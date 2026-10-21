@@ -1,0 +1,8 @@
+.tools/
+.cache/
+bin/
+.arm/
+*.test
+coverage.out
+*.swp
+*.swo

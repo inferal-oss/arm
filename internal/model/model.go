@@ -1,0 +1,119 @@
+package model
+
+import (
+	"encoding/json"
+	"time"
+)
+
+type Resources struct {
+	CPU    float64 `json:"cpu"`
+	Memory int64   `json:"memory_bytes"`
+	Disk   int64   `json:"disk_bytes"`
+}
+
+func (r Resources) Add(s Resources) Resources {
+	return Resources{r.CPU + s.CPU, r.Memory + s.Memory, r.Disk + s.Disk}
+}
+func (r Resources) Fits(s Resources) bool {
+	return r.CPU <= s.CPU && r.Memory <= s.Memory && r.Disk <= s.Disk
+}
+
+type Request struct {
+	Host         string        `json:"host"`
+	Reason       string        `json:"reason"`
+	Project      string        `json:"project,omitempty"`
+	Agent        string        `json:"agent,omitempty"`
+	Resources    Resources     `json:"resources"`
+	TTL          time.Duration `json:"ttl_ns"`
+	Key          string        `json:"idempotency_key"`
+	Queue        bool          `json:"queue"`
+	Profile      string        `json:"profile,omitempty"`
+	Kind         string        `json:"kind,omitempty"`
+	StorageLease string        `json:"storage_lease,omitempty"`
+}
+
+type Lease struct {
+	ID           string     `json:"id"`
+	Host         string     `json:"host"`
+	Owner        string     `json:"owner"`
+	Request      Request    `json:"request"`
+	State        string     `json:"state"`
+	Outcome      string     `json:"outcome,omitempty"`
+	Failure      string     `json:"failure,omitempty"`
+	Created      time.Time  `json:"created_at"`
+	Started      *time.Time `json:"started_at,omitempty"`
+	Expires      *time.Time `json:"expires_at,omitempty"`
+	Ended        *time.Time `json:"ended_at,omitempty"`
+	Revision     int        `json:"revision"`
+	PID          int        `json:"pid,omitempty"`
+	ManagedDir   string     `json:"managed_dir,omitempty"`
+	ExitCode     *int       `json:"exit_code,omitempty"`
+	Capabilities []string   `json:"capabilities"`
+	Artifact     *Artifact  `json:"artifact,omitempty"`
+}
+
+type Event struct {
+	Sequence int64           `json:"sequence"`
+	Type     string          `json:"type"`
+	Entity   string          `json:"entity"`
+	At       time.Time       `json:"at"`
+	Data     json.RawMessage `json:"data,omitempty"`
+}
+
+type Status struct {
+	Host         string         `json:"host"`
+	Owner        string         `json:"owner"`
+	Capacity     Resources      `json:"capacity"`
+	Reserved     Resources      `json:"reserved"`
+	Leases       []Lease        `json:"leases"`
+	Cursor       int64          `json:"cursor"`
+	Capabilities []string       `json:"capabilities"`
+	Resources    []ResourceView `json:"resources"`
+}
+
+type ResourceUse struct {
+	Lease    string     `json:"lease"`
+	Owner    string     `json:"owner"`
+	Agent    string     `json:"agent,omitempty"`
+	Project  string     `json:"project,omitempty"`
+	Reason   string     `json:"reason"`
+	Quantity float64    `json:"quantity"`
+	State    string     `json:"state"`
+	Expires  *time.Time `json:"expires_at,omitempty"`
+}
+type ResourceView struct {
+	ID          string               `json:"id"`
+	Host        string               `json:"host"`
+	Pool        string               `json:"pool"`
+	Kind        string               `json:"kind"`
+	Unit        string               `json:"unit"`
+	BudgetTotal float64              `json:"budget_total"`
+	Reserved    float64              `json:"reserved"`
+	Available   float64              `json:"available"`
+	Accounting  string               `json:"accounting"`
+	Observed    *float64             `json:"observed"`
+	Users       []ResourceUse        `json:"users"`
+	Measurement *ResourceMeasurement `json:"measurement,omitempty"`
+}
+
+type Error struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+func (e *Error) Error() string   { return e.Code + ": " + e.Message }
+func Err(code, msg string) error { return &Error{code, msg} }
+
+type WireRequest struct {
+	Version   int             `json:"version"`
+	ID        string          `json:"id"`
+	Operation string          `json:"operation"`
+	Params    json.RawMessage `json:"params"`
+}
+type WireResponse struct {
+	Version int    `json:"version"`
+	ID      string `json:"id,omitempty"`
+	Result  any    `json:"result,omitempty"`
+	Error   *Error `json:"error,omitempty"`
+	Event   *Event `json:"event,omitempty"`
+}
