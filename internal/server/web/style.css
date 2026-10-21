@@ -318,6 +318,19 @@ dialog.metric-help {
 }
 .metric-help::backdrop {background:#080e1280}
 .metric-help .dialog-heading {margin-bottom:14px}
+.lease-actions {border-top:1px solid var(--line);padding-top:18px;margin-top:22px}
+.lease-action-bar {display:flex;flex-wrap:wrap;gap:10px}
+.lease-action-review {margin-top:18px;padding:18px;border:1px solid #4b606d;border-radius:8px;background:#10171c}
+.lease-action-review h4 {font-size:16px;margin:0 0 12px}
+.lease-action-review p {font-size:13px;overflow-wrap:anywhere}
+.lease-action-review .action-scope {font:11px/1.7 var(--mono);color:var(--muted)}
+.lease-action-review label {display:block;font-size:13px;margin:18px 0 8px}
+.lease-action-review input {display:block;width:min(100%,260px);margin-top:8px}
+.lease-action-review .lease-action-bar {margin-top:18px}
+.lease-action-feedback {font-size:13px;color:var(--warn);overflow-wrap:anywhere}
+.lease-refresh {font-size:12px;margin-top:8px}
+.lease-action-bar .primary {border-color:#5eaa9e;color:var(--accent)}
+.lease-action-bar .danger {border-color:#aa6565;color:var(--red)}
 .metric-help .dialog-heading h2 {font-size:17px;letter-spacing:-.2px}
 #close-metric-help {padding:3px 9px;font-size:22px;background:transparent;border-color:transparent;color:var(--muted)}
 .metric-help p {font-size:13px;line-height:1.7;color:#c5d5dd;margin:12px 0}

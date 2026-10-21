@@ -29,7 +29,7 @@ func (a *app) dashboard(args []string) error {
 		return a.print(link)
 	}
 	fmt.Fprintln(a.out, a.paint("1;36", "Local ARM dashboard"))
-	fmt.Fprintln(a.out, "Monitor, resource budgets, leases, messages and activity. Changes use the CLI.")
+	fmt.Fprintln(a.out, "Monitor, resource budgets, leases, messages and activity. Extend, release or cancel leases from their details; use the CLI for other changes.")
 	fmt.Fprintln(a.out, "One-use connection link (valid for two minutes):")
 	fmt.Fprintln(a.out, link.URL)
 	if *noOpen {

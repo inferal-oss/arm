@@ -338,8 +338,8 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
-	if ctx.Value(browserContextKey{}) == true && !browserReadOperation(r.Operation) {
-		return nil, model.Err("forbidden", "this dashboard session supports observation; use the CLI for changes")
+	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
+		return nil, model.Err("forbidden", "this dashboard session supports inspection and reviewed lease controls; use the CLI for other changes")
 	}
 	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" || r.Operation == "shutdown" {
 		s.admission.Lock()
@@ -372,6 +372,14 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		var q model.LeaseAction
 		if err := decode(&q); err != nil {
 			return nil, err
+		}
+		if ctx.Value(browserContextKey{}) == true {
+			if q.Action != "renew" && q.Action != "release" && q.Action != "cancel" {
+				return nil, model.Err("forbidden", "dashboard lease controls support only extension, release and cancellation")
+			}
+			if (q.Action == "release" || q.Action == "cancel") && q.Consumers == nil {
+				return nil, model.Err("invalid_request", "destructive lease controls require the reviewed attached leases")
+			}
 		}
 		return s.Manager.LeaseAction(q)
 	case "message_send":
@@ -492,7 +500,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	case "status":
 		status, err := s.Manager.Status()
 		if s.authority != "" {
-			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation")
+			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls")
 		}
 		if s.monitor != nil {
 			status.Capabilities = append(status.Capabilities, "host-monitor-stream")

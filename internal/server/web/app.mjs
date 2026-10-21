@@ -1,6 +1,7 @@
 import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths} from './core.mjs';
 import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
+import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
@@ -31,12 +32,16 @@ const badge = text => { const el = node('span', 'badge', text); el.dataset.kind 
 const state = {status: null, statusReceived: 0, statusTime: null, messages: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, selectedDisk: '', selectedNetwork: '', connected: false};
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
 let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, refreshAgain = false;
+let detailPanel = null;
+let detailLeaseID = '';
+const pendingLeaseActions = new Set();
 
 function notice(text = '') { $('notice').textContent = text; $('notice').hidden = !text; }
 function connectionState(text, live = false) {
   $('connection').textContent = text;
   $('connection').dataset.state = live ? 'live' : 'offline';
   state.connected = live;
+  detailPanel?.updateConnection();
 }
 
 class Backend {
@@ -57,7 +62,7 @@ class Backend {
         else if (response.telemetry && response.subscription === this.monitorID) acceptMonitor(response.telemetry);
         else if (response.id && this.pending.has(response.id)) {
           const pending = this.pending.get(response.id); this.pending.delete(response.id); clearTimeout(pending.timer);
-          if (response.error) pending.reject(Error(`${response.error.code}: ${response.error.message}`));
+          if (response.error) pending.reject(Object.assign(Error(`${response.error.code}: ${response.error.message}`), {code: response.error.code, definitive: true}));
           else pending.resolve(response.result);
         }
       } catch (error) { notice(error.message); this.socket.close(); }
@@ -389,17 +394,40 @@ function leaseTable() {
 }
 async function showLease(id) {
   const request = ++detailRequest;
+  detailLeaseID = id;
+  detailPanel?.dispose(); detailPanel = null;
   $('detail-body').replaceChildren(empty('Loading lease…')); if (!$('detail').open) $('detail').showModal();
   try {
     const current = connection, lease = await current.call('inspect', {id});
-    if (request !== detailRequest || !$('detail').open) return;
-    const body = $('detail-body'), dl = node('dl');
-    for (const [label, value] of [['ID', lease.id], ['State', lease.state], ['Reason', lease.request.reason], ['Owner', ownerLabel(lease)], ['Agent', lease.request.agent || '—'], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
-    body.replaceChildren(dl, recordJSON(lease, 'Full lease record', `lease:${lease.id}`, true));
+    const status = await current.call('status');
+    if (request !== detailRequest || !$('detail').open || current !== connection) return;
+    renderLeaseDetail(lease, status.leases ?? [], request);
   } catch (error) { if (request === detailRequest && $('detail').open) $('detail-body').replaceChildren(empty(error.message)); }
 }
+function renderLeaseDetail(lease, leases, request, resultNote = '') {
+  detailPanel?.dispose();
+  const body = $('detail-body'), dl = node('dl');
+  for (const [label, value] of [['ID', lease.id], ['State', lease.state], ['Reason', lease.request.reason], ['Owner', ownerLabel(lease)], ['Agent', lease.request.agent || '—'], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
+  const current = connection;
+  detailPanel = leaseActionPanel({lease, leases, call: (...args) => current.call(...args), connected: () => state.connected && connection === current,
+    busy: () => pendingLeaseActions.has(lease.id), onPending: pending => {
+      if (pending) pendingLeaseActions.add(lease.id); else pendingLeaseActions.delete(lease.id);
+      detailPanel?.updateConnection();
+      // Reopening a detail during a request must not leave its pre-response
+      // snapshot actionable when that request finishes with an uncertain result.
+      if (!pending && request !== detailRequest && detailLeaseID === lease.id && $('detail').open) showLease(lease.id);
+    },
+    onRefresh: () => showLease(lease.id), onResult: result => {
+      scheduleRefresh();
+      if (request === detailRequest && $('detail').open) renderLeaseDetail(result, leases, request, `${leaseActionResult(result)}${result.state === 'active' ? ' Expires: ' + when(result.expires_at) : ''}`);
+    }});
+  body.replaceChildren(dl);
+  if (resultNote) { const note = node('p', 'lease-action-feedback', resultNote); note.setAttribute('role', 'status'); body.append(note); }
+  body.append(detailPanel.element, recordJSON(lease, 'Full lease record', `lease:${lease.id}`, true));
+  $('close-detail').focus();
+}
 $('close-detail').addEventListener('click', () => $('detail').close());
-$('detail').addEventListener('close', () => { detailRequest++; });
+$('detail').addEventListener('close', () => { detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null; });
 function renderMessages() {
   const root = $('messages'); root.replaceChildren();
   for (const m of [...state.messages].reverse()) {
@@ -426,7 +454,7 @@ function renderHost() {
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
   const p = panel('Local authority', 'CAPABILITIES', ''); const dl = node('dl');
   for (const [label, value] of [['Host', status.host], ['Owner', ownerLabel(status)], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
-  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'This observation session can read local state. Lease changes, pool edits, cleanup and messaging controls remain in the CLI. The TUI is still planned.'));
+  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Pool edits, explicit cleanup recovery and messaging controls remain in the CLI. The TUI is still planned.'));
   root.replaceChildren(p.box);
 }
 

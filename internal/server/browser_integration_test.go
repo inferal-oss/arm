@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -30,7 +31,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	if !ok || strings.Contains(link.URL, ep.Token) {
 		t.Fatal("unsafe browser link")
 	}
-	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs"} {
+	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs"} {
 		r, err := http.Get(base + path)
 		if err != nil {
 			t.Fatal(err)
@@ -105,11 +106,18 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 				if response.Error != nil {
 					t.Fatal(response.Error)
 				}
+				if operation == "status" {
+					raw, _ := json.Marshal(response.Result)
+					var status model.Status
+					if json.Unmarshal(raw, &status) != nil || !slices.Contains(status.Capabilities, "browser-dashboard-observation") || !slices.Contains(status.Capabilities, "browser-reviewed-lease-controls") {
+						t.Fatal("dashboard capabilities do not advertise supported controls", status.Capabilities)
+					}
+				}
 				break
 			}
 		}
 	}
-	for _, operation := range []string{"browser_ticket", "shutdown", "release", "message", "message_send", "lease_action", "pool_mutate", "run"} {
+	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "message_send", "pool_mutate", "run"} {
 		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: operation, Operation: operation, Params: json.RawMessage(`{}`)}); err != nil {
 			t.Fatal(err)
 		}
@@ -125,6 +133,66 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 				break
 			}
 		}
+	}
+	callAction := func(action model.LeaseAction) model.WireResponse {
+		t.Helper()
+		raw, _ := json.Marshal(action)
+		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: "action", Operation: "lease_action", Params: raw}); err != nil {
+			t.Fatal(err)
+		}
+		for {
+			var response model.WireResponse
+			if err := wsjson.Read(ctx, c, &response); err != nil {
+				t.Fatal(err)
+			}
+			if response.ID == "action" {
+				return response
+			}
+		}
+	}
+	decodeLease := func(response model.WireResponse, lease *model.Lease) error {
+		raw, err := json.Marshal(response.Result)
+		if err != nil {
+			return err
+		}
+		return json.Unmarshal(raw, lease)
+	}
+	var lease model.Lease
+	if err := client.Call(ctx, home, "acquire", model.Request{Reason: "browser reviewed controls", Resources: model.Resources{CPU: 1}, TTL: time.Minute}, &lease); err != nil {
+		t.Fatal(err)
+	}
+	for _, action := range []string{"reconcile", "storage_cleanup", "storage_handoff"} {
+		response := callAction(model.LeaseAction{ID: lease.ID, Revision: lease.Revision, Action: action})
+		if response.Error == nil || response.Error.Code != "forbidden" {
+			t.Fatalf("unoffered browser action %s accepted: %+v", action, response)
+		}
+	}
+	actionResponse := callAction(model.LeaseAction{ID: lease.ID, Revision: lease.Revision, Action: "release"})
+	if actionResponse.Error == nil || actionResponse.Error.Code != "invalid_request" {
+		t.Fatal("browser destructive action omitted reviewed consumers", actionResponse)
+	}
+	actionResponse = callAction(model.LeaseAction{ID: lease.ID, Revision: lease.Revision, Action: "renew", TTL: 2 * time.Minute})
+	var renewed model.Lease
+	if actionResponse.Error != nil || decodeLease(actionResponse, &renewed) != nil || renewed.Revision != lease.Revision+1 || !renewed.Expires.After(*lease.Expires) {
+		t.Fatalf("browser renewal: %+v", actionResponse)
+	}
+	actionResponse = callAction(model.LeaseAction{ID: lease.ID, Revision: lease.Revision, Action: "release", Consumers: []model.LeaseRevision{}})
+	if actionResponse.Error == nil || actionResponse.Error.Code != "revision_conflict" {
+		t.Fatal("browser stale release accepted", actionResponse)
+	}
+	var queued model.Lease
+	if err := client.Call(ctx, home, "acquire", model.Request{Reason: "browser queued cancellation", Resources: model.Resources{CPU: 1}, TTL: time.Minute, Queue: true}, &queued); err != nil || queued.State != "queued" {
+		t.Fatal("queue fixture", err)
+	}
+	actionResponse = callAction(model.LeaseAction{ID: queued.ID, Revision: queued.Revision, Action: "cancel", Consumers: []model.LeaseRevision{}})
+	var cancelled model.Lease
+	if actionResponse.Error != nil || decodeLease(actionResponse, &cancelled) != nil || cancelled.State != "terminal" || cancelled.Outcome != "cancelled" {
+		t.Fatalf("browser queue cancellation: %+v", actionResponse)
+	}
+	actionResponse = callAction(model.LeaseAction{ID: lease.ID, Revision: renewed.Revision, Action: "release", Consumers: []model.LeaseRevision{}})
+	var released model.Lease
+	if actionResponse.Error != nil || decodeLease(actionResponse, &released) != nil || released.State != "terminal" || released.Outcome != "released" {
+		t.Fatalf("browser release: %+v", actionResponse)
 	}
 	options.HTTPHeader.Set("Origin", "http://unrelated.invalid")
 	if connection, _, err := websocket.Dial(ctx, ep.URL, options); err == nil {

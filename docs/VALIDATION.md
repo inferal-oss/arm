@@ -2,6 +2,12 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: dashboard lease controls
+
+Nineteen JavaScript checks, focused native server/manager race suites and vet passed. Real CUA acceptance on a separate private backend exercised extension with shortening rejection and exact updated expiry, declined release without revision change, stale revision conflict after a concurrent CLI renewal, explicit refresh, queued/active cancellation and release. Review fixed keyboard focus after rerender and disabled Keep lease/duration controls once a request is in flight. The fixture was stopped and removed; `/tmp/arm-dashboard-release-proof.png` retains the rendered confirmation.
+
+Tests cover typed duration limits/nanosecond conversion, current state eligibility, concrete managed paths and attached consumers, literal untrusted text, pending serialization, closing/disposal, disconnection, definitive versus unknown outcomes and refusal to retry automatically. Backend tests verify exact dependent-set/revision conflicts and preservation on rejected review; browser access permits only reviewed renew/release/cancel while unrelated and direct mutations remain forbidden. Ending/needs-attention outcomes do not prove capacity returned. Full narrow-layout/reconnect and other dashboard operations remain separate acceptance work.
+
 ## October 21, 2026: durable human owner names
 
 Focused native race tests passed OS UID/environment spoof resistance, bounded directory lookup and failure/invalid-name fallback, one outstanding lookup limit, SQLite close/reopen and event snapshots, lease/resource owner preservation after rename, UID-only historical records, pool creator/current actor distinction, idempotent message attribution and escaped terminal versus raw JSON display. The effective UID remains authorization identity; optional username metadata comes from the OS account lookup. Real dashboard acceptance observed the native account name and UID, with Agent separate from Owner. Native lookups cannot be canceled internally; one stuck lookup occupies the capped slot and subsequent calls fall back to UID. CGo-free Linux local-account lookup may not resolve directory-service users. No historical name is invented.

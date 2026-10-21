@@ -16,7 +16,7 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/style.css
+//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/style.css
 var browserAssets embed.FS
 
 type browserContextKey struct{}
@@ -106,10 +106,12 @@ func (s *Server) authenticate(r *http.Request) (browser bool, expiry time.Time, 
 	return true, expiry, ok && time.Now().Before(expiry)
 }
 
-func browserReadOperation(op string) bool {
+func browserAllowedOperation(op string) bool {
 	switch op {
 	case "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "storage_list":
 		return true
+	case "lease_action":
+		return true // Restricted to revision-guarded renew/release/cancel below.
 	}
 	return false
 }
@@ -129,7 +131,7 @@ func (s *Server) registerBrowser(mux *http.ServeMux) {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
-	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/style.css": "style.css"} {
+	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/style.css": "style.css"} {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			s.browserHeaders(w)
 			if !s.validHost(r.Host) {

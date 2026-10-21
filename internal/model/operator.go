@@ -10,4 +10,12 @@ type LeaseAction struct {
 	Revision int           `json:"revision"`
 	Action   string        `json:"action"`
 	TTL      time.Duration `json:"ttl_ns,omitempty"`
+	// Consumers binds a destructive parent action to its displayed attached
+	// allocations. A non-nil empty list means the operator reviewed no consumers.
+	Consumers []LeaseRevision `json:"consumers"`
+}
+
+type LeaseRevision struct {
+	ID       string `json:"id"`
+	Revision int    `json:"revision"`
 }
