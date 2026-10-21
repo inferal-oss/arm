@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: same-document connection-link recovery
+
+Six JavaScript regressions passed capture-before-cleanup, duplicate browser events, stored credentials, cancelled/late exchanges, invalid credentials and retained in-flight message keys without replay. Native browser race and compiled bootstrap/asset/security checks passed. Actual Chrome acceptance restarted an isolated backend on the same port, opened a fresh link in the existing tab and recovered while preserving an unsent draft. During a pending send, fresh authentication immediately marked the original request uncertain, retained its exact key/body and later resolved exactly one durable message. A used ticket was refused; another fresh ticket recovered. Back/Forward remained connected with sanitized URLs. This is same-origin recovery, not cross-origin operation migration or packet-capture evidence.
+
 ## October 21, 2026: reviewed browser operator messaging
 
 JavaScript checks cover exact contact/broadcast review, stale registration, literal bodies, linked replies, durable lookup, explicit same-key retry and uncertainty after a rejected retry. The persistence regression restores all eight maximum-size requests beyond the old 2 MiB envelope and warns on unsupported saved data. Native manager/server race tests cover durable receipts/restart, missing versus failed journals, no native invocation during lookup, browser permission restrictions and CLI operator-inbox preservation.

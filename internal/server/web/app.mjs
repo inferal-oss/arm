@@ -5,6 +5,7 @@ import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {createDashboardHistory} from './route.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
 import {createOperatorMessaging} from './operator-messaging.mjs';
+import {createConnectionLinkHandler, createDashboardAuthentication} from './connection-links.mjs';
 
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
@@ -89,6 +90,10 @@ class Backend {
       }
     });
   }
+  disconnect() {
+    for (const pending of this.pending.values()) { clearTimeout(pending.timer); pending.reject(Error('Dashboard session changed; the prior request outcome may be unknown')); }
+    this.pending.clear(); this.socket.close();
+  }
   call(operation, params = {}) {
     if (this.socket.readyState !== WebSocket.OPEN) return Promise.reject(Error('Backend disconnected'));
     if (this.pending.size >= 4) return Promise.reject(Error('Dashboard request limit reached'));
@@ -103,23 +108,26 @@ class Backend {
   }
 }
 
-async function bootstrap() {
-  const fragment = new URLSearchParams(location.hash.slice(1)), ticket = fragment.get('connect');
-  navigation.sanitize(); // Remove connection credentials before any fetch.
-  try {
-    if (ticket !== null) {
-      const response = await fetch('/v1/browser/session', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ticket}), credentials: 'omit', cache: 'no-store', redirect: 'error'});
-      if (!response.ok) throw Error('Connection link expired or already used. Run arm dashboard again.');
-      session = await response.json();
-      if (!/^[a-f0-9]{64}$/.test(session.token) || !Number.isFinite(Date.parse(session.expires_at))) throw Error('Invalid browser credential');
-      try { sessionStorage.setItem('arm-session', JSON.stringify(session)); } catch { /* The in-memory session still works. */ }
-    } else {
-      try { session = JSON.parse(sessionStorage.getItem('arm-session') || 'null'); } catch { session = null; }
-    }
-    if (!session || !/^[a-f0-9]{64}$/.test(session.token) || Date.now() >= Date.parse(session.expires_at)) throw Error('Run arm dashboard to open an authenticated local console.');
-    await connect();
-  } catch (error) { connectionState('Not connected'); notice(error.message); }
-}
+const authentication = createDashboardAuthentication({
+  exchange: async (ticket, signal) => {
+    const response = await fetch('/v1/browser/session', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ticket}), credentials: 'omit', cache: 'no-store', redirect: 'error', signal});
+    if (!response.ok) throw Error('Connection link expired or already used. Run arm dashboard again.');
+    return response.json();
+  },
+  readSession: () => { try { return JSON.parse(sessionStorage.getItem('arm-session') || 'null'); } catch { return null; } },
+  writeSession: value => { try { sessionStorage.setItem('arm-session', JSON.stringify(value)); } catch { /* In-memory credentials still work. */ } },
+  clearSession: () => { try { sessionStorage.removeItem('arm-session'); } catch { /* Storage may be unavailable. */ } },
+  onStart: fresh => {
+    clearTimeout(retryTimer); clearTimeout(refreshTimer); refreshTimer = null; retry = 0;
+    const previous = connection; connection = null; session = null;
+    previous?.disconnect(); // Settle outstanding requests immediately, never replay.
+    connectionState(fresh ? 'Authenticating' : 'Connecting'); notice();
+  },
+  onSession: async value => { session = value; await connect(); },
+  onError: error => { connectionState('Not connected'); notice(error.message); },
+});
+const connectionLinks = createConnectionLinkHandler({location, navigation,
+  onConnect: link => authentication.start(link), onStored: () => authentication.start()});
 
 async function connect() {
   clearTimeout(retryTimer);
@@ -164,7 +172,7 @@ async function refresh() {
     updateOperatorMessaging();
     updateActivityFeed();
     if (view !== 'monitor') renderCurrent();
-  } catch (error) { notice(error.message); }
+  } catch (error) { if (connection === current) notice(error.message); }
   finally { refreshBusy = false; if (refreshAgain) { refreshAgain = false; scheduleRefresh(); } }
 }
 function addEvent(event, render = true) {
@@ -228,7 +236,8 @@ function applyDashboardRoute(route) {
   }
 }
 function selectView(name) { navigation.navigate({view: name, lease: null}); }
-window.addEventListener('popstate', () => navigation.restore());
+window.addEventListener('popstate', connectionLinks.change);
+window.addEventListener('hashchange', connectionLinks.change);
 function renderCurrent() {
   ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost})[view]();
 }
@@ -484,5 +493,4 @@ function renderHost() {
 }
 
 setInterval(updateFreshness, 1000);
-applyDashboardRoute(navigation.current);
-bootstrap();
+connectionLinks.start();
