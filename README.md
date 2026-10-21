@@ -208,6 +208,8 @@ Re-running `arm install` upgrades only an unchanged managed instruction block, p
 make test
 make check
 make test-local
+# Opt-in: real installed Cargo/rustc, Gradle/JDK and uv/Python, offline.
+make test-workloads
 # Opt-in: actual authenticated Codex and Claude sessions, network required.
 make test-live
 # Optional: real Linux runtime, using an already cached image with Python 3.
@@ -219,6 +221,8 @@ python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST -
 ```
 
 Use `GO=.tools/go/bin/go` with these targets if Go is not on PATH. Live tests use dedicated sessions, temporary Codex configuration and project instruction files, and the existing CLI sign-ins. They do not send to existing user sessions or rewrite global agent instructions. Native CLIs may retain the dedicated session transcripts in their history. Reports are written beneath `.cache/`.
+
+`test-workloads` requires all three toolchains and never installs or downloads them. It uses private projects, configuration, caches and an ARM authority. Tests compile and export a Rust executable and Java JAR, resolve/install a local Python wheel with uv, and preserve a standalone Python zipapp. They check failures, cancellation, Python execution expiry and verified managed-directory removal while preserving exported outputs. Physical reclamation can remain unknown and charged. To select installed tools explicitly, run `python3 scripts/test-workloads.py --tools cargo uv`; `--allow-missing` prints prerequisite skips instead of treating them as coverage. Gradle and uv currently use generic supervision with explicit tool settings, rather than dedicated ARM profiles.
 
 The implementation has been exercised on macOS and Linux arm64 in an isolated container on an actual Linux kernel. Linux amd64 cross-compilation is also checked; wider filesystem, hardware and service validation remains. See [the validation record](docs/VALIDATION.md) and [remaining implementation plan](docs/PLAN.md).
 

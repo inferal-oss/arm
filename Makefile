@@ -2,7 +2,7 @@ GO ?= go
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: build install test check test-local test-live test-linux test-web
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads
 build:
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -25,6 +25,11 @@ test-web:
 test-live: build
 	CGO_ENABLED=0 $(GO) build -o .cache/wsbridge ./scripts/wsbridge
 	python3 scripts/test-live-agents.py
+
+# Opt-in real offline Cargo/rustc, Gradle/JDK and uv/Python scenarios.
+# Missing toolchains fail; this target never downloads or installs them.
+test-workloads: build
+	python3 scripts/test-workloads.py
 
 test-local: build
 	python3 scripts/test-local.py
