@@ -62,28 +62,12 @@ func (a *app) stopBackend(request model.ShutdownRequest) (int, error) {
 		}
 		current, readErr := local.ReadEndpoint(a.home)
 		if os.IsNotExist(readErr) {
-			// Endpoint removal precedes releasing the daemon authority lock.
-			// Both facts are required; a missing file alone is not shutdown.
-			lock, lockErr := os.OpenFile(filepath.Join(a.home, "daemon.lock"), os.O_RDWR, 0600)
-			if lockErr != nil {
-				return 1, lockErr
+			final, released, finalErr := readReleasedShutdown(a.home, report.ID)
+			if finalErr != nil {
+				return 1, finalErr
 			}
-			lockErr = syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
-			if lockErr == nil {
-				final, finalErr := readFinalShutdown(a.home, report.ID)
-				_ = syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)
-				if finalErr != nil {
-					lock.Close()
-					return 1, finalErr
-				}
-				report = final
-			}
-			lock.Close()
-			if lockErr == nil {
-				report.Stopped = true
-				report.Phase = "stopped"
-				report.Detail = "Backend stopped; state and event history are retained."
-				return 0, a.print(report)
+			if released {
+				return a.printStoppedShutdown(final)
 			}
 		} else if readErr != nil {
 			return 1, readErr
@@ -104,19 +88,18 @@ func (a *app) stopBackend(request model.ShutdownRequest) (int, error) {
 				if errors.As(err, &api) {
 					return 1, model.Err(api.Code, api.Message+" (shutdown "+report.ID+")")
 				}
+				// Shutdown can finish between reading the endpoint and sending
+				// this status request. Verify its durable result under the lock
+				// before treating a lost final response as an interruption.
+				final, released, finalErr := readReleasedShutdown(a.home, report.ID)
+				if finalErr != nil {
+					return 1, finalErr
+				}
+				if released {
+					return a.printStoppedShutdown(final)
+				}
 				if consecutiveErrors >= 5 {
 					return 1, model.Err("shutdown_status_unavailable", "cannot observe shutdown "+report.ID+"; backend intent continues. Reconnect and inspect before retrying.")
-				}
-				lock, openErr := os.OpenFile(filepath.Join(a.home, "daemon.lock"), os.O_RDWR, 0600)
-				if openErr == nil {
-					unlocked := syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB) == nil
-					if unlocked {
-						_ = syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)
-					}
-					lock.Close()
-					if unlocked {
-						return 1, model.Err("shutdown_interrupted", "backend exited before verified shutdown; state is retained. Restart and inspect recovered allocations.")
-					}
 				}
 			}
 		}
@@ -126,6 +109,37 @@ func (a *app) stopBackend(request model.ShutdownRequest) (int, error) {
 		case <-time.After(100 * time.Millisecond):
 		}
 	}
+}
+
+func (a *app) printStoppedShutdown(report model.ShutdownReport) (int, error) {
+	report.Stopped = true
+	report.Phase = "stopped"
+	report.Detail = "Backend stopped; state and event history are retained."
+	return 0, a.print(report)
+}
+
+// Both the ordinary endpoint-removal path and a failed final status request
+// converge here. Holding the authority lock prevents a replacement backend
+// from racing the endpoint and durable completion checks.
+func readReleasedShutdown(home, id string) (model.ShutdownReport, bool, error) {
+	var report model.ShutdownReport
+	lock, err := os.OpenFile(filepath.Join(home, "daemon.lock"), os.O_RDWR, 0600)
+	if err != nil {
+		return report, false, err
+	}
+	defer lock.Close()
+	if err = syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); err != nil {
+		if errors.Is(err, syscall.EWOULDBLOCK) || errors.Is(err, syscall.EAGAIN) {
+			return report, false, nil
+		}
+		return report, false, err
+	}
+	defer syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)
+	if _, err := local.ReadEndpoint(home); !os.IsNotExist(err) {
+		return report, true, model.Err("shutdown_interrupted", "backend exited with its endpoint still present; restart and inspect recovered allocations")
+	}
+	report, err = readFinalShutdown(home, id)
+	return report, true, err
 }
 
 // Once the authority lock is released, read the durable final result without
