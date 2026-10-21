@@ -224,6 +224,14 @@ func (m *Manager) sample() {
 	m.observations = observations
 	m.observationMu.Unlock()
 }
+
+// Observation returns an immutable cached physical reading without admission
+// or database work. The monitor reuses filesystem topology/capacity probes.
+func (m *Manager) Observation(kind string) model.ResourceMeasurement {
+	m.observationMu.RLock()
+	defer m.observationMu.RUnlock()
+	return m.observations[kind]
+}
 func (m *Manager) Close() error {
 	m.mu.Lock()
 	m.closing = true

@@ -15,6 +15,8 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"monitor": {summary: "Show physical host CPU, memory/swap, filesystem space, per-device disk I/O and network rates with bounded history. --follow streams through the shared backend. Unknown counters and history gaps remain explicit; these are separate from lease budgets.", example: `arm monitor
+  arm monitor --follow --json`},
 	"agents":       {summary: "Read the full agent operating guide: resource leases, registration, warnings, polling, operator messages and safeguards. Works offline without creating state. Use arm agent list to list contacts.", example: `arm agents --json`},
 	"start":        {summary: "Start the local backend in the background. Shortcut for arm daemon start; an existing backend keeps its budgets.", example: `arm start --cpu 4 --memory 8GiB --disk 20GiB`},
 	"stop":         {summary: "Stop an idle backend. Shortcut for arm daemon stop; outstanding leases and unresolved obligations prevent shutdown."},

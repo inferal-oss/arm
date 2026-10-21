@@ -119,6 +119,7 @@ Commands:
   usage LEASE_ID            Show supervised CPU/memory observations
   incidents                 Show durable usage incidents and warnings
   resources                 Show budgets, availability, owners, and reasons
+  monitor                   Observe physical host usage and short history
   storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
   ports reserve|list|discover Manage port reservations and native inventory
   pool create|list|inspect|history|set|adjust  Manage counted host/global pools
@@ -182,6 +183,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.integration(cmd, args)
 	case "agents":
 		return 0, a.agentsGuide(args)
+	case "monitor":
+		return 0, a.monitorCommand(args)
 	case "agent":
 		return 0, a.agent(args)
 	case "message":

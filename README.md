@@ -73,6 +73,8 @@ Inspect native CPU and memory observations for a supervised command:
 bin/arm usage LEASE_ID
 ```
 
+For physical host monitoring, use `arm monitor`, or `arm monitor --follow --json` to stream sample pages. The shared backend reports aggregate/per-core CPU, memory/swap, cached filesystem space, per-device disk I/O and network rates. It retains a two-minute window of compact history at a nominal two-second cadence. Restart changes the collector epoch and explicitly marks a history gap. Physical observations are separate from lease budgets and attribution; unavailable/reset counters remain null, and GPU telemetry is not yet implemented. Web/TUI Monitor views remain upcoming.
+
 Snapshots also appear in `inspect` and `status`. CPU needs two samples and reports a lower-bound logical-core average for captured group members present in both. macOS reports native process physical footprints; Linux reports private resident memory. These metrics have different scopes, and shared memory, exited children and escaped processes prevent treating them as a complete physical allocation. Output includes identity verification, timestamps, freshness, completeness and measurement details; unavailable counters remain `null`. The final lease retains a summary. Sampling alone takes no automatic action; supervised runs can opt into sustained-overage warnings and revocation with `--usage-policy warn|revoke`. Kernel CPU/memory limits remain planned. macOS uses `purego` to call system APIs without a C compiler.
 
 Inspect a directory's logical size and reported allocation through the backend:

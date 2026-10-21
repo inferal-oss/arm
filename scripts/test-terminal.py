@@ -2,15 +2,19 @@
 """Real PTY checks, isolated instruction roots, and redirected JSON contracts."""
 import argparse
 import errno
+import fcntl
 import json
 import os
 from pathlib import Path
 import pty
+import re
 import select
 import shlex
 import signal
+import struct
 import subprocess
 import tempfile
+import termios
 import time
 
 
@@ -37,8 +41,9 @@ def main():
             assert result.returncode == 0, (args, result.stderr)
             return json.loads(result.stdout)
 
-        def tty(args, response=None, before_response=None, env_extra=None):
+        def tty(args, response=None, before_response=None, env_extra=None, width=80):
             master, slave = pty.openpty()
+            fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 24, width, 0, 0))
             env = dict(os.environ, TERM='xterm-256color')
             env.pop('NO_COLOR', None)
             env.update(env_extra or {})
@@ -154,6 +159,20 @@ def main():
             code, text = tty(['uninstall'])
             assert code == 1 and 'active_leases' in text and 'Apply these changes?' not in text
             cli('release', lease['id'])
+            deadline = time.monotonic() + 6
+            while not cli('monitor')['latest']:
+                assert time.monotonic() < deadline, 'monitor did not produce its first sample'
+                time.sleep(.05)
+            code, text = tty(['monitor'], width=40)
+            clean = re.sub(r'\x1b\[[0-9;]*m', '', text)
+            assert code == 0 and 'Host monitor' in clean and 'Physical observations' in clean
+            for line in clean.splitlines():
+                if line.startswith(('CPU ', 'Memory ')):
+                    assert len(line) <= 40, ('monitor chart ignored terminal width', line)
+                if re.match(r'  cpu\d', line):
+                    assert len(re.findall(r'\bcpu\d+\b', line)) <= 2, line
+            code, text = tty(['monitor', '--json'], width=40)
+            assert code == 0 and json.loads(text)['latest'] and '\x1b' not in text
             code, text = tty(['uninstall'], response=b'n\n')
             assert code == 1 and cli('status')['host'] and backend.poll() is None, 'declining uninstall stopped an idle backend'
             code, text = tty(['uninstall'], response=b'y\n')

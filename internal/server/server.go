@@ -25,13 +25,15 @@ import (
 )
 
 type Server struct {
-	Manager     *manager.Manager
-	home, token string
-	stop        context.CancelFunc
-	admission   sync.Mutex
-	stopping    bool
-	storageScan chan struct{}
-	portScan    chan struct{}
+	Manager      *manager.Manager
+	home, token  string
+	stop         context.CancelFunc
+	admission    sync.Mutex
+	stopping     bool
+	storageScan  chan struct{}
+	portScan     chan struct{}
+	monitor      *observe.Monitor
+	monitorSlots chan struct{}
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
@@ -69,6 +71,16 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel}
 	s.storageScan = make(chan struct{}, 1)
 	s.portScan = make(chan struct{}, 1)
+	initial, e := m.Status()
+	if e != nil {
+		return e
+	}
+	s.monitor = observe.NewMonitor(initial.Host, func() model.ResourceMeasurement { return m.Observation("disk") })
+	s.monitorSlots = make(chan struct{}, 32)
+	monitorCtx, monitorStop := context.WithCancel(ctx)
+	monitorDone := make(chan struct{})
+	go func() { defer close(monitorDone); s.monitor.Run(monitorCtx) }()
+	defer func() { monitorStop(); <-monitorDone }()
 	ep := local.Endpoint{URL: "ws://" + listener.Addr().String() + "/v1/ws", Token: s.token, PID: os.Getpid()}
 	if e = local.AtomicJSON(filepath.Join(home, "endpoint.json"), ep); e != nil {
 		return e
@@ -138,8 +150,16 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	var subscription context.CancelFunc
+	var monitoring context.CancelFunc
+	monitorSlot := false
 	requests := make(chan struct{}, 8)
 	defer func() {
+		if monitoring != nil {
+			monitoring()
+		}
+		if monitorSlot {
+			<-s.monitorSlots
+		}
 		if subscription != nil {
 			subscription()
 		}
@@ -200,6 +220,82 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			}(p.After)
 			continue
 		}
+		if req.Operation == "monitor_subscribe" || req.Operation == "monitor_unsubscribe" {
+			if req.Operation == "monitor_unsubscribe" {
+				if monitoring != nil {
+					monitoring()
+					monitoring = nil
+				}
+				if monitorSlot {
+					<-s.monitorSlots
+					monitorSlot = false
+				}
+				resp.Result = map[string]bool{"subscribed": false}
+				if !send(resp) {
+					return
+				}
+				continue
+			}
+			var q model.MonitorQuery
+			if err := json.Unmarshal(req.Params, &q); err != nil {
+				resp.Error = &model.Error{Code: "invalid_request", Message: "invalid monitor subscription parameters"}
+				send(resp)
+				continue
+			}
+			page, changed, err := s.monitor.Read(q)
+			if err != nil {
+				var api *model.Error
+				if !errors.As(err, &api) {
+					api = &model.Error{Code: "internal_error", Message: "monitor snapshot unavailable"}
+				}
+				resp.Error = api
+				send(resp)
+				continue
+			}
+			if !monitorSlot {
+				select {
+				case s.monitorSlots <- struct{}{}:
+					monitorSlot = true
+				default:
+					resp.Error = &model.Error{Code: "monitor_busy", Message: "at most 32 monitor subscriptions may be active"}
+					send(resp)
+					continue
+				}
+			}
+			if monitoring != nil {
+				monitoring()
+			}
+			subctx, stop := context.WithCancel(ctx)
+			monitoring = stop
+			resp.Result = page
+			if !send(resp) {
+				return
+			}
+			go func(page model.MonitorPage, changed <-chan struct{}) {
+				for {
+					select {
+					case <-subctx.Done():
+						return
+					case <-changed:
+					}
+					next, ch, e := s.monitor.Read(model.MonitorQuery{Epoch: page.Epoch, After: page.Cursor})
+					if e != nil {
+						cancel()
+						return
+					}
+					select {
+					case <-subctx.Done():
+						return
+					default:
+					}
+					if !send(model.WireResponse{Version: 1, Subscription: req.ID, Telemetry: &next}) {
+						return
+					}
+					page, changed = next, ch
+				}
+			}(page, changed)
+			continue
+		}
 		select {
 		case requests <- struct{}{}:
 			// Long polling must not block the reader: it needs to notice a
@@ -257,6 +353,13 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "monitor":
+		var q model.MonitorQuery
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		page, _, err := s.monitor.Read(q)
+		return page, err
 	case "incidents":
 		var q struct {
 			Lease string `json:"lease"`
@@ -358,7 +461,11 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		}
 		return result, nil
 	case "status":
-		return s.Manager.Status()
+		status, err := s.Manager.Status()
+		if s.monitor != nil {
+			status.Capabilities = append(status.Capabilities, "host-monitor-stream")
+		}
+		return status, err
 	case "resources":
 		status, e := s.Manager.Status()
 		return status.Resources, e

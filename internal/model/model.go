@@ -133,9 +133,11 @@ type WireRequest struct {
 	Params    json.RawMessage `json:"params"`
 }
 type WireResponse struct {
-	Version int    `json:"version"`
-	ID      string `json:"id,omitempty"`
-	Result  any    `json:"result,omitempty"`
-	Error   *Error `json:"error,omitempty"`
-	Event   *Event `json:"event,omitempty"`
+	Version      int          `json:"version"`
+	ID           string       `json:"id,omitempty"`
+	Result       any          `json:"result,omitempty"`
+	Error        *Error       `json:"error,omitempty"`
+	Event        *Event       `json:"event,omitempty"`
+	Telemetry    *MonitorPage `json:"telemetry,omitempty"`
+	Subscription string       `json:"subscription,omitempty"`
 }

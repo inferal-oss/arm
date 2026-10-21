@@ -11,18 +11,29 @@ import (
 // string, integer, and boolean values we need and skips unsupported scalars.
 // Input is bounded at the command boundary; nesting is bounded here too.
 func plist(data []byte) (map[string]any, error) {
+	v, err := propertyList(data)
+	if err != nil {
+		return nil, err
+	}
+	d, ok := v.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("expected property list dictionary")
+	}
+	return d, nil
+}
+func propertyList(data []byte) (any, error) {
 	d := xml.NewDecoder(bytes.NewReader(data))
 	for {
 		t, err := d.Token()
 		if err != nil {
 			return nil, err
 		}
-		if s, ok := t.(xml.StartElement); ok && s.Name.Local == "dict" {
+		if s, ok := t.(xml.StartElement); ok && (s.Name.Local == "dict" || s.Name.Local == "array") {
 			v, err := plistValue(d, s, 0)
 			if err != nil {
 				return nil, err
 			}
-			return v.(map[string]any), nil
+			return v, nil
 		}
 	}
 }
