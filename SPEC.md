@@ -113,6 +113,16 @@ Release and cancellation are idempotent. Renewal is an admission decision, not a
 
 Time limits start when a lease becomes active, not when it joins the queue. A granted but unused lease still occupies its reservation until released or expired. Persist wall-clock deadlines for recovery and use an appropriate elapsed-time source while running. Sleep counts toward the lease duration; after wake or restart, reconcile overdue leases before new admission. Clock changes must not silently extend leases.
 
+### Agentic heartbeats and lease reviews
+
+Provide optional lease review checkpoints that ask the owning agent whether the reservation is still needed and why. A checkpoint includes the lease's purpose, claims, remaining time, observed usage and measurement quality, and queued demand where relevant. The agent can report progress and continued need, or request resizing, renewal, or early release through authorized structured operations.
+
+Checkpoint policy is configurable per profile or lease. Adapt frequency to scarcity and contention: scarce capacity with waiting work may justify an earlier review, while retained storage may need less frequent review. Coalesce reviews for the same agent and bound delivery retries, concurrent reviews, and agent invocation costs. An optional feature must not require waking an agent for every telemetry sample.
+
+Route reviews to the registered exact session using verified contact capabilities or the durable polling inbox. Persist checkpoint identity, lease revision, request context, reply deadline, delivery state, and response so restart or reconnect does not duplicate reviews or apply a stale answer to changed ownership or a terminal lease. The panel and TUI show pending reviews and the agent's explanation.
+
+A heartbeat response expresses intent; it does not prove compliance, renew a lease, or suspend expiry or incident deadlines. Missing a reply does not silently extend entitlement. Any consequence of silence beyond normal expiry requires an explicit resolved policy. ARM retains deterministic admission and enforcement decisions; capacity changes and renewals require the corresponding authorized, concurrency-checked operation and audit event. Treat free-form replies as data rather than executable instructions.
+
 ### Early release and credits
 
 Record useful early release as part of the initial implementation: original and revised allocations, duration, measured usage where known, release reason, confirmed release time, and capacity actually returned. Credits are owner-scoped, bounded, and auditable.
@@ -437,6 +447,8 @@ Implement the knowledge-card index and a functional Cargo adapter and profile, w
 
 Implement overage incidents, communication adapters, durable warnings, and revocation. Verify recovery after compliance, repeated breach after warnings, failed message delivery, restart during escalation, forced termination of supervised work, and lease-only revocation without falsely declaring unreclaimed resources free. Verify that unrelated processes and shared consumers survive enforcement.
 
+Add optional agentic lease reviews after the communication and lifecycle foundations. Verify exact-recipient delivery and polling fallback, coalesced and bounded scheduling under contention, restart/reconnect deduplication, late or duplicate replies, revision/ownership changes, denied renewal, explicit early release, and silence through expiry. Acknowledgement or conversational intent must never alter entitlement or establish compliance by itself.
+
 ### Operator interfaces and agent integration
 
 Deliver the web panel and TUI against the same backend, with the views and controls specified above. Both must observe the same lease revisions, warnings, messages, delivery outcomes, and cleanup state. Verify reconnect and cursor recovery, concurrent changes from both clients, stale-state display, and slow-client behavior. Review the web layout visually and exercise the TUI in a real terminal, including resizing and keyboard workflows.
@@ -473,6 +485,7 @@ Cluster placement, shared pools across hosts, stronger multi-user isolation, add
 - Exact queue fairness, future reservation, overcommit, and emergency-intervention policy.
 - Credit formula, fraud resistance, and whether credits affect scheduling at all.
 - Default warning thresholds, grace periods, renewal limits, and fallback contact requirements.
+- Default lease-review cadence, contention triggers, agent invocation budgets, and optional consequences of an unanswered review.
 - Exact supported Codex and Claude messaging mechanisms and their tested version ranges.
 - Initial additional workload adapters beyond Cargo, and the shared-service model for tools such as Gradle.
 - Exact APFS per-artifact measurement methods and attainable accuracy, backed by real filesystem tests.

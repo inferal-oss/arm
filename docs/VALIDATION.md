@@ -1,5 +1,7 @@
 # Validation record
 
+Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
+
 ## October 21, 2026: counted host/global resource pools
 
 The complete native macOS race suite with required APFS metadata and `go vet ./...` passed after integrating custom counted pools, journalled mutations and lease admission. Tests cover 40 concurrent capacity adjustments, competing grants, complete mixed native/custom bundles, zero-capacity pause/queue growth, reduction below reservations, renewal denial under a deficit, drain/delete safeguards, immutable scope, overflow/invalid inputs, exact int64 resource and CLI responses, revision/idempotency conflicts, history pagination, metadata edits and display-name reuse after tombstoning. Transaction failure injection proves state, journal and retry-result rollback together; restart preserves committed changes, operation retries and outstanding counts. Recovered uncertain supervised work keeps its custom permits charged. An audit test reuses an agent contact name and proves old session/registration and creator identities survive. Review also closed an integer-overflow bypass in native bundle capacity checks.

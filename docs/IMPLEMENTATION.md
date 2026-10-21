@@ -137,6 +137,7 @@ These permits return after ordinary lease settlement. Recovered uncertain superv
 
 - Further platform providers for observed pressure and per-workload usage, exclusive/reclaimable filesystem extents, richer port observation/cross-namespace recovery, and GPU resources.
 - Durable overage incidents, automatic warning escalation, and verified usage enforcement where supported.
+- Optional agentic lease reviews with contention-aware scheduling, bounded/coalesced agent invocations, durable exact-recipient delivery and responses, and explicit renew/resize/release actions. This is planned behavior; a conversational reply will not itself change entitlement or enforcement deadlines.
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.
 - Knowledge cards with YAML indexing and additional code-based workload adapters, including persistent services such as Gradle.
 - Native daemon services, stronger permissions, bounded telemetry/history retention, and richer recovery diagnostics.
