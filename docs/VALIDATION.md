@@ -2,6 +2,12 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: shared native WebSocket session
+
+Eleven real-loopback WebSocket/client tests passed under the race detector, including three repeated runs and vet. Tests cover out-of-order concurrent replies, max-int64 values, 100 unconsumed telemetry pages with explicit coalescing gaps, durable events and request bounds, overflow/resynchronization, dropped mutation responses without retries, and cancellation/late response isolation. A real authenticated ARM backend test exercises status, event/monitor subscriptions, acquire and revision-guarded release on one connection. Both Linux harnesses now include the client package. The isolated staged snapshot also passed all eleven client tests on actual Linux arm64, including the authenticated-backend lifecycle.
+
+Review fixed monitor identity changing before its request succeeded and context-insensitive waiting for frame writes. Rejected replacements preserve telemetry; concurrent monitor controls serialize while ordinary requests proceed; successful acknowledgements switch identities in wire order, unsubscribe clears queued telemetry, unsent cancellations preserve the stream, and sent ambiguous cancellations close for resynchronization. Deterministic held-write-gate checks require cancelled calls to return before the gate is released. This is a transport foundation, not TUI/reconnect completion; consumers must reload snapshots after failure and never replay mutations automatically.
+
 ## October 21, 2026: persistent dashboard activity feed
 
 All 29 JavaScript checks, including five feed tests, passed bounds/exact sequence ordering, owner/reason context, message deduplication, acknowledgement preservation, literal content, keyed focus/scroll preservation, compact recent counts, keyboard wrapping and deferred-close/reopen behavior. Native browser/server race checks and the compiled dashboard security/CLI smoke passed. Minimal DOM fixtures support unit contracts, not rendered acceptance.
