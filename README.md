@@ -152,6 +152,10 @@ The installer discovers Codex and Claude, including Claude in `~/.local/bin`. Ex
 
 Install and uninstall show the proposed changes and ask for confirmation in a terminal. Empty replies, EOF and Ctrl-C cancel. `--dry-run` only previews; use `arm install --yes` or `arm uninstall --yes` in scripts and agents. Noninteractive calls without `--yes` return a JSON preview and `confirmation_required`. Approval does not bypass edited-file or active-lease safeguards, and changes made while reviewing a preview require a fresh approval.
 
+Use `arm install --dry-run --diff` or `arm uninstall --dry-run --diff` to inspect exact unified patches; `--diff` also works with the interactive confirmation. Additions/deletions are colorized in a terminal, respecting `NO_COLOR` and `TERM=dumb`. JSON includes the diff, line/byte counts, existence and SHA-256 hashes. Non-UTF-8 files are identified explicitly rather than shown as a lossy textual patch.
+
+Before edits, ARM saves verified originals of the selected instruction files and installation manifest under `ARM_HOME/install-backups/OPERATION_ID/`. Private `.original` files retain exact bytes; adjacent `.json` records identify source paths, modes, sizes, ownership, timestamps and hashes, including files that were absent. The report gives the actual backup directory and completion state. Backup failure prevents instruction and manifest changes; dry runs and declined prompts make no backups, and no-op reinstall avoids redundant copies. Uninstall retains previous backups. Automatic restoration and backup retention/purge controls remain upcoming.
+
 Uninstall preserves unrelated edits, edited managed blocks, state, and history. It refuses outstanding leases, stops an idle backend, and checks target directory identity. It never deletes source trees or caches. An edited managed block results in an incomplete report and a nonzero exit status.
 
 Register an exact existing session before sending messages:

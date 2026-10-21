@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"syscall"
 
@@ -74,15 +75,19 @@ type Manifest struct {
 	Entries []Entry `json:"entries"`
 }
 type Action struct {
-	Path   string `json:"path"`
-	Action string `json:"action"`
-	Detail string `json:"detail,omitempty"`
+	Path   string      `json:"path"`
+	Action string      `json:"action"`
+	Detail string      `json:"detail,omitempty"`
+	Change *FileChange `json:"change,omitempty"`
 }
 type Report struct {
-	DryRun   bool     `json:"dry_run"`
-	Complete bool     `json:"complete"`
-	Actions  []Action `json:"actions"`
-	Retained []string `json:"retained,omitempty"`
+	DryRun          bool          `json:"dry_run"`
+	Complete        bool          `json:"complete"`
+	Actions         []Action      `json:"actions"`
+	Retained        []string      `json:"retained,omitempty"`
+	BackupDirectory string        `json:"backup_directory,omitempty"`
+	BackupComplete  bool          `json:"backup_complete"`
+	Backups         []BackupEntry `json:"backups,omitempty"`
 }
 
 func readManifest(home string) (Manifest, error) {
@@ -168,6 +173,13 @@ func write(root, name string, b []byte, expected ...string) error {
 }
 
 func Install(home string, targets []Target, dry bool) (Report, error) {
+	if !dry {
+		p, e := PreviewInstall(home, targets)
+		if e != nil {
+			return Report{}, e
+		}
+		return p.Apply()
+	}
 	return install(home, targets, dry, nil)
 }
 func install(home string, targets []Target, dry bool, expected *snapshot) (Report, error) {
@@ -187,6 +199,15 @@ func install(home string, targets []Target, dry bool, expected *snapshot) (Repor
 			if e = expected.check(home, true); e != nil {
 				return report, e
 			}
+		}
+		if expected != nil && expected.backupID != "" {
+			report.BackupDirectory = filepath.Join(home, "install-backups", expected.backupID)
+			report.Backups, e = expected.backup(home)
+			if e != nil {
+				report.Complete = false
+				return report, e
+			}
+			report.BackupComplete = true
 		}
 	}
 	m, e := readManifest(home)
@@ -265,10 +286,23 @@ func install(home string, targets []Target, dry bool, expected *snapshot) (Repor
 				desired = existing.PendingBlock
 				action = "resume-upgrade"
 			}
+			var change *FileChange
 			if desired != existing.Block || strings.Count(string(b), existing.Block) != 1 {
 				action = "upgrade-managed-instructions"
 				if strings.Count(string(b), existing.Block) != 1 {
 					action = "resume-install"
+				}
+				next := strings.Replace(string(b), existing.Block, desired, 1)
+				if strings.Count(string(b), existing.Block) != 1 {
+					next = string(b) + desired
+				}
+				state, e := fileState(t.Root, t.Name)
+				if e != nil {
+					return report, e
+				}
+				change = fileChange(path, b, []byte(next), state.Exists, true)
+				if e = expected.acceptChange(path, change); e != nil {
+					return report, e
 				}
 				if !dry {
 					// Retain both exact blocks across the atomic write. A crash at
@@ -277,10 +311,6 @@ func install(home string, targets []Target, dry bool, expected *snapshot) (Repor
 					m.Entries[index] = existing
 					if e = save(home, m); e != nil {
 						return report, e
-					}
-					next := strings.Replace(string(b), existing.Block, desired, 1)
-					if strings.Count(string(b), existing.Block) != 1 {
-						next = string(b) + desired
 					}
 					if e = write(t.Root, t.Name, []byte(next), existing.RootID); e != nil {
 						return report, e
@@ -293,7 +323,11 @@ func install(home string, targets []Target, dry bool, expected *snapshot) (Repor
 					}
 				}
 			}
-			report.Actions = append(report.Actions, Action{Path: path, Action: action})
+			detail := ""
+			if action == "resume-upgrade" && change == nil {
+				detail = "Instruction bytes already match; finalize the interrupted installation record only"
+			}
+			report.Actions = append(report.Actions, Action{Path: path, Action: action, Change: change, Detail: detail})
 			continue
 		}
 		b, e := read(t.Root, t.Name)
@@ -304,7 +338,15 @@ func install(home string, targets []Target, dry bool, expected *snapshot) (Repor
 		if e != nil {
 			return report, e
 		}
-		report.Actions = append(report.Actions, Action{Path: path, Action: "add-managed-instructions"})
+		state, e := fileState(t.Root, t.Name)
+		if e != nil {
+			return report, e
+		}
+		change := fileChange(path, b, append(append([]byte{}, b...), []byte(block)...), state.Exists, true)
+		if e = expected.acceptChange(path, change); e != nil {
+			return report, e
+		}
+		report.Actions = append(report.Actions, Action{Path: path, Action: "add-managed-instructions", Change: change})
 		if dry {
 			continue
 		}
@@ -333,6 +375,13 @@ func install(home string, targets []Target, dry bool, expected *snapshot) (Repor
 }
 
 func Uninstall(home string, dry bool) (Report, error) {
+	if !dry {
+		p, e := PreviewUninstall(home)
+		if e != nil {
+			return Report{}, e
+		}
+		return p.Apply()
+	}
 	return uninstall(home, dry, nil)
 }
 func uninstall(home string, dry bool, expected *snapshot) (Report, error) {
@@ -353,6 +402,15 @@ func uninstall(home string, dry bool, expected *snapshot) (Report, error) {
 				return report, e
 			}
 		}
+		if expected != nil && expected.backupID != "" {
+			report.BackupDirectory = filepath.Join(home, "install-backups", expected.backupID)
+			report.Backups, e = expected.backup(home)
+			if e != nil {
+				report.Complete = false
+				return report, e
+			}
+			report.BackupComplete = true
+		}
 	}
 	m, e := readManifest(home)
 	if e != nil {
@@ -366,13 +424,13 @@ func uninstall(home string, dry bool, expected *snapshot) (Report, error) {
 			return report, e
 		}
 		if len(b) == 0 {
-			report.Actions = append(report.Actions, Action{Path: path, Action: "already-absent"})
+			report.Actions = append(report.Actions, Action{Path: path, Action: "already-absent", Detail: "No instruction bytes changed; remove the saved integration record only"})
 			continue
 		}
 		block := matchingBlock(b, entry)
 		if block == "" {
 			if digest(b) == entry.OriginalHash {
-				report.Actions = append(report.Actions, Action{Path: path, Action: "already-absent"})
+				report.Actions = append(report.Actions, Action{Path: path, Action: "already-absent", Detail: "No instruction bytes changed; remove the saved integration record only"})
 				continue
 			}
 			report.Complete = false
@@ -385,7 +443,11 @@ func uninstall(home string, dry bool, expected *snapshot) (Report, error) {
 		if len(rest) == 0 && entry.Created {
 			action = "remove-created-file"
 		}
-		report.Actions = append(report.Actions, Action{Path: path, Action: action})
+		change := fileChange(path, b, rest, true, action != "remove-created-file")
+		if e = expected.acceptChange(path, change); e != nil {
+			return report, e
+		}
+		report.Actions = append(report.Actions, Action{Path: path, Action: action, Change: change})
 		if dry {
 			remaining = append(remaining, entry)
 			continue
@@ -408,7 +470,7 @@ func uninstall(home string, dry bool, expected *snapshot) (Report, error) {
 			return report, e
 		}
 	}
-	if !dry && len(m.Entries) > 0 {
+	if !dry && len(m.Entries) > 0 && !slices.Equal(m.Entries, remaining) {
 		m.Entries = remaining
 		if e = save(home, m); e != nil {
 			return report, e

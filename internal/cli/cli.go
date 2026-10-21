@@ -39,6 +39,7 @@ type app struct {
 	outputTTY, errorTTY, inputTTY bool
 	forceJSON, colors             bool
 	commandName                   string
+	showDiff, diffShown           bool
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
@@ -869,6 +870,7 @@ func (a *app) integration(action string, args []string) error {
 	f := a.flags(action)
 	dry := f.Bool("dry-run", false, "preview without changes")
 	yes := f.Bool("yes", false, "apply without prompting (required for scripts/agents)")
+	f.BoolVar(&a.showDiff, "diff", false, "show unified file diffs in a terminal (JSON always includes them)")
 	codexRoot, claudeRoot := new(string), new(string)
 	if action == "install" {
 		f.StringVar(codexRoot, "codex-home", "", "explicit Codex integration `directory`")
@@ -924,6 +926,12 @@ func (a *app) integration(action string, args []string) error {
 		}
 		report, e := plan.Apply()
 		if e != nil {
+			if report.BackupDirectory != "" {
+				report.Complete = false
+				if outErr := a.print(report); outErr != nil {
+					return outErr
+				}
+			}
 			return e
 		}
 		return a.print(report)
@@ -975,6 +983,12 @@ func (a *app) integration(action string, args []string) error {
 	}
 	report, e := plan.Apply()
 	if e != nil {
+		if report.BackupDirectory != "" {
+			report.Complete = false
+			if outErr := a.print(report); outErr != nil {
+				return outErr
+			}
+		}
 		return e
 	}
 	report.Actions = append(report.Actions, install.Action{Path: a.home, Action: "backend-idle", Detail: "Backend is stopped; state and history are retained"})

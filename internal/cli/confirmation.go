@@ -63,6 +63,8 @@ func (a *app) installationReport(report install.Report) error {
 	} else {
 		verb += " result"
 	}
+	showDiff := a.showDiff && !a.diffShown
+	hasChanges := false
 	fmt.Fprintln(&b, a.paint("1;36", "ARM · "+verb))
 	if report.DryRun {
 		fmt.Fprintln(&b, "Review the instruction-file changes below. Nothing has been changed.")
@@ -94,9 +96,72 @@ func (a *app) installationReport(report install.Report) error {
 		if action.Detail != "" {
 			fmt.Fprintln(&b, "    "+terminalSafe(action.Detail))
 		}
+		if change := action.Change; change != nil {
+			hasChanges = true
+			kind := "Modify existing file"
+			if !change.BeforeExists {
+				kind = "Create new file"
+			}
+			if !change.AfterExists {
+				kind = "Delete ARM-created file"
+			}
+			if change.Binary {
+				fmt.Fprintf(&b, "    %s · non-UTF-8 content\n", kind)
+			} else {
+				fmt.Fprintf(&b, "    %s · %d line(s) added, %d removed\n", kind, change.Added, change.Removed)
+			}
+			fmt.Fprintf(&b, "    %s → %s\n", humanBytes(fmt.Sprint(change.BeforeBytes)), humanBytes(fmt.Sprint(change.AfterBytes)))
+			if change.Binary {
+				fmt.Fprintln(&b, "    Non-UTF-8 file: textual hunks unavailable; exact bytes are identified by SHA-256.")
+				fmt.Fprintln(&b, "    Before: "+change.BeforeHash+"\n    After:  "+change.AfterHash)
+			}
+			if showDiff {
+				fmt.Fprintln(&b)
+				for _, line := range strings.Split(strings.TrimSuffix(change.Diff, "\n"), "\n") {
+					color := "2"
+					if strings.HasPrefix(line, "+") {
+						color = "32"
+					}
+					if strings.HasPrefix(line, "-") {
+						color = "31"
+					}
+					if strings.HasPrefix(line, "@@") {
+						color = "36"
+					}
+					fmt.Fprintln(&b, "    "+a.paint(color, terminalSafe(line)))
+				}
+			}
+		}
 	}
 	if len(report.Actions) == 0 {
-		fmt.Fprintln(&b, "\nNo managed instruction files to change.")
+		if report.Complete {
+			fmt.Fprintln(&b, "\nNo managed instruction files to change.")
+		} else {
+			fmt.Fprintln(&b, "\nNo instruction files were changed before the operation stopped.")
+		}
+	}
+	if report.DryRun && hasChanges && !a.showDiff {
+		fmt.Fprintln(&b, "\nUse --diff to inspect the exact changes, or --dry-run --diff for a read-only preview.")
+	}
+	if showDiff {
+		a.diffShown = true
+	}
+	if report.BackupDirectory != "" {
+		label := "Planned backup directory (originals and metadata; retained on uninstall):"
+		if !report.DryRun {
+			label = "Backup directory (originals and metadata; retained on uninstall):"
+			if !report.BackupComplete {
+				label = "Backup directory (incomplete; inspect the reported error):"
+			}
+		}
+		fmt.Fprintln(&b, "\n"+label+"\n  "+terminalSafe(report.BackupDirectory))
+		for _, entry := range report.Backups {
+			if entry.Exists {
+				fmt.Fprintln(&b, "  "+terminalSafe(entry.Source)+" → "+terminalSafe(entry.Saved))
+			} else {
+				fmt.Fprintln(&b, "  "+terminalSafe(entry.Source)+" was absent; recorded in "+terminalSafe(entry.Metadata))
+			}
+		}
 	}
 	if len(report.Retained) > 0 {
 		fmt.Fprintln(&b, "\nRetained state and history:")
@@ -106,7 +171,7 @@ func (a *app) installationReport(report install.Report) error {
 		fmt.Fprintln(&b, "The ARM executable is also kept. Uninstall removes managed agent instructions.")
 	}
 	if !report.Complete {
-		fmt.Fprintln(&b, "\n"+a.paint("33", "Some edited instructions must be resolved manually; they will be preserved."))
+		fmt.Fprintln(&b, "\n"+a.paint("33", "Some changes are incomplete. Review preservation decisions and any reported error."))
 	}
 	_, err := io.WriteString(a.out, b.String())
 	return err

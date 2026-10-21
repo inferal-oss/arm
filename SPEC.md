@@ -402,6 +402,10 @@ Instructions explain which operations need leases, how to register contact infor
 
 Installation is scoped, idempotent, and available in dry-run form. Record a manifest of files, managed blocks, registrations, service identities, versions, and relevant pre-change state. Preserve unrelated instructions. Existing conflicting or edited content must be explained rather than overwritten. Do not recursively modify arbitrary projects merely because the installer can discover them.
 
+Install and uninstall previews must describe exact instruction-file effects: creation, modification or deletion, byte/line changes and before/after content hashes. Offer `--diff` for a unified patch with additions, deletions and context, colorized only in a suitable terminal. Structured output includes the same diff without ANSI. Preserve missing-final-newline distinctions; explicitly identify non-UTF-8 content when textual hunks cannot represent it faithfully. Bind confirmed content to the actual applied transformation.
+
+Before changing any instruction file or the installation manifest, save verified originals and metadata in a private per-operation backup directory under ARM state. Record absent files rather than inventing empty originals. Include original path, mode, size, identity, timestamps, ownership and content digest; retain byte-exact originals with private permissions. Sync and validate the backups before edits, stop if they cannot be saved, and report their concrete locations and completion state. Dry runs and declined prompts must create no backups. Uninstall preserves earlier backups; retention/purge is separate explicit scope. A backup does not authorize silently restoring over later user edits.
+
 Use native service management where supported, with recovery after daemon failure and clear manual-operation fallback where unavailable. Installation must report exactly what is enabled, what capabilities are missing, and how to inspect or reverse changes. Partial failure must leave recoverable recorded state.
 
 ### Uninstallation

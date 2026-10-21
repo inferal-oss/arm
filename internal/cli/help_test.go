@@ -51,7 +51,7 @@ func TestHelpOnlyListsOptionsThatApplyToTheCommand(t *testing.T) {
 		{"agent list", []string{"--json"}, []string{"--session", "--idle", "--adapter"}},
 		{"agents", []string{"offline", "--json", "arm agent list"}, []string{"--session", "--idle", "--adapter"}},
 		{"message operator", []string{"--text"}, []string{"--to"}},
-		{"uninstall", []string{"manifest", "--dry-run"}, []string{"--codex-home", "--claude-home"}},
+		{"uninstall", []string{"manifest", "--dry-run", "--diff"}, []string{"--codex-home", "--claude-home"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.command, func(t *testing.T) {

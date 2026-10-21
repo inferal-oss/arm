@@ -120,20 +120,32 @@ def main():
             assert code == 2 and 'Error:' in text and '\x1b[' in text
             code, text = tty(install + ['--dry-run'])
             assert code == 0 and 'Nothing has been changed' in text and 'Add ARM instructions' in text and not home.exists()
+            code, text = tty(install + ['--dry-run', '--diff'])
+            assert code == 0 and '@@ ' in text and '\x1b[32m' in text and '+Use arm' in text and 'line(s) added' in text and 'Planned backup directory' in text and not home.exists(), text
+            code, text = tty(install + ['--dry-run', '--diff'], env_extra={'NO_COLOR': '1'})
+            assert code == 0 and '@@ ' in text and '\x1b' not in text and not home.exists()
             blocked = run(*install)
             assert blocked.returncode == 1 and json.loads(blocked.stderr)['error']['code'] == 'confirmation_required'
             assert json.loads(blocked.stdout)['dry_run'] and not home.exists() and not cc.exists()
+            assert json.loads(blocked.stdout)['actions'][0]['change']['diff'].startswith('--- ')
             for answer, expected in ((b'\n', 1), (b'no\n', 1), (b'\x04', 1), ('interrupt', 130)):
                 code, text = tty(install, response=answer)
                 assert code == expected and not home.exists() and source.read_text() == 'User instructions\n', (code, text)
             code, text = tty(install, response=b'yes\n', before_response=lambda: source.write_text('Edited while reviewing\n'))
             assert code == 1 and 'plan_changed' in text and not home.exists()
             assert source.read_text() == 'Edited while reviewing\n' and not cc.exists()
-            code, text = tty(install, response=b'yes\n')
+            code, text = tty(install + ['--diff'], response=b'yes\n')
             assert code == 0 and 'Install result' in text and (cc / 'CLAUDE.md').exists(), text
+            assert 'Backup directory' in text and '\x1b[32m' in text
+            backups = list((home / 'install-backups').glob('*/*.json'))
+            entries = [json.loads(path.read_text()) for path in backups]
+            saved = next(item for item in entries if item['source'] == str(source))
+            assert Path(saved['saved_file']).read_bytes() == b'Edited while reviewing\n' and Path(saved['saved_file']).stat().st_mode & 0o777 == 0o600
             installed = source.read_bytes()
             assert b'Edited while reviewing' in installed and b'<!-- arm:begin' in installed
             manifest = (home / 'install.json').read_bytes()
+            code, text = tty(['uninstall', '--dry-run', '--diff'])
+            assert code == 0 and '\x1b[31m' in text and '-Use arm' in text and 'Delete ARM-created file' in text and source.read_bytes() == installed, text
             code, text = tty(['uninstall'], response=b'n\n')
             assert code == 1 and source.read_bytes() == installed and (home / 'install.json').read_bytes() == manifest
             code, text = tty(['--json', 'uninstall'])
@@ -146,6 +158,9 @@ def main():
             assert code == 1 and 'plan_changed' in text and (cc / 'CLAUDE.md').exists()
             report = cli('uninstall', '--yes')
             assert report['complete'] and source.read_text() == 'Edited while reviewing\nNew user note\n'
+            assert report['backup_complete'] and Path(report['backup_directory']).is_dir()
+            assert any(item['source'] == str(source) and Path(item['saved_file']).read_bytes() == installed + b'New user note\n' for item in report['backups'])
+            assert all(path.exists() for path in backups), 'uninstall removed earlier backups'
             assert not (cc / 'CLAUDE.md').exists() and home.exists()
             cli(*install, '--yes')
             backend = subprocess.Popen(prefix + ['serve'], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)

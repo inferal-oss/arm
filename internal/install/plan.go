@@ -3,6 +3,7 @@ package install
 import (
 	"crypto/sha256"
 	"fmt"
+	"github.com/yrashk/arm/internal/local"
 	"io"
 	"os"
 	"path/filepath"
@@ -27,8 +28,10 @@ type pathState struct {
 	Hash     string
 }
 type snapshot struct {
-	dirs  map[string]pathState
-	files map[string]pathState
+	dirs                      map[string]pathState
+	files                     map[string]pathState
+	backupID, backupOperation string
+	changes                   map[string]FileChange
 }
 
 func PreviewInstall(home string, targets []Target) (*Plan, error) {
@@ -50,6 +53,14 @@ func preview(home string, targets []Target, remove bool) (*Plan, error) {
 		}
 	}
 	targets = append([]Target{}, targets...)
+	seen := map[string]bool{}
+	for _, target := range targets {
+		path := filepath.Join(target.Root, target.Name)
+		if (target.Name != "AGENTS.md" && target.Name != "CLAUDE.md") || seen[path] {
+			return nil, model.Err("invalid_target", "integration targets must be distinct supported instruction files")
+		}
+		seen[path] = true
+	}
 	before, err := capture(home, targets)
 	if err != nil {
 		return nil, err
@@ -68,6 +79,28 @@ func preview(home string, targets []Target, remove bool) (*Plan, error) {
 	}
 	if err = before.check(home, false); err != nil {
 		return nil, err
+	}
+	before.changes = map[string]FileChange{}
+	mutates := false
+	for _, action := range report.Actions {
+		if action.Action != "unchanged" && action.Action != "preserved" {
+			mutates = true
+		}
+		if action.Change != nil {
+			state := before.files[action.Path]
+			if state.Exists != action.Change.BeforeExists || (state.Exists && state.Hash != action.Change.BeforeHash) {
+				return nil, model.Err("plan_changed", "diff content changed during preview")
+			}
+			before.changes[action.Path] = *action.Change
+		}
+	}
+	if mutates {
+		before.backupID = local.ID()
+		before.backupOperation = "install"
+		if remove {
+			before.backupOperation = "uninstall"
+		}
+		report.BackupDirectory = filepath.Join(home, "install-backups", before.backupID)
 	}
 	return &Plan{Report: report, home: home, targets: targets, remove: remove, snapshot: before}, nil
 }
