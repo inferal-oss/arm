@@ -111,6 +111,7 @@ Commands:
   serve                     Run the backend in the foreground
   status                    Show host budgets and leases
   usage LEASE_ID            Show supervised CPU/memory observations
+  incidents                 Show durable usage incidents and warnings
   resources                 Show budgets, availability, owners, and reasons
   storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
   ports reserve|list|discover Manage port reservations and native inventory
@@ -224,6 +225,18 @@ func (a *app) command(args []string) (int, error) {
 			}
 		}
 		return 0, a.print(result)
+	case "incidents":
+		f := a.flags("incidents")
+		lease := f.String("lease", "", "filter by lease `ID`")
+		f.Bool("json", true, "JSON incident records and evidence")
+		if err := a.parse(f, args, false); err != nil {
+			return 2, err
+		}
+		var result []model.UsageIncident
+		if err := a.call("incidents", map[string]string{"lease": *lease}, &result); err != nil {
+			return 1, err
+		}
+		return 0, a.print(result)
 	case "usage":
 		f := a.flags("usage")
 		f.Bool("json", true, "JSON output with observation scope and uncertainty")
@@ -311,7 +324,13 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	project := f.String("project", "", "project attribution")
 	agent := f.String("agent", "", "registered agent contact for attribution")
 	storageLease, portLease, cwd := new(string), new(string), new(string)
+	var usagePolicy model.UsagePolicy
 	if command == "run" {
+		f.StringVar(&usagePolicy.Mode, "usage-policy", "", "opt-in observed overage policy: warn or revoke (requires --agent)")
+		f.DurationVar(&usagePolicy.Window, "usage-window", 5*time.Second, "sustained observed breach `duration` before warning")
+		f.DurationVar(&usagePolicy.Grace, "usage-grace", 30*time.Second, "remediation `duration` after each warning")
+		f.IntVar(&usagePolicy.Warnings, "usage-warnings", 3, "maximum warning `count` per incident")
+		f.Float64Var(&usagePolicy.Tolerance, "usage-tolerance", .1, "allowed fraction above budget (0..1)")
 		f.StringVar(profile, "profile", "", "workload `profile` (rust-build)")
 		f.StringVar(storageLease, "storage", "", "attach managed storage `lease` (must outlast this command)")
 		f.StringVar(portLease, "port-lease", "", "attach a dedicated port `lease` (one consumer)")
@@ -402,6 +421,19 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		return 2, fmt.Errorf("invalid CPU quantity")
 	}
 	r := model.Request{Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
+	if usagePolicy.Mode != "" {
+		r.UsagePolicy = &usagePolicy
+	} else {
+		orphan := false
+		f.Visit(func(v *flag.Flag) {
+			if strings.HasPrefix(v.Name, "usage-") {
+				orphan = true
+			}
+		})
+		if orphan {
+			return 2, fmt.Errorf("usage options require --usage-policy warn or revoke")
+		}
+	}
 	r.Pools = poolClaims
 	r.StorageLease = *storageLease
 	r.PortLease = *portLease

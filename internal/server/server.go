@@ -257,6 +257,14 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "incidents":
+		var q struct {
+			Lease string `json:"lease"`
+		}
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.Incidents(q.Lease)
 	case "usage":
 		var q struct {
 			ID string `json:"id"`

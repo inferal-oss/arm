@@ -41,6 +41,7 @@ type Request struct {
 	Ports        []PortClaim   `json:"ports,omitempty"`
 	PortLease    string        `json:"port_lease,omitempty"`
 	Pools        []PoolClaim   `json:"pools,omitempty"`
+	UsagePolicy  *UsagePolicy  `json:"usage_policy,omitempty"`
 }
 
 type Lease struct {

@@ -15,6 +15,10 @@ func TestLinuxStatIdentityAndMemoryCounters(t *testing.T) {
 	if err != nil || values.pgid != 42 || values.start != "99" || values.user != 12 || values.system != 3 || values.rss != 2 {
 		t.Fatalf("proc stat offsets/identity: %+v %v", values, err)
 	}
+	fields[2] = "0"
+	if values, err := parseStat([]byte("1 (namespace parent) " + strings.Join(fields, " "))); err != nil || values.pgid != 0 {
+		t.Fatalf("namespace-invisible process group was treated as corrupt: %+v %v", values, err)
+	}
 	for _, bad := range []string{"", "1 (missing fields) S 1", "1 no comm"} {
 		if _, err := parseStat([]byte(bad)); err == nil {
 			t.Fatal("malformed stat accepted")

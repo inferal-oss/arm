@@ -59,6 +59,7 @@ type Manager struct {
 	inboxChanged      chan struct{}
 	inboxSlots        chan struct{}
 	usages            map[string]workloadSample
+	policyClocks      map[string]incidentClock
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority"}
@@ -78,6 +79,9 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		`CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, entity TEXT NOT NULL, at TEXT NOT NULL, data TEXT)`,
 		`CREATE TABLE IF NOT EXISTS agents (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
+		`CREATE TABLE IF NOT EXISTS usage_incidents (id TEXT PRIMARY KEY, lease TEXT NOT NULL, resource TEXT NOT NULL, data TEXT NOT NULL)`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS usage_incidents_open ON usage_incidents(lease,resource) WHERE json_extract(data,'$.state')<>'closed'`,
+		`CREATE TABLE IF NOT EXISTS policy_outbox (message TEXT PRIMARY KEY, state TEXT NOT NULL, data TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS agent_inbox (sequence INTEGER PRIMARY KEY AUTOINCREMENT, recipient TEXT NOT NULL, registration TEXT NOT NULL, message TEXT NOT NULL, receipt TEXT NOT NULL, UNIQUE(recipient,registration,message))`,
 		`CREATE INDEX IF NOT EXISTS agent_inbox_recipient ON agent_inbox(recipient,registration,sequence)`,
 		`CREATE TABLE IF NOT EXISTS pools (id TEXT PRIMARY KEY, scope TEXT NOT NULL, host TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL)`,
@@ -97,6 +101,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
 	m.usages = map[string]workloadSample{}
+	m.policyClocks = map[string]incidentClock{}
 	m.inboxChanged = make(chan struct{})
 	m.inboxSlots = make(chan struct{}, 64)
 	m.portNamespace, m.portErr = ports.Namespace()
@@ -173,6 +178,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
+	if e = m.recoverPolicyOutbox(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	m.sample()
 	opened = true
 	return m, nil
@@ -180,6 +189,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 
 func (m *Manager) Start() {
 	m.wg.Go(m.sampleUsageLoop)
+	m.wg.Go(m.policyDeliveryLoop)
 	m.wg.Go(func() {
 		t := time.NewTicker(5 * time.Second)
 		defer t.Stop()
@@ -302,7 +312,7 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{Host: m.host, Owner: m.owner, Capacity: m.capacity, Leases: ls, Capabilities: capabilities, Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s := model.Status{Host: m.host, Owner: m.owner, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
 	if m.portErr == nil {
 		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
 	}
@@ -446,6 +456,9 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		if count == 0 {
 			return empty, model.Err("invalid_contact", "register the agent contact before using it for attribution")
 		}
+	}
+	if err := m.resolveUsagePolicy(&r, run != nil); err != nil {
+		return empty, err
 	}
 	if !r.Resources.Fits(m.capacity) {
 		return empty, model.Err("capacity_exceeded", "request exceeds the configured host budget")
@@ -788,6 +801,9 @@ func (m *Manager) tick() {
 			_, _ = m.end(l.ID, "expired")
 		}
 	}
+	if err := m.reconcileIncidents(); err != nil {
+		return
+	}
 	ls, e = m.list()
 	if e != nil {
 		return
@@ -947,6 +963,15 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		l.Capabilities = append(append([]string{}, l.Capabilities...), "supervised-usage-observation")
 	} else {
 		j.observationError = "native process identity unavailable; usage cannot be attributed"
+	}
+	if l.Request.UsagePolicy != nil && j.identity == nil {
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+		f.Close()
+		return m.launchFailed(l, model.Err("observation_unavailable", "usage policy requires a captured process identity; command was not authorized to start"))
+	}
+	if l.Request.UsagePolicy != nil {
+		l.Capabilities = append(l.Capabilities, "observed-usage-policy")
 	}
 	m.jobs[l.ID] = j
 	l.PID = cmd.Process.Pid

@@ -116,6 +116,13 @@ func (m *Manager) sampleUsageLoop() {
 					summary := view
 					j.lastUsage = &summary
 				}
+				// Policy transitions and their notification outbox are durable;
+				// collection itself never holds the admission lock.
+				if err := m.evaluateUsage(id, view, observed); err != nil {
+					failed := m.usages[id]
+					failed.view.Detail += "; policy evaluation failed: " + err.Error()
+					m.usages[id] = failed
+				}
 			}
 			m.mu.Unlock()
 		}

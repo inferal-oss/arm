@@ -36,6 +36,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         shutil.copyfile(root / "scripts" / "test-pools.py", target / "test-pools.py")
         shutil.copyfile(root / "scripts" / "test-usage.py", target / "test-usage.py")
+        shutil.copyfile(root / "scripts" / "test-policy.py", target / "test-policy.py")
         os.chmod(target, 0o755)
         for child in target.iterdir():
             child.chmod(0o755 if child.suffix != ".py" else 0o644)
@@ -50,6 +51,7 @@ python3 /tests/test-ports.py --arm /tests/arm
 python3 /tests/test-inbox.py --arm /tests/arm
 python3 /tests/test-pools.py --arm /tests/arm
 python3 /tests/test-usage.py --arm /tests/arm
+python3 /tests/test-policy.py --arm /tests/arm
 '''
         subprocess.run([
             opts.docker, "run", "--rm", "--pull", "never", "--init", "--network", "none",

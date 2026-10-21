@@ -209,15 +209,16 @@ func (m *Manager) Message(ctx context.Context, audience, body, lease string) (Me
 }
 
 func (m *Manager) recoverDeliveries() error {
-	rows, e := m.db.Query(`SELECT data FROM messages`)
+	rows, e := m.db.Query(`SELECT m.data,COALESCE(o.state,'') FROM messages m LEFT JOIN policy_outbox o ON o.message=m.id`)
 	if e != nil {
 		return e
 	}
 	pending := []Message{}
 	for rows.Next() {
 		var b []byte
+		var outboxState string
 		var msg Message
-		if e = rows.Scan(&b); e != nil {
+		if e = rows.Scan(&b, &outboxState); e != nil {
 			rows.Close()
 			return e
 		}
@@ -227,7 +228,7 @@ func (m *Manager) recoverDeliveries() error {
 		}
 		changed := false
 		for id, d := range msg.Deliveries {
-			if d.State == "pending" {
+			if d.State == "pending" && outboxState != "queued" {
 				d.State = "unknown"
 				d.Error = "delivery was interrupted; verify the recipient before resending"
 				msg.Deliveries[id] = d

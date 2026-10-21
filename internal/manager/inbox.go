@@ -138,15 +138,28 @@ func (m *Manager) createMessage(msg Message, targets []agents.Contact) error {
 			return model.Err("contact_changed", "recipient changed during message creation; retry explicitly")
 		}
 	}
-	b, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
 	tx, err := m.db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
+	if err = insertMessage(tx, msg, targets); err != nil {
+		return err
+	}
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+	m.notifyInbox()
+	return nil
+}
+
+// The caller validates contacts and holds the manager lock. Incident warnings
+// use this same insert inside their state transition transaction.
+func insertMessage(tx *sql.Tx, msg Message, targets []agents.Contact) error {
+	b, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
 	if _, err = tx.Exec(`INSERT INTO messages(id,data) VALUES(?,?)`, msg.ID, string(b)); err != nil {
 		return err
 	}
@@ -155,14 +168,7 @@ func (m *Manager) createMessage(msg Message, targets []agents.Contact) error {
 			return err
 		}
 	}
-	if err = event(tx, "message.created", msg.ID, msg); err != nil {
-		return err
-	}
-	if err = tx.Commit(); err != nil {
-		return err
-	}
-	m.notifyInbox()
-	return nil
+	return event(tx, "message.created", msg.ID, msg)
 }
 func (m *Manager) hydrateReceipts(msg *Message) error {
 	for id, d := range msg.Deliveries {

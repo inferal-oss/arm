@@ -44,6 +44,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         shutil.copyfile(root / "scripts" / "test-pools.py", target / "test-pools.py")
         shutil.copyfile(root / "scripts" / "test-usage.py", target / "test-usage.py")
+        shutil.copyfile(root / "scripts" / "test-policy.py", target / "test-policy.py")
         script = '''#!/bin/sh
 set -eu
 uname -srmo
@@ -59,6 +60,7 @@ done
             script += 'python3 ./test-inbox.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-pools.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-usage.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-policy.py --arm "$PWD/arm"\n'
         (target / "run.sh").write_text(script)
         remote = subprocess.check_output(ssh + ["mktemp -d /tmp/arm-tests.XXXXXXXXXX"], text=True).strip()
         if not re.fullmatch(r"/tmp/arm-tests\.[A-Za-z0-9]{10}", remote):

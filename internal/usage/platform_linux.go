@@ -105,7 +105,9 @@ func parseStat(data []byte) (statValues, error) {
 	}
 	v.state = fields[0]
 	var err error
-	if v.pgid, err = strconv.Atoi(fields[2]); err != nil || v.pgid <= 0 {
+	// A group outside this PID namespace is reported as zero. It cannot
+	// match the positive captured group, but is not malformed metadata.
+	if v.pgid, err = strconv.Atoi(fields[2]); err != nil || v.pgid < 0 {
 		return v, fmt.Errorf("process group is unavailable")
 	}
 	start, err := strconv.ParseUint(fields[19], 10, 64)
@@ -192,6 +194,13 @@ func collect(ctx context.Context, s *Snapshot) {
 	}
 	defer directory.Close()
 	visited := 0
+	unavailable := 0
+	firstError := ""
+	defer func() {
+		if unavailable > 0 {
+			s.Detail += fmt.Sprintf("; %d process identities unavailable (first: %s)", unavailable, firstError)
+		}
+	}()
 	for {
 		names, readErr := directory.Readdirnames(256)
 		for _, name := range names {
@@ -212,7 +221,15 @@ func collect(ctx context.Context, s *Snapshot) {
 			}
 			before, values, err := process(pid)
 			if err != nil {
+				if os.IsNotExist(err) {
+					// Already exited processes are outside the live-member scope.
+					continue
+				}
 				s.Complete = false
+				unavailable++
+				if firstError == "" {
+					firstError = err.Error()
+				}
 				continue
 			}
 			if before.PGID != s.Root.PGID {

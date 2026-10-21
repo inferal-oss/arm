@@ -13,6 +13,7 @@ import select
 import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -105,6 +106,40 @@ def main():
                 time.sleep(.1)
             raise TimeoutError("fixture did not become ready")
 
+        def policy_warning(contact, recipient=None):
+            # Exercise the automatic generator/outbox, not a manually composed
+            # message. The workload belongs only to this disposable backend.
+            program = "import time\ndeadline=time.monotonic()+45\nn=1\nwhile time.monotonic()<deadline:\n for _ in range(10000): n=(n*1664525+1013904223)&0xffffffff\n"
+            workload = subprocess.Popen([str(arm), "--home", str(home), "run", "--agent", contact, "--cpu", "0.1", "--usage-policy", "warn", "--usage-window", "1s", "--usage-grace", "30s", "--usage-warnings", "1", "--ttl", "40s", "--reason", "Dedicated automatic warning fixture", "--json", "--", sys.executable, "-c", program], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            children.append(workload)
+            selected = {}
+
+            def delivered():
+                for incident in cli("incidents"):
+                    if incident["agent"] != contact or not incident["messages"]:
+                        continue
+                    message = next(m for m in cli("messages") if m["id"] == incident["messages"][0])
+                    result = message["deliveries"][contact]
+                    if result["state"] in ("queued", "responded"):
+                        selected.update(incident=incident, message=message, delivery=result)
+                        return True
+                    if result["state"] in ("failed", "unknown", "superseded"):
+                        raise AssertionError("Automatic native warning failed: " + str(result))
+                return False
+
+            wait_for(delivered, seconds=30)
+            if recipient:
+                assert recipient.completed(""), "Codex did not respond to the generated warning"
+            else:
+                assert selected["delivery"].get("reply"), "Claude did not respond to the generated warning"
+                assert any(m.get("reply_to") == selected["message"]["id"] for m in cli("messages")), "Generated warning reply missing from operator inbox"
+            assert selected["message"]["sender"] == "arm-policy"
+            assert selected["incident"]["evidence"]["identity_verified"]
+            cli("cancel", selected["incident"]["lease"])
+            stdout, stderr = workload.communicate(timeout=15)
+            assert workload.returncode == 125, (workload.returncode, stderr)
+            report["checks"].append("automatic native overage warning and same-session response: " + contact)
+
         try:
             install_args = ("install", "--codex-home", str(codex_home), "--claude-home", str(work))
             cli(*install_args, "--dry-run")
@@ -145,6 +180,7 @@ def main():
                 sent = cli("message", "send", "--to", "codex-fixture", "--text", "Integration warning: CPU budget exceeded; reduce concurrency. Do not use tools. Reply exactly ARM_CODEX_ACK.")
                 assert sent["deliveries"]["codex-fixture"]["state"] == "queued", sent
                 rpc.completed("ARM_CODEX_ACK")
+                policy_warning("codex-fixture", rpc)
                 report["agents"]["codex"] = {"version": run([codex,"--version"]).stdout.strip(), "result":"passed", "instruction_loading":True, "same_session_queue_and_response":True}
 
             if opts.agent in ("both", "claude"):
@@ -160,6 +196,7 @@ def main():
                 delivery = sent["deliveries"]["claude-fixture"]
                 assert delivery["state"] == "responded" and "ARM_CLAUDE_ACK" in delivery["reply"], delivery
                 assert any(m.get("sender")=="claude-fixture" and m.get("reply_to")==sent["id"] for m in cli("messages")), "agent reply did not reach operator inbox"
+                policy_warning("claude-fixture")
                 report["agents"]["claude"] = {"version":run([claude,"--version"]).stdout.strip(), "result":"passed", "instruction_loading":True, "same_idle_session_resume_and_response":True, "active_session_injection":False}
 
             received=cli("message", "operator", "--text", "ARM_OPERATOR_INBOX_ACK")
