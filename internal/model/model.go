@@ -85,6 +85,7 @@ type Status struct {
 	Capabilities   []string       `json:"capabilities"`
 	Resources      []ResourceView `json:"resources"`
 	Infrastructure []PortBinding  `json:"infrastructure_ports"`
+	Memory         *MemoryBudget  `json:"memory_budget"`
 }
 
 type ResourceUse struct {
@@ -107,6 +108,7 @@ type ResourceView struct {
 	BudgetTotal json.Number          `json:"budget_total"`
 	Reserved    json.Number          `json:"reserved"`
 	Available   json.Number          `json:"available"`
+	Deficit     json.Number          `json:"deficit,omitempty"`
 	Accounting  string               `json:"accounting"`
 	Observed    *float64             `json:"observed"`
 	Users       []ResourceUse        `json:"users"`

@@ -48,6 +48,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal.py", target / "test-terminal.py")
         shutil.copyfile(root / "scripts" / "test-monitor.py", target / "test-monitor.py")
         shutil.copyfile(root / "scripts" / "test-dashboard.py", target / "test-dashboard.py")
+        shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         script = '''#!/bin/sh
 set -eu
 uname -srmo
@@ -57,6 +58,10 @@ for suite in ./*.test; do
 done
 ./arm version
 '''.replace("TEST_SELECTION", "-test.run=" + shlex.quote(opts.test_run) if opts.test_run else "")
+        # Opt-in strict native collection must reach the remote test process;
+        # setting it only for the local cross-compiler silently skips that gate.
+        if os.environ.get("ARM_TEST_NATIVE_MONITOR") == "1":
+            script = script.replace("set -eu\n", "set -eu\nexport ARM_TEST_NATIVE_MONITOR=1\n", 1)
         if not opts.skip_smoke:
             script += 'python3 ./test-local.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-ports.py --arm "$PWD/arm"\n'
@@ -67,6 +72,7 @@ done
             script += 'python3 ./test-terminal.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-monitor.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-dashboard.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-memory.py --arm "$PWD/arm"\n'
         (target / "run.sh").write_text(script)
         remote = subprocess.check_output(ssh + ["mktemp -d /tmp/arm-tests.XXXXXXXXXX"], text=True).strip()
         if not re.fullmatch(r"/tmp/arm-tests\.[A-Za-z0-9]{10}", remote):

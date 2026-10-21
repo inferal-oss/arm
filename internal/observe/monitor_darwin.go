@@ -23,6 +23,7 @@ var monitorMach struct {
 	deallocate     func(uint32, uintptr, uintptr) int32
 	portDeallocate func(uint32, uint32) int32
 	statistics     func(uint32, int32, unsafe.Pointer, *uint32) int32
+	statistics64   func(uint32, int32, unsafe.Pointer, *uint32) int32
 	sysctl         func(*int32, uint32, unsafe.Pointer, *uintptr, unsafe.Pointer, uintptr) int32
 }
 
@@ -36,7 +37,7 @@ func initMonitorMach() error {
 		for _, symbol := range []struct {
 			name   string
 			target any
-		}{{"mach_host_self", &monitorMach.host}, {"mach_task_self", &monitorMach.task}, {"host_processor_info", &monitorMach.processors}, {"vm_deallocate", &monitorMach.deallocate}, {"mach_port_deallocate", &monitorMach.portDeallocate}, {"host_statistics", &monitorMach.statistics}, {"sysctl", &monitorMach.sysctl}} {
+		}{{"mach_host_self", &monitorMach.host}, {"mach_task_self", &monitorMach.task}, {"host_processor_info", &monitorMach.processors}, {"vm_deallocate", &monitorMach.deallocate}, {"mach_port_deallocate", &monitorMach.portDeallocate}, {"host_statistics", &monitorMach.statistics}, {"host_statistics64", &monitorMach.statistics64}, {"sysctl", &monitorMach.sysctl}} {
 			p, e := purego.Dlsym(h, symbol.name)
 			if e != nil {
 				monitorMach.err = e
@@ -91,28 +92,7 @@ func darwinMonitorCPU() ([]cpuCounter, error) {
 	return rows, nil
 }
 func darwinMonitorMemory() model.ResourceMeasurement {
-	u := unavailable("host-memory", "Mach HOST_VM_INFO", "native memory counters unavailable")
-	if initMonitorMach() != nil {
-		return u
-	}
-	var info [15]uint32
-	count := uint32(len(info))
-	host := monitorMach.host()
-	defer monitorMach.portDeallocate(monitorMach.task(), host)
-	if monitorMach.statistics(host, 2, unsafe.Pointer(&info), &count) != 0 || count < 4 {
-		return u
-	}
-	total, e1 := unix.SysctlUint64("hw.memsize")
-	page, e2 := unix.SysctlUint32("hw.pagesize")
-	if e1 != nil || e2 != nil || page == 0 {
-		return u
-	}
-	r := memoryValues(total, uint64(info[0])*uint64(page), "host-physical-memory-free-pages-only", "Mach HOST_VM_INFO; sysctl hw.memsize/hw.pagesize", time.Now())
-	r.Total.Scope = "host-physical-memory"
-	r.Available.Detail = "Free pages only; excludes conditional cache reclamation, compression and swap; not memory pressure or an allocation guarantee"
-	r.Used.Scope = "host-nonfree-physical-memory"
-	runtime.KeepAlive(&info)
-	return r
+	return memoryAvailabilityValues(MemoryAvailability(context.Background()))
 }
 func darwinMonitorNetwork() ([]ioCounter, error) {
 	if err := initMonitorMach(); err != nil {

@@ -25,6 +25,24 @@ func unavailable(scope, method, detail string) model.ResourceMeasurement {
 	return model.ResourceMeasurement{Total: u, Available: u, Used: u}
 }
 
+func memoryAvailabilityValues(reading model.MemoryAvailability) model.ResourceMeasurement {
+	r := unavailable(reading.Scope, reading.Method, reading.Detail)
+	if reading.Total != nil {
+		r.Total = known(float64(*reading.Total), "bytes", "host-physical-memory", reading.Method, "reported")
+		r.Total.At = reading.At
+	}
+	if reading.Available == nil || reading.Total == nil {
+		return r
+	}
+	r.Available = known(float64(*reading.Available), "bytes", reading.Scope, reading.Method, reading.Quality)
+	r.Available.Detail = reading.Detail
+	r.Available.At = reading.At
+	r.Used = known(float64(*reading.Total-*reading.Available), "bytes", "host-total-minus-estimated-available", reading.Method, "estimated")
+	r.Used.Detail = "Total minus estimated available memory, including reclaimable file caches in availability; not application-exclusive usage"
+	r.Used.At = reading.At
+	return r
+}
+
 // Snapshot measures the filesystem containing path, not all filesystems and not
 // a lease's consumption. Platform commands are bounded by the caller's deadline.
 func Snapshot(ctx context.Context, path string) map[string]model.ResourceMeasurement {

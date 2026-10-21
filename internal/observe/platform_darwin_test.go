@@ -10,20 +10,6 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func TestVMFreeDoesNotSumOverlappingLists(t *testing.T) {
-	data := []byte("Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free: 10.\nPages inactive: 200.\nPages speculative: 5.\nPages purgeable: 100.\n")
-	got, err := vmFree(data)
-	if err != nil || got != 10*16384 {
-		t.Fatalf("double counted lists: %f %v", got, err)
-	}
-	if _, err := vmFree([]byte("Pages free: 10.")); err == nil {
-		t.Fatal("invented page size")
-	}
-	if _, err := vmFree([]byte("Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free: broken.")); err == nil {
-		t.Fatal("accepted malformed free counter")
-	}
-}
-
 func TestAPFSCloneRemainsUnknown(t *testing.T) {
 	root := t.TempDir()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

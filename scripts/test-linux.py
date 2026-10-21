@@ -40,6 +40,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal.py", target / "test-terminal.py")
         shutil.copyfile(root / "scripts" / "test-monitor.py", target / "test-monitor.py")
         shutil.copyfile(root / "scripts" / "test-dashboard.py", target / "test-dashboard.py")
+        shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         os.chmod(target, 0o755)
         for child in target.iterdir():
             child.chmod(0o755 if child.suffix != ".py" else 0o644)
@@ -58,12 +59,14 @@ python3 /tests/test-policy.py --arm /tests/arm
 python3 /tests/test-terminal.py --arm /tests/arm
 python3 /tests/test-monitor.py --arm /tests/arm
 python3 /tests/test-dashboard.py --arm /tests/arm
+python3 /tests/test-memory.py --arm /tests/arm
 '''
         subprocess.run([
             opts.docker, "run", "--rm", "--pull", "never", "--init", "--network", "none",
             "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
             "--pids-limit", "256", "--memory", "1g", "--cpus", "2", "--user", "65534:65534",
             "--tmpfs", "/tmp:rw,exec,nosuid,size=512m", "--env", "HOME=/tmp",
+            *(["--env", "ARM_TEST_NATIVE_MONITOR=1"] if os.environ.get("ARM_TEST_NATIVE_MONITOR") == "1" else []),
             "--mount", "type=bind,source=" + staging + ",target=/tests,readonly",
             "--entrypoint", "/bin/sh", image["Id"], "-c", script,
         ], check=True, timeout=240)

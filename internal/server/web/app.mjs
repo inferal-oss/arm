@@ -156,6 +156,7 @@ function acceptMonitor(page) {
   state.history = mergeHistory(state.history, page, state.epoch);
   state.epoch = page.epoch; state.cursor = page.cursor; state.monitor = page; state.received = performance.now();
   if (view === 'monitor') renderMonitor();
+  scheduleRefresh(); // Live memory pool changes do not create durable events.
   updateFreshness();
 }
 function updateFreshness() {

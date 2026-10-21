@@ -174,6 +174,8 @@ Cleanup runs in bounded, retryable steps, with progress and failures recorded. A
 
 CPU claims express capacity in explicit units, such as logical-core equivalents over time. Exclusive affinity, CPU bandwidth limits, and cooperative job counts are different capabilities and must have different semantics. A tool's worker count is useful regulation but is not proof of its entire process tree's CPU consumption.
 
+Memory admission pools follow fresh estimates of current host availability rather than assuming a fixed amount of RAM is available. An operator can set an upper ceiling; a shrinking pool may expose a shortfall below existing claims. Preserve those obligations and make freshness, uncertainty and accounting visible. Unknown availability must not authorize unsupported grants.
+
 Memory claims identify their accounting scope and whether the limit covers process resident memory, a supervised group, or a platform-specific charged total. Shared pages, caches, swap, and unified CPU/GPU memory must not be treated as independent additive capacities. Show observed usage separately from reservation and avoid counting a shared allocation twice when attribution supports deduplication.
 
 Workload adapters should configure tools to stay within grants, then providers observe or enforce the resulting workload. For Cargo, a CPU grant can set an appropriate jobs budget. Explicit CLI arguments or configuration that override that budget must be resolved and validated. A cooperative setting supplements platform enforcement where available.

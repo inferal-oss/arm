@@ -97,6 +97,7 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"monitor extra", "monitor --cpu 1", "monitor --after 1", "monitor --after -1 --epoch fixture",
 		"dashboard extra", "dashboard --cpu 1",
 		"message operator --key ignored --text fixture", "message broadcast --reply-to ignored --text fixture",
+		"start --memory 0", "start --memory bogus", "serve --memory 0",
 	}
 	for _, command := range tests {
 		t.Run(command, func(t *testing.T) {

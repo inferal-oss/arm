@@ -403,6 +403,9 @@ func TestPoolAuditRetainsAgentSessionAcrossContactReuse(t *testing.T) {
 func TestNativeBudgetCannotOverflowAlongsideCustomClaims(t *testing.T) {
 	m := newManager(t)
 	m.capacity.Memory = math.MaxInt64
+	// Inject an exact boundary reading: never ask the real host for exabytes.
+	m.memoryAvailability = model.MemoryAvailability{Total: count(math.MaxInt64), Available: count(math.MaxInt64), At: time.Now().UTC(), Quality: "estimated"}
+	m.memoryObserved = time.Now()
 	p := makePool(t, m, "room", "global", 2)
 	r := poolRequest(p, 1)
 	r.Resources.Memory = math.MaxInt64

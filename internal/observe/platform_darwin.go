@@ -3,7 +3,6 @@ package observe
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/yrashk/arm/internal/model"
@@ -11,57 +10,7 @@ import (
 )
 
 func memorySnapshot(ctx context.Context) model.ResourceMeasurement {
-	r := unavailable("host-physical-memory", "sysctl/vm_stat", "memory counters unavailable")
-	if total, err := unix.SysctlUint64("hw.memsize"); err == nil {
-		r.Total = known(float64(total), "bytes", "host-physical-memory", "sysctl:hw.memsize", "reported")
-	} else {
-		r.Total.Detail = err.Error()
-	}
-	data, err := command(ctx, "/usr/bin/vm_stat")
-	if err != nil {
-		r.Available.Detail = err.Error()
-		r.Used.Detail = err.Error()
-		return r
-	}
-	free, err := vmFree(data)
-	if err != nil {
-		r.Available.Detail = err.Error()
-		return r
-	}
-	// Deliberately do not add inactive, purgeable or speculative lists: these
-	// counters can overlap. This is a conservative free-pages measure, not
-	// macOS's memory pressure or the maximum allocation that could succeed.
-	r.Available = known(free, "bytes", "host-free-pages", "vm_stat:Pages free", "reported")
-	r.Available.Detail = "Free pages only; excludes potential cache reclamation, compression and swap; not a memory-pressure estimate"
-	if r.Total.Value != nil && free <= *r.Total.Value {
-		r.Used = known(*r.Total.Value-free, "bytes", "host-nonfree-physical-memory", "hw.memsize minus vm_stat free pages", "estimated")
-	}
-	return r
-}
-func vmFree(data []byte) (float64, error) {
-	pageSize := uint64(0)
-	pages := uint64(0)
-	found := false
-	for _, line := range strings.Split(string(data), "\n") {
-		if _, tail, ok := strings.Cut(line, "page size of "); ok {
-			fields := strings.Fields(tail)
-			if len(fields) > 0 {
-				pageSize, _ = strconv.ParseUint(fields[0], 10, 64)
-			}
-		}
-		if _, tail, ok := strings.Cut(line, "Pages free:"); ok {
-			n, err := strconv.ParseUint(strings.Trim(strings.TrimSpace(tail), "."), 10, 64)
-			if err != nil {
-				return 0, err
-			}
-			pages = n
-			found = true
-		}
-	}
-	if !found || pageSize == 0 {
-		return 0, fmt.Errorf("vm_stat free-page counters unavailable")
-	}
-	return blocksBytes(pages, pageSize)
+	return memoryAvailabilityValues(MemoryAvailability(ctx))
 }
 
 func filesystemSnapshot(ctx context.Context, path string) model.ResourceMeasurement {

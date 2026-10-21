@@ -39,32 +39,37 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
-	mu                sync.Mutex
-	db                *sql.DB
-	home, host, owner string
-	capacity          model.Resources
-	jobs              map[string]*job
-	stop              chan struct{}
-	wg                sync.WaitGroup
-	closing           bool
-	observationMu     sync.RWMutex
-	observations      map[string]model.ResourceMeasurement
-	storage           *storage.Provider
-	storageErr        error
-	storageJobs       map[string]bool
-	portSockets       map[string][]*ports.Socket
-	portNamespace     string
-	portErr           error
-	infrastructure    []model.PortBinding
-	inboxChanged      chan struct{}
-	inboxSlots        chan struct{}
-	usages            map[string]workloadSample
-	policyClocks      map[string]incidentClock
+	mu                 sync.Mutex
+	db                 *sql.DB
+	home, host, owner  string
+	capacity           model.Resources
+	jobs               map[string]*job
+	stop               chan struct{}
+	wg                 sync.WaitGroup
+	closing            bool
+	observationMu      sync.RWMutex
+	observations       map[string]model.ResourceMeasurement
+	memoryAvailability model.MemoryAvailability
+	memoryObserved     time.Time
+	storage            *storage.Provider
+	storageErr         error
+	storageJobs        map[string]bool
+	portSockets        map[string][]*ports.Socket
+	portNamespace      string
+	portErr            error
+	infrastructure     []model.PortBinding
+	inboxChanged       chan struct{}
+	inboxSlots         chan struct{}
+	usages             map[string]workloadSample
+	policyClocks       map[string]incidentClock
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
+	if capacity.Memory < 0 {
+		return nil, model.Err("invalid_config", "memory ceiling must be nonnegative; zero selects live availability")
+	}
 	if e := local.Prepare(home); e != nil {
 		return nil, e
 	}
@@ -184,11 +189,24 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m.sample()
+	m.sampleMemory()
 	opened = true
 	return m, nil
 }
 
 func (m *Manager) Start() {
+	m.wg.Go(func() {
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-m.stop:
+				return
+			case <-ticker.C:
+				m.sampleMemory()
+			}
+		}
+	})
 	m.wg.Go(m.sampleUsageLoop)
 	m.wg.Go(m.policyDeliveryLoop)
 	m.wg.Go(func() {
@@ -333,6 +351,10 @@ func (m *Manager) Status() (model.Status, error) {
 			s.Reserved = s.Reserved.Add(l.Request.Resources)
 		}
 	}
+	memory := m.memoryBudget(s.Reserved.Memory)
+	s.Memory = &memory
+	s.Capacity.Memory = memory.Capacity
+	s.Capabilities = append(s.Capabilities, "live-memory-admission")
 	for _, kind := range []string{"cpu", "memory", "disk"} {
 		total, reserved, unit := s.Capacity.CPU, s.Reserved.CPU, "logical-core-equivalents"
 		if kind == "memory" {
@@ -346,6 +368,8 @@ func (m *Manager) Status() (model.Status, error) {
 			v.BudgetTotal = model.CountQuantity(s.Capacity.Memory)
 			v.Reserved = model.CountQuantity(s.Reserved.Memory)
 			v.Available = model.CountQuantity(max(0, s.Capacity.Memory-s.Reserved.Memory))
+			v.Deficit = model.CountQuantity(memory.Deficit)
+			v.Accounting = "live-host-memory-headroom; full outstanding promises charged conservatively"
 		}
 		if kind == "disk" {
 			v.BudgetTotal = model.CountQuantity(s.Capacity.Disk)
@@ -469,9 +493,6 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if err := m.resolveUsagePolicy(&r, run != nil); err != nil {
 		return empty, err
 	}
-	if !r.Resources.Fits(m.capacity) {
-		return empty, model.Err("capacity_exceeded", "request exceeds the configured host budget")
-	}
 	if r.Key != "" {
 		var old []byte
 		var savedRun sql.NullString
@@ -508,6 +529,9 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		if cancelled > 0 {
 			return empty, model.Err("request_cancelled", "this request was cancelled before admission")
 		}
+	}
+	if !m.requestFitsCeiling(r.Resources) {
+		return empty, model.Err("capacity_exceeded", "request exceeds a configured host ceiling or known physical memory capacity")
 	}
 	for _, c := range r.Pools {
 		p, e := m.pool(c.Pool)
@@ -556,10 +580,10 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if e != nil {
 		return empty, e
 	}
-	if !queued && r.Resources.FitsRemaining(used, m.capacity) && poolFits {
+	if !queued && m.fitsLiveMemory(r.Resources, used) && poolFits {
 		m.activate(&l, run != nil)
 	} else if !r.Queue {
-		return empty, model.Err("insufficient_capacity", "capacity is reserved; use --wait to queue")
+		return empty, model.Err("insufficient_capacity", "capacity is reserved or live memory headroom is insufficient/unavailable; use --wait to queue")
 	}
 	var rb any
 	if run != nil {
@@ -744,6 +768,17 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if l.Request.Resources.Memory > 0 {
+		var reserved int64
+		for _, lease := range ls {
+			if consuming(lease.State) {
+				reserved += lease.Request.Resources.Memory
+			}
+		}
+		if budget := m.memoryBudget(reserved); budget.Stale || budget.Deficit > 0 || budget.Observation.Available == nil {
+			return l, model.Err("renewal_denied", "live memory headroom cannot cover outstanding promises")
+		}
+	}
 	poolUsed, e := poolReservations(ls)
 	if e != nil {
 		return l, e
@@ -858,7 +893,7 @@ func (m *Manager) tick() {
 		if err != nil {
 			return
 		}
-		if !l.Request.Resources.FitsRemaining(used, m.capacity) || !poolFits {
+		if !m.fitsLiveMemory(l.Request.Resources, used) || !poolFits {
 			break
 		}
 		var rb sql.NullString
