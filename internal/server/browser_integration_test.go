@@ -34,7 +34,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	if !ok || strings.Contains(link.URL, ep.Token) {
 		t.Fatal("unsafe browser link")
 	}
-	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs", "/lease-state.mjs", "/io-devices.mjs", "/io-selector.mjs", "/route.mjs", "/activity-feed.mjs", "/operator-messaging.mjs", "/connection-links.mjs", "/pool-model.mjs", "/pool-operations.mjs", "/pool-console.mjs"} {
+	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs", "/lease-state.mjs", "/io-devices.mjs", "/io-selector.mjs", "/route.mjs", "/dashboard-shortcuts.mjs", "/activity-feed.mjs", "/operator-messaging.mjs", "/connection-links.mjs", "/pool-model.mjs", "/pool-operations.mjs", "/pool-console.mjs"} {
 		r, err := http.Get(base + path)
 		if err != nil {
 			t.Fatal(err)

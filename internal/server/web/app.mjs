@@ -6,6 +6,7 @@ import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {createDashboardHistory} from './route.mjs';
+import {installDashboardShortcuts} from './dashboard-shortcuts.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
 import {createOperatorMessaging} from './operator-messaging.mjs';
 import {createPoolConsole} from './pool-console.mjs';
@@ -249,7 +250,11 @@ window.addEventListener('hashchange', connectionLinks.change);
 function renderCurrent() {
   ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost})[view]();
 }
-for (const button of document.querySelectorAll('nav button')) button.addEventListener('click', () => selectView(button.dataset.view));
+for (const [index, button] of [...document.querySelectorAll('nav button')].entries()) {
+  button.setAttribute('aria-keyshortcuts', String(index + 1));
+  button.addEventListener('click', () => selectView(button.dataset.view));
+}
+installDashboardShortcuts({document, selectView});
 
 let helpKey = '';
 function helpButton(key, content) {
