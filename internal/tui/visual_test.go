@@ -44,11 +44,12 @@ func visualDashboard(t *testing.T) *dashboardModel {
 		cpu := 32 + 21*math.Sin(float64(index)/6) + 9*math.Cos(float64(index)/2)
 		memory := 12*gib + float64(index)*.015*gib
 		free := 610*gib - float64(index)*.17*gib
+		zero := 0.0
 		diskR := (8 + 6*math.Sin(float64(index)/4)) * 1024 * 1024
 		diskW := (3 + 2*math.Cos(float64(index)/5)) * 1024 * 1024
 		netR := (1.4 + .8*math.Sin(float64(index)/7)) * 1024 * 1024
 		netW := (.4 + .2*math.Cos(float64(index)/6)) * 1024 * 1024
-		m.history = append(m.history, model.MonitorPoint{Sequence: int64(index + 1), At: now.Add(time.Duration(index-59) * time.Second), CPU: &cpu, MemoryUsed: &memory, FilesystemAvailable: &free, DiskIO: []model.MonitorHistoryIO{{ID: "disk-0", Read: &diskR, Write: &diskW}}, Network: []model.MonitorHistoryIO{{ID: "net-0", Read: &netR, Write: &netW}}})
+		m.history = append(m.history, model.MonitorPoint{Sequence: int64(index + 1), At: now.Add(time.Duration(index-59) * time.Second), CPU: &cpu, MemoryUsed: &memory, FilesystemAvailable: &free, DiskIO: []model.MonitorHistoryIO{{ID: "disk-0", Read: &diskR, Write: &diskW}, {ID: "disk-1", Read: &zero, Write: &zero}}, Network: []model.MonitorHistoryIO{{ID: "net-0", Read: &netR, Write: &netW}, {ID: "net-1", Read: &zero, Write: &zero}}})
 	}
 	lease := activeLease("a1b2c3d4e5f60123456789abcdef01234")
 	lease.Owner = "1000"
@@ -128,11 +129,11 @@ func TestWindowGeometryAndDynamicMemoryLabelsRemainExplicit(t *testing.T) {
 	if text := ansi.Strip(m.monitorText()); !strings.Contains(text, "32 GiB") || !strings.Contains(text, "DISK I/O") || !strings.Contains(text, "NETWORK") {
 		t.Fatal("physical observations/window composition missing", text)
 	}
-	first := m.page.Latest.Network[0].ID
-	m.selectedNetwork = nextIO(m.page.Latest.Network, first)
-	if m.selectedNetwork == first || !strings.Contains(ansi.Strip(m.monitorText()), "Ethernet") {
-		t.Fatal("view-only interface cycling did not change existing data selection")
+	m.networkSelection = ioSelection{IDs: map[string]bool{"net-1": true}}
+	if !strings.Contains(ansi.Strip(m.monitorText()), "1 selected interfaces") {
+		t.Fatal("combined custom interface selection not shown")
 	}
+
 }
 
 // Optional deterministic visual artifacts use synthetic data, never a user's
@@ -148,9 +149,19 @@ func TestWriteWindowedDashboardPreviews(t *testing.T) {
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"monitor-wide", "monitor-compact", "resources", "leases", "messages", "activity", "host", "record", "release-review", "message-review", "connecting", "disconnected"} {
+	for _, name := range []string{"monitor-wide", "disk-picker", "network-picker", "io-none", "io-missing", "monitor-compact", "resources", "leases", "messages", "activity", "host", "record", "release-review", "message-review", "connecting", "disconnected"} {
 		m := visualDashboard(t)
 		switch name {
+		case "disk-picker":
+			m.openIOPicker(true)
+		case "network-picker":
+			m.openIOPicker(false)
+		case "io-none":
+			m.diskSelection = ioSelection{}
+			m.networkSelection = ioSelection{}
+		case "io-missing":
+			m.diskSelection = ioSelection{IDs: map[string]bool{"missing-disk": true}}
+			m.openIOPicker(true)
 		case "monitor-compact":
 			m.width = 70
 			m.height = 28

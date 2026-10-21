@@ -36,7 +36,8 @@ type dashboardModel struct {
 	lastRefresh, timeNow, timeMonitor time.Time
 	page                              model.MonitorPage
 	history                           []model.MonitorPoint
-	selectedDisk, selectedNetwork     string
+	diskSelection, networkSelection   ioSelection
+	ioPicker                          *ioPicker
 	events                            []model.Event
 	width, height, view, selected     int
 	feedFocus, feedOpen               bool
@@ -94,7 +95,7 @@ func newDashboard(ctx context.Context, home string) *dashboardModel {
 	input := textinput.New()
 	input.CharLimit = 16384
 	input.SetWidth(50)
-	m := &dashboardModel{ctx: ctx, home: home, width: 100, height: 30, timeNow: time.Now(), connecting: true, viewport: viewport.New(viewport.WithWidth(65), viewport.WithHeight(20)), input: input}
+	m := &dashboardModel{ctx: ctx, home: home, width: 100, height: 30, timeNow: time.Now(), connecting: true, diskSelection: ioSelection{All: true}, networkSelection: ioSelection{All: true}, viewport: viewport.New(viewport.WithWidth(65), viewport.WithHeight(20)), input: input}
 	m.viewport.SoftWrap = true
 	p, err := readPreferences(home)
 	m.hideInactive = p.HideInactive
@@ -248,6 +249,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		m.input, cmd = m.input.Update(key)
 		return cmd
 	}
+	if m.ioPicker != nil {
+		return m.pickerKey(k)
+	}
 	if m.review != nil {
 		return m.reviewKey(k)
 	}
@@ -370,7 +374,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": "APFS volumes share container capacity. Clones and snapshots can share blocks; allocated size does not prove exclusive or reclaimable space.", "Disk and network": "Device/interface rates describe their own scope. Layered devices and virtual interfaces can overlap; do not sum them as independent physical traffic.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. This dashboard shows the local host; peer views are not available here."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": "APFS volumes share container capacity. Clones and snapshots can share blocks; allocated size does not prove exclusive or reclaimable space.", "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. This dashboard shows the local host; peer views are not available here."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"
@@ -382,9 +386,8 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return refresh(m.ctx, m.session)
 		}
 	case "n":
-		if m.view == 0 && m.page.Latest != nil {
-			m.selectedNetwork = nextIO(m.page.Latest.Network, m.selectedNetwork)
-			return nil
+		if m.view == 0 {
+			return m.openIOPicker(false)
 		}
 		if m.view == 3 {
 			return m.beginCompose(false)
@@ -394,9 +397,8 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return m.beginCompose(true)
 		}
 	case "d":
-		if m.view == 0 && m.page.Latest != nil {
-			m.selectedDisk = nextIO(m.page.Latest.DiskIO, m.selectedDisk)
-			return nil
+		if m.view == 0 {
+			return m.openIOPicker(true)
 		}
 	case "y":
 		if m.view == 3 {

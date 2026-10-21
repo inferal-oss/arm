@@ -5,8 +5,8 @@ export function metricHelp(kind, {measurements = [], filesystem, accounting, mem
     cpu: ['CPU activity', 'How busy the host’s processors have been since the previous sample. This includes work outside ARM.', 'A core count reserves capacity in ARM; it does not guarantee a particular speed.'],
     memory: ['Memory & swap', 'Available memory estimates how much RAM the system could make available, including supported reclaimable caches. Used is total RAM minus that estimate.', 'Swap is memory stored on disk. These host readings are separate from the promises made to individual leases.'],
     filesystem: ['Storage space', 'Space available to your user on the filesystem where ARM stores its data. Other disks and volumes may have different limits.', 'File size is not the same as space that deletion will free: snapshots, clones and shared files can retain data.'],
-    disk_io: ['Disk activity', 'Data read and written each second by the selected device, including work outside ARM.', 'Virtual devices and their underlying drives can report the same activity. Adding their rates can count it twice.'],
-    network: ['Network activity', 'Data received and sent each second through the selected network interface, including work outside ARM.', 'A VPN or virtual interface may report traffic also counted by another interface. The rates are not bandwidth reservations.'],
+    disk_io: ['Disk activity', 'Read and write rates add the reports from every selected device, including work outside ARM. This is a sum of reported counters, not exclusive physical throughput.', 'Virtual devices and their underlying drives can report the same activity. Adding their rates can count it twice.'],
+    network: ['Network activity', 'Receive and send rates add the reports from every selected interface, including work outside ARM. This is a sum of reported counters, not exclusive physical throughput.', 'A VPN or virtual interface may report traffic also counted by another interface. The rates are not bandwidth reservations.'],
     gpu: ['GPU monitoring', 'GPU activity is not available in this build. An unavailable reading does not mean the GPU is idle.'],
     'resource-cpu': ['CPU reservations', 'The pool is ARM’s logical-core budget. Available means the portion not promised to current leases.', 'A reservation is cooperative; observed CPU activity is shown in Monitor.'],
     'resource-memory': ['Memory reservations', 'Available is the portion of this memory pool not promised to current leases. Physical RAM and actual usage are shown separately.', 'A reservation is cooperative and does not guarantee that the operating system can satisfy an allocation.'],
@@ -15,6 +15,7 @@ export function metricHelp(kind, {measurements = [], filesystem, accounting, mem
     'resource-custom': ['Coordination pool', 'This pool coordinates a limited number of shared permits. Its capacity and changes are recorded by ARM.', 'Permits do not enforce limits on an external system. A capacity reduction can leave existing claims above the new pool size.'],
   };
   const [title, ...paragraphs] = copy[kind] ?? ['Resource information', 'This reading describes one reported resource.'];
+  if (kind === 'disk_io' || kind === 'network') paragraphs.push('Select all includes newly reported devices. A custom selection keeps exact device identities. Missing, unavailable or reset counters leave gaps rather than adding zero; a changed device set also starts a new combined history segment.');
   if (kind === 'filesystem' && filesystem?.shared) {
     paragraphs.push(filesystem.type === 'apfs'
       ? 'APFS volumes can share one storage container. Their totals describe shared space and must not be added together.'

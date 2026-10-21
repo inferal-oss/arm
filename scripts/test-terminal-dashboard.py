@@ -146,6 +146,31 @@ def main():
         wait_text('Local authority')
         send('1')
         wait_text('CPU')
+        # These are real terminal popups over the same observation stream.
+        # Mouse All/None and keyboard Space change only chart selection.
+        selection_revision = cli('inspect', lease['id'])['revision']
+        send('d')
+        wait_text('SELECT DEVICES')
+        mouse(12, 37)
+        wait_text('Nothing selected')
+        mouse(3, 37)
+        wait_text('All reported devices')
+        send(' ')
+        wait_text('Custom selection')
+        send('\x1b')
+        drain(.1)
+        send('n')
+        wait_text('SELECT INTERFACES')
+        mouse(12, 37)
+        wait_text('Nothing selected')
+        mouse(3, 37)
+        wait_text('All reported interfaces')
+        send(' ')
+        wait_text('Custom selection')
+        send('\x1b')
+        drain(.1)
+        assert cli('inspect', lease['id'])['revision'] == selection_revision, 'chart selection changed a lease'
+        assert len(cli('messages')) == 1, 'chart selection sent a message'
         guard = cli('acquire', '--cpu', '1', '--ttl', '5m', '--reason', 'must survive dashboard exit')
         # Actual SIGWINCH handling and compact feed mode.
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 24, 70, 0, 0))
@@ -184,7 +209,7 @@ def main():
         restored[3] &= ~getattr(termios, 'PENDIN', 0)
         assert restored == original, 'signal exit did not restore terminal mode'
         assert cli('inspect', guard['id'])['state'] == 'active'
-        print('Terminal dashboard PTY: six-view navigation, exact counts, declined/reviewed extension+release, polling message review/send, resize/feed, q/SIGTERM raw mode and alternate-screen restoration, surviving active lease passed')
+        print('Terminal dashboard PTY: six-view navigation, exact counts, declined/reviewed extension+release, polling message review/send, disk/network multi-select All/None/custom, resize/feed, q/SIGTERM raw mode and alternate-screen restoration, surviving active lease passed')
     finally:
         if process is not None and process.poll() is None:
             process.kill()

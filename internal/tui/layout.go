@@ -62,6 +62,9 @@ func (m *dashboardModel) viewportContent() string {
 	return content
 }
 func (m *dashboardModel) displayContent() string {
+	if m.ioPicker != nil {
+		return fieldLabels(m.pickerText())
+	}
 	if m.inputMode != "" {
 		return fieldLabels(m.editorDisplay())
 	}

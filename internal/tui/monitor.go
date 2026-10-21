@@ -94,65 +94,42 @@ func totalValue(r model.ResourceMeasurement) float64 {
 	return *r.Total.Value
 }
 
-func selectedIO(items []model.MonitorIO, id string) (model.MonitorIO, int, bool) {
-	if len(items) == 0 {
-		return model.MonitorIO{}, 0, false
-	}
-	for index, item := range items {
-		if item.ID == id {
-			return item, index, true
-		}
-	}
-	return items[0], 0, true
-}
 func (m *dashboardModel) ioWindow(items []model.MonitorIO, disk bool, width int) string {
 	inner := width - 4
-	title := "NETWORK"
-	id := m.selectedNetwork
-	key := "n"
-	tone := "purple"
-	if disk {
-		title = "DISK I/O"
-		id = m.selectedDisk
-		key = "d"
-		tone = "blue"
-	}
-	item, index, found := selectedIO(items, id)
-	if !found {
-		return window(title, muted.Render("unavailable")+"\n\nNo counters reported for this host/sample.\n\n\n[i] complete sample · [?] measurement help", width, 8, false, tone)
-	}
-	name := short(item.Name, max(1, inner-14))
+	title, key, noun, tone := "NETWORK", "n", "interfaces", "purple"
 	readLabel, writeLabel := "↓ Receive", "↑ Send"
 	if disk {
+		title, key, noun, tone = "DISK I/O", "d", "devices", "blue"
 		readLabel, writeLabel = "↓ Read", "↑ Write"
 	}
-	lines := []string{align(strong.Render(name), muted.Render(fmt.Sprintf("%d/%d [%s] next", index+1, len(items), key)), inner), align(muted.Render(readLabel), strong.Render(measurement(item.Read)), inner), align(muted.Render(writeLabel), strong.Render(measurement(item.Write)), inner)}
-	ceiling := float64(0)
+	selection := m.ioSelection(disk)
+	ids := selection.selectedIDs(items)
+	scope := fmt.Sprintf("%d selected %s", len(ids), noun)
+	if selection.All {
+		scope = fmt.Sprintf("All %d %s", len(ids), noun)
+	} else if len(ids) == 0 {
+		scope = "Nothing selected"
+	}
+	read, write := selection.latest(items, true), selection.latest(items, false)
+	lines := []string{align(strong.Render(scope), muted.Render("["+key+"] Select"), inner), align(muted.Render(readLabel), strong.Render(measurement(model.Measurement{Value: read, Unit: "bytes/second"})), inner), align(muted.Render(writeLabel), strong.Render(measurement(model.Measurement{Value: write, Unit: "bytes/second"})), inner)}
 	get := func(read bool) func(model.MonitorPoint) *float64 {
-		return func(p model.MonitorPoint) *float64 {
-			values := p.Network
+		return func(point model.MonitorPoint) *float64 {
+			values := point.Network
 			if disk {
-				values = p.DiskIO
+				values = point.DiskIO
 			}
-			for _, v := range values {
-				if v.ID == item.ID {
-					if read {
-						return v.Read
-					}
-					return v.Write
-				}
-			}
-			return nil
+			return selection.history(items, values, read)
 		}
 	}
-	for _, p := range m.history {
+	ceiling := float64(0)
+	for _, point := range m.history {
 		for _, read := range []bool{true, false} {
-			if value := get(read)(p); value != nil {
-				ceiling = max(ceiling, *value)
+			if value := get(read)(point); value != nil {
+				ceiling = max(ceiling, max(1, *value))
 			}
 		}
 	}
-	lines = append(lines, lipgloss.NewStyle().Foreground(colorBlue).Render("↓ "+historyLine(m.history, max(1, inner-2), m.page.Cadence, ceiling, get(true))), lipgloss.NewStyle().Foreground(colorPurple).Render("↑ "+historyLine(m.history, max(1, inner-2), m.page.Cadence, ceiling, get(false))), muted.Render("Per-device scope · [?] help"))
+	lines = append(lines, lipgloss.NewStyle().Foreground(colorBlue).Render("↓ "+historyLine(m.history, max(1, inner-2), m.page.Cadence, ceiling, get(true))), lipgloss.NewStyle().Foreground(colorPurple).Render("↑ "+historyLine(m.history, max(1, inner-2), m.page.Cadence, ceiling, get(false))), muted.Render("Selected reported sum · [?] help"))
 	return window(title, strings.Join(lines, "\n"), width, 8, false, tone)
 }
 
@@ -201,12 +178,4 @@ func (m *dashboardModel) historyGraph(width, height int, ceiling float64, value 
 		out[row] = accent.Render(string(content)) + " " + muted.Render(label)
 	}
 	return out
-}
-
-func nextIO(items []model.MonitorIO, current string) string {
-	_, index, found := selectedIO(items, current)
-	if !found {
-		return ""
-	}
-	return items[(index+1)%len(items)].ID
 }

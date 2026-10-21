@@ -10,7 +10,7 @@ import (
 )
 
 func (m *dashboardModel) modal() bool {
-	return m.review != nil || m.composer != nil || m.inputMode != ""
+	return m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
 	return m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
@@ -57,6 +57,12 @@ func (m *dashboardModel) editorDisplay() string {
 }
 
 func (m *dashboardModel) windowTitle() (string, string) {
+	if m.ioPicker != nil {
+		if m.ioPicker.disk {
+			return "DISK I/O · SELECT DEVICES", "blue"
+		}
+		return "NETWORK · SELECT INTERFACES", "purple"
+	}
 	if m.inputMode != "" {
 		return map[string]string{"filter": "FILTER", "ttl": "EXTEND LEASE · DURATION", "recipient": "NEW MESSAGE · RECIPIENT", "body": "NEW MESSAGE · COMPOSE"}[m.inputMode], ""
 	}

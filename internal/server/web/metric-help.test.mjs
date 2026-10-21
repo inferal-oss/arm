@@ -17,6 +17,12 @@ test('filesystem explanation separates human policy from collector paths and not
 test('I/O, unavailable GPU and reservations have plain independent explanations', () => {
   assert.match(metricHelp('disk_io').paragraphs.join(' '), /count it twice/);
   assert.match(metricHelp('network').paragraphs.join(' '), /VPN/);
+  for (const kind of ['disk_io','network']) {
+    const copy=metricHelp(kind).paragraphs.join(' ');
+    assert.match(copy,/sum of reported counters, not exclusive physical throughput/);
+    assert.match(copy,/custom selection keeps exact device identities/);
+    assert.match(copy,/gaps rather than adding zero/);
+  }
   assert.match(metricHelp('gpu').paragraphs.join(' '), /does not mean the GPU is idle/);
   assert.doesNotMatch(metricHelp('resource-memory').paragraphs.join(' '), /pool follows/);
   const live = metricHelp('resource-memory', {memory: {}});

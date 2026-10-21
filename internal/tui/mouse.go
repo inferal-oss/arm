@@ -11,6 +11,7 @@ import (
 
 type mouseControl struct{ key, label string }
 type mouseRegion struct {
+	picker              bool
 	x, y, width, height int
 	key                 string
 	row                 int
@@ -24,6 +25,8 @@ type dashboardMouseMsg struct {
 
 func (m *dashboardModel) controls() []mouseControl {
 	switch {
+	case m.ioPicker != nil:
+		return []mouseControl{{"a", "All"}, {"n", "None"}, {"esc", "Done"}, {"enter", "Toggle"}, {"?", "Help"}}
 	case m.inputMode != "":
 		return []mouseControl{{"enter", "Continue"}, {"esc", "Back"}}
 	case m.review != nil:
@@ -89,19 +92,25 @@ func (m *dashboardModel) controlBar() (string, []mouseRegion) {
 // Bind an input to the exact rendered state: resize, dialog replacement, pending
 // transitions, selection or content changes invalidate delayed mouse commands.
 func (m *dashboardModel) mouseFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%d/%d/%d/%t/%t/%p/%p/%p/%d/%s/%s/%x", m.width, m.height, m.view, m.selected, m.viewport.YOffset(), m.feedOffset, m.detailGeneration, m.pending, m.feedFocus, m.review, m.composer, m.record, m.messageOperation, m.messageBusy, m.inputMode, sha256.Sum256([]byte(m.displayContent()+fmt.Sprint(m.feedItems()))))
+	return fmt.Sprintf("%dx%d/%d/%d/%d/%d/%d/%t/%t/%p/%p/%p/%d/%s/%s/%p/%x", m.width, m.height, m.view, m.selected, m.viewport.YOffset(), m.feedOffset, m.detailGeneration, m.pending, m.feedFocus, m.review, m.composer, m.record, m.messageOperation, m.messageBusy, m.inputMode, m.ioPicker, sha256.Sum256([]byte(m.displayContent()+fmt.Sprint(m.feedItems()))))
 }
 
 // Read-only wheel deltas can be queued from one rendered frame. Scrolling or
 // telemetry refresh must not discard the next delta; navigation/modal/geometry
 // changes still prevent an old gesture from scrolling a different surface.
 func (m *dashboardModel) mouseScrollFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive)
+	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker)
 }
 
 func mouseKey(key string) tea.KeyPressMsg {
 	code := rune(0)
 	switch key {
+	case "down":
+		code = tea.KeyDown
+	case "up":
+		code = tea.KeyUp
+	case "space":
+		code = tea.KeySpace
 	case "enter":
 		code = tea.KeyEnter
 	case "esc":
@@ -134,6 +143,7 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 	}
 	if m.modal() {
 		regions = append(regions, m.modalButtonRegions()...)
+		regions = append(regions, m.pickerMouseRegions()...)
 		return regions
 	}
 	if m.width >= 110 {
@@ -151,6 +161,7 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 	if m.view == 2 && m.detail == nil && m.record == nil && !m.feedFocus && m.resourceID == "" && m.viewport.YOffset() == 0 {
 		regions = append(regions, mouseRegion{x: 2, y: 5, width: min(31, m.mainWidth()-4), height: 1, key: "h", row: -1})
 	}
+	regions = append(regions, m.monitorSelectorRegions()...)
 	if m.detail != nil {
 		return regions
 	}
@@ -280,6 +291,14 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg) tea.Cmd {
 	}
 	if r.key != "" {
 		return m.key(mouseKey(r.key))
+	}
+	if r.picker && m.ioPicker != nil {
+		options := m.ioOptions()
+		if r.row >= 0 && r.row < len(options) {
+			m.ioPicker.selectedID = options[r.row].id
+			m.ioSelection(m.ioPicker.disk).toggle(options[r.row].id, m.ioItems(m.ioPicker.disk))
+		}
+		return nil
 	}
 	if m.modal() {
 		return nil

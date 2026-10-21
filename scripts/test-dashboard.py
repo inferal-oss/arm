@@ -78,7 +78,7 @@ def main():
         ticket = urllib.parse.parse_qs(url.fragment)['connect'][0]
         base = urllib.parse.urlunsplit((url.scheme, url.netloc, '', '', ''))
         endpoint = json.loads((home / 'endpoint.json').read_text())
-        for path in ('/', '/app.mjs', '/core.mjs', '/json-view.mjs', '/metric-help.mjs', '/lease-actions.mjs', '/lease-state.mjs', '/route.mjs', '/activity-feed.mjs', '/operator-messaging.mjs', '/connection-links.mjs', '/style.css'):
+        for path in ('/', '/app.mjs', '/core.mjs', '/json-view.mjs', '/metric-help.mjs', '/lease-actions.mjs', '/lease-state.mjs', '/io-devices.mjs', '/io-selector.mjs', '/route.mjs', '/activity-feed.mjs', '/operator-messaging.mjs', '/connection-links.mjs', '/style.css'):
             status, headers, body = request(base + path)
             assert status == 200 and body and endpoint['token'].encode() not in body
             assert headers['Cache-Control'] == 'no-store' and 'Set-Cookie' not in headers

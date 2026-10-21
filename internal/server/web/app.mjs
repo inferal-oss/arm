@@ -1,5 +1,7 @@
 import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths, ownerDisplay} from './core.mjs';
 import {leaseStateLabel, leaseVisible, isInactiveLease, readHideInactive, saveHideInactive} from './lease-state.mjs';
+import {allDevices,selectedDeviceIDs,aggregateIO,aggregateIOWindow} from './io-devices.mjs';
+import {createIOSelector} from './io-selector.mjs';
 import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
@@ -34,7 +36,7 @@ const ownerLabel = (record, host = record?.host) => ownerDisplay(record, state.s
 const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
 const badge = (text, kind = text) => { const el = node('span', 'badge', text); el.dataset.kind = kind; return el; };
-const state = {status: null, statusReceived: 0, statusTime: null, messages: [], contacts: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, selectedDisk: '', selectedNetwork: '', connected: false};
+const state = {status: null, statusReceived: 0, statusTime: null, messages: [], contacts: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, connected: false};
 let leasePreferenceStorage; try { leasePreferenceStorage = localStorage; } catch { /* A blocked preference store keeps this session's choice in memory. */ }
 let hideInactiveLeases = readHideInactive(leasePreferenceStorage);
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
@@ -314,14 +316,16 @@ function stat(parent, label, value) { const row = node('div', 'stat-row'); row.a
 function renderMonitor() {
   const root = $('monitor'), sample = state.monitor?.latest;
   if (!sample) { root.replaceChildren(empty('Waiting for the shared host collector…')); return; }
-  // Keep native device selectors stable while they have keyboard focus; their
-  // surrounding charts resume rendering on blur. Sampling continues normally.
-  if (root.contains(document.activeElement) && (document.activeElement.tagName === 'SELECT' || document.activeElement.classList.contains('info-button'))) {
+  // Keep a focused help source stable until its dialog opens. I/O selectors
+  // have persistent cards and update in place while telemetry continues.
+  if (root.contains(document.activeElement) && document.activeElement.classList.contains('info-button')) {
     root.dataset.paused = 'true';
     return;
   }
   delete root.dataset.paused;
-  const grid = node('div', 'grid');
+  const cards = [];
+  let grid = root.querySelector('.grid');
+  if (!grid) { grid = node('div', 'grid'); root.replaceChildren(grid); }
   const cpu = panel('CPU activity', sample.cpu_busy_percent.value == null ? 'UNAVAILABLE' : 'ALL CORES', 'span8', metricHelp('cpu', {measurements: [['CPU', sample.cpu_busy_percent]]}));
   metric(cpu.body, percent(sample.cpu_busy_percent.value), `${sample.cores?.length ?? 0} logical cores`);
   cpu.body.append(chart(p => p.cpu_busy_percent, 100)); chartLabels(cpu.body);
@@ -330,40 +334,49 @@ function renderMonitor() {
     const box = node('div', 'core'), labels = node('div', 'core-label');
     labels.append(node('span', '', core.id), node('span', '', percent(core.busy_percent.value))); box.append(labels, bar(core.busy_percent.value)); cores.append(box);
   }
-  cpu.body.append(cores); grid.append(cpu.box);
+  cpu.body.append(cores); cards.push(cpu.box);
   const memory = panel('Memory & swap', sample.memory.used.value == null ? 'UNAVAILABLE' : 'HOST MEMORY', 'span4', metricHelp('memory', {measurements: [['RAM', sample.memory.used], ['Available RAM', sample.memory.available], ['Swap', sample.swap.used]]}));
   metric(memory.body, bytes(sample.memory.used.value), 'memory used');
   memory.body.append(chart(p => p.memory_used_bytes, numeric(sample.memory.total.value))); chartLabels(memory.body);
   stat(memory.body, 'Total', bytes(sample.memory.total.value)); stat(memory.body, 'Available', bytes(sample.memory.available.value));
   memory.body.append(node('div', 'divider'));
   stat(memory.body, 'Swap used', bytes(sample.swap.used.value)); memory.body.append(bar(sample.swap.used.value, numeric(sample.swap.total.value)));
-  stat(memory.body, 'Swap total', bytes(sample.swap.total.value)); grid.append(memory.box);
+  stat(memory.body, 'Swap total', bytes(sample.swap.total.value)); cards.push(memory.box);
   const fs = panel('Storage space', sample.filesystem_stale ? 'STALE' : sample.filesystem.available.value == null ? 'UNAVAILABLE' : 'ON THIS DISK', 'span4', metricHelp('filesystem', {measurements: [['Available space', sample.filesystem.available]], filesystem: sample.filesystem.filesystem}));
   metric(fs.body, bytes(sample.filesystem.available.value), 'available');
   fs.body.append(chart(p => p.filesystem_available_bytes, numeric(sample.filesystem.total.value))); chartLabels(fs.body);
   stat(fs.body, 'Total', bytes(sample.filesystem.total.value)); stat(fs.body, 'Used', bytes(sample.filesystem.used.value));
-  grid.append(fs.box);
-  grid.append(ioPanel('Disk I/O', 'disk_io', sample.disk_io ?? [], sample.disk_quality, sample.disk_detail, 'selectedDisk'));
-  grid.append(ioPanel('Network', 'network', sample.network ?? [], sample.network_quality, sample.network_detail, 'selectedNetwork'));
+  cards.push(fs.box);
+  cards.push(ioPanel('Disk I/O', 'disk_io', sample.disk_io ?? [], sample.disk_quality, sample.disk_detail));
+  cards.push(ioPanel('Network', 'network', sample.network ?? [], sample.network_quality, sample.network_detail));
   const support = node('div', 'support span12');
   support.append(node('span', '', 'GPU monitoring unavailable'), helpButton('gpu', metricHelp('gpu', {measurements: [['GPU', sample.gpu_busy_percent]]})));
-  grid.append(support); root.replaceChildren(grid);
+  cards.push(support);
+  for (const [index, card] of cards.entries()) {
+    const current=grid.children[index];
+    if (current!==card) { if(current) current.replaceWith(card); else grid.append(card); }
+  }
+  for (const card of ioPanels.values()) card.selector.reposition();
 }
-function ioPanel(title, key, devices, quality, detail, selection) {
-  const selected = devices.find(d => d.id === state[selection]) ?? devices[0];
-  const p = panel(title, quality === 'unavailable' ? 'UNAVAILABLE' : 'BYTES / SECOND', 'span4', metricHelp(key, {measurements: [['Read / receive', selected?.read_bytes_per_second], ['Write / send', selected?.write_bytes_per_second], ['Devices', {quality, detail}]]}));
-  state[selection] = selected?.id ?? '';
-  const heading = node('div', 'io-heading');
-  if (quality !== 'reported') heading.append(badge(({estimated: 'Estimate', partial: 'Partial reading', unavailable: 'Unavailable'})[quality] || 'Reading incomplete'));
-  if (selected) {
-    const select = node('select'); select.setAttribute('aria-label', `${title} device`);
-    for (const d of devices) { const option = node('option', '', d.name); option.value = d.id; option.selected = d.id === selected.id; select.append(option); }
-    select.addEventListener('change', () => { state[selection] = select.value; });
-    select.addEventListener('blur', () => renderMonitor()); heading.append(select);
-    p.body.append(heading);
-    const legend = node('div', 'legend'); legend.append(node('span', '', `${key === 'network' ? '↓ Receive' : '↓ Read'} ${rate(selected.read_bytes_per_second.value)}`), node('span', '', `${key === 'network' ? '↑ Send' : '↑ Write'} ${rate(selected.write_bytes_per_second.value)}`));
-    p.body.append(legend, chart(point => point[key]?.find(d => d.id === selected.id)?.read, null, point => point[key]?.find(d => d.id === selected.id)?.write)); chartLabels(p.body);
-  } else p.body.append(empty('No device readings available'));
+const ioPanels = new Map();
+function ioPanel(title, key, devices, quality, detail) {
+  let card=ioPanels.get(key);
+  if (!card) {
+    const help=metricHelp(key),p=panel(title,'REPORTED SUM','span4 io-panel',help),heading=node('div','io-heading'),qualityBadge=badge(''),summary=node('p','io-summary'),legend=node('div','legend'),read=node('span'),write=node('span'),graph=node('div','io-graph'),note=node('p','io-note');
+    card={p,help,qualityBadge,summary,read,write,graph,note,selection:allDevices()};
+    card.selector=createIOSelector({kind:key,title,onChange:selection=>{card.selection=selection;renderMonitor();}});
+    heading.append(card.selector.element,qualityBadge);legend.append(read,write);p.body.append(heading,summary,legend,graph,note);ioPanels.set(key,card);
+  }
+  const {p,selector,selection,help}=card,ids=selectedDeviceIDs(selection,devices),totals=aggregateIO(devices,ids);
+  selector.update(devices);
+  Object.assign(help,metricHelp(key,{measurements:[['Inventory',{quality,detail}],...devices.filter(d=>ids.includes(d.id)).flatMap(d=>[[`${d.name} · Read / receive`,d.read_bytes_per_second],[`${d.name} · Write / send`,d.write_bytes_per_second]])]}));
+  card.qualityBadge.hidden=quality==='reported';card.qualityBadge.textContent=({partial:'Partial inventory',estimated:'Estimate',unavailable:'Unavailable'})[quality]||'Reading incomplete';
+  card.summary.textContent=`Sum of ${ids.length} selected ${key==='network'?'interface':'device'} ${ids.length===1?'report':'reports'}`;
+  card.read.textContent=`${key==='network'?'↓ Receive':'↓ Read'} ${rate(totals.read)}`;card.write.textContent=`${key==='network'?'↑ Send':'↑ Write'} ${rate(totals.write)}`;
+  card.note.textContent=!ids.length?(devices.length?'Select devices to see combined activity.':'No device reports are available.'):totals.present<totals.selected?'A selected device is unavailable. Totals are unknown until it reports again.':totals.read==null||totals.write==null?'A selected reading is unavailable. Gaps preserve unknown or reset counters.':'';
+  card.note.hidden=!card.note.textContent;
+  const window=aggregateIOWindow(state.history,key,selection,devices),bySequence=new Map(window.map(point=>[String(point.sequence),point]));
+  card.graph.replaceChildren(chart(point=>bySequence.get(String(point.sequence))?.read??null,null,point=>bySequence.get(String(point.sequence))?.write??null));chartLabels(card.graph);
   return p.box;
 }
 
