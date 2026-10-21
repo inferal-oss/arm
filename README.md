@@ -283,3 +283,7 @@ arm message broadcast --text "Host maintenance soon." --key BROADCAST_ID
 ```
 
 Reuse a key only for the same send. ARM pins current recipient registrations/settings and rejects changed broadcast membership during submission. A retry reads the existing delivery state rather than invoking agents again; a changed request conflicts. After an uncertain result, inspect `arm messages` before creating a new send. `message send --reply-to MESSAGE_ID` links a reply to that contact's message in the operator inbox.
+
+## License
+
+Licensed under either the [Apache License, Version 2.0](LICENSE-APACHE) or the [MIT license](LICENSE-MIT), at your option. SPDX: `Apache-2.0 OR MIT`.
