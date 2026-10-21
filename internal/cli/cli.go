@@ -43,7 +43,11 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	a := app{home: local.Home(), in: in, out: out, err: errout, ctx: ctx}
 	f := a.flags("arm")
 	f.StringVar(&a.home, "home", a.home, "private ARM state directory (or ARM_HOME)")
-	if e := f.Parse(args); e != nil {
+	if e := a.parse(f, args, true); e != nil {
+		if errors.Is(e, flag.ErrHelp) {
+			return 0
+		}
+		fmt.Fprintln(errout, "arm:", e)
 		return 2
 	}
 	abs, e := filepath.Abs(a.home)
@@ -65,6 +69,10 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 		return 0
 	}
 	if e != nil {
+		var argument *argumentError
+		if errors.As(e, &argument) {
+			code = 2
+		}
 		var api *model.Error
 		if errors.As(e, &api) {
 			_ = json.NewEncoder(errout).Encode(map[string]any{"error": api})
@@ -80,6 +88,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 func (a *app) flags(name string) *flag.FlagSet {
 	f := flag.NewFlagSet(name, flag.ContinueOnError)
 	f.SetOutput(a.err)
+	f.Usage = func() { a.usage(f) }
 	return f
 }
 func (a *app) print(v any) error {
@@ -116,16 +125,41 @@ Commands:
   version                   Print build and Go versions
 
 Use COMMAND --help for options. Status operations return JSON.
+Use arm help COMMAND or arm GROUP --help to browse commands.
+Global --home DIR goes before COMMAND; ARM_HOME selects the same state directory.
 This initial backend uses cooperative CPU/memory/disk budgets, not OS quotas.`)
 }
 
 func (a *app) command(args []string) (int, error) {
 	cmd, args := args[0], args[1:]
+	if a.group(cmd, args) {
+		return 0, nil
+	}
 	switch cmd {
 	case "help":
+		if len(args) > 0 {
+			name := strings.Join(args, " ")
+			if name == "arm" {
+				a.help()
+				return 0, nil
+			}
+			if _, ok := groupHelps[name]; ok {
+				a.group(name, nil)
+				return 0, nil
+			}
+			if _, ok := commandHelps[name]; !ok {
+				return 2, fmt.Errorf("unknown help topic %q", name)
+			}
+			return a.command(append(args, "--help"))
+		}
 		a.help()
 		return 0, nil
 	case "version":
+		f := a.flags("version")
+		f.Bool("json", true, "JSON output")
+		if err := a.parse(f, args, false); err != nil {
+			return 2, err
+		}
 		return 0, a.print(map[string]string{"version": Version, "go": runtime.Version(), "os": runtime.GOOS, "arch": runtime.GOARCH})
 	case "serve", "daemon":
 		return a.daemon(cmd, args)
@@ -146,7 +180,7 @@ func (a *app) command(args []string) (int, error) {
 		follow := f.Bool("follow", false, "stream live events")
 		after := f.Int64("after", 0, "resume after this event sequence")
 		f.Bool("json", true, "JSON output")
-		if e := f.Parse(args); e != nil {
+		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
 		if *follow {
@@ -161,7 +195,7 @@ func (a *app) command(args []string) (int, error) {
 		f := a.flags(cmd)
 		f.Bool("json", true, "JSON output")
 		host := f.String("host", "localhost", "host ID or localhost")
-		if e := f.Parse(args); e != nil {
+		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
 		if *host != "localhost" {
@@ -185,15 +219,18 @@ func (a *app) command(args []string) (int, error) {
 		}
 		return 0, a.print(result)
 	case "inspect", "release", "cancel", "reconcile", "renew":
-		if len(args) == 0 {
-			return 2, fmt.Errorf("%s requires a lease ID", cmd)
-		}
-		id := args[0]
 		f := a.flags(cmd)
-		ttl := f.Duration("ttl", 0, "renewal duration from now")
+		ttl := new(time.Duration)
+		if cmd == "renew" {
+			f.DurationVar(ttl, "ttl", 0, "required renewal `duration` from now")
+		}
 		f.Bool("json", true, "JSON output")
-		if e := f.Parse(args[1:]); e != nil {
+		if e := a.parse(f, args, false); e != nil {
 			return 2, e
+		}
+		id := f.Args()[0]
+		if cmd == "renew" && *ttl <= 0 {
+			return 2, fmt.Errorf("renew requires --ttl DURATION greater than zero")
 		}
 		var result model.Lease
 		if e := a.call(cmd, map[string]any{"id": id, "ttl_ns": *ttl}, &result); e != nil {
@@ -226,32 +263,97 @@ func bytesValue(s string) (int64, error) {
 }
 
 func (a *app) acquire(command string, args []string) (int, error) {
-	f := a.flags(command)
+	label := command
+	if command == "storage" {
+		label = "storage create"
+	}
+	if command == "ports" {
+		label = "ports reserve"
+	}
+	f := a.flags(label)
 	defaultCPU := float64(1)
 	if command == "storage" || command == "ports" {
 		defaultCPU = 0
 	}
-	cpu := f.Float64("cpu", defaultCPU, "logical-core budget (cooperative)")
-	memory := f.String("memory", "0", "memory reservation, e.g. 2GiB")
-	disk := f.String("disk", "0", "disk reservation, e.g. 10GiB")
+	cpu := &defaultCPU
+	memoryValue, diskValue := "0", "0"
+	memory, disk := &memoryValue, &diskValue
+	if command == "acquire" || command == "run" {
+		f.Float64Var(cpu, "cpu", defaultCPU, "logical-core `budget` (cooperative)")
+		f.StringVar(memory, "memory", "0", "memory `size`, e.g. 2GiB")
+	}
+	if command != "ports" {
+		f.StringVar(disk, "disk", "0", "disk `size`, e.g. 10GiB")
+	}
 	reason := f.String("reason", "", "required purpose")
 	ttl := f.Duration("ttl", 10*time.Minute, "lease duration")
 	wait := f.Bool("wait", false, "queue and wait for capacity")
 	key := f.String("key", "", "idempotency key")
 	host := f.String("host", "localhost", "target host")
-	profile := f.String("profile", "", "profile (rust-build)")
+	profile := new(string)
 	project := f.String("project", "", "project attribution")
 	agent := f.String("agent", "", "registered agent contact for attribution")
-	storageLease := f.String("storage", "", "attach a managed storage lease (supervised run only)")
-	portLease := f.String("port-lease", "", "attach a dedicated port lease (one supervised consumer)")
+	storageLease, portLease, cwd := new(string), new(string), new(string)
+	if command == "run" {
+		f.StringVar(profile, "profile", "", "workload `profile` (rust-build)")
+		f.StringVar(storageLease, "storage", "", "attach managed storage `lease` (must outlast this command)")
+		f.StringVar(portLease, "port-lease", "", "attach a dedicated port `lease` (one consumer)")
+		f.StringVar(cwd, "cwd", "", "command working `directory` (default: current directory)")
+	}
 	var portFlags portFlags
-	f.Var(&portFlags, "port", "repeatable [NAME=]tcp4|tcp6|udp4|udp6://ADDRESS:PORT[-END]")
-	portMode := f.String("port-mode", "", "hold, activation or cooperative (defaults to hold; activation for run)")
-	dualStack := f.Bool("port-dual-stack", false, "IPv6 wildcard claims also bind IPv4")
-	cwd := f.String("cwd", "", "command working directory")
-	asJSON := f.Bool("json", false, "keep command output on stderr and emit final JSON")
-	if e := f.Parse(args); e != nil {
+	portMode := new(string)
+	dualStack := new(bool)
+	if command != "storage" {
+		f.Var(&portFlags, "port", "repeatable port `spec`: [NAME=]tcp4|tcp6|udp4|udp6://IP:PORT[-END]")
+		modes := "hold (default) or cooperative"
+		if command == "run" {
+			modes = "activation (default) or cooperative"
+		}
+		f.StringVar(portMode, "port-mode", "", modes)
+		f.BoolVar(dualStack, "port-dual-stack", false, "IPv6 wildcard bindings also cover IPv4")
+	}
+	asJSON := new(bool)
+	if command == "run" {
+		f.BoolVar(asJSON, "json", false, "send command output to stderr and final lease JSON to stdout")
+	} else {
+		f.BoolVar(asJSON, "json", true, "return the lease as JSON")
+	}
+	if e := a.parse(f, args, command == "run"); e != nil {
 		return 2, e
+	}
+	if command == "storage" && len(f.Args()) > 0 {
+		providedDisk := false
+		f.Visit(func(v *flag.Flag) {
+			if v.Name == "disk" {
+				providedDisk = true
+			}
+		})
+		if providedDisk {
+			return 2, fmt.Errorf("provide storage SIZE as an argument or --disk SIZE, not both")
+		}
+		*disk = f.Args()[0]
+	}
+	if command == "storage" && *disk == "0" {
+		return 2, fmt.Errorf("storage create requires SIZE; for example: arm storage create 10GiB --reason \"Retain build outputs\"")
+	}
+	if command == "ports" {
+		if len(f.Args()) > 0 && len(portFlags) > 0 {
+			return 2, fmt.Errorf("provide port specs as arguments or --port flags, not both")
+		}
+		for _, spec := range f.Args() {
+			if !strings.Contains(spec, "://") {
+				spec = "tcp4://127.0.0.1:" + spec
+			}
+			if e := portFlags.Set(spec); e != nil {
+				return 2, e
+			}
+		}
+		if len(portFlags) == 0 {
+			portFlags = append(portFlags, model.PortClaim{Network: "tcp4", Address: "127.0.0.1"})
+		}
+	}
+	if strings.TrimSpace(*reason) == "" {
+		return 2, fmt.Errorf("--reason is required; see arm %s --help", label)
 	}
 	mem, e := bytesValue(*memory)
 	if e != nil {
@@ -432,13 +534,27 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		}
 		action, args = args[0], args[1:]
 	}
-	f := a.flags("daemon " + action)
-	cpus := f.Float64("cpu", float64(max(1, runtime.NumCPU()-1)), "host CPU reservation budget")
-	mem := f.String("memory", "8GiB", "host memory reservation budget")
-	disk := f.String("disk", "20GiB", "host disk reservation budget")
-	listen := f.String("listen", "127.0.0.1:0", "loopback backend address")
-	f.Bool("json", true, "JSON output")
-	if e := f.Parse(args); e != nil {
+	if action != "start" && action != "stop" && action != "status" && !(command == "serve" && action == "serve") {
+		return 2, fmt.Errorf("unknown daemon action %q; use arm daemon --help", action)
+	}
+	label := "daemon " + action
+	if action == "serve" {
+		label = "serve"
+	}
+	f := a.flags(label)
+	cpuValue := float64(max(1, runtime.NumCPU()-1))
+	memValue, diskValue, listenValue := "8GiB", "20GiB", "127.0.0.1:0"
+	cpus, mem, disk, listen := &cpuValue, &memValue, &diskValue, &listenValue
+	if action == "start" || action == "serve" {
+		f.Float64Var(cpus, "cpu", cpuValue, "host CPU reservation `budget`")
+		f.StringVar(mem, "memory", memValue, "host memory reservation `size`")
+		f.StringVar(disk, "disk", diskValue, "host disk reservation `size`")
+		f.StringVar(listen, "listen", listenValue, "loopback backend `address`")
+	}
+	if action != "serve" {
+		f.Bool("json", true, "JSON output")
+	}
+	if e := a.parse(f, args, false); e != nil {
 		return 2, e
 	}
 	if action == "status" {
@@ -537,15 +653,22 @@ func (a *app) agent(args []string) error {
 	action, args := args[0], args[1:]
 	f := a.flags("agent " + action)
 	var c agents.Contact
-	f.StringVar(&c.ID, "id", "", "stable contact name")
-	f.StringVar(&c.Adapter, "adapter", "", "codex or claude")
-	f.StringVar(&c.Session, "session", "", "exact existing session UUID")
-	f.StringVar(&c.CWD, "cwd", "", "session working directory")
-	f.StringVar(&c.ConfigDir, "config-dir", "", "agent configuration root")
-	f.StringVar(&c.Remote, "remote", "", "Codex unix endpoint for an isolated server")
-	f.BoolVar(&c.Idle, "idle", false, "caller declares Claude session idle")
+	if action != "probe" && action != "register" && action != "list" {
+		return fmt.Errorf("unknown agent action %q; use arm agent --help", action)
+	}
+	if action == "probe" || action == "register" {
+		f.StringVar(&c.Adapter, "adapter", "", "codex or claude")
+	}
+	if action == "register" {
+		f.StringVar(&c.ID, "id", "", "stable contact `name`")
+		f.StringVar(&c.Session, "session", "", "exact existing session `UUID`")
+		f.StringVar(&c.CWD, "cwd", "", "session working `directory` (default: current directory)")
+		f.StringVar(&c.ConfigDir, "config-dir", "", "agent configuration `directory`")
+		f.StringVar(&c.Remote, "remote", "", "Codex unix `endpoint` for an isolated server")
+		f.BoolVar(&c.Idle, "idle", false, "declare that the Claude session is idle")
+	}
 	f.Bool("json", true, "JSON output")
-	if e := f.Parse(args); e != nil {
+	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
 	if action == "probe" {
@@ -578,6 +701,17 @@ func (a *app) agent(args []string) error {
 			return e
 		}
 	}
+	var pathErr error
+	c.CWD, pathErr = filepath.Abs(c.CWD)
+	if pathErr != nil {
+		return pathErr
+	}
+	if c.ConfigDir != "" {
+		c.ConfigDir, pathErr = filepath.Abs(c.ConfigDir)
+		if pathErr != nil {
+			return pathErr
+		}
+	}
 	var out any
 	if e := a.call("register", c, &out); e != nil {
 		return e
@@ -591,11 +725,17 @@ func (a *app) message(args []string) error {
 	}
 	action, args := args[0], args[1:]
 	f := a.flags("message " + action)
-	to := f.String("to", "", "registered contact ID")
+	if action != "operator" && action != "send" && action != "broadcast" {
+		return fmt.Errorf("unknown message action %q; use arm message --help", action)
+	}
+	to := new(string)
+	if action == "send" {
+		f.StringVar(to, "to", "", "required registered contact `ID`")
+	}
 	body := f.String("text", "", "message body (or - for stdin)")
 	lease := f.String("lease", "", "related lease ID")
 	f.Bool("json", true, "JSON output")
-	if e := f.Parse(args); e != nil {
+	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
 	if *body == "-" {
@@ -636,10 +776,13 @@ func (a *app) message(args []string) error {
 func (a *app) integration(action string, args []string) error {
 	f := a.flags(action)
 	dry := f.Bool("dry-run", false, "preview without changes")
-	codexRoot := f.String("codex-home", "", "explicit Codex integration root")
-	claudeRoot := f.String("claude-home", "", "explicit Claude integration root")
+	codexRoot, claudeRoot := new(string), new(string)
+	if action == "install" {
+		f.StringVar(codexRoot, "codex-home", "", "explicit Codex integration `directory`")
+		f.StringVar(claudeRoot, "claude-home", "", "explicit Claude integration `directory`")
+	}
 	f.Bool("json", true, "JSON output")
-	if e := f.Parse(args); e != nil {
+	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
 	if action == "install" {

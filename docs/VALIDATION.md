@@ -1,5 +1,11 @@
 # Validation record
 
+## October 21, 2026: CLI parsing, defaults and help
+
+The complete macOS race suite with required native APFS metadata and `go vet ./...` passed after the CLI review. Regression tests exercise `storage create SIZE -reason ...`, flags on either side of storage sizes and lease IDs, the retained `--disk` alternative, no-argument port reservations, explicit and positional port forms, and preservation of child arguments after either supported `run` boundary. Tests browse every leaf and group help entry without a backend or state-directory creation, verify unrelated options are absent, and reject extra operands, missing values, unsupported flags, conflicting positional/flag forms and ignored JSON settings before backend or installation changes.
+
+The entire CLI test executable also passed directly under the configured unprivileged login on `LINUX_HOST`, without process-namespace isolation. The CGo-free compiled macOS binary passed both the storage/lifecycle/install-uninstall guard/cancellation smoke test and the port activation/recovery/native inventory smoke test. These client parsing changes do not require a running backend restart; they do not add OS resource quotas or complete the remaining specification.
+
 ## October 21, 2026: integrated port leases and OrbStack SSH acceptance
 
 Port admission now has tests for atomic resource/port grants, queue waiting without partial budgets, normalized idempotency, exact expiry, dedicated parent/consumer lifetimes and denied renewal. Actual inherited TCP/UDP servers pass traffic through the supervised launch gate. Revocation tests keep a cooperative unrelated socket alive and charged, and an escaped inherited socket remains `needs_attention` until the fixture exits itself. Recovery tests prove saved descriptors are unknown rather than silently restored. Linux inventory tests distinguish held-inode claims from cooperative-ledger overlap; native fixtures retrieve their own process and start identity on both platforms. CLI tests cover public port commands, activation metadata, consumer attribution without double charging, and protected backend accounting.

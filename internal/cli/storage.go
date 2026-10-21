@@ -15,13 +15,19 @@ func (a *app) storage(args []string) (int, error) {
 	if action == "create" {
 		return a.acquire("storage", args)
 	}
+	if action != "list" && action != "inspect" && action != "cleanup" && action != "handoff" {
+		return 2, fmt.Errorf("unknown storage action %q; use arm storage --help", action)
+	}
 	f := a.flags("storage " + action)
-	dry := f.Bool("dry-run", false, "preview without mutation")
+	dry := new(bool)
+	if action == "cleanup" {
+		f.BoolVar(dry, "dry-run", false, "preview cleanup without changing data")
+	}
 	f.Bool("json", true, "JSON output")
+	if err := a.parse(f, args, false); err != nil {
+		return 2, err
+	}
 	if action == "list" {
-		if err := f.Parse(args); err != nil {
-			return 2, err
-		}
 		if len(f.Args()) != 0 {
 			return 2, fmt.Errorf("unexpected storage list arguments")
 		}
@@ -31,16 +37,7 @@ func (a *app) storage(args []string) (int, error) {
 		}
 		return 0, a.print(result)
 	}
-	if len(args) == 0 {
-		return 2, fmt.Errorf("storage %s requires a path or lease ID", action)
-	}
-	target := args[0]
-	if err := f.Parse(args[1:]); err != nil {
-		return 2, err
-	}
-	if len(f.Args()) != 0 {
-		return 2, fmt.Errorf("unexpected storage arguments")
-	}
+	target := f.Args()[0]
 	var result any
 	switch action {
 	case "inspect":

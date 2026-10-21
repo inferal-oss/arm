@@ -48,9 +48,12 @@ func (a *app) ports(args []string) (int, error) {
 	if args[0] == "reserve" {
 		return a.acquire("ports", args[1:])
 	}
+	if args[0] != "list" && args[0] != "discover" {
+		return 2, fmt.Errorf("unknown ports action %q; use arm ports --help", args[0])
+	}
 	f := a.flags("ports " + args[0])
 	f.Bool("json", true, "JSON output")
-	if err := f.Parse(args[1:]); err != nil {
+	if err := a.parse(f, args[1:], false); err != nil {
 		return 2, err
 	}
 	if len(f.Args()) > 0 {

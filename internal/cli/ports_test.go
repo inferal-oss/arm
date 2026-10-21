@@ -45,6 +45,21 @@ func TestCLIPortReservationsActivationAndProtectedBackend(t *testing.T) {
 		return out.Bytes()
 	}
 	var lease model.Lease
+	for _, args := range [][]string{
+		{"ports", "reserve", "-reason", "testing"},
+		{"ports", "reserve", "0", "--reason", "positional port"},
+		{"ports", "reserve", "--reason", "positional port", "0"},
+		{"ports", "reserve", "--port", "web=tcp4://127.0.0.1:0", "--reason", "explicit port"},
+	} {
+		var port model.Lease
+		if err := json.Unmarshal(call(args...), &port); err != nil {
+			t.Fatal(err)
+		}
+		if len(port.Ports) != 1 || port.Ports[0].Port == 0 || port.Ports[0].Address != "127.0.0.1" || port.Request.Resources != (model.Resources{}) {
+			t.Fatalf("default/explicit port: %+v", port)
+		}
+		call("release", "--json", port.ID)
+	}
 	if err := json.Unmarshal(call("ports", "reserve", "--port", "web=tcp4://127.0.0.1:0", "--reason", "reserve web fixture", "--ttl", "1m"), &lease); err != nil {
 		t.Fatal(err)
 	}

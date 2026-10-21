@@ -46,6 +46,28 @@ func TestCLIExecutionExpiryAndUninstallGuard(t *testing.T) {
 	if code != 7 || out != "hello arm" || err != "" {
 		t.Fatalf("output or exit status lost: %d %q %q", code, out, err)
 	}
+	for _, boundary := range [][]string{{"--", "/bin/sh"}, {"/bin/sh"}} {
+		args := append([]string{"run", "--reason", "child option boundary"}, boundary...)
+		args = append(args, "-c", `printf '%s' "$@"`, "fixture", "--reason", "child", "--help", "--cpu", "8")
+		code, out, err = call(args...)
+		if code != 0 || out != "--reasonchild--help--cpu8" || err != "" {
+			t.Fatalf("child flags interpreted by ARM: %d %q %q", code, out, err)
+		}
+	}
+	for _, args := range [][]string{
+		{"storage", "create", "10MiB", "-reason", "q"},
+		{"storage", "create", "--reason", "q", "10MiB"},
+		{"storage", "create", "--disk", "10MiB", "--reason", "q"},
+	} {
+		code, out, err = call(args...)
+		var storage model.Lease
+		if code != 0 || json.Unmarshal([]byte(out), &storage) != nil || storage.Request.Reason != "q" || storage.Request.Resources.Disk != 10<<20 || storage.Request.Resources.CPU != 0 {
+			t.Fatalf("storage argument parsing: %d %s %s", code, out, err)
+		}
+		if code, _, err = call("storage", "handoff", "--json", storage.ID); code != 0 {
+			t.Fatal(err)
+		}
+	}
 	work := t.TempDir()
 	if e := os.WriteFile(filepath.Join(work, "size-fixture"), []byte("arm"), 0600); e != nil {
 		t.Fatal(e)

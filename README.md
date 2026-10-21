@@ -41,7 +41,7 @@ bin/arm --home /tmp/arm-demo daemon stop
 Use `--profile rust-build` with `arm run` to supply Cargo's jobs budget and reject explicit conflicting jobs overrides. Attach a managed storage lease to retain its target directory independently of the command:
 
 ```sh
-bin/arm storage create --disk 10GiB --ttl 2h --reason "Retain Rust build outputs"
+bin/arm storage create 10GiB --ttl 2h --reason "Retain Rust build outputs"
 # Use the ID returned by storage create:
 bin/arm run --storage STORAGE_ID --profile rust-build --cpu 2 --ttl 20m \
   --reason "Compile release binaries" -- cargo build --release
@@ -61,6 +61,8 @@ bin/arm renew LEASE_ID --ttl 20m
 bin/arm release LEASE_ID
 ```
 
+Use `arm help COMMAND` or `arm GROUP COMMAND --help` for command-specific options and examples. Flags may surround positional arguments, so `arm storage create 10GiB --reason "Build outputs"` and `arm renew --ttl 20m LEASE_ID` work. For `run`, put ARM options before the command; everything after `--` belongs to the child. Both `-reason` and `--reason` work. JSON is the output format for status and lease operations; `run --json` additionally separates the child output onto stderr.
+
 Use `--wait` with `acquire` or `run` to queue. CPU, memory, and disk claims are cooperative reservation budgets. `resources` shows the budget, reservations, availability, and each consuming lease's owner, registered agent when provided, project, reason, and expiry. Separate timestamped measurements report host memory and the filesystem containing ARM's state, including APFS container identity when available. These observations do not yet affect admission; unmeasured quantities remain `null`.
 
 Inspect a directory's logical size and reported allocation through the backend:
@@ -73,9 +75,11 @@ The read-only scan deduplicates hard links and skips symlinks and child mounts. 
 
 ## Ports
 
-Reserve exact TCP/UDP bindings, kernel-selected ports (`0`), or a bounded selection range:
+Reserve exact TCP/UDP bindings, kernel-selected ports (`0`), or a bounded selection range. With no port argument, ARM holds one available TCP port on `127.0.0.1`:
 
 ```sh
+bin/arm ports reserve --reason "Testing"
+bin/arm ports reserve 8080 --reason "Preview server"
 bin/arm ports reserve --port web=tcp4://127.0.0.1:0 --ttl 15m --reason "Reserve the preview server"
 bin/arm ports list
 bin/arm ports discover

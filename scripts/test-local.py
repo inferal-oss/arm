@@ -55,7 +55,7 @@ def main():
             preview=arm("storage","cleanup",retained["id"],"--dry-run")
             assert preview["can_clean"] and preview["reclaimable_bytes"] is None,preview
             assert retained_file.exists(),"cleanup preview changed data"
-            blocked=subprocess.run([binary,"--home",home,"uninstall","--dry-run","--codex-home",str(Path(root)/"codex"),"--claude-home",str(Path(root)/"claude")],capture_output=True,text=True,timeout=15)
+            blocked=subprocess.run([binary,"--home",home,"uninstall","--dry-run"],capture_output=True,text=True,timeout=15)
             assert blocked.returncode!=0 and "active_leases" in blocked.stderr,"uninstall ignored retained storage"
             handed=arm("storage","handoff",retained["id"])
             assert handed["outcome"]=="handed_off" and retained_file.exists()

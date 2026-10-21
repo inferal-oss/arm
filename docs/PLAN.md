@@ -4,7 +4,7 @@ The complete scope remains [SPEC.md](../SPEC.md). A stage is complete only when 
 
 | Stage | State | Remaining work |
 | --- | --- | --- |
-| Backend and CLI foundation | Implemented | Maintain lifecycle, admission, SQLite, process supervision, WebSocket and recovery checks. |
+| Backend and CLI foundation | Implemented | Command-specific help, intermixed flags, positional storage sizes and default loopback ports are validated. Maintain lifecycle, admission, SQLite, process supervision, WebSocket and recovery checks. |
 | Agent integration | Initial integration validated | Add recipient inbox polling, cursor-based watch and explicit acknowledgement as the fallback for agents without active-session injection, including installed watcher/background-task instructions. Retest real Codex and Claude as warning delivery and service behavior evolve. Active Claude injection remains unsupported. |
 | Host observation and filesystem accounting | Partial, initial observations validated | Host memory, filesystem blocks, APFS container UUIDs and read-only sparse/hard-link/clone inspection exist. Per-workload usage, exclusive/reclaimable extents and pressure-aware admission remain. |
 | Managed storage | Partial, initial lifecycle validated | Dedicated storage leases, explicit supervised consumers, retained outputs, creation-time identity checks, bounded cleanup, retry/handoff and conservative unresolved accounting exist. Unprivileged Linux cleanup can be blocked by inaccessible same-user services; capability and privileged-observer policy need work. Configurable roots, adoption/shared caches, remount identity resolution and reclaim verification remain. |

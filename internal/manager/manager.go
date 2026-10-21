@@ -359,7 +359,7 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		r.Ports = nil
 	}
 	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || (r.Resources == (model.Resources{}) && len(r.Ports) == 0 && r.PortLease == "") {
-		return empty, model.Err("invalid_request", "request at least one positive resource quantity")
+		return empty, model.Err("invalid_request", "request positive CPU/memory/disk, at least one port, or an attached port lease")
 	}
 	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
