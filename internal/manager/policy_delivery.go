@@ -140,7 +140,7 @@ func (m *Manager) finishPolicyDeliveryLocked(id string, d agents.Delivery, state
 		return err
 	}
 	if d.State == "responded" && d.Reply != "" {
-		reply := Message{ID: local.ID(), Sender: item.Target.ID, ReplyTo: id, Audience: "operator", Body: d.Reply, Lease: msg.Lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
+		reply := Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: item.Target.ID, ReplyTo: id, Audience: "operator", Body: d.Reply, Lease: msg.Lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
 		if err = insertMessage(tx, reply, nil); err != nil {
 			return err
 		}

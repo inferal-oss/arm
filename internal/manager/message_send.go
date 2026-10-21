@@ -129,7 +129,7 @@ func (m *Manager) createReviewedMessage(request MessageRequest) (Message, bool, 
 	if request.Audience == "operator" {
 		sender = "local-client"
 	}
-	msg = Message{ID: local.ID(), Sender: sender, Audience: request.Audience, Body: request.Body, Lease: request.Lease, ReplyTo: request.ReplyTo, Key: request.Key, Created: time.Now().UTC(), Deliveries: make(map[string]agents.Delivery)}
+	msg = Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: sender, Audience: request.Audience, Body: request.Body, Lease: request.Lease, ReplyTo: request.ReplyTo, Key: request.Key, Created: time.Now().UTC(), Deliveries: make(map[string]agents.Delivery)}
 	for _, target := range targets {
 		state := "pending"
 		if target.Delivery == "poll" {

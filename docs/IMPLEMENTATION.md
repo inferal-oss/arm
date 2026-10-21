@@ -19,6 +19,8 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `internal/storage` | Verified managed directories, quarantine, mount and activity checks, and bounded cleanup steps. |
 | `internal/ports` | TCP/UDP binding, conflict matching, socket inheritance and bounded native socket/owner observations. |
 
+The daemon snapshots its effective OS UID and optional OS account username at startup. UID remains authority; username is display metadata from UID lookup, never an environment/caller name. Lookup waits at most 250ms with at most one outstanding native call process-wide; failure or invalid names fall back to UID. New leases/messages/pools and journal events retain that snapshot; incidents/resource consumers copy their lease owner. Pool changes record the current actor separately from the original creator. Existing UID-only history is not backfilled or relabelled after an account rename. Terminal output combines name and UID; JSON keeps independent fields.
+
 The daemon stores a stable host ID and authenticated local owner identity. `localhost` resolves to that host ID. Leases reserve CPU, memory, and disk budgets together. Queued work holds no partial grant, and older queued work blocks renewal and queue bypass. Start time and expiry begin at grant rather than queue insertion. Acquisition idempotency keys reject mismatched reuse.
 
 Interrupted CLI acquisitions cancel by request key, including when the grant response was lost. A durable cancellation marker prevents a late request from becoming a new allocation after its cancellation arrived first.

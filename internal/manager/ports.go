@@ -257,18 +257,18 @@ func (m *Manager) portResources(s *model.Status, leases []model.Lease) {
 	for _, l := range leases {
 		if consuming(l.State) {
 			for _, b := range l.Ports {
-				appendRow(b, model.ResourceUse{Lease: l.ID, Owner: l.Owner, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: model.CountQuantity(1), State: l.State, Expires: l.Expires, Relationship: "reservation"}, b.State)
+				appendRow(b, model.ResourceUse{Lease: l.ID, Owner: l.Owner, OwnerUsername: l.OwnerUsername, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: model.CountQuantity(1), State: l.State, Expires: l.Expires, Relationship: "reservation"}, b.State)
 				row := &s.Resources[len(s.Resources)-1]
 				for _, c := range leases {
 					if c.Request.PortLease == l.ID && consuming(c.State) {
-						row.Users = append(row.Users, model.ResourceUse{Lease: c.ID, Owner: c.Owner, Agent: c.Request.Agent, Project: c.Request.Project, Reason: c.Request.Reason, Quantity: model.CountQuantity(0), State: c.State, Expires: c.Expires, Relationship: "consumer"})
+						row.Users = append(row.Users, model.ResourceUse{Lease: c.ID, Owner: c.Owner, OwnerUsername: c.OwnerUsername, Agent: c.Request.Agent, Project: c.Request.Project, Reason: c.Request.Reason, Quantity: model.CountQuantity(0), State: c.State, Expires: c.Expires, Relationship: "consumer"})
 					}
 				}
 			}
 		}
 	}
 	for _, b := range m.infrastructure {
-		appendRow(b, model.ResourceUse{Owner: m.owner, Reason: b.Detail, Quantity: model.CountQuantity(1), State: "infrastructure"}, "protected-infrastructure")
+		appendRow(b, model.ResourceUse{Owner: m.owner, OwnerUsername: m.ownerUsername, Reason: b.Detail, Quantity: model.CountQuantity(1), State: "infrastructure"}, "protected-infrastructure")
 	}
 }
 

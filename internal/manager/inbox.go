@@ -360,7 +360,7 @@ func (m *Manager) AgentReceipt(p ReceiptRequest) (agents.Receipt, error) {
 		if err = json.Unmarshal(original, &msg); err != nil {
 			return r, err
 		}
-		reply := Message{ID: r.ReplyID, Sender: c.ID, ReplyTo: p.Message, Audience: "operator", Body: p.Text, Lease: msg.Lease, Created: now, Deliveries: map[string]agents.Delivery{}}
+		reply := Message{ID: r.ReplyID, Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: c.ID, ReplyTo: p.Message, Audience: "operator", Body: p.Text, Lease: msg.Lease, Created: now, Deliveries: map[string]agents.Delivery{}}
 		b, _ := json.Marshal(reply)
 		if _, err = tx.Exec(`INSERT INTO messages(id,data) VALUES(?,?)`, reply.ID, string(b)); err != nil {
 			return r, err

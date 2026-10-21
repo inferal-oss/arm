@@ -85,6 +85,8 @@ arm dashboard --json      # automation; never opens a browser
 
 It includes Monitor, Resources, Leases, Messages, Activity and Host views. Physical observations and cooperative reservation budgets have distinct labels. Resource cards show total/reserved/available quantities, consumers and their reasons, including exact int64 custom pool counts. The first panel is read-only: use the CLI for lease changes, pool edits, cleanup and operator sends. Browser layout, keyboard and reconnect acceptance remain pending; the TUI is not implemented.
 
+New lease and actor records include the OS username alongside the stable UID. Terminal output shows both. Older records or unavailable account lookups retain an explicit UID fallback; display names do not change authorization.
+
 Use the (?) buttons for short explanations of measurements and reservation accounting. Collector names, paths and filesystem caveats live inside the popup’s optional Technical details.
 
 A link expires after two minutes and can be exchanged once. The page removes it from the address bar before bootstrap; a separate observation credential lives in per-origin sessionStorage for up to eight hours. No cookies or primary discovery credential are given to the browser. Refresh reuses the tab's session. A backend restart changes its endpoint and invalidates browser sessions: run `arm dashboard` again. Assets are embedded in the executable; ARM build/runtime does not require Node.js. Development-only JSON precision/history checks run with `make test-web`.

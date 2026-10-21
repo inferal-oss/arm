@@ -153,7 +153,14 @@ func (a *app) tree(w io.Writer, value any, indent int) {
 	switch value := value.(type) {
 	case map[string]any:
 		for _, key := range orderedKeys(value) {
+			if (key == "owner_username" || key == "actor_username") && value[strings.TrimSuffix(key, "_username")] != nil {
+				continue
+			}
 			child := value[key]
+			if (key == "owner" || key == "actor") && value[key+"_username"] != nil {
+				fmt.Fprintln(w, pad+label(key)+": "+accountLabel(value, key))
+				continue
+			}
 			switch child.(type) {
 			case map[string]any, []any:
 				fmt.Fprintln(w, pad+a.paint("1", label(key))+":")
@@ -229,7 +236,7 @@ func (a *app) resourceTable(w io.Writer, rows []any) {
 			}
 			fmt.Fprintf(w, "  %s  %s\n", a.paint("1", terminalSafe(fmt.Sprint(u["lease"]))), a.scalar("state", u["state"]))
 			fmt.Fprintf(w, "    Reserved: %s %s\n", quantity(u["quantity"], fmt.Sprint(row["unit"])), terminalSafe(fmt.Sprint(row["unit"])))
-			fmt.Fprintf(w, "    %s; owner %s", terminalSafe(fmt.Sprint(u["reason"])), terminalSafe(fmt.Sprint(u["owner"])))
+			fmt.Fprintf(w, "    %s; owner %s", terminalSafe(fmt.Sprint(u["reason"])), accountLabel(u, "owner"))
 			if agent, ok := u["agent"].(string); ok && agent != "" {
 				fmt.Fprintf(w, "; agent %s", terminalSafe(agent))
 			}

@@ -227,7 +227,7 @@ func (m *Manager) evaluateUsage(id string, view model.WorkloadUsage, at time.Tim
 			if err != nil {
 				return err
 			}
-			i = model.UsageIncident{ID: local.ID(), Lease: id, Host: l.Host, Owner: l.Owner, Agent: c.ID, Session: c.Session, Registration: c.Registration, Resource: resource, Unit: unit, Limit: quantity, Threshold: threshold, Policy: *l.Request.UsagePolicy, State: "observing", Opened: at.UTC(), Messages: []string{}}
+			i = model.UsageIncident{ID: local.ID(), Lease: id, Host: l.Host, Owner: l.Owner, OwnerUsername: l.OwnerUsername, Agent: c.ID, Session: c.Session, Registration: c.Registration, Resource: resource, Unit: unit, Limit: quantity, Threshold: threshold, Policy: *l.Request.UsagePolicy, State: "observing", Opened: at.UTC(), Messages: []string{}}
 			clock = incidentClock{}
 			kind = "incident.opened"
 		}
@@ -269,7 +269,7 @@ func (m *Manager) evaluateUsage(id string, view model.WorkloadUsage, at time.Tim
 				if c.Delivery == "poll" {
 					delivery.State = "available"
 				}
-				msg := Message{ID: local.ID(), Sender: "arm-policy", Audience: c.ID, Body: body, Lease: id, Created: at.UTC(), Deliveries: map[string]agents.Delivery{c.ID: delivery}}
+				msg := Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: "arm-policy", Audience: c.ID, Body: body, Lease: id, Created: at.UTC(), Deliveries: map[string]agents.Delivery{c.ID: delivery}}
 				message, target = &msg, &c
 				i.Messages = append(append([]string{}, i.Messages...), msg.ID)
 				kind = "incident.warning"

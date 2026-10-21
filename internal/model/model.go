@@ -45,26 +45,27 @@ type Request struct {
 }
 
 type Lease struct {
-	ID           string           `json:"id"`
-	Host         string           `json:"host"`
-	Owner        string           `json:"owner"`
-	Request      Request          `json:"request"`
-	State        string           `json:"state"`
-	Outcome      string           `json:"outcome,omitempty"`
-	Failure      string           `json:"failure,omitempty"`
-	Created      time.Time        `json:"created_at"`
-	Started      *time.Time       `json:"started_at,omitempty"`
-	Expires      *time.Time       `json:"expires_at,omitempty"`
-	Ended        *time.Time       `json:"ended_at,omitempty"`
-	Revision     int              `json:"revision"`
-	PID          int              `json:"pid,omitempty"`
-	ManagedDir   string           `json:"managed_dir,omitempty"`
-	ExitCode     *int             `json:"exit_code,omitempty"`
-	Capabilities []string         `json:"capabilities"`
-	Artifact     *Artifact        `json:"artifact,omitempty"`
-	Ports        []PortBinding    `json:"ports,omitempty"`
-	Process      *ProcessIdentity `json:"process_identity,omitempty"`
-	Usage        *WorkloadUsage   `json:"usage,omitempty"`
+	ID            string           `json:"id"`
+	Host          string           `json:"host"`
+	Owner         string           `json:"owner"`
+	OwnerUsername string           `json:"owner_username,omitempty"`
+	Request       Request          `json:"request"`
+	State         string           `json:"state"`
+	Outcome       string           `json:"outcome,omitempty"`
+	Failure       string           `json:"failure,omitempty"`
+	Created       time.Time        `json:"created_at"`
+	Started       *time.Time       `json:"started_at,omitempty"`
+	Expires       *time.Time       `json:"expires_at,omitempty"`
+	Ended         *time.Time       `json:"ended_at,omitempty"`
+	Revision      int              `json:"revision"`
+	PID           int              `json:"pid,omitempty"`
+	ManagedDir    string           `json:"managed_dir,omitempty"`
+	ExitCode      *int             `json:"exit_code,omitempty"`
+	Capabilities  []string         `json:"capabilities"`
+	Artifact      *Artifact        `json:"artifact,omitempty"`
+	Ports         []PortBinding    `json:"ports,omitempty"`
+	Process       *ProcessIdentity `json:"process_identity,omitempty"`
+	Usage         *WorkloadUsage   `json:"usage,omitempty"`
 }
 
 type Event struct {
@@ -78,6 +79,7 @@ type Event struct {
 type Status struct {
 	Host           string         `json:"host"`
 	Owner          string         `json:"owner"`
+	OwnerUsername  string         `json:"owner_username,omitempty"`
 	Capacity       Resources      `json:"capacity"`
 	Reserved       Resources      `json:"reserved"`
 	Leases         []Lease        `json:"leases"`
@@ -89,15 +91,16 @@ type Status struct {
 }
 
 type ResourceUse struct {
-	Lease        string      `json:"lease"`
-	Owner        string      `json:"owner"`
-	Agent        string      `json:"agent,omitempty"`
-	Project      string      `json:"project,omitempty"`
-	Reason       string      `json:"reason"`
-	Quantity     json.Number `json:"quantity"`
-	State        string      `json:"state"`
-	Expires      *time.Time  `json:"expires_at,omitempty"`
-	Relationship string      `json:"relationship,omitempty"`
+	Lease         string      `json:"lease"`
+	Owner         string      `json:"owner"`
+	OwnerUsername string      `json:"owner_username,omitempty"`
+	Agent         string      `json:"agent,omitempty"`
+	Project       string      `json:"project,omitempty"`
+	Reason        string      `json:"reason"`
+	Quantity      json.Number `json:"quantity"`
+	State         string      `json:"state"`
+	Expires       *time.Time  `json:"expires_at,omitempty"`
+	Relationship  string      `json:"relationship,omitempty"`
 }
 type ResourceView struct {
 	ID          string               `json:"id"`

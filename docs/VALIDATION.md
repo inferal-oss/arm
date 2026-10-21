@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: durable human owner names
+
+Focused native race tests passed OS UID/environment spoof resistance, bounded directory lookup and failure/invalid-name fallback, one outstanding lookup limit, SQLite close/reopen and event snapshots, lease/resource owner preservation after rename, UID-only historical records, pool creator/current actor distinction, idempotent message attribution and escaped terminal versus raw JSON display. The effective UID remains authorization identity; optional username metadata comes from the OS account lookup. Real dashboard acceptance observed the native account name and UID, with Agent separate from Owner. Native lookups cannot be canceled internally; one stuck lookup occupies the capped slot and subsequent calls fall back to UID. CGo-free Linux local-account lookup may not resolve directory-service users. No historical name is invented.
+
 ## October 21, 2026: moving memory pool
 
 Native macOS manager/observe/CLI race suites, vet and compiled CGo-free memory acceptance passed. Actual Linux arm64 parser/native availability/monitor and LiveMemory tests passed with strict native collection required. Earlier complete native/Linux compiled acceptance also passed during development. Review fixed requests above fresh known physical RAM queuing indefinitely at acquisition, freshness across suspend/wall-clock changes, strict Linux telemetry/admission parser parity, and native-test opt-in forwarding that previously could silently skip a remote native check.

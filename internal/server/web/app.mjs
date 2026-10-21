@@ -24,6 +24,7 @@ const svg = (tag, attrs) => {
   return el;
 };
 const when = value => value ? new Date(value).toLocaleString() : '—';
+const ownerLabel = record => record.owner_username ? `${record.owner_username} (UID ${record.owner})` : `UID ${record.owner}`;
 const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
 const badge = text => { const el = node('span', 'badge', text); el.dataset.kind = text; return el; };
@@ -353,7 +354,7 @@ function resourceCards() {
     }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
     for (const u of r.users ?? []) {
-      const user = node('div', 'consumer'); user.append(leaseButton(u.lease), node('p', '', u.reason), node('small', '', `${u.agent || u.owner} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
+      const user = node('div', 'consumer'); user.append(leaseButton(u.lease), node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u)} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
     }
     if (!r.users?.length) p.body.append(node('p', 'measure-note', 'No current consumers'));
     grid.append(p.box);
@@ -374,7 +375,7 @@ function leaseTable() {
   const body = node('tbody');
   const leases = [...(state.status.leases ?? [])].reverse().filter(l => stringifyJSON(l).toLowerCase().includes(leaseFilter.toLowerCase())).slice(0, 200);
   for (const l of leases) {
-    const row = node('tr'), id = node('td'); id.append(leaseButton(l.id), node('p', 'muted', l.request.agent || l.owner));
+    const row = node('tr'), id = node('td'); id.append(leaseButton(l.id), node('p', 'muted', `${l.request.agent ? l.request.agent + ' · ' : ''}${ownerLabel(l)}`));
     const status = node('td'); status.append(badge(l.state));
     const claims = l.request.resources ?? {}, summary = [];
     if (claims.cpu) summary.push(`${count(claims.cpu)} cores`);
@@ -393,7 +394,7 @@ async function showLease(id) {
     const current = connection, lease = await current.call('inspect', {id});
     if (request !== detailRequest || !$('detail').open) return;
     const body = $('detail-body'), dl = node('dl');
-    for (const [label, value] of [['ID', lease.id], ['State', lease.state], ['Reason', lease.request.reason], ['Owner', lease.request.agent || lease.owner], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
+    for (const [label, value] of [['ID', lease.id], ['State', lease.state], ['Reason', lease.request.reason], ['Owner', ownerLabel(lease)], ['Agent', lease.request.agent || '—'], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
     body.replaceChildren(dl, recordJSON(lease, 'Full lease record', `lease:${lease.id}`, true));
   } catch (error) { if (request === detailRequest && $('detail').open) $('detail-body').replaceChildren(empty(error.message)); }
 }
@@ -424,7 +425,7 @@ function renderHost() {
   const root = $('host-view'), status = state.status;
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
   const p = panel('Local authority', 'CAPABILITIES', ''); const dl = node('dl');
-  for (const [label, value] of [['Host', status.host], ['Owner', status.owner], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
+  for (const [label, value] of [['Host', status.host], ['Owner', ownerLabel(status)], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
   p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'This observation session can read local state. Lease changes, pool edits, cleanup and messaging controls remain in the CLI. The TUI is still planned.'));
   root.replaceChildren(p.box);
 }

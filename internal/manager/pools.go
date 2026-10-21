@@ -138,7 +138,7 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	now := time.Now().UTC()
 	var p model.Pool
 	if r.Operation == "create" {
-		p = model.Pool{ID: "pool_" + local.ID(), Name: r.Name, Scope: r.Scope, Host: r.Host, Authority: m.host, Owner: m.owner, Agent: r.Agent, Session: session, Registration: registration, Project: r.Project, Description: r.Description, Unit: r.Unit, Capacity: *r.Capacity, Revision: 1, State: "active", Accounting: "cooperative-counted-permits", Expiry: "return-after-lease-settlement", Created: now, Updated: now}
+		p = model.Pool{ID: "pool_" + local.ID(), Name: r.Name, Scope: r.Scope, Host: r.Host, Authority: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Agent: r.Agent, Session: session, Registration: registration, Project: r.Project, Description: r.Description, Unit: r.Unit, Capacity: *r.Capacity, Revision: 1, State: "active", Accounting: "cooperative-counted-permits", Expiry: "return-after-lease-settlement", Created: now, Updated: now}
 	} else {
 		p, err = m.pool(r.ID)
 		if err != nil {
@@ -204,6 +204,7 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	result.Operation = r.Operation
 	result.Key = r.Key
 	result.Actor = m.owner
+	result.ActorUsername = m.ownerUsername
 	result.Agent = r.Agent
 	result.Session = session
 	result.Registration = registration
@@ -348,7 +349,7 @@ func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error
 			if consuming(l.State) || l.State == "queued" {
 				for _, c := range l.Request.Pools {
 					if c.Pool == p.ID {
-						u := model.ResourceUse{Lease: l.ID, Owner: l.Owner, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: model.CountQuantity(c.Quantity), State: l.State, Expires: l.Expires}
+						u := model.ResourceUse{Lease: l.ID, Owner: l.Owner, OwnerUsername: l.OwnerUsername, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: model.CountQuantity(c.Quantity), State: l.State, Expires: l.Expires}
 						if l.State == "queued" {
 							v.Queued = append(v.Queued, u)
 						} else {

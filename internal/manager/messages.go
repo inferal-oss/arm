@@ -15,15 +15,17 @@ import (
 )
 
 type Message struct {
-	ID         string                     `json:"id"`
-	Sender     string                     `json:"sender"`
-	ReplyTo    string                     `json:"reply_to,omitempty"`
-	Key        string                     `json:"idempotency_key,omitempty"`
-	Audience   string                     `json:"audience"`
-	Body       string                     `json:"body"`
-	Lease      string                     `json:"lease,omitempty"`
-	Created    time.Time                  `json:"created_at"`
-	Deliveries map[string]agents.Delivery `json:"deliveries"`
+	ID            string                     `json:"id"`
+	Owner         string                     `json:"owner,omitempty"`
+	OwnerUsername string                     `json:"owner_username,omitempty"`
+	Sender        string                     `json:"sender"`
+	ReplyTo       string                     `json:"reply_to,omitempty"`
+	Key           string                     `json:"idempotency_key,omitempty"`
+	Audience      string                     `json:"audience"`
+	Body          string                     `json:"body"`
+	Lease         string                     `json:"lease,omitempty"`
+	Created       time.Time                  `json:"created_at"`
+	Deliveries    map[string]agents.Delivery `json:"deliveries"`
 }
 
 func (m *Manager) Register(c agents.Contact) error {
@@ -151,7 +153,7 @@ func (m *Manager) Message(ctx context.Context, audience, body, lease string) (Me
 	if audience == "operator" {
 		sender = "local-client"
 	}
-	msg := Message{ID: local.ID(), Sender: sender, Audience: audience, Body: body, Lease: lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
+	msg := Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: sender, Audience: audience, Body: body, Lease: lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
 	if body == "" || len(body) > 16384 {
 		return msg, model.Err("invalid_request", "message body must contain 1 to 16384 bytes")
 	}
@@ -204,7 +206,7 @@ func (m *Manager) deliverMessage(ctx context.Context, msg Message, targets []age
 			return msg, err
 		}
 		if delivery := msg.Deliveries[c.ID]; delivery.State == "responded" && delivery.Reply != "" {
-			reply := Message{ID: local.ID(), Sender: c.ID, ReplyTo: msg.ID, Audience: "operator", Body: delivery.Reply, Lease: msg.Lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
+			reply := Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: c.ID, ReplyTo: msg.ID, Audience: "operator", Body: delivery.Reply, Lease: msg.Lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
 			if err := m.saveMessage(reply, "message.received"); err != nil {
 				return msg, err
 			}

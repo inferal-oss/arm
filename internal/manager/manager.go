@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -42,6 +41,7 @@ type Manager struct {
 	mu                 sync.Mutex
 	db                 *sql.DB
 	home, host, owner  string
+	ownerUsername      string
 	capacity           model.Resources
 	jobs               map[string]*job
 	stop               chan struct{}
@@ -115,12 +115,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
-	u, e := user.Current()
-	if e != nil {
-		db.Close()
-		return nil, e
-	}
-	m.owner = u.Uid
+	identity := local.CurrentIdentity()
+	m.owner, m.ownerUsername = identity.UID, identity.Username
 	if e = m.migrateContacts(); e != nil {
 		db.Close()
 		return nil, e
@@ -339,7 +335,7 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{Host: m.host, Owner: m.owner, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s := model.Status{Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
 	if m.portErr == nil {
 		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
 	}
@@ -402,7 +398,7 @@ func (m *Manager) Status() (model.Status, error) {
 				if kind == "disk" {
 					quantity = model.CountQuantity(l.Request.Resources.Disk)
 				}
-				v.Users = append(v.Users, model.ResourceUse{Lease: l.ID, Owner: l.Owner, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: quantity, State: l.State, Expires: l.Expires})
+				v.Users = append(v.Users, model.ResourceUse{Lease: l.ID, Owner: l.Owner, OwnerUsername: l.OwnerUsername, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: quantity, State: l.State, Expires: l.Expires})
 			}
 		}
 		s.Resources = append(s.Resources, v)
@@ -571,7 +567,7 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			queued = true
 		}
 	}
-	l := model.Lease{ID: local.ID(), Host: m.host, Owner: m.owner, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
+	l := model.Lease{ID: local.ID(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
 	poolUsed, e := poolReservations(ls)
 	if e != nil {
 		return empty, e
