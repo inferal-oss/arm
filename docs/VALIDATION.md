@@ -2,6 +2,12 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: reviewed browser operator messaging
+
+JavaScript checks cover exact contact/broadcast review, stale registration, literal bodies, linked replies, durable lookup, explicit same-key retry and uncertainty after a rejected retry. The persistence regression restores all eight maximum-size requests beyond the old 2 MiB envelope and warns on unsupported saved data. Native manager/server race tests cover durable receipts/restart, missing versus failed journals, no native invocation during lookup, browser permission restrictions and CLI operator-inbox preservation.
+
+Actual isolated Chrome checks exercised laptop and 375-pixel layouts, declined confirmations without sends, changed-contact review, exact two-contact polling broadcasts, receipts and linked replies, draft preservation across views and pending-key preservation after a forced response timeout/reload. Dedicated authenticated Codex 0.162.1 and Claude 2.1.306 sessions passed the existing install/comms/polling checks against this implementation. Fresh same-document connection links after daemon replacement are a separate follow-up; UI history remains bounded and no distinct operator role is claimed.
+
 ## October 21, 2026: safe managed output export and retention
 
 Native storage/manager/CLI/server/knowledge race tests and vet passed export independence, internal/external hardlinks, active/shared/foreign sources, overwrite refusal, source/parent mutation, cancellation, bounds, exact retries, retention/renewal and SQLite checkpoint/recovery failures. Actual Linux provider/manager/CLI export/retain/renew tests passed. Review fixed a response/worker manifest race, root permissions and parent replacement during final hashing, exact operation-worker attribution and the published-checkpoint/old-worker cleanup race. Deterministic regressions passed on macOS and Linux; no recovery path silently deletes partial data or claims unknown physical reclamation.

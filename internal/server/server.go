@@ -352,7 +352,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
-		return nil, model.Err("forbidden", "this dashboard session supports inspection and reviewed lease controls; use the CLI for other changes")
+		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease controls and reviewed operator messaging; use the CLI for other changes")
 	}
 	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" {
 		s.admission.Lock()
@@ -403,10 +403,21 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			}
 		}
 		return s.Manager.LeaseAction(q)
+	case "message_lookup":
+		var q struct {
+			Key string `json:"idempotency_key"`
+		}
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.LookupMessage(q.Key)
 	case "message_send":
 		var q manager.MessageRequest
 		if err := decode(&q); err != nil {
 			return nil, err
+		}
+		if ctx.Value(browserContextKey{}) == true && (q.Audience == "operator" || q.Audience == "" || len(q.Targets) == 0) {
+			return nil, model.Err("invalid_request", "dashboard sends require at least one explicitly reviewed agent recipient")
 		}
 		return s.Manager.SendMessage(ctx, q)
 	case "browser_ticket":
@@ -574,7 +585,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	case "status":
 		status, err := s.Manager.Status()
 		if s.authority != "" {
-			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls")
+			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging")
 		}
 		if s.monitor != nil {
 			status.Capabilities = append(status.Capabilities, "host-monitor-stream")

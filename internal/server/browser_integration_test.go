@@ -13,8 +13,11 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
+	"github.com/google/uuid"
+	"github.com/yrashk/arm/internal/agents"
 	"github.com/yrashk/arm/internal/client"
 	"github.com/yrashk/arm/internal/local"
+	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/model"
 )
 
@@ -31,7 +34,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	if !ok || strings.Contains(link.URL, ep.Token) {
 		t.Fatal("unsafe browser link")
 	}
-	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs", "/route.mjs", "/activity-feed.mjs"} {
+	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs", "/route.mjs", "/activity-feed.mjs", "/operator-messaging.mjs"} {
 		r, err := http.Get(base + path)
 		if err != nil {
 			t.Fatal(err)
@@ -109,7 +112,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 				if operation == "status" {
 					raw, _ := json.Marshal(response.Result)
 					var status model.Status
-					if json.Unmarshal(raw, &status) != nil || !slices.Contains(status.Capabilities, "browser-dashboard-observation") || !slices.Contains(status.Capabilities, "browser-reviewed-lease-controls") {
+					if json.Unmarshal(raw, &status) != nil || !slices.Contains(status.Capabilities, "browser-dashboard-observation") || !slices.Contains(status.Capabilities, "browser-reviewed-lease-controls") || !slices.Contains(status.Capabilities, "browser-reviewed-messaging") {
 						t.Fatal("dashboard capabilities do not advertise supported controls", status.Capabilities)
 					}
 				}
@@ -117,7 +120,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 			}
 		}
 	}
-	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "message_send", "pool_mutate", "run"} {
+	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "pool_mutate", "run"} {
 		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: operation, Operation: operation, Params: json.RawMessage(`{}`)}); err != nil {
 			t.Fatal(err)
 		}
@@ -194,6 +197,64 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	if actionResponse.Error != nil || decodeLease(actionResponse, &released) != nil || released.State != "terminal" || released.Outcome != "released" {
 		t.Fatalf("browser release: %+v", actionResponse)
 	}
+
+	callMessage := func(operation string, params any) model.WireResponse {
+		t.Helper()
+		raw, _ := json.Marshal(params)
+		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: "messaging", Operation: operation, Params: raw}); err != nil {
+			t.Fatal(err)
+		}
+		for {
+			var response model.WireResponse
+			if err := wsjson.Read(ctx, c, &response); err != nil {
+				t.Fatal(err)
+			}
+			if response.ID == "messaging" {
+				return response
+			}
+		}
+	}
+	var contact agents.Contact
+	if err := client.Call(ctx, home, "register", agents.Contact{ID: "browser-agent", Adapter: "codex", Session: uuid.NewString(), CWD: t.TempDir(), Delivery: "poll"}, &contact); err != nil {
+		t.Fatal(err)
+	}
+	reviewed := manager.MessageRequest{Key: "browser-reviewed-message", Audience: contact.ID, Body: "Browser exact session", Targets: []agents.Contact{contact}}
+	for _, invalid := range []manager.MessageRequest{{Key: "missing-targets", Audience: contact.ID, Body: "No implicit targeting"}, {Key: "operator-inbox", Audience: "operator", Body: "Use CLI", Targets: []agents.Contact{}}} {
+		response := callMessage("message_send", invalid)
+		if response.Error == nil || response.Error.Code != "invalid_request" {
+			t.Fatal("browser accepted implicit/operator audience", response)
+		}
+	}
+	responseMessage := callMessage("message_send", reviewed)
+	if responseMessage.Error != nil {
+		t.Fatal("reviewed browser send", responseMessage.Error)
+	}
+	lookup := callMessage("message_lookup", map[string]string{"idempotency_key": reviewed.Key})
+	if lookup.Error != nil {
+		t.Fatal("browser read lookup", lookup.Error)
+	}
+	raw, _ := json.Marshal(lookup.Result)
+	var found manager.MessageLookup
+	if json.Unmarshal(raw, &found) != nil || !found.Found || found.Message.Body != reviewed.Body {
+		t.Fatal("lookup mismatch", lookup)
+	}
+	if retry := callMessage("message_send", reviewed); retry.Error != nil {
+		t.Fatal("exact browser retry", retry.Error)
+	}
+	stale := reviewed
+	stale.Key = "browser-stale"
+	stale.Targets = append([]agents.Contact(nil), reviewed.Targets...)
+	stale.Targets[0].Session = uuid.NewString()
+	if response := callMessage("message_send", stale); response.Error == nil || response.Error.Code != "contact_changed" {
+		t.Fatal("browser silently retargeted", response)
+	}
+	// Native clients retain operator inbox access; the browser restriction is local
+	// to the browser context and does not narrow the CLI reviewed-send protocol.
+	var native manager.Message
+	if err := client.Call(ctx, home, "message_send", manager.MessageRequest{Key: "native-operator", Audience: "operator", Body: "Native inbox", Targets: []agents.Contact{}}, &native); err != nil || native.Audience != "operator" {
+		t.Fatal("native inbox regression", err)
+	}
+
 	options.HTTPHeader.Set("Origin", "http://unrelated.invalid")
 	if connection, _, err := websocket.Dial(ctx, ep.URL, options); err == nil {
 		connection.CloseNow()

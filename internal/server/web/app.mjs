@@ -4,6 +4,7 @@ import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {createDashboardHistory} from './route.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
+import {createOperatorMessaging} from './operator-messaging.mjs';
 
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
@@ -31,7 +32,7 @@ const ownerLabel = record => record.owner_username ? `${record.owner_username} (
 const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
 const badge = text => { const el = node('span', 'badge', text); el.dataset.kind = text; return el; };
-const state = {status: null, statusReceived: 0, statusTime: null, messages: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, selectedDisk: '', selectedNetwork: '', connected: false};
+const state = {status: null, statusReceived: 0, statusTime: null, messages: [], contacts: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, selectedDisk: '', selectedNetwork: '', connected: false};
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
 let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, refreshAgain = false;
 let detailPanel = null;
@@ -39,6 +40,9 @@ let detailLeaseID = '';
 const pendingLeaseActions = new Set();
 const navigation = createDashboardHistory({location, history, onRoute: applyDashboardRoute});
 const activityFeed = createActivityFeed({root:$('live-feed'),toggle:$('feed-toggle'),drawer:$('feed-drawer'),onLease:id=>showLease(id),onMessages:()=>selectView('messages'),onActivity:()=>selectView('activity')});
+let messageStorage; try { messageStorage = sessionStorage; } catch { /* Pending requests remain in memory. */ }
+const operatorMessaging = createOperatorMessaging({root:$('messages'),call:(...args)=>connection.call(...args),connected:()=>state.connected,onLease:id=>showLease(id),storage:messageStorage});
+function updateOperatorMessaging() { operatorMessaging.update({contacts:state.contacts,messages:state.messages,leases:state.status?.leases ?? []}); }
 function updateActivityFeed() { activityFeed.update({events:state.events,messages:state.messages,leases:state.status?.leases ?? [],connected:state.connected}); }
 
 function notice(text = '') { $('notice').textContent = text; $('notice').hidden = !text; }
@@ -48,6 +52,7 @@ function connectionState(text, live = false) {
   state.connected = live;
   detailPanel?.updateConnection();
   updateActivityFeed();
+  updateOperatorMessaging();
 }
 
 class Backend {
@@ -131,6 +136,7 @@ async function connect() {
     const events = await current.call('events', {after});
     for (const event of events ?? []) addEvent(event, false);
     state.messages = (await current.call('messages') ?? []).slice(-200);
+    state.contacts = await current.call('agents') ?? [];
     if (connection !== current || current.socket.readyState !== WebSocket.OPEN) return;
     retry = 0; connectionState('● Connected', true); notice(); applyDashboardRoute(navigation.current); updateFreshness(); scheduleRefresh();
   } catch (error) {
@@ -152,8 +158,10 @@ async function refresh() {
   try {
     const status = await current.call('status');
     const messages = await current.call('messages');
+    const contacts = await current.call('agents');
     if (connection !== current) return;
-    state.status = status; state.statusReceived = performance.now(); state.statusTime = new Date(); state.messages = (messages ?? []).slice(-200);
+    state.status = status; state.statusReceived = performance.now(); state.statusTime = new Date(); state.messages = (messages ?? []).slice(-200); state.contacts = contacts ?? [];
+    updateOperatorMessaging();
     updateActivityFeed();
     if (view !== 'monitor') renderCurrent();
   } catch (error) { notice(error.message); }
@@ -195,7 +203,7 @@ const titles = {
   monitor: ['Host monitor', 'Physical observations · reservation budgets are in Resources'],
   resources: ['Resource budgets', 'Capacity, availability, consumers and the reasons behind each claim'],
   leases: ['Leases', 'Current and historical claims · select a lease to inspect its exact state'],
-  messages: ['Operator inbox', 'Agent messages and delivery outcomes · send and broadcast through arm message'],
+  messages: ['Operator messages', 'Exact session delivery, reviewed broadcasts and agent replies'],
   activity: ['Activity', 'Durable operational events · latest 200 loaded entries'],
   host: ['Host & capabilities', 'Local authority, infrastructure allocations and supported capabilities'],
 };
@@ -456,19 +464,8 @@ $('detail').addEventListener('close', () => {
   if (navigation.current.lease) { navigation.navigate({view, lease: null}); return; }
   detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
 });
-function renderMessages() {
-  const root = $('messages'); root.replaceChildren();
-  for (const m of [...state.messages].reverse()) {
-    const item = node('article', 'item'), heading = node('div', 'item-heading');
-    heading.append(node('span', '', `${m.sender} → ${m.audience}`), node('span', '', when(m.created_at))); item.append(heading, node('p', '', m.body));
-    if (m.lease) item.append(leaseButton(m.lease));
-    for (const [contact, delivery] of Object.entries(m.deliveries ?? {})) {
-      item.append(node('p', 'measure-note', `${contact} · ${delivery.state}${delivery.error ? ' · ' + delivery.error : ''}${delivery.reply ? ' · ' + delivery.reply : ''}`));
-    }
-    root.append(item);
-  }
-  if (!root.childElementCount) root.append(empty('No messages yet. Agents can send one with arm message operator.'));
-}
+function renderMessages() { updateOperatorMessaging(); }
+
 function renderActivity() {
   const root = $('activity'); root.replaceChildren();
   for (const ev of [...state.events].reverse()) {
@@ -482,7 +479,7 @@ function renderHost() {
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
   const p = panel('Local authority', 'CAPABILITIES', ''); const dl = node('dl');
   for (const [label, value] of [['Host', status.host], ['Owner', ownerLabel(status)], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
-  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Pool edits, explicit cleanup recovery and messaging controls remain in the CLI. The TUI is still planned.'));
+  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Pool edits and explicit cleanup recovery remain in the CLI. Reviewed agent messaging is available in Messages. The TUI is still planned.'));
   root.replaceChildren(p.box);
 }
 
