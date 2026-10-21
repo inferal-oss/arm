@@ -122,6 +122,9 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	if !errors.Is(err, sql.ErrNoRows) {
 		return result, err
 	}
+	if err = m.reviewPoolMutationLocked(r); err != nil {
+		return result, err
+	}
 	session, registration := "", ""
 	if r.Agent != "" {
 		c, contactErr := m.contact(r.Agent)
@@ -341,7 +344,7 @@ func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error
 		if p.State == "deleted" && !all {
 			continue
 		}
-		v := model.PoolView{Pool: p, Reserved: used[p.ID], Available: max(0, p.Capacity-used[p.ID]), Deficit: max(0, used[p.ID]-p.Capacity), Users: []model.ResourceUse{}, Queued: []model.ResourceUse{}}
+		v := model.PoolView{Review: &model.PoolReview{Authority: m.host, Consumers: []model.LeaseRevision{}}, Pool: p, Reserved: used[p.ID], Available: max(0, p.Capacity-used[p.ID]), Deficit: max(0, used[p.ID]-p.Capacity), Users: []model.ResourceUse{}, Queued: []model.ResourceUse{}}
 		if p.State == "deleted" {
 			v.Available = 0
 		}
@@ -349,6 +352,7 @@ func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error
 			if consuming(l.State) || l.State == "queued" {
 				for _, c := range l.Request.Pools {
 					if c.Pool == p.ID {
+						v.Review.Consumers = append(v.Review.Consumers, model.LeaseRevision{ID: l.ID, Revision: l.Revision})
 						u := model.ResourceUse{Lease: l.ID, Owner: l.Owner, OwnerUsername: l.OwnerUsername, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: model.CountQuantity(c.Quantity), State: l.State, Expires: l.Expires}
 						if l.State == "queued" {
 							v.Queued = append(v.Queued, u)
@@ -359,6 +363,7 @@ func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error
 				}
 			}
 		}
+		sort.Slice(v.Review.Consumers, func(i, j int) bool { return v.Review.Consumers[i].ID < v.Review.Consumers[j].ID })
 		out = append(out, v)
 	}
 	return out, nil

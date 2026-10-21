@@ -23,6 +23,9 @@ import (
 var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host"}
 
 type dashboardModel struct {
+	poolUI                            *poolDashboard
+	poolPending                       *poolOperation
+	poolSequence                      uint64
 	hideInactive                      bool
 	ctx                               context.Context
 	home                              string
@@ -77,6 +80,9 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 		}
 		if result.pending || result.unknownLease != "" {
 			fmt.Fprintln(output, "Lease action outcome may be unknown; inspect lease", safe(result.unknownLease), "before another action.")
+		}
+		if op := result.poolPending; op != nil && (op.state == "unknown" || op.busy != "") {
+			fmt.Fprintln(output, "Pool outcome may be unknown; retain exact request/key:", safe(poolRequestJSON(op.request)))
 		}
 		if result.pendingMessage != nil {
 			fmt.Fprintln(output, "Message outcome may be unknown; inspect idempotency key", safe(result.pendingMessage.Key), "before another send.")
@@ -186,6 +192,16 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.detailGeneration++
 			m.refreshing = false
 			m.review = nil
+			if m.poolUI != nil {
+				m.poolUI.generation++
+				m.poolUI.loading = false
+				m.poolUI.review = nil
+				m.poolUI.form = nil
+				if strings.HasPrefix(m.inputMode, "pool:") {
+					m.inputMode = ""
+					m.input.Blur()
+				}
+			}
 			m.notice = "Disconnected; observations are stale. Reconnecting…"
 			m.retry++
 			return m, tea.Tick(time.Second, func(time.Time) tea.Msg { return reconnectMsg{} })
@@ -205,6 +221,10 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session))
 		}
 		return m, clockTick()
+	case poolReadMsg:
+		return m, m.acceptPoolRead(msg)
+	case poolResultMsg:
+		return m, m.acceptPoolResult(msg)
 	case detailMsg:
 		return m, m.acceptDetail(msg)
 	case leaseResultMsg:
@@ -238,6 +258,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	}
 	if m.inputMode != "" {
 		if k == "esc" {
+			if strings.HasPrefix(m.inputMode, "pool:") {
+				return m.poolKey("esc")
+			}
 			m.inputMode = ""
 			m.input.Blur()
 			return nil
@@ -257,6 +280,15 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	}
 	if m.composer != nil {
 		return m.composeKey(k)
+	}
+	if m.poolUI != nil && m.record == nil && m.detail == nil {
+		if !m.poolModal() && k >= "1" && k <= "6" {
+			m.poolUI.generation++
+			m.poolUI = nil
+			m.resourceID = ""
+		} else {
+			return m.poolKey(k)
+		}
 	}
 	if k == "j" || k == "k" || k == "up" || k == "down" {
 		defer m.keepSelectionVisible()
@@ -315,6 +347,8 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.resourceID = ""
 			m.selected = 0
 			m.viewport.GotoTop()
+		case "p":
+			return m.openPools()
 		case "i":
 			m.record, _ = newRecord(resource, "Resource")
 			m.viewport.GotoTop()
@@ -348,6 +382,10 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 	switch k {
+	case "p":
+		if m.view == 1 && !m.feedFocus {
+			return m.openPools()
+		}
 	case "h":
 		if m.view == 2 && !m.feedFocus {
 			id, previous := m.selectionID(), m.selected
@@ -440,6 +478,9 @@ func (m *dashboardModel) acceptInput() tea.Cmd {
 	mode := m.inputMode
 	m.inputMode = ""
 	m.input.Blur()
+	if strings.HasPrefix(mode, "pool:") {
+		return m.poolAcceptInput(value)
+	}
 	switch mode {
 	case "filter":
 		m.filter = strings.TrimSpace(value)

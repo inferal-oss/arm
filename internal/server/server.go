@@ -361,7 +361,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
-		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease controls and reviewed operator messaging; use the CLI for other changes")
+		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease and pool controls and reviewed operator messaging; use the CLI for other changes")
 	}
 	if strings.HasPrefix(r.Operation, "mesh_") {
 		return s.meshOperation(ctx, r.Operation, r.Params)
@@ -457,10 +457,23 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, err
 		}
 		return s.Manager.Usage(q.ID)
+	case "pool_lookup":
+		var q struct {
+			Key string `json:"idempotency_key"`
+		}
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return boundedPoolRead(s.Manager.LookupPoolMutation(q.Key))
 	case "pool_mutate":
 		var q model.PoolMutation
 		if e := decode(&q); e != nil {
 			return nil, e
+		}
+		if ctx.Value(browserContextKey{}) == true {
+			if err := browserPoolMutation(q); err != nil {
+				return nil, err
+			}
 		}
 		return s.Manager.MutatePool(q)
 	case "pool_list", "pool_inspect", "pool_history":
@@ -476,9 +489,9 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return s.Manager.Pools(q.All)
 		}
 		if r.Operation == "pool_history" {
-			return s.Manager.PoolHistory(q.ID, q.After)
+			return boundedPoolRead(s.Manager.PoolHistory(q.ID, q.After))
 		}
-		return s.Manager.PoolInspect(q.ID)
+		return boundedPoolRead(s.Manager.PoolInspect(q.ID))
 	case "agent_message", "agent_message_lookup":
 		var q manager.AgentMessageRequest
 		if err := decode(&q); err != nil {
@@ -606,7 +619,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	case "status":
 		status, err := s.Manager.Status()
 		if s.authority != "" {
-			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging")
+			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging", "browser-reviewed-pool-controls")
 		}
 		if s.monitor != nil {
 			status.Capabilities = append(status.Capabilities, "host-monitor-stream")

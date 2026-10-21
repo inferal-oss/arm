@@ -844,3 +844,161 @@ dialog::backdrop {
 .io-selector-note { margin:10px 0 0; }
 .io-summary { margin:13px 0 0; }
 .io-note { margin:12px 0 0; }
+
+/* Custom pools: exact counted budgets and a stable review/journal workspace. */
+.pool-console {
+  margin-top: 2rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+  min-width: 0;
+}
+.pool-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+.pool-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+.pool-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-variant-numeric: tabular-nums;
+}
+.pool-table th,
+.pool-table td {
+  padding: 0.75rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.pool-table td:nth-child(n + 3) {
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+.pool-table td small {
+  display: block;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+.pool-table tr[data-selected="true"] {
+  background: var(--panel);
+}
+.pool-table th {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.pool-detail,
+.pool-form-box,
+.pool-review,
+.pool-operation,
+.pool-journal {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 1rem;
+  min-width: 0;
+}
+.pool-review {
+  border-color: var(--accent);
+  background: var(--panel);
+}
+.pool-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.pool-form h3,
+.pool-form > .pool-tools {
+  grid-column: 1/-1;
+}
+.pool-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.pool-field input,
+.pool-field select,
+.pool-field textarea,
+.pool-tools input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font: inherit;
+}
+.pool-field textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+.pool-field:has(textarea) {
+  grid-column: 1/-1;
+}
+.pool-feedback,
+.pool-stale {
+  color: var(--warn);
+  overflow-wrap: anywhere;
+}
+.pool-consumers {
+  padding: 0.75rem 0;
+}
+.pool-consumers summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.pool-change {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.pool-review dl {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 0.5rem;
+}
+.pool-review dd {
+  margin: 0;
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+.pool-operations .pool-operation {
+  background: var(--panel);
+}
+@media (max-width: 760px) {
+  .pool-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .pool-table {
+    display: block;
+    overflow-x: auto;
+  }
+  .pool-table th,
+  .pool-table td {
+    min-width: 8rem;
+  }
+  .pool-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pool-review dl {
+    grid-template-columns: 6rem minmax(0, 1fr);
+  }
+  .pool-detail,
+  .pool-review,
+  .pool-form-box,
+  .pool-journal {
+    padding: 0.9rem;
+  }
+}

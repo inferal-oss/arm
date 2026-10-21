@@ -35,21 +35,27 @@ type PoolClaim struct {
 	Authority string `json:"authority,omitempty"`
 }
 
+type PoolReview struct {
+	Authority string          `json:"authority"`
+	Consumers []LeaseRevision `json:"consumers"`
+}
+
 type PoolMutation struct {
-	Operation   string `json:"operation"`
-	ID          string `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Scope       string `json:"scope,omitempty"`
-	Host        string `json:"host,omitempty"`
-	Unit        string `json:"unit,omitempty"`
-	Description string `json:"description,omitempty"`
-	Capacity    *int64 `json:"capacity,omitempty"`
-	Delta       *int64 `json:"delta,omitempty"`
-	Revision    *int64 `json:"revision,omitempty"`
-	Reason      string `json:"reason"`
-	Agent       string `json:"agent,omitempty"`
-	Project     string `json:"project,omitempty"`
-	Key         string `json:"idempotency_key"`
+	Reviewed    *PoolReview `json:"reviewed,omitempty"`
+	Operation   string      `json:"operation"`
+	ID          string      `json:"id,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Scope       string      `json:"scope,omitempty"`
+	Host        string      `json:"host,omitempty"`
+	Unit        string      `json:"unit,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Capacity    *int64      `json:"capacity,omitempty"`
+	Delta       *int64      `json:"delta,omitempty"`
+	Revision    *int64      `json:"revision,omitempty"`
+	Reason      string      `json:"reason"`
+	Agent       string      `json:"agent,omitempty"`
+	Project     string      `json:"project,omitempty"`
+	Key         string      `json:"idempotency_key"`
 }
 
 type PoolChange struct {
@@ -70,6 +76,7 @@ type PoolChange struct {
 }
 
 type PoolView struct {
+	Review    *PoolReview   `json:"review"`
 	Pool      Pool          `json:"pool"`
 	Reserved  int64         `json:"reserved"`
 	Available int64         `json:"available"`

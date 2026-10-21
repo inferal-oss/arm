@@ -10,7 +10,7 @@ import (
 )
 
 func (m *dashboardModel) modal() bool {
-	return m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
+	return m.poolModal() || m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
 	return m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
@@ -34,6 +34,9 @@ func (m *dashboardModel) viewportGeometry() (int, int) {
 }
 
 func (m *dashboardModel) editorDisplay() string {
+	if strings.HasPrefix(m.inputMode, "pool:") {
+		return m.poolEditorDisplay()
+	}
 	field := panelStyle.Background(lipgloss.Color("#24343d")).Padding(0, 1).Render(m.input.View())
 	switch m.inputMode {
 	case "filter":
@@ -62,6 +65,9 @@ func (m *dashboardModel) windowTitle() (string, string) {
 			return "DISK I/O · SELECT DEVICES", "blue"
 		}
 		return "NETWORK · SELECT INTERFACES", "purple"
+	}
+	if strings.HasPrefix(m.inputMode, "pool:") {
+		return "POOL · " + strings.ToUpper(strings.TrimPrefix(m.inputMode, "pool:")), ""
 	}
 	if m.inputMode != "" {
 		return map[string]string{"filter": "FILTER", "ttl": "EXTEND LEASE · DURATION", "recipient": "NEW MESSAGE · RECIPIENT", "body": "NEW MESSAGE · COMPOSE"}[m.inputMode], ""
@@ -95,6 +101,9 @@ func (m *dashboardModel) windowTitle() (string, string) {
 		}
 		return title, ""
 	}
+	if m.poolUI != nil {
+		return m.poolWindowTitle()
+	}
 	if m.resourceID != "" {
 		return "RESOURCE · CONSUMERS & PURPOSE", ""
 	}
@@ -121,7 +130,11 @@ func (m *dashboardModel) renderMain() string {
 	dialogWidth, dialogHeight := m.modalGeometry()
 	content := view.View()
 	dialog := window(title, content, dialogWidth, dialogHeight, true, tone)
-	background := window(strings.ToUpper(viewNames[m.view]), fitBlock(m.bodyText(), max(1, width-4), max(1, height-2)), width, height, false, "")
+	backgroundContent := m.bodyText()
+	if m.poolModal() {
+		backgroundContent = m.poolListText()
+	}
+	background := window(strings.ToUpper(viewNames[m.view]), fitBlock(backgroundContent, max(1, width-4), max(1, height-2)), width, height, false, "")
 	dimmed := lipgloss.NewStyle().Foreground(lipgloss.Color("#52616c")).Background(colorBackground).Render(ansi.Strip(background))
 	return lipgloss.NewCompositor(lipgloss.NewLayer(dimmed), lipgloss.NewLayer(dialog).X(max(0, (width-dialogWidth)/2)).Y(max(0, (height-dialogHeight)/2)).Z(1)).Render()
 }

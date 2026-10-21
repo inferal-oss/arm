@@ -200,6 +200,9 @@ func (m *dashboardModel) bodyText() string {
 	if m.detail != nil {
 		return m.leaseDetailText()
 	}
+	if m.poolUI != nil {
+		return m.poolText()
+	}
 	if m.resourceID != "" {
 		return m.resourceDetailText()
 	}

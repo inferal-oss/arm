@@ -16,7 +16,7 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/activity-feed.mjs web/operator-messaging.mjs web/connection-links.mjs web/style.css
+//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/activity-feed.mjs web/operator-messaging.mjs web/pool-model.mjs web/pool-operations.mjs web/pool-console.mjs web/connection-links.mjs web/style.css
 var browserAssets embed.FS
 
 type browserContextKey struct{}
@@ -108,8 +108,10 @@ func (s *Server) authenticate(r *http.Request) (browser bool, expiry time.Time, 
 
 func browserAllowedOperation(op string) bool {
 	switch op {
-	case "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "storage_list", "message_lookup", "message_send":
+	case "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "pool_lookup", "storage_list", "message_lookup", "message_send":
 		return true
+	case "pool_mutate":
+		return true // Restricted to reviewed local pool operations in dispatch.
 	case "lease_action":
 		return true // Restricted to revision-guarded renew/release/cancel below.
 	}
@@ -131,7 +133,7 @@ func (s *Server) registerBrowser(mux *http.ServeMux) {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
-	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/lease-state.mjs": "lease-state.mjs", "/io-devices.mjs": "io-devices.mjs", "/io-selector.mjs": "io-selector.mjs", "/route.mjs": "route.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/operator-messaging.mjs": "operator-messaging.mjs", "/connection-links.mjs": "connection-links.mjs", "/style.css": "style.css"} {
+	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/lease-state.mjs": "lease-state.mjs", "/io-devices.mjs": "io-devices.mjs", "/io-selector.mjs": "io-selector.mjs", "/route.mjs": "route.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/operator-messaging.mjs": "operator-messaging.mjs", "/connection-links.mjs": "connection-links.mjs", "/pool-model.mjs": "pool-model.mjs", "/pool-operations.mjs": "pool-operations.mjs", "/pool-console.mjs": "pool-console.mjs", "/style.css": "style.css"} {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			s.browserHeaders(w)
 			if !s.validHost(r.Host) {

@@ -8,6 +8,7 @@ import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {createDashboardHistory} from './route.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
 import {createOperatorMessaging} from './operator-messaging.mjs';
+import {createPoolConsole} from './pool-console.mjs';
 import {createConnectionLinkHandler, createDashboardAuthentication} from './connection-links.mjs';
 
 const jsonExpansions = new Map();
@@ -42,6 +43,7 @@ let hideInactiveLeases = readHideInactive(leasePreferenceStorage);
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
 let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, refreshAgain = false;
 let detailPanel = null;
+let poolConsole = null;
 let detailLeaseID = '';
 const pendingLeaseActions = new Set();
 const navigation = createDashboardHistory({location, history, onRoute: applyDashboardRoute});
@@ -59,6 +61,7 @@ function connectionState(text, live = false) {
   detailPanel?.updateConnection();
   updateActivityFeed();
   updateOperatorMessaging();
+  poolConsole?.updateConnection();
 }
 
 class Backend {
@@ -386,9 +389,19 @@ function filterToolbar(root, placeholder, value, onInput, label) {
 }
 function renderResources() {
   const root = $('resources');
-  if (!state.status) { root.replaceChildren(empty('Waiting for resource budgets…')); return; }
+  if (!state.status) { poolConsole?.dispose(); poolConsole=null; root.replaceChildren(empty('Waiting for resource budgets…')); return; }
   if (!root.querySelector('input')) { root.replaceChildren(); filterToolbar(root, 'Filter resources, owners or reasons…', resourceFilter, value => { resourceFilter = value; resourceCards(); }, 'Cooperative reservations · exact counts'); }
   resourceCards();
+  if (!poolConsole) {
+    const slot = node('section', 'pool-console');
+    root.append(slot);
+    poolConsole = createPoolConsole({
+      root: slot, call: (...args) => connection.call(...args),
+      connected: () => state.connected, onLease: id => showLease(id),
+      onChanged: scheduleRefresh, storage: messageStorage,
+    });
+  }
+  poolConsole.update({status: state.status});
 }
 function resourceCards() {
   const root = $('resources'); root.querySelector('.resource-grid')?.remove();
@@ -418,7 +431,7 @@ function resourceCards() {
     if (!r.users?.length) p.body.append(node('p', 'measure-note', 'No current consumers'));
     grid.append(p.box);
   }
-  if (!grid.childElementCount) grid.append(empty('No matching resources')); root.append(grid);
+  if (!grid.childElementCount) grid.append(empty('No matching resources')); const poolSlot=root.querySelector('.pool-console');if(poolSlot)root.insertBefore(grid,poolSlot);else root.append(grid);
 }
 function leaseButton(id) { const b = node('button', 'link-button', id); b.addEventListener('click', () => showLease(id)); return b; }
 function renderLeases() {
@@ -524,7 +537,7 @@ function renderHost() {
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
   const p = panel('Local authority', 'CAPABILITIES', ''); const dl = node('dl');
   for (const [label, value] of [['Host', status.host], ['Owner', ownerLabel(status)], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
-  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Pool edits and explicit cleanup recovery remain in the CLI. Reviewed agent messaging is available in Messages. Use arm dashboard terminal for the terminal dashboard.'));
+  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Reviewed custom pool controls and their journal are in Resources. Explicit cleanup recovery remains in the CLI. Reviewed agent messaging is available in Messages. Use arm dashboard terminal for the terminal dashboard.'));
   root.replaceChildren(p.box);
 }
 

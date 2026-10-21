@@ -1,0 +1,655 @@
+import { stringifyJSON, count, ownerDisplay } from './core.mjs';
+import { jsonView } from './json-view.mjs';
+import { preparePoolMutation, poolRequestCopy } from './pool-model.mjs';
+import { createPoolOperations } from './pool-operations.mjs';
+
+export function createPoolConsole({
+  root,
+  call,
+  connected,
+  onLease = () => {},
+  onChanged = () => {},
+  storage,
+  document = globalThis.document,
+  key = () => crypto.randomUUID(),
+}) {
+  const el = (tag, cls = '', text = null) => {
+    const item = document.createElement(tag);
+    item.className = cls;
+    if (text !== null) item.textContent = text;
+    return item;
+  };
+  const button = (label, action, cls = '') => {
+    const item = el('button', cls, label);
+    item.type = 'button';
+    item.addEventListener('click', action);
+    return item;
+  };
+  const field = (label, input) => {
+    const wrap = el('label', 'pool-field', label);
+    wrap.append(input);
+    return wrap;
+  };
+  let status = null,
+    pools = [],
+    selected = '',
+    cursor = null,
+    readGeneration = 0,
+    historyGeneration = 0,
+    formGeneration = 0,
+    loading = false,
+    history = null,
+    historyStart = 0,
+    previous = [],
+    review = null,
+    reviewStale = false,
+    draft = null,
+    disposed = false;
+  const heading = el('header', 'pool-heading'),
+    tools = el('div', 'pool-tools'),
+    filter = el('input'),
+    feedback = el('p', 'pool-feedback'),
+    table = el('table', 'pool-table'),
+    body = el('tbody'),
+    detail = el('section', 'pool-detail'),
+    formBox = el('section', 'pool-form-box'),
+    reviewBox = el('section', 'pool-review'),
+    operationsBox = el('section', 'pool-operations'),
+    journal = el('section', 'pool-journal');
+  filter.type = 'search';
+  filter.placeholder = 'Find custom pools';
+  filter.setAttribute('aria-label', 'Find custom pools');
+  feedback.setAttribute('role', 'status');
+  heading.append(el('div', '', 'Custom resource pools'));
+  const createButton = button('Create pool', () => begin('create'), 'primary'),
+    refreshButton = button('Refresh pools', () => load(true));
+  createButton.dataset.poolOnline = refreshButton.dataset.poolOnline = '';
+  tools.append(filter, createButton, refreshButton);
+  heading.append(tools);
+  const head = el('thead'),
+    headRow = el('tr');
+  for (const label of [
+    'Pool / scope',
+    'State',
+    'Capacity',
+    'Reserved',
+    'Available / deficit',
+  ])
+    headRow.append(el('th', '', label));
+  head.append(headRow);
+  table.append(head, body);
+  root.append(
+    heading,
+    el(
+      'p',
+      'measure-note',
+      'Counted cooperative resources. Global pools use this one authority; physical resources retain their own policies.'
+    ),
+    feedback,
+    table,
+    detail,
+    formBox,
+    reviewBox,
+    operationsBox,
+    journal
+  );
+  formBox.hidden = reviewBox.hidden = true;
+  const rows = new Map();
+  let ops,
+    detailFingerprint = null;
+  const current = () => pools.find((view) => view.pool.id === selected);
+  const owner = (uid, name, authority) =>
+    ownerDisplay({ owner: uid, owner_username: name }, status, authority);
+  function fail(message) {
+    feedback.textContent = message;
+  }
+  function setBusyState() {
+    for (const item of root.querySelectorAll('[data-pool-online]'))
+      item.disabled = !connected();
+    if (review) {
+      reviewStale =
+        !connected() ||
+        review.request.reviewed.authority !== status?.host ||
+        (review.before &&
+          (() => {
+            const now = current();
+            return (
+              !now ||
+              String(now.pool.revision) !== String(review.request.revision) ||
+              stringifyJSON(now.review) !==
+                stringifyJSON(review.request.reviewed)
+            );
+          })());
+      const confirm = reviewBox.querySelector('[data-pool-confirm]');
+      if (confirm) confirm.disabled = reviewStale;
+      const note = reviewBox.querySelector('.pool-stale');
+      if (note)
+        note.textContent = reviewStale
+          ? 'The pool snapshot or connection changed. Keep unchanged, refresh, and review again.'
+          : '';
+    }
+  }
+  function renderRows() {
+    const visible = new Set(),
+      search = filter.value.toLowerCase();
+    for (const view of pools) {
+      const p = view.pool;
+      visible.add(p.id);
+      let row = rows.get(p.id);
+      if (!row) {
+        const tr = el('tr'),
+          cells = [];
+        for (let i = 0; i < 5; i++) {
+          const cell = el('td');
+          cells.push(cell);
+          tr.append(cell);
+        }
+        const pick = button('', () => select(p.id), 'link-button');
+        cells[0].append(pick, el('small'));
+        row = { tr, cells, pick };
+        rows.set(p.id, row);
+        body.append(tr);
+      }
+      row.pick.textContent = p.name;
+      row.pick.setAttribute('aria-pressed', String(selected === p.id));
+      row.cells[0].children[1].textContent = `${p.scope === 'global' ? 'Global · one ledger' : p.scope + ' · ' + p.host} · ${owner(p.owner, p.owner_username, p.authority)}`;
+      row.cells[1].textContent = p.state;
+      row.cells[2].textContent = `${count(p.capacity)} ${p.unit}`;
+      row.cells[3].textContent = count(view.reserved);
+      row.cells[4].textContent =
+        view.deficit > 0
+          ? `Deficit ${count(view.deficit)}`
+          : count(view.available);
+      row.tr.hidden = !stringifyJSON(view).toLowerCase().includes(search);
+      row.tr.dataset.selected = String(selected === p.id);
+    }
+    for (const [id, row] of rows)
+      if (!visible.has(id)) {
+        row.tr.remove();
+        rows.delete(id);
+      }
+    if (!pools.length)
+      fail('No custom pools yet. Create one to coordinate counted permits.');
+  }
+  function renderDetail() {
+    const view = current(),
+      fingerprint = stringifyJSON({
+        view,
+        owner: status?.owner,
+        username: status?.owner_username,
+      });
+    if (fingerprint === detailFingerprint) {
+      setBusyState();
+      return;
+    }
+    detailFingerprint = fingerprint;
+    const focused = detail.contains(document.activeElement)
+        ? document.activeElement?.textContent
+        : null,
+      opened = new Set(
+        [...detail.querySelectorAll('details')]
+          .filter((n) => n.open)
+          .map((n) => n.querySelector('summary')?.textContent)
+      );
+    detail.replaceChildren();
+    if (!view) return;
+    const p = view.pool;
+    detail.append(
+      el('h3', '', p.name),
+      el(
+        'p',
+        'measure-note',
+        `${p.scope} · authority ${p.authority} · revision ${p.revision} · ${p.id}`
+      )
+    );
+    if (p.description) detail.append(el('p', '', p.description));
+    const controls = el('div', 'pool-tools');
+    if (p.state !== 'deleted') {
+      for (const [op, label] of [
+        ['set', 'Set capacity'],
+        ['adjust', 'Adjust capacity'],
+        [
+          p.state === 'draining' ? 'resume' : 'drain',
+          p.state === 'draining' ? 'Resume' : 'Drain',
+        ],
+        ['delete', 'Delete definition'],
+      ]) {
+        const b = button(
+          label,
+          () => begin(op),
+          op === 'delete' ? 'danger' : ''
+        );
+        b.dataset.poolOnline = '';
+        controls.append(b);
+      }
+    }
+    detail.append(controls);
+    for (const [label, users] of [
+      ['Current consumers', view.users],
+      ['Queued claims', view.queued],
+    ]) {
+      const block = el('details', 'pool-consumers'),
+        summary = el('summary', '', `${label} · ${users?.length || 0}`);
+      block.append(summary);
+      for (const user of users || []) {
+        const entry = el('div', 'consumer');
+        entry.append(
+          button(user.lease, () => onLease(user.lease), 'link-button'),
+          el('p', '', user.reason),
+          el(
+            'small',
+            '',
+            `${owner(user.owner, user.owner_username, p.authority)} · ${count(user.quantity)} ${p.unit} · ${user.state}`
+          )
+        );
+        block.append(entry);
+      }
+      detail.append(block);
+    }
+    detail.append(
+      jsonView(view, { label: 'Complete pool snapshot', document })
+    );
+    for (const d of detail.querySelectorAll('details'))
+      if (opened.has(d.querySelector('summary')?.textContent)) d.open = true;
+    if (focused) {
+      const target = [...detail.querySelectorAll('button')].find(
+        (b) => b.textContent === focused
+      );
+      target?.focus();
+    }
+    setBusyState();
+  }
+  async function load(force = false) {
+    if (
+      disposed ||
+      !connected() ||
+      loading ||
+      (!force && cursor === status?.cursor)
+    )
+      return;
+    loading = true;
+    const generation = ++readGeneration,
+      requestedCursor = status?.cursor,
+      oldRevision = current()?.pool.revision;
+    try {
+      const result = await call('pool_list', { all: true });
+      if (disposed || generation !== readGeneration) return;
+      pools = result;
+      cursor = requestedCursor;
+      if (selected && !current()) selected = '';
+      if (!selected && pools.length) selected = pools[0].pool.id;
+      renderRows();
+      renderDetail();
+      if (
+        selected &&
+        (!history ||
+          force ||
+          String(oldRevision) !== String(current()?.pool.revision))
+      )
+        await loadHistory(history ? historyStart : 0, !history);
+    } catch (error) {
+      if (generation === readGeneration) fail(error.message);
+    } finally {
+      if (generation === readGeneration) loading = false;
+    }
+  }
+  function select(id) {
+    if (selected === id) return;
+    selected = id;
+    history = null;
+    previous = [];
+    historyStart = 0;
+    formGeneration++;
+    draft = null;
+    review = null;
+    formBox.hidden = reviewBox.hidden = true;
+    renderRows();
+    renderDetail();
+    loadHistory(0, true);
+  }
+  async function loadHistory(after = 0, reset = false) {
+    if (!selected || !connected()) return;
+    const generation = ++historyGeneration,
+      id = selected;
+    try {
+      const page = await call('pool_history', { id, after });
+      if (disposed || generation !== historyGeneration || id !== selected)
+        return;
+      history = page;
+      historyStart = after;
+      if (reset) previous = [];
+      renderHistory();
+    } catch (error) {
+      if (generation === historyGeneration) fail(error.message);
+    }
+  }
+  function renderHistory() {
+    journal.replaceChildren();
+    if (!history) return;
+    journal.append(
+      el('h3', '', 'Capacity-change journal'),
+      el(
+        'p',
+        'measure-note',
+        'Each page preserves the recorded actor, time, reason and exact before/after counts.'
+      )
+    );
+    for (const change of history.entries) {
+      const item = el('article', 'pool-change'),
+        p = change.after;
+      item.append(
+        el(
+          'h4',
+          '',
+          `${change.operation} · ${new Date(change.at).toLocaleString()}`
+        ),
+        el('p', '', owner(change.actor, change.actor_username, p.authority)),
+        el('p', '', change.reason),
+        el(
+          'p',
+          '',
+          `${change.before?.capacity ?? '—'} → ${p.capacity} ${p.unit} · change ${change.delta} · revision ${change.before?.revision ?? '—'} → ${p.revision}`
+        ),
+        jsonView(change, {
+          label: `Journal entry ${change.sequence}`,
+          document,
+        })
+      );
+      journal.append(item);
+    }
+    if (!history.entries.length)
+      journal.append(el('p', 'measure-note', 'No later entries on this page.'));
+    const nav = el('div', 'pool-tools'),
+      start = button('First page', () => loadHistory(0, true)),
+      back = button('Previous page', () => {
+        const after = previous.pop();
+        loadHistory(after ?? 0);
+      }),
+      next = button('Next page', () => {
+        previous.push(historyStart);
+        if (previous.length > 256) previous.shift();
+        loadHistory(history.cursor);
+      });
+    start.disabled = historyStart === 0;
+    back.disabled = !previous.length;
+    next.disabled = !history.more;
+    nav.append(start, back, next);
+    journal.append(nav);
+  }
+  function begin(operation) {
+    if (!connected()) return;
+    draft = { operation };
+    review = null;
+    formBox.replaceChildren();
+    reviewBox.hidden = true;
+    formBox.hidden = false;
+    const form = el('form', 'pool-form'),
+      inputs = {};
+    form.append(
+      el(
+        'h3',
+        '',
+        operation === 'create'
+          ? 'Create counted pool'
+          : `${operation} · ${current()?.pool.name || ''}`
+      )
+    );
+    function input(name, label, value = '', textarea = false) {
+      const item = el(textarea ? 'textarea' : 'input');
+      item.value = value;
+      item.name = name;
+      if (!textarea) item.type = 'text';
+      item.setAttribute('aria-label', label);
+      inputs[name] = item;
+      form.append(field(label, item));
+      return item;
+    }
+    if (operation === 'create') {
+      input('name', 'Pool name');
+      const scope = el('select');
+      scope.name = 'scope';
+      scope.setAttribute('aria-label', 'Pool scope');
+      for (const [value, label] of [
+        ['host', 'This host'],
+        ['global', 'Global · one authority'],
+      ]) {
+        const option = el('option', '', label);
+        option.value = value;
+        scope.append(option);
+      }
+      scope.value = 'host';
+      inputs.scope = scope;
+      form.append(field('Scope', scope));
+      input('unit', 'Count unit', 'count');
+      input('capacity', 'Initial capacity', '0').inputMode = 'numeric';
+      input('description', 'Description (optional)', '', true);
+    } else if (operation === 'set')
+      input(
+        'capacity',
+        'New capacity',
+        String(current()?.pool.capacity ?? 0)
+      ).inputMode = 'numeric';
+    else if (operation === 'adjust')
+      input('delta', 'Signed capacity adjustment', '1').inputMode = 'text';
+    input('reason', 'Required reason', '', true).required = true;
+    const controls = el('div', 'pool-tools'),
+      keep = button('Keep unchanged', () => {
+        formGeneration++;
+        draft = null;
+        formBox.hidden = true;
+      }),
+      reviewButton = el('button', 'primary', 'Review change');
+    reviewButton.type = 'submit';
+    controls.append(keep, reviewButton);
+    form.append(controls);
+    formBox.append(form);
+    const generation = ++formGeneration;
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!connected() || generation !== formGeneration) return;
+      const data = { operation };
+      for (const [name, input] of Object.entries(inputs))
+        data[name] = input.value;
+      for (const input of Object.values(inputs)) input.disabled = true;
+      reviewButton.disabled = true;
+      try {
+        const snapshot =
+          operation === 'create'
+            ? null
+            : await call('pool_inspect', { id: selected });
+        if (disposed || generation !== formGeneration) return;
+        review = preparePoolMutation(data, snapshot, status?.host, key());
+        if (snapshot) {
+          const index = pools.findIndex((v) => v.pool.id === snapshot.pool.id);
+          if (index >= 0) pools[index] = snapshot;
+        }
+        formBox.hidden = true;
+        renderReview();
+      } catch (error) {
+        if (generation === formGeneration) fail(error.message);
+      } finally {
+        if (generation === formGeneration) {
+          for (const input of Object.values(inputs)) input.disabled = false;
+          reviewButton.disabled = false;
+        }
+      }
+    });
+    Object.values(inputs)[0]?.focus();
+  }
+  function renderReview() {
+    reviewBox.replaceChildren();
+    if (!review) return;
+    reviewBox.hidden = false;
+    const plan = review;
+    reviewBox.append(
+      el('h3', '', `Review ${plan.request.operation} · ${plan.name}`),
+      el(
+        'p',
+        '',
+        `Authority: ${plan.authority} · ${plan.scope} · request key ${plan.request.idempotency_key}`
+      ),
+      el('p', '', `Reason: ${plan.request.reason}`)
+    );
+    const effects = el('dl');
+    for (const [label, before, after] of [
+      ['Capacity', plan.before?.pool.capacity ?? 'New', plan.capacity],
+      ['State', plan.before?.pool.state ?? 'New', plan.state],
+      ['Reserved', plan.before?.reserved ?? 0, plan.reserved],
+      ['Available', plan.before?.available ?? 0, plan.available],
+      ['Deficit', plan.before?.deficit ?? 0, plan.deficit],
+    ])
+      effects.append(el('dt', '', label), el('dd', '', `${before} → ${after}`));
+    reviewBox.append(effects);
+    for (const paragraph of plan.paragraphs)
+      reviewBox.append(el('p', '', paragraph));
+    const scope = el('details', 'pool-review-scope');
+    scope.append(
+      el(
+        'summary',
+        '',
+        `Complete affected scope · ${plan.request.reviewed.consumers.length} leases`
+      )
+    );
+    let scopePage = 0;
+    const scopeRows = el('div'),
+      scopeNav = el('div', 'pool-tools');
+    function renderScope() {
+      scopeRows.replaceChildren();
+      const consumers = plan.request.reviewed.consumers;
+      for (const c of consumers.slice(scopePage * 50, scopePage * 50 + 50))
+        scopeRows.append(el('p', '', `${c.id} · revision ${c.revision}`));
+      scopeBack.disabled = scopePage === 0;
+      scopeNext.disabled = (scopePage + 1) * 50 >= consumers.length;
+      scopeLabel.textContent = `${scopePage * 50 + Math.min(consumers.length, 1)}–${Math.min(consumers.length, (scopePage + 1) * 50)} of ${consumers.length}`;
+    }
+    const scopeBack = button('Earlier obligations', () => {
+        scopePage--;
+        renderScope();
+      }),
+      scopeNext = button('Later obligations', () => {
+        scopePage++;
+        renderScope();
+      }),
+      scopeLabel = el('span');
+    scopeNav.append(scopeBack, scopeLabel, scopeNext);
+    scope.append(scopeRows, scopeNav);
+    renderScope();
+    reviewBox.append(scope);
+    reviewBox.append(
+      jsonView(plan.before ?? { authority: plan.authority }, {
+        label: 'Reviewed snapshot and obligations',
+        document,
+      }),
+      jsonView(plan.request, {
+        label: 'Exact request and complete consumer revisions',
+        document,
+      }),
+      el('p', 'pool-stale')
+    );
+    const controls = el('div', 'pool-tools'),
+      keep = button('Keep unchanged', () => {
+        review = null;
+        reviewBox.hidden = true;
+        formBox.hidden = false;
+        formBox.querySelector('textarea')?.focus();
+      }),
+      confirm = button(
+        'Confirm reviewed change',
+        () => {
+          if (!review || reviewStale || !connected()) return;
+          const request = poolRequestCopy(review.request);
+          review = null;
+          reviewBox.hidden = true;
+          draft = null;
+          formBox.hidden = true;
+          ops
+            .submit(request)
+            .then(() => {
+              onChanged();
+              load(true);
+            })
+            .catch((error) => fail(error.message));
+        },
+        plan.request.operation === 'delete' ? 'danger' : 'primary'
+      );
+    confirm.dataset.poolConfirm = '';
+    controls.append(keep, confirm);
+    reviewBox.append(controls);
+    setBusyState();
+    keep.focus();
+  }
+  function renderOperations() {
+    const focused = operationsBox.contains(document.activeElement);
+    operationsBox.replaceChildren();
+    if (ops.warning)
+      operationsBox.append(el('p', 'pool-feedback', ops.warning));
+    for (const op of [...ops.operations].reverse()) {
+      const item = el('article', 'pool-operation');
+      item.append(
+        el(
+          'h4',
+          '',
+          `${op.request.operation} · ${op.state === 'recorded' ? 'Recorded' : op.state === 'rejected' ? 'Rejected' : op.busy ? 'In flight' : 'Outcome uncertain'}`
+        ),
+        el('p', '', `Key: ${op.request.idempotency_key}`),
+        el('p', '', op.error || ''),
+        jsonView(op.request, { label: 'Retained exact request', document })
+      );
+      if (op.change)
+        item.append(
+          jsonView(op.change, { label: 'Recorded change', document })
+        );
+      if (op.state === 'unknown') {
+        const inspect = button('Check stored result', () => ops.lookup(op)),
+          retry = button('Retry exact request', () => ops.retry(op));
+        inspect.disabled = retry.disabled = op.busy || !connected();
+        item.append(
+          el(
+            'p',
+            'measure-note',
+            'Lookup is read-only. A missing result cannot prove the original request will not commit. Retry retains this exact request/key.'
+          ),
+          inspect,
+          retry
+        );
+      }
+      operationsBox.append(item);
+    }
+    if (focused) {
+      operationsBox.tabIndex = -1;
+      operationsBox.focus();
+    }
+  }
+  ops = createPoolOperations({
+    call,
+    authority: () => status?.host,
+    storage,
+    onChange: renderOperations,
+  });
+  renderOperations();
+  filter.addEventListener('input', renderRows);
+  return {
+    update({ status: next }) {
+      status = next;
+      setBusyState();
+      load();
+    },
+    updateConnection() {
+      if (!connected()) {
+        readGeneration++;
+        historyGeneration++;
+        loading = false;
+        cursor = null;
+      }
+      setBusyState();
+      renderOperations();
+    },
+    dispose() {
+      disposed = true;
+      readGeneration++;
+      historyGeneration++;
+      formGeneration++;
+    },
+    select,
+  };
+}

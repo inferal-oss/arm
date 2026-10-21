@@ -34,7 +34,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	if !ok || strings.Contains(link.URL, ep.Token) {
 		t.Fatal("unsafe browser link")
 	}
-	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs", "/lease-state.mjs", "/io-devices.mjs", "/io-selector.mjs", "/route.mjs", "/activity-feed.mjs", "/operator-messaging.mjs", "/connection-links.mjs"} {
+	for _, path := range []string{"/", "/style.css", "/app.mjs", "/core.mjs", "/json-view.mjs", "/metric-help.mjs", "/lease-actions.mjs", "/lease-state.mjs", "/io-devices.mjs", "/io-selector.mjs", "/route.mjs", "/activity-feed.mjs", "/operator-messaging.mjs", "/connection-links.mjs", "/pool-model.mjs", "/pool-operations.mjs", "/pool-console.mjs"} {
 		r, err := http.Get(base + path)
 		if err != nil {
 			t.Fatal(err)
@@ -112,7 +112,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 				if operation == "status" {
 					raw, _ := json.Marshal(response.Result)
 					var status model.Status
-					if json.Unmarshal(raw, &status) != nil || !slices.Contains(status.Capabilities, "browser-dashboard-observation") || !slices.Contains(status.Capabilities, "browser-reviewed-lease-controls") || !slices.Contains(status.Capabilities, "browser-reviewed-messaging") {
+					if json.Unmarshal(raw, &status) != nil || !slices.Contains(status.Capabilities, "browser-dashboard-observation") || !slices.Contains(status.Capabilities, "browser-reviewed-lease-controls") || !slices.Contains(status.Capabilities, "browser-reviewed-messaging") || !slices.Contains(status.Capabilities, "browser-reviewed-pool-controls") {
 						t.Fatal("dashboard capabilities do not advertise supported controls", status.Capabilities)
 					}
 				}
@@ -120,7 +120,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 			}
 		}
 	}
-	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "pool_mutate", "run"} {
+	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "run"} {
 		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: operation, Operation: operation, Params: json.RawMessage(`{}`)}); err != nil {
 			t.Fatal(err)
 		}
@@ -196,6 +196,93 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	var released model.Lease
 	if actionResponse.Error != nil || decodeLease(actionResponse, &released) != nil || released.State != "terminal" || released.Outcome != "released" {
 		t.Fatalf("browser release: %+v", actionResponse)
+	}
+
+	// Browser pool controls use the same native manager ledger, with complete
+	// reviewed scope and exact integer fields rather than rounded UI numbers.
+	type poolWireReply struct {
+		ID     string          `json:"id"`
+		Result json.RawMessage `json:"result"`
+		Error  *model.Error    `json:"error,omitempty"`
+	}
+	callPool := func(operation string, params any) poolWireReply {
+		t.Helper()
+		raw, _ := json.Marshal(params)
+		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: "pool-control", Operation: operation, Params: raw}); err != nil {
+			t.Fatal(err)
+		}
+		for {
+			var reply poolWireReply
+			if err := wsjson.Read(ctx, c, &reply); err != nil {
+				t.Fatal(err)
+			}
+			if reply.ID == "pool-control" {
+				return reply
+			}
+		}
+	}
+	var poolStatus model.Status
+	if err := client.Call(ctx, home, "status", nil, &poolStatus); err != nil {
+		t.Fatal(err)
+	}
+	maxCapacity := int64(9223372036854775807)
+	poolCreate := model.PoolMutation{Operation: "create", Name: "browser exact permits", Scope: "global", Unit: "permits", Capacity: &maxCapacity, Reason: "reviewed browser creation", Key: local.ID()}
+	if reply := callPool("pool_mutate", poolCreate); reply.Error == nil || reply.Error.Code != "invalid_request" {
+		t.Fatal("unreviewed browser creation allowed", reply)
+	}
+	poolCreate.Reviewed = &model.PoolReview{Authority: poolStatus.Host, Consumers: []model.LeaseRevision{}}
+	reply := callPool("pool_mutate", poolCreate)
+	var created model.PoolChange
+	poolRaw, _ := json.Marshal(reply.Result)
+	if reply.Error != nil || json.Unmarshal(poolRaw, &created) != nil || created.Pool.Capacity != maxCapacity {
+		t.Fatal("browser int64 pool creation", reply)
+	}
+	rename := model.PoolMutation{Operation: "rename", ID: created.Pool.ID, Name: "forbidden rename", Revision: &created.Pool.Revision, Reason: "unsupported dashboard edit", Key: local.ID(), Reviewed: poolCreate.Reviewed}
+	if reply := callPool("pool_mutate", rename); reply.Error == nil || reply.Error.Code != "forbidden" {
+		t.Fatal("browser raw unsupported mutation allowed", reply)
+	}
+	var poolLease model.Lease
+	if err := client.Call(ctx, home, "acquire", model.Request{Reason: "browser reviewed pool consumer", TTL: time.Minute, Pools: []model.PoolClaim{{Pool: created.Pool.ID, Quantity: maxCapacity}}}, &poolLease); err != nil {
+		t.Fatal(err)
+	}
+	var poolView model.PoolView
+	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &poolView); err != nil {
+		t.Fatal(err)
+	}
+	zero := int64(0)
+	poolSetRevision := poolView.Pool.Revision
+	poolSet := model.PoolMutation{Operation: "set", ID: created.Pool.ID, Capacity: &zero, Revision: &poolSetRevision, Reason: "retain exact obligations below capacity", Key: local.ID(), Reviewed: poolView.Review}
+	reply = callPool("pool_mutate", poolSet)
+	if reply.Error != nil {
+		t.Fatal("browser reviewed reduction", reply)
+	}
+	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &poolView); err != nil || poolView.Reserved != maxCapacity || poolView.Deficit != maxCapacity {
+		t.Fatal("browser reduction lost obligations", poolView, err)
+	}
+	lookupReply := callPool("pool_lookup", map[string]string{"idempotency_key": poolSet.Key})
+	var poolLookup manager.PoolMutationLookup
+	poolRaw, _ = json.Marshal(lookupReply.Result)
+	if lookupReply.Error != nil || json.Unmarshal(poolRaw, &poolLookup) != nil || !poolLookup.Found || poolLookup.Change.Pool.Capacity != 0 {
+		t.Fatal("browser read-only pool lookup", lookupReply)
+	}
+	stalePool := poolSet
+	stalePool.Key = local.ID()
+	stalePool.Revision = &poolView.Pool.Revision
+	stalePool.Reviewed = poolCreate.Reviewed
+	if reply := callPool("pool_mutate", stalePool); reply.Error == nil || reply.Error.Code != "review_conflict" {
+		t.Fatal("browser incomplete pool review allowed", reply)
+	}
+	poolDelete := model.PoolMutation{Operation: "delete", ID: created.Pool.ID, Revision: &poolView.Pool.Revision, Reason: "must preserve live obligation", Key: local.ID(), Reviewed: poolView.Review}
+	if reply := callPool("pool_mutate", poolDelete); reply.Error == nil || reply.Error.Code != "pool_in_use" {
+		t.Fatal("browser deleted active obligation", reply)
+	}
+	if err := client.Call(ctx, home, "release", map[string]string{"id": poolLease.ID}, nil); err != nil {
+		t.Fatal(err)
+	}
+	// Exact key returns its committed result even though the reviewed consumer
+	// has ended since the original mutation; it must not apply the change twice.
+	if reply := callPool("pool_mutate", poolSet); reply.Error != nil {
+		t.Fatal("browser exact-key retry lost prior result", reply)
 	}
 
 	callMessage := func(operation string, params any) model.WireResponse {
