@@ -13,7 +13,7 @@ import (
 func TestAllCommandHelpIsAvailableWithoutBackendOrSideEffects(t *testing.T) {
 	home := filepath.Join(t.TempDir(), "absent")
 	commands := []string{"", "acquire", "run", "storage create", "storage list", "storage inspect", "storage cleanup", "storage handoff", "ports reserve", "ports list", "ports discover", "pool create", "pool list", "pool inspect", "pool history", "pool set", "pool adjust", "pool rename", "pool describe", "pool drain", "pool resume", "pool delete", "pool", "usage", "inspect", "release", "cancel", "reconcile", "renew", "status", "resources", "messages", "events", "daemon start", "daemon stop", "daemon status", "serve", "agent probe", "agent register", "agent list", "agent inbox", "agent watch", "agent receive", "agent ack", "message operator", "message send", "message broadcast", "install", "uninstall", "version", "storage", "ports", "daemon", "agent", "message"}
-	for _, command := range append(commands, "incidents") {
+	for _, command := range append(commands, "incidents", "start", "stop") {
 		t.Run(command, func(t *testing.T) {
 			for _, spelling := range []string{"--help", "-h", "topic"} {
 				args := strings.Fields(command)
@@ -89,6 +89,7 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"pool create slots --scope global --host localhost --capacity 1 --reason test", "pool set ID 2 --reason test",
 		"pool adjust ID 0 --reason test", "pool list --reason ignored", "pool inspect", "pool history ID extra", "pool adjust ID 1 --revision 0 --reason test",
 		"usage", "usage ID extra", "usage ID --cpu 1", "incidents extra", "incidents --cpu 1", "run --reason test --usage-grace 1s -- echo test", "acquire --reason test --usage-policy revoke", "status --json=false", "--home", "--no-such-option", "agent register --id",
+		"start extra", "stop extra", "stop --cpu 1", "start --reason ignored",
 	}
 	for _, command := range tests {
 		t.Run(command, func(t *testing.T) {

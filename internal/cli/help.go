@@ -15,6 +15,8 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"start":        {summary: "Start the local backend in the background. Shortcut for arm daemon start; an existing backend keeps its budgets.", example: `arm start --cpu 4 --memory 8GiB --disk 20GiB`},
+	"stop":         {summary: "Stop an idle backend. Shortcut for arm daemon stop; outstanding leases and unresolved obligations prevent shutdown."},
 	"incidents":    {summary: "Show the latest 100 durable CPU/memory usage incidents, warning message IDs, evidence, deadlines and outcomes. Filter with --lease. Observed overage policy is opt-in for supervised run."},
 	"usage":        {usage: "LEASE_ID [OPTIONS]", summary: "Observe CPU cores over an interval and platform-specific accounted memory for ARM-supervised live group members. Unknown or stale measurements remain explicit; observation is not a hard quota.", example: `arm usage LEASE_ID`, min: 1, max: 1},
 	"pool create":  {usage: "NAME --scope host|global --capacity COUNT --reason TEXT [OPTIONS]", summary: "Create an agent-defined cooperative resource pool. Mutations return before/after state and a durable journal sequence.", example: `arm pool create browser-slots --scope host --capacity 3 --reason "Coordinate browsers"`, min: 1, max: 1},

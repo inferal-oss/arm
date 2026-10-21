@@ -169,6 +169,8 @@ The complete staged checklist is [PLAN.md](PLAN.md).
 
 ## CLI usability
 
+`arm start` and `arm stop` are shortcuts for `arm daemon start` and `arm daemon stop`. They share startup budgets, existing-backend behavior and outstanding-lease safeguards, with command-specific help.
+
 Every command and group has backend-independent help with full command names, scoped options, output descriptions and examples where useful. `arm help ports reserve` is equivalent to `arm ports reserve --help`. Non-execution commands accept flags before or after positional arguments; unexpected operands and irrelevant flags fail before requests or integration writes. `run` stops interpreting ARM flags at its command or `--` boundary. Global `--home` precedes the command.
 
 `storage create SIZE` accepts a positional disk quantity, with `--disk SIZE` retained as an alternative; supplying both is rejected. `ports reserve` without explicit claims holds an OS-selected TCP loopback port. Positional numeric ports and ranges are TCP/IPv4 loopback shorthand; the explicit `--port [NAME=]NETWORK://IP:PORT[-END]` syntax remains available. Dedicated storage and port commands expose only their own resource options; profile, working directory and parent attachments belong to supervised `run`. JSON-only commands reject `--json=false` instead of ignoring it.

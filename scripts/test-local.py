@@ -46,7 +46,9 @@ def main():
             assert p.returncode==0,(args,p.returncode,p.stderr)
             return json.loads(p.stdout)
         try:
-            arm("daemon","start","--cpu","1","--memory","1GiB","--disk","2GiB")
+            arm("start","--cpu","1","--memory","1GiB","--disk","2GiB")
+            arm("daemon","start","--cpu","2")
+            assert arm("status")["capacity"]["cpu"] == 1, "repeat start changed an existing backend budget"
             retained=arm("storage","create","--disk","1MiB","--ttl","2m","--reason","retain the smoke-test output")
             assert retained["state"]=="active" and retained["artifact"]["identity"]
             arm("run","--storage",retained["id"],"--ttl","30s","--reason","write a retained result","--json","--","/bin/sh","-c",'printf result > "$ARM_STORAGE_DIR/result"')
@@ -74,6 +76,8 @@ def main():
             assert arm("status")["reserved"]["disk_bytes"]==1<<20,"unverified reclamation was declared free"
             arm("storage","handoff",cleanup["id"])
             occupied=arm("acquire","--cpu","1","--reason","occupy the test budget","--ttl","1m")
+            blocked=subprocess.run([binary,"--home",home,"stop"],capture_output=True,text=True,timeout=15)
+            assert blocked.returncode and "active_leases" in blocked.stderr,"stop shortcut ignored outstanding leases"
             resources=arm("resources")
             assert resources[0]["available"]==0
             assert resources[0]["users"][0]["reason"]=="occupy the test budget"
@@ -100,8 +104,8 @@ def main():
             arm("release",occupied["id"])
             time.sleep(.25)
             assert not marker.exists(),"cancelled command started after capacity was released"
-            assert arm("daemon","stop")["stopped"]
-            print("Local CLI: daemon lifecycle, storage retention/preview/handoff, uninstall guard, conservative cleanup, who/why budgets, filesystem measurements, and queued Ctrl-C cancellation passed")
+            assert arm("stop")["stopped"]
+            print("Local CLI: start/stop shortcuts, repeat-start and active-lease safeguards, storage retention/preview/handoff, uninstall guard, conservative cleanup, who/why budgets, filesystem measurements, and queued Ctrl-C cancellation passed")
         finally:
             if waiting and waiting.poll() is None:
                 waiting.send_signal(signal.SIGINT)

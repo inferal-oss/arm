@@ -107,6 +107,7 @@ func (a *app) help() {
 Usage: arm [--home DIR] COMMAND [OPTIONS]
 
 Commands:
+  start|stop                Start or stop the local backend
   daemon start|stop|status    Manage the local backend
   serve                     Run the backend in the foreground
   status                    Show host budgets and leases
@@ -166,7 +167,7 @@ func (a *app) command(args []string) (int, error) {
 			return 2, err
 		}
 		return 0, a.print(map[string]string{"version": Version, "go": runtime.Version(), "os": runtime.GOOS, "arch": runtime.GOARCH})
-	case "serve", "daemon":
+	case "serve", "daemon", "start", "stop":
 		return a.daemon(cmd, args)
 	case "acquire", "run":
 		return a.acquire(cmd, args)
@@ -593,6 +594,9 @@ func (a *app) acquired(l model.Lease) (int, error) {
 
 func (a *app) daemon(command string, args []string) (int, error) {
 	action := "serve"
+	if command == "start" || command == "stop" {
+		action = command
+	}
 	if command == "daemon" {
 		if len(args) == 0 {
 			return 2, fmt.Errorf("daemon requires start, stop, or status")
@@ -603,8 +607,8 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		return 2, fmt.Errorf("unknown daemon action %q; use arm daemon --help", action)
 	}
 	label := "daemon " + action
-	if action == "serve" {
-		label = "serve"
+	if command != "daemon" {
+		label = command
 	}
 	f := a.flags(label)
 	cpuValue := float64(max(1, runtime.NumCPU()-1))

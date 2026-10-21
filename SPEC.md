@@ -322,6 +322,8 @@ Protocol compatibility and errors are versioned. Both interfaces display stale o
 ```sh
 arm install --dry-run
 arm install
+arm start
+arm stop
 arm run --host localhost --profile rust-build \
   --cpu 4 --memory 8GiB --disk 20GiB --ttl 20m \
   --reason "Build release binaries for issue #123" \

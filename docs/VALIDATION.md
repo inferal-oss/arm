@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: start/stop shortcuts
+
+The CLI race suite passed with backend-independent `arm start`/`arm stop` help, scoped options and invalid-argument checks. The compiled macOS and Linux lifecycle acceptance checks use the shortcuts for actual background startup and idle shutdown, verify that a repeat canonical start preserves existing budgets, and prove that `stop` refuses an outstanding lease. The Linux CLI test executable and all six compiled smoke checks passed in the configured private process namespace. The shortcuts reuse the existing daemon operations and do not bypass safeguards.
+
 ## October 21, 2026: opt-in usage incidents, warnings and revocation
 
 The full native macOS race/APFS suite and `go vet ./...` passed after integrating per-run CPU/memory policies, durable incidents and the warning outbox. Checks cover sustained windows, three warnings and final grace, warning-only bounds, explicit acknowledgement and renewal without postponing remediation, unavailable/stale/foreign/gapped observations, scoped recovery and repeat breaches. SQLite failure injection proves warning state and inbox/message creation roll back together. Tests cover exact integral memory thresholds, immutable/defaulted policy, bounded quotation of untrusted purposes, native CLI failure and supersession with retained fallback, interrupted versus never-invoked outbox recovery, idempotent native replies, and refusal to turn a durable revocation decision into control over a saved PID.
