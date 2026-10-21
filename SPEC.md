@@ -162,6 +162,10 @@ Storage accounting must be filesystem-aware. There is no universal per-directory
 
 Measurements include units, scope, method, timestamp, completeness, and quality: exact within stated semantics, estimated, or unavailable. Unknown is never zero. A shared block can appear in several files' allocation reports, so those reports must not automatically be summed as unique physical usage.
 
+### Dynamic disk admission
+
+The default disk reservation pool follows current nonprivileged filesystem availability rather than assuming a fixed20GiB pool. Allow an explicit configured ceiling, but never treat that ceiling as observed free space. Initially identify the filesystem containing ARM's managed storage/state and state that scope clearly; arbitrary unlocated cooperative disk claims do not prove where writes occur. Use fresh native availability, preserve existing promises when capacity falls, expose shortfalls/unknown observations and apply the same policy to admission, queueing, renewal and web/TUI views. APFS shared-container capacity and equivalent shared filesystems must not be summed as independent volume space. Outstanding promises remain conservatively charged until supported settlement; observed file size or namespace removal alone cannot establish exclusive physical reclaim. Disk availability and configured ceiling are separate values. This default replaces the initial static development budget and requires native/Linux verification.
+
 ### Filesystem knowledge
 
 APFS support must account for sparse files, clones, snapshots, and volumes sharing container capacity. A directory walk or logical-byte sum is insufficient. Provider discovery must identify the filesystem and relevant pool, prefer supported platform accounting APIs, and distinguish readily available capacity from conditional or purgeable capacity. Shared volume free space must not be summed into fictional additional capacity. These distinctions follow [Apple's APFS documentation](https://developer.apple.com/documentation/foundation/about-apple-file-system).
@@ -404,6 +408,8 @@ The web panel must work at practical laptop widths and support keyboard navigati
 
 Destructive actions show their concrete scope and consequences before execution, including affected jobs or paths. Cleanup previews include ownership and measurement uncertainty. Client-side confirmation does not replace backend authorization or ownership checks. Cancelled actions must not mutate state.
 
+The web dashboard supports the same numbered view shortcuts as the terminal dashboard:1 Monitor,2 Resources,3 Leases,4 Messages,5 Activity and6 Host. Navigation follows ordinary URL history and performs no mutation. Do not intercept typing, editable controls, composition, browser modifier shortcuts or modal/review interactions.
+
 ## Installation and safe uninstallation
 
 ### Installation
@@ -433,6 +439,16 @@ Remove only verified ARM-managed instruction blocks, registrations, and service 
 Preserve history, configuration, and user-retained artifacts by default, listing their locations. Purging is a separate explicit scope and must retain the ownership, path, active-use, and mount checks used by ordinary cleanup. A force option must never bypass those checks. Do not delete shared caches or source trees as part of generic uninstall.
 
 Interrupted uninstall is resumable and repeatable. Keep the recovery manifest until obligations and requested cleanup are resolved. Report complete, incomplete, and needs-attention outcomes truthfully, including any remaining service, instructions, resources, or retained data. An uninstall report must remain available after the web backend stops.
+
+### Database inspection and backup
+
+Provide `arm database stats` with physical/logical database, WAL/shared-memory sizes, SQLite page/freelist/reusable-space information, table/journal/message/lease counts and retained obligation summaries. Sizes must distinguish allocated observations from logical length and avoid claiming a vacuum will reclaim exclusive APFS blocks. Statistics and `arm database check` are read-only; bounded quick checks and explicit full integrity checks must report what was actually verified. `arm database backup DESTINATION` creates a consistent private backup at an unused explicit path, preserves the source and refuses unsafe targets. Explain supported online/offline scope honestly. Human terminals receive readable output; redirected/forced JSON remains structured. Do not run compaction, repair or deletion as a side effect of inspection. These are newly requested commands, not current CLI support.
+
+### Explicit database removal
+
+Provide `arm database remove` to remove the entire local lease/accounting database, including its SQLite WAL/shared-memory companions when present, after a concrete review and explicit confirmation. Terminal interaction asks by default; decline/EOF/interruption makes no destructive change. Noninteractive mutation requires `--yes`; `--dry-run` returns the same plan without removing anything. Use readable terminal output and structured JSON for scripts.
+
+The plan identifies the exact authority, database files, lost lease/message/resource/policy history, and configuration/managed files that remain. Require exclusive stopped-backend ownership and refuse unresolved leases, managed storage/export or other durable obligations rather than erase their accounting or signal arbitrary processes. Revalidate identities and reviewed scope immediately before deletion and handle interrupted removal explicitly. Missing/unsafe/corrupt evidence cannot be guessed into proof that obligations settled. Host identity, mesh trust and the next startup's authority need an explicit consistent preservation/reset policy so deleting the database cannot silently reuse grants for an unintended authority or leave the installation broken. Database removal is separate from recursive ARM-home deletion, managed-artifact cleanup and ordinary uninstall. This is newly requested work, not current supported CLI behavior.
 
 ## Persistence and implementation
 
