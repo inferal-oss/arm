@@ -37,7 +37,7 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	var result model.PoolChange
-	if m.closing {
+	if m.closing || m.draining {
 		return result, model.Err("backend_stopping", "backend is shutting down")
 	}
 	if strings.TrimSpace(r.Reason) == "" || len(r.Reason) > 4096 || r.Key == "" || len(r.Key) > 128 || len(r.Project) > 256 || len(r.Agent) > 128 {

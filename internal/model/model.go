@@ -80,6 +80,7 @@ type Status struct {
 	Host           string         `json:"host"`
 	Owner          string         `json:"owner"`
 	OwnerUsername  string         `json:"owner_username,omitempty"`
+	Draining       bool           `json:"draining"`
 	Capacity       Resources      `json:"capacity"`
 	Reserved       Resources      `json:"reserved"`
 	Leases         []Lease        `json:"leases"`

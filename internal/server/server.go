@@ -23,17 +23,22 @@ import (
 )
 
 type Server struct {
-	Manager      *manager.Manager
-	home, token  string
-	stop         context.CancelFunc
-	admission    sync.Mutex
-	stopping     bool
-	storageScan  chan struct{}
-	portScan     chan struct{}
-	monitor      *observe.Monitor
-	monitorSlots chan struct{}
-	authority    string
-	browser      browserCredentials
+	Manager          *manager.Manager
+	home, token      string
+	stop             context.CancelFunc
+	admission        sync.Mutex
+	stopping         bool
+	storageScan      chan struct{}
+	portScan         chan struct{}
+	monitor          *observe.Monitor
+	monitorSlots     chan struct{}
+	authority        string
+	browser          browserCredentials
+	lifecycleContext context.Context
+	shutdownWorker   sync.Once
+	shutdownWG       sync.WaitGroup
+	lifecycleMu      sync.Mutex
+	lifecycleClosing bool
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
@@ -69,6 +74,14 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel}
+	s.lifecycleContext = ctx
+	defer func() {
+		s.lifecycleMu.Lock()
+		s.lifecycleClosing = true
+		cancel()
+		s.lifecycleMu.Unlock()
+		s.shutdownWG.Wait()
+	}()
 	s.authority = listener.Addr().String()
 	s.storageScan = make(chan struct{}, 1)
 	s.portScan = make(chan struct{}, 1)
@@ -341,7 +354,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
 		return nil, model.Err("forbidden", "this dashboard session supports inspection and reviewed lease controls; use the CLI for other changes")
 	}
-	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" || r.Operation == "shutdown" {
+	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" {
 		s.admission.Lock()
 		defer s.admission.Unlock()
 		if s.stopping {
@@ -368,6 +381,14 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "bulk_end":
+		var q model.BulkEndRequest
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.BulkEnd(q)
+	case "shutdown_status":
+		return s.Manager.ShutdownStatus()
 	case "lease_action":
 		var q model.LeaseAction
 		if err := decode(&q); err != nil {
@@ -556,12 +577,13 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	case "messages":
 		return s.Manager.Messages()
 	case "shutdown":
-		if s.Manager.Active() {
-			return nil, model.Err("active_leases", "release leases and finish supervised work before stopping the daemon")
+		var q model.ShutdownRequest
+		if len(r.Params) > 0 && string(r.Params) != "null" {
+			if err := decode(&q); err != nil {
+				return nil, err
+			}
 		}
-		s.stopping = true
-		go func() { time.Sleep(100 * time.Millisecond); s.stop() }()
-		return map[string]bool{"stopping": true}, nil
+		return s.requestShutdown(q)
 	}
 	return nil, model.Err("unknown_operation", "unsupported operation")
 }

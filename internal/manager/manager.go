@@ -47,6 +47,8 @@ type Manager struct {
 	stop               chan struct{}
 	wg                 sync.WaitGroup
 	closing            bool
+	draining           bool
+	shutdownDeadline   time.Time
 	observationMu      sync.RWMutex
 	observations       map[string]model.ResourceMeasurement
 	memoryAvailability model.MemoryAvailability
@@ -64,7 +66,7 @@ type Manager struct {
 	policyClocks       map[string]incidentClock
 }
 
-var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority"}
+var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
 	if capacity.Memory < 0 {
@@ -186,6 +188,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	m.sample()
 	m.sampleMemory()
+	if e = m.recoverShutdown(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	opened = true
 	return m, nil
 }
@@ -335,7 +341,7 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s := model.Status{Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
 	if m.portErr == nil {
 		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
 	}
@@ -425,7 +431,7 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	var empty model.Lease
-	if m.closing {
+	if m.closing || m.draining {
 		return empty, model.Err("backend_stopping", "backend is shutting down")
 	}
 	if len(r.Key) > 128 {
@@ -740,6 +746,9 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if m.draining {
+		return l, model.Err("backend_draining", "renewal is paused while backend shutdown drains existing work")
+	}
 	if ttl <= 0 || ttl > 7*24*time.Hour {
 		return l, model.Err("invalid_request", "invalid renewal ttl")
 	}
@@ -864,6 +873,9 @@ func (m *Manager) tick() {
 		if l.Request.Kind == "ports" && l.State == "ending" {
 			_, _ = m.finishPortParent(l)
 		}
+	}
+	if m.draining {
+		return
 	}
 	poolUsed, e := poolReservations(ls)
 	if e != nil {

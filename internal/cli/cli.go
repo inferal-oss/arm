@@ -71,7 +71,12 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	}
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
-		a.reportError(model.Err("interrupted", "operation interrupted"))
+		var detail *model.Error
+		if errors.As(e, &detail) && detail.Code == "shutdown_wait_interrupted" {
+			a.reportError(detail)
+		} else {
+			a.reportError(model.Err("interrupted", "operation interrupted"))
+		}
 		return 130
 	}
 	if errors.Is(e, flag.ErrHelp) {
@@ -273,6 +278,11 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.print(result)
 	case "inspect", "release", "cancel", "reconcile", "renew":
 		f := a.flags(cmd)
+		all, key := new(bool), new(string)
+		if cmd == "release" || cmd == "cancel" {
+			f.BoolVar(all, "all", false, "end all outstanding leases at this local authority")
+			f.StringVar(key, "key", "", "bulk operation `key` for exact retries (requires --all)")
+		}
 		ttl := new(time.Duration)
 		if cmd == "renew" {
 			f.DurationVar(ttl, "ttl", 0, "required renewal `duration` from now")
@@ -280,6 +290,17 @@ func (a *app) command(args []string) (int, error) {
 		f.Bool("json", false, "force JSON output (default: automatic)")
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
+		}
+		if cmd == "release" || cmd == "cancel" {
+			if *all {
+				if len(f.Args()) != 0 {
+					return 2, fmt.Errorf("--all cannot be combined with a lease ID")
+				}
+				return a.bulkEnd(cmd, *key)
+			}
+			if len(f.Args()) != 1 || *key != "" {
+				return 2, fmt.Errorf("provide one lease ID or --all; --key requires --all")
+			}
 		}
 		id := f.Args()[0]
 		if cmd == "renew" && *ttl <= 0 {
@@ -644,6 +665,12 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if action != "serve" {
 		f.Bool("json", false, "force JSON output (default: automatic)")
 	}
+	force, wait, timeout := new(bool), new(bool), new(int64)
+	if action == "stop" {
+		f.BoolVar(force, "force", false, "release leases now using normal provider safeguards")
+		f.BoolVar(wait, "wait", false, "drain existing work; cancel queued requests and pause admission/renewal")
+		f.Int64Var(timeout, "timeout", 0, "force release after this many positive `seconds` (requires --wait)")
+	}
 	if e := a.parse(f, args, false); e != nil {
 		return 2, e
 	}
@@ -655,26 +682,16 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		return 0, a.print(s)
 	}
 	if action == "stop" {
-		if e := a.call("shutdown", nil, nil); e != nil {
-			return 1, e
-		}
-		for i := 0; i < 50; i++ {
-			if _, e := local.ReadEndpoint(a.home); os.IsNotExist(e) {
-				lock, e := os.OpenFile(filepath.Join(a.home, "daemon.lock"), os.O_RDWR, 0600)
-				if e != nil {
-					return 1, e
-				}
-				err := syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
-				if err == nil {
-					_ = syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)
-					lock.Close()
-					return 0, a.print(map[string]bool{"stopped": true})
-				}
-				lock.Close()
+		timeoutSet := false
+		f.Visit(func(v *flag.Flag) {
+			if v.Name == "timeout" {
+				timeoutSet = true
 			}
-			time.Sleep(100 * time.Millisecond)
+		})
+		if *force && *wait || timeoutSet && (!*wait || *timeout <= 0) || *timeout > int64((1<<63-1)/int64(time.Second)) {
+			return 2, fmt.Errorf("--force and --wait are exclusive; --timeout requires --wait and positive seconds within duration range")
 		}
-		return 1, fmt.Errorf("backend has not finished shutdown")
+		return a.stopBackend(model.ShutdownRequest{Force: *force, Wait: *wait, Timeout: time.Duration(*timeout) * time.Second})
 	}
 	var memory int64
 	var e error
