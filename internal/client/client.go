@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -53,7 +54,9 @@ func Call(ctx context.Context, home, operation string, params, result any) error
 		return resp.Error
 	}
 	if result != nil {
-		return json.Unmarshal(resp.Result, result)
+		decoder := json.NewDecoder(bytes.NewReader(resp.Result))
+		decoder.UseNumber()
+		return decoder.Decode(result)
 	}
 	return nil
 }

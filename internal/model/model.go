@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 )
 
@@ -18,6 +19,13 @@ func (r Resources) Fits(s Resources) bool {
 	return r.CPU <= s.CPU && r.Memory <= s.Memory && r.Disk <= s.Disk
 }
 
+// Compare against remaining capacity before adding integer counters, so an
+// overflowing sum cannot turn a full budget into apparent availability.
+func (r Resources) FitsRemaining(used, capacity Resources) bool {
+	return used.CPU >= 0 && used.Memory >= 0 && used.Disk >= 0 && used.Fits(capacity) &&
+		used.CPU+r.CPU <= capacity.CPU && r.Memory <= capacity.Memory-used.Memory && r.Disk <= capacity.Disk-used.Disk
+}
+
 type Request struct {
 	Host         string        `json:"host"`
 	Reason       string        `json:"reason"`
@@ -32,6 +40,7 @@ type Request struct {
 	StorageLease string        `json:"storage_lease,omitempty"`
 	Ports        []PortClaim   `json:"ports,omitempty"`
 	PortLease    string        `json:"port_lease,omitempty"`
+	Pools        []PoolClaim   `json:"pools,omitempty"`
 }
 
 type Lease struct {
@@ -76,15 +85,15 @@ type Status struct {
 }
 
 type ResourceUse struct {
-	Lease        string     `json:"lease"`
-	Owner        string     `json:"owner"`
-	Agent        string     `json:"agent,omitempty"`
-	Project      string     `json:"project,omitempty"`
-	Reason       string     `json:"reason"`
-	Quantity     float64    `json:"quantity"`
-	State        string     `json:"state"`
-	Expires      *time.Time `json:"expires_at,omitempty"`
-	Relationship string     `json:"relationship,omitempty"`
+	Lease        string      `json:"lease"`
+	Owner        string      `json:"owner"`
+	Agent        string      `json:"agent,omitempty"`
+	Project      string      `json:"project,omitempty"`
+	Reason       string      `json:"reason"`
+	Quantity     json.Number `json:"quantity"`
+	State        string      `json:"state"`
+	Expires      *time.Time  `json:"expires_at,omitempty"`
+	Relationship string      `json:"relationship,omitempty"`
 }
 type ResourceView struct {
 	ID          string               `json:"id"`
@@ -92,15 +101,19 @@ type ResourceView struct {
 	Pool        string               `json:"pool"`
 	Kind        string               `json:"kind"`
 	Unit        string               `json:"unit"`
-	BudgetTotal float64              `json:"budget_total"`
-	Reserved    float64              `json:"reserved"`
-	Available   float64              `json:"available"`
+	BudgetTotal json.Number          `json:"budget_total"`
+	Reserved    json.Number          `json:"reserved"`
+	Available   json.Number          `json:"available"`
 	Accounting  string               `json:"accounting"`
 	Observed    *float64             `json:"observed"`
 	Users       []ResourceUse        `json:"users"`
 	Measurement *ResourceMeasurement `json:"measurement,omitempty"`
 	Port        *PortBinding         `json:"port,omitempty"`
+	Custom      *PoolView            `json:"custom,omitempty"`
 }
+
+func FloatQuantity(v float64) json.Number { return json.Number(strconv.FormatFloat(v, 'g', -1, 64)) }
+func CountQuantity(v int64) json.Number   { return json.Number(strconv.FormatInt(v, 10)) }
 
 type Error struct {
 	Code    string `json:"code"`

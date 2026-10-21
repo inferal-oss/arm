@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -14,6 +15,18 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"pool create":  {usage: "NAME --scope host|global --capacity COUNT --reason TEXT [OPTIONS]", summary: "Create an agent-defined cooperative resource pool. Mutations return before/after state and a durable journal sequence.", example: `arm pool create browser-slots --scope host --capacity 3 --reason "Coordinate browsers"`, min: 1, max: 1},
+	"pool list":    {summary: "List counted resources, host/global scope, exact capacities, consumers and queue. --all includes deleted definitions."},
+	"pool inspect": {usage: "POOL_ID [OPTIONS]", summary: "Inspect a counted resource, revision, availability/deficit, consumers and queued reasons.", min: 1, max: 1},
+	"pool history": {usage: "POOL_ID [OPTIONS]", summary: "Browse the transactional change journal: actor, attribution, time, reason and before/after state.", min: 1, max: 1},
+	"pool set":     {usage: "POOL_ID COUNT --reason TEXT [OPTIONS]", summary: "Set nonnegative capacity using a revision guard. Reductions below reservations record a deficit without changing existing leases.", min: 2, max: 2},
+	"pool adjust": {usage: "POOL_ID DELTA --reason TEXT [OPTIONS]", summary: "Atomically increase or reduce capacity by a signed integer. A repeated --key never applies the adjustment twice.", example: `arm pool adjust POOL_ID --reason "Free one more device" 1
+  arm pool adjust POOL_ID -1 --reason "Device unavailable"`, min: 2, max: 2},
+	"pool rename":     {usage: "POOL_ID NAME --reason TEXT [OPTIONS]", summary: "Rename a resource while preserving its ID, claims and history.", min: 2, max: 2},
+	"pool describe":   {usage: "POOL_ID TEXT --reason TEXT [OPTIONS]", summary: "Change a pool description with an attributed journal entry.", min: 2, max: 2},
+	"pool drain":      {usage: "POOL_ID --reason TEXT [OPTIONS]", summary: "Refuse new claims. Already queued requests continue under normal capacity and fairness rules.", min: 1, max: 1},
+	"pool resume":     {usage: "POOL_ID --reason TEXT [OPTIONS]", summary: "Reopen a draining pool to new claims.", min: 1, max: 1},
+	"pool delete":     {usage: "POOL_ID --reason TEXT [OPTIONS]", summary: "Preserve a historical tombstone. Queued or consuming claims prevent deletion.", min: 1, max: 1},
 	"arm":             {usage: "[--home DIR] COMMAND [OPTIONS]", max: -1},
 	"acquire":         {usage: "[OPTIONS]", summary: "Reserve CPU, memory, disk and/or ports without starting a command. Output is lease JSON.", example: `arm acquire --cpu 2 --memory 1GiB --reason "Analysis workers"`},
 	"run":             {usage: "[OPTIONS] -- COMMAND [ARG...]", summary: "Run a command under a supervised lease. ARM options precede COMMAND; everything after -- belongs to the command.", example: `arm run --cpu 2 --reason "Compile release binaries" -- cargo build --release`, min: 1, max: -1},
@@ -55,6 +68,7 @@ var commandHelps = map[string]commandHelp{
 	"version":           {summary: "Print ARM, Go and platform versions as JSON."},
 }
 var groupHelps = map[string]string{
+	"pool":    "  create NAME --scope SCOPE --capacity COUNT  Create a host/global pool\n  list|inspect ID|history ID                  Browse definitions, claims and journal\n  set ID COUNT|adjust ID DELTA                Set capacity or apply a signed delta\n  rename ID NAME|describe ID TEXT             Update resource metadata\n  drain ID|resume ID                          Close or reopen new admission\n  delete ID                                  Tombstone a pool with no outstanding claims\n",
 	"storage": "  create SIZE       Create a managed disk lease\n  list              List storage leases\n  inspect PATH      Measure a directory without changing it\n  cleanup LEASE_ID  Reclaim managed storage (--dry-run previews)\n  handoff LEASE_ID  Preserve remaining files and return responsibility\n",
 	"ports":   "  reserve [PORT_SPEC...]  Hold bindings (default: TCP loopback, OS-selected port)\n  list                    List ARM allocations, consumers and reasons\n  discover                Observe native bindings and visible owners\n",
 	"daemon":  "  start   Start the backend in the background\n  stop    Stop an idle backend\n  status  Inspect backend status\n",
@@ -177,6 +191,12 @@ func (a *app) parse(f *flag.FlagSet, args []string, stopAtCommand bool) (err err
 			}
 			positionals = append(positionals, arg)
 			continue
+		}
+		if f.Name() == "pool adjust" {
+			if _, err := strconv.ParseInt(arg, 10, 64); err == nil {
+				positionals = append(positionals, arg)
+				continue
+			}
 		}
 		name, _, inline := strings.Cut(strings.TrimLeft(arg, "-"), "=")
 		v := f.Lookup(name)

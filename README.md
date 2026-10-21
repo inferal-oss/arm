@@ -97,6 +97,31 @@ Revocation stops only attached supervised work. An occupied or uncertain binding
 
 `arm run` streams combined command output, preserves its exit status, and returns 124 on lease expiry. With `--json`, command output goes to stderr and stdout contains the final lease JSON. Execution is noninteractive; commands receive no interactive stdin. Foreground daemon mode is `arm serve`.
 
+## Custom resource pools
+
+Agents and operators can define counted resources for arbitrary coordination:
+
+```sh
+arm pool create browser-slots --scope host --capacity 3 --reason "Coordinate browsers"
+arm pool create deployment-slots --scope global --capacity 2 --reason "Limit deployments"
+# The mutation response contains the definition under after; use after.id:
+arm acquire --pool POOL_ID=1 --ttl 10m --reason "Run a browser test"
+arm run --pool POOL_ID=1 --reason "Test under one permit" -- ./test-command
+arm pool adjust POOL_ID -1 --reason "One slot unavailable" --key UNIQUE_OPERATION_ID
+arm pool inspect POOL_ID
+arm pool set POOL_ID 4 --revision CURRENT_REVISION --reason "Update capacity"
+arm pool history POOL_ID
+arm release LEASE_ID
+```
+
+Host-specific pools belong to the stable local host. Global pools have no resource host and share one ledger among clients of the current authority; multi-host transport/coordination is still pending. Counts are nonnegative int64 capacities and positive integral claims; zero capacity pauses grants. Custom-only `acquire --pool` defaults to no CPU reservation. Combine repeated `--pool` flags with native claims for a complete grant. Supervised commands receive their normalized claims in `ARM_POOLS` JSON.
+
+Capacity creation/changes, their attributed journal entries, retry results and events commit together. `adjust` applies a signed delta atomically; other edits require the current `--revision`. Reuse an explicit operation key with the same parameters to retry an uncertain result without applying it twice. A retry returns the original result; inspect the pool separately for its latest state. Mutation errors include the operation key, including generated keys. The journal records the authenticated owner, optional agent/session/registration/project, time, reason, before/after capacity and revision. `history` paginates with `--after CURSOR`.
+
+A reduction below reservations records a deficit and blocks further grants without revoking existing leases. Deficit or draining pools deny renewals. `pool drain ID --revision N --reason TEXT` refuses new requests while already queued work proceeds normally; `resume` reopens admission. `rename` and `describe` retain the pool ID and journal their changes. `delete` requires no queued or consuming claims, preserves a historical tombstone, and allows the name to be reused under a new ID. `pool list --all` includes tombstones.
+
+These are cooperative logical permits. Ordinary release/expiry returns them after lease settlement; uncertain supervised work or unresolved bundled resources keep them charged. ARM does not infer that an arbitrary external activity stopped, implement service fencing, or create physical capacity when a custom pool grows. `resources` includes exact pool counts, deficits, consumers and reasons; web/TUI controls remain upcoming.
+
 ## Agent integration
 
 Preview before choosing to install instructions into your agent configuration:

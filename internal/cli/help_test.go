@@ -12,7 +12,7 @@ import (
 
 func TestAllCommandHelpIsAvailableWithoutBackendOrSideEffects(t *testing.T) {
 	home := filepath.Join(t.TempDir(), "absent")
-	commands := []string{"", "acquire", "run", "storage create", "storage list", "storage inspect", "storage cleanup", "storage handoff", "ports reserve", "ports list", "ports discover", "inspect", "release", "cancel", "reconcile", "renew", "status", "resources", "messages", "events", "daemon start", "daemon stop", "daemon status", "serve", "agent probe", "agent register", "agent list", "agent inbox", "agent watch", "agent receive", "agent ack", "message operator", "message send", "message broadcast", "install", "uninstall", "version", "storage", "ports", "daemon", "agent", "message"}
+	commands := []string{"", "acquire", "run", "storage create", "storage list", "storage inspect", "storage cleanup", "storage handoff", "ports reserve", "ports list", "ports discover", "pool create", "pool list", "pool inspect", "pool history", "pool set", "pool adjust", "pool rename", "pool describe", "pool drain", "pool resume", "pool delete", "pool", "inspect", "release", "cancel", "reconcile", "renew", "status", "resources", "messages", "events", "daemon start", "daemon stop", "daemon status", "serve", "agent probe", "agent register", "agent list", "agent inbox", "agent watch", "agent receive", "agent ack", "message operator", "message send", "message broadcast", "install", "uninstall", "version", "storage", "ports", "daemon", "agent", "message"}
 	for _, command := range commands {
 		t.Run(command, func(t *testing.T) {
 			for _, spelling := range []string{"--help", "-h", "topic"} {
@@ -85,6 +85,9 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"install extra", "uninstall --codex-home ignored", "agent list --session ignored",
 		"message operator --to ignored --text test", "status extra", "events extra", "version extra",
 		"agent inbox --once", "agent receive --text ignored", "agent ack --after ignored", "agent watch unexpected",
+		"pool create slots --capacity 1 --reason test", "pool create slots --scope global --reason test",
+		"pool create slots --scope global --host localhost --capacity 1 --reason test", "pool set ID 2 --reason test",
+		"pool adjust ID 0 --reason test", "pool list --reason ignored", "pool inspect", "pool history ID extra", "pool adjust ID 1 --revision 0 --reason test",
 		"status --json=false", "--home", "--no-such-option", "agent register --id",
 	}
 	for _, command := range tests {

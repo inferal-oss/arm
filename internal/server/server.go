@@ -230,7 +230,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
-	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "shutdown" {
+	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" || r.Operation == "shutdown" {
 		s.admission.Lock()
 		defer s.admission.Unlock()
 		if s.stopping {
@@ -257,6 +257,28 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "pool_mutate":
+		var q model.PoolMutation
+		if e := decode(&q); e != nil {
+			return nil, e
+		}
+		return s.Manager.MutatePool(q)
+	case "pool_list", "pool_inspect", "pool_history":
+		var q struct {
+			ID    string `json:"id"`
+			All   bool   `json:"all"`
+			After int64  `json:"after"`
+		}
+		if e := decode(&q); e != nil {
+			return nil, e
+		}
+		if r.Operation == "pool_list" {
+			return s.Manager.Pools(q.All)
+		}
+		if r.Operation == "pool_history" {
+			return s.Manager.PoolHistory(q.ID, q.After)
+		}
+		return s.Manager.PoolInspect(q.ID)
 	case "agent_inbox":
 		var q manager.InboxRequest
 		if e := decode(&q); e != nil {

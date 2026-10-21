@@ -195,11 +195,11 @@ func TestAttachedPortLeaseRetainsSocketAndRevokesOnlyItsConsumer(t *testing.T) {
 	consumerShown := false
 	for _, row := range status.Resources {
 		if row.Kind == "port" {
-			if row.Reserved != 1 {
+			if row.Reserved != "1" {
 				t.Fatal("consumer double-charged port")
 			}
 			for _, u := range row.Users {
-				if u.Lease == l.ID && u.Relationship == "consumer" && u.Quantity == 0 {
+				if u.Lease == l.ID && u.Relationship == "consumer" && u.Quantity == "0" {
 					consumerShown = true
 				}
 			}

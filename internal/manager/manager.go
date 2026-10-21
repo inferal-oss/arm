@@ -56,7 +56,7 @@ type Manager struct {
 	inboxSlots        chan struct{}
 }
 
-var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation"}
+var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
 	if e := local.Prepare(home); e != nil {
@@ -75,6 +75,11 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		`CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS agent_inbox (sequence INTEGER PRIMARY KEY AUTOINCREMENT, recipient TEXT NOT NULL, registration TEXT NOT NULL, message TEXT NOT NULL, receipt TEXT NOT NULL, UNIQUE(recipient,registration,message))`,
 		`CREATE INDEX IF NOT EXISTS agent_inbox_recipient ON agent_inbox(recipient,registration,sequence)`,
+		`CREATE TABLE IF NOT EXISTS pools (id TEXT PRIMARY KEY, scope TEXT NOT NULL, host TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL)`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS pools_name ON pools(scope,host,name) WHERE json_extract(data,'$.state')<>'deleted'`,
+		`CREATE TABLE IF NOT EXISTS pool_changes (sequence INTEGER PRIMARY KEY AUTOINCREMENT, pool TEXT NOT NULL, data TEXT NOT NULL)`,
+		`CREATE INDEX IF NOT EXISTS pool_changes_pool ON pool_changes(pool,sequence)`,
+		`CREATE TABLE IF NOT EXISTS pool_operations (key TEXT PRIMARY KEY, request TEXT NOT NULL, result TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS cancelled_requests (key TEXT PRIMARY KEY)`} {
 		if _, e = db.Exec(q); e != nil {
 			db.Close()
@@ -302,7 +307,17 @@ func (m *Manager) Status() (model.Status, error) {
 		if kind == "disk" {
 			total, reserved, unit = float64(s.Capacity.Disk), float64(s.Reserved.Disk), "bytes"
 		}
-		v := model.ResourceView{ID: m.host + "/" + kind, Host: m.host, Pool: m.host + "/" + kind + "-budget", Kind: kind, Unit: unit, BudgetTotal: total, Reserved: reserved, Available: max(0, total-reserved), Accounting: "cooperative-reservation-budget", Users: []model.ResourceUse{}}
+		v := model.ResourceView{ID: m.host + "/" + kind, Host: m.host, Pool: m.host + "/" + kind + "-budget", Kind: kind, Unit: unit, BudgetTotal: model.FloatQuantity(total), Reserved: model.FloatQuantity(reserved), Available: model.FloatQuantity(max(0, total-reserved)), Accounting: "cooperative-reservation-budget", Users: []model.ResourceUse{}}
+		if kind == "memory" {
+			v.BudgetTotal = model.CountQuantity(s.Capacity.Memory)
+			v.Reserved = model.CountQuantity(s.Reserved.Memory)
+			v.Available = model.CountQuantity(max(0, s.Capacity.Memory-s.Reserved.Memory))
+		}
+		if kind == "disk" {
+			v.BudgetTotal = model.CountQuantity(s.Capacity.Disk)
+			v.Reserved = model.CountQuantity(s.Reserved.Disk)
+			v.Available = model.CountQuantity(max(0, s.Capacity.Disk-s.Reserved.Disk))
+		}
 		m.observationMu.RLock()
 		measurement, exists := m.observations[kind]
 		m.observationMu.RUnlock()
@@ -322,12 +337,27 @@ func (m *Manager) Status() (model.Status, error) {
 				q = float64(l.Request.Resources.Disk)
 			}
 			if q > 0 {
-				v.Users = append(v.Users, model.ResourceUse{Lease: l.ID, Owner: l.Owner, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: q, State: l.State, Expires: l.Expires})
+				quantity := model.FloatQuantity(q)
+				if kind == "memory" {
+					quantity = model.CountQuantity(l.Request.Resources.Memory)
+				}
+				if kind == "disk" {
+					quantity = model.CountQuantity(l.Request.Resources.Disk)
+				}
+				v.Users = append(v.Users, model.ResourceUse{Lease: l.ID, Owner: l.Owner, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: quantity, State: l.State, Expires: l.Expires})
 			}
 		}
 		s.Resources = append(s.Resources, v)
 	}
 	m.portResources(&s, ls)
+	views, err := m.poolViews(ls, false)
+	if err != nil {
+		return s, err
+	}
+	for _, v := range views {
+		view := v
+		s.Resources = append(s.Resources, model.ResourceView{ID: v.Pool.ID, Host: v.Pool.Host, Pool: v.Pool.ID, Kind: "custom", Unit: v.Pool.Unit, BudgetTotal: model.CountQuantity(v.Pool.Capacity), Reserved: model.CountQuantity(v.Reserved), Available: model.CountQuantity(v.Available), Accounting: "cooperative-counted-permits", Users: v.Users, Custom: &view})
+	}
 	e = m.db.QueryRow(`SELECT COALESCE(MAX(sequence),0) FROM events`).Scan(&s.Cursor)
 	return s, e
 }
@@ -357,6 +387,10 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		return empty, model.Err("invalid_request", "ttl must be positive and no greater than 7 days")
 	}
 	var portErr error
+	r.Pools, portErr = m.normalizePoolClaims(r.Pools)
+	if portErr != nil {
+		return empty, portErr
+	}
 	if len(r.Ports) > 0 {
 		if m.portErr != nil {
 			return empty, model.Err("namespace_unavailable", m.portErr.Error())
@@ -368,16 +402,16 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	} else {
 		r.Ports = nil
 	}
-	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || (r.Resources == (model.Resources{}) && len(r.Ports) == 0 && r.PortLease == "") {
-		return empty, model.Err("invalid_request", "request positive CPU/memory/disk, at least one port, or an attached port lease")
+	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || (r.Resources == (model.Resources{}) && len(r.Ports) == 0 && r.PortLease == "" && len(r.Pools) == 0) {
+		return empty, model.Err("invalid_request", "request positive CPU/memory/disk, at least one port, an attached port lease, or counted pool claims")
 	}
 	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
 	}
-	if r.Kind == "storage" && (run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
+	if r.Kind == "storage" && (len(r.Pools) > 0 || run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
 		return empty, model.Err("invalid_request", "a storage lease requires only a disk claim and no command, profile or parent storage lease")
 	}
-	if r.Kind == "ports" && (run != nil || r.Resources != (model.Resources{}) || len(r.Ports) == 0 || r.PortLease != "" || r.Profile != "" || r.StorageLease != "") {
+	if r.Kind == "ports" && (len(r.Pools) > 0 || run != nil || r.Resources != (model.Resources{}) || len(r.Ports) == 0 || r.PortLease != "" || r.Profile != "" || r.StorageLease != "") {
 		return empty, model.Err("invalid_request", "a ports lease requires only port claims and no command, profile or parent lease")
 	}
 	if r.PortLease != "" && (run == nil || len(r.Ports) > 0) {
@@ -438,6 +472,15 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			return empty, model.Err("request_cancelled", "this request was cancelled before admission")
 		}
 	}
+	for _, c := range r.Pools {
+		p, e := m.pool(c.Pool)
+		if e != nil {
+			return empty, e
+		}
+		if p.State != "active" {
+			return empty, model.Err("pool_unavailable", "pool is draining or deleted; existing claims remain recorded")
+		}
+	}
 	if r.StorageLease != "" {
 		if _, e := m.storageForRun(r); e != nil {
 			return empty, e
@@ -468,7 +511,15 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		}
 	}
 	l := model.Lease{ID: local.ID(), Host: m.host, Owner: m.owner, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
-	if !queued && used.Add(r.Resources).Fits(m.capacity) {
+	poolUsed, e := poolReservations(ls)
+	if e != nil {
+		return empty, e
+	}
+	poolFits, e := m.poolsFit(r.Pools, poolUsed)
+	if e != nil {
+		return empty, e
+	}
+	if !queued && r.Resources.FitsRemaining(used, m.capacity) && poolFits {
 		m.activate(&l, run != nil)
 	} else if !r.Queue {
 		return empty, model.Err("insufficient_capacity", "capacity is reserved; use --wait to queue")
@@ -653,6 +704,19 @@ func (m *Manager) Renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	poolUsed, e := poolReservations(ls)
+	if e != nil {
+		return l, e
+	}
+	for _, c := range l.Request.Pools {
+		p, err := m.pool(c.Pool)
+		if err != nil {
+			return l, err
+		}
+		if p.State != "active" || poolUsed[c.Pool] > p.Capacity {
+			return l, model.Err("renewal_denied", "pool is draining or has a capacity deficit")
+		}
+	}
 	for _, o := range ls {
 		if o.State == "queued" {
 			return l, model.Err("renewal_denied", "queued work has priority over renewal")
@@ -727,6 +791,10 @@ func (m *Manager) tick() {
 			_, _ = m.finishPortParent(l)
 		}
 	}
+	poolUsed, e := poolReservations(ls)
+	if e != nil {
+		return
+	}
 	for _, l := range ls {
 		if l.State != "queued" {
 			continue
@@ -743,7 +811,11 @@ func (m *Manager) tick() {
 				continue
 			}
 		}
-		if !used.Add(l.Request.Resources).Fits(m.capacity) {
+		poolFits, err := m.poolsFit(l.Request.Pools, poolUsed)
+		if err != nil {
+			return
+		}
+		if !l.Request.Resources.FitsRemaining(used, m.capacity) || !poolFits {
 			break
 		}
 		var rb sql.NullString
@@ -779,6 +851,9 @@ func (m *Manager) tick() {
 		}
 		if consuming(l.State) {
 			used = used.Add(l.Request.Resources)
+			for _, c := range l.Request.Pools {
+				poolUsed[c.Pool] += c.Quantity
+			}
 		}
 		if len(l.Ports) > 0 {
 			ls = append(ls, l)
@@ -808,10 +883,18 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	cmd.ExtraFiles = []*os.File{reader}
 	cmd.Dir = r.CWD
 	for _, entry := range os.Environ() {
-		if strings.HasPrefix(entry, "ARM_PORTS=") || strings.HasPrefix(entry, "ARM_PORT_LEASE=") || strings.HasPrefix(entry, "ARM_STORAGE_DIR=") || strings.HasPrefix(entry, "ARM_STORAGE_LEASE=") {
+		if strings.HasPrefix(entry, "ARM_POOLS=") || strings.HasPrefix(entry, "ARM_PORTS=") || strings.HasPrefix(entry, "ARM_PORT_LEASE=") || strings.HasPrefix(entry, "ARM_STORAGE_DIR=") || strings.HasPrefix(entry, "ARM_STORAGE_LEASE=") {
 			continue
 		}
 		cmd.Env = append(cmd.Env, entry)
+	}
+	if len(l.Request.Pools) > 0 {
+		claims, err := json.Marshal(l.Request.Pools)
+		if err != nil {
+			f.Close()
+			return m.launchFailed(l, err)
+		}
+		cmd.Env = append(cmd.Env, "ARM_POOLS="+string(claims))
 	}
 	if len(l.Ports) > 0 || l.Request.PortLease != "" {
 		if e = m.activatePorts(&l, cmd); e != nil {

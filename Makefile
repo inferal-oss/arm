@@ -25,6 +25,7 @@ test-local: build
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py
+	python3 scripts/test-pools.py
 
 # Select an already cached Linux image containing /bin/sh and python3.
 test-linux:

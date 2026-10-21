@@ -113,6 +113,7 @@ Commands:
   resources                 Show budgets, availability, owners, and reasons
   storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
   ports reserve|list|discover Manage port reservations and native inventory
+  pool create|list|inspect|history|set|adjust  Manage counted host/global pools
   acquire                   Request a resource lease
   run                       Execute a command under a supervised lease
   inspect|release|cancel ID  Inspect or end a lease
@@ -177,6 +178,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.storage(args)
 	case "ports":
 		return a.ports(args)
+	case "pool":
+		return a.pool(args)
 	case "events":
 		f := a.flags(cmd)
 		follow := f.Bool("follow", false, "stream live events")
@@ -302,6 +305,10 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		f.StringVar(portLease, "port-lease", "", "attach a dedicated port `lease` (one consumer)")
 		f.StringVar(cwd, "cwd", "", "command working `directory` (default: current directory)")
 	}
+	var poolClaims poolFlags
+	if command == "acquire" || command == "run" {
+		f.Var(&poolClaims, "pool", "repeatable counted claim: POOL_ID=COUNT")
+	}
 	var portFlags portFlags
 	portMode := new(string)
 	dualStack := new(bool)
@@ -357,6 +364,17 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	if strings.TrimSpace(*reason) == "" {
 		return 2, fmt.Errorf("--reason is required; see arm %s --help", label)
 	}
+	if command == "acquire" && len(poolClaims) > 0 {
+		explicitCPU := false
+		f.Visit(func(v *flag.Flag) {
+			if v.Name == "cpu" {
+				explicitCPU = true
+			}
+		})
+		if !explicitCPU {
+			*cpu = 0
+		}
+	}
 	mem, e := bytesValue(*memory)
 	if e != nil {
 		return 2, e
@@ -372,6 +390,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		return 2, fmt.Errorf("invalid CPU quantity")
 	}
 	r := model.Request{Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
+	r.Pools = poolClaims
 	r.StorageLease = *storageLease
 	r.PortLease = *portLease
 	for _, c := range portFlags {

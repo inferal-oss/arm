@@ -27,6 +27,18 @@ supervised work; follow ARM warnings and stop using revoked resources.
 Register your exact session with arm agent register so ARM can contact you.
 Use arm message operator --text "message" to contact the human operator.
 Use arm messages --json to inspect the inbox and delivery status.
+For arbitrary coordination resources, use arm pool create NAME --scope host|global
+--capacity COUNT --reason "purpose". Host pools belong to this machine; global
+pools share the current ARM authority and will extend to multiple hosts later.
+Mutation output contains the definition under after, including its stable ID.
+Acquire counted permits with arm acquire --pool POOL_ID=COUNT --reason "purpose",
+or add --pool to arm run. These are cooperative permits, not OS resource limits.
+Use arm pool adjust POOL_ID DELTA --reason "purpose" --key OPERATION_ID for atomic
+capacity changes (including negative deltas). Reuse the key only for the exact
+same operation. Inspect history with arm pool history POOL_ID. Absolute set,
+metadata edits, drain/resume and delete require the inspected --revision N.
+Capacity reductions preserve existing leases and expose any deficit.
+
 If your CLI cannot receive messages while working (including active Claude),
 register with --delivery poll and your exact session UUID; no --idle is needed.
 Use arm agent inbox --id CONTACT --session SESSION --pending to check warnings.

@@ -61,7 +61,7 @@ func TestConcurrentAdmissionAndAttribution(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	if s.Reserved.CPU != 1 || len(s.Resources) != 3 || s.Resources[0].Available != 0 {
+	if s.Reserved.CPU != 1 || len(s.Resources) != 3 || s.Resources[0].Available != "0" {
 		t.Fatalf("wrong resource accounting: %+v", s)
 	}
 	u := s.Resources[0].Users
@@ -213,7 +213,10 @@ func TestUnknownRecoveredJobStaysCharged(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	l, e := m.Acquire(request("unknown"), nil)
+	pool := makePool(t, m, "recovered job permits", "global", 1)
+	req := request("unknown")
+	req.Pools = []model.PoolClaim{{Pool: pool.ID, Quantity: 1}}
+	l, e := m.Acquire(req, nil)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -231,6 +234,10 @@ func TestUnknownRecoveredJobStaysCharged(t *testing.T) {
 	s, _ := m.Status()
 	if s.Reserved.CPU != 1 || s.Leases[0].State != "needs_attention" {
 		t.Fatal("unverified recovered PID released capacity")
+	}
+	poolView, err := m.PoolInspect(pool.ID)
+	if err != nil || poolView.Reserved != 1 {
+		t.Fatal("recovered supervised job released custom permits", err)
 	}
 	if _, e = m.End(l.ID, "released"); e == nil {
 		t.Fatal("released unverified allocation")
