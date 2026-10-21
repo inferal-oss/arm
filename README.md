@@ -134,6 +134,8 @@ These are cooperative logical permits. Ordinary release/expiry returns them afte
 
 ## Agent integration
 
+Read `arm agents` for the full operating guide, or `arm agents --json` for structured sections and command examples. It works offline without creating state and covers leases, managed storage, ports, counted pools, exact-session registration, warnings, polling and operator communication. `arm agent list` lists registered contacts. Installed instructions point to the guide using the installation's executable and state-directory prefix.
+
 Preview before choosing to install instructions into your agent configuration:
 
 ```sh

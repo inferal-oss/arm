@@ -128,6 +128,7 @@ Commands:
   reconcile ID              Verify a recovered process group has stopped
   renew ID --ttl DURATION    Extend a lease when the queue permits
   events [--follow]          Read or stream durable events
+  agents                    Read the offline agent operating guide
   agent probe|register|list  Discover CLIs and register exact sessions
   agent inbox|watch|receive|ack  Poll notifications and acknowledge explicitly
   message operator|send|broadcast  Send a durable message
@@ -179,6 +180,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.acquire(cmd, args)
 	case "install", "uninstall":
 		return 0, a.integration(cmd, args)
+	case "agents":
+		return 0, a.agentsGuide(args)
 	case "agent":
 		return 0, a.agent(args)
 	case "message":

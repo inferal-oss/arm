@@ -19,6 +19,9 @@ const instructions = begin + `
 ## Agent Resource Manager
 
 Use arm for resource-intensive commands. Start with arm status --json.
+Read arm agents --json for the full operating guide, resource workflows,
+exact-session registration, warnings, polling and operator communication.
+It works offline without creating state. arm agent list lists contacts.
 Use arm run --cpu N --memory SIZE --ttl DURATION --reason "purpose" -- COMMAND.
 Use --wait to queue for capacity. A grant is required before work begins.
 Use arm release LEASE_ID when done and arm renew LEASE_ID --ttl DURATION
@@ -43,7 +46,7 @@ If your CLI cannot receive messages while working (including active Claude),
 register with --delivery poll and your exact session UUID; no --idle is needed.
 Use arm agent inbox --id CONTACT --session SESSION --pending to check warnings.
 For a background watcher or subagent, run arm agent watch --id CONTACT --session SESSION.
-The watcher prints JSON lines and reconnects; forward warnings to the main agent.
+Use --json for JSON lines even in a terminal; forward warnings to the main agent.
 Keep the last emitted cursor and resume with --after CURSOR. Use --once for one
 bounded batch. If background tasks are unavailable, poll before costly work and renewal.
 Reading or watching does not acknowledge a message. After actually handling it,

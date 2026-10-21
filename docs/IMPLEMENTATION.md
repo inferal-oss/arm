@@ -169,6 +169,8 @@ The complete staged checklist is [PLAN.md](PLAN.md).
 
 ## CLI usability
 
+`arm agents` reads the complete build-local agent operating guide without backend access, CLI discovery or state creation. Terminal output has sections and examples; redirected output and --json return structured sections with stable topic IDs and the selected state directory. It explains resource lifetimes, registration, warning/polling workflows, operator messages, safety checks and current limitations. Installed instructions link to it; `arm agent list` remains the contact listing.
+
 `arm start` and `arm stop` are shortcuts for `arm daemon start` and `arm daemon stop`. They share startup budgets, existing-backend behavior and outstanding-lease safeguards, with command-specific help.
 
 Every command and group has backend-independent help with full command names, scoped options, output descriptions and examples where useful. `arm help ports reserve` is equivalent to `arm ports reserve --help`. Non-execution commands accept flags before or after positional arguments; unexpected operands and irrelevant flags fail before requests or integration writes. `run` stops interpreting ARM flags at its command or `--` boundary. Global `--home` precedes the command; `--json` may appear globally or on commands that return results.

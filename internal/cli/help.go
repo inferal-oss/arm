@@ -15,6 +15,7 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"agents":       {summary: "Read the full agent operating guide: resource leases, registration, warnings, polling, operator messages and safeguards. Works offline without creating state. Use arm agent list to list contacts.", example: `arm agents --json`},
 	"start":        {summary: "Start the local backend in the background. Shortcut for arm daemon start; an existing backend keeps its budgets.", example: `arm start --cpu 4 --memory 8GiB --disk 20GiB`},
 	"stop":         {summary: "Stop an idle backend. Shortcut for arm daemon stop; outstanding leases and unresolved obligations prevent shutdown."},
 	"incidents":    {summary: "Show the latest 100 durable CPU/memory usage incidents, warning message IDs, evidence, deadlines and outcomes. Filter with --lease. Observed overage policy is opt-in for supervised run."},

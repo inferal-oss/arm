@@ -13,7 +13,7 @@ import (
 func TestAllCommandHelpIsAvailableWithoutBackendOrSideEffects(t *testing.T) {
 	home := filepath.Join(t.TempDir(), "absent")
 	commands := []string{"", "acquire", "run", "storage create", "storage list", "storage inspect", "storage cleanup", "storage handoff", "ports reserve", "ports list", "ports discover", "pool create", "pool list", "pool inspect", "pool history", "pool set", "pool adjust", "pool rename", "pool describe", "pool drain", "pool resume", "pool delete", "pool", "usage", "inspect", "release", "cancel", "reconcile", "renew", "status", "resources", "messages", "events", "daemon start", "daemon stop", "daemon status", "serve", "agent probe", "agent register", "agent list", "agent inbox", "agent watch", "agent receive", "agent ack", "message operator", "message send", "message broadcast", "install", "uninstall", "version", "storage", "ports", "daemon", "agent", "message"}
-	for _, command := range append(commands, "incidents", "start", "stop") {
+	for _, command := range append(commands, "incidents", "start", "stop", "agents") {
 		t.Run(command, func(t *testing.T) {
 			for _, spelling := range []string{"--help", "-h", "topic"} {
 				args := strings.Fields(command)
@@ -49,6 +49,7 @@ func TestHelpOnlyListsOptionsThatApplyToTheCommand(t *testing.T) {
 		{"agent receive", []string{"--message"}, []string{"--text", "--wait", "--after", "--once"}},
 		{"agent ack", []string{"--message", "--text"}, []string{"--wait", "--after", "--once"}},
 		{"agent list", []string{"--json"}, []string{"--session", "--idle", "--adapter"}},
+		{"agents", []string{"offline", "--json", "arm agent list"}, []string{"--session", "--idle", "--adapter"}},
 		{"message operator", []string{"--text"}, []string{"--to"}},
 		{"uninstall", []string{"manifest", "--dry-run"}, []string{"--codex-home", "--claude-home"}},
 	}
@@ -90,6 +91,7 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"pool adjust ID 0 --reason test", "pool list --reason ignored", "pool inspect", "pool history ID extra", "pool adjust ID 1 --revision 0 --reason test",
 		"usage", "usage ID extra", "usage ID --cpu 1", "incidents extra", "incidents --cpu 1", "run --reason test --usage-grace 1s -- echo test", "acquire --reason test --usage-policy revoke", "status --json=invalid", "--home", "--no-such-option", "agent register --id",
 		"start extra", "stop extra", "stop --cpu 1", "start --reason ignored",
+		"agents extra", "agents --adapter codex",
 	}
 	for _, command := range tests {
 		t.Run(command, func(t *testing.T) {

@@ -26,6 +26,9 @@ func TestRoundTripPreservesSubsequentUserEdits(t *testing.T) {
 		t.Fatal(e)
 	}
 	first, _ := os.ReadFile(path)
+	if !strings.Contains(string(first), "arm agents --json") {
+		t.Fatal("installed instructions do not link to the full agent guide")
+	}
 	if _, e := Install(home, targets, false); e != nil {
 		t.Fatal(e)
 	}

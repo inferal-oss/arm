@@ -2,6 +2,14 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: offline agent operating guide
+
+`arm agents` passed CLI/installer race tests and vet, including offline operation with no agent CLIs on PATH, no state creation, argument/help checks, selected state-directory output, terminal escaping and forced JSON. The compiled PTY check validates all 45 documented examples against actual command parsers in help mode without starting work or creating state. That check passed on macOS and the configured Linux arm64 SSH target; Linux CLI/installer suites and all seven compiled acceptance checks passed as well. These parser checks complement the existing workflow acceptance checks; they do not execute every example as a workload.
+
+Dedicated real Codex and Claude sessions identified the new guide from installed instructions. Codex executed the exact offline command with a successful commandExecution result containing its title. Claude returned the guide title after the allowed Bash request and completed the same-session polling/acknowledgement and pool workflows. Both native warning paths, operator broadcast/inbox and reversible install/uninstall checks passed. Temporary roots and dedicated sessions were used; global instruction files and unrelated conversations were unchanged.
+
+Review strengthened the prior command-name-only instruction-loading assertion. On the installed Claude CLI, the fixture's empty --setting-sources prevented project instructions from loading. The fixture now explicitly enables only project settings and requires a random token present solely in its temporary CLAUDE.md. A paired isolated check confirmed the token was absent with empty sources and present with project sources. Native delivery continues to use its separate restricted resume path; active-session injection is not claimed.
+
 ## October 21, 2026: terminal presentation and installation confirmation
 
 The native macOS race/APFS suite and vet passed; final CLI/installer race tests passed after review. All seven compiled CLI acceptance checks passed on macOS and on the configured Linux arm64 SSH target in its private process namespace. Real PTY checks cover ANSI colors, NO_COLOR/TERM=dumb, explicit and redirected JSON, safe rendering of terminal control sequences, preview without writes, default-no/EOF/Ctrl-C cancellation, accepted prompts, noninteractive --yes, edited targets while awaiting approval, outstanding-lease refusal and preserving an idle backend on decline. Plan tests also cover changed file identities/modes, replaced roots, missing ancestors, symlinks, manifest changes, shared state/target roots and empty uninstall without state creation.

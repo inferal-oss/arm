@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import pty
 import select
+import shlex
 import signal
 import subprocess
 import tempfile
@@ -82,6 +83,24 @@ def main():
                 os.close(master)
 
         try:
+            guide = cli('agents')
+            assert guide['title'] == 'ARM agent operating guide' and guide['state_directory'] == str(home)
+            assert not home.exists(), 'offline guide created state'
+            # Check documented examples against real command parsers without
+            # starting work, probing CLIs or changing integration files.
+            for section in guide['sections']:
+                for example in section['commands']:
+                    args = shlex.split(example)
+                    assert args.pop(0) == 'arm', example
+                    if args[0] == 'run':
+                        args = args[:args.index('--')]
+                    if args[0] != 'help':
+                        args.append('--help')
+                    result = run(*args)
+                    assert result.returncode == 0 and 'Usage: arm' in result.stdout, (example, result.stderr)
+            assert not home.exists(), 'guide examples created state while requesting help'
+            code, text = tty(['agents'])
+            assert code == 0 and '\x1b[' in text and guide['title'] in text
             code, text = tty(['version'])
             assert code == 0 and '\x1b[' in text and 'ARM · Version' in text, text
             for extra in ({'NO_COLOR': '1'}, {'TERM': 'dumb'}):
