@@ -54,6 +54,7 @@ test-local: build
 	python3 scripts/test-memory.py
 	python3 scripts/test-lifecycle.py
 	python3 scripts/test-scheduling.py
+	python3 scripts/test-agent-messages.py
 
 # Select an already cached Linux image containing /bin/sh and python3.
 test-linux:

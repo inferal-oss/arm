@@ -73,7 +73,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && (detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted") {
+		if errors.As(e, &detail) && (detail.Code == "agent_message_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))
@@ -200,7 +200,11 @@ func (a *app) command(args []string) (int, error) {
 	case "dashboard":
 		return 0, a.dashboard(args)
 	case "agent":
-		return 0, a.agent(args)
+		err := a.agent(args)
+		if errors.Is(err, errAgentDeliveryReported) {
+			return 1, nil
+		}
+		return 0, err
 	case "message":
 		return 0, a.message(args)
 	case "storage":
@@ -807,9 +811,12 @@ func (a *app) daemon(command string, args []string) (int, error) {
 
 func (a *app) agent(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("agent requires probe, register, list, inbox, watch, receive, or ack")
+		return fmt.Errorf("agent requires probe, register, list, send, reply, message-lookup, inbox, watch, receive, or ack")
 	}
 	action, args := args[0], args[1:]
+	if action == "send" || action == "reply" || action == "message-lookup" {
+		return a.agentMessage(action, args)
+	}
 	if action == "inbox" || action == "watch" || action == "receive" || action == "ack" {
 		return a.agentInbox(action, args)
 	}

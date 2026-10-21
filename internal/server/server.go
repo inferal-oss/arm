@@ -479,6 +479,15 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return s.Manager.PoolHistory(q.ID, q.After)
 		}
 		return s.Manager.PoolInspect(q.ID)
+	case "agent_message", "agent_message_lookup":
+		var q manager.AgentMessageRequest
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		if r.Operation == "agent_message_lookup" {
+			return s.Manager.LookupAgentMessage(q.ID, q.Session, q.Registration, q.Key)
+		}
+		return s.Manager.AgentMessage(ctx, q)
 	case "agent_inbox":
 		var q manager.InboxRequest
 		if e := decode(&q); e != nil {

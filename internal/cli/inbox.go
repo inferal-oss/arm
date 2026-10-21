@@ -39,7 +39,7 @@ func (a *app) agentInbox(action string, args []string) error {
 		f.StringVar(message, "message", "", "required message ID")
 	}
 	if action == "ack" {
-		f.StringVar(text, "text", "", "acknowledgement text, also sent to the operator inbox")
+		f.StringVar(text, "text", "", "response text, routed to the original agent sender inbox or operator")
 	}
 	f.Bool("json", false, "JSON output (watch emits one JSON object per message)")
 	if err := a.parse(f, args, false); err != nil {

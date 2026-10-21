@@ -94,13 +94,27 @@ func (m *dashboardModel) replyMessage() tea.Cmd {
 		m.notice = "Reply is available for messages sent to the operator."
 		return nil
 	}
+	recipient := message.Sender
+	if message.SenderContact != nil {
+		recipient = message.SenderContact.ID
+		found := false
+		for _, contact := range m.data.contacts {
+			if contact == *message.SenderContact {
+				found = true
+			}
+		}
+		if !found {
+			m.notice = "The original sender registration or settings changed; this reply cannot be retargeted."
+			return nil
+		}
+	}
 	cmd := m.beginCompose(false)
 	if m.composer == nil {
 		return cmd
 	}
 	m.composer.request.Lease = message.Lease
 	m.composer.request.ReplyTo = message.ID
-	return m.composeRecipient(message.Sender)
+	return m.composeRecipient(recipient)
 }
 func (m *dashboardModel) composeKey(key string) tea.Cmd {
 	if scrollReview(&m.viewport, key) {

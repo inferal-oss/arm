@@ -18,6 +18,8 @@ import (
 // operator. Targets is an explicit array (empty for the operator inbox), never
 // a request to resolve mutable contact names after confirmation.
 type MessageRequest struct {
+	source            *agents.Contact
+	agentKey          string
 	PeerCertificate   string           `json:"-"`
 	PeerGrantRevision int              `json:"-"`
 	OriginKey         string           `json:"-"`
@@ -31,6 +33,11 @@ type MessageRequest struct {
 }
 
 func (m *Manager) SendMessage(ctx context.Context, request MessageRequest) (Message, error) {
+	request.source, request.agentKey = nil, ""
+	return m.sendMessage(ctx, request)
+}
+
+func (m *Manager) sendMessage(ctx context.Context, request MessageRequest) (Message, error) {
 	if request.Key == "" || len(request.Key) > 128 || request.Audience == "" || request.Body == "" || len(request.Body) > 16384 || request.Targets == nil {
 		return Message{}, model.Err("invalid_request", "a key (at most 128 bytes), audience, body (1 to 16384 bytes), and explicit reviewed targets array are required")
 	}
@@ -69,7 +76,20 @@ func (m *Manager) createReviewedMessage(request MessageRequest) (Message, bool, 
 	if m.closing {
 		return msg, false, model.Err("backend_stopping", "backend is shutting down")
 	}
-	raw, err := json.Marshal(request)
+	if request.source != nil {
+		current, err := m.inboxContact(request.source.ID, request.source.Session, request.source.Registration)
+		if err != nil {
+			return msg, false, err
+		}
+		if current != *request.source {
+			return msg, false, model.Err("contact_changed", "sender settings changed; inspect the current registration before sending")
+		}
+	}
+	raw, err := json.Marshal(struct {
+		MessageRequest
+		Source   *agents.Contact `json:"sender_contact,omitempty"`
+		AgentKey string          `json:"agent_operation_key,omitempty"`
+	}{request, request.source, request.agentKey})
 	if err != nil {
 		return msg, false, err
 	}
@@ -95,7 +115,15 @@ func (m *Manager) createReviewedMessage(request MessageRequest) (Message, bool, 
 		if err != nil {
 			return msg, false, model.Err("invalid_request", "reply_to must identify an existing operator-inbox message")
 		}
-		if original.Audience != "operator" || original.Sender != request.Audience {
+		if request.source != nil {
+			if err := m.validateAgentReplyLocked(original, *request.source, request.Audience, request.Targets); err != nil {
+				return msg, false, err
+			}
+		} else if original.SenderContact != nil {
+			if original.Audience != "operator" || request.Audience != original.SenderContact.ID || len(request.Targets) != 1 || request.Targets[0] != *original.SenderContact {
+				return msg, false, model.Err("contact_changed", "operator reply must pin the original agent sender registration and settings")
+			}
+		} else if original.Audience != "operator" || original.Sender != request.Audience {
 			return msg, false, model.Err("invalid_request", "reply audience must match the original message sender")
 		}
 	}
@@ -136,7 +164,11 @@ func (m *Manager) createReviewedMessage(request MessageRequest) (Message, bool, 
 	if request.Peer != "" {
 		sender = "peer:" + request.Peer
 	}
+	if request.source != nil {
+		sender = "agent:" + request.source.ID
+	}
 	msg = Message{OriginCertificate: request.PeerCertificate, OriginGrantRevision: request.PeerGrantRevision, OriginKey: request.OriginKey, OriginHost: request.Peer, ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: sender, Audience: request.Audience, Body: request.Body, Lease: request.Lease, ReplyTo: request.ReplyTo, Key: request.Key, Created: time.Now().UTC(), Deliveries: make(map[string]agents.Delivery)}
+	msg.SenderContact, msg.AgentKey = request.source, request.agentKey
 	for _, target := range targets {
 		state := "pending"
 		if target.Delivery == "poll" {

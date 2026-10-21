@@ -90,3 +90,26 @@ func TestAgentsGuideTerminalEscapesStateAndSupportsForcedJSON(t *testing.T) {
 		t.Fatalf("forced JSON failed: %v %s", err, &out)
 	}
 }
+
+func TestAgentGuideExplainsReplyIdentityAndUnknownSend(t *testing.T) {
+	var out, stderr bytes.Buffer
+	if code := Main([]string{"--home", filepath.Join(t.TempDir(), "absent"), "agents", "--json"}, strings.NewReader(""), &out, &stderr); code != 0 {
+		t.Fatal(code, stderr.String())
+	}
+	var guide agentGuide
+	if err := json.Unmarshal(out.Bytes(), &guide); err != nil {
+		t.Fatal(err)
+	}
+	for _, section := range guide.Sections {
+		if section.ID == "agent-messages" {
+			body := strings.Join(section.Guidance, " ") + strings.Join(section.Commands, " ")
+			for _, need := range []string{"sender_contact", "agent reply", "--registration", "message-lookup", "polling inbox", "not separate authentication", "replacement"} {
+				if !strings.Contains(body, need) {
+					t.Fatalf("guide omits %q", need)
+				}
+			}
+			return
+		}
+	}
+	t.Fatal("missing agent communication workflow")
+}

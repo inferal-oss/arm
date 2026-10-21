@@ -3,6 +3,13 @@ import {jsonView} from './json-view.mjs';
 const copy = value => JSON.parse(JSON.stringify(value));
 const contactFields = ['id','adapter','session','cwd','config_dir','remote','idle','delivery','registration'];
 const normalize = contact => Object.fromEntries(contactFields.filter(key => contact[key] !== undefined).map(key => [key,contact[key]]));
+export function operatorReplyTarget(message,contacts) {
+  if(message?.audience!=='operator')return null;
+  const source=message.sender_contact;
+  const current=contacts.find(c=>c.id===(source?.id||message.sender));
+  if(!current || source&&JSON.stringify(normalize(source))!==JSON.stringify(normalize(current)))return null;
+  return current;
+}
 export function reviewedTargets(contacts, audience) {
   return contacts.filter(c => audience === 'broadcast' || c.id === audience).map(normalize).sort((a,b) => a.id.localeCompare(b.id));
 }
@@ -154,25 +161,25 @@ export function createOperatorMessaging({root,call,connected,onLease,document = 
       try{await ops.submit(frozen);}catch(err){showError(err.message);body.value=frozen.body;recipient.value=frozen.audience;lease.value=frozen.lease||'';}
     },'message-primary');reviewConfirm=confirm;confirm.disabled=reviewStale||!connected();reviewBox.append(back,confirm);
   }
-  form.addEventListener('submit',event=>{event.preventDefault();showError('');if(!connected()){showError('Reconnect before reviewing a send.');return;}try{review=prepareMessage({audience:recipient.value,body:body.value,lease:lease.value,reply_to:reply?.id||''},contacts,ops.newKey());renderReview();reviewBox.querySelector('button')?.focus();}catch(err){showError(err.message);}});
+  form.addEventListener('submit',event=>{event.preventDefault();showError('');if(!connected()){showError('Reconnect before reviewing a send.');return;}try{if(reply?.sender_contact&&!operatorReplyTarget(reply,contacts))throw Error('The original sender changed. This reply cannot target a replacement registration.');review=prepareMessage({audience:recipient.value,body:body.value,lease:lease.value,reply_to:reply?.id||''},contacts,ops.newKey());renderReview();reviewBox.querySelector('button')?.focus();}catch(err){showError(err.message);}});
   function startReply(message){
-    if(!contacts.some(c=>c.id===message.sender)||message.audience!=='operator')return;
-    review=null;reviewBox.hidden=true;form.hidden=false;reply=message;recipient.value=message.sender;lease.value=message.lease||'';
+    const target=operatorReplyTarget(message,contacts);if(!target)return;
+    review=null;reviewBox.hidden=true;form.hidden=false;reply=message;recipient.value=target.id;lease.value=message.lease||'';
     replyBox.replaceChildren(el('p','',`Reply to ${message.sender} · ${message.id}`),el('p','message-body',message.body),button('Remove reply context',()=>{reply=null;replyBox.replaceChildren();}));body.focus();
   }
-  recipient.addEventListener('change',()=>{if(reply&&recipient.value!==reply.sender){reply=null;replyBox.replaceChildren();}});
+  recipient.addEventListener('change',()=>{if(reply&&recipient.value!==(reply.sender_contact?.id||reply.sender)){reply=null;replyBox.replaceChildren();}});
   const cards=new Map();
   function renderHistory(){
     const keep=new Set();
     for(const message of [...messages].sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))){
-      keep.add(message.id);const signature=JSON.stringify([message,contacts.some(c=>c.id===message.sender)]);let entry=cards.get(message.id);
+      keep.add(message.id);const signature=JSON.stringify([message,operatorReplyTarget(message,contacts)]);let entry=cards.get(message.id);
       if(!entry){entry={element:el('article','item message-history-item'),signature:''};cards.set(message.id,entry);list.append(entry.element);}
       if(entry.signature===signature||entry.element.contains(document.activeElement))continue;
       entry.signature=signature;const card=entry.element;card.replaceChildren();card.id='message-'+message.id;const head=el('div','item-heading');head.append(el('strong','',`${message.sender} → ${message.audience}`),el('span','',new Date(message.created_at).toLocaleString()));card.append(head,el('p','message-body',message.body));
       if(message.reply_to)card.append(button('View original message '+message.reply_to,()=>focusMessage(message.reply_to),'message-context-link'));
       if(message.lease)card.append(button('Lease '+message.lease,()=>onLease(message.lease),'message-context-link'));
       for(const [id,d]of Object.entries(message.deliveries||{})){card.append(el('p','message-delivery',`${id}: ${deliveryDescription(d)}`));if(d.receipt?.text)card.append(el('p','message-reply-context',d.receipt.text));if(d.reply)card.append(el('p','message-reply-context',d.reply));}
-      if(message.audience==='operator'){if(contacts.some(c=>c.id===message.sender))card.append(button('Reply',()=>startReply(message)));else card.append(el('p','measure-note','Reply unavailable: the sender is not a currently registered agent contact.'));}
+      if(message.audience==='operator'){if(operatorReplyTarget(message,contacts))card.append(button('Reply',()=>startReply(message)));else card.append(el('p','measure-note','Reply unavailable: the original sender is no longer registered with these settings.'));}
     }
     for(const [id,entry]of cards)if(!keep.has(id)&&!entry.element.contains(document.activeElement)){entry.element.remove();cards.delete(id);}
     // Existing nodes keep focus; reorder only while focus is outside history.

@@ -339,6 +339,23 @@ func (m *Manager) AgentReceipt(p ReceiptRequest) (agents.Receipt, error) {
 			r.ReplyID = local.ID()
 		}
 	}
+	var reply *Message
+	var replyTargets []agents.Contact
+	if r.ReplyID != "" {
+		original, err := m.message(p.Message)
+		if err != nil {
+			return r, err
+		}
+		if original.SenderContact != nil {
+			value, targets := m.agentPollReplyLocked(original, c, p.Text, r.ReplyID, now)
+			reply, replyTargets = &value, targets
+			delivery := value.Deliveries[original.SenderContact.ID]
+			r.ReplyState, r.ReplyError = delivery.State, delivery.Error
+		} else {
+			reply = &Message{ID: r.ReplyID, Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: c.ID, ReplyTo: p.Message, Audience: "operator", Body: p.Text, Lease: original.Lease, Created: now, Deliveries: map[string]agents.Delivery{}}
+			r.ReplyState = "operator_inbox"
+		}
+	}
 	tx, err := m.db.Begin()
 	if err != nil {
 		return r, err
@@ -351,18 +368,14 @@ func (m *Manager) AgentReceipt(p ReceiptRequest) (agents.Receipt, error) {
 	if _, err = tx.Exec(`UPDATE agent_inbox SET receipt=? WHERE recipient=? AND registration=? AND message=?`, string(b), c.ID, c.Registration, p.Message); err != nil {
 		return r, err
 	}
-	if r.ReplyID != "" {
-		var original []byte
-		var msg Message
-		if err = tx.QueryRow(`SELECT data FROM messages WHERE id=?`, p.Message).Scan(&original); err != nil {
-			return r, err
+	if reply != nil {
+		if reply.SenderContact != nil {
+			err = insertMessage(tx, *reply, replyTargets)
+		} else {
+			b, _ := json.Marshal(reply)
+			_, err = tx.Exec(`INSERT INTO messages(id,data) VALUES(?,?)`, reply.ID, string(b))
 		}
-		if err = json.Unmarshal(original, &msg); err != nil {
-			return r, err
-		}
-		reply := Message{ID: r.ReplyID, Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: c.ID, ReplyTo: p.Message, Audience: "operator", Body: p.Text, Lease: msg.Lease, Created: now, Deliveries: map[string]agents.Delivery{}}
-		b, _ := json.Marshal(reply)
-		if _, err = tx.Exec(`INSERT INTO messages(id,data) VALUES(?,?)`, reply.ID, string(b)); err != nil {
+		if err != nil {
 			return r, err
 		}
 		if err = event(tx, "message.received", reply.ID, reply); err != nil {

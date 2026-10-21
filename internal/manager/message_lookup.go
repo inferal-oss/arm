@@ -21,6 +21,10 @@ func (m *Manager) LookupMessage(key string) (MessageLookup, error) {
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.lookupMessageLocked(key)
+}
+
+func (m *Manager) lookupMessageLocked(key string) (MessageLookup, error) {
 	var id string
 	err := m.db.QueryRow(`SELECT message FROM message_operations WHERE key=?`, key).Scan(&id)
 	if errors.Is(err, sql.ErrNoRows) {

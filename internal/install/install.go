@@ -39,7 +39,18 @@ Use arm release LEASE_ID when done and arm renew LEASE_ID --ttl DURATION
 before expiry when more time is needed. Limits and expiry can terminate
 supervised work; follow ARM warnings and stop using revoked resources.
 Register your exact session with arm agent register so ARM can contact you.
-Use arm message operator --text "message" to contact the human operator.
+Save your returned contact ID, session UUID and registration identity. For messages
+that retain who should receive a reply, use arm agent send --id CONTACT --session
+SESSION --registration REGISTRATION --to RECIPIENT --text "message" --key SEND_KEY.
+Inspect arm agent list --json and pin --to-registration for a reviewed recipient.
+Use --to operator to contact the human with your sender identity. Incoming agent
+messages include sender_contact and a message ID; arm agent reply --id CONTACT
+--session SESSION --registration REGISTRATION --message MESSAGE_ID --text "reply"
+--key REPLY_KEY routes to that recorded sender, refusing replacement registrations.
+After a lost response, arm agent message-lookup with the same sender selectors and
+--key SEND_KEY reads the saved outcome without delivery. Native returned text and
+ack responses go to the sender's durable polling inbox to avoid automatic loops.
+Read arm agents --json for the complete communication workflow and boundaries.
 arm messages --json reads the operator inbox/delivery reports, not your recipient inbox.
 For arbitrary coordination resources, use arm pool create NAME --scope host|global
 --capacity COUNT --reason "purpose". Host pools belong to this machine; global

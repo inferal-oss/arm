@@ -48,6 +48,8 @@ type Receipt struct {
 	Acknowledged *time.Time `json:"acknowledged_at,omitempty"`
 	Text         string     `json:"text,omitempty"`
 	ReplyID      string     `json:"reply_id,omitempty"`
+	ReplyState   string     `json:"reply_state,omitempty"`
+	ReplyError   string     `json:"reply_error,omitempty"`
 }
 
 func Binary(name string) (string, error) {

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {prepareMessage,sameTargets,createMessageOperations,deliveryDescription,createOperatorMessaging} from './operator-messaging.mjs';
+import {prepareMessage,sameTargets,createMessageOperations,deliveryDescription,createOperatorMessaging,operatorReplyTarget} from './operator-messaging.mjs';
 const a={id:'agent-a',adapter:'codex',session:'dedicated-session',cwd:'/work/<literal>',registration:'rev-a',delivery:'poll'};
 const b={...a,id:'agent-b',adapter:'claude',session:'other',registration:'rev-b',idle:true};
 const draft={audience:a.id,body:'<script>literal</script>',lease:'lease',reply_to:'inbox-id'};
@@ -128,4 +128,15 @@ test('a rejected exact retry cannot erase an earlier uncertain request that migh
  const ops=createMessageOperations({storage:s,call:async()=>{if(!attempts++)throw Error('Original send disconnected');throw Object.assign(Error('Recipients changed'),{code:'contact_changed'});}});
  const op=await ops.submit(request());await ops.retry(op);assert.equal(op.state,'unknown');assert.match(op.error,/prior outcome remains uncertain/);
  const restored=createMessageOperations({storage:s,call:()=>assert.fail('implicit retry')});assert.deepEqual(restored.operations[0].request,request());
+});
+
+
+test('operator reply uses the agent sender snapshot and refuses a replacement before review',async()=>{
+ const source={...a},msg={id:'agent-question',sender:'agent:'+a.id,sender_contact:source,audience:'operator',body:'Please clarify',deliveries:{}};
+ assert.equal(operatorReplyTarget(msg,[a,b]),a);
+ assert.equal(operatorReplyTarget(msg,[{...a,registration:'replacement'},b]),null);
+ assert.equal(operatorReplyTarget({...msg,audience:b.id},[a,b]),null);
+ const f=uiFixture();f.update([a,b],[msg]);await f.find('Reply').fire('click');assert.equal(f.recipient.value,a.id);f.body.value='Operator answer';
+ f.update([{...a,registration:'replacement'},b],[msg]);await f.form.fire('submit');assert.equal(f.calls.length,0);assert.match(f.root.textContent,/original sender changed/);assert.equal(f.find('Confirm send'),undefined);
+ f.update([a,b],[msg]);await f.form.fire('submit');await f.find('Confirm send').fire('click');assert.equal(f.calls.length,1);assert.deepEqual(f.calls[0][1].targets,[a]);assert.equal(f.calls[0][1].reply_to,msg.id);
 });
