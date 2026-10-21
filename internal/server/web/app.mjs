@@ -2,6 +2,7 @@ import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, 
 import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
+import {createDashboardHistory} from './route.mjs';
 
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
@@ -35,6 +36,7 @@ let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, re
 let detailPanel = null;
 let detailLeaseID = '';
 const pendingLeaseActions = new Set();
+const navigation = createDashboardHistory({location, history, onRoute: applyDashboardRoute});
 
 function notice(text = '') { $('notice').textContent = text; $('notice').hidden = !text; }
 function connectionState(text, live = false) {
@@ -94,7 +96,7 @@ class Backend {
 
 async function bootstrap() {
   const fragment = new URLSearchParams(location.hash.slice(1)), ticket = fragment.get('connect');
-  if (ticket !== null) history.replaceState(null, '', location.pathname); // Before any network request.
+  navigation.sanitize(); // Remove connection credentials before any fetch.
   try {
     if (ticket !== null) {
       const response = await fetch('/v1/browser/session', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ticket}), credentials: 'omit', cache: 'no-store', redirect: 'error'});
@@ -126,7 +128,7 @@ async function connect() {
     for (const event of events ?? []) addEvent(event, false);
     state.messages = (await current.call('messages') ?? []).slice(-200);
     if (connection !== current || current.socket.readyState !== WebSocket.OPEN) return;
-    retry = 0; connectionState('● Connected', true); notice(); renderCurrent(); updateFreshness(); scheduleRefresh();
+    retry = 0; connectionState('● Connected', true); notice(); applyDashboardRoute(navigation.current); updateFreshness(); scheduleRefresh();
   } catch (error) {
     if (connection !== current) return;
     notice(`${error.message}. If the backend restarted, run arm dashboard for a fresh link.`);
@@ -191,7 +193,7 @@ const titles = {
   activity: ['Activity', 'Durable operational events · latest 200 loaded entries'],
   host: ['Host & capabilities', 'Local authority, infrastructure allocations and supported capabilities'],
 };
-function selectView(name) {
+function renderView(name) {
   if (!titles[name]) return;
   view = name;
   for (const button of document.querySelectorAll('nav button')) {
@@ -201,6 +203,18 @@ function selectView(name) {
   [$('title').textContent, $('subtitle').textContent] = titles[name];
   renderCurrent(); updateFreshness();
 }
+function applyDashboardRoute(route) {
+  const previousView = view, hadDetail = Boolean(detailLeaseID) || $('detail').open;
+  renderView(route.view);
+  if (route.lease) loadLease(route.lease);
+  else {
+    detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
+    if ($('detail').open) $('detail').close();
+    if (hadDetail || previousView !== route.view) document.querySelector('nav button[aria-current]')?.focus();
+  }
+}
+function selectView(name) { navigation.navigate({view: name, lease: null}); }
+window.addEventListener('popstate', () => navigation.restore());
 function renderCurrent() {
   ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost})[view]();
 }
@@ -334,7 +348,7 @@ function filterToolbar(root, placeholder, value, onInput, label) {
 function renderResources() {
   const root = $('resources');
   if (!state.status) { root.replaceChildren(empty('Waiting for resource budgets…')); return; }
-  if (!root.querySelector('input')) filterToolbar(root, 'Filter resources, owners or reasons…', resourceFilter, value => { resourceFilter = value; resourceCards(); }, 'Cooperative reservations · exact counts');
+  if (!root.querySelector('input')) { root.replaceChildren(); filterToolbar(root, 'Filter resources, owners or reasons…', resourceFilter, value => { resourceFilter = value; resourceCards(); }, 'Cooperative reservations · exact counts'); }
   resourceCards();
 }
 function resourceCards() {
@@ -359,7 +373,7 @@ function resourceCards() {
     }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
     for (const u of r.users ?? []) {
-      const user = node('div', 'consumer'); user.append(leaseButton(u.lease), node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u)} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
+      const user = node('div', 'consumer'); if (u.lease) user.append(leaseButton(u.lease)); user.append(node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u)} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
     }
     if (!r.users?.length) p.body.append(node('p', 'measure-note', 'No current consumers'));
     grid.append(p.box);
@@ -370,7 +384,7 @@ function leaseButton(id) { const b = node('button', 'link-button', id); b.addEve
 function renderLeases() {
   const root = $('leases');
   if (!state.status) { root.replaceChildren(empty('Waiting for leases…')); return; }
-  if (!root.querySelector('input')) filterToolbar(root, 'Filter leases, owners or reasons…', leaseFilter, value => { leaseFilter = value; leaseTable(); }, 'Live snapshot · includes historical leases');
+  if (!root.querySelector('input')) { root.replaceChildren(); filterToolbar(root, 'Filter leases, owners or reasons…', leaseFilter, value => { leaseFilter = value; leaseTable(); }, 'Live snapshot · includes historical leases'); }
   leaseTable();
 }
 function leaseTable() {
@@ -392,11 +406,13 @@ function leaseTable() {
   }
   table.append(body); box.append(table); if (!leases.length) box.append(empty('No matching leases')); root.append(box);
 }
-async function showLease(id) {
+function showLease(id) { navigation.navigate({view, lease: id}); }
+async function loadLease(id) {
   const request = ++detailRequest;
   detailLeaseID = id;
   detailPanel?.dispose(); detailPanel = null;
   $('detail-body').replaceChildren(empty('Loading lease…')); if (!$('detail').open) $('detail').showModal();
+  if (!state.connected) { $('detail-body').replaceChildren(empty('Waiting for a connection to inspect this lease…')); return; }
   try {
     const current = connection, lease = await current.call('inspect', {id});
     const status = await current.call('status');
@@ -415,9 +431,9 @@ function renderLeaseDetail(lease, leases, request, resultNote = '') {
       detailPanel?.updateConnection();
       // Reopening a detail during a request must not leave its pre-response
       // snapshot actionable when that request finishes with an uncertain result.
-      if (!pending && request !== detailRequest && detailLeaseID === lease.id && $('detail').open) showLease(lease.id);
+      if (!pending && request !== detailRequest && detailLeaseID === lease.id && $('detail').open) loadLease(lease.id);
     },
-    onRefresh: () => showLease(lease.id), onResult: result => {
+    onRefresh: () => loadLease(lease.id), onResult: result => {
       scheduleRefresh();
       if (request === detailRequest && $('detail').open) renderLeaseDetail(result, leases, request, `${leaseActionResult(result)}${result.state === 'active' ? ' Expires: ' + when(result.expires_at) : ''}`);
     }});
@@ -427,7 +443,13 @@ function renderLeaseDetail(lease, leases, request, resultNote = '') {
   $('close-detail').focus();
 }
 $('close-detail').addEventListener('click', () => $('detail').close());
-$('detail').addEventListener('close', () => { detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null; });
+$('detail').addEventListener('close', () => {
+  // A queued close event from Back must not tear down a dialog reopened by a
+  // quick Forward. The URL is already authoritative for history-driven closes.
+  if ($('detail').open) return;
+  if (navigation.current.lease) { navigation.navigate({view, lease: null}); return; }
+  detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
+});
 function renderMessages() {
   const root = $('messages'); root.replaceChildren();
   for (const m of [...state.messages].reverse()) {
@@ -459,5 +481,5 @@ function renderHost() {
 }
 
 setInterval(updateFreshness, 1000);
-selectView('monitor');
+applyDashboardRoute(navigation.current);
 bootstrap();
