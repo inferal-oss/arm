@@ -16,6 +16,7 @@ import (
 )
 
 const sessionRequestLimit = 4
+const sessionConnectTimeout = 10 * time.Second
 
 type sessionResponse struct {
 	raw json.RawMessage
@@ -47,7 +48,11 @@ type Session struct {
 }
 
 func OpenSession(ctx context.Context, home string) (*Session, error) {
-	conn, err := Connect(ctx, home)
+	// The endpoint can accept TCP without completing a WebSocket handshake.
+	// Bound that dial alone; the established Session keeps its caller's lifetime.
+	dialCtx, cancelDial := context.WithTimeout(ctx, sessionConnectTimeout)
+	conn, err := Connect(dialCtx, home)
+	cancelDial()
 	if err != nil {
 		return nil, err
 	}

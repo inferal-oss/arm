@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: bounded native session connection
+
+An actual loopback endpoint that accepts HTTP without completing the WebSocket upgrade reaches a ten-second handshake deadline without cancelling the caller. A successful connection continues serving calls after its temporary handshake context is cancelled, and caller cancellation closes the established session. All thirteen native client race tests and vet passed; both new handshake/lifetime regressions also passed on actual Linux arm64. This closes a reconnect hang found during TUI review; mutation retry behavior is unchanged.
+
 ## October 21, 2026: interactive terminal dashboard
 
 All 22 terminal-dashboard tests passed under the native race detector; focused CLI checks and vet also passed. Actual backend integration checks stale revision refusal, declined actions without effects, one release journal event, shared monitoring and reconnect to authoritative budgets. Review fixed overlapping lookup/retry and stale-result races, mismatched message responses, bracketed paste routing, reset-journal history, ambiguous partial lease failures and an expiry preview that failed to advance with accepted-from-now TTL. Deterministic regressions preserve the original uncertain request and prevent late results clearing newer work.
