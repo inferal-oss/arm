@@ -198,7 +198,12 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 	value, e := m.store.WithPeer(peer.Identity.Host, func(current mesh.Peer) (any, error) { return m.dispatch(ctx, current, request) })
 	respond(value, e)
 }
-func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh.Request) (any, error) {
+func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh.Request) (value any, err error) {
+	defer func() {
+		if err == nil {
+			value, err = meshWithoutPolicy(value)
+		}
+	}()
 	grant := peer.Grant
 	require := func(permission string) error {
 		if !grant.Has(permission) {

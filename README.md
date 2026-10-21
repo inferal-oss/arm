@@ -144,7 +144,7 @@ arm pool history POOL_ID
 arm release LEASE_ID
 ```
 
-Host-specific pools belong to the stable local host. Global pools have no resource host and share one ledger among clients of the current authority; multi-host transport/coordination is still pending. Counts are nonnegative int64 capacities and positive integral claims; zero capacity pauses grants. Custom-only `acquire --pool` defaults to no CPU reservation. Combine repeated `--pool` flags with native claims for a complete grant. Supervised commands receive their normalized claims in `ARM_POOLS` JSON.
+Host-specific pools belong to the stable local host. Global pools have no resource host and share one ledger among clients of the current authority; cross-host pool coordination is still pending. Counts are nonnegative int64 capacities and positive integral claims; zero capacity pauses grants. Custom-only `acquire --pool` defaults to no CPU reservation. Combine repeated `--pool` flags with native claims for a complete grant. Supervised commands receive their normalized claims in `ARM_POOLS` JSON.
 
 Capacity creation/changes, their attributed journal entries, retry results and events commit together. `adjust` applies a signed delta atomically; other edits require the current `--revision`. Reuse an explicit operation key with the same parameters to retry an uncertain result without applying it twice. A retry returns the original result; inspect the pool separately for its latest state. Mutation errors include the operation key, including generated keys. The journal records the authenticated owner, optional agent/session/registration/project, time, reason, before/after capacity and revision. `history` paginates with `--after CURSOR`.
 
@@ -152,9 +152,31 @@ A reduction below reservations records a deficit and blocks further grants witho
 
 These are cooperative logical permits. Ordinary release/expiry returns them after lease settlement; uncertain supervised work or unresolved bundled resources keep them charged. ARM does not infer that an arbitrary external activity stopped, implement service fencing, or create physical capacity when a custom pool grows. `resources` includes exact pool counts, deficits, consumers and reasons; Resources in both dashboards supports reviewed pool controls and the attributed capacity-change journal. Reductions preserve outstanding leases and expose a deficit; deleting a definition requires all consuming and queued claims to settle.
 
+## Owner and nested policy budgets
+
+Every local lease also counts against a stable authority/OS-user policy root. Optional child budgets add CPU, memory, disk and custom-pool ceilings without reserving capacity:
+
+```sh
+arm budget list --json
+arm budget inspect self --json
+arm budget create builds --limits '{"cpu":2,"memory_bytes":2147483648}' --reason "Coordinate build commitments" --key CREATE_KEY
+# Use after.id from the returned definition:
+arm acquire --budget BUDGET_ID --cpu 1 --memory 512MiB --ttl 10m --reason "Analysis within build policy"
+arm budget consumers BUDGET_ID --json
+arm budget history BUDGET_ID --json
+arm budget set BUDGET_ID --limits '{"cpu":1}' --revision CURRENT_REVISION --reason "Reduce future CPU commitments" --key CHANGE_KEY
+arm budget lookup --key CHANGE_KEY --json
+```
+
+`set --limits` replaces the complete limits object: omitted/null native fields add no ceiling, explicit zero forbids that positive resource dimension, and `{}` clears all extra ceilings. Use exact byte integers and pool-ID/count pairs. All ancestor ceilings and ordinary host capacity must fit together. A reduction can leave a visible deficit while existing leases retain their terms. Drain blocks new bindings and renewals; already queued requests retain their place. Definitions and mutations have revision guards and an attributed transactional journal.
+
+These budgets constrain additional allocations. They do not reuse an executing parent's reservation or carve a resource subpool. Root and child usage overlap in policy views but each actual allocation is counted once against the host. Agent/project labels cannot create a new owner root. Remote peers count the destination user's root and their separate directional grant; selecting/administering local policy budgets through mesh or browser RPCs is unsupported. Native same-user access remains cooperative rather than separate agent authentication.
+
+Policy-corrupt startup remains observable with `budget_error`, preserves original records, and blocks fresh grants, renewals and policy mutations. Ordinary safe release, expiry, reconciliation and handoff remain available. This limited recovery mode does not repair policy data or ignore general database/schema failures. Browser/TUI policy editors and true resource subpools remain planned.
+
 ## Agent integration
 
-Read `arm agents` for the full operating guide, or `arm agents --json` for structured sections and command examples. It works offline without creating state and covers leases, managed storage, ports, counted pools, exact-session registration, warnings, polling and operator communication. `arm agent list` lists registered contacts. Installed instructions point to the guide using the installation's executable and state-directory prefix.
+Read `arm agents` for the full operating guide, or `arm agents --json` for structured sections and command examples. It works offline without creating state and covers leases, owner/nested policy ceilings, managed storage, ports, counted pools, exact-session registration, warnings, polling and operator communication. `arm agent list` lists registered contacts. Installed instructions point to the guide using the installation's executable and state-directory prefix.
 
 List embedded workload policies with `arm agents card --list --json` (`arm agents card list` is an alias). This returns catalog metadata without card bodies. Read one with `arm agents card NAME --json`, or use `--markdown` for plain Markdown in a pipe. Before Cargo work, read `arm agents card rust-build --json` for temporary artifacts, output export and cleanup policy. Discovery works offline.
 

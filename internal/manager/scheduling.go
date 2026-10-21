@@ -256,6 +256,11 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 			add("pool_capacity", claim.Pool, pool.Unit, "Pool permits are unavailable. The operator may grow this cooperative pool.", number(model.CountQuantity(claim.Quantity)), number(model.CountQuantity(max(int64(0), pool.Capacity-s.poolUsed[claim.Pool]))))
 		}
 	}
+	policyBlockers, err := m.queuedBudgetBlockers(l, s.leases)
+	if err != nil {
+		policyBlockers = []model.QueueBlocker{{Code: "invalid_accounting", Detail: "Policy lineage or outstanding accounting is invalid; admission is paused. Inspect budget evidence and reconcile provider obligations without rebinding allocations."}}
+	}
+	info.Blockers = append(info.Blockers, policyBlockers...)
 	if len(l.Request.Ports) > 0 {
 		detail := "Port availability is checked at binding time; no socket is held by this queued request."
 		if l.Failure != "" {
@@ -276,7 +281,7 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	if len(info.Blockers) == 0 {
 		add("dispatch_pending", "", "", "Budget currently fits; the scheduler must still make a fresh atomic admission decision.", nil, nil)
 	}
-	if position == 1 && !m.draining {
+	if position == 1 && !m.draining && len(policyBlockers) == 0 {
 		info.Estimate = m.estimateQueued(l, s, at)
 	}
 	return info, nil

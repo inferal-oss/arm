@@ -35,6 +35,9 @@ func TestAgentsGuideWorksOfflineWithoutStateOrAgentCLIs(t *testing.T) {
 			}
 			seen[section.ID] = true
 		}
+		if !seen["budgets"] {
+			t.Fatal("guide omits authenticated owner policy discovery")
+		}
 	}
 	if _, err := os.Stat(home); !os.IsNotExist(err) {
 		t.Fatalf("offline guide created state: %v", err)

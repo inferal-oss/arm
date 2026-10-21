@@ -27,6 +27,7 @@ func (r Resources) FitsRemaining(used, capacity Resources) bool {
 }
 
 type Request struct {
+	Budget            string        `json:"budget,omitempty"`
 	StartDeadline     *time.Time    `json:"start_deadline_at,omitempty"`
 	PeerCertificate   string        `json:"origin_certificate,omitempty"`
 	PeerGrantRevision int           `json:"origin_grant_revision,omitempty"`
@@ -51,29 +52,32 @@ type Request struct {
 }
 
 type Lease struct {
-	QueueInfo     *QueueInfo       `json:"queue_info,omitempty"`
-	ID            string           `json:"id"`
-	Host          string           `json:"host"`
-	Owner         string           `json:"owner"`
-	OwnerUsername string           `json:"owner_username,omitempty"`
-	Request       Request          `json:"request"`
-	State         string           `json:"state"`
-	Outcome       string           `json:"outcome,omitempty"`
-	Failure       string           `json:"failure,omitempty"`
-	Created       time.Time        `json:"created_at"`
-	Started       *time.Time       `json:"started_at,omitempty"`
-	Expires       *time.Time       `json:"expires_at,omitempty"`
-	Ended         *time.Time       `json:"ended_at,omitempty"`
-	Revision      int              `json:"revision"`
-	PID           int              `json:"pid,omitempty"`
-	ManagedDir    string           `json:"managed_dir,omitempty"`
-	ExitCode      *int             `json:"exit_code,omitempty"`
-	Capabilities  []string         `json:"capabilities"`
-	Artifact      *Artifact        `json:"artifact,omitempty"`
-	Ports         []PortBinding    `json:"ports,omitempty"`
-	Process       *ProcessIdentity `json:"process_identity,omitempty"`
-	Usage         *WorkloadUsage   `json:"usage,omitempty"`
-	Workload      *WorkloadBinding `json:"workload,omitempty"`
+	Budget        *BudgetBinding         `json:"budget_binding,omitempty"`
+	BudgetPolicy  []BudgetPolicyRevision `json:"budget_policy,omitempty"`
+	BudgetError   *Error                 `json:"budget_error,omitempty"`
+	QueueInfo     *QueueInfo             `json:"queue_info,omitempty"`
+	ID            string                 `json:"id"`
+	Host          string                 `json:"host"`
+	Owner         string                 `json:"owner"`
+	OwnerUsername string                 `json:"owner_username,omitempty"`
+	Request       Request                `json:"request"`
+	State         string                 `json:"state"`
+	Outcome       string                 `json:"outcome,omitempty"`
+	Failure       string                 `json:"failure,omitempty"`
+	Created       time.Time              `json:"created_at"`
+	Started       *time.Time             `json:"started_at,omitempty"`
+	Expires       *time.Time             `json:"expires_at,omitempty"`
+	Ended         *time.Time             `json:"ended_at,omitempty"`
+	Revision      int                    `json:"revision"`
+	PID           int                    `json:"pid,omitempty"`
+	ManagedDir    string                 `json:"managed_dir,omitempty"`
+	ExitCode      *int                   `json:"exit_code,omitempty"`
+	Capabilities  []string               `json:"capabilities"`
+	Artifact      *Artifact              `json:"artifact,omitempty"`
+	Ports         []PortBinding          `json:"ports,omitempty"`
+	Process       *ProcessIdentity       `json:"process_identity,omitempty"`
+	Usage         *WorkloadUsage         `json:"usage,omitempty"`
+	Workload      *WorkloadBinding       `json:"workload,omitempty"`
 }
 
 type Event struct {
@@ -85,6 +89,7 @@ type Event struct {
 }
 
 type Status struct {
+	BudgetError    *Error         `json:"budget_error,omitempty"`
 	Host           string         `json:"host"`
 	Owner          string         `json:"owner"`
 	OwnerUsername  string         `json:"owner_username,omitempty"`

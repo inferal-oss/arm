@@ -73,7 +73,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && (detail.Code == "agent_message_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted") {
+		if errors.As(e, &detail) && (detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))
@@ -132,6 +132,7 @@ Commands:
   storage COMMAND           Manage files, exports and short retention
   ports reserve|list|discover Manage port reservations and native inventory
   pool create|list|inspect|history|set|adjust  Manage counted host/global pools
+  budget list|inspect|create|set|history      Manage local owner policy ceilings
   acquire                   Request a resource lease
   run                       Execute a command under a supervised lease
   inspect|release|cancel ID  Inspect or end a lease
@@ -213,6 +214,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.ports(args)
 	case "pool":
 		return a.pool(args)
+	case "budget":
+		return a.budget(args)
 	case "events":
 		f := a.flags(cmd)
 		follow := f.Bool("follow", false, "stream live events")
@@ -382,6 +385,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	}
 	reason := f.String("reason", "", "required purpose")
 	ttl := f.Duration("ttl", 10*time.Minute, "lease duration from grant")
+	budget := f.String("budget", "", "local policy budget ID (default: authenticated owner root); additional allocation, not parent-reservation reuse")
 	startDeadline := f.String("start-deadline", "", "latest start `timestamp` (absolute RFC3339, local host only)")
 	wait := f.Bool("wait", false, "queue and wait for capacity")
 	key := f.String("key", "", "idempotency key")
@@ -504,7 +508,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		stamp = stamp.UTC()
 		deadline = &stamp
 	}
-	r := model.Request{StartDeadline: deadline, Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
+	r := model.Request{Budget: *budget, StartDeadline: deadline, Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
 	if usagePolicy.Mode != "" {
 		r.UsagePolicy = &usagePolicy
 	} else {

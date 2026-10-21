@@ -46,6 +46,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
+        shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
         shutil.copyfile(root / "scripts" / "test-agent-messages.py", target / "test-agent-messages.py")
         os.chmod(target, 0o755)
         for child in target.iterdir():
@@ -71,6 +72,7 @@ python3 /tests/test-terminal-recovery.py --arm /tests/arm
 python3 /tests/test-memory.py --arm /tests/arm
 python3 /tests/test-lifecycle.py --arm /tests/arm
 python3 /tests/test-scheduling.py --arm /tests/arm
+python3 /tests/test-budgets.py --arm /tests/arm
 python3 /tests/test-agent-messages.py --arm /tests/arm
 '''
         subprocess.run([
