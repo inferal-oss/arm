@@ -14,8 +14,8 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-var accent = lipgloss.NewStyle().Foreground(lipgloss.Color("#71dbc4"))
-var muted = lipgloss.NewStyle().Foreground(lipgloss.Color("#97a7b8"))
+var accent = lipgloss.NewStyle().Foreground(colorAccent)
+var muted = lipgloss.NewStyle().Foreground(lipgloss.Color("#95a8b3"))
 var strong = lipgloss.NewStyle().Bold(true)
 
 func scrollReview(view *viewport.Model, key string) bool {
@@ -45,14 +45,26 @@ func (m *dashboardModel) mainWidth() int {
 	return m.width
 }
 func (m *dashboardModel) resize() {
-	m.viewport.SetWidth(max(1, m.mainWidth()-4))
-	m.viewport.SetHeight(max(1, m.height-8))
-	m.input.SetWidth(max(10, m.mainWidth()-10))
+	width, height := m.viewportGeometry()
+	m.viewport.SetWidth(max(1, width))
+	m.viewport.SetHeight(max(1, height))
+	m.input.SetWidth(max(10, width-4))
 }
 func (m *dashboardModel) syncViewport() {
-	m.viewport.SetContent(m.displayContent())
+	m.resize()
+	m.viewport.SetContent(m.viewportContent())
+}
+func (m *dashboardModel) viewportContent() string {
+	content := m.displayContent()
+	if m.modal() {
+		return ansi.Wrap(content, max(1, min(m.mainWidth(), 88)-4), "")
+	}
+	return content
 }
 func (m *dashboardModel) displayContent() string {
+	if m.inputMode != "" {
+		return fieldLabels(m.editorDisplay())
+	}
 	body := m.bodyText()
 	if m.feedFocus && m.detail == nil {
 		body = m.feedText(max(1, m.mainWidth()-4), true)
@@ -62,18 +74,43 @@ func (m *dashboardModel) displayContent() string {
 	}
 	if m.review != nil {
 		body = m.leaseReviewText()
+		body = strings.TrimPrefix(body, "REVIEW "+strings.ToUpper(m.review.request.Action)+"\n\n")
+		if !m.pending && m.connected {
+			body = strings.TrimSuffix(body, "\n\ny confirm this exact request · n/Esc keep unchanged")
+			label := "Extend lease"
+			tone := ""
+			if m.review.request.Action == "release" {
+				label = "Release lease"
+				tone = "danger"
+			}
+			if m.review.request.Action == "cancel" {
+				label = "Cancel lease"
+				tone = "danger"
+			}
+			body += "\n\n" + keycap("y", label, tone) + "  " + keycap("n/Esc", "Keep lease", "quiet")
+		}
 	}
 	if m.composer != nil {
 		body = m.messageReviewText()
 	}
-	return body
+	return fieldLabels(body)
 }
 func (m *dashboardModel) keepSelectionVisible() {
 	m.syncViewport()
+	if m.view == 2 && m.detail == nil && m.record == nil && m.resourceID == "" && !m.feedFocus && !m.modal() {
+		row := m.leaseTableSelectionRow()
+		if row < m.viewport.YOffset() {
+			m.viewport.SetYOffset(row)
+		} else if row+1 >= m.viewport.YOffset()+m.viewport.Height() {
+			m.viewport.SetYOffset(max(0, row-m.viewport.Height()+2))
+		}
+		return
+	}
 	row := 0
 	width := max(1, m.viewport.Width())
 	for _, line := range strings.Split(m.displayContent(), "\n") {
-		if strings.HasPrefix(line, "> ") {
+		plain := ansi.Strip(line)
+		if strings.HasPrefix(plain, "> ") || strings.HasPrefix(plain, "╔═ > ") || strings.HasPrefix(plain, "╭─ > ") {
 			if row < m.viewport.YOffset() {
 				m.viewport.SetYOffset(row)
 			} else if row >= m.viewport.YOffset()+m.viewport.Height() {
@@ -155,87 +192,6 @@ func fitBlock(text string, width, height int) string {
 	}
 	return strings.Join(out, "\n")
 }
-func (m *dashboardModel) View() tea.View {
-	if m.width < 45 || m.height < 14 {
-		view := tea.NewView(fitBlock("ARM dashboard\n\nEnlarge the terminal to at least 45 × 14.\nq or Ctrl+C exits; leases keep running.", m.width, m.height))
-		view.AltScreen = true
-		return view
-	}
-	header := accent.Render("◈ ARM") + "  " + strong.Render(short(m.data.status.Host, max(5, m.width-55)))
-	state := "○ disconnected · stale"
-	if m.connecting {
-		state = "◌ connecting"
-	}
-	if m.connected {
-		state = "● connected"
-	}
-	header += "  " + muted.Render(state)
-	nav := make([]string, len(viewNames))
-	for i, name := range viewNames {
-		text := fmt.Sprintf(" %d %s ", i+1, name)
-		if i == m.view {
-			text = lipgloss.NewStyle().Background(lipgloss.Color("#183d3b")).Foreground(lipgloss.Color("#a4ffdf")).Bold(true).Render(text)
-		}
-		nav[i] = text
-	}
-	if m.width < 80 {
-		for i, name := range viewNames {
-			nav[i] = fmt.Sprintf("%d%s", i+1, name[:1])
-			if i == m.view {
-				nav[i] = accent.Render("[" + nav[i] + "]")
-			}
-		}
-	}
-	title := viewNames[m.view]
-	if m.detail != nil {
-		title = "Lease details · " + short(m.detail.ID, 36)
-	}
-	if m.record != nil {
-		title = "Structured record · Enter expands/collapses · Esc returns"
-	}
-	if m.feedFocus && m.record == nil && m.detail == nil && m.review == nil && m.composer == nil {
-		title = "Activity feed · Enter opens lease · Tab returns"
-	}
-	if m.filter != "" && m.detail == nil {
-		title += " · filter: " + short(m.filter, 30)
-	}
-	body := m.displayContent()
-	viewport := m.viewport
-	viewport.SetContent(body)
-	main := lipgloss.NewStyle().Padding(0, 1).Render(fitBlock(viewport.View(), max(1, m.mainWidth()-2), max(1, m.height-8)))
-	if m.width >= 110 {
-		feed := accent.Render("LIVE FEED") + "\n" + muted.Render("leases · messages · operations") + "\n\n" + m.feedText(30, false)
-		main = lipgloss.JoinHorizontal(lipgloss.Top, main, muted.Render("│")+" "+fitBlock(feed, 32, max(1, m.height-8)))
-	} else if m.feedOpen && m.detail == nil && m.record == nil && m.review == nil && m.composer == nil {
-		main = fitBlock(accent.Render("LIVE FEED · f closes")+"\n\n"+m.feedText(m.width-4, true), m.width, max(1, m.height-8))
-	}
-	fresh := "Awaiting snapshot"
-	if !m.lastRefresh.IsZero() {
-		fresh = fmt.Sprintf("Snapshot %ds ago", max(0, int(m.timeNow.Sub(m.lastRefresh).Seconds())))
-	}
-	if m.view == 0 && !m.timeMonitor.IsZero() {
-		age := m.page.Age + m.timeNow.Sub(m.timeMonitor)
-		fresh = fmt.Sprintf("Sample %ds ago · %s cadence · %d/60 points", max(0, int(age.Seconds())), m.page.Cadence, len(m.history))
-		if m.page.Stale || !m.connected || age > m.page.StaleAfter {
-			fresh = "STALE · " + fresh
-		}
-	}
-	footer := "1–6 views · ↑↓ select · Enter inspect · Tab feed · / filter · ? help · q exit"
-	if m.detail != nil {
-		footer = "e extend · x release · c cancel · r refresh · i record · Esc return"
-	}
-	if m.view == 3 && m.detail == nil {
-		footer = "n message agent · b broadcast · y reply · Enter record · Tab feed · ? help"
-	}
-	if m.inputMode != "" {
-		footer = strong.Render(map[string]string{"filter": "Filter", "ttl": "New duration FROM NOW (max 7d)", "recipient": "Recipient ID (or broadcast)", "body": "Message (one line)"}[m.inputMode]) + ": " + m.input.View() + " · Enter review · Esc cancel"
-	}
-	content := fitBlock(header, m.width, 1) + "\n" + fitBlock(strings.Join(nav, " "), m.width, 1) + "\n" + fitBlock(strong.Render(short(title, m.width)), m.width, 1) + "\n" + fitBlock(muted.Render(fresh), m.width, 1) + "\n" + main + "\n" + fitBlock(accent.Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + fitBlock(short(m.notice, m.width), m.width, 1) + "\n" + fitBlock(footer, m.width, 1) + "\n" + fitBlock(muted.Render("Local operator · closing leaves leases running · f compact feed"), m.width, 1)
-	view := tea.NewView(content)
-	view.AltScreen = true
-	view.WindowTitle = "ARM · " + viewNames[m.view]
-	return view
-}
 
 func (m *dashboardModel) bodyText() string {
 	if m.detail != nil {
@@ -267,7 +223,10 @@ func (m *dashboardModel) filteredLeases() []model.Lease {
 	out := make([]model.Lease, 0)
 	filter := strings.ToLower(m.filter)
 	for _, l := range m.data.status.Leases {
-		if filter == "" || strings.Contains(strings.ToLower(l.ID+" "+l.Request.Reason+" "+l.State+" "+l.Request.Agent+" "+l.Request.Project+" "+l.OwnerUsername), filter) {
+		if m.hideInactive && l.State == "terminal" {
+			continue
+		}
+		if filter == "" || strings.Contains(strings.ToLower(l.ID+" "+l.Request.Reason+" "+l.State+" "+leaseLabel(l)+" "+l.Request.Agent+" "+l.Request.Project+" "+l.OwnerUsername), filter) {
 			out = append(out, l)
 		}
 	}
@@ -292,35 +251,69 @@ func selectedPrefix(selected, index int) string {
 func (m *dashboardModel) leasesText() string {
 	var out strings.Builder
 	leases := m.filteredLeases()
+	mark := " "
+	if m.hideInactive {
+		mark = "x"
+	}
+	fmt.Fprintf(&out, "[%s] Hide inactive leases · [h] toggle · %d visible\n\n", mark, len(leases))
 	if len(leases) == 0 {
-		return "No matching leases."
+		return out.String() + "◇ No matching leases\n\nClear the filter or wait for an agent to reserve resources.\nNew claims will appear here automatically."
 	}
-	for i, l := range leases {
-		fmt.Fprintf(&out, "%s%s · %s · %s\n  %s\n  %s · expires %s\n\n", selectedPrefix(m.selected, i), safe(l.ID), safe(l.State), safe(l.Request.Kind), safe(l.Request.Reason), owner(l.Owner, l.OwnerUsername), date(l.Expires))
-	}
+	out.WriteString(m.leaseTable(leases))
 	return out.String()
 }
 func (m *dashboardModel) resourcesText() string {
-	var out strings.Builder
+	var cards []string
+	width := max(12, m.mainWidth()-4)
 	for i, r := range m.filteredResources() {
-		fmt.Fprintf(&out, "%s%s · %s\n  Total %s   Reserved %s   Available %s\n", selectedPrefix(m.selected, i), safe(r.Kind), safe(r.Pool), quantity(r.BudgetTotal, r.Unit), quantity(r.Reserved, r.Unit), quantity(r.Available, r.Unit))
+		totalLabel := "Capacity"
+		title := strings.ToUpper(safe(r.Kind))
+		if r.Kind == "memory" {
+			totalLabel = "Reservable now"
+			title = "MEMORY · LIVE BUDGET"
+		}
+		if r.Custom != nil {
+			title = safe(r.Custom.Pool.Name) + " · " + strings.ToUpper(r.Custom.Pool.Scope)
+		}
+		if i == m.selected {
+			title = "> " + title
+		}
+		inner := width - 4
+		lines := []string{align(muted.Render(totalLabel), strong.Render(quantity(r.BudgetTotal, r.Unit)), inner), align(muted.Render("Promised"), quantity(r.Reserved, r.Unit), inner), align(muted.Render("Available"), strong.Foreground(colorAccent).Render(quantity(r.Available, r.Unit)), inner)}
 		if r.Deficit != "" && r.Deficit != "0" {
-			out.WriteString("  Deficit " + quantity(r.Deficit, r.Unit) + "\n")
+			lines = append(lines, align(strong.Foreground(colorWarning).Render("SHORTFALL"), strong.Foreground(colorWarning).Render(quantity(r.Deficit, r.Unit)), inner))
 		}
+		if r.Kind == "memory" {
+			lines = append(lines, muted.Render("Changes with current host headroom · not physical RAM"))
+		}
+		lines = append(lines, muted.Foreground(colorLine).Render(strings.Repeat("─", inner)))
 		if len(r.Users) == 0 {
-			out.WriteString("  No lease consumers\n")
+			lines = append(lines, muted.Render("No lease consumers"))
 		}
-		for _, u := range r.Users {
-			fmt.Fprintf(&out, "  ↳ %s · %s · %s\n    Why: %s\n", safe(u.Lease), owner(u.Owner, u.OwnerUsername), quantity(u.Quantity, r.Unit), safe(u.Reason))
+		for _, u := range r.Users[:min(3, len(r.Users))] {
+			lines = append(lines, align(safe(u.Agent), quantity(u.Quantity, r.Unit), inner), muted.Render(m.owner(u.Owner, u.OwnerUsername, r.Host)), ansi.Wrap("Why: "+safe(u.Reason), inner, ""))
 		}
-		out.WriteString("\n")
+		if len(r.Users) > 3 {
+			lines = append(lines, muted.Render(fmt.Sprintf("+%d more consumers · Enter to browse", len(r.Users)-3)))
+		}
+		cards = append(cards, window(title, strings.Join(lines, "\n"), width, 0, i == m.selected, ""))
 	}
-	return out.String()
+	if len(cards) == 0 {
+		return "No matching resources.\n\nClear the filter or refresh the backend snapshot."
+	}
+	return strings.Join(cards, "\n")
 }
+
 func (m *dashboardModel) leaseDetailText() string {
 	l := m.detail
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s\nState: %s · revision %d\nWhy: %s\nOwner: %s\nAgent: %s\nProject: %s\nHost: %s\n\nCPU: %g cores\nMemory: %s\nDisk: %s\nExpires: %s\n", safe(l.ID), safe(l.State), l.Revision, safe(l.Request.Reason), owner(l.Owner, l.OwnerUsername), safe(l.Request.Agent), safe(l.Request.Project), safe(l.Host), l.Request.Resources.CPU, byteCount(fmt.Sprint(l.Request.Resources.Memory)), byteCount(fmt.Sprint(l.Request.Resources.Disk)), date(l.Expires))
+	fmt.Fprintf(&out, "%s\nState: %s · revision %d\nWhy: %s\nOwner: %s\nAgent: %s\nProject: %s\nHost: %s\n\nCPU: %g cores\nMemory: %s\nDisk: %s\nExpires: %s\n", safe(l.ID), leaseLabel(*l), l.Revision, safe(l.Request.Reason), m.owner(l.Owner, l.OwnerUsername, l.Host), safe(l.Request.Agent), safe(l.Request.Project), safe(l.Host), l.Request.Resources.CPU, byteCount(fmt.Sprint(l.Request.Resources.Memory)), byteCount(fmt.Sprint(l.Request.Resources.Disk)), date(l.Expires))
+	if l.State == "terminal" {
+		fmt.Fprintf(&out, "Lifecycle: terminal · recorded outcome: %s\n", safe(l.Outcome))
+	}
+	if l.ExitCode != nil {
+		fmt.Fprintf(&out, "Exit code: %d\n", *l.ExitCode)
+	}
 	if l.Artifact != nil {
 		fmt.Fprintf(&out, "\nManaged files: %s\nPhase: %s · policy %s\n", safe(l.Artifact.Path), safe(l.Artifact.Phase), safe(l.Artifact.Policy))
 	}
@@ -368,7 +361,7 @@ func (m *dashboardModel) messagesText() string {
 	}
 	out.WriteString("\n\nn new · b broadcast · y reply to selected operator message\n\n")
 	for i, message := range m.data.messages {
-		fmt.Fprintf(&out, "%s%s → %s · %s\n  %s\n  %s\n", selectedPrefix(m.selected, i), safe(message.Sender), safe(message.Audience), message.Created.Local().Format("Jan 02 15:04:05"), safe(message.Body), safe(message.ID))
+		fmt.Fprintf(&out, "%s%s → %s · %s\n  %s\n  %s\n", selectedPrefix(m.selected, i), strong.Foreground(colorBlue).Render(safe(message.Sender)), accent.Render(safe(message.Audience)), message.Created.Local().Format("Jan 02 15:04:05"), safe(message.Body), safe(message.ID))
 		ids := make([]string, 0, len(message.Deliveries))
 		for id := range message.Deliveries {
 			ids = append(ids, id)
@@ -390,7 +383,7 @@ func (m *dashboardModel) eventsText() string {
 	var out strings.Builder
 	for i := len(m.events) - 1; i >= 0; i-- {
 		event := m.events[i]
-		fmt.Fprintf(&out, "%s%s · %s\n  %s · #%d\n\n", selectedPrefix(m.selected, len(m.events)-1-i), event.At.Local().Format("15:04:05"), safe(event.Type), safe(event.Entity), event.Sequence)
+		fmt.Fprintf(&out, "%s%s · %s\n  %s · #%d\n\n", selectedPrefix(m.selected, len(m.events)-1-i), muted.Render(event.At.Local().Format("15:04:05")), accent.Render(safe(event.Type)), safe(event.Entity), event.Sequence)
 	}
 	if len(m.events) == 0 {
 		return "No recorded events."
@@ -400,7 +393,7 @@ func (m *dashboardModel) eventsText() string {
 func (m *dashboardModel) hostText() string {
 	s := m.data.status
 	var out strings.Builder
-	fmt.Fprintf(&out, "Host: %s\nOwner: %s\nDraining: %t\nJournal cursor: %d\n\nLocal authority\nNative authenticated operator connection. No remote-host transport yet.\nClosing the dashboard never stops work.\n\nCapabilities\n", safe(s.Host), owner(s.Owner, s.OwnerUsername), s.Draining, s.Cursor)
+	fmt.Fprintf(&out, "Host: %s\nOwner: %s\nDraining: %t\nJournal cursor: %d\n\nLocal authority\nNative authenticated operator connection. This dashboard shows the local host; peer views are not available here.\nClosing the dashboard never stops work.\n\nCapabilities\n", safe(s.Host), m.owner(s.Owner, s.OwnerUsername, s.Host), s.Draining, s.Cursor)
 	for _, capability := range s.Capabilities {
 		out.WriteString("  • " + safe(capability) + "\n")
 	}
@@ -563,7 +556,7 @@ func (m *dashboardModel) resourceDetailText() string {
 		out += "No lease consumers.\n"
 	}
 	for i, u := range r.Users {
-		out += fmt.Sprintf("\n%s%s\n  %s · %s · %s\n  Why: %s\n", selectedPrefix(m.selected, i), safe(u.Lease), owner(u.Owner, u.OwnerUsername), quantity(u.Quantity, r.Unit), safe(u.State), safe(u.Reason))
+		out += fmt.Sprintf("\n%s%s\n  %s · %s · %s\n  Why: %s\n", selectedPrefix(m.selected, i), safe(u.Lease), m.owner(u.Owner, u.OwnerUsername, r.Host), quantity(u.Quantity, r.Unit), safe(u.State), safe(u.Reason))
 	}
 	return out + "\n↑↓ selects consumer · Enter inspects lease · i record · Esc budgets"
 }

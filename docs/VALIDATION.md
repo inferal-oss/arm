@@ -303,3 +303,11 @@ The October 20 checks establish the first local backend and CLI milestone. They 
 The browser JavaScript suite passed 54 tests. Real subprocess race tests verified natural successful/failed completion, preservation of explicit release/cancel/expiry/revocation even after graceful exit zero, restart persistence and unchanged historical outcomes. Dashboard server race checks and the compiled dashboard smoke passed, including serving the new embedded asset.
 
 Actual browser checks on a disposable backend verified keyboard checkbox operation/focus, preference and detail-route survival after reload, live updates, filtered historical detail links, and 390px/1440px layouts. Display-only synthetic rows established that unfamiliar and unresolved states remain visible; they do not establish provider enforcement. The existing 200-row rendered snapshot bound remains.
+
+## October 21, 2026: windowed terminal dashboard and lease tables
+
+Native TUI race tests and vet passed. Responsive rendering checks cover all six views at widths45–160 and verify bounded viewport geometry, stable selection, outcome labels, private preferences, mouse navigation/scroll/structured expansion and stale-confirmation rejection. Darwin/Linux arm64 and Linux amd64 CGo-free builds passed.
+
+The actual PTY suite covers six-view navigation, aligned lease-row drilldown, exact counts, mouse selection/decline/confirmation, keyboard extension, reviewed polling messages, resize/feed, remembered visibility and q/SIGTERM restoration of raw mode, mouse protocol and alternate screen. Exiting preserves unrelated active work. Deterministic Lip Gloss previews were inspected for lease tables, monitor windows and reviews; these use synthetic fixtures and establish visual composition, not native Terminal GUI acceptance. Combined multi-device I/O selectors remain a separate feature.
+
+The final isolated staged TUI race suite passed (4.867s), including additional responsive multi-row table/detail/selection regressions. The actual PTY rerun passed after fixing queued wheel input: read-only wheel events accumulate within the same view while clicks retain exact rendered-state guards. Resize/navigation still invalidate stale scroll contexts.

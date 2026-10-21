@@ -23,6 +23,7 @@ import (
 var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host"}
 
 type dashboardModel struct {
+	hideInactive                      bool
 	ctx                               context.Context
 	home                              string
 	session                           transport
@@ -35,9 +36,11 @@ type dashboardModel struct {
 	lastRefresh, timeNow, timeMonitor time.Time
 	page                              model.MonitorPage
 	history                           []model.MonitorPoint
+	selectedDisk, selectedNetwork     string
 	events                            []model.Event
 	width, height, view, selected     int
 	feedFocus, feedOpen               bool
+	feedOffset                        int
 	viewport                          viewport.Model
 	notice                            string
 	detail                            *model.Lease
@@ -93,6 +96,11 @@ func newDashboard(ctx context.Context, home string) *dashboardModel {
 	input.SetWidth(50)
 	m := &dashboardModel{ctx: ctx, home: home, width: 100, height: 30, timeNow: time.Now(), connecting: true, viewport: viewport.New(viewport.WithWidth(65), viewport.WithHeight(20)), input: input}
 	m.viewport.SoftWrap = true
+	p, err := readPreferences(home)
+	m.hideInactive = p.HideInactive
+	if err != nil {
+		m.notice = "Client settings not loaded: " + safe(err.Error())
+	}
 	m.resize()
 	m.syncViewport()
 	return m
@@ -204,6 +212,10 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.acceptMessageResult(msg)
 	case lookupResultMsg:
 		return m, m.acceptLookup(msg)
+	case dashboardMouseMsg:
+		return m, m.acceptMouse(msg)
+	case tea.MouseMsg:
+		return m, nil
 	case tea.KeyPressMsg:
 		return m, m.key(msg)
 	}
@@ -327,10 +339,23 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		m.selected = 0
 		m.filter = ""
 		m.feedFocus = false
+		m.feedOpen = false
 		m.viewport.GotoTop()
 		return nil
 	}
 	switch k {
+	case "h":
+		if m.view == 2 && !m.feedFocus {
+			id, previous := m.selectionID(), m.selected
+			m.hideInactive = !m.hideInactive
+			m.restoreSelection(id, previous)
+			m.viewport.GotoTop()
+			if err := writePreferences(m.home, preferences{Version: 1, HideInactive: m.hideInactive}); err != nil {
+				m.notice = "Filter changed for this session; saving failed: " + safe(err.Error())
+			} else {
+				m.notice = "Lease visibility preference saved"
+			}
+		}
 	case "q":
 		return tea.Quit
 	case "tab":
@@ -345,7 +370,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": "APFS volumes share container capacity. Clones and snapshots can share blocks; allocated size does not prove exclusive or reclaimable space.", "Disk and network": "Device/interface rates describe their own scope. Layered devices and virtual interfaces can overlap; do not sum them as independent physical traffic.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Remote host coordination is not implemented."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": "APFS volumes share container capacity. Clones and snapshots can share blocks; allocated size does not prove exclusive or reclaimable space.", "Disk and network": "Device/interface rates describe their own scope. Layered devices and virtual interfaces can overlap; do not sum them as independent physical traffic.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. This dashboard shows the local host; peer views are not available here."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"
@@ -357,12 +382,21 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return refresh(m.ctx, m.session)
 		}
 	case "n":
+		if m.view == 0 && m.page.Latest != nil {
+			m.selectedNetwork = nextIO(m.page.Latest.Network, m.selectedNetwork)
+			return nil
+		}
 		if m.view == 3 {
 			return m.beginCompose(false)
 		}
 	case "b":
 		if m.view == 3 {
 			return m.beginCompose(true)
+		}
+	case "d":
+		if m.view == 0 && m.page.Latest != nil {
+			m.selectedDisk = nextIO(m.page.Latest.DiskIO, m.selectedDisk)
+			return nil
 		}
 	case "y":
 		if m.view == 3 {

@@ -121,3 +121,14 @@ func historyLine(points []model.MonitorPoint, width int, cadence time.Duration, 
 	}
 	return out.String()
 }
+
+// The live account lookup is explicitly distinct from a name recorded at creation.
+func (m *dashboardModel) owner(uid, username, host string) string {
+	if username != "" {
+		return owner(uid, username)
+	}
+	if host != "" && host == m.data.status.Host && uid == m.data.status.Owner && m.data.status.OwnerUsername != "" {
+		return owner(uid, m.data.status.OwnerUsername) + " · current account; historical name unknown"
+	}
+	return owner(uid, "")
+}

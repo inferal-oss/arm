@@ -304,3 +304,11 @@ Lease details, lists, resource consumers and the activity feed can supplement an
 Natural supervised exit records `completed` for exit zero and `failed` otherwise, while explicit release, cancellation, expiry or revocation retains its recorded outcome. Uncertain descendants remain charged and require attention. Existing history is never reinterpreted from an exit code.
 
 The browser shows human lifecycle/outcome labels and separate exit codes. Its remembered **Hide inactive leases** checkbox hides only `terminal` records; unknown states and unresolved obligations stay visible. Historical detail links remain available even when their rows are hidden. The preference is a browser-local boolean, with a session-only fallback when storage is unavailable.
+
+## Windowed terminal dashboard and lease table
+
+`arm dashboard terminal` uses Bubble Tea, Bubbles viewports and Lip Gloss windows/tables. The six views share the web navigation order, with a fixed status/action area and a live-feed window at wide sizes; compact layouts provide an accessible feed view. Monitor panels separate physical measurements from reservation budgets.
+
+Leases appear in aligned two-line rows: lease/account identity, outcome status, reason, claims and expiry. Narrow layouts reduce secondary columns; full IDs, reasons, claims and timestamps remain in details. Selection tracks the lease ID across refreshes. Mouse navigation, row selection/drilldown, scrolling, record expansion and reviewed action controls complement keyboard operation. Delayed clicks are bound to the rendered state, preventing a replaced or already-pending dialog from accepting an old confirmation. Closing restores terminal modes and leaves leases running.
+
+The terminal's Hide inactive toggle remembers a private client preference; only terminal records are hidden. Unresolved/unknown lifecycles remain visible. Current-account fallbacks are distinguished from usernames recorded when a lease was created. Remote peer views and full operational editor parity remain work.

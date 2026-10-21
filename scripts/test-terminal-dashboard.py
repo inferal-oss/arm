@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import pty
+import re
 import select
 import shutil
 import signal
@@ -72,7 +73,7 @@ def main():
             end = time.monotonic() + seconds
             while time.monotonic() < end:
                 output += drain(.1)
-                if text in output:
+                if text in re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', output):
                     return output
                 assert process.poll() is None, ('dashboard exited early', bytes(transcript).decode(errors='replace'))
             raise AssertionError(('missing terminal text', text, output[-6000:]))
@@ -80,14 +81,22 @@ def main():
         def send(text):
             os.write(master, text.encode())
 
+        def mouse(x, y, button=0):
+            # Real SGR terminal mouse protocol, including release. Coordinates
+            # are zero-based here; the terminal wire protocol is one-based.
+            send(f'\x1b[<{button};{x + 1};{y + 1}M')
+            if button < 64:
+                send(f'\x1b[<{button};{x + 1};{y + 1}m')
+
         wait_text('connected')
-        send('3')
+        assert b'\x1b[?1002h' in transcript and b'\x1b[?1006h' in transcript, 'terminal mouse mode was not enabled'
+        mouse(30, 1)  # Visible Leases navigation tab.
         wait_text('PTY build fixture')
-        send('\r')
+        mouse(4, 9)  # Selected lease table row, after the visibility checkbox.
         wait_text('Why: PTY build fixture')
-        send('x')
+        mouse(16, 37)  # Visible Release button: review only.
         wait_text('REVIEW RELEASE')
-        send('n')
+        mouse(23, 37)  # Explicit Keep unchanged button.
         drain(.2)
         assert cli('inspect', lease['id'])['revision'] == lease['revision'], 'declined action changed lease'
         send('e')
@@ -100,12 +109,15 @@ def main():
         assert renewed['revision'] == lease['revision'] + 1 and renewed['state'] == 'active'
         send('x')
         wait_text('REVIEW RELEASE')
-        send('y')
-        wait_text('State: terminal')
+        mouse(4, 37)  # Explicit Confirm; press/release must mutate once.
+        wait_text('State: Released')
         assert cli('inspect', lease['id'])['state'] == 'terminal'
         send('\x1b')
         drain(.15)
-        send('2')
+        send('3h')
+        wait_text('Lease visibility preference saved')
+        assert json.loads((root / 'state' / 'dashboard-client.json').read_text())['hide_inactive_leases'] is True
+        send('2/custom\r')
         wait_text('9223372036854775807')
         send('4n')
         wait_text('Recipient ID')
@@ -139,6 +151,9 @@ def main():
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 24, 70, 0, 0))
         os.kill(process.pid, signal.SIGWINCH)
         drain(.2)
+        mouse(10, 10, 65)  # Wheel down over compact monitor viewport.
+        mouse(10, 10, 65)
+        wait_text('STORAGE')
         send('f')
         wait_text('LIVE FEED')
         send('q')
@@ -151,6 +166,7 @@ def main():
         restored[3] &= ~getattr(termios, 'PENDIN', 0)
         original[3] &= ~getattr(termios, 'PENDIN', 0)
         assert restored == original, ('terminal mode was not restored', original, restored)
+        assert b'\x1b[?1002l' in transcript and b'\x1b[?1006l' in transcript, 'terminal mouse mode not restored'
         assert b'\x1b[?1049h' in transcript and b'\x1b[?1049l' in transcript, 'alternate screen not restored'
         # Exiting the dashboard must not stop the daemon or mutate other work.
         assert cli('status')['host']
@@ -158,6 +174,8 @@ def main():
         # A signal exit must restore the same terminal and leave work intact too.
         process = subprocess.Popen(prefix + ['dashboard', 'terminal'], stdin=slave, stdout=slave, stderr=slave, env=env, start_new_session=True)
         wait_text('connected')
+        send('3')
+        wait_text('[x] Hide inactive leases')
         process.send_signal(signal.SIGTERM)
         process.wait(timeout=5)
         drain(.1)
