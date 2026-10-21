@@ -43,14 +43,14 @@ func TestCLIExecutionExpiryAndUninstallGuard(t *testing.T) {
 		return code, out.String(), err.String()
 	}
 	code, out, err := call("run", "--reason", "CLI exit fixture", "--", "/bin/sh", "-c", "printf 'hello arm'; exit 7")
-	if code != 7 || out != "hello arm" || err != "" {
+	if code != 7 || !json.Valid([]byte(out)) || err != "hello arm" {
 		t.Fatalf("output or exit status lost: %d %q %q", code, out, err)
 	}
 	for _, boundary := range [][]string{{"--", "/bin/sh"}, {"/bin/sh"}} {
 		args := append([]string{"run", "--reason", "child option boundary"}, boundary...)
 		args = append(args, "-c", `printf '%s' "$@"`, "fixture", "--reason", "child", "--help", "--cpu", "8")
 		code, out, err = call(args...)
-		if code != 0 || out != "--reasonchild--help--cpu8" || err != "" {
+		if code != 0 || !json.Valid([]byte(out)) || err != "--reasonchild--help--cpu8" {
 			t.Fatalf("child flags interpreted by ARM: %d %q %q", code, out, err)
 		}
 	}
@@ -79,7 +79,7 @@ func TestCLIExecutionExpiryAndUninstallGuard(t *testing.T) {
 	}
 	os.WriteFile(filepath.Join(work, "fixture.sh"), []byte("#!/bin/sh\nprintf relative-cwd"), 0700)
 	code, out, err = call("run", "--reason", "relative executable fixture", "--cwd", work, "--", "./fixture.sh")
-	if code != 0 || out != "relative-cwd" {
+	if code != 0 || !json.Valid([]byte(out)) || err != "relative-cwd" {
 		t.Fatalf("cwd executable resolution: %d %q %q", code, out, err)
 	}
 	code, out, err = call("run", "--reason", "CLI expiry fixture", "--ttl", "50ms", "--json", "--", "/bin/sleep", "10")
@@ -90,7 +90,7 @@ func TestCLIExecutionExpiryAndUninstallGuard(t *testing.T) {
 	root := t.TempDir()
 	cx := filepath.Join(root, "codex")
 	cc := filepath.Join(root, "claude")
-	if code, _, err = call("install", "--codex-home", cx, "--claude-home", cc); code != 0 {
+	if code, _, err = call("install", "--yes", "--codex-home", cx, "--claude-home", cc); code != 0 {
 		t.Fatal(err)
 	}
 	code, out, err = call("acquire", "--cpu", "1", "--reason", "protect uninstall", "--ttl", "1m")
@@ -101,7 +101,7 @@ func TestCLIExecutionExpiryAndUninstallGuard(t *testing.T) {
 	if e := json.Unmarshal([]byte(out), &lease); e != nil {
 		t.Fatal(e)
 	}
-	if code, _, _ = call("uninstall"); code == 0 {
+	if code, _, _ = call("uninstall", "--yes"); code == 0 {
 		t.Fatal("uninstall ignored outstanding lease")
 	}
 	if _, e := os.Stat(filepath.Join(cx, "AGENTS.md")); e != nil {
@@ -110,7 +110,7 @@ func TestCLIExecutionExpiryAndUninstallGuard(t *testing.T) {
 	if code, _, err = call("release", lease.ID); code != 0 {
 		t.Fatal(err)
 	}
-	code, out, err = call("uninstall")
+	code, out, err = call("uninstall", "--yes")
 	if code != 0 {
 		t.Fatal(err)
 	}

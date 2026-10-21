@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -42,7 +41,7 @@ func (a *app) agentInbox(action string, args []string) error {
 	if action == "ack" {
 		f.StringVar(text, "text", "", "acknowledgement text, also sent to the operator inbox")
 	}
-	f.Bool("json", true, "JSON output (watch emits one JSON object per message)")
+	f.Bool("json", false, "JSON output (watch emits one JSON object per message)")
 	if err := a.parse(f, args, false); err != nil {
 		return err
 	}
@@ -99,7 +98,7 @@ func (a *app) agentInbox(action string, args []string) error {
 				return err
 			}
 			if !reconnecting {
-				fmt.Fprintln(a.err, "ARM inbox disconnected; reconnecting with the last emitted cursor")
+				a.notice("ARM inbox disconnected; reconnecting with the last emitted cursor")
 				reconnecting = true
 			}
 			select {
@@ -111,7 +110,7 @@ func (a *app) agentInbox(action string, args []string) error {
 			continue
 		}
 		if reconnecting {
-			fmt.Fprintln(a.err, "ARM inbox reconnected")
+			a.notice("ARM inbox reconnected")
 			reconnecting = false
 		}
 		backoff = 200 * time.Millisecond
@@ -127,7 +126,12 @@ func (a *app) agentInbox(action string, args []string) error {
 				Registration string `json:"registration"`
 				manager.InboxItem
 			}{page.Host, page.ID, page.Session, page.Registration, item}
-			if err = json.NewEncoder(a.out).Encode(line); err != nil {
+			if a.machine() {
+				err = json.NewEncoder(a.out).Encode(line)
+			} else {
+				err = a.print(line)
+			}
+			if err != nil {
 				return err
 			}
 			p.After = item.Cursor // advance only after a successful stdout write

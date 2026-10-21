@@ -2,6 +2,14 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: terminal presentation and installation confirmation
+
+The native macOS race/APFS suite and vet passed; final CLI/installer race tests passed after review. All seven compiled CLI acceptance checks passed on macOS and on the configured Linux arm64 SSH target in its private process namespace. Real PTY checks cover ANSI colors, NO_COLOR/TERM=dumb, explicit and redirected JSON, safe rendering of terminal control sequences, preview without writes, default-no/EOF/Ctrl-C cancellation, accepted prompts, noninteractive --yes, edited targets while awaiting approval, outstanding-lease refusal and preserving an idle backend on decline. Plan tests also cover changed file identities/modes, replaced roots, missing ancestors, symlinks, manifest changes, shared state/target roots and empty uninstall without state creation.
+
+Real authenticated Codex/Claude checks passed with the noninteractive confirmation contract, including instruction loading, native warning delivery, polling/acknowledgement, broadcasts and reversible installation in isolated roots. The release build remains CGo-free. Redirected run output now places the final lease JSON on stdout and child output on stderr; the pool smoke check was updated and rerun successfully on both platforms. Snapshot checks protect reviewed targets and retain existing safeguards; they do not establish a global filesystem transaction against arbitrary concurrent same-user writers.
+
+The shared web/TUI Monitor tab is specified and planned. Neither client nor host telemetry history/streaming is implemented or validated yet.
+
 ## October 21, 2026: start/stop shortcuts
 
 The CLI race suite passed with backend-independent `arm start`/`arm stop` help, scoped options and invalid-argument checks. The compiled macOS and Linux lifecycle acceptance checks use the shortcuts for actual background startup and idle shutdown, verify that a repeat canonical start preserves existing budgets, and prove that `stop` refuses an outstanding lease. The Linux CLI test executable and all six compiled smoke checks passed in the configured private process namespace. The shortcuts reuse the existing daemon operations and do not bypass safeguards.

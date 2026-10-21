@@ -74,8 +74,10 @@ def main():
             assert waiting.returncode == 0, stderr
             granted = json.loads(stdout)
             cli('release', granted['id'])
-            run = cli('run', '--pool', pool + '=1', '--pool', host['id'] + '=1', '--reason', 'consume both scopes', '--', '/bin/sh', '-c', 'printf "%s" "$ARM_POOLS"')
-            assert len(run) == 2 and {c['scope'] for c in run} == {'host', 'global'}
+            run = subprocess.run(prefix + ['run', '--pool', pool + '=1', '--pool', host['id'] + '=1', '--reason', 'consume both scopes', '--', '/bin/sh', '-c', 'printf "%s" "$ARM_POOLS"'], capture_output=True, text=True, timeout=15)
+            assert run.returncode == 0 and json.loads(run.stdout)['exit_code'] == 0
+            claims = json.loads(run.stderr)
+            assert len(claims) == 2 and {c['scope'] for c in claims} == {'host', 'global'}
             backend.kill()  # exact test-owned PID, no PID recovered from ARM state
             backend.wait(timeout=10)
             backend = start()

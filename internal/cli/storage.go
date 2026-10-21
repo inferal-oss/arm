@@ -23,7 +23,7 @@ func (a *app) storage(args []string) (int, error) {
 	if action == "cleanup" {
 		f.BoolVar(dry, "dry-run", false, "preview cleanup without changing data")
 	}
-	f.Bool("json", true, "JSON output")
+	f.Bool("json", false, "force JSON output (default: automatic)")
 	if err := a.parse(f, args, false); err != nil {
 		return 2, err
 	}

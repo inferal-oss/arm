@@ -32,28 +32,34 @@ import (
 const Version = "0.1.0-dev"
 
 type app struct {
-	home     string
-	in       io.Reader
-	out, err io.Writer
-	ctx      context.Context
+	home                          string
+	in                            io.Reader
+	out, err                      io.Writer
+	ctx                           context.Context
+	outputTTY, errorTTY, inputTTY bool
+	forceJSON, colors             bool
+	commandName                   string
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	a := app{home: local.Home(), in: in, out: out, err: errout, ctx: ctx}
+	a.outputTTY, a.errorTTY, a.inputTTY = terminal(out), terminal(errout), terminal(in)
+	a.colors = os.Getenv("NO_COLOR") == "" && os.Getenv("TERM") != "dumb"
 	f := a.flags("arm")
 	f.StringVar(&a.home, "home", a.home, "private ARM state directory (or ARM_HOME)")
+	f.BoolVar(&a.forceJSON, "json", false, "force JSON output, including in a terminal")
 	if e := a.parse(f, args, true); e != nil {
 		if errors.Is(e, flag.ErrHelp) {
 			return 0
 		}
-		fmt.Fprintln(errout, "arm:", e)
+		a.reportError(e)
 		return 2
 	}
 	abs, e := filepath.Abs(a.home)
 	if e != nil {
-		fmt.Fprintln(errout, e)
+		a.reportError(e)
 		return 1
 	}
 	a.home = abs
@@ -64,6 +70,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	}
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
+		a.reportError(model.Err("interrupted", "operation interrupted"))
 		return 130
 	}
 	if errors.Is(e, flag.ErrHelp) {
@@ -74,12 +81,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 		if errors.As(e, &argument) {
 			code = 2
 		}
-		var api *model.Error
-		if errors.As(e, &api) {
-			_ = json.NewEncoder(errout).Encode(map[string]any{"error": api})
-		} else {
-			fmt.Fprintln(errout, "arm:", e)
-		}
+		a.reportError(e)
 		if code == 0 {
 			code = 1
 		}
@@ -93,6 +95,9 @@ func (a *app) flags(name string) *flag.FlagSet {
 	return f
 }
 func (a *app) print(v any) error {
+	if !a.machine() {
+		return a.human(v)
+	}
 	enc := json.NewEncoder(a.out)
 	enc.SetIndent("", "  ")
 	return enc.Encode(v)
@@ -103,7 +108,7 @@ func (a *app) call(op string, p, result any) error {
 	return client.Call(ctx, a.home, op, p, result)
 }
 func (a *app) help() {
-	fmt.Fprintln(a.out, `Agent Resource Manager
+	fmt.Fprintln(a.out, a.paint("1;36", "Agent Resource Manager")+`
 Usage: arm [--home DIR] COMMAND [OPTIONS]
 
 Commands:
@@ -130,7 +135,8 @@ Commands:
   install|uninstall         Manage reversible agent instruction blocks
   version                   Print build and Go versions
 
-Use COMMAND --help for options. Status operations return JSON.
+Use COMMAND --help for options. Terminal output is human-readable; pipes use JSON.
+Use --json to force JSON output, including in a terminal.
 Use arm help COMMAND or arm GROUP --help to browse commands.
 Global --home DIR goes before COMMAND; ARM_HOME selects the same state directory.
 This initial backend uses cooperative CPU/memory/disk budgets, not OS quotas.`)
@@ -162,7 +168,7 @@ func (a *app) command(args []string) (int, error) {
 		return 0, nil
 	case "version":
 		f := a.flags("version")
-		f.Bool("json", true, "JSON output")
+		f.Bool("json", false, "force JSON output (default: automatic)")
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err
 		}
@@ -187,12 +193,17 @@ func (a *app) command(args []string) (int, error) {
 		f := a.flags(cmd)
 		follow := f.Bool("follow", false, "stream live events")
 		after := f.Int64("after", 0, "resume after this event sequence")
-		f.Bool("json", true, "JSON output")
+		f.Bool("json", false, "force JSON output (default: automatic)")
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
 		if *follow {
-			return 0, client.Follow(a.ctx, a.home, *after, func(ev model.Event) error { return json.NewEncoder(a.out).Encode(ev) })
+			return 0, client.Follow(a.ctx, a.home, *after, func(ev model.Event) error {
+				if !a.machine() {
+					return a.print(ev)
+				}
+				return json.NewEncoder(a.out).Encode(ev)
+			})
 		}
 		var result any
 		if e := a.call("events", map[string]any{"after": *after}, &result); e != nil {
@@ -201,7 +212,7 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.print(result)
 	case "status", "resources", "messages":
 		f := a.flags(cmd)
-		f.Bool("json", true, "JSON output")
+		f.Bool("json", false, "force JSON output (default: automatic)")
 		host := f.String("host", "localhost", "host ID or localhost")
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
@@ -229,7 +240,7 @@ func (a *app) command(args []string) (int, error) {
 	case "incidents":
 		f := a.flags("incidents")
 		lease := f.String("lease", "", "filter by lease `ID`")
-		f.Bool("json", true, "JSON incident records and evidence")
+		f.Bool("json", false, "JSON incident records and evidence")
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err
 		}
@@ -240,7 +251,7 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.print(result)
 	case "usage":
 		f := a.flags("usage")
-		f.Bool("json", true, "JSON output with observation scope and uncertainty")
+		f.Bool("json", false, "JSON output with observation scope and uncertainty")
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err
 		}
@@ -255,7 +266,7 @@ func (a *app) command(args []string) (int, error) {
 		if cmd == "renew" {
 			f.DurationVar(ttl, "ttl", 0, "required renewal `duration` from now")
 		}
-		f.Bool("json", true, "JSON output")
+		f.Bool("json", false, "force JSON output (default: automatic)")
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
@@ -357,10 +368,13 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	if command == "run" {
 		f.BoolVar(asJSON, "json", false, "send command output to stderr and final lease JSON to stdout")
 	} else {
-		f.BoolVar(asJSON, "json", true, "return the lease as JSON")
+		f.BoolVar(asJSON, "json", false, "return the lease as JSON")
 	}
 	if e := a.parse(f, args, command == "run"); e != nil {
 		return 2, e
+	}
+	if command == "run" {
+		*asJSON = a.machine()
 	}
 	if command == "storage" && len(f.Args()) > 0 {
 		providedDisk := false
@@ -544,10 +558,8 @@ func (a *app) acquire(command string, args []string) (int, error) {
 					continue
 				}
 			}
-			if *asJSON {
-				if e = a.print(l); e != nil {
-					return 1, e
-				}
+			if e = a.print(l); e != nil {
+				return 1, e
 			}
 			if l.Outcome == "expired" {
 				return 124, nil
@@ -568,10 +580,8 @@ func (a *app) acquire(command string, args []string) (int, error) {
 			return 0, nil
 		}
 		if l.State == "needs_attention" {
-			if *asJSON {
-				if e = a.print(l); e != nil {
-					return 1, e
-				}
+			if e = a.print(l); e != nil {
+				return 1, e
 			}
 			return 1, model.Err("needs_attention", "lease "+l.ID+" requires operator reconciliation: "+l.Failure)
 		}
@@ -621,7 +631,7 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		f.StringVar(listen, "listen", listenValue, "loopback backend `address`")
 	}
 	if action != "serve" {
-		f.Bool("json", true, "JSON output")
+		f.Bool("json", false, "force JSON output (default: automatic)")
 	}
 	if e := a.parse(f, args, false); e != nil {
 		return 2, e
@@ -740,7 +750,7 @@ func (a *app) agent(args []string) error {
 		f.StringVar(&c.Remote, "remote", "", "Codex unix `endpoint` for an isolated server")
 		f.BoolVar(&c.Idle, "idle", false, "declare that the Claude session is idle")
 	}
-	f.Bool("json", true, "JSON output")
+	f.Bool("json", false, "force JSON output (default: automatic)")
 	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
@@ -810,7 +820,7 @@ func (a *app) message(args []string) error {
 	}
 	body := f.String("text", "", "message body (or - for stdin)")
 	lease := f.String("lease", "", "related lease ID")
-	f.Bool("json", true, "JSON output")
+	f.Bool("json", false, "force JSON output (default: automatic)")
 	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
@@ -852,12 +862,13 @@ func (a *app) message(args []string) error {
 func (a *app) integration(action string, args []string) error {
 	f := a.flags(action)
 	dry := f.Bool("dry-run", false, "preview without changes")
+	yes := f.Bool("yes", false, "apply without prompting (required for scripts/agents)")
 	codexRoot, claudeRoot := new(string), new(string)
 	if action == "install" {
 		f.StringVar(codexRoot, "codex-home", "", "explicit Codex integration `directory`")
 		f.StringVar(claudeRoot, "claude-home", "", "explicit Claude integration `directory`")
 	}
-	f.Bool("json", true, "JSON output")
+	f.Bool("json", false, "force JSON output (default: automatic)")
 	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
@@ -895,13 +906,51 @@ func (a *app) integration(action string, args []string) error {
 		if len(targets) == 0 {
 			return model.Err("cli_missing", "no supported agent CLIs were found")
 		}
-		report, e := install.Install(a.home, targets, *dry)
+		plan, e := install.PreviewInstall(a.home, targets)
+		if e != nil {
+			return e
+		}
+		if *dry {
+			return a.print(plan.Report)
+		}
+		if e = a.approve(plan, *yes); e != nil {
+			return e
+		}
+		report, e := plan.Apply()
 		if e != nil {
 			return e
 		}
 		return a.print(report)
 	}
-	if e := a.uninstallGuard(*dry); e != nil {
+	if e := a.uninstallGuard(true); e != nil {
+		return e
+	}
+	plan, e := install.PreviewUninstall(a.home)
+	if e != nil {
+		return e
+	}
+	plan.Report.Actions = append(plan.Report.Actions, install.Action{Path: a.home, Action: "stop-idle-backend", Detail: "If running, stop the idle backend after rechecking leases; retain state and history"})
+	if *dry {
+		if e = a.print(plan.Report); e != nil {
+			return e
+		}
+		if !plan.Report.Complete {
+			return model.Err("uninstall_incomplete", "edited integrations were preserved; see report")
+		}
+		return nil
+	}
+	if e = a.approve(plan, *yes); e != nil {
+		return e
+	}
+	if e = a.uninstallGuard(false); e != nil {
+		return e
+	}
+	if _, e = os.Stat(a.home); os.IsNotExist(e) {
+		report := plan.Report
+		report.DryRun = false
+		report.Actions[len(report.Actions)-1] = install.Action{Path: a.home, Action: "backend-idle", Detail: "Backend is stopped; no state directory exists"}
+		return a.print(report)
+	} else if e != nil {
 		return e
 	}
 	if !*dry {
@@ -918,10 +967,11 @@ func (a *app) integration(action string, args []string) error {
 		}
 		defer syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)
 	}
-	report, e := install.Uninstall(a.home, *dry)
+	report, e := plan.Apply()
 	if e != nil {
 		return e
 	}
+	report.Actions = append(report.Actions, install.Action{Path: a.home, Action: "backend-idle", Detail: "Backend is stopped; state and history are retained"})
 	if e = a.print(report); e != nil {
 		return e
 	}

@@ -32,36 +32,36 @@ var commandHelps = map[string]commandHelp{
 	"pool resume":     {usage: "POOL_ID --reason TEXT [OPTIONS]", summary: "Reopen a draining pool to new claims.", min: 1, max: 1},
 	"pool delete":     {usage: "POOL_ID --reason TEXT [OPTIONS]", summary: "Preserve a historical tombstone. Queued or consuming claims prevent deletion.", min: 1, max: 1},
 	"arm":             {usage: "[--home DIR] COMMAND [OPTIONS]", max: -1},
-	"acquire":         {usage: "[OPTIONS]", summary: "Reserve CPU, memory, disk and/or ports without starting a command. Output is lease JSON.", example: `arm acquire --cpu 2 --memory 1GiB --reason "Analysis workers"`},
+	"acquire":         {usage: "[OPTIONS]", summary: "Reserve CPU, memory, disk and/or ports without starting a command.", example: `arm acquire --cpu 2 --memory 1GiB --reason "Analysis workers"`},
 	"run":             {usage: "[OPTIONS] -- COMMAND [ARG...]", summary: "Run a command under a supervised lease. ARM options precede COMMAND; everything after -- belongs to the command.", example: `arm run --cpu 2 --reason "Compile release binaries" -- cargo build --release`, min: 1, max: -1},
-	"storage create":  {usage: "SIZE [OPTIONS]", summary: "Create a managed disk-only lease. SIZE accepts units such as 10GiB. --disk SIZE is an alternative. Output is lease JSON.", example: `arm storage create 10GiB --reason "Retain build outputs"`, max: 1},
-	"storage list":    {summary: "List managed storage leases and their retained obligations. Output is JSON."},
+	"storage create":  {usage: "SIZE [OPTIONS]", summary: "Create a managed disk-only lease. SIZE accepts units such as 10GiB. --disk SIZE is an alternative.", example: `arm storage create 10GiB --reason "Retain build outputs"`, max: 1},
+	"storage list":    {summary: "List managed storage leases and their retained obligations."},
 	"storage inspect": {usage: "PATH [OPTIONS]", summary: "Measure logical and allocated storage without adopting or deleting it. Exclusive/reclaimable bytes may be unknown.", example: `arm storage inspect ./target`, min: 1, max: 1},
 	"storage cleanup": {usage: "LEASE_ID [OPTIONS]", summary: "Reclaim verified managed storage after its consumers stop. --dry-run only previews. Unverified reclamation stays charged.", example: `arm storage cleanup LEASE_ID --dry-run`, min: 1, max: 1},
 	"storage handoff": {usage: "LEASE_ID [OPTIONS]", summary: "Return files and unresolved storage responsibility to the operator. Preserves remaining data and ends ARM's cleanup authority.", example: `arm storage handoff LEASE_ID`, min: 1, max: 1},
-	"ports reserve": {usage: "[PORT_SPEC...] [OPTIONS]", summary: "Hold port bindings. With no PORT_SPEC or --port, reserve one OS-selected TCP port on 127.0.0.1. Output is lease JSON.", example: `arm ports reserve --reason "Preview server"
+	"ports reserve": {usage: "[PORT_SPEC...] [OPTIONS]", summary: "Hold port bindings. With no PORT_SPEC or --port, reserve one OS-selected TCP port on 127.0.0.1.", example: `arm ports reserve --reason "Preview server"
   arm ports reserve 8080 --reason "Preview server"
   arm ports reserve web=tcp6://[::1]:8000-8010 --reason "IPv6 preview"`, max: -1},
-	"ports list":        {summary: "List ARM port reservations, consumers and reasons, including its protected backend listener. Output is JSON."},
-	"ports discover":    {summary: "Observe native TCP listeners and bound UDP sockets. Permission restrictions and unknown ownership remain explicit. Output is JSON."},
-	"inspect":           {usage: "LEASE_ID [OPTIONS]", summary: "Inspect one lease and its current outcome. Output is JSON.", min: 1, max: 1},
+	"ports list":        {summary: "List ARM port reservations, consumers and reasons, including its protected backend listener."},
+	"ports discover":    {summary: "Observe native TCP listeners and bound UDP sockets. Permission restrictions and unknown ownership remain explicit."},
+	"inspect":           {usage: "LEASE_ID [OPTIONS]", summary: "Inspect one lease and its current outcome.", min: 1, max: 1},
 	"release":           {usage: "LEASE_ID [OPTIONS]", summary: "End a lease early and begin its supported reclamation. Unresolved resources remain charged.", min: 1, max: 1},
 	"cancel":            {usage: "LEASE_ID [OPTIONS]", summary: "Cancel queued or supervised work under this lease.", min: 1, max: 1},
 	"reconcile":         {usage: "LEASE_ID [OPTIONS]", summary: "Verify that an uncertain process group or port allocation is gone. Never signals a recovered PID.", min: 1, max: 1},
 	"renew":             {usage: "LEASE_ID --ttl DURATION [OPTIONS]", summary: "Extend a live lease when queue priority and parent lifetimes permit.", example: `arm renew LEASE_ID --ttl 20m`, min: 1, max: 1},
-	"status":            {summary: "Show host budgets, leases and capabilities. Output is JSON."},
-	"resources":         {summary: "Show resource budgets, available capacity, consumers and reasons. Output is JSON."},
-	"messages":          {summary: "Show the operator inbox and message delivery status. Output is JSON."},
-	"events":            {summary: "Read durable events, or stream JSON lines with --follow.", example: `arm events --follow`},
+	"status":            {summary: "Show host budgets, leases and capabilities."},
+	"resources":         {summary: "Show resource budgets, available capacity, consumers and reasons."},
+	"messages":          {summary: "Show the operator inbox and message delivery status."},
+	"events":            {summary: "Read durable events, or stream with --follow (JSON lines when redirected).", example: `arm events --follow`},
 	"daemon start":      {summary: "Start the local backend in the background. An already running backend keeps its existing budgets.", example: `arm daemon start --cpu 4 --memory 8GiB --disk 20GiB`},
 	"daemon stop":       {summary: "Stop an idle backend. Outstanding leases or unresolved resource obligations prevent shutdown."},
-	"daemon status":     {summary: "Show the running backend's status and budgets. Output is JSON."},
+	"daemon status":     {summary: "Show the running backend's status and budgets."},
 	"serve":             {summary: "Run the local backend in the foreground until interrupted.", example: `arm serve --cpu 4 --memory 8GiB --disk 20GiB`},
-	"agent probe":       {summary: "Inspect installed agent CLI versions and messaging capabilities. Output is JSON."},
+	"agent probe":       {summary: "Inspect installed agent CLI versions and messaging capabilities."},
 	"agent register":    {summary: "Register one exact supported agent session for attribution and messages.", example: `arm agent register --id builder --adapter codex --session SESSION_UUID`},
-	"agent list":        {summary: "List registered agent contacts. Output is JSON."},
-	"agent inbox":       {summary: "Read messages for an exact registered session. Reading never acknowledges them. Output is a JSON page with an opaque resume cursor.", example: `arm agent inbox --id builder --session SESSION_UUID --pending`},
-	"agent watch":       {summary: "Watch an exact recipient inbox as JSON lines. Reconnect with the last emitted cursor; use --once for one bounded batch. Output never acknowledges messages.", example: `arm agent watch --id builder --session SESSION_UUID`},
+	"agent list":        {summary: "List registered agent contacts."},
+	"agent inbox":       {summary: "Read messages for an exact registered session. Reading never acknowledges them. Returns a page with an opaque resume cursor.", example: `arm agent inbox --id builder --session SESSION_UUID --pending`},
+	"agent watch":       {summary: "Watch an exact recipient inbox (JSON lines when redirected or with --json). Reconnect with the last emitted cursor; use --once for one bounded batch. Output never acknowledges messages.", example: `arm agent watch --id builder --session SESSION_UUID`},
 	"agent receive":     {summary: "Explicitly record that a registered session received a message. This is separate from acknowledgement.", example: `arm agent receive --id builder --session SESSION_UUID --message MESSAGE_ID`},
 	"agent ack":         {summary: "Explicitly acknowledge a message. Optional response text reaches the operator inbox. An acknowledgement does not prove resource compliance.", example: `arm agent ack --id builder --session SESSION_UUID --message MESSAGE_ID --text "Reduced build concurrency"`},
 	"message operator":  {summary: "Send a durable message to the operator inbox.", example: `arm message operator --text "The build needs another five minutes."`},
@@ -69,14 +69,14 @@ var commandHelps = map[string]commandHelp{
 	"message broadcast": {summary: "Send a message to every currently registered contact.", example: `arm message broadcast --text "Please release idle leases."`},
 	"install":           {summary: "Install verified managed agent instructions. Preview with --dry-run. Backend startup is separate."},
 	"uninstall":         {summary: "Remove unchanged instructions using the saved installation manifest, preserving edits and resource obligations. The executable and state remain."},
-	"version":           {summary: "Print ARM, Go and platform versions as JSON."},
+	"version":           {summary: "Print ARM, Go and platform versions."},
 }
 var groupHelps = map[string]string{
 	"pool":    "  create NAME --scope SCOPE --capacity COUNT  Create a host/global pool\n  list|inspect ID|history ID                  Browse definitions, claims and journal\n  set ID COUNT|adjust ID DELTA                Set capacity or apply a signed delta\n  rename ID NAME|describe ID TEXT             Update resource metadata\n  drain ID|resume ID                          Close or reopen new admission\n  delete ID                                  Tombstone a pool with no outstanding claims\n",
 	"storage": "  create SIZE       Create a managed disk lease\n  list              List storage leases\n  inspect PATH      Measure a directory without changing it\n  cleanup LEASE_ID  Reclaim managed storage (--dry-run previews)\n  handoff LEASE_ID  Preserve remaining files and return responsibility\n",
 	"ports":   "  reserve [PORT_SPEC...]  Hold bindings (default: TCP loopback, OS-selected port)\n  list                    List ARM allocations, consumers and reasons\n  discover                Observe native bindings and visible owners\n",
 	"daemon":  "  start   Start the backend in the background\n  stop    Stop an idle backend\n  status  Inspect backend status\n",
-	"agent":   "  probe     Inspect installed CLIs and messaging capabilities\n  register  Register an exact session (--delivery poll for an inbox)\n  list      List contacts\n  inbox     Read a recipient's durable messages\n  watch     Stream inbox JSON lines with reconnect\n  receive   Record receipt of one message\n  ack       Acknowledge one message and optionally reply\n",
+	"agent":   "  probe     Inspect installed CLIs and messaging capabilities\n  register  Register an exact session (--delivery poll for an inbox)\n  list      List contacts\n  inbox     Read a recipient's durable messages\n  watch     Stream inbox messages with reconnect\n  receive   Record receipt of one message\n  ack       Acknowledge one message and optionally reply\n",
 	"message": "  operator   Send to the operator inbox\n  send       Send to one contact (--to ID)\n  broadcast  Send to all registered contacts\n",
 }
 
@@ -97,7 +97,7 @@ func (a *app) usage(f *flag.FlagSet) {
 		return
 	}
 	h := commandHelps[f.Name()]
-	fmt.Fprintf(f.Output(), "Usage: arm %s", f.Name())
+	fmt.Fprintf(f.Output(), "%s arm %s", a.paint("1;36", "Usage:"), f.Name())
 	if h.usage != "" {
 		fmt.Fprint(f.Output(), " ", h.usage)
 	} else {
@@ -112,6 +112,9 @@ func (a *app) usage(f *flag.FlagSet) {
 	}
 	f.VisitAll(func(v *flag.Flag) {
 		name, usage := flag.UnquoteUsage(v)
+		if v.Name == "json" {
+			usage = "force JSON output (default: automatic terminal detection)"
+		}
 		isBool := false
 		if b, ok := v.Value.(interface{ IsBoolFlag() bool }); ok {
 			isBool = b.IsBoolFlag()
@@ -166,7 +169,13 @@ func parseQuiet(f *flag.FlagSet, args []string) error {
 	return err
 }
 func (a *app) parse(f *flag.FlagSet, args []string, stopAtCommand bool) (err error) {
+	a.commandName = f.Name()
 	defer func() {
+		f.Visit(func(v *flag.Flag) {
+			if v.Name == "json" {
+				a.forceJSON = v.Value.String() == "true"
+			}
+		})
 		if err != nil && !errors.Is(err, flag.ErrHelp) {
 			err = &argumentError{err, f.Name()}
 		}
@@ -226,9 +235,6 @@ func (a *app) parse(f *flag.FlagSet, args []string, stopAtCommand bool) (err err
 	}
 	if err := parseQuiet(f, append(append(options, "--"), positionals...)); err != nil {
 		return err
-	}
-	if v := f.Lookup("json"); v != nil && v.DefValue == "true" && v.Value.String() == "false" {
-		return fmt.Errorf("arm %s currently returns JSON; omit --json=false", f.Name())
 	}
 	if h, ok := commandHelps[f.Name()]; ok {
 		n := len(f.Args())

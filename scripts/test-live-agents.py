@@ -141,7 +141,7 @@ def main():
             report["checks"].append("automatic native overage warning and same-session response: " + contact)
 
         try:
-            install_args = ("install", "--codex-home", str(codex_home), "--claude-home", str(work))
+            install_args = ("install", "--yes", "--codex-home", str(codex_home), "--claude-home", str(work))
             cli(*install_args, "--dry-run")
             assert not home.exists(), "dry-run created ARM state"
             cli(*install_args)
@@ -245,10 +245,10 @@ def main():
             with open(work/"CLAUDE.md","a") as f: f.write("\nUser edit after installation\n")
             preview=cli("uninstall","--dry-run")
             assert preview["dry_run"] and (codex_home/"AGENTS.md").exists()
-            result=cli("uninstall")
+            result=cli("uninstall","--yes")
             assert result["complete"] and not (codex_home/"AGENTS.md").exists()
             assert (work/"CLAUDE.md").read_text()=="# Dedicated ARM integration project\n\nUser edit after installation\n"
-            cli("uninstall")
+            cli("uninstall","--yes")
             report["checks"].append("active-lease uninstall refusal, uninstall preview, user-edit preservation, repeat uninstall")
             report["result"]="passed"
         except Exception as error:

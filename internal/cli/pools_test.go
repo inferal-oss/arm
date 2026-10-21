@@ -36,6 +36,7 @@ func TestCLICountedPoolsScopesSignedAdjustmentsAndExactNumbers(t *testing.T) {
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
+	var childOutput string
 	call := func(args ...string) string {
 		t.Helper()
 		var out, stderr bytes.Buffer
@@ -43,6 +44,7 @@ func TestCLICountedPoolsScopesSignedAdjustmentsAndExactNumbers(t *testing.T) {
 		if code != 0 {
 			t.Fatalf("%v: %d %s %s", args, code, &out, &stderr)
 		}
+		childOutput = stderr.String()
 		return out.String()
 	}
 	var created model.PoolChange
@@ -77,7 +79,7 @@ func TestCLICountedPoolsScopesSignedAdjustmentsAndExactNumbers(t *testing.T) {
 	call("release", lease.ID)
 	out := call("run", "--pool", id+"=1", "--reason", "supervised pool consumer", "--", "/bin/sh", "-c", `test -n "$ARM_POOLS" && printf '%s' "$ARM_POOLS"`)
 	var claims []model.PoolClaim
-	if json.Unmarshal([]byte(out), &claims) != nil || len(claims) != 1 || claims[0].Scope != "global" || claims[0].Quantity != 1 {
+	if !json.Valid([]byte(out)) || json.Unmarshal([]byte(childOutput), &claims) != nil || len(claims) != 1 || claims[0].Scope != "global" || claims[0].Quantity != 1 {
 		t.Fatalf("supervised metadata: %s", out)
 	}
 	json.Unmarshal([]byte(call("pool", "create", "large", "--scope", "host", "--capacity", "9223372036854775807", "--reason", "exact count fixture")), &created)

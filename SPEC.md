@@ -370,6 +370,7 @@ Both interfaces are first-class local clients with the same operational scope. T
 | View | Required information and actions |
 | --- | --- |
 | Overview | Selected host, resource pressure, reserved and observed use, headroom, active work, queue, and issues needing attention. |
+| Monitor | A btop-inspired host view: aggregate/per-core CPU, memory and swap, filesystem space and disk I/O, network rates, and GPU metrics where available, with short history charts and links to attributed workloads. |
 | Resources | Browse native and agent-defined host/global resources and pools: total capacity, configured budget, available/reserved capacity or deficit, observed use where supported, and who is using it and why. Inspect the attributed capacity-change journal and create/adjust pools when authorized. Drill down to owners, lease reasons, quantities, expiry, topology, enforcement support, measurement quality, port ownership, and GPU sharing. |
 | Leases | Owner, reason, claims, state, expiry, queue blockers, and warning status; filter, sort, inspect, renew, release, or cancel. |
 | Lease detail | Process and workload identity, artifacts, usage history, resolved policy, warnings, delivery, messages, and cleanup progress. |
@@ -382,6 +383,8 @@ Both interfaces are first-class local clients with the same operational scope. T
 The design should make current activity, its reason, and required operator action apparent immediately. Use readable typography, consistent units, clear state labels, restrained color, and small useful history charts. Reserve strong visual emphasis for pressure, violations, failed delivery, or failed cleanup. Do not present estimates as precise measurements or disguise unknown values as empty usage.
 
 Resource browsing must work in both directions: inspect a lease's claims or inspect a resource's consumers and the reason for each claim. The backend exposes the same budget breakdown and ownership links to every client. Distinguish physical capacity and observed use from ARM's reservation budget; show unattributed external usage where measurable rather than inventing an owner or purpose.
+
+The Monitor tab uses the same backend snapshot and WebSocket stream in both clients. Show units, sampling cadence, source, measurement scope, last update, and unavailable or stale readings explicitly. Bound provider polling, retained history and client buffering. Platform-specific metrics are capability-driven; unsupported readings must not appear as zero. Test tab navigation, resizing, disconnect/reconnect and stale samples alongside provider counter resets and rate calculations.
 
 The web panel must work at practical laptop widths and support keyboard navigation, readable contrast, and non-color status cues. The TUI must support keyboard navigation, resizing, host selection, filtering, detail panes, messaging, and help. Narrow terminals should switch to a useful compact layout. Both clients show the last successful update and reconnection state without presenting stale values as live.
 

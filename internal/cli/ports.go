@@ -52,7 +52,7 @@ func (a *app) ports(args []string) (int, error) {
 		return 2, fmt.Errorf("unknown ports action %q; use arm ports --help", args[0])
 	}
 	f := a.flags("ports " + args[0])
-	f.Bool("json", true, "JSON output")
+	f.Bool("json", false, "force JSON output (default: automatic)")
 	if err := a.parse(f, args[1:], false); err != nil {
 		return 2, err
 	}

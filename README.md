@@ -61,7 +61,9 @@ bin/arm renew LEASE_ID --ttl 20m
 bin/arm release LEASE_ID
 ```
 
-Use `arm help COMMAND` or `arm GROUP COMMAND --help` for command-specific options and examples. Flags may surround positional arguments, so `arm storage create 10GiB --reason "Build outputs"` and `arm renew --ttl 20m LEASE_ID` work. For `run`, put ARM options before the command; everything after `--` belongs to the child. Both `-reason` and `--reason` work. JSON is the output format for status and lease operations; `run --json` additionally separates the child output onto stderr.
+Use `arm help COMMAND` or `arm GROUP COMMAND --help` for command-specific options and examples. Flags may surround positional arguments, so `arm storage create 10GiB --reason "Build outputs"` and `arm renew --ttl 20m LEASE_ID` work. For `run`, put ARM options before the command; everything after `--` belongs to the child. Both `-reason` and `--reason` work.
+
+Terminal output uses readable fields, resource tables, explanations and ANSI colors. Piped output defaults to JSON; `--json` forces JSON in a terminal. Set `NO_COLOR=1` or `TERM=dumb` to disable colors. Redirected `run` returns its final lease JSON on stdout and sends child output to stderr.
 
 Use `--wait` with `acquire` or `run` to queue. CPU, memory, and disk claims are cooperative reservation budgets. `resources` shows the budget, reservations, availability, and each consuming lease's owner, registered agent when provided, project, reason, and expiry. Separate timestamped measurements report host memory and the filesystem containing ARM's state, including APFS container identity when available. These observations do not yet affect admission; unmeasured quantities remain `null`.
 
@@ -71,7 +73,7 @@ Inspect native CPU and memory observations for a supervised command:
 bin/arm usage LEASE_ID
 ```
 
-Snapshots also appear in `inspect` and `status`. CPU needs two samples and reports a lower-bound logical-core average for captured group members present in both. macOS reports native process physical footprints; Linux reports private resident memory. These metrics have different scopes, and shared memory, exited children and escaped processes prevent treating them as a complete physical allocation. Output includes identity verification, timestamps, freshness, completeness and measurement details; unavailable counters remain `null`. The final lease retains a summary. Observation does not yet trigger warnings or CPU/memory limits. macOS uses `purego` to call system APIs without a C compiler.
+Snapshots also appear in `inspect` and `status`. CPU needs two samples and reports a lower-bound logical-core average for captured group members present in both. macOS reports native process physical footprints; Linux reports private resident memory. These metrics have different scopes, and shared memory, exited children and escaped processes prevent treating them as a complete physical allocation. Output includes identity verification, timestamps, freshness, completeness and measurement details; unavailable counters remain `null`. The final lease retains a summary. Sampling alone takes no automatic action; supervised runs can opt into sustained-overage warnings and revocation with `--usage-policy warn|revoke`. Kernel CPU/memory limits remain planned. macOS uses `purego` to call system APIs without a C compiler.
 
 Inspect a directory's logical size and reported allocation through the backend:
 
@@ -144,6 +146,8 @@ bin/arm uninstall
 
 The installer discovers Codex and Claude, including Claude in `~/.local/bin`. Explicit `--codex-home DIR` and `--claude-home DIR` targets support isolated setups. Managed instructions include the actual ARM executable and state-directory prefix. Installation currently manages instruction blocks; daemon startup is separate, and native service registration is pending.
 
+Install and uninstall show the proposed changes and ask for confirmation in a terminal. Empty replies, EOF and Ctrl-C cancel. `--dry-run` only previews; use `arm install --yes` or `arm uninstall --yes` in scripts and agents. Noninteractive calls without `--yes` return a JSON preview and `confirmation_required`. Approval does not bypass edited-file or active-lease safeguards, and changes made while reviewing a preview require a fresh approval.
+
 Uninstall preserves unrelated edits, edited managed blocks, state, and history. It refuses outstanding leases, stops an idle backend, and checks target directory identity. It never deletes source trees or caches. An edited managed block results in an incomplete report and a nonzero exit status.
 
 Register an exact existing session before sending messages:
@@ -172,7 +176,7 @@ bin/arm agent ack --id claude-worker --session SESSION_UUID \
   --message MESSAGE_ID --text "Reduced build concurrency"
 ```
 
-`watch` prints JSON lines and reconnects using its last cursor. Save each emitted `cursor` to resume with `--after CURSOR`; `--once` returns one batch, waiting at most `--wait` (default 20 seconds). `inbox` returns a page of at most 64 messages with `more` and `cursor`. Reading never marks receipt or acknowledgement: `receive` explicitly records receipt, and `ack` records acknowledgement plus an optional operator reply. Retrying the same acknowledgement is idempotent. Acknowledgement is not proof of resource compliance.
+`watch` prints JSON lines when redirected or with `--json`, readable events in a terminal, and reconnects using its last cursor. Save each emitted `cursor` to resume with `--after CURSOR`; `--once` returns one batch, waiting at most `--wait` (default 20 seconds). `inbox` returns a page of at most 64 messages with `more` and `cursor`. Reading never marks receipt or acknowledgement: `receive` explicitly records receipt, and `ack` records acknowledgement plus an optional operator reply. Retrying the same acknowledgement is idempotent. Acknowledgement is not proof of resource compliance.
 
 The agent must consume watcher output and forward warnings to its main task, or poll before costly work and renewals. A watcher does not itself inject into a live conversation. Registration returns a session and registration identity; `--registration ID` pins requests to that exact identity. Cursors are scoped to the host and registration. Reusing a contact name for another session cannot inherit its old inbox; changing a contact with outstanding attributed leases or an in-progress native delivery is refused. `--adapter generic --delivery poll` supports other agents and generates a session UUID when omitted.
 

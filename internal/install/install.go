@@ -165,13 +165,26 @@ func write(root, name string, b []byte, expected ...string) error {
 }
 
 func Install(home string, targets []Target, dry bool) (Report, error) {
+	return install(home, targets, dry, nil)
+}
+func install(home string, targets []Target, dry bool, expected *snapshot) (Report, error) {
 	report := Report{DryRun: dry, Complete: true, Actions: []Action{}}
+	if expected != nil {
+		if e := expected.check(home, false); e != nil {
+			return report, e
+		}
+	}
 	if !dry {
 		lock, e := local.Lock(home, "integration.lock")
 		if e != nil {
 			return report, e
 		}
 		defer lock.Close()
+		if expected != nil {
+			if e = expected.check(home, true); e != nil {
+				return report, e
+			}
+		}
 	}
 	m, e := readManifest(home)
 	if e != nil {
@@ -317,13 +330,26 @@ func Install(home string, targets []Target, dry bool) (Report, error) {
 }
 
 func Uninstall(home string, dry bool) (Report, error) {
+	return uninstall(home, dry, nil)
+}
+func uninstall(home string, dry bool, expected *snapshot) (Report, error) {
 	report := Report{DryRun: dry, Complete: true, Actions: []Action{}, Retained: []string{home}}
+	if expected != nil {
+		if e := expected.check(home, false); e != nil {
+			return report, e
+		}
+	}
 	if !dry {
 		lock, e := local.Lock(home, "integration.lock")
 		if e != nil {
 			return report, e
 		}
 		defer lock.Close()
+		if expected != nil {
+			if e = expected.check(home, true); e != nil {
+				return report, e
+			}
+		}
 	}
 	m, e := readManifest(home)
 	if e != nil {

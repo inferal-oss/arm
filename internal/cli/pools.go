@@ -37,7 +37,7 @@ func (a *app) pool(args []string) (int, error) {
 		return 2, fmt.Errorf("unknown pool action %q; use arm pool --help", action)
 	}
 	f := a.flags("pool " + action)
-	f.Bool("json", true, "JSON output; mutations include before/after state and journal sequence")
+	f.Bool("json", false, "JSON output; mutations include before/after state and journal sequence")
 	if action == "list" || action == "inspect" || action == "history" {
 		all := new(bool)
 		after := new(int64)
