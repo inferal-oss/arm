@@ -39,6 +39,7 @@ def main():
         for package in opts.packages or ("agents", "local", "install", "observe", "usage", "storage", "ports", "manager", "server", "client", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
+        shutil.copyfile(root / "scripts" / "linux-test-init.py", target / "linux-test-init.py")
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
@@ -84,7 +85,7 @@ done
             subprocess.run(["scp", "-q", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", *map(str, target.iterdir()), opts.host + ":" + remote + "/"], check=True)
             runner = "/bin/sh ./run.sh"
             if opts.isolate_processes:
-                runner = "unshare --user --map-current-user --pid --fork --kill-child --mount-proc " + runner
+                runner = "unshare --user --map-current-user --pid --fork --kill-child --mount-proc python3 ./linux-test-init.py " + runner
             subprocess.run(ssh + ["cd " + shlex.quote(remote) + " && timeout --signal=TERM --kill-after=10s 240s " + runner], check=True, timeout=270)
             succeeded = True
         finally:
