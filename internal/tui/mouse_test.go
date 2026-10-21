@@ -7,6 +7,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
+	"github.com/yrashk/arm/internal/agents"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/model"
 )
@@ -171,14 +172,14 @@ func TestMouseMessageReviewDeclineAndOneSend(t *testing.T) {
 	m.width = 140
 	m.height = 40
 	m.view = 3
-	request := manager.MessageRequest{Key: "mouse-exact-key", Audience: "fixture-agent", Body: "Reviewed fixture message"}
-	m.composer = &messageComposer{review: true, request: request}
+	request := manager.MessageRequest{Key: "mouse-exact-key", Audience: "fixture-agent", Body: "Reviewed fixture message", Targets: []agents.Contact{{ID: "fixture-agent", Registration: "original"}}}
+	m.composer = &messageComposer{authority: m.data.status.Host, review: true, request: request}
 	m.syncViewport()
 	clickRegion(t, m, func(r mouseRegion) bool { return r.key == "n" })
 	if m.composer != nil || len(s.operations) != 0 {
 		t.Fatal("declined message mutated")
 	}
-	m.composer = &messageComposer{review: true, request: request}
+	m.composer = &messageComposer{authority: m.data.status.Host, review: true, request: request}
 	m.syncViewport()
 	handler := m.View().OnMouse
 	var confirm mouseRegion

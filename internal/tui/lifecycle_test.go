@@ -18,7 +18,12 @@ func unknownMessageFixture(t *testing.T) (*dashboardModel, *testTransport, manag
 	m, s := fixtureDashboard(t)
 	request := manager.MessageRequest{Key: "reviewed-key", Audience: "agent", Body: "exact body", Targets: []agents.Contact{{ID: "agent", Registration: "registration"}}}
 	m.pendingMessage = &request
-	m.composer = &messageComposer{request: request, review: true, unknown: true}
+	intent, err := m.prepareDurable("message", m.data.status.Host, request, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m.messageIntent = intent
+	m.composer = &messageComposer{authority: m.data.status.Host, request: request, review: true, unknown: true}
 	return m, s, request
 }
 func recordedMessage(request manager.MessageRequest) manager.Message {

@@ -11,6 +11,7 @@ import (
 
 type mouseControl struct{ key, label string }
 type mouseRegion struct {
+	recovery            bool
 	pool                bool
 	picker              bool
 	x, y, width, height int
@@ -26,6 +27,8 @@ type dashboardMouseMsg struct {
 
 func (m *dashboardModel) controls() []mouseControl {
 	switch {
+	case m.recovery != nil && m.record == nil:
+		return m.recoveryControls()
 	case m.ioPicker != nil:
 		return []mouseControl{{"a", "All"}, {"n", "None"}, {"esc", "Done"}, {"enter", "Toggle"}, {"?", "Help"}}
 	case m.inputMode != "":
@@ -104,7 +107,7 @@ func (m *dashboardModel) mouseFrame() string {
 // telemetry refresh must not discard the next delta; navigation/modal/geometry
 // changes still prevent an old gesture from scrolling a different surface.
 func (m *dashboardModel) mouseScrollFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame()
+	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p", m.recovery)
 }
 
 func mouseKey(key string) tea.KeyPressMsg {
@@ -134,6 +137,9 @@ func mouseKey(key string) tea.KeyPressMsg {
 func (m *dashboardModel) mouseRegions() []mouseRegion {
 	_, regions := m.controlBar()
 	regions = append(regions, mouseRegion{x: 0, y: m.height - 1, width: 10, height: 1, key: "q", row: -1})
+	if x := strings.Index(ansi.Strip(m.exitFooter()), "[u] Recovery"); x >= 0 && m.canOpenRecovery() {
+		regions = append(regions, mouseRegion{x: x, y: m.height - 1, width: len("[u] Recovery"), height: 1, key: "u", row: -1})
+	}
 	if !m.modal() && !m.pending {
 		x := 0
 		for i, name := range viewNames {
@@ -163,6 +169,9 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 			}
 			regions = append(regions, mouseRegion{x: m.mainWidth() + 4, y: y, width: 29, height: min(2, 4+m.bodyHeight()-1-y), row: i, feed: true})
 		}
+	}
+	if m.recovery != nil && m.record == nil {
+		return append(regions, m.recoveryMouseRegions()...)
 	}
 	if m.view == 2 && m.detail == nil && m.record == nil && !m.feedFocus && m.resourceID == "" && m.viewport.YOffset() == 0 {
 		regions = append(regions, mouseRegion{x: 2, y: 5, width: min(31, m.mainWidth()-4), height: 1, key: "h", row: -1})
@@ -293,6 +302,7 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg) tea.Cmd {
 	}
 	r := msg.region
 	if strings.HasPrefix(r.key, "nav") {
+		m.recovery = nil
 		m.detail = nil
 		m.record = nil
 		m.resourceID = ""
@@ -306,6 +316,15 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg) tea.Cmd {
 		if r.row >= 0 && r.row < len(options) {
 			m.ioPicker.selectedID = options[r.row].id
 			m.ioSelection(m.ioPicker.disk).toggle(options[r.row].id, m.ioItems(m.ioPicker.disk))
+		}
+		return nil
+	}
+	if r.recovery {
+		if m.recovery != nil && r.row >= 0 && r.row < len(m.recovery.records) {
+			if m.recovery.selected == r.row {
+				return m.recoveryKey("enter")
+			}
+			m.recovery.selected = r.row
 		}
 		return nil
 	}

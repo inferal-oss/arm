@@ -23,6 +23,10 @@ import (
 var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host"}
 
 type dashboardModel struct {
+	recovery                          *recoveryBrowser
+	pendingRecords                    []pendingRecord
+	pendingStoreError                 string
+	messageIntent, poolIntent         *pendingRecord
 	poolUI                            *poolDashboard
 	poolPending                       *poolOperation
 	poolSequence                      uint64
@@ -107,6 +111,12 @@ func newDashboard(ctx context.Context, home string) *dashboardModel {
 	m.hideInactive = p.HideInactive
 	if err != nil {
 		m.notice = "Client settings not loaded: " + safe(err.Error())
+	}
+	m.refreshPending()
+	if len(m.pendingRecords) > 0 {
+		m.notice = fmt.Sprintf("%d uncertain requests retained. u opens Recovery; startup performs no replay.", len(m.pendingRecords))
+	} else if m.pendingStoreError != "" {
+		m.notice = "Private recovery storage needs attention: " + m.pendingStoreError + "; sends are blocked until fixed."
 	}
 	m.resize()
 	m.syncViewport()
@@ -255,6 +265,12 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	}
 	if k == "q" && m.inputMode == "" {
 		return tea.Quit
+	}
+	if k == "u" && m.canOpenRecovery() {
+		return m.openRecovery()
+	}
+	if m.recovery != nil && m.record == nil {
+		return m.recoveryKey(k)
 	}
 	if m.inputMode != "" {
 		if k == "esc" {

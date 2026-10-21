@@ -338,6 +338,9 @@ func (m *dashboardModel) beginPoolForm(operation string) tea.Cmd {
 	if !m.connected {
 		return nil
 	}
+	if m.blockPendingDraft("pool") {
+		return nil
+	}
 	fields := []string{"reason"}
 	values := map[string]string{}
 	draft := poolDraft{operation: operation}
@@ -419,6 +422,12 @@ func (m *dashboardModel) sendPoolRequest(request model.PoolMutation, priorUnknow
 	if m.poolPending != nil && m.poolPending.busy != "" {
 		return nil
 	}
+	intent, err := m.prepareDurable("pool", request.Reviewed.Authority, request, priorUnknown)
+	if err != nil {
+		m.notice = safe(err.Error())
+		return nil
+	}
+	m.poolIntent = intent
 	m.poolSequence++
 	sequence := m.poolSequence
 	op := &poolOperation{request: copyPoolMutation(request), state: "unknown", busy: "send", sequence: sequence}
@@ -460,6 +469,11 @@ func (m *dashboardModel) acceptPoolResult(result poolResultMsg) tea.Cmd {
 	if result.err != nil {
 		op.error = safe(result.err.Error())
 		if !result.priorUnknown && poolDefiniteError(result.err) {
+			if !m.finishDurable(m.poolIntent, true) {
+				op.error = m.notice
+				return nil
+			}
+			m.poolIntent = nil
 			op.state = "rejected"
 		}
 		return nil
@@ -481,6 +495,12 @@ func (m *dashboardModel) acceptPoolResult(result poolResultMsg) tea.Cmd {
 		return nil
 	}
 	change := result.change
+	if !m.finishDurable(m.poolIntent) {
+		op.error = m.notice
+		op.change = &change
+		return nil
+	}
+	m.poolIntent = nil
 	op.change = &change
 	op.state = "recorded"
 	op.error = ""

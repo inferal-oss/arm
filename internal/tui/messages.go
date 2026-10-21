@@ -15,9 +15,10 @@ import (
 )
 
 type messageComposer struct {
-	request manager.MessageRequest
-	review  bool
-	unknown bool
+	authority string
+	request   manager.MessageRequest
+	review    bool
+	unknown   bool
 }
 type messageResultMsg struct {
 	operation    uint64
@@ -39,10 +40,13 @@ func (m *dashboardModel) beginCompose(broadcast bool) tea.Cmd {
 		m.notice = "Reconnect or inspect the pending message before composing another."
 		return nil
 	}
+	if m.blockPendingDraft("message") {
+		return nil
+	}
 	m.feedFocus = false
 	m.feedOpen = false
 	m.messageOperation++
-	m.composer = &messageComposer{request: manager.MessageRequest{Key: local.ID()}}
+	m.composer = &messageComposer{authority: m.data.status.Host, request: manager.MessageRequest{Key: local.ID()}}
 	if broadcast {
 		return m.composeRecipient("broadcast")
 	}
@@ -141,6 +145,10 @@ func (m *dashboardModel) composeKey(key string) tea.Cmd {
 		if m.pendingMessage == nil {
 			return nil
 		}
+		if m.messageIntent == nil || m.messageIntent.Authority != m.data.status.Host {
+			m.notice = "Connect to the saved message authority before looking up this retained key."
+			return nil
+		}
 		request := *m.pendingMessage
 		m.messageOperation++
 		operation := m.messageOperation
@@ -160,6 +168,16 @@ func (m *dashboardModel) composeKey(key string) tea.Cmd {
 	}
 	request := m.composer.request
 	priorUnknown := m.composer.unknown
+	if m.composer.authority == "" || m.composer.authority != m.data.status.Host {
+		m.notice = "Connect to the reviewed message authority; this request cannot be retargeted."
+		return nil
+	}
+	intent, err := m.prepareDurable("message", m.composer.authority, request, priorUnknown)
+	if err != nil {
+		m.notice = safe(err.Error())
+		return nil
+	}
+	m.messageIntent = intent
 	m.messageOperation++
 	operation := m.messageOperation
 	m.messageBusy = "send"
@@ -189,6 +207,11 @@ func (m *dashboardModel) acceptMessageResult(msg messageResultMsg) tea.Cmd {
 			m.retainUnknownMessage("Send response did not identify the reviewed message. Inspect the retained key before another action.")
 			return nil
 		}
+		if !m.finishDurable(m.messageIntent) {
+			m.retainUnknownMessage(m.notice)
+			return nil
+		}
+		m.messageIntent = nil
 		m.notice = "Message recorded: " + msg.message.ID
 		m.pendingMessage = nil
 		m.composer = nil
@@ -196,9 +219,15 @@ func (m *dashboardModel) acceptMessageResult(msg messageResultMsg) tea.Cmd {
 	}
 	var api *model.Error
 	if errors.As(msg.err, &api) && !msg.priorUnknown && definiteMessageRejection(api.Code) {
+		if !m.finishDurable(m.messageIntent, true) {
+			m.retainUnknownMessage(m.notice)
+			return nil
+		}
+		authority := m.messageIntent.Authority
+		m.messageIntent = nil
 		m.pendingMessage = nil
 		m.notice = "Message rejected: " + api.Error() + ". Draft retained; press e to edit and review current recipients."
-		m.composer = &messageComposer{request: msg.request}
+		m.composer = &messageComposer{authority: authority, request: msg.request}
 		return nil
 	}
 	m.retainUnknownMessage("Message outcome unknown. Inspect its key before retrying; only an explicit retry reuses this exact request/key.")
@@ -212,7 +241,11 @@ func (m *dashboardModel) retainUnknownMessage(notice string) {
 	if m.pendingMessage == nil {
 		return
 	}
-	m.composer = &messageComposer{request: *m.pendingMessage, review: true, unknown: true}
+	authority := ""
+	if m.messageIntent != nil {
+		authority = m.messageIntent.Authority
+	}
+	m.composer = &messageComposer{authority: authority, request: *m.pendingMessage, review: true, unknown: true}
 	m.notice = notice
 }
 
@@ -241,6 +274,11 @@ func (m *dashboardModel) acceptLookup(msg lookupResultMsg) tea.Cmd {
 			m.retainUnknownMessage("Lookup returned a different or incomplete message. The original outcome remains unknown; inspect the retained key.")
 			return nil
 		}
+		if !m.finishDurable(m.messageIntent) {
+			m.retainUnknownMessage(m.notice)
+			return nil
+		}
+		m.messageIntent = nil
 		m.notice = "Message found: " + msg.message.ID + ". Latest delivery receipts are in its record."
 		m.pendingMessage = nil
 		m.composer = nil
@@ -262,7 +300,7 @@ func (m *dashboardModel) messageReviewText() string {
 	if c.review {
 		heading = "REVIEW MESSAGE"
 	}
-	out.WriteString(heading + "\n\nAudience: " + safe(c.request.Audience) + "\nKey: " + safe(c.request.Key) + "\n\n")
+	out.WriteString(heading + "\n\nAuthority: " + safe(c.authority) + "\nAudience: " + safe(c.request.Audience) + "\nKey: " + safe(c.request.Key) + "\n\n")
 	for _, target := range c.request.Targets {
 		fmt.Fprintf(&out, "%s · %s · %s\nSession: %s\nRegistration: %s\nWorking directory: %s\nConfig: %s\nRemote endpoint: %s\nIdle: %t\n\n", safe(target.ID), safe(target.Adapter), safe(target.Delivery), safe(target.Session), safe(target.Registration), safe(target.CWD), safe(target.ConfigDir), safe(target.Remote), target.Idle)
 	}

@@ -93,7 +93,7 @@ func (m *dashboardModel) displayContent() string {
 			body += "\n\n" + keycap("y", label, tone) + "  " + keycap("n/Esc", "Keep lease", "quiet")
 		}
 	}
-	if m.composer != nil {
+	if m.composer != nil && m.recovery == nil {
 		body = m.messageReviewText()
 	}
 	return fieldLabels(body)
@@ -197,6 +197,9 @@ func fitBlock(text string, width, height int) string {
 }
 
 func (m *dashboardModel) bodyText() string {
+	if m.recovery != nil {
+		return m.recoveryText()
+	}
 	if m.detail != nil {
 		return m.leaseDetailText()
 	}

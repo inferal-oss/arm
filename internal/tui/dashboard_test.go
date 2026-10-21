@@ -53,7 +53,7 @@ func (s *testTransport) Close() {
 }
 func fixtureDashboard(t *testing.T) (*dashboardModel, *testTransport) {
 	t.Helper()
-	m := newDashboard(t.Context(), t.TempDir())
+	m := newDashboard(t.Context(), pendingHome(t))
 	s := newTestTransport()
 	m.session = s
 	m.connected = true

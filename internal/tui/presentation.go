@@ -10,6 +10,9 @@ import (
 )
 
 func (m *dashboardModel) modal() bool {
+	if m.recovery != nil {
+		return false
+	}
 	return m.poolModal() || m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
@@ -60,6 +63,9 @@ func (m *dashboardModel) editorDisplay() string {
 }
 
 func (m *dashboardModel) windowTitle() (string, string) {
+	if m.recovery != nil && m.record == nil {
+		return "RECOVERY · UNCERTAIN REQUESTS", "warning"
+	}
 	if m.ioPicker != nil {
 		if m.ioPicker.disk {
 			return "DISK I/O · SELECT DEVICES", "blue"
@@ -267,7 +273,7 @@ func (m *dashboardModel) View() tea.View {
 	if !m.connected || m.unknownLease != "" || m.composer != nil && m.composer.unknown {
 		noticeStyle = strong.Foreground(colorWarning)
 	}
-	content := fitBlock(header, m.width, 1) + "\n" + fitBlock(strings.Join(nav, " "), m.width, 1) + "\n" + fitBlock(align(strong.Render(" "+section), muted.Render(m.freshness()+" "), m.width), m.width, 1) + "\n" + fitBlock(muted.Foreground(colorLine).Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + main + "\n" + fitBlock(noticeStyle.Render(" "+short(notice, m.width-2)), m.width, 1) + "\n" + fitBlock(func() string { bar, _ := m.controlBar(); return bar }(), m.width, 1) + "\n" + fitBlock(muted.Foreground(colorLine).Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + fitBlock(align(keycap("q", "Exit", "quiet")+muted.Render(" leases keep running"), muted.Render("Local operator · [f] Feed "), m.width), m.width, 1)
+	content := fitBlock(header, m.width, 1) + "\n" + fitBlock(strings.Join(nav, " "), m.width, 1) + "\n" + fitBlock(align(strong.Render(" "+section), muted.Render(m.freshness()+" "), m.width), m.width, 1) + "\n" + fitBlock(muted.Foreground(colorLine).Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + main + "\n" + fitBlock(noticeStyle.Render(" "+short(notice, m.width-2)), m.width, 1) + "\n" + fitBlock(func() string { bar, _ := m.controlBar(); return bar }(), m.width, 1) + "\n" + fitBlock(muted.Foreground(colorLine).Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + m.exitFooter()
 	view := tea.NewView(canvasStyle.Render(fitBlock(content, m.width, m.height)))
 	view.AltScreen = true
 	view.WindowTitle = "ARM · " + viewNames[m.view]
@@ -300,4 +306,12 @@ func (m *dashboardModel) feedCaption(item feedItem) (string, string) {
 		}
 	}
 	return label, detail
+}
+
+func (m *dashboardModel) exitFooter() string {
+	right := "Local operator · [u] Recovery · [f] Feed "
+	if m.width < 82 {
+		right = "Local operator · [u] Recovery"
+	}
+	return fitBlock(align(keycap("q", "Exit", "quiet")+muted.Render(" leases keep running"), muted.Render(right), m.width), m.width, 1)
 }
