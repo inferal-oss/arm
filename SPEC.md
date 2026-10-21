@@ -1,8 +1,8 @@
 # Agent Resource Manager project specification
 
-Status: Draft. Updated October 20, 2026.
+Status: Draft. Updated October 21, 2026.
 
-Agent Resource Manager (`arm`, or ARM) coordinates agents' use of finite host resources. Every lease records who needs a resource, why, for how long, and under what conditions ARM may reclaim it. Agents can request capacity, wait for availability, use it, renew it, or return it early. Humans can inspect and control the same activity through a local web panel and a terminal UI.
+Agent Resource Manager (`arm`, or ARM) coordinates agents' use of finite resources, including host capacity and agent-defined coordination pools. Every lease records who needs a resource, why, for how long, and under what conditions ARM may reclaim it. Agents can request capacity, wait for availability, use it, renew it, or return it early. Humans can inspect and control the same activity through a local web panel and a terminal UI.
 
 The product requirements below capture the project direction. The implementation baseline is Go with `modernc.org/sqlite`, embedded frontend assets, and a local daemon. Detailed command syntax, policy defaults, and protocol envelopes are contracts to refine during implementation. The current local backend and CLI milestone is described in [the implementation notes](docs/IMPLEMENTATION.md); the full interfaces below extend beyond that milestone.
 
@@ -11,6 +11,7 @@ The product requirements below capture the project direction. The implementation
 ARM must:
 
 - Coordinate CPU, memory, storage, GPU, and listener-port resources, with bandwidth and other network resources supported at lower initial depth.
+- Let agents define arbitrary countable, poolable resources with host-specific or global scope, and adjust their capacities through an attributed transactional log.
 - Keep a durable record of requests, reasons, ownership, allocations, warnings, releases, and reclamation.
 - Grant time-limited leases, explain queued requests and expected availability, and reward useful early release.
 - Detect misuse, communicate actionable warnings to agents, and escalate to revocation and supported enforcement.
@@ -31,12 +32,12 @@ Remote execution and scheduling across machines are later stages. The initial da
 | Concept | Meaning |
 | --- | --- |
 | Host | A machine with a stable identity, resource inventory, and local authority. |
-| Resource | A concrete capability on a host, such as CPU capacity, a storage location, or a GPU device. |
+| Resource | A host capability such as CPU, storage or a GPU, or an agent-defined host-specific or global coordination resource. |
 | Capacity pool | The underlying capacity against which one or more resources consume allocations. |
 | Owner | A stable authenticated principal, with optional project and agent attribution. |
 | Agent session | A particular agent execution and its registered communication endpoint. |
 | Request | An application for resources, including quantities, duration, reason, and required capabilities. |
-| Claim | A requested or granted allocation against a particular resource on an explicit host. |
+| Claim | An allocation against an explicitly scoped resource: a host ID for host resources, or a global pool ID and its authority. |
 | Lease | A time-bounded grant containing one or more claims, ownership, policy, and lifecycle state. |
 | Artifact | A managed directory or other retained resource with its own ownership and lifetime. |
 | Provider | Code that discovers, measures, regulates, or reclaims a class of resources. |
@@ -49,11 +50,29 @@ The reason is mandatory. Owner identity must come from authenticated local conte
 
 ### Hosts and capacity pools
 
-Every claim has a host ID, even in the local-only implementation. `localhost` is a convenience alias for a stable registered host ID, not the persisted identity. Clients explicitly select a host or use a configured default.
+Every host-specific claim has a host ID, even in the local-only implementation. `localhost` is a convenience alias for a stable registered host ID, not the persisted identity. Clients explicitly select a host or use a configured default. Agent-defined resources may instead have explicit global scope, with a stable pool ID and authority rather than an invented global host. The execution location and resource scope are separate: work on one host can claim both that host's capacity and a global coordination permit.
 
 Resources can share a pool. APFS volumes can share container capacity; CPU and GPU allocations can draw from unified memory. Admission must account for those relationships instead of adding capacities that overlap. Resource paths and device indexes are locators; persistent identity must survive ordinary renames or enumeration changes where the platform permits it.
 
 Each host authority owns its inventory, admission decisions, process supervision, expiry, and reclamation. A future coordinator can request work on hosts, but disconnecting it must not disable local expiry. Shared storage exposed through multiple hosts eventually requires common pool identity and coordination rather than independent reservations of the same capacity.
+
+### Agent-defined resources and pools
+
+Agents and operators may create arbitrary named resources to coordinate activities ARM does not discover from the operating system. Examples include browser slots, test devices, deployment concurrency, scarce accounts, licensed-tool slots and exclusive workflow locks. A capacity-one pool represents an exclusive coordination resource; larger capacities provide counted shared permits. These are ordinary leased claims with owner/session attribution, a required reason, duration, queueing, renewal, release, expiry, durable history and visibility through every client.
+
+Creation explicitly selects host-specific or global scope. Host-specific pools belong to a stable host identity; equal names on different hosts are independent. Global pools share one capacity across participating hosts. A global pool's capacity is never copied into independently spendable per-host counters. One authoritative ledger initially lives in the local daemon; future multi-host support routes claims to the designated global authority and must not grant disconnected replicas authority to spend the same capacity.
+
+A definition records an immutable pool ID, human-readable name, scope/host or global authority, creator and authenticated owner, description, unit, finite capacity, policy and revision. Counts use validated integral units initially, including overflow checks. Zero capacity may pause admission; negative capacity or nonpositive claims are invalid. Custom definitions cannot shadow native resource identities or manufacture CPU, memory, disk or GPU capacity. Resource creation and mutation are available to agents under the authenticated owner's policy; a supplied agent name supplies attribution rather than extra privileges. Retrying creation with the same operation key is idempotent; a conflicting existing definition is reported rather than silently replaced.
+
+Capacity can be increased or reduced, either by setting an absolute value or applying a signed delta. Creation and every capacity change commit the updated pool and an append-only audit entry in the same database transaction. Each entry records pool and scope, operation/idempotency key, authenticated actor, agent/session/project where supplied, timestamp, required reason, previous capacity, signed change, resulting capacity, and previous/new revision. Concurrent adjustments cannot lose updates, retries cannot apply a delta twice, and absolute updates use revision checks or equivalent conflict handling. Admission, capacity changes and claim release serialize against the same ledger.
+
+Reducing capacity below existing reservations is allowed and records the deficit explicitly. Existing leases retain their quantities and deadlines; new grants are blocked while they would exceed the revised capacity. Increasing capacity can wake queued requests under the normal fairness policy. A capacity change alone does not revoke work or kill processes; explicit revocation follows the recorded lease/provider policy. Definitions cannot be deleted, expire or change scope in a way that erases active obligations. Drain or finish claims first, preserve definition/change history, and use explicit transitions rather than relabeling outstanding allocations. Rename/display edits preserve identity and are audited as metadata changes.
+
+Abstract permits provide cooperative coordination, not proof that an external activity stopped. Their expiry policy must state whether logical permits become reusable on entitlement expiry or require a provider/owner confirmation; clients can use fencing tokens where their protected service supports them. Physical resources retain the normal conservative reclamation rules. Defining a custom pool does not authorize arbitrary shell cleanup, signalling unrelated processes, or asserting an unavailable OS enforcement capability. Capacity pools model concurrent finite capacity; refill rates and consumable quotas require separately defined semantics.
+
+Claims can combine custom pools with native resource claims without partial queued grants. The single local authority can serialize this decision; combining authorities later needs recorded provisioning and compensation, and must reject unsupported atomicity requirements rather than pretend a local transaction reserves remote capacity. If a global authority is unavailable, clients report it and cannot issue new global grants from stale availability. Recovery preserves reservations and uncertain allocations.
+
+The resource browser in both web and TUI includes these definitions, host/global scope, capacity, reservations, availability or deficit, queue blockers, owners, reasons and the full capacity-change journal. Supported creation, resize/adjust and drain operations use the shared backend protocol and its authorization/concurrency checks. Proposed CLI operations include pool create/list/inspect, capacity set/adjust with reason and idempotency/revision support, and ordinary acquisitions referencing stable pool IDs; exact syntax is an implementation contract to refine, not currently available commands.
 
 ### Execution and storage lifetimes
 
@@ -67,7 +86,7 @@ Nested work must be explicit. A child command can consume its parent's budget or
 
 An acquisition contains:
 
-- Host, owner, project attribution, agent session, and a human-readable reason.
+- Resource scope/authority, execution host where applicable, owner, project attribution, agent session, and a human-readable reason.
 - Resource selectors, quantities with units, sharing modes, and required enforcement or measurement capabilities.
 - Requested duration, optional start deadline, and whether to wait or return immediately when queued.
 - Profile and workload adapter selection, with the resolved versions recorded.
@@ -277,14 +296,14 @@ The initial backend serves embedded web assets and a versioned API on a loopback
 
 WebSocket messages use explicit envelopes:
 
-- Requests carry protocol version, request ID, operation, target host, parameters, and an idempotency key for supported mutations.
+- Requests carry protocol version, request ID, operation, explicit target host or global resource authority, parameters, and an idempotency key for supported mutations.
 - Responses identify the request and contain a result or a structured error with a stable code and retry guidance.
-- Events carry host ID, event type, sequence or cursor, timestamp, and the affected entity ID and revision where applicable.
+- Events carry explicit host or global scope/authority, event type, sequence or cursor, timestamp, and the affected entity ID and revision where applicable.
 - Subscriptions specify scope and an optional resume cursor. Initial state is a snapshot paired with a cursor so updates are not lost between fetching and subscribing.
 
 Separate request IDs from durable operation identity. Retrying a mutation after disconnect must not launch a second workload, issue duplicate credits, or delete a resource twice. Return the existing operation and its state when the outcome is uncertain. Clients resynchronize on conflicts rather than overwriting newer state.
 
-Stream queue changes, lease lifecycle, warnings, messages, contact delivery, resource samples, cleanup progress, and host health. Durable operational events support replay within a documented retention window; stale cursors require a fresh snapshot. High-frequency telemetry can be sampled or coalesced without pretending it is a complete audit record. Bound per-client buffers and signal gaps or resynchronization instead of allowing a slow dashboard to exhaust the daemon's memory.
+Stream custom-pool creation/capacity changes, queue changes, lease lifecycle, warnings, messages, contact delivery, resource samples, cleanup progress, and host health. Durable operational events support replay within a documented retention window; stale cursors require a fresh snapshot. High-frequency telemetry can be sampled or coalesced without pretending it is a complete audit record. Bound per-client buffers and signal gaps or resynchronization instead of allowing a slow dashboard to exhaust the daemon's memory.
 
 Protocol compatibility and errors are versioned. Both interfaces display stale or disconnected state clearly. Client disconnection does not release leases, stop expiry, or suspend enforcement.
 
@@ -337,7 +356,7 @@ Both interfaces are first-class local clients with the same operational scope. T
 | View | Required information and actions |
 | --- | --- |
 | Overview | Selected host, resource pressure, reserved and observed use, headroom, active work, queue, and issues needing attention. |
-| Resources | Browse each resource and pool: total capacity, configured budget, available and reserved capacity, observed use, and who is using it and why. Drill down to owners, lease reasons, quantities, expiry, topology, enforcement support, measurement quality, port ownership, and GPU sharing. |
+| Resources | Browse native and agent-defined host/global resources and pools: total capacity, configured budget, available/reserved capacity or deficit, observed use where supported, and who is using it and why. Inspect the attributed capacity-change journal and create/adjust pools when authorized. Drill down to owners, lease reasons, quantities, expiry, topology, enforcement support, measurement quality, port ownership, and GPU sharing. |
 | Leases | Owner, reason, claims, state, expiry, queue blockers, and warning status; filter, sort, inspect, renew, release, or cancel. |
 | Lease detail | Process and workload identity, artifacts, usage history, resolved policy, warnings, delivery, messages, and cleanup progress. |
 | Storage | Managed artifacts, ownership evidence, active consumers, logical and physical accounting, retention, and cleanup preview. |
@@ -408,6 +427,10 @@ Implement durable single-host identity, pools, admission, lease lifecycle, `arm 
 
 Acceptance requires concurrent requests to stay within configured admission budgets, queued requests to hold no partial grants, expiry and early release to be recorded correctly, and cleanup failures to remain accounted for. Demonstrate a supervised process tree, a retained artifact after command exit, a port conflict, and recovery after daemon restart. GPU and optional capabilities must be discoverable and explicitly unavailable when unsupported.
 
+### Custom coordination pools
+
+Implement agent-created host-specific and global pools, counted claims, and transactional creation/capacity-change history through the shared backend and CLI before exposing their controls in web/TUI. Validate concurrent admission, integral quantity/overflow rejection, capacity-one exclusivity, zero-capacity pause, increasing and reducing capacity (including below current reservations), FIFO wakeup, no lost concurrent adjustments, idempotent retries, revision conflicts, audit attribution/reasons and crash consistency between pool state and journal. Verify host-specific equal names stay distinct, globally scoped claims share one ledger, and deletion/scope changes cannot erase outstanding obligations. Local global scope is testable before remote hosts; actual multi-host acceptance must later demonstrate no double allocation during partitions and recovery.
+
 ### Workload knowledge and enforcement
 
 Implement the knowledge-card index and a functional Cargo adapter and profile, with growth paths for Gradle and other workloads. Demonstrate that a Cargo grant configures its jobs budget and managed target directory, handles conflicting overrides, and protects a live or shared target directory. Demonstrate persistent-service accounting with a representative adapter or fixture; claiming full Gradle support requires real Gradle tests.
@@ -442,7 +465,7 @@ Exercise process identity races, failed provisioning, denied renewal, concurrent
 
 Add remote registration, authenticated transport, host selection, and remote execution through the existing host boundary. Test unreachable hosts, reconnect, stale inventory, duplicate requests, and autonomous local expiry during a network partition. Do not reassign uncertain remote allocations until authority and reclamation are established.
 
-Cluster placement, shared pools across hosts, stronger multi-user isolation, additional GPU providers, network shaping, and more workload adapters follow demonstrated local correctness. A claim remains bound to its host; moving work requires a new placement and ownership transition, not relabeling an existing lease.
+Cluster placement, shared pools across hosts, stronger multi-user isolation, additional GPU providers, network shaping, and more workload adapters follow demonstrated local correctness. A host claim remains bound to its host and a global claim to its pool/authority; moving work requires an explicit placement and ownership transition, not relabeling an existing lease or duplicating global capacity.
 
 ## Decisions still to resolve
 

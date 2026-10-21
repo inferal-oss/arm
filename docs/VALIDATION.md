@@ -1,5 +1,7 @@
 # Validation record
 
+Custom host/global pools and transactional capacity increases/reductions were added to the specification and plan on October 21. They are not implemented or validated by the checks below.
+
 ## October 21, 2026: polling inbox and explicit acknowledgement
 
 The native macOS race suite and `go vet ./...` passed with durable recipient inboxes, registration-scoped cursors, explicit receipt/acknowledgement and resumable instruction upgrades. Manager tests exercise private and broadcast fanout, no implicit receipt, idempotent acknowledgement/operator replies, pagination and pending filters, contact/session replacement, corrupt/wrong-host/future cursors, cancellation and the 64-request limit, legacy contact migration without guessed historical replay, restart recovery and a late native result preserving receipts. WebSocket tests hold a long poll while another response completes, reject a ninth in-flight request, and release all eight polls on a message.

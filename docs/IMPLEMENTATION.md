@@ -124,6 +124,8 @@ Installed instructions describe background watchers/subagents where supported an
 
 ## Next implementation work
 
+- Agent-defined countable resource pools, with host-specific or global scope, normal lease admission, and transactional capacity adjustments/audit history. This is specified but not implemented; current resource quantities remain the built-in CPU, memory, disk and port types.
+
 - Further platform providers for observed pressure and per-workload usage, exclusive/reclaimable filesystem extents, richer port observation/cross-namespace recovery, and GPU resources.
 - Durable overage incidents, automatic warning escalation, and verified usage enforcement where supported.
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.
