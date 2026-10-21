@@ -2,7 +2,7 @@
 
 Agent Resource Manager (`arm`) gives agents time-limited leases for host resources, with a reason, an owner, an audit history, and a reclamation policy.
 
-The first implementation includes a local backend and CLI, durable SQLite leases, cooperative resource budgets, queued admission, supervised commands, expiry, resource attribution, and agent messaging. The future web panel and TUI will use the same WebSocket protocol already used by the CLI.
+The first implementation includes a local backend and CLI, durable SQLite leases, cooperative resource budgets, queued admission, supervised commands, expiry, resource attribution, and agent messaging. An initial embedded observation dashboard uses the same WebSocket protocol as the CLI. Browser mutation controls and the TUI remain planned; rendered browser acceptance is still pending.
 
 See [SPEC.md](SPEC.md) for the complete design and [the implementation notes](docs/IMPLEMENTATION.md) for supported behavior, validation, and remaining work.
 
@@ -73,7 +73,19 @@ Inspect native CPU and memory observations for a supervised command:
 bin/arm usage LEASE_ID
 ```
 
-For physical host monitoring, use `arm monitor`, or `arm monitor --follow --json` to stream sample pages. The shared backend reports aggregate/per-core CPU, memory/swap, cached filesystem space, per-device disk I/O and network rates. It retains a two-minute window of compact history at a nominal two-second cadence. Restart changes the collector epoch and explicitly marks a history gap. Physical observations are separate from lease budgets and attribution; unavailable/reset counters remain null, and GPU telemetry is not yet implemented. Web/TUI Monitor views remain upcoming.
+For physical host monitoring, use `arm monitor`, or `arm monitor --follow --json` to stream sample pages. The shared backend reports aggregate/per-core CPU, memory/swap, cached filesystem space, per-device disk I/O and network rates. It retains a two-minute window of compact history at a nominal two-second cadence. Restart changes the collector epoch and explicitly marks a history gap. Physical observations are separate from lease budgets and attribution; unavailable/reset counters remain null, and GPU telemetry is not yet implemented. The initial web Monitor consumes this stream; TUI views and rendered browser acceptance remain upcoming.
+
+Open the local observation dashboard with a running backend:
+
+```sh
+arm dashboard
+arm dashboard --no-open   # print a one-use link
+arm dashboard --json      # automation; never opens a browser
+```
+
+It includes Monitor, Resources, Leases, Messages, Activity and Host views. Physical observations and cooperative reservation budgets have distinct labels. Resource cards show total/reserved/available quantities, consumers and their reasons, including exact int64 custom pool counts. The first panel is read-only: use the CLI for lease changes, pool edits, cleanup and operator sends. Browser layout, keyboard and reconnect acceptance remain pending; the TUI is not implemented.
+
+A link expires after two minutes and can be exchanged once. The page removes it from the address bar before bootstrap; a separate observation credential lives in per-origin sessionStorage for up to eight hours. No cookies or primary discovery credential are given to the browser. Refresh reuses the tab's session. A backend restart changes its endpoint and invalidates browser sessions: run `arm dashboard` again. Assets are embedded in the executable; ARM build/runtime does not require Node.js. Development-only JSON precision/history checks run with `make test-web`.
 
 Snapshots also appear in `inspect` and `status`. CPU needs two samples and reports a lower-bound logical-core average for captured group members present in both. macOS reports native process physical footprints; Linux reports private resident memory. These metrics have different scopes, and shared memory, exited children and escaped processes prevent treating them as a complete physical allocation. Output includes identity verification, timestamps, freshness, completeness and measurement details; unavailable counters remain `null`. The final lease retains a summary. Sampling alone takes no automatic action; supervised runs can opt into sustained-overage warnings and revocation with `--usage-policy warn|revoke`. Kernel CPU/memory limits remain planned. macOS uses `purego` to call system APIs without a C compiler.
 

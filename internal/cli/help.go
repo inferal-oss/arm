@@ -15,6 +15,7 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"dashboard": {summary: "Open the embedded local web console for live monitoring, budgets, consumers, reasons, leases, messages and activity. A one-use link creates an eight-hour observation session; CLI controls remain available. Requires a running backend. Piped/JSON output never opens a browser.", example: "arm dashboard\n  arm dashboard --no-open\n  arm dashboard --json"},
 	"monitor": {summary: "Show physical host CPU, memory/swap, filesystem space, per-device disk I/O and network rates with bounded history. --follow streams through the shared backend. Unknown counters and history gaps remain explicit; these are separate from lease budgets.", example: `arm monitor
   arm monitor --follow --json`},
 	"agents":       {summary: "Read the full agent operating guide: resource leases, registration, warnings, polling, operator messages and safeguards. Works offline without creating state. Use arm agent list to list contacts.", example: `arm agents --json`},

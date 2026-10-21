@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -34,6 +32,8 @@ type Server struct {
 	portScan     chan struct{}
 	monitor      *observe.Monitor
 	monitorSlots chan struct{}
+	authority    string
+	browser      browserCredentials
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
@@ -69,6 +69,7 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel}
+	s.authority = listener.Addr().String()
 	s.storageScan = make(chan struct{}, 1)
 	s.portScan = make(chan struct{}, 1)
 	initial, e := m.Status()
@@ -89,6 +90,7 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	m.Start()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/ws", s.ws)
+	s.registerBrowser(mux)
 	h := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, MaxHeaderBytes: 8192, BaseContext: func(net.Listener) context.Context { return ctx }}
 	done := make(chan error, 1)
 	go func() { done <- h.Serve(listener) }()
@@ -105,15 +107,20 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 }
 
 func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
-	if subtle.ConstantTimeCompare([]byte(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")), []byte(s.token)) != 1 {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-	if host, _, e := net.SplitHostPort(r.Host); e != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
+	if !s.validHost(r.Host) {
 		http.Error(w, "invalid host", http.StatusForbidden)
 		return
 	}
-	c, e := websocket.Accept(w, r, nil)
+	browser, expires, ok := s.authenticate(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	options := &websocket.AcceptOptions{}
+	if browser {
+		options.Subprotocols = []string{"arm.v1"}
+	}
+	c, e := websocket.Accept(w, r, options)
 	if e != nil {
 		return
 	}
@@ -121,6 +128,11 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 	c.SetReadLimit(65536)
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
+	if browser {
+		ctx = context.WithValue(ctx, browserContextKey{}, true)
+		timer := time.AfterFunc(time.Until(expires), cancel)
+		defer timer.Stop()
+	}
 	out := make(chan model.WireResponse, 64)
 	go func() {
 		defer cancel()
@@ -326,6 +338,9 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
+	if ctx.Value(browserContextKey{}) == true && !browserReadOperation(r.Operation) {
+		return nil, model.Err("forbidden", "this dashboard session supports observation; use the CLI for changes")
+	}
 	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" || r.Operation == "shutdown" {
 		s.admission.Lock()
 		defer s.admission.Unlock()
@@ -353,6 +368,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "browser_ticket":
+		return s.browser.issue(s.authority, time.Now())
 	case "monitor":
 		var q model.MonitorQuery
 		if err := decode(&q); err != nil {
@@ -462,6 +479,9 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return result, nil
 	case "status":
 		status, err := s.Manager.Status()
+		if s.authority != "" {
+			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation")
+		}
 		if s.monitor != nil {
 			status.Capabilities = append(status.Capabilities, "host-monitor-stream")
 		}

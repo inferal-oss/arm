@@ -121,6 +121,7 @@ Commands:
   incidents                 Show durable usage incidents and warnings
   resources                 Show budgets, availability, owners, and reasons
   monitor                   Observe physical host usage and short history
+  dashboard                 Open the authenticated local web console
   storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
   ports reserve|list|discover Manage port reservations and native inventory
   pool create|list|inspect|history|set|adjust  Manage counted host/global pools
@@ -186,6 +187,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.agentsGuide(args)
 	case "monitor":
 		return 0, a.monitorCommand(args)
+	case "dashboard":
+		return 0, a.dashboard(args)
 	case "agent":
 		return 0, a.agent(args)
 	case "message":

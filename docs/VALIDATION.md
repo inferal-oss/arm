@@ -2,6 +2,14 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: dashboard observation foundation
+
+The complete native macOS race suite with required APFS/monitor observations, vet and CGo-free builds passed. Linux arm64 server and CLI suites and all nine compiled acceptance checks passed in the configured private process namespace. Local compiled acceptance and pure-JavaScript checks passed as well. Dashboard checks cover native JSON link output without browser launch, embedded assets without the primary credential, exact authority/origin validation, JSON-only bounded bootstrap bodies, one-use exchange/replay rejection, hashed/bounded/expiring credentials, selected version-only subprotocol, shared ordinary/event/monitor requests and browser mutation denial. Final macOS server/CLI race checks and Linux targeted dashboard checks also passed concurrent single-winner exchange and session expiry closing an existing WebSocket; the protocol fixture uses ARM’s 4 MiB response boundary. JavaScript unit checks cover exact signed int64 parse/display/serialization, strict JSON/string/prototype handling, bounded epoch-scoped history and graph breaks for unknown or missing intervals.
+
+Review fixed mismatched resource reservation field names, a status-refresh race on connection initialization, debouncing that could indefinitely postpone resource updates during sustained events, and stale inspect responses overwriting a newer dialog. Current changes retain an observation allowlist; no browser mutation is claimed. Agent delivery adapters and instruction installation templates were unchanged; authenticated Codex/Claude delivery was not rerun for this interface feature.
+
+Real browser visual and interaction checks are **not complete**. The browser tool reports “Local browser use is disabled in Work settings.” No alternative UI driver was used to bypass that setting. Actual layout, narrow sizes, keyboard/focus, DOM rendering/live refresh and reconnect presentation still require browser acceptance, even though protocol and pure helper checks pass. The TUI, dedicated storage/incident views, pool editors/journals and bidirectional messaging controls remain unimplemented. Browser reconnect reuses one endpoint/session; backend restart requires a fresh `arm dashboard` link.
+
 ## October 21, 2026: exact installer diffs and verified backups
 
 The full native macOS race/APFS/monitor suite and vet passed; final installer/CLI race tests passed after review. Independent git apply checks reconstruct exact expected bytes for append, create, delete, middle edits and missing-final-newline cases. Tests cover exact preview/applied hashes, retained original instruction/manifest bytes and permission metadata, private copies, absent-file records without invented ownership, binary-byte preservation with explicit non-textual diffs, rejection of unreviewed transformations, unsafe/symlink/public backup roots and no instruction/manifest changes on backup failure. Review fixed preservation-only uninstall unnecessarily rewriting an unchanged manifest; a regression test verifies the manifest identity/content and no redundant backup.
@@ -34,7 +42,7 @@ The native macOS race/APFS suite and vet passed; final CLI/installer race tests 
 
 Real authenticated Codex/Claude checks passed with the noninteractive confirmation contract, including instruction loading, native warning delivery, polling/acknowledgement, broadcasts and reversible installation in isolated roots. The release build remains CGo-free. Redirected run output now places the final lease JSON on stdout and child output on stderr; the pool smoke check was updated and rerun successfully on both platforms. Snapshot checks protect reviewed targets and retain existing safeguards; they do not establish a global filesystem transaction against arbitrary concurrent same-user writers.
 
-The shared web/TUI Monitor tab is specified and planned. Neither client nor host telemetry history/streaming is implemented or validated yet.
+The shared web/TUI Monitor tab is specified and planned. At this earlier checkpoint neither client nor host telemetry history/streaming had been implemented; later entries above record the monitor backend and initial observation dashboard separately.
 
 ## October 21, 2026: start/stop shortcuts
 

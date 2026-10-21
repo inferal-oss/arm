@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ARM · Local resource manager</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="masthead">
+    <div class="brand"><span class="mark" aria-hidden="true">a</span><strong>arm<span class="brand-detail"> / resource manager</span></strong></div>
+    <div class="connection"><span id="connection" role="status">Connecting</span><span class="host" id="host">localhost</span></div>
+  </header>
+  <nav aria-label="Views">
+    <button data-view="monitor" aria-current="page">01 <span>Monitor</span></button>
+    <button data-view="resources">02 <span>Resources</span></button>
+    <button data-view="leases">03 <span>Leases</span></button>
+    <button data-view="messages">04 <span>Messages</span></button>
+    <button data-view="activity">05 <span>Activity</span></button>
+    <button data-view="host">06 <span>Host</span></button>
+  </nav>
+  <main id="main" tabindex="-1">
+    <div class="page-heading"><div><p class="eyebrow">LOCAL OPERATOR CONSOLE</p><h1 id="title">Host monitor</h1><p id="subtitle">Physical observations · reservation budgets are in Resources</p></div><div class="update"><span id="freshness">Waiting for first sample</span><small id="cadence">Shared backend stream</small></div></div>
+    <div id="notice" role="status" hidden></div>
+    <section id="monitor" class="view"></section>
+    <section id="resources" class="view" hidden></section>
+    <section id="leases" class="view" hidden></section>
+    <section id="messages" class="view" hidden></section>
+    <section id="activity" class="view" hidden></section>
+    <section id="host-view" class="view" hidden></section>
+  </main>
+  <footer><span>OBSERVATION SESSION <span class="footer-detail">· use the CLI for changes</span></span><span>ARM / LOCAL</span></footer>
+  <dialog id="detail"><div class="dialog-heading"><h2>Lease detail</h2><button id="close-detail" aria-label="Close lease detail">Close ×</button></div><div id="detail-body"></div></dialog>
+</body>
+</html>
