@@ -25,7 +25,7 @@ ARM must:
 
 The first release coordinates a single user's cooperating agents on one machine. It does not promise isolation from arbitrary programs running with the same user privileges, control over every process on the host, or identical enforcement capabilities across operating systems. Machine-wide coordination across users requires a shared authority and an explicit permission model; separate user daemons must not claim independently to reserve the whole host.
 
-Remote execution and scheduling across machines are later stages. The initial data model and client boundary must accommodate them without changing the meaning of a claim.
+The implementation now includes an initial opt-in direct-peer mesh through the host client boundary. Its approved authentication and directional authorization model is recorded in [MESH-SECURITY.md](docs/MESH-SECURITY.md). Distributed scheduling, remote provider coverage and global-pool coordination remain later stages; direct dispatch does not change the meaning or authority of a claim.
 
 ## Core concepts
 
@@ -302,7 +302,7 @@ New workload support follows the same pattern: implementation, evidence and capa
 
 One daemon owns domain state, scheduling, provider operations, notification delivery, and enforcement. Clients must not reimplement those policies. The web panel and TUI connect to the same backend WebSocket endpoint for request and response operations and streaming updates. The CLI should reuse the same protocol and client library.
 
-The initial backend serves embedded web assets and a versioned API on a loopback endpoint. Local discovery provides the actual address and authorized credentials through protected local state. A Unix socket can supplement bootstrap or transport where useful, but must not create a separate policy implementation. Remote transport is added behind the host client boundary later.
+The initial backend serves embedded web assets and a versioned API on a loopback endpoint. Local discovery provides the actual address and authorized credentials through protected local state. A Unix socket can supplement bootstrap or transport where useful, but must not create a separate policy implementation. Remote transport uses a separate opt-in mutually authenticated TLS listener behind the host client boundary. The initial direct-peer API is deliberately narrower than native WebSocket RPC; remote subscriptions and interface host selection remain further work.
 
 ### Protocol contract
 
@@ -440,7 +440,7 @@ Configuration covers enabled providers and resource types, managed roots, host a
 
 ### Local access and privacy
 
-Bind the web backend to loopback by default. Localhost is not authentication: protect API and WebSocket access with local credentials or sessions, check browser origins and host headers, and defend state-changing operations against cross-site requests. Protect credential and discovery files; do not place reusable secrets in query strings or ordinary logs. Remote exposure requires a separate authenticated transport design.
+Bind the web backend to loopback by default. Localhost is not authentication: protect API and WebSocket access with local credentials or sessions, check browser origins and host headers, and defend state-changing operations against cross-site requests. Protect credential and discovery files; do not place reusable secrets in query strings or ordinary logs. Remote exposure uses the separately approved pinned TLS1.3 mutual-authentication design in [MESH-SECURITY.md](docs/MESH-SECURITY.md). It never exposes browser bootstrap credentials or the full local administrative API to peers. Directional per-peer grants remain separate from authenticated node identity.
 
 Use permissions appropriate to the owner and explicit operator capabilities for administrative actions. Privileged features are opt-in and reported individually. Reasons, messages, paths, and command metadata can be sensitive; support bounded retention and redaction. Avoid capturing environment secrets or full process output by default. Bound client requests and telemetry so the resource manager does not become a resource-exhaustion source itself.
 
@@ -490,7 +490,9 @@ Exercise process identity races, failed provisioning, denied renewal, concurrent
 
 ### Remote hosts and broader coverage
 
-Add remote registration, authenticated transport, host selection, and remote execution through the existing host boundary. Test unreachable hosts, reconnect, stale inventory, duplicate requests, and autonomous local expiry during a network partition. Do not reassign uncertain remote allocations until authority and reclamation are established.
+The initial direct-peer implementation provides explicit SSH-assisted registration, pinned mutual TLS, stable-ID/unique-name CLI host selection, immediate native resource claims, supervised target-local execution and scoped host-directed messages through the existing host boundary. Validate unreachable hosts, identity/grant rejection, stale inventory, duplicate requests, lost acknowledgements and autonomous local expiry during a network partition. Do not reassign uncertain remote allocations until authority and reclamation are established.
+
+This initial mesh rejects remote queueing, custom-pool bundles, managed storage/port/agent attachments and cross-authority atomicity. Those capabilities, remote subscriptions, operator interface host selection, discovery and broader provider integration remain required later stages; direct-peer transport is not completion of this section.
 
 Cluster placement, shared pools across hosts, stronger multi-user isolation, additional GPU providers, network shaping, and more workload adapters follow demonstrated local correctness. A host claim remains bound to its host and a global claim to its pool/authority; moving work requires an explicit placement and ownership transition, not relabeling an existing lease or duplicating global capacity.
 
@@ -506,6 +508,6 @@ Cluster placement, shared pools across hosts, stronger multi-user isolation, add
 - Exact APFS per-artifact measurement methods and attainable accuracy, backed by real filesystem tests.
 - Configuration format, service installation paths, protocol compatibility window, and telemetry retention defaults.
 - UI framework, TUI library, visual design details, and measured resource-overhead targets.
-- Later machine-wide authorization and remote trust model.
+- Later machine-wide authorization, private-key rotation and broader mesh placement, membership and delegation policy; initial direct-peer trust is approved in MESH-SECURITY.md.
 
 Host identity, safe uninstall, real agent-CLI validation, ports, bidirectional operator messaging, shared WebSocket clients, code-based workload knowledge, explanatory Markdown cards, and CGo-free SQLite are part of the project scope, not deferred architectural choices.

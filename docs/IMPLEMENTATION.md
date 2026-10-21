@@ -1,6 +1,6 @@
-# Local backend implementation
+# Backend and CLI implementation
 
-This is the first local backend and CLI milestone of [the specification](../SPEC.md). It supplies real persistence, admission, command supervision, a shared client protocol, reversible agent instructions, and tested native-agent communication. It does not yet implement every provider and policy in the specification.
+This records the implemented backend, CLI and initial direct-peer mesh within [the specification](../SPEC.md). It supplies real persistence, admission, command supervision, a shared client protocol, reversible agent instructions, and tested native-agent communication. It does not yet implement every provider and policy in the specification.
 
 ## Components
 
@@ -9,8 +9,9 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `cmd/arm` | Single executable entry point. |
 | `internal/model` | Lease, resource, event, and protocol types. |
 | `internal/manager` | SQLite state, admission, lifecycle, supervised processes, usage incidents/policy, contacts, inbox/outbox, and delivery records. |
-| `internal/server` | Authenticated loopback WebSocket backend and authority lock. |
-| `internal/client` | Shared request and streaming client, currently used by the CLI. |
+| `internal/server` | Authenticated loopback WebSocket backend, authority lock and separate narrow peer API. |
+| `internal/mesh` | Private node identity/trust storage, pinned TLS1.3 transport, directional grants and durable trust history. |
+| `internal/client` | Shared request and streaming client used by the CLI and terminal dashboard. |
 | `internal/cli` | Daemon lifecycle, lease commands, resource inspection, integration installation, and messaging. |
 | `internal/install` | Manifest-based managed instructions with reversible edits and path identity checks. |
 | `internal/agents` | Version probing and native Codex and Claude contact adapters. |
@@ -20,11 +21,11 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `knowledge` | Embedded Markdown cards, validated metadata/index and registered code bindings. |
 | `internal/ports` | TCP/UDP binding, conflict matching, socket inheritance and bounded native socket/owner observations. |
 
-The daemon snapshots its effective OS UID and optional OS account username at startup. UID remains authority; username is display metadata from UID lookup, never an environment/caller name. Lookup waits at most 250ms with at most one outstanding native call process-wide; failure or invalid names fall back to UID. New leases/messages/pools and journal events retain that snapshot; incidents/resource consumers copy their lease owner. Pool changes record the current actor separately from the original creator. Existing UID-only history is not backfilled or relabelled after an account rename. Terminal output combines name and UID; JSON keeps independent fields.
+The daemon snapshots its effective OS UID and optional OS account username at startup. UID remains local OS authority; remote API ownership additionally uses the authenticated source host principal. Username is display metadata from UID lookup, never an environment/caller name. Lookup waits at most 250ms with at most one outstanding native call process-wide; failure or invalid names fall back to UID. New leases/messages/pools and journal events retain that snapshot; incidents/resource consumers copy their lease owner. Pool changes record the current actor separately from the original creator. Existing UID-only history is not backfilled or relabelled after an account rename. Terminal output combines name and UID; JSON keeps independent fields.
 
 The daemon stores a stable host ID and authenticated local owner identity. `localhost` resolves to that host ID. Leases reserve CPU, memory, and disk budgets together. Queued work holds no partial grant, and older queued work blocks renewal and queue bypass. Start time and expiry begin at grant rather than queue insertion. Acquisition idempotency keys reject mismatched reuse.
 
-Interrupted CLI acquisitions cancel by request key, including when the grant response was lost. A durable cancellation marker prevents a late request from becoming a new allocation after its cancellation arrived first.
+Interrupted local CLI acquisitions cancel by request key, including when the grant response was lost. Remote mutations instead preserve their authority/key and report uncertain outcomes; they never silently rerun or infer cancellation from a disconnected caller. A durable cancellation marker prevents a late request from becoming a new allocation after its cancellation arrived first.
 
 Default CPU/disk budgets are development defaults: logical CPU count minus one and 20 GiB disk. Memory defaults to current host availability (`--memory auto`); an explicit positive size sets an optional ceiling. These settings do not imply operating-system reservation. Unsupervised leases have no inferred process usage.
 
@@ -40,6 +41,34 @@ ARM does not yet credit verified exclusive resident consumption against promises
 
 Each state directory is an independent authority. Separate test instances do not coordinate their budgets; cooperating agents must use the same ARM instance. Resource rows carry stable host, resource, and budget-pool IDs.
 
+## Direct-peer mesh
+
+`arm mesh init` creates an opt-in separate listener bound to an explicit non-wildcard literal IP and private persistent Ed25519 identity using the manager's existing host ID. Startup refuses a copied identity belonging to another ledger. Mesh failure is reported without taking down the local backend. `mesh join` uses a direct, already verified known-hosts SSH destination to review both node certificates/SPKI pins, actual SSH account/key, destination OS owner, endpoints, reason and exact directional grants. Both nodes must already be initialized/running and reachable. Machine mutation needs `--yes`; `--dry-run` performs no trust mutation. A five-minute pending enrollment and proof of both pinned keys precede activation. Interrupted setup retains its pairing key and stage for inspection/exact resume.
+
+The default requested target permission is `observe-host`; reverse permissions default to none. Supported permissions are:
+
+| Permission | Initial capability |
+| --- | --- |
+| `observe-host` | Aggregate host/resource summary, including real memory observation freshness; excludes lease reasons, paths, contacts and messages. |
+| `observe-own` | Inspect the authenticated source peer's leases. |
+| `observe-all` | Inspect other lease metadata; does not implicitly reveal contacts, messages or process output. |
+| `lease-own` | Acquire/release/cancel/renew own native claims under atomic aggregate resource ceilings and a maximum TTL. |
+| `run` | Additional permission for own target-local command execution/output and renewal of supervised work. |
+| `contact-read` | Review only explicitly allowed target contact IDs and their registration/settings. |
+| `message` | Send to the explicitly enabled operator inbox or allowed exact contacts; no remote broadcasts. |
+
+Standard CLI `status`, `resources`, `acquire`, `run`, `inspect`, `release`, `cancel` and `renew` accept peer stable IDs or unique names through the authenticated local gateway. Native `localhost`/local stable-ID behavior remains. Names are routing conveniences and ambiguity fails closed. A remote run needs an explicit absolute destination-local `--cwd` and existing destination dependencies; no local executable resolution, upload or environment forwarding occurs. Run has destination account privileges, including access to same-user files/credentials/ARM keys, and is not a sandbox.
+
+Remote mutations use canonical semantic request digests, bounded opaque operation keys and durable intent/result records. Lost, malformed, oversized, redirected or otherwise ambiguous mutation replies report the authority/original key as unknown rather than automatically resend. Authenticated source host, admitting certificate fingerprint and grant revision persist on leases/messages/intents; native caller-supplied peer attribution is cleared. Later certificate/grant repair does not alter original admission provenance or break an otherwise authorized exact retry. Aggregate limits and renewal checks share the manager admission mutex. Reducing a grant keeps existing obligations but denies extensions above current aggregate allowances.
+
+`mesh send`, `mesh contacts` and `mesh message-lookup` use explicit host and recipient scope. Exact agent sends bind the reviewed registration; a replacement cannot inherit a retry. Lookup is read-only, principal-scoped and rechecks current operator/contact permission before exposing later reply/receipt metadata. Native delivery includes a trusted peer-source header; polling retains structured origin. Peer messages are not local operator policy, and permission to prompt a powerful agent is a substantial trust grant. No peer can forward an operation through the receiver's identity to a third node.
+
+TLS1.3 mutual authentication uses normal X.509 purpose/SAN/time checks plus exact self-signed non-CA Ed25519 DER and SPKI pins. Actual HTTP transport uses `http/1.1` ALPN, a dedicated `/v1/mesh` endpoint and explicit version/final-host envelopes. No system trust fallback, shared CA/password, session resumption or redirects are enabled. The closed remote API excludes native tokens/browser tickets, trust administration, shutdown, installation, message history and streaming subscriptions. Private files use owned-directory FD traversal, no-follow single-link files and bounded fsync/rename persistence. Accepted sockets, pre-body per-peer/global concurrency, request/response bytes and operation duration are bounded. Trust changes retain actor/time/reason/identity/grant digests; limits are 64 peers, 1,024 trust events and a 1 MiB configuration, with refusal rather than silent history deletion when full.
+
+`mesh revoke` blocks new authorization and closes existing peer sessions; committed work remains local obligations. `mesh renew` explicitly recovers/renews even an expired local certificate with the existing private key/SPKI, changes the certificate pin, closes sessions and revokes local peer grants. Reviewed `join --replace-revoked` is required on both sides; active trust is never silently replaced. Private-key rotation is not implemented. A failed trust write is not reported as durable success; inspect uncertain/interrupted setup before changing keys or reissuing work.
+
+Each host remains authoritative for admission, inventory, process identity, expiry and reclamation during disconnection. Initial remote claims refuse queues, custom-pool bundles, managed storage/port/agent attachments, usage-policy attachments and cross-authority atomicity. Direct-only SSH rejects ProxyJump/ProxyCommand and disables forwarding, first-contact/DNS trust, host-key mutation, multiplex reuse and unsafe configured commands/environment propagation. Remote browser/TUI selection, remote event subscriptions, automatic discovery/NAT/relay, placement, replicated global pools and distributed transactions remain work. Full policy is in [MESH-SECURITY.md](MESH-SECURITY.md).
+
 ## Execution and recovery
 
 The backend launches commands in owned process groups and records their PID before opening a pipe gate that permits execution. Parent death before launch authorization closes the gate, preventing user work from starting without a durable process record. Command arguments are passed as an argument array; the fixed gate script executes them through quoted `"$@"` without evaluating their contents.
@@ -50,7 +79,7 @@ A restart never signals a persisted PID. Recovered jobs with an extant or uncert
 
 ### Bulk actions and deliberate shutdown
 
-`arm release --all` and `arm cancel --all` capture outstanding leases for the selected local authority and authenticated owner. An optional `--key` pins exact retries: scope and its event commit before any lease is ended, so retries after restart cannot include later work. Consumers precede managed storage/port parents. Every lease uses the ordinary provider path; the report shows partial failures and remaining allocations. ID and `--all` are exclusive; `--key` requires `--all`. Response size remains bounded by the shared API limit rather than paginated bulk output.
+`arm release --all` and `arm cancel --all` capture outstanding leases for the selected local authority and authenticated owner. An optional `--key` pins exact retries: scope and its event commit before any lease is ended, so retries after restart cannot include later work. Consumers precede managed storage/port parents. Every lease uses the ordinary provider path; the report shows partial failures and remaining allocations. ID and `--all` are exclusive; local bulk `--key` requires `--all`. Single-lease remote lifecycle operations separately accept `--key` for exact remote retries; remote bulk is not exposed. Response size remains bounded by the shared API limit rather than paginated bulk output.
 
 `arm stop` remains idle-only. `arm stop --wait` pauses admission, renewal and pool changes, immediately cancels queued requests and lets active work finish or expire. `--timeout SECONDS` requires wait and positive integral seconds; after its backend-owned monotonic deadline it requests ordinary release. `arm stop --force` requests that release immediately. Inspection, cleanup/reconciliation and communication remain available during drain. Unverified storage, foreign ports and recovered group identities remain charged; force never bypasses ownership checks. Blocked shutdown leaves the backend available with admission paused until obligations are resolved.
 
@@ -170,7 +199,7 @@ Pool state, an append-only change entry, a durable operation-key result and an e
 
 Capacity may shrink below outstanding reservations, exposing a deficit rather than changing existing quantities or deadlines. New grants wait for room; deficit or draining pools deny renewals. Drain rejects new acquisitions while already queued work proceeds under normal capacity/FIFO rules. Delete requires no queued or consuming claims, keeps a tombstone/history and permits reuse of the display name with a new ID. Metadata edits preserve identity and scope/unit cannot be mutated. Resource views include exact counts, users/reasons, queued claims and deficit. Numeric wire fields remain JSON numbers; the Go client preserves them through generic decoding rather than converting integers to float64. Integer native budgets also compare remaining capacity before addition to prevent overflow bypasses.
 
-These permits return after ordinary lease settlement. Recovered uncertain supervised work and unresolved bundled resources remain charged, including their pool quantities. Custom capacity does not claim OS enforcement or physical reclamation, and no external-service fencing adapter is implemented. Scope is represented for future multi-host coordination, but remote claims, replication/failover and partition behavior are not implemented. Built-in leases use the existing transactional event journal; built-in host-budget configuration does not yet have this capacity-change journal. Initial web resource browsing is implemented in the observation dashboard; pool controls, the TUI and rendered-browser acceptance remain work.
+These permits return after ordinary lease settlement. Recovered uncertain supervised work and unresolved bundled resources remain charged, including their pool quantities. Custom capacity does not claim OS enforcement or physical reclamation, and no external-service fencing adapter is implemented. Scope is represented for future multi-host pool coordination. The initial direct-peer mesh rejects all remote pool bundles; global replication/failover and distributed pool partition handling are not implemented. Built-in leases use the existing transactional event journal; built-in host-budget configuration does not yet have this capacity-change journal. Web and terminal resource browsing are implemented; custom-pool editors and journals remain work.
 
 ## Supervised workload observations
 
@@ -243,8 +272,8 @@ This remains a partial operator interface. Browser automation is now available; 
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.
 - Additional knowledge cards and code-based workload adapters, including persistent services such as Gradle; web/TUI card search and discovery.
 - Native daemon services, stronger permissions, durable history retention, and richer recovery diagnostics.
-- Rendered acceptance of the initial observation dashboard, followed by remaining web/TUI mutation controls, dedicated storage/incidents and pool journals, and full interface parity. The bounded monitor backend and initial web views are implemented; GPU telemetry and the remaining interfaces are planned.
-- Broader Linux/filesystem/hardware acceptance tests and then remote-host transport and coordination.
+- Broader rendered acceptance and remaining web/TUI mutation controls, dedicated storage/incidents and pool journals, and full interface parity. Current browser navigation, lease actions, messaging, history visibility and help have focused rendered acceptance; GPU telemetry and the remaining interfaces are planned.
+- Broader Linux/filesystem/hardware acceptance, remote queue/provider coverage, interface host selection/subscriptions and distributed pool/placement coordination beyond the initial direct-peer mesh.
 
 The complete staged checklist is [PLAN.md](PLAN.md).
 
@@ -293,7 +322,7 @@ Connection fragments are captured before URL cleanup on initial load, `popstate`
 
 Streams and histories are bounded; reconnect reloads authoritative snapshots and replaces journal history, without mutation replay. Lease errors with possible partial effects retain an inspection gate. Message sends/lookups are exclusive, correlated to their exact saved key/request and protected against stale asynchronous results; uncertain retries preserve prior uncertainty. The single-line editor accepts bracketed paste without confirmation. Closing restores the terminal and leaves backend work running; unresolved request keys are printed after restoration.
 
-This is initial functional layout/navigation parity. Device charts are stacked, the composer is one line, and UI drafts are not persisted across process restarts. Dedicated pool/storage/incident editors, telemetry pause, fuller searches, remote-host selection and complete web/TUI parity remain planned. Native operator credentials retain their existing same-user authority; this is not role isolation.
+The windowed layout uses titled panels and an aligned lease table, with stacked panels on compact terminals. The composer is one line, and UI drafts are not persisted across process restarts. Dedicated pool/storage/incident editors, telemetry pause, fuller searches, remote-host selection and complete web/TUI parity remain planned. Native operator credentials retain their existing same-user authority; this is not role isolation.
 
 ### Displaying historical UID-only owners
 

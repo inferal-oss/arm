@@ -435,6 +435,10 @@ func (m *Manager) Inspect(id string) (model.Lease, error) {
 func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.acquire(r, run)
+}
+
+func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error) {
 	var empty model.Lease
 	if m.closing || m.draining {
 		return empty, model.Err("backend_stopping", "backend is shutting down")
@@ -512,6 +516,8 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			a, b := r, l.Request
 			a.Host = ""
 			b.Host = ""
+			a.PeerCertificate, b.PeerCertificate = "", ""
+			a.PeerGrantRevision, b.PeerGrantRevision = 0, 0
 			if !reflect.DeepEqual(a, b) {
 				return empty, model.Err("idempotency_conflict", "key was already used for a different request")
 			}

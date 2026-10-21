@@ -18,12 +18,16 @@ import (
 // operator. Targets is an explicit array (empty for the operator inbox), never
 // a request to resolve mutable contact names after confirmation.
 type MessageRequest struct {
-	Key      string           `json:"idempotency_key"`
-	Audience string           `json:"audience"`
-	Body     string           `json:"body"`
-	Lease    string           `json:"lease,omitempty"`
-	ReplyTo  string           `json:"reply_to,omitempty"`
-	Targets  []agents.Contact `json:"targets"`
+	PeerCertificate   string           `json:"-"`
+	PeerGrantRevision int              `json:"-"`
+	OriginKey         string           `json:"-"`
+	Peer              string           `json:"-"`
+	Key               string           `json:"idempotency_key"`
+	Audience          string           `json:"audience"`
+	Body              string           `json:"body"`
+	Lease             string           `json:"lease,omitempty"`
+	ReplyTo           string           `json:"reply_to,omitempty"`
+	Targets           []agents.Contact `json:"targets"`
 }
 
 func (m *Manager) SendMessage(ctx context.Context, request MessageRequest) (Message, error) {
@@ -129,7 +133,10 @@ func (m *Manager) createReviewedMessage(request MessageRequest) (Message, bool, 
 	if request.Audience == "operator" {
 		sender = "local-client"
 	}
-	msg = Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: sender, Audience: request.Audience, Body: request.Body, Lease: request.Lease, ReplyTo: request.ReplyTo, Key: request.Key, Created: time.Now().UTC(), Deliveries: make(map[string]agents.Delivery)}
+	if request.Peer != "" {
+		sender = "peer:" + request.Peer
+	}
+	msg = Message{OriginCertificate: request.PeerCertificate, OriginGrantRevision: request.PeerGrantRevision, OriginKey: request.OriginKey, OriginHost: request.Peer, ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: sender, Audience: request.Audience, Body: request.Body, Lease: request.Lease, ReplyTo: request.ReplyTo, Key: request.Key, Created: time.Now().UTC(), Deliveries: make(map[string]agents.Delivery)}
 	for _, target := range targets {
 		state := "pending"
 		if target.Delivery == "poll" {

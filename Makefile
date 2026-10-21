@@ -1,8 +1,9 @@
 GO ?= go
+PYTHON ?= python3
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-mesh validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -33,6 +34,11 @@ test-live: build
 # Missing toolchains fail; this target never downloads or installs them.
 test-workloads: build
 	python3 scripts/test-workloads.py
+
+# Actual two-node mTLS plus strict TLS1.3 wire probes; no SSH/agent sign-in needed.
+# PYTHON must have TLS1.3 support; missing probes fail this gate.
+test-mesh: build
+	$(PYTHON) scripts/test-mesh.py --arm bin/arm --require-tls-probes
 
 test-local: build
 	python3 scripts/test-local.py

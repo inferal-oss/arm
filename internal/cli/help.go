@@ -15,6 +15,18 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"mesh renew":          {summary: "Explicitly renew/recover the local node certificate using its existing key; revokes peer grants and requires reviewed SSH re-pair. --reason and confirmation required; no automatic key/pin replacement."},
+	"mesh message-lookup": {usage: "HOST --key ORIGINAL_KEY", summary: "Inspect this peer’s recorded send without sending or refreshing contact identity.", min: 1, max: 1},
+	"mesh identity":       {summary: "Show this initialized node's public certificate, pins, stable ID and advertised address."},
+	"mesh peers":          {summary: "Inspect directional peer grants, pending/active/revoked state and certificate expiry."},
+	"mesh init":           {summary: "Create a private node identity and explicitly enable a separate pinned TLS1.3 listener. Requires --name, --listen literalIP:PORT and --address reachableHOST:PORT; --yes for scripts."},
+	"mesh join":           {summary: "Pair with an initialized node over strictly verified SSH. Directional --grant defaults observe-host; reverse defaults none. lease-own needs ceilings; run grants target OS-user code execution. Review --dry-run and --reason; scripts require --yes."},
+	"mesh revoke":         {usage: "HOST --reason TEXT [OPTIONS]", summary: "Block a direct peer and close its sessions. Existing local leases retain expiry/cleanup obligations.", min: 1, max: 1},
+	"mesh call":           {usage: "HOST OPERATION [--params JSON] [--key KEY]", summary: "Call the closed direct-peer operation allowlist. Mutations require a stable exact-retry key; no transitive dispatch or local administrative RPC.", min: 2, max: 2},
+	"mesh contacts":       {usage: "HOST", summary: "Read only explicitly allowed target-local contacts with a contact-read grant.", min: 1, max: 1},
+	"mesh send":           {usage: "HOST --body TEXT --key KEY [--to CONTACT --registration REVIEWED]", summary: "Send to the granted peer operator inbox or exact allowed contact. Target host ID is authoritative; ambiguous names fail. Requires explicit message/contact permissions.", min: 1, max: 1},
+	"mesh bootstrap":      {summary: "Bounded stdin helper used only through verified operator SSH; not a mesh RPC."},
+
 	"dashboard": {usage: "[BROWSER] [OPTIONS]", summary: "Open the local web console for monitoring and reviewed lease controls. BROWSER selects a macOS application (Safari or an .app path) or an executable on PATH; Linux accepts executables. Use terminal for the interactive terminal dashboard with the same six views, live feed and reviewed lease/message controls. It requires terminal input/output, rejects --json and --no-open, and leaves leases running when closed. A one-use link creates an eight-hour session. Requires a running backend. Piped/JSON output and --no-open never launch a browser, even with BROWSER.", example: "arm dashboard\n  arm dashboard Safari\n  arm dashboard firefox\n  arm dashboard terminal\n  arm dashboard --no-open\n  arm dashboard Safari --json", max: 1},
 	"monitor": {summary: "Show physical host CPU, memory/swap, filesystem space, per-device disk I/O and network rates with bounded history. --follow streams through the shared backend. Unknown counters and history gaps remain explicit; these are separate from lease budgets.", example: `arm monitor
   arm monitor --follow --json`},
@@ -83,6 +95,8 @@ var commandHelps = map[string]commandHelp{
 	"version":           {summary: "Print ARM, Go and platform versions."},
 }
 var groupHelps = map[string]string{
+	"mesh": "  init|identity|peers      Configure and inspect explicit node trust\n  join --ssh DEST          Pair initialized nodes with reviewed directional grants\n  revoke HOST              Revoke peer trust and close sessions\n  call HOST OP             Dispatch an allowed operation with an exact-retry key\n  contacts HOST            Inspect granted remote contact identities\n  send HOST                Send an explicitly authorized host/contact message\n",
+
 	"pool":    "  create NAME --scope SCOPE --capacity COUNT  Create a host/global pool\n  list|inspect ID|history ID                  Browse definitions, claims and journal\n  set ID COUNT|adjust ID DELTA                Set capacity or apply a signed delta\n  rename ID NAME|describe ID TEXT             Update resource metadata\n  drain ID|resume ID                          Close or reopen new admission\n  delete ID                                  Tombstone a pool with no outstanding claims\n",
 	"storage": "  create SIZE           Create a managed disk lease\n  list                  List storage leases\n  inspect PATH          Measure a directory without changing it\n  export ID DEST --file SOURCE  Preserve selected outputs in a new bundle\n  exports               List export operations (inspect|reconcile|handoff ID)\n  retain ID --ttl TIME   Shorten intermediate retention with --reason\n  cleanup LEASE_ID      Reclaim managed storage (--dry-run previews)\n  handoff LEASE_ID      Preserve remaining files and return responsibility\n",
 	"ports":   "  reserve [PORT_SPEC...]  Hold bindings (default: TCP loopback, OS-selected port)\n  list                    List ARM allocations, consumers and reasons\n  discover                Observe native bindings and visible owners\n",

@@ -2,7 +2,7 @@
 
 Agent Resource Manager (`arm`) gives agents time-limited leases for host resources, with a reason, an owner, an audit history, and a reclamation policy.
 
-The first implementation includes a local backend and CLI, durable SQLite leases, cooperative resource budgets, queued admission, supervised commands, expiry, resource attribution, and agent messaging. An initial embedded observation dashboard uses the same WebSocket protocol as the CLI. Browser mutation controls and the TUI remain planned; rendered browser acceptance is still pending.
+The implementation includes a local backend and CLI, durable SQLite leases, cooperative resource budgets, queued admission, supervised commands, expiry, resource attribution, agent messaging, an embedded web dashboard and an interactive terminal dashboard. An opt-in direct-peer mesh adds authenticated host selection, scoped remote leases/execution and host-directed messaging. Dedicated operational editors, full web/TUI parity and distributed scheduling remain planned.
 
 See [SPEC.md](SPEC.md) for the complete design and [the implementation notes](docs/IMPLEMENTATION.md) for supported behavior, validation, and remaining work.
 
@@ -206,12 +206,51 @@ The agent must consume watcher output and forward warnings to its main task, or 
 
 Re-running `arm install` upgrades only an unchanged managed instruction block, preserving surrounding edits and file permissions. Interrupted upgrades retain both exact expected versions in the recovery manifest so installation or uninstall can resume safely. The installed instructions describe polling and watcher limitations.
 
+## Direct-peer hosts
+
+Mesh access is opt-in and separate from the loopback dashboard/API. Each node needs a running ARM backend, a reachable explicitly chosen mesh address, and its own stable host identity. Initialize each node locally, substituting its real non-wildcard IP and reachable address:
+
+```sh
+arm start
+arm mesh init --name node-a --listen "$NODE_A_IP:7443" --address "$NODE_A_ADDRESS:7443"
+# On the other node:
+arm start
+arm mesh init --name node-b --listen "$NODE_B_IP:7443" --address "$NODE_B_ADDRESS:7443"
+```
+
+From node A, pair with an existing verified SSH destination. Both initialized listeners must be reachable in both directions for identity proof. Review the actual SSH account/key, target OS user, both node identities/certificate pins, endpoints and directional permissions before confirming:
+
+```sh
+arm mesh join --ssh user@node-b --reason "Observe the build host" --dry-run
+arm mesh join --ssh user@node-b --reason "Observe the build host"
+arm mesh peers
+arm status --host node-b
+arm resources --host HOST_ID
+```
+
+The default grants node A only aggregate host observation on node B; node B receives no reverse permissions. `--grant` and `--reverse-grant` explicitly choose directional permissions. `lease-own` enables immediate native CPU/memory/disk claims within reviewed aggregate ceilings and maximum TTL; `run` additionally permits arbitrary commands as the destination ARM user's OS account. **A run grant is not a sandbox: that account's files, credentials and ARM keys are accessible to the command.** Remote runs require an explicit absolute destination-local `--cwd`; dependencies must already exist there. ARM does not upload files or forward the caller's environment. Remote queued work, pool bundles and managed storage/port/agent attachments are currently refused.
+
+`message` separately permits the explicitly enabled operator inbox or listed target contact IDs; `contact-read` allows reviewing only those contact registrations. Agent sends require that exact reviewed registration. Message access to a powerful agent is also a significant trust decision. Remote broadcast and transitive relay are refused.
+
+```sh
+arm mesh send HOST_ID --body "Build host maintenance at 18:00" --key UNIQUE_SEND_KEY
+arm mesh contacts HOST_ID
+arm mesh send HOST_ID --to CONTACT_ID --registration REGISTRATION_ID --body "Please report progress" --key OTHER_SEND_KEY
+arm mesh message-lookup HOST_ID --key UNIQUE_SEND_KEY
+```
+
+These send examples require the corresponding grants. Unknown or ambiguous host names fail closed; prefer stable host IDs in scripts. Remote mutations never retry automatically. Preserve the authority and original operation key after a lost response; inspect or retry the same request/key instead of creating new work. Single-lease remote `release`, `cancel` and `renew` accept `--key` for this purpose.
+
+`arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
+
 ## Test
 
 ```sh
 make test
 make check
 make test-local
+# Actual two-node mTLS, lost-response recovery and strict TLS1.3 wire probes:
+make PYTHON=python3 test-mesh
 # Opt-in: real installed Cargo/rustc, Gradle/JDK and uv/Python, offline.
 make test-workloads
 # Opt-in: actual authenticated Codex and Claude sessions, network required.
@@ -223,6 +262,8 @@ python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST
 # Isolate successful cleanup fixtures from unrelated inaccessible host processes:
 python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST --isolate-processes
 ```
+
+`test-mesh` requires a Python build linked to TLS1.3-capable OpenSSL; choose it with `PYTHON=/path/to/python3` where the system Python lacks that support. It creates isolated backends and needs neither SSH nor agent credentials. Missing wire-probe capability fails this target rather than counting a skip as coverage. Linux harnesses include the compiled mesh package tests by default; the strict two-node wire suite is a separate gate.
 
 Use `GO=.tools/go/bin/go` with these targets if Go is not on PATH. Live tests use dedicated sessions, temporary Codex configuration and project instruction files, and the existing CLI sign-ins. They do not send to existing user sessions or rewrite global agent instructions. Native CLIs may retain the dedicated session transcripts in their history. Reports are written beneath `.cache/`.
 

@@ -27,21 +27,25 @@ func (r Resources) FitsRemaining(used, capacity Resources) bool {
 }
 
 type Request struct {
-	Host         string        `json:"host"`
-	Reason       string        `json:"reason"`
-	Project      string        `json:"project,omitempty"`
-	Agent        string        `json:"agent,omitempty"`
-	Resources    Resources     `json:"resources"`
-	TTL          time.Duration `json:"ttl_ns"`
-	Key          string        `json:"idempotency_key"`
-	Queue        bool          `json:"queue"`
-	Profile      string        `json:"profile,omitempty"`
-	Kind         string        `json:"kind,omitempty"`
-	StorageLease string        `json:"storage_lease,omitempty"`
-	Ports        []PortClaim   `json:"ports,omitempty"`
-	PortLease    string        `json:"port_lease,omitempty"`
-	Pools        []PoolClaim   `json:"pools,omitempty"`
-	UsagePolicy  *UsagePolicy  `json:"usage_policy,omitempty"`
+	PeerCertificate   string        `json:"origin_certificate,omitempty"`
+	PeerGrantRevision int           `json:"origin_grant_revision,omitempty"`
+	OriginKey         string        `json:"origin_key,omitempty"`
+	Peer              string        `json:"origin_peer,omitempty"`
+	Host              string        `json:"host"`
+	Reason            string        `json:"reason"`
+	Project           string        `json:"project,omitempty"`
+	Agent             string        `json:"agent,omitempty"`
+	Resources         Resources     `json:"resources"`
+	TTL               time.Duration `json:"ttl_ns"`
+	Key               string        `json:"idempotency_key"`
+	Queue             bool          `json:"queue"`
+	Profile           string        `json:"profile,omitempty"`
+	Kind              string        `json:"kind,omitempty"`
+	StorageLease      string        `json:"storage_lease,omitempty"`
+	Ports             []PortClaim   `json:"ports,omitempty"`
+	PortLease         string        `json:"port_lease,omitempty"`
+	Pools             []PoolClaim   `json:"pools,omitempty"`
+	UsagePolicy       *UsagePolicy  `json:"usage_policy,omitempty"`
 }
 
 type Lease struct {

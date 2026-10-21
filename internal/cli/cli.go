@@ -25,6 +25,7 @@ import (
 	"github.com/yrashk/arm/internal/install"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
+	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/server"
 )
@@ -72,7 +73,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && detail.Code == "shutdown_wait_interrupted" {
+		if errors.As(e, &detail) && (detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))
@@ -127,6 +128,7 @@ Commands:
   resources                 Show budgets, availability, owners, and reasons
   monitor                   Observe physical host usage and short history
   dashboard                 Open the authenticated local web console
+  mesh                      Manage explicit trusted hosts and host-directed messages
   storage COMMAND           Manage files, exports and short retention
   ports reserve|list|discover Manage port reservations and native inventory
   pool create|list|inspect|history|set|adjust  Manage counted host/global pools
@@ -191,6 +193,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.integration(cmd, args)
 	case "agents":
 		return 0, a.agentsGuide(args)
+	case "mesh":
+		return a.meshCommand(args)
 	case "monitor":
 		return 0, a.monitorCommand(args)
 	case "dashboard":
@@ -228,29 +232,14 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.print(result)
 	case "status", "resources", "messages":
 		f := a.flags(cmd)
-		f.Bool("json", false, "force JSON output (default: automatic)")
-		host := f.String("host", "localhost", "host ID or localhost")
+		f.Bool("json", false, "JSON output")
+		host := f.String("host", "localhost", "target host ID or unique peer name")
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
-		if *host != "localhost" {
-			var status model.Status
-			if e := a.call("status", nil, &status); e != nil {
-				return 1, e
-			}
-			if status.Host != *host {
-				return 1, model.Err("host_unavailable", "only the local host is registered")
-			}
-		}
 		var result any
-		if e := a.call(cmd, nil, &result); e != nil {
+		if e := a.hostCall(*host, cmd, nil, &result); e != nil {
 			return 1, e
-		}
-		if *host != "localhost" && cmd == "status" {
-			s := result.(map[string]any)
-			if s["host"] != *host {
-				return 1, model.Err("host_unavailable", "only localhost is available")
-			}
 		}
 		return 0, a.print(result)
 	case "incidents":
@@ -278,37 +267,65 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.print(result)
 	case "inspect", "release", "cancel", "reconcile", "renew":
 		f := a.flags(cmd)
+		host := f.String("host", "localhost", "target host ID or unique peer name")
 		all, key := new(bool), new(string)
 		if cmd == "release" || cmd == "cancel" {
 			f.BoolVar(all, "all", false, "end all outstanding leases at this local authority")
-			f.StringVar(key, "key", "", "bulk operation `key` for exact retries (requires --all)")
+			f.StringVar(key, "key", "", "bulk or remote operation `key` for exact retries")
 		}
 		ttl := new(time.Duration)
 		if cmd == "renew" {
+			f.StringVar(key, "key", "", "remote operation key for exact retries")
 			f.DurationVar(ttl, "ttl", 0, "required renewal `duration` from now")
 		}
 		f.Bool("json", false, "force JSON output (default: automatic)")
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
+		if *host != "localhost" {
+			var status model.Status
+			if e := a.call("status", nil, &status); e != nil {
+				return 1, e
+			}
+			if *host == status.Host {
+				*host = "localhost"
+			}
+		}
 		if cmd == "release" || cmd == "cancel" {
 			if *all {
+				if *host != "localhost" {
+					return 2, model.Err("unsupported_remote_operation", "remote bulk actions are not enabled")
+				}
 				if len(f.Args()) != 0 {
 					return 2, fmt.Errorf("--all cannot be combined with a lease ID")
 				}
 				return a.bulkEnd(cmd, *key)
 			}
-			if len(f.Args()) != 1 || *key != "" {
-				return 2, fmt.Errorf("provide one lease ID or --all; --key requires --all")
+			if len(f.Args()) != 1 || (*key != "" && *host == "localhost") {
+				return 2, fmt.Errorf("provide one lease ID or --all; --key requires --all or a remote host")
 			}
 		}
 		id := f.Args()[0]
 		if cmd == "renew" && *ttl <= 0 {
 			return 2, fmt.Errorf("renew requires --ttl DURATION greater than zero")
 		}
+		if *host != "localhost" && mesh.Mutating(cmd) && *key == "" {
+			*key = local.ID()
+		}
+		if *host == "localhost" && cmd == "renew" && *key != "" {
+			return 2, fmt.Errorf("renew --key applies only to remote operations")
+		}
 		var result model.Lease
-		if e := a.call(cmd, map[string]any{"id": id, "ttl_ns": *ttl}, &result); e != nil {
+		if e := a.hostCallKey(*host, cmd, *key, map[string]any{"id": id, "ttl_ns": *ttl}, &result); e != nil {
 			return 1, e
+		}
+		if *host != "localhost" && mesh.Mutating(cmd) {
+			raw, _ := json.Marshal(result)
+			var view map[string]any
+			_ = json.Unmarshal(raw, &view)
+			view["operation_key"] = *key
+			view["target_host"] = result.Host
+			return 0, a.print(view)
 		}
 		return 0, a.print(result)
 	}
@@ -499,7 +516,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		r.Kind = "ports"
 	}
 	defer func() {
-		if a.ctx.Err() != nil {
+		if a.ctx.Err() != nil && *host == "localhost" {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			_ = client.Call(ctx, a.home, "cancel_request", map[string]string{"key": r.Key}, nil)
@@ -511,6 +528,9 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		if len(argv) == 0 {
 			return 2, fmt.Errorf("run requires -- COMMAND [ARG...]")
 		}
+		if *host != "localhost" && (*cwd == "" || !filepath.IsAbs(*cwd)) {
+			return 2, fmt.Errorf("remote run requires explicit absolute --cwd on the target host; files are not uploaded")
+		}
 		if *cwd == "" {
 			*cwd, e = os.Getwd()
 			if e != nil {
@@ -521,25 +541,27 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		if e != nil {
 			return 2, e
 		}
-		name := argv[0]
-		if strings.ContainsRune(name, os.PathSeparator) && !filepath.IsAbs(name) {
-			name = filepath.Join(*cwd, name)
+		if *host == "localhost" {
+			name := argv[0]
+			if strings.ContainsRune(name, os.PathSeparator) && !filepath.IsAbs(name) {
+				name = filepath.Join(*cwd, name)
+			}
+			exe, e := exec.LookPath(name)
+			if e != nil {
+				return 2, e
+			}
+			exe, e = filepath.Abs(exe)
+			if e != nil {
+				return 2, e
+			}
+			argv[0] = exe
 		}
-		exe, e := exec.LookPath(name)
-		if e != nil {
-			return 2, e
-		}
-		exe, e = filepath.Abs(exe)
-		if e != nil {
-			return 2, e
-		}
-		argv[0] = exe
-		e = a.call("run", manager.RunRequest{Request: r, Command: argv, CWD: *cwd}, &l)
+		e = a.hostCall(*host, "run", manager.RunRequest{Request: r, Command: argv, CWD: *cwd}, &l)
 		if e != nil {
 			return 1, e
 		}
 	} else {
-		if e = a.call("acquire", r, &l); e != nil {
+		if e = a.hostCall(*host, "acquire", r, &l); e != nil {
 			return 1, e
 		}
 	}
@@ -549,11 +571,14 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	var offset int64
 	for {
 		if a.ctx.Err() != nil {
+			if *host != "localhost" {
+				return 130, model.Err("remote_wait_interrupted", fmt.Sprintf("remote lease %s on %s may continue; inspect its outcome before retrying exact key %q", l.ID, *host, r.Key))
+			}
 			return 130, a.ctx.Err()
 		}
 		if command == "run" {
 			var b []byte
-			if e = a.call("output", map[string]any{"id": l.ID, "offset": offset}, &b); e != nil {
+			if e = a.hostCall(*host, "output", map[string]any{"id": l.ID, "offset": offset}, &b); e != nil {
 				return 1, e
 			}
 			dest := a.out
@@ -568,7 +593,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 				continue
 			}
 		}
-		if e = a.call("inspect", map[string]string{"id": l.ID}, &l); e != nil {
+		if e = a.hostCall(*host, "inspect", map[string]string{"id": l.ID}, &l); e != nil {
 			return 1, e
 		}
 		if command != "run" && l.State != "queued" {
@@ -577,7 +602,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		if l.State == "terminal" {
 			if command == "run" {
 				var b []byte
-				if e = a.call("output", map[string]any{"id": l.ID, "offset": offset}, &b); e != nil {
+				if e = a.hostCall(*host, "output", map[string]any{"id": l.ID, "offset": offset}, &b); e != nil {
 					return 1, e
 				}
 				if len(b) > 0 {

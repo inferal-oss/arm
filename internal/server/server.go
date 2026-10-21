@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -23,6 +24,9 @@ import (
 )
 
 type Server struct {
+	meshMu           sync.Mutex
+	meshAdminMu      sync.Mutex
+	mesh             *meshService
 	Manager          *manager.Manager
 	home, token      string
 	stop             context.CancelFunc
@@ -75,6 +79,11 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	defer cancel()
 	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel}
 	s.lifecycleContext = ctx
+	// A mesh configuration failure never disables the authenticated local authority.
+	if meshErr := s.loadMesh(); meshErr != nil {
+		fmt.Fprintln(os.Stderr, "ARM mesh unavailable:", meshErr)
+	}
+	defer s.closeMesh()
 	defer func() {
 		s.lifecycleMu.Lock()
 		s.lifecycleClosing = true
@@ -354,6 +363,9 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
 		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease controls and reviewed operator messaging; use the CLI for other changes")
 	}
+	if strings.HasPrefix(r.Operation, "mesh_") {
+		return s.meshOperation(ctx, r.Operation, r.Params)
+	}
 	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" {
 		s.admission.Lock()
 		defer s.admission.Unlock()
@@ -599,12 +611,14 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		if e := decode(&q); e != nil {
 			return nil, e
 		}
+		q.Peer, q.OriginKey, q.PeerCertificate, q.PeerGrantRevision = "", "", "", 0
 		return s.Manager.Acquire(q, nil)
 	case "run":
 		var q manager.RunRequest
 		if e := decode(&q); e != nil {
 			return nil, e
 		}
+		q.Request.Peer, q.Request.OriginKey, q.Request.PeerCertificate, q.Request.PeerGrantRevision = "", "", "", 0
 		return s.Manager.Acquire(q.Request, &q)
 	case "inspect", "release", "cancel", "cancel_request", "reconcile", "renew", "output", "events", "message":
 		if e := decode(&p); e != nil {
