@@ -165,6 +165,14 @@ The collector retains 60 compact points in memory, not SQLite or the durable eve
 
 These measurements do not change reservations, admission, ownership, expiry or enforcement and do not attribute external usage to invented owners. An initial embedded web observation dashboard consumes these streams as described below. Browser visual/interaction acceptance, mutation controls and the TUI remain work.
 
+## Guarded operator operations
+
+The shared `lease_action` operation requires a lease ID, positive reviewed revision and action (`renew`, `release`, `cancel`, `reconcile`, `storage_cleanup` or `storage_handoff`). The manager compares revisions under the same lock as the existing domain operation. A changed lease returns `revision_conflict`; it does not silently act on a newer state. Renewal accepts `ttl_ns`; other actions reject it. Existing process ownership, parent lifetime, queue, cleanup identity and reconciliation rules still decide eligibility. This is a concurrency guard, not proof that dynamic filesystem content stayed frozen after a preview; cleanup must reverify ownership and consumers normally.
+
+`message_send` accepts an explicit reviewed contact array, body/audience/context and idempotency key. It validates exact contact configuration and complete broadcast membership under the manager lock. The key/request, message, inbox fanout and creation event commit in one SQLite transaction. Exact retries return current delivery/receipt state without another recipient invocation; changed input conflicts. A new key is a new send, so clients must preserve the original request/key after an uncertain result. Interrupted native delivery becomes `unknown` on restart and is never automatically repeated. Operator replies can bind `reply_to` to a message from the selected contact in the operator inbox.
+
+CLI `message send`/`broadcast` use this path, snapshotting contacts before submission; `--key` pins an exact retry, with a generated key otherwise. Results and errors report the key. `message send --reply-to MESSAGE_ID` links an operator reply. `message operator` retains the existing local-client inbox path. These operations remain behind native authentication; browser sessions still have their observation allowlist until the reviewed composer is enabled. Action/retry records currently have no retention policy.
+
 ## Local observation dashboard
 
 `arm dashboard` requests an authenticated, two-minute, one-use bootstrap link from the existing backend. In a terminal it opens `/usr/bin/open` on macOS or `xdg-open` on Linux, with `--no-open` to print only. Redirected/explicit JSON always returns a link without opening a browser. The daemon serves embedded HTML/CSS/JavaScript without a separate frontend build or runtime dependency.

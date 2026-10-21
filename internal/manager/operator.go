@@ -1,0 +1,40 @@
+package manager
+
+import "github.com/yrashk/arm/internal/model"
+
+func (m *Manager) LeaseAction(request model.LeaseAction) (model.Lease, error) {
+	if request.ID == "" || request.Revision <= 0 {
+		return model.Lease{}, model.Err("invalid_request", "lease ID and a positive reviewed revision are required")
+	}
+	if request.Action != "renew" && request.TTL != 0 {
+		return model.Lease{}, model.Err("invalid_request", "only renewal accepts ttl_ns")
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.closing {
+		return model.Lease{}, model.Err("backend_stopping", "backend is shutting down")
+	}
+	l, err := m.get(request.ID)
+	if err != nil {
+		return l, err
+	}
+	if l.Revision != request.Revision {
+		return l, model.Err("revision_conflict", "lease changed; inspect its current state before confirming another action")
+	}
+	switch request.Action {
+	case "release":
+		return m.end(l.ID, "released")
+	case "cancel":
+		return m.end(l.ID, "cancelled")
+	case "renew":
+		return m.renew(l.ID, request.TTL)
+	case "reconcile":
+		return m.reconcile(l.ID)
+	case "storage_cleanup":
+		return m.storageCleanup(l.ID)
+	case "storage_handoff":
+		return m.storageHandoff(l.ID)
+	default:
+		return l, model.Err("invalid_request", "unsupported lease action")
+	}
+}

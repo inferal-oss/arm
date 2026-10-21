@@ -368,6 +368,18 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "lease_action":
+		var q model.LeaseAction
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.LeaseAction(q)
+	case "message_send":
+		var q manager.MessageRequest
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.SendMessage(ctx, q)
 	case "browser_ticket":
 		return s.browser.issue(s.authority, time.Now())
 	case "monitor":

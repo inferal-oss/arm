@@ -79,6 +79,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		`CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, entity TEXT NOT NULL, at TEXT NOT NULL, data TEXT)`,
 		`CREATE TABLE IF NOT EXISTS agents (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
+		`CREATE TABLE IF NOT EXISTS message_operations (key TEXT PRIMARY KEY, request TEXT NOT NULL, message TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS usage_incidents (id TEXT PRIMARY KEY, lease TEXT NOT NULL, resource TEXT NOT NULL, data TEXT NOT NULL)`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS usage_incidents_open ON usage_incidents(lease,resource) WHERE json_extract(data,'$.state')<>'closed'`,
 		`CREATE TABLE IF NOT EXISTS policy_outbox (message TEXT PRIMARY KEY, state TEXT NOT NULL, data TEXT NOT NULL)`,
@@ -712,6 +713,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 func (m *Manager) Renew(id string, ttl time.Duration) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.renew(id, ttl)
+}
+func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
@@ -1067,6 +1071,9 @@ func (m *Manager) launchFailed(l model.Lease, err error) (model.Lease, error) {
 func (m *Manager) Reconcile(id string) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.reconcile(id)
+}
+func (m *Manager) reconcile(id string) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e

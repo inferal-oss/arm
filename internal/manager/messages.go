@@ -18,6 +18,7 @@ type Message struct {
 	ID         string                     `json:"id"`
 	Sender     string                     `json:"sender"`
 	ReplyTo    string                     `json:"reply_to,omitempty"`
+	Key        string                     `json:"idempotency_key,omitempty"`
 	Audience   string                     `json:"audience"`
 	Body       string                     `json:"body"`
 	Lease      string                     `json:"lease,omitempty"`
@@ -187,25 +188,32 @@ func (m *Manager) Message(ctx context.Context, audience, body, lease string) (Me
 	if e = m.createMessage(msg, targets); e != nil {
 		return msg, e
 	}
+	return m.deliverMessage(ctx, msg, targets)
+}
+
+// Delivery is attempted only by the caller that created the durable message.
+// An idempotent retry reads its current delivery/receipt state without invoking
+// any recipient again, including after interrupted native delivery.
+func (m *Manager) deliverMessage(ctx context.Context, msg Message, targets []agents.Contact) (Message, error) {
 	for _, c := range targets {
-		d := agents.Deliver(ctx, c, fmt.Sprintf("ARM message %s\n%s", msg.ID, body))
+		d := agents.Deliver(ctx, c, fmt.Sprintf("ARM message %s\n%s", msg.ID, msg.Body))
 		d.Mode = c.Delivery
 		d.Registration = c.Registration
 		msg.Deliveries[c.ID] = d
-		if e = m.saveMessage(msg, "message.delivery"); e != nil {
-			return msg, e
+		if err := m.saveMessage(msg, "message.delivery"); err != nil {
+			return msg, err
 		}
 		if delivery := msg.Deliveries[c.ID]; delivery.State == "responded" && delivery.Reply != "" {
-			reply := Message{ID: local.ID(), Sender: c.ID, ReplyTo: msg.ID, Audience: "operator", Body: delivery.Reply, Lease: lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
-			if e = m.saveMessage(reply, "message.received"); e != nil {
-				return msg, e
+			reply := Message{ID: local.ID(), Sender: c.ID, ReplyTo: msg.ID, Audience: "operator", Body: delivery.Reply, Lease: msg.Lease, Created: time.Now().UTC(), Deliveries: map[string]agents.Delivery{}}
+			if err := m.saveMessage(reply, "message.received"); err != nil {
+				return msg, err
 			}
 		}
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	e = m.hydrateReceipts(&msg)
-	return msg, e
+	err := m.hydrateReceipts(&msg)
+	return msg, err
 }
 
 func (m *Manager) recoverDeliveries() error {

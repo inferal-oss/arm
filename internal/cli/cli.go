@@ -825,8 +825,13 @@ func (a *app) message(args []string) error {
 		return fmt.Errorf("unknown message action %q; use arm message --help", action)
 	}
 	to := new(string)
+	key, replyTo := new(string), new(string)
 	if action == "send" {
 		f.StringVar(to, "to", "", "required registered contact `ID`")
+		f.StringVar(replyTo, "reply-to", "", "operator inbox message being answered")
+	}
+	if action != "operator" {
+		f.StringVar(key, "key", "", "idempotency key for an exact send retry (generated when omitted)")
 	}
 	body := f.String("text", "", "message body (or - for stdin)")
 	lease := f.String("lease", "", "related lease ID")
@@ -851,8 +856,35 @@ func (a *app) message(args []string) error {
 		return fmt.Errorf("unknown message action")
 	}
 	var out any
-	if e := a.call("message", map[string]string{"audience": audience, "body": *body, "lease": *lease}, &out); e != nil {
-		return e
+	if *body == "" || len(*body) > 16384 || len(*key) > 128 {
+		return fmt.Errorf("message requires 1 to 16384 body bytes and a key of at most 128 bytes")
+	}
+	if action == "operator" {
+		if err := a.call("message", map[string]string{"audience": audience, "body": *body, "lease": *lease}, &out); err != nil {
+			return err
+		}
+	} else {
+		var contacts []agents.Contact
+		if err := a.call("agents", nil, &contacts); err != nil {
+			return err
+		}
+		targets := make([]agents.Contact, 0)
+		for _, contact := range contacts {
+			if action == "broadcast" || contact.ID == audience {
+				targets = append(targets, contact)
+			}
+		}
+		if *key == "" {
+			*key = local.ID()
+		}
+		request := manager.MessageRequest{Key: *key, Audience: audience, Body: *body, Lease: *lease, ReplyTo: *replyTo, Targets: targets}
+		if err := a.call("message_send", request, &out); err != nil {
+			var api *model.Error
+			if errors.As(err, &api) {
+				return model.Err(api.Code, fmt.Sprintf("%s (message operation key %q)", api.Message, *key))
+			}
+			return fmt.Errorf("message operation key %q; check delivery reports and retry the exact request with this --key if needed: %w", *key, err)
+		}
 	}
 	if e := a.print(out); e != nil {
 		return e

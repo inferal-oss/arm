@@ -223,3 +223,12 @@ Use `GO=.tools/go/bin/go` with these targets if Go is not on PATH. Live tests us
 The implementation has been exercised on macOS and Linux arm64 in an isolated container on an actual Linux kernel. Linux amd64 cross-compilation is also checked; wider filesystem, hardware and service validation remains. See [the validation record](docs/VALIDATION.md) and [remaining implementation plan](docs/PLAN.md).
 
 ARM creates private state directories and refuses an existing shared or symlink state root. It does not silently change existing directory permissions.
+
+Operator sends support exact retries:
+
+```sh
+arm message send --to CONTACT --text "Please release idle leases." --key OPERATION_ID
+arm message broadcast --text "Host maintenance soon." --key BROADCAST_ID
+```
+
+Reuse a key only for the same send. ARM pins current recipient registrations/settings and rejects changed broadcast membership during submission. A retry reads the existing delivery state rather than invoking agents again; a changed request conflicts. After an uncertain result, inspect `arm messages` before creating a new send. `message send --reply-to MESSAGE_ID` links a reply to that contact's message in the operator inbox.

@@ -324,6 +324,9 @@ func (m *Manager) StoragePreview(ctx context.Context, id string) (model.StorageP
 func (m *Manager) StorageCleanup(id string) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.storageCleanup(id)
+}
+func (m *Manager) storageCleanup(id string) (model.Lease, error) {
 	l, err := m.get(id)
 	if err != nil {
 		return l, err
@@ -346,6 +349,9 @@ func (m *Manager) StorageCleanup(id string) (model.Lease, error) {
 func (m *Manager) StorageHandoff(id string) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.storageHandoff(id)
+}
+func (m *Manager) storageHandoff(id string) (model.Lease, error) {
 	l, err := m.get(id)
 	if err != nil {
 		return l, err

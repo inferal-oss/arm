@@ -51,6 +51,8 @@ func TestHelpOnlyListsOptionsThatApplyToTheCommand(t *testing.T) {
 		{"agent list", []string{"--json"}, []string{"--session", "--idle", "--adapter"}},
 		{"agents", []string{"offline", "--json", "arm agent list"}, []string{"--session", "--idle", "--adapter"}},
 		{"message operator", []string{"--text"}, []string{"--to"}},
+		{"message send", []string{"--key", "--reply-to", "--to"}, nil},
+		{"message broadcast", []string{"--key"}, []string{"--to", "--reply-to"}},
 		{"uninstall", []string{"manifest", "--dry-run", "--diff"}, []string{"--codex-home", "--claude-home"}},
 	}
 	for _, tt := range tests {
@@ -94,6 +96,7 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"agents extra", "agents --adapter codex",
 		"monitor extra", "monitor --cpu 1", "monitor --after 1", "monitor --after -1 --epoch fixture",
 		"dashboard extra", "dashboard --cpu 1",
+		"message operator --key ignored --text fixture", "message broadcast --reply-to ignored --text fixture",
 	}
 	for _, command := range tests {
 		t.Run(command, func(t *testing.T) {
