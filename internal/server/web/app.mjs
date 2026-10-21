@@ -3,6 +3,7 @@ import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {createDashboardHistory} from './route.mjs';
+import {createActivityFeed} from './activity-feed.mjs';
 
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
@@ -37,6 +38,8 @@ let detailPanel = null;
 let detailLeaseID = '';
 const pendingLeaseActions = new Set();
 const navigation = createDashboardHistory({location, history, onRoute: applyDashboardRoute});
+const activityFeed = createActivityFeed({root:$('live-feed'),toggle:$('feed-toggle'),drawer:$('feed-drawer'),onLease:id=>showLease(id),onMessages:()=>selectView('messages'),onActivity:()=>selectView('activity')});
+function updateActivityFeed() { activityFeed.update({events:state.events,messages:state.messages,leases:state.status?.leases ?? [],connected:state.connected}); }
 
 function notice(text = '') { $('notice').textContent = text; $('notice').hidden = !text; }
 function connectionState(text, live = false) {
@@ -44,6 +47,7 @@ function connectionState(text, live = false) {
   $('connection').dataset.state = live ? 'live' : 'offline';
   state.connected = live;
   detailPanel?.updateConnection();
+  updateActivityFeed();
 }
 
 class Backend {
@@ -150,6 +154,7 @@ async function refresh() {
     const messages = await current.call('messages');
     if (connection !== current) return;
     state.status = status; state.statusReceived = performance.now(); state.statusTime = new Date(); state.messages = (messages ?? []).slice(-200);
+    updateActivityFeed();
     if (view !== 'monitor') renderCurrent();
   } catch (error) { notice(error.message); }
   finally { refreshBusy = false; if (refreshAgain) { refreshAgain = false; scheduleRefresh(); } }
@@ -159,6 +164,7 @@ function addEvent(event, render = true) {
   events.set(String(event.sequence), event);
   state.events = [...events.values()].sort((a, b) => a.sequence < b.sequence ? -1 : a.sequence > b.sequence ? 1 : 0).slice(-200);
   if (render && view === 'activity') renderActivity();
+  if (render) updateActivityFeed();
 }
 function acceptMonitor(page) {
   state.history = mergeHistory(state.history, page, state.epoch);

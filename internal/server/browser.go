@@ -16,7 +16,7 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/route.mjs web/style.css
+//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/route.mjs web/activity-feed.mjs web/style.css
 var browserAssets embed.FS
 
 type browserContextKey struct{}
@@ -131,7 +131,7 @@ func (s *Server) registerBrowser(mux *http.ServeMux) {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
-	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/route.mjs": "route.mjs", "/style.css": "style.css"} {
+	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/route.mjs": "route.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/style.css": "style.css"} {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			s.browserHeaders(w)
 			if !s.validHost(r.Host) {

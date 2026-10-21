@@ -183,11 +183,61 @@ nav button[aria-current] {
   border-color:var(--accent);
   color:var(--accent);
 }
+.workspace {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 296px;
+  align-items:start;
+  gap:26px;
+  max-width:1800px;
+  margin:0 auto;
+  padding:32px 32px 44px;
+}
 main {
-  max-width:1600px;
-  margin:auto;
-  padding:34px 36px 46px;
+  min-width:0;
+  margin:0;
+  padding:0;
   min-height:calc(100vh - 190px);
+}
+.feed-slot {position:sticky;top:20px;height:calc(100dvh - 190px);min-height:310px;max-height:960px;min-width:0}
+.live-feed {display:flex;flex-direction:column;height:100%;min-height:0;border:1px solid #35434c;border-radius:12px;background:linear-gradient(180deg,#192329 0%,#141c22 130px);box-shadow:0 8px 28px #080d1126;overflow:hidden}
+.feed-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:21px 19px 15px}
+.feed-heading .eyebrow {font-size:8px;letter-spacing:1.25px;margin-bottom:8px;color:#8dafa9}
+.feed-heading h2 {font-size:18px;font-weight:550;letter-spacing:-.35px;margin:0}
+.feed-close {display:none;padding:3px 9px;background:transparent;border-color:transparent;color:var(--muted);font-size:24px}
+.feed-connection {margin:0 19px 14px;display:flex;align-items:center;gap:7px;font:10px var(--mono);color:var(--muted)}
+.feed-connection::before {content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.feed-connection[data-live=true] {color:var(--accent)}
+.feed-connection[data-live=false] {color:var(--warn)}
+.feed-scroll {min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;outline-offset:-3px!important}
+.feed-list {list-style:none;margin:0;padding:0 12px 14px 19px}
+.feed-entry {position:relative;margin:0;padding:15px 0 15px 17px;border-top:1px solid #29363f;overflow-wrap:anywhere}
+.feed-entry::before {content:"";position:absolute;left:0;top:20px;width:5px;height:5px;border-radius:50%;background:#8195a1}
+.feed-entry[data-kind=message]::before {background:var(--accent);border-radius:1px}
+.feed-entry[data-kind=attention]::before {background:var(--warn);transform:rotate(45deg);border-radius:0}
+.feed-entry-heading {display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.feed-entry h3 {font-size:12px;font-weight:550;line-height:1.5;margin:0;color:#dce8ed}
+.feed-entry time {font:9px var(--mono);color:#8da0ac;white-space:nowrap}
+.feed-entry-body {font-size:12px;line-height:1.55;color:#bfd0d9;margin:6px 0 7px;white-space:pre-wrap}
+.feed-entry-actor,.feed-entry-status {font:9px/1.6 var(--mono);color:#91a8b6;margin:4px 0;overflow-wrap:anywhere}
+.feed-entry-status {color:#bbbead}
+.feed-entry-links {display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:8px}
+.feed-entry-links button {font:10px var(--mono);line-height:1.8}
+.feed-latest {margin:0 15px 12px;padding:9px 10px;font-size:11px;line-height:1.5;color:var(--accent);border-color:#426c64;background:#1b332f;flex:none}
+.feed-empty {padding:20px 20px 30px;margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+footer.feed-footer {flex:none;padding:13px 17px;border-top:1px solid #33414b;gap:8px;align-items:center;font:9px var(--mono);letter-spacing:0;min-height:47px;background:#141d23}
+.feed-footer .link-button {font-size:10px;white-space:nowrap}
+.feed-toggle {display:none;position:fixed;right:18px;bottom:18px;z-index:5;align-items:center;gap:10px;padding:11px 15px;border-radius:30px;border-color:#4b7a71;color:var(--accent);background:#172b29;box-shadow:0 6px 24px #0006;font-size:12px;min-height:44px}
+.feed-toggle>span:first-child {font-size:20px;line-height:16px}
+.feed-unread {display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--accent);color:#10211f;font:10px var(--mono)}
+dialog.feed-drawer {padding:0;border:0;border-radius:15px;width:min(410px,calc(100vw - 24px));height:min(760px,calc(100dvh - 24px));max-height:calc(100dvh - 24px);margin:auto 12px 12px auto;box-shadow:0 18px 80px #0009;overflow:hidden}
+.feed-drawer::backdrop {background:#070e14a6;backdrop-filter:blur(2px)}
+.feed-drawer .live-feed {border-radius:15px}
+.feed-drawer .feed-close {display:block}
+@media(max-width:1199px),(max-height:560px) {
+  .workspace {display:block;max-width:1600px}
+  .feed-slot {display:none}
+  .feed-toggle {display:flex}
+  body>footer {padding-bottom:76px}
 }
 .page-heading {
   display:flex;
@@ -690,7 +740,7 @@ dialog::backdrop {
   nav button span {
     margin-left:6px;
   }
-  main {
+  .workspace {
     padding:25px 16px 30px;
   }
   .page-heading {

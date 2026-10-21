@@ -23,6 +23,7 @@
     <button data-view="activity">05 <span>Activity</span></button>
     <button data-view="host">06 <span>Host</span></button>
   </nav>
+  <div class="workspace">
   <main id="main" tabindex="-1">
     <div class="page-heading"><div><p class="eyebrow">LOCAL OPERATOR CONSOLE</p><h1 id="title">Host monitor</h1><p id="subtitle">Physical observations · reservation budgets are in Resources</p></div><div class="update"><span id="freshness">Waiting for first sample</span><small id="cadence">Shared backend stream</small></div></div>
     <div id="notice" role="status" hidden></div>
@@ -33,6 +34,18 @@
     <section id="activity" class="view" hidden></section>
     <section id="host-view" class="view" hidden></section>
   </main>
+  <aside id="feed-slot" class="feed-slot" aria-label="Live activity">
+    <section id="live-feed" class="live-feed" aria-labelledby="live-feed-title">
+      <header class="feed-heading"><div><p class="eyebrow">ACROSS YOUR WORKSPACE</p><h2 id="live-feed-title" tabindex="-1">Live activity</h2></div><button type="button" class="feed-close" data-feed-close aria-label="Close live activity" autofocus>×</button></header>
+      <div class="feed-connection" data-feed-connection role="status">Connecting</div>
+      <button type="button" class="feed-latest" data-feed-latest hidden>View latest activity</button>
+      <div class="feed-scroll" data-feed-scroll tabindex="0" aria-label="Recent activity, newest first"><ol class="feed-list" data-feed-list aria-live="off"></ol><p class="feed-empty" data-feed-empty>Waiting for local activity…</p></div>
+      <footer class="feed-footer"><span data-feed-count>Recent activity</span><button type="button" class="link-button" data-feed-history>View history →</button></footer>
+    </section>
+  </aside>
+  </div>
+  <button id="feed-toggle" class="feed-toggle" type="button" aria-controls="feed-drawer" aria-haspopup="dialog" aria-expanded="false"><span aria-hidden="true">≋</span> Activity <span class="feed-unread" data-feed-unread hidden>0</span></button>
+  <dialog id="feed-drawer" class="feed-drawer" aria-labelledby="live-feed-title"></dialog>
   <footer><span>LOCAL OPERATOR SESSION <span class="footer-detail">· reviewed lease controls</span></span><span>ARM / LOCAL</span></footer>
   <dialog id="detail"><div class="dialog-heading"><h2>Lease detail</h2><button id="close-detail" aria-label="Close lease detail">Close ×</button></div><div id="detail-body"></div></dialog>
   <dialog id="metric-help" class="metric-help" aria-labelledby="metric-help-title">
