@@ -10,6 +10,8 @@ The latest completed feature is `301adc9` (real Cargo/rustc, Gradle/JDK and uv/P
 
 The memory implementation charges outstanding promises in full against estimated current headroom. It does not yet credit verified exclusive resident consumption, so it can over-reserve after a workload materializes its allocation. Completing the moving pool does not complete shared/unified memory accounting, container allowances or hard memory limits.
 
+Latest user requests prioritize dashboard Extend/Cancel/Release controls and recorded human owner names. These are being implemented in parallel with memory review; the (?) popup cleanup has passed focused checks.
+
 ## Execution order
 
 Each row is a feature or group of focused commits. The remaining specification stays in scope throughout.
@@ -48,11 +50,12 @@ These are explicit outstanding requirements, not optional polish. Preserve them 
 
 | Item | Required behavior and current status |
 | --- | --- |
-| Human metric explanations | Remove collector scopes, syscall names and long caveats from main dashboard cards. Accessible (?) popups give short plain-language explanations and optional technical detail. Unknown/stale readings remain visible. Not implemented. |
+| Human metric explanations | Implemented: collector scopes, syscall names and long accounting caveats moved off cards into accessible (?) dialogs with plain-language explanations and collapsed technical details. Real browser storage popup, technical disclosure, Escape/focus return and survival across telemetry refresh were checked. Wider layout/keyboard acceptance remains. |
 | Visual quality | A deliberate btop-inspired Monitor design with clear hierarchy, aligned charts, legible type, restrained color, useful density, empty/connection states, laptop/narrow layouts and non-color status cues. Initial web styling exists; requested redesign and rendered acceptance remain. |
 | Persistent activity | A bounded live lease/message feed on every page, within the viewport: side feed on wide displays and an accessible compact feed on narrow displays. Preserve focus/navigation. Not implemented. |
 | Operator messaging | Compose to exact registered agents, reply in context and broadcast to a reviewed audience; show delivery/receipt/failure. Preserve the request/key after an uncertain outcome and never silently reinvoke native delivery. Backend ready; UI not implemented. |
-| Lease controls | Renew/release/cancel/reconcile and supported storage preview/cleanup/handoff from detail views. Show concrete consequences, preserve revision/ownership guards and make declined confirmation mutation-free. Backend ready; UI not implemented. |
+| Lease controls | Requested next: Extend/Cancel/Release in lease details, using existing revision guards and concrete confirmations; then reconcile and supported storage actions. Declining must send no mutation; uncertain outcomes must not auto-retry. Backend ready; UI implementation in progress. |
+| Human owner identity | Requested: record the authenticated OS username alongside the stable UID and show a readable owner in lease/resource views. Preserve historical attribution; a display name never grants authority. Implementation in progress. |
 | Navigation | Push URL view/detail state; reload and Back/Forward restore location. Never retain bootstrap credentials in history. Not implemented beyond safe removal of the bootstrap fragment. |
 | Browser selection | `arm dashboard [BROWSER]`, e.g. `arm dashboard Safari`; macOS application names/paths use `open -a`, executables on PATH launch as argument arrays. Piped/explicit JSON and `--no-open` never launch a browser. Only default-browser opening exists. |
 | Familiar TUI | `arm dashboard terminal` uses the same layout and operations as web, adapted to terminal capabilities; same backend WebSocket protocol. Not implemented. |
@@ -73,6 +76,14 @@ The current priority list does not replace the rest of the specification:
 - **Authorization and trust:** distinct operator/agent capabilities, scoped broadcasts and privileged provider policy; same-user cooperation is not security isolation. Avoid credentials in URLs/logs and keep private test destinations out of repository contents/history.
 - **Remote hosts:** authenticated registration/transport, explicit selection and execution, stale inventory/unreachable hosts, autonomous local expiry, retry/reconnect, partition recovery, shared/global authority and no double allocation. Placement changes are explicit transitions, not relabelled leases.
 
+## Delegated delivery
+
+Continue assigning focused work to individual subagents as slots become available. Current assignments are live-memory review, authenticated username attribution, and guarded dashboard lease operations; the coordinating agent finishes popup acceptance, reviews integration and creates focused commits.
+
+Subsequent assignments cover knowledge-card catalog/instructions, Rust export/retention, bulk lifecycle/shutdown, web navigation/browser selection, persistent activity/readability, operator messaging, remaining operational views/pool controls, and the equivalent TUI. Then assign the remaining scheduling/credit, provider/workload, policy/heartbeat, configuration/services/recovery, authorization and remote-host stages described above. Respect dependencies, coordinate shared-file ownership and keep the complete scope intact. A queued assignment is not evidence of work running or completion.
+
+Each assignment must return its concrete changes, review findings/fixes, relevant verification, material limitations and documentation updates. The coordinating agent reviews and integrates features, resolves shared-file conflicts, validates the combined result and commits each completed major feature. Parallel implementation does not waive real-tool/platform/UI acceptance or ownership safeguards.
+
 ## Validation and commit gates
 
 For every major feature: inspect the final implementation, fix review findings, run relevant checks, align this plan/implementation notes/validation record, then commit only the completed feature. Broaden tests when new failures or unresolved concerns justify it. No backward-compatibility layer is required for unpublished development snapshots.
@@ -81,7 +92,7 @@ For every major feature: inspect the final implementation, fix review findings, 
 - **Real agents:** isolated configuration roots and dedicated authenticated Codex/Claude sessions; actual instruction loading, exact-session warning delivery, polling/acknowledgement, operator replies/broadcasts, enforcement outcomes and reversible install/uninstall. Repeat affected gates after integration changes; mocks establish failure paths, not real compatibility.
 - **Real workloads:** the new offline macOS Cargo/Gradle/uv suite passes. The designated Linux SSH environment currently lacks Cargo/rustc, Gradle/JDK and uv in checked installation paths. Prepare isolated prerequisites and run this suite on Linux; do not count absence or explicit skips as passes. Shared Gradle daemons still need dedicated acceptance.
 - **Linux:** actual arm64 runtime and compiled checks have passed. Successful storage-cleanup fixtures use an unprivileged private process namespace because unrelated same-user services can deny host-wide observation. Separately preserve denied-observation tests; namespace success does not establish host-wide privileges. Native amd64 and broader filesystem/hardware tests remain.
-- **Browser/TUI:** the last browser-tool attempt reported local browser use disabled. Recheck availability for rendered acceptance; do not bypass the setting or call protocol/DOM emulation visual acceptance. Backend/CLI/TUI work can continue. Once available, inspect laptop/narrow layouts, keyboard/focus, navigation/history, live updates, concurrent changes and reconnect; verify TUI behavior in a real terminal.
+- **Browser/TUI:** browser automation is now available. The storage help popup has actual rendered and keyboard/focus checks; the earlier restriction no longer blocks acceptance. Continue laptop/narrow layouts, navigation/history, live updates, concurrent changes and reconnect; verify the forthcoming TUI in a real terminal. Pure DOM emulation is not rendered acceptance.
 - **Recovery and safety:** continue failure injection and crash/restart checks for launch, delivery, provisioning, cleanup and journals; concurrency/revision races, unrelated sentinel survival, sleep/wake/clock behavior, slow clients, limits and explicit unsupported capabilities. Audit repository objects for private test destination leakage after commits.
 
 Completion requires the full requested behavior to be implemented and verified against the specification and later user requirements.

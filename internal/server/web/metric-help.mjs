@@ -1,0 +1,41 @@
+// Operator-facing explanations are deliberately separate from collector IDs.
+// Backend strings remain data and are only shown in the technical disclosure.
+export function metricHelp(kind, {measurements = [], filesystem, accounting, memory} = {}) {
+  const copy = {
+    cpu: ['CPU activity', 'How busy the host’s processors have been since the previous sample. This includes work outside ARM.', 'A core count reserves capacity in ARM; it does not guarantee a particular speed.'],
+    memory: ['Memory & swap', 'Available memory estimates how much RAM the system could make available, including supported reclaimable caches. Used is total RAM minus that estimate.', 'Swap is memory stored on disk. These host readings are separate from the promises made to individual leases.'],
+    filesystem: ['Storage space', 'Space available to your user on the filesystem where ARM stores its data. Other disks and volumes may have different limits.', 'File size is not the same as space that deletion will free: snapshots, clones and shared files can retain data.'],
+    disk_io: ['Disk activity', 'Data read and written each second by the selected device, including work outside ARM.', 'Virtual devices and their underlying drives can report the same activity. Adding their rates can count it twice.'],
+    network: ['Network activity', 'Data received and sent each second through the selected network interface, including work outside ARM.', 'A VPN or virtual interface may report traffic also counted by another interface. The rates are not bandwidth reservations.'],
+    gpu: ['GPU monitoring', 'GPU activity is not available in this build. An unavailable reading does not mean the GPU is idle.'],
+    'resource-cpu': ['CPU reservations', 'The pool is ARM’s logical-core budget. Available means the portion not promised to current leases.', 'A reservation is cooperative; observed CPU activity is shown in Monitor.'],
+    'resource-memory': ['Memory reservations', 'Available is the portion of this memory pool not promised to current leases. Physical RAM and actual usage are shown separately.', 'A reservation is cooperative and does not guarantee that the operating system can satisfy an allocation.'],
+    'resource-disk': ['Storage reservations', 'The pool is ARM’s storage budget. Available means the portion not promised to current leases.', 'This is separate from free disk space. Shared blocks or snapshots can keep storage charged after files are removed.'],
+    'resource-port': ['Port reservations', 'Each claim records its address, protocol and consumer. Holding a socket reserves its binding; a cooperative claim relies on the consumer to release it.'],
+    'resource-custom': ['Coordination pool', 'This pool coordinates a limited number of shared permits. Its capacity and changes are recorded by ARM.', 'Permits do not enforce limits on an external system. A capacity reduction can leave existing claims above the new pool size.'],
+  };
+  const [title, ...paragraphs] = copy[kind] ?? ['Resource information', 'This reading describes one reported resource.'];
+  if (kind === 'filesystem' && filesystem?.shared) {
+    paragraphs.push(filesystem.type === 'apfs'
+      ? 'APFS volumes can share one storage container. Their totals describe shared space and must not be added together.'
+      : 'This filesystem shares an underlying storage pool. Its total may overlap with other volumes.');
+  }
+  if (kind === 'resource-memory' && memory) {
+    paragraphs[0] = 'The pool follows the system’s current estimate of available RAM, up to an optional operator ceiling. It can shrink while leases are active.';
+    paragraphs.push('ARM currently subtracts full outstanding promises. It cannot yet safely credit shared or compressed memory already used by those jobs, so this can reserve more headroom than necessary.');
+  }
+  const technical = [];
+  for (const [label, m] of measurements) {
+    if (!m) continue;
+    for (const [key, value] of [['Scope', m.scope], ['Source', m.method], ['Quality', m.quality], ['Measured at', m.at], ['Collector note', m.detail]]) {
+      if (value) technical.push([`${label} · ${key}`, String(value)]);
+    }
+  }
+  if (filesystem) {
+    for (const [key, value] of [['Filesystem', filesystem.type], ['Filesystem note', filesystem.detail]]) {
+      if (value) technical.push([key, String(value)]);
+    }
+  }
+  if (accounting) technical.push(['Accounting', String(accounting)]);
+  return {title, paragraphs, technical};
+}

@@ -1,5 +1,6 @@
 import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths} from './core.mjs';
 import {jsonView} from './json-view.mjs';
+import {metricHelp} from './metric-help.mjs';
 
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
@@ -198,9 +199,45 @@ function renderCurrent() {
 }
 for (const button of document.querySelectorAll('nav button')) button.addEventListener('click', () => selectView(button.dataset.view));
 
-function panel(title, tag, span) {
+let helpKey = '';
+function helpButton(key, content) {
+  const button = node('button', 'info-button', '?');
+  button.type = 'button'; button.dataset.helpKey = key;
+  button.setAttribute('aria-label', `About ${content.title.toLowerCase()}`);
+  button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'metric-help');
+  button.addEventListener('blur', () => queueMicrotask(() => {
+    if (!$('metric-help').open && view === 'monitor') renderMonitor();
+  }));
+  button.addEventListener('click', () => {
+    helpKey = key;
+    $('metric-help-title').textContent = content.title;
+    const body = $('metric-help-body'); body.replaceChildren();
+    for (const paragraph of content.paragraphs) body.append(node('p', '', paragraph));
+    if (content.technical.length) {
+      const details = node('details', 'metric-technical'), list = node('dl');
+      details.append(node('summary', '', 'Technical details'));
+      for (const [label, value] of content.technical) list.append(node('dt', '', label), node('dd', '', value));
+      details.append(list); body.append(details);
+    }
+    $('metric-help').showModal();
+  });
+  return button;
+}
+$('close-metric-help').addEventListener('click', () => $('metric-help').close());
+$('metric-help').addEventListener('click', event => {
+  const dialog = $('metric-help'), rect = dialog.getBoundingClientRect();
+  if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
+});
+$('metric-help').addEventListener('close', () => {
+  // Telemetry can replace the original card while the explanation stays open.
+  const source = [...document.querySelectorAll('[data-help-key]')].find(b => b.dataset.helpKey === helpKey);
+  source?.focus(); helpKey = '';
+});
+function panel(title, tag, span, help = null, key = title) {
   const box = node('article', `panel ${span}`), head = node('div', 'panel-head'), body = node('div', 'panel-body');
-  head.append(node('h2', '', title), node('span', 'panel-tag', tag)); box.append(head, body);
+  const tools = node('div', 'panel-tools'); tools.append(node('span', 'panel-tag', tag));
+  if (help) tools.append(helpButton(key, help));
+  head.append(node('h2', '', title), tools); box.append(head, body);
   return {box, body};
 }
 function bar(value, total = 100) {
@@ -227,21 +264,18 @@ function metric(parent, value, note) {
   const line = node('div', 'metric-line'); line.append(node('div', 'metric accent', value), node('span', 'submetric', note)); parent.append(line);
 }
 function stat(parent, label, value) { const row = node('div', 'stat-row'); row.append(node('span', '', label), node('span', '', value)); parent.append(row); }
-function measurementNote(parent, measurement) {
-  parent.append(node('div', 'measure-note', [measurement?.scope, measurement?.quality, measurement?.method, measurement?.detail].filter(Boolean).join(' · ') || 'Observation unavailable'));
-}
 function renderMonitor() {
   const root = $('monitor'), sample = state.monitor?.latest;
   if (!sample) { root.replaceChildren(empty('Waiting for the shared host collector…')); return; }
   // Keep native device selectors stable while they have keyboard focus; their
   // surrounding charts resume rendering on blur. Sampling continues normally.
-  if (root.contains(document.activeElement) && document.activeElement.tagName === 'SELECT') {
+  if (root.contains(document.activeElement) && (document.activeElement.tagName === 'SELECT' || document.activeElement.classList.contains('info-button'))) {
     root.dataset.paused = 'true';
     return;
   }
   delete root.dataset.paused;
   const grid = node('div', 'grid');
-  const cpu = panel('CPU activity', 'PHYSICAL / ALL CORES', 'span8');
+  const cpu = panel('CPU activity', sample.cpu_busy_percent.value == null ? 'UNAVAILABLE' : 'ALL CORES', 'span8', metricHelp('cpu', {measurements: [['CPU', sample.cpu_busy_percent]]}));
   metric(cpu.body, percent(sample.cpu_busy_percent.value), `${sample.cores?.length ?? 0} logical cores`);
   cpu.body.append(chart(p => p.cpu_busy_percent, 100)); chartLabels(cpu.body);
   const cores = node('div', 'cores');
@@ -249,33 +283,31 @@ function renderMonitor() {
     const box = node('div', 'core'), labels = node('div', 'core-label');
     labels.append(node('span', '', core.id), node('span', '', percent(core.busy_percent.value))); box.append(labels, bar(core.busy_percent.value)); cores.append(box);
   }
-  cpu.body.append(cores); measurementNote(cpu.body, sample.cpu_busy_percent); grid.append(cpu.box);
-  const memory = panel('Memory & swap', 'PHYSICAL / HOST', 'span4');
+  cpu.body.append(cores); grid.append(cpu.box);
+  const memory = panel('Memory & swap', sample.memory.used.value == null ? 'UNAVAILABLE' : 'HOST MEMORY', 'span4', metricHelp('memory', {measurements: [['RAM', sample.memory.used], ['Available RAM', sample.memory.available], ['Swap', sample.swap.used]]}));
   metric(memory.body, bytes(sample.memory.used.value), 'memory used');
   memory.body.append(chart(p => p.memory_used_bytes, numeric(sample.memory.total.value))); chartLabels(memory.body);
   stat(memory.body, 'Total', bytes(sample.memory.total.value)); stat(memory.body, 'Available', bytes(sample.memory.available.value));
-  measurementNote(memory.body, sample.memory.used);
   memory.body.append(node('div', 'divider'));
   stat(memory.body, 'Swap used', bytes(sample.swap.used.value)); memory.body.append(bar(sample.swap.used.value, numeric(sample.swap.total.value)));
-  stat(memory.body, 'Swap total', bytes(sample.swap.total.value)); measurementNote(memory.body, sample.swap.used); grid.append(memory.box);
-  const fs = panel('Filesystem space', sample.filesystem_stale ? 'STALE / CACHED' : 'PHYSICAL / CACHED', 'span4');
+  stat(memory.body, 'Swap total', bytes(sample.swap.total.value)); grid.append(memory.box);
+  const fs = panel('Storage space', sample.filesystem_stale ? 'STALE' : sample.filesystem.available.value == null ? 'UNAVAILABLE' : 'ON THIS DISK', 'span4', metricHelp('filesystem', {measurements: [['Available space', sample.filesystem.available]], filesystem: sample.filesystem.filesystem}));
   metric(fs.body, bytes(sample.filesystem.available.value), 'available');
   fs.body.append(chart(p => p.filesystem_available_bytes, numeric(sample.filesystem.total.value))); chartLabels(fs.body);
   stat(fs.body, 'Total', bytes(sample.filesystem.total.value)); stat(fs.body, 'Used', bytes(sample.filesystem.used.value));
-  measurementNote(fs.body, sample.filesystem.available);
-  const info = sample.filesystem.filesystem;
-  if (info) fs.body.append(node('p', 'measure-note', [info.type, info.shared ? 'shared storage pool' : '', info.detail].filter(Boolean).join(' · ')));
   grid.append(fs.box);
   grid.append(ioPanel('Disk I/O', 'disk_io', sample.disk_io ?? [], sample.disk_quality, sample.disk_detail, 'selectedDisk'));
   grid.append(ioPanel('Network', 'network', sample.network ?? [], sample.network_quality, sample.network_detail, 'selectedNetwork'));
-  const support = node('div', 'support span12', `GPU · ${sample.gpu_busy_percent.quality} · ${sample.gpu_busy_percent.detail || 'GPU telemetry is not yet implemented'}. Device rates are individual observations; overlapping layers are not added together.`);
+  const support = node('div', 'support span12');
+  support.append(node('span', '', 'GPU monitoring unavailable'), helpButton('gpu', metricHelp('gpu', {measurements: [['GPU', sample.gpu_busy_percent]]})));
   grid.append(support); root.replaceChildren(grid);
 }
 function ioPanel(title, key, devices, quality, detail, selection) {
-  const p = panel(title, 'PER DEVICE / BYTES PER SECOND', 'span4');
   const selected = devices.find(d => d.id === state[selection]) ?? devices[0];
+  const p = panel(title, quality === 'unavailable' ? 'UNAVAILABLE' : 'BYTES / SECOND', 'span4', metricHelp(key, {measurements: [['Read / receive', selected?.read_bytes_per_second], ['Write / send', selected?.write_bytes_per_second], ['Devices', {quality, detail}]]}));
   state[selection] = selected?.id ?? '';
-  const heading = node('div', 'io-heading'); heading.append(badge(quality));
+  const heading = node('div', 'io-heading');
+  if (quality !== 'reported') heading.append(badge(({estimated: 'Estimate', partial: 'Partial reading', unavailable: 'Unavailable'})[quality] || 'Reading incomplete'));
   if (selected) {
     const select = node('select'); select.setAttribute('aria-label', `${title} device`);
     for (const d of devices) { const option = node('option', '', d.name); option.value = d.id; option.selected = d.id === selected.id; select.append(option); }
@@ -284,9 +316,7 @@ function ioPanel(title, key, devices, quality, detail, selection) {
     p.body.append(heading);
     const legend = node('div', 'legend'); legend.append(node('span', '', `${key === 'network' ? '↓ Receive' : '↓ Read'} ${rate(selected.read_bytes_per_second.value)}`), node('span', '', `${key === 'network' ? '↑ Send' : '↑ Write'} ${rate(selected.write_bytes_per_second.value)}`));
     p.body.append(legend, chart(point => point[key]?.find(d => d.id === selected.id)?.read, null, point => point[key]?.find(d => d.id === selected.id)?.write)); chartLabels(p.body);
-    measurementNote(p.body, selected.read_bytes_per_second);
   } else p.body.append(empty('No device readings available'));
-  if (detail) p.body.append(node('p', 'measure-note', detail));
   return p.box;
 }
 
@@ -307,12 +337,19 @@ function resourceCards() {
     if (!stringifyJSON(r).toLowerCase().includes(filter)) continue;
     const custom = r.custom?.pool;
     const label = custom?.name || ({cpu: 'CPU', memory: 'Memory', disk: 'Disk', port: 'Port'})[r.kind] || r.kind;
-    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '');
+    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, memory: r.kind === 'memory' ? state.status.memory_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
     const budget = node('div', 'budget');
-    for (const [label, value] of [['TOTAL', r.budget_total], ['RESERVED', r.reserved], ['AVAILABLE', r.available]]) {
+    for (const [label, value] of [['POOL', r.budget_total], ['RESERVED', r.reserved], ['AVAILABLE', r.available]]) {
       const item = node('div'); item.append(node('small', '', label), node('strong', label === 'AVAILABLE' ? 'accent' : '', quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
     }
-    p.body.append(budget, bar(r.reserved, numeric(r.budget_total)), node('p', 'measure-note', r.accounting));
+    p.body.append(budget, bar(r.reserved, numeric(r.budget_total)));
+    if(r.kind==='memory' && state.status.memory_budget) {
+      const memory=state.status.memory_budget;
+      stat(p.body,'Physical memory',bytes(memory?.observation.total_bytes));
+      if(memory?.ceiling_bytes!=null) stat(p.body,'Operator ceiling',bytes(memory.ceiling_bytes));
+      if(memory?.stale || memory?.observation.available_bytes==null) p.body.append(node('p','measure-note','New memory grants paused: waiting for an availability estimate.'));
+      if(r.deficit>0) p.body.append(node('p','',`Memory shortfall: ${bytes(r.deficit)}`));
+    }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
     for (const u of r.users ?? []) {
       const user = node('div', 'consumer'); user.append(leaseButton(u.lease), node('p', '', u.reason), node('small', '', `${u.agent || u.owner} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);

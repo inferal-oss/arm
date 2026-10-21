@@ -284,6 +284,49 @@ p {
   color:var(--muted);
   overflow-wrap:anywhere;
 }
+.panel-tools {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.info-button {
+  display:inline-grid;
+  place-items:center;
+  flex:none;
+  width:26px;
+  height:26px;
+  padding:0;
+  border:1px solid #4b606d;
+  border-radius:50%;
+  background:transparent;
+  color:#b7cbd6;
+  font:13px var(--mono);
+}
+.support {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+dialog.metric-help {
+  width:min(440px,calc(100vw - 28px));
+  max-height:calc(100dvh - 32px);
+  padding:24px;
+  border-color:#496473;
+  border-radius:14px;
+  box-shadow:0 22px 80px #0008;
+}
+.metric-help::backdrop {background:#080e1280}
+.metric-help .dialog-heading {margin-bottom:14px}
+.metric-help .dialog-heading h2 {font-size:17px;letter-spacing:-.2px}
+#close-metric-help {padding:3px 9px;font-size:22px;background:transparent;border-color:transparent;color:var(--muted)}
+.metric-help p {font-size:13px;line-height:1.7;color:#c5d5dd;margin:12px 0}
+.metric-technical {border-top:1px solid var(--line);padding-top:15px;margin-top:20px}
+.metric-technical summary {cursor:pointer;color:var(--muted);font-size:12px;padding:3px 0}
+.metric-technical summary:focus-visible {outline:2px solid var(--accent);outline-offset:4px}
+.metric-technical dl {display:block;margin:16px 0 0;font:11px/1.6 var(--mono)}
+.metric-technical dt {margin-top:14px;color:var(--muted)}
+.metric-technical dd {margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
 .panel-body {
   padding:20px;
 }
