@@ -1,5 +1,11 @@
 # Validation record
 
+## October 21, 2026: port provider foundations
+
+The internal port provider passed native macOS race tests and CGo-free executable tests on the actual Linux arm64 kernel described below. Checks exercise TCP/UDP separation, IPv4 wildcard conflicts, IPv6-only and dual-stack behavior, bounded range selection, rollback of an earlier bind when another claim fails, cooperative-ledger conflicts, stale namespace refusal and competing simultaneous binds. A subprocess receives actual bound TCP and UDP descriptors, serves traffic through both, and exits while the parent's copies continue holding the ports. The final probes succeed only after those copies close.
+
+The full macOS race suite, `go vet ./...`, the expanded Linux acceptance harness and compiled Linux CLI smoke test passed. After adding the concurrent-bind case, the port package passed again under the macOS race detector and in the unprivileged Linux container. This establishes provider primitives only: port leases, restart reconciliation, inventory/owner attribution, CLI commands and operator views are not yet integrated. Existing Codex/Claude adapters were unchanged and authenticated sessions were not re-exercised for this work.
+
 ## October 21, 2026: user installation target
 
 `make install` now builds with CGo disabled and installs the executable under `~/.local/bin` by default. Verification used an isolated prefix with spaces, checked the installed binary's mode (0755), compared its content with the build output, invoked its version command, repeated installation, and checked package staging with `DESTDIR` and `/usr/local` as the prefix. These checks did not install ARM into live agent configuration or start a persistent user service. `PREFIX` and `BINDIR` are configurable; agent instructions remain a separate `arm install` operation.

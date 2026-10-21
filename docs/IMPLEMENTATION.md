@@ -16,6 +16,7 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `internal/agents` | Version probing and native Codex and Claude contact adapters. |
 | `internal/observe` | Bounded read-only host and filesystem observations with explicit measurement scopes and uncertainty. |
 | `internal/storage` | Verified managed directories, quarantine, mount and activity checks, and bounded cleanup steps. |
+| `internal/ports` | Internal TCP/UDP binding, conflict matching and socket-inheritance primitives; not yet exposed through lease admission or CLI. |
 
 The daemon stores a stable host ID and authenticated local owner identity. `localhost` resolves to that host ID. Leases reserve CPU, memory, and disk budgets together. Queued work holds no partial grant, and older queued work blocks renewal and queue bypass. Start time and expiry begin at grant rather than queue insertion. Acquisition idempotency keys reject mismatched reuse.
 
@@ -68,6 +69,14 @@ For `rust-build`, an attachment supplies Cargo target and build-directory enviro
 Namespace removal is recorded separately from physical reclamation. This provider does not prove exclusive blocks on snapshot/reflink filesystems. A populated candidate therefore remains charged after removal under `needs_attention`, with `namespace_removed` and the reason visible. Empty-directory cleanup can finish automatically. `storage cleanup` retries transient failures; it does not assert that unknown physical blocks were freed. `storage handoff` explicitly transfers remaining files and/or unresolved physical-allocation responsibility to the operator, records a terminal outcome and removes ARM's future cleanup authority. It refuses tracked active consumers and in-progress cleanup. Subsequent cleanup calls preserve handed-off data. Handoff is not a physical-free-space observation.
 
 Storage leases, including unresolved cleanup, block ordinary daemon stop and uninstall. The existing uninstall guard applies to durable storage obligations even while the daemon is down. Files explicitly handed off remain user-retained under the recorded path; state and history remain preserved. Configurable managed roots, explicit adoption, shared-cache policy, remount identity resolution and filesystem-specific reclamation verification are still planned.
+
+## Port provider foundations
+
+The internal port provider validates explicit TCP/UDP IPv4/IPv6 claims in the daemon's current network namespace. It selects ephemeral ports or bounded ranges, checks wildcard and dual-stack conflicts against a supplied reservation ledger, and attempts real kernel binds for the entire bundle. Failure closes sockets acquired earlier in the bundle. IPv6 sockets explicitly select IPv6-only or dual-stack behavior; TCP and UDP remain separate resources. Linux namespace identities include the boot ID; this provider does not enter other namespaces.
+
+Held sockets can be passed to a child as inherited descriptors without closing and rebinding. The daemon's copy keeps the bind until explicitly closed, even after a child exits. Cooperative mode instead closes the probe socket and reports that it supplies only ledger coordination: a later workload bind can fail. Probes test the exact selected port and reject stale namespace identities. A successful probe is only a current observation, and socket inode metadata grants no process-control authority.
+
+These are tested internal primitives. Port lease admission, durable lifecycle/restart reconciliation, the execution environment contract, protected backend-listener accounting, CLI commands, native listener/owner inventory and operator resource views remain integration work. Existing CLI leases still reserve CPU, memory and disk only.
 
 ## Installation and messages
 

@@ -28,7 +28,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "local", "install", "observe", "storage", "manager", "server", "cli"):
+        for package in ("agents", "local", "install", "observe", "storage", "ports", "manager", "server", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
