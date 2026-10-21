@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync"
 	"syscall"
@@ -19,6 +20,7 @@ import (
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/observe"
+	"github.com/yrashk/arm/internal/ports"
 	"github.com/yrashk/arm/internal/storage"
 	_ "modernc.org/sqlite"
 )
@@ -46,6 +48,10 @@ type Manager struct {
 	storage           *storage.Provider
 	storageErr        error
 	storageJobs       map[string]bool
+	portSockets       map[string][]*ports.Socket
+	portNamespace     string
+	portErr           error
+	infrastructure    []model.PortBinding
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation"}
@@ -75,7 +81,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
-	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}}
+	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.portNamespace, m.portErr = ports.Namespace()
 	if e = db.QueryRow(`SELECT value FROM metadata WHERE key='host'`).Scan(&m.host); e != nil {
 		db.Close()
 		return nil, e
@@ -105,7 +112,23 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			db.Close()
 			return nil, e
 		}
-		if run.Valid && consuming(l.State) {
+		if consuming(l.State) && len(l.Request.Ports) > 0 {
+			l.State = "needs_attention"
+			if l.Outcome == "" {
+				l.Outcome = "port_supervision_lost"
+			}
+			l.Failure = "Socket descriptors did not survive restart; reconcile actual availability before returning this allocation"
+			for i := range l.Ports {
+				l.Ports[i].State = "unknown"
+				l.Ports[i].SocketID = ""
+				l.Ports[i].Detail = l.Failure
+			}
+			l.Revision++
+			if e = m.put(l, "ports.recovery_required"); e != nil {
+				db.Close()
+				return nil, e
+			}
+		} else if run.Valid && consuming(l.State) {
 			l.State = "needs_attention"
 			l.Outcome = "supervision_lost"
 			if l.PID == 0 || errors.Is(syscall.Kill(-l.PID, 0), syscall.ESRCH) {
@@ -174,6 +197,9 @@ func (m *Manager) Close() error {
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
+	for _, sockets := range m.portSockets {
+		ports.Close(sockets)
+	}
 	if m.storage != nil {
 		m.storage.Close()
 	}
@@ -246,7 +272,10 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{Host: m.host, Owner: m.owner, Capacity: m.capacity, Leases: ls, Capabilities: capabilities}
+	s := model.Status{Host: m.host, Owner: m.owner, Capacity: m.capacity, Leases: ls, Capabilities: capabilities, Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	if m.portErr == nil {
+		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
+	}
 	if e != nil {
 		return s, e
 	}
@@ -288,6 +317,7 @@ func (m *Manager) Status() (model.Status, error) {
 		}
 		s.Resources = append(s.Resources, v)
 	}
+	m.portResources(&s, ls)
 	e = m.db.QueryRow(`SELECT COALESCE(MAX(sequence),0) FROM events`).Scan(&s.Cursor)
 	return s, e
 }
@@ -316,14 +346,32 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if r.TTL <= 0 || r.TTL > 7*24*time.Hour {
 		return empty, model.Err("invalid_request", "ttl must be positive and no greater than 7 days")
 	}
-	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || r.Resources == (model.Resources{}) {
+	var portErr error
+	if len(r.Ports) > 0 {
+		if m.portErr != nil {
+			return empty, model.Err("namespace_unavailable", m.portErr.Error())
+		}
+		r.Ports, portErr = ports.Normalize(r.Ports, m.portNamespace, run != nil)
+		if portErr != nil {
+			return empty, portErr
+		}
+	} else {
+		r.Ports = nil
+	}
+	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || (r.Resources == (model.Resources{}) && len(r.Ports) == 0 && r.PortLease == "") {
 		return empty, model.Err("invalid_request", "request at least one positive resource quantity")
 	}
-	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" {
-		return empty, model.Err("invalid_request", "kind must be execution or storage")
+	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" {
+		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
 	}
-	if r.Kind == "storage" && (run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "") {
+	if r.Kind == "storage" && (run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
 		return empty, model.Err("invalid_request", "a storage lease requires only a disk claim and no command, profile or parent storage lease")
+	}
+	if r.Kind == "ports" && (run != nil || r.Resources != (model.Resources{}) || len(r.Ports) == 0 || r.PortLease != "" || r.Profile != "" || r.StorageLease != "") {
+		return empty, model.Err("invalid_request", "a ports lease requires only port claims and no command, profile or parent lease")
+	}
+	if r.PortLease != "" && (run == nil || len(r.Ports) > 0) {
+		return empty, model.Err("invalid_request", "a supervised run can attach one port lease or request its own ports")
 	}
 	if r.StorageLease != "" && run == nil {
 		return empty, model.Err("invalid_request", "only supervised commands can attach storage")
@@ -355,15 +403,16 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			a, b := r, l.Request
 			a.Host = ""
 			b.Host = ""
-			if a != b {
+			if !reflect.DeepEqual(a, b) {
 				return empty, model.Err("idempotency_conflict", "key was already used for a different request")
 			}
-			var rb string
-			if run != nil {
-				raw, _ := json.Marshal(run)
-				rb = string(raw)
+			var oldRun RunRequest
+			if savedRun.Valid {
+				if e = json.Unmarshal([]byte(savedRun.String), &oldRun); e != nil {
+					return empty, e
+				}
 			}
-			if savedRun.String != rb {
+			if savedRun.Valid != (run != nil) || (run != nil && (!reflect.DeepEqual(oldRun.Command, run.Command) || oldRun.CWD != run.CWD)) {
 				return empty, model.Err("idempotency_conflict", "key was already used for a different command")
 			}
 			return l, nil
@@ -383,6 +432,16 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		if _, e := m.storageForRun(r); e != nil {
 			return empty, e
 		}
+	}
+	if r.PortLease != "" {
+		if _, e := m.portParent(r, ""); e != nil {
+			return empty, e
+		}
+	}
+	if run != nil {
+		copyRun := *run
+		copyRun.Request = r
+		run = &copyRun
 	}
 	ls, e := m.list()
 	if e != nil {
@@ -444,7 +503,9 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		return empty, e
 	}
 	if l.State == "provisioning" {
-		if r.Kind == "storage" {
+		if len(r.Ports) > 0 {
+			l, e = m.provisionPorts(l, run, ls)
+		} else if r.Kind == "storage" {
 			l, e = m.provisionStorage(l)
 		} else {
 			l, e = m.launch(l, *run)
@@ -459,7 +520,7 @@ func (m *Manager) activate(l *model.Lease, isRun bool) {
 	l.Started = &now
 	l.Expires = &end
 	l.State = "active"
-	if isRun || l.Request.Kind == "storage" {
+	if isRun || l.Request.Kind == "storage" || len(l.Request.Ports) > 0 {
 		l.State = "provisioning"
 	}
 }
@@ -516,6 +577,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.Request.Kind == "storage" {
 		return m.endStorage(l, outcome)
 	}
+	if l.Request.Kind == "ports" && l.State != "queued" {
+		return m.endPortParent(l, outcome)
+	}
 	l.Revision++
 	l.Outcome = outcome
 	if j := m.jobs[id]; j != nil {
@@ -542,6 +606,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	now := time.Now().UTC()
 	l.State = "terminal"
 	l.Ended = &now
+	if len(l.Ports) > 0 {
+		m.finishPorts(&l)
+	}
 	return l, m.put(l, "lease."+outcome)
 }
 
@@ -562,6 +629,13 @@ func (m *Manager) Renew(id string, ttl time.Duration) (model.Lease, error) {
 		r := l.Request
 		r.TTL = ttl
 		if _, err := m.storageForRun(r); err != nil {
+			return l, err
+		}
+	}
+	if l.Request.PortLease != "" {
+		r := l.Request
+		r.TTL = ttl
+		if _, err := m.portParent(r, l.ID); err != nil {
 			return l, err
 		}
 	}
@@ -639,6 +713,9 @@ func (m *Manager) tick() {
 		if l.Request.Kind == "storage" && l.State == "ending" {
 			m.scheduleStorage(l.ID)
 		}
+		if l.Request.Kind == "ports" && l.State == "ending" {
+			_, _ = m.finishPortParent(l)
+		}
 	}
 	for _, l := range ls {
 		if l.State != "queued" {
@@ -650,6 +727,12 @@ func (m *Manager) tick() {
 				continue
 			}
 		}
+		if l.Request.PortLease != "" {
+			if _, err := m.portParent(l.Request, l.ID); err != nil {
+				_, _ = m.end(l.ID, "ports_unavailable")
+				continue
+			}
+		}
 		if !used.Add(l.Request.Resources).Fits(m.capacity) {
 			break
 		}
@@ -657,19 +740,38 @@ func (m *Manager) tick() {
 		if e = m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, l.ID).Scan(&rb); e != nil {
 			return
 		}
-		m.activate(&l, rb.Valid)
-		l.Revision++
-		if e = m.put(l, "lease.granted"); e != nil {
-			return
+		if len(l.Request.Ports) == 0 {
+			m.activate(&l, rb.Valid)
+			l.Revision++
+			if e = m.put(l, "lease.granted"); e != nil {
+				return
+			}
 		}
-		used = used.Add(l.Request.Resources)
 		if rb.Valid {
 			var r RunRequest
-			if json.Unmarshal([]byte(rb.String), &r) == nil {
-				_, _ = m.launch(l, r)
+			if e = json.Unmarshal([]byte(rb.String), &r); e == nil {
+				if len(l.Request.Ports) > 0 {
+					l, e = m.provisionPorts(l, &r, ls)
+				} else {
+					l, e = m.launch(l, r)
+				}
 			}
 		} else if l.Request.Kind == "storage" {
-			_, _ = m.provisionStorage(l)
+			l, e = m.provisionStorage(l)
+		} else if len(l.Request.Ports) > 0 {
+			l, e = m.provisionPorts(l, nil, ls)
+		}
+		if e != nil {
+			return
+		}
+		if l.State == "queued" {
+			break
+		}
+		if consuming(l.State) {
+			used = used.Add(l.Request.Resources)
+		}
+		if len(l.Ports) > 0 {
+			ls = append(ls, l)
 		}
 	}
 }
@@ -695,7 +797,18 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	cmd := exec.Command("/bin/sh", args...)
 	cmd.ExtraFiles = []*os.File{reader}
 	cmd.Dir = r.CWD
-	cmd.Env = os.Environ()
+	for _, entry := range os.Environ() {
+		if strings.HasPrefix(entry, "ARM_PORTS=") || strings.HasPrefix(entry, "ARM_PORT_LEASE=") || strings.HasPrefix(entry, "ARM_STORAGE_DIR=") || strings.HasPrefix(entry, "ARM_STORAGE_LEASE=") {
+			continue
+		}
+		cmd.Env = append(cmd.Env, entry)
+	}
+	if len(l.Ports) > 0 || l.Request.PortLease != "" {
+		if e = m.activatePorts(&l, cmd); e != nil {
+			f.Close()
+			return m.launchFailed(l, e)
+		}
+	}
 	if l.Request.StorageLease != "" {
 		store, e := m.storageForRun(l.Request)
 		if e != nil {
@@ -767,6 +880,8 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			current.State = "needs_attention"
 			current.Outcome = "descendants_unreconciled"
 			current.Ended = nil
+		} else if len(current.Ports) > 0 {
+			m.finishPorts(&current)
 		}
 		current.Revision++
 		_ = m.put(current, "lease."+current.Outcome)
@@ -780,6 +895,9 @@ func (m *Manager) launchFailed(l model.Lease, err error) (model.Lease, error) {
 	l.Outcome = "launch_failed"
 	l.Failure = err.Error()
 	l.Ended = &now
+	if len(l.Ports) > 0 {
+		m.finishPorts(&l)
+	}
 	l.Revision++
 	return l, m.put(l, "lease.launch_failed")
 }
@@ -798,6 +916,9 @@ func (m *Manager) Reconcile(id string) (model.Lease, error) {
 	}
 	if l.Request.Kind == "storage" {
 		return l, model.Err("needs_attention", "use storage cleanup to retry or storage handoff to transfer responsibility")
+	}
+	if l.State == "needs_attention" && len(l.Request.Ports) > 0 {
+		return m.reconcilePorts(l)
 	}
 	if l.State != "needs_attention" || l.PID <= 0 {
 		return l, model.Err("needs_attention", "lease has no verifiable recovered process group")

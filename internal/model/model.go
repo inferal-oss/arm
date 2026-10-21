@@ -30,26 +30,29 @@ type Request struct {
 	Profile      string        `json:"profile,omitempty"`
 	Kind         string        `json:"kind,omitempty"`
 	StorageLease string        `json:"storage_lease,omitempty"`
+	Ports        []PortClaim   `json:"ports,omitempty"`
+	PortLease    string        `json:"port_lease,omitempty"`
 }
 
 type Lease struct {
-	ID           string     `json:"id"`
-	Host         string     `json:"host"`
-	Owner        string     `json:"owner"`
-	Request      Request    `json:"request"`
-	State        string     `json:"state"`
-	Outcome      string     `json:"outcome,omitempty"`
-	Failure      string     `json:"failure,omitempty"`
-	Created      time.Time  `json:"created_at"`
-	Started      *time.Time `json:"started_at,omitempty"`
-	Expires      *time.Time `json:"expires_at,omitempty"`
-	Ended        *time.Time `json:"ended_at,omitempty"`
-	Revision     int        `json:"revision"`
-	PID          int        `json:"pid,omitempty"`
-	ManagedDir   string     `json:"managed_dir,omitempty"`
-	ExitCode     *int       `json:"exit_code,omitempty"`
-	Capabilities []string   `json:"capabilities"`
-	Artifact     *Artifact  `json:"artifact,omitempty"`
+	ID           string        `json:"id"`
+	Host         string        `json:"host"`
+	Owner        string        `json:"owner"`
+	Request      Request       `json:"request"`
+	State        string        `json:"state"`
+	Outcome      string        `json:"outcome,omitempty"`
+	Failure      string        `json:"failure,omitempty"`
+	Created      time.Time     `json:"created_at"`
+	Started      *time.Time    `json:"started_at,omitempty"`
+	Expires      *time.Time    `json:"expires_at,omitempty"`
+	Ended        *time.Time    `json:"ended_at,omitempty"`
+	Revision     int           `json:"revision"`
+	PID          int           `json:"pid,omitempty"`
+	ManagedDir   string        `json:"managed_dir,omitempty"`
+	ExitCode     *int          `json:"exit_code,omitempty"`
+	Capabilities []string      `json:"capabilities"`
+	Artifact     *Artifact     `json:"artifact,omitempty"`
+	Ports        []PortBinding `json:"ports,omitempty"`
 }
 
 type Event struct {
@@ -61,25 +64,27 @@ type Event struct {
 }
 
 type Status struct {
-	Host         string         `json:"host"`
-	Owner        string         `json:"owner"`
-	Capacity     Resources      `json:"capacity"`
-	Reserved     Resources      `json:"reserved"`
-	Leases       []Lease        `json:"leases"`
-	Cursor       int64          `json:"cursor"`
-	Capabilities []string       `json:"capabilities"`
-	Resources    []ResourceView `json:"resources"`
+	Host           string         `json:"host"`
+	Owner          string         `json:"owner"`
+	Capacity       Resources      `json:"capacity"`
+	Reserved       Resources      `json:"reserved"`
+	Leases         []Lease        `json:"leases"`
+	Cursor         int64          `json:"cursor"`
+	Capabilities   []string       `json:"capabilities"`
+	Resources      []ResourceView `json:"resources"`
+	Infrastructure []PortBinding  `json:"infrastructure_ports"`
 }
 
 type ResourceUse struct {
-	Lease    string     `json:"lease"`
-	Owner    string     `json:"owner"`
-	Agent    string     `json:"agent,omitempty"`
-	Project  string     `json:"project,omitempty"`
-	Reason   string     `json:"reason"`
-	Quantity float64    `json:"quantity"`
-	State    string     `json:"state"`
-	Expires  *time.Time `json:"expires_at,omitempty"`
+	Lease        string     `json:"lease"`
+	Owner        string     `json:"owner"`
+	Agent        string     `json:"agent,omitempty"`
+	Project      string     `json:"project,omitempty"`
+	Reason       string     `json:"reason"`
+	Quantity     float64    `json:"quantity"`
+	State        string     `json:"state"`
+	Expires      *time.Time `json:"expires_at,omitempty"`
+	Relationship string     `json:"relationship,omitempty"`
 }
 type ResourceView struct {
 	ID          string               `json:"id"`
@@ -94,6 +99,7 @@ type ResourceView struct {
 	Observed    *float64             `json:"observed"`
 	Users       []ResourceUse        `json:"users"`
 	Measurement *ResourceMeasurement `json:"measurement,omitempty"`
+	Port        *PortBinding         `json:"port,omitempty"`
 }
 
 type Error struct {

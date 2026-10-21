@@ -71,6 +71,26 @@ bin/arm storage inspect /absolute/path/to/artifacts
 
 The read-only scan deduplicates hard links and skips symlinks and child mounts. It leaves exclusive and reclaimable bytes unknown because clones, snapshots, open files and shared extents can prevent deletion from returning the reported allocation. Inspection does not authorize cleanup.
 
+## Ports
+
+Reserve exact TCP/UDP bindings, kernel-selected ports (`0`), or a bounded selection range:
+
+```sh
+bin/arm ports reserve --port web=tcp4://127.0.0.1:0 --ttl 15m --reason "Reserve the preview server"
+bin/arm ports list
+bin/arm ports discover
+bin/arm run --port-lease PORT_LEASE_ID --ttl 2m --reason "Serve the preview" -- ./socket-aware-server
+# Or request ports together with execution resources:
+bin/arm run --port web=tcp4://127.0.0.1:8000-8010 --cpu 1 --reason "Serve the preview" -- ./socket-aware-server
+bin/arm release PORT_LEASE_ID
+```
+
+Held bindings stay open through socket activation. A supervised command receives `ARM_PORTS`, a JSON array containing each binding's `name`, `network`, `address`, selected `port`, `namespace`, `mode` and inherited `fd`. The first socket descriptor is normally 4; always use the supplied numbers. In Go, wrap the descriptor with `os.NewFile` and `net.FileListener` or `net.FilePacketConn`, then close the original wrapper after duplication. Do not bind the address again. `ARM_PORT_LEASE` identifies the owning lease. A dedicated port lease permits one attached command at a time, must outlast it, and keeps its sockets after the command finishes.
+
+For programs that cannot accept inherited sockets, use `--port-mode cooperative`. Its descriptor is `null`; the program must bind the reported address and handle bind failure. That mode coordinates through ARM's ledger without holding a kernel reservation. IPv6 uses explicit `tcp6`/`udp6` addresses such as `web=tcp6://[::1]:0`; `--port-dual-stack` enables IPv4 overlap for IPv6 wildcard claims.
+
+Revocation stops only attached supervised work. An occupied or uncertain binding stays charged as `needs_attention`; `arm reconcile ID` probes the exact binding without signalling an unrelated listener. Restarted allocations never claim their old descriptors survived. Discovery is a bounded, non-atomic native observation with permission/completeness metadata, separate from reservations. The backend listener is a protected infrastructure resource.
+
 `arm run` streams combined command output, preserves its exit status, and returns 124 on lease expiry. With `--json`, command output goes to stderr and stdout contains the final lease JSON. Execution is noninteractive; commands receive no interactive stdin. Foreground daemon mode is `arm serve`.
 
 ## Agent integration
@@ -112,6 +132,10 @@ make test-local
 make test-live
 # Optional: real Linux runtime, using an already cached image with Python 3.
 make GO=.tools/go/bin/go LINUX_IMAGE=IMAGE_ID test-linux
+# Explicit SSH target; no Go installation required on the target:
+python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST
+# Isolate successful cleanup fixtures from unrelated inaccessible host processes:
+python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST --isolate-processes
 ```
 
 Use `GO=.tools/go/bin/go` with these targets if Go is not on PATH. Live tests use dedicated sessions, temporary Codex configuration and project instruction files, and the existing CLI sign-ins. They do not send to existing user sessions or rewrite global agent instructions. Native CLIs may retain the dedicated session transcripts in their history. Reports are written beneath `.cache/`.

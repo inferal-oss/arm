@@ -16,7 +16,7 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `internal/agents` | Version probing and native Codex and Claude contact adapters. |
 | `internal/observe` | Bounded read-only host and filesystem observations with explicit measurement scopes and uncertainty. |
 | `internal/storage` | Verified managed directories, quarantine, mount and activity checks, and bounded cleanup steps. |
-| `internal/ports` | Internal TCP/UDP binding, conflict matching and socket-inheritance primitives; not yet exposed through lease admission or CLI. |
+| `internal/ports` | TCP/UDP binding, conflict matching, socket inheritance and bounded native socket/owner observations. |
 
 The daemon stores a stable host ID and authenticated local owner identity. `localhost` resolves to that host ID. Leases reserve CPU, memory, and disk budgets together. Queued work holds no partial grant, and older queued work blocks renewal and queue bypass. Start time and expiry begin at grant rather than queue insertion. Acquisition idempotency keys reject mismatched reuse.
 
@@ -40,7 +40,7 @@ Raw leases recover with their original deadlines. Terminal outcomes and resource
 
 The CLI uses `/v1/ws` on the daemon's selected loopback address. A protected `endpoint.json` file contains discovery information and an authentication token. Browser requests also undergo origin checking. There is one authority per state directory, enforced with an operating-system lock. The current permission model trusts clients operating as the same OS user with that token; separate operator and agent credentials remain to be implemented.
 
-Protocol version 1 uses the envelopes in `internal/model`. Operations include `status`, `resources`, `storage_inspect`, `storage_list`, `storage_preview`, `storage_cleanup`, `storage_handoff`, `acquire`, `run`, `inspect`, `release`, `cancel`, `cancel_request`, `renew`, `reconcile`, `output`, `events`, `subscribe`, `agents`, `register`, `message`, `messages`, and `shutdown`.
+Protocol version 1 uses the envelopes in `internal/model`. Operations include `status`, `resources`, `ports_discover`, `storage_inspect`, `storage_list`, `storage_preview`, `storage_cleanup`, `storage_handoff`, `acquire`, `run`, `inspect`, `release`, `cancel`, `cancel_request`, `renew`, `reconcile`, `output`, `events`, `subscribe`, `agents`, `register`, `message`, `messages`, and `shutdown`.
 
 Events have durable increasing sequence numbers. `status` returns a snapshot cursor; subscribing after that cursor recovers changes after the snapshot. Requests and event streaming share a WebSocket connection and retain request IDs. Bounded output queues disconnect slow clients instead of growing indefinitely. Operation history currently has no pruning policy, and full lease snapshots are intended for the small local milestone rather than unlimited historical workloads.
 
@@ -70,13 +70,21 @@ Namespace removal is recorded separately from physical reclamation. This provide
 
 Storage leases, including unresolved cleanup, block ordinary daemon stop and uninstall. The existing uninstall guard applies to durable storage obligations even while the daemon is down. Files explicitly handed off remain user-retained under the recorded path; state and history remain preserved. Configurable managed roots, explicit adoption, shared-cache policy, remount identity resolution and filesystem-specific reclamation verification are still planned.
 
-## Port provider foundations
+## Port leases and discovery
 
 The internal port provider validates explicit TCP/UDP IPv4/IPv6 claims in the daemon's current network namespace. It selects ephemeral ports or bounded ranges, checks wildcard and dual-stack conflicts against a supplied reservation ledger, and attempts real kernel binds for the entire bundle. Failure closes sockets acquired earlier in the bundle. IPv6 sockets explicitly select IPv6-only or dual-stack behavior; TCP and UDP remain separate resources. Linux namespace identities include the boot ID; this provider does not enter other namespaces.
 
 Held sockets can be passed to a child as inherited descriptors without closing and rebinding. The daemon's copy keeps the bind until explicitly closed, even after a child exits. Cooperative mode instead closes the probe socket and reports that it supplies only ledger coordination: a later workload bind can fail. Probes test the exact selected port and reject stale namespace identities. A successful probe is only a current observation, and socket inode metadata grants no process-control authority.
 
-These are tested internal primitives. Port lease admission, durable lifecycle/restart reconciliation, the execution environment contract, protected backend-listener accounting, CLI commands, native listener/owner inventory and operator resource views remain integration work. Existing CLI leases still reserve CPU, memory and disk only.
+`acquire --port` combines port requests with resource budgets; `ports reserve` creates a dedicated port-only lease. Provisioning intent is durable before binding; actual selected bindings are recorded before success or execution authorization. Queued bundles hold no partial grant, and repeated identical bind failures do not generate new audit events every scheduler tick. A failed bundle releases its earlier descriptors and resource reservation. Idempotency compares normalized claim lists and command identity.
+
+`run --port` defaults to inherited activation. The pipe gate occupies descriptor 3; `ARM_PORTS` gives each actual socket's descriptor (starting at 4), and `ARM_PORT_LEASE` identifies ownership. The process wraps these sockets rather than rebinding. `run --port-lease ID` attaches one command to a dedicated port lease; it cannot combine attachment with fresh claims, and the parent must outlast the child including renewal. The parent retains sockets for subsequent sequential consumers. Revoking a parent cancels its attached owned command and waits for reconciliation before closing its copies. Resource rows identify both the reservation and the attached consumer/reason; the latter adds no duplicate reservation quantity.
+
+Release probes each exact binding after closing owned descriptors. An unrelated listener, escaped inherited socket or uncertain process group keeps the allocation charged. No inventory PID grants signalling authority. A restart marks consuming port allocations `needs_attention` with unknown descriptors; `reconcile` requires tracked consumers and saved process groups to be absent and current-namespace binds to succeed. Cross-namespace reconciliation is unsupported rather than silently probing a different namespace. TCP TIME_WAIT can conservatively delay successful reconciliation.
+
+`ports list` returns allocated resource rows, including the protected backend listener; its resource ID is not a releasable lease. `ports discover` observes Linux `/proc/net` tables and descriptor/start-time identities, or macOS native `lsof` fields and process-start observations. Collection has time, output, entry and process limits, and exposes permission restrictions and non-atomic scope. IPv6-only/socket-sharing options are unknown in observations. Linux can match a held socket inode to its lease; potential ledger overlaps are reported separately from verified inode claims. Empty owner lists never establish free ports. GPU providers, richer socket-option observations and host-wide network budgets remain work.
+
+On an ordinary Linux login, a same-user service may deny `/proc` activity access even though ARM owns its storage directory. The current storage provider refuses deletion and retains the budget in that case; it does not omit the service to obtain a successful scan. This occurs for `sd-pam` on the tested OrbStack machine. Explicit handoff remains available. The test harness verifies this degraded behavior directly and uses a private process namespace only for separate successful-cleanup fixtures; that isolation does not prove host-wide observation permissions.
 
 ## Installation and messages
 
@@ -104,7 +112,7 @@ The opt-in native suite checks real instruction loading, same-session message ac
 
 ## Next implementation work
 
-- Further platform providers for observed pressure and per-workload usage, exclusive/reclaimable filesystem extents, listener-port inventory and claims, and GPU resources.
+- Further platform providers for observed pressure and per-workload usage, exclusive/reclaimable filesystem extents, richer port observation/cross-namespace recovery, and GPU resources.
 - Durable overage incidents, automatic warning escalation, and verified usage enforcement where supported.
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.
 - Knowledge cards with YAML indexing and additional code-based workload adapters, including persistent services such as Gradle.

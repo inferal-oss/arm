@@ -102,6 +102,7 @@ Commands:
   status                    Show host budgets and leases
   resources                 Show budgets, availability, owners, and reasons
   storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
+  ports reserve|list|discover Manage port reservations and native inventory
   acquire                   Request a resource lease
   run                       Execute a command under a supervised lease
   inspect|release|cancel ID  Inspect or end a lease
@@ -138,6 +139,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.message(args)
 	case "storage":
 		return a.storage(args)
+	case "ports":
+		return a.ports(args)
 	case "events":
 		f := a.flags(cmd)
 		follow := f.Bool("follow", false, "stream live events")
@@ -225,7 +228,7 @@ func bytesValue(s string) (int64, error) {
 func (a *app) acquire(command string, args []string) (int, error) {
 	f := a.flags(command)
 	defaultCPU := float64(1)
-	if command == "storage" {
+	if command == "storage" || command == "ports" {
 		defaultCPU = 0
 	}
 	cpu := f.Float64("cpu", defaultCPU, "logical-core budget (cooperative)")
@@ -240,6 +243,11 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	project := f.String("project", "", "project attribution")
 	agent := f.String("agent", "", "registered agent contact for attribution")
 	storageLease := f.String("storage", "", "attach a managed storage lease (supervised run only)")
+	portLease := f.String("port-lease", "", "attach a dedicated port lease (one supervised consumer)")
+	var portFlags portFlags
+	f.Var(&portFlags, "port", "repeatable [NAME=]tcp4|tcp6|udp4|udp6://ADDRESS:PORT[-END]")
+	portMode := f.String("port-mode", "", "hold, activation or cooperative (defaults to hold; activation for run)")
+	dualStack := f.Bool("port-dual-stack", false, "IPv6 wildcard claims also bind IPv4")
 	cwd := f.String("cwd", "", "command working directory")
 	asJSON := f.Bool("json", false, "keep command output on stderr and emit final JSON")
 	if e := f.Parse(args); e != nil {
@@ -261,8 +269,20 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	}
 	r := model.Request{Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
 	r.StorageLease = *storageLease
+	r.PortLease = *portLease
+	for _, c := range portFlags {
+		c.Mode = *portMode
+		c.DualStack = *dualStack
+		r.Ports = append(r.Ports, c)
+	}
+	if len(portFlags) == 0 && (*portMode != "" || *dualStack) {
+		return 2, fmt.Errorf("port-mode and port-dual-stack require at least one --port")
+	}
 	if command == "storage" {
 		r.Kind = "storage"
+	}
+	if command == "ports" {
+		r.Kind = "ports"
 	}
 	defer func() {
 		if a.ctx.Err() != nil {
@@ -380,7 +400,12 @@ func (a *app) acquire(command string, args []string) (int, error) {
 			return 0, nil
 		}
 		if l.State == "needs_attention" {
-			return 1, model.Err("needs_attention", "workload supervision requires operator reconciliation")
+			if *asJSON {
+				if e = a.print(l); e != nil {
+					return 1, e
+				}
+			}
+			return 1, model.Err("needs_attention", "lease "+l.ID+" requires operator reconciliation: "+l.Failure)
 		}
 		select {
 		case <-a.ctx.Done():

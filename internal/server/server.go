@@ -31,6 +31,7 @@ type Server struct {
 	admission   sync.Mutex
 	stopping    bool
 	storageScan chan struct{}
+	portScan    chan struct{}
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
@@ -60,10 +61,14 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 		return e
 	}
 	defer listener.Close()
+	if e = m.TrackInfrastructure(listener.Addr()); e != nil {
+		return e
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel}
 	s.storageScan = make(chan struct{}, 1)
+	s.portScan = make(chan struct{}, 1)
 	ep := local.Endpoint{URL: "ws://" + listener.Addr().String() + "/v1/ws", Token: s.token, PID: os.Getpid()}
 	if e = local.AtomicJSON(filepath.Join(home, "endpoint.json"), ep); e != nil {
 		return e
@@ -239,6 +244,14 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "ports_discover":
+		select {
+		case s.portScan <- struct{}{}:
+			defer func() { <-s.portScan }()
+		default:
+			return nil, model.Err("observation_busy", "socket discovery is already running")
+		}
+		return s.Manager.DiscoverPorts(ctx)
 	case "storage_list":
 		return s.Manager.StorageList()
 	case "storage_preview", "storage_cleanup", "storage_handoff":

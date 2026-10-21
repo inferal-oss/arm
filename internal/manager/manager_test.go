@@ -3,6 +3,7 @@ package manager
 import (
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 	"sync/atomic"
@@ -199,6 +200,14 @@ func TestSupervisedExpiryAndDescendants(t *testing.T) {
 }
 
 func TestUnknownRecoveredJobStaysCharged(t *testing.T) {
+	// Use a group created inside the current PID namespace. An inherited
+	// outside group can appear as PGID 0 under an unprivileged unshare fixture.
+	child := exec.Command("/bin/sleep", "30")
+	child.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	if err := child.Start(); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = child.Process.Kill(); _ = child.Wait() }()
 	home := filepath.Join(t.TempDir(), "arm")
 	m, e := Open(home, model.Resources{CPU: 1})
 	if e != nil {
@@ -208,7 +217,7 @@ func TestUnknownRecoveredJobStaysCharged(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	l.PID = syscall.Getpgrp()
+	l.PID = child.Process.Pid
 	data, _ := json.Marshal(l)
 	if _, e = m.db.Exec(`UPDATE leases SET run='{}',data=? WHERE id=?`, string(data), l.ID); e != nil {
 		t.Fatal(e)
@@ -225,6 +234,9 @@ func TestUnknownRecoveredJobStaysCharged(t *testing.T) {
 	}
 	if _, e = m.End(l.ID, "released"); e == nil {
 		t.Fatal("released unverified allocation")
+	}
+	if err := child.Process.Signal(syscall.Signal(0)); err != nil {
+		t.Fatal("recovery or release signalled the unverified group", err)
 	}
 }
 

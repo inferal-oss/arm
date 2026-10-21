@@ -195,12 +195,36 @@ func TestKernelFamiliesWildcardsAndRange(t *testing.T) {
 			t.Fatalf("unresolved range: %+v", s.Binding)
 		}
 	}
-	v6, err := Open(t.Context(), []model.PortClaim{claim("tcp6", "::", 0)}, nil)
-	if err != nil {
-		t.Skipf("IPv6 unavailable: %v", err)
+	// A kernel-selected IPv6-only port need not be free in IPv4, including
+	// sockets held earlier in this fixture. Distinguish such external/family
+	// collisions from a broken IPV6_V6ONLY setting before choosing a new port.
+	paired := false
+	for attempt := 0; attempt < 16; attempt++ {
+		v6, err := Open(t.Context(), []model.PortClaim{claim("tcp6", "::", 0)}, nil)
+		if err != nil {
+			t.Skipf("IPv6 unavailable: %v", err)
+		}
+		c := claim("tcp4", "0.0.0.0", v6[0].Binding.Port)
+		v4, err := Open(t.Context(), []model.PortClaim{c}, nil)
+		Close(v6)
+		if err == nil {
+			Close(v4)
+			paired = true
+			break
+		}
+		// If removing our v6-only socket makes IPv4 available, its settings
+		// caused the conflict; retrying would hide an implementation defect.
+		probe, probeErr := Open(t.Context(), []model.PortClaim{c}, nil)
+		if probeErr == nil {
+			Close(probe)
+			t.Fatalf("IPv6-only socket blocked an otherwise free IPv4 binding: %v", err)
+		}
+		errorCode(t, err, "port_conflict")
+		errorCode(t, probeErr, "port_conflict")
 	}
-	defer Close(v6)
-	open(t, claim("tcp4", "0.0.0.0", v6[0].Binding.Port))
+	if !paired {
+		t.Fatal("could not select a port free in both independent families")
+	}
 	dual := claim("tcp6", "::", 0)
 	dual.DualStack = true
 	d := open(t, dual)[0]
