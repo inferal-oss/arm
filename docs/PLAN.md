@@ -82,11 +82,19 @@ Continue assigning focused work to individual subagents as slots become availabl
 
 | Subagent | Running now | Ready for coordinating review | Next queued assignment |
 | --- | --- | --- | --- |
-| `live_memory` | Safe storage export and short retention | Embedded knowledge catalog and installed discovery | Cargo effective configuration and stronger workload ownership evidence |
+| `live_memory` | Safe storage export and short retention | Knowledge catalog committed as `5c78202` | Cargo effective configuration and stronger workload ownership evidence |
 | `owner_names` | Persistent lease/message activity feed | Bulk release/cancel and backend-owned shutdown | Exact-recipient operator messaging and reviewed broadcasts |
-| `dashboard_actions` | URL view/detail history and rendered acceptance | Browser application/executable selection | Equivalent terminal dashboard using the shared WebSocket interface |
+| `dashboard_actions` | URL view/detail history and rendered acceptance | Browser selection committed as `c1d0756` | Equivalent terminal dashboard using the shared WebSocket interface |
 
-Subsequent assignments cover knowledge-card catalog/instructions, Rust export/retention, bulk lifecycle/shutdown, web navigation/browser selection, persistent activity/readability, operator messaging, remaining operational views/pool controls, and the equivalent TUI. Then assign the remaining scheduling/credit, provider/workload, policy/heartbeat, configuration/services/recovery, authorization and remote-host stages described above. Respect dependencies, coordinate shared-file ownership and keep the complete scope intact. A queued assignment is not evidence of work running or completion.
+The rest of the specification is also divided into downstream portfolios. These are sequential queues, not claims that all work is running:
+
+| Subagent | Downstream queue after its next assignment |
+| --- | --- |
+| `live_memory` | Additional code-backed workload cards/adapters and Gradle persistent services; filesystem/shared accounting and reclamation; capability-driven GPU/unified memory and network providers. |
+| `owner_names` | Owner/nested budgets, queue blockers/start deadlines/impossible-request revalidation; conservative accounting/headroom and early-release credit records; policy and agentic lease reviews; validated configuration, services/watchdog, recovery and retention. |
+| `dashboard_actions` | Remaining operational views and guarded pool/storage/incident controls; visual, keyboard and reconnect acceptance; distinct operator/agent permissions and privacy controls; remote-host transport and global coordination after local correctness gates. |
+
+The coordinating agent resolves cross-stream model/API dependencies, credit-policy decisions, platform/tool provisioning and aggregate acceptance. Remote work depends on the provider and operations gates; authorization work must precede exposing new trust boundaries. Assign smaller concrete tasks from these portfolios as preceding work is reviewed, rather than opening simultaneous edits across every stage.
 
 Each assignment must return its concrete changes, review findings/fixes, relevant verification, material limitations and documentation updates. The coordinating agent reviews and integrates features, resolves shared-file conflicts, validates the combined result and commits each completed major feature. Parallel implementation does not waive real-tool/platform/UI acceptance or ownership safeguards.
 
