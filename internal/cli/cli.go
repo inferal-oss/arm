@@ -377,7 +377,8 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		f.StringVar(disk, "disk", "0", "disk `size`, e.g. 10GiB")
 	}
 	reason := f.String("reason", "", "required purpose")
-	ttl := f.Duration("ttl", 10*time.Minute, "lease duration")
+	ttl := f.Duration("ttl", 10*time.Minute, "lease duration from grant")
+	startDeadline := f.String("start-deadline", "", "latest start `timestamp` (absolute RFC3339, local host only)")
 	wait := f.Bool("wait", false, "queue and wait for capacity")
 	key := f.String("key", "", "idempotency key")
 	host := f.String("host", "localhost", "target host")
@@ -484,7 +485,16 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	if math.IsNaN(*cpu) || math.IsInf(*cpu, 0) {
 		return 2, fmt.Errorf("invalid CPU quantity")
 	}
-	r := model.Request{Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
+	var deadline *time.Time
+	if *startDeadline != "" {
+		stamp, parseErr := time.Parse(time.RFC3339Nano, *startDeadline)
+		if parseErr != nil {
+			return 2, fmt.Errorf("--start-deadline requires an absolute RFC3339 timestamp: %w", parseErr)
+		}
+		stamp = stamp.UTC()
+		deadline = &stamp
+	}
+	r := model.Request{StartDeadline: deadline, Host: *host, Reason: *reason, Project: *project, Agent: *agent, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: d}, TTL: *ttl, Key: *key, Queue: *wait, Profile: *profile}
 	if usagePolicy.Mode != "" {
 		r.UsagePolicy = &usagePolicy
 	} else {
@@ -570,6 +580,9 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	}
 	var offset int64
 	for {
+		if l.QueueInfo != nil && l.QueueInfo.Rejection != nil {
+			return a.acquired(l)
+		}
 		if a.ctx.Err() != nil {
 			if *host != "localhost" {
 				return 130, model.Err("remote_wait_interrupted", fmt.Sprintf("remote lease %s on %s may continue; inspect its outcome before retrying exact key %q", l.ID, *host, r.Key))
@@ -595,6 +608,9 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		}
 		if e = a.hostCall(*host, "inspect", map[string]string{"id": l.ID}, &l); e != nil {
 			return 1, e
+		}
+		if l.QueueInfo != nil && l.QueueInfo.Rejection != nil {
+			return a.acquired(l)
 		}
 		if command != "run" && l.State != "queued" {
 			return a.acquired(l)
@@ -652,6 +668,9 @@ func (a *app) acquire(command string, args []string) (int, error) {
 func (a *app) acquired(l model.Lease) (int, error) {
 	if err := a.print(l); err != nil {
 		return 1, err
+	}
+	if l.QueueInfo != nil && l.QueueInfo.Rejection != nil {
+		return 1, nil
 	}
 	if l.State == "needs_attention" {
 		return 1, model.Err("needs_attention", "allocation remains charged; inspect its failure and ownership details")

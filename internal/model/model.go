@@ -27,6 +27,7 @@ func (r Resources) FitsRemaining(used, capacity Resources) bool {
 }
 
 type Request struct {
+	StartDeadline     *time.Time    `json:"start_deadline_at,omitempty"`
 	PeerCertificate   string        `json:"origin_certificate,omitempty"`
 	PeerGrantRevision int           `json:"origin_grant_revision,omitempty"`
 	OriginKey         string        `json:"origin_key,omitempty"`
@@ -49,6 +50,7 @@ type Request struct {
 }
 
 type Lease struct {
+	QueueInfo     *QueueInfo       `json:"queue_info,omitempty"`
 	ID            string           `json:"id"`
 	Host          string           `json:"host"`
 	Owner         string           `json:"owner"`

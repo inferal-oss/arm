@@ -43,6 +43,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal-dashboard.py", target / "test-terminal-dashboard.py")
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
+        shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
         os.chmod(target, 0o755)
         for child in target.iterdir():
             child.chmod(0o755 if child.suffix != ".py" else 0o644)
@@ -64,6 +65,7 @@ python3 /tests/test-dashboard.py --arm /tests/arm
 python3 /tests/test-terminal-dashboard.py --arm /tests/arm
 python3 /tests/test-memory.py --arm /tests/arm
 python3 /tests/test-lifecycle.py --arm /tests/arm
+python3 /tests/test-scheduling.py --arm /tests/arm
 '''
         subprocess.run([
             opts.docker, "run", "--rm", "--pull", "never", "--init", "--network", "none",

@@ -54,6 +54,9 @@ func (m *Manager) ensureStorage() error {
 }
 
 func (m *Manager) provisionStorage(l model.Lease) (model.Lease, error) {
+	if reason := m.startDeadlineProblem(l); reason != nil {
+		return m.rejectUnstarted(l, reason)
+	}
 	if err := m.ensureStorage(); err != nil {
 		return m.storageFailed(l, err)
 	}
@@ -71,6 +74,9 @@ func (m *Manager) provisionStorage(l model.Lease) (model.Lease, error) {
 	}
 	l.Artifact.Identity = &id
 	l.Artifact.Phase = "owned"
+	if reason := m.startDeadlineProblem(l); reason != nil {
+		return m.rejectUnstarted(l, reason)
+	}
 	l.State = "active"
 	l.Capabilities = append(append([]string{}, l.Capabilities...), "managed-storage", "explicit-storage-consumers")
 	l.Revision++

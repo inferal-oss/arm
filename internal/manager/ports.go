@@ -15,6 +15,9 @@ import (
 )
 
 func (m *Manager) provisionPorts(l model.Lease, run *RunRequest, leases []model.Lease) (model.Lease, error) {
+	if reason := m.startDeadlineProblem(l); reason != nil {
+		return m.rejectUnstarted(l, reason)
+	}
 	blocked := append([]model.PortBinding{}, m.infrastructure...)
 	for _, other := range leases {
 		if other.ID != l.ID && consuming(other.State) {
@@ -48,6 +51,10 @@ func (m *Manager) provisionPorts(l model.Lease, run *RunRequest, leases []model.
 			return l, nil
 		}
 		return l, model.Err("port_unavailable", fmt.Sprintf("lease %s: %v", l.ID, err))
+	}
+	if reason := m.startDeadlineProblem(l); reason != nil {
+		ports.Close(sockets)
+		return m.rejectUnstarted(l, reason)
 	}
 	// Binding can take time. The usable TTL begins when the whole bundle is
 	// selected, including the first immediate grant as well as queued grants.

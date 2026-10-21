@@ -65,6 +65,12 @@ type Manager struct {
 	inboxSlots         chan struct{}
 	usages             map[string]workloadSample
 	policyClocks       map[string]incidentClock
+	startClocks        map[string]time.Time
+	scheduleHighwater  time.Time
+	scheduleCheckpoint time.Time
+	scheduleRollback   bool
+	scheduleWallNow    func() time.Time
+	scheduleElapsedNow func() time.Time
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown"}
@@ -194,6 +200,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	m.sample()
 	m.sampleMemory()
 	if e = m.recoverShutdown(); e != nil {
+		db.Close()
+		return nil, e
+	}
+	if e = m.initScheduling(); e != nil {
 		db.Close()
 		return nil, e
 	}
@@ -353,6 +363,9 @@ func (m *Manager) Status() (model.Status, error) {
 	if e != nil {
 		return s, e
 	}
+	if e = m.queueViews(ls); e != nil {
+		return s, e
+	}
 	for _, l := range ls {
 		if consuming(l.State) {
 			s.Reserved = s.Reserved.Add(l.Request.Resources)
@@ -429,7 +442,23 @@ func (m *Manager) Status() (model.Status, error) {
 func (m *Manager) Inspect(id string) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return m.get(id)
+	l, err := m.get(id)
+	if err != nil || l.State != "queued" {
+		return l, err
+	}
+	ls, err := m.list()
+	if err != nil {
+		return l, err
+	}
+	if err = m.queueViews(ls); err != nil {
+		return l, err
+	}
+	for _, current := range ls {
+		if current.ID == id {
+			return current, nil
+		}
+	}
+	return l, nil
 }
 
 func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error) {
@@ -442,6 +471,12 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	var empty model.Lease
 	if m.closing || m.draining {
 		return empty, model.Err("backend_stopping", "backend is shutting down")
+	}
+	if err := canonicalStartDeadline(&r); err != nil {
+		return empty, err
+	}
+	if err := m.reconcileQueued(); err != nil {
+		return empty, err
 	}
 	if len(r.Key) > 128 {
 		return empty, model.Err("invalid_request", "idempotency key must be at most 128 bytes")
@@ -593,7 +628,15 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if e != nil {
 		return empty, e
 	}
-	if !queued && m.fitsLiveMemory(r.Resources, used) && poolFits {
+	deadlineProblem := m.startDeadlineProblem(l)
+	if deadlineProblem != nil {
+		l.State = "terminal"
+		l.Outcome = "rejected"
+		stamp, _ := m.schedulingTime()
+		l.Ended = &stamp
+		l.QueueInfo = rejectedQueueInfo(stamp, deadlineProblem)
+		l.Failure = deadlineProblem.Message
+	} else if !queued && m.fitsLiveMemory(r.Resources, used) && poolFits {
 		m.activate(&l, run != nil)
 	} else if !r.Queue {
 		return empty, model.Err("insufficient_capacity", "capacity is reserved or live memory headroom is insufficient/unavailable; use --wait to queue")
@@ -634,8 +677,27 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if e = event(tx, "lease.created", l.ID, l); e != nil {
 		return empty, e
 	}
+	if r.StartDeadline != nil {
+		if _, e = tx.Exec(`INSERT INTO metadata(key,value) VALUES('scheduler_clock',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, m.scheduleHighwater.Format(time.RFC3339Nano)); e != nil {
+			return empty, e
+		}
+	}
+	if deadlineProblem != nil {
+		if e = event(tx, "lease.rejected", l.ID, l); e != nil {
+			return empty, e
+		}
+	}
 	if e = tx.Commit(); e != nil {
 		return empty, e
+	}
+	if r.StartDeadline != nil {
+		m.scheduleCheckpoint = m.scheduleHighwater
+	}
+	if l.State == "active" {
+		if reason := m.startDeadlineProblem(l); reason != nil {
+			return m.rejectUnstarted(l, reason)
+		}
+		delete(m.startClocks, l.ID)
 	}
 	if l.State == "provisioning" {
 		if len(r.Ports) > 0 {
@@ -646,11 +708,17 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			l, e = m.launch(l, *run)
 		}
 	}
+	if e == nil && l.State == "queued" {
+		if e = m.refreshQueueInfo(); e == nil {
+			l, e = m.get(l.ID)
+		}
+	}
 	return l, e
 }
 
 func (m *Manager) activate(l *model.Lease, isRun bool) {
-	now := time.Now().UTC()
+	now, _ := m.schedulingTime()
+	l.QueueInfo = nil
 	end := now.Add(l.Request.TTL)
 	l.Started = &now
 	l.Expires = &end
@@ -872,6 +940,9 @@ func (m *Manager) tick() {
 	if err := m.reconcileIncidents(); err != nil {
 		return
 	}
+	if err := m.reconcileQueued(); err != nil {
+		return
+	}
 	ls, e = m.list()
 	if e != nil {
 		return
@@ -920,6 +991,12 @@ func (m *Manager) tick() {
 		if !m.fitsLiveMemory(l.Request.Resources, used) || !poolFits {
 			break
 		}
+		if reason := m.startDeadlineProblem(l); reason != nil {
+			if _, e = m.rejectUnstarted(l, reason); e != nil {
+				return
+			}
+			continue
+		}
 		var rb sql.NullString
 		if e = m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, l.ID).Scan(&rb); e != nil {
 			return
@@ -930,6 +1007,15 @@ func (m *Manager) tick() {
 			if e = m.put(l, "lease.granted"); e != nil {
 				return
 			}
+		}
+		if !rb.Valid && l.Request.Kind != "storage" && len(l.Request.Ports) == 0 {
+			if reason := m.startDeadlineProblem(l); reason != nil {
+				if _, e = m.rejectUnstarted(l, reason); e != nil {
+					return
+				}
+				continue
+			}
+			delete(m.startClocks, l.ID)
 		}
 		if rb.Valid {
 			var r RunRequest
@@ -964,6 +1050,9 @@ func (m *Manager) tick() {
 }
 
 func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
+	if reason := m.startDeadlineProblem(l); reason != nil {
+		return m.rejectUnstarted(l, reason)
+	}
 	if e := os.MkdirAll(filepath.Join(m.home, "logs"), 0700); e != nil {
 		return m.launchFailed(l, e)
 	}
@@ -1022,6 +1111,10 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	cmd.Stdout = f
 	cmd.Stderr = f
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	if reason := m.startDeadlineProblem(l); reason != nil {
+		f.Close()
+		return m.rejectUnstarted(l, reason)
+	}
 	if e = cmd.Start(); e != nil {
 		f.Close()
 		return m.launchFailed(l, e)
@@ -1050,7 +1143,17 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	l.Revision++
 	if e = m.put(l, "lease.started"); e != nil {
 		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+	} else if reason := m.startDeadlineProblem(l); reason != nil {
+		// The shell still waits on our private gate: no requested command ran.
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+		f.Close()
+		delete(m.jobs, l.ID)
+		l.PID = 0
+		l.Process = nil
+		return m.rejectUnstarted(l, reason)
 	} else {
+		delete(m.startClocks, l.ID)
 		_, e = writer.Write([]byte("go\n"))
 		if e != nil {
 			_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
