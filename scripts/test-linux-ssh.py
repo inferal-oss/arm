@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", required=True, help="explicit SSH destination, e.g. user@linux-host")
     parser.add_argument("--go", default=os.environ.get("GO", "go"))
-    parser.add_argument("--packages", nargs="+", choices=("agents", "local", "install", "observe", "storage", "ports", "manager", "server", "cli"), help="selected suites (default: all)")
+    parser.add_argument("--packages", nargs="+", choices=("agents", "local", "install", "observe", "usage", "storage", "ports", "manager", "server", "cli"), help="selected suites (default: all)")
     parser.add_argument("--test-run", default="", help="Go test regular expression for a targeted verification")
     parser.add_argument("--skip-smoke", action="store_true", help="skip compiled CLI smoke test for a targeted verification")
     parser.add_argument("--isolate-processes", action="store_true", help="run under unprivileged unshare with a private /proc; separately test host permission restrictions")
@@ -36,13 +36,14 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-ssh-") as staging:
         target = Path(staging)
-        for package in opts.packages or ("agents", "local", "install", "observe", "storage", "ports", "manager", "server", "cli"):
+        for package in opts.packages or ("agents", "local", "install", "observe", "usage", "storage", "ports", "manager", "server", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         shutil.copyfile(root / "scripts" / "test-pools.py", target / "test-pools.py")
+        shutil.copyfile(root / "scripts" / "test-usage.py", target / "test-usage.py")
         script = '''#!/bin/sh
 set -eu
 uname -srmo
@@ -57,6 +58,7 @@ done
             script += 'python3 ./test-ports.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-inbox.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-pools.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-usage.py --arm "$PWD/arm"\n'
         (target / "run.sh").write_text(script)
         remote = subprocess.check_output(ssh + ["mktemp -d /tmp/arm-tests.XXXXXXXXXX"], text=True).strip()
         if not re.fullmatch(r"/tmp/arm-tests\.[A-Za-z0-9]{10}", remote):

@@ -28,13 +28,14 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "local", "install", "observe", "storage", "ports", "manager", "server", "cli"):
+        for package in ("agents", "local", "install", "observe", "usage", "storage", "ports", "manager", "server", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         shutil.copyfile(root / "scripts" / "test-pools.py", target / "test-pools.py")
+        shutil.copyfile(root / "scripts" / "test-usage.py", target / "test-usage.py")
         os.chmod(target, 0o755)
         for child in target.iterdir():
             child.chmod(0o755 if child.suffix != ".py" else 0o644)
@@ -48,6 +49,7 @@ python3 /tests/test-local.py --arm /tests/arm
 python3 /tests/test-ports.py --arm /tests/arm
 python3 /tests/test-inbox.py --arm /tests/arm
 python3 /tests/test-pools.py --arm /tests/arm
+python3 /tests/test-usage.py --arm /tests/arm
 '''
         subprocess.run([
             opts.docker, "run", "--rm", "--pull", "never", "--init", "--network", "none",

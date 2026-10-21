@@ -110,6 +110,7 @@ Commands:
   daemon start|stop|status    Manage the local backend
   serve                     Run the backend in the foreground
   status                    Show host budgets and leases
+  usage LEASE_ID            Show supervised CPU/memory observations
   resources                 Show budgets, availability, owners, and reasons
   storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
   ports reserve|list|discover Manage port reservations and native inventory
@@ -221,6 +222,17 @@ func (a *app) command(args []string) (int, error) {
 			if s["host"] != *host {
 				return 1, model.Err("host_unavailable", "only localhost is available")
 			}
+		}
+		return 0, a.print(result)
+	case "usage":
+		f := a.flags("usage")
+		f.Bool("json", true, "JSON output with observation scope and uncertainty")
+		if err := a.parse(f, args, false); err != nil {
+			return 2, err
+		}
+		var result model.UsageView
+		if err := a.call("usage", map[string]string{"id": f.Args()[0]}, &result); err != nil {
+			return 1, err
 		}
 		return 0, a.print(result)
 	case "inspect", "release", "cancel", "reconcile", "renew":

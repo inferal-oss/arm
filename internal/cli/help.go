@@ -15,6 +15,7 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"usage":        {usage: "LEASE_ID [OPTIONS]", summary: "Observe CPU cores over an interval and platform-specific accounted memory for ARM-supervised live group members. Unknown or stale measurements remain explicit; observation is not a hard quota.", example: `arm usage LEASE_ID`, min: 1, max: 1},
 	"pool create":  {usage: "NAME --scope host|global --capacity COUNT --reason TEXT [OPTIONS]", summary: "Create an agent-defined cooperative resource pool. Mutations return before/after state and a durable journal sequence.", example: `arm pool create browser-slots --scope host --capacity 3 --reason "Coordinate browsers"`, min: 1, max: 1},
 	"pool list":    {summary: "List counted resources, host/global scope, exact capacities, consumers and queue. --all includes deleted definitions."},
 	"pool inspect": {usage: "POOL_ID [OPTIONS]", summary: "Inspect a counted resource, revision, availability/deficit, consumers and queued reasons.", min: 1, max: 1},

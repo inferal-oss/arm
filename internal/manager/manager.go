@@ -22,6 +22,7 @@ import (
 	"github.com/yrashk/arm/internal/observe"
 	"github.com/yrashk/arm/internal/ports"
 	"github.com/yrashk/arm/internal/storage"
+	"github.com/yrashk/arm/internal/usage"
 	_ "modernc.org/sqlite"
 )
 
@@ -31,8 +32,11 @@ type RunRequest struct {
 	CWD     string   `json:"cwd"`
 }
 type job struct {
-	cmd  *exec.Cmd
-	done chan struct{}
+	cmd              *exec.Cmd
+	done             chan struct{}
+	identity         *model.ProcessIdentity
+	observationError string
+	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
 	mu                sync.Mutex
@@ -54,6 +58,7 @@ type Manager struct {
 	infrastructure    []model.PortBinding
 	inboxChanged      chan struct{}
 	inboxSlots        chan struct{}
+	usages            map[string]workloadSample
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority"}
@@ -91,6 +96,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.usages = map[string]workloadSample{}
 	m.inboxChanged = make(chan struct{})
 	m.inboxSlots = make(chan struct{}, 64)
 	m.portNamespace, m.portErr = ports.Namespace()
@@ -122,6 +128,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	for _, l := range leaves {
+		if l.Usage != nil {
+			l.Usage.Live = false
+			l.Usage.Stale = true
+		}
 		var run sql.NullString
 		if e = db.QueryRow(`SELECT run FROM leases WHERE id=?`, l.ID).Scan(&run); e != nil {
 			db.Close()
@@ -169,6 +179,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 }
 
 func (m *Manager) Start() {
+	m.wg.Go(m.sampleUsageLoop)
 	m.wg.Go(func() {
 		t := time.NewTicker(5 * time.Second)
 		defer t.Stop()
@@ -239,6 +250,7 @@ func (m *Manager) list() ([]model.Lease, error) {
 		if e = json.Unmarshal(b, &l); e != nil {
 			return nil, e
 		}
+		m.attachUsage(&l)
 		out = append(out, l)
 	}
 	return out, rows.Err()
@@ -254,6 +266,9 @@ func (m *Manager) get(id string) (model.Lease, error) {
 		return l, e
 	}
 	e = json.Unmarshal(b, &l)
+	if e == nil {
+		m.attachUsage(&l)
+	}
 	return l, e
 }
 func event(tx *sql.Tx, kind, id string, v any) error {
@@ -925,6 +940,14 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		return m.launchFailed(l, e)
 	}
 	j := &job{cmd: cmd, done: make(chan struct{})}
+	identity, identityErr := usage.Capture(cmd.Process.Pid)
+	if identityErr == nil && identity.PGID == cmd.Process.Pid && identity.UID == m.owner {
+		j.identity = &identity
+		l.Process = &identity
+		l.Capabilities = append(append([]string{}, l.Capabilities...), "supervised-usage-observation")
+	} else {
+		j.observationError = "native process identity unavailable; usage cannot be attributed"
+	}
 	m.jobs[l.ID] = j
 	l.PID = cmd.Process.Pid
 	l.State = "active"
@@ -951,6 +974,17 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		defer close(j.done)
 		delete(m.jobs, l.ID)
 		current, ge := m.get(l.ID)
+		delete(m.usages, l.ID)
+		if (current.Usage == nil || !current.Usage.IdentityVerified || current.Usage.MemberCount == 0) && j.lastUsage != nil {
+			summary := *j.lastUsage
+			summary.Stale = true
+			summary.Detail += "; final summary retains the last identity-verified observation"
+			current.Usage = &summary
+		}
+		if current.Usage != nil {
+			current.Usage.Live = false
+			current.Usage.Members = nil
+		}
 		if ge != nil {
 			return
 		}

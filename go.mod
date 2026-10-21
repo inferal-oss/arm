@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	github.com/coder/websocket v1.8.15
+	github.com/ebitengine/purego v0.11.2
 	github.com/google/uuid v1.6.0
 	golang.org/x/sys v0.48.0
 	modernc.org/sqlite v1.60.1

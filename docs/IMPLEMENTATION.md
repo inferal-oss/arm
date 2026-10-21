@@ -15,6 +15,7 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `internal/install` | Manifest-based managed instructions with reversible edits and path identity checks. |
 | `internal/agents` | Version probing and native Codex and Claude contact adapters. |
 | `internal/observe` | Bounded read-only host and filesystem observations with explicit measurement scopes and uncertainty. |
+| `internal/usage` | Identity-checked native process-group CPU/memory snapshots, with explicit metric scopes and missing/stale evidence. |
 | `internal/storage` | Verified managed directories, quarantine, mount and activity checks, and bounded cleanup steps. |
 | `internal/ports` | TCP/UDP binding, conflict matching, socket inheritance and bounded native socket/owner observations. |
 
@@ -22,7 +23,7 @@ The daemon stores a stable host ID and authenticated local owner identity. `loca
 
 Interrupted CLI acquisitions cancel by request key, including when the grant response was lost. A durable cancellation marker prevents a late request from becoming a new allocation after its cancellation arrived first.
 
-The default budgets are development defaults: logical CPU count minus one, 8 GiB memory, and 20 GiB disk. They are configurable with daemon flags and do not imply operating-system reservation. Inspect them before choosing workload allocations. Host observations are separate from these budgets and do not yet affect admission. Per-lease observed consumption remains unknown.
+The default budgets are development defaults: logical CPU count minus one, 8 GiB memory, and 20 GiB disk. They are configurable with daemon flags and do not imply operating-system reservation. Inspect them before choosing workload allocations. Host and supervised-workload observations are separate from these budgets and do not yet affect admission. Unsupervised leases have no inferred process usage.
 
 Each state directory is an independent authority. Separate test instances do not coordinate their budgets; cooperating agents must use the same ARM instance. Resource rows carry stable host, resource, and budget-pool IDs.
 
@@ -40,7 +41,7 @@ Raw leases recover with their original deadlines. Terminal outcomes and resource
 
 The CLI uses `/v1/ws` on the daemon's selected loopback address. A protected `endpoint.json` file contains discovery information and an authentication token. Browser requests also undergo origin checking. There is one authority per state directory, enforced with an operating-system lock. The current permission model trusts clients operating as the same OS user with that token; separate operator and agent credentials remain to be implemented.
 
-Protocol version 1 uses the envelopes in `internal/model`. Operations include `status`, `resources`, `ports_discover`, `storage_inspect`, `storage_list`, `storage_preview`, `storage_cleanup`, `storage_handoff`, `acquire`, `run`, `inspect`, `release`, `cancel`, `cancel_request`, `renew`, `reconcile`, `output`, `events`, `subscribe`, `agents`, `register`, `message`, `messages`, and `shutdown`.
+Protocol version 1 uses the envelopes in `internal/model`. Operations include `status`, `resources`, `usage`, `ports_discover`, `storage_inspect`, `storage_list`, `storage_preview`, `storage_cleanup`, `storage_handoff`, `acquire`, `run`, `inspect`, `release`, `cancel`, `cancel_request`, `renew`, `reconcile`, `output`, `events`, `subscribe`, `agents`, `register`, `message`, `messages`, and `shutdown`.
 
 Events have durable increasing sequence numbers. `status` returns a snapshot cursor; subscribing after that cursor recovers changes after the snapshot. Requests and event streaming share a WebSocket connection and retain request IDs. Bounded output queues disconnect slow clients instead of growing indefinitely. Operation history currently has no pruning policy, and full lease snapshots are intended for the small local milestone rather than unlimited historical workloads.
 
@@ -132,10 +133,20 @@ Capacity may shrink below outstanding reservations, exposing a deficit rather th
 
 These permits return after ordinary lease settlement. Recovered uncertain supervised work and unresolved bundled resources remain charged, including their pool quantities. Custom capacity does not claim OS enforcement or physical reclamation, and no external-service fencing adapter is implemented. Scope is represented for future multi-host coordination, but remote claims, replication/failover and partition behavior are not implemented. Built-in leases use the existing transactional event journal; built-in host-budget configuration does not yet have this capacity-change journal. Web/TUI resource browsing and pool controls remain implementation work.
 
+## Supervised workload observations
+
+Launch captures PID, process group, UID, native start identity and boot/PID namespace before opening the execution gate. Failure leaves supervision available but usage attribution explicitly unavailable. Only the live owned job object enables sampling; persisted PIDs never restore monitoring or signalling authority after restart.
+
+The sampler runs outside the admission lock on a one-second cadence, rotating batches of at most 32 jobs and 256 members per job. A shared two-second context bounds cooperative collection work; native kernel calls themselves are not preemptible. Snapshots validate the root before and after collection and each member around its counter reads. Metadata restrictions, races, bounds and missing counters expose incomplete or unavailable evidence. Samples older than three seconds are stale using elapsed time within the running daemon. No process environments or command lines are read.
+
+macOS calls public libproc APIs through `github.com/ebitengine/purego`, retaining CGo-free builds. Runtime ABI checks and Mach timebase conversion protect counter interpretation. Memory is the sum of process physical footprints, including task-ledger compression/platform charges; it is not exclusive physical allocation. Linux uses bounded `/proc` reads, native `AT_CLKTCK`, boot/PID-namespace/start-tick identities and `smaps_rollup` Private_Clean plus Private_Dirty. This private-resident metric excludes shared mappings, swap and other unreported charges. Raw per-process RSS is separate and is not summed as group physical usage.
+
+CPU compares cumulative counters only for identities present in two verified samples and uses the enclosing read interval. The result is a lower-bound core average, not instantaneous CPU or a complete accounting of short-lived/exited/escaped descendants. The first sample and unavailable counters remain null. `arm usage LEASE_ID`, `inspect` and `status` return scope, quality, completeness, timestamps and identity evidence. Samples remain in memory rather than generating one durable event per second; normal lifecycle persistence retains a final summary without member details. A fallback to an earlier verified sample is marked stale. Recovery never presents persisted usage as a live measurement. Telemetry history/streaming, durable incidents, warning escalation and kernel resource limits remain work.
+
 ## Next implementation work
 
 
-- Further platform providers for observed pressure and per-workload usage, exclusive/reclaimable filesystem extents, richer port observation/cross-namespace recovery, and GPU resources.
+- Further platform providers for observed pressure and stronger workload containment/accounting, exclusive/reclaimable filesystem extents, richer port observation/cross-namespace recovery, and GPU resources.
 - Durable overage incidents, automatic warning escalation, and verified usage enforcement where supported.
 - Optional agentic lease reviews with contention-aware scheduling, bounded/coalesced agent invocations, durable exact-recipient delivery and responses, and explicit renew/resize/release actions. This is planned behavior; a conversational reply will not itself change entitlement or enforcement deadlines.
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.

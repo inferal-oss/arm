@@ -65,6 +65,14 @@ Use `arm help COMMAND` or `arm GROUP COMMAND --help` for command-specific option
 
 Use `--wait` with `acquire` or `run` to queue. CPU, memory, and disk claims are cooperative reservation budgets. `resources` shows the budget, reservations, availability, and each consuming lease's owner, registered agent when provided, project, reason, and expiry. Separate timestamped measurements report host memory and the filesystem containing ARM's state, including APFS container identity when available. These observations do not yet affect admission; unmeasured quantities remain `null`.
 
+Inspect native CPU and memory observations for a supervised command:
+
+```sh
+bin/arm usage LEASE_ID
+```
+
+Snapshots also appear in `inspect` and `status`. CPU needs two samples and reports a lower-bound logical-core average for captured group members present in both. macOS reports native process physical footprints; Linux reports private resident memory. These metrics have different scopes, and shared memory, exited children and escaped processes prevent treating them as a complete physical allocation. Output includes identity verification, timestamps, freshness, completeness and measurement details; unavailable counters remain `null`. The final lease retains a summary. Observation does not yet trigger warnings or CPU/memory limits. macOS uses `purego` to call system APIs without a C compiler.
+
 Inspect a directory's logical size and reported allocation through the backend:
 
 ```sh
