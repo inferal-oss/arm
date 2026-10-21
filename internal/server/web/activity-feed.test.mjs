@@ -136,3 +136,11 @@ test('a queued close event cannot remove a reopened drawer or steal its focus', 
   assert.equal(f.toggle.attributes['aria-expanded'], 'true'); assert.equal(f.doc.activeElement, f.controls.close);
   f.feed.dispose();
 });
+
+test('legacy feed attribution supplements the same-host UID with an explicitly current account name', () => {
+  const event = leaseEvent(1);delete event.data.owner_username;event.data.host='local';
+  const ownerContext={host:'local',owner:'501',owner_username:'current-user'};
+  assert.equal(activityItems({events:[event],ownerContext})[0].actor,'builder · current-user (UID 501; current account)');
+  assert.equal(activityItems({events:[{...event,data:{...event.data,host:'remote'}}],ownerContext})[0].actor,'builder · UID 501');
+  assert.equal(event.data.owner_username,undefined);
+});

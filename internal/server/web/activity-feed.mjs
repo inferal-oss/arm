@@ -1,8 +1,10 @@
+import {ownerDisplay} from './core.mjs';
+
 const text = (value, limit = 260) => typeof value === 'string' ? value.length > limit ? `${value.slice(0, limit)}…` : value : '';
 const titleCase = value => value.replaceAll(/[._-]/g, ' ').replace(/^./, c => c.toUpperCase());
 const stamp = value => Number.isFinite(Date.parse(value)) ? Date.parse(value) : 0;
 const sequence = value => { try { return BigInt(value ?? 0); } catch { return 0n; } };
-const owner = value => value?.owner_username ? text(value.owner_username, 80) : value?.owner ? `UID ${value.owner}` : '';
+const owner = (value, current) => value?.owner_username ? text(value.owner_username, 80) : value?.owner ? ownerDisplay(value, current, value.host || current?.host) : '';
 
 function messageStatus(message) {
   const states = new Map();
@@ -17,7 +19,7 @@ function messageStatus(message) {
 // One bounded, read-only view over the dashboard's existing event/message data.
 // Message snapshots and delivery events share one row rather than duplicating
 // every notification and receipt. Exact sequence integers are never narrowed.
-export function activityItems({events = [], messages = [], leases = []} = {}, limit = 80) {
+export function activityItems({events = [], messages = [], leases = [], ownerContext = null} = {}, limit = 80) {
   const bound = Math.max(1, Math.min(200, limit)), records = new Map(), byLease = new Map(leases.map(l => [l.id, l]));
   const byMessage = new Map(messages.filter(m => typeof m.id === 'string').map(m => [m.id, {...m}]));
   for (const event of [...events].sort((a, b) => sequence(a.sequence) < sequence(b.sequence) ? -1 : sequence(a.sequence) > sequence(b.sequence) ? 1 : 0)) {
@@ -51,7 +53,7 @@ export function activityItems({events = [], messages = [], leases = []} = {}, li
     };
     const title = captions[kind] ?? titleCase(kind);
     const attribution = lease ?? data, agent = text(attribution.request?.agent || attribution.agent, 80);
-    const actor = [agent, owner(attribution) || text(data.actor_username, 80) || (data.actor ? `UID ${data.actor}` : '')].filter(Boolean).join(' · ');
+    const actor = [agent, owner(attribution, ownerContext) || text(data.actor_username, 80) || (data.actor ? `UID ${data.actor}` : '')].filter(Boolean).join(' · ');
     const reason = text(lease?.request?.reason || data.reason || data.detail || data.description || data.after?.description);
     records.set(`event:${event.sequence}`, {key: `event:${event.sequence}`, kind: /attention|warning|failed|recovery|interrupted|blocked|revocation/.test(kind) ? 'attention' : 'lease',
       title, body: reason || (kind.startsWith('agent.') ? `Contact ${text(event.entity, 80)}` : ''), actor,

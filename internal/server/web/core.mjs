@@ -108,3 +108,15 @@ export function chartPaths(points, get, ceiling = null, cadence = 2000) {
   if (current) paths.push(current);
   return paths;
 }
+
+// Historical records keep their original UID/name snapshot. A current account
+// name may supplement a missing snapshot only on the same selected authority.
+export function ownerDisplay(record, current = null, host = record?.host) {
+  const uid = record?.owner;
+  if (uid == null || uid === '') return 'Unknown owner';
+  if (record.owner_username) return `${record.owner_username} (UID ${uid})`;
+  if (host && host === current?.host && uid === current?.owner && current.owner_username) {
+    return `${current.owner_username} (UID ${uid}; current account)`;
+  }
+  return `UID ${uid}`;
+}

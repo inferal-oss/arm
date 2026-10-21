@@ -1,4 +1,4 @@
-import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths} from './core.mjs';
+import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths, ownerDisplay} from './core.mjs';
 import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
@@ -29,7 +29,7 @@ const svg = (tag, attrs) => {
   return el;
 };
 const when = value => value ? new Date(value).toLocaleString() : '—';
-const ownerLabel = record => record.owner_username ? `${record.owner_username} (UID ${record.owner})` : `UID ${record.owner}`;
+const ownerLabel = (record, host = record?.host) => ownerDisplay(record, state.status, host);
 const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
 const badge = text => { const el = node('span', 'badge', text); el.dataset.kind = text; return el; };
@@ -44,7 +44,7 @@ const activityFeed = createActivityFeed({root:$('live-feed'),toggle:$('feed-togg
 let messageStorage; try { messageStorage = sessionStorage; } catch { /* Pending requests remain in memory. */ }
 const operatorMessaging = createOperatorMessaging({root:$('messages'),call:(...args)=>connection.call(...args),connected:()=>state.connected,onLease:id=>showLease(id),storage:messageStorage});
 function updateOperatorMessaging() { operatorMessaging.update({contacts:state.contacts,messages:state.messages,leases:state.status?.leases ?? []}); }
-function updateActivityFeed() { activityFeed.update({events:state.events,messages:state.messages,leases:state.status?.leases ?? [],connected:state.connected}); }
+function updateActivityFeed() { activityFeed.update({events:state.events,messages:state.messages,leases:state.status?.leases ?? [],ownerContext:state.status,connected:state.connected}); }
 
 function notice(text = '') { $('notice').textContent = text; $('notice').hidden = !text; }
 function connectionState(text, live = false) {
@@ -396,7 +396,7 @@ function resourceCards() {
     }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
     for (const u of r.users ?? []) {
-      const user = node('div', 'consumer'); if (u.lease) user.append(leaseButton(u.lease)); user.append(node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u)} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
+      const user = node('div', 'consumer'); if (u.lease) user.append(leaseButton(u.lease)); user.append(node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u, r.host)} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
     }
     if (!r.users?.length) p.body.append(node('p', 'measure-note', 'No current consumers'));
     grid.append(p.box);

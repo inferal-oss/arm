@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {parseJSON, stringifyJSON, count, bytes, mergeHistory, chartPaths} from './core.mjs';
+import {parseJSON, stringifyJSON, count, bytes, mergeHistory, chartPaths, ownerDisplay} from './core.mjs';
 
 test('exact signed int64 values survive parsing, display and serialization', () => {
   const text = '{"capacity":9223372036854775807,"delta":-9223372036854775808,"safe":9007199254740991,"fraction":0.25,"string":"9223372036854775807"}';
@@ -35,4 +35,18 @@ test('unknown samples, missing intervals and device resets break graphs', () => 
   assert.equal(chartPaths([point(0, 1), point(2, 2)], p => p.value).length, 1);
   assert.equal(bytes(null), 'unavailable');
   assert.equal(bytes(1024), '1 KiB');
+});
+
+test('historical owner display uses current account only for the same UID and authority without rewriting history', () => {
+  const current = {host:'local-host',owner:'501',owner_username:'current-user'};
+  const legacy = {host:'local-host',owner:'501'};
+  assert.equal(ownerDisplay(legacy,current),'current-user (UID 501; current account)');
+  assert.equal(ownerDisplay({...legacy,owner_username:'recorded-user'},current),'recorded-user (UID 501)');
+  assert.equal(ownerDisplay({...legacy,host:'other-host'},current),'UID 501');
+  assert.equal(ownerDisplay({...legacy,owner:'502'},current),'UID 502');
+  assert.equal(ownerDisplay(legacy,{...current,owner_username:''}),'UID 501');
+  assert.equal(ownerDisplay({owner:'501'},current),'UID 501');
+  assert.equal(ownerDisplay({owner:'501'},current,'local-host'),'current-user (UID 501; current account)');
+  assert.equal(ownerDisplay(null,current),'Unknown owner');
+  assert.deepEqual(legacy,{host:'local-host',owner:'501'});
 });

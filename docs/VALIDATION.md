@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: historical owner display
+
+JavaScript regressions cover same-authority/UID current-name fallback, recorded-name precedence, other-host/UID refusal, unknown-name fallback and unchanged historical data. The activity feed uses the same explicit current-account distinction. New records retain their captured username; stored legacy records and raw structured JSON are not relabelled. The CGo-free staged build and compiled dashboard security smoke passed. Actual Chrome acceptance opened an isolated UID-only historical lease and showed `yrashk (UID 501; current account)` in details and the list while raw JSON retained only its original UID. The updated `arm / agent resource manager` wordmark was also visible.
+
 ## October 21, 2026: bounded native session connection
 
 An actual loopback endpoint that accepts HTTP without completing the WebSocket upgrade reaches a ten-second handshake deadline without cancelling the caller. A successful connection continues serving calls after its temporary handshake context is cancelled, and caller cancellation closes the established session. All thirteen native client race tests and vet passed; both new handshake/lifetime regressions also passed on actual Linux arm64. This closes a reconnect hang found during TUI review; mutation retry behavior is unchanged.
