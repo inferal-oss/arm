@@ -56,6 +56,7 @@ type Manager struct {
 	storage            *storage.Provider
 	storageErr         error
 	storageJobs        map[string]bool
+	storageExportSlots chan struct{}
 	portSockets        map[string][]*ports.Socket
 	portNamespace      string
 	portErr            error
@@ -119,6 +120,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	identity := local.CurrentIdentity()
 	m.owner, m.ownerUsername = identity.UID, identity.Username
+	if e = m.initStorageExports(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	if e = m.migrateContacts(); e != nil {
 		db.Close()
 		return nil, e
@@ -807,6 +812,11 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 		return l, model.Err("invalid_request", "renewal must extend the current expiry")
 	}
 	l.Expires = &end
+	if l.Request.Kind == "storage" && l.Artifact != nil {
+		// An explicitly renewed deadline supersedes a prior shortening policy;
+		// the earlier retention rationale remains in its durable event.
+		l.Artifact.Retention = nil
+	}
 	l.Revision++
 	return l, m.put(l, "lease.renewed")
 }

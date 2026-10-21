@@ -478,6 +478,59 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return s.Manager.DiscoverPorts(ctx)
 	case "storage_list":
 		return s.Manager.StorageList()
+	case "storage_export", "storage_export_preview":
+		var request model.StorageExportRequest
+		if err := decode(&request); err != nil {
+			return nil, err
+		}
+		select {
+		case s.storageScan <- struct{}{}:
+			defer func() { <-s.storageScan }()
+		default:
+			return nil, model.Err("observation_busy", "a storage scan/export preparation is running; inspect an existing operation or retry after it finishes")
+		}
+		if r.Operation == "storage_export_preview" {
+			return s.Manager.StorageExportPreview(ctx, request)
+		}
+		return s.Manager.StorageExportCreate(ctx, request)
+	case "storage_exports":
+		var request struct {
+			Lease string `json:"lease"`
+		}
+		if err := decode(&request); err != nil {
+			return nil, err
+		}
+		return s.Manager.StorageExports(request.Lease)
+	case "storage_export_inspect", "storage_export_reconcile", "storage_export_handoff":
+		var request struct {
+			ID     string `json:"id"`
+			Reason string `json:"reason,omitempty"`
+		}
+		if err := decode(&request); err != nil {
+			return nil, err
+		}
+		if r.Operation != "storage_export_handoff" && request.Reason != "" {
+			return nil, model.Err("invalid_request", "reason is only accepted for export handoff")
+		}
+		switch r.Operation {
+		case "storage_export_inspect":
+			return s.Manager.StorageExportInspect(request.ID)
+		case "storage_export_reconcile":
+			return s.Manager.StorageExportReconcile(ctx, request.ID)
+		default:
+			return s.Manager.StorageExportHandoff(request.ID, request.Reason)
+		}
+	case "storage_retain":
+		var request struct {
+			ID       string        `json:"id"`
+			Revision int           `json:"revision"`
+			TTL      time.Duration `json:"ttl_ns"`
+			Reason   string        `json:"reason"`
+		}
+		if err := decode(&request); err != nil {
+			return nil, err
+		}
+		return s.Manager.StorageRetain(request.ID, request.Revision, request.TTL, request.Reason)
 	case "storage_preview", "storage_cleanup", "storage_handoff":
 		var q struct {
 			ID string `json:"id"`

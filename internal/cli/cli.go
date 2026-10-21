@@ -127,7 +127,7 @@ Commands:
   resources                 Show budgets, availability, owners, and reasons
   monitor                   Observe physical host usage and short history
   dashboard                 Open the authenticated local web console
-  storage create|list|inspect|cleanup|handoff  Manage storage lifetimes
+  storage COMMAND           Manage files, exports and short retention
   ports reserve|list|discover Manage port reservations and native inventory
   pool create|list|inspect|history|set|adjust  Manage counted host/global pools
   acquire                   Request a resource lease

@@ -9,11 +9,20 @@ import (
 
 func (a *app) storage(args []string) (int, error) {
 	if len(args) == 0 {
-		return 2, fmt.Errorf("storage requires create, list, inspect PATH, cleanup ID, or handoff ID")
+		return 2, fmt.Errorf("storage requires a command; use arm storage --help for create, list, inspect, export, exports, retain, cleanup and handoff")
 	}
 	action, args := args[0], args[1:]
 	if action == "create" {
 		return a.acquire("storage", args)
+	}
+	if action == "export" {
+		return a.storageExport(args)
+	}
+	if action == "exports" {
+		return a.storageExports(args)
+	}
+	if action == "retain" {
+		return a.storageRetain(args)
 	}
 	if action != "list" && action != "inspect" && action != "cleanup" && action != "handoff" {
 		return 2, fmt.Errorf("unknown storage action %q; use arm storage --help", action)

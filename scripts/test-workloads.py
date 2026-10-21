@@ -68,7 +68,7 @@ class Fixture:
         assert self.cli('status')['reserved']['cpu'] == 0, 'execution CPU promise leaked'
         return lease, stderr
 
-    def cancel(self, handle, marker):
+    def cancel(self, handle, marker, before_cancel=None):
         process, _, err, name = handle
         deadline = time.monotonic() + 60
         while not marker.exists():
@@ -79,6 +79,8 @@ class Fixture:
             time.sleep(.1)
         lease = next(l for l in self.cli('status')['leases'] if l['request']['reason'] == name)
         assert lease['state'] == 'active' and lease.get('process_identity'), lease
+        if before_cancel:
+            before_cancel()
         # The ready marker comes from a real build script/task/Python command.
         self.cli('cancel', lease['id'])
         ended, _ = self.finish(handle, 125)
@@ -172,7 +174,13 @@ def cargo_scenarios(f, tools):
     (project / 'src').mkdir(parents=True)
     (project / 'Cargo.toml').write_text('[package]\nname="arm_real_rust"\nversion="0.1.0"\nedition="2021"\n')
     source = project / 'src/main.rs'
-    source.write_text('fn main() { println!("arm-real-rust"); }\n')
+    program = '''fn main() {
+        let executable = std::env::current_exe().unwrap();
+        let runtime = executable.parent().unwrap().join("../share/runtime.dat");
+        assert_eq!(std::fs::read_to_string(runtime).unwrap(), "arm-runtime-data");
+        println!("arm-real-rust");
+    }\n'''
+    source.write_text(program)
     (project / 'build.rs').write_text('''fn main() {
         assert_eq!(std::env::var("CARGO_BUILD_JOBS").unwrap(), "1");
         assert_eq!(std::env::var("NUM_JOBS").unwrap(), "1");
@@ -198,19 +206,52 @@ def cargo_scenarios(f, tools):
     assert not (project / 'unowned-target').exists()
     binary = Path(store['managed_dir']) / 'target/debug/arm_real_rust'
     assert binary.is_file() and not (project / 'target').exists()
-    exported = f.root / 'exports/rust-app'
-    shutil.copy2(binary, exported)
+    directory = Path(store['managed_dir'])
+    (directory / 'runtime.dat').write_text('arm-runtime-data')
+    bundle = f.root / 'exports/rust-bundle'
+    export_args = ['storage', 'export', store['id'], str(bundle),
+                   '--file', 'target/debug/arm_real_rust=bin/arm_real_rust',
+                   '--file', 'runtime.dat=share/runtime.dat',
+                   '--reason', 'Keep the requested executable and its explicit runtime data',
+                   '--key', 'cargo-export']
+    outside_link = f.root / 'exports/shared-cargo-source'
+    os.link(binary, outside_link)
+    shared = subprocess.run(f.prefix + export_args + ['--dry-run'], env=f.env,
+                            capture_output=True, text=True, timeout=30)
+    assert shared.returncode != 0 and 'hardlink' in shared.stderr.lower(), shared.stderr
+    assert not bundle.exists() and outside_link.read_bytes() == binary.read_bytes()
+    outside_link.unlink()  # Only this test-created isolated link is removed.
+    plan = f.cli(*(export_args + ['--dry-run']))
+    assert len(plan['files']) == 2 and not bundle.exists()
+    publication = f.cli(*(export_args + ['--wait']))
+    assert publication['state'] == 'published' and len(publication['plan']['files']) == 2
+    assert all(file.get('output_identity') and len(file.get('sha256', '')) == 64
+               and file['output_identity'] != file['source_identity']
+               for file in publication['plan']['files'])
+    assert f.cli(*(export_args + ['--wait']))['id'] == publication['id'], 'exact export retry recopied outputs'
+    exported = bundle / 'bin/arm_real_rust'
     verify = lambda: assert_output([str(exported)], 'arm-real-rust', f.env)
     verify()
+    retained = f.cli('storage', 'retain', store['id'], '--ttl', '3m',
+                     '--reason', 'Briefly retain intermediates for failure and cancellation checks')
+    assert retained['artifact']['retention']['reason'].startswith('Briefly retain')
     source.write_text('fn main() { this is not valid Rust; }\n')
     failed, log = f.finish(f.launch('cargo-failure', project, store, command, 'rust-build'), 101)
     assert failed['exit_code'] == 101 and 'error' in log.lower()
-    source.write_text('fn main() { println!("arm-real-rust"); }\n')
+    source.write_text(program)
     (project / 'slow').touch()
+    def refuse_live_export():
+        live = subprocess.run(f.prefix + ['storage', 'export', store['id'],
+            str(f.root / 'exports/live-must-not-publish'), '--file', 'target/debug/arm_real_rust',
+            '--reason', 'Verify active Cargo artifacts remain protected', '--dry-run'],
+            env=f.env, capture_output=True, text=True, timeout=30)
+        assert live.returncode != 0 and 'storage_in_use' in live.stderr, live.stderr
+        assert not (f.root / 'exports/live-must-not-publish').exists()
     f.cancel(f.launch('cargo-cancel', project, store, command, 'rust-build'),
-             Path(store['managed_dir']) / 'cargo.ready')
+             directory / 'cargo.ready', before_cancel=refuse_live_export)
     f.cleanup(store, exported, verify)
-    print('PASS Cargo/rustc: real compilation, jobs=1, owned target, compile error/101, build-script cancellation, exported executable and cleanup', flush=True)
+    assert (bundle / 'share/runtime.dat').read_text() == 'arm-runtime-data'
+    print('PASS Cargo/rustc: real compilation, jobs=1, owned target, ARM export with runtime file, internal/external hardlink evidence, exact retry, short retention, active-build refusal, compile error/101, cancellation and executable survives cleanup', flush=True)
 
 
 def gradle_scenarios(f, tools):

@@ -103,6 +103,11 @@ func (m *Manager) storageForRun(r model.Request) (model.Lease, error) {
 	if m.storage == nil {
 		return l, model.Err("storage_unavailable", "managed storage provider is unavailable")
 	}
+	if export, err := m.storageExportBusy(l.ID); err != nil {
+		return l, err
+	} else if export != "" {
+		return l, model.Err("operation_busy", "storage export "+export+" must settle, reconcile or be handed off before attaching new work")
+	}
 	if err := m.storage.Check(*l.Artifact); err != nil {
 		return l, model.Err("storage_unavailable", err.Error())
 	}
@@ -125,6 +130,11 @@ func (m *Manager) endStorage(l model.Lease, outcome string) (model.Lease, error)
 		l.Ended = &now
 		l.Revision++
 		return l, m.put(l, "lease."+outcome)
+	}
+	if export, err := m.storageExportBusy(l.ID); err != nil {
+		return l, err
+	} else if export != "" && outcome != "expired" {
+		return l, model.Err("operation_busy", "storage export "+export+" must settle, reconcile or be handed off before release")
 	}
 	l.State = "ending"
 	l.Outcome = outcome
@@ -160,6 +170,15 @@ func (m *Manager) cleanupStorage(id string) {
 	m.mu.Lock()
 	l, err := m.get(id)
 	if err != nil || l.State != "ending" {
+		m.mu.Unlock()
+		return
+	}
+	if export, e := m.storageExportBusy(id); e != nil || export != "" {
+		if e != nil {
+			_, _ = m.storageFailed(l, e)
+		} else if !m.storageJobs[exportJobKey(id)] {
+			_, _ = m.storageFailed(l, fmt.Errorf("export %s is unresolved; reconcile it or explicitly hand off uncertain output before cleanup", export))
+		}
 		m.mu.Unlock()
 		return
 	}
@@ -293,6 +312,15 @@ func (m *Manager) StoragePreview(ctx context.Context, id string) (model.StorageP
 	ls, err := m.list()
 	p := m.storage
 	preview := model.StoragePreview{Lease: l, Consumers: storageConsumers(ls, id), ActivePIDs: []int{}, Detail: "Read-only preview; allocated blocks do not establish exclusive or reclaimable bytes"}
+	if export, e := m.storageExportBusy(id); e != nil || export != "" {
+		if e != nil {
+			m.mu.Unlock()
+			return preview, e
+		}
+		preview.Detail += "; storage export " + export + " must settle or receive explicit recovery/handoff before cleanup"
+		m.mu.Unlock()
+		return preview, nil
+	}
 	if m.storageJobs[id] {
 		preview.Detail += "; cleanup is in progress"
 		m.mu.Unlock()
@@ -364,6 +392,11 @@ func (m *Manager) storageHandoff(id string) (model.Lease, error) {
 	}
 	if m.storageJobs[id] {
 		return l, model.Err("operation_busy", "wait for the current cleanup step to finish before handoff")
+	}
+	if export, err := m.storageExportBusy(id); err != nil {
+		return l, err
+	} else if export != "" {
+		return l, model.Err("operation_busy", "resolve or hand off storage export "+export+" before handing off its source allocation")
 	}
 	ls, err := m.list()
 	if err != nil {

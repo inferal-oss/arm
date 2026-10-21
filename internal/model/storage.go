@@ -12,17 +12,18 @@ type FileIdentity struct {
 }
 
 type Artifact struct {
-	Name             string        `json:"name"`
-	Path             string        `json:"path"`
-	Identity         *FileIdentity `json:"identity"`
-	Phase            string        `json:"phase"`
-	Policy           string        `json:"policy"`
-	AllocatedBefore  *int64        `json:"allocated_before_cleanup"`
-	ContentObserved  bool          `json:"content_observed"`
-	NamespaceRemoved bool          `json:"namespace_removed"`
-	DeletedEntries   int           `json:"deleted_entries"`
-	LastError        string        `json:"last_error,omitempty"`
-	Updated          time.Time     `json:"updated_at"`
+	Name             string            `json:"name"`
+	Path             string            `json:"path"`
+	Identity         *FileIdentity     `json:"identity"`
+	Phase            string            `json:"phase"`
+	Policy           string            `json:"policy"`
+	AllocatedBefore  *int64            `json:"allocated_before_cleanup"`
+	ContentObserved  bool              `json:"content_observed"`
+	NamespaceRemoved bool              `json:"namespace_removed"`
+	DeletedEntries   int               `json:"deleted_entries"`
+	LastError        string            `json:"last_error,omitempty"`
+	Updated          time.Time         `json:"updated_at"`
+	Retention        *StorageRetention `json:"retention,omitempty"`
 }
 
 type StoragePreview struct {
