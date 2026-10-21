@@ -1,3 +1,4 @@
+import {leaseStateLabel} from './lease-state.mjs';
 import {ownerDisplay} from './core.mjs';
 
 const text = (value, limit = 260) => typeof value === 'string' ? value.length > limit ? `${value.slice(0, limit)}…` : value : '';
@@ -41,7 +42,7 @@ export function activityItems({events = [], messages = [], leases = [], ownerCon
     const captions = {
       'lease.created': data.state === 'queued' ? 'Lease queued' : 'Lease reserved', 'lease.granted': 'Lease granted', 'lease.started': 'Work started',
       'lease.renewed': 'Lease extended', 'lease.ending': 'Work stopping', 'lease.released': 'Lease released', 'lease.cancelled': 'Lease cancelled',
-      'lease.expired': 'Lease expired', 'lease.finished': 'Work finished', 'lease.recovery_required': 'Work needs review', 'lease.launch_failed': 'Work could not start',
+      'lease.completed': 'Work completed', 'lease.failed': 'Work failed', 'lease.expired': 'Lease expired', 'lease.finished': 'Work finished', 'lease.recovery_required': 'Work needs review', 'lease.launch_failed': 'Work could not start',
       'lease.exited': 'Work finished', 'lease.revoked': 'Lease revoked', 'lease.reconciled': 'Lease checked',
       'storage.needs_attention': 'Storage needs review', 'storage.handed_off': 'Storage handed back', 'ports.needs_attention': 'Port needs review',
       'storage.created': 'Build storage ready', 'storage.cleanup_planned': 'Storage cleanup started', 'storage.cleanup_progress': 'Storage cleanup in progress',
@@ -57,7 +58,7 @@ export function activityItems({events = [], messages = [], leases = [], ownerCon
     const reason = text(lease?.request?.reason || data.reason || data.detail || data.description || data.after?.description);
     records.set(`event:${event.sequence}`, {key: `event:${event.sequence}`, kind: /attention|warning|failed|recovery|interrupted|blocked|revocation/.test(kind) ? 'attention' : 'lease',
       title, body: reason || (kind.startsWith('agent.') ? `Contact ${text(event.entity, 80)}` : ''), actor,
-      status: text(lease?.state || data.state || data.after?.state, 48), at: event.at, sequence: sequence(event.sequence), lease: lease?.id || leaseID || '', message: false});
+      status: lease?.state || data.state || data.after?.state ? leaseStateLabel(lease ?? (data.state ? data : data.after)) : '', at: event.at, sequence: sequence(event.sequence), lease: lease?.id || leaseID || '', message: false});
   }
   for (const [id, message] of byMessage) {
     const row = records.get(`message:${id}`);

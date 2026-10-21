@@ -298,3 +298,9 @@ This is initial functional layout/navigation parity. Device charts are stacked, 
 ### Displaying historical UID-only owners
 
 Lease details, lists, resource consumers and the activity feed can supplement an older UID-only record with the selected authority's current account name when both host and UID match. The label explicitly says `current account`; a recorded historical username always wins. Cross-host/other-UID names remain unknown. This is a display lookup against already authenticated status metadata, not a rewrite or guessed backfill of the lease/journal. The web wordmark now reads `arm / agent resource manager`.
+
+## Lease outcomes and history visibility
+
+Natural supervised exit records `completed` for exit zero and `failed` otherwise, while explicit release, cancellation, expiry or revocation retains its recorded outcome. Uncertain descendants remain charged and require attention. Existing history is never reinterpreted from an exit code.
+
+The browser shows human lifecycle/outcome labels and separate exit codes. Its remembered **Hide inactive leases** checkbox hides only `terminal` records; unknown states and unresolved obligations stay visible. Historical detail links remain available even when their rows are hidden. The preference is a browser-local boolean, with a session-only fallback when storage is unavailable.

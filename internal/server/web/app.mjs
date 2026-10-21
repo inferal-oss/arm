@@ -1,4 +1,5 @@
 import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths, ownerDisplay} from './core.mjs';
+import {leaseStateLabel, leaseVisible, isInactiveLease, readHideInactive, saveHideInactive} from './lease-state.mjs';
 import {jsonView} from './json-view.mjs';
 import {metricHelp} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
@@ -32,8 +33,10 @@ const when = value => value ? new Date(value).toLocaleString() : '—';
 const ownerLabel = (record, host = record?.host) => ownerDisplay(record, state.status, host);
 const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
-const badge = text => { const el = node('span', 'badge', text); el.dataset.kind = text; return el; };
+const badge = (text, kind = text) => { const el = node('span', 'badge', text); el.dataset.kind = kind; return el; };
 const state = {status: null, statusReceived: 0, statusTime: null, messages: [], contacts: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, selectedDisk: '', selectedNetwork: '', connected: false};
+let leasePreferenceStorage; try { leasePreferenceStorage = localStorage; } catch { /* A blocked preference store keeps this session's choice in memory. */ }
+let hideInactiveLeases = readHideInactive(leasePreferenceStorage);
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
 let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, refreshAgain = false;
 let detailPanel = null;
@@ -366,7 +369,7 @@ function ioPanel(title, key, devices, quality, detail, selection) {
 
 function filterToolbar(root, placeholder, value, onInput, label) {
   const bar = node('div', 'toolbar'), input = node('input'); input.type = 'search'; input.placeholder = placeholder; input.value = value; input.setAttribute('aria-label', placeholder);
-  input.addEventListener('input', () => onInput(input.value)); bar.append(input, node('small', '', label)); root.append(bar);
+  input.addEventListener('input', () => onInput(input.value)); bar.append(input, node('small', '', label)); root.append(bar); return bar;
 }
 function renderResources() {
   const root = $('resources');
@@ -377,6 +380,7 @@ function renderResources() {
 function resourceCards() {
   const root = $('resources'); root.querySelector('.resource-grid')?.remove();
   const grid = node('div', 'resource-grid'), filter = resourceFilter.toLowerCase();
+  const byLease = new Map((state.status.leases ?? []).map(lease => [lease.id, lease]));
   for (const r of state.status.resources ?? []) {
     if (!stringifyJSON(r).toLowerCase().includes(filter)) continue;
     const custom = r.custom?.pool;
@@ -396,7 +400,7 @@ function resourceCards() {
     }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
     for (const u of r.users ?? []) {
-      const user = node('div', 'consumer'); if (u.lease) user.append(leaseButton(u.lease)); user.append(node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u, r.host)} · ${quantity(u.quantity, r.unit)} · ${u.state}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
+      const user = node('div', 'consumer'); if (u.lease) user.append(leaseButton(u.lease)); user.append(node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u, r.host)} · ${quantity(u.quantity, r.unit)} · ${leaseStateLabel(byLease.get(u.lease) ?? u)}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
     }
     if (!r.users?.length) p.body.append(node('p', 'measure-note', 'No current consumers'));
     grid.append(p.box);
@@ -407,7 +411,20 @@ function leaseButton(id) { const b = node('button', 'link-button', id); b.addEve
 function renderLeases() {
   const root = $('leases');
   if (!state.status) { root.replaceChildren(empty('Waiting for leases…')); return; }
-  if (!root.querySelector('input')) { root.replaceChildren(); filterToolbar(root, 'Filter leases, owners or reasons…', leaseFilter, value => { leaseFilter = value; leaseTable(); }, 'Live snapshot · includes historical leases'); }
+  if (!root.querySelector('input[type=search]')) {
+    root.replaceChildren();
+    const bar = filterToolbar(root, 'Filter leases, owners or reasons…', leaseFilter, value => { leaseFilter = value; leaseTable(); }, '');
+    bar.classList.add('lease-toolbar');
+    const label = node('label', 'lease-visibility'), toggle = node('input'); toggle.type = 'checkbox'; toggle.checked = hideInactiveLeases;
+    const note = bar.querySelector('small'); note.classList.add('lease-count-note'); note.setAttribute('role', 'status');
+    label.append(toggle, node('span', '', 'Hide inactive leases')); bar.insertBefore(label, note);
+    toggle.addEventListener('change', () => {
+      hideInactiveLeases = toggle.checked;
+      const saved = saveHideInactive(leasePreferenceStorage, hideInactiveLeases);
+      label.title = saved ? 'Remembered in this browser.' : 'Applied for this session. Browser storage is unavailable.';
+      leaseTable();
+    });
+  }
   leaseTable();
 }
 function leaseTable() {
@@ -415,10 +432,15 @@ function leaseTable() {
   const box = node('div', 'panel table-wrap'), table = node('table'), head = node('thead'), row = node('tr');
   for (const title of ['LEASE / OWNER', 'STATE', 'REASON', 'CLAIMS', 'EXPIRES']) row.append(node('th', '', title)); head.append(row); table.append(head);
   const body = node('tbody');
-  const leases = [...(state.status.leases ?? [])].reverse().filter(l => stringifyJSON(l).toLowerCase().includes(leaseFilter.toLowerCase())).slice(0, 200);
+  const all = state.status.leases ?? [], query = leaseFilter.toLowerCase();
+  const matches = [...all].reverse().filter(l => leaseVisible(l, hideInactiveLeases) && `${leaseStateLabel(l)} ${stringifyJSON(l)}`.toLowerCase().includes(query));
+  const leases = matches.slice(0, 200), hidden = hideInactiveLeases ? all.filter(isInactiveLease).length : 0;
+  const note = root.querySelector('.lease-count-note'), caption = `${matches.length} matching${matches.length > 200 ? ' · showing 200' : ''}${hideInactiveLeases ? ` · ${hidden} inactive hidden` : ' · includes history'}`;
+  if (note && note.textContent !== caption) note.textContent = caption;
   for (const l of leases) {
     const row = node('tr'), id = node('td'); id.append(leaseButton(l.id), node('p', 'muted', `${l.request.agent ? l.request.agent + ' · ' : ''}${ownerLabel(l)}`));
-    const status = node('td'); status.append(badge(l.state));
+    const status = node('td'); status.append(badge(leaseStateLabel(l), l.state));
+    if (l.exit_code != null) status.append(node('small', 'lease-exit-code', `Exit code ${l.exit_code}`));
     const claims = l.request.resources ?? {}, summary = [];
     if (claims.cpu) summary.push(`${count(claims.cpu)} cores`);
     if (claims.memory_bytes) summary.push(bytes(claims.memory_bytes) + ' memory');
@@ -446,7 +468,8 @@ async function loadLease(id) {
 function renderLeaseDetail(lease, leases, request, resultNote = '') {
   detailPanel?.dispose();
   const body = $('detail-body'), dl = node('dl');
-  for (const [label, value] of [['ID', lease.id], ['State', lease.state], ['Reason', lease.request.reason], ['Owner', ownerLabel(lease)], ['Agent', lease.request.agent || '—'], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
+  for (const [label, value] of [['ID', lease.id], ['State', leaseStateLabel(lease)], ['Reason', lease.request.reason], ['Owner', ownerLabel(lease)], ['Agent', lease.request.agent || '—'], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
+  if (lease.exit_code != null) dl.append(node('dt', '', 'Exit code'), node('dd', '', String(lease.exit_code)));
   const current = connection;
   detailPanel = leaseActionPanel({lease, leases, call: (...args) => current.call(...args), connected: () => state.connected && connection === current,
     busy: () => pendingLeaseActions.has(lease.id), onPending: pending => {

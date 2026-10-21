@@ -817,3 +817,10 @@ dialog::backdrop {
 
 .message-saved-request {font-size:12px;margin:12px 0;color:var(--muted)}
 .message-saved-request .json-view {margin-top:10px;max-height:260px}
+
+.lease-toolbar { flex-wrap:wrap; }
+.lease-visibility { display:inline-flex; align-items:center; gap:9px; font-size:13px; color:var(--text); cursor:pointer; white-space:nowrap; }
+.lease-visibility input[type=checkbox] { width:17px; min-width:17px; height:17px; margin:0; accent-color:var(--accent); cursor:pointer; }
+.lease-visibility:focus-within { outline:2px solid var(--accent); outline-offset:5px; border-radius:2px; }
+.lease-count-note { color:var(--muted); }
+.lease-exit-code { display:block; margin-top:6px; color:var(--muted); font:10px var(--mono); }

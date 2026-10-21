@@ -1090,7 +1090,10 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		now := time.Now().UTC()
 		current.State = "terminal"
 		if current.Outcome == "" {
-			current.Outcome = "released"
+			current.Outcome = "completed"
+			if code != 0 {
+				current.Outcome = "failed"
+			}
 		}
 		current.Ended = &now
 		if !groupGone {

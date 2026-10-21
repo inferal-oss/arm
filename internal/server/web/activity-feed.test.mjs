@@ -144,3 +144,17 @@ test('legacy feed attribution supplements the same-host UID with an explicitly c
   assert.equal(activityItems({events:[{...event,data:{...event.data,host:'remote'}}],ownerContext})[0].actor,'builder · UID 501');
   assert.equal(event.data.owner_username,undefined);
 });
+
+test('completion events show recorded human outcomes while unsettled lifecycle remains visible', () => {
+  const events = [
+    {sequence:1,type:'lease.completed',entity:'done',at:'2026-01-01T00:00:00Z',data:{id:'done',state:'terminal',outcome:'completed',request:{reason:'Build finished'}}},
+    {sequence:2,type:'lease.failed',entity:'bad',at:'2026-01-01T00:00:01Z',data:{id:'bad',state:'terminal',outcome:'failed',request:{reason:'Build failed'}}},
+    {sequence:3,type:'lease.ending',entity:'stopping',at:'2026-01-01T00:00:02Z',data:{id:'stopping',state:'ending',outcome:'released',request:{reason:'Stopping'}}},
+  ];
+  const items=activityItems({events});
+  assert.equal(items.find(item=>item.lease==='done').title,'Work completed');
+  assert.equal(items.find(item=>item.lease==='done').status,'Completed');
+  assert.equal(items.find(item=>item.lease==='bad').title,'Work failed');
+  assert.equal(items.find(item=>item.lease==='bad').status,'Failed');
+  assert.equal(items.find(item=>item.lease==='stopping').status,'Ending');
+});

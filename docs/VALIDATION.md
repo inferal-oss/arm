@@ -297,3 +297,9 @@ The tests did not alter the user's global agent instruction files or message unr
 ## Scope of this result
 
 The October 20 checks establish the first local backend and CLI milestone. They do not establish APFS allocation accuracy, physical usage enforcement, managed artifact reclamation, GPU or port-provider behavior, native daemon services, web/TUI functionality, or remote scheduling. The October 21 additions above establish limited read-only observations, not exact reclaimable extents or enforcement. Remaining work is tracked in [PLAN.md](PLAN.md), [IMPLEMENTATION.md](IMPLEMENTATION.md), and [SPEC.md](../SPEC.md).
+
+## October 21, 2026: lease outcomes and history visibility
+
+The browser JavaScript suite passed 54 tests. Real subprocess race tests verified natural successful/failed completion, preservation of explicit release/cancel/expiry/revocation even after graceful exit zero, restart persistence and unchanged historical outcomes. Dashboard server race checks and the compiled dashboard smoke passed, including serving the new embedded asset.
+
+Actual browser checks on a disposable backend verified keyboard checkbox operation/focus, preference and detail-route survival after reload, live updates, filtered historical detail links, and 390px/1440px layouts. Display-only synthetic rows established that unfamiliar and unresolved states remain visible; they do not establish provider enforcement. The existing 200-row rendered snapshot bound remains.
