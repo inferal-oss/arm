@@ -2,6 +2,14 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: interactive terminal dashboard
+
+All 22 terminal-dashboard tests passed under the native race detector; focused CLI checks and vet also passed. Actual backend integration checks stale revision refusal, declined actions without effects, one release journal event, shared monitoring and reconnect to authoritative budgets. Review fixed overlapping lookup/retry and stale-result races, mismatched message responses, bracketed paste routing, reset-journal history, ambiguous partial lease failures and an expiry preview that failed to advance with accepted-from-now TTL. Deterministic regressions preserve the original uncertain request and prevent late results clearing newer work.
+
+The isolated compiled PTY acceptance passed on macOS and actual Linux arm64: all six views, max-int64 custom count, declined and reviewed lease extension/release, exact polling-recipient review/send, resize/compact feed, q and SIGTERM exit, and survival of an unrelated active lease/backend. Terminal assertions compare all termios fields except only the kernel-maintained PENDIN reprint bit and require canonical/echo/signal restoration plus alternate-screen exit. The earlier difference was not an EXTPROC/raw-mode library bug. Graphical Terminal typography/theme acceptance remains unverified.
+
+Actual Linux client/TUI/CLI test executables and all twelve compiled CLI scenarios passed, with native monitoring required and a private process namespace/reaping init. Both Linux harnesses and `make test-local` include the new TUI gates. CGo-free macOS and Linux builds passed. This establishes initial functional layout/action parity, not multiline editing, persisted TUI drafts, complete operational editors, role isolation or full web/TUI parity.
+
 ## October 21, 2026: same-document connection-link recovery
 
 Six JavaScript regressions passed capture-before-cleanup, duplicate browser events, stored credentials, cancelled/late exchanges, invalid credentials and retained in-flight message keys without replay. Native browser race and compiled bootstrap/asset/security checks passed. Actual Chrome acceptance restarted an isolated backend on the same port, opened a fresh link in the existing tab and recovered while preserving an unsent draft. During a pending send, fresh authentication immediately marked the original request uncertain, retained its exact key/body and later resolved exactly one durable message. A used ticket was refused; another fresh ticket recovered. Back/Forward remained connected with sanitized URLs. This is same-origin recovery, not cross-origin operation migration or packet-capture evidence.

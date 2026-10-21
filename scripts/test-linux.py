@@ -28,7 +28,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "local", "install", "observe", "usage", "storage", "ports", "manager", "server", "client", "cli"):
+        for package in ("agents", "local", "install", "observe", "usage", "storage", "ports", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
@@ -40,6 +40,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal.py", target / "test-terminal.py")
         shutil.copyfile(root / "scripts" / "test-monitor.py", target / "test-monitor.py")
         shutil.copyfile(root / "scripts" / "test-dashboard.py", target / "test-dashboard.py")
+        shutil.copyfile(root / "scripts" / "test-terminal-dashboard.py", target / "test-terminal-dashboard.py")
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         os.chmod(target, 0o755)
@@ -60,6 +61,7 @@ python3 /tests/test-policy.py --arm /tests/arm
 python3 /tests/test-terminal.py --arm /tests/arm
 python3 /tests/test-monitor.py --arm /tests/arm
 python3 /tests/test-dashboard.py --arm /tests/arm
+python3 /tests/test-terminal-dashboard.py --arm /tests/arm
 python3 /tests/test-memory.py --arm /tests/arm
 python3 /tests/test-lifecycle.py --arm /tests/arm
 '''

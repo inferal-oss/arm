@@ -138,16 +138,32 @@ func TestDashboardExecutableReceivesOneURLAndSuppressedModesNeverLaunch(t *testi
 	}
 }
 
-func TestDashboardTerminalSelectorIsExplicitlyUnavailableBeforeBackendAccess(t *testing.T) {
-	home := filepath.Join(t.TempDir(), "absent")
-	a := app{home: home, out: &bytes.Buffer{}, err: &bytes.Buffer{}, ctx: t.Context()}
-	err := a.dashboard([]string{"terminal"})
-	var api *model.Error
-	if !errors.As(err, &api) || api.Code != "capability_unavailable" || !strings.Contains(api.Message, "not implemented") {
-		t.Fatal("terminal selector pretended to provide a TUI", err)
-	}
-	if _, err := os.Stat(home); !os.IsNotExist(err) {
-		t.Fatal("reserved selector created state")
+func TestDashboardTerminalSelectorRejectsNoninteractiveModesBeforeBackendAccess(t *testing.T) {
+	for _, mode := range []struct {
+		args                     []string
+		input, output, forceJSON bool
+		term                     string
+	}{
+		{args: []string{"terminal"}},
+		{args: []string{"terminal", "--json"}, input: true, output: true, term: "xterm-256color"},
+		{args: []string{"terminal", "--no-open"}, input: true, output: true, term: "xterm-256color"},
+		{args: []string{"terminal"}, input: true, output: true, forceJSON: true, term: "xterm-256color"},
+		{args: []string{"terminal"}, input: true, output: true, term: "dumb"},
+		{args: []string{"terminal"}, input: false, output: true, term: "xterm-256color"},
+	} {
+		t.Run(strings.Join(mode.args, "_"), func(t *testing.T) {
+			t.Setenv("TERM", mode.term)
+			home := filepath.Join(t.TempDir(), "absent")
+			a := app{home: home, out: &bytes.Buffer{}, err: &bytes.Buffer{}, ctx: t.Context(), inputTTY: mode.input, outputTTY: mode.output, forceJSON: mode.forceJSON}
+			err := a.dashboard(mode.args)
+			var api *model.Error
+			if !errors.As(err, &api) || (api.Code != "terminal_required" && api.Code != "invalid_request") {
+				t.Fatal("terminal selector did not reject noninteractive request", err)
+			}
+			if _, err := os.Stat(home); !os.IsNotExist(err) {
+				t.Fatal("reserved selector created state")
+			}
+		})
 	}
 }
 

@@ -488,7 +488,7 @@ function renderHost() {
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
   const p = panel('Local authority', 'CAPABILITIES', ''); const dl = node('dl');
   for (const [label, value] of [['Host', status.host], ['Owner', ownerLabel(status)], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
-  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Pool edits and explicit cleanup recovery remain in the CLI. Reviewed agent messaging is available in Messages. The TUI is still planned.'));
+  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'Inspect local state and extend, release or cancel leases from their detail view. Pool edits and explicit cleanup recovery remain in the CLI. Reviewed agent messaging is available in Messages. Use arm dashboard terminal for the terminal dashboard.'));
   root.replaceChildren(p.box);
 }
 

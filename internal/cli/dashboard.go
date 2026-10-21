@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -12,6 +13,7 @@ import (
 	"unicode"
 
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/tui"
 )
 
 func (a *app) dashboard(args []string) error {
@@ -28,7 +30,16 @@ func (a *app) dashboard(args []string) error {
 			return &argumentError{err, "dashboard"}
 		}
 		if selector == "terminal" {
-			return model.Err("capability_unavailable", "the terminal dashboard is not implemented yet; use arm dashboard to open the web console")
+			if *noOpen {
+				return model.Err("invalid_request", "--no-open cannot be combined with dashboard terminal")
+			}
+			if a.forceJSON || !a.outputTTY || !a.inputTTY {
+				return model.Err("terminal_required", "dashboard terminal requires interactive terminal input and output; use arm dashboard --json or arm monitor --json for scripts")
+			}
+			if os.Getenv("TERM") == "dumb" {
+				return model.Err("terminal_required", "dashboard terminal requires cursor-capable terminal support; use arm monitor for this terminal")
+			}
+			return tui.Run(a.ctx, a.home, a.in, a.out)
 		}
 	}
 	var link model.BrowserLink
@@ -98,7 +109,7 @@ func dashboardLauncher(platform, selector, address string, lookup func(string) (
 			return dashboardLaunch{}, err
 		}
 		if selector == "terminal" {
-			return dashboardLaunch{}, model.Err("capability_unavailable", "the terminal dashboard is not implemented yet")
+			return dashboardLaunch{}, model.Err("invalid_request", "terminal selects the interactive dashboard, not a browser launcher")
 		}
 		if platform == "darwin" && strings.HasSuffix(strings.TrimRight(selector, "/"), ".app") {
 			return dashboardLaunch{path: "/usr/bin/open", args: []string{"-a", selector, address}}, nil

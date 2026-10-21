@@ -121,7 +121,7 @@ def main():
         selected = urllib.parse.urlsplit(argv[1])
         assert selected.netloc == url.netloc and selected.fragment.startswith('connect=')
         result = subprocess.run(prefix + ['dashboard', 'terminal'], capture_output=True, text=True, timeout=15)
-        assert result.returncode == 1 and json.loads(result.stderr)['error']['code'] == 'capability_unavailable'
+        assert result.returncode == 1 and json.loads(result.stderr)['error']['code'] == 'terminal_required'
         cli('stop')
         print('Compiled dashboard: one-use CLI link, embedded assets, CSP/no cookies, origin/authority guards, bootstrap/replay, literal executable URL argument, real PTY launcher and no-launch JSON/piped modes passed; script does not establish browser rendering acceptance')
     finally:
