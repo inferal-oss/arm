@@ -1,4 +1,14 @@
 import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths} from './core.mjs';
+import {jsonView} from './json-view.mjs';
+
+const jsonExpansions = new Map();
+function recordJSON(value, label, key, open = false) {
+  if (!jsonExpansions.has(key)) {
+    if (jsonExpansions.size >= 256) jsonExpansions.delete(jsonExpansions.keys().next().value);
+    jsonExpansions.set(key, new Map());
+  }
+  return jsonView(value, {label, open, expansion: jsonExpansions.get(key)});
+}
 
 const $ = id => document.getElementById(id);
 const node = (tag, className = '', text = null) => {
@@ -346,12 +356,11 @@ async function showLease(id) {
     if (request !== detailRequest || !$('detail').open) return;
     const body = $('detail-body'), dl = node('dl');
     for (const [label, value] of [['ID', lease.id], ['State', lease.state], ['Reason', lease.request.reason], ['Owner', lease.request.agent || lease.owner], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
-    const raw = node('details'), summary = node('summary', '', 'Full lease record (exact integer values)'); raw.append(summary, node('pre', '', pretty(lease))); body.replaceChildren(dl, raw);
+    body.replaceChildren(dl, recordJSON(lease, 'Full lease record', `lease:${lease.id}`, true));
   } catch (error) { if (request === detailRequest && $('detail').open) $('detail-body').replaceChildren(empty(error.message)); }
 }
 $('close-detail').addEventListener('click', () => $('detail').close());
 $('detail').addEventListener('close', () => { detailRequest++; });
-function pretty(value) { return JSON.stringify(value, (_, v) => typeof v === 'bigint' ? `${v} (exact integer)` : v, 2); }
 function renderMessages() {
   const root = $('messages'); root.replaceChildren();
   for (const m of [...state.messages].reverse()) {
@@ -369,7 +378,7 @@ function renderActivity() {
   const root = $('activity'); root.replaceChildren();
   for (const ev of [...state.events].reverse()) {
     const item = node('article', 'item'), heading = node('div', 'item-heading'); heading.append(node('span', '', `#${ev.sequence} / ${ev.type}`), node('span', '', when(ev.at)));
-    item.append(heading, node('p', '', ev.entity)); const detail = node('details'); detail.append(node('summary', '', 'Event data'), node('pre', '', pretty(ev))); item.append(detail); root.append(item);
+    item.append(heading, node('p', '', ev.entity), recordJSON(ev, 'Event data', `event:${ev.sequence}`)); root.append(item);
   }
   if (!root.childElementCount) root.append(empty('No operational events in the loaded window'));
 }
@@ -378,7 +387,7 @@ function renderHost() {
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
   const p = panel('Local authority', 'CAPABILITIES', ''); const dl = node('dl');
   for (const [label, value] of [['Host', status.host], ['Owner', status.owner], ['Event cursor', count(status.cursor)], ['Capabilities', (status.capabilities ?? []).join(', ')]]) dl.append(node('dt', '', label), node('dd', '', value));
-  p.body.append(dl, node('h3', '', 'Infrastructure ports'), node('pre', '', pretty(status.infrastructure_ports ?? [])), node('p', 'measure-note', 'This observation session can read local state. Lease changes, pool edits, cleanup and messaging controls remain in the CLI. The TUI is still planned.'));
+  p.body.append(dl, node('h3', '', 'Infrastructure ports'), recordJSON(status.infrastructure_ports ?? [], 'Port bindings', 'infrastructure', true), node('p', 'measure-note', 'This observation session can read local state. Lease changes, pool edits, cleanup and messaging controls remain in the CLI. The TUI is still planned.'));
   root.replaceChildren(p.box);
 }
 

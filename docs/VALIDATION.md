@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: structured JSON viewers
+
+Seven pure JavaScript checks passed exact int64 values, nested independent object/array expansion, collapse-all/root controls, literal untrusted text, lazy paging, node limits, empty collections and preserving expansion choices across refreshed records without key-path collisions. The renderer fixture emulates only its DOM calls; it is not a browser driver and does not establish actual keyboard, layout or focus acceptance. Dashboard/browser race tests passed the authenticated embedded asset boundary, including the new module. Real browser acceptance remains pending because local browser use is disabled; the outstanding dashboard improvements and live-memory correction remain listed in the plan.
+
 ## October 21, 2026: guarded operator operations and retry-safe sends
 
 The full native macOS race/APFS/monitor suite and vet passed. Focused Linux arm64 manager/CLI/server checks passed lease revision concurrency, guarded supervised cancellation and storage handoff, exact recipient/policy/broadcast membership, concurrent send deduplication, receipt-preserving retries, linked reply audience, transaction rollback, interrupted native recovery, real native-adapter invocation counted once and shared API behavior. CLI checks validate stable send/broadcast IDs, input conflicts and structured retry-key diagnostics. Review fixed the initial error wrapper losing the operation key when encoded as a structured API error; the final native and Linux checks passed after correction.
