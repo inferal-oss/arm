@@ -17,6 +17,7 @@ This is the first local backend and CLI milestone of [the specification](../SPEC
 | `internal/observe` | Bounded read-only host and filesystem observations with explicit measurement scopes and uncertainty. |
 | `internal/usage` | Identity-checked native process-group CPU/memory snapshots, with explicit metric scopes and missing/stale evidence. |
 | `internal/storage` | Verified managed directories, quarantine, mount and activity checks, and bounded cleanup steps. |
+| `knowledge` | Embedded Markdown cards, validated metadata/index and registered code bindings. |
 | `internal/ports` | TCP/UDP binding, conflict matching, socket inheritance and bounded native socket/owner observations. |
 
 The daemon snapshots its effective OS UID and optional OS account username at startup. UID remains authority; username is display metadata from UID lookup, never an environment/caller name. Lookup waits at most 250ms with at most one outstanding native call process-wide; failure or invalid names fall back to UID. New leases/messages/pools and journal events retain that snapshot; incidents/resource consumers copy their lease owner. Pool changes record the current actor separately from the original creator. Existing UID-only history is not backfilled or relabelled after an account rename. Terminal output combines name and UID; JSON keeps independent fields.
@@ -210,7 +211,7 @@ This remains a partial operator interface. Browser automation is now available; 
 - Stronger resource controls and descendant containment; provider/unsupervised incidents, configurable host/profile policy, and richer warning retry policy.
 - Optional agentic lease reviews with contention-aware scheduling, bounded/coalesced agent invocations, durable exact-recipient delivery and responses, and explicit renew/resize/release actions. This is planned behavior; a conversational reply will not itself change entitlement or enforcement deadlines.
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.
-- Knowledge cards with YAML indexing and additional code-based workload adapters, including persistent services such as Gradle.
+- Additional knowledge cards and code-based workload adapters, including persistent services such as Gradle; web/TUI card search and discovery.
 - Native daemon services, stronger permissions, durable history retention, and richer recovery diagnostics.
 - Rendered acceptance of the initial observation dashboard, followed by web mutation controls, dedicated storage/incidents and pool journals, and the TUI with equivalent views/actions. The bounded monitor backend and initial web views are implemented; GPU telemetry and the remaining interfaces are planned.
 - Broader Linux/filesystem/hardware acceptance tests and then remote-host transport and coordination.
@@ -220,6 +221,10 @@ The complete staged checklist is [PLAN.md](PLAN.md).
 ## CLI usability
 
 `arm agents` reads the complete build-local agent operating guide without backend access, CLI discovery or state creation. Terminal output has sections and examples; redirected output and --json return structured sections with stable topic IDs and the selected state directory. It explains resource lifetimes, registration, warning/polling workflows, operator messages, safety checks and current limitations. Installed instructions link to it; `arm agent list` remains the contact listing.
+
+`arm agents` also lists embedded card metadata and its retrieval command. `arm agents card NAME` works offline: terminal Markdown, piped/default JSON containing metadata and Markdown, explicit `--json`, or `--markdown` for redirected plain Markdown. Installed instructions request the Rust card before Cargo builds. Detailed artifact cleanup policy lives in that card rather than the general guide.
+
+The initial `rust-build` card explains cooperative jobs, managed target directories, explicit output export/verification, short justified retention and shared/active/APFS safeguards. Explanations cannot add runtime behavior: metadata binds to the same profile registry used by admission. The build gate validates a bounded documented YAML subset, duplicate IDs, required fields, registered bindings and generated index consistency. Run `go generate ./knowledge` after metadata changes; `make validate-knowledge` and `make build` reject stale/invalid catalogs. Bare `go build` compiles without running that gate. Safe export helpers, automatic runtime-file discovery, broader cards and full Cargo configuration resolution remain work.
 
 `arm start` and `arm stop` are shortcuts for `arm daemon start` and `arm daemon stop`. They share startup budgets, existing-backend behavior and outstanding-lease safeguards, with command-specific help.
 

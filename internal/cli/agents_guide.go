@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/knowledge"
 )
 
 type agentGuideSection struct {
@@ -14,23 +17,28 @@ type agentGuideSection struct {
 }
 
 type agentGuide struct {
-	Title          string              `json:"title"`
-	Version        string              `json:"version"`
-	StateDirectory string              `json:"state_directory"`
-	Introduction   string              `json:"introduction"`
-	Sections       []agentGuideSection `json:"sections"`
+	Title          string               `json:"title"`
+	Version        string               `json:"version"`
+	StateDirectory string               `json:"state_directory"`
+	Introduction   string               `json:"introduction"`
+	Sections       []agentGuideSection  `json:"sections"`
+	Cards          []knowledge.Metadata `json:"cards"`
+	CardCommand    string               `json:"card_command"`
 }
 
 // This guide is local build documentation: reading it never starts a backend,
 // discovers agent sessions, registers a contact or creates state.
 func (a *app) agentsGuide(args []string) error {
+	if len(args) > 0 && args[0] == "card" {
+		return a.agentsCard(args[1:])
+	}
 	f := a.flags("agents")
 	f.Bool("json", false, "force JSON output (default: automatic)")
 	if err := a.parse(f, args, false); err != nil {
 		return err
 	}
 	guide := agentGuide{
-		Title: "ARM agent operating guide", Version: Version, StateDirectory: a.home,
+		Title: "ARM agent operating guide", Version: Version, StateDirectory: a.home, CardCommand: "arm agents card NAME --json",
 		Introduction: "Read this before resource-intensive work. Examples use arm as shorthand for the executable and state-directory prefix in your installed instructions. Otherwise pass --home DIR before the command or set ARM_HOME. Replace CONTACT, SESSION_UUID, LEASE_ID and other uppercase identifiers with actual returned values. This offline guide describes this build; inspect a running backend's capabilities before relying on them.",
 		Sections: []agentGuideSection{
 			{ID: "orientation", Title: "Inspect capacity and choose a purpose",
@@ -61,9 +69,16 @@ func (a *app) agentsGuide(args []string) error {
 				Guidance: []string{"Send questions, progress or requests to the operator inbox with concrete lease/project context in the text. Operator replies and broadcasts arrive in your registered inbox. arm messages reads the operator inbox and delivery reports; it is not your private recipient inbox.", "Native queue acceptance, delivery, receipt and acknowledgement are separate states. Delivery failure does not suspend deadlines. Use the durable inbox if native communication is unavailable."},
 				Commands: []string{"arm message operator --text \"Lease LEASE_ID needs another five minutes to finish tests; requesting renewal.\"", "arm messages --json"}},
 			{ID: "integration", Title: "Installation, records and current boundaries",
-				Guidance: []string{"install adds verified managed instruction blocks. Reinstall upgrades only an unchanged ARM block; unrelated edits survive. Interactive install/uninstall preview and ask, defaulting to no. Agents/scripts must review --dry-run --diff and use --yes for an authorized application. Verified originals and metadata are saved before instruction/manifest changes; the report identifies retained backups. --yes never bypasses edited-file or outstanding-lease checks.", "uninstall refuses outstanding obligations, stops an idle backend and preserves state/history and the executable. Do not bypass this by killing the backend or removing its database. Durable events journal ordinary lease transitions; pool history separately records capacity changes. Built-in budget changes do not yet have that capacity journal.", "This build supports one local host authority. arm dashboard provides a local observation console for host monitoring, budgets, consumers, reasons, leases, messages and activity. Browser mutation controls and the TUI remain planned, as do GPU allocation, remote hosts, optional agentic lease reviews, native daemon services and indexed knowledge cards. Do not infer those capabilities from the complete project spec. Commands and the backend's advertised capabilities describe supported behavior."},
+				Guidance: []string{"install adds verified managed instruction blocks. Reinstall upgrades only an unchanged ARM block; unrelated edits survive. Interactive install/uninstall preview and ask, defaulting to no. Agents/scripts must review --dry-run --diff and use --yes for an authorized application. Verified originals and metadata are saved before instruction/manifest changes; the report identifies retained backups. --yes never bypasses edited-file or outstanding-lease checks.", "uninstall refuses outstanding obligations, stops an idle backend and preserves state/history and the executable. Do not bypass this by killing the backend or removing its database. Durable events journal ordinary lease transitions; pool history separately records capacity changes. Built-in budget changes do not yet have that capacity journal.", "This build supports one local host authority. arm dashboard shows host monitoring, budgets, consumers, reasons, leases, messages and activity. Lease details support Extend, Release and Cancel with reviewed confirmations and revision guards. Pool editors, explicit cleanup recovery, operator messaging UI and the TUI remain planned, alongside GPU allocation, remote hosts, optional agentic lease reviews and native daemon services. Embedded cards describe supported workload behavior and its limits. Do not infer capabilities from the complete project spec or from prose alone. Commands and the backend's advertised capabilities describe supported behavior."},
 				Commands: []string{"arm install --dry-run --diff", "arm uninstall --dry-run --diff", "arm events --json", "arm help agent", "arm help storage"}},
 		},
+	}
+	cards, err := knowledge.Load()
+	if err != nil {
+		return model.Err("invalid_knowledge_catalog", err.Error())
+	}
+	for _, card := range cards {
+		guide.Cards = append(guide.Cards, card.Metadata)
 	}
 	if a.machine() {
 		return a.print(guide)
@@ -72,6 +87,12 @@ func (a *app) agentsGuide(args []string) error {
 	fmt.Fprintln(&text, a.paint("1;36", guide.Title))
 	fmt.Fprintln(&text, "Build: "+guide.Version+" · State: "+terminalSafe(guide.StateDirectory))
 	fmt.Fprintln(&text, "\n"+guide.Introduction)
+	fmt.Fprintln(&text, "\n"+a.paint("1;36", "Workload knowledge cards"))
+	fmt.Fprintln(&text, "Read the applicable card before using a workload profile. Cards explain implemented behavior and its limits.")
+	for _, card := range guide.Cards {
+		fmt.Fprintf(&text, "  %s — %s (%s)\n", card.ID, card.Title, strings.Join(card.Resources, ", "))
+	}
+	fmt.Fprintln(&text, "Retrieve a card with arm agents card NAME; add --json for metadata and Markdown, or --markdown for plain Markdown in a pipe.")
 	for _, section := range guide.Sections {
 		fmt.Fprintln(&text, "\n"+a.paint("1;36", section.Title))
 		for _, paragraph := range section.Guidance {
@@ -82,6 +103,36 @@ func (a *app) agentsGuide(args []string) error {
 			fmt.Fprintln(&text, "  "+command)
 		}
 	}
-	_, err := io.WriteString(a.out, text.String())
+	_, err = io.WriteString(a.out, text.String())
 	return err
+}
+
+func (a *app) agentsCard(args []string) error {
+	f := a.flags("agents card")
+	f.Bool("json", false, "force JSON metadata and Markdown")
+	markdown := f.Bool("markdown", false, "emit plain Markdown, including when redirected")
+	if err := a.parse(f, args, false); err != nil {
+		return err
+	}
+	if f.NArg() != 1 {
+		return model.Err("invalid_request", "expected usage: arm agents card NAME [--json|--markdown]")
+	}
+	if *markdown && a.forceJSON {
+		return model.Err("invalid_request", "--markdown and --json cannot be combined")
+	}
+	cards, err := knowledge.Load()
+	if err != nil {
+		return model.Err("invalid_knowledge_catalog", err.Error())
+	}
+	for _, card := range cards {
+		if card.ID != f.Arg(0) {
+			continue
+		}
+		if a.machine() && !*markdown {
+			return a.print(card)
+		}
+		_, err := io.WriteString(a.out, card.Markdown)
+		return err
+	}
+	return model.Err("card_not_found", "unknown knowledge card; run arm agents to list available card IDs")
 }

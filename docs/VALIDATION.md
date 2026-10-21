@@ -2,6 +2,12 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: embedded workload knowledge
+
+Catalog/parser/index and offline CLI race checks passed invalid/duplicate/missing metadata, UTF-8/control bounds, unregistered bindings, stale indexes, JSON/Markdown/terminal modes and mutation-free errors. Installer race tests passed discovery templates, previews/backups/recovery and preservation. Cargo override and actual attached build checks passed through the registered admission validator. Generation, the Make validation gate and focused vet passed. Actual Linux arm64 offline/card/terminal/JSON/error/no-state and install checks passed.
+
+Dedicated authenticated Codex `0.162.1` and Claude `2.1.306` sessions loaded the updated installed instructions and read the embedded Rust card through their real tools. Native warning/same-session communication, polling/explicit acknowledgement, operator reply/broadcast, pool audit and reversible install/uninstall also passed. The local report is `.cache/knowledge-live-agent-results.json`. The live binary preceded the final generated-index gate and general-guide wording update; unchanged card retrieval/instructions/comms were exercised live, while the final index gate has separate native/Linux checks. No global instruction files or unrelated sessions were modified. Only the Rust card is shipped; broader adapters and export helpers are not implied.
+
 ## October 21, 2026: dashboard lease controls
 
 Nineteen JavaScript checks, focused native server/manager race suites and vet passed. Real CUA acceptance on a separate private backend exercised extension with shortening rejection and exact updated expiry, declined release without revision change, stale revision conflict after a concurrent CLI renewal, explicit refresh, queued/active cancellation and release. Review fixed keyboard focus after rerender and disabled Keep lease/duration controls once a request is in flight. The fixture was stopped and removed; `/tmp/arm-dashboard-release-proof.png` retains the rendered confirmation.

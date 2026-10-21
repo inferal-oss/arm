@@ -131,7 +131,8 @@ Commands:
   reconcile ID              Verify a recovered process group has stopped
   renew ID --ttl DURATION    Extend a lease when the queue permits
   events [--follow]          Read or stream durable events
-  agents                    Read the offline agent operating guide
+  agents                    Read the offline guide and list knowledge cards
+  agents card NAME          Read a workload knowledge card
   agent probe|register|list  Discover CLIs and register exact sessions
   agent inbox|watch|receive|ack  Poll notifications and acknowledge explicitly
   message operator|send|broadcast  Send a durable message

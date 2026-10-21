@@ -2,9 +2,12 @@ GO ?= go
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads
-build:
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads validate-knowledge
+build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
+
+validate-knowledge:
+	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/check-knowledge
 
 install: build
 	install -d "$(DESTDIR)$(BINDIR)"

@@ -29,6 +29,9 @@ func TestRoundTripPreservesSubsequentUserEdits(t *testing.T) {
 	if !strings.Contains(string(first), "arm agents --json") {
 		t.Fatal("installed instructions do not link to the full agent guide")
 	}
+	if !strings.Contains(string(first), "arm agents card NAME --json") || !strings.Contains(string(first), "arm agents card rust-build --json") {
+		t.Fatal("installed instructions omit knowledge discovery and Cargo card")
+	}
 	if _, e := Install(home, targets, false); e != nil {
 		t.Fatal(e)
 	}

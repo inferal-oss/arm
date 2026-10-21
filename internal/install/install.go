@@ -22,6 +22,9 @@ const instructions = begin + `
 Use arm for resource-intensive commands. Start with arm status --json.
 Read arm agents --json for the full operating guide, resource workflows,
 exact-session registration, warnings, polling and operator communication.
+It also lists embedded knowledge cards. Read arm agents card NAME --json for
+workload-specific policy and limits; use arm agents card rust-build --json
+before Cargo builds. Cards explain code-backed behavior, not extra permissions.
 It works offline without creating state. arm agent list lists contacts.
 Use arm run --cpu N --memory SIZE --ttl DURATION --reason "purpose" -- COMMAND.
 Use --wait to queue for capacity. A grant is required before work begins.

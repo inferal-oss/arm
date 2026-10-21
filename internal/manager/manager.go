@@ -474,7 +474,7 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if r.StorageLease != "" && run == nil {
 		return empty, model.Err("invalid_request", "only supervised commands can attach storage")
 	}
-	if r.Profile != "" && r.Profile != "rust-build" {
+	if r.Profile != "" && !SupportsProfile(r.Profile) {
 		return empty, model.Err("unsupported_profile", "supported profile: rust-build")
 	}
 	if r.Agent != "" {
@@ -586,15 +586,15 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		if len(run.Command) == 0 || !filepath.IsAbs(run.CWD) {
 			return empty, model.Err("invalid_request", "run needs a command and absolute cwd")
 		}
-		if r.Profile == "rust-build" {
-			if e = validateCargo(run.Command, r.Resources.CPU); e != nil {
+		if r.Profile != "" {
+			if e = profileValidators[r.Profile](run.Command, r.Resources.CPU); e != nil {
 				return empty, e
 			}
-			if r.StorageLease != "" {
-				for _, arg := range run.Command[1:] {
-					if arg == "--target-dir" || strings.HasPrefix(arg, "--target-dir=") || arg == "--build-dir" || strings.HasPrefix(arg, "--build-dir=") {
-						return empty, model.Err("profile_conflict", "attached storage supplies CARGO_TARGET_DIR; remove target-dir overrides")
-					}
+		}
+		if r.Profile == "rust-build" && r.StorageLease != "" {
+			for _, arg := range run.Command[1:] {
+				if arg == "--target-dir" || strings.HasPrefix(arg, "--target-dir=") || arg == "--build-dir" || strings.HasPrefix(arg, "--build-dir=") {
+					return empty, model.Err("profile_conflict", "attached storage supplies CARGO_TARGET_DIR; remove target-dir overrides")
 				}
 			}
 		}
