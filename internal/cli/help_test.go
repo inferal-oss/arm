@@ -95,7 +95,7 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"start extra", "stop extra", "stop --cpu 1", "start --reason ignored",
 		"agents extra", "agents --adapter codex",
 		"monitor extra", "monitor --cpu 1", "monitor --after 1", "monitor --after -1 --epoch fixture",
-		"dashboard extra", "dashboard --cpu 1",
+		"dashboard Safari extra", "dashboard --cpu 1",
 		"message operator --key ignored --text fixture", "message broadcast --reply-to ignored --text fixture",
 		"start --memory 0", "start --memory bogus", "serve --memory 0",
 	}

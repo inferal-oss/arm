@@ -2,6 +2,10 @@
 
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
+## October 21, 2026: browser selection
+
+Focused CLI race tests and vet passed structured macOS/Linux launcher selection, literal executable arguments, early invalid-selector/operand errors, pipe/JSON/no-open suppression, reserved terminal behavior and detached executable lifetime after ARM context completion. Compiled acceptance used a real PTY and an executable whose path contains spaces and a semicolon; it received exactly one connection URL argument. Native LaunchServices returned the expected error for a uniquely nonexistent application, preserving the manual link. Safari application resolution succeeded; actual Safari page opening remains unverified because CUA refused access to the Terminal application used for that attempted acceptance. No alternate terminal route was used. This is a UI automation access limitation; executable and native failure-path tests passed independently.
+
 ## October 21, 2026: embedded workload knowledge
 
 Catalog/parser/index and offline CLI race checks passed invalid/duplicate/missing metadata, UTF-8/control bounds, unregistered bindings, stale indexes, JSON/Markdown/terminal modes and mutation-free errors. Installer race tests passed discovery templates, previews/backups/recovery and preservation. Cargo override and actual attached build checks passed through the registered admission validator. Generation, the Make validation gate and focused vet passed. Actual Linux arm64 offline/card/terminal/JSON/error/no-state and install checks passed.
