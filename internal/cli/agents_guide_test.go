@@ -21,7 +21,11 @@ func TestAgentsGuideWorksOfflineWithoutStateOrAgentCLIs(t *testing.T) {
 		if code != 0 || stderr.Len() != 0 || json.Unmarshal(out.Bytes(), &guide) != nil || guide.StateDirectory != home || len(guide.Sections) == 0 {
 			t.Fatalf("offline guide failed: %d %s %s", code, &out, &stderr)
 		}
-		if len(guide.Cards) == 0 || guide.Cards[0].ID != "rust-build" || guide.Cards[0].Adapter != "rust-build" {
+		foundRust := false
+		for _, card := range guide.Cards {
+			foundRust = foundRust || card.ID == "rust-build" && card.Adapter == "rust-build"
+		}
+		if !foundRust {
 			t.Fatal("offline guide omits embedded card discovery", guide.Cards)
 		}
 		seen := map[string]bool{}

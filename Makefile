@@ -3,7 +3,7 @@ PYTHON ?= python3
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-mesh validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -34,6 +34,11 @@ test-live: build
 # Missing toolchains fail; this target never downloads or installs them.
 test-workloads: build
 	python3 scripts/test-workloads.py
+
+# Real owned persistent Gradle daemons/clients; requires installed Gradle/JDK.
+# This never downloads tools or adopts a user daemon/cache.
+test-gradle-services: build
+	$(PYTHON) scripts/test-gradle-services.py --arm bin/arm
 
 # Actual two-node mTLS plus strict TLS1.3 wire probes; no SSH/agent sign-in needed.
 # PYTHON must have TLS1.3 support; missing probes fail this gate.

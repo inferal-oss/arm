@@ -126,6 +126,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	identity := local.CurrentIdentity()
 	m.owner, m.ownerUsername = identity.UID, identity.Username
+	if e = m.initGradleRecords(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	if e = m.initStorageExports(); e != nil {
 		db.Close()
 		return nil, e
@@ -176,7 +180,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		} else if run.Valid && consuming(l.State) {
 			l.State = "needs_attention"
 			l.Outcome = "supervision_lost"
-			if l.PID == 0 || errors.Is(syscall.Kill(-l.PID, 0), syscall.ESRCH) {
+			if !m.gradleObligation(l) && (l.PID == 0 || errors.Is(syscall.Kill(-l.PID, 0), syscall.ESRCH)) {
 				now := time.Now().UTC()
 				l.State = "terminal"
 				l.Outcome = "interrupted"
@@ -356,7 +360,7 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s := model.Status{Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
 	if m.portErr == nil {
 		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
 	}
@@ -525,7 +529,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		return empty, model.Err("invalid_request", "only supervised commands can attach storage")
 	}
 	if r.Profile != "" && !SupportsProfile(r.Profile) {
-		return empty, model.Err("unsupported_profile", "supported profile: rust-build")
+		return empty, model.Err("unsupported_profile", "supported profiles: rust-build, gradle-service, gradle-build")
 	}
 	if r.Agent != "" {
 		var count int
@@ -577,6 +581,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		if cancelled > 0 {
 			return empty, model.Err("request_cancelled", "this request was cancelled before admission")
 		}
+	}
+	if err := m.validateGradleRequest(r, run); err != nil {
+		return empty, err
 	}
 	if !m.requestFitsCeiling(r.Resources) {
 		return empty, model.Err("capacity_exceeded", "request exceeds a configured host ceiling or known physical memory capacity")
@@ -783,6 +790,14 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.Request.Kind == "ports" && l.State != "queued" {
 		return m.endPortParent(l, outcome)
 	}
+	if m.gradleObligation(l) {
+		if m.jobs[id] == nil {
+			return m.reconcileGradle(l, outcome)
+		}
+		if err := m.endGradleConsumers(l, outcome); err != nil {
+			return l, err
+		}
+	}
 	l.Revision++
 	l.Outcome = outcome
 	if j := m.jobs[id]; j != nil {
@@ -833,6 +848,9 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	if l.State != "active" || l.Expires == nil || !time.Now().Before(*l.Expires) {
 		return l, model.Err("lease_inactive", "only an unexpired active lease can be renewed")
+	}
+	if err := m.gradleRenew(l, ttl); err != nil {
+		return l, err
 	}
 	if l.Request.StorageLease != "" {
 		r := l.Request
@@ -931,6 +949,7 @@ func (m *Manager) tick() {
 	if e != nil {
 		return
 	}
+	m.tickGradleWorkloads(ls)
 	now := time.Now()
 	for _, l := range ls {
 		if (l.State == "active" || l.State == "provisioning") && l.Expires != nil && !now.Before(*l.Expires) {
@@ -1053,6 +1072,9 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if reason := m.startDeadlineProblem(l); reason != nil {
 		return m.rejectUnstarted(l, reason)
 	}
+	if err := m.prepareGradleLaunch(&l, &r); err != nil {
+		return m.launchFailed(l, err)
+	}
 	if e := os.MkdirAll(filepath.Join(m.home, "logs"), 0700); e != nil {
 		return m.launchFailed(l, e)
 	}
@@ -1108,6 +1130,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if l.Request.Profile == "rust-build" {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("CARGO_BUILD_JOBS=%d", max(1, int(l.Request.Resources.CPU))))
 	}
+	applyGradleEnvironment(l, cmd)
 	cmd.Stdout = f
 	cmd.Stderr = f
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
@@ -1127,6 +1150,12 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		l.Capabilities = append(append([]string{}, l.Capabilities...), "supervised-usage-observation")
 	} else {
 		j.observationError = "native process identity unavailable; usage cannot be attributed"
+	}
+	if err := m.captureGradleLaunch(&l, j.identity); err != nil {
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+		f.Close()
+		return m.launchFailed(l, err)
 	}
 	if l.Request.UsagePolicy != nil && j.identity == nil {
 		_ = cmd.Process.Kill()
@@ -1212,6 +1241,10 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		} else if len(current.Ports) > 0 {
 			m.finishPorts(&current)
 		}
+		if err := m.finishGradleJob(&current, groupGone); err != nil {
+			current.State, current.Ended = "needs_attention", nil
+			current.Failure = "Gradle workload settlement failed: " + err.Error()
+		}
 		current.Revision++
 		_ = m.put(current, "lease."+current.Outcome)
 	})
@@ -1245,6 +1278,9 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 	}
 	if l.State == "terminal" {
 		return l, nil
+	}
+	if m.gradleObligation(l) {
+		return m.reconcileGradle(l, "")
 	}
 	if l.Request.Kind == "storage" {
 		return l, model.Err("needs_attention", "use storage cleanup to retry or storage handoff to transfer responsibility")

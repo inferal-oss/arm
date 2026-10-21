@@ -43,6 +43,7 @@ type Request struct {
 	Profile           string        `json:"profile,omitempty"`
 	Kind              string        `json:"kind,omitempty"`
 	StorageLease      string        `json:"storage_lease,omitempty"`
+	ServiceLease      string        `json:"service_lease,omitempty"`
 	Ports             []PortClaim   `json:"ports,omitempty"`
 	PortLease         string        `json:"port_lease,omitempty"`
 	Pools             []PoolClaim   `json:"pools,omitempty"`
@@ -72,6 +73,7 @@ type Lease struct {
 	Ports         []PortBinding    `json:"ports,omitempty"`
 	Process       *ProcessIdentity `json:"process_identity,omitempty"`
 	Usage         *WorkloadUsage   `json:"usage,omitempty"`
+	Workload      *WorkloadBinding `json:"workload,omitempty"`
 }
 
 type Event struct {

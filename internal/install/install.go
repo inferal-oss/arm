@@ -25,7 +25,8 @@ exact-session registration, warnings, polling and operator communication.
 List embedded knowledge cards with arm agents card --list --json (card list is
 an alias). Read arm agents card NAME --json for
 workload-specific policy and limits; use arm agents card rust-build --json
-before Cargo builds. Cards explain code-backed behavior, not extra permissions.
+before Cargo builds. Read arm agents card gradle-build --json before owned Gradle
+services/builds. Cards explain code-backed behavior, not extra permissions.
 It works offline without creating state. arm agent list lists contacts.
 Use arm run --cpu N --memory SIZE --ttl DURATION --reason "purpose" -- COMMAND.
 Use --wait to queue locally for capacity. A grant is required before work begins.

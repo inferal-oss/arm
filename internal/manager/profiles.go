@@ -5,7 +5,9 @@ package manager
 type profileValidator func([]string, float64) error
 
 var profileValidators = map[string]profileValidator{
-	"rust-build": validateCargo,
+	"rust-build":     validateCargo,
+	"gradle-service": validateGradleService,
+	"gradle-build":   validateGradleBuild,
 }
 
 // SupportsProfile is shared by admission and the embedded knowledge build gate.

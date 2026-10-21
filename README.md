@@ -245,6 +245,22 @@ These send examples require the corresponding grants. Unknown or ambiguous host 
 
 `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
 
+## Owned Gradle services
+
+Read `arm agents card gradle-build --json` before using the local `gradle-service` and `gradle-build` profiles. Start an installed Gradle/JDK service with its own managed storage and CPU/memory claim, then attach serialized build clients with separate output storage and client budgets:
+
+```sh
+arm storage create 4GiB --ttl 30m --reason "Private Gradle service state"
+arm run --profile gradle-service --detach --storage SERVICE_STORAGE_ID --cpu 2 --memory 1GiB --ttl 20m --reason "Gradle daemon and workers" -- gradle
+arm inspect SERVICE_LEASE_ID --json  # Wait for workload.state = ready.
+arm storage create 4GiB --ttl 15m --reason "Temporary Gradle outputs"
+arm run --profile gradle-build --service SERVICE_LEASE_ID --storage OUTPUT_STORAGE_ID --cwd /absolute/project --cpu 0.25 --memory 256MiB --ttl 10m --reason "Build the requested JAR" -- gradle --offline jar
+```
+
+Replace IDs with the values returned by ARM. The service remains charged between clients; client exit alone cannot prove daemon-side work completed. Missing identity/completion evidence stays charged and blocks reuse. Export and verify the requested JAR/runtime files before releasing intermediate storage, then release the service and its storage when finished. The card gives the full lifecycle and cleanup commands.
+
+Initial acceptance covers installed Gradle 9.8.1 on macOS/Linux. Wrappers, `buildSrc`, composite builds, daemon adoption, remote services and arbitrary JVM/worker overrides are unsupported. JVM settings and worker limits are cooperative controls, not total process quotas. Unexpected fallback daemons are never adopted or killed from observed PIDs.
+
 ## Test
 
 ```sh
@@ -255,6 +271,8 @@ make test-local
 make PYTHON=python3 test-mesh
 # Opt-in: real installed Cargo/rustc, Gradle/JDK and uv/Python, offline.
 make test-workloads
+# Opt-in: real installed Gradle/JDK persistent-service and consumer lifecycle.
+make test-gradle-services
 # Opt-in: actual authenticated Codex and Claude sessions, network required.
 make test-live
 # Optional: real Linux runtime, using an already cached image with Python 3.
@@ -269,7 +287,7 @@ python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST -
 
 Use `GO=.tools/go/bin/go` with these targets if Go is not on PATH. Live tests use dedicated sessions, temporary Codex configuration and project instruction files, and the existing CLI sign-ins. They do not send to existing user sessions or rewrite global agent instructions. Native CLIs may retain the dedicated session transcripts in their history. Reports are written beneath `.cache/`.
 
-`test-workloads` requires all three toolchains and never installs or downloads them. It uses private projects, configuration, caches and an ARM authority. Tests compile and export a Rust executable and Java JAR, resolve/install a local Python wheel with uv, and preserve a standalone Python zipapp. They check failures, cancellation, Python execution expiry and verified managed-directory removal while preserving exported outputs. Physical reclamation can remain unknown and charged. To select installed tools explicitly, run `python3 scripts/test-workloads.py --tools cargo uv`; `--allow-missing` prints prerequisite skips instead of treating them as coverage. Gradle and uv currently use generic supervision with explicit tool settings, rather than dedicated ARM profiles.
+`test-workloads` requires all three toolchains and never installs or downloads them. It uses private projects, configuration, caches and an ARM authority. Tests compile and export a Rust executable and Java JAR, resolve/install a local Python wheel with uv, and preserve a standalone Python zipapp. They check failures, cancellation, Python execution expiry and verified managed-directory removal while preserving exported outputs. Physical reclamation can remain unknown and charged. To select installed tools explicitly, run `python3 scripts/test-workloads.py --tools cargo uv`; `--allow-missing` prints prerequisite skips instead of treating them as coverage. That suite uses generic Gradle/uv supervision with explicit tool settings. `make test-gradle-services` separately requires installed Gradle/JDK and exercises owned persistent services, exact JVM reuse, separate budgets, cancellation/expiry/restart, fallback uncertainty and retained executable JARs. Missing tools fail rather than count as coverage.
 
 The implementation has been exercised on macOS and Linux arm64 in an isolated container on an actual Linux kernel. Linux amd64 cross-compilation is also checked; wider filesystem, hardware and service validation remains. See [the validation record](docs/VALIDATION.md) and [remaining implementation plan](docs/PLAN.md).
 

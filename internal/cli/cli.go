@@ -390,6 +390,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	project := f.String("project", "", "project attribution")
 	agent := f.String("agent", "", "registered agent contact for attribution")
 	storageLease, portLease, cwd := new(string), new(string), new(string)
+	serviceLease, detach := new(string), new(bool)
 	var usagePolicy model.UsagePolicy
 	if command == "run" {
 		f.StringVar(&usagePolicy.Mode, "usage-policy", "", "opt-in observed overage policy: warn or revoke (requires --agent)")
@@ -397,8 +398,10 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		f.DurationVar(&usagePolicy.Grace, "usage-grace", 30*time.Second, "remediation `duration` after each warning")
 		f.IntVar(&usagePolicy.Warnings, "usage-warnings", 3, "maximum warning `count` per incident")
 		f.Float64Var(&usagePolicy.Tolerance, "usage-tolerance", .1, "allowed fraction above budget (0..1)")
-		f.StringVar(profile, "profile", "", "workload `profile` (rust-build)")
+		f.StringVar(profile, "profile", "", "workload `profile` (rust-build, gradle-service or gradle-build)")
 		f.StringVar(storageLease, "storage", "", "attach managed storage `lease` (must outlast this command)")
+		f.StringVar(serviceLease, "service", "", "attach a verified ready Gradle service `lease` (gradle-build only)")
+		f.BoolVar(detach, "detach", false, "return the initial supervised service lease (gradle-service only; inspect readiness)")
 		f.StringVar(portLease, "port-lease", "", "attach a dedicated port `lease` (one consumer)")
 		f.StringVar(cwd, "cwd", "", "command working `directory` (default: current directory)")
 	}
@@ -429,6 +432,9 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	}
 	if command == "run" {
 		*asJSON = a.machine()
+		if *detach && *profile != "gradle-service" {
+			return 2, fmt.Errorf("--detach requires --profile gradle-service; ordinary run follows command completion")
+		}
 	}
 	if command == "storage" && len(f.Args()) > 0 {
 		providedDisk := false
@@ -514,6 +520,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	}
 	r.Pools = poolClaims
 	r.StorageLease = *storageLease
+	r.ServiceLease = *serviceLease
 	r.PortLease = *portLease
 	for _, c := range portFlags {
 		c.Mode = *portMode
@@ -578,6 +585,15 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		if e = a.hostCall(*host, "acquire", r, &l); e != nil {
 			return 1, e
 		}
+	}
+	if *detach {
+		if l.State != "active" || l.Workload == nil {
+			if err := a.print(l); err != nil {
+				return 1, err
+			}
+			return 1, model.Err("service_not_started", "service lease "+l.ID+" did not start: "+l.Failure)
+		}
+		return a.acquired(l)
 	}
 	if command != "run" && (!*wait || l.State != "queued") {
 		return a.acquired(l)

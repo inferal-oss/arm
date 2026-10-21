@@ -69,7 +69,7 @@ func (m *Manager) bulkEnd(request model.BulkEndRequest) (model.BulkEndReport, er
 		// Consumers precede their managed parents. Parent providers retain their
 		// ordinary checks and can still defer reclamation until a child settles.
 		sort.SliceStable(ls, func(i, j int) bool {
-			return ls[i].Request.Kind != "storage" && ls[i].Request.Kind != "ports" && (ls[j].Request.Kind == "storage" || ls[j].Request.Kind == "ports")
+			return leaseDependencyRank(ls[i]) < leaseDependencyRank(ls[j])
 		})
 		operation = bulkOperation{Request: request, Actor: m.owner, ActorUsername: m.ownerUsername, At: time.Now().UTC(), IDs: []string{}}
 		for _, l := range ls {
