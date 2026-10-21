@@ -41,6 +41,7 @@ def main():
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
+        shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         script = '''#!/bin/sh
 set -eu
 uname -srmo
@@ -53,6 +54,7 @@ done
         if not opts.skip_smoke:
             script += 'python3 ./test-local.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-ports.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-inbox.py --arm "$PWD/arm"\n'
         (target / "run.sh").write_text(script)
         remote = subprocess.check_output(ssh + ["mktemp -d /tmp/arm-tests.XXXXXXXXXX"], text=True).strip()
         if not re.fullmatch(r"/tmp/arm-tests\.[A-Za-z0-9]{10}", remote):

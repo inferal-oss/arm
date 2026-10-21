@@ -126,6 +126,25 @@ bin/arm messages --json
 
 Codex delivery uses its native queue command. Claude currently supports explicitly idle sessions: register with `--adapter claude --idle`; delivery resumes the same session in a response-only turn and records its reply in the operator inbox. Active Claude injection is not implemented. CLI authentication must be available to the backend process. Register with `--config-dir` only when the agent actually uses that configuration root; optional Codex `--remote unix://PATH` supports a local app-server socket.
 
+For active Claude sessions and other agents without live message injection, select the durable polling inbox:
+
+```sh
+bin/arm agent register --id claude-worker --adapter claude --delivery poll \
+  --session SESSION_UUID --cwd /absolute/project/path
+bin/arm agent inbox --id claude-worker --session SESSION_UUID --pending
+# Run in a background task or watcher subagent when supported:
+bin/arm agent watch --id claude-worker --session SESSION_UUID
+# After handling the message:
+bin/arm agent ack --id claude-worker --session SESSION_UUID \
+  --message MESSAGE_ID --text "Reduced build concurrency"
+```
+
+`watch` prints JSON lines and reconnects using its last cursor. Save each emitted `cursor` to resume with `--after CURSOR`; `--once` returns one batch, waiting at most `--wait` (default 20 seconds). `inbox` returns a page of at most 64 messages with `more` and `cursor`. Reading never marks receipt or acknowledgement: `receive` explicitly records receipt, and `ack` records acknowledgement plus an optional operator reply. Retrying the same acknowledgement is idempotent. Acknowledgement is not proof of resource compliance.
+
+The agent must consume watcher output and forward warnings to its main task, or poll before costly work and renewals. A watcher does not itself inject into a live conversation. Registration returns a session and registration identity; `--registration ID` pins requests to that exact identity. Cursors are scoped to the host and registration. Reusing a contact name for another session cannot inherit its old inbox; changing a contact with outstanding attributed leases or an in-progress native delivery is refused. `--adapter generic --delivery poll` supports other agents and generates a session UUID when omitted.
+
+Re-running `arm install` upgrades only an unchanged managed instruction block, preserving surrounding edits and file permissions. Interrupted upgrades retain both exact expected versions in the recovery manifest so installation or uninstall can resume safely. The installed instructions describe polling and watcher limitations.
+
 ## Test
 
 ```sh

@@ -2,8 +2,11 @@ package manager
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"time"
 
 	"github.com/yrashk/arm/internal/agents"
@@ -23,24 +26,82 @@ type Message struct {
 }
 
 func (m *Manager) Register(c agents.Contact) error {
+	_, err := m.RegisterContact(c)
+	return err
+}
+func (m *Manager) RegisterContact(c agents.Contact) (agents.Contact, error) {
+	var empty agents.Contact
+	if c.Delivery == "" {
+		c.Delivery = "native"
+	}
+	if id, err := uuid.Parse(c.Session); err == nil {
+		c.Session = id.String()
+	}
 	if e := c.Validate(); e != nil {
-		return e
+		return empty, e
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.closing {
+		return empty, model.Err("backend_stopping", "backend is shutting down")
+	}
+	old, err := m.contact(c.ID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return empty, err
+	}
+	c.Registration = ""
+	if err == nil {
+		a, b := old, c
+		a.Registration = ""
+		if a != b {
+			var pending int
+			err := m.db.QueryRow(`SELECT 1 FROM agent_inbox i JOIN messages m ON m.id=i.message JOIN json_each(m.data,'$.deliveries') d ON d.key=i.recipient WHERE i.recipient=? AND i.registration=? AND json_extract(d.value,'$.state')='pending' LIMIT 1`, old.ID, old.Registration).Scan(&pending)
+			if err == nil {
+				return empty, model.Err("contact_in_use", "native delivery is in progress; wait for its result before changing the contact")
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return empty, err
+			}
+		}
+		a.Delivery = ""
+		a.Idle = false
+		b.Delivery = ""
+		b.Idle = false
+		if a == b {
+			c.Registration = old.Registration
+		}
+		if c.Registration == "" {
+			ls, err := m.list()
+			if err != nil {
+				return empty, err
+			}
+			for _, l := range ls {
+				if l.Request.Agent == c.ID && (consuming(l.State) || l.State == "queued") {
+					return empty, model.Err("contact_in_use", "finish attributed leases or register a new contact ID before changing recipient identity")
+				}
+			}
+		}
+	}
+	if c.Registration == "" {
+		c.Registration = local.ID()
+	}
 	b, _ := json.Marshal(c)
 	tx, e := m.db.Begin()
 	if e != nil {
-		return e
+		return empty, e
 	}
 	defer tx.Rollback()
 	if _, e = tx.Exec(`INSERT INTO agents VALUES(?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data`, c.ID, string(b)); e != nil {
-		return e
+		return empty, e
 	}
 	if e = event(tx, "agent.registered", c.ID, c); e != nil {
-		return e
+		return empty, e
 	}
-	return tx.Commit()
+	if e = tx.Commit(); e != nil {
+		return empty, e
+	}
+	m.notifyInbox()
+	return c, nil
 }
 func (m *Manager) Contacts() ([]agents.Contact, error) {
 	m.mu.Lock()
@@ -114,11 +175,23 @@ func (m *Manager) Message(ctx context.Context, audience, body, lease string) (Me
 			return msg, model.Err("not_found", "agent contact is not registered")
 		}
 	}
-	if e = m.saveMessage(msg, "message.created"); e != nil {
+	for _, c := range targets {
+		d := msg.Deliveries[c.ID]
+		d.Mode = c.Delivery
+		d.Registration = c.Registration
+		if c.Delivery == "poll" {
+			d.State = "available"
+		}
+		msg.Deliveries[c.ID] = d
+	}
+	if e = m.createMessage(msg, targets); e != nil {
 		return msg, e
 	}
 	for _, c := range targets {
-		msg.Deliveries[c.ID] = agents.Deliver(ctx, c, fmt.Sprintf("ARM message %s\n%s", msg.ID, body))
+		d := agents.Deliver(ctx, c, fmt.Sprintf("ARM message %s\n%s", msg.ID, body))
+		d.Mode = c.Delivery
+		d.Registration = c.Registration
+		msg.Deliveries[c.ID] = d
 		if e = m.saveMessage(msg, "message.delivery"); e != nil {
 			return msg, e
 		}
@@ -129,7 +202,10 @@ func (m *Manager) Message(ctx context.Context, audience, body, lease string) (Me
 			}
 		}
 	}
-	return msg, nil
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	e = m.hydrateReceipts(&msg)
+	return msg, e
 }
 
 func (m *Manager) recoverDeliveries() error {
@@ -152,7 +228,9 @@ func (m *Manager) recoverDeliveries() error {
 		changed := false
 		for id, d := range msg.Deliveries {
 			if d.State == "pending" {
-				msg.Deliveries[id] = agents.Delivery{State: "unknown", Error: "delivery was interrupted; verify the recipient before resending"}
+				d.State = "unknown"
+				d.Error = "delivery was interrupted; verify the recipient before resending"
+				msg.Deliveries[id] = d
 				changed = true
 			}
 		}
@@ -192,5 +270,15 @@ func (m *Manager) Messages() ([]Message, error) {
 		}
 		out = append(out, msg)
 	}
-	return out, rows.Err()
+	err := rows.Err()
+	rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	for i := range out {
+		if err = m.hydrateReceipts(&out[i]); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
 }

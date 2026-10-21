@@ -43,6 +43,10 @@ var commandHelps = map[string]commandHelp{
 	"agent probe":       {summary: "Inspect installed agent CLI versions and messaging capabilities. Output is JSON."},
 	"agent register":    {summary: "Register one exact supported agent session for attribution and messages.", example: `arm agent register --id builder --adapter codex --session SESSION_UUID`},
 	"agent list":        {summary: "List registered agent contacts. Output is JSON."},
+	"agent inbox":       {summary: "Read messages for an exact registered session. Reading never acknowledges them. Output is a JSON page with an opaque resume cursor.", example: `arm agent inbox --id builder --session SESSION_UUID --pending`},
+	"agent watch":       {summary: "Watch an exact recipient inbox as JSON lines. Reconnect with the last emitted cursor; use --once for one bounded batch. Output never acknowledges messages.", example: `arm agent watch --id builder --session SESSION_UUID`},
+	"agent receive":     {summary: "Explicitly record that a registered session received a message. This is separate from acknowledgement.", example: `arm agent receive --id builder --session SESSION_UUID --message MESSAGE_ID`},
+	"agent ack":         {summary: "Explicitly acknowledge a message. Optional response text reaches the operator inbox. An acknowledgement does not prove resource compliance.", example: `arm agent ack --id builder --session SESSION_UUID --message MESSAGE_ID --text "Reduced build concurrency"`},
 	"message operator":  {summary: "Send a durable message to the operator inbox.", example: `arm message operator --text "The build needs another five minutes."`},
 	"message send":      {summary: "Send a message to one registered agent contact.", example: `arm message send --to builder --text "Please reduce build concurrency."`},
 	"message broadcast": {summary: "Send a message to every currently registered contact.", example: `arm message broadcast --text "Please release idle leases."`},
@@ -54,7 +58,7 @@ var groupHelps = map[string]string{
 	"storage": "  create SIZE       Create a managed disk lease\n  list              List storage leases\n  inspect PATH      Measure a directory without changing it\n  cleanup LEASE_ID  Reclaim managed storage (--dry-run previews)\n  handoff LEASE_ID  Preserve remaining files and return responsibility\n",
 	"ports":   "  reserve [PORT_SPEC...]  Hold bindings (default: TCP loopback, OS-selected port)\n  list                    List ARM allocations, consumers and reasons\n  discover                Observe native bindings and visible owners\n",
 	"daemon":  "  start   Start the backend in the background\n  stop    Stop an idle backend\n  status  Inspect backend status\n",
-	"agent":   "  probe     Inspect installed CLIs and messaging capabilities\n  register  Register an exact session\n  list      List contacts\n",
+	"agent":   "  probe     Inspect installed CLIs and messaging capabilities\n  register  Register an exact session (--delivery poll for an inbox)\n  list      List contacts\n  inbox     Read a recipient's durable messages\n  watch     Stream inbox JSON lines with reconnect\n  receive   Record receipt of one message\n  ack       Acknowledge one message and optionally reply\n",
 	"message": "  operator   Send to the operator inbox\n  send       Send to one contact (--to ID)\n  broadcast  Send to all registered contacts\n",
 }
 

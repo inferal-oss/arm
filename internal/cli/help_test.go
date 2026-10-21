@@ -12,7 +12,7 @@ import (
 
 func TestAllCommandHelpIsAvailableWithoutBackendOrSideEffects(t *testing.T) {
 	home := filepath.Join(t.TempDir(), "absent")
-	commands := []string{"", "acquire", "run", "storage create", "storage list", "storage inspect", "storage cleanup", "storage handoff", "ports reserve", "ports list", "ports discover", "inspect", "release", "cancel", "reconcile", "renew", "status", "resources", "messages", "events", "daemon start", "daemon stop", "daemon status", "serve", "agent probe", "agent register", "agent list", "message operator", "message send", "message broadcast", "install", "uninstall", "version", "storage", "ports", "daemon", "agent", "message"}
+	commands := []string{"", "acquire", "run", "storage create", "storage list", "storage inspect", "storage cleanup", "storage handoff", "ports reserve", "ports list", "ports discover", "inspect", "release", "cancel", "reconcile", "renew", "status", "resources", "messages", "events", "daemon start", "daemon stop", "daemon status", "serve", "agent probe", "agent register", "agent list", "agent inbox", "agent watch", "agent receive", "agent ack", "message operator", "message send", "message broadcast", "install", "uninstall", "version", "storage", "ports", "daemon", "agent", "message"}
 	for _, command := range commands {
 		t.Run(command, func(t *testing.T) {
 			for _, spelling := range []string{"--help", "-h", "topic"} {
@@ -45,6 +45,9 @@ func TestHelpOnlyListsOptionsThatApplyToTheCommand(t *testing.T) {
 		{"daemon stop", []string{"--json"}, []string{"--cpu", "--memory", "--disk", "--listen"}},
 		{"release", []string{"LEASE_ID"}, []string{"--ttl"}},
 		{"storage handoff", []string{"Preserves remaining data"}, []string{"--dry-run"}},
+		{"agent inbox", []string{"--after", "--pending"}, []string{"--once", "--message", "--text"}},
+		{"agent receive", []string{"--message"}, []string{"--text", "--wait", "--after", "--once"}},
+		{"agent ack", []string{"--message", "--text"}, []string{"--wait", "--after", "--once"}},
 		{"agent list", []string{"--json"}, []string{"--session", "--idle", "--adapter"}},
 		{"message operator", []string{"--text"}, []string{"--to"}},
 		{"uninstall", []string{"manifest", "--dry-run"}, []string{"--codex-home", "--claude-home"}},
@@ -81,6 +84,7 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"storage handoff fixture --dry-run", "storage cleanup fixture extra", "daemon stop --cpu 1",
 		"install extra", "uninstall --codex-home ignored", "agent list --session ignored",
 		"message operator --to ignored --text test", "status extra", "events extra", "version extra",
+		"agent inbox --once", "agent receive --text ignored", "agent ack --after ignored", "agent watch unexpected",
 		"status --json=false", "--home", "--no-such-option", "agent register --id",
 	}
 	for _, command := range tests {

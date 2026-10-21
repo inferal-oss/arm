@@ -138,6 +138,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	var subscription context.CancelFunc
+	requests := make(chan struct{}, 8)
 	defer func() {
 		if subscription != nil {
 			subscription()
@@ -199,19 +200,31 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			}(p.After)
 			continue
 		}
-		result, err := s.dispatch(ctx, req)
-		if err != nil {
-			var re *model.Error
-			if errors.As(err, &re) {
-				resp.Error = re
-			} else {
-				resp.Error = &model.Error{Code: "internal_error", Message: "backend operation failed"}
+		select {
+		case requests <- struct{}{}:
+			// Long polling must not block the reader: it needs to notice a
+			// disconnected client and multiplex other requests and events.
+			go func(req model.WireRequest) {
+				defer func() { <-requests }()
+				resp := model.WireResponse{Version: 1, ID: req.ID}
+				result, err := s.dispatch(ctx, req)
+				if err != nil {
+					var re *model.Error
+					if errors.As(err, &re) {
+						resp.Error = re
+					} else {
+						resp.Error = &model.Error{Code: "internal_error", Message: "backend operation failed"}
+					}
+				} else {
+					resp.Result = result
+				}
+				send(resp)
+			}(req)
+		default:
+			resp.Error = &model.Error{Code: "too_many_requests", Message: "at most eight requests may be in flight on one connection"}
+			if !send(resp) {
+				return
 			}
-		} else {
-			resp.Result = result
-		}
-		if !send(resp) {
-			return
 		}
 	}
 }
@@ -244,6 +257,18 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "agent_inbox":
+		var q manager.InboxRequest
+		if e := decode(&q); e != nil {
+			return nil, e
+		}
+		return s.Manager.AgentInbox(ctx, q)
+	case "agent_receipt":
+		var q manager.ReceiptRequest
+		if e := decode(&q); e != nil {
+			return nil, e
+		}
+		return s.Manager.AgentReceipt(q)
 	case "ports_discover":
 		select {
 		case s.portScan <- struct{}{}:
@@ -342,8 +367,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		if e := decode(&q); e != nil {
 			return nil, e
 		}
-		e := s.Manager.Register(q)
-		return q, e
+		return s.Manager.RegisterContact(q)
 	case "messages":
 		return s.Manager.Messages()
 	case "shutdown":

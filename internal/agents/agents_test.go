@@ -32,3 +32,24 @@ func TestUnknownClaudeSessionIsNotCreated(t *testing.T) {
 		t.Fatal("accepted delivery to unknown Claude session")
 	}
 }
+
+func TestPollingDoesNotRequireAnIdleCLIOrLaunchAnotherConversation(t *testing.T) {
+	for _, adapter := range []string{"claude", "codex", "generic"} {
+		c := Contact{ID: "poll-fixture", Adapter: adapter, Session: uuid.NewString(), CWD: t.TempDir(), Delivery: "poll"}
+		if err := c.Validate(); err != nil {
+			t.Fatal(err)
+		}
+		d := Deliver(t.Context(), c, "only the inbox should receive this")
+		if d.State != "available" || d.Mode != "poll" || d.Reply != "" {
+			t.Fatalf("poll claimed native delivery: %+v", d)
+		}
+	}
+	c := Contact{ID: "poll-fixture", Adapter: "generic", Session: uuid.NewString(), CWD: t.TempDir(), Delivery: "native"}
+	if c.Validate() == nil {
+		t.Fatal("generic adapter claimed native support")
+	}
+	c.Delivery = "typo"
+	if c.Validate() == nil {
+		t.Fatal("accepted unknown delivery mode")
+	}
+}

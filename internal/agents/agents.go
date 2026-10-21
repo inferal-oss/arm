@@ -16,25 +16,38 @@ import (
 )
 
 type Contact struct {
-	ID        string `json:"id"`
-	Adapter   string `json:"adapter"`
-	Session   string `json:"session"`
-	CWD       string `json:"cwd"`
-	ConfigDir string `json:"config_dir,omitempty"`
-	Remote    string `json:"remote,omitempty"`
-	Idle      bool   `json:"idle,omitempty"`
+	ID           string `json:"id"`
+	Adapter      string `json:"adapter"`
+	Session      string `json:"session"`
+	CWD          string `json:"cwd"`
+	ConfigDir    string `json:"config_dir,omitempty"`
+	Remote       string `json:"remote,omitempty"`
+	Idle         bool   `json:"idle,omitempty"`
+	Delivery     string `json:"delivery,omitempty"`
+	Registration string `json:"registration,omitempty"`
 }
 type Capability struct {
-	Adapter string `json:"adapter"`
-	Path    string `json:"path,omitempty"`
-	Version string `json:"version,omitempty"`
-	Mode    string `json:"mode"`
-	Error   string `json:"error,omitempty"`
+	Adapter  string `json:"adapter"`
+	Path     string `json:"path,omitempty"`
+	Version  string `json:"version,omitempty"`
+	Mode     string `json:"mode"`
+	Error    string `json:"error,omitempty"`
+	Fallback string `json:"fallback,omitempty"`
 }
 type Delivery struct {
-	State string `json:"state"`
-	Error string `json:"error,omitempty"`
-	Reply string `json:"reply,omitempty"`
+	State        string   `json:"state"`
+	Error        string   `json:"error,omitempty"`
+	Reply        string   `json:"reply,omitempty"`
+	Mode         string   `json:"mode,omitempty"`
+	Registration string   `json:"registration,omitempty"`
+	Receipt      *Receipt `json:"receipt,omitempty"`
+}
+
+type Receipt struct {
+	Received     *time.Time `json:"received_at,omitempty"`
+	Acknowledged *time.Time `json:"acknowledged_at,omitempty"`
+	Text         string     `json:"text,omitempty"`
+	ReplyID      string     `json:"reply_id,omitempty"`
 }
 
 func Binary(name string) (string, error) {
@@ -52,7 +65,11 @@ func Binary(name string) (string, error) {
 	return "", model.Err("cli_missing", name+" is not installed or executable")
 }
 func Probe(ctx context.Context, name string) Capability {
-	c := Capability{Adapter: name}
+	c := Capability{Adapter: name, Fallback: "polling-inbox"}
+	if name == "generic" {
+		c.Mode = "polling-inbox"
+		return c
+	}
 	p, e := Binary(name)
 	if e != nil {
 		c.Error = e.Error()
@@ -100,14 +117,20 @@ func (c Contact) Validate() error {
 	if c.ConfigDir != "" && !filepath.IsAbs(c.ConfigDir) {
 		return model.Err("invalid_contact", "config-dir must be absolute")
 	}
-	if c.Adapter == "claude" && !c.Idle {
+	if c.Delivery != "" && c.Delivery != "native" && c.Delivery != "poll" {
+		return model.Err("unsupported_delivery", "delivery must be native or poll")
+	}
+	if c.Adapter == "claude" && !c.Idle && c.Delivery != "poll" {
 		return model.Err("unsupported_capability", "Claude adapter currently requires an explicitly idle session; live injection is not implemented")
 	}
-	if c.Adapter != "claude" && c.Adapter != "codex" {
-		return model.Err("unsupported_adapter", "expected codex or claude")
+	if c.Adapter != "claude" && c.Adapter != "codex" && !(c.Adapter == "generic" && c.Delivery == "poll") {
+		return model.Err("unsupported_adapter", "expected codex, claude, or generic with poll delivery")
 	}
 	if c.Remote != "" && !strings.HasPrefix(c.Remote, "unix://") {
 		return model.Err("invalid_contact", "only local unix Codex endpoints are supported")
+	}
+	if c.Remote != "" && c.Adapter != "codex" {
+		return model.Err("invalid_contact", "remote endpoints apply only to Codex")
 	}
 	return nil
 }
@@ -133,6 +156,9 @@ func (c Contact) env() []string {
 func Deliver(ctx context.Context, c Contact, body string) Delivery {
 	if e := c.Validate(); e != nil {
 		return Delivery{State: "failed", Error: e.Error()}
+	}
+	if c.Delivery == "poll" {
+		return Delivery{State: "available", Mode: "poll", Registration: c.Registration}
 	}
 	p, e := Binary(c.Adapter)
 	if e != nil {

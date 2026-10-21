@@ -52,6 +52,8 @@ type Manager struct {
 	portNamespace     string
 	portErr           error
 	infrastructure    []model.PortBinding
+	inboxChanged      chan struct{}
+	inboxSlots        chan struct{}
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation"}
@@ -71,6 +73,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		`CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, entity TEXT NOT NULL, at TEXT NOT NULL, data TEXT)`,
 		`CREATE TABLE IF NOT EXISTS agents (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
+		`CREATE TABLE IF NOT EXISTS agent_inbox (sequence INTEGER PRIMARY KEY AUTOINCREMENT, recipient TEXT NOT NULL, registration TEXT NOT NULL, message TEXT NOT NULL, receipt TEXT NOT NULL, UNIQUE(recipient,registration,message))`,
+		`CREATE INDEX IF NOT EXISTS agent_inbox_recipient ON agent_inbox(recipient,registration,sequence)`,
 		`CREATE TABLE IF NOT EXISTS cancelled_requests (key TEXT PRIMARY KEY)`} {
 		if _, e = db.Exec(q); e != nil {
 			db.Close()
@@ -82,6 +86,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.inboxChanged = make(chan struct{})
+	m.inboxSlots = make(chan struct{}, 64)
 	m.portNamespace, m.portErr = ports.Namespace()
 	if e = db.QueryRow(`SELECT value FROM metadata WHERE key='host'`).Scan(&m.host); e != nil {
 		db.Close()
@@ -93,6 +99,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m.owner = u.Uid
+	if e = m.migrateContacts(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	m.loadStorage()
 	opened := false
 	defer func() {

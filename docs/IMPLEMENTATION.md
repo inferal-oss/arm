@@ -110,6 +110,18 @@ Installer tests cover dry-run side effects, repeat install/uninstall, preserving
 
 The opt-in native suite checks real instruction loading, same-session message acknowledgement, operator inbox and broadcast delivery, active-lease uninstall refusal, removal preview, later user edits, and repeat uninstall. The tested versions and results are recorded in [VALIDATION.md](VALIDATION.md). A dedicated session is always used; no `--last` or unrelated existing user session is selected.
 
+## Durable recipient inboxes
+
+`agent register --delivery poll` selects an inbox without launching an agent CLI; active Claude sessions need no idle declaration. A generic polling adapter supports other agents. Existing contacts get persistent registration identities at startup; historical messages without verifiable recipient identities are not guessed or replayed. A new session/configuration identity gets a new registration, and retargeting a contact with outstanding attributed work is refused. Changes during a pending native delivery are also refused, and message creation rejects a stale contact/delivery snapshot.
+
+Message creation and recipient fanout commit together. Each current broadcast recipient gets a registration-scoped inbox entry; contacts registered later do not inherit it. Native messages also enter the inbox as a fallback, while queued/responded/failed/unknown native delivery remains separate from polling receipts. Receipt data is stored independently so a late native result cannot overwrite it. These views narrow recipient selection within ARM's same-user trust boundary; session IDs and cursors are not independent authentication credentials.
+
+`agent inbox` returns up to 64 items plus a host/registration-scoped opaque cursor and `more`. `--pending` filters explicit acknowledgements. Waits are bounded to 20 seconds, with 64 active inbox requests globally. The shared WebSocket reader multiplexes bounded concurrent requests (eight per connection) so long polling does not block ordinary responses or disconnect cancellation. `agent watch` prints JSON lines, advances after successful output, reconnects with bounded backoff, and rejects registration changes. `--once` reads one bounded batch. This uses the existing request/response transport and durable inbox; it does not introduce a second authority.
+
+Reading or streaming never implies receipt, acknowledgement or compliance. `agent receive` records receipt explicitly; `agent ack` records an acknowledgement and optionally adds a linked response to the operator inbox in one transaction. An identical retry preserves the original timestamps/reply ID, while changed response text conflicts. Retention policy, automatic incident routing and delivery retry policy remain work.
+
+Installed instructions describe background watchers/subagents where supported and polling before expensive work otherwise. ARM cannot ensure that a background tool's output reaches the main agent while it is busy. The real Claude check verifies a resumed exact session running `watch --once` and `ack` through Bash; it does not establish active-session injection or automatic subagent forwarding. Reinstallation upgrades only an exact unchanged managed block. A persisted pending-block record covers either side of its atomic replacement; preview is read-only, surrounding user edits and modes survive, and ambiguous/edited managed blocks are preserved for manual resolution.
+
 ## Next implementation work
 
 - Further platform providers for observed pressure and per-workload usage, exclusive/reclaimable filesystem extents, richer port observation/cross-namespace recovery, and GPU resources.

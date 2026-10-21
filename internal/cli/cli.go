@@ -19,6 +19,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/yrashk/arm/internal/agents"
 	"github.com/yrashk/arm/internal/client"
 	"github.com/yrashk/arm/internal/install"
@@ -119,6 +120,7 @@ Commands:
   renew ID --ttl DURATION    Extend a lease when the queue permits
   events [--follow]          Read or stream durable events
   agent probe|register|list  Discover CLIs and register exact sessions
+  agent inbox|watch|receive|ack  Poll notifications and acknowledge explicitly
   message operator|send|broadcast  Send a durable message
   messages                  Read the operator inbox and delivery status
   install|uninstall         Manage reversible agent instruction blocks
@@ -648,18 +650,22 @@ func (a *app) daemon(command string, args []string) (int, error) {
 
 func (a *app) agent(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("agent requires probe, register, or list")
+		return fmt.Errorf("agent requires probe, register, list, inbox, watch, receive, or ack")
 	}
 	action, args := args[0], args[1:]
+	if action == "inbox" || action == "watch" || action == "receive" || action == "ack" {
+		return a.agentInbox(action, args)
+	}
 	f := a.flags("agent " + action)
 	var c agents.Contact
 	if action != "probe" && action != "register" && action != "list" {
 		return fmt.Errorf("unknown agent action %q; use arm agent --help", action)
 	}
 	if action == "probe" || action == "register" {
-		f.StringVar(&c.Adapter, "adapter", "", "codex or claude")
+		f.StringVar(&c.Adapter, "adapter", "", "codex, claude, or generic (poll only)")
 	}
 	if action == "register" {
+		f.StringVar(&c.Delivery, "delivery", "native", "native CLI or poll inbox")
 		f.StringVar(&c.ID, "id", "", "stable contact `name`")
 		f.StringVar(&c.Session, "session", "", "exact existing session `UUID`")
 		f.StringVar(&c.CWD, "cwd", "", "session working `directory` (default: current directory)")
@@ -693,6 +699,9 @@ func (a *app) agent(args []string) error {
 	}
 	if action != "register" {
 		return fmt.Errorf("unknown agent action")
+	}
+	if c.Adapter == "generic" && c.Session == "" {
+		c.Session = uuid.NewString()
 	}
 	if c.CWD == "" {
 		var e error
