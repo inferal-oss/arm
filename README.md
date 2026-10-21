@@ -154,6 +154,8 @@ These are cooperative logical permits. Ordinary release/expiry returns them afte
 
 Read `arm agents` for the full operating guide, or `arm agents --json` for structured sections and command examples. It works offline without creating state and covers leases, managed storage, ports, counted pools, exact-session registration, warnings, polling and operator communication. `arm agent list` lists registered contacts. Installed instructions point to the guide using the installation's executable and state-directory prefix.
 
+List embedded workload policies with `arm agents card --list --json` (`arm agents card list` is an alias). This returns catalog metadata without card bodies. Read one with `arm agents card NAME --json`, or use `--markdown` for plain Markdown in a pipe. Before Cargo work, read `arm agents card rust-build --json` for temporary artifacts, output export and cleanup policy. Discovery works offline.
+
 Preview before choosing to install instructions into your agent configuration:
 
 ```sh

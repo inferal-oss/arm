@@ -338,10 +338,10 @@ arm release LEASE_ID --json
 arm inspect LEASE_ID --json
 arm status --host localhost --json
 arm events --host localhost --json
-arm knowledge list
-arm knowledge show cargo-build
+arm agents card --list
+arm agents card rust-build
 arm dashboard
-arm tui
+arm dashboard terminal
 arm uninstall --dry-run
 ```
 

@@ -123,3 +123,17 @@ func TestCatalogSupportsDocumentedQuotedMetadataAndStableOrdering(t *testing.T) 
 		t.Fatal("invalid stable/quoted catalog", cards, err)
 	}
 }
+
+func TestCatalogReservesListCommandCardID(t *testing.T) {
+	for _, value := range []string{"list", `"list"`, "'list'"} {
+		data := strings.Replace(fixture, "id: rust-build", "id: "+value, 1)
+		_, err := load(fstest.MapFS{"cards/list.md": &fstest.MapFile{Data: []byte(data)}}, func(string) bool { return true })
+		if err == nil || !strings.Contains(err.Error(), `cards/list.md: card ID "list" is reserved for the arm agents card list command`) {
+			t.Fatal("unreachable command-alias card ID was not clearly rejected", value, err)
+		}
+	}
+	data := strings.Replace(fixture, "id: rust-build", "id: listing", 1)
+	if _, err := parse([]byte(data)); err != nil {
+		t.Fatal("reserved ID check rejected a distinct valid ID", err)
+	}
+}

@@ -167,6 +167,9 @@ func parse(data []byte) (Card, error) {
 	if card.ID, err = scalar(fields["id"]); err != nil || !validID(card.ID) {
 		return card, fmt.Errorf("invalid card ID")
 	}
+	if card.ID == "list" {
+		return card, fmt.Errorf("card ID %q is reserved for the arm agents card list command", card.ID)
+	}
 	if card.Title, err = scalar(fields["title"]); err != nil || len(card.Title) > 200 {
 		return card, fmt.Errorf("invalid title; use a nonempty string up to 200 bytes")
 	}
