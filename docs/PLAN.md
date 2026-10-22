@@ -140,3 +140,8 @@ Completion requires the full requested behavior to be implemented and verified a
 ## Custom pool interface polish — newly requested
 
 Replace ambiguous operation labels with explicit capacity/add-remove/pause/resume/delete actions, clearly separate editing from review, and use a bounded, accessible modal with a visible backdrop, pool identity, before/after counts, reason and exact consequences. Keep decline/back controls prominent, preserve focus/Escape behavior and complete atomic revision/consumer checks, and retain separately uncertain operations without automatic replay. Review actual rendered desktop/compact layouts and keyboard behavior on disposable state. This is assigned after the mesh agent's frozen final gates; pool URL/history is a separate completed feature.
+
+
+## Mesh dashboard management — newly requested
+
+Add peer list/detail and connect/disconnect controls to web and terminal dashboards through shared WebSocket operations. Reuse the approved SSH/pinned-mTLS scheme and the automatic lifecycle backend; show exact pins/endpoints/directional grants before confirmation, default to observation access, preserve leases on disconnect and retain inspectable incomplete results. Design a bounded operator orchestration interface rather than expose raw native trust/setup RPCs or arbitrary shell/binary selection to browser clients. Include readable status/grants, accessible concrete review, public peer-detail history, cancellation/reconnect/no-replay tests and actual two-host acceptance. The mesh agent owns this after current pool UI polish; root independently reviews the shared workflow/security boundary before integration. Earlier Cargo hardening and remaining remote provider work stay queued.
