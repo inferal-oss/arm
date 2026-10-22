@@ -20,19 +20,20 @@ import (
 // ProvisionReceipt is target-side publication/start evidence. It is not peer
 // trust and never grants remote execution. Unknown intent remains inspectable.
 type ProvisionReceipt struct {
-	ReusedBinary bool             `json:"reused_binary,omitempty"`
-	Runtime      *RuntimeProof    `json:"runtime,omitempty"`
-	Schema       int              `json:"schema"`
-	Request      meshssh.Transfer `json:"request"`
-	Actor        local.Identity   `json:"actor"`
-	Phase        string           `json:"phase"`
-	Binary       string           `json:"binary"`
-	Version      string           `json:"actual_arm_version"`
-	Protocol     int              `json:"actual_lifecycle_protocol"`
-	Updated      time.Time        `json:"updated_at"`
-	StartedHost  string           `json:"started_host,omitempty"`
-	StartHome    string           `json:"start_home,omitempty"`
-	Startup      *StartupPolicy   `json:"startup,omitempty"`
+	CatalogSeed  *CatalogSeedReceipt `json:"catalog_seed,omitempty"`
+	ReusedBinary bool                `json:"reused_binary,omitempty"`
+	Runtime      *RuntimeProof       `json:"runtime,omitempty"`
+	Schema       int                 `json:"schema"`
+	Request      meshssh.Transfer    `json:"request"`
+	Actor        local.Identity      `json:"actor"`
+	Phase        string              `json:"phase"`
+	Binary       string              `json:"binary"`
+	Version      string              `json:"actual_arm_version"`
+	Protocol     int                 `json:"actual_lifecycle_protocol"`
+	Updated      time.Time           `json:"updated_at"`
+	StartedHost  string              `json:"started_host,omitempty"`
+	StartHome    string              `json:"start_home,omitempty"`
+	Startup      *StartupPolicy      `json:"startup,omitempty"`
 }
 
 func provisionPaths(q meshssh.Transfer) (string, string, string) {
@@ -248,6 +249,9 @@ func LookupProvision(q meshssh.Transfer) (ProvisionReceipt, error) {
 		return r, e
 	}
 	f.Close()
+	if e = verifyProvisionSeed(r); e != nil {
+		return r, e
+	}
 	return r, nil
 }
 

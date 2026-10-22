@@ -1,12 +1,40 @@
 package database
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
+	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshops"
+	"golang.org/x/sys/unix"
 )
+
+// The seed fields are optional when absent, but explicit null is not a known
+// unseeded request/outcome. strictEvidence validates their complete nested
+// canonical typed shape; preserve this stronger optional-field distinction at
+// each opaque coordinator request/review/result boundary too.
+func validateProvisionSeedJSON(raw []byte, path ...string) error {
+	for i, name := range path {
+		var fields map[string]json.RawMessage
+		if e := json.Unmarshal(raw, &fields); e != nil || fields == nil {
+			return fmt.Errorf("invalid provision seed evidence object")
+		}
+		value, ok := fields[name]
+		if !ok && i == len(path)-1 {
+			return nil
+		}
+		if !ok || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+			return fmt.Errorf("provision seed evidence is missing/null")
+		}
+		raw = value
+	}
+	return nil
+}
 
 func provisionBinary(q meshops.ProvisionRequest) string {
 	return q.Transfer.Root + "/artifact-" + q.Transfer.SHA256 + "/arm"
@@ -18,7 +46,7 @@ func validateProvisionResult(r *proofCoordRecord, v meshops.ProvisionResult) err
 	}
 	receipt := v.Receipt
 	runtime := receipt.Runtime
-	if v.Key != q.Transfer.Key || v.ConnectionKey != q.ConnectionKey || v.Provisioned != provisionBinary(*q) || v.VerifiedAt.IsZero() || receipt.Schema != 1 || receipt.Request != q.Transfer || receipt.Actor.UID != q.Transfer.ExpectedUID || receipt.Phase != "started_verified" || receipt.Binary != v.Provisioned || receipt.Version != q.Transfer.Version || receipt.Protocol != q.Transfer.Protocol || receipt.Updated.IsZero() || receipt.StartHome != q.Home || receipt.Startup == nil || *receipt.Startup != q.Startup || !validHost(receipt.StartedHost) || runtime == nil {
+	if v.Key != q.Transfer.Key || v.ConnectionKey != q.ConnectionKey || v.Provisioned != provisionBinary(*q) || v.VerifiedAt.IsZero() || receipt.Schema != 1 || receipt.Request != q.Transfer || receipt.Actor.UID != q.Transfer.ExpectedUID || receipt.Binary != v.Provisioned || receipt.Version != q.Transfer.Version || receipt.Protocol != q.Transfer.Protocol || receipt.Updated.IsZero() || receipt.StartHome != q.Home || receipt.Startup == nil || *receipt.Startup != q.Startup || !validHost(receipt.StartedHost) || runtime == nil {
 		return fmt.Errorf("provision outcome is incomplete or differs from reviewed artifact/start")
 	}
 	if runtime.Host != receipt.StartedHost || runtime.UID != q.Transfer.ExpectedUID || runtime.SHA256 != q.Transfer.SHA256 || runtime.Size != q.Transfer.Size || runtime.Version != q.Transfer.Version || runtime.Protocol != q.Transfer.Protocol || runtime.Captured.IsZero() || runtime.Captured.After(receipt.Updated) || !oneOf(runtime.Method, "kernel-self-executable", "startup-open-file-snapshot") {
@@ -27,6 +55,27 @@ func validateProvisionResult(r *proofCoordRecord, v meshops.ProvisionResult) err
 	if q.Transfer.OS == "linux" && runtime.Method != "kernel-self-executable" || q.Transfer.OS == "darwin" && runtime.Method != "startup-open-file-snapshot" {
 		return fmt.Errorf("runtime proof method differs from target platform")
 	}
+	return validateProvisionSeed(*q, receipt)
+}
+
+func validateProvisionSeed(q meshops.ProvisionRequest, receipt mesh.ProvisionReceipt) error {
+	if q.Seed == nil {
+		if receipt.Phase != "started_verified" || receipt.CatalogSeed != nil {
+			return fmt.Errorf("unseeded provision has unexpected seed phase/evidence")
+		}
+		return nil
+	}
+	seed := receipt.CatalogSeed
+	if q.Seed.Validate(q.Transfer) != nil || receipt.Phase != "seeded_verified" || seed == nil || seed.Identity == nil || seed.Request.Validate() != nil || seed.Request.Transfer != q.Transfer || seed.Request.Home != q.Home || seed.Request.Host != receipt.StartedHost || !reflect.DeepEqual(seed.Request.Catalog, *q.Seed) || seed.Destination != filepath.Join(q.Home, "mesh-companions", "catalog-"+q.Seed.Digest) {
+		return fmt.Errorf("catalog seed is incomplete or differs from exact reviewed artifact/start/catalog")
+	}
+	owner, e := strconv.ParseUint(q.Transfer.ExpectedUID, 10, 32)
+	id := seed.Identity
+	if e != nil || id.Inode == 0 || id.Owner != uint32(owner) || id.Mode != unix.S_IFDIR|0700 {
+		return fmt.Errorf("catalog seed lacks exact private owned directory identity")
+	}
+	// This is retained remote operator configuration evidence, never local or
+	// remote cleanup authority. No catalog filesystem is opened or removed.
 	return nil
 }
 func validateProvisionLink(r, root *proofCoordRecord, records map[string]*proofCoordRecord) error {

@@ -41,6 +41,11 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 			return nil, err
 		}
 		q := r.request
+		if q.Provision != nil {
+			if err = validateProvisionSeedJSON(op.Request, "provision", "seed_catalog"); err != nil {
+				return nil, err
+			}
+		}
 		if !mesh.ValidKey(q.Key) || q.Kind != op.Kind {
 			return nil, fmt.Errorf("coordinator immutable request identity differs")
 		}
@@ -219,6 +224,9 @@ func parseCoordReview(r *proofCoordRecord) error {
 		if err = strictEvidence(string(op.Review), &v); err != nil {
 			return err
 		}
+		if err = validateProvisionSeedJSON(op.Review, "request", "seed_catalog"); err != nil {
+			return err
+		}
 		q := r.request.Provision
 		if op.Kind != "provision" || q == nil || v.Key != q.Transfer.Key || !reflect.DeepEqual(v.Request, *q) || v.Binary != provisionBinary(*q) || v.ArtifactSource != "native trusted local catalog / SHA256 "+q.Transfer.SHA256 || v.Effect == "" {
 			return fmt.Errorf("provision review differs from exact artifact/account/path/startup intent")
@@ -299,6 +307,9 @@ func parseCoordResult(r *proofCoordRecord) error {
 	if r.op.Kind == "provision" {
 		var v meshops.ProvisionResult
 		if err := strictEvidence(string(r.op.Result), &v); err != nil {
+			return err
+		}
+		if err := validateProvisionSeedJSON(r.op.Result, "receipt", "catalog_seed"); err != nil {
 			return err
 		}
 		if err := validateProvisionResult(r, v); err != nil {

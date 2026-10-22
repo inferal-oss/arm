@@ -3,9 +3,12 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yrashk/arm/internal/companions"
+	"github.com/yrashk/arm/internal/local"
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshops"
@@ -24,7 +27,26 @@ func (a *app) provisionMissingMesh(key string, request *meshConnectRequest, arti
 		return false, nil
 	}
 	var selected mesh.Artifact
+	var source *companions.Catalog
 	if artifactPath == "" {
+		var closer interface{ Close() error }
+		source, closer, e = a.meshCompanionSource()
+		if e != nil {
+			return false, e
+		}
+		if closer != nil {
+			defer closer.Close()
+		}
+		if source != nil {
+			payload, ok := source.Lookup(probe.OS, probe.Arch)
+			if !ok {
+				return false, model.Err("artifact_unavailable", "reviewed catalog does not contain target platform")
+			}
+			manifest := source.Manifest()
+			selected = mesh.Artifact{Schema: 1, SHA256: payload.SHA256, Size: payload.Size, OS: payload.OS, Arch: payload.Arch, Version: manifest.Version, Protocol: manifest.Protocol, Imported: time.Now().UTC(), Actor: local.CurrentIdentity(), Reason: request.Reason}
+		}
+	}
+	if artifactPath == "" && source == nil {
 		artifacts, e := mesh.Artifacts(a.home)
 		if e != nil {
 			return false, e
@@ -72,10 +94,29 @@ func (a *app) provisionMissingMesh(key string, request *meshConnectRequest, arti
 	}
 	transfer := meshssh.Transfer{Root: installRoot, Key: meshops.ProvisionKey(key), SHA256: selected.SHA256, Size: selected.Size, ExpectedUID: probe.UID, OS: probe.OS, Arch: probe.Arch, Version: selected.Version, Protocol: selected.Protocol, Reason: request.Reason}
 	q := meshops.ProvisionRequest{ConnectionKey: key, Destination: request.Destination, Transfer: transfer, SSH: sshIdentity, Home: probe.StateHome, Startup: startup}
+	if source != nil {
+		manifest := source.Manifest()
+		_, digest, err := companions.Canonical(manifest)
+		if err != nil {
+			return false, err
+		}
+		q.Seed = &meshssh.CatalogSeed{Schema: 1, Digest: digest, Manifest: manifest}
+	}
 	if e = q.Validate(); e != nil {
 		return false, e
 	}
 	coordinator := a.meshCoordinator()
+	if source != nil {
+		coordinator.ProvisionCatalog = source
+		coordinator.ProvisionTransport = &meshops.ProvisionTransport{Import: func(expected mesh.Artifact) (mesh.Artifact, error) {
+			stream, _, err := source.Open(expected.OS, expected.Arch)
+			if err != nil {
+				return expected, err
+			}
+			defer stream.Close()
+			return mesh.ImportCompanion(a.home, expected, stream)
+		}}
+	}
 	if artifactPath != "" {
 		coordinator.ProvisionTransport = &meshops.ProvisionTransport{Import: func(mesh.Artifact) (mesh.Artifact, error) {
 			return mesh.ImportArtifact(a.home, artifactPath, request.Reason)

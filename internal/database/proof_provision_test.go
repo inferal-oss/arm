@@ -21,7 +21,7 @@ import (
 
 // Actual public journal producers with fixed external-I/O callbacks. Real SSH,
 // artifact execution and runtime-image replacement have separate live gates.
-func provisionWriterHistory(t *testing.T) (mesh.Coordination, mesh.Coordination, map[string]mesh.LifecycleOperation) {
+func provisionWriterHistory(t *testing.T, seeded ...bool) (mesh.Coordination, mesh.Coordination, map[string]mesh.LifecycleOperation) {
 	t.Helper()
 	service, connect, _, home := coordWriterFixture(t)
 	remote, e := mesh.InspectLifecycle(connect.Connect.RemoteHome, buildinfo.Version)
@@ -45,6 +45,9 @@ func provisionWriterHistory(t *testing.T) (mesh.Coordination, mesh.Coordination,
 	connect.Connect.Binary = binary
 	connect.Connect.ProvisionKey = transfer.Key
 	coordinator := service.New(context.Background())
+	if len(seeded) > 0 && seeded[0] {
+		q.Seed, coordinator.ProvisionCatalog = provisionSeedFixture(t, transfer, payload)
+	}
 	coordinator.Print = func(any) error { return nil }
 	coordinator.Confirm = func(any, bool, bool) error { return nil }
 	receipt := mesh.ProvisionReceipt{Schema: 1, Request: transfer, Actor: remote.Owner, Phase: "published_verified", Binary: binary, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Updated: time.Now().UTC()}
@@ -74,7 +77,43 @@ func provisionWriterHistory(t *testing.T) (mesh.Coordination, mesh.Coordination,
 		receipt.Updated = time.Now().UTC()
 		return q.SSH, assign(out, receipt)
 	}
-	if _, e = coordinator.Provision(q, artifact, true, false); e != nil {
+	if q.Seed != nil {
+		calls := 0
+		coordinator.ProvisionTransport.Seed = func(ctx context.Context, _ string, _ string, seed meshssh.CatalogSeedRequest, frames io.Reader, _ meshssh.Identity, out any) (meshssh.Identity, error) {
+			calls++
+			if calls != 1 {
+				t.Fatal("recovery resent catalog frames")
+			}
+			receipt.Phase = "seed_intent"
+			receipt.CatalogSeed = &mesh.CatalogSeedReceipt{Request: seed, Destination: filepath.Join(seed.Home, "mesh-companions", "catalog-"+seed.Catalog.Digest)}
+			_, e := mesh.PublishCompanionCatalog(ctx, seed, frames, func(id mesh.CatalogIdentity) error { receipt.CatalogSeed.Identity = &id; return nil })
+			if e != nil {
+				return q.SSH, e
+			}
+			receipt.Phase = "seeded_verified"
+			receipt.Updated = time.Now().UTC()
+			if len(seeded) > 1 && seeded[1] {
+				return q.SSH, fmt.Errorf("fixture lost durable seed publication ACK")
+			}
+			return q.SSH, assign(out, receipt)
+		}
+	}
+	_, e = coordinator.Provision(q, artifact, true, false)
+	if len(seeded) > 1 && seeded[1] {
+		if e == nil {
+			t.Fatal("fixture did not lose original seed acknowledgment")
+		}
+		recovery := service.New(context.Background())
+		recovery.Print = func(any) error { return nil }
+		recovery.Confirm = func(any, bool, bool) error { return nil }
+		recovery.ProvisionCatalog = coordinator.ProvisionCatalog
+		recovery.ProvisionTransport = coordinator.ProvisionTransport
+		recovery.ProvisionTransport.Lookup = func(_ context.Context, _ string, _ meshssh.Transfer, _ meshssh.Identity, out any) (meshssh.Identity, error) {
+			return q.SSH, assign(out, receipt)
+		}
+		_, e = recovery.Provision(q, artifact, true, false)
+	}
+	if e != nil {
 		t.Fatal(e)
 	}
 	if _, e = service.Start(connect); e != nil {

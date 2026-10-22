@@ -116,6 +116,8 @@ func (a *app) meshCommand(args []string) (int, error) {
 		f.BoolVar(dry, "dry-run", false, "preview without mutation")
 	}
 	switch action {
+	case "provision-seed":
+		return a.meshProvisionSeed(args)
 	case "provision-finalize", "provision-lookup":
 		return a.meshProvisionHelper(action, args)
 	case "artifacts":

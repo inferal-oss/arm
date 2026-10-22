@@ -10,6 +10,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/yrashk/arm/internal/companions"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshssh"
@@ -19,6 +20,7 @@ import (
 // ProvisionTransport replaces only fixed external I/O for deterministic producer
 // tests. It is not serialized or configurable by browser/peer/native RPC input.
 type ProvisionTransport struct {
+	Seed   func(context.Context, string, string, meshssh.CatalogSeedRequest, io.Reader, meshssh.Identity, any) (meshssh.Identity, error)
 	Import func(mesh.Artifact) (mesh.Artifact, error)
 	Probe  func(context.Context, string, string, string, meshssh.Identity) (meshssh.Probe, meshssh.Identity, error)
 	Upload func(context.Context, string, meshssh.Transfer, io.Reader, meshssh.Identity, any) (meshssh.Identity, error)
@@ -48,12 +50,13 @@ func (a *Coordinator) lookupProvision(q ProvisionRequest, result any) (meshssh.I
 }
 
 type ProvisionRequest struct {
-	ConnectionKey string             `json:"connection_key"`
-	Destination   string             `json:"ssh_destination"`
-	Transfer      meshssh.Transfer   `json:"transfer"`
-	SSH           meshssh.Identity   `json:"ssh_identity"`
-	Home          string             `json:"remote_home"`
-	Startup       mesh.StartupPolicy `json:"startup"`
+	Seed          *meshssh.CatalogSeed `json:"seed_catalog,omitempty"`
+	ConnectionKey string               `json:"connection_key"`
+	Destination   string               `json:"ssh_destination"`
+	Transfer      meshssh.Transfer     `json:"transfer"`
+	SSH           meshssh.Identity     `json:"ssh_identity"`
+	Home          string               `json:"remote_home"`
+	Startup       mesh.StartupPolicy   `json:"startup"`
 }
 type ProvisionPlan struct {
 	Operation      string           `json:"operation"`
@@ -82,6 +85,11 @@ func (q ProvisionRequest) Validate() error {
 	}
 	if e := q.Transfer.Validate(); e != nil {
 		return e
+	}
+	if q.Seed != nil {
+		if e := q.Seed.Validate(q.Transfer); e != nil {
+			return e
+		}
 	}
 	return q.Startup.Validate()
 }
@@ -113,9 +121,31 @@ func (a *Coordinator) provision(q ProvisionRequest, artifact mesh.Artifact, yes,
 	if artifact.SHA256 != q.Transfer.SHA256 || artifact.Size != q.Transfer.Size || artifact.OS != q.Transfer.OS || artifact.Arch != q.Transfer.Arch {
 		return 2, fmt.Errorf("selected artifact differs from reviewed transfer")
 	}
+	if q.Seed != nil {
+		if a.ProvisionCatalog == nil {
+			return 2, model.Err("seed_source_unavailable", "reviewed four-payload source catalog is required before any installation")
+		}
+		_, digest, err := companions.Canonical(a.ProvisionCatalog.Manifest())
+		if err != nil || digest != q.Seed.Digest {
+			return 2, model.Err("seed_source_changed", "source companion manifest differs from reviewed seed; nothing installed")
+		}
+	}
 	key := q.Transfer.Key
 	binary := q.Transfer.Root + "/artifact-" + q.Transfer.SHA256 + "/arm"
 	plan := ProvisionPlan{Operation: "install-and-start-arm-node", Key: key, Request: q, ArtifactSource: "native trusted local catalog / SHA256 " + artifact.SHA256, Binary: binary, Effect: "Copy these verified local bytes into the private source catalog if needed (the original project binary is unchanged). Install only these reviewed bytes at this private content-addressed user path, then start this exact ARM home once with the shown settings (or preserve an already-running authority). No PATH/global executable/root/service changes. No peer trust is granted: a separate fresh TLS identity/endpoint/grant review follows. Interrupted publication/start requires exact lookup; it is never automatically resent."}
+	if q.Seed != nil {
+		var compressed, stored int64
+		for _, payload := range q.Seed.Manifest.Artifacts {
+			compressed += payload.CompressedSize
+			stored += payload.CompressedSize
+		}
+		manifest, _, _ := companions.Canonical(q.Seed.Manifest)
+		stored += int64(len(manifest))
+		plan.Effect += fmt.Sprintf(" Exact catalog destination: %s/mesh-companions/catalog-%s. Catalog transfer: %d bytes; retained files: %d bytes (filesystem allocation may differ).", q.Home, q.Seed.Digest, compressed, stored)
+		plan.Effect += " Also copy the FOUR reviewed compressed platform companions to this started node's private mesh-companions configuration for onward provisioning; their exact per-platform sizes/digests are in seed_catalog. This retained operator configuration grants no trust and is not deleted by ledger reset. No payload write occurs before this approval."
+	} else {
+		plan.Effect += " No onward companion catalog is included in this manual-artifact request."
+	}
 	if dry || (a.Machine && !yes) {
 		if e := a.Print(plan); e != nil {
 			return 1, e
@@ -235,13 +265,48 @@ func (a *Coordinator) provision(q ProvisionRequest, artifact mesh.Artifact, yes,
 		Startup  mesh.StartupPolicy
 	}{"provision_start", q.Transfer, q.Home, q.Startup}
 	_, e = a.ssh(q.Destination, binary, start, q.SSH, &receipt)
-	if e != nil || !provisionSettled(q, receipt) {
+	if e != nil || !provisionStarted(q, receipt) {
 		return 1, model.Err("provision_outcome_unknown", fmt.Sprintf("start key %s outcome unknown; query exact provision receipt before any recovery; no automatic start retry", key))
+	}
+	if q.Seed != nil {
+		if a.ProvisionCatalog == nil {
+			return 1, model.Err("provision_outcome_unknown", "reviewed seed source unavailable; node may be started, no catalog stream resent")
+		}
+		frames := a.ProvisionCatalog.Frames()
+		defer frames.Close()
+		seed := meshssh.CatalogSeedRequest{Transfer: q.Transfer, Home: q.Home, Host: receipt.StartedHost, Catalog: *q.Seed}
+		fn := meshssh.SeedCatalog
+		if a.ProvisionTransport != nil && a.ProvisionTransport.Seed != nil {
+			fn = a.ProvisionTransport.Seed
+		}
+		_, e = fn(a.Context, q.Destination, binary, seed, frames, q.SSH, &receipt)
+		if e != nil || !provisionSettled(q, receipt) {
+			return 1, model.Err("provision_outcome_unknown", "catalog seed outcome unknown; inspect exact original provision key, never resend frames automatically")
+		}
 	}
 	return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, receipt, time.Now().UTC(), false})
 }
 func provisionSettled(q ProvisionRequest, r mesh.ProvisionReceipt) bool {
-	return r.Schema == 1 && r.Request == q.Transfer && r.Phase == "started_verified" && r.StartHome == q.Home && r.Startup != nil && *r.Startup == q.Startup && len(r.StartedHost) == 32 && r.Version == q.Transfer.Version && r.Protocol == q.Transfer.Protocol && r.Runtime != nil && r.Runtime.Host == r.StartedHost && r.Runtime.UID == q.Transfer.ExpectedUID && r.Runtime.SHA256 == q.Transfer.SHA256 && r.Runtime.Size == q.Transfer.Size && r.Runtime.Version == q.Transfer.Version && r.Runtime.Protocol == q.Transfer.Protocol && r.Runtime.Method != "" && !r.Runtime.Captured.IsZero()
+	if !provisionStarted(q, r) {
+		return false
+	}
+	if q.Seed == nil {
+		return r.Phase == "started_verified" && r.CatalogSeed == nil
+	}
+	seed := r.CatalogSeed
+	if r.Phase != "seeded_verified" || seed == nil || seed.Identity == nil || seed.Request.Validate() != nil || seed.Request.Transfer != q.Transfer || seed.Request.Home != q.Home || seed.Request.Host != r.StartedHost {
+		return false
+	}
+	expectedRequest := meshssh.CatalogSeedRequest{Transfer: q.Transfer, Home: q.Home, Host: r.StartedHost, Catalog: *q.Seed}
+	if mesh.ValidateCatalogSeedEvidence(expectedRequest, seed) != nil {
+		return false
+	}
+	expected, _ := mesh.ReviewDigest(*q.Seed)
+	actual, _ := mesh.ReviewDigest(seed.Request.Catalog)
+	return expected == actual
+}
+func provisionStarted(q ProvisionRequest, r mesh.ProvisionReceipt) bool {
+	return r.Schema == 1 && r.Request == q.Transfer && (r.Phase == "started_verified" || r.Phase == "seeded_verified") && r.StartHome == q.Home && r.Startup != nil && *r.Startup == q.Startup && len(r.StartedHost) == 32 && r.Version == q.Transfer.Version && r.Protocol == q.Transfer.Protocol && r.Runtime != nil && r.Runtime.Host == r.StartedHost && r.Runtime.UID == q.Transfer.ExpectedUID && r.Runtime.SHA256 == q.Transfer.SHA256 && r.Runtime.Size == q.Transfer.Size && r.Runtime.Version == q.Transfer.Version && r.Runtime.Protocol == q.Transfer.Protocol && r.Runtime.Method != "" && !r.Runtime.Captured.IsZero()
 }
 func (a *Coordinator) recordProvisionRequest(key string, q ProvisionRequest) error {
 	raw, e := json.Marshal(StartRequest{Key: key, Kind: "provision", Provision: &q})
