@@ -14,6 +14,7 @@ import (
 // or run any native worker based on that cache. No database reload or native I/O
 // occurs under the lock; startup's complete reader is the recovery boundary.
 func (m *Manager) commitShareTransaction(tx *sql.Tx) error {
+	m.traceShareBeforeCommit(tx)
 	err := tx.Commit()
 	if err == nil && m.shares.commitAckFailure != nil {
 		// A test-only one-shot value simulates lost acknowledgment AFTER the real
@@ -30,5 +31,6 @@ func (m *Manager) commitShareTransaction(tx *sql.Tx) error {
 	for _, worker := range m.shares.workers {
 		worker.requestStop()
 	}
+	m.traceShareLocked("commit_unknown", "")
 	return model.Err("share_outcome_unknown", "share transaction may have committed; exact-key inspection is unavailable until the complete ledger is revalidated on backend restart; no execution or mutation is retried")
 }

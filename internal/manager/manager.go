@@ -182,6 +182,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	m.initShares()
 	m.recoverShares()
+	m.traceShareLocked("restart", "")
 	m.loadStorage()
 	opened := false
 	defer func() {

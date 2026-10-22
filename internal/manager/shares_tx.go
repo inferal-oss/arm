@@ -209,6 +209,7 @@ func (m *Manager) putSharePublication(p sharelease.Publication, l model.Lease, t
 		return err
 	}
 	m.applySharePublication(change)
+	m.traceShareLocked(transition, p.ID)
 	return nil
 }
 

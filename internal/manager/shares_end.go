@@ -165,6 +165,8 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 	if err = ctx.Err(); err != nil {
 		return p, err
 	}
+	m.traceShareNative(id, "observed_absent")
+	m.traceShareBarrier(ctx, id, "reconcile")
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	now, ok := m.shares.state.Publications[id]

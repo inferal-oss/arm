@@ -1,0 +1,311 @@
+#!/usr/bin/env python3
+"""Offline regressions for snapshot provenance and hostile trace inputs."""
+import argparse
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import shlex
+import subprocess
+import tempfile
+import time
+import unittest
+import sys
+from unittest.mock import patch
+
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location('formal_runner', Path(__file__).with_name('test-formal.py'))
+formal = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(formal)
+
+class RunnerTests(unittest.TestCase):
+    def setUp(self):
+        (formal.ROOT / '.tla').mkdir(exist_ok=True)
+        self.temp = tempfile.TemporaryDirectory(prefix='runner-test-', dir=formal.ROOT / '.tla')
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+
+    def process_is_running(self, pid):
+        if sys.platform.startswith('linux'):
+            try:
+                state = Path('/proc/' + str(pid) + '/stat').read_text().rsplit(')', 1)[1].split()[0]
+            except FileNotFoundError:
+                return False
+            return state not in ('Z', 'X')
+        result = subprocess.run(['ps', '-o', 'stat=', '-p', str(pid)], text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5)
+        self.assertFalse(result.stderr, result.stderr)
+        self.assertIn(result.returncode, (0, 1))
+        return bool(result.stdout.strip()) and not result.stdout.strip().startswith(('Z', 'X'))
+
+    def test_bounded_duplicate_and_trailing_input(self):
+        path = self.root / 'trace.json'
+        for raw in (b'{"state":1,"state":2}', b'{} {}', b' ' * ((1 << 20) + 1)):
+            path.write_bytes(raw)
+            with self.assertRaises(ValueError):
+                formal.read_json(path)
+
+    def test_snapshot_hashes_and_all_gate_paths_use_copied_sources(self):
+        source = self.root / 'source'
+        source.mkdir()
+        for name in ('SharePreparation.tla', 'SharePreparationProof.tla', 'Witness.tla', 'Safety.cfg'):
+            (source / name).write_text('old:' + name)
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='all', targets=['prepared'],
+                                  java='java', tlc_jar='jar', tlapm='tlapm')
+        with patch.object(formal, 'MODEL', source):
+            gate = formal.Gate(args)
+            for item in source.iterdir():
+                item.write_text('changed after snapshot')
+            for name, digest in gate.summary['sources'].items():
+                self.assertEqual((gate.run / name).read_text(), 'old:' + name)
+                self.assertEqual(digest, hashlib.sha256((gate.run / name).read_bytes()).hexdigest())
+            commands = []
+            def command(argv, name, **kwargs):
+                commands.append(list(map(str, argv)))
+                if name == 'tlapm':
+                    return 'All 19 obligations proved.'
+                return 'Model checking completed. No error has been found.\n950 distinct states found, 0 states left on queue.'
+            gate.command = command
+            gate.check()
+            gate.prove()
+            self.assertEqual((gate.run / 'Safety.cfg').read_text(), 'old:Safety.cfg')
+            self.assertIn(str(gate.run / 'Safety.cfg'), commands[0])
+            self.assertIn('-Djava.io.tmpdir=' + str(gate.run / 'java-tmp'), commands[0])
+            self.assertIn(str(gate.run / 'SharePreparation.tla'), commands[0])
+            self.assertIn(str(gate.run / 'SharePreparationProof.tla'), commands[1])
+            self.assertIn(str(gate.run), commands[1])
+            self.assertNotIn(str(source), commands[1])
+            self.assertIn('--strict', commands[1])
+            self.assertIn('--nofp', commands[1])
+            self.assertEqual(commands[1][commands[1].index('--stretch') + 1], '10')
+
+    def test_timeout_preserves_output_and_stops_owned_descendants(self):
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove', targets=[])
+        gate = formal.Gate(args)
+        pidfile = self.root / 'child.pid'
+        child = ('import os, signal, sys, time; from pathlib import Path; '
+                 'signal.signal(signal.SIGTERM, signal.SIG_IGN); '
+                 'Path(sys.argv[1]).write_text(str(os.getpid())); '
+                 'print("child ready", flush=True); time.sleep(60)')
+        parent = ('import subprocess, sys, time; '
+                  'subprocess.Popen([sys.executable, "-u", "-c", sys.argv[1], sys.argv[2]]); '
+                  'print("parent ready", flush=True); time.sleep(60)')
+
+        for closed_output in (False, True):
+            with self.subTest(closed_output=closed_output):
+                gate = formal.Gate(args)
+                pidfile = self.root / ('child-closed.pid' if closed_output else 'child-open.pid')
+                command = parent
+                if closed_output:
+                    command = parent.replace('sys.argv[2]]);',
+                        'sys.argv[2]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL);')
+                try:
+                    with self.assertRaises(subprocess.TimeoutExpired) as failure:
+                        gate.command([sys.executable, '-u', '-c', command, child, pidfile], 'owned-timeout', timeout=2)
+                    self.assertIn('parent ready', failure.exception.output)
+                    log = (gate.run / 'owned-timeout.log').read_text()
+                    self.assertIn('parent ready', log)
+                    if not closed_output:
+                        self.assertIn('child ready', failure.exception.output)
+                        self.assertIn('child ready', log)
+                    pid = int(pidfile.read_text())
+                    deadline = time.monotonic() + 5
+                    while self.process_is_running(pid) and time.monotonic() < deadline:
+                        time.sleep(0.02)
+                    self.assertFalse(self.process_is_running(pid), 'owned descendant is still executing after timeout')
+                finally:
+                    if pidfile.exists():
+                        pid = int(pidfile.read_text())
+                        if self.process_is_running(pid):
+                            os.kill(pid, signal.SIGKILL)
+
+    def test_cli_signals_preserve_output_and_stop_owned_work(self):
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            with self.subTest(signal=sig):
+                case = self.root / ('signal-' + str(sig))
+                case.mkdir()
+                leader_file, child_file, ready_file = case / 'leader.pid', case / 'child.pid', case / 'ready'
+                helper = case / 'java.py'
+                helper.write_text('''import os, signal, subprocess, sys, time
+from pathlib import Path
+if '-version' in sys.argv:
+    print('offline Java fixture')
+    raise SystemExit(0)
+if '-help' in sys.argv:
+    print('TLC - offline fixture Version 1')
+    raise SystemExit(1)
+signal.signal(signal.SIGTERM, signal.SIG_IGN)
+Path(os.environ['FORMAL_TEST_LEADER']).write_text(str(os.getpid()))
+code = "import os, signal, sys, time; from pathlib import Path; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('child ready', flush=True); Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(60)"
+subprocess.Popen([sys.executable, '-u', '-c', code, os.environ['FORMAL_TEST_CHILD']])
+print('tool ready', flush=True)
+Path(os.environ['FORMAL_TEST_READY']).write_text('ready')
+time.sleep(60)
+''')
+                java = case / 'java'
+                java.write_text('#!/bin/sh\nexec ' + shlex.quote(sys.executable) + ' -u ' + shlex.quote(str(helper)) + ' "$@"\n')
+                java.chmod(0o700)
+                jar = case / 'fixture.jar'
+                jar.write_text('offline fixture')
+                work = case / 'runs'
+                env = dict(os.environ, FORMAL_TEST_LEADER=str(leader_file), FORMAL_TEST_CHILD=str(child_file),
+                           FORMAL_TEST_READY=str(ready_file))
+                command = [sys.executable, str(formal.ROOT / 'scripts/test-formal.py'), '--mode', 'check',
+                           '--java', str(java), '--tlc-jar', str(jar), '--work-dir', str(work)]
+                runner = subprocess.Popen(command, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                try:
+                    deadline = time.monotonic() + 10
+                    while (not child_file.exists() or child_file.stat().st_size == 0 or not ready_file.exists()) and time.monotonic() < deadline:
+                        if runner.poll() is not None:
+                            self.fail('runner exited before signal fixture started: ' + runner.communicate()[0])
+                        time.sleep(0.02)
+                    self.assertTrue(child_file.exists(), 'tool descendant did not start')
+                    self.assertTrue(ready_file.exists(), 'tool did not publish output readiness')
+                    os.kill(runner.pid, sig)
+                    output, _ = runner.communicate(timeout=10)
+                    self.assertEqual(runner.returncode, 128 + sig, output)
+                    logs = list(work.glob('run-*/safety.log'))
+                    self.assertEqual(len(logs), 1)
+                    self.assertIn('tool ready', logs[0].read_text())
+                    self.assertIn('child ready', logs[0].read_text())
+                    for path in (leader_file, child_file):
+                        pid = int(path.read_text())
+                        deadline = time.monotonic() + 5
+                        while self.process_is_running(pid) and time.monotonic() < deadline:
+                            time.sleep(0.02)
+                        self.assertFalse(self.process_is_running(pid), 'owned work is live after runner signal')
+                finally:
+                    for path in (leader_file, child_file):
+                        if path.exists() and path.stat().st_size:
+                            pid = int(path.read_text())
+                            if self.process_is_running(pid):
+                                os.kill(pid, signal.SIGKILL)
+                    if runner.poll() is None:
+                        runner.kill()
+                    runner.communicate(timeout=5)
+
+    def test_closed_tlc_edges_and_scalar_types(self):
+        states = [{k: False if t is bool else 0 if t is int else 'x' for k, t in formal.FIELDS.items()} for _ in range(2)]
+        for s in states:
+            s['schema'] = 'arm.share-preparation/v1'
+        doc = formal.envelope(states)
+        path = self.root / 'trace.json'
+        path.write_text(json.dumps(doc))
+        self.assertEqual(formal.tlc_states(path), states)
+        doc['counterexample']['action'][0][2][0] = 99
+        path.write_text(json.dumps(doc))
+        with self.assertRaises(ValueError):
+            formal.tlc_states(path)
+        states[0]['launches'] = True
+        with self.assertRaises(ValueError):
+            formal.validate_states(states)
+
+    def test_interrupt_during_timeout_grace_stops_owned_work(self):
+        case = self.root / 'timeout-interrupt'
+        case.mkdir()
+        leader_file, child_file, term_file = case / 'leader.pid', case / 'child.pid', case / 'term'
+        helper = case / 'tool.py'
+        helper.write_text('''import os, signal, subprocess, sys, time
+from pathlib import Path
+signal.signal(signal.SIGTERM, lambda *_: Path(sys.argv[3]).write_text('TERM observed'))
+Path(sys.argv[1]).write_text(str(os.getpid()))
+code = "import os, signal, sys, time; from pathlib import Path; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('child ready', flush=True); Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(60)"
+subprocess.Popen([sys.executable, '-u', '-c', code, sys.argv[2]])
+print('tool ready', flush=True)
+time.sleep(60)
+''')
+        work = case / 'runs'
+        harness = '''import argparse, importlib.util, sys
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location('runner', sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+gate = module.Gate(argparse.Namespace(work_dir=sys.argv[2], mode='check', targets=[]))
+try:
+    gate.command([sys.executable, '-u', sys.argv[3], *sys.argv[4:]], 'timeout-interrupt', timeout=2)
+except KeyboardInterrupt:
+    raise SystemExit(130)
+'''
+        command = [sys.executable, '-u', '-c', harness, str(formal.ROOT / 'scripts/test-formal.py'),
+                   str(work), str(helper), str(leader_file), str(child_file), str(term_file)]
+        runner = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        try:
+            deadline = time.monotonic() + 10
+            while not term_file.exists() and time.monotonic() < deadline:
+                if runner.poll() is not None:
+                    self.fail('timeout fixture exited before TERM grace: ' + runner.communicate()[0])
+                time.sleep(0.01)
+            self.assertTrue(term_file.exists(), 'tool did not reach timeout TERM grace')
+            os.kill(runner.pid, signal.SIGINT)
+            output, _ = runner.communicate(timeout=10)
+            self.assertEqual(runner.returncode, 130, output)
+            logs = list(work.glob('run-*/timeout-interrupt.log'))
+            self.assertEqual(len(logs), 1)
+            self.assertIn('tool ready', logs[0].read_text())
+            self.assertIn('child ready', logs[0].read_text())
+            for path in (leader_file, child_file):
+                pid = int(path.read_text())
+                deadline = time.monotonic() + 5
+                while self.process_is_running(pid) and time.monotonic() < deadline:
+                    time.sleep(0.02)
+                self.assertFalse(self.process_is_running(pid), 'owned work is live after timeout interruption')
+        finally:
+            for path in (leader_file, child_file):
+                if path.exists() and path.stat().st_size:
+                    pid = int(path.read_text())
+                    if self.process_is_running(pid):
+                        os.kill(pid, signal.SIGKILL)
+            if runner.poll() is None:
+                runner.kill()
+            runner.communicate(timeout=5)
+
+    def test_empty_or_incomplete_proof_is_not_acceptance(self):
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove',
+                                  targets=[], tlapm='tlapm')
+        for output in ('All 0 obligations proved.', 'All 2 obligations proved.\n[ERROR]: incomplete',
+                       '1/2 obligations failed.'):
+            gate = formal.Gate(args)
+            gate.command = lambda *a, **kw: output
+            with self.assertRaises(RuntimeError):
+                gate.prove()
+
+    def test_safety_requires_nonempty_complete_exploration(self):
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='check', targets=[])
+        gate = formal.Gate(args)
+        completed = 'Model checking completed. No error has been found.\n'
+        statistics = '950 distinct states found, 0 states left on queue.'
+        for output in (completed + '0 distinct states found, 0 states left on queue.',
+                       completed + '950 distinct states found, 1 states left on queue.',
+                       statistics, completed):
+            gate.tlc = lambda *a, **kw: output
+            with self.assertRaises(RuntimeError):
+                gate.check()
+        self.assertEqual(gate.summary['gates'], [])
+        gate.tlc = lambda *a, **kw: completed + statistics
+        gate.check()
+        self.assertEqual(gate.summary['gates'][0]['safety'], 'passed')
+
+    def test_negative_requires_valid_initial_and_actual_exploration(self):
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='traces', targets=[])
+        gate = formal.Gate(args)
+        initial = {k: False if t is bool else 0 if t is int else 'x' for k, t in formal.FIELDS.items()}
+        initial['schema'] = 'arm.share-preparation/v1'
+        states = [dict(initial), dict(initial)]
+        with self.assertRaises(ValueError):
+            gate.replay(states, 'no-validated-init', accepted=False)
+        gate.initial_state = dict(initial)
+        states[0]['action'] = 'wrong-init'
+        with self.assertRaises(ValueError):
+            gate.replay(states, 'corrupt-init', accepted=False)
+        states[0] = dict(initial)
+        gate.tlc = lambda *a, **kw: '0 distinct states found'
+        with self.assertRaises(RuntimeError):
+            gate.replay(states, 'empty-exploration', accepted=False)
+        source = (gate.run / 'Replayemptyexploration.tla').read_text()
+        self.assertIn('/\\ Next', source)
+        self.assertNotIn('[Next]_vars', source)
+
+if __name__ == '__main__':
+    unittest.main()

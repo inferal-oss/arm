@@ -118,6 +118,7 @@ func (m *Manager) PrepareShare(ctx context.Context, q sharelease.PrepareRequest)
 	lifetime, cancel := context.WithTimeout(context.Background(), duration)
 	worker := &shareWorker{ctx: lifetime, cancel: cancel, initial: ctx, started: make(chan struct{}), stop: make(chan struct{}), done: make(chan struct{}), provider: provider, artifact: *source.Artifact}
 	m.shares.workers[publication.ID] = worker
+	m.traceShareLocked("admit", publication.ID)
 	m.wg.Go(func() { m.runSharePreparation(publication.ID, worker) })
 	m.mu.Unlock()
 	select {
@@ -181,6 +182,7 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 		m.mu.Unlock()
 		close(w.done)
 	}()
+	m.traceShareBarrier(w.ctx, id, "worker_start")
 	m.mu.Lock()
 	p, ok := m.shares.state.Publications[id]
 	if !ok || m.shares.failure != nil {
@@ -206,6 +208,8 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 	if err != nil {
 		m.mu.Unlock()
 		close(w.started)
+		m.traceShareNative(id, "native_skipped")
+		m.traceShareBarrier(w.ctx, id, "settle")
 		m.finishSharePreparation(id, w, sharePreparedResult{err: err})
 		return
 	}
@@ -216,6 +220,8 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 	// once started, this detached leased operation follows its own TTL/stop scope.
 	if err = w.initial.Err(); err != nil {
 		close(w.started)
+		m.traceShareNative(id, "native_skipped")
+		m.traceShareBarrier(w.ctx, id, "settle")
 		m.finishSharePreparation(id, w, sharePreparedResult{err: err})
 		return
 	}
@@ -226,6 +232,8 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 	nativeDone := make(chan struct{})
 	go func() {
 		defer close(nativeDone)
+		m.traceShareBarrier(w.ctx, id, "native_begin")
+		m.traceShareNative(id, "native_begin")
 		if beforeNative != nil {
 			beforeNative(w.ctx)
 		}
@@ -239,6 +247,8 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 	}()
 	prepared := <-result
 	<-nativeDone
+	m.traceShareNative(id, "native_join")
+	m.traceShareBarrier(w.ctx, id, "settle")
 	m.finishSharePreparation(id, w, prepared)
 }
 func (m *Manager) shareStorageSourceForWorker(p sharelease.Publication, w *shareWorker) (model.Lease, error) {

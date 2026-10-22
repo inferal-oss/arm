@@ -155,7 +155,24 @@ tla-tlapm:
 # A missing/broken tool or unproved obligation fails; it is never a skip.
 tla-tool-check: tla-tools
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provision-tla.py
-	mkdir -p .tla/proofs/toolchain .tla/states/toolchain .tla/traces/toolchain
+	mkdir -p .tla/proofs/toolchain .tla/states/toolchain .tla/traces/toolchain .tla/tmp/toolchain
 	cp formal/ToolchainSmoke.tla .tla/proofs/toolchain/ToolchainSmoke.tla
-	"$(JAVA)" -Xmx512m -cp "$(TLC_JAR)" tlc2.TLC -workers 1 -noGenerateSpecTE -metadir .tla/states/toolchain -teSpecOutDir .tla/traces/toolchain -config formal/ToolchainCounter.cfg formal/ToolchainCounter.tla
+	"$(JAVA)" -Djava.io.tmpdir="$(CURDIR)/.tla/tmp/toolchain" -Xmx512m -cp "$(TLC_JAR)" tlc2.TLC -workers 1 -noGenerateSpecTE -metadir .tla/states/toolchain -teSpecOutDir .tla/traces/toolchain -config formal/ToolchainCounter.cfg formal/ToolchainCounter.tla
 	"$(TLAPM)" --strict --nofp --threads 2 --cache-dir .tla/proofs/toolchain/cache .tla/proofs/toolchain/ToolchainSmoke.tla
+
+# ARM protocol models, implementation trace comparison and checked proofs.
+# Explicit modes support shorter local iterations; test-formal runs every gate.
+TLA_WORK_DIR ?= $(CURDIR)/.tla/share-preparation
+.PHONY: tla-check tla-traces tla-prove test-formal
+tla-check: tla-tlc
+	$(PYTHON) scripts/test-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_WORK_DIR)"
+
+tla-traces: tla-tlc
+	$(PYTHON) scripts/test-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
+
+tla-prove: tla-tlapm
+	$(PYTHON) scripts/test-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_WORK_DIR)"
+
+test-formal: tla-tools
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-runner.py
+	$(PYTHON) scripts/test-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
