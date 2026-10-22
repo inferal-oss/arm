@@ -7,7 +7,7 @@ export function dashboardShortcut(event, blocked = false) {
   if (
     blocked || event.defaultPrevented || event.repeat || event.isComposing || event.keyCode === 229 ||
     event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
-    typeof event.key !== 'string' || event.key.length !== 1 || !/^[1-6]$/.test(event.key)
+    typeof event.key !== 'string' || event.key.length !== 1 || !/^[1-7]$/.test(event.key)
   ) return null;
   const path = event.composedPath?.() ?? [event.target];
   for (const node of path) {

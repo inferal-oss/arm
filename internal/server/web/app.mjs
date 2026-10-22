@@ -10,8 +10,14 @@ import {installDashboardShortcuts} from './dashboard-shortcuts.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
 import {createOperatorMessaging} from './operator-messaging.mjs';
 import {createPoolConsole} from './pool-console.mjs';
+import {createMeshConsole} from './mesh-console.mjs';
+import {nodeWindowRoute,openNodeWindow,receiveNodeWindow,nodeContextClosed} from './node-window.mjs';
+import {createRemoteNodeDashboard} from './remote-node.mjs';
 import {createConnectionLinkHandler, createDashboardAuthentication} from './connection-links.mjs';
 
+const targetWindow = nodeWindowRoute(location.href);
+const sessionKey = targetWindow?.host ? 'arm-node-session:'+targetWindow.host : 'arm-session';
+let remoteDashboard = null, nodeContextInvalid = false;
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
   if (!jsonExpansions.has(key)) {
@@ -45,6 +51,7 @@ let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailR
 let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, refreshAgain = false;
 let detailPanel = null;
 let poolConsole = null;
+let meshConsole = null;
 let detailLeaseID = '';
 const pendingLeaseActions = new Set();
 const navigation = createDashboardHistory({location, history, onRoute: applyDashboardRoute});
@@ -60,9 +67,10 @@ function connectionState(text, live = false) {
   $('connection').dataset.state = live ? 'live' : 'offline';
   state.connected = live;
   detailPanel?.updateConnection();
-  updateActivityFeed();
-  updateOperatorMessaging();
+  if (!remoteDashboard) { updateActivityFeed(); updateOperatorMessaging(); }
+  else if (!live) remoteDashboard.disconnect();
   poolConsole?.updateConnection();
+  meshConsole?.updateConnection();
 }
 
 class Backend {
@@ -72,7 +80,8 @@ class Backend {
     this.ready = new Promise((resolve, reject) => {
       const timer = setTimeout(() => { reject(Error('Connection timed out')); this.socket.close(); }, 10000);
       this.socket.addEventListener('open', () => { clearTimeout(timer); resolve(); }, {once: true});
-      this.socket.addEventListener('close', () => { clearTimeout(timer); reject(Error('Connection refused')); }, {once: true});
+      this.socket.addEventListener('close', event => {
+      if(nodeContextClosed(session?.context,event))nodeContextInvalid=true; clearTimeout(timer); reject(Error('Connection refused')); }, {once: true});
     });
     this.socket.addEventListener('message', event => {
       if (connection !== this) return;
@@ -81,17 +90,20 @@ class Backend {
         if (response.version !== 1) throw Error('Unsupported protocol version');
         if (response.event) { addEvent(response.event); scheduleRefresh(); }
         else if (response.telemetry && response.subscription === this.monitorID) acceptMonitor(response.telemetry);
+        else if (this.meshWatchID && response.subscription === this.meshWatchID) { meshConsole?.invalidate(); }
         else if (response.id && this.pending.has(response.id)) {
           const pending = this.pending.get(response.id); this.pending.delete(response.id); clearTimeout(pending.timer);
           if (response.error) pending.reject(Object.assign(Error(`${response.error.code}: ${response.error.message}`), {code: response.error.code, definitive: true}));
-          else pending.resolve(response.result);
+          else { if (pending.operation === 'mesh_operator_watch') this.meshWatchID = response.result?.subscription; pending.resolve(response.result); }
         }
       } catch (error) { notice(error.message); this.socket.close(); }
     });
-    this.socket.addEventListener('close', () => {
+    this.socket.addEventListener('close', event => {
+      if(nodeContextClosed(session?.context,event))nodeContextInvalid=true;
       for (const p of this.pending.values()) { clearTimeout(p.timer); p.reject(Error('Backend disconnected')); }
       this.pending.clear();
       if (connection === this) {
+        if(nodeContextInvalid){connectionState('Node context changed');notice('Trust or permissions changed. Reopen this exact node from the local Mesh page.');return;}
         connectionState('Disconnected · retrying');
         updateFreshness();
         if (Date.now() < Date.parse(session?.expires_at)) retryTimer = setTimeout(connect, Math.min(15000, 1000 * 2 ** Math.min(retry++, 4)));
@@ -110,7 +122,7 @@ class Backend {
     if (operation === 'monitor_subscribe') this.monitorID = id;
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => { this.pending.delete(id); reject(Error(`${operation} timed out`)); }, 15000);
-      this.pending.set(id, {resolve, reject, timer});
+      this.pending.set(id, {resolve, reject, timer, operation});
       try { this.socket.send(stringifyJSON({version: 1, id, operation, params})); }
       catch (error) { clearTimeout(timer); this.pending.delete(id); reject(error); }
     });
@@ -123,20 +135,20 @@ const authentication = createDashboardAuthentication({
     if (!response.ok) throw Error('Connection link expired or already used. Run arm dashboard again.');
     return response.json();
   },
-  readSession: () => { try { return JSON.parse(sessionStorage.getItem('arm-session') || 'null'); } catch { return null; } },
-  writeSession: value => { try { sessionStorage.setItem('arm-session', JSON.stringify(value)); } catch { /* In-memory credentials still work. */ } },
-  clearSession: () => { try { sessionStorage.removeItem('arm-session'); } catch { /* Storage may be unavailable. */ } },
+  readSession: () => { try { return (()=>{const value=JSON.parse(sessionStorage.getItem(sessionKey)||'null');return targetWindow?.host && value?.context?.host!==targetWindow.host ? null : value;})(); } catch { return null; } },
+  writeSession: value => { try { sessionStorage.setItem(sessionKey, JSON.stringify(value)); } catch { /* In-memory credentials still work. */ } },
+  clearSession: () => { try { sessionStorage.removeItem(sessionKey); } catch { /* Storage may be unavailable. */ } },
   onStart: fresh => {
     clearTimeout(retryTimer); clearTimeout(refreshTimer); refreshTimer = null; retry = 0;
     const previous = connection; connection = null; session = null;
     previous?.disconnect(); // Settle outstanding requests immediately, never replay.
     connectionState(fresh ? 'Authenticating' : 'Connecting'); notice();
   },
-  onSession: async value => { session = value; await connect(); },
+  onSession: async value => { if (targetWindow?.host && value.context?.host !== targetWindow.host) throw Error('Open this exact node from the local Mesh page.'); session = value; await connect(); },
   onError: error => { connectionState('Not connected'); notice(error.message); },
 });
 const connectionLinks = createConnectionLinkHandler({location, navigation,
-  onConnect: link => authentication.start(link), onStored: () => authentication.start()});
+  onConnect: link => authentication.start(targetWindow?.host?{error:'Node windows require a host-bound handoff. Open this node again from the local Mesh page.'}:link), onStored: () => authentication.start()});
 
 async function connect() {
   clearTimeout(retryTimer);
@@ -144,10 +156,25 @@ async function connect() {
   const current = connection = new Backend(session.token);
   try {
     await current.ready;
+    if (session.context && !session.context.local) {
+      if (session.context.host !== targetWindow?.host) throw Error('Node session does not match this window.');
+      if (!remoteDashboard) {
+        for (const section of document.querySelectorAll('main>.view')) section.hidden=true;
+        const remoteRoot=node('section','view'); $('main').append(remoteRoot);
+        remoteDashboard=createRemoteNodeDashboard({root:remoteRoot,feed:$('live-feed'),call:(...args)=>connection.call(...args),context:session.context,onError:error=>{if(error.code==='node_context_changed'){nodeContextInvalid=true;current.socket.close();}}});
+        for(const button of document.querySelectorAll('nav button'))button.hidden=!['resources','leases','host'].includes(button.dataset.view);
+        document.querySelector('.page-heading .eyebrow').textContent='DESTINATION NODE / SCOPED INSPECTION';
+        document.querySelector('body>footer').replaceChildren(node('span','','REMOTE NODE · READ-ONLY GATEWAY'),node('span','mesh-mono',session.context.host));
+      }
+      $('freshness').textContent='Destination snapshots · observation ages shown per resource'; $('cadence').textContent='Scoped reads · no local streams';
+      $('host').textContent=session.context.host; retry=0;connectionState('● Connected to destination',true);notice();
+      renderView(navigation.current.view);await remoteDashboard.refresh();return;
+    }
     const status = await current.call('status');
     if (connection !== current) return;
     state.status = status; state.statusReceived = performance.now(); state.statusTime = new Date(); $('host').textContent = status.host;
     await current.call('subscribe', {after: status.cursor});
+    await current.call('mesh_operator_watch');
     acceptMonitor(await current.call('monitor_subscribe', {epoch: state.epoch, after: state.cursor}));
     const after = BigInt(status.cursor) > 100n ? BigInt(status.cursor) - 100n : 0;
     const events = await current.call('events', {after});
@@ -170,6 +197,7 @@ function scheduleRefresh() {
 async function refresh() {
   if (refreshBusy) { refreshAgain = true; return; }
   if (!state.connected) return;
+  if (remoteDashboard) { await remoteDashboard.refresh(); return; }
   refreshBusy = true;
   const current = connection;
   try {
@@ -223,8 +251,14 @@ const titles = {
   messages: ['Operator messages', 'Exact session delivery, reviewed broadcasts and agent replies'],
   activity: ['Activity', 'Durable operational events · latest 200 loaded entries'],
   host: ['Host & capabilities', 'Local authority, infrastructure allocations and supported capabilities'],
+  mesh: ['Mesh', 'Direct peers · explicit trust · independent resource authorities'],
 };
 function renderView(name) {
+  if (remoteDashboard) {
+    name=['resources','leases','host'].includes(name)?name:'resources'; view=name;
+    for(const button of document.querySelectorAll('nav button')){if(button.dataset.view===name)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
+    $('title').textContent=({resources:'Destination resources',leases:'Destination leases',host:'Node metadata'})[name]; $('subtitle').textContent='Scoped through the local ARM gateway · destination permissions enforced';remoteDashboard.show(name);return;
+  }
   if (!titles[name]) return;
   view = name;
   for (const button of document.querySelectorAll('nav button')) {
@@ -235,6 +269,7 @@ function renderView(name) {
   renderCurrent(); updateFreshness();
 }
 function applyDashboardRoute(route) {
+  if(remoteDashboard){renderView(route.view);return;}
   const previousView = view, previousLease = detailLeaseID, hadDetail = Boolean(detailLeaseID) || $('detail').open;
   renderView(route.view);
   poolConsole?.applyRoute(route);
@@ -250,7 +285,7 @@ function selectView(name) { navigation.navigate({view: name, lease: null}); }
 window.addEventListener('popstate', connectionLinks.change);
 window.addEventListener('hashchange', connectionLinks.change);
 function renderCurrent() {
-  ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost})[view]();
+  ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost, mesh: renderMesh})[view]();
 }
 for (const [index, button] of [...document.querySelectorAll('nav button')].entries()) {
   button.setAttribute('aria-keyshortcuts', String(index + 1));
@@ -551,6 +586,10 @@ function renderActivity() {
   }
   if (!root.childElementCount) root.append(empty('No operational events in the loaded window'));
 }
+function renderMesh() {
+  if (!meshConsole) meshConsole = createMeshConsole({root:$('mesh'),call:(...args)=>connection.call(...args),connected:()=>state.connected,storage:messageStorage,openNode:entry=>{try{openNodeWindow({entry,call:(...args)=>connection.call(...args),onError:error=>notice(error)});}catch(error){notice(error.message);}}});
+  meshConsole.refresh();
+}
 function renderHost() {
   const root = $('host-view'), status = state.status;
   if (!status) { root.replaceChildren(empty('Waiting for the local authority…')); return; }
@@ -561,4 +600,9 @@ function renderHost() {
 }
 
 setInterval(updateFreshness, 1000);
-connectionLinks.start();
+if(targetWindow?.error){navigation.sanitize();connectionState('Invalid node window');notice(targetWindow.error);}
+else if(targetWindow?.nonce){
+  navigation.sanitize();connectionState('Waiting for node authorization');
+  receiveNodeWindow({route:targetWindow,exchange:async(ticket,host,nonce)=>{const response=await fetch('/v1/browser/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket,host,window_nonce:nonce}),credentials:'omit',cache:'no-store',redirect:'error'});if(!response.ok)throw Error('Node handoff expired, changed, or already used. Reopen it from Mesh.');return response.json();}}).then(value=>{try{sessionStorage.setItem(sessionKey,JSON.stringify(value));}catch{}return authentication.start();}).catch(error=>{connectionState('Node not connected');notice(error.message);});
+}else connectionLinks.start();
+setInterval(()=>{if(remoteDashboard&&state.connected)remoteDashboard.refresh();},5000);

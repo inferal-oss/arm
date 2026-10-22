@@ -257,3 +257,33 @@ func TestNodeWindowIdleDestinationOnlyChangeClosesBrowser(t *testing.T) {
 		})
 	}
 }
+
+func TestNodeWindowChangedSourceEnrollmentClosesWithContextPolicy(t *testing.T) {
+	left, _, source, _, bound := scopedRegistry(t)
+	nonce := strings.Repeat("c", 32)
+	ticket, _, err := left.browser.issueNode(bound, nonce, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	token, _, _, ok := left.browser.exchangeNode(ticket, bound.Host, nonce, time.Now())
+	if !ok {
+		t.Fatal("exchange failed")
+	}
+	if err = source.Revoke(bound.Host, "private policy-close regression"); err != nil {
+		t.Fatal(err)
+	}
+	h := httptest.NewServer(http.HandlerFunc(left.ws))
+	defer h.Close()
+	left.authority = strings.TrimPrefix(h.URL, "http://")
+	ctx, stop := context.WithTimeout(t.Context(), 5*time.Second)
+	defer stop()
+	c, _, err := websocket.Dial(ctx, strings.Replace(h.URL, "http://", "ws://", 1), &websocket.DialOptions{HTTPHeader: http.Header{"Origin": []string{h.URL}}, Subprotocols: []string{"arm.v1", "arm.auth." + token}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.CloseNow()
+	_, _, err = c.Read(ctx)
+	if err == nil || websocket.CloseStatus(err) != websocket.StatusPolicyViolation || !strings.Contains(err.Error(), "node_context_changed") {
+		t.Fatal("changed context did not carry explicit close policy", err)
+	}
+}

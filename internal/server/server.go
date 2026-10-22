@@ -188,6 +188,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		if bound := admission.Node; bound != nil {
 			ctx = context.WithValue(ctx, nodeSessionKey{}, *bound)
 			if _, e := s.validateNodeSession(*bound); e != nil {
+				_ = c.Close(websocket.StatusPolicyViolation, "node_context_changed")
 				return
 			}
 			go s.watchNodeSession(ctx, cancel, *bound)

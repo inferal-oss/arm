@@ -1,5 +1,5 @@
 export const dashboardViews = Object.freeze([
-  'monitor', 'resources', 'leases', 'messages', 'activity', 'host',
+  'monitor', 'resources', 'leases', 'messages', 'activity', 'host', 'mesh',
 ]);
 const validLease = value => typeof value === 'string' && /^[a-f0-9]{32}$/.test(value);
 const validPool = value => typeof value === 'string' && /^pool_[a-f0-9]{32}$/.test(value);
@@ -20,7 +20,7 @@ export function readDashboardRoute(address) {
     const url = new URL(address), params = url.searchParams;
     if (
       url.search.length > 1024 ||
-      ['view', 'lease', 'pool', 'pool_after', 'pool_before'].some(key => params.getAll(key).length > 1) ||
+      ['view', 'lease', 'pool', 'pool_after', 'pool_before', 'host'].some(key => params.getAll(key).length > 1) ||
       (params.has('pool_after') && params.has('pool_before'))
     ) return emptyRoute();
     const lease = validLease(params.get('lease')) ? params.get('lease') : null;
@@ -33,6 +33,7 @@ export function readDashboardRoute(address) {
       route.poolBefore = journalBoundary(params.get('pool_before'), true);
       route.poolAfter = route.poolBefore === null ? journalBoundary(params.get('pool_after')) ?? '0' : null;
     }
+    if (validLease(params.get('host'))) route.host = params.get('host');
     return route;
   } catch { return emptyRoute(); }
 }
@@ -52,6 +53,8 @@ export function dashboardRouteURL(route, address) {
   if (lease) params.set('lease', lease);
   // Only public navigation identifiers survive. Never copy credentials, drafts,
   // unknown query fields or untrusted history.state into another entry.
+  const host = route.host ?? url.searchParams.get('host');
+  if (validLease(host)) params.set('host', host);
   const search = params.toString();
   return url.pathname + (search ? '?' + search : '');
 }
