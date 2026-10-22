@@ -1,5 +1,9 @@
 # Validation record
 
+## Embedded mesh access proposal — research only
+
+The pending [SSH/mounted-share scheme](MESH-ACCESS-PROPOSAL.md) was checked against the current mesh contract, native macOS mount manpages, primary OpenSSH/Linux FUSE/NFS documentation, Apple's SMB client source and rclone's local NFS mount implementation. Independent review identified extra SSH channel admission, cross-share filehandle/path confinement, other-local-user access and partial cross-authority setup as required gates; the proposal includes them. No embedded SSH/file server, mount, credential mechanism or protocol dependency was implemented or acceptance-tested. Actual non-root Linux/macOS mount feasibility, safe local authentication and writable semantics remain unverified; source precedent is not a runtime pass. No system configuration, privileged helper or service changes were made for the proposal.
+
 Agentic lease reviews are specified and planned, but not implemented or validated. Acceptance must cover exact-session and polling delivery, bounded/coalesced scheduling, restart deduplication, stale or duplicate replies, and unchanged expiry/enforcement deadlines unless an authorized lifecycle operation succeeds.
 
 ## October 21, 2026: reviewed custom-pool controls

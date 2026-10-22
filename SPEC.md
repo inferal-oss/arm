@@ -541,3 +541,7 @@ Cluster placement, shared pools across hosts, stronger multi-user isolation, add
 - Later machine-wide authorization, private-key rotation and broader mesh placement, membership and delegation policy; initial direct-peer trust is approved in MESH-SECURITY.md.
 
 Host identity, safe uninstall, real agent-CLI validation, ports, bidirectional operator messaging, shared WebSocket clients, code-based workload knowledge, explanatory Markdown cards, and CGo-free SQLite are part of the project scope, not deferred architectural choices.
+
+## Proposed embedded mesh SSH and mounted shares — approval pending
+
+The operator requested a security scheme for automatic mesh shares and ARM-managed SSH, clarifying that servers must be embedded/proxied by ARM without host-service setup or privileged OS access. [MESH-ACCESS-PROPOSAL.md](docs/MESH-ACCESS-PROPOSAL.md) proposes destination-authorized embedded SSH, per-invocation keys, independent shell/file grants and protocol-independent leased shares with capability-tested unprivileged local mount adapters. No system sshd/NFS configuration, root helper, privileged fallback or automatic export of existing directories. This is pending approval, not supported behavior or an already approved mesh amendment. Linux FUSE needs existing user-mount facilities; macOS local NFS or authenticated alternatives require actual non-root mounting and local-access-isolation gates. No universal mount guarantee is implied on hosts lacking permitted OS facilities.
