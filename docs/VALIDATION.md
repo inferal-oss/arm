@@ -572,3 +572,8 @@ Author actual native-to-Linux browser checks established default-Decline concret
 Root also guarded unknown future review kinds from accidental connect/disconnect approval and retained uncertain Resume dispatches rather than blind resend. Those final narrow guard/policy deltas have unit/component/actual-socket regressions; they add no broader remote permissions. Full operational remote parity and separately keyed recovery resolution remain on PLAN. Private test state only; the user's installed CLI/default backend and earlier preview were not updated by these gates.
 
 Go1.27.3 remains the current stable toolchain: rechecked October21 against the [official download manifest](https://go.dev/dl/?mode=json), matching the isolated builds.
+
+
+## Installed instruction command formatting
+
+Root independently reviewed the three-file Markdown embedding change in an isolated committed-source snapshot. Full install race tests passed2.858s, focused vet and a CGo-free compiled CLI build passed. Actual compiled disposable Codex/Claude checks passed dry-run without state creation, exact code-formatted diffs, managed-block upgrade, exact backup, repeated-install no-op, edited-block refusal, uninstall and preservation of surrounding user text and modes. No real agent configuration or active session was modified; native communication and Linux acceptance were not repeated for this formatting-only change.
