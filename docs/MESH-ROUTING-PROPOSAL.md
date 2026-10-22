@@ -1,6 +1,6 @@
-# Connected-graph discovery and messaging — proposal for approval
+# Connected-graph discovery and messaging — approved scheme
 
-Status: DESIGN ONLY. No routing/product/schema changes are authorized by this document. Current direct-peer TLS/grants continue unchanged. The new user request explicitly needs a security-scheme amendment: A connected to B and C should let B and C discover and message each other through A, without a direct B–C connection.
+Status: APPROVED by the operator on October 21, 2026. Staged implementation is authorized under the review and validation gates below. Current supported product behavior remains direct-peer TLS/grants until the implementation passes those gates. This amends the original scheme: A connected to B and C should let B and C discover and message each other through A, without a direct B–C connection.
 
 ## Recommended decision
 
@@ -108,4 +108,4 @@ No resource claim, pool capacity or successful reclamation is inferred from memb
 
 “Allow reviewed messaging workspaces: trust the selected pinned directory and explicitly delegated introducers to admit exact node identities for automatic member discovery and addressed host-inbox/opt-in-agent messaging. Permit bounded ARM-only relaying with end-to-end pinned TLS; keep resource/execution/file/administrative grants direct and explicit. Accept directory freshness/partition availability limits and separately review joins/merges/identity changes.”
 
-Until that amendment is approved, keep current direct-only product behavior. This document is not permission to implement it.
+The operator approved this amendment explicitly. Implement and independently review each checkpoint; approval of the design does not establish working graph routing or waive the required real tests.

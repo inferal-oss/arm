@@ -19,7 +19,7 @@ Updated October 21, 2026 against the current worktree. The complete scope remain
 
 **Upcoming milestones:**
 
-0. The [connected-graph forwarding proposal](MESH-ROUTING-PROPOSAL.md) is ready for operator security approval: A–B/A–C ⇒ B↔C via A, preserving original sender/replies and destination permissions. Review the needed limited membership/message trust extension with the operator before implementation; the original no-transitive-trust scheme is still current. Include three-node forwarding/partition/replay/revocation and forwarded-execution denial gates. Direct-peer lists do not complete this requirement.
+0. The operator approved the [connected-graph forwarding scheme](MESH-ROUTING-PROPOSAL.md) on October21: A–B/A–C ⇒ B↔C via A, preserving original sender/replies and destination permissions. The standalone bounded nested-TLS/closed-relay prototype is assigned; product routing, workspace membership and durable messaging remain unimplemented. Include three-node forwarding/partition/replay/revocation and forwarded-execution denial gates. Direct-peer lists do not complete this requirement.
 1. Subpool/proof (`693e537`), mesh recovery proof (`7fe0c7c`) and terminal quality (`c318f4f`) checkpoints are committed. The confirmed reset checkpoint is validated; finish independent review of the mesh dashboard candidates and validate each isolated feature before committing it.
 2. Deliver polished mesh list/detail/connect/disconnect and authorized per-node windows; bring matching operations into the terminal interface. Finish hierarchy review contracts and tree/consumer controls in both dashboards.
 3. Finish bounded evidence-preserving pre-receipt recovery and broader restore/purge, retaining explicit confirmation and private-fixture gates.
@@ -125,9 +125,9 @@ Continue assigning focused work to individual subagents as slots become availabl
 
 | Subagent | Running now | Ready for coordinating review | Next queued assignment |
 | --- | --- | --- | --- |
-| `live_memory` | Design and implementation of reviewed missing-node ARM provisioning over verified SSH | Web Mesh candidate frozen for root's remaining rendered review; scoped-session foundation committed | Verified multi-platform artifact/install/start/recovery gates; then queued Cargo hardening/provider work |
-| `owner_names` | Final known-recovery review rendering for the frozen terminal Mesh candidate | Carve identity, terminal polish and scoped-session backend are committed; terminal Mesh gates passed, final delta under review | Connected-graph discovery/forwarded-message security proposal for operator approval; separately keyed Resume API; hierarchy editors and accounting/headroom |
-| `dashboard_actions` | Secure unprivileged macOS mount-adapter feasibility, using private fixtures | Confirmed reset source is frozen; root owns final isolated integration | Adapter isolation and throughput gates, then approved leased-share implementation; bounded reads and storage/incident controls |
+| `live_memory` | Design and implementation of reviewed missing-node ARM provisioning over verified SSH | Web Mesh controls/windows and scoped-session foundation are committed | Verified multi-platform artifact/install/start/recovery gates; then queued Cargo hardening/provider work |
+| `owner_names` | Approved graph-routing checkpoint: isolated pinned nested-TLS/closed-relay prototype | Terminal Mesh candidate and instruction Markdown change are frozen for root review | Workspace/durable graph messaging after prototype review; separately keyed Resume API; hierarchy editors and accounting/headroom |
+| `dashboard_actions` | Approved embedded SSH checkpoint A: bounded pinned transport and isolated SSH protocol, without process execution | Confirmed reset is committed; mount feasibility has no production-ready macOS adapter | Leased process adapter and actual two-host OpenSSH gates; secure mount/throughput gates; bounded reads and storage/incident controls |
 
 The rest of the specification is also divided into downstream portfolios. These are sequential queues, not claims that all work is running:
 
