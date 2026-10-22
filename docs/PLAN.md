@@ -123,6 +123,12 @@ Replace the fixed20GiB default disk pool with current state-filesystem nonprivil
 
 The separate web1–6 navigation feature is implemented and passed independent native/Linux checks: same tab order/history as terminal, no interception while typing/editing/composing/modifier shortcuts or reviewing dialogs, and no mutation. Require browser and shortcut tests. Keep it independently reviewable from pool URL/history implementation.
 
+## External resource plugins — requested, not implemented
+
+Add generic provisioning through external plugins rather than hardcoding a list of external resource types. `arm NAME ...` dispatches to `arm-NAME` on the caller's `PATH`, preserving argv and exit behavior with built-in precedence and non-executing discovery. Managed provisioning is an additional versioned protocol and explicitly enabled provider registration; CLI dispatch alone does not confer provider authority. Nodes, clusters and pods are examples that plugins can implement.
+
+Deliver in sequence: precise CLI discovery/dispatch and native/Linux acceptance; the bounded provider protocol/registration and a real external durable-state fixture; transactional intent/budget/readiness/release/reconciliation and crash/unknown-outcome tests plus formal coverage; then matching reviewed web/TUI controls and independently tested real integrations. Bind exact external identities and cleanup ownership, retain parent/cost/quota obligations while uncertain, and never replay unknown creation or infer deletion from a missing name. Scope may be host-specific or global, with one authority. This is queued alongside broader provider work; current pool counters and ARM mesh binary provisioning do not implement it. See [SPEC.md](../SPEC.md#external-resource-plugins-and-provisioning).
+
 ## Remaining specification work
 
 The current priority list does not replace the rest of the specification:

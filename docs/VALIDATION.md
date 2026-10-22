@@ -1,5 +1,7 @@
 # Validation record
 
+External CLI/resource plugins and generic provisioning have specification acceptance criteria but no implementation acceptance yet. Required gates include actual external executables on macOS/Linux, argv/exit/signal and built-in precedence, bounded protocol/registration, real durable external-state crash/retry/reclamation fixtures, provisioning models and real separately authorized integration tests. Existing pool and ARM binary-provisioning tests do not establish this feature; see [SPEC.md](../SPEC.md#resource-plugin-acceptance).
+
 ## New interface and mount acceptance requirements
 
 The operator requires polished web interfaces, Charm/Lip Gloss terminal windows and tables with truecolor/highcolor styling where supported, and matching functionality. Reduced-color/no-color, keyboard/mouse, compact layouts, contrast and non-color state cues remain part of acceptance. The current terminal polish and mesh interface work is in progress; this requirement is not a claim that complete parity or its visual gates have passed.

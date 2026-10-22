@@ -1,5 +1,7 @@
 # Backend and CLI implementation
 
+External CLI/resource plugins (`arm-NAME`, invoked as `arm NAME`) and generic plugin-backed provisioning are requested future work, specified in [SPEC.md](../SPEC.md#external-resource-plugins-and-provisioning). No external plugin dispatch, provider registration/protocol or generic external create/reclaim lifecycle is implemented yet. Existing custom pools track coordination counts; existing mesh provisioning installs ARM on a selected host. Neither currently provisions arbitrary plugin-defined resources.
+
 This records the implemented backend, CLI and initial direct-peer mesh within [the specification](../SPEC.md). It supplies real persistence, admission, command supervision, a shared client protocol, reversible agent instructions, and tested native-agent communication. It does not yet implement every provider and policy in the specification.
 
 Public leased direct-peer embedded SSH sessions are implemented within the reviewed scope below; mounted shares are **not implemented**. [Their security scheme](MESH-ACCESS-PROPOSAL.md) is approved for staged implementation with explicit unprivileged adapter feasibility gates. Current verified direct-SSH bootstrap, peer grants, remote-provider support and OS privileges remain the implemented behavior. [Mount feasibility evidence](MOUNT-FEASIBILITY.md) now includes authenticated NFS RPC and a native macOS WebDAV mount with material locking/coherence limits; neither is a production mounted-share adapter.

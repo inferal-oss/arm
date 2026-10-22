@@ -1,6 +1,6 @@
 # Agent Resource Manager project specification
 
-Status: Draft. Updated October 21, 2026.
+Status: Draft. Updated October 22, 2026.
 
 Agent Resource Manager (`arm`, or ARM) coordinates agents' use of finite resources, including host capacity and agent-defined coordination pools. Every lease records who needs a resource, why, for how long, and under what conditions ARM may reclaim it. Agents can request capacity, wait for availability, use it, renew it, or return it early. Humans can inspect and control the same activity through a local web panel and a terminal UI.
 
@@ -12,6 +12,7 @@ ARM must:
 
 - Coordinate CPU, memory, storage, GPU, and listener-port resources, with bandwidth and other network resources supported at lower initial depth.
 - Let agents define arbitrary countable, poolable resources with host-specific or global scope, and adjust their capacities through an attributed transactional log.
+- Let external resource plugins provision and manage arbitrary resources, with durable ownership, budgets, readiness and reclamation; expose plugin commands through `arm-<NAME>` executables.
 - Keep a durable record of requests, reasons, ownership, allocations, warnings, releases, and reclamation.
 - Grant time-limited leases, explain queued requests and expected availability, and reward useful early release.
 - Detect misuse, communicate actionable warnings to agents, and escalate to revocation and supported enforcement.
@@ -41,6 +42,7 @@ The implementation now includes an initial opt-in direct-peer mesh through the h
 | Lease | A time-bounded grant containing one or more claims, ownership, policy, and lifecycle state. |
 | Artifact | A managed directory or other retained resource with its own ownership and lifetime. |
 | Provider | Code that discovers, measures, regulates, or reclaims a class of resources. |
+| Resource plugin | An external executable that extends the CLI and can implement a versioned provisioning/provider contract for arbitrary resource types. |
 | Workload adapter | Code that understands a tool or workload and connects it to providers and policies. |
 | Profile | Configuration for a workflow, including resource defaults and retention choices. |
 | Knowledge card | Markdown explaining supported behavior and policy, indexed by YAML frontmatter. |
@@ -81,6 +83,24 @@ Custom resource pools must support bounded parent/child hierarchies. A child car
 A subpool inherits the parent's authority, resource unit and host-specific or global scope. Partitioning, direct allocations, queued claims and ancestor constraints must be checked transactionally without counting one allocation multiple times. Creating a child cannot bypass a resource limit on its ancestors. Parent/child views must distinguish direct use, child partitions, available capacity and overlapping rollups, and show the actual lease owners and reasons.
 
 Creation, resizing, drain/resume and deletion require attributed, reasoned, keyed journal records and revision guards. Reductions preserve existing leases and descendant obligations; capacity still promised below a reduced child cannot simultaneously be returned for allocation by its parent. Show deficits and withheld capacity explicitly and block new grants as appropriate. Deleting a child returns only settled capacity and requires safe handling of descendants and queued/active obligations. Parentage, cycle/depth limits, restart recovery and exact retry behavior must be validated. Web, terminal and agent interfaces must expose the same tree and backend policy. Distributed global-pool authority remains a separate requirement; subpools do not imply cross-host consensus. The native backend/CLI now implements these local partitions and exact lineage/accounting journals; matching hierarchy editors/tree navigation in both dashboards remain required. Nested policy budgets remain separate ceilings.
+
+### External resource plugins and provisioning
+
+Custom resources can have a provisioning implementation as well as a counted pool. ARM supplies a generic external plugin mechanism; resource-specific implementations live in plugins. Nodes, Kubernetes clusters and pods are examples of possible plugins, not required built-in resource types or a closed enumeration. A definition binds an explicitly selected plugin/type/version and validated configuration to a host-specific or global authority. An ordinary abstract pool remains usable without a provisioning plugin.
+
+An executable named `arm-<NAME>` can extend the CLI: `arm <NAME> ARG...` invokes the matching executable on the caller's `PATH`, preserving the remaining argument boundaries and its exit status, without a shell. Built-in command names take precedence and cannot be overridden by plugins. Plugin names are validated single command names; unknown commands report a useful error. Explicit invocation runs the executable with the caller's normal privileges. Command discovery/help must not execute arbitrary candidates merely because they appear on `PATH`. Normal ARM installation remains self-contained; optional plugins may declare their own prerequisites and must report unavailable capabilities truthfully.
+
+CLI extension and managed provisioning are distinct capabilities. A CLI plugin may use the normal authenticated ARM API, but running it does not register a provider or grant administrative rights. A managed resource plugin additionally implements a versioned, bounded request/response protocol for capabilities, configuration validation, planning, provision/status lookup, renewal where supported, release and reconciliation. Requests bind the authenticated owner, agent/session/project attribution, required reason, exact operation key and immutable intent, authority, resource type, resolved configuration, budgets and lifetime. Machine messages use structured JSON with explicit protocol/version and errors; diagnostics use a separate channel. Cancellation and timeouts are requests to stop, not proof that an external operation stopped. Protocol framing, limits and plugin compatibility are specified and tested before runtime integration.
+
+Enabling a provider requires a policy-authorized registration of its resolved executable identity/version, configuration and permitted operations/resource scopes. An unreviewed replacement must not silently inherit durable provisioning or deletion authority. Browser and peer requests cannot select arbitrary executable paths, commands, environment variables or credentials. Credentials remain private references outside ordinary records, metadata and logs. Plugin processes are trusted code running with their actual OS permissions; the external protocol is not a sandbox or permission to mutate an external account. Agents may request provisioning within explicitly delegated policy; approval requirements and resource or monetary ceilings are concrete policy, not a blanket requirement for a human to confirm every authorized request.
+
+Provisioning first reserves the applicable parent capacity, concurrency and configured cost/quota budgets and durably records the exact intent, before any external side effect. Persist the external authority/account/project/namespace and immutable resource ID, resolved specification digest, plugin identity, provider request ID, owner, timestamps, dependencies and observed state. A reused name is not the same resource. Only positively confirmed readiness makes newly created capacity available for ordinary claims; creation must not duplicate overlapping host/native/global capacity. Multi-provider requests must expose staged provisioning and compensation when a single atomic admission cannot be provided.
+
+Lost responses, crashes and disconnected providers produce inspectable unknown outcomes with their original keys. Repeated requests inspect/reconcile that intent, never blindly create a replacement. If a provider cannot prove whether creation happened, retain the reservation and uncertainty until explicit evidence resolves it. Restart must preserve cleanup ownership, pending operations and external obligations even if a plugin is unavailable or upgraded. Imported resources require explicit adoption policy; discovery alone never grants deletion ownership.
+
+Releasing a lease, expiry or revocation stops entitlement and begins the configured release, return-to-pool, retain or delete workflow. Shared/warm resources can outlive one consumer under their own recorded lease; deleting a cluster or node must respect dependent consumers and resources. Destructive cleanup targets only the exact owned external identity, with current evidence and policy checks. A deletion request, expired lease, missing name or timed-out process is not confirmed reclamation. Failed or uncertain teardown retains visible obligations and any continuing cost/quota accounting. Keep a complete attributed transactional lifecycle journal alongside ordinary pool/lease history.
+
+CLI, web and TUI must show planned/creating/ready/ending/reclaiming/failed/unknown outcomes, provisioning progress, external identity, dependencies, owner and reason, budgets, cleanup policy and actionable errors. Supported mutations share the backend's revision/idempotency/authorization checks. Plugin-provided display text or metadata is bounded untrusted data, not executable UI or authority. This extension is planned; current custom coordination pools and missing-node ARM binary installation do not implement generic plugin provisioning.
 
 ### Execution and storage lifetimes
 
@@ -485,6 +505,12 @@ Acceptance requires concurrent requests to stay within configured admission budg
 ### Custom coordination pools
 
 Implement agent-created host-specific and global pools, counted claims, and transactional creation/capacity-change history through the shared backend and CLI before exposing their controls in web/TUI. Validate concurrent admission, integral quantity/overflow rejection, capacity-one exclusivity, zero-capacity pause, increasing and reducing capacity (including below current reservations), FIFO wakeup, no lost concurrent adjustments, idempotent retries, revision conflicts, audit attribution/reasons and crash consistency between pool state and journal. Verify host-specific equal names stay distinct, globally scoped claims share one ledger, and deletion/scope changes cannot erase outstanding obligations. Local global scope is testable before remote hosts; actual multi-host acceptance must later demonstrate no double allocation during partitions and recovery.
+
+### Resource plugin acceptance
+
+Deliver external CLI dispatch and the managed provider contract as separately reviewed features. Validate exact argument/exit/signal behavior, built-in precedence, invalid/colliding names, missing executables, non-executing discovery, terminal and machine output, incompatible protocol versions, bounded/malformed replies, executable replacement and unavailable dependencies on macOS and Linux. Enabling/disabling/removing a plugin must preserve pending external obligations and unrelated configuration.
+
+Exercise a real external fixture executable with durable external state through provisioning, readiness, renewal if supported, release and explicit reconciliation. Include concurrent identical requests, changed-intent conflicts, actual process death and lost acknowledgments before/after external creation/deletion, delayed readiness, parent and cost/concurrency budget exhaustion, expiry, denied cleanup, reused external names, shared dependents and restart with the plugin missing. No duplicate creation or false reclamation is allowed. Validate real integrations in disposable explicitly authorized environments before claiming support for a plugin such as a cluster or pod provider; fixture protocol acceptance alone is not acceptance of those integrations. Model and compare actual implementation traces for the provisioning/admission/reclamation protocol, including ambiguous outcomes and dependency accounting.
 
 ### Workload knowledge and enforcement
 
