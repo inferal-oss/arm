@@ -510,6 +510,12 @@ Install and uninstall tests against actual Codex and Claude CLIs are required in
 
 Do not send test messages into an unrelated user's live agent session or modify live agent configuration as a substitute for isolation. Missing CLI installation, unsupported session messaging, or unavailable authentication is an explicit blocked validation result, never a pass. Mocks remain useful for failure injection but cannot establish real compatibility. Implementation must inspect and verify actual CLI behavior rather than assuming proposed command flags exist.
 
+### Formal models and implementation traces
+
+Concurrency, resource ownership, uncertain outcomes and distributed recovery protocols require TLA+ models with explicit abstraction/identity/time assumptions. Use TLC to check finite safety properties and produce traces; development-only Go instrumentation must record matching observations at real implementation boundaries, and tests must compare/model-check those executions, including deliberately invalid traces. Use TLAPM to discharge named proof obligations for the model, recording proof/backend results separately from finite checking and implementation evidence. A model proof or a set of passing traces alone does not prove implementation refinement or filesystem/kernel correctness.
+
+Makefile targets provision checksum-pinned development tools under gitignored `.tla/` and keep generated states, traces and proof caches there. Models, proof source, configurations and mapping notes remain tracked. Normal ARM builds/runtime do not require formal tools. Missing tools, incomplete proofs and skipped checks are explicit failures/incomplete evidence, never formal acceptance. Start with share preparation and extend to mesh freshness/recovery and SSH archive settlement, then other protocols with relevant concurrency/ownership risks.
+
 ### Cross platform validation
 
 Validate on actual macOS and Linux environments. Test filesystem accounting with sparse files, hard links, shared extents or clones where supported, snapshots where available, and cleanup that does not immediately return capacity. Test denied observation permissions and unknown measurements. APFS tests must demonstrate shared-container accounting and avoid presenting directory size as exact reclaimable capacity.

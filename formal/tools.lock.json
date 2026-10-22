@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "tlc": {
+    "version": "v1.8.0",
+    "artifact": {
+      "url": "https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar",
+      "sha256": "5bd7b64db99ae4c6c35f290de5e809c0ee41af43f8699cf696099ffb6452b1e2",
+      "bytes": 4502227
+    }
+  },
+  "tlapm": {
+    "version": "1.6.0-pre",
+    "artifacts": {
+      "darwin-arm64": {
+        "url": "https://github.com/tlaplus/tlapm/releases/download/1.6.0-pre/tlapm-1.6.0-pre-arm64-darwin.tar.gz",
+        "sha256": "d84177fd0984e9e694c9daba2f9872a59d9c2b57741923c86ba569335f23b039",
+        "bytes": 36435722
+      },
+      "linux-amd64": {
+        "url": "https://github.com/tlaplus/tlapm/releases/download/1.6.0-pre/tlapm-1.6.0-pre-x86_64-linux-gnu.tar.gz",
+        "sha256": "b3c2554d3dd2198772ea8c814639a024fe9c390eac0ec25f4f444ad446a7dd28",
+        "bytes": 46758585
+      }
+    }
+  }
+}

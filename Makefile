@@ -126,3 +126,27 @@ bundle carrier: validate-knowledge
 # Optional extracted companion layout for development/distribution inspection.
 bundle-archive: validate-knowledge
 	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/build-bundle --jobs "$(BUNDLE_JOBS)" --go "$(GO)" --output "$(BUNDLE_DIR)"
+
+# Development-only formal tools. Downloads/executables, TLC states/traces and
+# TLAPM caches stay in gitignored .tla/. Normal ARM builds require none of them.
+JAVA ?= java
+TLC_JAR ?= $(CURDIR)/.tla/tools/tlc/tla2tools.jar
+TLAPM ?= $(CURDIR)/.tla/tools/tlapm/tlapm/bin/tlapm
+.PHONY: tla-tools tla-tlc tla-tlapm tla-tool-check
+tla-tools:
+	$(PYTHON) scripts/provision-tla.py --component all
+
+tla-tlc:
+	$(PYTHON) scripts/provision-tla.py --component tlc
+
+tla-tlapm:
+	$(PYTHON) scripts/provision-tla.py --component tlapm
+
+# Actual strict SMT proof health check, separate from ARM model verification.
+# A missing/broken tool or unproved obligation fails; it is never a skip.
+tla-tool-check: tla-tools
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provision-tla.py
+	mkdir -p .tla/proofs/toolchain .tla/states/toolchain .tla/traces/toolchain
+	cp formal/ToolchainSmoke.tla .tla/proofs/toolchain/ToolchainSmoke.tla
+	"$(JAVA)" -Xmx512m -cp "$(TLC_JAR)" tlc2.TLC -workers 1 -noGenerateSpecTE -metadir .tla/states/toolchain -teSpecOutDir .tla/traces/toolchain -config formal/ToolchainCounter.cfg formal/ToolchainCounter.tla
+	"$(TLAPM)" --strict --nofp --threads 2 --cache-dir .tla/proofs/toolchain/cache .tla/proofs/toolchain/ToolchainSmoke.tla

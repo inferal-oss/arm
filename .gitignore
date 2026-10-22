@@ -7,3 +7,6 @@ coverage.out
 *.swp
 *.swo
 dist/
+
+# Local TLA+ tools, model-checker states, traces and proof caches.
+/.tla/
