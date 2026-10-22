@@ -7,7 +7,8 @@ The approved [access scheme](MESH-ACCESS-PROPOSAL.md) requires unprivileged moun
 | Linux FUSE, read-only | Independent non-root mount, synthetic read and unmount passed. | Production origin/attachment leases, confinement, recovery, isolation and performance. Existing OS FUSE support is required. |
 | macOS NFS with AUTH_SYS | Native non-root mount/read/unmount passed; a hand-written request claiming UID 0 was accepted. | Client-supplied UID/GID does not authenticate a local caller. This adapter cannot be selected without another proven boundary. |
 | macOS NFS with RPCSEC_GSS privacy | Native GSS mutual authentication and encrypted NFS GETATTR/LOOKUP/READ passed in the isolated prototype. Null auth, forged AUTH_SYS UID 0, borrowed handles without GSS and replayed encrypted reads were refused. | A full kernel mount using only its exact private credentials remains unresolved. These are authenticated RPC results, not a mounted filesystem. |
-| macOS native SMB | Wrong/absent credentials were promptly refused. | Correct credentials did not produce a usable native mount. Authenticated negotiation alone is insufficient. |
+| macOS SMB, first prototype | Wrong/absent credentials were promptly refused. | Correct credentials did not produce a usable native mount in that implementation. |
+| macOS SMB, alternative prototype | Native non-root read-only/writable mount, exact reads/writes, ordinary unmount and remount passed. Wrong/empty credentials were refused after a successful session on the same server. | Confined virtual backend, another-OS-user isolation, lease/revocation/recovery, common metadata mapping and cross-host performance remain unverified. |
 | macOS native WebDAV over TLS | Root independently repeated non-root mount/read/write/unmount, wrong/absent credential and untrusted-leaf refusal, with private per-invocation credentials and leaf trust. | General build-filesystem semantics fail: exclusive flock did not exclude another process; external updates can be stale; symlinks were unsupported. Production isolation, lifecycle and performance remain unverified. |
 
 ## Correctly authenticated NFS
@@ -21,6 +22,20 @@ The remaining problem is selecting that exact credential for the kernel mount. I
 Further research can test NFSv4 security negotiation or another exact-credential native entry point. Before selection it must pass actual correct-credential mount/read/unmount, wrong/absent/expired credential, replay/borrowed-handle and another-real-OS-user denial, plus cancellation, revocation and owned cleanup. The experimental server's context limits, expiry/replay implementation and dependencies also need production review.
 
 Source references inspected by the prototype: [Apple NFS](https://github.com/apple-oss-distributions/NFS/tree/93733ffccece4daee73bf6306b291d1ae69130c0), [gssd](https://github.com/apple-oss-distributions/gssd/tree/e0aaeb03e7eb6a0311e7773a5582e38496f8eaf4) and [Heimdal](https://github.com/apple-oss-distributions/Heimdal/tree/1635de38a813f6e1dd3f8fd270683187ad4f02be). These source observations do not replace runtime gates.
+
+## Authenticated SMB: usable native mount candidate
+
+An independent alternative experiment used the [MIT-licensed SMB server source](https://github.com/malivvan/samba/tree/236760a9b8c0370edaad68a4a7348acdc9b45ecf) in an ignored module, with synthetic private files, loopback-only ephemeral ports, a fresh random password, guest access disabled and signing/encryption required. Credentials entered through a private pipe and separate NetFS API arguments, without URLs, argv, environment or global preference changes. No production dependency was added.
+
+The initial native mount/read/unmount succeeded but exposed an encrypted-LOGOFF panic. A narrow experimental fix retained the authenticated encryption context for that final response after channel removal; it did not introduce plaintext fallback. Clean read-only and writable repeats then passed, with no panic. Wrong and absent passwords returned native EAUTH 80 in roughly 80 ms after the valid session, on the same still-running server/address, without a mount or timeout. A later valid remount also succeeded.
+
+Actual native operations passed 32 MiB write/fsync/exact readback against the backing file, rename, truncate, delete, two-process exclusive-flock contention, symlink reads and immediate fresh-open observation of an external update. A script retained mode 0700 and executed with exit 23 before and after remount. The backing POSIX file remained mode 0644 despite the native client reporting 0700, so common origin metadata needs explicit mapping. Native SMB reported version 3.1.1 and required active signing; instrumentation counted 947 successfully authenticated encrypted request frames without logging bodies, keys or tokens.
+
+These are capability results, not a selected production adapter. Its current host-path filesystem layer is not ARM's required descriptor-anchored confined virtual backend. It must not expose user roots unchanged. Required gates still include path/link/handle confinement, parser/cryptographic/replay review, current generation/lease authorization, actual another-OS-user denial, revocation, busy/abrupt-loss cleanup and strict retirement proof, then real mounted builds.
+
+Fresh-client 32 MiB loopback reads took about 26/23 ms, writes plus fsync 55/44 ms and immediate reads after writing 3/2 ms. The backing filesystem was cache-warm; the last figures are client-cache behavior. These are not cold-origin, physical power-loss durability, LAN/WAN or encrypted-stream-relative throughput acceptance. Every final fixture ordinarily unmounted, its exact server exited 0, and only identity-checked generated roots were removed.
+
+Apple's [FSKit sample](https://developer.apple.com/documentation/FSKit/building-a-passthrough-file-system) offers another user-space architecture but requires a containing app/extension and explicit Settings enablement. Read-only capability inspection found only Apple's built-in modules; no extension was installed or enabled. That has not established the requested no-setup adapter.
 
 ## WebDAV: useful feasibility, limited semantics
 

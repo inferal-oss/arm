@@ -700,3 +700,10 @@ Evidence records physical executable identity, permissions, size, modification t
 Queries have a 30-second total context, five-second child deadlines, 1MiB stdout/64KiB stderr caps and a 250ms pipe wait bound. Executable inspection is capped at 256MiB, PATH at 256 entries and built-in targets at 4096. Errors omit child diagnostics and environment/configuration values. Query networking is disabled; this does not restrict the planned compilation workflow's ordinary fetching. Shared Cargo cache/network activity remains external accounting, without cleanup authority.
 
 This is still an internal preparation component. Resolve/revalidate must run inside the admitted supervised helper; the current rust-build profile does not yet call it. Charged helper startup, owned directories, final launch authorization, durable recovery and strict reset integration remain required. The real Rustup fixture additionally requires ARM_TEST_CARGO_PROXY pointing to an existing proxy; absence skips that specific fixture and is not Rustup acceptance.
+
+
+## macOS SMB mount feasibility update
+
+A separate ignored SMB prototype now passes native non-root read-only/writable mounting, exact file operations, remount and wrong/empty-password denial after a successful same-server session. A narrow encrypted-LOGOFF context fix removed a reproduced panic. Native signing and authenticated encrypted requests were observed; locking, executable/symlink persistence and immediate external updates passed the tested local scenarios. [Detailed evidence and limits](MOUNT-FEASIBILITY.md) distinguish this from production support.
+
+No share service, adapter or dependency was added to ARM. The prototype's host-path filesystem layer needs a confined virtual backend and common metadata mapping before use; real other-user isolation, leased authorization/expiry/recovery, cross-host semantics and near-network performance remain required. No OS service, credential store, user backend, extension or policy was changed.
