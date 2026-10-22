@@ -865,6 +865,8 @@ This is internal preparation only. Publication verification, consumers, grants, 
 
 ## Local formal tool provisioning
 
+The shared formal runner now checks proof source scope before invoking the prover: one named top-level module, one final module terminator, no trailing declarations, and the required unique initialization/preservation/safety theorem roster. Nested comments, line comments and strings are masked for this structural check. This is a deliberately closed module convention, not a replacement TLA parser or proof checker; TLAPM still parses/proves the original bytes with strict checking and fingerprints disabled. Premature module ends are rejected even if proving a prefix would succeed. The preparation model/proof are unchanged; isolated publication/messaging candidates retain separate complete-proof gates.
+
 `make tla-tools` installs locked TLC/TLAPM artifacts under ignored `.tla/`, validates exact size/SHA-256 before extraction, and revalidates installed inventories on repeat runs. Archive extraction refuses links, unsafe/duplicate paths, special files and excessive expansion; unfamiliar destinations are preserved. `make tla-tlc`/`tla-tlapm` select individual tools. `make tla-tool-check` runs offline installer safeguards and a real strict TLAPM SMT smoke theorem with fingerprints disabled; this is toolchain evidence only. Java is supplied by the developer. Current upstream native TLAPM artifacts cover macOS ARM64/Linux AMD64; unsupported platforms fail explicitly and may supply a separately installed prover. No global package, shell or ARM runtime dependency changes. See [formal development checks](../formal/README.md). The requested share, graph and history model/trace/proof integrations remain in progress.
 
 

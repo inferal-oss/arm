@@ -29,6 +29,81 @@ FIELDS = {'schema': str, 'action': str, 'phase': str, 'cache_phase': str,
           'charged': bool, 'pin': bool, 'native': str, 'launches': int,
           'join_known': bool, 'absence_proved': bool, 'skipped_proved': bool,
           'revision': int, 'slots': int, 'outcome': str, 'manifest': bool}
+PREPARATION_THEOREMS = ('InitEstablishesInvariant', 'EveryStepPreservesInvariant',
+    'StutterPreserves', 'StrengthenedSafety', 'Safety', *('Preserve' + action for action in (
+        'Admit', 'Start', 'Prepare', 'End', 'Finish', 'NativeBegin', 'NativeJoin',
+        'SkipNative', 'Crash', 'Restart', 'ObserveAbsent', 'Lookup', 'LookupUnknown',
+        'Retry', 'Reject', 'CommitUnavailable')))
+
+
+def module_code(text):
+    """Mask nested comments and strings, retaining token positions/newlines.
+
+    This is a closed-source scope check, not a TLA+ parser or proof checker.
+    TLAPM still parses and proves the actual unchanged source bytes.
+    """
+    result = list(text)
+    index, depth, string = 0, 0, False
+    while index < len(text):
+        pair = text[index:index+2]
+        count = 1
+        if depth:
+            if pair == '(*':
+                depth += 1
+                count = 2
+            elif pair == '*)':
+                depth -= 1
+                count = 2
+        elif string:
+            if text[index] == '\\':
+                count = 2
+            elif text[index] == '"':
+                string = False
+            elif text[index] in '\r\n':
+                raise ValueError('unclosed TLA string')
+        elif pair == '(*':
+            depth = 1
+            count = 2
+        elif pair == '\\*':
+            newline = text.find('\n', index)
+            count = (len(text) if newline < 0 else newline) - index
+        elif text[index] == '"':
+            string = True
+        else:
+            index += 1
+            continue
+        for offset in range(index, min(index+count, len(text))):
+            if result[offset] not in '\r\n':
+                result[offset] = ' '
+        index += count
+    if depth or string:
+        raise ValueError('unclosed TLA comment or string')
+    return ''.join(result)
+
+
+def validate_module_source(path, required_theorems=()):
+    """Require exactly one complete top-level module and its theorem roster.
+
+    TLAPM can successfully prove a prefix before an accidental module end while
+    ignoring subsequent text. A positive obligation count alone cannot detect it.
+    Nested modules and trailing declarations are outside this runner's roster.
+    """
+    path = Path(path)
+    raw = path.read_bytes()
+    if len(raw) > 1 << 20:
+        raise ValueError('formal source exceeds 1MiB')
+    code = module_code(raw.decode('utf-8'))
+    headers = list(re.finditer(r'-{4,}\s+MODULE\s+([A-Za-z_][A-Za-z0-9_]*)\s+-{4,}', code))
+    ends = list(re.finditer(r'={4,}', code))
+    if (len(headers) != 1 or headers[0].group(1) != path.stem
+            or code[:headers[0].start()].strip() or len(ends) != 1
+            or ends[0].start() < headers[0].end() or code[ends[0].end():].strip()):
+        raise ValueError('one complete named TLA module with one final terminator required: ' + path.name)
+    body = code[headers[0].end():ends[0].start()]
+    theorems = re.findall(r'\bTHEOREM\s+([A-Za-z_][A-Za-z0-9_]*)\b', body)
+    if len(theorems) != len(set(theorems)) or not set(required_theorems) <= set(theorems):
+        raise ValueError('complete unique in-module theorem roster required: ' + path.name)
+    return theorems
 
 
 def strict_object(pairs):
@@ -369,6 +444,7 @@ class Gate:
             'conservative_abstraction_guards': ['unavailable-no-start-retains-obligations']})
 
     def prove(self):
+        validate_module_source(self.run / 'SharePreparationProof.tla', PREPARATION_THEOREMS)
         # TLAPM also limits obligation preprocessing (five seconds by default).
         # Stretch all tool budgets without changing the theorem or assumptions.
         log = self.command([self.args.tlapm, '--strict', '--nofp', '--threads', '2', '--stretch', '10', '--cache-dir',

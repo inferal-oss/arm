@@ -31,7 +31,7 @@ class RunnerTests(unittest.TestCase):
         if sys.platform.startswith('linux'):
             try:
                 state = Path('/proc/' + str(pid) + '/stat').read_text().rsplit(')', 1)[1].split()[0]
-            except FileNotFoundError:
+            except (FileNotFoundError, ProcessLookupError):
                 return False
             return state not in ('Z', 'X')
         result = subprocess.run(['ps', '-o', 'stat=', '-p', str(pid)], text=True,
@@ -47,11 +47,25 @@ class RunnerTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 formal.read_json(path)
 
+    def test_linux_process_disappearing_during_read_is_absent(self):
+        # Linux procfs can return ESRCH after open but before read when cleanup
+        # wins the race. Permission failures remain unavailable evidence.
+        with patch.object(sys, 'platform', 'linux'):
+            for error in (FileNotFoundError(), ProcessLookupError()):
+                with self.subTest(error=type(error).__name__):
+                    with patch.object(Path, 'read_text', side_effect=error):
+                        self.assertFalse(self.process_is_running(123))
+            with patch.object(Path, 'read_text', side_effect=PermissionError()):
+                with self.assertRaises(PermissionError):
+                    self.process_is_running(123)
+
     def test_snapshot_hashes_and_all_gate_paths_use_copied_sources(self):
         source = self.root / 'source'
         source.mkdir()
+        expected = {}
         for name in ('SharePreparation.tla', 'SharePreparationProof.tla', 'Witness.tla', 'Safety.cfg'):
-            (source / name).write_text('old:' + name)
+            expected[name] = ((formal.MODEL / name).read_text() if name.endswith('Proof.tla') else 'old:' + name)
+            (source / name).write_text(expected[name])
         args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='all', targets=['prepared'],
                                   java='java', tlc_jar='jar', tlapm='tlapm')
         with patch.object(formal, 'MODEL', source):
@@ -59,7 +73,7 @@ class RunnerTests(unittest.TestCase):
             for item in source.iterdir():
                 item.write_text('changed after snapshot')
             for name, digest in gate.summary['sources'].items():
-                self.assertEqual((gate.run / name).read_text(), 'old:' + name)
+                self.assertEqual((gate.run / name).read_text(), expected[name])
                 self.assertEqual(digest, hashlib.sha256((gate.run / name).read_bytes()).hexdigest())
             commands = []
             def command(argv, name, **kwargs):
@@ -80,6 +94,48 @@ class RunnerTests(unittest.TestCase):
             self.assertIn('--strict', commands[1])
             self.assertIn('--nofp', commands[1])
             self.assertEqual(commands[1][commands[1].index('--stretch') + 1], '10')
+
+    def test_module_scope_masks_comments_strings_and_requires_final_end(self):
+        path = self.root / 'Scope.tla'
+        valid = ('(* ==== (* nested ---- MODULE Wrong ---- *) *)\n'
+                 '---- MODULE Scope ----\n'
+                 'Text == "==== THEOREM Fake ---- MODULE Wrong ----"\n'
+                 '\\* ==== THEOREM Hidden\n'
+                 'THEOREM Safety == TRUE OBVIOUS\n'
+                 '==== (* final comment *)\n')
+        path.write_text(valid)
+        self.assertEqual(formal.validate_module_source(path, ('Safety',)), ['Safety'])
+        bad = [valid.replace('THEOREM Safety', '====\nTHEOREM Safety'),
+               valid + '\nTHEOREM Outside == TRUE OBVIOUS\n',
+               valid.replace('THEOREM Safety', '(* THEOREM Safety *) THEOREM Other'),
+               valid.replace('MODULE Scope', 'MODULE Wrong'),
+               valid.replace('THEOREM Safety', '---- MODULE Inner ----\nTHEOREM Safety'),
+               valid.replace('==== (* final comment *)', '(* unclosed'),
+               valid.replace('Text == "====', 'Text == "unclosed\n====')]
+        for text in bad:
+            with self.subTest(text=text):
+                path.write_text(text)
+                with self.assertRaises(ValueError):
+                    formal.validate_module_source(path, ('Safety',))
+
+    def test_prefix_proof_success_cannot_bypass_safety_scope(self):
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove',
+                                  targets=[], tlapm='tlapm')
+        gate = formal.Gate(args)
+        path = gate.run / 'SharePreparationProof.tla'
+        original = path.read_text()
+        header, rest = original.split('\n', 1)
+        path.write_text(header + '\nTHEOREM Prefix1 == TRUE OBVIOUS\nTHEOREM Prefix2 == TRUE OBVIOUS\n====\n' + rest)
+        calls = []
+        gate.command = lambda *a, **kw: calls.append(a) or 'All 2 obligations proved.'
+        with self.assertRaises(ValueError):
+            gate.prove()
+        self.assertEqual(calls, [], 'prover must not run on an early-terminated source')
+        self.assertEqual(gate.summary['gates'], [])
+        path.write_text(original.replace('THEOREM Safety ==', 'THEOREM RemovedSafety =='))
+        with self.assertRaises(ValueError):
+            gate.prove()
+        self.assertEqual(calls, [])
 
     def test_timeout_preserves_output_and_stops_owned_descendants(self):
         args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove', targets=[])
