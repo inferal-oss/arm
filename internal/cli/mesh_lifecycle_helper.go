@@ -3,22 +3,13 @@ package cli
 import (
 	"fmt"
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/model"
 	"path/filepath"
 )
 
-type meshLifecycleHelper struct {
-	Home, Action                string
-	ExpectedHost, ExpectedOwner string
-	Startup                     mesh.StartupPolicy
-	Prepare                     mesh.PrepareRequest
-	Apply                       mesh.ApplySetup
-	Revoke                      meshDisconnectRequest
-}
-type meshDisconnectRequest struct {
-	Key, Host, Pair, Fingerprint, Reason string
-	Revision                             int
-}
+type meshLifecycleHelper = meshops.Helper
+type meshDisconnectRequest = meshops.DisconnectRequest
 
 func (a *app) meshLifecycleBootstrap(raw []byte) (int, error) {
 	var q meshLifecycleHelper

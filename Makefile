@@ -3,7 +3,7 @@ PYTHON ?= python3
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -44,6 +44,12 @@ test-gradle-services: build
 # PYTHON must have TLS1.3 support; missing probes fail this gate.
 test-mesh: build
 	$(PYTHON) scripts/test-mesh.py --arm bin/arm --require-tls-probes
+
+# Explicit trusted SSH fixture and compatible destination binary; disposable homes only.
+# Set MESH_SSH, MESH_REMOTE_ARM and MESH_REMOTE_ROOT (an existing private /tmp directory).
+test-mesh-ssh: build
+	$(PYTHON) scripts/test-mesh-lifecycle.py --arm bin/arm --ssh "$(MESH_SSH)" --remote-binary "$(MESH_REMOTE_ARM)" --remote-root "$(MESH_REMOTE_ROOT)"
+	$(PYTHON) scripts/test-mesh-operator.py --arm bin/arm --ssh "$(MESH_SSH)" --remote-binary "$(MESH_REMOTE_ARM)" --remote-root "$(MESH_REMOTE_ROOT)"
 
 test-local: build
 	python3 scripts/test-local.py

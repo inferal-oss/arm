@@ -8,6 +8,7 @@ import (
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/model"
 	"io"
 	"regexp"
@@ -95,19 +96,16 @@ func (a *app) meshConfirm(plan any, yes, dry bool) error {
 	}
 }
 
-type meshBootstrap struct {
-	Home, Action, Host, Pair, Reason string
-	ReplaceRevoked                   bool
-	ExpectedRevision                 *int
-	Identity                         mesh.Identity
-	Grant                            mesh.Grant
-}
+type meshBootstrap = meshops.Bootstrap
 
 func (a *app) meshCommand(args []string) (int, error) {
 	if len(args) == 0 {
 		return 2, fmt.Errorf("mesh requires connect, disconnect, lookup, identity, peers or an advanced operation")
 	}
 	action, args := args[0], args[1:]
+	if action == "connector" {
+		return a.meshConnector(args)
+	}
 	if action == "connect" || action == "disconnect" {
 		return a.meshLifecycle(action, args)
 	}
@@ -118,6 +116,32 @@ func (a *app) meshCommand(args []string) (int, error) {
 		f.BoolVar(dry, "dry-run", false, "preview without mutation")
 	}
 	switch action {
+	case "operations":
+		if e := a.parse(f, args, false); e != nil {
+			return 2, e
+		}
+		if f.NArg() > 1 {
+			return 2, fmt.Errorf("mesh operations accepts at most one exact key")
+		}
+		if f.NArg() == 1 {
+			op, ok, e := mesh.ReadCoordination(a.home, f.Arg(0))
+			if e != nil {
+				return 1, e
+			}
+			if !ok {
+				return 1, model.Err("not_found", "operator workflow key not found")
+			}
+			return 0, a.print(meshops.Project(op))
+		}
+		ops, e := mesh.ListCoordinations(a.home)
+		if e != nil {
+			return 1, e
+		}
+		out := make([]meshops.Operation, 0, len(ops))
+		for _, op := range ops {
+			out = append(out, meshops.ProjectSummary(op))
+		}
+		return 0, a.print(out)
 	case "lookup":
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err

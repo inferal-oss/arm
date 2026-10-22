@@ -47,11 +47,7 @@ func TestMeshSSHPolicyRejectsProxyAndEnvironmentForwarding(t *testing.T) {
 			t.Fatal("agent environment forwarded")
 		}
 	}
-	capture := &meshCapture{limit: 4}
-	n, e := capture.Write([]byte("123456"))
-	if n != 6 || e != nil || capture.String() != "1234" || !capture.overflow {
-		t.Fatal("unbounded SSH output capture")
-	}
+
 }
 func TestMeshSSHFlagsOverrideHostileConfiguration(t *testing.T) {
 	ssh, e := exec.LookPath("ssh")

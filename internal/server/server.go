@@ -19,11 +19,15 @@ import (
 	"github.com/yrashk/arm/internal/agents"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
+	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/observe"
 )
 
 type Server struct {
+	meshOperatorMu   sync.Mutex
+	meshOperator     *meshops.Service
 	nodeMu           sync.Mutex
 	nodeCache        map[string]cachedNodeRead
 	nodeSlots        chan struct{}
@@ -92,6 +96,7 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 		fmt.Fprintln(os.Stderr, "ARM mesh unavailable:", meshErr)
 	}
 	defer s.closeMesh()
+	defer s.closeMeshOperator()
 	defer func() {
 		s.lifecycleMu.Lock()
 		s.lifecycleClosing = true
@@ -191,11 +196,17 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			return false
 		}
 	}
+	var workflowSendMu sync.Mutex
+	var workflowIdentity string
+	var workflowSubscription context.CancelFunc
 	var subscription context.CancelFunc
 	var monitoring context.CancelFunc
 	monitorSlot := false
 	requests := make(chan struct{}, 8)
 	defer func() {
+		if workflowSubscription != nil {
+			workflowSubscription()
+		}
 		if monitoring != nil {
 			monitoring()
 		}
@@ -217,6 +228,77 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			if !send(resp) {
 				return
 			}
+			continue
+		}
+
+		if req.Operation == "mesh_operator_watch" {
+			var filter struct {
+				Key string `json:"key,omitempty"`
+			}
+			if e = mesh.Decode(req.Params, &filter); e != nil {
+				resp.Error = &model.Error{Code: "invalid_request", Message: "invalid workflow watch filter"}
+				send(resp)
+				continue
+			}
+			service, watchErr := s.meshOperatorService()
+			if watchErr != nil {
+				resp.Error = &model.Error{Code: "backend_stopping", Message: "operator watch is unavailable"}
+				send(resp)
+				continue
+			}
+			subctx, stop := context.WithCancel(ctx)
+			changes, watchErr := service.Watch(subctx, filter.Key)
+			if watchErr != nil {
+				stop()
+				var api *model.Error
+				if errors.As(watchErr, &api) {
+					resp.Error = api
+				} else {
+					resp.Error = &model.Error{Code: "operation_failed", Message: "operator watch unavailable"}
+				}
+				send(resp)
+				continue
+			}
+			if workflowSubscription != nil {
+				workflowSubscription()
+			}
+			workflowSubscription = stop
+			watchIdentity := "mesh_operator:" + local.ID()
+			workflowSendMu.Lock()
+			workflowIdentity = watchIdentity
+			resp.Result = map[string]string{"subscription": watchIdentity, "kind": "mesh_operator"}
+			sent := send(resp)
+			workflowSendMu.Unlock()
+			if !sent {
+				return
+			}
+			sendWorkflow := func(response model.WireResponse) bool {
+				workflowSendMu.Lock()
+				defer workflowSendMu.Unlock()
+				if workflowIdentity != watchIdentity || subctx.Err() != nil {
+					return false
+				}
+				return send(response)
+			}
+			go func() {
+				for {
+					select {
+					case <-subctx.Done():
+						return
+					case change, ok := <-changes:
+						if !ok {
+							sendWorkflow(model.WireResponse{Version: 1, Subscription: watchIdentity, Error: &model.Error{Code: "subscription_lost", Message: "refresh workflow snapshots and establish a new read-only watch"}})
+							return
+						}
+						if subctx.Err() != nil {
+							return
+						}
+						if !sendWorkflow(model.WireResponse{Version: 1, Subscription: watchIdentity, Result: change}) {
+							return
+						}
+					}
+				}
+			}()
 			continue
 		}
 		if req.Operation == "subscribe" {
@@ -370,6 +452,9 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
 		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease and pool controls and reviewed operator messaging; use the CLI for other changes")
+	}
+	if strings.HasPrefix(r.Operation, "mesh_operator_") {
+		return s.meshOperatorOperation(ctx, r.Operation, r.Params)
 	}
 	if strings.HasPrefix(r.Operation, "mesh_") {
 		return s.meshOperation(ctx, r.Operation, r.Params)
@@ -529,7 +614,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, e
 		}
 		if r.Operation == "pool_list" {
-			return s.Manager.Pools(q.All)
+			return boundedPoolRead(s.Manager.Pools(q.All))
 		}
 		if r.Operation == "pool_history" {
 			return boundedPoolRead(s.Manager.PoolHistory(q.ID, q.After))

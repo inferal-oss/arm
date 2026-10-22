@@ -350,7 +350,7 @@ func LockLifecycle(home string) (func(), error) {
 	}
 	if err = unix.Flock(fd, unix.LOCK_EX|unix.LOCK_NB); err != nil {
 		unix.Close(fd)
-		return nil, fmt.Errorf("another mesh lifecycle operation owns this ARM home")
+		return nil, fmt.Errorf("another mesh lifecycle operation owns this ARM home: %w", err)
 	}
 	return func() { unix.Flock(fd, unix.LOCK_UN); unix.Close(fd) }, nil
 }
