@@ -200,6 +200,7 @@ type Change struct {
 }
 type Records struct {
 	Initialized bool
+	Graph       *GraphRecords
 	Roots       []Root
 	Outbox      []Outbox
 	Inbox       []Inbox

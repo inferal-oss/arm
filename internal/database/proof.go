@@ -97,6 +97,7 @@ type proofReader struct {
 	subpoolSchema            bool
 	workspaceSchema          bool
 	routingSchema            bool
+	routingGraphSchema       bool
 	sshSchema                bool
 	cargoSchema              bool
 	cargoRuns                map[string]proofSSHRun
@@ -273,10 +274,11 @@ func (p *proofReader) metadata() error {
 				return fmt.Errorf("unknown budget binding schema")
 			}
 		case "routing_schema":
-			if raw != "1" {
+			if raw != "1" && raw != "2" {
 				return fmt.Errorf("unknown routing schema")
 			}
 			p.routingSchema = true
+			p.routingGraphSchema = raw == "2"
 		case "workspace_schema":
 			if raw != "1" && raw != "2" {
 				return fmt.Errorf("unknown workspace schema")

@@ -11,6 +11,11 @@ import (
 )
 
 func snapshotHash(v Snapshot) string { v.Hash = ""; return hash(v) }
+
+// ValidateSnapshotStructure checks retained complete directory evidence. It
+// deliberately does not confer current-time or in-process membership authority.
+func ValidateSnapshotStructure(v Snapshot) error { return validateSnapshot(v) }
+
 func validateSnapshot(v Snapshot) error {
 	if v.Schema != Schema || !validHex(v.Workspace, 16) || !validHex(v.Generation, 16) || !validHex(v.Requester, 16) || v.RequesterGeneration < 1 || !validHex(v.Nonce, 32) || v.Revision < 1 || v.PolicyRevision < 1 || v.Issued.IsZero() || !v.ValidUntil.After(v.Issued) || v.TTL != v.ValidUntil.Sub(v.Issued) || v.TTL > v.Policy.MembershipTTL || len(v.Members) < 1 || len(v.Members) > MaxMembers || !validHex(v.Hash, 32) || snapshotHash(v) != v.Hash {
 		return problem("invalid_snapshot", "invalid complete membership snapshot")
@@ -53,11 +58,30 @@ func cardOf(s Snapshot, host string) (MemberCard, bool) {
 	}
 	return MemberCard{}, false
 }
-func (s *Store) Issue(ctx context.Context, q RefreshRequest) (result Snapshot, err error) {
+
+// DirectoryIssue is current in-process SQL evidence, not a wire grant. A
+// callback must only persist typed dependent ledger data and never do I/O or
+// acquire Manager.mu. Snapshot and graph share this exact issuance transaction.
+type DirectoryIssue struct {
+	Snapshot Snapshot
+	Access   RouteAccess
+	Boot     string
+	Elapsed  time.Duration
+}
+
+func (s *Store) Issue(ctx context.Context, q RefreshRequest) (Snapshot, error) {
+	return s.IssueChecked(ctx, q, nil)
+}
+func (s *Store) IssueChecked(ctx context.Context, q RefreshRequest, dependent func(context.Context, *sql.Tx, DirectoryIssue) (DirectoryDependent, error)) (result Snapshot, err error) {
 	if !validPrincipal(q.Source) || !validHex(q.Nonce, 32) {
 		return result, problem("invalid_request", "authenticated source and fresh bounded nonce required")
 	}
-	err = s.transaction(ctx, false, func(tx *sql.Tx, v *Records) error {
+	var graph DirectoryDependent
+	var graphDeadline time.Duration
+	// Queue/SQL time consumes the dependent response's window too. The
+	// callback may not start a new TTL when it eventually obtains this store.
+	requestStarted := s.clock.Elapsed()
+	err = s.transactionChecked(ctx, false, func(tx *sql.Tx, v *Records) error {
 		root, e := rootOf(v, q.Source.Workspace)
 		if e != nil {
 			return e
@@ -96,7 +120,41 @@ func (s *Store) Issue(ctx context.Context, q RefreshRequest) (result Snapshot, e
 		if e = s.fail("issuance_floor"); e != nil {
 			return e
 		}
-		return writeClock(ctx, tx, clock)
+		if e = writeClock(ctx, tx, clock); e != nil {
+			return e
+		}
+		if dependent != nil {
+			// A directory may issue its own local view too. This Go-only value is
+			// not a routed stream token; the routed wire still forbids equal endpoints.
+			access := RouteAccess{At: now, Workspace: root.ID, Generation: root.Generation, Local: root.Self, Origin: member.Identity, Destination: root.Self, Directory: root.Directory, OriginGeneration: member.MembershipGeneration, DestinationGeneration: 1, DirectoryRevision: root.Revision, DestinationInbox: root.Policy.HostInbox, Expires: until, Remaining: until.Sub(now)}
+			started := s.clock.Elapsed()
+			graph, e = dependent(ctx, tx, DirectoryIssue{Snapshot: result, Access: access, Boot: s.boot, Elapsed: started})
+			if e != nil {
+				return e
+			}
+			if !validHex(graph.Hash, 32) || graph.Issued != result.Issued || !graph.ValidUntil.After(graph.Issued) || graph.ValidUntil.After(result.ValidUntil) {
+				return problem("invalid_snapshot", "dependent issue lacks exact bounded graph validity")
+			}
+			graphDeadline = requestStarted + graph.ValidUntil.Sub(graph.Issued)
+			if s.clock.Elapsed() >= graphDeadline || !graph.ValidUntil.After(s.now()) {
+				return problem("stale_refresh", "dependent graph issue expired before validation")
+			}
+			return nil
+		}
+		return nil
+	}, func(v *Records) error {
+		root, e := rootOf(v, q.Source.Workspace)
+		if e != nil {
+			return e
+		}
+		member, e := s.authorize(v, root, q.Source, false)
+		if e != nil {
+			return e
+		}
+		if root.Generation != result.Generation || root.Revision != result.Revision || root.Directory != result.Directory || root.Self != s.self || root.Policy != result.Policy || root.PolicyRevision != result.PolicyRevision || member.MembershipGeneration != result.RequesterGeneration || !result.ValidUntil.After(s.now()) || graph.Hash != "" && (s.clock.Elapsed() >= graphDeadline || !graph.ValidUntil.After(s.now())) {
+			return problem("stale_refresh", "directory issue changed or expired before final commit")
+		}
+		return nil
 	})
 	if err != nil {
 		return Snapshot{}, err
@@ -111,11 +169,34 @@ type refreshTicket struct {
 	startWall              time.Time
 	startElapsed           time.Duration
 }
+
+// RefreshStart is process-local evidence of a pending refresh's original
+// start, not a transferable authorization token. A dependent producer must
+// additionally run under a current RouteTransaction for this exact source.
+type RefreshStart struct {
+	Request           RefreshRequest
+	Boot              string
+	Wall              time.Time
+	Elapsed, Lifetime time.Duration
+}
+
+func (r *Runtime) RefreshStart(q RefreshRequest) (RefreshStart, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	t, ok := r.pending[q.Nonce]
+	if r.closed || !ok || t.request != q || t.boot != r.store.boot || r.store.clock.Elapsed() >= t.startElapsed+t.lifetime {
+		return RefreshStart{}, problem("stale_refresh", "exact current process refresh start is unavailable")
+	}
+	return RefreshStart{Request: q, Boot: t.boot, Wall: t.startWall, Elapsed: t.startElapsed, Lifetime: t.lifetime}, nil
+}
+
 type authorizedSnapshot struct {
-	boot       string
-	deadline   time.Duration
-	hash       string
-	generation int64
+	graph         string
+	graphDeadline time.Duration
+	boot          string
+	deadline      time.Duration
+	hash          string
+	generation    int64
 }
 
 // Runtime is an ephemeral authorization cache. Reopening the store or creating
@@ -206,7 +287,28 @@ func (r *Runtime) Begin(ctx context.Context, id string) (RefreshRequest, error) 
 
 // Accept requires a TLS-derived exact directory identity from the future closed
 // transport adapter. Caller JSON saying 'directory' is not authentication.
-func (r *Runtime) Accept(ctx context.Context, authenticatedDirectory Identity, snapshot Snapshot) error {
+// DirectoryAcceptance binds a dependent graph observation to the original
+// refresh request start. A returned graph hash is activated atomically WITH
+// current membership only after both ledgers committed and Close rechecked.
+type DirectoryDependent struct {
+	Hash               string
+	Issued, ValidUntil time.Time
+}
+
+type DirectoryAcceptance struct {
+	Snapshot                        Snapshot
+	Authority                       Authority
+	Local                           Identity
+	At                              time.Time
+	Boot                            string
+	StartWall                       time.Time
+	StartElapsed, Elapsed, Deadline time.Duration
+}
+
+func (r *Runtime) Accept(ctx context.Context, directory Identity, snapshot Snapshot) error {
+	return r.AcceptChecked(ctx, directory, snapshot, nil)
+}
+func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Identity, snapshot Snapshot, dependent func(context.Context, *sql.Tx, DirectoryAcceptance) (DirectoryDependent, error)) error {
 	r.mu.Lock()
 	t, ok := r.pending[snapshot.Nonce]
 	if ok {
@@ -214,10 +316,18 @@ func (r *Runtime) Accept(ctx context.Context, authenticatedDirectory Identity, s
 		delete(r.active, t.workspace)
 	}
 	closed := r.closed
-	r.mu.Unlock()
 	if !ok || closed || t.boot != r.store.boot {
+		r.mu.Unlock()
 		return problem("stale_refresh", "no current process refresh matches this nonce")
 	}
+	life, cancel := context.WithCancel(r.life)
+	r.finalizing.Add(1)
+	r.mu.Unlock()
+	defer r.finalizing.Done()
+	defer cancel()
+	stop := context.AfterFunc(ctx, cancel)
+	defer stop()
+	ctx = life
 	if e := validateSnapshot(snapshot); e != nil {
 		return e
 	}
@@ -225,7 +335,9 @@ func (r *Runtime) Accept(ctx context.Context, authenticatedDirectory Identity, s
 		return problem("invalid_snapshot", "response differs from exact request source/target")
 	}
 	var deadline time.Duration
-	e := r.store.transaction(ctx, false, func(tx *sql.Tx, v *Records) error {
+	var graph DirectoryDependent
+	var graphDeadline time.Duration
+	e := r.store.transactionChecked(ctx, false, func(tx *sql.Tx, v *Records) error {
 		root, e := rootOf(v, t.workspace)
 		if e != nil {
 			return e
@@ -346,7 +458,59 @@ func (r *Runtime) Accept(ctx context.Context, authenticatedDirectory Identity, s
 		}
 		clock.WallFloor = now
 		clock.LastRevision = root.Revision
-		return writeClock(ctx, tx, clock)
+		if e = writeClock(ctx, tx, clock); e != nil {
+			return e
+		}
+		if dependent != nil {
+			graph, e = dependent(ctx, tx, DirectoryAcceptance{Snapshot: snapshot, Authority: r.store.authority, Local: root.Self, At: now, Boot: r.store.boot, StartWall: t.startWall, StartElapsed: t.startElapsed, Elapsed: elapsed, Deadline: deadline})
+			if e != nil {
+				return e
+			}
+			if !validHex(graph.Hash, 32) || graph.Issued.IsZero() || !graph.ValidUntil.After(graph.Issued) || graph.Issued.Before(t.startWall.Add(-root.Policy.ClockSkew)) || graph.Issued.After(now.Add(root.Policy.ClockSkew)) || graph.ValidUntil.After(snapshot.ValidUntil) || graph.ValidUntil.Sub(graph.Issued) > snapshot.TTL {
+				return problem("invalid_snapshot", "dependent graph did not return an exact committed snapshot hash and bounded original validity")
+			}
+			graphDeadline = min(deadline, t.startElapsed+graph.ValidUntil.Sub(graph.Issued), elapsed+graph.ValidUntil.Sub(now))
+			if graphDeadline <= elapsed {
+				return problem("stale_refresh", "dependent graph consumed original request-start validity")
+			}
+		}
+		return nil
+	}, func(v *Records) error {
+		root, e := rootOf(v, t.workspace)
+		if e != nil {
+			return e
+		}
+		if root.Role != "member" || !known(root.State, "joining", "active") || root.Self != r.store.self || root.Directory != authenticatedDirectory || root.Policy != snapshot.Policy || root.PolicyRevision != snapshot.PolicyRevision || denied(v, root.ID, root.Directory.Host) || denied(v, root.ID, root.Self.Host) {
+			return problem("forbidden", "refresh authority changed before final commit")
+		}
+		clock, e := clockOf(v, root.ID)
+		if e != nil {
+			return e
+		}
+		if e = r.store.checkClock(clock.WallFloor); e != nil {
+			return e
+		}
+		now, elapsed := r.store.now(), r.store.clock.Elapsed()
+		if elapsed < t.startElapsed || elapsed >= deadline || !now.Before(snapshot.ValidUntil) || graph.Hash != "" && (elapsed >= graphDeadline || !now.Before(graph.ValidUntil)) {
+			return problem("stale_refresh", "refresh bundle consumed its ORIGINAL request-start validity before final commit")
+		}
+		if e = identityCurrent(root.Self, now); e != nil {
+			return e
+		}
+		if e = identityCurrent(root.Directory, now); e != nil {
+			return e
+		}
+		found := false
+		for _, o := range v.Observations {
+			if o.Workspace == root.ID && o.SnapshotHash == snapshot.Hash {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return problem("invalid_snapshot", "refresh dependent changed the exact membership observation")
+		}
+		return nil
 	})
 	if e != nil {
 		return e
@@ -356,7 +520,10 @@ func (r *Runtime) Accept(ctx context.Context, authenticatedDirectory Identity, s
 	if r.closed {
 		return problem("backend_stopping", "runtime closed during refresh; persisted observation remains display-only")
 	}
-	r.active[t.workspace] = authorizedSnapshot{r.store.boot, deadline, snapshot.Hash, snapshot.RequesterGeneration}
+	if r.store.clock.Elapsed() >= deadline {
+		return problem("stale_refresh", "committed bundle consumed original validity before runtime activation; observations remain display-only")
+	}
+	r.active[t.workspace] = authorizedSnapshot{boot: r.store.boot, deadline: deadline, hash: snapshot.Hash, generation: snapshot.RequesterGeneration, graph: graph.Hash, graphDeadline: graphDeadline}
 	return nil
 }
 

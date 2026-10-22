@@ -222,7 +222,11 @@ func (p *proofReader) readRouting() error {
 			if c.Before == nil || *c.Before != old || old.Revision == math.MaxInt64 || c.After.Revision != old.Revision+1 || old.State != "active" || c.After.Updated.Before(old.Updated) {
 				return fmt.Errorf("routing journal chain is incomplete")
 			}
-			if c.Kind == "retired" {
+			if c.Kind == "graph_enabled" {
+				if c.After.State != "active" || c.Phase != "active" || c.Actor != "uid:"+r.Authority.UID || c.Key != "" || c.Message != "" || c.Digest != "" || c.ReceiptHash != "" {
+					return fmt.Errorf("invalid graph enablement event")
+				}
+			} else if c.Kind == "retired" {
 				if c.After.State != "retired" || c.Phase != "retired" || c.Actor != "uid:"+r.Authority.UID || !validIntentKey(c.Key) || c.Message != "" || c.Digest != "" || c.ReceiptHash != "" {
 					return fmt.Errorf("routing retirement differs")
 				}
@@ -345,6 +349,9 @@ func (p *proofReader) readRouting() error {
 	}
 	if len(retained) != len(lastItems) {
 		return fmt.Errorf("routing message history was deleted")
+	}
+	if e := p.readRoutingGraph(roots, parents, changes, &producer, bytesRead); e != nil {
+		return e
 	}
 	// Supplemental pure validation is NOT the independent exact schema/raw/
 	// authority/retirement proof above. It also checks producer capacity promises.

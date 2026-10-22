@@ -63,12 +63,17 @@ func schema(ctx context.Context, tx *sql.Tx, initialize bool) (bool, error) {
 		}
 		return true, nil
 	}
-	if e != nil || marker != "1" || len(seen) != len(names) {
+	wantNames, wantStatements := names, statements
+	if marker == "2" {
+		wantNames = append(append([]string{}, names...), graphNames...)
+		wantStatements = append(append([]string{}, statements...), graphStatements...)
+	}
+	if e != nil || marker != "1" && marker != "2" || len(seen) != len(wantNames) {
 		return false, invalid("incomplete or unsupported routing ledger")
 	}
 	canonical := func(v string) string { return strings.ToLower(strings.Join(strings.Fields(v), " ")) }
-	for i, name := range names {
-		if canonical(seen[name]) != canonical(statements[i]) {
+	for i, name := range wantNames {
+		if canonical(seen[name]) != canonical(wantStatements[i]) {
 			return false, invalid(fmt.Sprintf("routing schema differs for %s", name))
 		}
 	}

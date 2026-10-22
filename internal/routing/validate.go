@@ -23,7 +23,7 @@ func validRoot(r Root) bool {
 }
 func Validate(v Records) error {
 	if !v.Initialized {
-		if len(v.Roots)+len(v.Outbox)+len(v.Inbox)+len(v.Events) > 0 {
+		if len(v.Roots)+len(v.Outbox)+len(v.Inbox)+len(v.Events) > 0 || v.Graph != nil {
 			return invalid("uninitialized routing ledger has records")
 		}
 		return nil
@@ -59,7 +59,11 @@ func Validate(v Records) error {
 			if c.Before == nil || *c.Before != before || before.Revision == math.MaxInt64 || c.After.Revision != before.Revision+1 || c.After.Updated.Before(before.Updated) || before.State != "active" {
 				return invalid("routing event chain is not exact monotone history")
 			}
-			if c.Kind == "retired" {
+			if c.Kind == "graph_enabled" {
+				if c.After.State != "active" || c.Phase != "active" || c.Actor != "uid:"+r.Authority.UID || c.Key != "" || c.Message != "" || c.Digest != "" || c.ReceiptHash != "" {
+					return invalid("graph enablement event differs")
+				}
+			} else if c.Kind == "retired" {
 				if c.After.State != "retired" || c.Phase != "retired" || c.Actor != "uid:"+r.Authority.UID || !validKey(c.Key) || c.Message != "" || c.Digest != "" || c.ReceiptHash != "" {
 					return invalid("routing retirement history differs")
 				}
@@ -191,6 +195,9 @@ func Validate(v Records) error {
 	if len(seenItems) != len(lastItem) {
 		return invalid("routing event message has no retained record")
 	}
+	if e := validateGraph(v); e != nil {
+		return e
+	}
 	return capacity(v)
 }
 func capacity(v Records) error {
@@ -239,6 +246,9 @@ func capacity(v Records) error {
 		if pending > MaxPending || out > MaxOutbox || in > MaxMessages || events+retireReserve > MaxEvents {
 			return model.Err("routing_capacity_exhausted", "routing history/pending capacity including settlement reserve is full")
 		}
+	}
+	if e := checkGraphCapacity(v, add, &bytes); e != nil {
+		return model.Err("routing_capacity_exhausted", e.Error())
 	}
 	if max(bytes, v.rawBytes) > MaxLedgerBytes {
 		return model.Err("routing_capacity_exhausted", "routing ledger including settlement reserve exceeds32MiB")

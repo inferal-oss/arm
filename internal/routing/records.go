@@ -140,6 +140,9 @@ func Read(ctx context.Context, tx *sql.Tx) (Records, error) {
 			return out, invalid("routing root immutable parent authority differs")
 		}
 	}
+	if e = readGraph(ctx, tx, &out); e != nil {
+		return out, e
+	}
 	if e = Validate(out); e != nil {
 		return out, e
 	}

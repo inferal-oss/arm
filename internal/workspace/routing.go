@@ -15,6 +15,7 @@ const RouteDirectory = "directory"
 type RouteAccess struct {
 	At                                      time.Time
 	Workspace, Generation                   string
+	GraphHash                               string
 	Local, Origin, Destination, Directory   Identity
 	OriginGeneration, DestinationGeneration int64
 	DirectoryRevision                       int64
@@ -28,7 +29,7 @@ func (s *Store) routeAccess(v *Records, cached authorizedSnapshot, id, origin, t
 	if e != nil {
 		return RouteAccess{}, e
 	}
-	if !validHex(origin, 16) || !validHex(target, 16) || origin == target || !known(class, RouteMessage, RouteDirectory) || root.State != "active" || root.Self != s.self || denied(v, id, root.Self.Host) || denied(v, id, root.Directory.Host) || denied(v, id, origin) || denied(v, id, target) {
+	if !validHex(origin, 16) || !validHex(target, 16) || origin == target || !known(class, RouteMessage, RouteDirectory) || (root.State != "active" && !(root.Role == "member" && root.State == "joining" && class == RouteDirectory && origin == root.Self.Host && target == root.Directory.Host)) || root.Self != s.self || denied(v, id, root.Self.Host) || denied(v, id, root.Directory.Host) || denied(v, id, origin) || denied(v, id, target) {
 		return RouteAccess{}, problem("forbidden", "current workspace state/pins/deny do not permit this route")
 	}
 	if class == RouteDirectory && target != root.Directory.Host {
@@ -77,6 +78,9 @@ func (s *Store) routeAccess(v *Records, cached authorizedSnapshot, id, origin, t
 		if class == RouteDirectory && origin == root.Self.Host {
 			out.Origin, out.Destination = root.Self, root.Directory
 			out.OriginGeneration = root.SelfGeneration
+			if out.OriginGeneration == 0 && root.State == "joining" {
+				out.OriginGeneration = 1
+			}
 			out.DestinationGeneration = 1
 			out.DirectoryRevision = root.PolicyRevision
 		} else {
@@ -125,6 +129,9 @@ func (s *Store) routeAccess(v *Records, cached authorizedSnapshot, id, origin, t
 			out.Origin, out.Destination = from.Identity, to.Identity
 			out.OriginGeneration, out.DestinationGeneration = from.MembershipGeneration, to.MembershipGeneration
 			out.DirectoryRevision = snapshot.Revision
+			if elapsed < cached.graphDeadline {
+				out.GraphHash = cached.graph
+			}
 			out.DestinationInbox = to.HostInbox
 			out.Remaining = min(out.Remaining, cached.deadline-elapsed, snapshot.ValidUntil.Sub(now))
 			out.Expires = minTime(out.Expires, now.Add(out.Remaining), snapshot.ValidUntil)

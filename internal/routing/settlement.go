@@ -105,6 +105,16 @@ func Retire(ctx context.Context, tx *sql.Tx, a workspace.Authority, id, key stri
 			return root, model.Err("outcome_unresolved", "accepted endpoint delivery remains pending")
 		}
 	}
+	if g, found := graphIssuer(v, id); found {
+		if at.Before(g.WallFloor) {
+			return root, model.Err("routing_clock_unavailable", "graph issuance clock is ahead of retirement")
+		}
+		g.Closed = true
+		g.Updated, g.WallFloor = at, at
+		if e = writeGraphIssuer(ctx, tx, g); e != nil {
+			return root, e
+		}
+	}
 	e = advance(ctx, tx, root, at, Change{Kind: "retired", Actor: "uid:" + a.UID, Key: key, Phase: "retired"})
 	if e != nil {
 		return root, e
