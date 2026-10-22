@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", required=True, help="explicit SSH destination, e.g. user@linux-host")
     parser.add_argument("--go", default=os.environ.get("GO", "go"))
-    parser.add_argument("--packages", nargs="+", choices=("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"), help="selected suites (default: all)")
+    parser.add_argument("--packages", nargs="+", choices=("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "sharelease", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"), help="selected suites (default: all)")
     parser.add_argument("--test-run", default="", help="Go test regular expression for a targeted verification")
     parser.add_argument("--skip-smoke", action="store_true", help="skip compiled CLI smoke test for a targeted verification")
     parser.add_argument("--isolate-processes", action="store_true", help="run under unprivileged unshare with a private /proc; separately test host permission restrictions")
@@ -36,7 +36,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-ssh-") as staging:
         target = Path(staging)
-        packages = list(opts.packages or ("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"))
+        packages = list(opts.packages or ("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "sharelease", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"))
         if not opts.skip_smoke and "manager" not in packages:
             packages.append("manager")
         for package in packages:

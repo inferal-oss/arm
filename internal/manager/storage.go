@@ -103,6 +103,12 @@ func (m *Manager) storageForRun(r model.Request) (model.Lease, error) {
 	if err != nil {
 		return l, err
 	}
+	if share, err := m.shareStorageBusy(l.ID); err != nil {
+		return l, err
+	} else if share != "" {
+		return l, model.Err("storage_in_use", "retire share "+share+" and join its workers/consumers before attaching a writer")
+	}
+
 	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || time.Now().Add(r.TTL).After(*l.Expires) || l.Artifact == nil || l.Artifact.Phase != "owned" {
 		return l, model.Err("storage_unavailable", "storage must be active, owned by this host/user, and outlast the command's TTL")
 	}
@@ -129,6 +135,10 @@ func storageConsumers(ls []model.Lease, id string) []string {
 	return consumers
 }
 func (m *Manager) endStorage(l model.Lease, outcome string) (model.Lease, error) {
+	if _, err := m.shareStorageBusy(l.ID); err != nil {
+		return m.storageFailed(l, err)
+	}
+
 	if l.State == "queued" {
 		now := time.Now().UTC()
 		l.State = "terminal"
@@ -176,6 +186,14 @@ func (m *Manager) cleanupStorage(id string) {
 	m.mu.Lock()
 	l, err := m.get(id)
 	if err != nil || l.State != "ending" {
+		m.mu.Unlock()
+		return
+	}
+
+	if share, e := m.shareStorageBusy(id); e != nil || share != "" {
+		if e != nil {
+			_, _ = m.storageFailed(l, e)
+		}
 		m.mu.Unlock()
 		return
 	}
@@ -318,6 +336,16 @@ func (m *Manager) StoragePreview(ctx context.Context, id string) (model.StorageP
 	ls, err := m.list()
 	p := m.storage
 	preview := model.StoragePreview{Lease: l, Consumers: storageConsumers(ls, id), ActivePIDs: []int{}, Detail: "Read-only preview; allocated blocks do not establish exclusive or reclaimable bytes"}
+
+	if share, e := m.shareStorageBusy(id); e != nil || share != "" {
+		if e != nil {
+			preview.Detail += "; share evidence unavailable: " + e.Error()
+		} else {
+			preview.Detail += "; share " + share + " pins this storage until its native workers/consumers join"
+		}
+		m.mu.Unlock()
+		return preview, nil
+	}
 	if export, e := m.storageExportBusy(id); e != nil || export != "" {
 		if e != nil {
 			m.mu.Unlock()
@@ -392,6 +420,12 @@ func (m *Manager) storageHandoff(id string) (model.Lease, error) {
 	}
 	if l.Request.Kind != "storage" {
 		return l, model.Err("invalid_request", "not a storage lease")
+	}
+
+	if share, e := m.shareStorageBusy(id); e != nil {
+		return l, e
+	} else if share != "" {
+		return l, model.Err("storage_in_use", "retire share "+share+" and join all native workers/consumers before storage handoff")
 	}
 	if l.State == "terminal" {
 		return l, nil

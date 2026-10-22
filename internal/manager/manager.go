@@ -43,6 +43,7 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
+	shares             *shareBoundary
 	cargoHelper        CargoHelperSource
 	cargoWorkers       map[string]*cargoWorker
 	workspaces         *workspaceBoundary
@@ -179,6 +180,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
+	m.initShares()
+	m.recoverShares()
 	m.loadStorage()
 	opened := false
 	defer func() {
@@ -358,6 +361,7 @@ func (m *Manager) Close() error {
 	m.mu.Lock()
 	m.closing = true
 	m.mu.Unlock()
+	m.cancelShareScopes()
 	// Workspace calls may hold the single database connection while awaiting
 	// cancellation. Join them before ordinary job-ending SQL, without holding
 	// Manager.mu: final proof gates also inspect manager lifecycle state.
@@ -365,6 +369,13 @@ func (m *Manager) Close() error {
 		m.workspaces.close()
 	}
 	m.mu.Lock()
+	if m.shares != nil {
+		for _, p := range m.shares.state.Publications {
+			if m.shares.workers[p.ID] != nil {
+				_, _ = m.end(p.Lease, "cancelled")
+			}
+		}
+	}
 	for id := range m.cargoWorkers {
 		_, _ = m.end(id, "cancelled")
 	}
@@ -590,8 +601,19 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	return m.acquire(r, run)
 }
 
-func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error) {
+func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmission) (model.Lease, error) {
 	var empty model.Lease
+	if len(shares) > 1 {
+		return empty, model.Err("invalid_request", "at most one typed share admission is allowed")
+	}
+	if len(shares) == 1 {
+		if err := shares[0].validate(r, run); err != nil {
+			return empty, err
+		}
+	} else if shareKind(r.Kind) {
+		return empty, model.Err("invalid_request", "share lease kinds are reserved for typed internal share lifecycle admission; public share commands are not enabled")
+	}
+
 	if run != nil && (run.SSH != nil || run.sshRuntime != nil) && (run.SSH == nil || run.sshRuntime == nil || !reflect.DeepEqual(run.SSH, sshDescriptor(run.sshRuntime.request)) || run.sshRuntime.check() != nil) {
 		return empty, model.Err("invalid_request", "a persisted/wire SSH descriptor cannot authorize execution")
 	}
@@ -638,7 +660,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || (r.Resources == (model.Resources{}) && len(r.Ports) == 0 && r.PortLease == "" && len(r.Pools) == 0) {
 		return empty, model.Err("invalid_request", "request positive CPU/memory/disk, at least one port, an attached port lease, or counted pool claims")
 	}
-	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" {
+	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" && !(len(shares) == 1 && r.Kind == "share-publication") {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
 	}
 	if r.Kind == "storage" && (len(r.Pools) > 0 || run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
@@ -650,7 +672,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if r.PortLease != "" && (run == nil || len(r.Ports) > 0) {
 		return empty, model.Err("invalid_request", "a supervised run can attach one port lease or request its own ports")
 	}
-	if r.StorageLease != "" && run == nil {
+	if r.StorageLease != "" && run == nil && len(shares) == 0 {
 		return empty, model.Err("invalid_request", "only supervised commands can attach storage")
 	}
 	if r.Profile != "" && !SupportsProfile(r.Profile) {
@@ -729,7 +751,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if err := m.poolAdmissionAncestry(r.Pools); err != nil {
 		return empty, err
 	}
-	if r.StorageLease != "" && r.Profile != "rust-build" {
+	if r.StorageLease != "" && r.Profile != "rust-build" && len(shares) == 0 {
 		if _, e := m.storageForRun(r); e != nil {
 			return empty, e
 		}
@@ -838,6 +860,11 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if r.Profile == "rust-build" {
 		projectCargo(&l, cargoNewRecord(l, run))
 	}
+	if len(shares) == 1 {
+		if e = m.prepareShareAdmission(shares[0], &l); e != nil {
+			return empty, e
+		}
+	}
 	b, _ := json.Marshal(l)
 	tx, e := m.db.Begin()
 	if e != nil {
@@ -863,6 +890,11 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if e = insertBudgetBinding(tx, l.ID, binding, "budget.bound"); e != nil {
 		return empty, e
 	}
+	if len(shares) == 1 {
+		if e = m.commitShareAdmission(shares[0], tx); e != nil {
+			return empty, e
+		}
+	}
 	if e = event(tx, "lease.created", l.ID, l); e != nil {
 		return empty, e
 	}
@@ -876,8 +908,16 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			return empty, e
 		}
 	}
-	if e = tx.Commit(); e != nil {
+	if len(shares) == 1 {
+		e = m.commitShareTransaction(tx)
+	} else {
+		e = tx.Commit()
+	}
+	if e != nil {
 		return empty, e
+	}
+	if len(shares) == 1 {
+		m.finishShareAdmission(shares[0])
 	}
 	if r.StartDeadline != nil {
 		m.scheduleCheckpoint = m.scheduleHighwater
@@ -960,6 +1000,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if handled, result, err := m.endShareIfNeeded(l, outcome); handled {
+		return result, err
+	}
 	if l.Cargo != nil || l.Request.Profile == "rust-build" {
 		return m.endCargo(l, outcome)
 	}
@@ -1025,6 +1068,17 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if m.shareNonRuntimeLease(l) {
+		return l, model.Err("share_lifetime_fixed", "share lifetimes are fixed to their reviewed storage/generation; retire and prepare a new share, or finish this consumer before requesting a new lease")
+	}
+	if l.Request.Kind == "storage" {
+		if share, e := m.shareStorageBusy(id); e != nil {
+			return l, e
+		} else if share != "" {
+			return l, model.Err("storage_in_use", "retire share "+share+" before renewing/changing its exact backing storage revision")
+		}
+	}
+
 	if err := m.budgetPolicyError(); err != nil {
 		return l, err
 	}

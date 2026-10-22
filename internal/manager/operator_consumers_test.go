@@ -21,23 +21,21 @@ func TestLeaseActionReviewsExactAttachedConsumers(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			// A queued consumer is enough to prove the review guard without starting
-			// a process or depending on optional storage cleanup support.
-			consumer, err := m.Acquire(request("consumer-review"), nil)
-			if err != nil {
+			// Use a genuinely supervised queued consumer: a run=NULL storage
+			// dependency is deliberately an unresolved share/orphan hold.
+			if _, err = m.Acquire(request("occupy-consumer-capacity"), nil); err != nil {
 				t.Fatal(err)
 			}
-			consumer.State = "queued"
+			q := request("consumer-review")
+			q.Queue = true
 			if kind == "storage" {
-				consumer.Request.StorageLease = parent.ID
+				q.StorageLease = parent.ID
 			} else {
-				consumer.Request.PortLease = parent.ID
+				q.PortLease = parent.ID
 			}
-			m.mu.Lock()
-			err = m.put(consumer, "test.attached")
-			m.mu.Unlock()
-			if err != nil {
-				t.Fatal(err)
+			consumer, err := m.Acquire(q, &RunRequest{Request: q, CWD: t.TempDir(), Command: []string{"/bin/true"}})
+			if err != nil || consumer.State != "queued" {
+				t.Fatal(consumer, err)
 			}
 			for _, reviewed := range [][]model.LeaseRevision{{}, {{ID: consumer.ID, Revision: consumer.Revision + 1}}, {{ID: "unrelated", Revision: 1}}} {
 				_, err = m.LeaseAction(model.LeaseAction{ID: parent.ID, Revision: parent.Revision, Action: "release", Consumers: reviewed})

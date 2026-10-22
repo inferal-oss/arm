@@ -167,6 +167,12 @@ func (m *Manager) exportSource(request model.StorageExportRequest) (model.Lease,
 	if err != nil {
 		return l, err
 	}
+	if share, e := m.shareStorageBusy(l.ID); e != nil {
+		return l, e
+	} else if share != "" {
+		return l, model.Err("storage_in_use", "retire share "+share+" and join its workers/consumers before exporting pinned storage")
+	}
+
 	if m.closing || m.draining {
 		return l, model.Err("backend_stopping", "new exports are unavailable during shutdown/drain")
 	}
@@ -479,6 +485,12 @@ func (m *Manager) StorageRetain(id string, revision int, ttl time.Duration, reas
 	if err != nil {
 		return l, err
 	}
+	if share, e := m.shareStorageBusy(id); e != nil {
+		return l, e
+	} else if share != "" {
+		return l, model.Err("storage_in_use", "retire share "+share+" before changing the exact storage revision/retention")
+	}
+
 	if m.closing || m.draining {
 		return l, model.Err("backend_stopping", "retention changes are unavailable during shutdown/drain")
 	}
