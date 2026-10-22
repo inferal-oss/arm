@@ -123,6 +123,15 @@ func (a *app) sshCommand(args []string) (int, error) {
 	if e != nil {
 		return 2, e
 	}
+	if *key == "" {
+		*key = local.ID()
+	}
+	if !historyText(*key, 128) {
+		return 2, model.Err("invalid_request", "valid exact SSH key required")
+	}
+	if e = a.sshSourcePrecheck(f.Arg(0), *key); e != nil {
+		return 1, e
+	}
 	account, e := a.sshAccount()
 	if e != nil {
 		return 1, e
@@ -172,9 +181,6 @@ func (a *app) sshCommand(args []string) (int, error) {
 	hostHash, e := sshKeyHash(identity.PublicKey)
 	if e != nil {
 		return 1, e
-	}
-	if *key == "" {
-		*key = local.ID()
 	}
 	control := meshstream.Control{Version: 1, Source: account.Binding.Host, Target: identity.Target, Pair: identity.Pair, Revision: identity.Revision, Account: identity.Account, Key: *key, PublicKey: pub, Reason: *reason, TTL: *ttl, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: ds}, CWD: *cwd, TargetOwner: identity.Owner, HostKeySHA256: hostHash, Kind: kind, CommandSHA256: sshDigest([]byte(command)), PTY: terminal}
 	if e = control.Validate(); e != nil {
@@ -252,19 +258,11 @@ func (a *app) sshServiceCommand(action string, args []string) (int, error) {
 	return 0, a.print(review.After)
 }
 func (a *app) sshOfflineState() (*sshservice.State, string, sshservice.Binding, error) {
-	config, exists, e := mesh.ReadRegistry(a.home)
-	if e != nil {
-		return nil, "", sshservice.Binding{}, e
-	}
-	if !exists {
-		return nil, "", sshservice.Binding{}, fmt.Errorf("mesh is not initialized")
-	}
-	native := local.CurrentIdentity()
-	binding := sshservice.Binding{Host: config.Identity.Host, Owner: native.UID, Account: native.Username}
-	home, e := filepath.EvalSymlinks(a.home)
+	home, _, binding, e := a.sshOfflineAuthority()
 	if e != nil {
 		return nil, "", binding, e
 	}
+
 	s, e := sshservice.ReadState(a.ctx, home, binding)
 	return s, home, binding, e
 }
@@ -299,6 +297,29 @@ func (a *app) sshRecover(action string, args []string) (int, error) {
 	state, home, b, e := a.sshOfflineState()
 	if e != nil {
 		return 1, e
+	}
+	_, registry, _, e := a.sshOfflineAuthority()
+	if e != nil {
+		return 1, e
+	}
+	localTarget, e := historyTarget(registry, f.Arg(0))
+	if e != nil {
+		return 1, e
+	}
+	if action == "lookup" {
+		receipt, e := sshservice.LookupSourceHistory(a.ctx, home, b, localTarget, *key)
+		if e != nil {
+			return 1, model.Err("ssh_evidence_unavailable", e.Error())
+		}
+		if receipt.Found {
+			if *cleanup {
+				return 1, model.Err("invalid_request", "local settled evidence is read-only; no pending artifact cleanup is available")
+			}
+			return 0, a.print(struct {
+				Source  string                         `json:"source"`
+				Receipt sshservice.SourceHistoryLookup `json:"receipt"`
+			}{"local", receipt})
+		}
 	}
 	store, e := mesh.Open(home)
 	if e != nil {
@@ -461,12 +482,10 @@ func (a *app) sshExecute(store *mesh.Store, peer mesh.Peer, account sshLocalAcco
 	}
 	intent := sshservice.SourceIntent{Schema: 1, Source: control.Source, Owner: account.Binding.Owner, Request: sshservice.SourceRequest{Key: control.Key, Pin: pin, TargetOwner: control.TargetOwner, SourceCertificate: store.Config().Identity.Fingerprint, PublicKey: control.PublicKey, Reason: control.Reason, TTL: control.TTL, Resources: control.Resources, CWD: control.CWD, Kind: control.Kind, CommandSHA256: control.CommandSHA256, PTY: control.PTY}, Worker: worker, Directory: dir, Created: time.Now().UTC()}
 	if e = sshservice.ReserveSource(a.ctx, account.StateHome, account.Binding, intent); e != nil {
-		if errors.Is(e, sshservice.ErrIntentExists) || errors.Is(e, sshservice.ErrTargetUncertain) {
-			if cleanupErr := sshservice.DiscardEmptyInvocationDirectory(a.ctx, dir); cleanupErr != nil {
-				return 1, fmt.Errorf("reservation refused; empty directory cleanup unavailable: %v: %w", cleanupErr, e)
-			}
-			return 1, model.Err("ssh_intent_exists", e.Error())
+		if refusal, definite := sshReservationRefusal(a.ctx, intent, e); definite {
+			return 1, refusal
 		}
+
 		return 1, sshUnknown(intent, e)
 	}
 	artifacts, e := sshservice.PrepareArtifacts(a.ctx, account.StateHome, account.Binding, intent)

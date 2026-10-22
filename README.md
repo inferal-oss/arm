@@ -353,9 +353,26 @@ receipt retrieval; that unresolved source history remains inspectable.
 
 `arm ssh disable --reason TEXT` closes current streams and retains history and
 keys. Explicit setup can re-enable the same destination key for fresh streams;
-old stream scopes remain invalid. Source history currently allows 64 total
-pending/completed/sealed invocations and refuses further admission without
-purging evidence; a settled-history archive command remains planned. See the
+old stream scopes remain invalid. The hot source ledger allows 64 total
+pending/completed/sealed invocations. Explicitly archive verified settled records
+to admit new work while preserving permanent old-key fences:
+
+```sh
+arm history ssh-source plan --json
+arm history ssh-source archive --key ARCHIVE_KEY --reason "Archive finished checks"
+arm history ssh-source inspect ARCHIVE_KEY
+arm history ssh-source receipt HOST_ID --key CHECK_KEY
+```
+
+An interactive archive shows the exact selection and asks for confirmation.
+Scripts need `--yes --expect-plan SHA256` from the current plan. Use `--dry-run`
+for a review without changes. An exact archive-key retry only reads its original
+outcome; use `reconcile ARCHIVE_KEY` to continue unfinished archival. Journal
+recovery has separate `recovery plan`, `inspect` and reviewed `apply` commands.
+Cold receipts and old-key refusal work offline, including after peer removal when
+addressed by stable host ID. Catalog limits remain finite: 256 packs and 16,384
+permanent keys, with no pruning. Run `make test-ssh-history` for the real OpenSSH
+acceptance suite (also included in `test-local`). See the
 [access contract](docs/MESH-ACCESS-PROPOSAL.md) and [validation](docs/VALIDATION.md).
 
 ## Database inspection and backup

@@ -110,27 +110,8 @@ func ReserveSource(ctx context.Context, home string, b Binding, r SourceIntent) 
 				return ErrIntentExists
 			}
 		}
-		if s.History != nil && len(s.History.Busy) > 0 {
-			return ErrHistoryBusy
-		}
-		if len(s.Intents) >= MaxSourceIntents {
-			return fmt.Errorf("SSH intention roster full; no unresolved record removed")
-		}
-		// Every outstanding invocation reserves a future durable completion
-		// slot. Interrupted settlement can retain both files for one key;
-		// count that pair once rather than inventing a second obligation.
-		completionSlots := map[string]bool{}
-		for _, old := range s.Completions {
-			completionSlots[intentName(old.Intent)] = true
-		}
-		for _, old := range s.Seals {
-			completionSlots[intentName(old.Intent)] = true
-		}
-		for _, old := range s.Intents {
-			completionSlots[intentName(old)] = true
-		}
-		if len(completionSlots) >= MaxCompletions {
-			return fmt.Errorf("SSH completed history full; refuse new execution intention before dispatch, no settled history removed")
+		if e := s.CheckSourceCapacity(); e != nil {
+			return e
 		}
 		worker, e := usage.Capture(os.Getpid())
 		if e != nil || worker != r.Worker || worker.UID != b.Owner {

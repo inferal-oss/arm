@@ -80,7 +80,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && (detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
+		if errors.As(e, &detail) && (detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))
@@ -138,6 +138,7 @@ Commands:
   dashboard                 Open the authenticated local web console
   mesh                      Connect, inspect and disconnect trusted hosts
   ssh                       Execute through a pinned, leased direct-peer SSH channel
+  history ssh-source        Review and archive local settled SSH receipts
   storage COMMAND           Manage files, exports and short retention
   ports reserve|list|discover Manage port reservations and native inventory
   pool create|list|inspect|history|set|adjust  Manage counted host/global pools
@@ -209,6 +210,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.agentsGuide(args)
 	case "workspaces":
 		return a.workspacesCommand(args)
+	case "history":
+		return a.historyCommand(args)
 	case "ssh":
 		return a.sshCommand(args)
 	case "mesh":

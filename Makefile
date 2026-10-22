@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-ssh-history test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -63,6 +63,11 @@ test-database-reset: build
 test-mesh: build
 	$(PYTHON) scripts/test-mesh.py --arm bin/arm --require-tls-probes
 
+# Actual OpenSSH, reviewed archival/recovery and permanent old-key fences.
+# Requires installed ssh/openssl and Python with TLS1.3; never installs tools.
+test-ssh-history: build
+	$(PYTHON) scripts/test-ssh-history.py --arm bin/arm
+
 # Explicit trusted SSH fixture and compatible destination binary; disposable homes only.
 # Set MESH_SSH, MESH_REMOTE_ARM and MESH_REMOTE_ROOT (an existing private /tmp directory).
 test-mesh-ssh: build
@@ -88,7 +93,7 @@ test-workspace-routing: build
 test-workspace-graph: build
 	$(PYTHON) scripts/test-workspace-graph.py --arm bin/arm
 
-test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph
+test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph test-ssh-history
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py
