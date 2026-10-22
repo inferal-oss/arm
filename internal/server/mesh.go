@@ -212,6 +212,10 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if request.Operation == "hello" {
+		if request.Expected != nil {
+			respond(nil, model.Err("invalid_request", "conditional enrollment reads do not perform pairing proof"))
+			return
+		}
 		var params struct {
 			Pair string `json:"pair"`
 		}
@@ -231,6 +235,11 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 	respond(value, e)
 }
 func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh.Request) (value any, err error) {
+	// serve invokes dispatch inside Store.WithPeer. This condition and grant
+	// authorization therefore share one immutable, locked admission snapshot.
+	if request.Expected != nil && (request.Expected.Revision < 1 || len(request.Expected.Pair) != 64 || request.Expected.Pair != peer.Pair || request.Expected.Revision != peer.Revision) {
+		return nil, model.Err("node_context_changed", "destination enrollment or grant revision changed; reopen the exact node context")
+	}
 	defer func() {
 		if err == nil {
 			value, err = meshWithoutPolicy(value)

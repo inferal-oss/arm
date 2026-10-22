@@ -53,13 +53,26 @@ func TestSessionUsesActualAuthenticatedARMBackend(t *testing.T) {
 	if err := s.Call(ctx, "acquire", model.Request{Reason: "multiplexed authenticated session", Resources: model.Resources{CPU: 1}, TTL: time.Minute}, &lease); err != nil || lease.State != "active" {
 		t.Fatal("native shared-session acquire", err, lease.State)
 	}
-	select {
-	case event := <-s.Events():
-		if event.Entity != lease.ID || event.Type != "lease.created" {
-			t.Fatal("native event routed incorrectly", event)
+	deadlineEvent := time.NewTimer(5 * time.Second)
+	defer deadlineEvent.Stop()
+events:
+	for {
+		select {
+		case event := <-s.Events():
+			// Policy binding is durably journalled before lease creation. Both
+			// events belong to this exact lease; ordering is not a lost stream.
+			if event.Entity != lease.ID {
+				t.Fatal("native event routed incorrectly", event)
+			}
+			if event.Type == "lease.created" {
+				break events
+			}
+			if event.Type != "budget.bound" {
+				t.Fatal("unexpected acquisition event", event)
+			}
+		case <-deadlineEvent.C:
+			t.Fatal("native lease-created event missing")
 		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("native event missing")
 	}
 	if err := s.Call(ctx, "lease_action", model.LeaseAction{ID: lease.ID, Revision: lease.Revision, Action: "release", Consumers: []model.LeaseRevision{}}, &lease); err != nil || lease.State != "terminal" {
 		t.Fatal("guarded action through shared session", err, lease.State)

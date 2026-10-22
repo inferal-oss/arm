@@ -15,12 +15,20 @@ import (
 	"unicode/utf8"
 )
 
+// ExpectedEnrollment binds a scoped gateway read to the destination grant
+// observed when its window/session was opened. The destination checks this
+// under the same peer lock as authorization, not in a separate preliminary RPC.
+type ExpectedEnrollment struct {
+	Pair     string `json:"pair"`
+	Revision int    `json:"revision"`
+}
 type Request struct {
-	Version   int             `json:"version"`
-	Host      string          `json:"host"`
-	Operation string          `json:"operation"`
-	Key       string          `json:"idempotency_key,omitempty"`
-	Params    json.RawMessage `json:"params"`
+	Expected  *ExpectedEnrollment `json:"expected_enrollment,omitempty"`
+	Version   int                 `json:"version"`
+	Host      string              `json:"host"`
+	Operation string              `json:"operation"`
+	Key       string              `json:"idempotency_key,omitempty"`
+	Params    json.RawMessage     `json:"params"`
 }
 type Response struct {
 	Result json.RawMessage `json:"result,omitempty"`

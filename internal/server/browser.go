@@ -23,6 +23,8 @@ type browserContextKey struct{}
 type browserCredentials struct {
 	sync.Mutex
 	tickets, sessions map[[32]byte]time.Time
+	nodeTickets       map[[32]byte]nodeTicket
+	nodeSessions      map[[32]byte]nodeCredential
 }
 
 const browserLifetime = 8 * time.Hour
@@ -56,8 +58,9 @@ func (b *browserCredentials) exchange(ticket string, now time.Time) (string, tim
 	defer b.Unlock()
 	pruneCredentials(b.tickets, now)
 	pruneCredentials(b.sessions, now)
+	b.pruneNodeSessions(now)
 	key := sha256.Sum256([]byte(ticket))
-	if _, ok := b.tickets[key]; !ok || len(ticket) != 64 || len(b.sessions) >= 64 {
+	if _, ok := b.tickets[key]; !ok || len(ticket) != 64 || len(b.sessions)+len(b.nodeSessions) >= 64 {
 		return "", time.Time{}, false
 	}
 	delete(b.tickets, key)
@@ -76,41 +79,62 @@ func (s *Server) validHost(host string) bool {
 	return err == nil && ip != nil && ip.IsLoopback() && (s.authority == "" || host == s.authority)
 }
 
-func (s *Server) authenticate(r *http.Request) (browser bool, expiry time.Time, ok bool) {
-	if header := r.Header.Get("Authorization"); strings.HasPrefix(header, "Bearer ") && s.token != "" &&
-		subtle.ConstantTimeCompare([]byte(strings.TrimPrefix(header, "Bearer ")), []byte(s.token)) == 1 {
-		return false, time.Time{}, true
+type browserAdmission struct {
+	Browser   bool
+	Expires   time.Time
+	Node      *nodeSession
+	Principal [32]byte
+}
+
+func (s *Server) authenticate(r *http.Request) (bool, time.Time, bool) {
+	a, ok := s.authenticateAdmission(r, time.Now())
+	return a.Browser, a.Expires, ok
+}
+func (s *Server) authenticateAdmission(r *http.Request, now time.Time) (browserAdmission, bool) {
+	if header := r.Header.Get("Authorization"); strings.HasPrefix(header, "Bearer ") && s.token != "" && subtle.ConstantTimeCompare([]byte(strings.TrimPrefix(header, "Bearer ")), []byte(s.token)) == 1 {
+		return browserAdmission{}, true
 	}
 	if r.Header.Get("Origin") != "http://"+r.Host {
-		return false, time.Time{}, false
+		return browserAdmission{}, false
 	}
-	var token string
+	token := browserToken(r)
 	version := false
 	for _, protocol := range strings.Split(strings.Join(r.Header.Values("Sec-WebSocket-Protocol"), ","), ",") {
-		protocol = strings.TrimSpace(protocol)
-		if protocol == "arm.v1" {
+		if strings.TrimSpace(protocol) == "arm.v1" {
 			version = true
-		} else if strings.HasPrefix(protocol, "arm.auth.") {
-			if token != "" { // Ambiguous credentials are never accepted.
-				return false, time.Time{}, false
-			}
-			token = strings.TrimPrefix(protocol, "arm.auth.")
 		}
 	}
 	if !version || len(token) != 64 {
-		return false, time.Time{}, false
+		return browserAdmission{}, false
 	}
+	key := sha256.Sum256([]byte(token))
 	s.browser.Lock()
 	defer s.browser.Unlock()
-	expiry, ok = s.browser.sessions[sha256.Sum256([]byte(token))]
-	return true, expiry, ok && time.Now().Before(expiry)
+	localExpiry, localOK := s.browser.sessions[key]
+	node, nodeOK := s.browser.nodeSessions[key]
+	// A scoped credential is NEVER inserted in the ordinary local map. Capture
+	// kind, expiry and binding atomically; pruning cannot reclassify admission.
+	if localOK && nodeOK {
+		return browserAdmission{}, false
+	}
+	if nodeOK {
+		if !now.Before(node.Expires) {
+			return browserAdmission{}, false
+		}
+		bound := node.Context
+		return browserAdmission{Browser: true, Expires: node.Expires, Node: &bound, Principal: key}, true
+	}
+	if !localOK || !now.Before(localExpiry) {
+		return browserAdmission{}, false
+	}
+	return browserAdmission{Browser: true, Expires: localExpiry, Principal: key}, true
 }
 
 func browserAllowedOperation(op string) bool {
 	switch op {
 	case "mesh_operator_watch", "mesh_operator_prepare", "mesh_operator_get", "mesh_operator_list", "mesh_operator_decide", "mesh_operator_cancel", "mesh_operator_resume", "mesh_operator_handoff", "mesh_operator_connectors":
 		return true
-	case "node_list", "node_inspect", "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
+	case "node_open", "node_list", "node_inspect", "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
 		return true
 	case "pool_mutate":
 		return true // Restricted to reviewed local pool operations in dispatch.
@@ -198,16 +222,35 @@ func (s *Server) browserSession(w http.ResponseWriter, r *http.Request) {
 	decoder.DisallowUnknownFields()
 	var input struct {
 		Ticket string `json:"ticket"`
+		Host   string `json:"host,omitempty"`
+		Nonce  string `json:"window_nonce,omitempty"`
 	}
 	if decoder.Decode(&input) != nil || decoder.Decode(new(any)) != io.EOF {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
 	}
-	token, expiry, ok := s.browser.exchange(input.Ticket, time.Now())
+	var token string
+	var expiry time.Time
+	var bound *nodeSession
+	var ok bool
+	if input.Host != "" || input.Nonce != "" {
+		token, expiry, bound, ok = s.browser.exchangeNode(input.Ticket, input.Host, input.Nonce, time.Now())
+		if ok {
+			if _, e := s.validateNodeSession(*bound); e != nil {
+				s.browser.Lock()
+				delete(s.browser.sessions, sha256.Sum256([]byte(token)))
+				delete(s.browser.nodeSessions, sha256.Sum256([]byte(token)))
+				s.browser.Unlock()
+				ok = false
+			}
+		}
+	} else {
+		token, expiry, ok = s.browser.exchange(input.Ticket, time.Now())
+	}
 	if !ok {
 		http.Error(w, "link expired, consumed or session limit reached; run arm dashboard again", http.StatusUnauthorized)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]any{"token": token, "expires_at": expiry})
+	_ = json.NewEncoder(w).Encode(map[string]any{"token": token, "expires_at": expiry, "context": bound})
 }

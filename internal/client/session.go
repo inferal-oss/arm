@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,6 +29,13 @@ type sessionPending struct {
 	response  chan sessionResponse
 }
 
+// WorkflowChange is a bounded invalidation, never evidence of commit. Consumers
+// read the durable keyed operation before presenting a new review or outcome.
+type WorkflowChange struct {
+	Key      string `json:"key"`
+	Revision int64  `json:"revision"`
+}
+
 // Session multiplexes native requests, durable events and coalesced physical
 // telemetry over the same authenticated WebSocket protocol as the browser.
 // Calls are never retried: losing a mutation response leaves an unknown outcome.
@@ -41,10 +49,12 @@ type Session struct {
 	pending     map[string]sessionPending
 	monitorGate chan struct{}
 	monitorID   string
+	workflowID  string
 	err         error
 	done        chan struct{}
 	events      chan model.Event
 	telemetry   chan model.MonitorPage
+	workflows   chan WorkflowChange
 }
 
 func OpenSession(ctx context.Context, home string) (*Session, error) {
@@ -62,16 +72,17 @@ func OpenSession(ctx context.Context, home string) (*Session, error) {
 func newSession(ctx context.Context, conn *websocket.Conn) *Session {
 	ctx, cancel := context.WithCancel(ctx)
 	conn.SetReadLimit(4 << 20)
-	s := &Session{conn: conn, ctx: ctx, cancel: cancel, pending: make(map[string]sessionPending), writeGate: make(chan struct{}, 1), monitorGate: make(chan struct{}, 1), done: make(chan struct{}), events: make(chan model.Event, 64), telemetry: make(chan model.MonitorPage, 1)}
+	s := &Session{conn: conn, ctx: ctx, cancel: cancel, pending: make(map[string]sessionPending), writeGate: make(chan struct{}, 1), monitorGate: make(chan struct{}, 1), done: make(chan struct{}), events: make(chan model.Event, 64), telemetry: make(chan model.MonitorPage, 1), workflows: make(chan WorkflowChange, 128)}
 	go s.read()
 	return s
 }
 
-func (s *Session) Events() <-chan model.Event          { return s.events }
-func (s *Session) Telemetry() <-chan model.MonitorPage { return s.telemetry }
-func (s *Session) Done() <-chan struct{}               { return s.done }
-func (s *Session) Close()                              { s.fail(errors.New("dashboard connection closed")) }
-func (s *Session) Err() error                          { s.mu.Lock(); defer s.mu.Unlock(); return s.err }
+func (s *Session) Events() <-chan model.Event             { return s.events }
+func (s *Session) Telemetry() <-chan model.MonitorPage    { return s.telemetry }
+func (s *Session) WorkflowChanges() <-chan WorkflowChange { return s.workflows }
+func (s *Session) Done() <-chan struct{}                  { return s.done }
+func (s *Session) Close()                                 { s.fail(errors.New("dashboard connection closed")) }
+func (s *Session) Err() error                             { s.mu.Lock(); defer s.mu.Unlock(); return s.err }
 
 func (s *Session) fail(err error) {
 	s.once.Do(func() {
@@ -125,11 +136,51 @@ func (s *Session) read() {
 			}
 			continue
 		}
+		if response.Subscription != "" && response.ID == "" {
+			s.mu.Lock()
+			matches := response.Subscription == s.workflowID
+			s.mu.Unlock()
+			if matches {
+				if response.Error != nil {
+					s.fail(response.Error)
+					return
+				}
+				var change WorkflowChange
+				if json.Unmarshal(response.Result, &change) != nil || change.Key == "" || len(change.Key) > 128 || change.Revision <= 0 {
+					s.fail(errors.New("invalid workflow change; reconnect and read durable operation snapshots"))
+					return
+				}
+				select {
+				case s.workflows <- change:
+				default:
+					s.fail(errors.New("dashboard workflow buffer filled; reconnect and load durable operation snapshots"))
+					return
+				}
+			}
+			continue
+		}
 		s.mu.Lock()
 		pending, found := s.pending[response.ID]
 		delete(s.pending, response.ID)
 		if found && response.Error == nil {
 			switch pending.operation {
+			case "mesh_operator_watch":
+				var watch struct {
+					Subscription string `json:"subscription"`
+				}
+				if json.Unmarshal(response.Result, &watch) == nil && strings.HasPrefix(watch.Subscription, "mesh_operator:") && len(watch.Subscription) <= 128 {
+					s.workflowID = watch.Subscription
+				clearWorkflow:
+					for {
+						select {
+						case <-s.workflows:
+						default:
+							break clearWorkflow
+						}
+					}
+				} else {
+					response.Error = &model.Error{Code: "protocol_error", Message: "workflow watch did not return a bounded subscription identity"}
+				}
 			case "monitor_subscribe":
 				s.monitorID = response.ID
 				s.clearTelemetry()
@@ -181,7 +232,7 @@ func (s *Session) offerTelemetry(page model.MonitorPage) {
 func (s *Session) Call(ctx context.Context, operation string, params, result any) error {
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	monitorControl := operation == "monitor_subscribe" || operation == "monitor_unsubscribe"
+	monitorControl := operation == "monitor_subscribe" || operation == "monitor_unsubscribe" || operation == "mesh_operator_watch"
 	if monitorControl {
 		select {
 		case s.monitorGate <- struct{}{}:

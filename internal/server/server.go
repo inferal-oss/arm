@@ -150,9 +150,15 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid host", http.StatusForbidden)
 		return
 	}
-	browser, expires, ok := s.authenticate(r)
+	admission, ok := s.authenticateAdmission(r, time.Now())
+	browser, expires := admission.Browser, admission.Expires
 	if !ok {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	nativeNode := r.Header.Values("Arm-Node-Context")
+	if len(nativeNode) > 0 && (browser || len(nativeNode) != 1 || nativeNode[0] != "v1") {
+		http.Error(w, "invalid native node negotiation", http.StatusForbidden)
 		return
 	}
 	options := &websocket.AcceptOptions{}
@@ -167,8 +173,25 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 	c.SetReadLimit(65536)
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
+	if len(nativeNode) == 1 {
+		bound, err := s.negotiateNativeNode(ctx, c)
+		if err != nil {
+			return
+		}
+		ctx = context.WithValue(ctx, nodeSessionKey{}, bound)
+		go s.watchNodeSession(ctx, cancel, bound)
+	}
 	if browser {
 		ctx = context.WithValue(ctx, browserContextKey{}, true)
+		ctx = context.WithValue(ctx, browserExpiryKey{}, expires)
+		ctx = context.WithValue(ctx, browserPrincipalKey{}, admission.Principal)
+		if bound := admission.Node; bound != nil {
+			ctx = context.WithValue(ctx, nodeSessionKey{}, *bound)
+			if _, e := s.validateNodeSession(*bound); e != nil {
+				return
+			}
+			go s.watchNodeSession(ctx, cancel, *bound)
+		}
 		timer := time.AfterFunc(time.Until(expires), cancel)
 		defer timer.Stop()
 	}
@@ -234,8 +257,17 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			}
 			continue
 		}
+		// Validate immutable local contexts too, before special subscription
+		// handlers can bypass ordinary dispatch. Remote handlers remain closed
+		// below and are independently destination-authorized by the gateway.
+		if bound, ok := ctx.Value(nodeSessionKey{}).(nodeSession); ok {
+			if _, err := s.validateNodeSession(bound); err != nil {
+				send(model.WireResponse{Version: 1, ID: req.ID, Error: &model.Error{Code: "node_context_changed", Message: "selected node authority changed; reopen from Mesh"}})
+				return
+			}
+		}
 
-		if req.Operation == "mesh_operator_watch" {
+		if req.Operation == "mesh_operator_watch" && !remoteNodeContext(ctx) {
 			var filter struct {
 				Key string `json:"key,omitempty"`
 			}
@@ -305,7 +337,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			}()
 			continue
 		}
-		if req.Operation == "subscribe" {
+		if req.Operation == "subscribe" && !remoteNodeContext(ctx) {
 			var p struct {
 				After int64 `json:"after"`
 			}
@@ -348,7 +380,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			}(p.After)
 			continue
 		}
-		if req.Operation == "monitor_subscribe" || req.Operation == "monitor_unsubscribe" {
+		if (req.Operation == "monitor_subscribe" || req.Operation == "monitor_unsubscribe") && !remoteNodeContext(ctx) {
 			if req.Operation == "monitor_unsubscribe" {
 				if monitoring != nil {
 					monitoring()
@@ -454,6 +486,14 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
+	if bound, ok := ctx.Value(nodeSessionKey{}).(nodeSession); ok {
+		if !bound.Local {
+			return s.nodeSessionOperation(ctx, bound, r)
+		}
+		if _, e := s.validateNodeSession(bound); e != nil {
+			return nil, e
+		}
+	}
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
 		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease and pool controls and reviewed operator messaging; use the CLI for other changes")
 	}
@@ -490,6 +530,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "node_open":
+		return s.openNode(ctx, r.Params)
 	case "node_list":
 		if err := nodeMetadataParams(r.Params); err != nil {
 			return nil, err
