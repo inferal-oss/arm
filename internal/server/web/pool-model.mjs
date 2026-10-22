@@ -148,7 +148,7 @@ export function preparePoolMutation(draft, view, authority, key) {
     );
   if (operation === 'drain')
     paragraphs.push(
-      'Pause new admissions. Existing and queued claims remain recorded; capacity is not reclaimed by draining.'
+      'Refuse new requests and renewals. Already queued requests may still start when capacity permits; queued requests are not cancelled. Existing obligations remain charged; pausing does not reclaim capacity.'
     );
   if (operation === 'resume')
     paragraphs.push(

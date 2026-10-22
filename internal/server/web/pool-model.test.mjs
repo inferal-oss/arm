@@ -265,3 +265,11 @@ test('lookup requires exact stored request and matching result, never accepts a 
   );
   assert.equal(matchingPoolChange(r, result(r)), true);
 });
+
+test('pause review distinguishes new requests from already queued work', () => {
+  const p = preparePoolMutation({operation:'drain', reason:'Pause new demand'}, view(), 'host-a', 'pause-key');
+  assert.equal(p.state, 'draining');
+  assert.match(p.paragraphs.join(' '), /Refuse new requests and renewals/);
+  assert.match(p.paragraphs.join(' '), /Already queued requests may still start when capacity permits/);
+  assert.match(p.paragraphs.join(' '), /queued requests are not cancelled/);
+});

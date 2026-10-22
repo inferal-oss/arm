@@ -50,6 +50,18 @@ export function createPoolConsole({
     focusDetail = false,
     focusHistory = false;
   let journalItems = new Map();
+  let opener = null, openerLabel = '';
+  const editor = el('dialog', 'pool-editor'),
+    editorHeader = el('header', 'pool-editor-heading'),
+    editorStep = el('p', 'pool-step'),
+    editorTitle = el('h2'),
+    editorContext = el('p', 'pool-editor-context'),
+    dialogFeedback = el('p', 'pool-dialog-feedback');
+  dialogFeedback.setAttribute('role', 'alert');
+  dialogFeedback.hidden = true;
+  editorTitle.id = `pool-editor-title-${Math.random().toString(36).slice(2)}`;
+  editor.setAttribute('aria-labelledby', editorTitle.id);
+  editor.setAttribute('aria-modal', 'true');
   const heading = el('header', 'pool-heading'),
     tools = el('div', 'pool-tools'),
     filter = el('input'),
@@ -65,8 +77,8 @@ export function createPoolConsole({
   filter.placeholder = 'Find custom pools';
   filter.setAttribute('aria-label', 'Find custom pools');
   feedback.setAttribute('role', 'status');
-  heading.append(el('div', '', 'Custom resource pools'));
-  const createButton = button('Create pool', () => begin('create'), 'primary'),
+  heading.append(el('h2', '', 'Custom resource pools'));
+  const createButton = button('Create pool…', () => begin('create'), 'primary'),
     refreshButton = button('Refresh pools', () => load(true));
   createButton.dataset.poolOnline = refreshButton.dataset.poolOnline = '';
   tools.append(filter, createButton, refreshButton);
@@ -93,12 +105,45 @@ export function createPoolConsole({
     feedback,
     table,
     detail,
-    formBox,
-    reviewBox,
+    editor,
     operationsBox,
     journal
   );
+  const dismissEditor = button('×', () => closeEditor(), 'pool-dialog-dismiss');
+  dismissEditor.setAttribute('aria-label', 'Close without changes');
+  editorHeader.append(editorStep, editorTitle, editorContext, dismissEditor);
+  editor.append(editorHeader, dialogFeedback, formBox, reviewBox);
+  editor.addEventListener('cancel', (event) => { event.preventDefault(); closeEditor(); });
+  editor.hidden = true;
   detail.hidden = journal.hidden = formBox.hidden = reviewBox.hidden = true;
+  function closeEditor(restore = true) {
+    formGeneration++;
+    draft = review = null;
+    formBox.hidden = reviewBox.hidden = true;
+    if (editor.open && typeof editor.close === 'function') editor.close();
+    editor.hidden = true;
+    const replacement = restore && openerLabel ? [...root.querySelectorAll('button')].find(b => (b.getAttribute?.('aria-label') || b.textContent) === openerLabel && !editor.contains(b)) : null;
+    if (restore && opener && root.contains(opener)) opener.focus();
+    else if (replacement) replacement.focus();
+    else if (restore && selected) {
+      const title = detail.querySelector('h3');
+      if (title) { title.tabIndex = -1; title.focus(); }
+    }
+    opener = null;
+    dialogFeedback.textContent = ''; dialogFeedback.hidden = true;
+  }
+  function showEditor(step, operation) {
+    const names = {create:'Create resource pool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'};
+    editorStep.textContent = step === 1 ? '1 · EDIT CHANGE' : '2 · REVIEW & CONFIRM';
+    editorTitle.textContent = names[operation];
+    editorContext.textContent = operation === 'create' ? 'Define a counted resource for agents to coordinate.' : current()?.pool.name || review?.name || 'Selected resource pool';
+    editor.hidden = false;
+    if (!editor.open) {
+      if (typeof editor.showModal === 'function') editor.showModal();
+      else editor.open = true;
+    }
+  }
+
   const rows = new Map();
   let ops,
     detailFingerprint = null;
@@ -107,6 +152,7 @@ export function createPoolConsole({
     ownerDisplay({ owner: uid, owner_username: name }, status, authority);
   function fail(message) {
     feedback.textContent = message;
+    if (editor.open) { dialogFeedback.textContent = message; dialogFeedback.hidden = !message; }
   }
   function setBusyState() {
     for (const item of root.querySelectorAll('[data-pool-online]'))
@@ -130,10 +176,11 @@ export function createPoolConsole({
       const note = reviewBox.querySelector('.pool-stale');
       if (note)
         note.textContent = reviewStale
-          ? 'The pool snapshot or connection changed. Keep unchanged, refresh, and review again.'
+          ? 'The pool snapshot or connection changed. Cancel this change, refresh the pool, then review again.'
           : '';
     }
   }
+  const stateLabel = state => ({active:'Open for leases',draining:'New requests paused',deleted:'Historical pool'})[state] || state;
   function renderRows() {
     const visible = new Set(),
       search = filter.value.toLowerCase();
@@ -158,7 +205,8 @@ export function createPoolConsole({
       row.pick.textContent = p.name;
       row.pick.setAttribute('aria-pressed', String(selected === p.id));
       row.cells[0].children[1].textContent = `${p.scope === 'global' ? 'Global · one ledger' : p.scope + ' · ' + p.host} · ${owner(p.owner, p.owner_username, p.authority)}`;
-      row.cells[1].textContent = p.state;
+      row.cells[1].textContent = stateLabel(p.state);
+      row.cells[1].className = 'pool-state';
       row.cells[2].textContent = `${count(p.capacity)} ${p.unit}`;
       row.cells[3].textContent = count(view.reserved);
       row.cells[4].textContent =
@@ -215,31 +263,38 @@ export function createPoolConsole({
       el(
         'p',
         'measure-note',
-        `${p.scope} · authority ${p.authority} · revision ${p.revision} · ${p.id}`
+        `${p.scope === 'global' ? 'Global pool · one authority' : 'Pool on this host'} · ${stateLabel(p.state)} · ${owner(p.owner, p.owner_username, p.authority)}`
       )
     );
     if (p.description) detail.append(el('p', '', p.description));
     const controls = el('div', 'pool-tools');
     if (p.state !== 'deleted') {
-      for (const [op, label] of [
-        ['set', 'Set capacity'],
-        ['adjust', 'Adjust capacity'],
+      for (const [op, label, explanation] of [
+        ['set', 'Change total capacity…', 'Replace the total with a specific number.'],
+        ['adjust', 'Add or remove units…', 'Increase or decrease the current total.'],
         [
           p.state === 'draining' ? 'resume' : 'drain',
-          p.state === 'draining' ? 'Resume' : 'Drain',
+          p.state === 'draining' ? 'Allow new requests…' : 'Pause new requests…',
+          p.state === 'draining' ? 'Reopen admission to this pool.' : 'Refuse new requests; already queued work may still start.',
         ],
-        ['delete', 'Delete definition'],
+        ['delete', 'Delete empty pool…', 'Retain its history; require no obligations.'],
       ]) {
         const b = button(
           label,
           () => begin(op),
-          op === 'delete' ? 'danger' : ''
+          op === 'delete' ? 'pool-action danger' : 'pool-action'
         );
+        b.setAttribute('aria-label', label);
+        b.append(el('small', '', explanation));
         b.dataset.poolOnline = '';
         controls.append(b);
       }
     }
-    detail.append(controls);
+    const budget = el('dl', 'pool-detail-budget');
+    for (const [label, value] of [['Total capacity',p.capacity],['Reserved',view.reserved],[view.deficit > 0 ? 'Over capacity' : 'Available',view.deficit > 0 ? view.deficit : view.available]]) {
+      const stat = el('div'); stat.append(el('dt','',label),el('dd','',`${count(value)} ${p.unit}`)); budget.append(stat);
+    }
+    detail.append(budget, controls);
     for (const [label, users] of [
       ['Current consumers', view.users],
       ['Queued claims', view.queued],
@@ -332,9 +387,7 @@ export function createPoolConsole({
     history = null;
     historyGeneration++;
     historyReadKey = null;
-    formGeneration++;
-    draft = review = null;
-    formBox.hidden = reviewBox.hidden = true;
+    closeEditor(false);
     renderRows();
     renderDetail();
     renderHistory();
@@ -434,22 +487,26 @@ export function createPoolConsole({
   }
   function begin(operation) {
     if (!connected() || operation !== 'create' && !current()) return;
+    fail('');
+    opener = document.activeElement;
+    openerLabel = opener?.getAttribute?.('aria-label') || opener?.textContent || '';
     draft = { operation };
+    showEditor(1, operation);
     review = null;
     formBox.replaceChildren();
     reviewBox.hidden = true;
     formBox.hidden = false;
     const form = el('form', 'pool-form'),
       inputs = {};
-    form.append(
-      el(
-        'h3',
-        '',
-        operation === 'create'
-          ? 'Create counted pool'
-          : `${operation} · ${current()?.pool.name || ''}`
-      )
-    );
+    const descriptions = {
+      create: 'Choose a name, scope and total count. Agents can lease units from this pool.',
+      set: `Current total: ${count(current()?.pool.capacity)} ${current()?.pool.unit}. Enter the replacement total; existing leases remain charged.`,
+      adjust: 'Use a positive number to add units, or a negative number to remove units. Existing leases remain charged.',
+      drain: 'New requests and renewals will be refused. Existing leases keep their obligations. Already queued requests may still start when capacity permits; queued requests are not cancelled.',
+      resume: 'New requests and renewals can be admitted again when capacity and other policies permit.',
+      delete: 'Only an empty pool with no queued or charged leases can be deleted. Its definition and journal remain available as history.',
+    };
+    form.append(el('p', 'pool-form-explainer', descriptions[operation]));
     function input(name, label, value = '', textarea = false) {
       const item = el(textarea ? 'textarea' : 'input');
       item.value = value;
@@ -482,18 +539,15 @@ export function createPoolConsole({
     } else if (operation === 'set')
       input(
         'capacity',
-        'New capacity',
+        'New total capacity',
         String(current()?.pool.capacity ?? 0)
       ).inputMode = 'numeric';
     else if (operation === 'adjust')
-      input('delta', 'Signed capacity adjustment', '1').inputMode = 'text';
-    input('reason', 'Required reason', '', true).required = true;
-    const controls = el('div', 'pool-tools'),
-      keep = button('Keep unchanged', () => {
-        formGeneration++;
-        draft = null;
-        formBox.hidden = true;
-      }),
+      input('delta', 'Units to add (+) or remove (−)', '1').inputMode = 'text';
+    input('reason', 'Why are you making this change?', '', true).required = true;
+    inputs.reason.placeholder = 'This reason will be recorded in the pool journal.';
+    const controls = el('footer', 'pool-dialog-actions'),
+      keep = button('Cancel', () => closeEditor()),
       reviewButton = el('button', 'primary', 'Review change');
     reviewButton.type = 'submit';
     controls.append(keep, reviewButton);
@@ -503,6 +557,7 @@ export function createPoolConsole({
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!connected() || generation !== formGeneration) return;
+      fail('');
       const data = { operation };
       for (const [name, input] of Object.entries(inputs))
         data[name] = input.value;
@@ -537,16 +592,17 @@ export function createPoolConsole({
     if (!review) return;
     reviewBox.hidden = false;
     const plan = review;
+    showEditor(2, plan.request.operation);
     reviewBox.append(
-      el('h3', '', `Review ${plan.request.operation} · ${plan.name}`),
+      el('h3', '', 'Proposed change'),
       el(
         'p',
         '',
-        `Authority: ${plan.authority} · ${plan.scope} · request key ${plan.request.idempotency_key}`
+        `${plan.scope === 'global' ? 'Global pool · single authority' : 'Pool on this host'} · ${plan.name}`
       ),
-      el('p', '', `Reason: ${plan.request.reason}`)
+      el('p', 'pool-reviewed-reason', `Reason · ${plan.request.reason}`)
     );
-    const effects = el('dl');
+    const effects = el('dl', 'pool-effects');
     for (const [label, before, after] of [
       ['Capacity', plan.before?.pool.capacity ?? 'New', plan.capacity],
       ['State', plan.before?.pool.state ?? 'New', plan.state],
@@ -554,7 +610,7 @@ export function createPoolConsole({
       ['Available', plan.before?.available ?? 0, plan.available],
       ['Deficit', plan.before?.deficit ?? 0, plan.deficit],
     ])
-      effects.append(el('dt', '', label), el('dd', '', `${before} → ${after}`));
+      effects.append(el('dt', '', label), el('dd', '', label === 'State' ? `${stateLabel(before)} → ${stateLabel(after)}` : `${before} → ${after}`));
     reviewBox.append(effects);
     for (const paragraph of plan.paragraphs)
       reviewBox.append(el('p', '', paragraph));
@@ -591,7 +647,8 @@ export function createPoolConsole({
     scope.append(scopeRows, scopeNav);
     renderScope();
     reviewBox.append(scope);
-    reviewBox.append(
+    const technical = el('details', 'pool-technical');
+    technical.append(el('summary', '', 'Technical review details'),
       jsonView(plan.before ?? { authority: plan.authority }, {
         label: 'Reviewed snapshot and obligations',
         document,
@@ -599,25 +656,24 @@ export function createPoolConsole({
       jsonView(plan.request, {
         label: 'Exact request and complete consumer revisions',
         document,
-      }),
-      el('p', 'pool-stale')
+      })
     );
-    const controls = el('div', 'pool-tools'),
-      keep = button('Keep unchanged', () => {
+    reviewBox.append(technical, el('p', 'pool-stale'));
+    const controls = el('footer', 'pool-dialog-actions'),
+      cancel = button('Cancel change', () => closeEditor()),
+      keep = button('Back to edit', () => {
         review = null;
         reviewBox.hidden = true;
         formBox.hidden = false;
+        showEditor(1, plan.request.operation);
         formBox.querySelector('textarea')?.focus();
       }),
       confirm = button(
-        'Confirm reviewed change',
+        ({create:'Create pool',set:`Set total capacity to ${count(plan.capacity)}`,adjust:plan.request.delta > 0 ? `Add ${count(plan.request.delta)} units` : `Remove ${count(-plan.request.delta)} units`,drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[plan.request.operation],
         () => {
           if (!review || reviewStale || !connected()) return;
           const request = poolRequestCopy(review.request);
-          review = null;
-          reviewBox.hidden = true;
-          draft = null;
-          formBox.hidden = true;
+          closeEditor();
           ops
             .submit(request)
             .then(() => {
@@ -629,10 +685,10 @@ export function createPoolConsole({
         plan.request.operation === 'delete' ? 'danger' : 'primary'
       );
     confirm.dataset.poolConfirm = '';
-    controls.append(keep, confirm);
+    controls.append(cancel, keep, confirm);
     reviewBox.append(controls);
     setBusyState();
-    keep.focus();
+    cancel.focus();
   }
   function renderOperations() {
     const focused = operationsBox.contains(document.activeElement);
@@ -645,9 +701,10 @@ export function createPoolConsole({
         el(
           'h4',
           '',
-          `${op.request.operation} · ${op.state === 'recorded' ? 'Recorded' : op.state === 'rejected' ? 'Rejected' : op.busy ? 'In flight' : 'Outcome uncertain'}`
+          `${({create:'Create pool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[op.request.operation] || op.request.operation} · ${op.state === 'recorded' ? 'Recorded' : op.state === 'rejected' ? 'Rejected' : op.busy ? 'In flight' : 'Outcome uncertain'}`
         ),
-        el('p', '', `Key: ${op.request.idempotency_key}`),
+        el('p', '', op.request.reason),
+        el('small', 'pool-operation-key', `Operation key: ${op.request.idempotency_key}`),
         el('p', '', op.error || ''),
         jsonView(op.request, { label: 'Retained exact request', document })
       );
@@ -704,6 +761,7 @@ export function createPoolConsole({
       if (connected()) load(true);
     },
     dispose() {
+      closeEditor(false);
       disposed = true;
       readGeneration++;
       historyGeneration++;

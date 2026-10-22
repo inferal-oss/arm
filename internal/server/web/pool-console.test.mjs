@@ -47,6 +47,9 @@ class Element {
   setAttribute(k, v) {
     this.attributes[k] = String(v);
   }
+  getAttribute(k) { return this.attributes[k] ?? null; }
+  showModal() { this.open = true; }
+  close() { this.open = false; }
   addEventListener(k, f) {
     (this.listeners[k] ||= []).push(f);
   }
@@ -175,7 +178,7 @@ function fixture() {
     root
       .all()
       .find(
-        (n) => visible(n) && n.tagName === 'button' && n.textContent === text
+        (n) => visible(n) && n.tagName === 'button' && (n.getAttribute('aria-label') || n.textContent) === text
       );
   return {
     ui,
@@ -208,12 +211,12 @@ async function start() {
   return f;
 }
 async function reviewSet(f) {
-  await f.find('Set capacity').fire('click');
+  await f.find('Change total capacity…').fire('click');
   const form = f.root.querySelector('form');
   form.all().find((n) => n.name === 'capacity').value = '0';
   form.all().find((n) => n.name === 'reason').value = 'Retain obligations';
   await form.fire('submit');
-  return f.find('Confirm reviewed change');
+  return f.find('Set total capacity to 0');
 }
 test('pool component decline does not mutate, exact deficit review preserves complete scope and focus', async () => {
   const f = await start();
@@ -222,11 +225,11 @@ test('pool component decline does not mutate, exact deficit review preserves com
   assert.match(f.root.textContent, /Deficit/);
   assert.match(f.root.textContent, /0 → 9223372036854775807/);
   assert.match(f.root.textContent, /lease-a · revision 2/);
-  assert.equal(f.doc.activeElement.textContent, 'Keep unchanged');
-  await f.find('Keep unchanged').fire('click');
+  assert.equal(f.doc.activeElement.textContent, 'Cancel change');
+  await f.find('Back to edit').fire('click');
   assert.equal(f.calls.filter((c) => c[0] === 'pool_mutate').length, 0);
   await f.root.querySelector('form').fire('submit');
-  await f.find('Confirm reviewed change').fire('click');
+  await f.find('Set total capacity to 0').fire('click');
   await flush();
   const mutations = f.calls.filter((c) => c[0] === 'pool_mutate');
   assert.equal(mutations.length, 1);
@@ -241,7 +244,7 @@ test('pool component decline does not mutate, exact deficit review preserves com
 test('pool component stale revision/consumer set disables confirmation and disconnect never replays', async () => {
   const f = await start();
   const confirm = await reviewSet(f);
-  const keep = f.find('Keep unchanged');
+  const keep = f.find('Back to edit');
   keep.focus();
   const changed = snapshot();
   changed.pool.revision = 8;
@@ -268,8 +271,8 @@ test('pool mutation result cannot erase a newer draft; in-flight exact request r
     })
   );
   await reviewSet(f);
-  await f.find('Confirm reviewed change').fire('click');
-  await f.find('Create pool').fire('click');
+  await f.find('Set total capacity to 0').fire('click');
+  await f.find('Create pool…').fire('click');
   const name = f.root
     .querySelector('form')
     .all()
@@ -297,12 +300,12 @@ test('pool mutation result cannot erase a newer draft; in-flight exact request r
 test('pool route controls selection and pages without silently choosing the first row', async () => {
   const f = fixture();
   f.navigate({}); await flush(); await flush();
-  assert.equal(f.find('Set capacity'), undefined);
+  assert.equal(f.find('Change total capacity…'), undefined);
   assert.equal(f.calls.filter(([op]) => op === 'pool_history_page').length, 0);
   f.setHistory(async r => ({pool:r.id, entries:[], previous_before:7n, next_after:9223372036854775807n}));
   await f.find('Review permits').fire('click'); await flush(); await flush();
   assert.equal(f.getRoute().pool, 'permits');
-  assert.ok(f.find('Set capacity'));
+  assert.ok(f.find('Change total capacity…'));
   assert.doesNotMatch(f.root.textContent,/No custom pools yet/);
   await f.find('Next page').fire('click'); await flush();
   assert.equal(f.getRoute().poolAfter, '9223372036854775807');
@@ -313,7 +316,7 @@ test('pool route controls selection and pages without silently choosing the firs
   f.navigate({pool:'missing',poolAfter:'0'}); await flush(); await flush();
   assert.match(f.root.textContent,/Pool unavailable/);
   assert.equal(f.getRoute().pool,'missing');
-  assert.equal(f.find('Set capacity'),undefined);
+  assert.equal(f.find('Change total capacity…'),undefined);
   await f.find('All pools').fire('click'); await flush();
   assert.equal(f.getRoute().pool,null);
   assert.equal(f.calls.filter(([op])=>op==='pool_mutate'||op==='pool_lookup').length,0);
@@ -342,7 +345,7 @@ test('pool journal A to B to A ignores the original late A read and reconnect is
 test('pool route changes clear unsubmitted reviews but retain independently uncertain operations', async () => {
   const f=await start(); let finish;
   f.hold(new Promise((_, reject)=>{finish=reject;}));
-  await reviewSet(f); await f.find('Confirm reviewed change').fire('click');
+  await reviewSet(f); await f.find('Set total capacity to 0').fire('click');
   finish(Error('connection lost')); await flush(); await flush();
   f.navigate({pool:'missing',poolBefore:'99'}); await flush(); await flush();
   assert.ok(f.find('Check stored result'));
@@ -353,7 +356,7 @@ test('pool route changes clear unsubmitted reviews but retain independently unce
 test('leaving Resources clears an unsubmitted pool review and closing lease restores its consumer', async () => {
   const f=await start(); await reviewSet(f);
   f.ui.applyRoute({view:'messages'});
-  assert.equal(f.find('Confirm reviewed change'),undefined);
+  assert.equal(f.find('Set total capacity to 0'),undefined);
   f.navigate({pool:'permits',poolAfter:'0'}); await flush();
   assert.equal(f.ui.focusLease('lease-a'),true);
   assert.equal(f.doc.activeElement.textContent,'lease-a');
@@ -365,7 +368,7 @@ test('deleted pool routes retain their journal while background refresh preserve
   const f=fixture(), deleted=snapshot(); deleted.pool.state='deleted';
   f.setView(deleted); f.update(); await flush(); await flush();
   assert.match(f.root.textContent,/Capacity-change journal/);
-  for(const label of ['Set capacity','Adjust capacity','Drain','Delete definition'])assert.equal(f.find(label),undefined);
+  for(const label of ['Change total capacity…','Add or remove units…','Pause new requests…','Delete empty pool…'])assert.equal(f.find(label),undefined);
   const refresh=f.find('Refresh pools'); refresh.focus();
   f.update(); await flush(); await flush();
   assert.equal(f.doc.activeElement,refresh);
@@ -391,5 +394,77 @@ test('background journal refresh preserves page controls and expanded entry focu
   assert.equal(branch.open, true);
   assert.equal(f.doc.activeElement, summary);
   assert.equal(f.root.contains(summary), true);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+});
+test('pool modal separates editing and review; Escape discards draft and restores action focus', async () => {
+  const f = await start();
+  const opener = f.find('Change total capacity…'); opener.focus();
+  await opener.fire('click');
+  const dialog = f.root.querySelector('dialog');
+  assert.equal(dialog.open, true);
+  assert.equal(dialog.getAttribute('aria-modal'), 'true');
+  assert.match(dialog.textContent, /1 · EDIT CHANGE/);
+  assert.match(dialog.textContent, /replacement total/);
+  assert.equal(f.root.querySelector('.pool-review').hidden, true);
+  let prevented = false;
+  await dialog.fire('cancel', {preventDefault() { prevented = true; }});
+  assert.equal(prevented, true);
+  assert.equal(dialog.hidden, true);
+  assert.equal(dialog.open, false);
+  assert.equal(f.doc.activeElement, opener);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+  await reviewSet(f);
+  assert.match(dialog.textContent, /2 · REVIEW & CONFIRM/);
+  assert.equal(f.doc.activeElement.textContent, 'Cancel change');
+  await f.find('Cancel change').fire('click');
+  assert.equal(dialog.hidden, true);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+});
+test('pause wording preserves queued obligations and confirmation names the exact action', async () => {
+  const f = await start();
+  await f.find('Pause new requests…').fire('click');
+  const form = f.root.querySelector('form');
+  assert.match(form.textContent, /queued requests are not cancelled/);
+  assert.match(form.textContent, /Already queued requests may still start when capacity permits/);
+  form.all().find(n => n.name === 'reason').value = 'Operator maintenance window';
+  await form.fire('submit');
+  assert.ok(f.find('Pause new requests'));
+  assert.match(f.root.querySelector('.pool-review').textContent, /Already queued requests may still start when capacity permits/);
+  assert.equal(f.doc.activeElement.textContent, 'Cancel change');
+  await f.find('Back to edit').fire('click');
+  assert.match(f.root.querySelector('dialog').textContent, /1 · EDIT CHANGE/);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+});
+test('validation errors are visible inside the modal and clear before a corrected review', async () => {
+  const f = await start(); await f.find('Change total capacity…').fire('click');
+  const form = f.root.querySelector('form');
+  const capacity = form.all().find(n => n.name === 'capacity');
+  capacity.value = '1.5'; form.all().find(n => n.name === 'reason').value = 'Correct exact count';
+  await form.fire('submit');
+  const error = f.root.querySelector('.pool-dialog-feedback');
+  assert.equal(error.hidden, false); assert.equal(error.getAttribute('role'), 'alert');
+  assert.match(error.textContent, /whole base-10/);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+  capacity.value = '2'; await form.fire('submit');
+  assert.equal(error.hidden, true); assert.ok(f.find('Set total capacity to 2'));
+});
+test('closing after a live detail refresh restores the replacement action without stealing journal focus', async () => {
+  const f = await start(); const opener = f.find('Change total capacity…'); opener.focus(); await opener.fire('click');
+  const changed = snapshot(); changed.pool.revision = 8; f.setView(changed); f.update(); await flush(); await flush();
+  assert.equal(f.root.contains(opener), false);
+  await f.find('Close without changes').fire('click');
+  assert.equal(f.doc.activeElement, f.find('Change total capacity…'));
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+});
+
+test('closing after a pool becomes unavailable restores focus to a focusable detail heading', async () => {
+  const f = await start(); const opener = f.find('Change total capacity…'); opener.focus(); await opener.fire('click');
+  f.setList(() => []); f.update(); await flush(); await flush();
+  assert.equal(f.root.contains(opener), false);
+  await f.find('Close without changes').fire('click');
+  const title = f.root.querySelector('.pool-detail').querySelector('h3');
+  assert.equal(title.textContent, 'Pool unavailable');
+  assert.equal(title.tabIndex, -1);
+  assert.equal(f.doc.activeElement, title);
   assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
 });

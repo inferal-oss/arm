@@ -138,9 +138,9 @@ For every major feature: inspect the final implementation, fix review findings, 
 
 Completion requires the full requested behavior to be implemented and verified against the specification and later user requirements.
 
-## Custom pool interface polish — newly requested
+## Custom pool interface polish — implemented in web
 
-Replace ambiguous operation labels with explicit capacity/add-remove/pause/resume/delete actions, clearly separate editing from review, and use a bounded, accessible modal with a visible backdrop, pool identity, before/after counts, reason and exact consequences. Keep decline/back controls prominent, preserve focus/Escape behavior and complete atomic revision/consumer checks, and retain separately uncertain operations without automatic replay. Review actual rendered desktop/compact layouts and keyboard behavior on disposable state. This is assigned after the mesh agent's frozen final gates; pool URL/history is a separate completed feature.
+Replace ambiguous operation labels with explicit capacity/add-remove/pause/resume/delete actions, clearly separate editing from review, and use a bounded, accessible modal with a visible backdrop, pool identity, before/after counts, reason and exact consequences. Keep decline/back controls prominent, preserve focus/Escape behavior and complete atomic revision/consumer checks, and retain separately uncertain operations without automatic replay. Review actual rendered desktop/compact layouts and keyboard behavior on disposable state. Implemented with native bounded Edit/Review modal, clear operation labels/consequences, default-cancel focus, validation and sticky narrow footer. Root review fixed explicit queued-start wording and missing-pool focus fallback; isolated90JS/native/Linux asset checks and actual desktop/narrow acceptance passed. Pool URL/history is a separate completed feature; matching terminal terminology remains follow-on polish.
 
 
 ## Mesh dashboard management — newly requested

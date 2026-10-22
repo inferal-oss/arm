@@ -1002,3 +1002,63 @@ dialog::backdrop {
     padding: 0.9rem;
   }
 }
+
+/* Pool changes use one bounded, native modal with separate edit/review steps. */
+.pool-heading h2 { margin:0; font-size:1.15rem; letter-spacing:-.25px; }
+.pool-detail > .pool-tools { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin:20px 0; }
+.pool-action { text-align:left; padding:12px 14px; min-height:76px; font-weight:600; }
+.pool-action small { display:block; color:var(--muted); font-weight:400; margin-top:7px; line-height:1.45; }
+.pool-action.danger { border-color:#795054; }
+dialog.pool-editor { width:min(680px,calc(100vw - 32px)); max-height:calc(100dvh - 40px); padding:0; margin:auto; border:1px solid #57736e; border-radius:16px; box-shadow:0 30px 100px #000b; overflow:auto; background:var(--panel); }
+dialog.pool-editor[open] { display:flex; flex-direction:column; }
+dialog.pool-editor::backdrop { background:#05090edb; backdrop-filter:blur(4px); }
+.pool-editor-heading { position:relative; padding:25px 70px 22px 26px; border-bottom:1px solid #3a4e52; background:linear-gradient(135deg,#1c2c2c,var(--panel)); flex:none; }
+.pool-step { margin:0 0 10px; font:11px var(--mono); letter-spacing:1.4px; color:var(--accent); }
+.pool-editor-heading h2 { margin:0; font-size:24px; font-weight:650; letter-spacing:-.6px; line-height:1.2; }
+.pool-editor-context { color:var(--muted); margin:10px 0 0; font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+.pool-dialog-dismiss { position:absolute; top:20px; right:20px; width:36px; height:36px; padding:0; font-size:24px; line-height:1; border-radius:50%; color:var(--muted); }
+.pool-editor > .pool-form-box,.pool-editor > .pool-review { min-height:0; overflow:auto; padding:24px 26px; margin:0; border:0; border-radius:0; background:transparent; }
+.pool-editor .pool-form { gap:20px 18px; }
+.pool-form-explainer { grid-column:1/-1; color:var(--muted); line-height:1.65; margin:0 0 3px; }
+.pool-editor .pool-field { gap:8px; font-size:13px; font-weight:500; color:var(--text); }
+.pool-editor .pool-field input,.pool-editor .pool-field select,.pool-editor .pool-field textarea { font-size:14px; line-height:1.4; padding:11px 12px; border-radius:8px; border-color:#40505a; }
+.pool-editor .pool-field textarea { min-height:82px; }
+.pool-editor .pool-field input:focus-visible,.pool-editor .pool-field select:focus-visible,.pool-editor .pool-field textarea:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.pool-dialog-actions { grid-column:1/-1; display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:10px; padding-top:20px; margin-top:8px; border-top:1px solid var(--line); }
+.pool-dialog-actions button { min-height:40px; padding:10px 15px; font-size:13px; }
+.pool-dialog-actions > button:first-child { margin-right:auto; }
+.pool-editor .pool-review h3 { margin:0 0 8px; font-size:16px; }
+.pool-editor .pool-review > p { line-height:1.65; }
+.pool-editor .pool-reviewed-reason { padding:13px 15px; border-left:3px solid var(--accent); background:#1c282e; border-radius:0 7px 7px 0; overflow-wrap:anywhere; }
+.pool-editor .pool-effects { margin:20px 0; padding:15px; background:var(--bg); border:1px solid var(--line); border-radius:10px; grid-template-columns:7rem minmax(0,1fr); gap:12px; }
+.pool-effects dt { color:var(--muted); font-size:13px; }
+.pool-effects dd { text-align:right; font-size:14px; }
+.pool-editor .pool-review-scope { padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.pool-editor .pool-review-scope summary { cursor:pointer; font-weight:550; }
+.pool-editor .json-view { max-height:220px; font-size:11px; }
+@media(max-width:620px) {
+ .pool-detail > .pool-tools { grid-template-columns:minmax(0,1fr); }
+ dialog.pool-editor { width:calc(100vw - 20px); max-height:calc(100dvh - 20px); border-radius:12px; }
+ .pool-editor-heading { padding:22px 60px 20px 20px; }
+ .pool-editor-heading h2 { font-size:21px; }
+ .pool-editor > .pool-form-box,.pool-editor > .pool-review { padding:20px; }
+ .pool-dialog-actions { gap:8px; }
+ .pool-dialog-actions > button { flex:1 1 auto; }
+ .pool-dialog-actions > button:first-child { margin-right:0; }
+}
+.pool-heading > .pool-tools { display:grid; grid-template-columns:minmax(160px,240px) auto auto; }
+.pool-heading .primary,.pool-editor .primary { color:#10201e; background:var(--accent); border-color:var(--accent); font-weight:700; }
+.pool-editor .pool-dialog-actions .danger { color:#ffe3e3; background:#713d45; border-color:#c78088; font-weight:650; }
+.pool-detail > h3 { margin:17px 0 10px; font-size:21px; letter-spacing:-.4px; }
+.pool-detail-budget { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:21px 0; }
+.pool-detail-budget > div { padding:15px; border:1px solid var(--line); border-radius:9px; background:var(--bg); }
+.pool-detail-budget dt { color:var(--muted); font-size:12px; margin-bottom:9px; }
+.pool-detail-budget dd { margin:0; font:17px var(--mono); overflow-wrap:anywhere; }
+.pool-state { color:var(--accent); }
+.pool-technical { margin:16px 0 0; padding:14px 0; border-top:1px solid var(--line); color:var(--muted); }
+.pool-technical > summary { cursor:pointer; font-size:12px; }
+.pool-dialog-feedback { margin:18px 26px 0; padding:12px 14px; background:#352c21; border:1px solid #8c7046; border-radius:8px; color:var(--warn); line-height:1.6; }
+@media(max-width:900px) { .pool-heading {align-items:flex-start;flex-direction:column;} .pool-heading > .pool-tools {width:100%;grid-template-columns:minmax(0,1fr) auto auto;} }
+@media(max-width:480px) { .pool-heading > .pool-tools {grid-template-columns:1fr 1fr;} .pool-heading > .pool-tools > input {grid-column:1/-1;} .pool-detail-budget {gap:7px;} .pool-detail-budget > div {padding:11px;} .pool-detail-budget dd {font-size:14px;} .pool-dialog-feedback {margin:16px 20px 0;} }
+.pool-editor .pool-dialog-actions { position:sticky; bottom:-24px; z-index:2; margin:22px -26px -24px; padding:16px 26px; background:var(--panel); box-shadow:0 -10px 18px #151c21f0; }
+@media(max-width:620px) { .pool-editor .pool-dialog-actions {bottom:-20px;margin:20px -20px -20px;padding:14px 20px;} }
