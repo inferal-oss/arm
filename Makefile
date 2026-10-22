@@ -3,7 +3,7 @@ PYTHON ?= python3
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh test-database-reset validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -40,6 +40,10 @@ test-workloads: build
 test-gradle-services: build
 	$(PYTHON) scripts/test-gradle-services.py --arm bin/arm
 
+# Destructive-operation acceptance uses only disposable private databases.
+test-database-reset: build
+	$(PYTHON) scripts/test-database-reset.py --arm bin/arm
+
 # Actual two-node mTLS plus strict TLS1.3 wire probes; no SSH/agent sign-in needed.
 # PYTHON must have TLS1.3 support; missing probes fail this gate.
 test-mesh: build
@@ -69,6 +73,7 @@ test-local: build
 	python3 scripts/test-memory.py
 	python3 scripts/test-live-disk.py
 	python3 scripts/test-database.py
+	python3 scripts/test-database-reset.py
 	python3 scripts/test-node-metadata.py
 	mkdir -p .cache
 	CGO_ENABLED=0 $(GO) build -o .cache/node-registry-probe ./scripts/node-registry-probe

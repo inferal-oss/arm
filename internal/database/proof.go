@@ -96,6 +96,7 @@ type proofReader struct {
 	subpoolSchema            bool
 	poolPaths                map[string][]string
 	poolParentRevisions      map[int64]int64
+	resetMetadata            *resetApplied
 	poolOperationSequences   map[int64]bool
 	budgetOperationSequences map[int64]bool
 }
@@ -127,7 +128,7 @@ func ProveDatabaseSettled(ctx context.Context, s *Source, owner string) (Settled
 		return result, err
 	}
 	p := &proofReader{ctx: ctx, home: s.Directory.Path, tx: tx, catalog: catalog, result: result, digest: sha256.New(), leases: map[string]model.Lease{}, pools: map[string]model.Pool{}, budgets: map[string]model.Budget{}, bindings: map[string]model.BudgetBinding{}, messages: map[string]proofMessage{}, incidents: map[string]model.UsageIncident{}, poolChanges: map[int64]model.PoolChange{}, budgetChanges: map[int64]model.BudgetChange{}, gradle: map[string]proofGradle{}, poolOperationSequences: map[int64]bool{}, budgetOperationSequences: map[int64]bool{}, maxSequence: map[string]int64{}, recordedSequences: map[string]int64{}}
-	for _, step := range []func() error{p.metadata, p.readLeases, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readIncidents, p.readExports, p.readGradle, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
+	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readIncidents, p.readExports, p.readGradle, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
 		if err = step(); err != nil {
 			return p.result, err
 		}
@@ -269,6 +270,12 @@ func (p *proofReader) metadata() error {
 				return fmt.Errorf("unknown subpool schema")
 			}
 			p.subpoolSchema = true
+		case resetAppliedKey:
+			var applied resetApplied
+			if err = strictEvidence(raw, &applied); err != nil {
+				return err
+			}
+			p.resetMetadata = &applied
 		case "scheduler_clock":
 			at, e := time.Parse(time.RFC3339Nano, raw)
 			if e != nil || at.IsZero() {

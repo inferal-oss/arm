@@ -37,7 +37,12 @@ func (m *Manager) DatabaseMaintenance(ctx context.Context, operation, destinatio
 		return inspectDatabase(ctx, source, operation, destination, full)
 	})
 }
-func prepareDatabaseFile(home string) error { return database.PrepareNewFile(home) }
+func prepareDatabaseFile(home string) (bool, error) {
+	if err := database.CheckStartupReset(home); err != nil {
+		return false, err
+	}
+	return database.PrepareNewFileCreated(home)
+}
 func (m *Manager) withDatabaseReader(ctx context.Context, limit time.Duration, operation string, read func(context.Context, *database.Source) (any, error)) (result any, err error) {
 	m.mu.Lock()
 	if m.closing {

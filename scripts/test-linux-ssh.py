@@ -58,6 +58,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-live-disk.py", target / "test-live-disk.py")
         shutil.copyfile(root / "scripts" / "test-database.py", target / "test-database.py")
+        shutil.copyfile(root / "scripts" / "test-database-reset.py", target / "test-database-reset.py")
         shutil.copyfile(root / "scripts" / "test-node-metadata.py", target / "test-node-metadata.py")
         shutil.copyfile(root / "scripts" / "test-node-registry.py", target / "test-node-registry.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
@@ -95,6 +96,7 @@ done
             script += 'python3 ./test-memory.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-live-disk.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-database.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-database-reset.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-node-metadata.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-node-registry.py --arm "$PWD/arm" --probe "$PWD/node-registry-probe"\n'
             script += 'python3 ./test-lifecycle.py --arm "$PWD/arm"\n'

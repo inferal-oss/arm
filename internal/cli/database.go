@@ -14,9 +14,12 @@ import (
 
 func (a *app) database(args []string) (int, error) {
 	if len(args) == 0 {
-		return 2, fmt.Errorf("use arm database stats, check or backup; see arm database --help")
+		return 2, fmt.Errorf("use arm database stats, check, backup or remove; see arm database --help")
 	}
 	operation := args[0]
+	if operation == "remove" {
+		return a.databaseRemove(args[1:])
+	}
 	if operation != "stats" && operation != "check" && operation != "backup" {
 		return 2, fmt.Errorf("unknown database operation %q; use arm database --help", operation)
 	}

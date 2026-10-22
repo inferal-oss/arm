@@ -127,6 +127,8 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 		return nil, e
 	}
 	if lifecycle != nil {
+		coordinators := map[string][]byte{}
+		lifecycleRecords := map[string]mesh.LifecycleOperation{}
 		_, contents, e := r.readNamespace(ctx, lifecycle, MaxRecordBytes, 512)
 		if e != nil {
 			return nil, e
@@ -134,7 +136,8 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 		for _, name := range sortedKeys(contents) {
 			raw := contents[name]
 			if strings.HasPrefix(name, "coordinator-") {
-				return nil, fmt.Errorf("operator coordinator schema is not yet approved for destructive proof; retained evidence blocks reset")
+				coordinators[name] = raw
+				continue
 			}
 			var op mesh.LifecycleOperation
 			if e = strictEvidence(string(raw), &op, "actor", "transitions", "key", "kind", "request_sha256", "at", "updated_at", "phase", "reason"); e != nil {
@@ -147,6 +150,15 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 			if !oneOf(op.Phase, "connected", "disconnected") {
 				r.Proof.Blockers = append(r.Proof.Blockers, ProofBlocker{"mesh_lifecycle", op.Key, "Peer setup/disconnection has not durably settled"})
 			}
+			lifecycleRecords[op.Key] = op
+		}
+		blockers, err := proveResetCoordinations(coordinators, owner, r.Proof.Host, lifecycleRecords)
+		if err != nil {
+			return nil, err
+		}
+		r.Proof.Blockers = append(r.Proof.Blockers, blockers...)
+		if len(coordinators) > 0 {
+			r.Mesh = &MeshRetirement{Host: r.Proof.Host, Required: true, Scope: "Retain/archive local coordinator and lifecycle history with explicit mesh retirement. This is not evidence of remote cleanup or resource release."}
 		}
 	}
 	configured, e := r.child("mesh")

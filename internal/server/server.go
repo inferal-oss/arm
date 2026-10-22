@@ -17,6 +17,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 	"github.com/yrashk/arm/internal/agents"
+	"github.com/yrashk/arm/internal/database"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
@@ -70,6 +71,9 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	host, _, e := net.SplitHostPort(address)
 	if e != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
 		return model.Err("invalid_address", "backend must listen on a literal loopback address")
+	}
+	if e = database.InstallResetSeed(ctx, home, lock); e != nil {
+		return e
 	}
 	m, e := manager.Open(home, capacity)
 	if e != nil {

@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/yrashk/arm/internal/database"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/observe"
@@ -90,7 +91,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	if e := local.Prepare(home); e != nil {
 		return nil, e
 	}
-	if e := prepareDatabaseFile(home); e != nil {
+	fresh, e := prepareDatabaseFile(home)
+	if e != nil {
 		return nil, e
 	}
 	db, e := sql.Open("sqlite", filepath.Join(home, "state.db"))
@@ -98,6 +100,12 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	db.SetMaxOpenConns(1)
+	if !fresh {
+		if _, e = database.StartupAuthority(context.Background(), home, db); e != nil {
+			db.Close()
+			return nil, e
+		}
+	}
 	for _, q := range []string{`PRAGMA journal_mode=WAL`, `PRAGMA busy_timeout=5000`,
 		`CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS leases (id TEXT PRIMARY KEY, request_key TEXT UNIQUE, data TEXT NOT NULL, run TEXT)`,
@@ -121,9 +129,11 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			return nil, e
 		}
 	}
-	if _, e = db.Exec(`INSERT OR IGNORE INTO metadata VALUES ('host',?)`, local.ID()); e != nil {
-		db.Close()
-		return nil, e
+	if fresh {
+		if _, e = db.Exec(`INSERT INTO metadata VALUES ('host',?)`, local.ID()); e != nil {
+			db.Close()
+			return nil, e
+		}
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
 	m.diskSampleSlots = make(chan struct{}, 1)

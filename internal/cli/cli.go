@@ -147,7 +147,7 @@ Commands:
   message operator|send|broadcast  Send a durable message
   messages                  Read the operator inbox and delivery status
   install|uninstall         Manage reversible agent instruction blocks
-  database stats|check|backup  Inspect and consistently back up the local ledger
+  database stats|check|backup|remove  Inspect, back up or review a safe local reset
   node                      Read reported local/remote node metadata
   version                   Print build and Go versions
 
