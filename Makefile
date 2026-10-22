@@ -2,6 +2,7 @@ GO ?= go
 PYTHON ?= python3
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
+BUNDLE_DIR ?= dist
 
 .PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh test-database-reset validate-knowledge
 build: validate-knowledge
@@ -10,9 +11,15 @@ build: validate-knowledge
 validate-knowledge:
 	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/check-knowledge
 
-install: build
-	install -d "$(DESTDIR)$(BINDIR)"
-	install -m 755 bin/arm "$(DESTDIR)$(BINDIR)/arm"
+# Install the self-contained carrier; a fresh private output makes repeated
+# installs independent of dist/ and preserves an existing install on build failure.
+install: validate-knowledge
+	@set -eu; \
+	arm_install_build=$$(mktemp -d "$${TMPDIR:-/tmp}/arm-install.XXXXXXXXXX"); \
+	trap 'rm -rf -- "$$arm_install_build"' 0; \
+	GOOS= GOARCH= CGO_ENABLED=0 "$(GO)" run ./scripts/build-bundle --carrier --go "$(GO)" --output "$$arm_install_build"; \
+	install -d "$(DESTDIR)$(BINDIR)"; \
+	install -m 755 "$$arm_install_build/arm" "$(DESTDIR)$(BINDIR)/arm"
 
 test:
 	$(GO) test ./...
@@ -87,3 +94,13 @@ test-local: build
 # Select an already cached Linux image containing /bin/sh and python3.
 test-linux:
 	python3 scripts/test-linux.py --go $(GO) --image $(LINUX_IMAGE)
+
+# Explicit distribution build: four thin platform payloads, then one native
+# carrier containing their compressed bytes. Normal make build stays thin.
+.PHONY: bundle carrier bundle-archive
+bundle carrier: validate-knowledge
+	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/build-bundle --carrier --go "$(GO)" --output "$(BUNDLE_DIR)"
+
+# Optional extracted companion layout for development/distribution inspection.
+bundle-archive: validate-knowledge
+	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/build-bundle --go "$(GO)" --output "$(BUNDLE_DIR)"

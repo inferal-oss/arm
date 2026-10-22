@@ -21,16 +21,28 @@ make build
 make GO=.tools/go/bin/go build
 ```
 
+For one distributable executable carrying macOS/Linux payloads for both arm64 and amd64:
+
+```sh
+make carrier             # dist/arm, native executable with four embedded payloads
+# Equivalent target: make bundle
+make carrier GO=.tools/go/bin/go BUNDLE_DIR=dist-next
+```
+
+This first builds four thin CGo-free binaries, then embeds their compressed bytes and manifest in the native carrier. Ordinary `make build` stays thin and fast. Generated assets live only in a private build snapshot. Choose a fresh output directory when rebuilding: existing carrier output is refused. The current carrier is about 82 MiB versus 25 MiB for a thin executable. Embedded mesh selection and onward catalog propagation are still being integrated; this build checkpoint alone does not enable them.
+
+For an optional archive with four sibling binaries and a platform-selecting launcher, use `make bundle-archive`. The manifest records sizes, SHA-256 and Go platform metadata; it is build integrity metadata, not a signed release.
+
 ## Run locally
 
 To install the executable for your user, with no administrator privileges:
 
 ```sh
-make install              # builds and installs ~/.local/bin/arm
+make install              # builds and installs the carrier as ~/.local/bin/arm
 arm version
 ```
 
-Ensure `~/.local/bin` is on your shell's PATH. In Fish, if needed, run `fish_add_path ~/.local/bin`. Set `PREFIX` to change the installation root, for example `make install PREFIX="$HOME/tools"`; `BINDIR` and packaging `DESTDIR` are also supported. Installing the executable does not modify agent configuration or start the backend. Use `arm install --dry-run` and `arm install` to add the agent instructions described below.
+`make install` builds the carrier in a fresh temporary directory, installs it only after a successful build, and removes its build output afterwards. It works repeatedly without replacing `dist/arm`. Ensure `~/.local/bin` is on your shell's PATH. In Fish, if needed, run `fish_add_path ~/.local/bin`. Set `PREFIX` to change the installation root, for example `make install PREFIX="$HOME/tools"`; `BINDIR` and packaging `DESTDIR` are also supported. Installing the executable does not modify agent configuration or start the backend. Use `arm install --dry-run` and `arm install` to add the agent instructions described below.
 
 The executable is `bin/arm`. Set `ARM_HOME` or pass `--home DIR` before the subcommand to select an isolated state directory. The default is the user's platform configuration directory under `arm`.
 
