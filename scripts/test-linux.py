@@ -28,7 +28,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "model", "database", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"):
+        for package in ("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "node-registry-probe"), "./scripts/node-registry-probe"], cwd=root, env=env, check=True)
