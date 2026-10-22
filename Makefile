@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -42,6 +42,12 @@ test-live: build
 # Missing toolchains fail; this target never downloads or installs them.
 test-workloads: build
 	python3 scripts/test-workloads.py
+
+# Explicit concrete installed tools make real offline Cargo tests mandatory.
+# These tests never install toolchains or use the caller's Cargo home/cache.
+test-cargo-profile:
+	@test -n "$$ARM_TEST_CARGO" && test -n "$$ARM_TEST_RUSTC" && test -n "$$ARM_TEST_RUSTDOC" || { echo 'Set absolute ARM_TEST_CARGO, ARM_TEST_RUSTC and ARM_TEST_RUSTDOC paths to installed tools.' >&2; exit 1; }
+	$(GO) test -race ./internal/cargoprofile
 
 # Real owned persistent Gradle daemons/clients; requires installed Gradle/JDK.
 # This never downloads tools or adopts a user daemon/cache.

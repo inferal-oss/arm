@@ -13,6 +13,7 @@ require (
 	github.com/ebitengine/purego v0.11.2
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-isatty v0.0.24
+	github.com/pelletier/go-toml/v2 v2.4.3
 	golang.org/x/crypto v0.58.0
 	golang.org/x/sys v0.49.0
 	modernc.org/sqlite v1.60.1
