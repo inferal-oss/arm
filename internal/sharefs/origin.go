@@ -59,6 +59,9 @@ type Origin struct {
 	children    map[string][]string
 	mu          sync.Mutex // Only session/handle bookkeeping; never held across I/O/guard.
 	closed      bool
+	operations  int
+	drained     chan struct{}
+	drainOnce   sync.Once
 	cacheClosed atomic.Bool
 	cacheDone   chan struct{}
 	handles     map[string]*Reader
@@ -100,7 +103,7 @@ func (e *Engine) Open(ctx context.Context, p *storage.Provider, a model.Artifact
 	copyArtifact := a
 	id := *a.Identity
 	copyArtifact.Identity = &id
-	o := &Origin{engine: e, provider: p, artifact: copyArtifact, binding: m.Binding, scope: s, guard: g, entries: map[string]Entry{}, children: map[string][]string{}, handles: map[string]*Reader{}, cacheDone: make(chan struct{})}
+	o := &Origin{engine: e, provider: p, artifact: copyArtifact, binding: m.Binding, scope: s, guard: g, entries: map[string]Entry{}, children: map[string][]string{}, handles: map[string]*Reader{}, cacheDone: make(chan struct{}), drained: make(chan struct{})}
 	for _, v := range m.Entries {
 		v.Chunks = append([]string{}, v.Chunks...)
 		o.entries[v.Path] = v
@@ -228,6 +231,10 @@ func (o *Origin) resolve(ctx context.Context, path string) (*os.File, error) {
 }
 
 func (o *Origin) Stat(ctx context.Context, path string) (Info, error) {
+	if err := o.beginOperation(); err != nil {
+		return Info{}, err
+	}
+	defer o.endOperation()
 	if err := o.engine.enter(ctx); err != nil {
 		return Info{}, err
 	}
@@ -248,6 +255,10 @@ func (o *Origin) Stat(ctx context.Context, path string) (Info, error) {
 // List returns a fixed manifest page, never live names from the backing tree.
 // next is an integer cursor for this exact immutable generation, not a path.
 func (o *Origin) List(ctx context.Context, path string, start, count int) (items []Info, next int, err error) {
+	if err := o.beginOperation(); err != nil {
+		return nil, 0, err
+	}
+	defer o.endOperation()
 	if start < 0 || count < 1 || count > 256 {
 		return nil, 0, ErrLimit
 	}
@@ -281,6 +292,10 @@ func (o *Origin) List(ctx context.Context, path string, start, count int) (items
 }
 
 func (o *Origin) OpenRead(ctx context.Context, path string) (string, error) {
+	if err := o.beginOperation(); err != nil {
+		return "", err
+	}
+	defer o.endOperation()
 	if err := o.engine.enter(ctx); err != nil {
 		return "", err
 	}
@@ -336,6 +351,9 @@ func (o *Origin) Close() {
 		return
 	}
 	o.closed = true
+	if o.operations == 0 {
+		o.drainOnce.Do(func() { close(o.drained) })
+	}
 	o.cacheClosed.Store(true)
 	close(o.cacheDone)
 	for k, r := range o.handles {
@@ -347,4 +365,44 @@ func (o *Origin) Close() {
 	o.engine.mu.Lock()
 	o.engine.sessions--
 	o.engine.mu.Unlock()
+}
+
+// BeginClose preserves Close's existing nonblocking behavior. It invalidates new
+// entries and cached bytes; neither method claims outstanding work has joined.
+func (o *Origin) BeginClose() { o.Close() }
+func (o *Origin) beginOperation() error {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	if o.closed {
+		return ErrClosed
+	}
+	o.operations++
+	return nil
+}
+func (o *Origin) endOperation() {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	o.operations--
+	if o.closed && o.operations == 0 {
+		o.drainOnce.Do(func() { close(o.drained) })
+	}
+}
+
+// WaitDrained witnesses actual public operation and cache-fill/pinned-reader
+// completion after BeginClose. It never waits while holding bookkeeping locks.
+// A cancelled wait is not a join; its caller must retain accounting/dependencies.
+func (o *Origin) WaitDrained(ctx context.Context) error {
+	o.mu.Lock()
+	closed := o.closed
+	done := o.drained
+	o.mu.Unlock()
+	if !closed {
+		return fmt.Errorf("BeginClose is required before waiting for origin drain")
+	}
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-done:
+	}
+	return o.engine.cache.waitDrained(ctx, o)
 }

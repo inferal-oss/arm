@@ -22,11 +22,17 @@ func Serve(ctx context.Context, o *sharefs.Origin, c io.ReadWriteCloser, abort f
 	if o == nil {
 		return fmt.Errorf("verified origin required")
 	}
+	defer func() {
+		o.BeginClose()
+		// A cancelled request scope cannot turn an unfinished native/cache operation
+		// into a join. The authority retains its lease while this waits.
+		_ = o.WaitDrained(context.Background())
+	}()
 	b, err := NewBridge(ctx, c, abort)
 	if err != nil {
 		return err
 	}
-	defer b.Close()
+	defer b.CloseAndJoin()
 	h := &handlers{ctx: ctx, origin: o}
 	server := sftp.NewRequestServer(b, sftp.Handlers{FileGet: h, FilePut: h, FileCmd: h, FileList: h}, sftp.WithRSMaxTxPacket(MaxData))
 	// The retained socket watcher, not RequestServer.Close, handles cancellation.

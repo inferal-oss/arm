@@ -22,6 +22,10 @@ type Reader struct {
 // bytes (including in-flight fills/pinned readers) separately reserve <=8MiB per
 // Origin and <=32MiB per Engine. Authorization and native identity are NOT cached.
 func (o *Origin) Read(ctx context.Context, token string, offset int64, length int) ([]byte, error) {
+	if err := o.beginOperation(); err != nil {
+		return nil, err
+	}
+	defer o.endOperation()
 	if offset < 0 || length < 0 || length > ChunkBytes || offset > math.MaxInt64-int64(length) {
 		return nil, ErrLimit
 	}

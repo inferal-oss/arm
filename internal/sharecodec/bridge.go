@@ -40,6 +40,9 @@ type Bridge struct {
 	abort               func()
 	once                sync.Once
 	stop                func() bool
+	abortDone           chan struct{}
+	abortJoin           sync.Once
+	abortJoined         chan struct{}
 	mu                  sync.Mutex
 	live                map[uint64]*ticket
 	initialized         bool
@@ -60,8 +63,8 @@ func NewBridge(ctx context.Context, c io.ReadWriteCloser, abort func()) (*Bridge
 		return nil, fmt.Errorf("live context, stream and independent socket abort required")
 	}
 	ctx, cancel := context.WithCancel(ctx)
-	b := &Bridge{ctx: ctx, cancel: cancel, conn: c, abort: abort, live: map[uint64]*ticket{}, credits: make(chan struct{}, Credits), rpos: 9}
-	b.stop = context.AfterFunc(ctx, func() { b.Close() })
+	b := &Bridge{ctx: ctx, cancel: cancel, conn: c, abort: abort, live: map[uint64]*ticket{}, credits: make(chan struct{}, Credits), rpos: 9, abortDone: make(chan struct{}), abortJoined: make(chan struct{})}
+	b.stop = context.AfterFunc(ctx, func() { defer close(b.abortDone); b.Close() })
 	return b, nil
 }
 func (b *Bridge) Stats() BridgeStats {
@@ -71,6 +74,21 @@ func (b *Bridge) Stats() BridgeStats {
 }
 func (b *Bridge) Close() error {
 	b.once.Do(func() { b.cancel(); b.abort(); _ = b.conn.Close() })
+	return nil
+}
+
+// CloseAndJoin also joins (or positively stops) the context abort callback.
+// Close remains nonblocking with respect to this watcher, preserving its API.
+// A blocked caller-owned abort/Close remains an outstanding charged duty.
+func (b *Bridge) CloseAndJoin() error {
+	b.Close()
+	b.abortJoin.Do(func() {
+		if !b.stop() {
+			<-b.abortDone
+		}
+		close(b.abortJoined)
+	})
+	<-b.abortJoined
 	return nil
 }
 func (b *Bridge) fail() error { b.Close(); return ErrProtocol }

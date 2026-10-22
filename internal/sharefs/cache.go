@@ -195,3 +195,22 @@ func (c *chunkCache) closeOrigin(o *Origin) {
 	}
 	c.wake()
 }
+
+// waitDrained checks the actual reserved cache roster, including fills and pins,
+// independently of operation count. Removing idle entries happens in Close.
+func (c *chunkCache) waitDrained(ctx context.Context, o *Origin) error {
+	for {
+		c.mu.Lock()
+		remaining := c.origins[o]
+		changed := c.changed
+		c.mu.Unlock()
+		if remaining == 0 {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-changed:
+		}
+	}
+}
