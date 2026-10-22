@@ -163,7 +163,7 @@ func saveCoordination(home string, op Coordination) error {
 // have committed. A new worker never silently steals their target or retries it.
 func ClaimCoordination(home, key, kind, digest, target string) (*CoordinationGuard, error) {
 	decoded, decodeErr := hex.DecodeString(digest)
-	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "disconnect") || len(digest) != 64 || target == "" || len(target) > 512 {
+	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "disconnect" && kind != "provision") || len(digest) != 64 || target == "" || len(target) > 512 {
 		return nil, model.Err("invalid_request", "invalid operator coordination intent")
 	}
 	unlock, e := coordinationLock(home)

@@ -27,32 +27,33 @@ import (
 )
 
 type Server struct {
-	meshOperatorMu   sync.Mutex
-	meshOperator     *meshops.Service
-	nodeMu           sync.Mutex
-	nodeCache        map[string]cachedNodeRead
-	nodeSlots        chan struct{}
-	nodeInFlight     map[string]bool
-	meshMu           sync.Mutex
-	meshAdminMu      sync.Mutex
-	mesh             *meshService
-	meshPending      *preparedMeshSetup
-	Manager          *manager.Manager
-	home, token      string
-	stop             context.CancelFunc
-	admission        sync.Mutex
-	stopping         bool
-	storageScan      chan struct{}
-	portScan         chan struct{}
-	monitor          *observe.Monitor
-	monitorSlots     chan struct{}
-	authority        string
-	browser          browserCredentials
-	lifecycleContext context.Context
-	shutdownWorker   sync.Once
-	shutdownWG       sync.WaitGroup
-	lifecycleMu      sync.Mutex
-	lifecycleClosing bool
+	runtimeExecutable *mesh.RuntimeExecutable
+	meshOperatorMu    sync.Mutex
+	meshOperator      *meshops.Service
+	nodeMu            sync.Mutex
+	nodeCache         map[string]cachedNodeRead
+	nodeSlots         chan struct{}
+	nodeInFlight      map[string]bool
+	meshMu            sync.Mutex
+	meshAdminMu       sync.Mutex
+	mesh              *meshService
+	meshPending       *preparedMeshSetup
+	Manager           *manager.Manager
+	home, token       string
+	stop              context.CancelFunc
+	admission         sync.Mutex
+	stopping          bool
+	storageScan       chan struct{}
+	portScan          chan struct{}
+	monitor           *observe.Monitor
+	monitorSlots      chan struct{}
+	authority         string
+	browser           browserCredentials
+	lifecycleContext  context.Context
+	shutdownWorker    sync.Once
+	shutdownWG        sync.WaitGroup
+	lifecycleMu       sync.Mutex
+	lifecycleClosing  bool
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
@@ -93,7 +94,9 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel}
+	runtimeExecutable, _ := mesh.CaptureRuntimeExecutable()
+	defer runtimeExecutable.Close()
+	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable}
 	s.lifecycleContext = ctx
 	// A mesh configuration failure never disables the authenticated local authority.
 	if meshErr := s.loadMesh(); meshErr != nil {
@@ -531,6 +534,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "provision_runtime":
+		return s.provisionRuntime(r.Params)
 	case "node_open":
 		return s.openNode(ctx, r.Params)
 	case "node_list":

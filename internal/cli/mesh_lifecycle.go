@@ -23,7 +23,9 @@ func (a *app) meshLifecycle(action string, args []string) (int, error) {
 	}
 	f := a.flags("mesh connect")
 	remoteHome := f.String("remote-home", "", "target ARM state directory")
-	binary := f.String("binary", "arm", "installed remote ARM executable (not downloaded)")
+	binary := f.String("binary", "arm", "remote ARM executable to inspect; absent nodes use a separately reviewed local companion")
+	artifact := f.String("artifact", "", "trusted local target-OS/architecture ARM companion (no network download)")
+	installRoot := f.String("install-root", "", "exact private target artifact root (default user-level content-addressed install)")
 	grant := f.String("grant", "observe-host", "permissions this node receives on target")
 	reverse := f.String("reverse-grant", "", "target permissions on this node; none by default")
 	contacts := f.String("contacts", "", "exact contact IDs allowed by forward/reverse contact grants")
@@ -77,6 +79,13 @@ func (a *app) meshLifecycle(action string, args []string) (int, error) {
 	}
 	if !mesh.ValidKey(*key) {
 		return 2, fmt.Errorf("connect requires a nonempty key up to128 bytes")
+	}
+	handled, e := a.provisionMissingMesh(*key, &request, *artifact, *installRoot, *yes, *dry)
+	if e != nil {
+		return 1, e
+	}
+	if handled {
+		return 0, nil
 	}
 	return a.connectMesh(*key, request, *yes, *dry)
 }

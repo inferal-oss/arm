@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshops"
 )
 
 // proveResetCoordinations accepts a COMPLETE namespace snapshot under lifecycle
@@ -51,7 +52,7 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 		var digest string
 		switch op.Kind {
 		case "connect":
-			if q.Connect == nil || q.Disconnect != nil {
+			if q.Connect == nil || q.Disconnect != nil || q.Provision != nil {
 				return nil, fmt.Errorf("invalid connect payload")
 			}
 			c := q.Connect
@@ -71,11 +72,19 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 			}
 			digest, err = mesh.ReviewDigest(*c)
 		case "disconnect":
-			if q.Disconnect == nil || q.Connect != nil || !validHost(q.Disconnect.Host) || !validDigest(q.Disconnect.Pair) || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
+			if q.Disconnect == nil || q.Connect != nil || q.Provision != nil || !validHost(q.Disconnect.Host) || !validDigest(q.Disconnect.Pair) || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
 				return nil, fmt.Errorf("invalid disconnect payload")
 			}
 			d := q.Disconnect
 			digest, err = mesh.ReviewDigest(struct{ Host, Pair, Reason string }{d.Host, d.Pair, d.Reason})
+		case "provision":
+			if q.Provision == nil || q.Connect != nil || q.Disconnect != nil || q.Key != q.Provision.Transfer.Key {
+				return nil, fmt.Errorf("invalid linked provision request")
+			}
+			if err = q.Provision.Validate(); err != nil {
+				return nil, err
+			}
+			digest, err = mesh.ReviewDigest(*q.Provision)
 		default:
 			return nil, fmt.Errorf("unknown coordinator intent")
 		}
@@ -123,6 +132,9 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 		}
 		if r.request.Key != root.op.Key {
 			return nil, fmt.Errorf("coordinator request is not bound to original key")
+		}
+		if err := validateProvisionLink(r, root, records); err != nil {
+			return nil, err
 		}
 		if err := validateCoordPayload(r, root, host, lifecycle); err != nil {
 			return nil, err
@@ -202,6 +214,19 @@ func parseCoordReview(r *proofCoordRecord) error {
 	}
 	r.reviewOperation = operation
 	switch operation {
+	case "install-and-start-arm-node", "verify-existing-provision":
+		var v meshops.ProvisionPlan
+		if err = strictEvidence(string(op.Review), &v); err != nil {
+			return err
+		}
+		q := r.request.Provision
+		if op.Kind != "provision" || q == nil || v.Key != q.Transfer.Key || !reflect.DeepEqual(v.Request, *q) || v.Binary != provisionBinary(*q) || v.ArtifactSource != "native trusted local catalog / SHA256 "+q.Transfer.SHA256 || v.Effect == "" {
+			return fmt.Errorf("provision review differs from exact artifact/account/path/startup intent")
+		}
+		if operation == "verify-existing-provision" && op.ParentKey == "" {
+			return fmt.Errorf("provision verification has no immutable original")
+		}
+		r.provisionReview = &v
 	case "connect-direct-peers":
 		var v proofCoordConnectReview
 		if err = strictEvidence(string(op.Review), &v); err != nil {
@@ -271,6 +296,17 @@ func parseCoordResult(r *proofCoordRecord) error {
 	if len(r.op.Result) == 0 {
 		return nil
 	}
+	if r.op.Kind == "provision" {
+		var v meshops.ProvisionResult
+		if err := strictEvidence(string(r.op.Result), &v); err != nil {
+			return err
+		}
+		if err := validateProvisionResult(r, v); err != nil {
+			return err
+		}
+		r.provisionResult = &v
+		return nil
+	}
 	if r.op.Kind == "connect" {
 		var v proofCoordConnectResult
 		if err := strictEvidence(string(r.op.Result), &v); err != nil {
@@ -318,6 +354,22 @@ func validateCoordPayload(r, root *proofCoordRecord, host string, lifecycles map
 			return fmt.Errorf("invalid duplicate coordinator target")
 		}
 		target[v] = true
+	}
+	if r.request.Provision != nil {
+		q := r.request.Provision
+		if len(target) != 1 || !target["ssh:"+q.Destination] {
+			return fmt.Errorf("provision target binding differs")
+		}
+		if r.provisionResult != nil {
+			if r.provisionReview == nil {
+				return fmt.Errorf("provision result lacks full exact reviewed installation")
+			}
+			if r.op.ParentKey != "" {
+				if root.provisionReview == nil || !root.op.Approved || r.provisionReview.Operation != "verify-existing-provision" || !r.provisionResult.Reused {
+					return fmt.Errorf("provision recovery did not preserve original approved installation")
+				}
+			}
+		}
 	}
 	if r.request.Disconnect != nil && !target["host:"+r.request.Disconnect.Host] {
 		return fmt.Errorf("disconnect target binding missing")
@@ -373,7 +425,7 @@ func validateCoordPayload(r, root *proofCoordRecord, host string, lifecycles map
 			return err
 		}
 	}
-	if op.Phase == "completed" && r.connectResult == nil && r.disconnectResult == nil {
+	if op.Phase == "completed" && r.connectResult == nil && r.disconnectResult == nil && r.provisionResult == nil {
 		return fmt.Errorf("completed coordinator lacks known final result")
 	}
 	return nil

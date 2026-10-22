@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -130,35 +131,49 @@ func Call(parent context.Context, destination, binary string, payload any, expec
 	if len(raw) > 1<<20 {
 		return expected, fmt.Errorf("SSH bootstrap input exceeded bound")
 	}
-	ctx, cancel := context.WithTimeout(parent, 20*time.Second)
+	observed, out, e := exchange(parent, destination, []string{binary, "mesh", "bootstrap"}, bytes.NewReader(raw), expected, 20*time.Second)
+	if e != nil {
+		return observed, e
+	}
+	if e = json.Unmarshal(out, result); e != nil {
+		return observed, e
+	}
+	return observed, nil
+}
+
+// exchange is deliberately private: callers supply only fixed internal commands.
+// The verified main-client SSH identity gates all stdin, including artifact bytes.
+func exchange(parent context.Context, destination string, remote []string, payload io.Reader, expected Identity, timeout time.Duration) (Identity, []byte, error) {
+	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
 	if e := CheckConfiguration(ctx, destination); e != nil {
-		return expected, e
+		return expected, nil, e
 	}
 	dir, e := os.MkdirTemp("", "arm-ssh-bootstrap-")
 	if e != nil {
-		return expected, e
+		return expected, nil, e
 	}
 	defer os.RemoveAll(dir)
 	logPath := filepath.Join(dir, "client.log")
 	file, e := os.OpenFile(logPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
 	if e != nil {
-		return expected, e
+		return expected, nil, e
 	}
 	_ = file.Close()
 	args := append([]string{"-v", "-E", logPath}, Flags()...)
-	args = append(args, "--", destination, binary, "mesh", "bootstrap")
+	args = append(args, "--", destination)
+	args = append(args, remote...)
 	command := exec.CommandContext(ctx, "ssh", args...)
 	command.Env = Environment()
 	input, e := command.StdinPipe()
 	if e != nil {
-		return expected, e
+		return expected, nil, e
 	}
 	out := &capture{limit: 1 << 20}
 	diagnostic := &capture{limit: 65536}
 	command.Stdout, command.Stderr = out, diagnostic
 	if e = command.Start(); e != nil {
-		return expected, e
+		return expected, nil, e
 	}
 	wait := make(chan error, 1)
 	go func() { wait <- command.Wait() }()
@@ -174,14 +189,14 @@ func Call(parent context.Context, destination, binary string, payload any, expec
 			_ = input.Close()
 			cancel()
 			<-wait
-			return expected, fmt.Errorf("SSH client diagnostic exceeds bound")
+			return expected, nil, fmt.Errorf("SSH client diagnostic exceeds bound")
 		}
 		log, readErr := os.ReadFile(logPath)
 		if readErr != nil {
 			_ = input.Close()
 			cancel()
 			<-wait
-			return expected, readErr
+			return expected, nil, readErr
 		}
 		user, key := userPattern.FindSubmatch(log), keyPattern.FindSubmatch(log)
 		if len(user) == 2 && len(key) == 2 && authenticated.Match(log) {
@@ -190,11 +205,11 @@ func Call(parent context.Context, destination, binary string, payload any, expec
 		}
 		select {
 		case e := <-wait:
-			return expected, fmt.Errorf("verified SSH authentication failed: %w: %.1024s", e, diagnostic.String())
+			return expected, nil, fmt.Errorf("verified SSH authentication failed: %w: %.1024s", e, diagnostic.String())
 		case <-ctx.Done():
 			_ = input.Close()
 			<-wait
-			return expected, ctx.Err()
+			return expected, nil, ctx.Err()
 		case <-ticker.C:
 		}
 	}
@@ -202,22 +217,19 @@ func Call(parent context.Context, destination, binary string, payload any, expec
 		_ = input.Close()
 		cancel()
 		<-wait
-		return expected, fmt.Errorf("SSH account/host key changed since preview; no mutation payload sent")
+		return expected, nil, fmt.Errorf("SSH account/host key changed since preview; no mutation payload sent")
 	}
-	_, e = input.Write(raw)
+	_, e = io.Copy(input, payload)
 	_ = input.Close()
 	waitErr := <-wait
 	if e != nil {
-		return observed, e
+		return observed, nil, e
 	}
 	if waitErr != nil {
-		return observed, fmt.Errorf("verified SSH helper failed: %w: %.2048s", waitErr, diagnostic.String())
+		return observed, nil, fmt.Errorf("verified SSH helper failed: %w: %.2048s", waitErr, diagnostic.String())
 	}
 	if out.overflow || diagnostic.overflow {
-		return observed, fmt.Errorf("SSH bootstrap output exceeded bound")
+		return observed, nil, fmt.Errorf("SSH bootstrap output exceeded bound")
 	}
-	if e = json.Unmarshal(out.Bytes(), result); e != nil {
-		return observed, e
-	}
-	return observed, nil
+	return observed, out.Bytes(), nil
 }

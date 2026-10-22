@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -39,6 +40,14 @@ func TestResetReviewIsReadOnlyAndRefusesActiveWork(t *testing.T) {
 }
 func TestResetActualLedgerFreshAuthorityPreservesStorageChildren(t *testing.T) {
 	home := proofFixture(t, false)
+	catalog := filepath.Join(home, "mesh-artifacts")
+	if err := os.Mkdir(catalog, 0700); err != nil {
+		t.Fatal(err)
+	}
+	catalogFile := filepath.Join(catalog, "retained-operator-config")
+	if err := os.WriteFile(catalogFile, []byte("trusted bytes remain without remote authority"), 0600); err != nil {
+		t.Fatal(err)
+	}
 	m, err := manager.Open(home, model.Resources{CPU: 2, Memory: 4096, Disk: 1 << 20})
 	if err != nil {
 		t.Fatal(err)
@@ -65,10 +74,16 @@ func TestResetActualLedgerFreshAuthorityPreservesStorageChildren(t *testing.T) {
 		t.Fatal("missing verified infrastructure identity")
 	}
 	oldHost, newHost := r.Plan.OldHost, r.Plan.NewHost
+	if !strings.Contains(strings.Join(r.Plan.Preserved, " "), "mesh-artifacts") {
+		t.Fatal("catalog retention absent from review")
+	}
 	result, err := r.Apply(context.Background())
 	r.Close()
 	if err != nil || !result.Completed {
 		t.Fatalf("reset %+v %v", result, err)
+	}
+	if raw, err := os.ReadFile(catalogFile); err != nil || string(raw) != "trusted bytes remain without remote authority" {
+		t.Fatal("operator catalog changed", err)
 	}
 	if _, err = os.Lstat(filepath.Join(home, "state.db")); !os.IsNotExist(err) {
 		t.Fatal("old DB not erased", err)

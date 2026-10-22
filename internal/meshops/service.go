@@ -15,10 +15,11 @@ import (
 // StartRequest contains a resolved native connector, never arbitrary browser
 // executable/home/options. Browser adapters must resolve their closed draft.
 type StartRequest struct {
-	Key        string           `json:"key"`
-	Kind       string           `json:"kind"`
-	Connect    *ConnectRequest  `json:"connect,omitempty"`
-	Disconnect *DisconnectDraft `json:"disconnect,omitempty"`
+	Key        string            `json:"key"`
+	Kind       string            `json:"kind"`
+	Connect    *ConnectRequest   `json:"connect,omitempty"`
+	Disconnect *DisconnectDraft  `json:"disconnect,omitempty"`
+	Provision  *ProvisionRequest `json:"provision,omitempty"`
 }
 type DisconnectDraft struct {
 	Pair   string `json:"pair,omitempty"`
@@ -127,7 +128,7 @@ func validateStart(q StartRequest) (any, string, error) {
 	}
 	switch q.Kind {
 	case "connect":
-		if q.Connect == nil || q.Disconnect != nil {
+		if q.Connect == nil || q.Disconnect != nil || q.Provision != nil {
 			return nil, "", model.Err("invalid_request", "connect draft required")
 		}
 		r := q.Connect
@@ -145,7 +146,7 @@ func validateStart(q StartRequest) (any, string, error) {
 		}
 		return *r, "ssh:" + r.Destination, nil
 	case "disconnect":
-		if q.Disconnect == nil || q.Connect != nil || len(q.Disconnect.Host) != 32 || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
+		if q.Disconnect == nil || q.Connect != nil || q.Provision != nil || len(q.Disconnect.Host) != 32 || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
 			return nil, "", model.Err("invalid_request", "exact stable target and reason required")
 		}
 		return struct{ Host, Pair, Reason string }{Host: q.Disconnect.Host, Pair: q.Disconnect.Pair, Reason: q.Disconnect.Reason}, "host:" + q.Disconnect.Host, nil

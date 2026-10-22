@@ -116,6 +116,10 @@ func (a *app) meshCommand(args []string) (int, error) {
 		f.BoolVar(dry, "dry-run", false, "preview without mutation")
 	}
 	switch action {
+	case "provision-finalize", "provision-lookup":
+		return a.meshProvisionHelper(action, args)
+	case "artifacts":
+		return a.meshArtifacts(args)
 	case "operations":
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
@@ -200,6 +204,12 @@ func (a *app) meshCommand(args []string) (int, error) {
 		var header struct{ Action string }
 		if e = json.Unmarshal(raw, &header); e != nil {
 			return 2, e
+		}
+		if header.Action == "provision_runtime" {
+			return a.meshProvisionRuntimeHelper(raw)
+		}
+		if header.Action == "provision_start" {
+			return a.meshProvisionStartHelper(raw)
 		}
 		if strings.HasPrefix(header.Action, "lifecycle_") {
 			return a.meshLifecycleBootstrap(raw)

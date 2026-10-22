@@ -18,18 +18,19 @@ import (
 )
 
 type Coordinator struct {
-	Context       context.Context
-	Home          string
-	Machine       bool
-	Inspect       func() (mesh.LifecycleInspection, error)
-	Ensure        func(mesh.StartupPolicy) (mesh.LifecycleInspection, error)
-	Call          func(context.Context, string, any, any) error
-	SSH           func(context.Context, string, string, any, meshssh.Identity, any) (meshssh.Identity, error)
-	Print         func(any) error
-	Confirm       func(any, bool, bool) error
-	guard         *mesh.CoordinationGuard
-	attemptParent string
-	heartbeatStop context.CancelFunc
+	ProvisionTransport *ProvisionTransport
+	Context            context.Context
+	Home               string
+	Machine            bool
+	Inspect            func() (mesh.LifecycleInspection, error)
+	Ensure             func(mesh.StartupPolicy) (mesh.LifecycleInspection, error)
+	Call               func(context.Context, string, any, any) error
+	SSH                func(context.Context, string, string, any, meshssh.Identity, any) (meshssh.Identity, error)
+	Print              func(any) error
+	Confirm            func(any, bool, bool) error
+	guard              *mesh.CoordinationGuard
+	attemptParent      string
+	heartbeatStop      context.CancelFunc
 }
 type Bootstrap struct {
 	Home, Action, Host, Pair, Reason string
@@ -52,6 +53,7 @@ type DisconnectRequest struct {
 }
 type ConnectRequest struct {
 	Destination    string     `json:"ssh_destination"`
+	ProvisionKey   string     `json:"provision_key,omitempty"`
 	RemoteHome     string     `json:"remote_home"`
 	Binary         string     `json:"remote_binary"`
 	LocalIP        string     `json:"local_ip,omitempty"`
