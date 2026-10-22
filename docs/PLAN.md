@@ -22,7 +22,7 @@ Updated October 21, 2026 against the current worktree. The complete scope remain
 1. Subpool/proof (`693e537`), mesh recovery proof (`7fe0c7c`) and terminal quality (`c318f4f`) checkpoints are committed. The confirmed reset checkpoint is validated; finish independent review of the mesh dashboard candidates and validate each isolated feature before committing it.
 2. Deliver polished mesh list/detail/connect/disconnect and authorized per-node windows; bring matching operations into the terminal interface. Finish hierarchy review contracts and tree/consumer controls in both dashboards.
 3. Finish bounded evidence-preserving pre-receipt recovery and broader restore/purge, retaining explicit confirmation and private-fixture gates.
-4. Implement approved embedded SSH/proxy sessions with real OpenSSH lifecycle/security tests. Continue mount adapter security/semantics and early performance experiments in parallel; select production adapters only after those gates.
+4. Add reviewed SSH provisioning of ARM itself for a missing mesh node: discover platform/account, select a verified carried/cached build, approve private installation/start, then review concrete peer pins/grants. No destination compiler or privileged setup; preserve existing installations and uncertain outcomes. Implement approved embedded SSH/proxy sessions with real OpenSSH lifecycle/security tests. Continue mount adapter security/semantics and early performance experiments in parallel; select production adapters only after those gates.
 5. Deliver leased read-only shares, then writable semantics and real build acceptance, with matching web/TUI accounting and recovery controls.
 6. Continue Cargo hardening and additional workload adapters, storage/incident views and bounded reads, followed by remaining services/recovery, agentic lease reviews, accounting/credits, GPU/network providers and broader distributed coordination. The complete remaining scope below stays in force.
 
@@ -124,7 +124,7 @@ Continue assigning focused work to individual subagents as slots become availabl
 
 | Subagent | Running now | Ready for coordinating review | Next queued assignment |
 | --- | --- | --- | --- |
-| `live_memory` | Polished mesh web management and host-bound session/window design | Shared coordinator independently reviewed; root native/Linux/two-host gates passed | Rendered web acceptance, matching terminal mesh operations; then Cargo hardening/provider work |
+| `live_memory` | Design and implementation of reviewed missing-node ARM provisioning over verified SSH | Web Mesh candidate frozen for root's remaining rendered review; scoped-session foundation committed | Verified multi-platform artifact/install/start/recovery gates; then queued Cargo hardening/provider work |
 | `owner_names` | Matching terminal Mesh operations and a separately bound remote workspace | Carve identity, terminal polish and subpool backend are reviewed and committed | Actual PTY/native/Linux mesh acceptance; hierarchy UI review contracts and editors; remaining accounting/headroom work |
 | `dashboard_actions` | Secure unprivileged macOS mount-adapter feasibility, using private fixtures | Confirmed reset source is frozen; root owns final isolated integration | Adapter isolation and throughput gates, then approved leased-share implementation; bounded reads and storage/incident controls |
 
