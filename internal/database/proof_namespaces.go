@@ -166,12 +166,20 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 		return nil, e
 	}
 	if configured != nil {
-		_, contents, e := r.readNamespace(ctx, configured, MaxRecordBytes, 2)
+		files, contents, e := r.readNamespace(ctx, configured, MaxRecordBytes, 256)
 		if e != nil {
 			return nil, e
 		}
-		if len(contents) != 2 || contents["config.json"] == nil || contents["node-key.pem"] == nil {
-			return nil, fmt.Errorf("mesh namespace differs from complete known config/key pair")
+		if configured.identity.Mode&07777 != 0700 {
+			return nil, fmt.Errorf("mesh/SSH namespace must retain exact0700 permissions")
+		}
+		for _, file := range files {
+			if file.Mode&07777 != 0600 {
+				return nil, fmt.Errorf("mesh/SSH namespace records must retain exact0600 permissions")
+			}
+		}
+		if contents["config.json"] == nil || contents["node-key.pem"] == nil {
+			return nil, fmt.Errorf("mesh namespace lacks complete known config/key pair")
 		}
 		var config mesh.Config
 		if e = strictEvidence(string(contents["config.json"]), &config, "identity", "listen", "peers"); e != nil {
@@ -187,6 +195,12 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 		if e = mesh.ValidateRegistry(config); e != nil {
 			return nil, fmt.Errorf("invalid stopped mesh registry evidence: %w", e)
 		}
+
+		sshBlockers, e := proveSSHNamespace(ctx, contents, r.Proof.Host, owner)
+		if e != nil {
+			return nil, e
+		}
+		r.Proof.Blockers = append(r.Proof.Blockers, sshBlockers...)
 
 		r.Mesh = &MeshRetirement{Host: config.Identity.Host, Name: config.Identity.Name, Fingerprint: config.Identity.Fingerprint, Peers: len(config.Peers), Required: true, Scope: "Local archive/identity retirement requires separate explicit review; no remote revoke or claim cleanup. Destination-owned claims retain original authority and expiry."}
 	}

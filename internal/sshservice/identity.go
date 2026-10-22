@@ -25,7 +25,7 @@ type hostRecord struct {
 	Private []byte `json:"private_pkcs8"`
 }
 
-// LoadHostKey is strictly read-only. Inventory must never call InitializeHostKey.
+// LoadHostKey is strictly read-only. Inventory must never call initializeHostKey.
 // dir is an existing canonical private service directory, not arbitrary HOME.
 func LoadHostKey(dir, host string) (ssh.Signer, error) {
 	d, err := privateDirectory(dir)
@@ -55,9 +55,9 @@ func LoadHostKey(dir, host string) (ssh.Signer, error) {
 	return ssh.NewSignerFromKey(ed)
 }
 
-// InitializeHostKey is an explicit setup operation; it never replaces an
+// initializeHostKey is an explicit setup operation; it never replaces an
 // established key, repairs a partial file, or creates a service directory.
-func InitializeHostKey(dir, host string) (ssh.Signer, error) {
+func initializeHostKey(dir, host string) (ssh.Signer, error) {
 	if !validID(host) {
 		return nil, fmt.Errorf("invalid host authority")
 	}
@@ -125,7 +125,7 @@ func privateDirectory(path string) (*os.File, error) {
 	}
 	f := os.NewFile(uintptr(fd), path)
 	var st unix.Stat_t
-	if err = unix.Fstat(fd, &st); err != nil || st.Uid != uint32(os.Geteuid()) || st.Mode&0077 != 0 || st.Mode&unix.S_IFMT != unix.S_IFDIR {
+	if err = unix.Fstat(fd, &st); err != nil || st.Uid != uint32(os.Geteuid()) || st.Mode&07777 != 0700 || st.Mode&unix.S_IFMT != unix.S_IFDIR {
 		f.Close()
 		return nil, fmt.Errorf("SSH service directory must be private and same-user")
 	}
@@ -151,7 +151,7 @@ func readPrivate(d *os.File, name string) ([]byte, error) {
 	f := os.NewFile(uintptr(fd), name)
 	defer f.Close()
 	var st unix.Stat_t
-	if unix.Fstat(fd, &st) != nil || st.Uid != uint32(os.Geteuid()) || st.Mode&unix.S_IFMT != unix.S_IFREG || st.Mode&0077 != 0 || st.Nlink != 1 || st.Size > 16384 {
+	if unix.Fstat(fd, &st) != nil || st.Uid != uint32(os.Geteuid()) || st.Mode&unix.S_IFMT != unix.S_IFREG || st.Mode&07777 != 0600 || st.Nlink != 1 || st.Size > 16384 {
 		return nil, fmt.Errorf("SSH identity must be bounded private single-link same-user file")
 	}
 	raw, err := io.ReadAll(io.LimitReader(f, 16385))

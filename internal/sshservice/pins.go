@@ -37,7 +37,7 @@ type pinSnapshot struct {
 	SHA           string
 }
 
-// PinReview is a concrete immutable review. CommitPin does no TOFU: the caller
+// PinReview is a concrete immutable review. commitPin does no TOFU: the caller
 // must explicitly accept this snapshot; it may not reconstruct a replacement.
 type PinReview struct {
 	Before                          *Pin
@@ -123,7 +123,20 @@ func readPin(d *os.File, target string) (*Pin, pinSnapshot, error) {
 	sum := sha256.Sum256(raw)
 	return &p, pinSnapshot{true, uint64(st.Dev), st.Ino, hex.EncodeToString(sum[:])}, nil
 }
-func CommitPin(ctx context.Context, review PinReview) error {
+func commitPin(ctx context.Context, review PinReview, guards ...func() error) error {
+	check := func() error {
+		for _, guard := range guards {
+			if guard != nil {
+				if e := guard(); e != nil {
+					return e
+				}
+			}
+		}
+		return ctx.Err()
+	}
+	if e := check(); e != nil {
+		return e
+	}
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -151,7 +164,7 @@ func CommitPin(ctx context.Context, review PinReview) error {
 	lock := os.NewFile(uintptr(fd), "ssh-pins.lock")
 	defer lock.Close()
 	var st unix.Stat_t
-	if unix.Fstat(fd, &st) != nil || st.Uid != uint32(os.Geteuid()) || st.Mode&unix.S_IFMT != unix.S_IFREG || st.Mode&0077 != 0 || st.Nlink != 1 || st.Size != 0 {
+	if unix.Fstat(fd, &st) != nil || st.Uid != uint32(os.Geteuid()) || st.Mode&unix.S_IFMT != unix.S_IFREG || st.Mode&07777 != 0600 || st.Nlink != 1 || st.Size != 0 {
 		return fmt.Errorf("unsafe SSH pin lock")
 	}
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -172,7 +185,7 @@ func CommitPin(ctx context.Context, review PinReview) error {
 	}
 	defer unix.Flock(fd, unix.LOCK_UN)
 	var named unix.Stat_t
-	if unix.Fstatat(int(d.Fd()), "ssh-pins.lock", &named, unix.AT_SYMLINK_NOFOLLOW) != nil || named.Dev != st.Dev || named.Ino != st.Ino {
+	if unix.Fstatat(int(d.Fd()), "ssh-pins.lock", &named, unix.AT_SYMLINK_NOFOLLOW) != nil || named.Dev != st.Dev || named.Ino != st.Ino || named.Mode != st.Mode || named.Uid != st.Uid || named.Nlink != 1 || named.Size != 0 {
 		return fmt.Errorf("SSH pin lock replaced")
 	}
 	if err = validateDirectory(d, review.directory); err != nil {
@@ -231,10 +244,10 @@ func CommitPin(ctx context.Context, review PinReview) error {
 	if err = validateDirectory(d, review.directory); err != nil {
 		return err
 	}
-	if unix.Fstatat(int(d.Fd()), "ssh-pins.lock", &named, unix.AT_SYMLINK_NOFOLLOW) != nil || named.Dev != st.Dev || named.Ino != st.Ino {
+	if unix.Fstatat(int(d.Fd()), "ssh-pins.lock", &named, unix.AT_SYMLINK_NOFOLLOW) != nil || named.Dev != st.Dev || named.Ino != st.Ino || named.Mode != st.Mode || named.Uid != st.Uid || named.Nlink != 1 || named.Size != 0 {
 		return fmt.Errorf("SSH pin lock changed before publication")
 	}
-	if err = ctx.Err(); err != nil {
+	if err = check(); err != nil {
 		return err
 	}
 	name := "ssh-pin-" + review.After.Target + ".json"

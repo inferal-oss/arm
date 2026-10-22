@@ -33,12 +33,12 @@ func TestHostIdentityReadOnlyExplicitSetupAndAuthorityBinding(t *testing.T) {
 	if len(entries) != 0 {
 		t.Fatal("read-only inventory wrote files")
 	}
-	a, err := InitializeHostKey(dir, host)
+	a, err := initializeHostKey(dir, host)
 	if err != nil {
 		t.Fatal(err)
 	}
 	before, _ := os.ReadFile(filepath.Join(dir, hostKeyFile))
-	b, err := InitializeHostKey(dir, host)
+	b, err := initializeHostKey(dir, host)
 	if err != nil || !bytes.Equal(a.PublicKey().Marshal(), b.PublicKey().Marshal()) {
 		t.Fatal("host key changed", err)
 	}
@@ -55,7 +55,7 @@ func TestHostIdentityUnsafePathsNeverReplaced(t *testing.T) {
 		t.Run(kind, func(t *testing.T) {
 			dir := privateFixture(t)
 			host := strings.Repeat("a", 32)
-			_, err := InitializeHostKey(dir, host)
+			_, err := initializeHostKey(dir, host)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -84,7 +84,7 @@ func TestHostIdentityUnsafePathsNeverReplaced(t *testing.T) {
 			if _, err = LoadHostKey(dir, host); err == nil {
 				t.Fatal("unsafe identity accepted")
 			}
-			if _, err = InitializeHostKey(dir, host); err == nil {
+			if _, err = initializeHostKey(dir, host); err == nil {
 				t.Fatal("unsafe key repaired")
 			}
 			after, _ := os.ReadFile(path)
@@ -96,7 +96,7 @@ func TestHostIdentityUnsafePathsNeverReplaced(t *testing.T) {
 }
 func pinFixture(t *testing.T, dir string) Pin {
 	t.Helper()
-	key, err := InitializeHostKey(dir, strings.Repeat("a", 32))
+	key, err := initializeHostKey(dir, strings.Repeat("a", 32))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -115,7 +115,7 @@ func TestPinExplicitReviewCASAndNoSilentRotation(t *testing.T) {
 	if _, err = os.Stat(filepath.Join(dir, "ssh-pins.lock")); !os.IsNotExist(err) {
 		t.Fatal("review created lock")
 	}
-	if err = CommitPin(context.Background(), review); err != nil {
+	if err = commitPin(context.Background(), review); err != nil {
 		t.Fatal(err)
 	}
 	stale, err := ReviewPin(dir, next)
@@ -124,7 +124,7 @@ func TestPinExplicitReviewCASAndNoSilentRotation(t *testing.T) {
 	}
 	changed := stale
 	changed.After.Pair = strings.Repeat("f", 64)
-	if CommitPin(context.Background(), changed) == nil {
+	if commitPin(context.Background(), changed) == nil {
 		t.Fatal("reviewed proposed pin changed")
 	}
 	path := pinPath(dir, next.Target)
@@ -134,7 +134,7 @@ func TestPinExplicitReviewCASAndNoSilentRotation(t *testing.T) {
 		t.Fatal("invalid edit fixture")
 	}
 	os.WriteFile(path, altered, 0600)
-	if CommitPin(context.Background(), stale) == nil {
+	if commitPin(context.Background(), stale) == nil {
 		t.Fatal("same-inode stale bytes overwritten")
 	}
 	after, _ := os.ReadFile(path)
@@ -157,7 +157,7 @@ func TestPinConcurrentReviewsCannotOverwriteEachOther(t *testing.T) {
 	}
 	done := make(chan error, 2)
 	for _, review := range []PinReview{first, second} {
-		go func(r PinReview) { done <- CommitPin(context.Background(), r) }(review)
+		go func(r PinReview) { done <- commitPin(context.Background(), r) }(review)
 	}
 	success := 0
 	for i := 0; i < 2; i++ {
@@ -187,7 +187,7 @@ func TestPinReviewRejectsReplacedServiceDirectoryBeforeWrites(t *testing.T) {
 	if err = os.Mkdir(dir, 0700); err != nil {
 		t.Fatal(err)
 	}
-	if CommitPin(context.Background(), review) == nil {
+	if commitPin(context.Background(), review) == nil {
 		t.Fatal("review adopted replaced directory")
 	}
 	entries, err := os.ReadDir(dir)
