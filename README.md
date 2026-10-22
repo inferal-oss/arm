@@ -395,6 +395,8 @@ make check
 make test-local
 # Actual two-node mTLS, lost-response recovery and strict TLS1.3 wire probes:
 make PYTHON=python3 test-mesh
+# Real three-node directory-relayed host inbox/replies and lost-receipt recovery:
+make test-workspace-routing
 # Opt-in: real installed Cargo/rustc, Gradle/JDK and uv/Python, offline.
 make test-workloads
 # Opt-in: real installed Gradle/JDK persistent-service and consumer lifecycle.
@@ -410,6 +412,8 @@ python3 scripts/test-linux-ssh.py --go .tools/go/bin/go --host USER@LINUX_HOST -
 ```
 
 `test-mesh` requires a Python build linked to TLS1.3-capable OpenSSL; choose it with `PYTHON=/path/to/python3` where the system Python lacks that support. It creates isolated backends and needs neither SSH nor agent credentials. Missing wire-probe capability fails this target rather than counting a skip as coverage. Linux harnesses include the compiled mesh package tests by default; the strict two-node wire suite is a separate gate.
+
+`test-workspace-routing` uses the Python standard library and private local daemons to verify original host identity/replies through a directory relay, exact-key deduplication, lost-receipt/restart lookup-only recovery, current denial and refused native/resource forwarding. `test-local` and both default Linux smoke paths include it alongside the existing workspace admission/recovery gate. General graph routing and published-agent delivery require separate acceptance.
 
 Use `GO=.tools/go/bin/go` with these targets if Go is not on PATH. Live tests use dedicated sessions, temporary Codex configuration and project instruction files, and the existing CLI sign-ins. They do not send to existing user sessions or rewrite global agent instructions. Native CLIs may retain the dedicated session transcripts in their history. Reports are written beneath `.cache/`.
 

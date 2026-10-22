@@ -71,6 +71,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
         shutil.copyfile(root / "scripts" / "test-workspace-lifecycle.py", target / "test-workspace-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-workspaces.py", target / "test-workspaces.py")
+        shutil.copyfile(root / "scripts" / "test-workspace-routing.py", target / "test-workspace-routing.py")
         shutil.copyfile(root / "scripts" / "test-mesh.py", target / "test-mesh.py")
         shutil.copyfile(root / "scripts" / "test-agent-messages.py", target / "test-agent-messages.py")
         script = '''#!/bin/sh
@@ -114,6 +115,7 @@ done
             script += 'python3 ./test-budgets.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-workspace-lifecycle.py --arm "$PWD/arm" --manager-tests "$PWD/manager.test"\n'
             script += 'python3 ./test-workspaces.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-workspace-routing.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-agent-messages.py --arm "$PWD/arm"\n'
         (target / "run.sh").write_text(script)
         remote = subprocess.check_output(ssh + ["mktemp -d /tmp/arm-tests.XXXXXXXXXX"], text=True).strip()

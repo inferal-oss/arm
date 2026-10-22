@@ -59,6 +59,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
         shutil.copyfile(root / "scripts" / "test-workspace-lifecycle.py", target / "test-workspace-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-workspaces.py", target / "test-workspaces.py")
+        shutil.copyfile(root / "scripts" / "test-workspace-routing.py", target / "test-workspace-routing.py")
         shutil.copyfile(root / "scripts" / "test-mesh.py", target / "test-mesh.py")
         shutil.copyfile(root / "scripts" / "test-agent-messages.py", target / "test-agent-messages.py")
         os.chmod(target, 0o755)
@@ -97,6 +98,7 @@ python3 /tests/test-scheduling.py --arm /tests/arm
 python3 /tests/test-budgets.py --arm /tests/arm
 python3 /tests/test-workspace-lifecycle.py --arm /tests/arm --manager-tests /tests/manager.test
 python3 /tests/test-workspaces.py --arm /tests/arm
+python3 /tests/test-workspace-routing.py --arm /tests/arm
 python3 /tests/test-agent-messages.py --arm /tests/arm
 '''
         subprocess.run([

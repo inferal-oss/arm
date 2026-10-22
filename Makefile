@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle test-workspaces validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -79,7 +79,12 @@ test-workspace-lifecycle: build
 test-workspaces: build
 	$(PYTHON) scripts/test-workspaces.py --arm bin/arm
 
-test-local: build test-workspace-lifecycle test-workspaces
+# Real three-daemon directory-relayed host inbox/replies, exact dedup and lost-ACK recovery.
+# No direct origin-recipient enrollment or general graph-discovery claim.
+test-workspace-routing: build
+	$(PYTHON) scripts/test-workspace-routing.py --arm bin/arm
+
+test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py
