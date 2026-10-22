@@ -203,7 +203,7 @@ func (s *Server) workspaceMessageFresh(ctx context.Context, id string) error {
 	if e != nil {
 		return e
 	}
-	if root.Role == "member" {
+	if root.Role == "member" || root.Role == "directory" {
 		_, e = s.workspaceRefresh(ctx, id)
 	}
 	return e

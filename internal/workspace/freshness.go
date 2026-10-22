@@ -78,10 +78,11 @@ func (s *Store) IssueChecked(ctx context.Context, q RefreshRequest, dependent fu
 	}
 	var graph DirectoryDependent
 	var graphDeadline time.Duration
+	var issueCount int64
 	// Queue/SQL time consumes the dependent response's window too. The
 	// callback may not start a new TTL when it eventually obtains this store.
 	requestStarted := s.clock.Elapsed()
-	err = s.transactionChecked(ctx, false, func(tx *sql.Tx, v *Records) error {
+	err = s.transactionPublished(ctx, false, func(tx *sql.Tx, v *Records) error {
 		root, e := rootOf(v, q.Source.Workspace)
 		if e != nil {
 			return e
@@ -120,6 +121,7 @@ func (s *Store) IssueChecked(ctx context.Context, q RefreshRequest, dependent fu
 		if e = s.fail("issuance_floor"); e != nil {
 			return e
 		}
+		issueCount = clock.IssuedCount
 		if e = writeClock(ctx, tx, clock); e != nil {
 			return e
 		}
@@ -153,6 +155,21 @@ func (s *Store) IssueChecked(ctx context.Context, q RefreshRequest, dependent fu
 		}
 		if root.Generation != result.Generation || root.Revision != result.Revision || root.Directory != result.Directory || root.Self != s.self || root.Policy != result.Policy || root.PolicyRevision != result.PolicyRevision || member.MembershipGeneration != result.RequesterGeneration || !result.ValidUntil.After(s.now()) || graph.Hash != "" && (s.clock.Elapsed() >= graphDeadline || !graph.ValidUntil.After(s.now())) {
 			return problem("stale_refresh", "directory issue changed or expired before final commit")
+		}
+		return nil
+	}, func(acknowledged bool) error {
+		if !acknowledged {
+			delete(s.directoryGraphs, result.Workspace)
+			return nil
+		}
+		if graph.Hash != "" {
+			if s.directoryGraphs == nil {
+				s.directoryGraphs = map[string]directoryGraphWitness{}
+			}
+			old := s.directoryGraphs[result.Workspace]
+			if issueCount > old.count {
+				s.directoryGraphs[result.Workspace] = directoryGraphWitness{generation: result.Generation, revision: result.Revision, count: issueCount, hash: graph.Hash, deadline: graphDeadline}
+			}
 		}
 		return nil
 	})
@@ -313,7 +330,6 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 	t, ok := r.pending[snapshot.Nonce]
 	if ok {
 		delete(r.pending, snapshot.Nonce)
-		delete(r.active, t.workspace)
 	}
 	closed := r.closed
 	if !ok || closed || t.boot != r.store.boot {
@@ -337,7 +353,7 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 	var deadline time.Duration
 	var graph DirectoryDependent
 	var graphDeadline time.Duration
-	e := r.store.transactionChecked(ctx, false, func(tx *sql.Tx, v *Records) error {
+	e := r.store.transactionPublished(ctx, false, func(tx *sql.Tx, v *Records) error {
 		root, e := rootOf(v, t.workspace)
 		if e != nil {
 			return e
@@ -511,20 +527,23 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 			return problem("invalid_snapshot", "refresh dependent changed the exact membership observation")
 		}
 		return nil
+	}, func(acknowledged bool) error {
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		delete(r.active, t.workspace)
+		if !acknowledged {
+			return nil
+		}
+		if r.closed {
+			return problem("backend_stopping", "runtime closed during refresh; persisted observation remains display-only")
+		}
+		if r.store.clock.Elapsed() >= deadline {
+			return problem("stale_refresh", "committed bundle consumed original validity before runtime activation; observations remain display-only")
+		}
+		r.active[t.workspace] = authorizedSnapshot{boot: r.store.boot, deadline: deadline, hash: snapshot.Hash, generation: snapshot.RequesterGeneration, graph: graph.Hash, graphDeadline: graphDeadline}
+		return nil
 	})
-	if e != nil {
-		return e
-	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if r.closed {
-		return problem("backend_stopping", "runtime closed during refresh; persisted observation remains display-only")
-	}
-	if r.store.clock.Elapsed() >= deadline {
-		return problem("stale_refresh", "committed bundle consumed original validity before runtime activation; observations remain display-only")
-	}
-	r.active[t.workspace] = authorizedSnapshot{boot: r.store.boot, deadline: deadline, hash: snapshot.Hash, generation: snapshot.RequesterGeneration, graph: graph.Hash, graphDeadline: graphDeadline}
-	return nil
+	return e
 }
 
 // Access is a bounded observation for the future destination-owned dispatcher,
@@ -538,67 +557,65 @@ type Access struct {
 	Remaining, StreamTTL               time.Duration
 }
 
-func (r *Runtime) Check(ctx context.Context, id, target string) (Access, error) {
-	r.mu.Lock()
-	cached, ok := r.active[id]
-	closed := r.closed
-	r.mu.Unlock()
-	if closed || !ok || cached.boot != r.store.boot {
-		return Access{}, problem("membership_unknown", "fresh process-bound directory membership required")
-	}
-	v, e := r.store.Read(ctx)
-	if e != nil {
-		return Access{}, e
-	}
-	root, e := rootOf(&v, id)
-	if e != nil {
-		return Access{}, e
-	}
-	if root.Role != "member" || root.State != "active" || root.Self != r.store.self || root.SelfGeneration != cached.generation || denied(&v, id, target) || denied(&v, id, root.Directory.Host) || denied(&v, id, root.Self.Host) {
-		return Access{}, problem("forbidden", "local workspace state/generation/deny does not permit messaging")
-	}
-	clock, e := clockOf(&v, id)
-	if e != nil {
-		return Access{}, e
-	}
-	r.store.mu.Lock()
-	e = r.store.checkClock(clock.WallFloor)
-	now, elapsed := r.store.now(), r.store.clock.Elapsed()
-	r.store.mu.Unlock()
-	if e != nil {
-		return Access{}, e
-	}
-	if elapsed >= cached.deadline {
-		return Access{}, problem("membership_stale", "request-start membership deadline passed")
-	}
-	var snap Snapshot
-	for _, o := range v.Observations {
-		if o.Workspace == id && o.SnapshotHash == cached.hash {
-			snap = o.Snapshot
-			break
+func (r *Runtime) Check(ctx context.Context, id, target string) (result Access, err error) {
+	err = r.store.readPublished(ctx, func(v Records) error {
+		r.mu.Lock()
+		cached, ok := r.active[id]
+		closed := r.closed
+		r.mu.Unlock()
+		if closed || !ok || cached.boot != r.store.boot {
+			return problem("membership_unknown", "fresh process-bound directory membership required")
 		}
-	}
-	if snap.Hash == "" || !now.Before(snap.ValidUntil) {
-		return Access{}, problem("membership_stale", "directory view changed or expired")
-	}
-	var trusted TrustedMember
-	for _, t := range v.Trusted {
-		if t.Workspace == id && t.Identity.Host == target {
-			trusted = t
-			break
+		root, e := rootOf(&v, id)
+		if e != nil {
+			return e
 		}
-	}
-	m, ok := cardOf(snap, target)
-	if !ok || m.State != "active" || trusted.State != "active" || trusted.Identity != m.Identity || trusted.MembershipGeneration != m.MembershipGeneration {
-		return Access{}, problem("identity_changed", "target membership/pin requires current explicit review")
-	}
-	for _, i := range []Identity{root.Self, root.Directory, m.Identity} {
-		if e = identityCurrent(i, now); e != nil {
-			return Access{}, e
+		if root.Role != "member" || root.State != "active" || root.Self != r.store.self || root.SelfGeneration != cached.generation || denied(&v, id, target) || denied(&v, id, root.Directory.Host) || denied(&v, id, root.Self.Host) {
+			return problem("forbidden", "local workspace state/generation/deny does not permit messaging")
 		}
-	}
-	remaining := min(cached.deadline-elapsed, snap.ValidUntil.Sub(now), root.Self.Expires.Sub(now), root.Directory.Expires.Sub(now), m.Identity.Expires.Sub(now))
-	return Access{id, root.Self.Host, target, snap.Revision, root.SelfGeneration, m.MembershipGeneration, root.Self.Fingerprint, m.Identity.Fingerprint, remaining, min(root.Policy.StreamTTL, remaining)}, nil
+		clock, e := clockOf(&v, id)
+		if e != nil {
+			return e
+		}
+		e = r.store.checkClock(clock.WallFloor)
+		now, elapsed := r.store.now(), r.store.clock.Elapsed()
+		if e != nil {
+			return e
+		}
+		if elapsed >= cached.deadline {
+			return problem("membership_stale", "request-start membership deadline passed")
+		}
+		var snap Snapshot
+		for _, o := range v.Observations {
+			if o.Workspace == id && o.SnapshotHash == cached.hash {
+				snap = o.Snapshot
+				break
+			}
+		}
+		if snap.Hash == "" || !now.Before(snap.ValidUntil) {
+			return problem("membership_stale", "directory view changed or expired")
+		}
+		var trusted TrustedMember
+		for _, t := range v.Trusted {
+			if t.Workspace == id && t.Identity.Host == target {
+				trusted = t
+				break
+			}
+		}
+		m, ok := cardOf(snap, target)
+		if !ok || m.State != "active" || trusted.State != "active" || trusted.Identity != m.Identity || trusted.MembershipGeneration != m.MembershipGeneration {
+			return problem("identity_changed", "target membership/pin requires current explicit review")
+		}
+		for _, i := range []Identity{root.Self, root.Directory, m.Identity} {
+			if e = identityCurrent(i, now); e != nil {
+				return e
+			}
+		}
+		remaining := min(cached.deadline-elapsed, snap.ValidUntil.Sub(now), root.Self.Expires.Sub(now), root.Directory.Expires.Sub(now), m.Identity.Expires.Sub(now))
+		result = Access{id, root.Self.Host, target, snap.Revision, root.SelfGeneration, m.MembershipGeneration, root.Self.Fingerprint, m.Identity.Fingerprint, remaining, min(root.Policy.StreamTTL, remaining)}
+		return nil
+	})
+	return
 }
 
 func membershipHash(s Snapshot) string {

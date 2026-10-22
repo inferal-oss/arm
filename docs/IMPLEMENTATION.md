@@ -634,7 +634,7 @@ Strict typed decoding rejects missing required fields, unknown/duplicate/case-al
 
 Authorization caches are process-only, with request-start monotonic validity at most60 seconds and streams at most30 seconds or remaining membership validity. Restarted observations are display-only. Wall/elapsed drift and rollback below the durable pre-issuance floor refuse fresh authority. Existing exact certificate/generation changes quarantine the target instead of silently replacing pins. Rotation, readmission, merges and directory failover are not implemented.
 
-Manager-local lifecycle, cached availability and independent strict reset/retirement proof are integrated as described below. Reads still create no workspace schema or node identity. The later public native membership and host messaging sections describe the CLI, closed admission/refresh transport and durable directory-relayed inbox/send/reply/dedup. General graph routes, opt-in agents and workspace UI remain required. Injected ledger/service tests alone do not establish those features.
+Manager-local lifecycle, cached availability and independent strict reset/retirement proof are integrated as described below. Reads still create no workspace schema or node identity. The later public native membership and host messaging sections describe the CLI, closed admission/refresh transport and durable directory-relayed inbox/send/reply/dedup. The later public graph section adds bounded alternate routes; opt-in agents and workspace UI remain required. Injected ledger/service tests alone do not establish those features.
 
 
 ## Reviewed carrier catalog seeding and onward provisioning
@@ -764,7 +764,7 @@ Separately keyed recovery preserves original consent, nonce and generation. A co
 
 Current public join and candidate-proof transport require the candidate and selected directory to be proven direct peers. Existing-member graph reachability does not remove this admission bootstrap requirement. The [candidate relay follow-on](MESH-CANDIDATE-RELAY-PLAN.md) separately covers reviewed delegated proposals, a pinned Via join binding, proof, exact own status and initial refresh through the introducer. Those stages and their independent reset/real-daemon gates remain unimplemented; no unadmitted candidate receives ordinary messaging authority.
 
-Actual three-daemon acceptance establishes A–B/A–C admission and B discovering C through A without B–C peer promotion. The following host messaging implementation adds durable sends and replies through that directory. General graph routes, agent publication, background directory refresh, public delegated-introducer proposals, workspace dashboard controls, merges and failover remain required. Membership confers no execution, resource, SSH or file grant. Native-only administration does not complete connected-graph messaging or the full specification.
+Actual three-daemon acceptance establishes A–B/A–C admission and B discovering C through A without B–C peer promotion. The following host messaging implementation adds durable sends and replies through that directory. The later public graph section adds bounded routes and background refresh. Agent publication, public delegated-introducer proposals, workspace dashboard controls, merges and failover remain required. Membership confers no execution, resource, SSH or file grant. Native-only administration does not complete connected-graph messaging or the full specification.
 
 ## Durable directory-relayed host messaging
 
@@ -818,7 +818,7 @@ Go-only Manager adapters persist the original pending source report and issue/ac
 
 A joining member can perform only self-to-pinned-directory refresh. It receives no message, lookup, relay, foreign-source or other-target authority before normal finalization. Directory issuance still requires actual prior admission. Explicit local routing retirement closes graph issuance and preserves historical reports/bundles; independent reset decoding checks exact schema/raw fields and complete dependencies without treating historical expiry as current authority.
 
-This checkpoint has no public graph dispatcher, command, transport capability or dashboard control. Existing public messaging still uses the reviewed direct/directory route. General graph transport and alternate paths, bounded background refresh, published agent/native delivery and actual four-node/cyclic/partition acceptance remain required. Destination seals and historical outcome recovery for unknown routed messages are separate remaining work.
+This internal checkpoint preceded the public graph section below. The later delivery adds native transport/inspection, alternate paths and bounded background refresh; published agent/native delivery, dashboard administration and broader partition acceptance remain required. Destination seals and historical outcome recovery for unknown routed messages are separate remaining work.
 
 
 ## Immutable history packs — internal storage foundation
@@ -850,3 +850,16 @@ This is internal preparation only. Publication verification, consumers, grants, 
 ## Local formal tool provisioning
 
 `make tla-tools` installs locked TLC/TLAPM artifacts under ignored `.tla/`, validates exact size/SHA-256 before extraction, and revalidates installed inventories on repeat runs. Archive extraction refuses links, unsafe/duplicate paths, special files and excessive expansion; unfamiliar destinations are preserved. `make tla-tlc`/`tla-tlapm` select individual tools. `make tla-tool-check` runs offline installer safeguards and a real strict TLAPM SMT smoke theorem with fingerprints disabled; this is toolchain evidence only. Java is supplied by the developer. Current upstream native TLAPM artifacts cover macOS ARM64/Linux AMD64; unsupported platforms fail explicitly and may supply a separately installed prover. No global package, shell or ARM runtime dependency changes. See [formal development checks](../formal/README.md). The requested share, graph and history model/trace/proof integrations remain in progress.
+
+
+## Public bounded host graph routing
+
+`arm workspaces graph` inspects paged nodes, edges and candidate paths from an exact graph hash. Closed, bounded report/page transport preflights the complete response before committing evidence; it never silently truncates a graph. Routing considers at most four candidate paths with at most eight nodes per path. Alternatives are tried only before application bytes are written. A failed or lost reply after that point retains an unknown outcome for exact-key lookup; it never triggers an automatic resend.
+
+Two coalesced refresh workers serve at most eight workspaces with a refresh interval bounded by 15 seconds. Refresh does not admit peers, add trust or replay messages. Membership SQL and process-local freshness witnesses publish under the same Store serialization boundary; readers cannot combine a new ledger with an old cache. New join finalization rechecks the exact snapshot, monotonic deadline, wall clock, current identities/pins/generations/deny and shutdown state immediately before commit. Completed-key observations apply no new membership.
+
+A first-application-write gate checks the selected path after nested TLS setup. A newer fresh graph may preserve the same authorized path; a removed path refuses before application bytes. Ongoing streams retain current membership/pin/generation/deny/certificate checks without treating an incidental graph-hash refresh as revoked authority. The original operation deadline still applies.
+
+Historical directory probes preserve at most four authenticated paths of eight nodes each for refreshing the exact selected directory after sparse graph updates or source restart. They carry original nonce/revision/generation/pin bindings and grant directory reachability only: they confer no message, execution, resource or native peer authority. Producers remove obsolete lineage when publishing a validated new snapshot; independent raw reset proof rejects malformed retained evidence.
+
+Acceptance covers four-daemon alternate routing and a genuine three-hop chain with direct shortcuts revoked on native macOS and Linux, plus the existing durable D1 host send/reply/unknown-outcome workflow. Initial candidate admission still requires a direct candidate–directory pair. Published agents, routed native Codex/Claude delivery, candidate relay bootstrap, workspace web/TUI administration, merges/failover and destination seals/historical outcome recovery remain separate work.

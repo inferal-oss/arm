@@ -71,6 +71,9 @@ func (s *Store) routeAccess(v *Records, cached authorizedSnapshot, id, origin, t
 		out.OriginGeneration, out.DestinationGeneration = from.MembershipGeneration, to.MembershipGeneration
 		out.DirectoryRevision = root.Revision
 		out.DestinationInbox = to.HostInbox
+		if g, ok := s.directoryGraphs[id]; ok && g.generation == root.Generation && g.revision == root.Revision && elapsed < g.deadline {
+			out.GraphHash = g.hash
+		}
 	} else if root.Role == "member" {
 		// Refreshing the pinned directory is permitted from the durable admitted
 		// self binding after restart. It cannot send messages, lookup outcomes or
@@ -83,6 +86,18 @@ func (s *Store) routeAccess(v *Records, cached authorizedSnapshot, id, origin, t
 			}
 			out.DestinationGeneration = 1
 			out.DirectoryRevision = root.PolicyRevision
+			// A directory probe does not REQUIRE a current observation, but may
+			// identify an already-active graph without renewing its deadline.
+			// After restart/expiry this remains empty and saved paths are only
+			// reachability probes, never message/lookup authority.
+			if cached.boot == s.boot && cached.hash != "" && cached.generation == root.SelfGeneration && elapsed < cached.deadline && elapsed < cached.graphDeadline {
+				for _, observation := range v.Observations {
+					if observation.Workspace == id && observation.SnapshotHash == cached.hash && now.Before(observation.Snapshot.ValidUntil) {
+						out.GraphHash = cached.graph
+						break
+					}
+				}
+			}
 		} else {
 			if cached.boot != s.boot || cached.hash == "" || cached.generation != root.SelfGeneration || elapsed >= cached.deadline {
 				return out, problem("membership_stale", "fresh process-bound directory membership required for routed messages/relay")
@@ -163,7 +178,6 @@ func (r *Runtime) RouteTransaction(ctx context.Context, id, origin, target, clas
 		r.mu.Unlock()
 		return RouteAccess{}, problem("backend_stopping", "workspace route runtime closing")
 	}
-	cached := r.active[id]
 	life, cancel := context.WithCancel(r.life)
 	r.finalizing.Add(1)
 	r.mu.Unlock()
@@ -172,7 +186,15 @@ func (r *Runtime) RouteTransaction(ctx context.Context, id, origin, target, clas
 	stop := context.AfterFunc(ctx, cancel)
 	defer stop()
 	var out RouteAccess
+	var cached authorizedSnapshot
 	e := r.store.transactionChecked(life, false, func(tx *sql.Tx, v *Records) error {
+		r.mu.Lock()
+		cached = r.active[id]
+		closed := r.closed
+		r.mu.Unlock()
+		if closed {
+			return problem("backend_stopping", "workspace route runtime closing")
+		}
 		var e error
 		out, e = r.store.routeAccess(v, cached, id, origin, target, class)
 		if e != nil {

@@ -60,6 +60,8 @@ func (s *Server) workspaceOperation(ctx context.Context, operation string, raw j
 		return nil
 	}
 	switch operation {
+	case "workspace_graph_read":
+		return s.workspaceGraphRead(ctx, raw)
 	case "workspace_message_send", "workspace_message_reply", "workspace_message_lookup", "workspace_message_page", "workspace_message_cancel", "workspace_messages_retire":
 		return s.workspaceMessageOperation(ctx, operation, raw)
 	case "workspace_list":

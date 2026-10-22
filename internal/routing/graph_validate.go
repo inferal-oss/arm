@@ -207,6 +207,9 @@ func validateGraph(v Records) error {
 			return invalid("graph observation lost exact original source report")
 		}
 
+		if e := validateDirectoryProbes(o, g); e != nil {
+			return e
+		}
 		observed[o.Workspace] = true
 	}
 	return nil

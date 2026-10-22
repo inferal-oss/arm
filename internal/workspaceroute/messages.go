@@ -10,6 +10,7 @@ import (
 
 	"github.com/yrashk/arm/internal/routing"
 	"github.com/yrashk/arm/internal/workspace"
+	"github.com/yrashk/arm/internal/workspacegraph"
 )
 
 const (
@@ -33,6 +34,7 @@ type Request struct {
 	Operation  string                    `json:"operation"`
 	Envelope   *routing.Envelope         `json:"envelope,omitempty"`
 	Refresh    *workspace.RefreshRequest `json:"refresh,omitempty"`
+	Report     *workspacegraph.Report    `json:"graph_report,omitempty"`
 }
 type Failure struct {
 	Code    string `json:"code"`
@@ -46,17 +48,18 @@ type LookupResult struct {
 	Receipt *routing.Receipt `json:"receipt,omitempty"`
 }
 type Reply struct {
-	Version    int              `json:"schema_version"`
-	Route      string           `json:"route_id"`
-	Workspace  string           `json:"workspace"`
-	Generation string           `json:"generation"`
-	Source     string           `json:"source_host"`
-	Target     string           `json:"target_host"`
-	Operation  string           `json:"operation"`
-	Receipt    *routing.Receipt `json:"receipt,omitempty"`
-	Lookup     *LookupResult    `json:"lookup,omitempty"`
-	Page       *workspace.Page  `json:"page,omitempty"`
-	Failure    *Failure         `json:"error,omitempty"`
+	Version    int                  `json:"schema_version"`
+	Route      string               `json:"route_id"`
+	Workspace  string               `json:"workspace"`
+	Generation string               `json:"generation"`
+	Source     string               `json:"source_host"`
+	Target     string               `json:"target_host"`
+	Operation  string               `json:"operation"`
+	Receipt    *routing.Receipt     `json:"receipt,omitempty"`
+	Lookup     *LookupResult        `json:"lookup,omitempty"`
+	Page       *workspace.Page      `json:"page,omitempty"`
+	GraphPage  *workspacegraph.Page `json:"graph_page,omitempty"`
+	Failure    *Failure             `json:"error,omitempty"`
 }
 
 func (q Request) Validate(o Open) error {
@@ -70,7 +73,7 @@ func (q Request) Validate(o Open) error {
 			want = ClassLookup
 		}
 		e := q.Envelope
-		if o.Class != want || e == nil || q.Refresh != nil || e.From.Kind != "host" || e.To.Kind != "host" || !e.Validate() || e.Workspace != q.Workspace || e.Generation != q.Generation || e.Origin != q.Source || e.Target != q.Target || e.OriginMembership != o.SourceGeneration || e.TargetMembership != o.TargetGeneration {
+		if o.Class != want || e == nil || q.Refresh != nil || q.Report != nil || e.From.Kind != "host" || e.To.Kind != "host" || !e.Validate() || e.Workspace != q.Workspace || e.Generation != q.Generation || e.Origin != q.Source || e.Target != q.Target || e.OriginMembership != o.SourceGeneration || e.TargetMembership != o.TargetGeneration {
 			return errors.New("message payload/class differs from admitted routed scope")
 		}
 	case OperationRefresh:
@@ -78,6 +81,12 @@ func (q Request) Validate(o Open) error {
 		if o.Class != ClassDirectory || p == nil || q.Envelope != nil || p.Source.Workspace != q.Workspace || p.Source.Generation != q.Generation || p.Source.Host != q.Source || p.Source.MembershipGeneration != o.SourceGeneration || !validHex(p.Source.Fingerprint, 32) || !validHex(p.Nonce, 32) {
 			return errors.New("directory refresh differs from admitted original member")
 		}
+		if r := q.Report; r != nil {
+			if r.ValidateStructure() != nil || r.Workspace != q.Workspace || r.Generation != q.Generation || r.Source != q.Source || r.SourceGeneration != p.Source.MembershipGeneration || r.SourcePin != p.Source.Fingerprint || r.Nonce != p.Nonce {
+				return errors.New("graph report differs from exact refresh source/nonce")
+			}
+		}
+
 	default:
 		return errors.New("operation is outside the closed routed endpoint protocol")
 	}
@@ -91,7 +100,7 @@ func (r Reply) Validate(q Request) error {
 		return errors.New("routed reply differs from pinned exact request")
 	}
 	count := 0
-	for _, p := range []bool{r.Receipt != nil, r.Lookup != nil, r.Page != nil, r.Failure != nil} {
+	for _, p := range []bool{r.Receipt != nil, r.Lookup != nil, r.Page != nil, r.GraphPage != nil, r.Failure != nil} {
 		if p {
 			count++
 		}
@@ -115,13 +124,20 @@ func (r Reply) Validate(q Request) error {
 			return errors.New("lookup result differs from exact queried envelope")
 		}
 	case OperationRefresh:
-		if q.Refresh == nil || r.Page == nil {
+		if q.Refresh == nil || r.Page == nil && r.GraphPage == nil {
 			return errors.New("directory refresh page missing")
+		}
+		if g := r.GraphPage; g != nil {
+			s := g.Snapshot
+			if q.Report == nil || g.Validate() != nil || s.Workspace != q.Workspace || s.Generation != q.Generation || s.Directory != q.Target || s.Requester != q.Source || s.RequesterGeneration != q.Refresh.Source.MembershipGeneration || s.Nonce != q.Refresh.Nonce || !validHex(s.Hash, 32) {
+				return errors.New("graph page differs from exact bounded routed refresh")
+			}
+			return nil
 		}
 		p := r.Page
 		s := p.Snapshot
 		raw, e := json.Marshal(p)
-		if e != nil || len(raw) > workspace.MaxPageBytes || p.Total < 1 || p.Total > workspace.MaxMembers || p.Offset < 0 || len(s.Members) < 1 || p.Offset+len(s.Members) > p.Total || s.Schema != workspace.Schema || s.Workspace != q.Workspace || s.Generation != q.Generation || s.Directory.Host != q.Target || s.Requester != q.Source || s.RequesterGeneration != q.Refresh.Source.MembershipGeneration || s.Nonce != q.Refresh.Nonce || !validHex(s.Hash, 32) {
+		if e != nil || len(raw) > workspace.MaxPageBytes || p.Total < 1 || p.Total > workspace.MaxMembers || p.Offset < 0 || len(s.Members) < 1 || p.Offset > p.Total || len(s.Members) > p.Total-p.Offset || s.Schema != workspace.Schema || s.Workspace != q.Workspace || s.Generation != q.Generation || s.Directory.Host != q.Target || s.Requester != q.Source || s.RequesterGeneration != q.Refresh.Source.MembershipGeneration || s.Nonce != q.Refresh.Nonce || !validHex(s.Hash, 32) {
 			return errors.New("directory page differs from exact bounded routed refresh")
 		}
 	default:

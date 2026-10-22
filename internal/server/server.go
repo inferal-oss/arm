@@ -44,6 +44,7 @@ type Server struct {
 	workspaceCallsContext context.Context
 	workspaceCallsCancel  context.CancelFunc
 	workspaceCalls        sync.WaitGroup
+	graph                 *workspaceGraphState
 	meshMu                sync.Mutex
 	meshAdminMu           sync.Mutex
 	mesh                  *meshService
@@ -154,6 +155,7 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	}
 	defer os.Remove(filepath.Join(home, "endpoint.json"))
 	m.Start()
+	s.startGraphRefresh()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/ws", s.ws)
 	s.registerBrowser(mux)

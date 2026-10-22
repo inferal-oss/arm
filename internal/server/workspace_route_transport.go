@@ -127,6 +127,23 @@ func (m *meshService) newRoutedHandler() *route.Handler {
 				e = model.Err("forbidden", "directory requester differs from authenticated original member")
 				break
 			}
+
+			if q.Report != nil {
+				replies, err := m.owner.graphDirectoryReplies(ctx, q)
+				e = err
+				if e == nil {
+					for _, r := range replies {
+						if h.Revalidate(ctx, outer, o, p) != nil {
+							return
+						}
+						if route.WriteReply(inner, q, r) != nil {
+							return
+						}
+					}
+					return
+				}
+				break
+			}
 			snapshot, err := m.owner.Manager.WorkspaceIssue(ctx, *q.Refresh)
 			e = err
 			if e == nil {

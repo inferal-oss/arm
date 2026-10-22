@@ -135,6 +135,9 @@ func (a *app) workspacesCommand(args []string) (int, error) {
 		args = []string{"list"}
 	}
 	action, args := args[0], args[1:]
+	if action == "graph" {
+		return a.workspaceGraphCommand(args)
+	}
 	if workspaceMessageAction(action) {
 		return a.workspaceMessagesCommand(action, args)
 	}

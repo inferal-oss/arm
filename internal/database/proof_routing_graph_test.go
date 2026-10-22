@@ -27,6 +27,9 @@ func graphProofClose(t *testing.T, m *manager.Manager) func() {
 }
 func graphProofFixture(t *testing.T) (string, string) { return graphProofFixtureWithEarlier(t, false) }
 func graphProofFixtureWithEarlier(t *testing.T, earlier bool) (directory, member string) {
+	return graphProofFixtureWithOptions(t, earlier, false)
+}
+func graphProofFixtureWithOptions(t *testing.T, earlier, probes bool) (directory, member string) {
 	t.Helper()
 	ctx := t.Context()
 	directory, id := workspaceProofFixture(t, "active")
@@ -99,7 +102,12 @@ func graphProofFixtureWithEarlier(t *testing.T, earlier bool) (directory, member
 			t.Fatal(e)
 		}
 		live = next
-		if e = m.WorkspaceAcceptGraph(ctx, root.Directory, bundle); e != nil {
+		if probes {
+			e = m.WorkspaceAcceptGraphDirectoryPath(ctx, root.Directory, bundle, []string{op.Review.Source.Host, root.Directory.Host})
+		} else {
+			e = m.WorkspaceAcceptGraph(ctx, root.Directory, bundle)
+		}
+		if e != nil {
 			t.Fatal(e)
 		}
 		for _, blocked := range []struct{ label, from, to, class string }{

@@ -32,6 +32,12 @@ func (m *Manager) WorkspaceGraphReport(ctx context.Context, q workspace.RefreshR
 // It returns a complete bundle and new witnesses only after the shared SQL
 // transaction succeeds. No graph adjacency grants message/resource authority.
 func (m *Manager) WorkspaceIssueGraph(ctx context.Context, q workspace.RefreshRequest, report workspacegraph.Report, neighbors []workspacegraph.Neighbor, live []workspacegraph.Observation) (routing.GraphBundle, []workspacegraph.Observation, error) {
+	return m.WorkspaceIssueGraphChecked(ctx, q, report, neighbors, live, nil)
+}
+
+// The optional Go-only preflight is bounded pure encoding/validation. It may
+// not network or acquire Manager/trust locks inside the workspace transaction.
+func (m *Manager) WorkspaceIssueGraphChecked(ctx context.Context, q workspace.RefreshRequest, report workspacegraph.Report, neighbors []workspacegraph.Neighbor, live []workspacegraph.Observation, preflight func(routing.GraphBundle) error) (routing.GraphBundle, []workspacegraph.Observation, error) {
 	type issued struct {
 		bundle routing.GraphBundle
 		live   []workspacegraph.Observation
@@ -41,6 +47,9 @@ func (m *Manager) WorkspaceIssueGraph(ctx context.Context, q workspace.RefreshRe
 		membership, e := s.IssueChecked(ctx, q, func(ctx context.Context, tx *sql.Tx, b workspace.DirectoryIssue) (workspace.DirectoryDependent, error) {
 			var e error
 			out.bundle.Snapshot, out.live, e = routing.IssueGraph(ctx, tx, b, report, neighbors, live)
+			if e == nil && preflight != nil {
+				e = preflight(routing.GraphBundle{Membership: b.Snapshot, Snapshot: out.bundle.Snapshot})
+			}
 			return workspace.DirectoryDependent{Hash: out.bundle.Snapshot.Hash, Issued: out.bundle.Snapshot.Issued, ValidUntil: out.bundle.Snapshot.ValidUntil}, e
 		})
 		if e != nil {
@@ -55,6 +64,18 @@ func (m *Manager) WorkspaceAcceptGraph(ctx context.Context, directory workspace.
 	_, e := workspaceCall(ctx, m, true, func(ctx context.Context, w *workspaceBoundary, _ *workspace.Store) (bool, error) {
 		e := w.runtime.AcceptChecked(ctx, directory, b.Membership, func(ctx context.Context, tx *sql.Tx, a workspace.DirectoryAcceptance) (workspace.DirectoryDependent, error) {
 			return routing.AcceptGraph(ctx, tx, a, b.Snapshot)
+		})
+		return e == nil, e
+	})
+	return e
+}
+
+// WorkspaceAcceptGraphDirectoryPath is called only after successful native
+// source reception over the actual inner-TLS connection. Path is not wire input.
+func (m *Manager) WorkspaceAcceptGraphDirectoryPath(ctx context.Context, directory workspace.Identity, b routing.GraphBundle, path []string) error {
+	_, e := workspaceCall(ctx, m, true, func(ctx context.Context, w *workspaceBoundary, _ *workspace.Store) (bool, error) {
+		e := w.runtime.AcceptChecked(ctx, directory, b.Membership, func(ctx context.Context, tx *sql.Tx, a workspace.DirectoryAcceptance) (workspace.DirectoryDependent, error) {
+			return routing.AcceptGraphDirectoryPath(ctx, tx, a, b.Snapshot, path)
 		})
 		return e == nil, e
 	})

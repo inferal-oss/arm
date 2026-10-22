@@ -92,13 +92,30 @@ type proofGraphStoredReport struct {
 	OriginalUntil time.Time        `json:"original_valid_until"`
 }
 type proofGraphObservation struct {
-	Schema       int              `json:"schema_version"`
-	Workspace    string           `json:"workspace"`
-	Authority    proofWSAuthority `json:"local_authority"`
-	LocalPin     string           `json:"local_pin"`
-	SourceReport proofGraphReport `json:"source_report"`
-	Bundle       proofGraphBundle `json:"bundle"`
-	Received     time.Time        `json:"received_at"`
-	RequestStart time.Time        `json:"request_started_at"`
-	WallFloor    time.Time        `json:"wall_floor"`
+	DirectoryProbes []proofDirectoryProbe `json:"directory_probes,omitempty"`
+	Schema          int                   `json:"schema_version"`
+	Workspace       string                `json:"workspace"`
+	Authority       proofWSAuthority      `json:"local_authority"`
+	LocalPin        string                `json:"local_pin"`
+	SourceReport    proofGraphReport      `json:"source_report"`
+	Bundle          proofGraphBundle      `json:"bundle"`
+	Received        time.Time             `json:"received_at"`
+	RequestStart    time.Time             `json:"request_started_at"`
+	WallFloor       time.Time             `json:"wall_floor"`
+}
+
+type proofDirectoryProbe struct {
+	Schema             int              `json:"schema_version"`
+	Workspace          string           `json:"workspace"`
+	Generation         string           `json:"generation"`
+	Source             string           `json:"source_host"`
+	SourceGeneration   int64            `json:"source_generation"`
+	SourcePin          string           `json:"source_pin"`
+	Directory          string           `json:"directory_host"`
+	DirectoryPin       string           `json:"directory_pin"`
+	MembershipRevision int64            `json:"membership_revision"`
+	SourceSequence     int64            `json:"source_report_sequence"`
+	Nonce              string           `json:"request_nonce"`
+	Observed           time.Time        `json:"observed_at"`
+	Nodes              []proofGraphNode `json:"nodes"`
 }

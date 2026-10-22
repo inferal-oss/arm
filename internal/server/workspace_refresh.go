@@ -10,62 +10,6 @@ import (
 	wire "github.com/yrashk/arm/internal/workspacetransport"
 )
 
-func (s *Server) workspaceRefresh(ctx context.Context, id string) (api.RefreshResult, error) {
-	records, e := s.Manager.WorkspaceRead(ctx)
-	if e != nil {
-		return api.RefreshResult{}, e
-	}
-	root, e := workspaceRoot(records, id)
-	if e != nil {
-		return api.RefreshResult{}, e
-	}
-	ticket, e := s.Manager.WorkspaceBeginRefresh(ctx, id)
-	if e != nil {
-		return api.RefreshResult{}, e
-	}
-	defer s.Manager.WorkspaceAbandonRefresh(context.Background(), ticket.Nonce)
-	conn, o, admission, e := s.workspaceDial(ctx, id, root.Generation, root.Self.Host, root.Directory.Host, wire.ClassDirectory, "")
-	if e != nil {
-		return api.RefreshResult{}, e
-	}
-	defer conn.Close()
-	q := workspaceWireRequest(o, wire.OperationRefresh)
-	q.Refresh = &ticket
-	if e = wire.WriteRequest(conn, o, q); e != nil {
-		return api.RefreshResult{}, e
-	}
-	pages := []workspace.Page{}
-	count := 0
-	for {
-		r, e := wire.ReadReply(conn, q)
-		if e != nil {
-			return api.RefreshResult{}, e
-		}
-		if e = wireReplyError(r); e != nil {
-			return api.RefreshResult{}, e
-		}
-		page := *r.Page
-		if page.Offset != count {
-			return api.RefreshResult{}, model.Err("invalid_snapshot", "directory page ordering differs")
-		}
-		pages = append(pages, page)
-		count += len(page.Snapshot.Members)
-		if count == page.Total {
-			break
-		}
-		if len(pages) >= workspace.MaxMembers {
-			return api.RefreshResult{}, model.Err("invalid_snapshot", "too many directory pages")
-		}
-	}
-	snapshot, e := workspace.Assemble(pages)
-	if e != nil {
-		return api.RefreshResult{}, e
-	}
-	if e = s.Manager.WorkspaceAccept(ctx, admission.Remote, snapshot); e != nil {
-		return api.RefreshResult{}, e
-	}
-	return api.RefreshResult{Workspace: id, Revision: snapshot.Revision, Members: len(snapshot.Members), ValidUntil: snapshot.ValidUntil}, nil
-}
 func (s *Server) workspaceRecoveryRun(ctx context.Context, q api.RecoveryRun) (any, error) {
 	records, e := s.Manager.WorkspaceRead(ctx)
 	if e != nil {

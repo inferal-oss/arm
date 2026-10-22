@@ -55,15 +55,16 @@ type GraphReport struct {
 }
 
 type GraphObservation struct {
-	Schema       int                   `json:"schema_version"`
-	Workspace    string                `json:"workspace"`
-	Authority    workspace.Authority   `json:"local_authority"`
-	LocalPin     string                `json:"local_pin"`
-	SourceReport workspacegraph.Report `json:"source_report"`
-	Bundle       GraphBundle           `json:"bundle"`
-	Received     time.Time             `json:"received_at"`
-	RequestStart time.Time             `json:"request_started_at"`
-	WallFloor    time.Time             `json:"wall_floor"`
+	DirectoryProbes []DirectoryProbe      `json:"directory_probes,omitempty"`
+	Schema          int                   `json:"schema_version"`
+	Workspace       string                `json:"workspace"`
+	Authority       workspace.Authority   `json:"local_authority"`
+	LocalPin        string                `json:"local_pin"`
+	SourceReport    workspacegraph.Report `json:"source_report"`
+	Bundle          GraphBundle           `json:"bundle"`
+	Received        time.Time             `json:"received_at"`
+	RequestStart    time.Time             `json:"request_started_at"`
+	WallFloor       time.Time             `json:"wall_floor"`
 }
 
 type GraphRecords struct {

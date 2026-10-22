@@ -144,10 +144,12 @@ func TestPagedSnapshotsAreCompleteBoundedAndExcludePrivateAdmission(t *testing.T
 		t.Fatal(e)
 	}
 	raw, _ := json.Marshal(snap)
-	for _, forbidden := range []string{"reviewed introducer", "consent_sha256", "admission_key", "proof_nonce", "local_authority", "uid", "reason"} {
-		if strings.Contains(string(raw), forbidden) {
-			t.Fatal("directory leaked internal admission data", forbidden)
-		}
+	var public any
+	if e = json.Unmarshal(raw, &public); e != nil {
+		t.Fatal(e)
+	}
+	if forbidden := privateAdmissionField(public); forbidden != "" {
+		t.Fatal("directory leaked internal admission data", forbidden)
 	}
 	single := snap
 	single.Members = single.Members[:1]
@@ -181,6 +183,51 @@ func TestPagedSnapshotsAreCompleteBoundedAndExcludePrivateAdmission(t *testing.T
 	}
 	if e = r.Accept(m.ctx, d.self, assembled); e != nil {
 		t.Fatal(e)
+	}
+}
+
+// Inspect JSON field names rather than certificate/name bytes: random base64
+// can legitimately contain "uid" without exposing the private authority UID.
+func privateAdmissionField(value any) string {
+	switch v := value.(type) {
+	case map[string]any:
+		for key, child := range v {
+			for _, forbidden := range []string{"consent_sha256", "admission_key", "proof_nonce", "local_authority", "uid", "reason"} {
+				if strings.Contains(key, forbidden) {
+					return key
+				}
+			}
+			if forbidden := privateAdmissionField(child); forbidden != "" {
+				return forbidden
+			}
+		}
+	case []any:
+		for _, child := range v {
+			if forbidden := privateAdmissionField(child); forbidden != "" {
+				return forbidden
+			}
+		}
+	case string:
+		if strings.Contains(v, "reviewed introducer") {
+			return "private introducer reason"
+		}
+	}
+	return ""
+}
+
+func TestSnapshotPrivacyCheckUsesFieldsInsteadOfOpaqueCertificateBytes(t *testing.T) {
+	public := map[string]any{"certificate": "-----BEGIN CERTIFICATE-----\nuidReasonUID\n-----END CERTIFICATE-----", "name": "uid reason admission_key"}
+	if got := privateAdmissionField(public); got != "" {
+		t.Fatal("opaque public text mistaken for private fields", got)
+	}
+	for _, field := range []string{"uid", "owner_uid", "consent_sha256", "admission_key", "proof_nonce", "local_authority", "reason"} {
+		nested := map[string]any{"members": []any{map[string]any{"nested": map[string]any{field: "private"}}}}
+		if got := privateAdmissionField(nested); got == "" {
+			t.Fatal("nested private field accepted", field)
+		}
+	}
+	if got := privateAdmissionField(map[string]any{"name": "reviewed introducer"}); got == "" {
+		t.Fatal("private introducer reason accepted")
 	}
 }
 func TestLocalDenyImmediatelyOverridesFreshCachedMembership(t *testing.T) {

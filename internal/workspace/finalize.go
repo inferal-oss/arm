@@ -13,13 +13,12 @@ func (r *Runtime) Finalize(ctx context.Context, id, key string, revision int64) 
 }
 func (r *Runtime) finalize(ctx context.Context, id, key string, revision int64, recovery *recoveryFinalize) (result Operation, err error) {
 	r.mu.Lock()
-	cached, ok := r.active[id]
 	closed := r.closed
-	if ok && !closed && cached.boot == r.store.boot {
+	if !closed {
 		r.finalizing.Add(1)
 	}
 	r.mu.Unlock()
-	if !ok || closed || cached.boot != r.store.boot {
+	if closed {
 		return result, problem("membership_unknown", "fresh directory result required to finalize join")
 	}
 	defer r.finalizing.Done()
@@ -30,7 +29,17 @@ func (r *Runtime) finalize(ctx context.Context, id, key string, revision int64, 
 	if r.life.Err() != nil {
 		return result, problem("backend_stopping", "workspace runtime closing")
 	}
-	err = r.store.transaction(ctx, false, func(tx *sql.Tx, v *Records) error {
+	var admitted authorizedSnapshot
+	var finalizedRoot Instance
+	applying := false
+	err = r.store.transactionChecked(ctx, false, func(tx *sql.Tx, v *Records) error {
+		r.mu.Lock()
+		cached, ok := r.active[id]
+		closed := r.closed
+		r.mu.Unlock()
+		if !ok || closed || cached.boot != r.store.boot {
+			return problem("membership_unknown", "fresh directory result required to finalize join")
+		}
 		root, e := rootOf(v, id)
 		if e != nil {
 			return e
@@ -131,6 +140,60 @@ func (r *Runtime) finalize(ctx context.Context, id, key string, revision int64, 
 			return e
 		}
 		result = op.View()
+		admitted = cached
+		finalizedRoot = root
+		applying = true
+		return nil
+	}, func(v *Records) error {
+		// A completed-key readonly observation applies no new membership and
+		// keeps its original semantics. NEW finalization must still be current
+		// after structural validation and all before_commit delay/fault hooks.
+		if !applying {
+			return nil
+		}
+		r.mu.Lock()
+		current, ok := r.active[id]
+		closed := r.closed
+		r.mu.Unlock()
+		if closed || r.life.Err() != nil {
+			return problem("backend_stopping", "workspace runtime closing before membership finalization")
+		}
+		if !ok || current != admitted || current.boot != r.store.boot {
+			return problem("membership_unknown", "exact process membership changed before finalization commit")
+		}
+		root, e := rootOf(v, id)
+		if e != nil {
+			return e
+		}
+		if root != finalizedRoot || root.Role != "member" || root.State != "active" || root.Self != r.store.self || root.SelfGeneration != current.generation || denied(v, id, root.Directory.Host) || denied(v, id, root.Self.Host) {
+			return problem("admission_changed", "finalized local binding or deny changed before commit")
+		}
+		clock, e := clockOf(v, id)
+		if e != nil {
+			return e
+		}
+		if e = r.store.checkClock(clock.WallFloor); e != nil {
+			return e
+		}
+		now, elapsed := r.store.now(), r.store.clock.Elapsed()
+		if elapsed >= current.deadline {
+			return problem("membership_stale", "original membership deadline passed before finalization commit")
+		}
+		found := false
+		for _, o := range v.Observations {
+			if o.Workspace == id && o.SnapshotHash == current.hash && now.Before(o.Snapshot.ValidUntil) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return problem("membership_stale", "exact directory observation expired before finalization commit")
+		}
+		for _, identity := range []Identity{root.Self, root.Directory} {
+			if e = identityCurrent(identity, now); e != nil {
+				return e
+			}
+		}
 		return nil
 	})
 	return

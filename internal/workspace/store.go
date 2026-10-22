@@ -24,15 +24,16 @@ func (c realClock) Wall() time.Time        { return time.Now().UTC() }
 func (c realClock) Elapsed() time.Duration { return time.Since(c.start) }
 
 type Store struct {
-	db           *sql.DB
-	authority    Authority
-	self         Identity
-	clock        Clock
-	boot         string
-	mu           sync.Mutex
-	wallStart    time.Time
-	elapsedStart time.Duration
-	clockInvalid bool
+	db              *sql.DB
+	authority       Authority
+	self            Identity
+	clock           Clock
+	boot            string
+	mu              sync.Mutex
+	wallStart       time.Time
+	elapsedStart    time.Duration
+	clockInvalid    bool
+	directoryGraphs map[string]directoryGraphWitness
 	// Optional deterministic failure injection for in-package transactional
 	// tests. Never a public RPC/CLI option; no callback spans network I/O.
 	fault func(string) error
@@ -94,22 +95,29 @@ type Records struct {
 func emptyRecords() Records {
 	return Records{Instances: []Instance{}, Members: []Member{}, Trusted: []TrustedMember{}, Observations: []Observation{}, Operations: []Operation{}, Changes: []Change{}, Denies: []Deny{}, Clocks: []ClockRecord{}}
 }
-func (s *Store) Read(ctx context.Context) (Records, error) {
+func (s *Store) Read(ctx context.Context) (result Records, err error) {
+	err = s.readPublished(ctx, func(v Records) error { result = v; return nil })
+	return
+}
+
+// readPublished observes SQL and process-only witnesses under the same Store
+// lock. Callbacks may briefly acquire Runtime.mu; they never do external I/O.
+func (s *Store) readPublished(ctx context.Context, observe func(Records) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	tx, e := s.db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
 	if e != nil {
-		return Records{}, e
+		return e
 	}
 	defer tx.Rollback()
 	v, e := readRecords(ctx, tx, s.authority)
 	if e != nil {
-		return Records{}, stateProblem(e)
+		return stateProblem(e)
 	}
 	if e = tx.Commit(); e != nil {
-		return Records{}, e
+		return e
 	}
-	return v, nil
+	return observe(v)
 }
 func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.Tx, *Records) error) error {
 	return s.transactionChecked(ctx, initialize, fn, nil)
@@ -119,6 +127,15 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 // commit, AFTER structural validation and fault hooks. It must be pure local
 // ledger/clock work: no network, manager lock or external authorization I/O.
 func (s *Store) transactionChecked(ctx context.Context, initialize bool, fn func(*sql.Tx, *Records) error, final func(*Records) error) error {
+	return s.transactionPublished(ctx, initialize, fn, final, nil)
+}
+
+// transactionPublished serializes a committed ledger and its ephemeral witness.
+// publish runs under Store.mu after commit/ACK validation; success=false means
+// SQL may have committed but its new authority MUST remain display-only. No
+// Runtime.mu holder may wait for this lock. publish performs local memory work
+// only, with no SQL, network, native delivery, or Manager.mu acquisition.
+func (s *Store) transactionPublished(ctx context.Context, initialize bool, fn func(*sql.Tx, *Records) error, final func(*Records) error, publish func(bool) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	tx, e := s.db.BeginTx(ctx, nil)
@@ -168,10 +185,19 @@ func (s *Store) transactionChecked(ctx context.Context, initialize bool, fn func
 		}
 	}
 	if e = tx.Commit(); e != nil {
+		if publish != nil {
+			_ = publish(false)
+		}
 		return problem("workspace_outcome_unknown", "workspace commit outcome unknown; inspect exact key before another mutation")
 	}
 	if e = s.fail("after_commit"); e != nil {
+		if publish != nil {
+			_ = publish(false)
+		}
 		return problem("workspace_outcome_unknown", "workspace reply lost after commit; inspect exact key")
+	}
+	if publish != nil {
+		return publish(true)
 	}
 	return nil
 }

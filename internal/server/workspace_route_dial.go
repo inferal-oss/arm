@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/workspace"
 	route "github.com/yrashk/arm/internal/workspaceroute"
@@ -16,7 +15,7 @@ import (
 // current direct peer registry. The initial star route is source→directory→
 // destination when no exact direct destination exists. Graph alternatives are
 // a separate bounded directory observation, never arbitrary caller path/URL.
-func (s *Server) workspaceRouteDial(ctx context.Context, id, target, class string) (*tls.Conn, route.Open, workspace.RouteAccess, error) {
+func (s *Server) workspaceRouteDial(ctx context.Context, id, target, class string) (*workspaceRouteConn, route.Open, workspace.RouteAccess, error) {
 	m, e := s.workspaceService()
 	if e != nil {
 		return nil, route.Open{}, workspace.RouteAccess{}, e
@@ -30,53 +29,108 @@ func (s *Server) workspaceRouteDial(ctx context.Context, id, target, class strin
 	if e != nil {
 		return nil, route.Open{}, a, e
 	}
-	var peer mesh.Peer
-	path := []string{source, target}
-	peer, e = m.store.Resolve(target)
-	if e != nil || peer.State != "active" || !peer.Proven || peer.Identity.Fingerprint != a.Destination.Fingerprint {
-		if a.Directory.Host == source || a.Directory.Host == target {
-			return nil, route.Open{}, a, model.Err("route_unavailable", "no current exact direct workspace transport; no action was retried")
+
+	// All alternatives share one original start deadline. No application request
+	// has been written here; once the caller begins WriteRequest it never redials.
+	expires := minStamp(time.Now().Add(route.MaxLifetime), a.Expires)
+	attemptCtx, cancelAttempts := context.WithDeadline(ctx, expires)
+	succeeded := false
+	defer func() {
+		if !succeeded {
+			cancelAttempts()
 		}
-		peer, e = m.store.Resolve(a.Directory.Host)
-		if e != nil || peer.State != "active" || !peer.Proven || peer.Identity.Fingerprint != a.Directory.Fingerprint {
-			return nil, route.Open{}, a, model.Err("route_unavailable", "no current directory relay; no discovered member was promoted to a direct peer")
+	}()
+	// On success the carrier owns this bounded context until its original deadline;
+	// cancelling it here would close the returned authenticated application stream.
+	var last error
+	var lastOpen route.Open
+	for _, candidate := range s.graphRouteCandidates(attemptCtx, a, class) {
+		if e = attemptCtx.Err(); e != nil {
+			break
 		}
-		path = []string{source, a.Directory.Host, target}
-	}
-	o := route.Open{Version: route.Version, Workspace: id, Generation: a.Generation, Route: local.ID(), Source: source, Target: target, SourceGeneration: a.OriginGeneration, TargetGeneration: a.DestinationGeneration, DirectoryRevision: a.DirectoryRevision, Path: path, Hop: 1, Class: class, Expires: minStamp(time.Now().Add(route.MaxLifetime), a.Expires), Pair: peer.Pair, Revision: 1}
-	check := func(ctx context.Context) error {
-		current, e := s.Manager.WorkspaceRouteAccess(ctx, id, source, target, ledgerClass)
-		if e != nil {
-			return e
+		peer, err := s.graphCandidatePeer(attemptCtx, m, a, candidate, class)
+		if err != nil {
+			last = err
+			continue
 		}
-		if current.Generation != a.Generation || current.Local != a.Local || current.Origin != a.Origin || current.Destination != a.Destination || current.OriginGeneration != a.OriginGeneration || current.DestinationGeneration != a.DestinationGeneration {
-			return model.Err("forbidden", "origin/final route authority changed")
+		hopGeneration, err := s.graphHopGeneration(attemptCtx, a, candidate, class, peer.Identity.Fingerprint)
+		if err != nil {
+			last = err
+			continue
 		}
-		return m.store.WorkspaceIdentityCurrent(a.Local)
+		o := route.Open{Version: route.Version, Workspace: id, Generation: a.Generation, Route: local.ID(), Source: source, Target: target, SourceGeneration: a.OriginGeneration, TargetGeneration: a.DestinationGeneration, DirectoryRevision: a.DirectoryRevision, Path: candidate.path, Hop: 1, Class: class, Expires: expires, Pair: peer.Pair, Revision: 1}
+		lastOpen = o
+		check := func(checkCtx context.Context) error {
+			current, err := s.Manager.WorkspaceRouteAccess(checkCtx, id, source, target, ledgerClass)
+			if err != nil {
+				return err
+			}
+			if current.Generation != a.Generation || current.Local != a.Local || current.Origin != a.Origin || current.Destination != a.Destination || current.OriginGeneration != a.OriginGeneration || current.DestinationGeneration != a.DestinationGeneration {
+				return model.Err("forbidden", "origin/final route authority changed")
+			}
+			// The chosen graph is a reachability observation, not a stream
+			// grant. A new same-scope refresh must not tear down this original
+			// request/receipt. Revalidate stable hop membership and native pair
+			// instead, retaining the original generation and pin.
+			liveCandidate := candidate
+			liveCandidate.graph, liveCandidate.probe = "", false
+			livePeer, err := s.graphCandidatePeer(checkCtx, m, current, liveCandidate, class)
+			if err != nil {
+				return err
+			}
+			if livePeer.Identity != peer.Identity {
+				return model.Err("identity_changed", "selected first-hop identity changed")
+			}
+			generation, err := s.graphHopGeneration(checkCtx, current, candidate, class, peer.Identity.Fingerprint)
+			if err != nil {
+				return err
+			}
+			if generation != hopGeneration {
+				return model.Err("identity_changed", "selected first-hop membership generation changed")
+			}
+			return m.store.WorkspaceIdentityCurrent(a.Local)
+		}
+		raw, err := m.routeHop(attemptCtx, peer, o, check)
+		if err != nil {
+			last = err
+			continue
+		}
+		config, err := m.store.RoutedWorkspaceTLS(a.Local, a.Destination, false)
+		if err != nil {
+			raw.Close()
+			last = err
+			continue
+		}
+		conn := tls.Client(raw, config)
+		handshake, stop := context.WithTimeout(attemptCtx, 5*time.Second)
+		err = conn.HandshakeContext(handshake)
+		stop()
+		if err == nil {
+			err = check(attemptCtx)
+		}
+		if err != nil {
+			raw.Close()
+			last = err
+			continue
+		}
+		succeeded = true
+		return &workspaceRouteConn{Conn: conn, ctx: attemptCtx, beforeWrite: func(ctx context.Context) error {
+			if err := check(ctx); err != nil {
+				return err
+			}
+			_, err := s.graphCandidatePeer(ctx, m, a, candidate, class)
+			return err
+		}}, o, a, nil
 	}
-	raw, e := m.routeHop(ctx, peer, o, check)
-	if e != nil {
-		return nil, o, a, e
+	if last == nil {
+		last = model.Err("route_unavailable", "no current bounded workspace path; application request was not retried")
 	}
-	config, e := m.store.RoutedWorkspaceTLS(a.Local, a.Destination, false)
-	if e != nil {
-		raw.Close()
-		return nil, o, a, e
+	if attemptCtx.Err() != nil {
+		last = attemptCtx.Err()
 	}
-	conn := tls.Client(raw, config)
-	handshake, cancel := context.WithTimeout(ctx, 5*time.Second)
-	e = conn.HandshakeContext(handshake)
-	cancel()
-	if e != nil {
-		raw.Close()
-		return nil, o, a, e
-	}
-	if e = check(ctx); e != nil {
-		raw.Close()
-		return nil, o, a, e
-	}
-	return conn, o, a, nil
+	return nil, lastOpen, a, last
 }
+
 func routedWireRequest(o route.Open, operation string) route.Request {
 	return route.Request{Version: route.Version, Route: o.Route, Workspace: o.Workspace, Generation: o.Generation, Source: o.Source, Target: o.Target, Operation: operation}
 }

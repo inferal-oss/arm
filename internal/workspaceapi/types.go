@@ -96,10 +96,13 @@ type RecoveryRun struct {
 	Revision  int64  `json:"revision"`
 }
 type RefreshResult struct {
-	Workspace  string    `json:"workspace"`
-	Revision   int64     `json:"directory_revision"`
-	Members    int       `json:"members"`
-	ValidUntil time.Time `json:"valid_until"`
+	GraphHash       string    `json:"graph_sha256,omitempty"`
+	GraphRevision   int64     `json:"graph_revision,omitempty"`
+	GraphValidUntil time.Time `json:"graph_valid_until,omitempty"`
+	Workspace       string    `json:"workspace"`
+	Revision        int64     `json:"directory_revision"`
+	Members         int       `json:"members"`
+	ValidUntil      time.Time `json:"valid_until"`
 }
 type RecoveryPrepare struct {
 	Kind              string             `json:"kind"`

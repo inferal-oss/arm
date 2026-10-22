@@ -346,6 +346,9 @@ func (p *proofReader) readRoutingGraph(roots map[string]proofRouteRoot, parents 
 		if s.Workspace != g.Workspace || s.Generation != g.Generation || s.Requester != g.Authority.Host || !s.ValidUntil.After(o.Received) || s.Issued.Before(o.RequestStart.Add(-o.Bundle.Membership.Policy.ClockSkew)) || !graphProofReport(q) || q.Workspace != g.Workspace || q.Generation != g.Generation || q.Source != g.Authority.Host || q.SourcePin != g.LocalPin || q.SourceGeneration != s.RequesterGeneration || q.Nonce != s.Nonce || q.Issued != o.RequestStart || q.Issued.After(o.Received) || !q.ValidUntil.After(o.Received) || q.Sequence > g.ReportSequence || q.Sequence == g.ReportSequence && workspaceProofHash(q) != g.ReportHash {
 			return fmt.Errorf("graph observation exact original report/membership linkage differs")
 		}
+		if e := graphProofDirectoryProbes(o, g); e != nil {
+			return e
+		}
 		seen[o.Workspace] = true
 	}
 	return nil

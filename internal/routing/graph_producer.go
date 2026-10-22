@@ -175,7 +175,11 @@ func IssueGraph(ctx context.Context, tx *sql.Tx, b workspace.DirectoryIssue, inc
 	if deadline <= b.Elapsed {
 		return workspacegraph.Snapshot{}, nil, model.Err("stale_refresh", "same report cannot renew an elapsed original process deadline")
 	}
-	current = append(filtered, workspacegraph.Observation{Report: row.Report, Boot: b.Boot, Deadline: deadline}, workspacegraph.Observation{Report: own, Boot: b.Boot, Deadline: b.Elapsed + own.ValidUntil.Sub(a.At)})
+	current = filtered
+	if incoming.Source != a.Local.Host {
+		current = append(current, workspacegraph.Observation{Report: row.Report, Boot: b.Boot, Deadline: deadline})
+	}
+	current = append(current, workspacegraph.Observation{Report: own, Boot: b.Boot, Deadline: b.Elapsed + own.ValidUntil.Sub(a.At)})
 	issueSeq, e := graphNext(g.IssuedCount)
 	if e != nil {
 		return workspacegraph.Snapshot{}, nil, e
@@ -250,6 +254,21 @@ func AcceptGraph(ctx context.Context, tx *sql.Tx, b workspace.DirectoryAcceptanc
 		}
 	}
 	o := GraphObservation{Schema: 1, Workspace: m.Workspace, Authority: g.Authority, LocalPin: g.LocalPin, SourceReport: *g.LastReport, Bundle: GraphBundle{Membership: m, Snapshot: s}, Received: b.At, RequestStart: b.StartWall, WallFloor: b.At}
+	for _, old := range v.Graph.Observations {
+		if old.Workspace == o.Workspace {
+			// Prior records were fully validated by graphMutation/Read. Changed
+			// current remote lineage/policy may invalidate a historical hint;
+			// discard just that hint before validating the NEW complete bundle.
+			// This filtering never runs in raw reads or destructive proof.
+			for _, probe := range old.DirectoryProbes {
+				candidate := o
+				candidate.DirectoryProbes = []DirectoryProbe{probe}
+				if validateDirectoryProbes(candidate, g) == nil {
+					o.DirectoryProbes = append(o.DirectoryProbes, probe)
+				}
+			}
+		}
+	}
 	g.Updated = b.At
 	g.WallFloor = b.At
 	if e = writeGraphIssuer(ctx, tx, g); e != nil {

@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -84,7 +84,11 @@ test-workspaces: build
 test-workspace-routing: build
 	$(PYTHON) scripts/test-workspace-routing.py --arm bin/arm
 
-test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing
+# Actual four-daemon graph with revoked bootstrap edge and alternate relay.
+test-workspace-graph: build
+	$(PYTHON) scripts/test-workspace-graph.py --arm bin/arm
+
+test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py
