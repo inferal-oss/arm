@@ -10,6 +10,8 @@ New acceptance requirements include near-network-speed mounted-share performance
 
 ## Components
 
+The offline `arm agents` guide includes the implemented workspace host-inbox graph/send/reply/lookup workflow and leased SSH execution/pending/lookup/local-history workflow. Installed instructions point to these sections and distinguish direct-peer messaging from workspace forwarding. Membership does not grant resource or execution authority; unknown operations retain their original keys, and historical receipts are not fresh remote status. SSH takes one remote shell command string, unlike `arm run`'s argument vector. Workspace agent publication remains explicitly in development. Reading the guide does not start a backend or create state.
+
 | Component | Responsibility |
 | --- | --- |
 | `cmd/arm` | Single executable entry point. |

@@ -46,7 +46,7 @@ func TestCurrentInstructionsRoundTripBothAdaptersWithBoundState(t *testing.T) {
 			"does not release the source", "shorter deadline, never an extension",
 			"remote mesh pool bundles are refused", "reverse permissions default to none",
 			"it is not a sandbox", "arm mesh message-lookup HOST_ID --key KEY",
-			"Remote broadcasts/transitive forwarding are refused", "--after CURSOR",
+			"Direct-peer messages do not transit other peers", "arm workspaces list --json", "--after CURSOR",
 			"Reading or watching does not acknowledge", "never as local operator policy",
 			shellQuote(executable) + " --home " + shellQuote(home),
 		} {

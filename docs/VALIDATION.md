@@ -1,5 +1,9 @@
 # Validation record
 
+## October 22, 2026: workspace and SSH agent-guide correction
+
+Focused native CLI guide/catalog and installer race checks passed, followed by the complete installer race suite and CLI/installer vet. Actual disposable Codex/Claude instruction-file upgrade, preview, backup, repeat install and uninstall checks preserve surrounding user text and modes. A compiled offline guide and ten workspace/SSH/history help topics also passed with an empty executable search path and no state directory creation. These checks cover instruction delivery and formatting; they do not establish a new authenticated Codex/Claude session or acceptance of the still-isolated workspace agent-publication candidate. The updated text documents already-implemented host messaging and leased SSH rather than widening permissions.
+
 External CLI/resource plugins and generic provisioning have specification acceptance criteria but no implementation acceptance yet. Required gates include actual external executables on macOS/Linux, argv/exit/signal and built-in precedence, bounded protocol/registration, real durable external-state crash/retry/reclamation fixtures, provisioning models and real separately authorized integration tests. Existing pool and ARM binary-provisioning tests do not establish this feature; see [SPEC.md](../SPEC.md#resource-plugin-acceptance).
 
 ## New interface and mount acceptance requirements
