@@ -6,13 +6,14 @@ import "github.com/yrashk/arm/internal/sharefs"
 // worker and queue bounds are enforced separately; Go allocator/GC/runtime and
 // kernel/client caches are not byte-exact attribution or hostile-code isolation.
 type MemoryPlan struct {
-	Policy      string `json:"policy"`
-	Preparation int64  `json:"preparation_bytes"`
-	Session     int64  `json:"session_bytes"`
-	Manifest    int64  `json:"manifest_max_bytes"`
-	Entries     int    `json:"entries_max"`
-	Chunks      int    `json:"chunks_max"`
-	Credits     int    `json:"packet_credits"`
+	Policy        string `json:"policy"`
+	Preparation   int64  `json:"preparation_bytes"`
+	Session       int64  `json:"session_bytes"`
+	Manifest      int64  `json:"manifest_max_bytes"`
+	Entries       int    `json:"entries_max"`
+	Chunks        int    `json:"chunks_max"`
+	Credits       int    `json:"packet_credits"`
+	VerifiedCache int64  `json:"verified_cache_per_session_bytes"`
 }
 
 // AdmissionMemory covers full evidence+map+copy+hash/encoder transients, generous
@@ -29,6 +30,6 @@ func AdmissionMemory() MemoryPlan {
 	base := int64(32<<20) + int64(l.ManifestBytes)*16 + int64(l.Entries)*768 + int64(l.Chunks)*96 + sharefs.ChunkBytes + 8<<20
 	round := func(n int64) int64 { return (n + (8 << 20) - 1) / (8 << 20) * (8 << 20) }
 	prep := round(base)
-	session := round(prep + int64(Credits)*int64(MaxOutgoing)*3 + int64(l.Reads)*2*sharefs.ChunkBytes)
-	return MemoryPlan{"share-memory-v1", prep, session, int64(l.ManifestBytes), l.Entries, l.Chunks, Credits}
+	session := round(prep + int64(Credits)*int64(MaxOutgoing)*3 + int64(l.Reads)*2*sharefs.ChunkBytes + sharefs.VerifiedCacheOriginBytes)
+	return MemoryPlan{"share-memory-v2", prep, session, int64(l.ManifestBytes), l.Entries, l.Chunks, Credits, sharefs.VerifiedCacheOriginBytes}
 }

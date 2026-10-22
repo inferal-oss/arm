@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/storage"
@@ -21,13 +22,14 @@ type Engine struct {
 	gate     chan struct{}
 	mu       sync.Mutex
 	sessions int
+	cache    *chunkCache
 }
 
 func New(l Limits) (*Engine, error) {
 	if err := l.validate(); err != nil {
 		return nil, err
 	}
-	return &Engine{limits: l, gate: make(chan struct{}, l.Reads)}, nil
+	return &Engine{limits: l, gate: make(chan struct{}, l.Reads), cache: newChunkCache()}, nil
 }
 func (e *Engine) enter(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
@@ -47,17 +49,19 @@ func (e *Engine) enter(ctx context.Context) error {
 func (e *Engine) leave() { <-e.gate }
 
 type Origin struct {
-	engine   *Engine
-	provider *storage.Provider
-	artifact model.Artifact
-	binding  Binding
-	scope    Scope
-	guard    Guard
-	entries  map[string]Entry
-	children map[string][]string
-	mu       sync.Mutex // Only session/handle bookkeeping; never held across I/O/guard.
-	closed   bool
-	handles  map[string]*Reader
+	engine      *Engine
+	provider    *storage.Provider
+	artifact    model.Artifact
+	binding     Binding
+	scope       Scope
+	guard       Guard
+	entries     map[string]Entry
+	children    map[string][]string
+	mu          sync.Mutex // Only session/handle bookkeeping; never held across I/O/guard.
+	closed      bool
+	cacheClosed atomic.Bool
+	cacheDone   chan struct{}
+	handles     map[string]*Reader
 }
 
 func (e *Engine) Open(ctx context.Context, p *storage.Provider, a model.Artifact, m Manifest, s Scope, g Guard) (*Origin, error) {
@@ -96,7 +100,7 @@ func (e *Engine) Open(ctx context.Context, p *storage.Provider, a model.Artifact
 	copyArtifact := a
 	id := *a.Identity
 	copyArtifact.Identity = &id
-	o := &Origin{engine: e, provider: p, artifact: copyArtifact, binding: m.Binding, scope: s, guard: g, entries: map[string]Entry{}, children: map[string][]string{}, handles: map[string]*Reader{}}
+	o := &Origin{engine: e, provider: p, artifact: copyArtifact, binding: m.Binding, scope: s, guard: g, entries: map[string]Entry{}, children: map[string][]string{}, handles: map[string]*Reader{}, cacheDone: make(chan struct{})}
 	for _, v := range m.Entries {
 		v.Chunks = append([]string{}, v.Chunks...)
 		o.entries[v.Path] = v
@@ -132,6 +136,9 @@ func (o *Origin) authorize(ctx context.Context, operation, path string) error {
 		return err
 	}
 	if err := o.guard(ctx, Access{o.binding, o.scope, operation, path}); err != nil {
+		// Permission failures never leave reusable verified bytes behind. The
+		// authority still owns scope revocation and must Close its session.
+		o.engine.cache.closeOrigin(o)
 		return fmt.Errorf("%w: %v", ErrDenied, err)
 	}
 	o.mu.Lock()
@@ -329,11 +336,14 @@ func (o *Origin) Close() {
 		return
 	}
 	o.closed = true
+	o.cacheClosed.Store(true)
+	close(o.cacheDone)
 	for k, r := range o.handles {
 		r.closed = true
 		delete(o.handles, k)
 	}
 	o.mu.Unlock()
+	o.engine.cache.closeOrigin(o)
 	o.engine.mu.Lock()
 	o.engine.sessions--
 	o.engine.mu.Unlock()

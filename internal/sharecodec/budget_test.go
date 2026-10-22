@@ -107,7 +107,17 @@ func TestMaximumManifestAllocationFitsAdmissionHeadroom(t *testing.T) {
 	if allocated+uint64(len(raw))*2 > uint64(plan.Preparation) {
 		t.Fatal("measured maximum-shape cycle exceeds preparation headroom")
 	}
-	if plan.Session < plan.Preparation+Credits*MaxOutgoing*3+int64(sharefs.DefaultLimits().Reads)*2*sharefs.ChunkBytes {
-		t.Fatal("session omits bounded transport and active buffer headroom")
+	if plan.Session < plan.Preparation+Credits*MaxOutgoing*3+int64(sharefs.DefaultLimits().Reads)*2*sharefs.ChunkBytes+sharefs.VerifiedCacheOriginBytes {
+		t.Fatal("session omits bounded transport, verified cache and active buffer headroom")
+	}
+}
+
+func TestAdmissionCacheAccountingIsExplicit(t *testing.T) {
+	plan := AdmissionMemory()
+	if plan.Policy != "share-memory-v2" || plan.VerifiedCache != sharefs.VerifiedCacheOriginBytes || plan.Session < plan.Preparation+plan.VerifiedCache {
+		t.Fatal("cache not represented in cooperative admission", plan)
+	}
+	if sharefs.VerifiedCacheAuthorityBytes > int64(sharefs.DefaultLimits().Sessions)*plan.VerifiedCache {
+		t.Fatal("session claims cannot cover authority cache bound")
 	}
 }

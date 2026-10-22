@@ -18,8 +18,9 @@ type Reader struct {
 
 // Read returns at most one MiB. No caller buffer is populated before EVERY
 // covered chunk is verified and final current authorization/identity succeeds.
-// Active buffer space is at most2MiB (one result plus one verified scratch),
-// bounded globally by Engine.Reads, never multiplied by the number of sessions.
+// Each result is at most1MiB, globally bounded by Engine.Reads. Verified chunk
+// bytes (including in-flight fills/pinned readers) separately reserve <=8MiB per
+// Origin and <=32MiB per Engine. Authorization and native identity are NOT cached.
 func (o *Origin) Read(ctx context.Context, token string, offset int64, length int) ([]byte, error) {
 	if offset < 0 || length < 0 || length > ChunkBytes || offset > math.MaxInt64-int64(length) {
 		return nil, ErrLimit
@@ -46,10 +47,9 @@ func (o *Origin) Read(ctx context.Context, token string, offset int64, length in
 	x := o.entries[r.path]
 	size := x.Version.Size
 	n := min(int64(length), max(int64(0), size-offset))
-	// Buffer allocation is admitted by the global gate. At most two chunks are
-	// needed for an unaligned one-MiB read; only one chunk scratch is allocated.
+	// Result allocation is admitted by the global gate. A read pins only one
+	// cached chunk at a time, including an unaligned read spanning two chunks.
 	out := make([]byte, int(n))
-	scratch := make([]byte, ChunkBytes)
 	for copied := int64(0); copied < n; {
 		if err = o.authorize(ctx, "read", r.path); err != nil {
 			return nil, err
@@ -58,15 +58,34 @@ func (o *Origin) Read(ctx context.Context, token string, offset int64, length in
 		chunk := position / ChunkBytes
 		begin := chunk * ChunkBytes
 		chunkN := min(int64(ChunkBytes), size-begin)
-		if _, err = f.ReadAt(scratch[:chunkN], begin); err != nil {
+		key := chunkKey{o, o.binding, r.path, x.Version, x.Chunks[chunk], chunk}
+		verified, release, err := o.engine.cache.acquire(ctx, key, func() ([]byte, error) {
+			scratch := make([]byte, int(chunkN))
+			if _, err := f.ReadAt(scratch, begin); err != nil {
+				return nil, err
+			}
+			h := sha256.Sum256(scratch)
+			if hex.EncodeToString(h[:]) != x.Chunks[chunk] {
+				return nil, ErrChanged
+			}
+			after, err := version(int(f.Fd()))
+			if err != nil {
+				return nil, err
+			}
+			if after != x.Version {
+				return nil, ErrChanged
+			}
+			if err = o.finish(ctx, "read", r.path); err != nil {
+				return nil, err
+			}
+			return scratch, nil
+		})
+		if err != nil {
 			return nil, err
 		}
-		h := sha256.Sum256(scratch[:chunkN])
-		if hex.EncodeToString(h[:]) != x.Chunks[chunk] {
-			return nil, ErrChanged
-		}
 		take := min(n-copied, chunkN-(position-begin))
-		copy(out[copied:copied+take], scratch[position-begin:position-begin+take])
+		copy(out[copied:copied+take], verified[position-begin:position-begin+take])
+		release()
 		copied += take
 	}
 	after, err := version(int(f.Fd()))
