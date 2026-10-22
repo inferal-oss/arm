@@ -443,12 +443,27 @@ class Gate:
             'normalization_guards': ['wrong-key-refused', 'wrong-authority-refused'],
             'conservative_abstraction_guards': ['unavailable-no-start-retains-obligations']})
 
+    def check_captured_sources(self):
+        sources = self.summary.get('sources')
+        if not sources:
+            raise RuntimeError('captured source inventory required')
+        for name, digest in sources.items():
+            path = self.run / name
+            if name != Path(name).name or path.is_symlink():
+                raise RuntimeError('captured source identity changed: ' + name)
+            with path.open('rb') as stream:
+                raw = stream.read((1 << 20) + 1)
+            if len(raw) > 1 << 20 or hashlib.sha256(raw).hexdigest() != digest:
+                raise RuntimeError('captured source changed: ' + name)
+
     def prove(self):
+        self.check_captured_sources()
         validate_module_source(self.run / 'SharePreparationProof.tla', PREPARATION_THEOREMS)
         # TLAPM also limits obligation preprocessing (five seconds by default).
         # Stretch all tool budgets without changing the theorem or assumptions.
         log = self.command([self.args.tlapm, '--strict', '--nofp', '--threads', '2', '--stretch', '10', '--cache-dir',
             self.run / 'proofs', '-I', self.run, self.run / 'SharePreparationProof.tla'], 'tlapm', timeout=3600)
+        self.check_captured_sources()
         proved = re.search(r'All (\d+) obligations proved\.', log)
         if proved is None or int(proved.group(1)) == 0 or '[ERROR]' in log:
             raise RuntimeError('TLAPM did not discharge every proof obligation')

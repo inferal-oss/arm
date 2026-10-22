@@ -126,6 +126,9 @@ class RunnerTests(unittest.TestCase):
         original = path.read_text()
         header, rest = original.split('\n', 1)
         path.write_text(header + '\nTHEOREM Prefix1 == TRUE OBVIOUS\nTHEOREM Prefix2 == TRUE OBVIOUS\n====\n' + rest)
+        # Model an invalid source already present when the snapshot was made,
+        # so source stability alone cannot stand in for the scope guard.
+        gate.summary['sources'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         calls = []
         gate.command = lambda *a, **kw: calls.append(a) or 'All 2 obligations proved.'
         with self.assertRaises(ValueError):
@@ -133,9 +136,33 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(calls, [], 'prover must not run on an early-terminated source')
         self.assertEqual(gate.summary['gates'], [])
         path.write_text(original.replace('THEOREM Safety ==', 'THEOREM RemovedSafety =='))
+        gate.summary['sources'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         with self.assertRaises(ValueError):
             gate.prove()
         self.assertEqual(calls, [])
+
+    def test_before_or_during_proof_source_mutation_cannot_pass(self):
+        args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove',
+                                  targets=[], tlapm='tlapm')
+        for when in ('before', 'during'):
+            with self.subTest(when=when):
+                gate = formal.Gate(args)
+                path = gate.run / 'SharePreparation.tla'
+                calls = []
+                def change():
+                    path.write_text(path.read_text() + '\n(* actual file mutation *)\n')
+                def command(*a, **kw):
+                    calls.append(a)
+                    if when == 'during':
+                        change()
+                    return 'All 509 obligations proved.'
+                gate.command = command
+                if when == 'before':
+                    change()
+                with self.assertRaisesRegex(RuntimeError, 'captured source changed'):
+                    gate.prove()
+                self.assertEqual(len(calls), 0 if when == 'before' else 1)
+                self.assertEqual(gate.summary['gates'], [])
 
     def test_timeout_preserves_output_and_stops_owned_descendants(self):
         args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove', targets=[])
