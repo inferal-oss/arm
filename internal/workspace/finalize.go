@@ -12,9 +12,20 @@ func (r *Runtime) Finalize(ctx context.Context, id, key string, revision int64) 
 	r.mu.Lock()
 	cached, ok := r.active[id]
 	closed := r.closed
+	if ok && !closed && cached.boot == r.store.boot {
+		r.finalizing.Add(1)
+	}
 	r.mu.Unlock()
 	if !ok || closed || cached.boot != r.store.boot {
 		return result, problem("membership_unknown", "fresh directory result required to finalize join")
+	}
+	defer r.finalizing.Done()
+	ctx, cancel := context.WithCancel(ctx)
+	stop := context.AfterFunc(r.life, cancel)
+	defer stop()
+	defer cancel()
+	if r.life.Err() != nil {
+		return result, problem("backend_stopping", "workspace runtime closing")
 	}
 	err = r.store.transaction(ctx, false, func(tx *sql.Tx, v *Records) error {
 		root, e := rootOf(v, id)

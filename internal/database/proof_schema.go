@@ -96,6 +96,7 @@ func normalizedSchema(raw string) string {
 
 var resetAutoIndexes = map[string]int{
 	"pool_lineage": 1, "pool_claim_bindings": 1,
+	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2,
 }
 
@@ -103,6 +104,10 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	expected := map[string]bool{}
 	for _, query := range resetSchema {
 		expected[normalizedSchema(query)] = false
+	}
+	workspaceObjects := map[string]string{}
+	for i, q := range workspaceResetSchema {
+		workspaceObjects[normalizedSchema(q)] = workspaceResetTables[i]
 	}
 	mesh := normalizedSchema(meshResetSchema)
 	ssh := normalizedSchema(sshResetSchema)
@@ -143,6 +148,13 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
+		if expectedTable, ok := workspaceObjects[normal]; ok {
+			if kind != "table" || name != expectedTable || table != expectedTable {
+				return nil, fmt.Errorf("workspace schema object identity differs")
+			}
+			catalog[expectedTable] = nil
+			continue
+		}
 		if normal == mesh || normal == ssh {
 			continue
 		}
@@ -161,6 +173,15 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if !seen {
 			return nil, fmt.Errorf("required reset schema object missing: %.160s", query)
 		}
+	}
+	workspaceCount := 0
+	for _, table := range workspaceResetTables {
+		if _, ok := catalog[table]; ok {
+			workspaceCount++
+		}
+	}
+	if workspaceCount != 0 && workspaceCount != len(workspaceResetTables) {
+		return nil, fmt.Errorf("partial workspace reset schema group")
 	}
 	// Retrieve columns only after the exact schema/constraints have been checked.
 	rows.Close()

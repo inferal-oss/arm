@@ -91,21 +91,22 @@ type Event struct {
 }
 
 type Status struct {
-	PoolError      *Error         `json:"pool_error,omitempty"`
-	BudgetError    *Error         `json:"budget_error,omitempty"`
-	Host           string         `json:"host"`
-	Owner          string         `json:"owner"`
-	OwnerUsername  string         `json:"owner_username,omitempty"`
-	Draining       bool           `json:"draining"`
-	Capacity       Resources      `json:"capacity"`
-	Reserved       Resources      `json:"reserved"`
-	Leases         []Lease        `json:"leases"`
-	Cursor         int64          `json:"cursor"`
-	Capabilities   []string       `json:"capabilities"`
-	Resources      []ResourceView `json:"resources"`
-	Infrastructure []PortBinding  `json:"infrastructure_ports"`
-	Disk           *DiskBudget    `json:"disk_budget"`
-	Memory         *MemoryBudget  `json:"memory_budget"`
+	Workspaces     *WorkspaceAvailability `json:"workspaces,omitempty"`
+	PoolError      *Error                 `json:"pool_error,omitempty"`
+	BudgetError    *Error                 `json:"budget_error,omitempty"`
+	Host           string                 `json:"host"`
+	Owner          string                 `json:"owner"`
+	OwnerUsername  string                 `json:"owner_username,omitempty"`
+	Draining       bool                   `json:"draining"`
+	Capacity       Resources              `json:"capacity"`
+	Reserved       Resources              `json:"reserved"`
+	Leases         []Lease                `json:"leases"`
+	Cursor         int64                  `json:"cursor"`
+	Capabilities   []string               `json:"capabilities"`
+	Resources      []ResourceView         `json:"resources"`
+	Infrastructure []PortBinding          `json:"infrastructure_ports"`
+	Disk           *DiskBudget            `json:"disk_budget"`
+	Memory         *MemoryBudget          `json:"memory_budget"`
 }
 
 type ResourceUse struct {

@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh test-database-reset validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -63,7 +63,13 @@ test-mesh-ssh: build
 	$(PYTHON) scripts/test-mesh-lifecycle.py --arm bin/arm --ssh "$(MESH_SSH)" --remote-binary "$(MESH_REMOTE_ARM)" --remote-root "$(MESH_REMOTE_ROOT)"
 	$(PYTHON) scripts/test-mesh-operator.py --arm bin/arm --ssh "$(MESH_SSH)" --remote-binary "$(MESH_REMOTE_ARM)" --remote-root "$(MESH_REMOTE_ROOT)"
 
-test-local: build
+# Private compiled crash/restart/ordinary cleanup with optional workspace corruption.
+test-workspace-lifecycle: build
+	mkdir -p .cache
+	GOOS= GOARCH= CGO_ENABLED=0 $(GO) test -c -o .cache/workspace-manager.test ./internal/manager
+	$(PYTHON) scripts/test-workspace-lifecycle.py --arm bin/arm --manager-tests .cache/workspace-manager.test
+
+test-local: build test-workspace-lifecycle
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py

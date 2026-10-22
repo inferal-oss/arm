@@ -3,7 +3,6 @@ package workspace
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
 )
 
@@ -46,16 +45,23 @@ func schema(ctx context.Context, tx *sql.Tx) (bool, error) {
 		return false, e
 	}
 	if len(seen) == 0 && e == sql.ErrNoRows {
+		var extra int
+		if e = tx.QueryRowContext(ctx, `SELECT count(*) FROM sqlite_schema WHERE tbl_name LIKE 'workspace_%' OR name LIKE 'workspace_%'`).Scan(&extra); e != nil {
+			return false, e
+		}
+		if extra != 0 {
+			return false, invalidf("unknown workspace schema object without complete group")
+		}
 		return false, nil
 	}
 	if e != nil || marker != "1" || len(seen) != len(tables) {
-		return false, fmt.Errorf("incomplete/unknown workspace schema group")
+		return false, invalidf("incomplete/unknown workspace schema group")
 	}
 	for i, name := range tables {
 		expected := schemaSQL[i]
 		actual := seen[name]
 		if strings.ToLower(strings.Join(strings.Fields(actual), " ")) != strings.ToLower(strings.Join(strings.Fields(expected), " ")) {
-			return false, fmt.Errorf("workspace schema differs for %s", name)
+			return false, invalidf("workspace schema differs for %s", name)
 		}
 	}
 	// No triggers/views or caller-added indexes may smuggle writes into this
@@ -65,7 +71,7 @@ func schema(ctx context.Context, tx *sql.Tx) (bool, error) {
 		return false, e
 	}
 	if extra != 0 {
-		return false, fmt.Errorf("unknown workspace schema object")
+		return false, invalidf("unknown workspace schema object")
 	}
 	return true, nil
 }

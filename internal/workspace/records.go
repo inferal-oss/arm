@@ -9,8 +9,11 @@ import (
 func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) {
 	v := emptyRecords()
 	var host string
-	if e := tx.QueryRowContext(ctx, `SELECT value FROM metadata WHERE key='host'`).Scan(&host); e != nil || host != a.Host {
-		return v, fmt.Errorf("workspace store differs from central ledger authority")
+	if e := tx.QueryRowContext(ctx, `SELECT value FROM metadata WHERE key='host'`).Scan(&host); e != nil {
+		return v, e
+	}
+	if host != a.Host {
+		return v, invalidf("workspace store differs from central ledger authority")
 	}
 	ok, e := schema(ctx, tx)
 	if e != nil {
@@ -35,7 +38,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 		for rows.Next() {
 			n++
 			if n > maxRows {
-				return fmt.Errorf("workspace %s row capacity exceeded", table)
+				return invalidf("workspace %s row capacity exceeded", table)
 			}
 			names, e := rows.Columns()
 			if e != nil {
@@ -53,10 +56,10 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 			}
 			total += len(raw)
 			if total > MaxLedgerBytes {
-				return fmt.Errorf("workspace ledger exceeds complete-read budget")
+				return invalidf("workspace ledger exceeds complete-read budget")
 			}
 			if e = fn(keys, raw); e != nil {
-				return fmt.Errorf("%s: %w", table, e)
+				return invalidf("%s: %w", table, e)
 			}
 		}
 		return rows.Err()
@@ -165,7 +168,10 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	return v, ValidateRecords(v, a)
+	if e := ValidateRecords(v, a); e != nil {
+		return v, invalidState(e)
+	}
+	return v, nil
 }
 
 // ValidateRecords is pure and time-neutral. Destructive reset proof must still
@@ -190,6 +196,9 @@ func ValidateRecords(v Records, a Authority) error {
 			return fmt.Errorf("duplicate workspace")
 		}
 		roots[x.ID] = x
+	}
+	if len(roots) == 0 {
+		return fmt.Errorf("initialized workspace group lacks retained origin")
 	}
 	if len(roots) > MaxWorkspaces {
 		return fmt.Errorf("workspace count exceeded")

@@ -121,22 +121,28 @@ type authorizedSnapshot struct {
 // Runtime is an ephemeral authorization cache. Reopening the store or creating
 // another Runtime never grants authority from serialized observations alone.
 type Runtime struct {
-	store   *Store
-	mu      sync.Mutex
-	pending map[string]refreshTicket
-	active  map[string]authorizedSnapshot
-	closed  bool
+	store      *Store
+	mu         sync.Mutex
+	pending    map[string]refreshTicket
+	active     map[string]authorizedSnapshot
+	closed     bool
+	life       context.Context
+	cancel     context.CancelFunc
+	finalizing sync.WaitGroup
 }
 
 func NewRuntime(s *Store) *Runtime {
-	return &Runtime{store: s, pending: map[string]refreshTicket{}, active: map[string]authorizedSnapshot{}}
+	ctx, cancel := context.WithCancel(context.Background())
+	return &Runtime{life: ctx, cancel: cancel, store: s, pending: map[string]refreshTicket{}, active: map[string]authorizedSnapshot{}}
 }
 func (r *Runtime) Close() {
 	r.mu.Lock()
 	r.closed = true
+	r.cancel()
 	clear(r.pending)
 	clear(r.active)
 	r.mu.Unlock()
+	r.finalizing.Wait()
 }
 func (r *Runtime) Begin(ctx context.Context, id string) (RefreshRequest, error) {
 	v, e := r.store.Read(ctx)

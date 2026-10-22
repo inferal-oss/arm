@@ -101,7 +101,7 @@ func (s *Store) Read(ctx context.Context) (Records, error) {
 	defer tx.Rollback()
 	v, e := readRecords(ctx, tx, s.authority)
 	if e != nil {
-		return Records{}, problem("workspace_state_invalid", e.Error())
+		return Records{}, stateProblem(e)
 	}
 	if e = tx.Commit(); e != nil {
 		return Records{}, e
@@ -118,7 +118,7 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 	defer tx.Rollback()
 	v, e := readRecords(ctx, tx, s.authority)
 	if e != nil {
-		return problem("workspace_state_invalid", e.Error())
+		return stateProblem(e)
 	}
 	if !v.Initialized {
 		if !initialize {
@@ -136,7 +136,7 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 		return e
 	}
 	if _, e = readRecords(ctx, tx, s.authority); e != nil {
-		return problem("workspace_state_invalid", e.Error())
+		return stateProblem(e)
 	}
 	if e = s.fail("before_commit"); e != nil {
 		return e

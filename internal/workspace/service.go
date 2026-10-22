@@ -20,11 +20,15 @@ type Service struct {
 	slots  chan struct{}
 	mu     sync.Mutex
 	closed bool
+	gate   func(context.Context) error
 }
 
 func NewService(parent context.Context, store *Store) *Service {
+	return NewServiceWithGate(parent, store, nil)
+}
+func NewServiceWithGate(parent context.Context, store *Store, gate func(context.Context) error) *Service {
 	ctx, cancel := context.WithCancel(parent)
-	return &Service{store: store, ctx: ctx, cancel: cancel, slots: make(chan struct{}, 2)}
+	return &Service{gate: gate, store: store, ctx: ctx, cancel: cancel, slots: make(chan struct{}, 2)}
 }
 func (s *Service) Close() { s.mu.Lock(); s.closed = true; s.cancel(); s.mu.Unlock() }
 func (s *Service) Activate(ctx context.Context, p Principal, key string, transport ProofTransport) (Operation, error) {
@@ -85,6 +89,12 @@ func (s *Service) Activate(ctx context.Context, p Principal, key string, transpo
 	}
 	if a.err != nil {
 		return s.interrupted(p, key, op.Revision)
+	}
+	if s.gate != nil {
+		if e := s.gate(proofCtx); e != nil {
+			_, _ = s.interrupted(p, key, op.Revision)
+			return Operation{}, e
+		}
 	}
 	// A close between proof return and commit cancels the commit context. The
 	// final store transaction also fences boot, review, current deny/delegation.

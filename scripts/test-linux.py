@@ -28,7 +28,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "database", "local", "install", "observe", "usage", "storage", "ports", "mesh", "meshssh", "meshops", "manager", "server", "client", "tui", "cli"):
+        for package in ("agents", "database", "local", "install", "observe", "usage", "storage", "ports", "mesh", "meshssh", "meshops", "workspace", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "node-registry-probe"), "./scripts/node-registry-probe"], cwd=root, env=env, check=True)
@@ -56,6 +56,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
+        shutil.copyfile(root / "scripts" / "test-workspace-lifecycle.py", target / "test-workspace-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-agent-messages.py", target / "test-agent-messages.py")
         os.chmod(target, 0o755)
         for child in target.iterdir():
@@ -90,6 +91,7 @@ python3 /tests/test-node-registry.py --arm /tests/arm --probe /tests/node-regist
 python3 /tests/test-lifecycle.py --arm /tests/arm
 python3 /tests/test-scheduling.py --arm /tests/arm
 python3 /tests/test-budgets.py --arm /tests/arm
+python3 /tests/test-workspace-lifecycle.py --arm /tests/arm --manager-tests /tests/manager.test
 python3 /tests/test-agent-messages.py --arm /tests/arm
 '''
         subprocess.run([

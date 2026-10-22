@@ -42,6 +42,7 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
+	workspaces         *workspaceBoundary
 	mu                 sync.Mutex
 	db                 *sql.DB
 	databaseSlot       chan struct{}
@@ -251,6 +252,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
+	if e = m.initWorkspaces(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	opened = true
 	return m, nil
 }
@@ -327,6 +332,14 @@ func (m *Manager) Observation(kind string) model.ResourceMeasurement {
 func (m *Manager) Close() error {
 	m.mu.Lock()
 	m.closing = true
+	m.mu.Unlock()
+	// Workspace calls may hold the single database connection while awaiting
+	// cancellation. Join them before ordinary job-ending SQL, without holding
+	// Manager.mu: final proof gates also inspect manager lifecycle state.
+	if m.workspaces != nil {
+		m.workspaces.close()
+	}
+	m.mu.Lock()
 	for id := range m.jobs {
 		_, _ = m.end(id, "cancelled")
 	}
@@ -413,6 +426,9 @@ func (m *Manager) Status() (model.Status, error) {
 	defer m.mu.Unlock()
 	ls, e := m.list()
 	s := model.Status{PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	if m.workspaces != nil {
+		s.Workspaces = m.workspaces.projection()
+	}
 	if m.portErr == nil {
 		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
 	}
