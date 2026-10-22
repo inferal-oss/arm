@@ -94,6 +94,8 @@ type proofReader struct {
 	maxSequence              map[string]int64
 	recordedSequences        map[string]int64
 	subpoolSchema            bool
+	sshSchema                bool
+	sshRuns                  map[string]proofSSHRun
 	poolPaths                map[string][]string
 	poolParentRevisions      map[int64]int64
 	resetMetadata            *resetApplied
@@ -128,7 +130,7 @@ func ProveDatabaseSettled(ctx context.Context, s *Source, owner string) (Settled
 		return result, err
 	}
 	p := &proofReader{ctx: ctx, home: s.Directory.Path, tx: tx, catalog: catalog, result: result, digest: sha256.New(), leases: map[string]model.Lease{}, pools: map[string]model.Pool{}, budgets: map[string]model.Budget{}, bindings: map[string]model.BudgetBinding{}, messages: map[string]proofMessage{}, incidents: map[string]model.UsageIncident{}, poolChanges: map[int64]model.PoolChange{}, budgetChanges: map[int64]model.BudgetChange{}, gradle: map[string]proofGradle{}, poolOperationSequences: map[int64]bool{}, budgetOperationSequences: map[int64]bool{}, maxSequence: map[string]int64{}, recordedSequences: map[string]int64{}}
-	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readIncidents, p.readExports, p.readGradle, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
+	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSSH, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readIncidents, p.readExports, p.readGradle, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
 		if err = step(); err != nil {
 			return p.result, err
 		}
@@ -265,6 +267,11 @@ func (p *proofReader) metadata() error {
 			if raw != "1" {
 				return fmt.Errorf("unknown budget binding schema")
 			}
+		case "ssh_schema":
+			if raw != "1" {
+				return fmt.Errorf("unknown SSH execution schema")
+			}
+			p.sshSchema = true
 		case "subpool_schema":
 			if raw != "1" {
 				return fmt.Errorf("unknown subpool schema")
@@ -407,13 +414,15 @@ func (p *proofReader) readLeases() error {
 			if !ok {
 				return fmt.Errorf("invalid run record")
 			}
-			var q struct {
-				model.Request
-				Command []string `json:"command"`
-				CWD     string   `json:"cwd"`
-			}
+			var q proofSSHRun
 			if err = strictEvidence(raw, &q, "command", "cwd"); err != nil {
 				return err
+			}
+			if q.SSH != nil {
+				if p.sshRuns == nil {
+					p.sshRuns = map[string]proofSSHRun{}
+				}
+				p.sshRuns[id] = q
 			}
 			if len(q.Command) == 0 || q.CWD == "" {
 				return fmt.Errorf("missing supervised command evidence")

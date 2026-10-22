@@ -9,6 +9,7 @@ require (
 	github.com/charmbracelet/colorprofile v0.4.3
 	github.com/charmbracelet/x/ansi v0.11.9
 	github.com/coder/websocket v1.8.15
+	github.com/creack/pty v1.1.24
 	github.com/ebitengine/purego v0.11.2
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-isatty v0.0.24

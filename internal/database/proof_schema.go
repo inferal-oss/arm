@@ -96,7 +96,7 @@ func normalizedSchema(raw string) string {
 
 var resetAutoIndexes = map[string]int{
 	"pool_lineage": 1, "pool_claim_bindings": 1,
-	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1,
+	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2,
 }
 
 func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, error) {
@@ -105,6 +105,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		expected[normalizedSchema(query)] = false
 	}
 	mesh := normalizedSchema(meshResetSchema)
+	ssh := normalizedSchema(sshResetSchema)
 	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 129`)
 	if err != nil {
 		return nil, err
@@ -142,7 +143,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
-		if normal == mesh {
+		if normal == mesh || normal == ssh {
 			continue
 		}
 		if _, ok := expected[normal]; !ok {
@@ -168,6 +169,12 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	if count == 1 {
 		catalog["mesh_operations"] = nil
+	}
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM sqlite_schema WHERE type='table' AND name='ssh_operations'`).Scan(&count); err != nil {
+		return nil, err
+	}
+	if count == 1 {
+		catalog["ssh_operations"] = nil
 	}
 	for table := range catalog {
 		for i := 1; i <= resetAutoIndexes[table]; i++ {

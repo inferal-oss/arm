@@ -191,6 +191,15 @@ func (m *Manager) PeerRenew(peer, id string, ttl time.Duration, limit model.Reso
 	if e = m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, id).Scan(&command); e != nil {
 		return lease, e
 	}
+	if command.Valid {
+		var stored RunRequest
+		if e = json.Unmarshal([]byte(command.String), &stored); e != nil {
+			return lease, e
+		}
+		if stored.SSH != nil {
+			return lease, model.Err("forbidden", "SSH executions have fixed invocation deadlines; ordinary run grants cannot renew them")
+		}
+	}
 	if command.Valid && !runGranted {
 		return lease, model.Err("forbidden", "execution renewal requires explicit run grant")
 	}

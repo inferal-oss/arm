@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"os/exec"
@@ -28,8 +29,10 @@ import (
 
 type RunRequest struct {
 	model.Request
-	Command []string `json:"command"`
-	CWD     string   `json:"cwd"`
+	Command    []string                `json:"command"`
+	CWD        string                  `json:"cwd"`
+	SSH        *model.SSHRunDescriptor `json:"ssh,omitempty"`
+	sshRuntime *sshRuntime
 }
 type job struct {
 	cmd              *exec.Cmd
@@ -545,6 +548,9 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 
 func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error) {
 	var empty model.Lease
+	if run != nil && (run.SSH != nil || run.sshRuntime != nil) && (run.SSH == nil || run.sshRuntime == nil || !reflect.DeepEqual(run.SSH, sshDescriptor(run.sshRuntime.request)) || run.sshRuntime.check() != nil) {
+		return empty, model.Err("invalid_request", "a persisted/wire SSH descriptor cannot authorize execution")
+	}
 	if m.closing || m.draining {
 		return empty, model.Err("backend_stopping", "backend is shutting down")
 	}
@@ -643,7 +649,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 					return empty, e
 				}
 			}
-			if savedRun.Valid != (run != nil) || (run != nil && (!reflect.DeepEqual(oldRun.Command, run.Command) || oldRun.CWD != run.CWD)) {
+			if savedRun.Valid != (run != nil) || (run != nil && (!reflect.DeepEqual(oldRun.Command, run.Command) || oldRun.CWD != run.CWD || !reflect.DeepEqual(oldRun.SSH, run.SSH))) {
 				return empty, model.Err("idempotency_conflict", "key was already used for a different command")
 			}
 			m.attachBudgetEvidence(&l)
@@ -793,6 +799,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		key = r.Key
 	}
 	if _, e = tx.Exec(`INSERT INTO leases VALUES(?,?,?,?)`, l.ID, key, string(b), rb); e != nil {
+		return empty, e
+	}
+	if e = m.insertSSHOperation(tx, l, run); e != nil {
 		return empty, e
 	}
 	if e = insertPoolClaimBinding(tx, l.ID, poolBinding, "pool.bound"); e != nil {
@@ -1204,18 +1213,25 @@ func (m *Manager) tick() {
 }
 
 func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
+	if (r.SSH != nil || r.sshRuntime != nil) && (r.SSH == nil || r.sshRuntime == nil) {
+		return m.launchFailed(l, model.Err("ssh_replay_denied", "a stored/wire SSH descriptor cannot reconstruct a runtime"))
+	}
 	if reason := m.startDeadlineProblem(l); reason != nil {
 		return m.rejectUnstarted(l, reason)
 	}
 	if err := m.prepareGradleLaunch(&l, &r); err != nil {
 		return m.launchFailed(l, err)
 	}
-	if e := os.MkdirAll(filepath.Join(m.home, "logs"), 0700); e != nil {
-		return m.launchFailed(l, e)
-	}
-	f, e := os.OpenFile(filepath.Join(m.home, "logs", l.ID+".log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
-	if e != nil {
-		return m.launchFailed(l, e)
+	var f io.Closer = sshNoopCloser{}
+	var e error
+	if r.sshRuntime == nil {
+		if e = os.MkdirAll(filepath.Join(m.home, "logs"), 0700); e != nil {
+			return m.launchFailed(l, e)
+		}
+		f, e = os.OpenFile(filepath.Join(m.home, "logs", l.ID+".log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+		if e != nil {
+			return m.launchFailed(l, e)
+		}
 	}
 	// Do not execute user work until its PID and lease have been persisted.
 	// Parent death closes the gate, making the waiting child exit.
@@ -1226,11 +1242,21 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	}
 	defer reader.Close()
 	defer writer.Close()
-	args := append([]string{"-c", `IFS= read -r arm_gate <&3 || exit 125; [ "$arm_gate" = go ] || exit 125; exec 3<&-; exec "$@"`, "arm-launch"}, r.Command...)
+	command := r.Command
+	if r.sshRuntime != nil {
+		command = []string{"/bin/sh", "-l"}
+		if r.sshRuntime.execution.Kind == "exec" {
+			command = []string{"/bin/sh", "-c", r.sshRuntime.execution.Command}
+		}
+	}
+	args := append([]string{"-c", `IFS= read -r arm_gate <&3 || exit 125; [ "$arm_gate" = go ] || exit 125; exec 3<&-; exec "$@"`, "arm-launch"}, command...)
 	cmd := exec.Command("/bin/sh", args...)
 	cmd.ExtraFiles = []*os.File{reader}
 	cmd.Dir = r.CWD
 	for _, entry := range os.Environ() {
+		if r.sshRuntime != nil {
+			break
+		}
 		if strings.HasPrefix(entry, "ARM_POOLS=") || strings.HasPrefix(entry, "ARM_PORTS=") || strings.HasPrefix(entry, "ARM_PORT_LEASE=") || strings.HasPrefix(entry, "ARM_STORAGE_DIR=") || strings.HasPrefix(entry, "ARM_STORAGE_LEASE=") {
 			continue
 		}
@@ -1266,9 +1292,16 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("CARGO_BUILD_JOBS=%d", max(1, int(l.Request.Resources.CPU))))
 	}
 	applyGradleEnvironment(l, cmd)
-	cmd.Stdout = f
-	cmd.Stderr = f
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	if r.sshRuntime == nil {
+		cmd.Stdout = f.(*os.File)
+		cmd.Stderr = f.(*os.File)
+		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	} else {
+		f, e = r.sshRuntime.prepare(cmd)
+		if e != nil {
+			return m.launchFailed(l, e)
+		}
+	}
 	if reason := m.startDeadlineProblem(l); reason != nil {
 		f.Close()
 		return m.rejectUnstarted(l, reason)
@@ -1276,6 +1309,9 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if e = cmd.Start(); e != nil {
 		f.Close()
 		return m.launchFailed(l, e)
+	}
+	if r.sshRuntime != nil {
+		r.sshRuntime.startCopies()
 	}
 	j := &job{cmd: cmd, done: make(chan struct{})}
 	identity, identityErr := usage.Capture(cmd.Process.Pid)
@@ -1292,7 +1328,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		f.Close()
 		return m.launchFailed(l, err)
 	}
-	if l.Request.UsagePolicy != nil && j.identity == nil {
+	if (l.Request.UsagePolicy != nil || r.sshRuntime != nil) && j.identity == nil {
 		_ = cmd.Process.Kill()
 		_ = cmd.Wait()
 		f.Close()
@@ -1316,6 +1352,14 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		l.PID = 0
 		l.Process = nil
 		return m.rejectUnstarted(l, reason)
+	} else if r.sshRuntime != nil && r.sshRuntime.check() != nil {
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+		f.Close()
+		delete(m.jobs, l.ID)
+		l.PID = 0
+		l.Process = nil
+		return m.launchFailed(l, model.Err("ssh_cancelled", "SSH authority/stream expired before process gate"))
 	} else {
 		delete(m.startClocks, l.ID)
 		_, e = writer.Write([]byte("go\n"))
@@ -1325,6 +1369,13 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	}
 	m.wg.Go(func() {
 		err := cmd.Wait()
+		sshOutcome := ""
+		if r.sshRuntime != nil && r.sshRuntime.ctx.Err() != nil {
+			sshOutcome = "interrupted"
+			if errors.Is(r.sshRuntime.ctx.Err(), context.DeadlineExceeded) {
+				sshOutcome = "expired"
+			}
+		}
 		f.Close()
 		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
 		deadline := time.Now().Add(2 * time.Second)
@@ -1366,6 +1417,9 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			current.Outcome = "completed"
 			if code != 0 {
 				current.Outcome = "failed"
+			}
+			if sshOutcome != "" {
+				current.Outcome = sshOutcome
 			}
 		}
 		current.Ended = &now
