@@ -51,7 +51,7 @@ func (r *ResetReview) apply(ctx context.Context, checkpoint func(string) error) 
 		}
 	}
 	for _, n := range receipt.Protected {
-		if n.Present && (n.Name == "mesh" || n.Name == "mesh-lifecycle") {
+		if n.Present && (n.Name == "mesh" || n.Name == "mesh-lifecycle" || n.Name == "ssh-source-history") {
 			receipt.Archives[n.Name] = "source"
 		}
 	}
@@ -163,7 +163,7 @@ func (s *resetStore) finishReset(ctx context.Context, r *ResetReceipt, file *Fil
 			return fail(err)
 		}
 	}
-	for _, name := range []string{"mesh", "mesh-lifecycle"} {
+	for _, name := range []string{"mesh", "mesh-lifecycle", "ssh-source-history"} {
 		if _, ok := r.Archives[name]; ok {
 			if err = s.archiveResetNamespace(ctx, r, file, name, hook); err != nil {
 				return fail(err)

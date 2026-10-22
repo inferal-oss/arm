@@ -152,6 +152,9 @@ func readResetJSON[T any](d *Directory, name string) (value T, file File, err er
 	if err != nil || int64(len(raw)) != file.Size {
 		return value, file, fmt.Errorf("maintenance receipt changed while reading")
 	}
+	if err = preflightResetCollections(raw); err != nil {
+		return value, file, err
+	}
 	if err = strictEvidence(string(raw), &value); err != nil {
 		return value, file, err
 	}
@@ -256,6 +259,10 @@ func planDigest(plan ResetPlan) (string, error) {
 	return hex.EncodeToString(sum[:]), nil
 }
 func validResetPlan(plan ResetPlan, home string) error {
+	encoded, encodeErr := json.Marshal(plan)
+	if encodeErr != nil || len(encoded) > MaxRecordBytes {
+		return fmt.Errorf("complete reset plan exceeds 1 MiB")
+	}
 	uid := local.CurrentIdentity().UID
 	if plan.Schema != ResetSchema || !validHost(plan.ID) || plan.Home != home || plan.Actor.UID != uid || strings.TrimSpace(plan.Reason) == "" || len(plan.Reason) > 4096 || plan.Created.IsZero() || !validHost(plan.OldHost) || !validHost(plan.NewHost) || plan.OldHost == plan.NewHost || !plan.Proof.Complete || !plan.Proof.Settled || plan.Proof.Host != plan.OldHost || plan.Proof.Owner != uid || len(plan.Proof.Blockers) != 0 {
 		return fmt.Errorf("invalid reset plan authority/settled scope")
@@ -267,7 +274,7 @@ func validResetPlan(plan ResetPlan, home string) error {
 		return fmt.Errorf("reset plan lacks exact prior authority pointer scope")
 	}
 	for _, namespace := range plan.Namespaces {
-		if namespace.Present && oneOf(namespace.Name, "mesh", "mesh-lifecycle") && !plan.RetireMesh {
+		if namespace.Present && oneOf(namespace.Name, "mesh", "mesh-lifecycle", "ssh-source-history") && !plan.RetireMesh {
 			return fmt.Errorf("mesh evidence requires explicit local retirement")
 		}
 	}
@@ -303,7 +310,7 @@ func (s *resetStore) readReceipt() (ResetReceipt, File, error) {
 	if r.Schema != ResetSchema || r.Revision < 1 || r.Updated.Before(r.Plan.Created) || filepath.Base(s.operation.Path) != "reset-"+r.Plan.ID || !oneOf(r.Phase, "staged", "fenced", "moving", "retiring", "seed_ready", "erasing", "completed") {
 		return r, file, fmt.Errorf("invalid reset receipt schema/phase")
 	}
-	if r.Step != "" && !oneOf(r.Step, "state.db", "state.db-wal", "state.db-shm", "mesh", "mesh-lifecycle", "seed", "fence") {
+	if r.Step != "" && !oneOf(r.Step, "state.db", "state.db-wal", "state.db-shm", "mesh", "mesh-lifecycle", "ssh-source-history", "seed", "fence") {
 		return r, file, fmt.Errorf("invalid reset receipt step")
 	}
 	if r.Moves == nil || len(r.Moves) != 3 || r.Archives == nil {
@@ -318,13 +325,13 @@ func (s *resetStore) readReceipt() (ResetReceipt, File, error) {
 		}
 	}
 	for name, state := range r.Archives {
-		if !oneOf(name, "mesh", "mesh-lifecycle") || !oneOf(state, "source", "archived") {
+		if !oneOf(name, "mesh", "mesh-lifecycle", "ssh-source-history") || !oneOf(state, "source", "archived") {
 			return r, file, fmt.Errorf("unknown retained archive state")
 		}
 	}
 	expectedArchives := 0
 	for _, namespace := range r.Plan.Namespaces {
-		if oneOf(namespace.Name, "mesh", "mesh-lifecycle") && namespace.Present {
+		if oneOf(namespace.Name, "mesh", "mesh-lifecycle", "ssh-source-history") && namespace.Present {
 			expectedArchives++
 			if _, ok := r.Archives[namespace.Name]; !ok {
 				return r, file, fmt.Errorf("reset receipt lost reviewed mesh retirement scope")

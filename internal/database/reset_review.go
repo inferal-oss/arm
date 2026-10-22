@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -56,6 +57,10 @@ func ReviewReset(ctx context.Context, home, reason string, retireMesh bool) (*Re
 	plan.SHA256, err = planDigest(plan)
 	if err != nil {
 		return fail(err)
+	}
+	encoded, err := json.Marshal(plan)
+	if err != nil || len(encoded) > MaxRecordBytes {
+		return fail(fmt.Errorf("complete reset plan exceeds 1 MiB; no intent created"))
 	}
 	r.Plan = plan
 	return r, nil

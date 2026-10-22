@@ -61,7 +61,27 @@ func SettleSourceSeal(ctx context.Context, home string, b Binding, expected Sour
 	if e := MatchSourceSeal(expected, seal); e != nil {
 		return e
 	}
+	verified, e := preverifySourceHistory(ctx, home, b, expected.Request.Pin.Target, expected.Request.Key)
+	if e != nil {
+		return e
+	}
+	if verified != nil && verified.Absence == nil && (verified.Lookup.Seal == nil || !exactIntent(verified.Lookup.Seal.Intent, expected) || !reflect.DeepEqual(verified.Lookup.Seal.Seal, seal)) {
+		return fmt.Errorf("archived SSH seal differs; original key remains fenced")
+	}
 	return withStateMutation(ctx, home, b, true, func(s *State, d *os.File) error {
+		if verified != nil && verified.Absence == nil {
+			return recheckVerifiedSourceHistory(ctx, s, verified)
+		}
+		if verified == nil || verified.Absence == nil {
+			return fmt.Errorf("verified absence required for hot settlement")
+		}
+		bindSourceAbsenceGuard(s, *verified.Absence)
+		if fence, e := sourceStateFence(ctx, s, expected.Request.Pin.Target, expected.Request.Key); e != nil {
+			return e
+		} else if fence != nil {
+			return fmt.Errorf("source was archived concurrently; inspect/retry exact read-only settlement")
+		}
+
 		if _, e := os.Lstat(expected.Directory.Path); !os.IsNotExist(e) {
 			return fmt.Errorf("SSH invocation artifacts remain or cannot be verified absent")
 		}
@@ -105,6 +125,9 @@ func SettleSourceSeal(ctx context.Context, home string, b Binding, expected Sour
 			if e != nil {
 				return e
 			}
+			if e = recheckVerifiedSourceHistory(ctx, s, verified); e != nil {
+				return e
+			}
 			if e = atomicStateFile(ctx, s, d, sealCompletionName(expected), raw, nil); e != nil {
 				return fmt.Errorf("SSH seal completion durability uncertain; inspect exact record without retry: %w", e)
 			}
@@ -125,6 +148,9 @@ func SettleSourceSeal(ctx context.Context, home string, b Binding, expected Sour
 			return e
 		}
 		if e = ctx.Err(); e != nil {
+			return e
+		}
+		if e = recheckVerifiedSourceHistory(ctx, s, verified); e != nil {
 			return e
 		}
 		if e = unix.Unlinkat(int(d.Fd()), name, 0); e != nil {

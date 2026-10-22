@@ -44,6 +44,9 @@ type State struct {
 	Completions     []SourceCompletion
 	Seals           []SourceSealCompletion
 	Intents         []SourceIntent
+	History         *SourceHistorySummary
+	historyMarker   *SourceHistoryMarker
+	historyRecovery *SourceHistoryRecovery
 	PublicKey       string
 	home, dir       string
 	files           map[string]stateFile
@@ -54,6 +57,9 @@ type State struct {
 }
 
 func ReadState(ctx context.Context, home string, b Binding) (*State, error) {
+	return readSourceState(ctx, home, b, true)
+}
+func readSourceState(ctx context.Context, home string, b Binding, checkHistory bool) (*State, error) {
 	if ctx == nil || b.Validate() != nil || b.Owner != strconv.Itoa(os.Geteuid()) {
 		return nil, fmt.Errorf("current SSH owner binding required")
 	}
@@ -98,6 +104,9 @@ func ReadState(ctx context.Context, home string, b Binding) (*State, error) {
 			return nil, err
 		}
 		limit := int64(MaxIntentBytes)
+		if name == SourceHistoryRecoveryName {
+			limit = SourceHistoryRecoveryMaxBytes
+		}
 		if name == "config.json" {
 			limit = 1 << 20
 		}
@@ -135,6 +144,18 @@ func ReadState(ctx context.Context, home string, b Binding) (*State, error) {
 				return nil, e
 			}
 			s.PublicKey = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(signer.PublicKey())))
+		case name == SourceHistoryRecoveryName:
+			var v SourceHistoryRecovery
+			if e = decodeSourceRecovery(raw, &v); e != nil || v.Validate() != nil || v.Marker.Binding != b {
+				return nil, fmt.Errorf("invalid source history recovery fence")
+			}
+			s.historyRecovery = &v
+		case name == SourceHistoryMarkerName:
+			var m SourceHistoryMarker
+			if e = DecodeStateRecord(raw, &m); e != nil || m.Validate() != nil || m.Binding != b {
+				return nil, fmt.Errorf("invalid source history marker")
+			}
+			s.historyMarker = &m
 		case name == ServiceFile:
 			var r ServiceRecord
 			if e = DecodeStateRecord(raw, &r); e != nil || r.Validate() != nil || r.Binding != b {
@@ -203,6 +224,14 @@ func ReadState(ctx context.Context, home string, b Binding) (*State, error) {
 	cert, e := tls.X509KeyPair([]byte(s.config.Identity.Certificate), s.contents["node-key.pem"])
 	if e != nil || len(cert.Certificate) != 1 {
 		return nil, fmt.Errorf("SSH namespace mesh private key/certificate differ")
+	}
+	if s.historyRecovery != nil && (s.historyMarker == nil || s.historyRecovery.Marker != *s.historyMarker) {
+		return nil, fmt.Errorf("source recovery lost its exact catalog marker")
+	}
+	if checkHistory {
+		if err = loadSourceHistorySummary(ctx, s); err != nil {
+			return nil, err
+		}
 	}
 	scanFD, err = unix.Openat(int(d.Fd()), ".", unix.O_RDONLY|unix.O_DIRECTORY|unix.O_CLOEXEC, 0)
 	if err != nil {
@@ -332,6 +361,9 @@ func lockStateAt(ctx context.Context, d *os.File, name, path string) (*stateLock
 	return l, nil
 }
 func withStateMutation(ctx context.Context, home string, b Binding, sshLock bool, fn func(*State, *os.File) error) error {
+	return withSourceMutation(ctx, home, b, sshLock, true, fn)
+}
+func withSourceMutation(ctx context.Context, home string, b Binding, sshLock, checkHistory bool, fn func(*State, *os.File) error) error {
 	if ctx == nil {
 		return fmt.Errorf("context required")
 	}
@@ -379,7 +411,7 @@ func withStateMutation(ctx context.Context, home string, b Binding, sshLock bool
 	if e = local.CheckStateFence(home); e != nil {
 		return e
 	}
-	s, e := ReadState(ctx, home, b)
+	s, e := readSourceState(ctx, home, b, checkHistory)
 	if e != nil {
 		return e
 	}
@@ -415,6 +447,9 @@ func currentStateFile(ctx context.Context, d *os.File, name string) (*stateFile,
 	return &v, e
 }
 func atomicStateFile(ctx context.Context, s *State, d *os.File, name string, raw []byte, expected *stateFile) error {
+	return atomicStateRecord(ctx, s, d, name, raw, expected, MaxIntentBytes)
+}
+func atomicStateRecord(ctx context.Context, s *State, d *os.File, name string, raw []byte, expected *stateFile, limit int) error {
 	check := func() error {
 		if s.guard != nil {
 			if e := s.guard(); e != nil {
@@ -439,8 +474,8 @@ func atomicStateFile(ctx context.Context, s *State, d *os.File, name string, raw
 		}
 		return nil
 	}
-	if len(raw) > MaxIntentBytes {
-		return fmt.Errorf("SSH record exceeds32KiB")
+	if len(raw) > limit {
+		return fmt.Errorf("SSH record exceeds its declared bound")
 	}
 	if e := check(); e != nil {
 		return e

@@ -20,10 +20,11 @@ import (
 )
 
 type NamespaceEvidence struct {
-	Name     string `json:"name"`
-	Present  bool   `json:"present"`
-	Identity File   `json:"identity"`
-	Files    []File `json:"files"`
+	Name       string                    `json:"name"`
+	Present    bool                      `json:"present"`
+	Identity   File                      `json:"identity"`
+	Files      []File                    `json:"files"`
+	SSHHistory *SSHSourceHistoryEvidence `json:"ssh_source_history,omitempty"`
 }
 type MeshRetirement struct {
 	Host        string `json:"host"`
@@ -201,8 +202,16 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 			return nil, e
 		}
 		r.Proof.Blockers = append(r.Proof.Blockers, sshBlockers...)
+		if e = r.reviewSSHSourceHistory(ctx, configured, contents); e != nil {
+			return nil, e
+		}
 
 		r.Mesh = &MeshRetirement{Host: config.Identity.Host, Name: config.Identity.Name, Fingerprint: config.Identity.Fingerprint, Peers: len(config.Peers), Required: true, Scope: "Local archive/identity retirement requires separate explicit review; no remote revoke or claim cleanup. Destination-owned claims retain original authority and expiry."}
+	}
+	if configured == nil {
+		if e = r.reviewSSHSourceHistory(ctx, nil, nil); e != nil {
+			return nil, e
+		}
 	}
 	if err = r.Validate(ctx); err != nil {
 		return nil, err
@@ -364,6 +373,9 @@ func (r *SettledReview) Validate(ctx context.Context) error {
 		return err
 	}
 	for _, n := range r.Namespaces {
+		if err := validSSHHistoryEvidence(n); err != nil {
+			return err
+		}
 		if err := ctx.Err(); err != nil {
 			return err
 		}
@@ -374,6 +386,12 @@ func (r *SettledReview) Validate(ctx context.Context) error {
 		if !n.Present {
 			if _, e := os.Lstat(path); !os.IsNotExist(e) {
 				return fmt.Errorf("previously absent review namespace appeared: %s", filepath.Base(path))
+			}
+			continue
+		}
+		if n.Name == "ssh-source-history" {
+			if err := checkSSHHistoryEvidencePath(ctx, path, n); err != nil {
+				return err
 			}
 			continue
 		}

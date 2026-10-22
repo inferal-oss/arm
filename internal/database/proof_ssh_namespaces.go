@@ -120,6 +120,9 @@ func proveSSHNamespace(ctx context.Context, contents map[string][]byte, host, ow
 		}
 		switch {
 		case name == "config.json", name == "node-key.pem":
+		case name == "ssh-history.json", name == "ssh-history-recovery.json":
+			// Closed schema, full catalog/pack closure and worker exclusion are
+			// checked by reviewSSHSourceHistory; never ignored as generic metadata.
 		case name == sshservice.StateLockName:
 			if len(raw) != 0 {
 				return nil, fmt.Errorf("SSH namespace lock must be empty")

@@ -16,7 +16,10 @@ import (
 func validResetProtected(plan ResetPlan, protected []NamespaceEvidence) error {
 	reviewed := map[string]NamespaceEvidence{}
 	for _, n := range plan.Namespaces {
-		if !oneOf(n.Name, "storage", "mesh", "mesh-lifecycle", "dashboard-pending", filepath.Join(plan.Home, "mesh-lifecycle.lock"), filepath.Join(plan.Home, "dashboard-pending", ".lock")) {
+		if err := validSSHHistoryEvidence(n); err != nil {
+			return err
+		}
+		if !oneOf(n.Name, "storage", "mesh", "mesh-lifecycle", "ssh-source-history", "dashboard-pending", filepath.Join(plan.Home, "mesh-lifecycle.lock"), filepath.Join(plan.Home, "dashboard-pending", ".lock")) {
 			return fmt.Errorf("unrecognized reviewed reset namespace")
 		}
 		if _, exists := reviewed[n.Name]; exists {
@@ -33,13 +36,21 @@ func validResetProtected(plan ResetPlan, protected []NamespaceEvidence) error {
 	}
 	lifecycleLock := filepath.Join(plan.Home, "mesh-lifecycle.lock")
 	pendingLock := filepath.Join(plan.Home, "dashboard-pending", ".lock")
-	if len(actual) != 6 {
+	expectedActual := 6
+	if _, ok := reviewed["ssh-source-history"]; ok {
+		expectedActual++
+	}
+	if len(actual) != expectedActual {
 		return fmt.Errorf("protected reset namespace scope is incomplete")
 	}
 	if _, exists := reviewed[lifecycleLock]; !exists {
 		return fmt.Errorf("reviewed lifecycle lock observation missing")
 	}
-	for _, name := range []string{"storage", "mesh", "mesh-lifecycle"} {
+	names := []string{"storage", "mesh", "mesh-lifecycle"}
+	if _, ok := reviewed["ssh-source-history"]; ok {
+		names = append(names, "ssh-source-history")
+	}
+	for _, name := range names {
 		before, ok := reviewed[name]
 		after, exists := actual[name]
 		if !ok || !exists || !reflect.DeepEqual(before, after) {
@@ -61,6 +72,9 @@ func validResetProtected(plan ResetPlan, protected []NamespaceEvidence) error {
 		return fmt.Errorf("protected pending roster is not the exact empty locked namespace")
 	}
 	expectedReviewed := 5
+	if _, ok := reviewed["ssh-source-history"]; ok {
+		expectedReviewed++
+	}
 	if before.Present {
 		expectedReviewed++
 		if _, exists := reviewed[pendingLock]; !exists {
@@ -88,6 +102,11 @@ const hashEmptyResetFile = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495
 func (s *resetStore) validateResetNamespaces(ctx context.Context, r ResetReceipt) error {
 	if len(r.Protected) == 0 {
 		return fmt.Errorf("protected reset namespace evidence is missing")
+	}
+	if _, known := resetNamespace(r.Protected, "ssh-source-history"); !known {
+		if _, err := os.Lstat(filepath.Join(s.home.Path, "ssh-source-history")); !os.IsNotExist(err) {
+			return fmt.Errorf("unreviewed source history cannot be retired or adopted")
+		}
 	}
 	for _, n := range r.Protected {
 		archived := r.Archives[n.Name] == "archived"
@@ -140,12 +159,12 @@ func (s *resetStore) checkResetNamespace(ctx context.Context, n NamespaceEvidenc
 		}
 		return nil
 	}
-	if !oneOf(n.Name, "storage", "mesh", "mesh-lifecycle", "dashboard-pending") {
+	if !oneOf(n.Name, "storage", "mesh", "mesh-lifecycle", "ssh-source-history", "dashboard-pending") {
 		return fmt.Errorf("unrecognized reset namespace")
 	}
 	parent := s.home
 	if archive {
-		if n.Name != "mesh" && n.Name != "mesh-lifecycle" {
+		if n.Name != "mesh" && n.Name != "mesh-lifecycle" && n.Name != "ssh-source-history" {
 			return fmt.Errorf("unrecognized retirement namespace")
 		}
 		parent = s.operation
@@ -166,6 +185,9 @@ func (s *resetStore) checkResetNamespace(ctx context.Context, n NamespaceEvidenc
 	defer d.Close()
 	if !sameIdentity(d.identity, n.Identity) {
 		return fmt.Errorf("protected reset namespace identity changed")
+	}
+	if n.Name == "ssh-source-history" {
+		return checkSSHHistoryEvidencePath(ctx, filepath.Join(parent.Path, n.Name), n)
 	}
 	if n.Name == "storage" {
 		return nil
@@ -227,5 +249,10 @@ func (s *resetStore) lockProtectedNamespaces(r ResetReceipt) ([]*os.File, error)
 		}
 		locks = append(locks, f)
 	}
+	historyLocks, err := s.lockSSHSourceHistory(r)
+	if err != nil {
+		return fail(err)
+	}
+	locks = append(locks, historyLocks...)
 	return locks, nil
 }

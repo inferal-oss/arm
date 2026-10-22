@@ -83,7 +83,18 @@ func ReserveSource(ctx context.Context, home string, b Binding, r SourceIntent) 
 	if r.Validate() != nil || r.Source != b.Host || r.Owner != b.Owner {
 		return fmt.Errorf("invalid source authority/intention")
 	}
+	absence, e := preverifySourceAbsence(ctx, home, b, r.Request.Pin.Target, r.Request.Key)
+	if e != nil {
+		return e
+	}
 	return withStateMutation(ctx, home, b, true, func(s *State, d *os.File) error {
+		if fence, e := sourceStateFence(ctx, s, r.Request.Pin.Target, r.Request.Key); e != nil {
+			return e
+		} else if fence != nil {
+			return ErrIntentExists
+		}
+
+		bindSourceAbsenceGuard(s, absence)
 		for _, completed := range s.Completions {
 			if intentName(completed.Intent) == intentName(r) {
 				return ErrIntentExists
@@ -98,6 +109,9 @@ func ReserveSource(ctx context.Context, home string, b Binding, r SourceIntent) 
 			if intentName(old) == intentName(r) {
 				return ErrIntentExists
 			}
+		}
+		if s.History != nil && len(s.History.Busy) > 0 {
+			return ErrHistoryBusy
 		}
 		if len(s.Intents) >= MaxSourceIntents {
 			return fmt.Errorf("SSH intention roster full; no unresolved record removed")
@@ -154,6 +168,9 @@ func ReserveSource(ctx context.Context, home string, b Binding, r SourceIntent) 
 		if e != nil {
 			return e
 		}
+		if e = absence.check(s); e != nil {
+			return e
+		}
 		return atomicStateFile(ctx, s, d, intentName(r), raw, nil)
 	})
 }
@@ -165,7 +182,27 @@ func SettleSource(ctx context.Context, home string, b Binding, expected SourceIn
 	if e := MatchTerminalReceipt(expected, receipt); e != nil {
 		return e
 	}
+	verified, e := preverifySourceHistory(ctx, home, b, expected.Request.Pin.Target, expected.Request.Key)
+	if e != nil {
+		return e
+	}
+	if verified != nil && verified.Absence == nil && (verified.Lookup.Completion == nil || !exactIntent(verified.Lookup.Completion.Intent, expected) || !reflect.DeepEqual(verified.Lookup.Completion.Receipt, receipt)) {
+		return fmt.Errorf("archived SSH receipt differs; original key remains fenced")
+	}
 	return withStateMutation(ctx, home, b, true, func(s *State, d *os.File) error {
+		if verified != nil && verified.Absence == nil {
+			return recheckVerifiedSourceHistory(ctx, s, verified)
+		}
+		if verified == nil || verified.Absence == nil {
+			return fmt.Errorf("verified absence required for hot settlement")
+		}
+		bindSourceAbsenceGuard(s, *verified.Absence)
+		if fence, e := sourceStateFence(ctx, s, expected.Request.Pin.Target, expected.Request.Key); e != nil {
+			return e
+		} else if fence != nil {
+			return fmt.Errorf("source was archived concurrently; inspect/retry exact read-only settlement")
+		}
+
 		for _, r := range s.Seals {
 			if intentName(r.Intent) == intentName(expected) {
 				return fmt.Errorf("SSH key already records nonexecution; no admitted settlement")
@@ -211,6 +248,9 @@ func SettleSource(ctx context.Context, home string, b Binding, expected SourceIn
 			if e = record.Validate(); e != nil {
 				return e
 			}
+			if e = recheckVerifiedSourceHistory(ctx, s, verified); e != nil {
+				return e
+			}
 			if e = atomicStateFile(ctx, s, d, completionName(expected), raw, nil); e != nil {
 				return fmt.Errorf("SSH completion publication uncertain; inspect exact pending/receipt, nothing may be replayed: %w", e)
 			}
@@ -231,6 +271,9 @@ func SettleSource(ctx context.Context, home string, b Binding, expected SourceIn
 			return e
 		}
 		if e = ctx.Err(); e != nil {
+			return e
+		}
+		if e = recheckVerifiedSourceHistory(ctx, s, verified); e != nil {
 			return e
 		}
 		if e = unix.Unlinkat(int(d.Fd()), name, 0); e != nil {
