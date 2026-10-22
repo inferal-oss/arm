@@ -21,6 +21,7 @@ type poolDraft struct{ operation, name, scope, unit, description, value, reason,
 type poolPlan struct {
 	request                                model.PoolMutation
 	before                                 *model.PoolView
+	parent                                 *model.PoolView
 	capacity, reserved, available, deficit int64
 	state, name, scope, unit               string
 }
@@ -61,15 +62,35 @@ func preparePoolPlan(draft poolDraft, view *model.PoolView, authority string) (*
 	if strings.TrimSpace(draft.reason) == "" || len(draft.reason) > 4096 || !utf8.ValidString(draft.reason) {
 		return nil, fmt.Errorf("reason is required and must be at most 4096 bytes")
 	}
+	if view != nil && view.Review != nil && view.Review.Unavailable != "" {
+		return nil, fmt.Errorf("tree remains readable but its complete review exceeds dashboard limits; no truncated change is allowed")
+	}
 	p := &poolPlan{name: draft.name, scope: draft.scope, unit: draft.unit, state: "active"}
-	r := model.PoolMutation{Operation: draft.operation, Reason: draft.reason, Key: local.ID()}
-	if draft.operation == "create" {
+	child := draft.operation == "create-child"
+	operation := draft.operation
+	if child {
+		operation = "create"
+	}
+	r := model.PoolMutation{Operation: operation, Reason: draft.reason, Key: local.ID()}
+	if draft.operation == "create" || child {
 		r.Name = strings.TrimSpace(draft.name)
 		r.Unit = strings.TrimSpace(draft.unit)
 		if r.Unit == "" {
 			r.Unit = "count"
 		}
 		r.Scope = draft.scope
+		if child {
+			if view == nil || view.Review == nil || view.Review.Authority != authority || view.Review.Consumers == nil || !poolHierarchyValid(view.Review.Hierarchy, view.Pool.ID) || view.Pool.Authority != authority || view.Pool.State != "active" {
+				return nil, fmt.Errorf("refresh an open parent and its complete hierarchy before carving a child")
+			}
+			r.Parent = view.Pool.ID
+			rev := view.Pool.Revision
+			r.ParentRevision = &rev
+			r.Scope = view.Pool.Scope
+			r.Unit = view.Pool.Unit
+			p.scope = r.Scope
+			p.parent = view
+		}
 		r.Description = draft.description
 		if r.Name == "" || len(r.Name) > 128 || len(r.Unit) > 64 || len(r.Description) > 4096 || !poolPrintable(r.Name) || !poolPrintable(r.Unit) || !poolPrintable(r.Description) || (r.Scope != "host" && r.Scope != "global") {
 			return nil, fmt.Errorf("enter a bounded name/unit/description and explicit host or global scope")
@@ -78,12 +99,19 @@ func preparePoolPlan(draft poolDraft, view *model.PoolView, authority string) (*
 		if err != nil {
 			return nil, err
 		}
+		if child && capacity > view.Available {
+			return nil, fmt.Errorf("child capacity exceeds parent uncarved availability; refresh or choose a smaller carve")
+		}
 		r.Capacity = &capacity
 		p.capacity = capacity
 		if r.Scope == "host" {
 			r.Host = authority
 		}
-		r.Reviewed = &model.PoolReview{Authority: authority, Consumers: []model.LeaseRevision{}}
+		if child {
+			r.Reviewed = view.Review
+		} else {
+			r.Reviewed = &model.PoolReview{Authority: authority, Consumers: []model.LeaseRevision{}}
+		}
 		p.name, p.unit = r.Name, r.Unit
 	} else {
 		if view == nil || view.Review == nil || view.Pool.Authority != authority || view.Review.Authority != authority || view.Review.Consumers == nil {
@@ -111,6 +139,12 @@ func preparePoolPlan(draft poolDraft, view *model.PoolView, authority string) (*
 		p.before = &before
 		p.name, p.scope, p.unit, p.state = view.Pool.Name, view.Pool.Scope, view.Pool.Unit, view.Pool.State
 		p.capacity, p.reserved = view.Pool.Capacity, view.Reserved
+		if view.Partition != nil {
+			p.reserved = view.Partition.Committed
+		}
+		if (view.Pool.Parent != "" || len(view.Children) > 0 || view.Review.Hierarchy != nil) && !poolHierarchyValid(view.Review.Hierarchy, view.Pool.ID) {
+			return nil, fmt.Errorf("refresh the complete hierarchy review before changing a partition")
+		}
 		r.ID = view.Pool.ID
 		revision := view.Pool.Revision
 		r.Revision = &revision
@@ -160,7 +194,7 @@ func matchingPoolChange(r model.PoolMutation, c model.PoolChange) bool {
 		return false
 	}
 	if r.Operation == "create" {
-		return c.Pool.Name == r.Name && c.Pool.Scope == r.Scope && c.Pool.Host == r.Host && c.Pool.Unit == r.Unit && r.Capacity != nil && c.Pool.Capacity == *r.Capacity && c.Pool.Revision == 1
+		return c.Pool.Name == r.Name && c.Pool.Scope == r.Scope && c.Pool.Host == r.Host && c.Pool.Parent == r.Parent && c.Pool.Unit == r.Unit && r.Capacity != nil && c.Pool.Capacity == *r.Capacity && c.Pool.Revision == 1
 	}
 	if c.Previous == nil || r.Revision == nil || *r.Revision <= 0 || *r.Revision == math.MaxInt64 || c.Pool.Capacity < 0 || c.Previous.Capacity < 0 || c.Pool.ID != r.ID || c.Previous.ID != r.ID || c.Previous.Revision != *r.Revision || c.Pool.Revision != *r.Revision+1 {
 		return false
@@ -191,4 +225,37 @@ func poolPrintable(s string) bool {
 		}
 	}
 	return true
+}
+
+func poolHierarchyValid(h *model.PoolHierarchyReview, id string) bool {
+	if h == nil || h.Schema != 1 || h.Pool != id || h.Root == "" || h.Pools < 1 || h.Pools > 4096 || h.Consumers < 0 || h.Consumers > 8192 || len(h.SHA256) != 64 {
+		return false
+	}
+	for _, r := range h.SHA256 {
+		if r < '0' || r > '9' {
+			if r < 'a' || r > 'f' {
+				return false
+			}
+		}
+	}
+	return true
+}
+func poolActionLabel(op string) string {
+	switch op {
+	case "create":
+		return "Create root pool"
+	case "create-child":
+		return "Create subpool"
+	case "set":
+		return "Change total capacity"
+	case "adjust":
+		return "Add or remove units"
+	case "drain":
+		return "Pause new requests"
+	case "resume":
+		return "Allow new requests"
+	case "delete":
+		return "Delete empty pool"
+	}
+	return human(op)
 }

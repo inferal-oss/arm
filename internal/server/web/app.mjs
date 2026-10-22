@@ -10,6 +10,7 @@ import {installDashboardShortcuts} from './dashboard-shortcuts.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
 import {createOperatorMessaging} from './operator-messaging.mjs';
 import {createPoolConsole} from './pool-console.mjs';
+import {poolBudgetFields} from './pool-model.mjs';
 import {createMeshConsole} from './mesh-console.mjs';
 import {nodeWindowRoute,openNodeWindow,receiveNodeWindow,nodeContextClosed} from './node-window.mjs';
 import {createRemoteNodeDashboard} from './remote-node.mjs';
@@ -460,11 +461,15 @@ function resourceCards() {
     const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, memory: r.kind === 'memory' ? state.status.memory_budget : null, disk: r.kind === 'disk' ? state.status.disk_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
     const budget = node('div', 'budget');
     const disk = r.kind === 'disk' ? state.status.disk_budget : null;
-    const fields = disk ? diskBudgetFields(r, disk) : [['POOL', r.budget_total], ['RESERVED', r.reserved], ['AVAILABLE', r.available]];
+    const fields = disk ? diskBudgetFields(r, disk) : poolBudgetFields(r);
     for (const [label, value] of fields) {
       const item = node('div'); item.append(node('small', '', label), node('strong', (label === 'AVAILABLE' || label === 'TO LEASE') ? 'accent' : '', quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
     }
-    p.body.append(budget, bar(r.reserved, numeric(r.budget_total)));
+    p.body.append(budget, bar(r.custom?.partition?.committed ?? r.reserved, numeric(r.budget_total)));
+    if (r.custom?.partition) {
+      const a=r.custom.partition;
+      p.body.append(node('p','measure-note', `Direct leases ${count(a.direct_reserved)} · Child backing ${count(a.child_backing)} ${r.unit}. Parent and child totals overlap.`));
+    }
     if(r.kind==='memory' && state.status.memory_budget) {
       const memory=state.status.memory_budget;
       stat(p.body,'Physical memory',bytes(memory?.observation.total_bytes));

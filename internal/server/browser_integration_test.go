@@ -272,12 +272,28 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	zero := int64(0)
 	poolSetRevision := poolView.Pool.Revision
 	poolSet := model.PoolMutation{Operation: "set", ID: created.Pool.ID, Capacity: &zero, Revision: &poolSetRevision, Reason: "retain exact obligations below capacity", Key: local.ID(), Reviewed: poolView.Review}
+	// Keep the original wire intent immutable. Decoding another pool_inspect
+	// into poolView reuses its nested Review pointer and updates the digest.
+	originalPoolSet, err := json.Marshal(poolSet)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var frozenPoolSet model.PoolMutation
+	if err = json.Unmarshal(originalPoolSet, &frozenPoolSet); err != nil {
+		t.Fatal(err)
+	}
+	poolSet = frozenPoolSet
 	reply = callPool("pool_mutate", poolSet)
 	if reply.Error != nil {
 		t.Fatal("browser reviewed reduction", reply)
 	}
 	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &poolView); err != nil || poolView.Reserved != maxCapacity || poolView.Deficit != maxCapacity {
 		t.Fatal("browser reduction lost obligations", poolView, err)
+	}
+	changedRetry := poolSet
+	changedRetry.Reviewed = poolView.Review
+	if response := callPool("pool_mutate", changedRetry); response.Error == nil || response.Error.Code != "idempotency_conflict" {
+		t.Fatal("same key accepted a changed live review", response)
 	}
 	lookupReply := callPool("pool_lookup", map[string]string{"idempotency_key": poolSet.Key})
 	var poolLookup manager.PoolMutationLookup

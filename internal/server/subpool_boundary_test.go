@@ -11,16 +11,21 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-func TestSubpoolReadNativeOnlyAndMeshProjection(t *testing.T) {
+func TestSubpoolReadLocalDashboardsAndMeshProjection(t *testing.T) {
 	s := meshFixture(t)
 	service := &meshService{owner: s}
 	peer := mesh.Peer{Identity: mesh.Identity{Host: strings.Repeat("a", 32)}, Grant: mesh.Grant{Permissions: []string{"observe-host", "observe-all", "lease-own"}}}
+	capacity := int64(10)
+	change, e := s.Manager.MutatePool(model.PoolMutation{Operation: "create", Scope: "global", Name: "boundary subtree", Capacity: &capacity, Reason: "private dashboard boundary", Key: "boundary-subtree"})
+	if e != nil {
+		t.Fatal(e)
+	}
 	for _, op := range []string{"pool_children", "pool_consumers"} {
-		raw := json.RawMessage(`{}`)
+		raw, _ := json.Marshal(model.PoolTreeQuery{ID: change.Pool.ID, Limit: 20, Descendants: op == "pool_consumers"})
 		value, err := s.dispatch(context.WithValue(t.Context(), browserContextKey{}, true), model.WireRequest{Operation: op, Params: raw})
 		var api *model.Error
-		if value != nil || !errors.As(err, &api) || api.Code != "forbidden" {
-			t.Fatal(op, value, err)
+		if value == nil || err != nil {
+			t.Fatal("local dashboard read refused", op, value, err)
 		}
 		value, err = service.dispatch(t.Context(), peer, mesh.Request{Operation: op, Params: raw})
 		if value != nil || !errors.As(err, &api) || api.Code != "forbidden" {

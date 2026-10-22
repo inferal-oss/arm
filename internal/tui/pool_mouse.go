@@ -45,9 +45,15 @@ func (m *dashboardModel) poolMouseRegions() []mouseRegion {
 		for i := range ui.views {
 			starts[4+2*i] = i
 		}
-	case "detail":
+	case "detail", "consumers":
 		if ui.current != nil {
 			users := append(append([]model.ResourceUse{}, ui.current.Users...), ui.current.Queued...)
+			if ui.mode == "consumers" {
+				users = nil
+				for _, entry := range ui.consumers.Entries {
+					users = append(users, entry.Use)
+				}
+			}
 			next := 0
 			for line, text := range strings.Split(m.displayContent(), "\n") {
 				plain := ansi.Strip(text)
@@ -109,9 +115,15 @@ func (m *dashboardModel) acceptPoolMouse(region mouseRegion) tea.Cmd {
 			return m.readPools("detail", ui.views[region.row].Pool.ID, 0, nil)
 		}
 		ui.selected = region.row
-	case "detail":
+	case "detail", "consumers":
 		if ui.current != nil {
 			users := append(append([]model.ResourceUse{}, ui.current.Users...), ui.current.Queued...)
+			if ui.mode == "consumers" {
+				users = nil
+				for _, entry := range ui.consumers.Entries {
+					users = append(users, entry.Use)
+				}
+			}
 			if region.row < len(users) {
 				ui.selected = region.row
 				return m.loadDetail(users[region.row].Lease)

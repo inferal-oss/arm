@@ -29,7 +29,7 @@ func (m *dashboardModel) poolText() string {
 	if ui.mode == "actions" {
 		lines := []string{"Select a reviewed operation", ""}
 		for i, option := range m.poolActionOptions() {
-			lines = append(lines, selectedPrefix(ui.selected, i)+human(option))
+			lines = append(lines, selectedPrefix(ui.selected, i)+poolActionLabel(option))
 		}
 		if len(lines) == 2 {
 			lines = append(lines, "This retained deleted definition has no mutation controls.")
@@ -42,13 +42,30 @@ func (m *dashboardModel) poolText() string {
 	if ui.current == nil {
 		return "No pool selected. Esc returns to the pool browser."
 	}
+	if ui.mode == "consumers" {
+		return m.poolSubtreeText()
+	}
 	if ui.mode == "history" {
 		return m.poolHistoryText()
 	}
 	view := ui.current
 	p := view.Pool
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nScope: %s\nHost: %s\nAuthority: %s\nOwner: %s\nUnit: %s\n\nCapacity: %d\nReserved: %d\nAvailable: %d\nDeficit: %d\n\n%s\n", safe(p.Name), safe(p.ID), safe(p.State), p.Revision, safe(p.Scope), safe(p.Host), safe(p.Authority), m.owner(p.Owner, p.OwnerUsername, p.Authority), safe(p.Unit), p.Capacity, view.Reserved, view.Available, view.Deficit, safe(p.Description))
+	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nScope: %s\nHost: %s\nAuthority: %s\nOwner: %s\nUnit: %s\n\nTotal capacity: %d\nDirectly leased: %d\nUncarved available: %d\nDeficit: %d\n\n%s\n", safe(p.Name), safe(p.ID), safe(p.State), p.Revision, safe(p.Scope), safe(p.Host), safe(p.Authority), m.owner(p.Owner, p.OwnerUsername, p.Authority), safe(p.Unit), p.Capacity, view.Reserved, view.Available, view.Deficit, safe(p.Description))
+	if view.Review != nil && view.Review.Unavailable != "" {
+		out.WriteString("\nREAD ONLY: Complete tree exceeds dashboard review limits. Browsing and current obligations remain available; no truncated change is allowed.\n")
+	}
+	if p.Parent != "" {
+		fmt.Fprintf(&out, "Parent partition: %s\n", safe(p.Parent))
+	}
+	if view.Partition != nil {
+		a := view.Partition
+		fmt.Fprintf(&out, "\nPARTITION BACKING\nDirectly leased: %d %s\nBacking for children: %d %s\nCommitted here: %d %s\nUncarved available: %d %s\n", a.Direct, p.Unit, a.ChildBacking, p.Unit, a.Committed, p.Unit, a.Available, p.Unit)
+		if p.Parent != "" {
+			fmt.Fprintf(&out, "Held in parent: %d %s\nPending return: %d %s\n", a.Held, p.Unit, a.PendingReturn, p.Unit)
+		}
+		out.WriteString("Parent and child totals overlap. Do not sum tree rows. Reductions keep promised backing until obligations settle.\n")
+	}
 	if p.Scope == "global" {
 		out.WriteString("Global uses this one authoritative ledger; capacity is not copied per host.\n")
 	}
@@ -56,7 +73,7 @@ func (m *dashboardModel) poolText() string {
 	m.poolConsumersText(&out, view.Users, p.Unit, p.Authority, 0)
 	out.WriteString("\nQUEUED CLAIMS\n")
 	m.poolConsumersText(&out, view.Queued, p.Unit, p.Authority, len(view.Users))
-	out.WriteString("\n[a] Actions · [h] Full journal · [i] Complete record\nAbstract permits coordinate work; they do not prove an external activity stopped.")
+	out.WriteString("\n[a] Actions · [c] Subtree leases · [b] Parent · [h] Full journal · [i] Complete record\nAbstract permits coordinate work; they do not prove an external activity stopped.")
 	return out.String()
 }
 func (m *dashboardModel) poolConsumersText(out *strings.Builder, users []model.ResourceUse, unit, authority string, offset int) {
@@ -69,7 +86,7 @@ func (m *dashboardModel) poolConsumersText(out *strings.Builder, users []model.R
 }
 func (m *dashboardModel) poolListText() string {
 	ui := m.poolUI
-	head := "CUSTOM POOLS · including retained deleted definitions\n\n"
+	head := "POOL HIERARCHY · includes retained definitions\n\n"
 	if len(ui.views) == 0 {
 		return head + "No custom pools. [n] creates a counted resource.\nHost and global scopes share this one local authority."
 	}
@@ -77,19 +94,28 @@ func (m *dashboardModel) poolListText() string {
 	headers := []string{"Pool / scope", "Capacity"}
 	widths := []int{max(12, width-23), 23}
 	if width >= 100 {
-		headers = []string{"Pool / scope", "State", "Capacity", "Reserved", "Available / deficit"}
+		headers = []string{"Pool / scope", "State", "Capacity", "Committed", "Available / deficit"}
 		widths = []int{width - 12 - 23*3, 12, 23, 23, 23}
 	}
 	rows := make([][]string, 0, len(ui.views))
 	for i, view := range ui.views {
 		p := view.Pool
-		row := []string{selectedPrefix(ui.selected, i) + short(safe(p.Name), widths[0]-4) + "\n" + safe(p.Scope), fmt.Sprint(p.Capacity)}
+		depth := max(0, len(view.Ancestors)-1)
+		prefix := strings.Repeat("  ", depth)
+		if depth > 0 {
+			prefix += "↳ "
+		}
+		row := []string{selectedPrefix(ui.selected, i) + short(prefix+safe(p.Name), widths[0]-4) + "\n" + safe(p.Scope), fmt.Sprint(p.Capacity)}
 		if len(headers) == 5 {
 			available := fmt.Sprint(view.Available)
 			if view.Deficit > 0 {
 				available = "! " + fmt.Sprint(view.Deficit)
 			}
-			row = []string{row[0], safe(p.State), fmt.Sprint(p.Capacity), fmt.Sprint(view.Reserved), available}
+			committed := view.Reserved
+			if view.Partition != nil {
+				committed = view.Partition.Committed
+			}
+			row = []string{row[0], safe(p.State), fmt.Sprint(p.Capacity), fmt.Sprint(committed), available}
 		}
 		rows = append(rows, row)
 	}
@@ -131,9 +157,17 @@ func (m *dashboardModel) poolHistoryText() string {
 func (m *dashboardModel) poolReviewText() string {
 	p := m.poolUI.review
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s · %s\nReason: %s\nScope: %s\nAuthority: %s\nRequest key: %s\n\n", human(p.request.Operation), safe(p.name), safe(p.request.Reason), safe(p.scope), safe(p.request.Reviewed.Authority), safe(p.request.Key))
+	fmt.Fprintf(&out, "%s · %s\nReason: %s\nScope: %s\nAuthority: %s\nRequest key: %s\n\n", poolActionLabel(p.request.Operation), safe(p.name), safe(p.request.Reason), safe(p.scope), safe(p.request.Reviewed.Authority), safe(p.request.Key))
 	beforeCap, beforeState := "new", "new"
 	beforeAvailable, beforeDeficit := int64(0), int64(0)
+	if p.parent != nil {
+		a := p.parent.Partition
+		committed := p.parent.Reserved
+		if a != nil {
+			committed = a.Committed
+		}
+		fmt.Fprintf(&out, "NEW CHILD · %s\nInitial capacity: %d %s · inherits %s scope\n\nPARENT · %s · exact revision %d\nTotal capacity: %d %s (unchanged)\nCommitted backing: %d → %d\nUncarved available: %d → %d\n\n", safe(p.name), p.capacity, safe(p.unit), safe(p.scope), safe(p.parent.Pool.Name), *p.request.ParentRevision, p.parent.Pool.Capacity, safe(p.unit), committed, committed+p.capacity, p.parent.Available, p.parent.Available-p.capacity)
+	}
 	if p.before != nil {
 		beforeCap = fmt.Sprint(p.before.Pool.Capacity)
 		beforeState = p.before.Pool.State
@@ -141,7 +175,11 @@ func (m *dashboardModel) poolReviewText() string {
 		beforeDeficit = p.before.Deficit
 		fmt.Fprintf(&out, "Pool: %s · revision %d\n", safe(p.before.Pool.ID), p.before.Pool.Revision)
 	}
-	fmt.Fprintf(&out, "Capacity: %s → %d %s\nState: %s → %s\nReserved: %d (unchanged)\nAvailable: %d → %d\nDeficit: %d → %d\n\nExisting leases retain their quantities and deadlines. This does not stop processes or delete files.\n", beforeCap, p.capacity, safe(p.unit), safe(beforeState), safe(p.state), p.reserved, beforeAvailable, p.available, beforeDeficit, p.deficit)
+	if p.parent == nil {
+		fmt.Fprintf(&out, "Capacity: %s → %d %s\nState: %s → %s\nCommitted backing: %d (unchanged)\nAvailable: %d → %d\nDeficit: %d → %d\n\nExisting leases retain their quantities and deadlines. This does not stop processes or delete files.\n", beforeCap, p.capacity, safe(p.unit), safe(beforeState), safe(p.state), p.reserved, beforeAvailable, p.available, beforeDeficit, p.deficit)
+	} else {
+		out.WriteString("Existing promises retain their quantities and deadlines. The backend rechecks ancestor backing at confirmation. Parent and child totals overlap.\n")
+	}
 	if p.scope == "global" {
 		out.WriteString("Global uses this one authority; capacity is not independently replicated per host.\n")
 	}
@@ -150,15 +188,18 @@ func (m *dashboardModel) poolReviewText() string {
 	}
 	switch p.request.Operation {
 	case "drain":
-		out.WriteString("Pause new admission; existing and queued claims remain recorded.\n")
+		out.WriteString("Refuse new requests and renewals. Already queued requests may still start when capacity permits; they are not cancelled. Existing promises remain charged.\n")
 	case "resume":
 		out.WriteString("Resume normal admission; queued work may start under backend policy.\n")
 	case "delete":
 		out.WriteString("Retain historical definition and journal. Deletion is refused while queued or consuming claims remain.\n")
 	}
-	fmt.Fprintf(&out, "\nCOMPLETE REVIEWED OBLIGATIONS · %d\n", len(p.request.Reviewed.Consumers))
+	fmt.Fprintf(&out, "\nDIRECT REVIEWED OBLIGATIONS · %d\n", len(p.request.Reviewed.Consumers))
 	for _, consumer := range p.request.Reviewed.Consumers {
 		fmt.Fprintf(&out, "%s · revision %d\n", safe(consumer.ID), consumer.Revision)
+	}
+	if h := p.request.Reviewed.Hierarchy; h != nil {
+		fmt.Fprintf(&out, "\nCOMPLETE ROOT TREE · %d pools · %d queued/consuming leases\nRoot %s · current lineage, revisions, claims and backing bound by snapshot.\n", h.Pools, h.Consumers, safe(h.Root))
 	}
 	out.WriteString("\n[n/Esc] Keep unchanged · [y] Confirm exact reviewed request")
 	return out.String()
@@ -174,7 +215,12 @@ func (m *dashboardModel) poolEditorDisplay() string {
 	}
 	field := form.fields[form.step]
 	labels := map[string]string{"name": "Pool name", "scope": "Scope: host or global", "unit": "Integral count unit", "capacity": "Capacity (0..9223372036854775807)", "delta": "Signed nonzero adjustment", "description": "Description (optional)", "reason": "Required reason"}
-	return fmt.Sprintf("%s · step %d/%d\n\n%s\n\n%s\n\nHost pools belong to this host. Global pools use this one authority.\nReview follows; nothing changes before explicit confirmation.\n\n%s  %s", human(form.draft.operation), form.step+1, len(form.fields), labels[field], panelStyle.Background(lipgloss.Color("#24343d")).Padding(0, 1).Render(m.input.View()), keycap("Enter", "Continue", ""), keycap("Esc", "Keep unchanged", "quiet"))
+	context := "Host pools belong to this host. Global pools use this one authority."
+	if form.draft.operation == "create-child" && ui.current != nil {
+		p := ui.current.Pool
+		context = fmt.Sprintf("Parent: %s · %s · %s. %d uncarved units. Capacity is partitioned, never added.", safe(p.Name), safe(p.Scope), safe(p.Unit), ui.current.Available)
+	}
+	return fmt.Sprintf("%s · step %d/%d\n\n%s\n\n%s\n\n%s\nReview follows; nothing changes before explicit confirmation.\n\n%s  %s", poolActionLabel(form.draft.operation), form.step+1, len(form.fields), labels[field], panelStyle.Background(lipgloss.Color("#24343d")).Padding(0, 1).Render(m.input.View()), context, keycap("Enter", "Continue", ""), keycap("Esc", "Keep unchanged", "quiet"))
 }
 func (m *dashboardModel) poolOperationText() string {
 	op := m.poolPending
@@ -211,8 +257,10 @@ func (m *dashboardModel) poolControls() []mouseControl {
 		return []mouseControl{{"n", "Keep"}, {"y", "Confirm"}, {"pgup", "↑"}, {"pgdown", "↓"}}
 	}
 	switch ui.mode {
+	case "consumers":
+		return []mouseControl{{"esc", "Pool"}, {"p", "Previous"}, {"n", "Next"}, {"enter", "Lease"}, {"r", "Refresh"}}
 	case "detail":
-		return []mouseControl{{"esc", "Pools"}, {"a", "Actions"}, {"h", "History"}, {"o", "Operation"}, {"i", "Record"}}
+		return []mouseControl{{"esc", "Pools"}, {"a", "Actions"}, {"c", "Subtree leases"}, {"b", "Parent"}, {"h", "History"}, {"o", "Operation"}, {"i", "Record"}}
 	case "actions":
 		return []mouseControl{{"esc", "Back"}, {"enter", "Choose"}}
 	case "history":
@@ -226,4 +274,29 @@ func (m *dashboardModel) poolControls() []mouseControl {
 	default:
 		return []mouseControl{{"esc", "Budgets"}, {"n", "New"}, {"enter", "Open"}, {"o", "Operation"}, {"r", "Refresh"}}
 	}
+}
+
+func (m *dashboardModel) poolSubtreeText() string {
+	ui := m.poolUI
+	var out strings.Builder
+	fmt.Fprintf(&out, "LEASES ACROSS THIS SUBTREE\n%s\nEach lease appears once; direct claims identify the partition. Tree totals overlap.\n\n", safe(ui.current.Pool.Name))
+	if len(ui.consumers.Entries) == 0 {
+		out.WriteString("No queued or consuming claims.\n")
+	}
+	for i, entry := range ui.consumers.Entries {
+		u := entry.Use
+		fmt.Fprintf(&out, "%s%s · %s\n  Owner: %s\n  Why: %s\n", selectedPrefix(ui.selected, i), safe(u.Lease), safe(u.State), m.owner(u.Owner, u.OwnerUsername, ui.current.Pool.Authority), safe(u.Reason))
+		for _, claim := range entry.Claims {
+			name := claim.Pool
+			for _, v := range ui.views {
+				if v.Pool.ID == claim.Pool {
+					name = v.Pool.Name
+					break
+				}
+			}
+			fmt.Fprintf(&out, "  %s: %d %s\n", safe(name), claim.Quantity, safe(ui.current.Pool.Unit))
+		}
+	}
+	out.WriteString("\n[p] Previous leases · [n] Next leases · [Enter] Inspect lease · [Esc] Pool")
+	return out.String()
 }

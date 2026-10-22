@@ -1,6 +1,6 @@
 import { stringifyJSON, count, ownerDisplay } from './core.mjs';
 import { jsonView } from './json-view.mjs';
-import { preparePoolMutation, poolRequestCopy } from './pool-model.mjs';
+import { preparePoolMutation, poolRequestCopy, poolTreeRows } from './pool-model.mjs';
 import { createPoolOperations } from './pool-operations.mjs';
 
 export function createPoolConsole({
@@ -41,6 +41,7 @@ export function createPoolConsole({
     formGeneration = 0,
     loading = false,
     history = null,
+    consumerPage = null, consumerAfter = '', consumerPrevious = [], consumerGeneration = 0,
     historyAfter = '0',
     historyBefore = null,
     review = null,
@@ -86,10 +87,10 @@ export function createPoolConsole({
   const head = el('thead'),
     headRow = el('tr');
   for (const label of [
-    'Pool / scope',
+    'Pool hierarchy',
     'State',
-    'Capacity',
-    'Reserved',
+    'Total',
+    'Committed',
     'Available / deficit',
   ])
     headRow.append(el('th', '', label));
@@ -133,10 +134,10 @@ export function createPoolConsole({
     dialogFeedback.textContent = ''; dialogFeedback.hidden = true;
   }
   function showEditor(step, operation) {
-    const names = {create:'Create resource pool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'};
+    const names = {'create-child':'Create subpool',create:'Create resource pool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'};
     editorStep.textContent = step === 1 ? '1 · EDIT CHANGE' : '2 · REVIEW & CONFIRM';
     editorTitle.textContent = names[operation];
-    editorContext.textContent = operation === 'create' ? 'Define a counted resource for agents to coordinate.' : current()?.pool.name || review?.name || 'Selected resource pool';
+    editorContext.textContent = operation === 'create-child' ? `Carve a named partition from ${current()?.pool.name || 'this parent'}.` : operation === 'create' ? 'Define a counted resource for agents to coordinate.' : current()?.pool.name || review?.name || 'Selected resource pool';
     editor.hidden = false;
     if (!editor.open) {
       if (typeof editor.showModal === 'function') editor.showModal();
@@ -156,17 +157,17 @@ export function createPoolConsole({
   }
   function setBusyState() {
     for (const item of root.querySelectorAll('[data-pool-online]'))
-      item.disabled = !connected();
+      item.disabled = !connected() || item.dataset.poolReadOnly === 'true';
     if (review) {
       reviewStale =
         !connected() ||
         review.request.reviewed.authority !== status?.host ||
-        (review.before &&
+        ((review.parent || review.before) &&
           (() => {
             const now = current();
             return (
               !now ||
-              String(now.pool.revision) !== String(review.request.revision) ||
+              String(now.pool.revision) !== String(review.request.parent_revision ?? review.request.revision) ||
               stringifyJSON(now.review) !==
                 stringifyJSON(review.request.reviewed)
             );
@@ -184,7 +185,9 @@ export function createPoolConsole({
   function renderRows() {
     const visible = new Set(),
       search = filter.value.toLowerCase();
-    for (const view of pools) {
+    let hierarchy;
+    try { hierarchy=poolTreeRows(pools); } catch(error){fail(error.message);return;}
+    for (const {view,depth,path} of hierarchy) {
       const p = view.pool;
       visible.add(p.id);
       let row = rows.get(p.id);
@@ -202,13 +205,18 @@ export function createPoolConsole({
         rows.set(p.id, row);
         body.append(tr);
       }
-      row.pick.textContent = p.name;
+      row.pick.textContent = `${depth ? '↳ ' : ''}${p.name}`;
+      row.cells[0].style?.setProperty('--pool-depth',String(depth));
+      row.cells[0].className='pool-tree-cell';
+      const parent = p.parent ? pools.find(v=>v.pool.id===p.parent)?.pool : null;
+      row.pick.setAttribute('aria-label',parent ? `${p.name}, subpool of ${parent.name}` : p.name);
+      body.append(row.tr);
       row.pick.setAttribute('aria-pressed', String(selected === p.id));
-      row.cells[0].children[1].textContent = `${p.scope === 'global' ? 'Global · one ledger' : p.scope + ' · ' + p.host} · ${owner(p.owner, p.owner_username, p.authority)}`;
+      row.cells[0].children[1].textContent = `${p.scope === 'global' ? 'Global · one ledger' : p.scope + ' · ' + p.host} · ${owner(p.owner, p.owner_username, p.authority)}${parent ? ' · Within ' + parent.name : ' · Root'}`;
       row.cells[1].textContent = stateLabel(p.state);
       row.cells[1].className = 'pool-state';
       row.cells[2].textContent = `${count(p.capacity)} ${p.unit}`;
-      row.cells[3].textContent = count(view.reserved);
+      row.cells[3].textContent = count(view.partition?.committed ?? view.reserved);
       row.cells[4].textContent =
         view.deficit > 0
           ? `Deficit ${count(view.deficit)}`
@@ -230,6 +238,7 @@ export function createPoolConsole({
     const view = current(),
       fingerprint = stringifyJSON({
         view: view ?? null,
+        consumerPage,
         selected,
         owner: status?.owner ?? null,
         username: status?.owner_username ?? null,
@@ -266,10 +275,15 @@ export function createPoolConsole({
         `${p.scope === 'global' ? 'Global pool · one authority' : 'Pool on this host'} · ${stateLabel(p.state)} · ${owner(p.owner, p.owner_username, p.authority)}`
       )
     );
+    const lineage=el('nav','pool-lineage');lineage.setAttribute('aria-label','Pool ancestry');
+    for(const id of view.ancestors || [p.id]){const node=pools.find(v=>v.pool.id===id)?.pool;lineage.append(button(node?.name||id,()=>select(id),'link-button'));}
+    detail.append(lineage);
     if (p.description) detail.append(el('p', '', p.description));
     const controls = el('div', 'pool-tools');
+    if(view.review?.unavailable) detail.append(el('p','pool-deficit','Read only: this complete tree exceeds dashboard review limits. Browsing and existing obligations remain available; no change can use a truncated review.'));
     if (p.state !== 'deleted') {
       for (const [op, label, explanation] of [
+        ...(p.state === 'active' ? [['create-child', 'Create subpool…', 'Carve existing capacity into a named child partition.']] : []),
         ['set', 'Change total capacity…', 'Replace the total with a specific number.'],
         ['adjust', 'Add or remove units…', 'Increase or decrease the current total.'],
         [
@@ -285,19 +299,23 @@ export function createPoolConsole({
           op === 'delete' ? 'pool-action danger' : 'pool-action'
         );
         b.setAttribute('aria-label', label);
+        b.dataset.poolReadOnly=String(Boolean(view.review?.unavailable));b.disabled=Boolean(view.review?.unavailable)||!connected();
         b.append(el('small', '', explanation));
         b.dataset.poolOnline = '';
         controls.append(b);
       }
     }
     const budget = el('dl', 'pool-detail-budget');
-    for (const [label, value] of [['Total capacity',p.capacity],['Reserved',view.reserved],[view.deficit > 0 ? 'Over capacity' : 'Available',view.deficit > 0 ? view.deficit : view.available]]) {
-      const stat = el('div'); stat.append(el('dt','',label),el('dd','',`${count(value)} ${p.unit}`)); budget.append(stat);
+    for (const [label, value] of [['Total capacity',p.capacity],['Directly leased',view.partition?.direct_reserved ?? view.reserved],['Backing for children',view.partition?.child_backing ?? 0],['Uncarved available',view.available],['Held in parent',p.parent ? view.partition?.held_backing ?? 0 : '—'],['Pending return',view.partition?.pending_return ?? 0]]) {
+      const stat = el('div'); stat.append(el('dt','',label),el('dd','',`${value === '—' ? value : count(value)} ${value === '—' ? '' : p.unit}`)); budget.append(stat);
     }
-    detail.append(budget, controls);
+    detail.append(budget);
+    if(view.deficit > 0) detail.append(el('p','pool-deficit',`Over capacity by ${count(view.deficit)} ${p.unit}. Existing promises keep their backing; the parent cannot reuse it yet.`));
+    detail.append(el('p','measure-note','Direct leases plus child backing are this node’s commitments. Parent and child figures overlap; do not add tree rows together.'), controls);
+    if(view.children?.length){const branch=el('div','pool-child-links');branch.append(el('h4','','Child partitions'));for(const id of view.children){const child=pools.find(v=>v.pool.id===id);if(child)branch.append(button(`${child.pool.name} · ${count(child.partition?.held_backing ?? child.pool.capacity)} ${p.unit} held`,()=>select(id),'pool-child-link'));}detail.append(branch);}
     for (const [label, users] of [
-      ['Current consumers', view.users],
-      ['Queued claims', view.queued],
+      ['Direct active leases', view.users],
+      ['Direct queued claims', view.queued],
     ]) {
       const block = el('details', 'pool-consumers'),
         summary = el('summary', '', `${label} · ${users?.length || 0}`);
@@ -317,6 +335,13 @@ export function createPoolConsole({
       }
       detail.append(block);
     }
+    const subtree=el('section','pool-subtree');subtree.append(el('h4','','Leases across this subtree'),el('p','measure-note','Each lease appears once. Its direct claims identify which child holds the units; tree totals are not summed.'));
+    if(consumerPage?.pool===selected){
+      for(const entry of consumerPage.entries || []){const u=entry.use,row=el('div','consumer');row.append(button(u.lease,()=>onLease(u.lease),'link-button'),el('p','',u.reason),el('small','',`${owner(u.owner,u.owner_username,p.authority)} · ${u.state}`));for(const claim of entry.direct_claims||[]){const node=pools.find(v=>v.pool.id===claim.pool)?.pool;row.append(el('p','',`${node?.name||claim.pool} · ${count(claim.quantity)} ${p.unit}`));}subtree.append(row);}
+      if(!consumerPage.entries?.length)subtree.append(el('p','measure-note','No queued or consuming claims in this subtree.'));
+      const nav=el('div','pool-tools'),back=button('Previous leases',()=>{const after=consumerPrevious.at(-1) ?? '';loadConsumers(after,'back');}),next=button('Next leases',()=>{loadConsumers(consumerPage.cursor,'next');});back.disabled=!consumerPrevious.length;next.disabled=!consumerPage.more;nav.append(back,next);subtree.append(nav);
+    } else subtree.append(el('p','measure-note',connected()?'Loading current subtree claims…':'Reconnect to refresh subtree claims.'));
+    detail.append(subtree);
     detail.append(
       jsonView(view, { label: 'Complete pool snapshot', document })
     );
@@ -364,6 +389,7 @@ export function createPoolConsole({
           String(oldRevision) !== String(current()?.pool.revision))
       )
         await loadHistory();
+      if(selected) await loadConsumers(consumerAfter);
     } catch (error) {
       if (generation === readGeneration) fail(error.message);
     } finally {
@@ -385,6 +411,7 @@ export function createPoolConsole({
     historyAfter = after;
     historyBefore = before;
     history = null;
+    consumerPage=null;consumerAfter='';consumerPrevious=[];consumerGeneration++;
     historyGeneration++;
     historyReadKey = null;
     closeEditor(false);
@@ -392,6 +419,17 @@ export function createPoolConsole({
     renderDetail();
     renderHistory();
     loadHistory();
+    loadConsumers();
+  }
+  async function loadConsumers(after='',direction='refresh') {
+    if(!selected || !connected())return;
+    const id=selected,generation=++consumerGeneration;
+    try{const page=await call('pool_consumers',{id,descendants:true,after,limit:20});
+      if(disposed||generation!==consumerGeneration||selected!==id)return;
+      if(page.pool!==id||page.descendants!==true||!Array.isArray(page.entries))throw Error('Subtree claim page differs from the selected pool.');
+      if(direction==='next')consumerPrevious.push(consumerAfter);else if(direction==='back')consumerPrevious.pop();
+      consumerPage=page;consumerAfter=after;detailFingerprint=null;renderDetail();
+    }catch(error){if(generation===consumerGeneration)fail(error.message);}
   }
   async function loadHistory() {
     if (!selected || !connected()) return;
@@ -499,6 +537,7 @@ export function createPoolConsole({
     const form = el('form', 'pool-form'),
       inputs = {};
     const descriptions = {
+      'create-child': `A child partitions ${current()?.pool.name}. Scope and count units are inherited. It does not add capacity; all ancestors must have enough backing.`,
       create: 'Choose a name, scope and total count. Agents can lease units from this pool.',
       set: `Current total: ${count(current()?.pool.capacity)} ${current()?.pool.unit}. Enter the replacement total; existing leases remain charged.`,
       adjust: 'Use a positive number to add units, or a negative number to remove units. Existing leases remain charged.',
@@ -517,8 +556,10 @@ export function createPoolConsole({
       form.append(field(label, item));
       return item;
     }
-    if (operation === 'create') {
-      input('name', 'Pool name');
+    if (operation === 'create' || operation === 'create-child') {
+      input('name', operation === 'create-child' ? 'Subpool name' : 'Pool name');
+      if(operation === 'create-child') form.append(el('p','pool-inherited',`Parent · ${current()?.pool.name} · ${current()?.pool.scope} · ${current()?.pool.unit}. ${count(current()?.available)} uncarved units in this snapshot.`));
+      if(operation === 'create') {
       const scope = el('select');
       scope.name = 'scope';
       scope.setAttribute('aria-label', 'Pool scope');
@@ -534,6 +575,7 @@ export function createPoolConsole({
       inputs.scope = scope;
       form.append(field('Scope', scope));
       input('unit', 'Count unit', 'count');
+      }
       input('capacity', 'Initial capacity', '0').inputMode = 'numeric';
       input('description', 'Description (optional)', '', true);
     } else if (operation === 'set')
@@ -592,7 +634,7 @@ export function createPoolConsole({
     if (!review) return;
     reviewBox.hidden = false;
     const plan = review;
-    showEditor(2, plan.request.operation);
+    showEditor(2, plan.request.parent ? 'create-child' : plan.request.operation);
     reviewBox.append(
       el('h3', '', 'Proposed change'),
       el(
@@ -602,16 +644,18 @@ export function createPoolConsole({
       ),
       el('p', 'pool-reviewed-reason', `Reason · ${plan.request.reason}`)
     );
-    const effects = el('dl', 'pool-effects');
-    for (const [label, before, after] of [
-      ['Capacity', plan.before?.pool.capacity ?? 'New', plan.capacity],
-      ['State', plan.before?.pool.state ?? 'New', plan.state],
-      ['Reserved', plan.before?.reserved ?? 0, plan.reserved],
-      ['Available', plan.before?.available ?? 0, plan.available],
-      ['Deficit', plan.before?.deficit ?? 0, plan.deficit],
-    ])
-      effects.append(el('dt', '', label), el('dd', '', label === 'State' ? `${stateLabel(before)} → ${stateLabel(after)}` : `${before} → ${after}`));
-    reviewBox.append(effects);
+    const addEffects=(rows)=>{const effects=el('dl','pool-effects');for(const [label,before,after]of rows)effects.append(el('dt','',label),el('dd','',`${before} → ${after}`));reviewBox.append(effects);};
+    if(plan.parent) {
+      const parent=plan.parent,a=parent.partition,committed=BigInt(a?.committed??parent.reserved),available=BigInt(parent.available);
+      reviewBox.append(el('h4','','New child · '+plan.name),el('p','pool-inherited',`Within ${parent.pool.name}. Inherits ${parent.pool.scope} scope and ${plan.unit} units. Initial capacity: ${plan.capacity} ${plan.unit}.`));
+      reviewBox.append(el('h4','','Parent · '+parent.pool.name),el('p','measure-note',`Exact parent revision ${plan.request.parent_revision}. Its total capacity stays ${parent.pool.capacity} ${plan.unit}; ${plan.capacity} units move into child backing.`));
+      addEffects([['Committed backing',committed,committed+plan.capacity],['Uncarved available',available,available-plan.capacity]]);
+    } else addEffects([
+      ['Capacity',plan.before?.pool.capacity??'New',plan.capacity],
+      ['State',stateLabel(plan.before?.pool.state??'New'),stateLabel(plan.state)],
+      ['Committed backing',plan.before?.partition?.committed??plan.before?.reserved??0,plan.reserved],
+      ['Available',plan.before?.available??0,plan.available],['Deficit',plan.before?.deficit??0,plan.deficit],
+    ]);
     for (const paragraph of plan.paragraphs)
       reviewBox.append(el('p', '', paragraph));
     const scope = el('details', 'pool-review-scope');
@@ -619,9 +663,10 @@ export function createPoolConsole({
       el(
         'summary',
         '',
-        `Complete affected scope · ${plan.request.reviewed.consumers.length} leases`
+        `Complete root scope guard · ${plan.request.reviewed.hierarchy?.pool_count ?? 1} pools · ${plan.request.reviewed.hierarchy?.consumer_count ?? plan.request.reviewed.consumers.length} leases`
       )
     );
+    if(plan.request.reviewed.hierarchy) scope.append(el('p','measure-note',`Root ${plan.request.reviewed.hierarchy.root}. Exact definitions, lineage, backing and all queued/consuming claims are bound by this snapshot. Direct selected-pool claims are listed below; subtree browsing shows their owners and reasons.`));
     let scopePage = 0;
     const scopeRows = el('div'),
       scopeNav = el('div', 'pool-tools');
@@ -669,7 +714,7 @@ export function createPoolConsole({
         formBox.querySelector('textarea')?.focus();
       }),
       confirm = button(
-        ({create:'Create pool',set:`Set total capacity to ${count(plan.capacity)}`,adjust:plan.request.delta > 0 ? `Add ${count(plan.request.delta)} units` : `Remove ${count(-plan.request.delta)} units`,drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[plan.request.operation],
+        ({create:plan.request.parent?'Create subpool':'Create pool',set:`Set total capacity to ${count(plan.capacity)}`,adjust:plan.request.delta > 0 ? `Add ${count(plan.request.delta)} units` : `Remove ${count(-plan.request.delta)} units`,drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[plan.request.operation],
         () => {
           if (!review || reviewStale || !connected()) return;
           const request = poolRequestCopy(review.request);
@@ -701,7 +746,7 @@ export function createPoolConsole({
         el(
           'h4',
           '',
-          `${({create:'Create pool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[op.request.operation] || op.request.operation} · ${op.state === 'recorded' ? 'Recorded' : op.state === 'rejected' ? 'Rejected' : op.busy ? 'In flight' : 'Outcome uncertain'}`
+          `${({create:op.request.parent?'Create subpool':'Create pool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[op.request.operation] || op.request.operation} · ${op.state === 'recorded' ? 'Recorded' : op.state === 'rejected' ? 'Rejected' : op.busy ? 'In flight' : 'Outcome uncertain'}`
         ),
         el('p', '', op.request.reason),
         el('small', 'pool-operation-key', `Operation key: ${op.request.idempotency_key}`),

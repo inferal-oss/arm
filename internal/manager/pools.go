@@ -346,12 +346,16 @@ func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error
 	if err != nil {
 		return nil, err
 	}
+	tokens, unavailable, err := m.hierarchyReviewTokens(t, ls, accounting, "")
+	if err != nil {
+		return nil, err
+	}
 	out := []model.PoolView{}
 	for _, p := range definitions {
 		if p.State == "deleted" && !all {
 			continue
 		}
-		v := model.PoolView{Review: &model.PoolReview{Authority: m.host, Consumers: []model.LeaseRevision{}}, Pool: p, Reserved: used[p.ID], Available: max(0, p.Capacity-used[p.ID]), Deficit: max(0, used[p.ID]-p.Capacity), Users: []model.ResourceUse{}, Queued: []model.ResourceUse{}}
+		v := model.PoolView{Review: &model.PoolReview{Authority: m.host, Consumers: []model.LeaseRevision{}, Hierarchy: tokens[p.ID], Unavailable: unavailable[p.ID]}, Pool: p, Reserved: used[p.ID], Available: max(0, p.Capacity-used[p.ID]), Deficit: max(0, used[p.ID]-p.Capacity), Users: []model.ResourceUse{}, Queued: []model.ResourceUse{}}
 		partition := accounting[p.ID]
 		v.Partition = &partition
 		v.Available = partition.Available

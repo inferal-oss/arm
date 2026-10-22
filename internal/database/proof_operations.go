@@ -20,6 +20,10 @@ func (p *proofReader) readOperations() error {
 		if e != nil {
 			return e
 		}
+		requestRaw, _ := r.text("request")
+		if e = p.validatePoolReviewRecord(requestRaw, q); e != nil {
+			return e
+		}
 		v, e := rowJSON[model.PoolChange](r, "result", "sequence", "operation", "idempotency_key", "actor", "reason", "at", "after", "delta")
 		if e != nil {
 			return e

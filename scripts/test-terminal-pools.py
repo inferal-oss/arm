@@ -192,7 +192,7 @@ def main():
         wait_text('CURRENT CONSUMERS')
         send('a')
         wait_text('Select a reviewed operation')
-        send('\r')
+        send('\x1b[B\r')
         wait_text('Capacity (0..9223372036854775807)')
         field('0', 'Required reason')
         field('PTY decline reduction', 'REVIEW POOL')
@@ -201,7 +201,7 @@ def main():
         assert cli('pool', 'inspect', pool_id)['pool']['revision'] == 1, 'decline changed pool'
         send('a')
         wait_text('Select a reviewed operation')
-        send('\r')
+        send('\x1b[B\r')
         wait_text('Capacity (0..9223372036854775807)')
         field('0', 'Required reason')
         field('PTY reviewed reduction', 'REVIEW POOL')
@@ -221,7 +221,7 @@ def main():
             wait_text('CURRENT CONSUMERS')
             send('a')
             wait_text('Select a reviewed operation')
-            for _ in range(index):
+            for _ in range(index + (1 if cli('pool', 'inspect', pool_id)['pool']['state'] == 'active' else 0)):
                 send('\x1b[B')
                 drain(.08)
             send('\r')

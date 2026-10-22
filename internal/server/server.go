@@ -669,8 +669,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		}
 		return boundedPoolRead(s.Manager.PoolConsumers(q))
 	case "pool_mutate":
-		var q model.PoolMutation
-		if e := decode(&q); e != nil {
+		q, e := manager.DecodePoolMutation(r.Params)
+		if e != nil {
 			return nil, e
 		}
 		if ctx.Value(browserContextKey{}) == true {

@@ -5,7 +5,7 @@ import {
   poolInteger,
   preparePoolMutation,
   MAX_COUNT,
-  matchingPoolChange,
+  matchingPoolChange, poolBudgetFields, validPoolHierarchy,
 } from './pool-model.mjs';
 import { createPoolOperations } from './pool-operations.mjs';
 const view = () => ({
@@ -272,4 +272,37 @@ test('pause review distinguishes new requests from already queued work', () => {
   assert.match(p.paragraphs.join(' '), /Refuse new requests and renewals/);
   assert.match(p.paragraphs.join(' '), /Already queued requests may still start when capacity permits/);
   assert.match(p.paragraphs.join(' '), /queued requests are not cancelled/);
+});
+
+test('subpool creation inherits identity and binds parent/tree review; reduction charges child backing once',async()=>{
+ const {poolTreeRows}=await import('./pool-model.mjs');
+ const parent=view();parent.pool.capacity=10;parent.reserved=1;parent.available=5;parent.partition={direct_reserved:1,child_backing:4,committed:5,held_backing:10,pending_return:0};parent.review.hierarchy={schema_version:1,pool:parent.pool.id,root:parent.pool.id,pool_count:2,consumer_count:1,snapshot_sha256:'a'.repeat(64)};
+ const p=preparePoolMutation({operation:'create-child',name:'Compiler slots',capacity:'3',reason:'Dedicated build partition'},parent,'host-a','child-key');
+ assert.equal(p.request.operation,'create');assert.equal(p.request.parent,parent.pool.id);assert.equal(p.request.parent_revision,7n);assert.equal(p.request.scope,'global');assert.equal(p.request.unit,'permits');assert.equal(p.request.reviewed.hierarchy.snapshot_sha256,'a'.repeat(64));assert.equal(p.reserved,0n);assert.match(p.paragraphs.join(' '),/overlap/);
+ parent.children=['child'];const reduced=preparePoolMutation({operation:'set',capacity:'2',reason:'retain backing'},parent,'host-a','reduce-key');assert.equal(reduced.reserved,5n);assert.equal(reduced.deficit,3n);
+ const child={...parent,pool:{...parent.pool,id:'child',name:'Child',parent:parent.pool.id},children:[]};
+ const tree=poolTreeRows([child,parent]);assert.deepEqual(tree.map(r=>[r.view.pool.id,r.depth]),[[parent.pool.id,0],['child',1]]);
+ assert.throws(()=>poolTreeRows([child]),/incomplete/);assert.throws(()=>poolTreeRows([{...child,pool:{...child.pool,parent:'child'}}]),/cyclic/);
+ assert.throws(()=>preparePoolMutation({operation:'create-child',name:'No guard',capacity:'1',reason:'x'},{...parent,review:{authority:'host-a',consumers:[]}},'host-a','k'),/complete hierarchy/);
+ assert.equal(matchingPoolChange(p.request,{...result(p.request),before:null,after:{...parent.pool,id:'new',name:p.request.name,unit:p.request.unit,scope:p.request.scope,capacity:p.request.capacity,revision:1,parent:'wrong'}}),false);
+});
+
+test('resource cards use backend child commitments without adding overlapping tree totals',()=>{
+ for(const a of [{configured:12,direct_reserved:1,child_backing:7,committed:8,uncarved_available:4},{configured:2,direct_reserved:3,child_backing:2,committed:5,uncarved_available:0},{configured:2,direct_reserved:2,child_backing:0,committed:2,uncarved_available:0}])assert.deepEqual(poolBudgetFields({custom:{partition:a},reserved:a.direct_reserved}),[['TOTAL',a.configured],['COMMITTED',a.committed],['AVAILABLE',a.uncarved_available]]);
+ assert.equal(validPoolHierarchy({schema_version:1,pool:'p',root:'p',pool_count:1.5,consumer_count:0,snapshot_sha256:'a'.repeat(64)},'p'),false);
+});
+
+test('malformed hierarchy scalar coercions cannot enter an exact child review',()=>{
+ const parent=view();parent.available=10;parent.review.hierarchy={schema_version:1,pool:parent.pool.id,root:parent.pool.id,pool_count:1,consumer_count:0,snapshot_sha256:'a'.repeat(64)};
+ for(const [field,value] of [['consumer_count',null],['consumer_count',false],['pool_count',true],['snapshot_sha256',['a'.repeat(64)]],['root',['p']]]){
+ const v=structuredClone(parent);v.review.hierarchy[field]=value;assert.equal(validPoolHierarchy(v.review.hierarchy,v.pool.id),false);assert.throws(()=>preparePoolMutation({operation:'create-child',name:'Child',capacity:'1',reason:'bounded review'},v,'host-a','key'),/complete hierarchy/);}
+ parent.review.unavailable='hierarchy_review_too_large';assert.throws(()=>preparePoolMutation({operation:'set',capacity:'1',reason:'no truncated fallback'},parent,'host-a','key'),/remains readable/);
+});
+test('child carve respects exact uncarved availability through MaxInt64',()=>{
+ const parent=view();parent.available=MAX_COUNT;parent.review.hierarchy={schema_version:1,pool:parent.pool.id,root:parent.pool.id,pool_count:1,consumer_count:0,snapshot_sha256:'a'.repeat(64)};
+ const draft={operation:'create-child',name:'Exact boundary',capacity:String(MAX_COUNT),reason:'Carve existing permits'};
+ assert.equal(preparePoolMutation(draft,parent,'host-a','key').capacity,MAX_COUNT);
+ parent.available=MAX_COUNT-1n;assert.throws(()=>preparePoolMutation(draft,parent,'host-a','key'),/uncarved availability/);
+ parent.available=0;draft.capacity='1';assert.throws(()=>preparePoolMutation(draft,parent,'host-a','key'),/uncarved availability/);
+ draft.capacity='0';assert.equal(preparePoolMutation(draft,parent,'host-a','key').capacity,0n);
 });

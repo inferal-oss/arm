@@ -36,9 +36,23 @@ type PoolClaim struct {
 	Authority string `json:"authority,omitempty"`
 }
 
+// PoolHierarchyReview is complete concurrency evidence, never authorization.
+// Pool binds the selected definition (or parent for child creation); the hash
+// covers its whole root tree and exact queued/consuming claims.
+type PoolHierarchyReview struct {
+	Schema    int    `json:"schema_version"`
+	Pool      string `json:"pool"`
+	Root      string `json:"root"`
+	Pools     int    `json:"pool_count"`
+	Consumers int    `json:"consumer_count"`
+	SHA256    string `json:"snapshot_sha256"`
+}
+
 type PoolReview struct {
-	Authority string          `json:"authority"`
-	Consumers []LeaseRevision `json:"consumers"`
+	Unavailable string               `json:"unavailable,omitempty"`
+	Hierarchy   *PoolHierarchyReview `json:"hierarchy,omitempty"`
+	Authority   string               `json:"authority"`
+	Consumers   []LeaseRevision      `json:"consumers"`
 }
 
 type PoolMutation struct {

@@ -130,7 +130,7 @@ function fixture() {
     cursor = 1,
     held = null,
     historyHandler = null,
-    listHandler = null;
+    listHandler = null, consumersHandler = null;
   const ui = createPoolConsole({
     root,
     document: doc,
@@ -142,6 +142,7 @@ function fixture() {
       calls.push([op, poolRequestCopy(r)]);
       if (op === 'pool_list') return listHandler ? listHandler(r) : [poolRequestCopy(view)];
       if (op === 'pool_inspect') return poolRequestCopy(view);
+      if (op === 'pool_consumers') return consumersHandler ? consumersHandler(r) : {pool:r.id,descendants:true,entries:[],cursor:'',more:false};
       if (op === 'pool_history_page')
         return historyHandler ? historyHandler(r) : { pool: view.pool.id, entries: [], previous_before: null, next_after: null };
       if (op === 'pool_mutate') {
@@ -186,6 +187,7 @@ function fixture() {
     getRoute: () => currentRoute,
     setHistory(handler) { historyHandler = handler; },
     setList(handler) { listHandler = handler; },
+    setConsumers(handler) { consumersHandler = handler; },
     root,
     doc,
     calls,
@@ -467,4 +469,32 @@ test('closing after a pool becomes unavailable restores focus to a focusable det
   assert.equal(title.tabIndex, -1);
   assert.equal(f.doc.activeElement, title);
   assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
+});
+
+function hierarchySnapshot() { const v=snapshot();v.pool.capacity=12;v.reserved=1;v.available=4;v.children=['child'];v.partition={configured:12,direct_reserved:1,child_backing:7,committed:8,held_backing:12,uncarved_available:4,pending_return:0,deficit:0};v.review.hierarchy={schema_version:1,pool:v.pool.id,root:v.pool.id,pool_count:2,consumer_count:1,snapshot_sha256:'a'.repeat(64)};return v;}
+test('subpool modal inherits parent scope, defaults to cancel and stales on sibling-only change',async()=>{
+ const f=fixture();const v=hierarchySnapshot();f.setView(v);f.update();await flush();await flush();
+ f.find('Create subpool…').focus();await f.find('Create subpool…').fire('click');const form=f.root.querySelector('form');
+ assert.equal(form.all().some(n=>n.name==='scope'||n.name==='unit'),false);
+ for(const [name,value] of Object.entries({name:'Compiler permits',capacity:'2',reason:'Carve existing capacity'}))form.all().find(n=>n.name===name).value=value;
+ await form.fire('submit');const confirm=f.find('Create subpool');assert.ok(confirm);assert.equal(f.doc.activeElement.textContent,'Cancel change');
+ assert.equal(f.calls.filter(c=>c[0]==='pool_mutate').length,0);
+ const changed=hierarchySnapshot();changed.review.hierarchy.snapshot_sha256='b'.repeat(64);f.setView(changed);f.update();await flush();await flush();
+ assert.equal(confirm.disabled,true);await confirm.fire('click');assert.equal(f.calls.filter(c=>c[0]==='pool_mutate').length,0);
+ await f.find('Cancel change').fire('click');assert.equal(f.doc.activeElement.textContent.startsWith('Create subpool…'),true);
+});
+test('subtree pagination commits its cursor history only after a successful current read',async()=>{
+ const f=fixture();f.setView(hierarchySnapshot());let failure=false;
+ f.setConsumers(r=>{if(r.after&&failure)throw Error('read disconnected');return {pool:r.id,descendants:true,entries:[{use:{lease:r.after?'lease-b':'lease-a',owner:'501',reason:'Exact child work',state:'active'},claims:[{pool:'permits',quantity:1}]}],cursor:r.after?'':'next',more:!r.after};});
+ f.update();await flush();await flush();failure=true;await f.find('Next leases').fire('click');await flush();
+ assert.equal(f.find('Previous leases').disabled,true);assert.match(f.root.textContent,/lease-a/);
+ failure=false;await f.find('Next leases').fire('click');await flush();assert.equal(f.find('Previous leases').disabled,false);assert.match(f.root.textContent,/lease-b/);
+ await f.find('Previous leases').fire('click');await flush();assert.equal(f.find('Previous leases').disabled,true);assert.match(f.root.textContent,/lease-a/);
+});
+
+test('oversized root remains browsable with explicit read-only controls and no incomplete review fallback',async()=>{
+ const f=fixture(),v=hierarchySnapshot();delete v.review.hierarchy;v.review.unavailable='hierarchy_review_too_large';f.setView(v);f.update();await flush();await flush();
+ assert.match(f.root.textContent,/Read only/);assert.ok(f.root.textContent.includes('Leases across this subtree'));
+ for(const label of ['Create subpool…','Change total capacity…','Add or remove units…','Pause new requests…','Delete empty pool…'])assert.equal(f.find(label).disabled,true);
+ f.setLive(false);f.setLive(true);await flush();assert.equal(f.find('Change total capacity…').disabled,true);assert.equal(f.calls.filter(c=>c[0]==='pool_mutate').length,0);
 });

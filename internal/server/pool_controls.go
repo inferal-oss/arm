@@ -31,7 +31,7 @@ func boundedPoolRead(value any, err error) (any, error) {
 		return nil, err
 	}
 	if len(raw) > 3<<20 {
-		return nil, model.Err("response_too_large", "complete pool snapshot exceeds the 3 MiB response budget; no scope was truncated. Use an individual pool ID for inspection or its paged journal. Paged consumer browsing is not implemented yet")
+		return nil, model.Err("response_too_large", "complete pool snapshot exceeds the 3 MiB response budget; no scope was truncated. Use an individual pool ID for inspection or its paged journal. Use the bounded child and consumer pages for browsing; a mutation still requires a complete untruncated review")
 	}
 	return value, nil
 }

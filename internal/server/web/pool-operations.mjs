@@ -25,6 +25,8 @@ const definite = new Set([
   'pool_in_use',
   'revision_conflict',
   'review_conflict',
+  'hierarchy_review_too_large',
+  'hierarchy_review_required',
   'revision_exhausted',
   'authority_unavailable',
   'host_unavailable',

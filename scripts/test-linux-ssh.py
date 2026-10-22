@@ -57,6 +57,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal-dashboard.py", target / "test-terminal-dashboard.py")
         shutil.copyfile(root / "scripts" / "test-terminal-colors.py", target / "test-terminal-colors.py")
         shutil.copyfile(root / "scripts" / "test-terminal-pools.py", target / "test-terminal-pools.py")
+        shutil.copyfile(root / "scripts" / "test-terminal-subpools.py", target / "test-terminal-subpools.py")
         shutil.copyfile(root / "scripts" / "test-terminal-recovery.py", target / "test-terminal-recovery.py")
         shutil.copyfile(root / "scripts" / "test-terminal-mesh.py", target / "test-terminal-mesh.py")
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
@@ -99,6 +100,7 @@ done
             script += 'python3 ./test-terminal-dashboard.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-terminal-colors.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-terminal-pools.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-terminal-subpools.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-terminal-recovery.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-terminal-mesh.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-memory.py --arm "$PWD/arm"\n'

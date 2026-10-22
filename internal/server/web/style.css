@@ -1111,3 +1111,17 @@ dialog.pool-editor::backdrop { background:#05090edb; backdrop-filter:blur(4px); 
 .mesh-dialog[open]{display:flex;flex-direction:column}.mesh-dialog-head,.mesh-dialog-foot{flex-shrink:0}.mesh-dialog[open]>.mesh-dialog-body{flex:1;min-height:0;max-height:none}
 
 .mesh-node-stats{grid-template-columns:minmax(0,1fr)}
+/* A tree row is one overlapping partition, never another resource total. */
+.pool-table .pool-tree-cell { padding-inline-start:calc(12px + var(--pool-depth,0) * 18px); }
+.pool-tree-cell > .link-button { text-align:start; }
+.pool-lineage { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:17px 0; color:var(--muted); }
+.pool-lineage > button:not(:last-child)::after { content:' /'; color:var(--muted); margin-inline-start:7px; }
+.pool-child-links { padding:18px; margin:18px 0; border:1px solid var(--line); border-radius:10px; background:var(--bg); }
+.pool-child-links h4 { margin:0 0 12px; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.07em; }
+.pool-child-link { display:block; width:100%; text-align:start; margin-top:8px; padding:12px; }
+.pool-deficit { padding:14px 16px; border:1px solid #997a43; background:#322b20; border-radius:9px; color:#f2d596; line-height:1.6; }
+.pool-inherited { padding:14px 16px; border:1px solid var(--line); border-inline-start:3px solid var(--accent); border-radius:7px; background:var(--bg); line-height:1.6; }
+.pool-subtree { margin:22px 0; padding-top:20px; border-top:1px solid var(--line); }
+.pool-subtree > h4 { font-size:16px; margin:0 0 10px; }
+.pool-subtree .consumer { margin:10px 0; padding:14px; border:1px solid var(--line); border-radius:8px; }
+@media(max-width:620px){.pool-table .pool-tree-cell{padding-inline-start:calc(5px + var(--pool-depth,0) * 9px)}.pool-lineage{font-size:12px}.pool-detail-budget{grid-template-columns:repeat(2,minmax(0,1fr))}}
