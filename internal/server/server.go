@@ -24,6 +24,10 @@ import (
 )
 
 type Server struct {
+	nodeMu           sync.Mutex
+	nodeCache        map[string]cachedNodeRead
+	nodeSlots        chan struct{}
+	nodeInFlight     map[string]bool
 	meshMu           sync.Mutex
 	meshAdminMu      sync.Mutex
 	mesh             *meshService
@@ -397,6 +401,19 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "node_list":
+		if err := nodeMetadataParams(r.Params); err != nil {
+			return nil, err
+		}
+		return s.nodeList()
+	case "node_inspect":
+		var q struct {
+			Host string `json:"host"`
+		}
+		if err := decodeNodeRead(r.Params, &q); err != nil {
+			return nil, err
+		}
+		return s.nodeInspect(ctx, q.Host)
 	case "node_metadata":
 		if err := nodeMetadataParams(r.Params); err != nil {
 			return nil, err

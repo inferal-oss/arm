@@ -244,6 +244,20 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		return nil
 	}
 	switch request.Operation {
+	case "access_scope":
+		if peer.State != "active" || !peer.Proven {
+			return nil, model.Err("forbidden", "access scope requires an active authenticated direct peer")
+		}
+		// handle already bound request.Host to this pinned destination before
+		// entering Store.WithPeer. Never recursively RLock Store.Config here:
+		// a pending revocation writer would deadlock the admitted read.
+		if !exactNodeID(request.Host) {
+			return nil, model.Err("wrong_host", "access scope requires the authenticated stable target")
+		}
+		if e := nodeMetadataParams(request.Params); e != nil {
+			return nil, e
+		}
+		return model.NodeAccessScope{Source: peer.Identity.Host, Target: request.Host, Pair: peer.Pair, Revision: peer.Revision, Grant: nodeGrant(peer.Grant), Observed: time.Now().UTC()}, nil
 	case "node_metadata":
 		if e := require("observe-host"); e != nil {
 			return nil, e

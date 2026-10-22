@@ -62,6 +62,9 @@ test-local: build
 	python3 scripts/test-live-disk.py
 	python3 scripts/test-database.py
 	python3 scripts/test-node-metadata.py
+	mkdir -p .cache
+	CGO_ENABLED=0 $(GO) build -o .cache/node-registry-probe ./scripts/node-registry-probe
+	python3 scripts/test-node-registry.py --arm bin/arm --probe .cache/node-registry-probe
 	python3 scripts/test-lifecycle.py
 	python3 scripts/test-scheduling.py
 	python3 scripts/test-budgets.py

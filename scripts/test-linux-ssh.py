@@ -39,6 +39,7 @@ def main():
         for package in opts.packages or ("agents", "database", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
+        subprocess.run([opts.go, "build", "-o", str(target / "node-registry-probe"), "./scripts/node-registry-probe"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "linux-test-init.py", target / "linux-test-init.py")
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
@@ -56,6 +57,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-live-disk.py", target / "test-live-disk.py")
         shutil.copyfile(root / "scripts" / "test-database.py", target / "test-database.py")
         shutil.copyfile(root / "scripts" / "test-node-metadata.py", target / "test-node-metadata.py")
+        shutil.copyfile(root / "scripts" / "test-node-registry.py", target / "test-node-registry.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
@@ -90,6 +92,7 @@ done
             script += 'python3 ./test-live-disk.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-database.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-node-metadata.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-node-registry.py --arm "$PWD/arm" --probe "$PWD/node-registry-probe"\n'
             script += 'python3 ./test-lifecycle.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-scheduling.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-budgets.py --arm "$PWD/arm"\n'

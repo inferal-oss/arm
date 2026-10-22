@@ -108,7 +108,7 @@ func (s *Server) authenticate(r *http.Request) (browser bool, expiry time.Time, 
 
 func browserAllowedOperation(op string) bool {
 	switch op {
-	case "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
+	case "node_list", "node_inspect", "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
 		return true
 	case "pool_mutate":
 		return true // Restricted to reviewed local pool operations in dispatch.
