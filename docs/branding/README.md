@@ -1,6 +1,6 @@
 # ARM identity explorations
 
-These are four proposals for review. None replaces the dashboard, CLI or terminal branding.
+**Selected identity: Carve.** The operator selected Carve from these four directions. The alternatives remain here as exploration history. The web header uses its original path wordmark; the favicon uses a slightly tighter viewBox and dark keyline for small-size contrast. Text terminals use the literal `arm` wordmark.
 
 ![Four logo directions](comparison.png)
 
@@ -33,4 +33,4 @@ node docs/branding/render.cjs
 node docs/branding/render.cjs /absolute/path/to/sharp
 ```
 
-SVG generation uses only Python's standard library and is deterministic. PNG rendering is offline with Sharp; system fonts can change the explanatory text rasterization. Symbol and wordmark geometry is font independent. Preview PNGs are review artifacts, not an installed favicon or terminal logo. Before adopting one direction, refine optical alignment at the chosen final sizes and test it in the actual product surfaces.
+SVG generation uses only Python's standard library and is deterministic. PNG rendering is offline with Sharp; system fonts can change the explanatory text rasterization. Symbol and wordmark geometry is font independent. Preview PNGs are review artifacts, not an installed favicon or terminal logo. Carve adoption has separate actual-dashboard and16px contrast acceptance recorded in ../VALIDATION.md. Further identity refinements should retain those optical and in-product checks.

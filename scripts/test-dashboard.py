@@ -78,11 +78,13 @@ def main():
         ticket = urllib.parse.parse_qs(url.fragment)['connect'][0]
         base = urllib.parse.urlunsplit((url.scheme, url.netloc, '', '', ''))
         endpoint = json.loads((home / 'endpoint.json').read_text())
-        for path in ('/', '/app.mjs', '/core.mjs', '/json-view.mjs', '/metric-help.mjs', '/lease-actions.mjs', '/lease-state.mjs', '/io-devices.mjs', '/io-selector.mjs', '/route.mjs', '/dashboard-shortcuts.mjs', '/activity-feed.mjs', '/operator-messaging.mjs', '/connection-links.mjs', '/pool-model.mjs', '/pool-operations.mjs', '/pool-console.mjs', '/style.css'):
+        for path in ('/', '/app.mjs', '/core.mjs', '/json-view.mjs', '/metric-help.mjs', '/lease-actions.mjs', '/lease-state.mjs', '/io-devices.mjs', '/io-selector.mjs', '/route.mjs', '/dashboard-shortcuts.mjs', '/activity-feed.mjs', '/operator-messaging.mjs', '/connection-links.mjs', '/pool-model.mjs', '/pool-operations.mjs', '/pool-console.mjs', '/brand-lockup.svg', '/favicon.svg', '/style.css'):
             status, headers, body = request(base + path)
             assert status == 200 and body and endpoint['token'].encode() not in body
             assert headers['Cache-Control'] == 'no-store' and 'Set-Cookie' not in headers
             assert "frame-ancestors 'none'" in headers['Content-Security-Policy']
+            if path.endswith(".svg"):
+                assert headers["Content-Type"] == "image/svg+xml" and b"<svg" in body
         payload = json.dumps({'ticket': ticket}).encode()
         headers = {'Content-Type': 'application/json', 'Origin': 'http://external.invalid'}
         assert request(base + '/v1/browser/session', payload, headers)[0] == 403

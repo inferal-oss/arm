@@ -128,16 +128,11 @@ a {
   color:var(--muted);
   margin-left:8px;
 }
-.mark {
-  display:grid;
-  place-items:center;
-  width:33px;
-  height:33px;
-  border:1px solid var(--accent);
-  border-radius:8px;
-  color:var(--accent);
-  font-family:var(--mono);
-  font-size:27px;
+.brand-logo {
+  display:block;
+  width:120px;
+  height:32px;
+  flex:0 0 auto;
 }
 .connection {
   display:flex;

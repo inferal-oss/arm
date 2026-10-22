@@ -1,5 +1,10 @@
 # Agent Resource Manager
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/branding/carve/lockup-dark.svg">
+  <img src="docs/branding/carve/lockup-light.svg" width="240" height="64" alt="arm — agent resource manager">
+</picture>
+
 Agent Resource Manager (`arm`) gives agents time-limited leases for host resources, with a reason, an owner, an audit history, and a reclamation policy.
 
 The implementation includes a local backend and CLI, durable SQLite leases, cooperative resource budgets, queued admission, supervised commands, expiry, resource attribution, agent messaging, an embedded web dashboard and an interactive terminal dashboard. An opt-in direct-peer mesh adds authenticated host selection, scoped remote leases/execution and host-directed messaging. Dedicated operational editors, full web/TUI parity and distributed scheduling remain planned.

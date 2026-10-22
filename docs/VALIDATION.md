@@ -534,3 +534,10 @@ Root visually inspected synthetic wide monitor, semantic lease table and compact
 ## Logo direction proposals
 
 A delegated original vector exploration produced four directions with matched dark/light lockups, monochrome symbols,16/24/32px previews, a comparison board and source generators under docs/branding. Root visually inspected the complete board and independently validated25 accessible self-contained SVGs, byte-identical SVG regeneration and37 PNG dimensions. Author offline raster/alpha-margin checks complement those checks; final adopted in-product optical/layout acceptance remains separate. No existing product branding was changed and no runtime/font dependency added. These are proposals for operator selection, not an installed identity.
+
+
+## Selected Carve branding acceptance
+
+The operator selected Carve. Root isolated focused browser and terminal presentation checks passed(server1.149s,TUI0.784s), and the CGo-free native build passed. The compiled dashboard bootstrap/asset/HTTP safeguards suite passed with the new self-contained SVG endpoints, correct SVG content types, no-store/CSP/no-cookie and authority protections. Actual in-app browser rendering showed the selected path wordmark, descriptor and connected dashboard; screenshot .cache/carve-dashboard.png. The favicon's actual16px light/dark rasters were visually inspected with nearest-neighbor enlargement. This is desktop browser and raster inspection, not a new narrow-browser/native GUI terminal acceptance claim.
+
+The same compiled asset/bootstrap suite also passed on actual Linux arm64 using a CGo-free build and disposable private state; no user backend or installation was changed for those tests. The standalone branding route preserves existing loopback/method/header protections. No mesh/reset WIP is included in this isolated feature and no external font/runtime dependency was added.

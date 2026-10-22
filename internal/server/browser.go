@@ -121,6 +121,7 @@ func browserAllowedOperation(op string) bool {
 }
 
 func (s *Server) registerBrowser(mux *http.ServeMux) {
+	s.registerBrand(mux)
 	mux.HandleFunc("/v1/browser/session", s.browserSession)
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		s.browserHeaders(w)

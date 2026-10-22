@@ -35,7 +35,7 @@ func meterFill(filled, width int, tone string) string {
 	return out.String()
 }
 func brandMark() string {
-	return strong.Foreground(colorAccent).Render(" ◈ ") + strong.Foreground(toneColor("accent", .85)).Render("arm ")
+	return strong.Foreground(toneColor("accent", .85)).Render(" arm ")
 }
 func (m *dashboardModel) navigationLabel(index int) string {
 	if m.width >= 82 {
