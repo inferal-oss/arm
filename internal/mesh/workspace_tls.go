@@ -50,6 +50,17 @@ func (s *Store) WorkspaceIdentityCurrent(expected workspace.Identity) error {
 // gate and revalidate that gate after handshake, before handling an operation,
 // and during the bounded stream. Remote identity JSON is not authorization.
 func (s *Store) WorkspaceTLS(expectedLocal, expectedRemote workspace.Identity, server bool) (*tls.Config, error) {
+	return s.workspaceTLS(expectedLocal, expectedRemote, server, WorkspaceInnerProtocol)
+}
+
+const WorkspaceMessageProtocol = "arm.workspace.message.v1"
+
+// RoutedWorkspaceTLS authenticates the final workspace endpoints only. It does
+// not authorize a route, expose ordinary mesh handlers or promote direct peers.
+func (s *Store) RoutedWorkspaceTLS(local, remote workspace.Identity, server bool) (*tls.Config, error) {
+	return s.workspaceTLS(local, remote, server, WorkspaceMessageProtocol)
+}
+func (s *Store) workspaceTLS(expectedLocal, expectedRemote workspace.Identity, server bool, protocol string) (*tls.Config, error) {
 	if expectedLocal.Host == expectedRemote.Host {
 		return nil, fmt.Errorf("workspace inner endpoints must be distinct")
 	}
@@ -73,7 +84,7 @@ func (s *Store) WorkspaceTLS(expectedLocal, expectedRemote workspace.Identity, s
 	s.mu.RUnlock()
 	roots := x509.NewCertPool()
 	roots.AddCert(remote)
-	config := &tls.Config{Certificates: []tls.Certificate{localCert}, MinVersion: tls.VersionTLS13, MaxVersion: tls.VersionTLS13, NextProtos: []string{WorkspaceInnerProtocol}, SessionTicketsDisabled: true}
+	config := &tls.Config{Certificates: []tls.Certificate{localCert}, MinVersion: tls.VersionTLS13, MaxVersion: tls.VersionTLS13, NextProtos: []string{protocol}, SessionTicketsDisabled: true}
 	if server {
 		config.ClientAuth = tls.RequireAndVerifyClientCert
 		config.ClientCAs = roots
@@ -82,7 +93,7 @@ func (s *Store) WorkspaceTLS(expectedLocal, expectedRemote workspace.Identity, s
 		config.ServerName = SAN(expectedRemote.Host)
 	}
 	config.VerifyConnection = func(state tls.ConnectionState) error {
-		if state.Version != tls.VersionTLS13 || state.DidResume || state.NegotiatedProtocol != WorkspaceInnerProtocol || len(state.PeerCertificates) != 1 || len(state.VerifiedChains) == 0 {
+		if state.Version != tls.VersionTLS13 || state.DidResume || state.NegotiatedProtocol != protocol || len(state.PeerCertificates) != 1 || len(state.VerifiedChains) == 0 {
 			return fmt.Errorf("workspace TLS protocol/normal verification differs")
 		}
 		certificate := state.PeerCertificates[0]

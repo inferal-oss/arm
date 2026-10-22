@@ -112,6 +112,13 @@ func (s *Store) Read(ctx context.Context) (Records, error) {
 	return v, nil
 }
 func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.Tx, *Records) error) error {
+	return s.transactionChecked(ctx, initialize, fn, nil)
+}
+
+// transactionChecked adds an internal final authority check immediately before
+// commit, AFTER structural validation and fault hooks. It must be pure local
+// ledger/clock work: no network, manager lock or external authorization I/O.
+func (s *Store) transactionChecked(ctx context.Context, initialize bool, fn func(*sql.Tx, *Records) error, final func(*Records) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	tx, e := s.db.BeginTx(ctx, nil)
@@ -144,7 +151,8 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 	if e = s.fail("before_validate"); e != nil {
 		return e
 	}
-	if _, e = readRecords(ctx, tx, s.authority); e != nil {
+	validated, e := readRecords(ctx, tx, s.authority)
+	if e != nil {
 		var capacity *capacityProblem
 		if errors.As(e, &capacity) {
 			return problem("history_full", capacity.Error())
@@ -153,6 +161,11 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 	}
 	if e = s.fail("before_commit"); e != nil {
 		return e
+	}
+	if final != nil {
+		if e = final(&validated); e != nil {
+			return e
+		}
 	}
 	if e = tx.Commit(); e != nil {
 		return problem("workspace_outcome_unknown", "workspace commit outcome unknown; inspect exact key before another mutation")

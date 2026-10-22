@@ -2,6 +2,8 @@ package manager
 
 import (
 	"context"
+	"database/sql"
+	"github.com/yrashk/arm/internal/routing"
 	"github.com/yrashk/arm/internal/workspace"
 )
 
@@ -53,7 +55,9 @@ func (m *Manager) WorkspaceRevoke(ctx context.Context, id string, q workspace.Mu
 }
 func (m *Manager) WorkspaceRetire(ctx context.Context, id string, q workspace.MutationRequest) (workspace.Operation, error) {
 	return workspaceCall(ctx, m, false, func(ctx context.Context, w *workspaceBoundary, _ *workspace.Store) (workspace.Operation, error) {
-		return w.operator.Retire(ctx, id, q)
+		return w.operator.RetireChecked(ctx, id, q, func(tx *sql.Tx) error {
+			return routing.CheckWorkspaceRetirement(ctx, tx, workspace.Authority{Host: m.host, UID: m.owner}, id)
+		})
 	})
 }
 func (m *Manager) WorkspaceCancelAdmission(ctx context.Context, id, source, key string, revision int64) (workspace.Operation, error) {

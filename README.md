@@ -304,7 +304,7 @@ arm mesh message-lookup HOST_ID --key UNIQUE_SEND_KEY
 
 These send examples require the corresponding grants. Unknown or ambiguous host names fail closed; prefer stable host IDs in scripts. Remote mutations never retry automatically. Preserve the authority and original operation key after a lost response; inspect or retry the same request/key instead of creating new work. Single-lease remote `release`, `cancel` and `renew` accept `--key` for this purpose.
 
-`arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Scoped read-only web/terminal node views are implemented, and reviewed workspaces add explicit member discovery. Private-key rotation, complete remote operational parity, routed messaging, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
+`arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Scoped read-only web/terminal node views are implemented, and reviewed workspaces add explicit discovery and host inbox messages through a directory relay. Private-key rotation, complete remote operational parity, general graph messaging, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
 
 ## Mesh workspaces
 
@@ -316,8 +316,11 @@ resource authority and separately granted execution, SSH and file permissions.
 `arm workspaces` now provides native local creation, joining, admission, directory
 refresh and explicit recovery. Invitations and candidate consent require review
 and real pinned proof; joining does not silently add a trusted direct peer.
-Routed messages/replies, automatic background refresh and workspace dashboard
-controls are still being implemented. See the [workspace guide](docs/MESH-WORKSPACES.md)
+Host inbox sends and original-recipient replies can use the directory as a relay
+with pinned end-to-end TLS. Durable keys prevent replay; explicit receipt lookup
+can reconcile a lost response without resending. General graph routes, published
+agent contacts, automatic background refresh and workspace dashboard controls
+remain in progress. See the [workspace guide](docs/MESH-WORKSPACES.md)
 for the workflow and current limits.
 
 ## Leased SSH through the mesh

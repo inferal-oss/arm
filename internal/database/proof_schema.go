@@ -95,6 +95,7 @@ func normalizedSchema(raw string) string {
 }
 
 var resetAutoIndexes = map[string]int{
+	"routing_roots": 1, "routing_outbox": 2, "routing_inbox": 2,
 	"cargo_workloads": 1,
 	"pool_lineage":    1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
@@ -109,6 +110,10 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	workspaceObjects := map[string]string{}
 	for i, q := range workspaceResetSchema {
 		workspaceObjects[normalizedSchema(q)] = workspaceResetTables[i]
+	}
+	routingObjects := map[string]string{}
+	for i, q := range routingResetSchema {
+		routingObjects[normalizedSchema(q)] = routingResetTables[i]
 	}
 	mesh := normalizedSchema(meshResetSchema)
 	ssh := normalizedSchema(sshResetSchema)
@@ -150,6 +155,13 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
+		if expectedTable, ok := routingObjects[normal]; ok {
+			if kind != "table" || name != expectedTable || table != expectedTable {
+				return nil, fmt.Errorf("routing schema object identity differs")
+			}
+			catalog[expectedTable] = nil
+			continue
+		}
 		if expectedTable, ok := workspaceObjects[normal]; ok {
 			if kind != "table" || name != expectedTable || table != expectedTable {
 				return nil, fmt.Errorf("workspace schema object identity differs")
@@ -197,6 +209,15 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	if workspaceCount != 0 && workspaceCount != len(workspaceResetTables) {
 		return nil, fmt.Errorf("partial workspace reset schema group")
+	}
+	routingCount := 0
+	for _, table := range routingResetTables {
+		if _, ok := catalog[table]; ok {
+			routingCount++
+		}
+	}
+	if routingCount != 0 && routingCount != len(routingResetTables) {
+		return nil, fmt.Errorf("partial routing reset schema group")
 	}
 	// Retrieve columns only after the exact schema/constraints have been checked.
 	rows.Close()

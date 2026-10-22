@@ -3,8 +3,8 @@
 A workspace is a named group of ARM mesh nodes with reviewed membership. Its
 directory node maintains the approved member list and exact certificate pins.
 For example, when a laptop A connects to build nodes B and C, one workspace lets
-B discover C through A. The routed messaging work will let them exchange messages
-through that connection while authenticating each other end to end.
+B discover C through A and exchange host inbox messages through that connection
+while authenticating each other end to end.
 
 Each host still owns its resources, leases and expiry. Workspace membership
 permits discovery and the workspace's messaging policy. Resource access,
@@ -14,7 +14,8 @@ discovered node into a trusted direct peer.
 ## Supported now
 
 The native local CLI supports creation, joining, candidate admission, directory
-refresh, inspection, deny/revoke/retirement and explicit recovery. Commands use
+refresh, inspection, deny/revoke/retirement, explicit recovery and durable host
+inbox send/reply/lookup. Commands use
 the local backend. Browser sessions, selected remote dashboards and ordinary
 peer RPC cannot invoke workspace administration.
 
@@ -22,8 +23,9 @@ Start with an enabled direct mesh and an existing active, proven pair between
 the candidate and directory. Use `arm mesh connect` to establish that pair with
 its own concrete trust review. Current admission runs as the directory's local
 operator. Public delegated-introducer proposals, automatic background directory
-refresh, workspace dashboard controls, agent publication and routed messages are
-remaining work. The directory is an explicitly selected authority; automatic
+refresh, workspace dashboard controls, agent publication and general graph routes
+are remaining work. Current messages use a direct pair or one directory relay.
+The directory is an explicitly selected authority; automatic
 directory failover, workspace merges and identity rotation are also unfinished.
 
 ## Inspect a workspace
@@ -128,6 +130,61 @@ Local `deny`, `revoke` and `retire` require an exact revision, reason and
 confirmation. They retain audit history and make no remote cleanup claim.
 Cancellation commands preserve the original intent. Unresolved membership or
 recovery history continues to prevent settled database removal.
+
+## Send and reply through the directory
+
+After admission and a fresh membership read, B can send to C's exact stable host
+ID without a B–C direct pair:
+
+```sh
+arm workspaces send --workspace WORKSPACE_ID --to HOST_C_ID --key MESSAGE_KEY --text "Build is ready" --ttl 1h
+arm workspaces outbox --workspace WORKSPACE_ID
+```
+
+On C, inspect the host inbox and reply using the original local message ID:
+
+```sh
+arm workspaces inbox --workspace WORKSPACE_ID
+arm workspaces reply --workspace WORKSPACE_ID --message ORIGINAL_MESSAGE_ID --key REPLY_KEY --text "Received"
+```
+
+The reply goes to the original sender, B. The relay A does not become the sender
+and cannot read the encrypted body. This is a host/operator inbox; publishing
+agent contacts and delivering into Codex/Claude sessions across routes remain
+separate work. No native command, resource, SSH or file operation is forwarded.
+
+A send persists the immutable intention before dispatch. Repeating the exact
+key inspects that intention and never sends it again; changed content conflicts.
+After an interrupted response, preserve the key and inspect it:
+
+```sh
+arm workspaces message-lookup --workspace WORKSPACE_ID --key MESSAGE_KEY
+arm workspaces message-lookup --workspace WORKSPACE_ID --key MESSAGE_KEY --reconcile
+```
+
+`--reconcile` explicitly asks the pinned destination for its retained receipt. It
+does not resend the message. An absent receipt, timeout or expired message is not
+proof of non-delivery. Only a never-dispatched `prepared` intention can be
+cancelled with `message-cancel --revision REVISION`; terminal confirmation or
+`--yes` is required. Dispatched or unknown sends must settle before ordinary
+workspace retirement, so retirement cannot remove their live lookup authority.
+If the destination becomes permanently unreachable, revoked or replaced,
+uncertain evidence remains charged and blocks settled reset; historical-receipt
+recovery and destination nonexecution sealing are not implemented yet.
+
+Inbox/outbox pages contain at most 20 complete records and 96 KiB. Pass the
+returned routing revision to `--revision` on subsequent pages; restart the read
+if it changes. Retained history is bounded to 256 incoming and 256 outgoing
+messages per workspace, eight unresolved sends and a complete 32 MiB routing
+ledger. New work refuses at capacity. Routine archival remains unfinished.
+Bodies are at most 16 KiB UTF-8 and the encoded envelope must also fit 56 KiB;
+highly escaped bodies can reach that limit first. Message deadlines are at most
+24 hours and never silently settle uncertainty.
+
+After all outgoing obligations settle and the parent workspace is explicitly
+retired, `messages-retire --workspace WORKSPACE_ID --key RETIRE_KEY --revision
+REVISION` records local routing retirement. It requires confirmation and claims
+no remote cleanup. Use command-specific help for the exact selectors.
 
 ## Connection and freshness limits
 

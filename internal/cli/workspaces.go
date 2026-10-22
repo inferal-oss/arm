@@ -135,6 +135,9 @@ func (a *app) workspacesCommand(args []string) (int, error) {
 		args = []string{"list"}
 	}
 	action, args := args[0], args[1:]
+	if workspaceMessageAction(action) {
+		return a.workspaceMessagesCommand(action, args)
+	}
 	f := a.flags("workspaces " + action)
 	var id, key, reason string
 	var parse func() error

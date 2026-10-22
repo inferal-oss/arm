@@ -80,7 +80,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	code, e := a.command(args)
 	if a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && (detail.Code == "workspace_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
+		if errors.As(e, &detail) && (detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))

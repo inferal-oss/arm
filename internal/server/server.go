@@ -25,6 +25,7 @@ import (
 	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/observe"
+	"github.com/yrashk/arm/internal/workspaceroute"
 	"github.com/yrashk/arm/internal/workspacetransport"
 )
 
@@ -38,6 +39,7 @@ type Server struct {
 	nodeInFlight          map[string]bool
 	workspaceStreamsMu    sync.Mutex
 	workspaceStreams      map[*workspacetransport.Handler]struct{}
+	routedStreams         map[*workspaceroute.Handler]struct{}
 	workspaceCallsClosed  bool
 	workspaceCallsContext context.Context
 	workspaceCallsCancel  context.CancelFunc

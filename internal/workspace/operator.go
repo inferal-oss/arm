@@ -58,3 +58,11 @@ func (o *Operator) DeclineRecovery(ctx context.Context, id, key string, revision
 func (o *Operator) CancelRecovery(ctx context.Context, id, key string, revision int64) (Operation, error) {
 	return o.store.CancelRecovery(ctx, id, key, revision)
 }
+
+// RetireChecked preserves identity-independent settlement while letting the
+// native manager check dependent optional ledgers in the SAME SQL transaction.
+// It never exposes a Store or a new authority-capable facade. The callback must
+// only inspect local SQL; it must not initialize, network or lock Manager.mu.
+func (o *Operator) RetireChecked(ctx context.Context, id string, q MutationRequest, before func(*sql.Tx) error) (Operation, error) {
+	return o.store.mutateChecked(ctx, id, "retire", q, before)
+}

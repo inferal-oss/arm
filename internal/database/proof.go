@@ -96,6 +96,7 @@ type proofReader struct {
 	recordedSequences        map[string]int64
 	subpoolSchema            bool
 	workspaceSchema          bool
+	routingSchema            bool
 	sshSchema                bool
 	cargoSchema              bool
 	cargoRuns                map[string]proofSSHRun
@@ -134,7 +135,7 @@ func ProveDatabaseSettled(ctx context.Context, s *Source, owner string) (Settled
 		return result, err
 	}
 	p := &proofReader{ctx: ctx, home: s.Directory.Path, tx: tx, catalog: catalog, result: result, digest: sha256.New(), leases: map[string]model.Lease{}, pools: map[string]model.Pool{}, budgets: map[string]model.Budget{}, bindings: map[string]model.BudgetBinding{}, messages: map[string]proofMessage{}, incidents: map[string]model.UsageIncident{}, poolChanges: map[int64]model.PoolChange{}, budgetChanges: map[int64]model.BudgetChange{}, gradle: map[string]proofGradle{}, poolOperationSequences: map[int64]bool{}, budgetOperationSequences: map[int64]bool{}, maxSequence: map[string]int64{}, recordedSequences: map[string]int64{}}
-	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSSH, p.readWorkspaces, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
+	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSSH, p.readWorkspaces, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
 		if err = step(); err != nil {
 			return p.result, err
 		}
@@ -271,6 +272,11 @@ func (p *proofReader) metadata() error {
 			if raw != "1" {
 				return fmt.Errorf("unknown budget binding schema")
 			}
+		case "routing_schema":
+			if raw != "1" {
+				return fmt.Errorf("unknown routing schema")
+			}
+			p.routingSchema = true
 		case "workspace_schema":
 			if raw != "1" && raw != "2" {
 				return fmt.Errorf("unknown workspace schema")

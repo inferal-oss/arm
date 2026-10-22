@@ -10,6 +10,7 @@ import (
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshstream"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/workspaceroute"
 	"github.com/yrashk/arm/internal/workspacetransport"
 	"io"
 	"net"
@@ -34,6 +35,7 @@ type meshService struct {
 	peerSlots   sync.Map
 	ssh         *meshstream.Handler
 	workspace   *workspacetransport.Handler
+	routed      *workspaceroute.Handler
 }
 
 func (s *Server) loadMesh() error {
@@ -104,6 +106,7 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32)}
 	service.ssh = service.newSSHHandler()
 	service.workspace = service.newWorkspaceHandler()
+	service.routed = service.newRoutedHandler()
 	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: func(c net.Conn, state http.ConnState) {
 		service.mu.Lock()
 		defer service.mu.Unlock()
@@ -130,6 +133,9 @@ func (m *meshService) revoke(host string) {
 	if m.workspace != nil {
 		m.workspace.ClosePeer(host)
 	}
+	if m.routed != nil {
+		m.routed.ClosePeer(host)
+	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for connection := range m.connections {
@@ -153,6 +159,9 @@ func (s *Server) closeMesh() {
 		s.meshPending = nil
 	}
 	if s.mesh != nil {
+		if s.mesh.routed != nil {
+			s.mesh.routed.Stop()
+		}
 		if s.mesh.ssh != nil {
 			s.mesh.ssh.ClosePeer("")
 		}
@@ -169,6 +178,10 @@ func (s *Server) closeMesh() {
 	}
 }
 func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == workspaceroute.Path {
+		m.routed.ServeHTTP(w, r)
+		return
+	}
 	if r.URL.Path == meshstream.Path {
 		if m.ssh == nil {
 			http.Error(w, "SSH unavailable", http.StatusForbidden)

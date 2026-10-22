@@ -18,6 +18,9 @@ func (s *Store) Retire(ctx context.Context, id string, q MutationRequest) (Opera
 	return s.mutate(ctx, id, "retire", q)
 }
 func (s *Store) mutate(ctx context.Context, id, kind string, q MutationRequest) (result Operation, err error) {
+	return s.mutateChecked(ctx, id, kind, q, nil)
+}
+func (s *Store) mutateChecked(ctx context.Context, id, kind string, q MutationRequest, before func(*sql.Tx) error) (result Operation, err error) {
 	if !validHex(id, 16) || !validKey(q.Key) || q.Revision < 1 || !reason(q.Reason) || kind != "retire" && !validHex(q.Host, 16) || kind == "retire" && q.Host != "" {
 		return result, problem("invalid_request", "exact workspace/revision/key/target and reason required")
 	}
@@ -32,6 +35,11 @@ func (s *Store) mutate(ctx context.Context, id, kind string, q MutationRequest) 
 			}
 			result = old.View()
 			return nil
+		}
+		if before != nil {
+			if e = before(tx); e != nil {
+				return e
+			}
 		}
 		if root.Revision != q.Revision {
 			return problem("stale_revision", "workspace revision changed")

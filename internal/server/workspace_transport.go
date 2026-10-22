@@ -281,6 +281,7 @@ func (s *Server) closeWorkspaceStreams() {
 	for _, h := range handlers {
 		h.Stop()
 	}
+	s.closeRoutedStreams()
 	s.workspaceCalls.Wait()
 	for _, h := range handlers {
 		h.Wait()
