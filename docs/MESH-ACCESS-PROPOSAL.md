@@ -210,6 +210,24 @@ forced/lazy detach. Cached/copied bytes cannot be revoked. Consumer references,
 export visibility and retained data are separate; cleanup/uninstall/reset refuse
 unresolved obligations. One consumer ending cannot unmount another's attachment.
 
+## Performance acceptance
+
+The operator requires mounts to approach the available network throughput; a
+slow mount is not a useful default. Evaluate performance before selecting an
+adapter. The initial engineering target is approximately 85–90% of measured
+encrypted streaming throughput between the same hosts for large sequential
+transfers, subject to disclosed storage and CPU limits. This is a target, not a
+measured result or a universal workload guarantee.
+
+Benchmark both directions against that baseline. Separate cold reads, durable
+writes and warm-cache reads; report dataset size, cache controls, concurrency,
+CPU, memory, network and local storage baselines. Bound read-ahead and buffered
+writes; do not improve the result by acknowledging durability before the promised
+commit point. Measure small-file metadata latency and actual Cargo/Gradle-style
+workloads separately, including simultaneous consumers and interruption/recovery.
+Retain the security and filesystem semantics gates even when they cost throughput.
+Basic mount/read/unmount feasibility does not establish performance acceptance.
+
 ## Delivery and approval gates
 
 1. Embedded SSH/proxy first: actual OpenSSH PTY/resize/signals/exit, grants,
@@ -217,7 +235,7 @@ unresolved obligations. One consumer ending cannot unmount another's attachment.
    revocation/expiry, lost replies/restart and unchanged system SSH settings.
 2. Isolated non-root Linux/macOS adapter experiments before selecting production
    code/dependencies: mount/access/unmount, other-user denial, credential exposure,
-   busy failures and unchanged OS policy. No sudo or installs. Report findings
+   busy failures, early throughput/latency measurements and unchanged OS policy. No sudo or installs. Report findings
    and revise the scheme if no secure no-setup macOS adapter passes.
 3. Common read-only shares/consumer accounting and selected adapters: both origin
    directions, cross-share/handle/path attacks, partial setup, partitions/crashes,

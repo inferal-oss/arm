@@ -4,6 +4,8 @@ This records the implemented backend, CLI and initial direct-peer mesh within [t
 
 Embedded mesh SSH sessions and mounted shares are **not implemented**. [Their security scheme](MESH-ACCESS-PROPOSAL.md) is approved for staged implementation with explicit unprivileged adapter feasibility gates. Current verified direct-SSH bootstrap, peer grants, remote-provider support and OS privileges remain the implemented behavior.
 
+New acceptance requirements include near-network-speed mounted-share performance and consistently polished web/Charm terminal interfaces with capable-terminal truecolor/highcolor styling and readable fallbacks. These are requirements recorded in SPEC/PLAN, not completed performance benchmarks or a claim of full web/TUI functional parity. Shared coordinator and subpool foundations are frozen for independent integration; mesh interfaces, the terminal quality pass and private-fixture database reset work remain in progress.
+
 ## Components
 
 | Component | Responsibility |

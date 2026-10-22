@@ -1,5 +1,11 @@
 # Validation record
 
+## New interface and mount acceptance requirements
+
+The operator requires polished web interfaces, Charm/Lip Gloss terminal windows and tables with truecolor/highcolor styling where supported, and matching functionality. Reduced-color/no-color, keyboard/mouse, compact layouts, contrast and non-color state cues remain part of acceptance. The current terminal polish and mesh interface work is in progress; this requirement is not a claim that complete parity or its visual gates have passed.
+
+Mounted-share performance is an early selection gate: initially target approximately 85–90% of same-host encrypted streaming throughput for large sequential transfers, measuring cold reads and durable writes separately, with cache conditions and storage/CPU limits disclosed. Metadata-heavy and real build workloads need separate measurements. No throughput benchmark or performance acceptance has passed yet; tiny synthetic feasibility reads do not establish it.
+
 ## Embedded mesh access proposal — research only
 
 The subsequently approved [SSH/mounted-share scheme](MESH-ACCESS-PROPOSAL.md) was checked against the current mesh contract, native macOS mount manpages, primary OpenSSH/Linux FUSE/NFS documentation, Apple's SMB client source and rclone's local NFS mount implementation. Independent review identified extra SSH channel admission, cross-share filehandle/path confinement, other-local-user access and partial cross-authority setup as required gates; the scheme includes them. Operator approval authorizes staged implementation, not a validation pass. No embedded SSH/file server, mount, credential mechanism or protocol dependency was implemented or acceptance-tested by the design checkpoint. Actual non-root Linux/macOS mount feasibility, safe local authentication and writable semantics remain unverified; source precedent is not a runtime pass. No system configuration, privileged helper or service changes were made for the proposal.
