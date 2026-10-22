@@ -244,27 +244,29 @@ type MutationRequest struct {
 }
 
 type Challenge struct {
-	Introducer          Principal `json:"introducer"`
-	CandidateIntroducer bool      `json:"candidate_introducer"`
-	HostInbox           bool      `json:"host_inbox_enabled"`
-	Workspace           string    `json:"workspace"`
-	Generation          string    `json:"generation"`
-	Directory           Identity  `json:"directory"`
-	Candidate           Identity  `json:"candidate"`
-	ConsentHash         string    `json:"consent_sha256"`
-	Nonce               string    `json:"nonce"`
-	PolicyRevision      int64     `json:"policy_revision"`
-	Expires             time.Time `json:"expires_at"`
+	Recovery            *RecoveryBinding `json:"recovery,omitempty"`
+	Introducer          Principal        `json:"introducer"`
+	CandidateIntroducer bool             `json:"candidate_introducer"`
+	HostInbox           bool             `json:"host_inbox_enabled"`
+	Workspace           string           `json:"workspace"`
+	Generation          string           `json:"generation"`
+	Directory           Identity         `json:"directory"`
+	Candidate           Identity         `json:"candidate"`
+	ConsentHash         string           `json:"consent_sha256"`
+	Nonce               string           `json:"nonce"`
+	PolicyRevision      int64            `json:"policy_revision"`
+	Expires             time.Time        `json:"expires_at"`
 }
 type Proof struct {
-	Workspace   string `json:"workspace"`
-	Generation  string `json:"generation"`
-	Source      string `json:"source_host"`
-	Target      string `json:"target_host"`
-	SourcePin   string `json:"source_pin"`
-	TargetPin   string `json:"target_pin"`
-	ConsentHash string `json:"consent_sha256"`
-	Nonce       string `json:"nonce"`
+	Recovery    *RecoveryBinding `json:"recovery,omitempty"`
+	Workspace   string           `json:"workspace"`
+	Generation  string           `json:"generation"`
+	Source      string           `json:"source_host"`
+	Target      string           `json:"target_host"`
+	SourcePin   string           `json:"source_pin"`
+	TargetPin   string           `json:"target_pin"`
+	ConsentHash string           `json:"consent_sha256"`
+	Nonce       string           `json:"nonce"`
 }
 
 // MemberCard is the only directory-distributed member shape. Internal admission

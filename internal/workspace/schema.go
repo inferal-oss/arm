@@ -54,7 +54,7 @@ func schema(ctx context.Context, tx *sql.Tx) (bool, error) {
 		}
 		return false, nil
 	}
-	if e != nil || marker != "1" || len(seen) != len(tables) {
+	if e != nil || (marker != "1" && marker != "2") || len(seen) != len(tables) {
 		return false, invalidf("incomplete/unknown workspace schema group")
 	}
 	for i, name := range tables {
@@ -81,10 +81,24 @@ func install(ctx context.Context, tx *sql.Tx) error {
 			return e
 		}
 	}
-	_, e := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('workspace_schema','1')`)
+	_, e := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('workspace_schema','2')`)
 	return e
 }
 
 // SchemaStatements returns a defensive copy for a separately reviewed proof
 // catalog. Recognition alone does not establish retirement/settlement.
 func SchemaStatements() []string { return append([]string(nil), schemaSQL...) }
+
+// enableRecoverySchema is mutation-only and changes no original records. Old
+// complete marker1 ledgers remain inspectable; they never authorize recovery
+// fields without this explicitly supported group marker.
+func enableRecoverySchema(ctx context.Context, tx *sql.Tx, v *Records) error {
+	if v.RecoveryEnabled {
+		return nil
+	}
+	if _, e := tx.ExecContext(ctx, `UPDATE metadata SET value='2' WHERE key='workspace_schema' AND value='1'`); e != nil {
+		return e
+	}
+	v.RecoveryEnabled = true
+	return nil
+}

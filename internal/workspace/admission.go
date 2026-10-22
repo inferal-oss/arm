@@ -16,6 +16,9 @@ func (s *Store) PrepareAdmission(ctx context.Context, p Principal, q AdmissionRe
 		return result, e
 	}
 	err = s.transaction(ctx, false, func(tx *sql.Tx, v *Records) error {
+		if e := enableRecoverySchema(ctx, tx, v); e != nil {
+			return e
+		}
 		root, e := rootOf(v, p.Workspace)
 		if e != nil {
 			return e
@@ -186,7 +189,7 @@ func (s *Store) CompleteProof(ctx context.Context, p Principal, key string, revi
 			return problem("stale_revision", "admission proof no longer matches current attempt")
 		}
 		expected := Proof{Workspace: root.ID, Generation: root.Generation, Source: member.Identity.Host, Target: root.Directory.Host, SourcePin: member.Identity.Fingerprint, TargetPin: root.Directory.Fingerprint, ConsentHash: member.ConsentHash, Nonce: op.Private.Nonce}
-		if proof != expected {
+		if hash(proof) != hash(expected) {
 			return problem("forbidden", "candidate proof did not bind the exact reviewed identities/consent/nonce")
 		}
 		before, oldMember := root, member
@@ -296,8 +299,22 @@ func (s *Store) ProveJoin(ctx context.Context, directory Identity, c Challenge) 
 			if e = Decode(op.Request, &q); e != nil {
 				return e
 			}
-			if op.Private.Boot != s.boot || !s.now().Before(op.ReviewExpires) || q.Introducer != c.Introducer.Host || q.RequestIntroducer != c.CandidateIntroducer || op.Review.HostInbox != c.HostInbox {
-				return problem("forbidden", "join boot/delegation/endpoint review changed")
+			if q.Introducer != c.Introducer.Host || q.RequestIntroducer != c.CandidateIntroducer || op.Review.HostInbox != c.HostInbox {
+				return problem("forbidden", "join delegation/endpoint review changed")
+			}
+			if c.Recovery != nil {
+				op, e = s.candidateRecovery(v, root, op, c)
+				if e != nil {
+					return e
+				}
+			} else {
+				children, err := familyChildren(v, root.ID, OperationRef{Principal: op.Principal, Key: op.Key, RequestHash: op.RequestHash, Revision: op.Revision})
+				if err != nil {
+					return err
+				}
+				if len(children) > 0 || op.Private.Boot != s.boot || !s.now().Before(op.ReviewExpires) {
+					return problem("forbidden", "fresh recovery required instead of original join approval")
+				}
 			}
 			if op.Private.LastChallenge != hash(c) {
 				if op.Private.ProofCount >= 4 {
@@ -314,7 +331,7 @@ func (s *Store) ProveJoin(ctx context.Context, directory Identity, c Challenge) 
 					return e
 				}
 			}
-			proof = Proof{Workspace: root.ID, Generation: root.Generation, Source: root.Self.Host, Target: directory.Host, SourcePin: root.Self.Fingerprint, TargetPin: directory.Fingerprint, ConsentHash: c.ConsentHash, Nonce: c.Nonce}
+			proof = Proof{Recovery: c.Recovery, Workspace: root.ID, Generation: root.Generation, Source: root.Self.Host, Target: directory.Host, SourcePin: root.Self.Fingerprint, TargetPin: directory.Fingerprint, ConsentHash: c.ConsentHash, Nonce: c.Nonce}
 			return nil
 		}
 		return problem("forbidden", "approved candidate join missing")

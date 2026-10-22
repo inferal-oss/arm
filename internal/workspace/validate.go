@@ -166,7 +166,7 @@ func validateDeny(v Deny, a Authority) error {
 	return nil
 }
 func validateReview(v Review) error {
-	if v.Schema != Schema || !text(v.Name, 128) || !validHex(v.RequestHash, 32) || !known(v.Kind, "create", "join") || !validHex(v.Workspace, 16) || !validHex(v.Generation, 16) || v.PolicyRevision < 1 || !reason(v.Reason) || v.Expires.IsZero() {
+	if v.Schema != Schema || !text(v.Name, 128) || !validHex(v.RequestHash, 32) || !known(v.Kind, "create", "join", "resume_admission", "resume_join") || !validHex(v.Workspace, 16) || !validHex(v.Generation, 16) || v.PolicyRevision < 1 || !reason(v.Reason) || v.Expires.IsZero() {
 		return fmt.Errorf("invalid workspace review")
 	}
 	if e := ValidatePolicy(v.Policy); e != nil {
@@ -181,7 +181,7 @@ func validateReview(v Review) error {
 	return nil
 }
 func validateOperation(v Operation) error {
-	if v.Schema != Schema || !validHex(v.Workspace, 16) || !text(v.Principal, 512) || !validKey(v.Key) || !known(v.Kind, "create", "join", "admit", "deny", "revoke", "retire") || !validHex(v.RequestHash, 32) || v.Revision < 1 || !known(v.Phase, "awaiting_review", "approved", "proving", "completed", "declined", "cancelled", "interrupted", "unknown") || v.Created.IsZero() || v.Updated.Before(v.Created) || len(v.Error) > 512 {
+	if v.Schema != Schema || !validHex(v.Workspace, 16) || !text(v.Principal, 512) || !validKey(v.Key) || !known(v.Kind, "create", "join", "admit", "deny", "revoke", "retire", "resume_admission", "resume_join") || !validHex(v.RequestHash, 32) || v.Revision < 1 || !known(v.Phase, "awaiting_review", "approved", "proving", "completed", "declined", "cancelled", "interrupted", "unknown") || v.Created.IsZero() || v.Updated.Before(v.Created) || len(v.Error) > 512 {
 		return fmt.Errorf("invalid workspace operation")
 	}
 	var request any
@@ -192,6 +192,8 @@ func validateOperation(v Operation) error {
 		request = &JoinRequest{}
 	case "admit":
 		request = &AdmissionRequest{}
+	case "resume_admission", "resume_join":
+		request = &RecoveryRequest{}
 	default:
 		request = &MutationRequest{}
 	}
@@ -214,6 +216,9 @@ func validateOperation(v Operation) error {
 	}
 	if v.Private == nil || !validHex(v.Private.Boot, 16) || v.Private.ProofCount < 0 || v.Private.ProofCount > 4 || v.Private.Nonce != "" && !validHex(v.Private.Nonce, 32) || v.Private.Introducer != nil && !validPrincipal(*v.Private.Introducer) {
 		return fmt.Errorf("workspace private operation binding missing")
+	}
+	if v.Private.ProofCount == 0 && v.Private.LastChallenge != "" || v.Private.ProofCount > 0 && !validHex(v.Private.LastChallenge, 32) {
+		return fmt.Errorf("candidate proof count/hash evidence differs")
 	}
 	if v.Result != nil {
 		return validateMember(*v.Result)
@@ -240,6 +245,8 @@ func validateRequest(o Operation, value any) error {
 	case *AdmissionRequest:
 		_, e := ValidateIdentity(q.Candidate)
 		valid = q.Key == o.Key && e == nil && validHex(q.ConsentHash, 32) && q.PolicyRevision > 0 && reason(q.Reason) && o.Private != nil && o.Private.Introducer != nil && o.Principal == principalKey(*o.Private.Introducer) && o.Private.IntroducerRevision > 0 && o.Private.CandidateRevision > 0 && validHex(o.Private.Nonce, 32) && o.Review == nil && !o.ReviewExpires.IsZero()
+	case *RecoveryRequest:
+		valid = validRecoveryRequest(*q) && q.Key == o.Key && q.Workspace == o.Workspace && o.Review != nil && o.Review.Reason == q.Reason
 	case *MutationRequest:
 		valid = q.Key == o.Key && q.Revision > 0 && reason(q.Reason) && (o.Kind == "retire" && q.Host == "" || o.Kind != "retire" && validHex(q.Host, 16)) && o.Review == nil
 	}

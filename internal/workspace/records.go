@@ -23,6 +23,11 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 		return v, nil
 	}
 	v.Initialized = true
+	var marker string
+	if e = tx.QueryRowContext(ctx, `SELECT value FROM metadata WHERE key='workspace_schema'`).Scan(&marker); e != nil {
+		return v, e
+	}
+	v.RecoveryEnabled = marker == "2"
 	total := 0
 	read := func(table string, maxRows int, columns string, fn func([]string, []byte) error) error {
 		suffix := ""
@@ -168,6 +173,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
+	v.rawBytes = int64(total)
 	if e := ValidateRecords(v, a); e != nil {
 		return v, invalidState(e)
 	}
@@ -224,6 +230,9 @@ func ValidateRecords(v Records, a Authority) error {
 	}
 	seen = map[string]bool{}
 	for _, x := range v.Operations {
+		if recoveryKind(x.Kind) && !v.RecoveryEnabled {
+			return fmt.Errorf("recovery evidence requires schema group version2")
+		}
 		r, ok := roots[x.Workspace]
 		if !ok {
 			return fmt.Errorf("orphan operation")
@@ -338,7 +347,7 @@ func ValidateRecords(v Records, a Authority) error {
 			if c.Workspace != id {
 				continue
 			}
-			if c.Schema != Schema || c.Revision != expected || c.After.ID != id || c.After.Revision != expected || c.After.Generation != r.Generation || c.At.IsZero() || !validKey(c.Key) || !text(c.Actor, 512) || !known(c.Kind, "create_prepared", "join_prepared", "decision", "admission_prepared", "admission_proving", "admission_completed", "admission_cancelled", "deny", "revoke", "retire", "join_proved", "join_finalized", "observation") {
+			if c.Schema != Schema || c.Revision != expected || c.After.ID != id || c.After.Revision != expected || c.After.Generation != r.Generation || c.At.IsZero() || !validKey(c.Key) || !text(c.Actor, 512) || !known(c.Kind, "create_prepared", "join_prepared", "decision", "admission_prepared", "admission_proving", "admission_completed", "admission_cancelled", "deny", "revoke", "retire", "join_proved", "join_finalized", "observation", "recovery_prepared", "recovery_decision", "recovery_proving", "recovery_completed", "recovery_reconciled") {
 				return fmt.Errorf("invalid workspace journal transition")
 			}
 			if e := validateInstance(c.After, a); e != nil {
@@ -370,6 +379,12 @@ func ValidateRecords(v Records, a Authority) error {
 				}
 			}
 		}
+	}
+	if e := validateRecoveryCapacity(v); e != nil {
+		return e
+	}
+	if e := validateRecoveryFamilies(v, a); e != nil {
+		return e
 	}
 	return validateTransitions(v, a)
 }

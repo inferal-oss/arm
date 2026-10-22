@@ -77,6 +77,25 @@ func (p *proofReader) readWorkspaces() error {
 		return fmt.Errorf("workspace tables/marker form an incomplete optional group")
 	}
 	v := workspace.Records{Initialized: true}
+	if e := p.walk("metadata", func(row proofRow) error {
+		key, e := row.text("key")
+		if e != nil {
+			return e
+		}
+		if key == "workspace_schema" {
+			value, e := row.text("value")
+			if e != nil {
+				return e
+			}
+			if value != "1" && value != "2" {
+				return fmt.Errorf("unknown workspace group")
+			}
+			v.RecoveryEnabled = value == "2"
+		}
+		return nil
+	}); e != nil {
+		return e
+	}
 	roots := map[string]proofWSInstance{}
 	members := map[string]proofWSMember{}
 	trusted := map[string]proofWSTrustedMember{}
@@ -200,6 +219,8 @@ func (p *proofReader) readWorkspaces() error {
 					requestValue = &proofWSJoinRequest{}
 				case "admit":
 					requestValue = &proofWSAdmissionRequest{}
+				case "resume_admission", "resume_join":
+					requestValue = &proofWSRecoveryRequest{}
 				case "deny", "revoke", "retire":
 					requestValue = &proofWSMutationRequest{}
 				default:
@@ -276,6 +297,9 @@ func (p *proofReader) readWorkspaces() error {
 	}
 	// Independent producer/journal/settlement checks precede the writer helper.
 	actor := "native:" + p.result.Host + ":" + p.result.Owner
+	if e := proofRecoveryFamilies(v.RecoveryEnabled, roots, operations, changes, actor); e != nil {
+		return e
+	}
 	for id, root := range roots {
 		if root.Authority.Host != p.result.Host || root.Authority.UID != p.result.Owner {
 			return fmt.Errorf("workspace authority differs from stopped ledger")

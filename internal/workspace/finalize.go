@@ -8,7 +8,10 @@ import (
 // Finalize installs a local membership binding only from this process's fresh,
 // authenticated directory snapshot after a matching locally approved join proof.
 // It performs no remote mutation and is not automatic on lookup/restart.
-func (r *Runtime) Finalize(ctx context.Context, id, key string, revision int64) (result Operation, err error) {
+func (r *Runtime) Finalize(ctx context.Context, id, key string, revision int64) (Operation, error) {
+	return r.finalize(ctx, id, key, revision, nil)
+}
+func (r *Runtime) finalize(ctx context.Context, id, key string, revision int64, recovery *recoveryFinalize) (result Operation, err error) {
 	r.mu.Lock()
 	cached, ok := r.active[id]
 	closed := r.closed
@@ -40,7 +43,25 @@ func (r *Runtime) Finalize(ctx context.Context, id, key string, revision int64) 
 			result = op.View()
 			return nil
 		}
-		if op.Phase != "approved" || op.Revision != revision || op.Private.Boot != r.store.boot || op.Private.ProofCount < 1 || !validHex(op.Private.LastChallenge, 32) || root.Role != "member" || root.State != "joining" || root.ConsentHash != op.ReviewHash || root.Self != r.store.self || root.SelfGeneration != 0 || denied(v, id, root.Directory.Host) || denied(v, id, root.Self.Host) {
+		authorized := op.Private.Boot == r.store.boot && op.Private.ProofCount > 0 && validHex(op.Private.LastChallenge, 32)
+		var recoveryChild Operation
+		if recovery == nil {
+			children, err := familyChildren(v, root.ID, OperationRef{Principal: op.Principal, Key: op.Key, RequestHash: op.RequestHash, Revision: op.Revision})
+			if err != nil {
+				return err
+			}
+			if len(children) > 0 {
+				authorized = false
+			}
+		}
+		if recovery != nil {
+			recoveryChild, e = r.store.checkFinalizeRecovery(v, root, op, recovery)
+			if e != nil {
+				return e
+			}
+			authorized = true
+		}
+		if op.Phase != "approved" || op.Revision != revision || !authorized || root.Role != "member" || root.State != "joining" || root.ConsentHash != op.ReviewHash || root.Self != r.store.self || root.SelfGeneration != 0 || denied(v, id, root.Directory.Host) || denied(v, id, root.Self.Host) {
 			return problem("admission_changed", "local exact join/proof/identity changed")
 		}
 		clock, e := clockOf(v, id)
@@ -94,6 +115,17 @@ func (r *Runtime) Finalize(ctx context.Context, id, key string, revision int64) 
 		}
 		if e = writeOperation(ctx, tx, op); e != nil {
 			return e
+		}
+		if recovery != nil {
+			recoveryChild.Revision, e = next(recoveryChild.Revision)
+			if e != nil {
+				return e
+			}
+			recoveryChild.Phase = "completed"
+			recoveryChild.Updated = root.Updated
+			if e = writeOperation(ctx, tx, recoveryChild); e != nil {
+				return e
+			}
 		}
 		if e = journal(ctx, tx, "join_finalized", op.Principal, key, op.Phase, &before, root, nil, nil); e != nil {
 			return e

@@ -51,3 +51,10 @@ func (o *Operator) CancelAdmission(ctx context.Context, id, source, key string, 
 func (o *Operator) CancelJoin(ctx context.Context, id, key string, revision int64) (Operation, error) {
 	return o.store.CancelJoin(ctx, id, key, revision)
 }
+
+func (o *Operator) DeclineRecovery(ctx context.Context, id, key string, revision int64, review string) (Operation, error) {
+	return o.store.DecideRecovery(ctx, id, key, revision, review, false)
+}
+func (o *Operator) CancelRecovery(ctx context.Context, id, key string, revision int64) (Operation, error) {
+	return o.store.CancelRecovery(ctx, id, key, revision)
+}

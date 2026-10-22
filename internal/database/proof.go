@@ -269,7 +269,7 @@ func (p *proofReader) metadata() error {
 				return fmt.Errorf("unknown budget binding schema")
 			}
 		case "workspace_schema":
-			if raw != "1" {
+			if raw != "1" && raw != "2" {
 				return fmt.Errorf("unknown workspace schema")
 			}
 			p.workspaceSchema = true

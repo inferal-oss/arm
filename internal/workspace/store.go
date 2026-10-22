@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -77,15 +78,17 @@ func (s *Store) fail(stage string) error {
 // Records is a bounded complete ledger view used by pure relationship/proof
 // validators. It includes private operation evidence and is NOT a public DTO.
 type Records struct {
-	Initialized  bool
-	Instances    []Instance
-	Members      []Member
-	Trusted      []TrustedMember
-	Observations []Observation
-	Operations   []Operation
-	Changes      []Change
-	Denies       []Deny
-	Clocks       []ClockRecord
+	rawBytes        int64
+	RecoveryEnabled bool
+	Initialized     bool
+	Instances       []Instance
+	Members         []Member
+	Trusted         []TrustedMember
+	Observations    []Observation
+	Operations      []Operation
+	Changes         []Change
+	Denies          []Deny
+	Clocks          []ClockRecord
 }
 
 func emptyRecords() Records {
@@ -128,6 +131,12 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 			return e
 		}
 		v.Initialized = true
+		v.RecoveryEnabled = true
+	}
+	if initialize && !v.RecoveryEnabled {
+		if e = enableRecoverySchema(ctx, tx, &v); e != nil {
+			return e
+		}
 	}
 	if e = fn(tx, &v); e != nil {
 		return e
@@ -136,6 +145,10 @@ func (s *Store) transaction(ctx context.Context, initialize bool, fn func(*sql.T
 		return e
 	}
 	if _, e = readRecords(ctx, tx, s.authority); e != nil {
+		var capacity *capacityProblem
+		if errors.As(e, &capacity) {
+			return problem("history_full", capacity.Error())
+		}
 		return stateProblem(e)
 	}
 	if e = s.fail("before_commit"); e != nil {
