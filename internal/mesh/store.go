@@ -27,7 +27,7 @@ type Grant struct {
 	MaxTTL        time.Duration   `json:"max_ttl_ns"`
 }
 
-var permissions = []string{"observe-host", "observe-own", "observe-all", "lease-own", "run", "message", "contact-read"}
+var permissions = []string{"observe-host", "observe-own", "observe-all", "lease-own", "run", "message", "contact-read", "ssh-exec"}
 
 func (g Grant) Validate() error {
 	if len(g.Contacts) > 64 {
@@ -53,6 +53,9 @@ func (g Grant) Validate() error {
 	}
 	if g.Has("lease-own") && (g.MaxTTL <= 0 || g.Limits == (model.Resources{})) {
 		return fmt.Errorf("lease-own requires explicit positive ceilings and TTL")
+	}
+	if g.Has("ssh-exec") && !g.Has("lease-own") {
+		return fmt.Errorf("ssh-exec requires lease-own")
 	}
 	if g.Has("run") && !g.Has("lease-own") {
 		return fmt.Errorf("run requires lease-own")
