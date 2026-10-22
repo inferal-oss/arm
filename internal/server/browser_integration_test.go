@@ -225,6 +225,9 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	if err := client.Call(ctx, home, "status", nil, &poolStatus); err != nil {
 		t.Fatal(err)
 	}
+	if !slices.Contains(poolStatus.Capabilities, "pool-journal-pages") {
+		t.Fatal("pool journal read capability missing")
+	}
 	maxCapacity := int64(9223372036854775807)
 	poolCreate := model.PoolMutation{Operation: "create", Name: "browser exact permits", Scope: "global", Unit: "permits", Capacity: &maxCapacity, Reason: "reviewed browser creation", Key: local.ID()}
 	if reply := callPool("pool_mutate", poolCreate); reply.Error == nil || reply.Error.Code != "invalid_request" {
@@ -248,6 +251,23 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 	var poolView model.PoolView
 	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &poolView); err != nil {
 		t.Fatal(err)
+	}
+	pageReply := callPool("pool_history_page", model.PoolHistoryPageRequest{ID: created.Pool.ID})
+	var journal model.PoolHistoryPage
+	if pageReply.Error != nil || json.Unmarshal(pageReply.Result, &journal) != nil || len(journal.Entries) != 1 || journal.Entries[0].Pool.Capacity != maxCapacity {
+		t.Fatal("browser exact journal page", pageReply)
+	}
+	pageReply = callPool("pool_history_page", model.PoolHistoryPageRequest{ID: created.Pool.ID, After: &maxCapacity})
+	if pageReply.Error != nil || json.Unmarshal(pageReply.Result, &journal) != nil || len(journal.Entries) != 0 || journal.PreviousBefore == nil || *journal.PreviousBefore != maxCapacity {
+		t.Fatal("browser maximum journal boundary rounded", pageReply)
+	}
+	pageReply = callPool("pool_history_page", model.PoolHistoryPageRequest{ID: created.Pool.ID, Before: journal.PreviousBefore})
+	if pageReply.Error != nil || json.Unmarshal(pageReply.Result, &journal) != nil || len(journal.Entries) != 1 {
+		t.Fatal("browser inclusive backward journal read", pageReply)
+	}
+	negative := int64(-1)
+	if reply := callPool("pool_history_page", model.PoolHistoryPageRequest{ID: created.Pool.ID, After: &negative}); reply.Error == nil || reply.Error.Code != "invalid_request" {
+		t.Fatal("browser invalid journal boundary accepted", reply)
 	}
 	zero := int64(0)
 	poolSetRevision := poolView.Pool.Revision

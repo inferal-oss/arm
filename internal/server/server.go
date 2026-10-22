@@ -478,6 +478,12 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			}
 		}
 		return s.Manager.MutatePool(q)
+	case "pool_history_page":
+		var q model.PoolHistoryPageRequest
+		if e := decode(&q); e != nil {
+			return nil, e
+		}
+		return boundedPoolRead(s.Manager.PoolHistoryPage(q))
 	case "pool_list", "pool_inspect", "pool_history":
 		var q struct {
 			ID    string `json:"id"`
@@ -620,6 +626,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return result, nil
 	case "status":
 		status, err := s.Manager.Status()
+		status.Capabilities = append(status.Capabilities, "pool-journal-pages")
 		if s.authority != "" {
 			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging", "browser-reviewed-pool-controls")
 		}

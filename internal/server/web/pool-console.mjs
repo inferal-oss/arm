@@ -9,6 +9,7 @@ export function createPoolConsole({
   connected,
   onLease = () => {},
   onChanged = () => {},
+  onNavigate = () => {},
   storage,
   document = globalThis.document,
   key = () => crypto.randomUUID(),
@@ -36,15 +37,19 @@ export function createPoolConsole({
     cursor = null,
     readGeneration = 0,
     historyGeneration = 0,
+    historyReadKey = null,
     formGeneration = 0,
     loading = false,
     history = null,
-    historyStart = 0,
-    previous = [],
+    historyAfter = '0',
+    historyBefore = null,
     review = null,
     reviewStale = false,
     draft = null,
-    disposed = false;
+    disposed = false,
+    focusDetail = false,
+    focusHistory = false;
+  let journalItems = new Map();
   const heading = el('header', 'pool-heading'),
     tools = el('div', 'pool-tools'),
     filter = el('input'),
@@ -93,7 +98,7 @@ export function createPoolConsole({
     operationsBox,
     journal
   );
-  formBox.hidden = reviewBox.hidden = true;
+  detail.hidden = journal.hidden = formBox.hidden = reviewBox.hidden = true;
   const rows = new Map();
   let ops,
     detailFingerprint = null;
@@ -168,15 +173,18 @@ export function createPoolConsole({
         row.tr.remove();
         rows.delete(id);
       }
-    if (!pools.length)
-      fail('No custom pools yet. Create one to coordinate counted permits.');
+    const emptyMessage = 'No custom pools yet. Create one to coordinate counted permits.';
+    if (!pools.length && cursor !== null) fail(emptyMessage);
+    else if (feedback.textContent === emptyMessage) fail('');
   }
   function renderDetail() {
+    detail.hidden = !selected;
     const view = current(),
       fingerprint = stringifyJSON({
-        view,
-        owner: status?.owner,
-        username: status?.owner_username,
+        view: view ?? null,
+        selected,
+        owner: status?.owner ?? null,
+        username: status?.owner_username ?? null,
       });
     if (fingerprint === detailFingerprint) {
       setBusyState();
@@ -192,9 +200,17 @@ export function createPoolConsole({
           .map((n) => n.querySelector('summary')?.textContent)
       );
     detail.replaceChildren();
-    if (!view) return;
+    if (!view) {
+      if (selected) detail.append(
+        button('All pools', () => select(''), 'link-button'),
+        el('h3', '', 'Pool unavailable'),
+        el('p', 'measure-note', `No available pool snapshot for ${selected}. Refresh to check again; the selected address has been kept.`)
+      );
+      return;
+    }
     const p = view.pool;
     detail.append(
+      button('All pools', () => select(''), 'link-button'),
       el('h3', '', p.name),
       el(
         'p',
@@ -257,6 +273,14 @@ export function createPoolConsole({
       );
       target?.focus();
     }
+    if (focusDetail) {
+      const title = detail.querySelector('h3');
+      if (title) {
+        title.tabIndex = -1;
+        title.focus();
+        focusDetail = false;
+      }
+    }
     setBusyState();
   }
   async function load(force = false) {
@@ -276,8 +300,6 @@ export function createPoolConsole({
       if (disposed || generation !== readGeneration) return;
       pools = result;
       cursor = requestedCursor;
-      if (selected && !current()) selected = '';
-      if (!selected && pools.length) selected = pools[0].pool.id;
       renderRows();
       renderDetail();
       if (
@@ -286,7 +308,7 @@ export function createPoolConsole({
           force ||
           String(oldRevision) !== String(current()?.pool.revision))
       )
-        await loadHistory(history ? historyStart : 0, !history);
+        await loadHistory();
     } catch (error) {
       if (generation === readGeneration) fail(error.message);
     } finally {
@@ -294,36 +316,63 @@ export function createPoolConsole({
     }
   }
   function select(id) {
-    if (selected === id) return;
+    onNavigate({pool: id || null, poolAfter: id ? '0' : null, poolBefore: null});
+  }
+  function applyRoute(route) {
+    const id = route?.view === 'resources' ? route.pool || '' : '',
+      after = id ? route.poolAfter ?? '0' : '0',
+      before = id ? route.poolBefore ?? null : null;
+    if (id === selected && after === historyAfter && before === historyBefore) return;
+    fail('');
+    focusDetail = id !== selected && Boolean(id);
+    focusHistory = id === selected && Boolean(id);
     selected = id;
+    historyAfter = after;
+    historyBefore = before;
     history = null;
-    previous = [];
-    historyStart = 0;
+    historyGeneration++;
+    historyReadKey = null;
     formGeneration++;
-    draft = null;
-    review = null;
+    draft = review = null;
     formBox.hidden = reviewBox.hidden = true;
     renderRows();
     renderDetail();
-    loadHistory(0, true);
+    renderHistory();
+    loadHistory();
   }
-  async function loadHistory(after = 0, reset = false) {
+  async function loadHistory() {
     if (!selected || !connected()) return;
+    const signature = `${selected}:${historyBefore === null ? 'after:' + historyAfter : 'before:' + historyBefore}`;
+    if (historyReadKey === signature) return;
+    historyReadKey = signature;
     const generation = ++historyGeneration,
-      id = selected;
+      id = selected,
+      after = historyAfter,
+      before = historyBefore;
     try {
-      const page = await call('pool_history', { id, after });
-      if (disposed || generation !== historyGeneration || id !== selected)
-        return;
+      const page = await call('pool_history_page', {
+        id,
+        ...(before !== null ? {before: BigInt(before)} : {after: BigInt(after)}),
+      });
+      if (
+        disposed || generation !== historyGeneration || id !== selected ||
+        after !== historyAfter || before !== historyBefore
+      ) return;
       history = page;
-      historyStart = after;
-      if (reset) previous = [];
       renderHistory();
     } catch (error) {
-      if (generation === historyGeneration) fail(error.message);
+      if (!disposed && generation === historyGeneration) fail(error.message);
+    } finally {
+      if (generation === historyGeneration) historyReadKey = null;
     }
   }
   function renderHistory() {
+    const active = document.activeElement,
+      restoreFocus = journal.contains(active),
+      action = active?.dataset?.journalAction,
+      previousItems = journalItems;
+    journalItems = new Map();
+    journal.hidden = !history;
     journal.replaceChildren();
     if (!history) return;
     journal.append(
@@ -335,9 +384,12 @@ export function createPoolConsole({
       )
     );
     for (const change of history.entries) {
-      const item = el('article', 'pool-change'),
+      const identity = String(change.sequence),
+        fingerprint = stringifyJSON(change),
+        saved = previousItems.get(identity),
+        item = saved?.fingerprint === fingerprint ? saved.item : el('article', 'pool-change'),
         p = change.after;
-      item.append(
+      if (saved?.fingerprint !== fingerprint) item.append(
         el(
           'h4',
           '',
@@ -355,29 +407,33 @@ export function createPoolConsole({
           document,
         })
       );
+      journalItems.set(identity, {fingerprint, item});
       journal.append(item);
     }
     if (!history.entries.length)
-      journal.append(el('p', 'measure-note', 'No later entries on this page.'));
+      journal.append(el('p', 'measure-note', 'No entries at this journal boundary.'));
     const nav = el('div', 'pool-tools'),
-      start = button('First page', () => loadHistory(0, true)),
-      back = button('Previous page', () => {
-        const after = previous.pop();
-        loadHistory(after ?? 0);
-      }),
-      next = button('Next page', () => {
-        previous.push(historyStart);
-        if (previous.length > 256) previous.shift();
-        loadHistory(history.cursor);
-      });
-    start.disabled = historyStart === 0;
-    back.disabled = !previous.length;
-    next.disabled = !history.more;
+      start = button('First page', () => onNavigate({pool: selected, poolAfter: '0', poolBefore: null})),
+      back = button('Previous page', () => onNavigate({pool: selected, poolAfter: null, poolBefore: String(history.previous_before)})),
+      next = button('Next page', () => onNavigate({pool: selected, poolAfter: String(history.next_after), poolBefore: null}));
+    start.disabled = historyBefore === null && historyAfter === '0';
+    back.disabled = history.previous_before == null;
+    next.disabled = history.next_after == null;
+    start.dataset.journalAction = 'first';
+    back.dataset.journalAction = 'previous';
+    next.dataset.journalAction = 'next';
     nav.append(start, back, next);
     journal.append(nav);
+    if (focusHistory || restoreFocus) {
+      const title = journal.querySelector('h3');
+      title.tabIndex = -1;
+      const replacement = [start, back, next].find(b => b.dataset.journalAction === action && !b.disabled);
+      (focusHistory ? title : journal.contains(active) ? active : replacement || title).focus();
+      focusHistory = false;
+    }
   }
   function begin(operation) {
-    if (!connected()) return;
+    if (!connected() || operation !== 'create' && !current()) return;
     draft = { operation };
     review = null;
     formBox.replaceChildren();
@@ -629,8 +685,9 @@ export function createPoolConsole({
   renderOperations();
   filter.addEventListener('input', renderRows);
   return {
-    update({ status: next }) {
+    update({ status: next, route }) {
       status = next;
+      applyRoute(route);
       setBusyState();
       load();
     },
@@ -638,11 +695,13 @@ export function createPoolConsole({
       if (!connected()) {
         readGeneration++;
         historyGeneration++;
+        historyReadKey = null;
         loading = false;
         cursor = null;
       }
       setBusyState();
       renderOperations();
+      if (connected()) load(true);
     },
     dispose() {
       disposed = true;
@@ -651,5 +710,15 @@ export function createPoolConsole({
       formGeneration++;
     },
     select,
+    applyRoute,
+    focusLease(id) {
+      const target = [...detail.querySelectorAll('button')].find(button => button.textContent === id) || detail.querySelector('h3');
+      if (!target) return false;
+      for (let parent = target.parentNode; parent && parent !== detail; parent = parent.parentNode)
+        if (parent.tagName?.toLowerCase() === 'details') parent.open = true;
+      target.tabIndex = -1;
+      target.focus();
+      return true;
+    },
   };
 }

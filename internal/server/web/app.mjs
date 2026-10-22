@@ -235,12 +235,14 @@ function renderView(name) {
   renderCurrent(); updateFreshness();
 }
 function applyDashboardRoute(route) {
-  const previousView = view, hadDetail = Boolean(detailLeaseID) || $('detail').open;
+  const previousView = view, previousLease = detailLeaseID, hadDetail = Boolean(detailLeaseID) || $('detail').open;
   renderView(route.view);
+  poolConsole?.applyRoute(route);
   if (route.lease) loadLease(route.lease);
   else {
     detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
     if ($('detail').open) $('detail').close();
+    if (hadDetail && route.view === 'resources' && route.pool && poolConsole?.focusLease(previousLease)) return;
     if (hadDetail || previousView !== route.view) document.querySelector('nav button[aria-current]')?.focus();
   }
 }
@@ -403,10 +405,11 @@ function renderResources() {
     poolConsole = createPoolConsole({
       root: slot, call: (...args) => connection.call(...args),
       connected: () => state.connected, onLease: id => showLease(id),
+      onNavigate: route => navigation.navigate({view: 'resources', lease: null, ...route}),
       onChanged: scheduleRefresh, storage: messageStorage,
     });
   }
-  poolConsole.update({status: state.status});
+  poolConsole.update({status: state.status, route: navigation.current});
 }
 function resourceCards() {
   const root = $('resources'); root.querySelector('.resource-grid')?.remove();
@@ -482,7 +485,7 @@ function leaseTable() {
   }
   table.append(body); box.append(table); if (!leases.length) box.append(empty('No matching leases')); root.append(box);
 }
-function showLease(id) { navigation.navigate({view, lease: id}); }
+function showLease(id) { navigation.navigate({...navigation.current, view, lease: id}); }
 async function loadLease(id) {
   const request = ++detailRequest;
   detailLeaseID = id;
@@ -524,7 +527,7 @@ $('detail').addEventListener('close', () => {
   // A queued close event from Back must not tear down a dialog reopened by a
   // quick Forward. The URL is already authoritative for history-driven closes.
   if ($('detail').open) return;
-  if (navigation.current.lease) { navigation.navigate({view, lease: null}); return; }
+  if (navigation.current.lease) { navigation.navigate({...navigation.current, view, lease: null}); return; }
   detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
 });
 function renderMessages() { updateOperatorMessaging(); }

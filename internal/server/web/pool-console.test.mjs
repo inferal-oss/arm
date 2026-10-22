@@ -121,22 +121,26 @@ function fixture() {
     },
     root = doc.createElement('section'),
     calls = [];
+  let currentRoute = {view: 'resources', pool: 'permits', poolAfter: '0', poolBefore: null};
   let live = true,
     view = snapshot(),
     cursor = 1,
-    held = null;
+    held = null,
+    historyHandler = null,
+    listHandler = null;
   const ui = createPoolConsole({
     root,
     document: doc,
     storage: { getItem: () => null, setItem() {} },
     key: () => 'review-key',
+    onNavigate: route => { currentRoute = {view: 'resources', ...route}; update(); },
     connected: () => live,
     call: async (op, r) => {
       calls.push([op, poolRequestCopy(r)]);
-      if (op === 'pool_list') return [poolRequestCopy(view)];
+      if (op === 'pool_list') return listHandler ? listHandler(r) : [poolRequestCopy(view)];
       if (op === 'pool_inspect') return poolRequestCopy(view);
-      if (op === 'pool_history')
-        return { pool: view.pool.id, entries: [], cursor: 0, more: false };
+      if (op === 'pool_history_page')
+        return historyHandler ? historyHandler(r) : { pool: view.pool.id, entries: [], previous_before: null, next_after: null };
       if (op === 'pool_mutate') {
         if (held) return held;
         return {
@@ -158,6 +162,7 @@ function fixture() {
   });
   const update = () =>
     ui.update({
+      route: currentRoute,
       status: {
         host: 'local-host',
         owner: '501',
@@ -174,6 +179,10 @@ function fixture() {
       );
   return {
     ui,
+    navigate(route) { currentRoute = {view: 'resources', pool: null, poolAfter: null, poolBefore: null, ...route}; update(); },
+    getRoute: () => currentRoute,
+    setHistory(handler) { historyHandler = handler; },
+    setList(handler) { listHandler = handler; },
     root,
     doc,
     calls,
@@ -283,4 +292,104 @@ test('pool mutation result cannot erase a newer draft; in-flight exact request r
   assert.equal(f.doc.activeElement, name);
   assert.equal(f.root.querySelector('form').hidden, false);
   assert.equal(f.calls.filter((c) => c[0] === 'pool_mutate').length, 1);
+});
+
+test('pool route controls selection and pages without silently choosing the first row', async () => {
+  const f = fixture();
+  f.navigate({}); await flush(); await flush();
+  assert.equal(f.find('Set capacity'), undefined);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_history_page').length, 0);
+  f.setHistory(async r => ({pool:r.id, entries:[], previous_before:7n, next_after:9223372036854775807n}));
+  await f.find('Review permits').fire('click'); await flush(); await flush();
+  assert.equal(f.getRoute().pool, 'permits');
+  assert.ok(f.find('Set capacity'));
+  assert.doesNotMatch(f.root.textContent,/No custom pools yet/);
+  await f.find('Next page').fire('click'); await flush();
+  assert.equal(f.getRoute().poolAfter, '9223372036854775807');
+  assert.equal(f.calls.filter(([op]) => op === 'pool_history_page').at(-1)[1].after,9223372036854775807n);
+  await f.find('Previous page').fire('click'); await flush();
+  assert.equal(f.getRoute().poolBefore, '7');
+  assert.equal(f.calls.filter(([op]) => op === 'pool_history_page').at(-1)[1].before,7);
+  f.navigate({pool:'missing',poolAfter:'0'}); await flush(); await flush();
+  assert.match(f.root.textContent,/Pool unavailable/);
+  assert.equal(f.getRoute().pool,'missing');
+  assert.equal(f.find('Set capacity'),undefined);
+  await f.find('All pools').fire('click'); await flush();
+  assert.equal(f.getRoute().pool,null);
+  assert.equal(f.calls.filter(([op])=>op==='pool_mutate'||op==='pool_lookup').length,0);
+});
+
+test('pool journal A to B to A ignores the original late A read and reconnect is read-only', async () => {
+  const f = fixture(), pending=[];
+  f.setHistory(r=>new Promise(resolve=>pending.push({r,resolve})));
+  f.navigate({pool:'permits',poolAfter:'0'}); await flush(); await flush();
+  f.navigate({pool:'other',poolBefore:'17'}); await flush();
+  f.navigate({pool:'permits',poolAfter:'23'}); await flush();
+  const latest=pending.at(-1);
+  latest.resolve({pool:'permits',entries:[],previous_before:22,next_after:null}); await flush();
+  for(const p of pending.slice(0,-1))p.resolve({pool:p.r.id,entries:[],previous_before:null,next_after:999});
+  await flush();
+  assert.equal(f.find('Next page').disabled,true);
+  assert.equal(f.find('Previous page').disabled,false);
+  f.setLive(false);
+  f.navigate({pool:'permits',poolAfter:'42'}); const before=f.calls.length;
+  await flush(); assert.equal(f.calls.length,before);
+  f.setLive(true); await flush(); await flush();
+  assert.equal(pending.at(-1).r.after,42n);
+  assert.equal(f.calls.filter(([op])=>op==='pool_mutate'||op==='pool_lookup').length,0);
+});
+
+test('pool route changes clear unsubmitted reviews but retain independently uncertain operations', async () => {
+  const f=await start(); let finish;
+  f.hold(new Promise((_, reject)=>{finish=reject;}));
+  await reviewSet(f); await f.find('Confirm reviewed change').fire('click');
+  finish(Error('connection lost')); await flush(); await flush();
+  f.navigate({pool:'missing',poolBefore:'99'}); await flush(); await flush();
+  assert.ok(f.find('Check stored result'));
+  assert.equal(f.calls.filter(([op])=>op==='pool_mutate').length,1);
+  assert.equal(f.calls.filter(([op])=>op==='pool_lookup').length,0);
+});
+
+test('leaving Resources clears an unsubmitted pool review and closing lease restores its consumer', async () => {
+  const f=await start(); await reviewSet(f);
+  f.ui.applyRoute({view:'messages'});
+  assert.equal(f.find('Confirm reviewed change'),undefined);
+  f.navigate({pool:'permits',poolAfter:'0'}); await flush();
+  assert.equal(f.ui.focusLease('lease-a'),true);
+  assert.equal(f.doc.activeElement.textContent,'lease-a');
+  assert.equal(f.doc.activeElement.parentNode.parentNode.open,true);
+  assert.equal(f.calls.filter(([op])=>op==='pool_mutate').length,0);
+});
+
+test('deleted pool routes retain their journal while background refresh preserves deliberate focus', async () => {
+  const f=fixture(), deleted=snapshot(); deleted.pool.state='deleted';
+  f.setView(deleted); f.update(); await flush(); await flush();
+  assert.match(f.root.textContent,/Capacity-change journal/);
+  for(const label of ['Set capacity','Adjust capacity','Drain','Delete definition'])assert.equal(f.find(label),undefined);
+  const refresh=f.find('Refresh pools'); refresh.focus();
+  f.update(); await flush(); await flush();
+  assert.equal(f.doc.activeElement,refresh);
+  assert.ok(f.find('First page'));
+  assert.equal(f.calls.filter(([op])=>op==='pool_mutate').length,0);
+});
+
+test('background journal refresh preserves page controls and expanded entry focus', async () => {
+  const f = fixture(), entries = [{sequence:1, operation:'create', at:'2026-10-21T00:00:00Z', actor:'501', reason:'Keep the audit readable', before:null, after:snapshot().pool, delta:1}];
+  f.setHistory(async r => ({pool:r.id, entries, previous_before:null, next_after:1}));
+  f.update(); await flush(); await flush();
+  const oldNext = f.find('Next page'); oldNext.focus();
+  let view = snapshot(); view.pool.revision++; f.setView(view);
+  f.update(); await flush(); await flush();
+  assert.notEqual(f.find('Next page'), oldNext);
+  assert.equal(f.doc.activeElement, f.find('Next page'));
+  const entry = f.root.querySelector('.pool-change'), branch = entry.querySelector('details'), summary = branch.querySelector('summary');
+  branch.open = true; await branch.fire('toggle'); summary.focus();
+  entries.push({...entries[0],sequence:2,reason:'Another journal record'});
+  view = snapshot(); view.pool.revision += 2; f.setView(view);
+  f.update(); await flush(); await flush();
+  assert.equal(f.root.querySelector('.pool-change'), entry);
+  assert.equal(branch.open, true);
+  assert.equal(f.doc.activeElement, summary);
+  assert.equal(f.root.contains(summary), true);
+  assert.equal(f.calls.filter(([op]) => op === 'pool_mutate').length, 0);
 });

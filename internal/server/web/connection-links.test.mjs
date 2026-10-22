@@ -21,7 +21,7 @@ test('connection fragments are exact, bounded single tickets and ordinary anchor
 });
 
 test('initial and same-document fresh links are captured before route cleanup and consumed once across both events',()=>{
- const f=fixture('http://127.0.0.1:1/?view=messages&private=drop#connect='+ticket);f.handler.start();assert.deepEqual(f.calls,[{ticket}]);assert.deepEqual(f.routes.at(-1),{view:'messages',lease:null});
+ const f=fixture('http://127.0.0.1:1/?view=messages&private=drop#connect='+ticket);f.handler.start();assert.deepEqual(f.calls,[{ticket}]);assert.deepEqual(f.routes.at(-1),{view:'messages',lease:null,pool:null,poolAfter:null,poolBefore:null});
  f.set('/?view=resources#connect='+second);f.handler.change();f.handler.change();assert.deepEqual(f.calls,[{ticket},{ticket:second}]);assert.ok(f.entries.every(e=>!e.includes('connect')&&!e.includes(ticket)&&!e.includes(second)&&!e.includes('private')));
  f.set('/?view=host');f.handler.change();assert.equal(f.calls.length,2);assert.equal(f.routes.at(-1).view,'host');
 });
