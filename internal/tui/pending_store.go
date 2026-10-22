@@ -161,6 +161,9 @@ func syncPendingDirectory(root *os.Root) error {
 	return f.Sync()
 }
 func openPending(home string) (*pendingFiles, error) {
+	if err := local.CheckStateFence(home); err != nil {
+		return nil, err
+	}
 	parent, err := trustedClientRoot(home)
 	if err != nil {
 		return nil, err
@@ -214,6 +217,12 @@ func openPending(home string) (*pendingFiles, error) {
 	named, err := h.root.Lstat(".lock")
 	if err != nil || !os.SameFile(named, info) {
 		return fail(fmt.Errorf("pending lock was replaced"))
+	}
+	// A reset holds this same lock through its final empty-roster proof.
+	// Recheck after acquiring it so a raced durable fence cannot authorize a
+	// new intent based on the earlier observation.
+	if err := local.CheckStateFence(home); err != nil {
+		return fail(err)
 	}
 	return h, nil
 }

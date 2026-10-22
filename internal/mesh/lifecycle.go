@@ -120,6 +120,9 @@ func DefaultStartup() StartupPolicy {
 }
 
 func InspectLifecycle(home, version string) (LifecycleInspection, error) {
+	if err := local.CheckStateFence(home); err != nil {
+		return LifecycleInspection{}, err
+	}
 	inspection := LifecycleInspection{Protocol: LifecycleProtocol, Version: version, OS: runtime.GOOS, Arch: runtime.GOARCH, Home: home, Owner: local.CurrentIdentity(), Startup: DefaultStartup(), StartupSource: "current defaults; no prior launch policy exists"}
 	privateIPs, err := PrivateInterfaces()
 	if err != nil {

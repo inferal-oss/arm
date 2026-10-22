@@ -52,7 +52,7 @@ func Prepare(home string) error {
 	if st, ok := info.Sys().(*syscall.Stat_t); ok && st.Uid != uint32(os.Geteuid()) {
 		return fmt.Errorf("ARM state directory belongs to another user")
 	}
-	return nil
+	return CheckStateFence(home)
 }
 
 func Lock(home, name string) (*os.File, error) {
