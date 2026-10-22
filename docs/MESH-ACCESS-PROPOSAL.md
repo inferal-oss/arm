@@ -1,7 +1,9 @@
-# Proposed embedded mesh SSH and mounted shares
+# Approved embedded mesh SSH and mounted-share scheme
 
-October 21, 2026. **Pending approval; not implemented.** This proposal does not
-amend the [approved mesh contract](MESH-SECURITY.md) until separately approved.
+October 21, 2026. **Approved by the operator; not implemented.** The operator
+explicitly approved this revised scheme after reviewing its no-setup and mount
+feasibility boundaries. It extends the [mesh contract](MESH-SECURITY.md) within
+the scoped permissions and implementation gates below.
 The operator requires embedded ARM services, no system sshd/NFS setup, no login
 key distribution and no privileged OS access. That supersedes the initial idea
 of native export configuration and an optional privileged helper.
@@ -233,7 +235,7 @@ arm shares grant SHARE --peer builder --read-only --reason "compile there"
 arm shares mount builder:SHARE ./inputs --reason "inspect inputs"
 ```
 
-Approval requested: embedded services through pinned mesh; distinct destination
+Approved scope: embedded services through pinned mesh; distinct destination
 shell/share grants; private keys kept local with ephemeral SSH admissions;
 protocol-independent leased shares; capability-tested unprivileged mount
 adapters; no privileged setup or silent fallback. Native adapter support remains

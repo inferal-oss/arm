@@ -4,7 +4,7 @@ Updated October 21, 2026 against the current worktree. The complete scope remain
 
 ## Current checkpoint
 
-**New scheme awaiting approval:** [Embedded mesh SSH and mounted shares](MESH-ACCESS-PROPOSAL.md). The user requested substantive design/research before implementation, with no privileged host setup. Proposed work uses embedded SSH/proxy, destination-owned sessions and local private keys, plus confined shares and capability-tested unprivileged consumer mount adapters. Linux FUSE needs existing host support; macOS local NFS/authenticated alternatives must prove non-root mounts and other-user isolation. No dependency install, system service/config change or implementation is authorized by this design checkpoint. Current delegated implementation continues below.
+**New scheme approved:** [Embedded mesh SSH and mounted shares](MESH-ACCESS-PROPOSAL.md). The operator approved staged implementation after the requested design/research. Use embedded SSH/proxy, destination-owned sessions and local private keys, plus confined shares and capability-tested unprivileged consumer mount adapters. Linux FUSE needs existing host support; macOS local NFS/authenticated alternatives must prove non-root mounts and other-user isolation. Root begins isolated feasibility work while current delegated features finish; embedded SSH follows the shared mesh backend checkpoint. No privileged host setup, OS dependency installation, system service/config change or security downgrade is authorized as a fallback. The services themselves are not implemented yet.
 
 **Running now:**
 

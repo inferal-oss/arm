@@ -2,7 +2,7 @@
 
 This records the implemented backend, CLI and initial direct-peer mesh within [the specification](../SPEC.md). It supplies real persistence, admission, command supervision, a shared client protocol, reversible agent instructions, and tested native-agent communication. It does not yet implement every provider and policy in the specification.
 
-Embedded mesh SSH sessions and mounted shares are **not implemented**. [Their proposed security scheme](MESH-ACCESS-PROPOSAL.md) is awaiting approval. It does not change existing verified direct-SSH bootstrap, peer grants, remote-provider support or OS privileges.
+Embedded mesh SSH sessions and mounted shares are **not implemented**. [Their security scheme](MESH-ACCESS-PROPOSAL.md) is approved for staged implementation with explicit unprivileged adapter feasibility gates. Current verified direct-SSH bootstrap, peer grants, remote-provider support and OS privileges remain the implemented behavior.
 
 ## Components
 
