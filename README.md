@@ -264,7 +264,7 @@ arm mesh disconnect HOST_ID
 arm mesh lookup OPERATION_KEY
 ```
 
-Connect prepares private backends/identities and concrete bound sockets, then asks you to review the actual SSH account/key, OS users, certificate pins, endpoints and directional grants before enabling network listeners/trust. Decline closes pending sockets; ordinary backends/private identities may remain. Scripts need `--yes`; dry-run and missing noninteractive confirmation create no ARM state. Exact listeners recover on restart; unavailable saved addresses fail visibly without rebinding. Existing backend ceilings are preserved, including auto memory/disk modes. Direct routing must work in both directions; ambiguous routes require explicit IP options. Connect never installs a missing executable or changes SSH trust. Advanced `mesh init` / `mesh join` remain available for explicit setup.
+Connect prepares private backends/identities and concrete bound sockets, then asks you to review the actual SSH account/key, OS users, certificate pins, endpoints and directional grants before enabling network listeners/trust. Decline closes pending sockets; ordinary backends/private identities may remain. Scripts need `--yes`; dry-run and missing noninteractive confirmation create no ARM state. Exact listeners recover on restart; unavailable saved addresses fail visibly without rebinding. Existing backend ceilings are preserved, including auto memory/disk modes. Direct routing must work in both directions; ambiguous routes require explicit IP options. When the destination lacks ARM, connect can separately review installation of a compatible thin executable from the carrier, local catalog or an explicit artifact; it never changes SSH trust or requires a destination compiler. Advanced `mesh init` / `mesh join` remain available for explicit setup.
 
 Localhost and peers share reported node metadata:
 
@@ -289,6 +289,41 @@ arm mesh message-lookup HOST_ID --key UNIQUE_SEND_KEY
 These send examples require the corresponding grants. Unknown or ambiguous host names fail closed; prefer stable host IDs in scripts. Remote mutations never retry automatically. Preserve the authority and original operation key after a lost response; inspect or retry the same request/key instead of creating new work. Single-lease remote `release`, `cancel` and `renew` accept `--key` for this purpose.
 
 `arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
+
+## Leased SSH through the mesh
+
+After reviewing directional `ssh-exec` and `lease-own` grants, explicitly enable
+ARM SSH on the destination and use the local system OpenSSH client:
+
+```sh
+# Run on the destination:
+arm ssh setup --reason "Allow reviewed leased SSH work"
+# Run on the source; first use reviews the exact destination host key:
+arm ssh HOST_ID --cpu 1 --ttl 5m --key CHECK_KEY --reason "Check the build host" -- 'uname -a'
+arm ssh pending
+arm ssh lookup HOST_ID --key CHECK_KEY
+```
+
+Each invocation gets a new destination-owned execution lease over pinned mutual
+TLS. Interactive terminals support PTY and resize; redirected commands preserve
+raw stdout, separate stderr and exit status. No system sshd, authorized_keys,
+shared login key or general SSH agent is configured. `ssh-exec` is same-account
+code execution and is not a sandbox. It grants no port forwarding, SFTP or shares.
+
+A lost reply stays unknown and is never an execution retry. Inspect the original
+key; `arm ssh seal HOST_ID --key CHECK_KEY --reason TEXT` explicitly prevents an
+absent key from executing later, without changing already admitted work. Complete
+unchanged invocation artifacts can be reviewed with `ssh lookup --cleanup` after
+exact destination finality and original-worker absence are proved. Changed or
+partial evidence is retained. Revoking the original enrollment can prevent remote
+receipt retrieval; that unresolved source history remains inspectable.
+
+`arm ssh disable --reason TEXT` closes current streams and retains history and
+keys. Explicit setup can re-enable the same destination key for fresh streams;
+old stream scopes remain invalid. Source history currently allows 64 total
+pending/completed/sealed invocations and refuses further admission without
+purging evidence; a settled-history archive command remains planned. See the
+[access contract](docs/MESH-ACCESS-PROPOSAL.md) and [validation](docs/VALIDATION.md).
 
 ## Database inspection and backup
 

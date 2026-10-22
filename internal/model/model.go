@@ -52,6 +52,7 @@ type Request struct {
 }
 
 type Lease struct {
+	Cargo         *CargoBinding          `json:"cargo,omitempty"`
 	PoolBinding   *PoolClaimBinding      `json:"pool_binding,omitempty"`
 	PoolError     *Error                 `json:"pool_error,omitempty"`
 	Budget        *BudgetBinding         `json:"budget_binding,omitempty"`

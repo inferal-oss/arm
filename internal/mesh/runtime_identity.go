@@ -87,3 +87,12 @@ func (r *RuntimeExecutable) Close() error {
 	}
 	return r.file.Close()
 }
+
+// VerifiedPath is internal launch authority derived from the startup image.
+// It is never a native/browser/peer request parameter or a public RPC result.
+func (r *RuntimeExecutable) VerifiedPath() (string, error) {
+	if _, e := r.Proof(); e != nil {
+		return "", e
+	}
+	return r.path, nil
+}

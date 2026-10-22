@@ -2,6 +2,7 @@ package meshstream
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"crypto/tls"
@@ -206,11 +207,12 @@ func Dial(ctx context.Context, address string, policy *tls.Config, control Contr
 	if err != nil || kind != websocket.MessageBinary {
 		return fail(fmt.Errorf("SSH stream admission unavailable"))
 	}
-	if _, err = closedObject(raw, []string{"version", "source", "target", "pair", "revision", "account"}); err != nil {
+	if _, err = closedObject(raw, []string{"version", "source", "target", "pair", "revision", "account", "control_sha256"}); err != nil {
 		return fail(err)
 	}
 	var accepted ready
-	if err = json.Unmarshal(raw, &accepted); err != nil || accepted != control.Ready() {
+	expectedAck, _ := json.Marshal(control.Ready())
+	if err = json.Unmarshal(raw, &accepted); err != nil || accepted != control.Ready() || !bytes.Equal(raw, expectedAck) {
 		return fail(fmt.Errorf("SSH stream admission identity changed"))
 	}
 	if !stopInitialAbort() || initial.Err() != nil {

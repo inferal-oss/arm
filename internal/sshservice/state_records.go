@@ -144,6 +144,12 @@ func DecodeStateRecord(raw []byte, out any) error {
 }
 
 func MatchTerminalReceipt(intent SourceIntent, receipt model.SSHLookup) error {
+	return matchSSHAdmission(intent, receipt, true)
+}
+
+// matchSSHAdmission validates the original admission without asserting that
+// nonterminal work has settled. Both branches retain the full request relation.
+func matchSSHAdmission(intent SourceIntent, receipt model.SSHLookup, terminal bool) error {
 	if intent.Validate() != nil || !receipt.Found || receipt.Operation == nil || receipt.Lease == nil {
 		return fmt.Errorf("matching durable destination receipt required")
 	}
@@ -151,11 +157,25 @@ func MatchTerminalReceipt(intent SourceIntent, receipt model.SSHLookup) error {
 	q := op.Request
 	r := intent.Request
 	expected := model.Request{Host: q.Target, Peer: intent.Source, OriginKey: r.Key, Key: "mesh:" + stateHash([]byte("arm-mesh-key-v1\x00"+intent.Source+"\x00ssh-exec\x00"+r.Key)), Reason: r.Reason, TTL: r.TTL, Resources: r.Resources, PeerCertificate: r.SourceCertificate, PeerGrantRevision: r.Pin.Revision}
-	if !validID(l.ID) || l.Host != q.Target || l.Created.IsZero() || !reflect.DeepEqual(l.Request, expected) || l.Artifact != nil || len(l.Ports) != 0 || l.ManagedDir != "" || l.PoolBinding != nil || l.QueueInfo != nil {
+	if l.Request.Budget == DefaultSSHPolicyID(q.Target, r.TargetOwner) {
+		expected.Budget = l.Request.Budget
+	}
+	if !validID(l.ID) || l.Host != q.Target || l.Created.IsZero() || !reflect.DeepEqual(l.Request, expected) || ValidateSSHLeaseAttachments(*l) != nil {
 		return fmt.Errorf("destination receipt has inconsistent authority, admission or unsupported attached obligations")
 	}
-	if op.Schema != 1 || op.Lease == "" || op.Lease != l.ID || op.AdmittedAt.IsZero() || l.State != "terminal" || l.Ended == nil || l.Ended.Before(op.AdmittedAt) || op.AdmittedAt.Before(l.Created) || l.Outcome == "" || q.Source != intent.Source || q.Target != r.Pin.Target || q.Pair != r.Pin.Pair || q.Revision != r.Pin.Revision || q.Account != r.Pin.Account || q.Key != r.Key || q.Certificate != r.SourceCertificate || q.PublicKeySHA256 != publicKeyHash(r.PublicKey) || q.Reason != r.Reason || q.TTL != r.TTL || !reflect.DeepEqual(q.Resources, r.Resources) || q.CWD != r.CWD || q.Kind != r.Kind || q.CommandSHA256 != r.CommandSHA256 || (r.PTY && !hexString(q.TerminalSHA256, 64)) || (!r.PTY && q.TerminalSHA256 != "") || l.Request.Host != q.Target || l.Request.Peer != intent.Source || l.Request.OriginKey != r.Key || l.OwnerUsername != q.Account || l.Owner != r.TargetOwner || l.Request.Key != "mesh:"+stateHash([]byte("arm-mesh-key-v1\x00"+intent.Source+"\x00ssh-exec\x00"+r.Key)) || l.Request.Reason != q.Reason || l.Request.TTL != q.TTL || l.Request.Resources != q.Resources || l.Request.PeerCertificate != q.Certificate || l.Request.PeerGrantRevision != q.Revision {
+	if op.Schema != 1 || op.Lease == "" || op.Lease != l.ID || op.AdmittedAt.IsZero() || l.Ended != nil && l.Ended.Before(op.AdmittedAt) || op.AdmittedAt.Before(l.Created) || q.Source != intent.Source || q.Target != r.Pin.Target || q.Pair != r.Pin.Pair || q.Revision != r.Pin.Revision || q.Account != r.Pin.Account || q.Key != r.Key || q.Certificate != r.SourceCertificate || q.PublicKeySHA256 != publicKeyHash(r.PublicKey) || q.Reason != r.Reason || q.TTL != r.TTL || !reflect.DeepEqual(q.Resources, r.Resources) || q.CWD != r.CWD || q.Kind != r.Kind || q.CommandSHA256 != r.CommandSHA256 || (r.PTY && !hexString(q.TerminalSHA256, 64)) || (!r.PTY && q.TerminalSHA256 != "") || l.Request.Host != q.Target || l.Request.Peer != intent.Source || l.Request.OriginKey != r.Key || l.OwnerUsername != q.Account || l.Owner != r.TargetOwner || l.Request.Key != "mesh:"+stateHash([]byte("arm-mesh-key-v1\x00"+intent.Source+"\x00ssh-exec\x00"+r.Key)) || l.Request.Reason != q.Reason || l.Request.TTL != q.TTL || l.Request.Resources != q.Resources || l.Request.PeerCertificate != q.Certificate || l.Request.PeerGrantRevision != q.Revision {
 		return fmt.Errorf("destination receipt differs from exact source intention or is not terminal")
+	}
+	switch l.State {
+	case "provisioning", "active", "ending", "reclaiming", "needs_attention", "terminal":
+	default:
+		return fmt.Errorf("unsupported SSH lease lifecycle state")
+	}
+	if terminal && (l.State != "terminal" || l.Ended == nil || l.Outcome == "") {
+		return fmt.Errorf("destination receipt is not terminal")
+	}
+	if l.State == "terminal" && (l.Ended == nil || l.Outcome == "") {
+		return fmt.Errorf("terminal SSH admission lacks final outcome")
 	}
 	return nil
 }

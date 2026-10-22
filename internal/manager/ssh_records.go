@@ -81,6 +81,11 @@ func (m *Manager) insertSSHOperation(tx *sql.Tx, l model.Lease, r *RunRequest) e
 	if _, err = tx.Exec(`INSERT INTO ssh_operations(principal,key,lease,data) VALUES(?,?,?,?)`, op.Request.Source, op.Request.Key, l.ID, string(raw)); err != nil {
 		return err
 	}
+	if r.sshRuntime.commitment != nil {
+		if err = insertSSHAdmittedFence(r.sshRuntime.ctx, tx, *r.sshRuntime.commitment, op, l); err != nil {
+			return err
+		}
+	}
 	return event(tx, "ssh.admitted", l.ID, op)
 }
 
@@ -177,6 +182,20 @@ func (m *Manager) LookupSSH(source, key string) (model.SSHLookup, error) {
 // and the current directional grant are destination-owned inputs. There is no
 // existing-key replay: callers receive inspection with a nil process handle.
 func (m *Manager) AcquireSSH(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time) (model.Lease, sshservice.Process, error) {
+	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, nil)
+}
+
+// AcquireSSHCommitted is the public-service adapter: its exact pre-exec
+// commitment joins operation+lease in one transaction before the process gate.
+// Actual command/channel remain runtime-only, never wire-decodable capability.
+func (m *Manager) AcquireSSHCommitted(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time, commitment model.SSHControlCommitment) (model.Lease, sshservice.Process, error) {
+	if commitment.Validate() != nil || !commitment.Matches(q) {
+		return model.Lease{}, nil, model.Err("invalid_request", "exact SSH control differs from execution")
+	}
+	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, &commitment)
+}
+
+func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time, commitment *model.SSHControlCommitment) (model.Lease, sshservice.Process, error) {
 	empty := model.Lease{}
 	if ctx == nil || ch == nil {
 		return empty, nil, model.Err("invalid_request", "live SSH context/channel required")
@@ -210,6 +229,14 @@ func (m *Manager) AcquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	if err = m.ensureSSHRecords(); err != nil {
 		return empty, nil, err
 	}
+	if commitment != nil {
+		if commitment.Owner != m.owner {
+			return empty, nil, model.Err("forbidden", "SSH destination UID differs from committed control")
+		}
+		if err = m.ensureSSHKeyFences(ctx); err != nil {
+			return empty, nil, err
+		}
+	}
 	prior, err := m.lookupSSH(q.Source, q.Key)
 	if err != nil {
 		return empty, nil, err
@@ -219,6 +246,25 @@ func (m *Manager) AcquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 			return empty, nil, model.Err("idempotency_conflict", "SSH key belongs to a different execution")
 		}
 		return *prior.Lease, nil, nil
+	}
+	present, fenceErr := m.sshFenceSchemaPresent(ctx)
+	if fenceErr != nil {
+		return empty, nil, fenceErr
+	}
+	if present {
+		fence, fenceErr := readSSHKeyFence(ctx, m.db, q.Source, q.Key, m.host)
+		if fenceErr != nil {
+			return empty, nil, fenceErr
+		}
+		if fence != nil {
+			if fence.State == "sealed" {
+				return empty, nil, model.Err("ssh_key_sealed", "this key is durably sealed against execution")
+			}
+			return empty, nil, model.Err("ssh_evidence_unavailable", "SSH key fence has no matching admitted operation")
+		}
+		if commitment == nil {
+			return empty, nil, model.Err("invalid_request", "committed SSH admission required for established key-fence namespace")
+		}
 	}
 	leases, err := m.list()
 	if err != nil {
@@ -236,6 +282,10 @@ func (m *Manager) AcquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	runtime, err := newSSHRuntime(ctx, q, e, ch, account, validUntil)
 	if err != nil {
 		return empty, nil, err
+	}
+	if commitment != nil {
+		c := *commitment
+		runtime.commitment = &c
 	}
 	r := model.Request{Host: m.host, Reason: q.Reason, TTL: q.TTL, Resources: q.Resources, Key: sshLeaseKey(q), Kind: "", Peer: q.Source, OriginKey: q.Key, PeerCertificate: q.Certificate, PeerGrantRevision: q.Revision}
 	run := &RunRequest{Request: r, Command: []string{sshRedactedCommand}, CWD: q.CWD, SSH: sshDescriptor(q), sshRuntime: runtime}

@@ -107,6 +107,7 @@ func proveSSHNamespace(ctx context.Context, contents map[string][]byte, host, ow
 	var service *proofSSHService
 	intentRecords := map[string]sshservice.SourceIntent{}
 	completionRecords := map[string]sshservice.SourceCompletion{}
+	sealRecords := map[string]sshservice.SourceSealCompletion{}
 	total := 0
 	for _, name := range sortedKeys(contents) {
 		if e := ctx.Err(); e != nil {
@@ -195,6 +196,20 @@ func proveSSHNamespace(ctx context.Context, contents map[string][]byte, host, ow
 			if _, e := os.Lstat(r.Intent.Directory.Path); !os.IsNotExist(e) {
 				blockers = append(blockers, ProofBlocker{"ssh_client_artifacts", r.Intent.Request.Key, "SSH invocation artifacts remain or cannot be proved removed; no cleanup inferred"})
 			}
+		case strings.HasPrefix(name, "ssh-sealed-") && strings.HasSuffix(name, ".json"):
+			var r proofSSHSourceSeal
+			if e := strictSSHProducer(raw, &r); e != nil {
+				return nil, e
+			}
+			var typed sshservice.SourceSealCompletion
+			if e := json.Unmarshal(raw, &typed); e != nil || typed.Validate() != nil || r.Intent.Source != host || r.Intent.Owner != owner || name != strings.Replace(sshIntentProofName(typed.Intent), "ssh-client-", "ssh-sealed-", 1) {
+				return nil, fmt.Errorf("invalid stopped SSH nonexecution receipt")
+			}
+			sealRecords[strings.Replace(name, "ssh-sealed-", "ssh-client-", 1)] = typed
+			completed++
+			if _, e := os.Lstat(r.Intent.Directory.Path); !os.IsNotExist(e) {
+				blockers = append(blockers, ProofBlocker{"ssh_client_artifacts", r.Intent.Request.Key, "SSH invocation artifacts remain or cannot be proved removed; no cleanup inferred"})
+			}
 		default:
 			return nil, fmt.Errorf("mesh namespace contains unfamiliar/partial SSH evidence %q", name)
 		}
@@ -205,7 +220,19 @@ func proveSSHNamespace(ctx context.Context, contents map[string][]byte, host, ow
 	if service != nil && (public == "" || public != service.PublicKey) {
 		return nil, fmt.Errorf("SSH host key and stopped service public identity differ")
 	}
+	for name := range sealRecords {
+		if _, ok := completionRecords[name]; ok {
+			return nil, fmt.Errorf("SSH key has contradictory admitted/nonexecution receipts")
+		}
+	}
 	for name, r := range intentRecords {
+		if c, ok := sealRecords[name]; ok {
+			a, _ := json.Marshal(r)
+			b, _ := json.Marshal(c.Intent)
+			if !bytes.Equal(a, b) {
+				return nil, fmt.Errorf("paired SSH pending/nonexecution records differ")
+			}
+		}
 		if c, ok := completionRecords[name]; ok {
 			a, _ := json.Marshal(r)
 			b, _ := json.Marshal(c.Intent)

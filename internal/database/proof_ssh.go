@@ -10,6 +10,7 @@ import (
 
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/sshservice"
 )
 
 const sshResetSchema = `CREATE TABLE ssh_operations (principal TEXT NOT NULL,key TEXT NOT NULL,lease TEXT NOT NULL UNIQUE,data TEXT NOT NULL,PRIMARY KEY(principal,key))`
@@ -22,11 +23,15 @@ type proofSSHRun struct {
 }
 
 func (p *proofReader) readSSH() error {
+	if err := checkSSHProofTypeShapes(); err != nil {
+		return err
+	}
 	_, exists := p.catalog["ssh_operations"]
 	if p.sshSchema != exists {
 		return fmt.Errorf("SSH operation schema and marker do not match")
 	}
 	seen := map[string]bool{}
+	operations := map[string]proofSSHOperationEvidence{}
 	if err := p.walk("ssh_operations", func(row proofRow) error {
 		op, err := rowJSON[model.SSHOperation](row, "data")
 		if err != nil {
@@ -52,6 +57,9 @@ func (p *proofReader) readSSH() error {
 		if !ok {
 			return fmt.Errorf("SSH admission references missing lease")
 		}
+		if err = sshservice.ValidateSSHLeaseAttachments(l); err != nil {
+			return err
+		}
 		run, ok := p.sshRuns[id]
 		if !ok || run.SSH == nil {
 			return fmt.Errorf("SSH admission lacks redacted run evidence")
@@ -64,6 +72,11 @@ func (p *proofReader) readSSH() error {
 			return fmt.Errorf("unknown SSH run descriptor schema")
 		}
 		seen[id] = true
+		raw, err := row.text("data")
+		if err != nil {
+			return err
+		}
+		operations[proofSSHOperationKey(source, key)] = proofSSHOperationEvidence{op, raw}
 		return nil
 	}); err != nil {
 		return err
@@ -73,7 +86,7 @@ func (p *proofReader) readSSH() error {
 			return fmt.Errorf("redacted SSH run lacks durable admission")
 		}
 	}
-	return nil
+	return p.readSSHFences(operations)
 }
 
 func sshProofHex(s string, n int) bool {

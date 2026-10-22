@@ -42,6 +42,7 @@ type State struct {
 	Service         *ServiceRecord
 	Pins            []Pin
 	Completions     []SourceCompletion
+	Seals           []SourceSealCompletion
 	Intents         []SourceIntent
 	PublicKey       string
 	home, dir       string
@@ -152,6 +153,12 @@ func ReadState(ctx context.Context, home string, b Binding) (*State, error) {
 				return nil, fmt.Errorf("invalid SSH terminal completion evidence")
 			}
 			s.Completions = append(s.Completions, r)
+		case strings.HasPrefix(name, "ssh-sealed-") && strings.HasSuffix(name, ".json"):
+			var r SourceSealCompletion
+			if e = DecodeStateRecord(raw, &r); e != nil || r.Validate() != nil || r.Intent.Source != b.Host || r.Intent.Owner != b.Owner || name != sealCompletionName(r.Intent) {
+				return nil, fmt.Errorf("invalid exact SSH nonexecution completion evidence")
+			}
+			s.Seals = append(s.Seals, r)
 		case strings.HasPrefix(name, "ssh-client-") && strings.HasSuffix(name, ".json"):
 			var r SourceIntent
 			if e = DecodeStateRecord(raw, &r); e != nil || r.Validate() != nil || r.Source != b.Host || r.Owner != b.Owner || name != intentName(r) {
@@ -162,8 +169,20 @@ func ReadState(ctx context.Context, home string, b Binding) (*State, error) {
 			return nil, fmt.Errorf("unfamiliar/partial mesh SSH namespace member %q; preserve evidence", name)
 		}
 	}
-	if len(s.Pins) > MaxPins || len(s.Intents) > MaxSourceIntents || len(s.Completions) > MaxCompletions {
+	if len(s.Pins) > MaxPins || len(s.Intents) > MaxSourceIntents || len(s.Completions)+len(s.Seals) > MaxCompletions {
 		return nil, fmt.Errorf("SSH complete pin/intent roster exceeds bounds")
+	}
+	for _, c := range s.Seals {
+		for _, r := range s.Intents {
+			if intentName(c.Intent) == intentName(r) && !exactIntent(c.Intent, r) {
+				return nil, fmt.Errorf("paired SSH seal differs from pending intention")
+			}
+		}
+		for _, r := range s.Completions {
+			if intentName(c.Intent) == intentName(r.Intent) {
+				return nil, fmt.Errorf("SSH key records both admitted work and nonexecution")
+			}
+		}
 	}
 	for _, c := range s.Completions {
 		for _, r := range s.Intents {

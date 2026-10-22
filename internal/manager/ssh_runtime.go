@@ -23,10 +23,17 @@ import (
 var sshAccountSlot = make(chan struct{}, 1)
 
 func resolveSSHAccount(ctx context.Context) (*user.User, error) {
+	if e := ctx.Err(); e != nil {
+		return nil, e
+	}
+	timer := time.NewTimer(500 * time.Millisecond)
+	defer timer.Stop()
 	select {
 	case sshAccountSlot <- struct{}{}:
-	default:
-		return nil, model.Err("account_unavailable", "destination account lookup already in progress")
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-timer.C:
+		return nil, model.Err("account_unavailable", "destination account lookup queue timed out")
 	}
 	type result struct {
 		u   *user.User
@@ -38,8 +45,6 @@ func resolveSSHAccount(ctx context.Context) (*user.User, error) {
 		u, err := user.LookupId(strconv.Itoa(os.Geteuid()))
 		done <- result{u, err}
 	}()
-	timer := time.NewTimer(500 * time.Millisecond)
-	defer timer.Stop()
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -59,6 +64,7 @@ type sshRuntime struct {
 	ctx            context.Context
 	cancel         context.CancelFunc
 	request        model.SSHExecutionRequest
+	commitment     *model.SSHControlCommitment
 	execution      sshservice.Execution
 	channel        ssh.Channel
 	account        *user.User

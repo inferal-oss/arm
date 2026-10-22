@@ -168,6 +168,9 @@ func TestSourceIntentOnlyExactTerminalReceiptSettles(t *testing.T) {
 	}
 	receipt = terminalReceipt(r)
 	for _, alter := range []func(*model.SSHLookup){
+		func(v *model.SSHLookup) {
+			v.Lease.Cargo = &model.CargoBinding{Schema: 1, Adapter: "cargo", State: "retained"}
+		},
 		func(v *model.SSHLookup) { v.Lease.Host = r.Source },
 		func(v *model.SSHLookup) { v.Lease.Request.StorageLease = "unreviewed" },
 		func(v *model.SSHLookup) { v.Lease.Request.Queue = true },

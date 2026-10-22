@@ -37,6 +37,10 @@ type sshManagerFixture struct {
 }
 
 func newSSHManagerFixture(t *testing.T, m *Manager, ttl time.Duration) *sshManagerFixture {
+	return newSSHManagerFixtureWithAdmission(t, m, ttl, nil)
+}
+
+func newSSHManagerFixtureWithAdmission(t *testing.T, m *Manager, ttl time.Duration, admit func(context.Context, model.SSHExecutionRequest, sshservice.Execution, ssh.Channel) (model.Lease, sshservice.Process, error)) *sshManagerFixture {
 	t.Helper()
 	if m == nil {
 		m = newManager(t)
@@ -69,7 +73,14 @@ func newSSHManagerFixture(t *testing.T, m *Manager, ttl time.Duration) *sshManag
 				raw, _ := json.Marshal(e.Terminal)
 				q.TerminalSHA256 = sshDigest(raw)
 			}
-			l, p, err := m.AcquireSSH(ctx, q, e, ch, model.Resources{CPU: 1}, time.Minute, time.Now().Add(time.Minute))
+			var l model.Lease
+			var p sshservice.Process
+			var err error
+			if admit != nil {
+				l, p, err = admit(ctx, q, e, ch)
+			} else {
+				l, p, err = m.AcquireSSH(ctx, q, e, ch, model.Resources{CPU: 1}, time.Minute, time.Now().Add(time.Minute))
+			}
 			f.mu.Lock()
 			f.q = q
 			f.channel = ch

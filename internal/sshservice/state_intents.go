@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -88,6 +89,11 @@ func ReserveSource(ctx context.Context, home string, b Binding, r SourceIntent) 
 				return ErrIntentExists
 			}
 		}
+		for _, completed := range s.Seals {
+			if intentName(completed.Intent) == intentName(r) {
+				return ErrIntentExists
+			}
+		}
 		for _, old := range s.Intents {
 			if intentName(old) == intentName(r) {
 				return ErrIntentExists
@@ -101,6 +107,9 @@ func ReserveSource(ctx context.Context, home string, b Binding, r SourceIntent) 
 		// count that pair once rather than inventing a second obligation.
 		completionSlots := map[string]bool{}
 		for _, old := range s.Completions {
+			completionSlots[intentName(old.Intent)] = true
+		}
+		for _, old := range s.Seals {
 			completionSlots[intentName(old.Intent)] = true
 		}
 		for _, old := range s.Intents {
@@ -157,6 +166,11 @@ func SettleSource(ctx context.Context, home string, b Binding, expected SourceIn
 		return e
 	}
 	return withStateMutation(ctx, home, b, true, func(s *State, d *os.File) error {
+		for _, r := range s.Seals {
+			if intentName(r.Intent) == intentName(expected) {
+				return fmt.Errorf("SSH key already records nonexecution; no admitted settlement")
+			}
+		}
 		if _, e := os.Lstat(expected.Directory.Path); !os.IsNotExist(e) {
 			return fmt.Errorf("SSH invocation artifacts remain or cannot be proved removed; retain exact intention")
 		}
@@ -186,7 +200,7 @@ func SettleSource(ctx context.Context, home string, b Binding, expected SourceIn
 			return fmt.Errorf("SSH intention is absent; no settlement inferred")
 		}
 		if completed == nil {
-			if len(s.Completions) >= MaxCompletions {
+			if len(s.Completions)+len(s.Seals) >= MaxCompletions {
 				return fmt.Errorf("SSH completed history full; preserve pending intention and archive known settled history explicitly")
 			}
 			record := SourceCompletion{1, expected, receipt, time.Now().UTC()}
@@ -227,4 +241,36 @@ func SettleSource(ctx context.Context, home string, b Binding, expected SourceIn
 		}
 		return nil
 	})
+}
+
+// DiscardEmptyInvocationDirectory is for a just-created, never-dispatched
+// directory after a definite reservation refusal. Exact identity and emptiness
+// are required; it cannot erase artifacts, pending state or another directory.
+func DiscardEmptyInvocationDirectory(ctx context.Context, expected InvocationDirectory) error {
+	if e := ctx.Err(); e != nil {
+		return e
+	}
+	actual, e := invocationIdentity(expected.Path)
+	if e != nil || actual != expected {
+		return fmt.Errorf("exact empty born directory required")
+	}
+	d, e := privateDirectory(expected.Path)
+	if e != nil {
+		return e
+	}
+	defer d.Close()
+	fd, e := unix.Openat(int(d.Fd()), ".", unix.O_RDONLY|unix.O_DIRECTORY|unix.O_CLOEXEC, 0)
+	if e != nil {
+		return e
+	}
+	scan := os.NewFile(uintptr(fd), expected.Path)
+	names, readErr := scan.Readdirnames(1)
+	scan.Close()
+	if len(names) != 0 || readErr != io.EOF {
+		return fmt.Errorf("invocation directory is not empty")
+	}
+	if validateDirectory(d, expected.Path) != nil {
+		return fmt.Errorf("invocation directory changed")
+	}
+	return os.Remove(expected.Path)
 }

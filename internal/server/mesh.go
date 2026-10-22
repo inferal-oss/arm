@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshstream"
 	"github.com/yrashk/arm/internal/model"
 	"io"
 	"net"
@@ -30,6 +31,7 @@ type meshService struct {
 	connections map[net.Conn]struct{}
 	slots       chan struct{}
 	peerSlots   sync.Map
+	ssh         *meshstream.Handler
 }
 
 func (s *Server) loadMesh() error {
@@ -98,6 +100,7 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 		return e
 	}
 	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32)}
+	service.ssh = service.newSSHHandler()
 	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: func(c net.Conn, state http.ConnState) {
 		service.mu.Lock()
 		defer service.mu.Unlock()
@@ -116,6 +119,11 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	return nil
 }
 func (m *meshService) revoke(host string) {
+	// Hijacked streams are absent from HTTP ConnState. Cancel them outside
+	// service.mu; cancellation never waits for manager lease cleanup.
+	if m.ssh != nil {
+		m.ssh.ClosePeer(host)
+	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for connection := range m.connections {
@@ -139,6 +147,9 @@ func (s *Server) closeMesh() {
 		s.meshPending = nil
 	}
 	if s.mesh != nil {
+		if s.mesh.ssh != nil {
+			s.mesh.ssh.ClosePeer("")
+		}
 		_ = s.mesh.http.Close()
 		closeErr := s.mesh.listener.Close()
 		if closeErr == nil || errors.Is(closeErr, net.ErrClosed) {
@@ -149,6 +160,14 @@ func (s *Server) closeMesh() {
 	}
 }
 func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == meshstream.Path {
+		if m.ssh == nil {
+			http.Error(w, "SSH unavailable", http.StatusForbidden)
+			return
+		}
+		m.ssh.ServeHTTP(w, r)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	respond := func(value any, e error) {
 		response := struct {
@@ -253,6 +272,8 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		return nil
 	}
 	switch request.Operation {
+	case "ssh_identity", "ssh_key_status", "ssh_key_seal":
+		return m.dispatchSSH(ctx, peer, request)
 	case "access_scope":
 		if peer.State != "active" || !peer.Proven {
 			return nil, model.Err("forbidden", "access scope requires an active authenticated direct peer")

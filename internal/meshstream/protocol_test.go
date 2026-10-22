@@ -14,7 +14,7 @@ import (
 
 func controlFixture() Control {
 	key, _ := ssh.NewPublicKey(ed25519.PublicKey(make([]byte, 32)))
-	return Control{1, strings.Repeat("a", 32), strings.Repeat("b", 32), strings.Repeat("c", 64), 1, "armuser", "op", strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key))), "test stream", time.Minute, model.Resources{CPU: 1, Memory: math.MaxInt64}, "/private/work"}
+	return Control{1, strings.Repeat("a", 32), strings.Repeat("b", 32), strings.Repeat("c", 64), 1, "armuser", "op", strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key))), "test stream", time.Minute, model.Resources{CPU: 1, Memory: math.MaxInt64}, "/private/work", "501", strings.Repeat("d", 64), "exec", strings.Repeat("e", 64), false}
 }
 func TestControlExactIntegersAndClosedSchema(t *testing.T) {
 	q := controlFixture()
@@ -31,7 +31,7 @@ func TestControlExactIntegersAndClosedSchema(t *testing.T) {
 }
 func TestControlAuthorityAndGrantBound(t *testing.T) {
 	q := controlFixture()
-	s := Scope{q.Source, q.Target, q.Pair, q.Account, "cert", q.Revision, q.TTL, q.Resources, time.Now().Add(time.Hour)}
+	s := Scope{q.Source, q.Target, q.Pair, q.Account, "cert", q.Revision, q.TTL, q.Resources, time.Now().Add(time.Hour), q.TargetOwner, q.HostKeySHA256, 1}
 	if err := q.Authorize(s); err != nil {
 		t.Fatal(err)
 	}

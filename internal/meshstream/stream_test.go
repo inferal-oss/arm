@@ -73,7 +73,7 @@ func transportTest(t *testing.T, limits Limits, handle func(context.Context, Sco
 		if !peer.Grant.Has("ssh-exec") {
 			return Scope{}, model.Err("forbidden", "explicit SSH grant required")
 		}
-		return Scope{peer.Identity.Host, q.Target, peer.Pair, q.Account, peer.Identity.Fingerprint, peer.Revision, peer.Grant.MaxTTL, peer.Grant.Limits, time.Now().Add(time.Minute)}, nil
+		return Scope{peer.Identity.Host, q.Target, peer.Pair, q.Account, peer.Identity.Fingerprint, peer.Revision, peer.Grant.MaxTTL, peer.Grant.Limits, time.Now().Add(time.Minute), q.TargetOwner, q.HostKeySHA256, 1}, nil
 	}
 	h.Revalidate = func(ctx context.Context, s Scope) error {
 		_, err := b.WithPeer(s.Source, func(p mesh.Peer) (any, error) {

@@ -278,6 +278,10 @@ func (p *proofReader) metadata() error {
 				return fmt.Errorf("unknown SSH execution schema")
 			}
 			p.sshSchema = true
+		case "ssh_fence_schema":
+			if raw != "1" {
+				return fmt.Errorf("unknown SSH key fence schema")
+			}
 		case "subpool_schema":
 			if raw != "1" {
 				return fmt.Errorf("unknown subpool schema")

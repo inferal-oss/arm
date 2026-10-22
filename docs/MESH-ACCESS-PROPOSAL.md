@@ -1,6 +1,6 @@
 # Approved embedded mesh SSH and mounted-share scheme
 
-October 21, 2026. **Approved by the operator; not implemented.** The operator
+October 21, 2026. **Approved by the operator. Embedded leased SSH is implemented; mounted shares remain in development.** The operator
 explicitly approved this revised scheme after reviewing its no-setup and mount
 feasibility boundaries. It extends the [mesh contract](MESH-SECURITY.md) within
 the scoped permissions and implementation gates below.

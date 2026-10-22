@@ -14,7 +14,7 @@ func TestSSHProofProducerShapesRequireIndependentReview(t *testing.T) {
 	}
 	// Simulate producer/proof declaration drift at each nested boundary. The
 	// independent literal schema cannot expand merely because model expanded.
-	for _, name := range []string{"model.Resources", "model.ProcessIdentity", "model.SSHLookup", "model.SSHOperation", "model.SSHExecutionRequest", "model.Lease", "model.Request", "model.WorkloadUsage", "model.ProcessUsage"} {
+	for _, name := range []string{"model.Resources", "model.ProcessIdentity", "model.SSHLookup", "model.SSHOperation", "model.SSHExecutionRequest", "model.Lease", "model.Request", "model.WorkloadUsage", "model.ProcessUsage", "model.CargoBinding"} {
 		t.Run(name, func(t *testing.T) {
 			declared := map[string]string{}
 			for k, v := range sshProofTypeShapes {
