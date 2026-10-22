@@ -89,7 +89,7 @@ func (m *dashboardModel) recoveryKey(key string) tea.Cmd {
 	if ui == nil {
 		return nil
 	}
-	if key >= "1" && key <= "6" {
+	if key >= "1" && key <= "7" {
 		m.recovery = nil
 		return m.key(mouseKey(key))
 	}
@@ -139,6 +139,11 @@ func (m *dashboardModel) recoveryKey(key string) tea.Cmd {
 			m.pendingMessage = &request
 			m.messageIntent = &r
 			m.composer = &messageComposer{request: request, authority: r.Authority, review: true, unknown: true}
+		case "mesh":
+			var request meshIntent
+			json.Unmarshal(r.Request, &request)
+			m.meshUI = &meshDashboard{mode: "operations", unknown: &request, intent: &r, err: "Restored exact request. Lookup/retry is explicit; nothing was sent on startup."}
+			m.view = 6
 		}
 		m.notice = "Restored UNKNOWN request for authority " + safe(r.Authority) + "; no lookup or send was performed."
 		m.viewport.GotoTop()

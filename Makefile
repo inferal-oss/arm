@@ -70,6 +70,7 @@ test-local: build
 	python3 scripts/test-terminal-colors.py
 	python3 scripts/test-terminal-pools.py
 	python3 scripts/test-terminal-recovery.py
+	$(PYTHON) scripts/test-terminal-mesh.py --arm bin/arm
 	python3 scripts/test-memory.py
 	python3 scripts/test-live-disk.py
 	python3 scripts/test-database.py

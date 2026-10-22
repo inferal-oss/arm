@@ -62,6 +62,9 @@ func (m *dashboardModel) viewportContent() string {
 	return content
 }
 func (m *dashboardModel) displayContent() string {
+	if m.nodeUI != nil && m.record == nil {
+		return fieldLabels(m.nodeText())
+	}
 	if m.ioPicker != nil {
 		return fieldLabels(m.pickerText())
 	}
@@ -197,6 +200,9 @@ func fitBlock(text string, width, height int) string {
 }
 
 func (m *dashboardModel) bodyText() string {
+	if m.nodeUI != nil {
+		return m.nodeText()
+	}
 	if m.recovery != nil {
 		return m.recoveryText()
 	}
@@ -225,6 +231,8 @@ func (m *dashboardModel) bodyText() string {
 		return m.eventsText()
 	case 5:
 		return m.hostText()
+	case 6:
+		return m.meshText()
 	}
 	return ""
 }
@@ -417,7 +425,7 @@ func (m *dashboardModel) eventsText() string {
 func (m *dashboardModel) hostText() string {
 	s := m.data.status
 	var out strings.Builder
-	fmt.Fprintf(&out, "Host: %s\nOwner: %s\nDraining: %t\nJournal cursor: %d\n\nLocal authority\nNative authenticated operator connection. This dashboard shows the local host; peer views are not available here.\nClosing the dashboard never stops work.\n\nCapabilities\n", safe(s.Host), m.owner(s.Owner, s.OwnerUsername, s.Host), s.Draining, s.Cursor)
+	fmt.Fprintf(&out, "Host: %s\nOwner: %s\nDraining: %t\nJournal cursor: %d\n\nLocal authority\nNative authenticated operator connection. This Host page describes the local authority. Mesh [7] opens explicitly selected read-only peer contexts through this gateway.\nClosing the dashboard never stops work.\n\nCapabilities\n", safe(s.Host), m.owner(s.Owner, s.OwnerUsername, s.Host), s.Draining, s.Cursor)
 	for _, capability := range s.Capabilities {
 		out.WriteString("  • " + safe(capability) + "\n")
 	}

@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -13,10 +14,10 @@ func (m *dashboardModel) modal() bool {
 	if m.recovery != nil {
 		return false
 	}
-	return m.poolModal() || m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
+	return m.meshModal() || m.poolModal() || m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
-	return m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
+	return m.nodeUI == nil && m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
 }
 func (m *dashboardModel) bodyHeight() int { return max(1, m.height-8) }
 func (m *dashboardModel) modalGeometry() (int, int) {
@@ -37,6 +38,13 @@ func (m *dashboardModel) viewportGeometry() (int, int) {
 }
 
 func (m *dashboardModel) editorDisplay() string {
+	if strings.HasPrefix(m.inputMode, "mesh:") {
+		label := "Reason"
+		if m.inputMode == "mesh:field" && m.meshUI != nil && m.meshUI.form != nil {
+			label = m.meshUI.form.fields[m.meshUI.form.selected].label
+		}
+		return strong.Render(safe(label)) + "\n\n" + m.input.View() + "\n\n" + keycap("Enter", "Apply field", "") + "  " + keycap("Esc", "Back", "quiet") + "\n\nNo network change is sent while editing."
+	}
 	if strings.HasPrefix(m.inputMode, "pool:") {
 		return m.poolEditorDisplay()
 	}
@@ -63,6 +71,9 @@ func (m *dashboardModel) editorDisplay() string {
 }
 
 func (m *dashboardModel) windowTitle() (string, string) {
+	if m.nodeUI != nil && m.record == nil {
+		return "SELECTED REMOTE NODE · READ ONLY", "blue"
+	}
 	if m.recovery != nil && m.record == nil {
 		return "RECOVERY · UNCERTAIN REQUESTS", "warning"
 	}
@@ -110,6 +121,15 @@ func (m *dashboardModel) windowTitle() (string, string) {
 	if m.poolUI != nil {
 		return m.poolWindowTitle()
 	}
+	if m.view == 6 && m.meshUI != nil {
+		if m.meshUI.prompt != nil {
+			return m.meshUI.prompt.title, "warning"
+		}
+		if m.meshUI.form != nil {
+			return "MESH · CONNECT NODE", ""
+		}
+		return "MESH · LOCAL OPERATOR", ""
+	}
 	if m.resourceID != "" {
 		return "RESOURCE · CONSUMERS & PURPOSE", ""
 	}
@@ -147,6 +167,11 @@ func (m *dashboardModel) renderMain() string {
 	return fitBlock(lipgloss.NewCompositor(lipgloss.NewLayer(dimmed), lipgloss.NewLayer(shadow).X(x+1).Y(y+1).Z(1), lipgloss.NewLayer(dialog).X(x).Y(y).Z(2)).Render(), width, height)
 }
 func (m *dashboardModel) renderFeed() string {
+	if m.nodeUI != nil {
+		ui := m.nodeUI
+		body := "REMOTE · READ ONLY\n\n" + safe(ui.selection.Host) + "\n\nThrough LOCAL gateway\n" + safe(ui.selection.Source) + "\n\nLocal activity is hidden.\nRemote monitor/event streams, contacts, messages and mutations are unavailable.\n\n[7/Esc] Return to LOCAL Mesh"
+		return window("DESTINATION CONTEXT", ansi.Wrap(body, 29, ""), 33, m.bodyHeight(), false, "blue")
+	}
 	width, height := 33, m.bodyHeight()
 	lines := []string{muted.Render("Leases & messages · scroll"), ""}
 	items := m.feedItems()
@@ -171,6 +196,16 @@ func (m *dashboardModel) renderFeed() string {
 }
 
 func (m *dashboardModel) freshness() string {
+	if m.nodeUI != nil {
+		ui := m.nodeUI
+		if !ui.connected || ui.err != "" || !ui.lastRead.IsZero() && m.timeNow.Sub(ui.lastRead) > 5*time.Second {
+			return "DESTINATION STALE"
+		}
+		if ui.lastRead.IsZero() {
+			return "Reading destination"
+		}
+		return fmt.Sprintf("Destination snapshot %ds ago", max(0, int(m.timeNow.Sub(ui.lastRead).Seconds())))
+	}
 	fresh := "Awaiting snapshot"
 	if !m.lastRefresh.IsZero() {
 		fresh = fmt.Sprintf("State %ds ago", max(0, int(m.timeNow.Sub(m.lastRefresh).Seconds())))
@@ -231,6 +266,13 @@ func (m *dashboardModel) View() tea.View {
 		status = strong.Foreground(colorAccent).Render("● connected")
 	}
 	host := m.data.status.Host
+	if m.nodeUI != nil {
+		host = "REMOTE " + m.nodeUI.selection.Host
+		status = strong.Foreground(colorWarning).Render("read-only · stale")
+		if m.nodeUI.connected && m.nodeUI.err == "" && (m.nodeUI.lastRead.IsZero() || m.timeNow.Sub(m.nodeUI.lastRead) <= 5*time.Second) {
+			status = strong.Foreground(colorBlue).Render("remote · read-only")
+		}
+	}
 	if len(host) > 18 {
 		host = host[:8] + "…" + host[len(host)-6:]
 	}
@@ -250,7 +292,11 @@ func (m *dashboardModel) View() tea.View {
 		if m.view == index {
 			nav = append(nav, lipgloss.NewStyle().Bold(true).Foreground(colorAccent).Background(lipgloss.Color("#203630")).Render("["+label+"]"))
 		} else {
-			nav = append(nav, muted.Render(" "+label+" "))
+			if m.width < 65 {
+				nav = append(nav, muted.Render(label))
+			} else {
+				nav = append(nav, muted.Render(" "+label+" "))
+			}
 		}
 	}
 	section := viewNames[m.view]
@@ -268,6 +314,9 @@ func (m *dashboardModel) View() tea.View {
 		main = lipgloss.JoinHorizontal(lipgloss.Top, main, "  ", m.renderFeed())
 	}
 	notice := m.notice
+	if m.nodeUI != nil {
+		notice = "Read-only destination context · [7/Esc] returns to LOCAL Mesh · no automatic retry or localhost fallback"
+	}
 	if notice == "" {
 		notice = "Ready · inspection is read-only; changes require a concrete review."
 		if m.review != nil || m.composer != nil {
@@ -314,6 +363,9 @@ func (m *dashboardModel) feedCaption(item feedItem) (string, string) {
 }
 
 func (m *dashboardModel) exitFooter() string {
+	if m.nodeUI != nil {
+		return " [q] Exit · [7/Esc] LOCAL Mesh · leases keep running"
+	}
 	right := "Local operator · [u] Recovery · [f] Feed "
 	if m.width < 82 {
 		right = "Local operator · [u] Recovery"

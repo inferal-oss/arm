@@ -38,10 +38,10 @@ func brandMark() string {
 	return strong.Foreground(toneColor("accent", .85)).Render(" arm ")
 }
 func (m *dashboardModel) navigationLabel(index int) string {
-	if m.width >= 82 {
+	if m.width >= 100 {
 		return fmt.Sprintf("%d %s", index+1, viewNames[index])
 	}
-	names := []string{"Mon", "Res", "Lse", "Msg", "Act", "Host"}
+	names := []string{"Mon", "Res", "Lse", "Msg", "Act", "Host", "Mesh"}
 	if m.width < 55 {
 		return fmt.Sprintf("%d%s", index+1, names[index])
 	}

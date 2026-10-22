@@ -95,6 +95,15 @@ func (r pendingRecord) validate() error {
 		if q.Audience == "" || q.Audience == "operator" || strings.TrimSpace(q.Body) == "" || len(q.Body) > 16384 || len(q.Targets) == 0 || len(q.Targets) > 128 {
 			return fmt.Errorf("invalid exact reviewed operator message")
 		}
+	case "mesh":
+		var q meshIntent
+		if err := strictPendingJSON(r.Request, &q); err != nil {
+			return err
+		}
+		if err := q.validate(); err != nil {
+			return err
+		}
+		key = q.Key
 	default:
 		return fmt.Errorf("unknown pending operation kind")
 	}
@@ -111,6 +120,11 @@ func (r pendingRecord) validate() error {
 	return nil
 }
 func (r pendingRecord) key() string {
+	if r.Kind == "mesh" {
+		var q meshIntent
+		json.Unmarshal(r.Request, &q)
+		return q.Key
+	}
 	var q struct {
 		Key string `json:"idempotency_key"`
 	}
@@ -134,6 +148,12 @@ func samePending(a, b pendingRecord) bool {
 		return samePoolRequest(x, y)
 	case "message":
 		var x, y manager.MessageRequest
+		if json.Unmarshal(a.Request, &x) != nil || json.Unmarshal(b.Request, &y) != nil {
+			return false
+		}
+		return reflect.DeepEqual(x, y)
+	case "mesh":
+		var x, y meshIntent
 		if json.Unmarshal(a.Request, &x) != nil || json.Unmarshal(b.Request, &y) != nil {
 			return false
 		}
@@ -417,6 +437,9 @@ func settlePendingOutcome(home string, r pendingRecord, initialRejection bool) e
 	}
 	if initialRejection && (r.Attempts != 1 || stored.Attempts != r.Attempts) {
 		return fmt.Errorf("another dispatch attempt is retained; an initial refusal cannot settle its uncertainty")
+	}
+	if r.Kind == "mesh" && stored.Attempts != r.Attempts {
+		return fmt.Errorf("a newer Mesh dispatch remains retained; an older receipt cannot settle its outcome")
 	}
 	if !samePending(stored, r) {
 		return fmt.Errorf("retained request changed; refusing to clear another operation")

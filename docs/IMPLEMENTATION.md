@@ -522,7 +522,7 @@ Hierarchy editors/tree navigation in web/TUI remain required. Existing reviewed 
 
 The Charm/Bubble Tea/Bubbles/Lip Gloss interface now uses cached perceptual gradient palettes for resource meters and vertically shaded CPU histories. Unknown gaps remain distinct from known zero. Semantic lease colors preserve literal lifecycle/outcome labels; selected rows retain visible text/markers in monochrome. More distinct compact navigation labels share geometry with mouse regions. The header, focused input, bounded centered review shadow and fixed-frame visual-line scroll hints use the same palette. Existing six-view layout, live feed, guarded actions and transport remain intact.
 
-Bubble Tea downsamples RGB styles to capable truecolor,256-color,16-color or monochrome profiles; NO_COLOR emits no color SGR. This is a tested presentation improvement, not full web/TUI feature parity. Mesh/node contexts and complete hierarchy/policy editors remain required. Optional deterministic synthetic ANSI→SVG review tooling is development-only and is not a terminal emulator or native GUI screenshot. No product dependency was added.
+Bubble Tea downsamples RGB styles to capable truecolor,256-color,16-color or monochrome profiles; NO_COLOR emits no color SGR. This is a tested presentation improvement, not full web/TUI feature parity. Scoped Mesh/node contexts are implemented separately; complete hierarchy/policy editors and full remote operational parity remain required. Optional deterministic synthetic ANSI→SVG review tooling is development-only and is not a terminal emulator or native GUI screenshot. No product dependency was added.
 
 
 ## Selected Carve identity
@@ -566,3 +566,12 @@ These screens manage direct peers. Connected-graph discovery/forwarded messaging
 ## Approved connected-graph messaging work
 
 The operator approved the security amendment in [MESH-ROUTING-PROPOSAL.md](MESH-ROUTING-PROPOSAL.md) on October21. A standalone bounded nested-TLS/closed-relay prototype is assigned first. Workspace membership, graph discovery and forwarded durable messages are not supported yet; the current product remains direct-only. Explicit workspace joins/merges, opt-in agent publication, directory freshness and denial of inherited execution/resource grants remain implementation and validation gates.
+
+
+## Terminal Mesh controls and selected-node workspace
+
+The seventh terminal tab matches the initial web Mesh inspection/management scope: local/direct-peer cards, exact node detail, directional rights and freshness, a typed connect editor, default-Keep preparation and immutable trust review, reviewed disconnect/cancel/recovery/handoff and collapsible full records. Known connect/restore/verify/disconnect reviews show concrete accounts, pins, endpoints, grants and consequences. Unknown review shapes cannot be approved. Mouse navigation and compact seven-tab layouts retain the windowed Charm/Lip Gloss presentation.
+
+Each selected remote node opens a separate immutable scoped session through the local gateway. Resources, authorized leases/own details and metadata use destination-only DTOs; local streams, activity and actions are hidden and never substituted. Revocation leaves stale remote observations; reopening is explicit. Remote monitor/messages/mutations and full operational parity remain unsupported.
+
+Mesh mutations retain the exact source authority, operation/key/request and dispatch attempt in private recovery storage before sending. A response from an older dispatch cannot clear newer uncertainty. Workflow notifications only invalidate read snapshots, with coalescing during requests. Uncertain Resume cannot be resent because the current backend can create another child attempt; parent/child receipts remain inspectable, and separately keyed Resume/lookup remains required. Closing or reconnecting neither replays mutations nor releases leases.

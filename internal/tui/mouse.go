@@ -11,6 +11,7 @@ import (
 
 type mouseControl struct{ key, label string }
 type mouseRegion struct {
+	mesh                bool
 	recovery            bool
 	pool                bool
 	picker              bool
@@ -27,6 +28,8 @@ type dashboardMouseMsg struct {
 
 func (m *dashboardModel) controls() []mouseControl {
 	switch {
+	case m.nodeUI != nil && m.record == nil:
+		return []mouseControl{{"7", "LOCAL Mesh"}, {"r", "Read node"}, {"i", "Record"}, {"pgdown", "↓"}}
 	case m.recovery != nil && m.record == nil:
 		return m.recoveryControls()
 	case m.ioPicker != nil:
@@ -55,6 +58,8 @@ func (m *dashboardModel) controls() []mouseControl {
 		return []mouseControl{{"e", "Extend"}, {"x", "Release"}, {"c", "Cancel"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Back"}}
 	case m.poolUI != nil:
 		return m.poolControls()
+	case m.view == 6:
+		return m.meshControls()
 	case m.resourceID != "":
 		return []mouseControl{{"enter", "Open lease"}, {"i", "Record"}, {"esc", "Budgets"}}
 	case m.view == 0:
@@ -107,7 +112,7 @@ func (m *dashboardModel) mouseFrame() string {
 // telemetry refresh must not discard the next delta; navigation/modal/geometry
 // changes still prevent an old gesture from scrolling a different surface.
 func (m *dashboardModel) mouseScrollFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p", m.recovery)
+	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI)
 }
 
 func mouseKey(key string) tea.KeyPressMsg {
@@ -145,15 +150,25 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 		for i := range viewNames {
 			label := m.navigationLabel(i)
 			w := ansi.StringWidth(label) + 2
+			if m.width < 65 && i != m.view {
+				w -= 2
+			}
 			regions = append(regions, mouseRegion{x: x, y: 1, width: w, height: 1, key: fmt.Sprintf("nav%d", i), row: -1})
 			x += w + 1
 		}
 	}
 	if m.modal() {
+		regions = append(regions, m.meshMouseRegions()...)
 		regions = append(regions, m.poolMouseRegions()...)
 		regions = append(regions, m.modalButtonRegions()...)
 		regions = append(regions, m.pickerMouseRegions()...)
 		return regions
+	}
+	if m.nodeUI != nil && m.record == nil {
+		return regions
+	}
+	if m.view == 6 && m.record == nil {
+		return append(regions, m.meshMouseRegions()...)
 	}
 	if m.width >= 110 {
 		for i := m.feedOffset; i < len(m.feedItems()); i++ {
@@ -307,6 +322,9 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg) tea.Cmd {
 	}
 	if r.key != "" {
 		return m.key(mouseKey(r.key))
+	}
+	if r.mesh {
+		return m.acceptMeshMouse(r)
 	}
 	if r.picker && m.ioPicker != nil {
 		options := m.ioOptions()

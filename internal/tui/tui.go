@@ -20,7 +20,7 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host"}
+var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh"}
 
 type dashboardModel struct {
 	recovery                          *recoveryBrowser
@@ -30,6 +30,8 @@ type dashboardModel struct {
 	poolUI                            *poolDashboard
 	poolPending                       *poolOperation
 	poolSequence                      uint64
+	meshUI                            *meshDashboard
+	nodeUI                            *nodeDashboard
 	hideInactive                      bool
 	ctx                               context.Context
 	home                              string
@@ -82,6 +84,9 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 		if result.session != nil {
 			result.session.Close()
 		}
+		if result.nodeUI != nil && result.nodeUI.session != nil {
+			result.nodeUI.session.Close()
+		}
 		if result.pending || result.unknownLease != "" {
 			fmt.Fprintln(output, "Lease action outcome may be unknown; inspect lease", safe(result.unknownLease), "before another action.")
 		}
@@ -92,6 +97,12 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 			fmt.Fprintln(output, "Message outcome may be unknown; inspect idempotency key", safe(result.pendingMessage.Key), "before another send.")
 			if raw, marshalErr := json.Marshal(result.pendingMessage); marshalErr == nil {
 				fmt.Fprintln(output, "Exact reviewed request (no automatic retry):", safe(string(raw)))
+			}
+		}
+		for _, record := range result.pendingRecords {
+			if record.Kind == "mesh" {
+				fmt.Fprintln(output, "Mesh outcome may be unknown for LOCAL authority", safe(record.Authority), "; inspect exact coordinator key", safe(record.key()), "before explicit recovery. No request was replayed.")
+				fmt.Fprintln(output, "Exact retained coordinator request:", safe(string(record.Request)))
 			}
 		}
 	}
@@ -170,6 +181,12 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Tick(time.Duration(min(15, 1<<min(m.retry, 4)))*time.Second, func(time.Time) tea.Msg { return reconnectMsg{} })
 		}
 		m.session = msg.session
+		if m.meshUI != nil {
+			m.meshUI.watching = false
+			m.meshUI.loading = false
+			m.meshUI.sequence++
+			m.meshUI.prompt = nil
+		}
 		// Reconnection is an authoritative journal snapshot. The database may
 		// have been replaced and sequence values may restart at this endpoint.
 		m.events = nil
@@ -181,6 +198,9 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.acceptMonitor(msg.page)
 		for _, event := range msg.events {
 			m.addEvent(event)
+		}
+		if m.view == 6 && m.meshUI != nil {
+			return m, tea.Batch(waitStream(m.ctx, m.session), m.readMesh("list", ""))
 		}
 		return m, waitStream(m.ctx, m.session)
 	case reconnectMsg:
@@ -205,6 +225,14 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if msg.err != nil {
 			m.connected = false
+			if m.meshUI != nil {
+				m.meshUI.sequence++
+				m.meshUI.loading = false
+				m.meshUI.watching = false
+				m.meshUI.prompt = nil
+				m.meshUI.busy = false
+				m.meshUI.err = "LOCAL coordinator disconnected. Retained requests are not replayed."
+			}
 			m.detailGeneration++
 			m.refreshing = false
 			m.review = nil
@@ -228,9 +256,31 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.page != nil {
 			m.acceptMonitor(*msg.page)
 		}
+		if msg.workflow != nil && m.meshUI != nil {
+			m.meshUI.dirty = true
+		}
+		if msg.workflow != nil && m.view == 6 && m.meshUI != nil && !m.meshUI.loading && !m.meshModal() {
+			mode, id := "list", ""
+			if op := m.meshUI.operation; op != nil && op.Key == msg.workflow.Key {
+				mode, id = "operation", op.Key
+			}
+			return m, tea.Batch(waitStream(m.ctx, m.session), m.readMesh(mode, id))
+		}
 		return m, waitStream(m.ctx, m.session)
 	case tickMsg:
 		m.timeNow = time.Time(msg)
+		if ui := m.meshUI; m.nodeUI == nil && m.view == 6 && m.connected && ui != nil && ui.dirty && !ui.loading && !ui.busy && !m.meshModal() {
+			mode, id := "list", ""
+			if ui.mode == "operation" && ui.operation != nil {
+				mode, id = "operation", ui.operation.Key
+			} else if ui.mode == "node" && ui.node != nil {
+				mode, id = "node", ui.node.Host
+			}
+			return m, tea.Batch(clockTick(), m.readMesh(mode, id))
+		}
+		if m.nodeUI != nil && m.nodeUI.connected && !m.nodeUI.loading && m.timeNow.Sub(m.nodeUI.lastRead) >= 2*time.Second {
+			return m, tea.Batch(clockTick(), m.refreshNode(""))
+		}
 		if m.connected && m.dirty && !m.refreshing && m.timeNow.Sub(m.lastRefresh) >= time.Second {
 			m.refreshing = true
 			m.dirty = false
@@ -239,6 +289,23 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, clockTick()
 	case poolReadMsg:
 		return m, m.acceptPoolRead(msg)
+	case meshReadMsg:
+		return m, m.acceptMeshRead(msg)
+	case meshSendMsg:
+		return m, m.acceptMeshSend(msg)
+	case meshWatchMsg:
+		if m.meshUI == msg.ui && m.session == msg.session && msg.err != nil {
+			msg.ui.watching = false
+			msg.ui.err = "Workflow stream unavailable: " + safe(msg.err.Error()) + ". Refresh reads snapshots; no mutation is retried."
+		}
+	case nodeReadMsg:
+		return m, m.acceptNodeRead(msg)
+	case nodeLostMsg:
+		if m.nodeUI == msg.ui && msg.ui.session == msg.session {
+			msg.ui.connected = false
+			msg.ui.loading = false
+			msg.ui.err = "Disconnected; cached destination observations are stale. Explicitly reopen from LOCAL Mesh; no local fallback."
+		}
 	case poolResultMsg:
 		return m, m.acceptPoolResult(msg)
 	case detailMsg:
@@ -272,6 +339,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	if k == "q" && m.inputMode == "" {
 		return tea.Quit
 	}
+	if m.nodeUI != nil && m.record == nil {
+		return m.nodeKey(k)
+	}
 	if k == "u" && m.canOpenRecovery() {
 		return m.openRecovery()
 	}
@@ -303,8 +373,11 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	if m.composer != nil {
 		return m.composeKey(k)
 	}
+	if m.view == 6 && m.record == nil && (m.meshModal() || k < "1" || k > "7") {
+		return m.meshKey(k)
+	}
 	if m.poolUI != nil && m.record == nil && m.detail == nil {
-		if !m.poolModal() && k >= "1" && k <= "6" {
+		if !m.poolModal() && k >= "1" && k <= "7" {
 			m.poolUI.generation++
 			m.poolUI = nil
 			m.resourceID = ""
@@ -393,7 +466,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		}
 		return nil
 	}
-	if k >= "1" && k <= "6" {
+	if k >= "1" && k <= "7" {
 		m.detailGeneration++
 		m.view = int(k[0] - '1')
 		m.selected = 0
@@ -401,6 +474,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		m.feedFocus = false
 		m.feedOpen = false
 		m.viewport.GotoTop()
+		if m.view == 6 {
+			return m.openMesh()
+		}
 		return nil
 	}
 	switch k {
@@ -434,7 +510,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. This dashboard shows the local host; peer views are not available here."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–7 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"
@@ -496,6 +572,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 func (m *dashboardModel) acceptInput() tea.Cmd {
+	if strings.HasPrefix(m.inputMode, "mesh:") {
+		return m.acceptMeshInput()
+	}
 	value := m.input.Value()
 	mode := m.inputMode
 	m.inputMode = ""

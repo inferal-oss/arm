@@ -38,10 +38,11 @@ type refreshedMsg struct {
 	err     error
 }
 type streamMsg struct {
-	session transport
-	event   *model.Event
-	page    *model.MonitorPage
-	err     error
+	session  transport
+	event    *model.Event
+	page     *model.MonitorPage
+	workflow *client.WorkflowChange
+	err      error
 }
 type tickMsg time.Time
 type reconnectMsg struct{}
@@ -93,6 +94,8 @@ func waitStream(ctx context.Context, s transport) tea.Cmd {
 			return streamMsg{session: s, event: &e}
 		case p := <-s.Telemetry():
 			return streamMsg{session: s, page: &p}
+		case change := <-workflowChannel(s):
+			return streamMsg{session: s, workflow: &change}
 		case <-s.Done():
 			return streamMsg{session: s, err: s.Err()}
 		case <-ctx.Done():
