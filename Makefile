@@ -59,6 +59,7 @@ test-local: build
 	python3 scripts/test-terminal-pools.py
 	python3 scripts/test-terminal-recovery.py
 	python3 scripts/test-memory.py
+	python3 scripts/test-live-disk.py
 	python3 scripts/test-lifecycle.py
 	python3 scripts/test-scheduling.py
 	python3 scripts/test-budgets.py

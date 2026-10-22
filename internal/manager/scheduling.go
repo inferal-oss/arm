@@ -199,6 +199,11 @@ func schedulingSnapshot(leases []model.Lease) (queueSnapshot, error) {
 			}
 		}
 	}
+	diskReserved, err := diskPromises(leases)
+	if err != nil {
+		return s, err
+	}
+	s.used.Disk = diskReserved
 	return s, nil
 }
 func number(value json.Number) *json.Number { return &value }
@@ -226,8 +231,21 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	if l.Request.Resources.CPU > max(0, m.capacity.CPU-s.used.CPU) || s.used.CPU > m.capacity.CPU {
 		add("budget_reserved", m.host+"/cpu", "logical-core-equivalents", "CPU budget is committed to existing leases.", number(model.FloatQuantity(l.Request.Resources.CPU)), number(model.FloatQuantity(max(0, m.capacity.CPU-s.used.CPU))))
 	}
-	if l.Request.Resources.Disk > max(int64(0), m.capacity.Disk-s.used.Disk) || s.used.Disk > m.capacity.Disk {
-		add("budget_reserved", m.host+"/disk", "bytes", "Disk budget is committed to existing leases.", number(model.CountQuantity(l.Request.Resources.Disk)), number(model.CountQuantity(max(int64(0), m.capacity.Disk-s.used.Disk))))
+	if l.Request.Resources.Disk > 0 {
+		budget := m.diskBudget(s.used.Disk)
+		if !budget.Known {
+			add("observation_unavailable", m.host+"/disk", "bytes", "Fresh nonprivileged state-filesystem headroom is required before disk admission.", number(model.CountQuantity(l.Request.Resources.Disk)), nil)
+		} else if l.Request.Resources.Disk > budget.Available {
+			add("disk_headroom", m.host+"/disk", "bytes", "State-filesystem headroom is insufficient after full outstanding promises; free space and filesystem size can change.", number(model.CountQuantity(l.Request.Resources.Disk)), number(model.CountQuantity(budget.Available)))
+		}
+		if len(info.Blockers) > 0 && info.Blockers[len(info.Blockers)-1].Resource == m.host+"/disk" {
+			last := &info.Blockers[len(info.Blockers)-1]
+			last.Stale = budget.Stale
+			if !budget.Observation.At.IsZero() {
+				stamp := budget.Observation.At
+				last.ObservationAt = &stamp
+			}
+		}
 	}
 	if l.Request.Resources.Memory > 0 {
 		budget := m.memoryBudget(s.used.Memory)
@@ -287,8 +305,8 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	return info, nil
 }
 func (m *Manager) estimateQueued(l model.Lease, s queueSnapshot, now time.Time) model.QueueEstimate {
-	unknown := model.QueueEstimate{Kind: "unknown", Detail: "Live memory, provider reclamation, port availability or earlier queue work cannot be predicted reliably."}
-	if l.Request.Resources.Memory > 0 || len(l.Request.Ports) > 0 || len(l.Request.Pools) > 0 || l.Request.StorageLease != "" || l.Request.PortLease != "" || l.Request.Kind == "storage" {
+	unknown := model.QueueEstimate{Kind: "unknown", Detail: "Live memory/disk headroom, provider reclamation, port availability or earlier queue work cannot be predicted reliably."}
+	if l.Request.Resources.Disk > 0 || l.Request.Resources.Memory > 0 || len(l.Request.Ports) > 0 || len(l.Request.Pools) > 0 || l.Request.StorageLease != "" || l.Request.PortLease != "" || l.Request.Kind == "storage" {
 		return unknown
 	}
 	capacity := m.capacity

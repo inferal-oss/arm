@@ -27,7 +27,7 @@ The daemon stores a stable host ID and authenticated local owner identity. `loca
 
 Interrupted local CLI acquisitions cancel by request key, including when the grant response was lost. Remote mutations instead preserve their authority/key and report uncertain outcomes; they never silently rerun or infer cancellation from a disconnected caller. A durable cancellation marker prevents a late request from becoming a new allocation after its cancellation arrived first.
 
-Default CPU/disk budgets are development defaults: logical CPU count minus one and 20 GiB disk. Memory defaults to current host availability (`--memory auto`); an explicit positive size sets an optional ceiling. These settings do not imply operating-system reservation. Unsupervised leases have no inferred process usage.
+CPU defaults to logical CPU count minus one. Memory defaults to current host availability (`--memory auto`); disk defaults to current nonprivileged availability on the state filesystem (`--disk auto`). An explicit positive memory/disk size sets an optional ceiling. These settings do not imply operating-system reservation. Unsupervised leases have no inferred process usage.
 
 ### Live memory admission
 
@@ -38,6 +38,14 @@ Existing claims survive shrinking capacity; renewal is refused during a memory s
 macOS estimates free plus pageable file-backed pages through public Mach counters. It does not add overlapping speculative/purgeable/inactive lists, anonymous inactive data, compression or swap. File-backed caches may require writeback. Linux uses exact `MemTotal`/`MemAvailable` from bounded `/proc/meminfo` reads; malformed/duplicate counters fail closed and telemetry shares the parser. Both are advisory host estimates, not hard quotas, memory-pressure scores or allocation guarantees; Linux cgroup allowances are not inferred.
 
 ARM does not yet credit verified exclusive resident consumption against promises: sampled group footprints may contain shared/compressed allocations. Charging full promises on current headroom can over-reserve once jobs allocate memory. Attribution-aware unconsumed-reservation accounting, deduplicated resident credit, container/owner allowances, human/OS headroom, unified GPU-memory pools and richer pressure policy remain work. Replacing the executable does not change an older running backend’s startup policy.
+
+### Live disk admission
+
+An independent nominal one-second sampler reports exact native `statfs` user-available bytes for ARM's state filesystem. The effective pool is fresh availability bounded by an optional positive ceiling. macOS optionally applies the lower APFS shared-container free bound; failure to discover optional topology retains the valid native reading and records uncertainty. Linux preserves shared-backing uncertainty for relevant filesystems. Volumes are never added as independent capacity. These cooperative claims do not locate arbitrary workload writes or guarantee quotas on other mounts.
+
+All outstanding disk promises stay charged, including uncertain/reclaiming provider states. No allocated-file, clone/snapshot or namespace-deletion credit is inferred. Exact arithmetic refuses negative/overflowing accounting. A falling pool preserves claims and exposes a shortfall; fresh headroom is required for relevant admission/renewal. Zero-disk work remains independent of disk pressure. Mutable free space/filesystem size never makes a request permanently impossible: only a configured positive ceiling does. Queued disk work receives explicit blockers and an unknown time estimate. Policy and peer-grant zero still mean zero allowance; only daemon configuration zero represents auto.
+
+Cached availability expires after three seconds using wall and monotonic age. Collection waits at most one second with one native call in flight; an uncancellable stuck syscall can retain one worker until it returns, without multiplying workers or indefinitely blocking shutdown. Filesystem identity replacement invalidates the reading until restart/revalidation. Status and both dashboards distinguish live pool, full promises, to-lease amount, ceiling, shortfall and unknown/stale observations; human help hides collector details behind disclosure. Ordinary explicit start/serve arguments determine startup policy; changing the executable does not reconfigure an existing daemon. Automatic mesh launch-policy replay is separate follow-on support.
 
 Each state directory is an independent authority. Separate test instances do not coordinate their budgets; cooperating agents must use the same ARM instance. Resource rows carry stable host, resource, and budget-pool IDs.
 

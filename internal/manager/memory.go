@@ -56,6 +56,9 @@ func (m *Manager) requestFitsCeiling(r model.Resources) bool {
 	if capacity.Memory == 0 {
 		capacity.Memory = math.MaxInt64
 	}
+	if capacity.Disk == 0 {
+		capacity.Disk = math.MaxInt64
+	}
 	// A moving headroom shortage can recover; a request larger than the host's
 	// known physical RAM cannot. Reject it rather than leave it queued forever.
 	// Unknown/stale inventory still uses the configured ceiling and fails live
@@ -67,15 +70,24 @@ func (m *Manager) requestFitsCeiling(r model.Resources) bool {
 	return r.Fits(capacity)
 }
 
-func (m *Manager) fitsLiveMemory(r, used model.Resources) bool {
+func (m *Manager) fitsLiveResources(r, used model.Resources) bool {
 	capacity := m.capacity
 	capacity.Memory = math.MaxInt64
+	capacity.Disk = math.MaxInt64
 	if !r.FitsRemaining(used, capacity) {
 		return false
 	}
-	if r.Memory == 0 {
-		return true
+	if r.Memory > 0 {
+		budget := m.memoryBudget(used.Memory)
+		if r.Memory > budget.Available {
+			return false
+		}
 	}
-	budget := m.memoryBudget(used.Memory)
-	return r.Memory <= budget.Available
+	if r.Disk > 0 {
+		budget := m.diskBudget(used.Disk)
+		if !budget.Known || r.Disk > budget.Available {
+			return false
+		}
+	}
+	return true
 }

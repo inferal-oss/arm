@@ -281,6 +281,10 @@ func (m *dashboardModel) resourcesText() string {
 			totalLabel = "Reservable now"
 			title = "MEMORY · LIVE BUDGET"
 		}
+		if r.Kind == "disk" && m.data.status.Disk != nil {
+			totalLabel = "Reservable now"
+			title = "DISK · LIVE HEADROOM"
+		}
 		if r.Custom != nil {
 			title = safe(r.Custom.Pool.Name) + " · " + strings.ToUpper(r.Custom.Pool.Scope)
 		}
@@ -288,12 +292,23 @@ func (m *dashboardModel) resourcesText() string {
 			title = "> " + title
 		}
 		inner := width - 4
-		lines := []string{align(muted.Render(totalLabel), strong.Render(quantity(r.BudgetTotal, r.Unit)), inner), align(muted.Render("Promised"), quantity(r.Reserved, r.Unit), inner), align(muted.Render("Available"), strong.Foreground(colorAccent).Render(quantity(r.Available, r.Unit)), inner)}
+		totalText, availableText := quantity(r.BudgetTotal, r.Unit), quantity(r.Available, r.Unit)
+		if r.Kind == "disk" && m.data.status.Disk != nil && !m.data.status.Disk.Known {
+			totalText = "unavailable"
+			availableText = "unavailable"
+		}
+		lines := []string{align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), quantity(r.Reserved, r.Unit), inner), align(muted.Render("Available"), strong.Foreground(colorAccent).Render(availableText), inner)}
 		if r.Deficit != "" && r.Deficit != "0" {
 			lines = append(lines, align(strong.Foreground(colorWarning).Render("SHORTFALL"), strong.Foreground(colorWarning).Render(quantity(r.Deficit, r.Unit)), inner))
 		}
 		if r.Kind == "memory" {
 			lines = append(lines, muted.Render("Changes with current host headroom · not physical RAM"))
+		}
+		if r.Kind == "disk" && m.data.status.Disk != nil {
+			lines = append(lines, muted.Render("State filesystem · full promises remain charged"))
+			if ceiling := m.data.status.Disk.Ceiling; ceiling != nil {
+				lines = append(lines, align(muted.Render("Operator ceiling"), quantity(model.CountQuantity(*ceiling), "bytes"), inner))
+			}
 		}
 		lines = append(lines, muted.Foreground(colorLine).Render(strings.Repeat("─", inner)))
 		if len(r.Users) == 0 {
@@ -493,7 +508,7 @@ func (m *dashboardModel) currentRecord() any {
 	case 1:
 		r := m.filteredResources()
 		if index < len(r) {
-			return r[index]
+			return m.resourceRecord(&r[index])
 		}
 	case 2:
 		l := m.filteredLeases()
@@ -561,6 +576,13 @@ func (m *dashboardModel) resourceDetailText() string {
 		return "Resource no longer exists. Esc returns to budgets."
 	}
 	out := fmt.Sprintf("%s · %s\nHost: %s\n\nTotal: %s\nReserved: %s\nAvailable: %s\n\nCONSUMERS · Enter opens selected lease\n", safe(r.Kind), safe(r.Pool), safe(r.Host), quantity(r.BudgetTotal, r.Unit), quantity(r.Reserved, r.Unit), quantity(r.Available, r.Unit))
+	if r.Kind == "disk" && m.data.status.Disk != nil {
+		disk := m.data.status.Disk
+		if !disk.Known {
+			out = fmt.Sprintf("Disk · live state-filesystem headroom\n\nReservable now: unavailable\nPromised: %s\nAvailable: unavailable\n\nNew disk grants wait for fresh availability.\n\nCONSUMERS · Enter opens selected lease\n", quantity(r.Reserved, r.Unit))
+		}
+		out += "\nFull outstanding promises stay charged. Shared files and snapshots do not prove exclusive reclamation. [?] help explains scope.\n"
+	}
 	if len(r.Users) == 0 {
 		out += "No lease consumers.\n"
 	}

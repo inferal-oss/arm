@@ -1,6 +1,6 @@
 // Operator-facing explanations are deliberately separate from collector IDs.
 // Backend strings remain data and are only shown in the technical disclosure.
-export function metricHelp(kind, {measurements = [], filesystem, accounting, memory} = {}) {
+export function metricHelp(kind, {measurements = [], filesystem, accounting, memory, disk} = {}) {
   const copy = {
     cpu: ['CPU activity', 'How busy the host’s processors have been since the previous sample. This includes work outside ARM.', 'A core count reserves capacity in ARM; it does not guarantee a particular speed.'],
     memory: ['Memory & swap', 'Available memory estimates how much RAM the system could make available, including supported reclaimable caches. Used is total RAM minus that estimate.', 'Swap is memory stored on disk. These host readings are separate from the promises made to individual leases.'],
@@ -25,7 +25,17 @@ export function metricHelp(kind, {measurements = [], filesystem, accounting, mem
     paragraphs[0] = 'The pool follows the system’s current estimate of available RAM, up to an optional operator ceiling. It can shrink while leases are active.';
     paragraphs.push('ARM currently subtracts full outstanding promises. It cannot yet safely credit shared or compressed memory already used by those jobs, so this can reserve more headroom than necessary.');
   }
+  if (kind === 'resource-disk' && disk) {
+    paragraphs[0] = 'The pool follows space currently available to your user on ARM’s state filesystem, up to an optional operator ceiling. It can shrink while leases are active.';
+    paragraphs[1] = 'ARM subtracts full outstanding disk promises, even when those jobs have already written files. This is conservative headroom, not exclusive free space or a hard disk quota.';
+    paragraphs.push('APFS volumes may share one container. Snapshots and clones can retain blocks after files are removed; ARM does not count them as guaranteed reclamation. Other mounted filesystems have separate limits.');
+    if (!disk.known) paragraphs.push('The latest availability reading is missing or stale. New disk grants wait; outstanding promises and ordinary cleanup remain visible.');
+  }
   const technical = [];
+  if (kind === 'resource-disk' && disk?.observation) {
+    const o = disk.observation;
+    for (const [label, value] of [['Scope',o.scope],['Filesystem',o.filesystem],['Source',o.method],['Quality',o.quality],['Measured at',o.at],['Collector note',o.detail]]) if (value) technical.push([`Availability · ${label}`, String(value)]);
+  }
   for (const [label, m] of measurements) {
     if (!m) continue;
     for (const [key, value] of [['Scope', m.scope], ['Source', m.method], ['Quality', m.quality], ['Measured at', m.at], ['Collector note', m.detail]]) {
@@ -39,4 +49,14 @@ export function metricHelp(kind, {measurements = [], filesystem, accounting, mem
   }
   if (accounting) technical.push(['Accounting', String(accounting)]);
   return {title, paragraphs, technical};
+}
+
+// Unknown effective admission capacity is deliberately unavailable in the UI,
+// while full outstanding promises remain visible (never a false idle zero).
+export function diskBudgetFields(resource, disk) {
+  return [
+    ['LIVE POOL', disk?.known ? resource.budget_total : null],
+    ['PROMISED', resource.reserved],
+    ['TO LEASE', disk?.known ? resource.available : null],
+  ];
 }

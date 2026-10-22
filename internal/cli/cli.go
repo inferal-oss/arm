@@ -722,12 +722,12 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	}
 	f := a.flags(label)
 	cpuValue := float64(max(1, runtime.NumCPU()-1))
-	memValue, diskValue, listenValue := "auto", "20GiB", "127.0.0.1:0"
+	memValue, diskValue, listenValue := "auto", "auto", "127.0.0.1:0"
 	cpus, mem, disk, listen := &cpuValue, &memValue, &diskValue, &listenValue
 	if action == "start" || action == "serve" {
 		f.Float64Var(cpus, "cpu", cpuValue, "host CPU reservation `budget`")
 		f.StringVar(mem, "memory", memValue, "live host memory pool: auto, or a positive optional ceiling `size`")
-		f.StringVar(disk, "disk", diskValue, "host disk reservation `size`")
+		f.StringVar(disk, "disk", diskValue, "live state-filesystem pool: auto, or a positive optional ceiling `size`")
 		f.StringVar(listen, "listen", listenValue, "loopback backend `address`")
 	}
 	if action != "serve" {
@@ -769,11 +769,14 @@ func (a *app) daemon(command string, args []string) (int, error) {
 			return 2, fmt.Errorf("--memory must be auto or a positive ceiling size")
 		}
 	}
-	d, e := bytesValue(*disk)
-	if e != nil {
-		return 2, e
+	var d int64
+	if *disk != "auto" {
+		d, e = bytesValue(*disk)
+		if e != nil || d <= 0 {
+			return 2, fmt.Errorf("--disk must be auto or a positive ceiling size")
+		}
 	}
-	if *cpus <= 0 || math.IsNaN(*cpus) || math.IsInf(*cpus, 0) || d <= 0 {
+	if *cpus <= 0 || math.IsNaN(*cpus) || math.IsInf(*cpus, 0) || d < 0 {
 		return 2, fmt.Errorf("host budgets must be positive and finite")
 	}
 	capacity := model.Resources{CPU: *cpus, Memory: memory, Disk: d}
@@ -806,7 +809,11 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if memory > 0 {
 		memoryArg = strconv.FormatInt(memory, 10)
 	}
-	cmd := exec.Command(exe, "--home", a.home, "serve", "--cpu", strconv.FormatFloat(*cpus, 'f', -1, 64), "--memory", memoryArg, "--disk", strconv.FormatInt(d, 10), "--listen", *listen)
+	diskArg := *disk
+	if d > 0 {
+		diskArg = strconv.FormatInt(d, 10)
+	}
+	cmd := exec.Command(exe, "--home", a.home, "serve", "--cpu", strconv.FormatFloat(*cpus, 'f', -1, 64), "--memory", memoryArg, "--disk", diskArg, "--listen", *listen)
 	cmd.Stdout = log
 	cmd.Stderr = log
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}

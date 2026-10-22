@@ -366,7 +366,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		case "p":
 			return m.openPools()
 		case "i":
-			m.record, _ = newRecord(resource, "Resource")
+			m.record, _ = newRecord(m.resourceRecord(resource), "Resource")
 			m.viewport.GotoTop()
 		case "enter":
 			if resource != nil && m.selected < len(resource.Users) {
@@ -428,7 +428,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": "APFS volumes share container capacity. Clones and snapshots can share blocks; allocated size does not prove exclusive or reclaimable space.", "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. This dashboard shows the local host; peer views are not available here."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–6 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. This dashboard shows the local host; peer views are not available here."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"

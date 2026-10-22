@@ -124,7 +124,7 @@ func TestLiveMemoryCeilingFailureAndExactBoundary(t *testing.T) {
 	}
 	m.capacity.Memory = math.MaxInt64
 	memoryReading(m, math.MaxInt64, math.MaxInt64, 0)
-	if !m.fitsLiveMemory(model.Resources{Memory: math.MaxInt64}, model.Resources{}) || m.fitsLiveMemory(model.Resources{Memory: 1}, model.Resources{Memory: math.MaxInt64}) {
+	if !m.fitsLiveResources(model.Resources{Memory: math.MaxInt64}, model.Resources{}) || m.fitsLiveResources(model.Resources{Memory: 1}, model.Resources{Memory: math.MaxInt64}) {
 		t.Fatal("exact int64 memory boundary lost")
 	}
 }

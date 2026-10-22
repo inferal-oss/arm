@@ -101,6 +101,7 @@ type Status struct {
 	Capabilities   []string       `json:"capabilities"`
 	Resources      []ResourceView `json:"resources"`
 	Infrastructure []PortBinding  `json:"infrastructure_ports"`
+	Disk           *DiskBudget    `json:"disk_budget"`
 	Memory         *MemoryBudget  `json:"memory_budget"`
 }
 

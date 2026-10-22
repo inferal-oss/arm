@@ -54,6 +54,11 @@ type Manager struct {
 	observations       map[string]model.ResourceMeasurement
 	memoryAvailability model.MemoryAvailability
 	memoryObserved     time.Time
+	diskAvailability   model.DiskAvailability
+	diskObserved       time.Time
+	diskScopeVolume    string
+	diskSampleSlots    chan struct{}
+	diskCollector      func(context.Context, string) model.DiskAvailability
 	storage            *storage.Provider
 	storageErr         error
 	storageJobs        map[string]bool
@@ -77,8 +82,8 @@ type Manager struct {
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
-	if capacity.Memory < 0 {
-		return nil, model.Err("invalid_config", "memory ceiling must be nonnegative; zero selects live availability")
+	if capacity.Memory < 0 || capacity.Disk < 0 {
+		return nil, model.Err("invalid_config", "memory/disk ceilings must be nonnegative; zero selects live availability")
 	}
 	if e := local.Prepare(home); e != nil {
 		return nil, e
@@ -116,6 +121,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.diskSampleSlots = make(chan struct{}, 1)
 	m.usages = map[string]workloadSample{}
 	m.policyClocks = map[string]incidentClock{}
 	m.inboxChanged = make(chan struct{})
@@ -208,6 +214,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	m.sample()
 	m.sampleMemory()
+	m.sampleDisk()
 	if e = m.recoverShutdown(); e != nil {
 		db.Close()
 		return nil, e
@@ -227,6 +234,18 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 }
 
 func (m *Manager) Start() {
+	m.wg.Go(func() {
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-m.stop:
+				return
+			case <-ticker.C:
+				m.sampleDisk()
+			}
+		}
+	})
 	m.wg.Go(func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
@@ -389,10 +408,18 @@ func (m *Manager) Status() (model.Status, error) {
 			s.Reserved = s.Reserved.Add(l.Request.Resources)
 		}
 	}
+	diskReserved, err := diskPromises(ls)
+	if err != nil {
+		return s, err
+	}
+	s.Reserved.Disk = diskReserved
 	memory := m.memoryBudget(s.Reserved.Memory)
 	s.Memory = &memory
 	s.Capacity.Memory = memory.Capacity
-	s.Capabilities = append(s.Capabilities, "live-memory-admission")
+	disk := m.diskBudget(s.Reserved.Disk)
+	s.Disk = &disk
+	s.Capacity.Disk = disk.Capacity
+	s.Capabilities = append(s.Capabilities, "live-memory-admission", "live-disk-admission")
 	for _, kind := range []string{"cpu", "memory", "disk"} {
 		total, reserved, unit := s.Capacity.CPU, s.Reserved.CPU, "logical-core-equivalents"
 		if kind == "memory" {
@@ -412,7 +439,9 @@ func (m *Manager) Status() (model.Status, error) {
 		if kind == "disk" {
 			v.BudgetTotal = model.CountQuantity(s.Capacity.Disk)
 			v.Reserved = model.CountQuantity(s.Reserved.Disk)
-			v.Available = model.CountQuantity(max(0, s.Capacity.Disk-s.Reserved.Disk))
+			v.Available = model.CountQuantity(disk.Available)
+			v.Deficit = model.CountQuantity(disk.Deficit)
+			v.Accounting = disk.Accounting
 		}
 		m.observationMu.RLock()
 		measurement, exists := m.observations[kind]
@@ -422,7 +451,7 @@ func (m *Manager) Status() (model.Status, error) {
 			v.Observed = measurement.Used.Value
 		}
 		for _, l := range ls {
-			if !consuming(l.State) {
+			if !consuming(l.State) && !(kind == "disk" && l.State == "reclaiming") {
 				continue
 			}
 			q := l.Request.Resources.CPU
@@ -654,6 +683,11 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			queued = true
 		}
 	}
+	diskReserved, e := diskPromises(ls)
+	if e != nil {
+		return empty, e
+	}
+	used.Disk = diskReserved
 	l := model.Lease{ID: local.ID(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
 	binding, e := m.resolveNewBudgetBinding(l, r.Budget)
 	if e != nil {
@@ -689,10 +723,10 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		l.Ended = &stamp
 		l.QueueInfo = rejectedQueueInfo(stamp, deadlineProblem)
 		l.Failure = deadlineProblem.Message
-	} else if !queued && m.fitsLiveMemory(r.Resources, used) && poolFits && len(budgetBlockers) == 0 {
+	} else if !queued && m.fitsLiveResources(r.Resources, used) && poolFits && len(budgetBlockers) == 0 {
 		m.activate(&l, run != nil)
 	} else if !r.Queue {
-		return empty, model.Err("insufficient_capacity", "host capacity or policy ceilings are committed, or live memory headroom is insufficient/unavailable; use --wait to queue")
+		return empty, model.Err("insufficient_capacity", "host capacity or policy ceilings are committed, or live memory/disk headroom is insufficient/unavailable; use --wait to queue")
 	}
 	var rb any
 	if run != nil {
@@ -922,6 +956,9 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if err := m.diskRenewal(ls, l); err != nil {
+		return l, err
+	}
 	policies, e := m.budgetRenewal(l, ls)
 	if e != nil {
 		return l, e
@@ -1030,6 +1067,11 @@ func (m *Manager) tick() {
 			used = used.Add(l.Request.Resources)
 		}
 	}
+	diskReserved, e := diskPromises(ls)
+	if e != nil {
+		return
+	}
+	used.Disk = diskReserved
 	for _, l := range ls {
 		if l.Request.Kind == "storage" && l.State == "ending" {
 			m.scheduleStorage(l.ID)
@@ -1069,7 +1111,7 @@ func (m *Manager) tick() {
 		if err != nil {
 			return
 		}
-		if !budgetFits || !m.fitsLiveMemory(l.Request.Resources, used) || !poolFits {
+		if !budgetFits || !m.fitsLiveResources(l.Request.Resources, used) || !poolFits {
 			break
 		}
 		if reason := m.startDeadlineProblem(l); reason != nil {

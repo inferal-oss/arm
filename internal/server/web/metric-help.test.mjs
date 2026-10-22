@@ -34,3 +34,16 @@ test('I/O, unavailable GPU and reservations have plain independent explanations'
     assert.deepEqual(info.technical, []);
   }
 });
+
+test('live disk help explains shared conservative headroom without collector paths', async () => {
+  const {diskBudgetFields} = await import('./metric-help.mjs');
+  const resource = {budget_total: 100, reserved: 80, available: 20};
+  assert.deepEqual(diskBudgetFields(resource, {known: true}), [['LIVE POOL',100],['PROMISED',80],['TO LEASE',20]]);
+  assert.deepEqual(diskBudgetFields(resource, {known: false}), [['LIVE POOL',null],['PROMISED',80],['TO LEASE',null]]);
+  const info = metricHelp('resource-disk', {disk:{known:false}});
+  assert.match(info.paragraphs.join(' '), /state filesystem/);
+  assert.match(info.paragraphs.join(' '), /full outstanding disk promises/);
+  assert.match(info.paragraphs.join(' '), /Snapshots and clones/i);
+  assert.match(info.paragraphs.join(' '), /missing or stale/);
+  assert.doesNotMatch(info.paragraphs.join(' '), /f_bavail|statfs|\/Users\//);
+});

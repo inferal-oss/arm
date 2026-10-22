@@ -87,7 +87,7 @@ var commandHelps = map[string]commandHelp{
 	"reconcile":            {usage: "LEASE_ID [OPTIONS]", summary: "Verify that an uncertain process group or port allocation is gone. Never signals a recovered PID.", min: 1, max: 1},
 	"renew":                {usage: "LEASE_ID --ttl DURATION [OPTIONS]", summary: "Extend a live lease when queue priority and parent lifetimes permit.", example: `arm renew LEASE_ID --ttl 20m`, min: 1, max: 1},
 	"status":               {summary: "Show host budgets, leases and capabilities."},
-	"resources":            {summary: "Show resource budgets, available capacity, consumers and reasons."},
+	"resources":            {summary: "Show live memory/state-filesystem disk headroom, full outstanding promises, optional ceilings, consumers and reasons. Unknown availability pauses only relevant new grants."},
 	"messages":             {summary: "Show the operator inbox and message delivery status."},
 	"events":               {summary: "Read durable events, or stream with --follow (JSON lines when redirected).", example: `arm events --follow`},
 	"daemon start":         {summary: "Start the local backend in the background. An already running backend keeps its existing budgets.", example: `arm daemon start --cpu 4 --memory 8GiB --disk 20GiB`},

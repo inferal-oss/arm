@@ -3,7 +3,7 @@ import {leaseStateLabel, leaseVisible, isInactiveLease, readHideInactive, saveHi
 import {allDevices,selectedDeviceIDs,aggregateIO,aggregateIOWindow} from './io-devices.mjs';
 import {createIOSelector} from './io-selector.mjs';
 import {jsonView} from './json-view.mjs';
-import {metricHelp} from './metric-help.mjs';
+import {metricHelp, diskBudgetFields} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {createDashboardHistory} from './route.mjs';
 import {installDashboardShortcuts} from './dashboard-shortcuts.mjs';
@@ -288,6 +288,7 @@ $('metric-help').addEventListener('click', event => {
   if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
 });
 $('metric-help').addEventListener('close', () => {
+  if ($('metric-help').open) return;
   // Telemetry can replace the original card while the explanation stays open.
   const source = [...document.querySelectorAll('[data-help-key]')].find(b => b.dataset.helpKey === helpKey);
   source?.focus(); helpKey = '';
@@ -412,17 +413,21 @@ function renderResources() {
   poolConsole.update({status: state.status, route: navigation.current});
 }
 function resourceCards() {
-  const root = $('resources'); root.querySelector('.resource-grid')?.remove();
+  const root = $('resources');
+  const focusedHelpKey = root.contains(document.activeElement) ? document.activeElement?.dataset.helpKey : null;
+  root.querySelector('.resource-grid')?.remove();
   const grid = node('div', 'resource-grid'), filter = resourceFilter.toLowerCase();
   const byLease = new Map((state.status.leases ?? []).map(lease => [lease.id, lease]));
   for (const r of state.status.resources ?? []) {
     if (!stringifyJSON(r).toLowerCase().includes(filter)) continue;
     const custom = r.custom?.pool;
     const label = custom?.name || ({cpu: 'CPU', memory: 'Memory', disk: 'Disk', port: 'Port'})[r.kind] || r.kind;
-    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, memory: r.kind === 'memory' ? state.status.memory_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
+    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, memory: r.kind === 'memory' ? state.status.memory_budget : null, disk: r.kind === 'disk' ? state.status.disk_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
     const budget = node('div', 'budget');
-    for (const [label, value] of [['POOL', r.budget_total], ['RESERVED', r.reserved], ['AVAILABLE', r.available]]) {
-      const item = node('div'); item.append(node('small', '', label), node('strong', label === 'AVAILABLE' ? 'accent' : '', quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
+    const disk = r.kind === 'disk' ? state.status.disk_budget : null;
+    const fields = disk ? diskBudgetFields(r, disk) : [['POOL', r.budget_total], ['RESERVED', r.reserved], ['AVAILABLE', r.available]];
+    for (const [label, value] of fields) {
+      const item = node('div'); item.append(node('small', '', label), node('strong', (label === 'AVAILABLE' || label === 'TO LEASE') ? 'accent' : '', quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
     }
     p.body.append(budget, bar(r.reserved, numeric(r.budget_total)));
     if(r.kind==='memory' && state.status.memory_budget) {
@@ -432,6 +437,11 @@ function resourceCards() {
       if(memory?.stale || memory?.observation.available_bytes==null) p.body.append(node('p','measure-note','New memory grants paused: waiting for an availability estimate.'));
       if(r.deficit>0) p.body.append(node('p','',`Memory shortfall: ${bytes(r.deficit)}`));
     }
+    if (disk) {
+      if (disk.ceiling_bytes != null) stat(p.body, 'Operator ceiling', bytes(disk.ceiling_bytes));
+      if (!disk.known) p.body.append(node('p', 'measure-note', 'New disk grants paused: waiting for fresh availability.'));
+      else if (disk.deficit_bytes > 0) p.body.append(node('p', '', `Disk shortfall: ${bytes(disk.deficit_bytes)}`));
+    }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
     for (const u of r.users ?? []) {
       const user = node('div', 'consumer'); if (u.lease) user.append(leaseButton(u.lease)); user.append(node('p', '', u.reason), node('small', '', `${u.agent ? u.agent + ' · ' : ''}${ownerLabel(u, r.host)} · ${quantity(u.quantity, r.unit)} · ${leaseStateLabel(byLease.get(u.lease) ?? u)}${u.project ? ' · ' + u.project : ''}`)); p.body.append(user);
@@ -440,6 +450,7 @@ function resourceCards() {
     grid.append(p.box);
   }
   if (!grid.childElementCount) grid.append(empty('No matching resources')); const poolSlot=root.querySelector('.pool-console');if(poolSlot)root.insertBefore(grid,poolSlot);else root.append(grid);
+  if (focusedHelpKey && !$('metric-help').open) [...grid.querySelectorAll('[data-help-key]')].find(button => button.dataset.helpKey === focusedHelpKey)?.focus({preventScroll: true});
 }
 function leaseButton(id) { const b = node('button', 'link-button', id); b.addEventListener('click', () => showLease(id)); return b; }
 function renderLeases() {
