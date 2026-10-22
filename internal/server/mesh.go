@@ -244,6 +244,14 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		return nil
 	}
 	switch request.Operation {
+	case "node_metadata":
+		if e := require("observe-host"); e != nil {
+			return nil, e
+		}
+		if e := nodeMetadataParams(request.Params); e != nil {
+			return nil, e
+		}
+		return m.owner.nodeMetadata()
 	case "status", "resources":
 		if e := require("observe-host"); e != nil {
 			return nil, e

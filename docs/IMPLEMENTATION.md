@@ -7,7 +7,8 @@ This records the implemented backend, CLI and initial direct-peer mesh within [t
 | Component | Responsibility |
 | --- | --- |
 | `cmd/arm` | Single executable entry point. |
-| `internal/model` | Lease, resource, event, and protocol types. |
+| `internal/model` | Lease, resource, node metadata, event, and protocol types. |
+| `internal/buildinfo` | Shared ARM build version without CLI/backend dependency cycles. |
 | `internal/database` | Bounded read-only ledger inspection/checks, private consistent backups and safe source-file observation. |
 | `internal/manager` | SQLite state, admission, lifecycle, supervised processes, usage incidents/policy, contacts, inbox/outbox, and delivery records. |
 | `internal/server` | Authenticated loopback WebSocket backend, authority lock and separate narrow peer API. |
@@ -460,3 +461,10 @@ Backups use modernc's stepped SQLite backup API entirely inside Conn.Raw, verify
 Pool detail offers Change total capacity, Add or remove units, Pause/Allow new requests and Delete empty pool, each with a short consequence. Selected-pool metrics and readable states separate ordinary work from collapsible technical evidence. One bounded native modal separates Edit from Review, names the pool and shows exact before/after counts, state, reason and complete affected scope. Confirm buttons name the exact operation/quantity; Cancel change receives default focus, with Back to edit separate. Escape/close discards only unsubmitted work and restores the opener or a focusable detail heading after live refresh. Errors appear inside the modal. A sticky footer keeps actions reachable on narrow screens.
 
 Pausing refuses new requests/renewals; existing obligations persist and already queued requests may still start when capacity permits. Deleting retains definition/history and requires no queued/charged claims. Exact revision/consumer review and independent pending-operation recovery are unchanged; close/reconnect never replays a mutation. Terminal controls retain their existing operations; matching terminology/layout polish there remains separate work.
+
+
+## Unified reported node metadata
+
+`arm node [--host HOST_ID|NAME]` and the typed `node_metadata` read return the same schema for localhost, a local browser session and an authorized direct peer. The local entry uses its real stable host ID. The allowlisted report contains OS/kernel release, process architecture, hostname, ARM/Go versions, process logical CPU inventory, exact host-memory/state-filesystem totals, each observation's original time/age/known/stale state, response time and bounded software feature declarations. Kernel release is a cached native call; no shell/environment/serial/private-path or owner/lease/contact/policy data is collected. Unknown/future/stale inventory remains visibly unknown/stale; a fresh response never relabels old measurements as fresh.
+
+A common server capability helper keeps status and metadata declarations aligned, preserving conditional browser/monitor features. Capabilities report software features and confer no permissions. The same ARM version moved to a dependency-leaf package with the existing CLI constant alias; `arm version` output is unchanged. Peer metadata still requires `observe-host` and pinned transport/final-host checks; it gives no lease/contact/admin rights. Parameters accept only an empty object/null, refusing selectors or annotations. This read foundation does not yet add custom annotations, registry/grant-health views, host dashboard windows or mesh management UI.

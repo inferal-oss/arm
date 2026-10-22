@@ -15,6 +15,7 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"node":                {summary: "Read the same reported OS, architecture, ARM build, hostname and bounded inventory/capability schema for localhost or a direct peer (--host). Inventory timestamps and stale flags describe the original cached observations; reported metadata is not authentication or a resource guarantee."},
 	"database backup":     {usage: "DESTINATION [OPTIONS]", summary: "Create a consistent private standalone SQLite backup at an unused explicit path. Parent must be private and contain no symlinks. Works online through the separate reader or from a stopped coherent copy. Source remains unchanged; no overwrite, compaction or repair. Mesh keys/configuration, managed artifacts and pending client intents are not included.", min: 1, max: 1},
 	"database check":      {summary: "Read-only bounded SQLite quick_check by default (10 seconds); --full explicitly runs integrity_check (two minutes). Up to100 findings; incomplete/corrupt checks do not report success. Structural checks do not certify provider obligations or process liveness."},
 	"database stats":      {summary: "Read exact database/WAL/shared-memory sizes, SQLite pages/reusable space and table/lease counts. Uses a separate read-only online connection, or a coherent stopped copy; no compaction, repair or permission changes. APFS allocated blocks are not exclusive reclaimable space."},

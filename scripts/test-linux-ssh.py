@@ -55,6 +55,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-live-disk.py", target / "test-live-disk.py")
         shutil.copyfile(root / "scripts" / "test-database.py", target / "test-database.py")
+        shutil.copyfile(root / "scripts" / "test-node-metadata.py", target / "test-node-metadata.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
@@ -88,6 +89,7 @@ done
             script += 'python3 ./test-memory.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-live-disk.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-database.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-node-metadata.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-lifecycle.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-scheduling.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-budgets.py --arm "$PWD/arm"\n'

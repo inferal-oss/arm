@@ -397,6 +397,11 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "node_metadata":
+		if err := nodeMetadataParams(r.Params); err != nil {
+			return nil, err
+		}
+		return s.nodeMetadata()
 	case "budget_list", "budget_inspect", "budget_consumers", "budget_history", "budget_lookup", "budget_mutate":
 		return s.budgetOperation(r.Operation, r.Params)
 	case "bulk_end":
@@ -639,14 +644,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return result, nil
 	case "status":
 		status, err := s.Manager.Status()
-		status.Capabilities = append(status.Capabilities, "pool-journal-pages", "automatic-mesh-lifecycle", "database-inspection-backup")
-		if s.authority != "" {
-			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging", "browser-reviewed-pool-controls")
-		}
-		if s.monitor != nil {
-			status.Capabilities = append(status.Capabilities, "host-monitor-stream")
-		}
-		return status, err
+		return s.withServerCapabilities(status), err
 	case "resources":
 		status, e := s.Manager.Status()
 		return status.Resources, e

@@ -21,6 +21,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/yrashk/arm/internal/agents"
+	"github.com/yrashk/arm/internal/buildinfo"
 	"github.com/yrashk/arm/internal/client"
 	"github.com/yrashk/arm/internal/install"
 	"github.com/yrashk/arm/internal/local"
@@ -30,7 +31,7 @@ import (
 	"github.com/yrashk/arm/internal/server"
 )
 
-const Version = "0.1.0-dev"
+const Version = buildinfo.Version
 
 type app struct {
 	home                          string
@@ -147,6 +148,7 @@ Commands:
   messages                  Read the operator inbox and delivery status
   install|uninstall         Manage reversible agent instruction blocks
   database stats|check|backup  Inspect and consistently back up the local ledger
+  node                      Read reported local/remote node metadata
   version                   Print build and Go versions
 
 Use COMMAND --help for options. Terminal output is human-readable; pipes use JSON.
@@ -180,6 +182,8 @@ func (a *app) command(args []string) (int, error) {
 		}
 		a.help()
 		return 0, nil
+	case "node":
+		return a.nodeMetadata(args)
 	case "version":
 		f := a.flags("version")
 		f.Bool("json", false, "force JSON output (default: automatic)")

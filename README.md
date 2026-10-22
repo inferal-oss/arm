@@ -249,6 +249,15 @@ arm mesh lookup OPERATION_KEY
 
 Connect prepares private backends/identities and concrete bound sockets, then asks you to review the actual SSH account/key, OS users, certificate pins, endpoints and directional grants before enabling network listeners/trust. Decline closes pending sockets; ordinary backends/private identities may remain. Scripts need `--yes`; dry-run and missing noninteractive confirmation create no ARM state. Exact listeners recover on restart; unavailable saved addresses fail visibly without rebinding. Existing backend ceilings are preserved, including auto memory/disk modes. Direct routing must work in both directions; ambiguous routes require explicit IP options. Connect never installs a missing executable or changes SSH trust. Advanced `mesh init` / `mesh join` remain available for explicit setup.
 
+Localhost and peers share reported node metadata:
+
+```sh
+arm node
+arm node --host HOST_ID --json
+```
+
+This includes OS/kernel release, process architecture, ARM/Go versions, hostname, logical CPUs, exact memory/state-filesystem totals with their own freshness, and declared software capabilities. Remote reads need `observe-host`; metadata is separate from granted permissions. Custom annotations and dashboard node windows remain under development.
+
 The default grants node A only aggregate host observation on node B; node B receives no reverse permissions. `--grant` and `--reverse-grant` explicitly choose directional permissions. `lease-own` enables immediate native CPU/memory/disk claims within reviewed aggregate ceilings and maximum TTL; `run` additionally permits arbitrary commands as the destination ARM user's OS account. **A run grant is not a sandbox: that account's files, credentials and ARM keys are accessible to the command.** Remote runs require an explicit absolute destination-local `--cwd`; dependencies must already exist there. ARM does not upload files or forward the caller's environment. Remote queued work, pool bundles and managed storage/port/agent attachments are currently refused.
 
 `message` separately permits the explicitly enabled operator inbox or listed target contact IDs; `contact-read` allows reviewing only those contact registrations. Agent sends require that exact reviewed registration. Message access to a powerful agent is also a significant trust decision. Remote broadcast and transitive relay are refused.
