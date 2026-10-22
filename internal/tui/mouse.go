@@ -142,11 +142,8 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 	}
 	if !m.modal() && !m.pending {
 		x := 0
-		for i, name := range viewNames {
-			label := fmt.Sprintf("%d %s", i+1, name)
-			if m.width < 82 {
-				label = fmt.Sprintf("%d%s", i+1, name[:1])
-			}
+		for i := range viewNames {
+			label := m.navigationLabel(i)
 			w := ansi.StringWidth(label) + 2
 			regions = append(regions, mouseRegion{x: x, y: 1, width: w, height: 1, key: fmt.Sprintf("nav%d", i), row: -1})
 			x += w + 1

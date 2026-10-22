@@ -131,18 +131,20 @@ func (m *dashboardModel) renderMain() string {
 	}
 	title, tone := m.windowTitle()
 	if !m.modal() {
-		return window(title, view.View(), width, height, !m.feedFocus, tone)
+		return scrollFrame(window(title, view.View(), width, height, !m.feedFocus, tone), view, width)
 	}
 	dialogWidth, dialogHeight := m.modalGeometry()
 	content := view.View()
-	dialog := window(title, content, dialogWidth, dialogHeight, true, tone)
+	dialog := scrollFrame(window(title, content, dialogWidth, dialogHeight, true, tone), view, dialogWidth)
 	backgroundContent := m.bodyText()
 	if m.poolModal() {
 		backgroundContent = m.poolListText()
 	}
 	background := window(strings.ToUpper(viewNames[m.view]), fitBlock(backgroundContent, max(1, width-4), max(1, height-2)), width, height, false, "")
 	dimmed := lipgloss.NewStyle().Foreground(lipgloss.Color("#52616c")).Background(colorBackground).Render(ansi.Strip(background))
-	return lipgloss.NewCompositor(lipgloss.NewLayer(dimmed), lipgloss.NewLayer(dialog).X(max(0, (width-dialogWidth)/2)).Y(max(0, (height-dialogHeight)/2)).Z(1)).Render()
+	x, y := max(0, (width-dialogWidth)/2), max(0, (height-dialogHeight)/2)
+	shadow := lipgloss.NewStyle().Background(lipgloss.Color("#080d10")).Render(fitBlock("", dialogWidth, dialogHeight))
+	return fitBlock(lipgloss.NewCompositor(lipgloss.NewLayer(dimmed), lipgloss.NewLayer(shadow).X(x+1).Y(y+1).Z(1), lipgloss.NewLayer(dialog).X(x).Y(y).Z(2)).Render(), width, height)
 }
 func (m *dashboardModel) renderFeed() string {
 	width, height := 33, m.bodyHeight()
@@ -208,7 +210,7 @@ func (m *dashboardModel) footer() string {
 		return "↑↓ select consumer · Enter open lease · [i] Record · Esc budgets"
 	}
 	if m.view == 0 {
-		return "[d] Next disk   [n] Next interface   [?] Help   [i] Record   PgDn scroll   q exit"
+		return "[d] Select disks   [n] Select interfaces   [?] Help   [i] Record   PgDn scroll   q exit"
 	}
 	if m.view == 3 {
 		return "[n] Message agent   [b] Broadcast   [y] Reply   Enter inspect   Tab feed"
@@ -235,13 +237,16 @@ func (m *dashboardModel) View() tea.View {
 	if host == "" {
 		host = "local host"
 	}
-	header := align(lipgloss.NewStyle().Bold(true).Foreground(colorAccent).Render(" ◈ ARM ")+muted.Render(" / ")+strong.Render(safe(host)), status+" ", m.width)
+	brand := brandMark()
+	if m.width >= 110 {
+		brand += muted.Render("agent resource manager") + muted.Foreground(colorLine).Render("  /  ")
+	} else {
+		brand += muted.Render(" / ")
+	}
+	header := align(brand+strong.Render(safe(host)), status+" ", m.width)
 	var nav []string
-	for index, name := range viewNames {
-		label := fmt.Sprintf("%d %s", index+1, name)
-		if m.width < 82 {
-			label = fmt.Sprintf("%d%s", index+1, name[:1])
-		}
+	for index := range viewNames {
+		label := m.navigationLabel(index)
 		if m.view == index {
 			nav = append(nav, lipgloss.NewStyle().Bold(true).Foreground(colorAccent).Background(lipgloss.Color("#203630")).Render("["+label+"]"))
 		} else {

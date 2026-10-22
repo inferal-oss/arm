@@ -91,13 +91,17 @@ func (m *dashboardModel) leaseTable(leases []model.Lease) string {
 		}
 		style = style.Height(2)
 		if row == m.selected {
-			return style.Background(lipgloss.Color("#203630")).Foreground(colorText)
+			style = style.Background(lipgloss.Color("#203630")).Foreground(colorText)
+			if col == 1 {
+				style = style.Foreground(leaseInk(leases[row])).Bold(true)
+			}
+			return style
 		}
 		if row%2 == 1 {
 			style = style.Background(lipgloss.Color("#182229"))
 		}
 		if col == 1 {
-			style = style.Foreground(colorAccent)
+			style = style.Foreground(leaseInk(leases[row]))
 		}
 		return style
 	}).String() + legend + "\n\n" + muted.Render("Click a row to select · click selected row / Enter for full details")

@@ -43,6 +43,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-monitor.py", target / "test-monitor.py")
         shutil.copyfile(root / "scripts" / "test-dashboard.py", target / "test-dashboard.py")
         shutil.copyfile(root / "scripts" / "test-terminal-dashboard.py", target / "test-terminal-dashboard.py")
+        shutil.copyfile(root / "scripts" / "test-terminal-colors.py", target / "test-terminal-colors.py")
         shutil.copyfile(root / "scripts" / "test-terminal-pools.py", target / "test-terminal-pools.py")
         shutil.copyfile(root / "scripts" / "test-terminal-recovery.py", target / "test-terminal-recovery.py")
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
@@ -74,6 +75,7 @@ python3 /tests/test-terminal.py --arm /tests/arm
 python3 /tests/test-monitor.py --arm /tests/arm
 python3 /tests/test-dashboard.py --arm /tests/arm
 python3 /tests/test-terminal-dashboard.py --arm /tests/arm
+python3 /tests/test-terminal-colors.py --arm /tests/arm
 python3 /tests/test-terminal-pools.py --arm /tests/arm
 python3 /tests/test-terminal-recovery.py --arm /tests/arm
 python3 /tests/test-memory.py --arm /tests/arm

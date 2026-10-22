@@ -516,3 +516,10 @@ Separate `pool_lineage` and `pool_claim_bindings` tables with `subpool_schema=1`
 The read-only database proof recognizes this exact schema and validates immutable paths, every historical claim binding, int64 arithmetic, full partition equations/propagation, historical parent revisions and canonical/non-null JSON. Idle configured partitions do not themselves prove an unsettled external obligation. Unknown/missing/corrupt evidence still refuses proof; this feature adds no database deletion path.
 
 Hierarchy editors/tree navigation in web/TUI remain required. Existing reviewed direct-only mutations refuse `hierarchy_review_required` for partitioned pools until a complete hierarchy review contract is implemented; native controls remain available. New hierarchy pages are native-only, and peer responses strip local pool bindings/errors. Distributed global-pool authority, remote custom claims and OS quotas are not implemented by these cooperative local partitions.
+
+
+## Terminal color and presentation quality pass
+
+The Charm/Bubble Tea/Bubbles/Lip Gloss interface now uses cached perceptual gradient palettes for resource meters and vertically shaded CPU histories. Unknown gaps remain distinct from known zero. Semantic lease colors preserve literal lifecycle/outcome labels; selected rows retain visible text/markers in monochrome. More distinct compact navigation labels share geometry with mouse regions. The header, focused input, bounded centered review shadow and fixed-frame visual-line scroll hints use the same palette. Existing six-view layout, live feed, guarded actions and transport remain intact.
+
+Bubble Tea downsamples RGB styles to capable truecolor,256-color,16-color or monochrome profiles; NO_COLOR emits no color SGR. This is a tested presentation improvement, not full web/TUI feature parity. Mesh/node contexts and complete hierarchy/policy editors remain required. Optional deterministic synthetic ANSI→SVG review tooling is development-only and is not a terminal emulator or native GUI screenshot. No product dependency was added.

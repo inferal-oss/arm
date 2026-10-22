@@ -104,6 +104,12 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 func newDashboard(ctx context.Context, home string) *dashboardModel {
 	input := textinput.New()
 	input.CharLimit = 16384
+	styles := input.Styles()
+	styles.Focused.Text = styles.Focused.Text.Foreground(colorText)
+	styles.Focused.Prompt = styles.Focused.Prompt.Foreground(colorAccent).Bold(true)
+	styles.Focused.Placeholder = styles.Focused.Placeholder.Foreground(colorLine)
+	styles.Cursor.Color = colorAccent
+	input.SetStyles(styles)
 	input.SetWidth(50)
 	m := &dashboardModel{ctx: ctx, home: home, width: 100, height: 30, timeNow: time.Now(), connecting: true, diskSelection: ioSelection{All: true}, networkSelection: ioSelection{All: true}, viewport: viewport.New(viewport.WithWidth(65), viewport.WithHeight(20)), input: input}
 	m.viewport.SoftWrap = true

@@ -90,14 +90,7 @@ func bar(value, total *float64, width int, tone string) string {
 		return muted.Render(strings.Repeat("·", width))
 	}
 	filled := int(math.Round(max(0, min(1, *value / *total)) * float64(width)))
-	style := accent
-	if tone == "blue" {
-		style = style.Foreground(colorBlue)
-	}
-	if tone == "purple" {
-		style = style.Foreground(colorPurple)
-	}
-	return style.Render(strings.Repeat("━", filled)) + muted.Foreground(colorLine).Render(strings.Repeat("─", width-filled))
+	return meterFill(filled, width, tone) + muted.Foreground(colorLine).Render(strings.Repeat("─", width-filled))
 }
 
 func percentage(value, total *float64) string {

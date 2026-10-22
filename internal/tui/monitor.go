@@ -175,7 +175,15 @@ func (m *dashboardModel) historyGraph(width, height int, ceiling float64, value 
 		} else if height > 4 && row == height/2 {
 			label = " 50%"
 		}
-		out[row] = accent.Render(string(content)) + " " + muted.Render(label)
+		var line strings.Builder
+		style := lipgloss.NewStyle().Foreground(toneColor(tone, 1-float64(row)/float64(max(1, height-1))))
+		for index, segment := range strings.Split(string(content), "·") {
+			if index > 0 {
+				line.WriteString(muted.Render("·"))
+			}
+			line.WriteString(style.Render(segment))
+		}
+		out[row] = line.String() + " " + muted.Render(label)
 	}
 	return out
 }
