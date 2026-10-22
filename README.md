@@ -65,7 +65,7 @@ Use `arm help COMMAND` or `arm GROUP COMMAND --help` for command-specific option
 
 Terminal output uses readable fields, resource tables, explanations and ANSI colors. Piped output defaults to JSON; `--json` forces JSON in a terminal. Set `NO_COLOR=1` or `TERM=dumb` to disable colors. Redirected `run` returns its final lease JSON on stdout and sends child output to stderr.
 
-Use `--wait` with `acquire` or `run` to queue. Claims are cooperative reservations. `resources` shows the pool, reservations, availability, and each consuming lease's owner, agent, project, reason and expiry. Memory follows current estimated host availability: `--memory auto` is the startup default, while a size such as `--memory 8GiB` sets an optional ceiling. Shrinkage can expose a shortfall below existing claims without revoking them. Unknown or stale estimates pause new memory grants and renewals. Outstanding promises are currently charged in full, with no verified exclusive-resident credit, so this conservative accounting can over-reserve after jobs allocate RAM. It is not an OS quota or allocation guarantee. Separate timestamped measurements report physical memory and filesystem space, including APFS shared-container identity; unmeasured quantities remain `null`. A running older backend keeps its startup behavior until restarted after its obligations are settled.
+Use `--wait` with `acquire` or `run` to queue. Claims are cooperative reservations. `resources` shows the pool, reservations, availability, and each consuming lease's owner, agent, project, reason and expiry. Memory follows current estimated host availability: `--memory auto` is the startup default, while a size such as `--memory 8GiB` sets an optional ceiling. Shrinkage can expose a shortfall below existing claims without revoking them. Unknown or stale estimates pause new memory grants and renewals. Outstanding promises are currently charged in full, with no verified exclusive-resident credit, so this conservative accounting can over-reserve after jobs allocate RAM. It is not an OS quota or allocation guarantee. Disk similarly defaults to `--disk auto`: fresh nonprivileged availability on ARM’s state filesystem, bounded by an optional ceiling and charged for full outstanding disk promises. Other mounts and exclusive APFS reclamation are not inferred. Separate timestamped measurements report physical memory and filesystem space, including APFS shared-container identity; unmeasured quantities remain `null`. A running older backend keeps its startup behavior until restarted after its obligations are settled.
 
 Inspect native CPU and memory observations for a supervised command:
 
@@ -73,7 +73,7 @@ Inspect native CPU and memory observations for a supervised command:
 bin/arm usage LEASE_ID
 ```
 
-For physical host monitoring, use `arm monitor`, or `arm monitor --follow --json` to stream sample pages. The shared backend reports aggregate/per-core CPU, memory/swap, cached filesystem space, per-device disk I/O and network rates. It retains a two-minute window of compact history at a nominal two-second cadence. Restart changes the collector epoch and explicitly marks a history gap. Physical observations are separate from lease budgets and attribution; unavailable/reset counters remain null, and GPU telemetry is not yet implemented. The initial web Monitor consumes this stream; TUI views and rendered browser acceptance remain upcoming.
+For physical host monitoring, use `arm monitor`, or `arm monitor --follow --json` to stream sample pages. The shared backend reports aggregate/per-core CPU, memory/swap, cached filesystem space, per-device disk I/O and network rates. It retains a two-minute window of compact history at a nominal two-second cadence. Restart changes the collector epoch and explicitly marks a history gap. Physical observations are separate from lease budgets and attribution; unavailable/reset counters remain null, and GPU telemetry is not yet implemented. Both dashboards consume this stream; GPU telemetry and fuller device/provider support remain upcoming.
 
 Open the local observation dashboard with a running backend:
 
@@ -234,25 +234,20 @@ Re-running `arm install` upgrades only an unchanged managed instruction block, p
 
 ## Direct-peer hosts
 
-Mesh access is opt-in and separate from the loopback dashboard/API. Each node needs a running ARM backend, a reachable explicitly chosen mesh address, and its own stable host identity. Initialize each node locally, substituting its real non-wildcard IP and reachable address:
+Mesh access is opt-in and separate from the loopback dashboard/API. With a compatible ARM executable installed on both nodes and an already verified direct SSH destination, connect without separately starting backends or configuring identities/listeners:
 
 ```sh
-arm start
-arm mesh init --name node-a --listen "$NODE_A_IP:7443" --address "$NODE_A_ADDRESS:7443"
-# On the other node:
-arm start
-arm mesh init --name node-b --listen "$NODE_B_IP:7443" --address "$NODE_B_ADDRESS:7443"
-```
-
-From node A, pair with an existing verified SSH destination. Both initialized listeners must be reachable in both directions for identity proof. Review the actual SSH account/key, target OS user, both node identities/certificate pins, endpoints and directional permissions before confirming:
-
-```sh
-arm mesh join --ssh user@node-b --reason "Observe the build host" --dry-run
-arm mesh join --ssh user@node-b --reason "Observe the build host"
+arm mesh connect user@node-b --dry-run
+arm mesh connect user@node-b
 arm mesh peers
-arm status --host node-b
+arm status --host HOST_ID
 arm resources --host HOST_ID
+arm mesh disconnect HOST_ID
+# Inspect an interrupted result without retrying it:
+arm mesh lookup OPERATION_KEY
 ```
+
+Connect prepares private backends/identities and concrete bound sockets, then asks you to review the actual SSH account/key, OS users, certificate pins, endpoints and directional grants before enabling network listeners/trust. Decline closes pending sockets; ordinary backends/private identities may remain. Scripts need `--yes`; dry-run and missing noninteractive confirmation create no ARM state. Exact listeners recover on restart; unavailable saved addresses fail visibly without rebinding. Existing backend ceilings are preserved, including auto memory/disk modes. Direct routing must work in both directions; ambiguous routes require explicit IP options. Connect never installs a missing executable or changes SSH trust. Advanced `mesh init` / `mesh join` remain available for explicit setup.
 
 The default grants node A only aggregate host observation on node B; node B receives no reverse permissions. `--grant` and `--reverse-grant` explicitly choose directional permissions. `lease-own` enables immediate native CPU/memory/disk claims within reviewed aggregate ceilings and maximum TTL; `run` additionally permits arbitrary commands as the destination ARM user's OS account. **A run grant is not a sandbox: that account's files, credentials and ARM keys are accessible to the command.** Remote runs require an explicit absolute destination-local `--cwd`; dependencies must already exist there. ARM does not upload files or forward the caller's environment. Remote queued work, pool bundles and managed storage/port/agent attachments are currently refused.
 
@@ -267,7 +262,7 @@ arm mesh message-lookup HOST_ID --key UNIQUE_SEND_KEY
 
 These send examples require the corresponding grants. Unknown or ambiguous host names fail closed; prefer stable host IDs in scripts. Remote mutations never retry automatically. Preserve the authority and original operation key after a lost response; inspect or retry the same request/key instead of creating new work. Single-lease remote `release`, `cancel` and `renew` accept `--key` for this purpose.
 
-`arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
+`arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
 
 ## Owned Gradle services
 

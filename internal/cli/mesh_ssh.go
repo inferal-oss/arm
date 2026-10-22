@@ -48,7 +48,7 @@ func meshSSHEnvironment() []string {
 	}
 	return result
 }
-func checkSSHConfiguration(ctx context.Context, destination string) error {
+func readSSHConfiguration(ctx context.Context, destination string) (string, error) {
 	args := append([]string{"-G"}, meshSSHFlags()...)
 	args = append(args, "--", destination)
 	command := exec.CommandContext(ctx, "ssh", args...)
@@ -57,12 +57,32 @@ func checkSSHConfiguration(ctx context.Context, destination string) error {
 	errout := &meshCapture{limit: 4096}
 	command.Stdout, command.Stderr = out, errout
 	if e := command.Run(); e != nil {
-		return fmt.Errorf("SSH configuration unavailable: %w", e)
+		return "", fmt.Errorf("SSH configuration unavailable: %w", e)
 	}
 	if out.overflow || errout.overflow {
-		return fmt.Errorf("SSH configuration output exceeded bound")
+		return "", fmt.Errorf("SSH configuration output exceeded bound")
 	}
-	return validateSSHConfiguration(out.String())
+	if err := validateSSHConfiguration(out.String()); err != nil {
+		return "", err
+	}
+	return out.String(), nil
+}
+func checkSSHConfiguration(ctx context.Context, destination string) error {
+	_, err := readSSHConfiguration(ctx, destination)
+	return err
+}
+func meshSSHCanonicalHost(ctx context.Context, destination string) (string, error) {
+	raw, err := readSSHConfiguration(ctx, destination)
+	if err != nil {
+		return "", err
+	}
+	for _, line := range strings.Split(raw, "\n") {
+		parts := strings.Fields(line)
+		if len(parts) == 2 && parts[0] == "hostname" {
+			return parts[1], nil
+		}
+	}
+	return "", fmt.Errorf("SSH canonical hostname unavailable")
 }
 func validateSSHConfiguration(configuration string) error {
 	for _, line := range strings.Split(configuration, "\n") {
@@ -92,7 +112,7 @@ func validateSSHConfiguration(configuration string) error {
 
 // Parse only the main OpenSSH client's private -E log. Remote stderr and nested
 // ssh transcript cannot satisfy this gate. Mutation bytes wait for reviewed pin.
-func (a *app) meshSSH(destination, binary string, payload meshBootstrap, expected meshSSHIdentity, result any) (meshSSHIdentity, error) {
+func (a *app) meshSSH(destination, binary string, payload any, expected meshSSHIdentity, result any) (meshSSHIdentity, error) {
 	ctx, cancel := context.WithTimeout(a.ctx, 20*time.Second)
 	defer cancel()
 	if e := checkSSHConfiguration(ctx, destination); e != nil {

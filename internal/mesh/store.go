@@ -85,12 +85,20 @@ type TrustEvent struct {
 	Revision     int       `json:"revision"`
 }
 type Config struct {
-	History  []TrustEvent `json:"history"`
-	Identity Identity     `json:"identity"`
-	Listen   string       `json:"listen"`
-	Peers    []Peer       `json:"peers"`
+	History     []TrustEvent        `json:"history"`
+	Identity    Identity            `json:"identity"`
+	Listen      string              `json:"listen"`
+	Enabled     *bool               `json:"listener_enabled,omitempty"`
+	Managed     bool                `json:"automatic_listener,omitempty"`
+	Disconnects []DisconnectReceipt `json:"disconnect_receipts,omitempty"`
+	Activation  *ListenerActivation `json:"listener_activation,omitempty"`
+	Peers       []Peer              `json:"peers"`
 }
+
+func (c Config) ListenerEnabled() bool { return c.Enabled == nil || *c.Enabled }
+
 type Store struct {
+	trustMu   sync.Mutex
 	mu        sync.RWMutex
 	home      string
 	config    Config
@@ -158,6 +166,14 @@ func validateListen(address string) error {
 	return nil
 }
 func Init(home, host, name, listen, address string) (*Store, error) {
+	return initListener(home, host, name, listen, address, true)
+}
+
+func InitPrepared(home, host, name, listen, address string) (*Store, error) {
+	return initListener(home, host, name, listen, address, false)
+}
+
+func initListener(home, host, name, listen, address string, enabled bool) (*Store, error) {
 	if e := validateListen(listen); e != nil {
 		return nil, e
 	}
@@ -184,7 +200,7 @@ func Init(home, host, name, listen, address string) (*Store, error) {
 	if e != nil {
 		return nil, e
 	}
-	if e = save(filepath.Join(dir, "config.json"), Config{Identity: identity, Listen: listen, Peers: []Peer{}}); e != nil {
+	if e = save(filepath.Join(dir, "config.json"), Config{Identity: identity, Listen: listen, Enabled: &enabled, Managed: !enabled, Peers: []Peer{}}); e != nil {
 		return nil, e
 	}
 	return Open(home)
@@ -205,6 +221,7 @@ func (s *Store) update(fn func(*Config) error) error {
 	next := s.config
 	next.Peers = slices.Clone(next.Peers)
 	next.History = slices.Clone(next.History)
+	next.Disconnects = slices.Clone(next.Disconnects)
 	if e := fn(&next); e != nil {
 		return e
 	}
@@ -217,7 +234,9 @@ func (s *Store) update(fn func(*Config) error) error {
 func (s *Store) Pair(identity Identity, grant Grant, pair, reason string) (Peer, error) {
 	return s.PairReviewed(identity, grant, pair, reason, false)
 }
-func (s *Store) PairReviewed(identity Identity, grant Grant, pair, reason string, replaceRevoked bool) (Peer, error) {
+func (s *Store) PairReviewed(identity Identity, grant Grant, pair, reason string, replaceRevoked bool, expectedRevision ...int) (Peer, error) {
+	s.trustMu.Lock()
+	defer s.trustMu.Unlock()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	var result Peer
@@ -245,6 +264,9 @@ func (s *Store) PairReviewed(identity Identity, grant Grant, pair, reason string
 						return nil
 					}
 				}
+				if len(expectedRevision) > 0 && p.Revision != expectedRevision[0] {
+					return fmt.Errorf("peer revision changed since trust review")
+				}
 				if replaceRevoked && p.State == "revoked" {
 					result = Peer{Identity: identity, Grant: cloneGrant(grant), Pair: pair, State: "pending", Deadline: time.Now().UTC().Add(5 * time.Minute), Revision: p.Revision + 1, Reason: reason}
 					c.Peers[index] = result
@@ -252,6 +274,9 @@ func (s *Store) PairReviewed(identity Identity, grant Grant, pair, reason string
 				}
 				return fmt.Errorf("peer already registered; revoke/inspect instead of replacing its identity or grants")
 			}
+		}
+		if len(expectedRevision) > 0 && expectedRevision[0] != 0 {
+			return fmt.Errorf("reviewed peer disappeared before pairing")
 		}
 		if len(c.Peers) >= 64 {
 			return fmt.Errorf("peer limit reached")
@@ -307,6 +332,8 @@ func (s *Store) PeerByCert(raw []byte) (Peer, error) {
 	return s.peerByCert(raw)
 }
 func (s *Store) Prove(host, pair string) error {
+	s.trustMu.Lock()
+	defer s.trustMu.Unlock()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for _, p := range s.config.Peers {
@@ -325,6 +352,8 @@ func (s *Store) Prove(host, pair string) error {
 	})
 }
 func (s *Store) Activate(host, pair string) error {
+	s.trustMu.Lock()
+	defer s.trustMu.Unlock()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.update(func(c *Config) error {
@@ -344,6 +373,8 @@ func (s *Store) Activate(host, pair string) error {
 	})
 }
 func (s *Store) Revoke(target, reason string) error {
+	s.trustMu.Lock()
+	defer s.trustMu.Unlock()
 	peer, e := s.Resolve(target)
 	if e != nil {
 		return e
@@ -483,6 +514,8 @@ func (s *Store) persist(c Config) error {
 	return writePrivate(s.directory, "config.json", append(raw, '\n'), false)
 }
 func (s *Store) Renew(reason string) (Identity, error) {
+	s.trustMu.Lock()
+	defer s.trustMu.Unlock()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if reason == "" || len(reason) > 4096 {

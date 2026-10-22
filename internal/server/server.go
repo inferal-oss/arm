@@ -27,6 +27,7 @@ type Server struct {
 	meshMu           sync.Mutex
 	meshAdminMu      sync.Mutex
 	mesh             *meshService
+	meshPending      *preparedMeshSetup
 	Manager          *manager.Manager
 	home, token      string
 	stop             context.CancelFunc
@@ -73,6 +74,9 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	}
 	defer listener.Close()
 	if e = m.TrackInfrastructure(listener.Addr()); e != nil {
+		return e
+	}
+	if e = saveMeshStartupPolicy(home, address, capacity); e != nil {
 		return e
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -626,7 +630,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return result, nil
 	case "status":
 		status, err := s.Manager.Status()
-		status.Capabilities = append(status.Capabilities, "pool-journal-pages")
+		status.Capabilities = append(status.Capabilities, "pool-journal-pages", "automatic-mesh-lifecycle")
 		if s.authority != "" {
 			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging", "browser-reviewed-pool-controls")
 		}

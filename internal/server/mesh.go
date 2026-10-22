@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 )
@@ -39,6 +40,10 @@ func (s *Server) loadMesh() error {
 	if e != nil {
 		return e
 	}
+	if !store.Config().ListenerEnabled() {
+		store.Close()
+		return nil
+	}
 	if e := s.startMesh(store); e != nil {
 		store.Close()
 		return e
@@ -46,24 +51,47 @@ func (s *Server) loadMesh() error {
 	return nil
 }
 func (s *Server) startMesh(store *mesh.Store) error {
+	return s.startMeshListener(store, nil)
+}
+
+func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedListener) error {
 	s.meshMu.Lock()
 	defer s.meshMu.Unlock()
+	s.lifecycleMu.Lock()
+	defer s.lifecycleMu.Unlock()
 	if s.mesh != nil {
 		return fmt.Errorf("mesh already running")
 	}
-	if e := s.meshAdmission(); e != nil {
-		return e
+	if s.lifecycleClosing || (s.lifecycleContext != nil && s.lifecycleContext.Err() != nil) {
+		return model.Err("backend_stopping", "mesh setup unavailable during shutdown")
+	}
+	if !store.Config().ListenerEnabled() {
+		return fmt.Errorf("mesh listener is prepared but not approved")
 	}
 	status, e := s.Manager.Status()
 	if e != nil {
 		return e
 	}
+	if status.Draining {
+		return model.Err("backend_stopping", "mesh setup unavailable during drain")
+	}
 	if store.Config().Identity.Host != status.Host {
 		return fmt.Errorf("mesh identity does not match this host ledger")
 	}
-	listener, e := net.Listen("tcp", store.Config().Listen)
-	if e != nil {
-		return e
+	var listener net.Listener
+	if provided == nil {
+		listener, e = net.Listen("tcp", store.Config().Listen)
+		if e != nil {
+			return e
+		}
+	} else {
+		if provided.Address() != store.Config().Listen {
+			return fmt.Errorf("prepared listener address changed")
+		}
+		listener, e = provided.Activate()
+		if e != nil {
+			return e
+		}
 	}
 	if e = s.Manager.TrackMeshInfrastructure(listener.Addr()); e != nil {
 		listener.Close()
@@ -106,6 +134,10 @@ func (m *meshService) revoke(host string) {
 func (s *Server) closeMesh() {
 	s.meshMu.Lock()
 	defer s.meshMu.Unlock()
+	if s.meshPending != nil {
+		s.meshPending.close()
+		s.meshPending = nil
+	}
 	if s.mesh != nil {
 		_ = s.mesh.http.Close()
 		closeErr := s.mesh.listener.Close()
@@ -394,6 +426,9 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 		s.meshAdminMu.Lock()
 		defer s.meshAdminMu.Unlock()
 	}
+	if strings.HasPrefix(operation, "mesh_setup_") {
+		return s.meshSetupOperation(ctx, operation, raw)
+	}
 	s.meshMu.Lock()
 	service := s.mesh
 	s.meshMu.Unlock()
@@ -475,7 +510,7 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 		return store.Config().Identity, nil
 	}
 	if service == nil {
-		return nil, model.Err("mesh_unavailable", "mesh is disabled; use mesh init explicitly")
+		return nil, model.Err("mesh_unavailable", "mesh is disabled; connect a node with arm mesh connect SSH_DEST")
 	}
 	switch operation {
 	case "mesh_identity":
@@ -484,13 +519,17 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 		return service.store.Config().Peers, nil
 	case "mesh_pair":
 		var q struct {
-			Identity       mesh.Identity
-			Grant          mesh.Grant
-			Pair, Reason   string
-			ReplaceRevoked bool
+			Identity         mesh.Identity
+			Grant            mesh.Grant
+			Pair, Reason     string
+			ReplaceRevoked   bool
+			ExpectedRevision *int
 		}
 		if e := mesh.Decode(raw, &q); e != nil {
 			return nil, e
+		}
+		if q.ExpectedRevision != nil {
+			return service.store.PairReviewed(q.Identity, q.Grant, q.Pair, q.Reason, q.ReplaceRevoked, *q.ExpectedRevision)
 		}
 		return service.store.PairReviewed(q.Identity, q.Grant, q.Pair, q.Reason, q.ReplaceRevoked)
 	case "mesh_activate", "mesh_revoke":

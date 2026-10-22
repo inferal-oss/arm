@@ -98,15 +98,19 @@ func (a *app) meshConfirm(plan any, yes, dry bool) error {
 type meshBootstrap struct {
 	Home, Action, Host, Pair, Reason string
 	ReplaceRevoked                   bool
+	ExpectedRevision                 *int
 	Identity                         mesh.Identity
 	Grant                            mesh.Grant
 }
 
 func (a *app) meshCommand(args []string) (int, error) {
 	if len(args) == 0 {
-		return 2, fmt.Errorf("mesh requires init, identity, peers, join, revoke, call, contacts or send")
+		return 2, fmt.Errorf("mesh requires connect, disconnect, lookup, identity, peers or an advanced operation")
 	}
 	action, args := args[0], args[1:]
+	if action == "connect" || action == "disconnect" {
+		return a.meshLifecycle(action, args)
+	}
 	f := a.flags("mesh " + action)
 	yes, dry := new(bool), new(bool)
 	if action == "init" || action == "join" || action == "revoke" || action == "renew" {
@@ -114,6 +118,21 @@ func (a *app) meshCommand(args []string) (int, error) {
 		f.BoolVar(dry, "dry-run", false, "preview without mutation")
 	}
 	switch action {
+	case "lookup":
+		if err := a.parse(f, args, false); err != nil {
+			return 2, err
+		}
+		if f.NArg() != 1 {
+			return 2, fmt.Errorf("mesh lookup requires lifecycle KEY")
+		}
+		operation, exists, err := mesh.ReadLifecycleOperation(a.home, f.Arg(0))
+		if err != nil {
+			return 1, err
+		}
+		if !exists {
+			return 1, model.Err("not_found", "no durable local mesh lifecycle record for this key")
+		}
+		return 0, a.print(operation)
 	case "identity", "peers":
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
@@ -154,6 +173,13 @@ func (a *app) meshCommand(args []string) (int, error) {
 		if e != nil || len(raw) > 1<<20 {
 			return 2, fmt.Errorf("bootstrap payload exceeds 1MiB")
 		}
+		var header struct{ Action string }
+		if e = json.Unmarshal(raw, &header); e != nil {
+			return 2, e
+		}
+		if strings.HasPrefix(header.Action, "lifecycle_") {
+			return a.meshLifecycleBootstrap(raw)
+		}
 		if e = mesh.Decode(raw, &q); e != nil {
 			return 2, e
 		}
@@ -172,11 +198,12 @@ func (a *app) meshCommand(args []string) (int, error) {
 			}
 		case "pair":
 			if e := a.call("mesh_pair", struct {
-				Identity       mesh.Identity
-				Grant          mesh.Grant
-				Pair, Reason   string
-				ReplaceRevoked bool
-			}{q.Identity, q.Grant, q.Pair, q.Reason, q.ReplaceRevoked}, &result); e != nil {
+				Identity         mesh.Identity
+				Grant            mesh.Grant
+				Pair, Reason     string
+				ReplaceRevoked   bool
+				ExpectedRevision *int
+			}{q.Identity, q.Grant, q.Pair, q.Reason, q.ReplaceRevoked, q.ExpectedRevision}, &result); e != nil {
 				return 1, e
 			}
 		case "activate":
