@@ -565,7 +565,7 @@ These screens manage direct peers. Connected-graph discovery/forwarded messaging
 
 ## Approved connected-graph messaging work
 
-The operator approved the security amendment in [MESH-ROUTING-PROPOSAL.md](MESH-ROUTING-PROPOSAL.md) on October21. An isolated test-only bounded nested-TLS/closed-relay prototype passed independent native/Linux review. Workspace membership, graph discovery and forwarded durable messages are not supported yet; the current product remains direct-only. Explicit workspace joins/merges, opt-in agent publication, directory freshness and denial of inherited execution/resource grants remain implementation and validation gates.
+The operator approved the security amendment in [MESH-ROUTING-PROPOSAL.md](MESH-ROUTING-PROPOSAL.md) on October21. An isolated test-only bounded nested-TLS/closed-relay prototype passed independent native/Linux review. Native reviewed workspace membership, pinned admission, explicit directory refresh and separately keyed recovery are now supported as described below. Forwarded durable messages, merges and opt-in agent publication remain in development; direct-peer messaging remains the current public messaging path.
 
 
 ## Terminal Mesh controls and selected-node workspace
@@ -590,7 +590,7 @@ SSH guards permit one authenticated execution session and reject forwarding, SFT
 
 `internal/routeproto` contains only a package comment and test-only transport/TLS/closed-probe helpers. No production package imports it, no daemon endpoint is registered and no directory, trust or message schema changed. The real loopback B→A→C fixture proves nested pinned TLS can authenticate B at C while relaying opaque bounded bytes through A and refusing resource/native/SSH handlers and caller-selected network targets. Its pre-provisioned test identities are not workspace admission or automatic discovery.
 
-The next checkpoint must implement reviewed workspace records, pinned directory admission/proof, pin continuity, bounded freshness/clock/revocation and strict reset-schema support. Durable host-inbox send/reply/dedup, opt-in agent publication, real three-daemon topology and alternate-route/partition/forwarded-grant denial plus matching UI remain required before graph messaging is supported.
+The subsequent reviewed workspace ledger, lifecycle/reset proof and public native admission/refresh checkpoints implement membership, pins and explicit discovery, including actual three-daemon recovery acceptance. Durable host-inbox send/reply/dedup, opt-in agent publication, alternate-route/partition/forwarded-grant denial and matching UI remain required before graph messaging is supported.
 
 
 ## Verified missing-node provisioning
@@ -630,7 +630,7 @@ Strict typed decoding rejects missing required fields, unknown/duplicate/case-al
 
 Authorization caches are process-only, with request-start monotonic validity at most60 seconds and streams at most30 seconds or remaining membership validity. Restarted observations are display-only. Wall/elapsed drift and rollback below the durable pre-issuance floor refuse fresh authority. Existing exact certificate/generation changes quarantine the target instead of silently replacing pins. Rotation, readmission, merges and directory failover are not implemented.
 
-Manager-local lifecycle, cached availability and independent strict reset/retirement proof are integrated as described below. Reads still create no workspace schema or node identity. Native workspace commands, listeners and dashboard controls are not exposed. Closed network admission/refresh, three-daemon graph discovery, durable inbox/send/reply/dedup, opt-in agents and UI remain required. Injected ledger/service tests do not establish those features.
+Manager-local lifecycle, cached availability and independent strict reset/retirement proof are integrated as described below. Reads still create no workspace schema or node identity. The later public native membership section describes the implemented CLI and closed network admission/refresh, independently verified with three daemons. Durable routed inbox/send/reply/dedup, opt-in agents and workspace UI remain required. Injected ledger/service tests alone do not establish those features.
 
 
 ## Reviewed carrier catalog seeding and onward provisioning
@@ -660,7 +660,7 @@ Strict reset proof independently recognizes all eight exact table definitions, a
 
 `make test-workspace-lifecycle` exercises compiled-backend restart/status/expiry/cleanup using a deliberately crashed private producer fixture. Both Linux aggregate harnesses include workspace tests and that smoke; `test-local` includes the native smoke. Failed smoke fixtures are retained for diagnosis. Host-wide Linux activity scans can legitimately refuse storage cleanup when a same-user protected process cannot be inspected; the allocation stays charged with needs_attention. Private PID/proc namespace acceptance establishes the supported cleanup path without weakening that refusal.
 
-This is internal lifecycle/reset support. Public administration and network admission/refresh, real three-daemon directory/graph discovery, durable routed messaging/replies, opt-in agent publication and dashboard controls remain required. No new messaging or execution capability is advertised by this checkpoint.
+This lifecycle/reset checkpoint is complemented by public native administration, pinned network admission/refresh and real three-daemon discovery described below. Durable routed messaging/replies, opt-in agent publication and workspace dashboard controls remain required. Membership adds no execution capability.
 
 
 ## Standalone Cargo policy foundation
@@ -717,7 +717,7 @@ Recovery first reconciles membership already committed by the directory. A compl
 
 Strict independent reset proof recognizes complete recovery families and refuses missing, altered or unresolved descendants. Initial workspace producers use optional group marker 2 and reserve recovery capacity before admission; historical marker 1 can be inspected without a read-side migration. Explicit mutations enable the supported group transactionally.
 
-A closed, bounded one-hop stream envelope and purpose-specific inner TLS 1.3 builder are available internally. They verify the exact recorded certificate, SAN, expiry, EKU and current retained local identity without system-root fallback, resumption or promotion into direct-peer grants. This checkpoint registers no listener, public command, browser permission or network capability. Public administration, actual network admission/refresh/recovery, three-daemon loss/restart acceptance and graph discovery/forwarding remain subsequent integration work.
+A closed, bounded one-hop stream envelope and purpose-specific inner TLS 1.3 builder are available internally. They verify the exact recorded certificate, SAN, expiry, EKU and current retained local identity without system-root fallback, resumption or promotion into direct-peer grants. That foundation checkpoint registered no listener or public command. The later public native workspace section describes its integrated endpoint, administration and actual three-daemon admission/refresh/recovery. Graph forwarding and workspace browser controls remain unfinished.
 
 
 ## Public leased SSH over direct mesh peers
@@ -744,3 +744,18 @@ Normal caller fetch settings survive resolver-only offline queries. Rustup selec
 Unknown spawn or post-grant outcomes retain resource/storage obligations and never rerun automatically. Current-worker cancellation closes private IPC and signals only its owned unreaped group; the watcher joins before reap. PID0 is not proof of nonexecution. Failed final persistence retains a consuming attention state; recorded positive group absence permits explicit reconciliation without asserting a known command outcome. Queued deadline rejection never launches a helper or creates roots, and keeps the scheduler explanation. Preparation cannot be renewed.
 
 Independent strict reset proof closes the private recursive record graph and original run/lease/storage, birth, source/config/tool, policy, argv, gate, timestamp and receipt links. Missing/altered/unknown/uncertain evidence blocks reset. Admission now enforces the same 4,096-record history bound as startup inside the lease transaction: overflow creates no lease/binding/event, exact existing retries work at capacity, and the largest admitted ledger reopens. Routine archival remains planned. The Rust card and guide examples use returned cargo paths and explicit output export before short-retention cleanup.
+
+
+## Public native workspace membership and recovery
+
+A workspace is a named mesh group whose selected directory maintains reviewed membership and pinned identities. `arm workspaces` exposes native local list/inspect/lookup, create/join/decide, invitation/consent export, reviewed admission, explicit directory refresh/finalize, deny/revoke/retire, original cancellation and separately keyed recovery. The [operator guide](MESH-WORKSPACES.md) explains the concrete flow. Browser sessions, selected remote dashboards and normal direct-peer RPC cannot administer membership. The authenticated local OS owner is the operator; distinct per-agent operator capabilities remain future work.
+
+Invitation and consent digests detect changed content; neither is a signature or bearer credential. Export exclusively creates a 0600 file. Import accepts a bounded regular file and opens nonblocking before checking its type, so an unopened FIFO cannot hang the CLI. Joining binds the directory's complete identity to an existing active proven direct peer. No review document or discovered member creates direct-peer trust. Admission recomputes its complete review inside the same transaction as the pending candidate. Exact known keys return retained outcomes without another proof, including unknown outcomes.
+
+The exact `/v1/mesh/workspace` endpoint admits only candidate proof, directory refresh and own-candidate admission status through existing pinned direct mutual TLS. It then authenticates the exact workspace endpoints independently with nested pinned TLS 1.3, normal SAN/expiry/EKU verification and current retained local key checks. The adapter rechecks pair/revision, ledger role/class/deny/boot/review and pins around handshakes, periodically and in the final producer transaction. It accepts no arbitrary address/path, resource/run/SSH/file/native RPC or TCP forwarding. Transport reachability never lends the peer's resource permissions.
+
+Controls are bounded to 16 KiB, requests to 60 KiB, membership pages to 48 KiB and complete streams to 1 MiB in each direction. Pending streams are limited to 32 globally and eight per peer; initial/inner handshakes have five-second bounds, streams at most 30 seconds and idle I/O ten seconds. Complete membership output is preflighted before sending any page. WebSocket payload limits are restored after NetConn construction, including fragmented messages. Cancellation aborts only the exact captured socket before WebSocket close, including unacknowledged text frames. No trust/database lock spans network I/O.
+
+Separately keyed recovery preserves original consent, nonce and generation. A completed directory admission reconciles read-only. Pending/unknown proof requires freshly reviewed candidate consent and a separately reviewed directory recovery child; old-boot approval never reprobes. Candidate recovery first obtains its own exact directory status and requires fresh complete directory evidence before local finalization. Complete native workflow intervals and incoming/retired hijacked handlers cancel and join before SQLite closes. Reset continues to validate the same canonical eight-table admission/recovery graph; no alternate authority schema is introduced.
+
+Actual three-daemon acceptance establishes A–B/A–C admission and B discovering C through A without B–C peer promotion. Routed durable messages/replies, agent publication, background directory refresh, public delegated-introducer proposals, workspace dashboard controls, merges and failover remain required. Membership confers no execution, resource, SSH or file grant. Native-only administration does not complete connected-graph messaging or the full specification.

@@ -68,7 +68,7 @@ func (o Open) Validate(now time.Time) error {
 		return errors.New("workspace transport currently permits an exact direct hop only")
 	}
 	switch o.Class {
-	case ClassJoinProof:
+	case ClassJoinProof, ClassAdmissionStatus:
 		if !hexValue(o.Consent, 32) {
 			return errors.New("candidate proof requires exact approved consent")
 		}

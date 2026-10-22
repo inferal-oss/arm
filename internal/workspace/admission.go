@@ -8,12 +8,16 @@ import (
 	"github.com/yrashk/arm/internal/local"
 )
 
-func (s *Store) PrepareAdmission(ctx context.Context, p Principal, q AdmissionRequest) (result Operation, err error) {
+func (s *Store) PrepareAdmission(ctx context.Context, p Principal, q AdmissionRequest) (Operation, error) {
+	result, _, err := s.prepareAdmission(ctx, p, q, nil)
+	return result, err
+}
+func (s *Store) prepareAdmission(ctx context.Context, p Principal, q AdmissionRequest, guard func(*Records, Instance) error) (result Operation, created bool, err error) {
 	if !validPrincipal(p) || !validKey(q.Key) || !validHex(q.ConsentHash, 32) || q.PolicyRevision < 1 || !reason(q.Reason) {
-		return result, problem("invalid_request", "exact source/candidate consent and bounded admission request required")
+		return result, false, problem("invalid_request", "exact source/candidate consent and bounded admission request required")
 	}
 	if _, e := ValidateIdentity(q.Candidate); e != nil {
-		return result, e
+		return result, false, e
 	}
 	err = s.transaction(ctx, false, func(tx *sql.Tx, v *Records) error {
 		if e := enableRecoverySchema(ctx, tx, v); e != nil {
@@ -33,6 +37,11 @@ func (s *Store) PrepareAdmission(ctx context.Context, p Principal, q AdmissionRe
 			}
 			result = op.View()
 			return nil
+		}
+		if guard != nil {
+			if e = guard(v, root); e != nil {
+				return e
+			}
 		}
 		if q.PolicyRevision != root.PolicyRevision || q.Candidate.Host == root.Self.Host || q.Introducer && p.Host != root.Directory.Host || q.HostInbox && !root.Policy.HostInbox || denied(v, root.ID, q.Candidate.Host) {
 			return problem("forbidden", "candidate scope/delegation/policy is not currently permitted")
@@ -87,6 +96,7 @@ func (s *Store) PrepareAdmission(ctx context.Context, p Principal, q AdmissionRe
 			return e
 		}
 		result = op.View()
+		created = true
 		return nil
 	})
 	return

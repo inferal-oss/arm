@@ -289,7 +289,7 @@ arm node
 arm node --host HOST_ID --json
 ```
 
-This includes OS/kernel release, process architecture, ARM/Go versions, hostname, logical CPUs, exact memory/state-filesystem totals with their own freshness, and declared software capabilities. Remote reads need `observe-host`; metadata is separate from granted permissions. Custom annotations and dashboard node windows remain under development.
+This includes OS/kernel release, process architecture, ARM/Go versions, hostname, logical CPUs, exact memory/state-filesystem totals with their own freshness, and declared software capabilities. Remote reads need `observe-host`; metadata is separate from granted permissions. Selected read-only node windows are available in the web dashboard, with corresponding terminal node views. Custom annotations and full remote operational parity remain under development.
 
 The default grants node A only aggregate host observation on node B; node B receives no reverse permissions. `--grant` and `--reverse-grant` explicitly choose directional permissions. `lease-own` enables immediate native CPU/memory/disk claims within reviewed aggregate ceilings and maximum TTL; `run` additionally permits arbitrary commands as the destination ARM user's OS account. **A run grant is not a sandbox: that account's files, credentials and ARM keys are accessible to the command.** Remote runs require an explicit absolute destination-local `--cwd`; dependencies must already exist there. ARM does not upload files or forward the caller's environment. Remote queued work, pool bundles and managed storage/port/agent attachments are currently refused.
 
@@ -304,7 +304,21 @@ arm mesh message-lookup HOST_ID --key UNIQUE_SEND_KEY
 
 These send examples require the corresponding grants. Unknown or ambiguous host names fail closed; prefer stable host IDs in scripts. Remote mutations never retry automatically. Preserve the authority and original operation key after a lost response; inspect or retry the same request/key instead of creating new work. Single-lease remote `release`, `cancel` and `renew` accept `--key` for this purpose.
 
-`arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
+`arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Scoped read-only web/terminal node views are implemented, and reviewed workspaces add explicit member discovery. Private-key rotation, complete remote operational parity, routed messaging, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
+
+## Mesh workspaces
+
+A workspace is a named group of mesh nodes with reviewed membership. A directory
+node keeps the approved member list and pinned identities. With A connected to B
+and C, a shared workspace lets B discover C through A. Each host retains its own
+resource authority and separately granted execution, SSH and file permissions.
+
+`arm workspaces` now provides native local creation, joining, admission, directory
+refresh and explicit recovery. Invitations and candidate consent require review
+and real pinned proof; joining does not silently add a trusted direct peer.
+Routed messages/replies, automatic background refresh and workspace dashboard
+controls are still being implemented. See the [workspace guide](docs/MESH-WORKSPACES.md)
+for the workflow and current limits.
 
 ## Leased SSH through the mesh
 

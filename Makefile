@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-database-reset test-workspace-lifecycle test-workspaces validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -75,7 +75,11 @@ test-workspace-lifecycle: build
 	GOOS= GOARCH= CGO_ENABLED=0 $(GO) test -c -o .cache/workspace-manager.test ./internal/manager
 	$(PYTHON) scripts/test-workspace-lifecycle.py --arm bin/arm --manager-tests .cache/workspace-manager.test
 
-test-local: build test-workspace-lifecycle
+# Real three-daemon reviewed workspace proof/directory/recovery; no routed message claim.
+test-workspaces: build
+	$(PYTHON) scripts/test-workspaces.py --arm bin/arm
+
+test-local: build test-workspace-lifecycle test-workspaces
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py

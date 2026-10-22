@@ -25,36 +25,43 @@ import (
 	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/observe"
+	"github.com/yrashk/arm/internal/workspacetransport"
 )
 
 type Server struct {
-	runtimeExecutable *mesh.RuntimeExecutable
-	meshOperatorMu    sync.Mutex
-	meshOperator      *meshops.Service
-	nodeMu            sync.Mutex
-	nodeCache         map[string]cachedNodeRead
-	nodeSlots         chan struct{}
-	nodeInFlight      map[string]bool
-	meshMu            sync.Mutex
-	meshAdminMu       sync.Mutex
-	mesh              *meshService
-	meshPending       *preparedMeshSetup
-	Manager           *manager.Manager
-	home, token       string
-	stop              context.CancelFunc
-	admission         sync.Mutex
-	stopping          bool
-	storageScan       chan struct{}
-	portScan          chan struct{}
-	monitor           *observe.Monitor
-	monitorSlots      chan struct{}
-	authority         string
-	browser           browserCredentials
-	lifecycleContext  context.Context
-	shutdownWorker    sync.Once
-	shutdownWG        sync.WaitGroup
-	lifecycleMu       sync.Mutex
-	lifecycleClosing  bool
+	runtimeExecutable     *mesh.RuntimeExecutable
+	meshOperatorMu        sync.Mutex
+	meshOperator          *meshops.Service
+	nodeMu                sync.Mutex
+	nodeCache             map[string]cachedNodeRead
+	nodeSlots             chan struct{}
+	nodeInFlight          map[string]bool
+	workspaceStreamsMu    sync.Mutex
+	workspaceStreams      map[*workspacetransport.Handler]struct{}
+	workspaceCallsClosed  bool
+	workspaceCallsContext context.Context
+	workspaceCallsCancel  context.CancelFunc
+	workspaceCalls        sync.WaitGroup
+	meshMu                sync.Mutex
+	meshAdminMu           sync.Mutex
+	mesh                  *meshService
+	meshPending           *preparedMeshSetup
+	Manager               *manager.Manager
+	home, token           string
+	stop                  context.CancelFunc
+	admission             sync.Mutex
+	stopping              bool
+	storageScan           chan struct{}
+	portScan              chan struct{}
+	monitor               *observe.Monitor
+	monitorSlots          chan struct{}
+	authority             string
+	browser               browserCredentials
+	lifecycleContext      context.Context
+	shutdownWorker        sync.Once
+	shutdownWG            sync.WaitGroup
+	lifecycleMu           sync.Mutex
+	lifecycleClosing      bool
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
@@ -117,6 +124,7 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 		fmt.Fprintln(os.Stderr, "ARM mesh unavailable:", meshErr)
 	}
 	defer s.closeMesh()
+	defer s.closeWorkspaceStreams()
 	defer s.closeMeshOperator()
 	defer func() {
 		s.lifecycleMu.Lock()
@@ -514,6 +522,9 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	}
 	if ctx.Value(browserContextKey{}) == true && !browserAllowedOperation(r.Operation) {
 		return nil, model.Err("forbidden", "this dashboard session supports inspection, reviewed lease and pool controls and reviewed operator messaging; use the CLI for other changes")
+	}
+	if strings.HasPrefix(r.Operation, "workspace_") {
+		return s.workspaceOperation(ctx, r.Operation, r.Params)
 	}
 	if strings.HasPrefix(r.Operation, "mesh_operator_") {
 		return s.meshOperatorOperation(ctx, r.Operation, r.Params)
