@@ -43,6 +43,9 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	if strings.TrimSpace(r.Reason) == "" || len(r.Reason) > 4096 || r.Key == "" || len(r.Key) > 128 || len(r.Project) > 256 || len(r.Agent) > 128 {
 		return result, model.Err("invalid_request", "provide a reason (1..4096 bytes), operation key (1..128 bytes) and bounded attribution")
 	}
+	if err := m.normalizeSubpoolCreate(&r); err != nil {
+		return result, err
+	}
 	if r.Operation == "create" {
 		if r.ID != "" || r.Delta != nil || r.Revision != nil || r.Capacity == nil || *r.Capacity < 0 || !poolText(r.Name, 128, true) || !poolText(r.Description, 4096, false) {
 			return result, model.Err("invalid_request", "create requires a name and nonnegative integral capacity; no ID, delta or revision")
@@ -68,7 +71,7 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 			return result, model.Err("invalid_request", "select explicit scope: host or global")
 		}
 	} else {
-		if r.ID == "" || r.Scope != "" || r.Host != "" || r.Unit != "" {
+		if r.ID == "" || r.Scope != "" || r.Host != "" || r.Unit != "" || r.Parent != "" || r.ParentRevision != nil {
 			return result, model.Err("invalid_request", "mutations require an ID and cannot change resource scope, host or unit")
 		}
 		if r.Operation != "adjust" && (r.Revision == nil || *r.Revision < 1) {
@@ -122,6 +125,9 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	if !errors.Is(err, sql.ErrNoRows) {
 		return result, err
 	}
+	if policyErr := m.poolPolicyError(); policyErr != nil {
+		return result, policyErr
+	}
 	if err = m.reviewPoolMutationLocked(r); err != nil {
 		return result, err
 	}
@@ -141,7 +147,7 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 	now := time.Now().UTC()
 	var p model.Pool
 	if r.Operation == "create" {
-		p = model.Pool{ID: "pool_" + local.ID(), Name: r.Name, Scope: r.Scope, Host: r.Host, Authority: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Agent: r.Agent, Session: session, Registration: registration, Project: r.Project, Description: r.Description, Unit: r.Unit, Capacity: *r.Capacity, Revision: 1, State: "active", Accounting: "cooperative-counted-permits", Expiry: "return-after-lease-settlement", Created: now, Updated: now}
+		p = model.Pool{ID: "pool_" + local.ID(), Parent: r.Parent, Name: r.Name, Scope: r.Scope, Host: r.Host, Authority: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Agent: r.Agent, Session: session, Registration: registration, Project: r.Project, Description: r.Description, Unit: r.Unit, Capacity: *r.Capacity, Revision: 1, State: "active", Accounting: "cooperative-counted-permits", Expiry: "return-after-lease-settlement", Created: now, Updated: now}
 	} else {
 		p, err = m.pool(r.ID)
 		if err != nil {
@@ -183,7 +189,7 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 				return result, err
 			}
 			for _, l := range ls {
-				if consuming(l.State) || l.State == "queued" {
+				if poolCharged(l.State) || l.State == "queued" {
 					for _, c := range l.Request.Pools {
 						if c.Pool == p.ID {
 							return result, model.Err("pool_in_use", "finish all queued and consuming claims before deleting a pool")
@@ -196,6 +202,11 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 		p.Revision++
 		p.Updated = now
 	}
+	partitions, lineage, err := m.validateSubpoolMutation(r, p)
+	if err != nil {
+		return result, err
+	}
+	result.Partitions = partitions
 	var collision int
 	err = m.db.QueryRow(`SELECT 1 FROM pools WHERE scope=? AND host=? AND name=? AND id<>? AND json_extract(data,'$.state')<>'deleted' LIMIT 1`, p.Scope, p.Host, p.Name, p.ID).Scan(&collision)
 	if err == nil {
@@ -224,6 +235,11 @@ func (m *Manager) MutatePool(r model.PoolMutation) (model.PoolChange, error) {
 		return result, err
 	}
 	defer tx.Rollback()
+	if r.Operation == "create" {
+		if err = insertPoolLineage(tx, lineage); err != nil {
+			return result, err
+		}
+	}
 	data, _ := json.Marshal(p)
 	if _, err = tx.Exec(`INSERT INTO pools(id,scope,host,name,data) VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,data=excluded.data`, p.ID, p.Scope, p.Host, p.Name, string(data)); err != nil {
 		return result, err
@@ -285,7 +301,10 @@ func (m *Manager) normalizePoolClaims(claims []model.PoolClaim) ([]model.PoolCla
 func poolReservations(ls []model.Lease) (map[string]int64, error) {
 	used := map[string]int64{}
 	for _, l := range ls {
-		if consuming(l.State) {
+		if !poolCharged(l.State) && l.State != "queued" && l.State != "terminal" {
+			return nil, model.Err("invalid_accounting", "unknown lifecycle cannot free pool backing")
+		}
+		if poolCharged(l.State) {
 			for _, c := range l.Request.Pools {
 				if c.Quantity <= 0 || c.Quantity > math.MaxInt64-used[c.Pool] {
 					return nil, model.Err("invalid_accounting", "persisted pool claims are invalid or overflow")
@@ -297,45 +316,33 @@ func poolReservations(ls []model.Lease) (map[string]int64, error) {
 	return used, nil
 }
 func (m *Manager) poolsFit(claims []model.PoolClaim, used map[string]int64) (bool, error) {
-	for _, c := range claims {
-		p, err := m.pool(c.Pool)
-		if err != nil {
-			return false, err
-		}
-		if p.State == "deleted" {
-			return false, model.Err("pool_deleted", "pool was deleted")
-		}
-		if used[c.Pool] > p.Capacity || c.Quantity > p.Capacity-used[c.Pool] {
-			return false, nil
-		}
+	if err := m.poolPolicyError(); err != nil {
+		return false, err
 	}
-	return true, nil
+	if len(claims) == 0 {
+		return true, nil
+	}
+	t, err := m.checkedPoolTree()
+	if err != nil {
+		return false, err
+	}
+	return t.admit(claims, used)
 }
 func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error) {
-	rows, err := m.db.Query(`SELECT data FROM pools ORDER BY rowid`)
+	t, err := m.checkedPoolTree()
 	if err != nil {
 		return nil, err
 	}
-	var definitions []model.Pool
-	for rows.Next() {
-		var raw []byte
-		var p model.Pool
-		if err = rows.Scan(&raw); err != nil {
-			rows.Close()
-			return nil, err
-		}
-		if err = json.Unmarshal(raw, &p); err != nil {
-			rows.Close()
-			return nil, err
-		}
+	definitions := []model.Pool{}
+	for _, p := range t.nodes {
 		definitions = append(definitions, p)
 	}
-	err = rows.Err()
-	rows.Close()
+	sort.Slice(definitions, func(i, j int) bool { return definitions[i].ID < definitions[j].ID })
+	used, err := poolReservations(ls)
 	if err != nil {
 		return nil, err
 	}
-	used, err := poolReservations(ls)
+	accounting, err := t.accounting(used)
 	if err != nil {
 		return nil, err
 	}
@@ -345,11 +352,17 @@ func (m *Manager) poolViews(ls []model.Lease, all bool) ([]model.PoolView, error
 			continue
 		}
 		v := model.PoolView{Review: &model.PoolReview{Authority: m.host, Consumers: []model.LeaseRevision{}}, Pool: p, Reserved: used[p.ID], Available: max(0, p.Capacity-used[p.ID]), Deficit: max(0, used[p.ID]-p.Capacity), Users: []model.ResourceUse{}, Queued: []model.ResourceUse{}}
+		partition := accounting[p.ID]
+		v.Partition = &partition
+		v.Available = partition.Available
+		v.Deficit = partition.Deficit
+		v.Ancestors = append([]string{}, t.paths[p.ID]...)
+		v.Children = append([]string{}, t.children[p.ID]...)
 		if p.State == "deleted" {
 			v.Available = 0
 		}
 		for _, l := range ls {
-			if consuming(l.State) || l.State == "queued" {
+			if poolCharged(l.State) || l.State == "queued" {
 				for _, c := range l.Request.Pools {
 					if c.Pool == p.ID {
 						v.Review.Consumers = append(v.Review.Consumers, model.LeaseRevision{ID: l.ID, Revision: l.Revision})

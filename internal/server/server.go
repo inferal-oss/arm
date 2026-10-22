@@ -578,6 +578,15 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, err
 		}
 		return boundedPoolRead(s.Manager.LookupPoolMutation(q.Key))
+	case "pool_children", "pool_consumers":
+		var q model.PoolTreeQuery
+		if e := decode(&q); e != nil {
+			return nil, e
+		}
+		if r.Operation == "pool_children" {
+			return boundedPoolRead(s.Manager.PoolChildren(q))
+		}
+		return boundedPoolRead(s.Manager.PoolConsumers(q))
 	case "pool_mutate":
 		var q model.PoolMutation
 		if e := decode(&q); e != nil {

@@ -43,6 +43,7 @@ type Manager struct {
 	databaseSlot       chan struct{}
 	home, host, owner  string
 	budgetStartupError *model.Error
+	poolStartupError   *model.Error
 	ownerUsername      string
 	capacity           model.Resources
 	jobs               map[string]*job
@@ -80,7 +81,7 @@ type Manager struct {
 	scheduleElapsedNow func() time.Time
 }
 
-var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets"}
+var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets", "counted-resource-subpools"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
 	if capacity.Memory < 0 || capacity.Disk < 0 {
@@ -137,6 +138,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	identity := local.CurrentIdentity()
 	m.owner, m.ownerUsername = identity.UID, identity.Username
+	if e = m.initSubpoolRecords(); e != nil && !m.degradePoolStartup(e) {
+		db.Close()
+		return nil, e
+	}
 	if e = m.initBudgetRecords(); e != nil && !m.degradeBudgetStartup(e) {
 		db.Close()
 		return nil, e
@@ -394,7 +399,7 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s := model.Status{PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
 	if m.portErr == nil {
 		s.Capabilities = append(append([]string{}, s.Capabilities...), "port-reservation", "socket-activation", "native-port-inventory")
 	}
@@ -406,6 +411,7 @@ func (m *Manager) Status() (model.Status, error) {
 	}
 	for i := range ls {
 		m.attachBudgetEvidence(&ls[i])
+		m.attachPoolEvidence(&ls[i])
 	}
 	for _, l := range ls {
 		if consuming(l.State) {
@@ -481,7 +487,10 @@ func (m *Manager) Status() (model.Status, error) {
 	m.portResources(&s, ls)
 	views, err := m.poolViews(ls, false)
 	if err != nil {
-		return s, err
+		if s.PoolError == nil {
+			return s, err
+		}
+		views = nil
 	}
 	for _, v := range views {
 		view := v
@@ -496,6 +505,7 @@ func (m *Manager) Inspect(id string) (model.Lease, error) {
 	l, err := m.get(id)
 	if err == nil {
 		m.attachBudgetEvidence(&l)
+		m.attachPoolEvidence(&l)
 	}
 	if err != nil || l.State != "queued" {
 		return l, err
@@ -510,6 +520,7 @@ func (m *Manager) Inspect(id string) (model.Lease, error) {
 	for _, current := range ls {
 		if current.ID == id {
 			m.attachBudgetEvidence(&current)
+			m.attachPoolEvidence(&current)
 			return current, nil
 		}
 	}
@@ -626,6 +637,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 				return empty, model.Err("idempotency_conflict", "key was already used for a different command")
 			}
 			m.attachBudgetEvidence(&l)
+			m.attachPoolEvidence(&l)
 			return l, nil
 		}
 		if !errors.Is(e, sql.ErrNoRows) {
@@ -639,6 +651,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 			return empty, model.Err("request_cancelled", "this request was cancelled before admission")
 		}
 	}
+	if err := m.poolPolicyError(); err != nil {
+		return empty, err
+	}
 	if err := m.budgetPolicyError(); err != nil {
 		return empty, err
 	}
@@ -648,14 +663,8 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if !m.requestFitsCeiling(r.Resources) {
 		return empty, model.Err("capacity_exceeded", "request exceeds a configured host ceiling or known physical memory capacity")
 	}
-	for _, c := range r.Pools {
-		p, e := m.pool(c.Pool)
-		if e != nil {
-			return empty, e
-		}
-		if p.State != "active" {
-			return empty, model.Err("pool_unavailable", "pool is draining or deleted; existing claims remain recorded")
-		}
+	if err := m.poolAdmissionAncestry(r.Pools); err != nil {
+		return empty, err
 	}
 	if r.StorageLease != "" {
 		if _, e := m.storageForRun(r); e != nil {
@@ -702,7 +711,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if e != nil {
 		return empty, e
 	}
-	want, e := requestedBudgetAmounts(r)
+	want, e := m.requestedBudgetAmounts(r)
 	if e != nil {
 		return empty, e
 	}
@@ -752,6 +761,17 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		b, _ := json.Marshal(run)
 		rb = string(b)
 	}
+	poolTree, bindErr := m.checkedPoolTree()
+	if bindErr != nil {
+		return empty, bindErr
+	}
+	poolBinding, bindErr := m.newPoolClaimBinding(poolTree, r.Pools)
+	if bindErr != nil {
+		return empty, bindErr
+	}
+	if len(poolBinding.Claims) > 0 {
+		l.PoolBinding = &poolBinding
+	}
 	b, _ := json.Marshal(l)
 	tx, e := m.db.Begin()
 	if e != nil {
@@ -763,6 +783,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		key = r.Key
 	}
 	if _, e = tx.Exec(`INSERT INTO leases VALUES(?,?,?,?)`, l.ID, key, string(b), rb); e != nil {
+		return empty, e
+	}
+	if e = insertPoolClaimBinding(tx, l.ID, poolBinding, "pool.bound"); e != nil {
 		return empty, e
 	}
 	if e = insertBudgetBinding(tx, l.ID, binding, "budget.bound"); e != nil {
@@ -978,18 +1001,8 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 			return l, model.Err("renewal_denied", "live memory headroom cannot cover outstanding promises")
 		}
 	}
-	poolUsed, e := poolReservations(ls)
-	if e != nil {
+	if e = m.poolRenewal(l, ls); e != nil {
 		return l, e
-	}
-	for _, c := range l.Request.Pools {
-		p, err := m.pool(c.Pool)
-		if err != nil {
-			return l, err
-		}
-		if p.State != "active" || poolUsed[c.Pool] > p.Capacity {
-			return l, model.Err("renewal_denied", "pool is draining or has a capacity deficit")
-		}
 	}
 	for _, o := range ls {
 		if o.State == "queued" {
@@ -1002,6 +1015,7 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	l.Expires = &end
 	m.attachBudgetEvidence(&l)
+	m.attachPoolEvidence(&l)
 	l.BudgetPolicy = policies
 	if l.Request.Kind == "storage" && l.Artifact != nil {
 		// An explicitly renewed deadline supersedes a prior shortening policy;
@@ -1084,7 +1098,7 @@ func (m *Manager) tick() {
 			_, _ = m.finishPortParent(l)
 		}
 	}
-	if m.draining || m.budgetStartupError != nil {
+	if m.draining || m.budgetStartupError != nil || m.poolStartupError != nil {
 		return
 	}
 	poolUsed, e := poolReservations(ls)
@@ -1129,6 +1143,7 @@ func (m *Manager) tick() {
 			return
 		}
 		m.attachBudgetEvidence(&l)
+		m.attachPoolEvidence(&l)
 		l.BudgetPolicy = policies
 		if len(l.Request.Ports) == 0 {
 			m.activate(&l, rb.Valid)

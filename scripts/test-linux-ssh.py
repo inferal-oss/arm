@@ -45,6 +45,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         shutil.copyfile(root / "scripts" / "test-pools.py", target / "test-pools.py")
+        shutil.copyfile(root / "scripts" / "test-subpools.py", target / "test-subpools.py")
         shutil.copyfile(root / "scripts" / "test-usage.py", target / "test-usage.py")
         shutil.copyfile(root / "scripts" / "test-policy.py", target / "test-policy.py")
         shutil.copyfile(root / "scripts" / "test-terminal.py", target / "test-terminal.py")
@@ -80,6 +81,7 @@ done
             script += 'python3 ./test-ports.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-inbox.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-pools.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-subpools.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-usage.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-policy.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-terminal.py --arm "$PWD/arm"\n'

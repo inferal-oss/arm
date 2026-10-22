@@ -21,6 +21,9 @@ func (m *Manager) MutateBudget(request model.BudgetMutation) (model.BudgetChange
 }
 func (m *Manager) mutateBudget(request model.BudgetMutation) (model.BudgetChange, error) {
 	var result model.BudgetChange
+	if err := m.poolPolicyError(); err != nil {
+		return result, err
+	}
 	if err := m.budgetPolicyError(); err != nil {
 		return result, err
 	}

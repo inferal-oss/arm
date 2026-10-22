@@ -10,6 +10,13 @@ func (m *Manager) reviewPoolMutationLocked(r model.PoolMutation) error {
 	if r.Reviewed == nil {
 		return nil
 	}
+	t, err := m.checkedPoolTree()
+	if err != nil {
+		return err
+	}
+	if r.Parent != "" || r.ID != "" && (t.nodes[r.ID].Parent != "" || len(t.children[r.ID]) > 0) {
+		return model.Err("hierarchy_review_required", "partition changes require a complete hierarchy review; use native CLI until hierarchy review controls are available")
+	}
 	if r.Reviewed.Authority != m.host {
 		return model.Err("authority_unavailable", "review belongs to another local pool authority")
 	}
@@ -37,7 +44,7 @@ func (m *Manager) reviewPoolMutationLocked(r model.PoolMutation) error {
 		return err
 	}
 	for _, lease := range leases {
-		if !consuming(lease.State) && lease.State != "queued" {
+		if !poolCharged(lease.State) && lease.State != "queued" {
 			continue
 		}
 		for _, claim := range lease.Request.Pools {

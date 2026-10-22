@@ -13,6 +13,8 @@ func meshLeaseWithoutPolicy(lease model.Lease) model.Lease {
 	lease.Budget = nil
 	lease.BudgetPolicy = nil
 	lease.BudgetError = nil
+	lease.PoolBinding = nil
+	lease.PoolError = nil
 	if lease.QueueInfo != nil {
 		info := *lease.QueueInfo
 		info.Blockers = append([]model.QueueBlocker(nil), info.Blockers...)

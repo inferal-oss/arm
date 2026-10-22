@@ -56,6 +56,7 @@ test-local: build
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py
 	python3 scripts/test-pools.py
+	python3 scripts/test-subpools.py
 	python3 scripts/test-usage.py
 	python3 scripts/test-policy.py
 	python3 scripts/test-terminal.py

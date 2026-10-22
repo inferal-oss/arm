@@ -106,7 +106,7 @@ func (m *Manager) queuedBudgetBlockers(l model.Lease, leases []model.Lease) ([]m
 	if err != nil {
 		return nil, err
 	}
-	want, err := requestedBudgetAmounts(l.Request)
+	want, err := m.requestedBudgetAmounts(l.Request)
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/yrashk/arm/internal/model"
 	"io"
 	"reflect"
 	"strings"
@@ -121,11 +120,6 @@ func validateEvidenceFields(raw json.RawMessage, t reflect.Type) error {
 		var fields map[string]json.RawMessage
 		if err := json.Unmarshal(raw, &fields); err != nil || fields == nil {
 			return fmt.Errorf("structured evidence must be an object")
-		}
-		if t == reflect.TypeOf(model.Pool{}) {
-			if _, present := fields["parent"]; present {
-				return fmt.Errorf("subpool lineage is not supported by this reset proof")
-			}
 		}
 		return validateEvidenceStruct(fields, t)
 	case reflect.Slice, reflect.Array:

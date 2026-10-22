@@ -143,7 +143,7 @@ func (m *Manager) BudgetConsumers(q model.BudgetQuery) (model.BudgetConsumers, e
 	}
 	sort.Slice(leases, func(i, j int) bool { return leases[i].ID < leases[j].ID })
 	for _, l := range leases {
-		amount, charged, err := budgetLeaseAmounts(l)
+		amount, charged, err := m.poolBudgetLeaseAmounts(l)
 		if err != nil {
 			return result, err
 		}
@@ -175,7 +175,7 @@ func (m *Manager) BudgetConsumers(q model.BudgetQuery) (model.BudgetConsumers, e
 			break
 		}
 		if l.State == "queued" {
-			amount, err = requestedBudgetAmounts(l.Request)
+			amount, err = m.requestedBudgetAmounts(l.Request)
 			if err != nil {
 				return result, err
 			}

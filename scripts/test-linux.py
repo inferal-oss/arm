@@ -36,6 +36,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-ports.py", target / "test-ports.py")
         shutil.copyfile(root / "scripts" / "test-inbox.py", target / "test-inbox.py")
         shutil.copyfile(root / "scripts" / "test-pools.py", target / "test-pools.py")
+        shutil.copyfile(root / "scripts" / "test-subpools.py", target / "test-subpools.py")
         shutil.copyfile(root / "scripts" / "test-usage.py", target / "test-usage.py")
         shutil.copyfile(root / "scripts" / "test-policy.py", target / "test-policy.py")
         shutil.copyfile(root / "scripts" / "test-terminal.py", target / "test-terminal.py")
@@ -66,6 +67,7 @@ python3 /tests/test-local.py --arm /tests/arm
 python3 /tests/test-ports.py --arm /tests/arm
 python3 /tests/test-inbox.py --arm /tests/arm
 python3 /tests/test-pools.py --arm /tests/arm
+python3 /tests/test-subpools.py --arm /tests/arm
 python3 /tests/test-usage.py --arm /tests/arm
 python3 /tests/test-policy.py --arm /tests/arm
 python3 /tests/test-terminal.py --arm /tests/arm

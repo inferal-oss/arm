@@ -35,6 +35,13 @@ func (p *proofReader) readOperations() error {
 		if e = matchPoolTransition(q, v); e != nil {
 			return e
 		}
+		if v.Operation == "create" && v.Pool.Parent != "" {
+			if q.ParentRevision == nil || *q.ParentRevision != p.poolParentRevisions[v.Sequence] {
+				return fmt.Errorf("child creation request differs from historical parent revision")
+			}
+		} else if q.Parent != "" || q.ParentRevision != nil {
+			return fmt.Errorf("unexpected immutable parent mutation request")
+		}
 		return nil
 	}); err != nil {
 		return err

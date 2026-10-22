@@ -32,9 +32,15 @@ func (a *app) pool(args []string) (int, error) {
 	}
 	action, args := args[0], args[1:]
 	switch action {
-	case "create", "set", "adjust", "rename", "describe", "drain", "resume", "delete", "list", "inspect", "history":
+	case "lookup", "roots", "children", "consumers", "create", "set", "adjust", "rename", "describe", "drain", "resume", "delete", "list", "inspect", "history":
 	default:
 		return 2, fmt.Errorf("unknown pool action %q; use arm pool --help", action)
+	}
+	if action == "lookup" {
+		return a.poolLookup(args)
+	}
+	if action == "roots" || action == "children" || action == "consumers" {
+		return a.poolHierarchy(action, args)
 	}
 	f := a.flags("pool " + action)
 	f.Bool("json", false, "JSON output; mutations include before/after state and journal sequence")
@@ -66,10 +72,13 @@ func (a *app) pool(args []string) (int, error) {
 	f.StringVar(&r.Agent, "agent", "", "registered agent contact for attribution")
 	f.StringVar(&r.Project, "project", "", "project attribution")
 	capacity, revision := int64(0), int64(0)
+	parentRevision := int64(0)
 	if action == "create" {
-		f.StringVar(&r.Scope, "scope", "", "required: host or global")
+		f.StringVar(&r.Scope, "scope", "", "root scope: host or global; inherited with --parent")
+		f.StringVar(&r.Parent, "parent", "", "carve from this pool; scope, host and unit are inherited")
+		f.Int64Var(&parentRevision, "parent-revision", 0, "required expected parent revision for child creation")
 		f.StringVar(&r.Host, "host", "", "host pool location (default: localhost); omit for global")
-		f.StringVar(&r.Unit, "unit", "count", "counted unit label")
+		f.StringVar(&r.Unit, "unit", "", "counted unit label")
 		f.StringVar(&r.Description, "description", "", "resource description")
 		f.Int64Var(&capacity, "capacity", 0, "required nonnegative integral capacity; zero pauses admission")
 	} else {
@@ -81,10 +90,13 @@ func (a *app) pool(args []string) (int, error) {
 	if strings.TrimSpace(r.Reason) == "" {
 		return 2, fmt.Errorf("--reason is required; see arm pool %s --help", action)
 	}
-	providedRevision, providedCapacity := false, false
+	providedRevision, providedCapacity, providedParentRevision := false, false, false
 	f.Visit(func(v *flag.Flag) {
 		if v.Name == "revision" {
 			providedRevision = true
+		}
+		if v.Name == "parent-revision" {
+			providedParentRevision = true
 		}
 		if v.Name == "capacity" {
 			providedCapacity = true
@@ -94,8 +106,16 @@ func (a *app) pool(args []string) (int, error) {
 		if !providedCapacity {
 			return 2, fmt.Errorf("pool create requires --capacity COUNT (zero is allowed)")
 		}
-		if capacity < 0 || (r.Scope != "host" && r.Scope != "global") || (r.Scope == "global" && r.Host != "") {
+		if capacity < 0 || r.Parent == "" && ((r.Scope != "host" && r.Scope != "global") || (r.Scope == "global" && r.Host != "")) {
 			return 2, fmt.Errorf("create requires nonnegative --capacity and --scope host|global; global pools have no --host")
+		}
+		if r.Parent != "" {
+			if parentRevision < 1 {
+				return 2, fmt.Errorf("child creation requires --parent-revision; inspect the parent first")
+			}
+			r.ParentRevision = &parentRevision
+		} else if providedParentRevision {
+			return 2, fmt.Errorf("--parent-revision requires --parent")
 		}
 		r.Name = f.Args()[0]
 		r.Capacity = &capacity

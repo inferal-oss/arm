@@ -185,8 +185,16 @@ func (m *Manager) migrateBudgetBindings() error {
 func (m *Manager) budgetCharges(leases []model.Lease) (map[string]model.BudgetAmounts, map[string][]model.BudgetUse, error) {
 	amounts := map[string]model.BudgetAmounts{}
 	users := map[string][]model.BudgetUse{}
+	var tree *poolTree
 	for _, lease := range leases {
-		charge, charged, err := budgetLeaseAmounts(lease)
+		if tree == nil && poolCharged(lease.State) && len(lease.Request.Pools) > 0 {
+			var err error
+			tree, err = m.checkedPoolTree()
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		charge, charged, err := m.poolBudgetLeaseAmountsWithTree(lease, tree)
 		if err != nil {
 			return nil, nil, err
 		}

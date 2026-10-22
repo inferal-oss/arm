@@ -44,6 +44,15 @@ func (m *Manager) attachBudgetEvidence(l *model.Lease) {
 	}
 }
 func (m *Manager) budgetQueuedFit(l model.Lease) (bool, []model.BudgetPolicyRevision, error) {
+	if len(l.Request.Pools) > 0 {
+		t, err := m.checkedPoolTree()
+		if err != nil {
+			return false, nil, err
+		}
+		if _, err = m.poolClaimBinding(t, l); err != nil {
+			return false, nil, err
+		}
+	}
 	binding, found, err := m.budgetBinding(l)
 	if err != nil {
 		return false, nil, err
@@ -59,7 +68,7 @@ func (m *Manager) budgetQueuedFit(l model.Lease) (bool, []model.BudgetPolicyRevi
 	if err != nil {
 		return false, nil, err
 	}
-	want, err := requestedBudgetAmounts(l.Request)
+	want, err := m.requestedBudgetAmounts(l.Request)
 	if err != nil {
 		return false, nil, err
 	}
@@ -82,7 +91,7 @@ func (m *Manager) budgetRenewal(l model.Lease, leases []model.Lease) ([]model.Bu
 	if err != nil {
 		return nil, err
 	}
-	own, err := requestedBudgetAmounts(l.Request)
+	own, err := m.requestedBudgetAmounts(l.Request)
 	if err != nil {
 		return nil, err
 	}

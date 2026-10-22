@@ -52,6 +52,8 @@ type Request struct {
 }
 
 type Lease struct {
+	PoolBinding   *PoolClaimBinding      `json:"pool_binding,omitempty"`
+	PoolError     *Error                 `json:"pool_error,omitempty"`
 	Budget        *BudgetBinding         `json:"budget_binding,omitempty"`
 	BudgetPolicy  []BudgetPolicyRevision `json:"budget_policy,omitempty"`
 	BudgetError   *Error                 `json:"budget_error,omitempty"`
@@ -89,6 +91,7 @@ type Event struct {
 }
 
 type Status struct {
+	PoolError      *Error         `json:"pool_error,omitempty"`
 	BudgetError    *Error         `json:"budget_error,omitempty"`
 	Host           string         `json:"host"`
 	Owner          string         `json:"owner"`

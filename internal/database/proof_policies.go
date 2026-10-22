@@ -149,7 +149,7 @@ func (p *proofReader) validBinding(v model.BudgetBinding) error {
 	return nil
 }
 func (p *proofReader) readPoolJournal() error {
-	return p.walk("pool_changes", func(r proofRow) error {
+	if err := p.walk("pool_changes", func(r proofRow) error {
 		v, err := rowJSON[model.PoolChange](r, "data", "operation", "idempotency_key", "actor", "reason", "at", "after", "delta")
 		if err != nil {
 			return err
@@ -179,11 +179,20 @@ func (p *proofReader) readPoolJournal() error {
 			if v.Previous.ID != id || v.Pool.Revision != v.Previous.Revision+1 || v.Delta != v.Pool.Capacity-v.Previous.Capacity {
 				return fmt.Errorf("pool transition differs")
 			}
+			if v.Previous.Parent != v.Pool.Parent || v.Previous.Authority != v.Pool.Authority || v.Previous.Owner != v.Pool.Owner || v.Previous.Scope != v.Pool.Scope || v.Previous.Host != v.Pool.Host || v.Previous.Unit != v.Pool.Unit {
+				return fmt.Errorf("pool transition changes immutable lineage")
+			}
+		}
+		if err = p.validatePartitionChange(v); err != nil {
+			return err
 		}
 		v.Sequence = seq
 		p.poolChanges[seq] = v
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
+	return p.poolJournalLineage()
 }
 func (p *proofReader) readBudgetJournal() error {
 	return p.walk("budget_changes", func(r proofRow) error {
@@ -233,6 +242,15 @@ func (p *proofReader) policyJournalRelationships() error {
 	sort.Slice(poolSeq, func(i, j int) bool { return poolSeq[i] < poolSeq[j] })
 	for _, seq := range poolSeq {
 		v := p.poolChanges[seq]
+		for _, entry := range v.Partitions {
+			if entry.Pool == v.Pool.ID {
+				continue
+			}
+			ancestor, ok := poolLatest[entry.Pool]
+			if !ok || ancestor.State == "deleted" || entry.Before == nil || entry.Before.Configured != ancestor.Capacity || entry.After.Configured != ancestor.Capacity {
+				return fmt.Errorf("partition ancestor differs from complete historical definitions")
+			}
+		}
 		old, exists := poolLatest[v.Pool.ID]
 		if exists && (v.Previous == nil || !equalEvidence(old, *v.Previous)) || !exists && v.Previous != nil {
 			return fmt.Errorf("pool journal has a missing or inconsistent transition")
@@ -285,7 +303,7 @@ func matchPoolTransition(q model.PoolMutation, v model.PoolChange) error {
 	if q.Capacity != nil && *q.Capacity != v.Pool.Capacity || q.Delta != nil && *q.Delta != v.Delta {
 		return fmt.Errorf("pool request capacity differs from transition")
 	}
-	if q.Operation == "create" && (q.Capacity == nil || q.Name != v.Pool.Name || q.Scope != v.Pool.Scope || q.Host != v.Pool.Host || q.Unit != v.Pool.Unit) {
+	if q.Operation == "create" && (q.Capacity == nil || q.Name != v.Pool.Name || q.Scope != v.Pool.Scope || q.Host != v.Pool.Host || q.Unit != v.Pool.Unit || q.Parent != v.Pool.Parent) {
 		return fmt.Errorf("pool creation request differs from result")
 	}
 	if q.Operation == "rename" && q.Name != v.Pool.Name || q.Operation == "describe" && q.Description != v.Pool.Description {

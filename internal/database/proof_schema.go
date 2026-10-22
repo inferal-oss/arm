@@ -10,7 +10,7 @@ import (
 
 // Reset proof supports exactly this writer schema. An unfamiliar table, trigger,
 // view, index or altered constraint is not evidence that obligations disappeared.
-// This catalog intentionally does not migrate or accept future subpool tables.
+// This catalog never migrates; supported subpool evidence is verified separately.
 var resetSchema = []string{
 	`CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)`,
 	`CREATE TABLE leases (id TEXT PRIMARY KEY, request_key TEXT UNIQUE, data TEXT NOT NULL, run TEXT)`,
@@ -28,6 +28,8 @@ var resetSchema = []string{
 	`CREATE TABLE pool_changes (sequence INTEGER PRIMARY KEY AUTOINCREMENT, pool TEXT NOT NULL, data TEXT NOT NULL)`,
 	`CREATE INDEX pool_changes_pool ON pool_changes(pool,sequence)`,
 	`CREATE TABLE pool_operations (key TEXT PRIMARY KEY, request TEXT NOT NULL, result TEXT NOT NULL)`,
+	`CREATE TABLE pool_lineage (pool TEXT PRIMARY KEY,data TEXT NOT NULL)`,
+	`CREATE TABLE pool_claim_bindings (lease TEXT PRIMARY KEY,data TEXT NOT NULL)`,
 	`CREATE TABLE cancelled_requests (key TEXT PRIMARY KEY)`,
 	`CREATE TABLE budgets (id TEXT PRIMARY KEY, owner TEXT NOT NULL, parent TEXT, data TEXT NOT NULL)`,
 	`CREATE UNIQUE INDEX budgets_root ON budgets(owner) WHERE parent IS NULL`,
@@ -93,6 +95,7 @@ func normalizedSchema(raw string) string {
 }
 
 var resetAutoIndexes = map[string]int{
+	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1,
 }
 

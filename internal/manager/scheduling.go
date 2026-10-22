@@ -263,16 +263,11 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 			}
 		}
 	}
-	for _, claim := range l.Request.Pools {
-		pool, err := m.pool(claim.Pool)
-		if err != nil {
-			return nil, err
-		}
-		if pool.State == "deleted" {
-			add("pool_deleted", claim.Pool, pool.Unit, "The coordination pool was deleted.", number(model.CountQuantity(claim.Quantity)), number(model.CountQuantity(0)))
-		} else if s.poolUsed[claim.Pool] > pool.Capacity || claim.Quantity > pool.Capacity-s.poolUsed[claim.Pool] {
-			add("pool_capacity", claim.Pool, pool.Unit, "Pool permits are unavailable. The operator may grow this cooperative pool.", number(model.CountQuantity(claim.Quantity)), number(model.CountQuantity(max(int64(0), pool.Capacity-s.poolUsed[claim.Pool]))))
-		}
+	poolBlockers, poolErr := m.subpoolQueueBlockers(l, s)
+	if poolErr != nil {
+		info.Blockers = append(info.Blockers, model.QueueBlocker{Code: "invalid_accounting", Detail: "Pool lineage or partition accounting is invalid; grants remain paused while provider cleanup remains available."})
+	} else {
+		info.Blockers = append(info.Blockers, poolBlockers...)
 	}
 	policyBlockers, err := m.queuedBudgetBlockers(l, s.leases)
 	if err != nil {
