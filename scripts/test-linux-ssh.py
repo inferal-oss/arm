@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", required=True, help="explicit SSH destination, e.g. user@linux-host")
     parser.add_argument("--go", default=os.environ.get("GO", "go"))
-    parser.add_argument("--packages", nargs="+", choices=("agents", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"), help="selected suites (default: all)")
+    parser.add_argument("--packages", nargs="+", choices=("agents", "database", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"), help="selected suites (default: all)")
     parser.add_argument("--test-run", default="", help="Go test regular expression for a targeted verification")
     parser.add_argument("--skip-smoke", action="store_true", help="skip compiled CLI smoke test for a targeted verification")
     parser.add_argument("--isolate-processes", action="store_true", help="run under unprivileged unshare with a private /proc; separately test host permission restrictions")
@@ -36,7 +36,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-ssh-") as staging:
         target = Path(staging)
-        for package in opts.packages or ("agents", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"):
+        for package in opts.packages or ("agents", "database", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "linux-test-init.py", target / "linux-test-init.py")
@@ -54,6 +54,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal-recovery.py", target / "test-terminal-recovery.py")
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-live-disk.py", target / "test-live-disk.py")
+        shutil.copyfile(root / "scripts" / "test-database.py", target / "test-database.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
@@ -86,6 +87,7 @@ done
             script += 'python3 ./test-terminal-recovery.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-memory.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-live-disk.py --arm "$PWD/arm"\n'
+            script += 'python3 ./test-database.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-lifecycle.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-scheduling.py --arm "$PWD/arm"\n'
             script += 'python3 ./test-budgets.py --arm "$PWD/arm"\n'

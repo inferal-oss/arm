@@ -1,0 +1,9 @@
+//go:build linux
+
+package database
+
+import "golang.org/x/sys/unix"
+
+func renameExclusive(fd int, from, to string) error {
+	return unix.Renameat2(fd, from, fd, to, unix.RENAME_NOREPLACE)
+}

@@ -264,6 +264,19 @@ These send examples require the corresponding grants. Unknown or ambiguous host 
 
 `arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Private-key rotation, remote dashboard/TUI selection, discovery, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
 
+## Database inspection and backup
+
+```sh
+arm database stats
+arm database check
+arm database check --full
+arm database backup "$HOME/private-backups/arm.db"
+```
+
+Stats reports database/WAL/shared-memory file sizes, allocated blocks, SQLite pages/reusable space, table/lease counts and known outstanding obligations. Allocated blocks are not exclusive APFS reclaimable space. Checks are read-only; full mode adds the explicit integrity/FK scope. Backup creates a consistent standalone0600 SQLite file at an unused path in an existing private directory; it never overwrites. It covers the ledger, not configuration, mesh keys, managed files or pending client intents.
+
+These commands work online through a separate read-only connection, or on a stopped authority (including committed WAL after a crash). They never start the backend, repair permissions, compact or delete data. Bounds are10 seconds for stats/quick checks, two minutes for full checks/backups and8GiB source data; timeout/incomplete results are explicit. Terminal output is readable; scripts receive JSON. Confirmed database removal/reset is separate work and is not yet supported.
+
 ## Owned Gradle services
 
 Read `arm agents card gradle-build --json` before using the local `gradle-service` and `gradle-build` profiles. Start an installed Gradle/JDK service with its own managed storage and CPU/memory claim, then attach serialized build clients with separate output storage and client budgets:

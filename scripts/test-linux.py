@@ -28,7 +28,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"):
+        for package in ("agents", "database", "local", "install", "observe", "usage", "storage", "ports", "mesh", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         shutil.copyfile(root / "scripts" / "test-local.py", target / "test-local.py")
@@ -45,6 +45,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-terminal-recovery.py", target / "test-terminal-recovery.py")
         shutil.copyfile(root / "scripts" / "test-memory.py", target / "test-memory.py")
         shutil.copyfile(root / "scripts" / "test-live-disk.py", target / "test-live-disk.py")
+        shutil.copyfile(root / "scripts" / "test-database.py", target / "test-database.py")
         shutil.copyfile(root / "scripts" / "test-lifecycle.py", target / "test-lifecycle.py")
         shutil.copyfile(root / "scripts" / "test-scheduling.py", target / "test-scheduling.py")
         shutil.copyfile(root / "scripts" / "test-budgets.py", target / "test-budgets.py")
@@ -72,6 +73,7 @@ python3 /tests/test-terminal-pools.py --arm /tests/arm
 python3 /tests/test-terminal-recovery.py --arm /tests/arm
 python3 /tests/test-memory.py --arm /tests/arm
 python3 /tests/test-live-disk.py --arm /tests/arm
+python3 /tests/test-database.py --arm /tests/arm
 python3 /tests/test-lifecycle.py --arm /tests/arm
 python3 /tests/test-scheduling.py --arm /tests/arm
 python3 /tests/test-budgets.py --arm /tests/arm

@@ -40,6 +40,7 @@ type job struct {
 type Manager struct {
 	mu                 sync.Mutex
 	db                 *sql.DB
+	databaseSlot       chan struct{}
 	home, host, owner  string
 	budgetStartupError *model.Error
 	ownerUsername      string
@@ -86,6 +87,9 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, model.Err("invalid_config", "memory/disk ceilings must be nonnegative; zero selects live availability")
 	}
 	if e := local.Prepare(home); e != nil {
+		return nil, e
+	}
+	if e := prepareDatabaseFile(home); e != nil {
 		return nil, e
 	}
 	db, e := sql.Open("sqlite", filepath.Join(home, "state.db"))

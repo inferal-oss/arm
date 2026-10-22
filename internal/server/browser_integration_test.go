@@ -120,7 +120,7 @@ func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {
 			}
 		}
 	}
-	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "run"} {
+	for _, operation := range []string{"browser_ticket", "shutdown", "shutdown_status", "bulk_end", "release", "renew", "cancel", "acquire", "message", "run", "database_stats", "database_check", "database_backup"} {
 		if err := wsjson.Write(ctx, c, model.WireRequest{Version: 1, ID: operation, Operation: operation, Params: json.RawMessage(`{}`)}); err != nil {
 			t.Fatal(err)
 		}

@@ -482,6 +482,15 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			}
 		}
 		return s.Manager.MutatePool(q)
+	case "database_stats", "database_check", "database_backup":
+		var q struct {
+			Destination string `json:"destination"`
+			Full        bool   `json:"full"`
+		}
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.DatabaseMaintenance(ctx, strings.TrimPrefix(r.Operation, "database_"), q.Destination, q.Full)
 	case "pool_history_page":
 		var q model.PoolHistoryPageRequest
 		if e := decode(&q); e != nil {
@@ -630,7 +639,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return result, nil
 	case "status":
 		status, err := s.Manager.Status()
-		status.Capabilities = append(status.Capabilities, "pool-journal-pages", "automatic-mesh-lifecycle")
+		status.Capabilities = append(status.Capabilities, "pool-journal-pages", "automatic-mesh-lifecycle", "database-inspection-backup")
 		if s.authority != "" {
 			status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging", "browser-reviewed-pool-controls")
 		}

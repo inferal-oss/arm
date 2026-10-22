@@ -146,6 +146,7 @@ Commands:
   message operator|send|broadcast  Send a durable message
   messages                  Read the operator inbox and delivery status
   install|uninstall         Manage reversible agent instruction blocks
+  database stats|check|backup  Inspect and consistently back up the local ledger
   version                   Print build and Go versions
 
 Use COMMAND --help for options. Terminal output is human-readable; pipes use JSON.
@@ -212,6 +213,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.storage(args)
 	case "ports":
 		return a.ports(args)
+	case "database":
+		return a.database(args)
 	case "pool":
 		return a.pool(args)
 	case "budget":
