@@ -817,7 +817,7 @@ The current codec-only memory policy is share-memory-v2: 184 MiB preparation hea
 
 These are internal library primitives, with no new listener, permission, CLI or mount. Open-origin counting is not a count of all unfinished consumers. The future manager must separately retain charged consumer lifetimes and its durable/runtime-tail slot union through setup, codec/native/cache/pump joins and supervisor removal. Consumer admission, restart/reconciliation, publication retirement with consumers, source obligations, reset closure and the composite formal verification remain separate work.
 
-An isolated, unintegrated manager candidate now implements individual consumer runtimes, publication draining and restart/absence reconciliation using these joins. Its runtime/transaction-failure/formal gates remain pending. The committed library boundary alone does not establish that lifecycle or enable file authorization.
+An isolated, unintegrated manager candidate now implements individual consumer runtimes, publication draining and restart/absence reconciliation using these joins. Its final frozen runtime/transaction-failure/formal acceptance remains pending; review includes retirement chronology across a backward clock correction. The committed library boundary alone does not establish that lifecycle or enable file authorization.
 
 
 ## Graph reports and atomic membership refresh — internal foundation
