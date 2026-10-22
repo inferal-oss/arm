@@ -565,7 +565,7 @@ These screens manage direct peers. Connected-graph discovery/forwarded messaging
 
 ## Approved connected-graph messaging work
 
-The operator approved the security amendment in [MESH-ROUTING-PROPOSAL.md](MESH-ROUTING-PROPOSAL.md) on October21. A standalone bounded nested-TLS/closed-relay prototype is assigned first. Workspace membership, graph discovery and forwarded durable messages are not supported yet; the current product remains direct-only. Explicit workspace joins/merges, opt-in agent publication, directory freshness and denial of inherited execution/resource grants remain implementation and validation gates.
+The operator approved the security amendment in [MESH-ROUTING-PROPOSAL.md](MESH-ROUTING-PROPOSAL.md) on October21. An isolated test-only bounded nested-TLS/closed-relay prototype passed independent native/Linux review. Workspace membership, graph discovery and forwarded durable messages are not supported yet; the current product remains direct-only. Explicit workspace joins/merges, opt-in agent publication, directory freshness and denial of inherited execution/resource grants remain implementation and validation gates.
 
 
 ## Terminal Mesh controls and selected-node workspace
@@ -584,3 +584,10 @@ The isolated `meshstream` and `sshservice` libraries implement the first reviewe
 The closed pinned mutual-TLS WebSocket transport binds exact source/target/account/enrollment and public invocation key, rejects browser credentials/Origin and arbitrary targets, and bounds control, aggregate messages, bytes, handshakes, idle time and lifetime. Read limits are restored after the maintained adapter constructor; forced shutdown aborts only the captured exact socket before closing WebSocket state. Idle time uses monotonic elapsed durations. A separate registry/revalidation callback covers hijacked streams; future destination callbacks must provide short current-grant checks and authorization-expiry bounds.
 
 SSH guards permit one authenticated execution session and reject forwarding, SFTP, env and duplicate execution. The execution callback must atomically create a new destination lease before launch; tests currently supply nonexecuting fixtures. Host keys and reviewed enrollment-bound pins have private no-follow storage; an invocation signer holds one expiring memory-only key and accepts only bounded matching SSH authentication packets. Fixed system OpenSSH arguments use the private agent/proxy and exact host pin without user configuration, general keys or forwards. Public service admission, durable unknown-outcome lookup, process/PTY supervision, resource accounting and reset-proof support are required before advertising working SSH. File/share/mount support remains separate.
+
+
+## Graph relay feasibility checkpoint
+
+`internal/routeproto` contains only a package comment and test-only transport/TLS/closed-probe helpers. No production package imports it, no daemon endpoint is registered and no directory, trust or message schema changed. The real loopback B→A→C fixture proves nested pinned TLS can authenticate B at C while relaying opaque bounded bytes through A and refusing resource/native/SSH handlers and caller-selected network targets. Its pre-provisioned test identities are not workspace admission or automatic discovery.
+
+The next checkpoint must implement reviewed workspace records, pinned directory admission/proof, pin continuity, bounded freshness/clock/revocation and strict reset-schema support. Durable host-inbox send/reply/dedup, opt-in agent publication, real three-daemon topology and alternate-route/partition/forwarded-grant denial plus matching UI remain required before graph messaging is supported.

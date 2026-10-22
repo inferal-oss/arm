@@ -21,7 +21,7 @@ Updated October 21, 2026 against the current worktree. The complete scope remain
 
 **Upcoming milestones:**
 
-0. The operator approved the [connected-graph forwarding scheme](MESH-ROUTING-PROPOSAL.md) on October21: A–B/A–C ⇒ B↔C via A, preserving original sender/replies and destination permissions. The standalone bounded nested-TLS/closed-relay prototype is assigned; product routing, workspace membership and durable messaging remain unimplemented. Include three-node forwarding/partition/replay/revocation and forwarded-execution denial gates. Direct-peer lists do not complete this requirement.
+0. The operator approved the [connected-graph forwarding scheme](MESH-ROUTING-PROPOSAL.md) on October21: A–B/A–C ⇒ B↔C via A, preserving original sender/replies and destination permissions. The isolated bounded nested-TLS/closed-relay prototype passed independent native/Linux review; workspace/directory record and admission design is next. Product routing, workspace membership and durable messaging remain unimplemented. Include three-node forwarding/partition/replay/revocation and forwarded-execution denial gates. Direct-peer lists do not complete this requirement.
 1. Subpool/proof (`693e537`), mesh recovery proof (`7fe0c7c`), confirmed reset (`c2b8124`), web Mesh (`4dc6f21`) and terminal Mesh (`55063e8`) checkpoints are committed after independent review and validation. Finish separately keyed Resume/lookup and full remote operational parity; do not replay uncertain child creation.
 2. Extend the implemented scoped read-only per-node dashboards to full authorized operational parity. Finish hierarchy review contracts and tree/consumer controls in both dashboards.
 3. Finish bounded evidence-preserving pre-receipt recovery and broader restore/purge, retaining explicit confirmation and private-fixture gates.
@@ -128,7 +128,7 @@ Continue assigning focused work to individual subagents as slots become availabl
 | Subagent | Running now | Ready for coordinating review | Next queued assignment |
 | --- | --- | --- | --- |
 | `live_memory` | Design and implementation of reviewed missing-node ARM provisioning over verified SSH | Web Mesh controls/windows and scoped-session foundation are committed | Verified multi-platform artifact/install/start/recovery gates; then queued Cargo hardening/provider work |
-| `owner_names` | Approved graph-routing checkpoint: isolated pinned nested-TLS/closed-relay prototype | Terminal Mesh controls and instruction Markdown change passed root review and validation | Workspace/durable graph messaging after prototype review; separately keyed Resume API; hierarchy editors and accounting/headroom |
+| `owner_names` | Reviewed workspace/directory records, join admission and freshness design | Relay prototype, terminal Mesh controls and instruction Markdown passed root review and validation | Workspace/durable graph messaging after prototype review; separately keyed Resume API; hierarchy editors and accounting/headroom |
 | `dashboard_actions` | Reviewed embedded SSH checkpoint B: destination-owned execution lease and durable CLI/lifecycle integration | SSH foundation passed independent native/Linux review; confirmed reset is committed; no production macOS mount adapter | Leased process adapter and actual two-host OpenSSH gates; secure mount/throughput gates; bounded reads and storage/incident controls |
 
 The rest of the specification is also divided into downstream portfolios. These are sequential queues, not claims that all work is running:
