@@ -23,6 +23,9 @@ import (
 // Generated assets never touch the caller checkout and cannot race make build.
 func BuildCarrier(ctx context.Context, o Options) (string, companions.Manifest, error) {
 	var manifest companions.Manifest
+	if _, _, e := payloadBudget(o.Jobs); e != nil {
+		return "", manifest, e
+	}
 	if !versionRE.MatchString(o.Version) || o.Protocol < 1 {
 		return "", manifest, fmt.Errorf("invalid carrier version/protocol")
 	}
@@ -119,9 +122,9 @@ func BuildCarrier(ctx context.Context, o Options) (string, companions.Manifest, 
 	if o.Log != nil {
 		fmt.Fprintf(o.Log, "Building native carrier %s/%s with four compressed thin payloads\n", runtime.GOOS, runtime.GOARCH)
 	}
-	cmd := exec.CommandContext(ctx, goPath, "build", "-trimpath", "-buildvcs=false", "-tags=armcarrier", "-ldflags="+flags, "-o", staged, "./cmd/arm")
+	cmd := exec.CommandContext(ctx, goPath, "build", "-mod=readonly", "-trimpath", "-buildvcs=false", "-tags=armcarrier", "-ldflags="+flags, "-o", staged, "./cmd/arm")
 	cmd.Dir = source
-	cmd.Env = buildEnvironment(runtime.GOOS, runtime.GOARCH)
+	cmd.Env = buildEnvironment(runtime.GOOS, runtime.GOARCH, runtime.GOMAXPROCS(0))
 	cmd.Stdout = o.Log
 	cmd.Stderr = o.Log
 	if e = cmd.Run(); e != nil {

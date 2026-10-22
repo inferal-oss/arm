@@ -17,7 +17,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -48,6 +51,7 @@ type Manifest struct {
 type Options struct {
 	Root, GoBinary, Output, Version string
 	Protocol                        int
+	Jobs                            int
 	Log                             io.Writer
 }
 
@@ -56,6 +60,9 @@ type Options struct {
 // downloads or compilers on the destination are involved.
 func Build(ctx context.Context, o Options) (string, Manifest, error) {
 	var manifest Manifest
+	if _, _, e := payloadBudget(o.Jobs); e != nil {
+		return "", manifest, e
+	}
 	if !versionRE.MatchString(o.Version) || o.Version == "." || o.Version == ".." || o.Protocol < 1 {
 		return "", manifest, fmt.Errorf("invalid bundle version/protocol")
 	}
@@ -134,17 +141,17 @@ func Build(ctx context.Context, o Options) (string, Manifest, error) {
 	}
 	return archivePath, manifest, nil
 }
-func buildEnvironment(goos, arch string) []string {
+func buildEnvironment(goos, arch string, cpus int) []string {
 	out := []string{}
 	for _, entry := range os.Environ() {
 		key, _, _ := strings.Cut(entry, "=")
 		switch key {
-		case "GOOS", "GOARCH", "CGO_ENABLED", "GOFLAGS", "GOAMD64", "GOARM64", "GOTOOLCHAIN", "GOWORK":
+		case "GOOS", "GOARCH", "CGO_ENABLED", "GOFLAGS", "GOAMD64", "GOARM64", "GOTOOLCHAIN", "GOWORK", "GOMAXPROCS":
 			continue
 		}
 		out = append(out, entry)
 	}
-	return append(out, "GOOS="+goos, "GOARCH="+arch, "CGO_ENABLED=0", "GOFLAGS=", "GOAMD64=v1", "GOARM64=v8.0", "GOTOOLCHAIN=local", "GOWORK=off")
+	return append(out, "GOOS="+goos, "GOARCH="+arch, "CGO_ENABLED=0", "GOFLAGS=", "GOAMD64=v1", "GOARM64=v8.0", "GOTOOLCHAIN=local", "GOWORK=off", "GOMAXPROCS="+strconv.Itoa(cpus))
 }
 func inspect(path, name, goos, arch, flags string) (Artifact, error) {
 	a := Artifact{Name: name, OS: goos, Arch: arch}
@@ -256,32 +263,98 @@ exec "$arm_binary" "$@"
 
 func buildPayloads(ctx context.Context, o Options, root, goPath, temp string) (Manifest, error) {
 	var manifest Manifest
-	var e error
+	jobs, cpus, e := payloadBudget(o.Jobs)
+	if e != nil {
+		return manifest, e
+	}
 	manifest = Manifest{Schema: 1, Version: o.Version, Protocol: o.Protocol, Integrity: "Local build integrity only; not an authenticated release manifest or permission to download/execute arbitrary bytes.", Artifacts: []Artifact{}}
 	tag := "arm-bundle-v1:" + o.Version + ":" + fmt.Sprint(o.Protocol)
 	flags := "-X=" + tagVariable + "=" + tag
-	for _, platform := range platforms {
-		if e = ctx.Err(); e != nil {
-			return manifest, e
-		}
+	var log io.Writer
+	if o.Log != nil {
+		log = &lockedWriter{writer: o.Log}
+		fmt.Fprintf(log, "Building platform payloads with %d workers, %d Go CPU/package jobs each\n", jobs, cpus)
+	}
+	manifest.Artifacts, e = parallelPayloads(ctx, jobs, func(ctx context.Context, i int) (Artifact, error) {
+		platform := platforms[i]
 		name := "arm-" + platform[0] + "-" + platform[1]
 		path := filepath.Join(temp, name)
-		if o.Log != nil {
-			fmt.Fprintf(o.Log, "Building %s with %s\n", name, goPath)
+		if log != nil {
+			fmt.Fprintf(log, "Building %s with %s\n", name, goPath)
 		}
-		cmd := exec.CommandContext(ctx, goPath, "build", "-trimpath", "-buildvcs=false", "-ldflags="+flags, "-o", path, "./cmd/arm")
+		cmd := exec.CommandContext(ctx, goPath, "build", "-mod=readonly", "-p="+strconv.Itoa(cpus), "-trimpath", "-buildvcs=false", "-ldflags="+flags, "-o", path, "./cmd/arm")
 		cmd.Dir = root
-		cmd.Env = buildEnvironment(platform[0], platform[1])
-		cmd.Stdout = o.Log
-		cmd.Stderr = o.Log
-		if e = cmd.Run(); e != nil {
-			return manifest, fmt.Errorf("build %s: %w", name, e)
+		cmd.Env = buildEnvironment(platform[0], platform[1], cpus)
+		cmd.Stdout = log
+		cmd.Stderr = log
+		if err := cmd.Run(); err != nil {
+			return Artifact{}, fmt.Errorf("build %s: %w", name, err)
 		}
-		artifact, e := inspect(path, name, platform[0], platform[1], flags)
-		if e != nil {
-			return manifest, e
-		}
-		manifest.Artifacts = append(manifest.Artifacts, artifact)
+		return inspect(path, name, platform[0], platform[1], flags)
+	})
+	return manifest, e
+}
+
+func payloadBudget(requested int) (workers, cpus int, err error) {
+	if requested < 0 || requested > len(platforms) {
+		return 0, 0, fmt.Errorf("payload jobs must be 0 (automatic) or between 1 and %d", len(platforms))
 	}
-	return manifest, nil
+	available := max(1, runtime.GOMAXPROCS(0))
+	if requested == 0 {
+		requested = len(platforms)
+	}
+	workers = min(requested, available)
+	return workers, max(1, available/workers), nil
+}
+
+// Wait for every started build before returning: callers may remove the private
+// source/output tree immediately afterwards. Results retain platform order.
+func parallelPayloads(ctx context.Context, jobs int, build func(context.Context, int) (Artifact, error)) ([]Artifact, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	results := make([]Artifact, len(platforms))
+	slots := make(chan struct{}, jobs)
+	var workers sync.WaitGroup
+	var first sync.Once
+	var failure error
+	for i := range platforms {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			select {
+			case slots <- struct{}{}:
+				defer func() { <-slots }()
+			case <-ctx.Done():
+				return
+			}
+			if ctx.Err() != nil {
+				return
+			}
+			a, e := build(ctx, i)
+			if e != nil {
+				first.Do(func() { failure = e; cancel() })
+				return
+			}
+			results[i] = a
+		}()
+	}
+	workers.Wait()
+	if failure != nil {
+		return nil, failure
+	}
+	if e := ctx.Err(); e != nil {
+		return nil, e
+	}
+	return results, nil
+}
+
+type lockedWriter struct {
+	mu     sync.Mutex
+	writer io.Writer
+}
+
+func (w *lockedWriter) Write(p []byte) (int, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.writer.Write(p)
 }

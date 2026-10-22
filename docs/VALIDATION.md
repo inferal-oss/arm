@@ -637,3 +637,10 @@ Corruption/bounds tests cover truncated or oversized payloads, compressed/plaint
 
 
 The requested `make install` behavior was independently tested twice using actual four-platform carrier builds and a disposable `DESTDIR`/`BINDIR` containing spaces. Both installed executables had `armcarrier` build metadata, contained approximately82MiB and launched correctly without creating state. Both temporary build trees were removed; an existing standalone `dist/arm` stayed byte-identical. An induced compiler failure preserved the previously installed executable. These were private packaging destinations, not changes to the user's installed ARM.
+
+
+## Parallel carrier payload compilation
+
+Root isolated the five-file builder/Make/CLI change over `8d4ff7e`, excluding all concurrent runtime, Cargo and workspace work. Native races passed distribution3.766s, companions1.535s and buildinfo1.685s, followed by affected vet. Tests prove a two-worker concurrency bound, fixed output ordering, sibling cancellation on first error, waiting for started work, no launch after prior cancellation, valid per-worker environment/budgets, invalid-option no writes and serialized diagnostics under concurrent writes.
+
+Actual Go1.27.3 builds passed a four-worker carrier, a two-worker four-platform archive with complete metadata/hash verification, and two-worker `make install` into a private path containing spaces. Both native carriers launched without creating ARM state. Actual Linux passed the new complete compiled distribution/companion/buildinfo suites without skips and launched the produced Linux arm64 payload; successful private uploads were removed. These checks establish concurrent builds and correctness, not a cold-cache speedup benchmark or kernel CPU/memory quota. Embedded mesh propagation remains a separate integration task.

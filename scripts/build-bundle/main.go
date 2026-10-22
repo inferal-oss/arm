@@ -20,6 +20,7 @@ func main() {
 	root := flag.String("root", ".", "ARM source module root")
 	output := flag.String("output", "dist", "archive output directory; existing archives are refused")
 	carrier := flag.Bool("carrier", false, "build one native ARM embedding four thin platform payloads")
+	jobs := flag.Int("jobs", 0, "parallel payload builds, 0=automatic, 1..4; bounded by available Go CPUs")
 	verify := flag.String("verify", "", "verify an existing bundle only; no compilation/execution")
 	flag.Parse()
 	if flag.NArg() != 0 {
@@ -37,7 +38,7 @@ func main() {
 		return
 	}
 	if *carrier {
-		binary, _, err := distribution.BuildCarrier(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Log: os.Stderr})
+		binary, _, err := distribution.BuildCarrier(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Jobs: *jobs, Log: os.Stderr})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -45,7 +46,7 @@ func main() {
 		fmt.Println(binary)
 		return
 	}
-	archive, _, err := distribution.Build(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Log: os.Stderr})
+	archive, _, err := distribution.Build(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Jobs: *jobs, Log: os.Stderr})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
