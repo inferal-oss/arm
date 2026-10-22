@@ -199,7 +199,16 @@ func openPending(home string) (*pendingFiles, error) {
 	if err = syncPendingDirectory(parent); err != nil {
 		return fail(err)
 	}
-	h.lock, err = h.root.OpenFile(".lock", os.O_CREATE|os.O_RDWR|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0600)
+	// Separate first creation from opening an existing lock. Concurrent
+	// O_CREATE opens can report ENOENT on the native filesystem even though
+	// another process has just created the entry. Exclusive creation gives
+	// the losing processes an explicit existing-file path; all ownership,
+	// no-follow, flock and named-inode checks still apply below.
+	flags := os.O_RDWR | syscall.O_NOFOLLOW | syscall.O_NONBLOCK
+	h.lock, err = h.root.OpenFile(".lock", flags|os.O_CREATE|os.O_EXCL, 0600)
+	if os.IsExist(err) {
+		h.lock, err = h.root.OpenFile(".lock", flags, 0)
+	}
 	if err != nil {
 		return fail(err)
 	}

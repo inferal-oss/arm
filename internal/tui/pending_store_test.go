@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -224,18 +225,25 @@ func TestPendingProcessWorker(t *testing.T) {
 func TestPendingConcurrentProcessesPreserveIndependentIntents(t *testing.T) {
 	home := pendingHome(t)
 	var commands []*exec.Cmd
+	var outputs []*bytes.Buffer
 	for i := 0; i < 6; i++ {
 		cmd := exec.Command(os.Args[0], "-test.run=^TestPendingProcessWorker$")
 		cmd.Env = append(os.Environ(), "ARM_TEST_PENDING_HOME="+home, "ARM_TEST_PENDING_AUTHORITY=fixture-"+strconv.Itoa(i))
+		output := new(bytes.Buffer)
+		cmd.Stdout, cmd.Stderr = output, output
+		outputs = append(outputs, output)
 		if err := cmd.Start(); err != nil {
 			t.Fatal(err)
 		}
 		commands = append(commands, cmd)
 	}
-	for _, cmd := range commands {
+	for i, cmd := range commands {
 		if err := cmd.Wait(); err != nil {
-			t.Fatal(err)
+			t.Errorf("pending child %d: %v\n%s", i, err, outputs[i].String())
 		}
+	}
+	if t.Failed() {
+		t.FailNow()
 	}
 	records, err := loadPending(home)
 	if err != nil || len(records) != 6 {
