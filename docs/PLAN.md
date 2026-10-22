@@ -19,7 +19,7 @@ Updated October 21, 2026 against the current worktree. The complete scope remain
 
 **Upcoming milestones:**
 
-1. Commit the independently reviewed subpool/proof checkpoint; independently review the mesh recovery proof follow-up.
+1. Subpool/proof checkpoint is committed as `693e537`; integrate the independently validated mesh recovery proof correction and terminal quality pass next.
 2. Deliver polished mesh list/detail/connect/disconnect and authorized per-node windows; bring matching operations into the terminal interface. Finish hierarchy review contracts and tree/consumer controls in both dashboards.
 3. Complete confirmed database removal, strict settled coordinator evidence, crash recovery and fresh-authority startup, tested only against disposable state before integration.
 4. Implement approved embedded SSH/proxy sessions with real OpenSSH lifecycle/security tests. Continue mount adapter security/semantics and early performance experiments in parallel; select production adapters only after those gates.

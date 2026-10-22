@@ -6,6 +6,7 @@ Linux ARM executable. All backend state and test helper copies are disposable.
 No default ARM home, agent files, SSH trust files or global packages are changed.
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -107,6 +108,30 @@ def main():
         assert resumed["remote_identity"] == result["remote_identity"]
         assert json.loads((local_home / "daemon-launch.json").read_text())["resources"] == startup["resources"]
 
+        # Model a crash AFTER the native connected journal, BEFORE its durable
+        # coordinator outcome: this exact private receipt is fault injection.
+        # Recovery must add its own concrete approved review and real mTLS hello,
+        # while preserving the original review and changing no trust history.
+        controls = local_home / "mesh-lifecycle"
+        receipt_path = controls / ("coordinator-operation-" + hashlib.sha256(b"automatic").hexdigest() + ".json")
+        receipt = json.loads(receipt_path.read_text())
+        receipt["phase"] = "incomplete"
+        receipt.pop("result", None)
+        receipt_path.write_text(json.dumps(receipt) + "\n")
+        old_keys = {p.name for p in controls.glob("coordinator-operation-*.json")}
+        trust_before = json.loads((local_home / "mesh" / "config.json").read_text())["history"]
+        recovered = local(connect("automatic") + ["--yes"])
+        assert recovered["reused"] is True and recovered["connected"] == target
+        new_paths = [p for p in controls.glob("coordinator-operation-*.json") if p.name not in old_keys]
+        assert len(new_paths) == 1
+        child = json.loads(new_paths[0].read_text())
+        assert child["phase"] == "completed" and child["approved"] is True
+        assert child["review"]["operation"] == "verify-existing-connection"
+        assert child["review"]["pair"] == result["pair"]
+        after_receipt = json.loads(receipt_path.read_text())
+        assert after_receipt["request"] == receipt["request"] and after_receipt["review"] == receipt["review"] and after_receipt["actor"] == receipt["actor"]
+        assert json.loads((local_home / "mesh" / "config.json").read_text())["history"] == trust_before
+
         # A failed target helper leaves durable local denial and exact retry.
         ssh("mv " + shlex.quote(remote_arm) + " " + shlex.quote(remote_arm + ".offline"))
         disconnected = local(["mesh", "disconnect", target, "--key", "disconnect", "--yes"])
@@ -131,7 +156,7 @@ def main():
         assert repaired["local_identity"]["fingerprint"] == result["local_identity"]["fingerprint"]
         assert repaired["remote_identity"]["fingerprint"] == result["remote_identity"]["fingerprint"]
         success = True
-        print("PASS automatic two-host connect: no-state preview, default grants, exact retry, both-stopped restart, pin/endpoint/budget preservation, local-first offline disconnect/resume, reviewed re-pair, old-disconnect protection and retained lease obligations")
+        print("PASS automatic two-host connect: no-state preview, default grants, exact retry, both-stopped restart, reviewed connected-outcome recovery with fresh mTLS and immutable original receipt, pin/endpoint/budget preservation, local-first offline disconnect/resume, reviewed re-pair, old-disconnect protection and retained lease obligations")
     finally:
         # Only these exact private fixture homes are stopped. Keep failure
         # evidence but do not strand backend/listener processes.

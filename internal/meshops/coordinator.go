@@ -201,7 +201,7 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 			return false
 		}
 		if own.Running && remote.Running && active(own.Config, *remote.Identity, request.Reverse) && active(remote.Config, *own.Identity, request.Forward) {
-			return 0, a.Print(map[string]any{"connected": remote.Host, "name": remote.Identity.Name, "key": key, "pair": operation.Pair, "local_identity": own.Identity, "remote_identity": remote.Identity, "source_permissions_on_target": request.Forward, "target_permissions_on_source": request.Reverse, "reused": true})
+			return a.verifyRecoveredConnection(key, request, operation, own, remote, sshIdentity, yes)
 		}
 	}
 	if operation.LocalIdentity != nil && own.Identity != nil && operation.LocalIdentity.Fingerprint != own.Identity.Fingerprint {

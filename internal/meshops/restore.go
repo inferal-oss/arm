@@ -84,3 +84,54 @@ func (a *Coordinator) restoreCompleted(key string, request ConnectRequest, recei
 	}
 	return 0, a.Print(receipt.Result)
 }
+
+// An incomplete record is not a completed-key read retry. Even when its native
+// lifecycle journal says connected, recovering that outcome requires a new
+// concrete decision and fresh current mTLS proof, without changing trust.
+func (a *Coordinator) verifyRecoveredConnection(key string, request ConnectRequest, original mesh.LifecycleOperation, own, remote mesh.LifecycleInspection, ssh meshssh.Identity, yes bool) (int, error) {
+
+	revision := func(config *mesh.Config, host string) int {
+		if config != nil {
+			for _, peer := range config.Peers {
+				if peer.Identity.Host == host {
+					return peer.Revision
+				}
+			}
+		}
+		return -1
+	}
+	localRevision, remoteRevision := revision(own.Config, remote.Host), revision(remote.Config, own.Host)
+	plan := map[string]any{"operation": "verify-existing-connection", "original_key": key, "pair": original.Pair, "local_revision": localRevision, "remote_revision": remoteRevision, "local_listen": own.Config.Listen, "remote_listen": remote.Config.Listen, "source_permissions_on_target": request.Forward, "target_permissions_on_source": request.Reverse, "local": lifecycleNodePreview(own, remote.Host), "remote": lifecycleNodePreview(remote, own.Host), "effect": "read-only recovery: verify the exact existing enabled enrollment, identities, endpoints and directional grants using fresh mTLS; do not change trust/listeners, start backends or retry execution"}
+	if e := a.Confirm(plan, yes, false); e != nil {
+		return 1, e
+	}
+	if e := a.markApproved(); e != nil {
+		return 1, e
+	}
+	currentOwn, e := a.Inspect()
+	if e != nil {
+		return 1, e
+	}
+	var currentRemote mesh.LifecycleInspection
+	if _, e = a.ssh(request.Destination, request.Binary, Helper{Home: request.RemoteHome, Action: "lifecycle_inspect"}, ssh, &currentRemote); e != nil {
+		return 1, e
+	}
+	if revision(currentOwn.Config, remote.Host) != localRevision || revision(currentRemote.Config, own.Host) != remoteRevision || original.LocalIdentity == nil || original.RemoteIdentity == nil || !currentOwn.Running || !currentRemote.Running || !existingEnrollment(currentOwn, *original.RemoteIdentity, original.Pair, request.Reverse, *original.LocalIdentity, own.Config.Listen) || !existingEnrollment(currentRemote, *original.LocalIdentity, original.Pair, request.Forward, *original.RemoteIdentity, remote.Config.Listen) {
+		return 1, model.Err("setup_changed", "existing enrollment changed after recovery review; no trust was modified")
+	}
+	params, _ := json.Marshal(map[string]string{"pair": original.Pair})
+	var proven mesh.Identity
+	if e = a.call("mesh_dispatch", struct {
+		Host    string
+		Request mesh.Request
+	}{remote.Host, mesh.Request{Operation: "hello", Params: params}}, &proven); e != nil {
+		return 1, e
+	}
+	if proven != *original.RemoteIdentity {
+		return 1, model.Err("wrong_host", "current mTLS proof differs from the reviewed recovery identity")
+	}
+	if e = a.check(); e != nil {
+		return 1, e
+	}
+	return 0, a.Print(map[string]any{"connected": remote.Host, "name": remote.Identity.Name, "key": key, "pair": original.Pair, "local_identity": currentOwn.Identity, "remote_identity": currentRemote.Identity, "source_permissions_on_target": request.Forward, "target_permissions_on_source": request.Reverse, "reused": true})
+}
