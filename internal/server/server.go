@@ -17,6 +17,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 	"github.com/yrashk/arm/internal/agents"
+	"github.com/yrashk/arm/internal/cargoprofile"
 	"github.com/yrashk/arm/internal/database"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
@@ -96,6 +97,19 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	defer cancel()
 	runtimeExecutable, _ := mesh.CaptureRuntimeExecutable()
 	defer runtimeExecutable.Close()
+	if e = m.ConfigureCargoHelper(func() (string, cargoprofile.HelperRuntime, error) {
+		path, e := runtimeExecutable.VerifiedPath()
+		if e != nil {
+			return "", cargoprofile.HelperRuntime{}, e
+		}
+		proof, e := runtimeExecutable.Proof()
+		if e != nil {
+			return "", cargoprofile.HelperRuntime{}, e
+		}
+		return path, cargoprofile.HelperRuntime{SHA256: proof.SHA256, Size: proof.Size, Version: proof.Version, Protocol: cargoprofile.HelperProtocol}, nil
+	}); e != nil {
+		return e
+	}
 	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable}
 	s.lifecycleContext = ctx
 	// A mesh configuration failure never disables the authenticated local authority.

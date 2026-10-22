@@ -253,10 +253,24 @@ func TestEmptyStorageCleanupAndInterruptedQuarantineRecovery(t *testing.T) {
 
 func TestCargoBuildUsesAttachedManagedStorage(t *testing.T) {
 	cargo, err := exec.LookPath("cargo")
+	if bin := os.Getenv("ARM_TEST_TOOLCHAIN_BIN"); bin != "" {
+		cargo, err = filepath.Join(bin, "cargo"), nil
+		t.Setenv("RUSTC", filepath.Join(bin, "rustc"))
+		t.Setenv("RUSTDOC", filepath.Join(bin, "rustdoc"))
+	}
+	if lib := os.Getenv("ARM_TEST_TOOL_LIBRARY_PATH"); lib != "" {
+		t.Setenv("LD_LIBRARY_PATH", lib)
+	}
 	if err != nil {
 		t.Skip("Cargo is not installed")
 	}
 	m := newManager(t)
+	configureCargoTestHelper(t, m)
+	cacheParent, e := filepath.EvalSymlinks(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Setenv("CARGO_HOME", filepath.Join(cacheParent, "cargo-home"))
 	m.capacity.Disk = 64 << 20
 	m.Start()
 	r := storageRequest("cargo-storage")
@@ -299,7 +313,7 @@ func TestCargoBuildUsesAttachedManagedStorage(t *testing.T) {
 		output, _ := m.Output(l.ID, 0)
 		t.Fatalf("real Cargo build failed: %+v\n%s", l, output)
 	}
-	if _, err := os.Stat(filepath.Join(s.ManagedDir, "target", "debug", "arm_storage_fixture")); err != nil {
+	if _, err := os.Stat(filepath.Join(l.Cargo.Target, "debug", "arm_storage_fixture")); err != nil {
 		t.Fatal("Cargo output not retained in storage lease:", err)
 	}
 	if _, err := os.Stat(filepath.Join(project, "target")); !os.IsNotExist(err) {

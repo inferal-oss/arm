@@ -55,19 +55,35 @@ bin/arm --home /tmp/arm-demo events --follow
 bin/arm --home /tmp/arm-demo daemon stop
 ```
 
-Use `--profile rust-build` with `arm run` to supply Cargo's jobs budget and reject explicit conflicting jobs overrides. Attach a managed storage lease to retain its target directory independently of the command:
+Use `--profile rust-build` with managed storage for supported Cargo build/check
+or test compilation. ARM charges preparation, verifies existing installed tools,
+creates distinct owned output directories and separately authorizes compilation:
 
 ```sh
-bin/arm storage create 10GiB --ttl 2h --reason "Retain Rust build outputs"
-# Use the ID returned by storage create:
+bin/arm storage create 10GiB --ttl 30m --reason "Temporary Rust artifacts until output export"
+# Use the returned storage ID, then save the returned build lease ID:
 bin/arm run --storage STORAGE_ID --profile rust-build --cpu 2 --ttl 20m \
-  --reason "Compile release binaries" -- cargo build --release
+  --cwd /absolute/project --reason "Compile release binaries" -- cargo build --release
+bin/arm storage export STORAGE_ID /approved/output/app \
+  --file cargo-BUILD_LEASE_ID/target/release/APP=bin/APP --reason "Keep the requested executable" --wait
 bin/arm storage cleanup STORAGE_ID --dry-run
-# Keep outputs and explicitly end ARM's cleanup responsibility:
-bin/arm storage handoff STORAGE_ID
+bin/arm release STORAGE_ID
 ```
 
-Attached commands receive `ARM_STORAGE_DIR`; the Rust profile supplies Cargo target/build-directory settings within it. Storage must outlast the execution lease. Release or `storage cleanup` begins asynchronous reclamation after attached consumers stop; shared or uncertain consumers block deletion. This initial provider keeps populated storage charged when physical block reclamation cannot be verified, even after removing its directory entries. Inspect its state, retry a blocked cleanup with `storage cleanup`, or explicitly hand responsibility back with `storage handoff`. Handoff preserves remaining files and records that ARM must never clean them later.
+Read `arm agents card rust-build` for the supported command/configuration grammar,
+exact path discovery, required runtime-file selections and recovery. The build
+lease's `cargo.target`, `cargo.build` and `cargo.control` identify its actual
+owned namespaces. Storage must outlast execution and export; export uses a new
+bundle in an existing private parent and never overwrites. Verify the exported
+result before cleanup. Jobs are cooperative; shared Cargo caches/downloads remain
+external activity and never become deletion authority.
+
+Release or `storage cleanup` begins asynchronous reclamation after attached
+consumers stop. Inspect the outcome: APFS/shared or uncertain reclamation can
+remain charged even after namespace removal. `storage handoff` explicitly ends
+ARM's cleanup responsibility while preserving remaining files. Cargo histories
+currently have a 4,096-record admission limit, with exact retries still available;
+routine history archival and broader Cargo compatibility remain planned.
 
 For an explicit lease:
 

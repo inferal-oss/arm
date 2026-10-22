@@ -110,6 +110,7 @@ func ReadStats(ctx context.Context, s *Source) (Stats, error) {
 	for label, spec := range map[string]struct{ table, query string }{
 		"leases_awaiting_settlement":    {"leases", `SELECT COUNT(*) FROM leases WHERE NOT json_valid(data) OR CASE WHEN json_valid(data) THEN COALESCE(json_extract(data,'$.state'),'unknown')<>'terminal' ELSE 1 END`},
 		"exports_awaiting_settlement":   {"storage_exports", `SELECT COUNT(*) FROM storage_exports WHERE COALESCE(state,'unknown') NOT IN ('published','handed_off')`},
+		"cargo_unsettled":               {"cargo_workloads", `SELECT COUNT(*) FROM cargo_workloads WHERE NOT json_valid(data) OR CASE WHEN json_valid(data) THEN COALESCE(json_extract(data,'$.phase'),'unknown')<>'finished' OR COALESCE(json_extract(data,'$.uncertain'),1)<>0 OR COALESCE(json_extract(data,'$.group_absent'),0)<>1 OR COALESCE(json_extract(data,'$.worker'),'')<>'' ELSE 1 END`},
 		"gradle_unsettled":              {"gradle_workloads", `SELECT COUNT(*) FROM gradle_workloads WHERE NOT json_valid(data) OR CASE WHEN json_valid(data) THEN COALESCE(json_extract(data,'$.phase'),'unknown')<>'finished' OR COALESCE(json_extract(data,'$.uncertain'),1)<>0 ELSE 1 END`},
 		"mesh_intents_without_result":   {"mesh_operations", `SELECT COUNT(*) FROM mesh_operations WHERE result IS NULL`},
 		"policy_outbox_unsettled":       {"policy_outbox", `SELECT COUNT(*) FROM policy_outbox WHERE COALESCE(state,'unknown') NOT IN ('done','skipped')`},

@@ -88,6 +88,9 @@ func rejectedQueueInfo(at time.Time, reason *model.Error) *model.QueueInfo {
 	return &model.QueueInfo{Policy: "fifo-no-bypass", Blockers: []model.QueueBlocker{{Code: reason.Code, Detail: reason.Message}}, Estimate: model.QueueEstimate{Kind: "unknown", Detail: "This request was rejected; it has no future reservation."}, Updated: at, Rejection: reason}
 }
 func (m *Manager) rejectUnstarted(l model.Lease, reason *model.Error) (model.Lease, error) {
+	if l.Cargo != nil {
+		return m.cargoRejectUnstarted(l, reason)
+	}
 	wall, _ := m.schedulingTime()
 	l.QueueInfo = rejectedQueueInfo(wall, reason)
 	l.Failure = reason.Message
@@ -281,8 +284,11 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 		}
 		add("port_admission", m.host+"/ports", "socket-binding", detail, nil, nil)
 	}
+	if l.Cargo != nil && m.cargoHelper == nil {
+		add("cargo_helper_unavailable", "", "", "Waiting for startup-verified Cargo helper configuration.", nil, nil)
+	}
 	if l.Request.StorageLease != "" {
-		if _, err := m.storageForRun(l.Request); err != nil {
+		if _, err := m.storageParentForProfile(l.Request, nil); err != nil {
 			add("storage_dependency", l.Request.StorageLease, "", err.Error(), nil, nil)
 		}
 	}

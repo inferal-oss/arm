@@ -303,6 +303,9 @@ func auditConfig(data map[string]any, origin string) ([]Setting, error) {
 	}
 	if env, ok := data["env"].(map[string]any); ok {
 		for key, value := range env {
+			if key == "RUSTUP_HOME" || key == "RUSTUP_TOOLCHAIN" {
+				return nil, fmt.Errorf("Cargo config environment cannot change the resolved Rustup selection/home (value omitted)")
+			}
 			if protectedKey(key) {
 				if key == "CARGO_BUILD_TARGET" {
 					return nil, fmt.Errorf("use modeled build.target configuration or explicit --target; config environment target selection is not regulated")

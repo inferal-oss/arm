@@ -21,8 +21,9 @@ import zipfile
 
 
 class Fixture:
-    def __init__(self, binary, root, env):
+    def __init__(self, binary, root, env, reset_ledger=False):
         self.root, self.env = root, env
+        self.reset_ledger = reset_ledger
         self.home = root / 'state'
         self.prefix = [binary, '--home', str(self.home)]
         self.children = []
@@ -149,6 +150,18 @@ class Fixture:
                     # that ARM successfully reclaimed this storage.
                     self.cli('storage', 'handoff', sid)
             self.cli('stop')
+            if self.reset_ledger:
+                before = {str(p.relative_to(self.root)): hashlib.sha256(p.read_bytes()).digest()
+                          for p in (self.root / 'exports').rglob('*') if p.is_file()}
+                preview = self.cli('database', 'remove', '--dry-run')
+                assert preview['plan']['settled_proof']['complete'] and preview['plan']['settled_proof']['settled'], preview
+                removed = self.cli('database', 'remove', '--yes', '--reason',
+                                   'Private real-tool acceptance: all exact process and cleanup obligations settled')
+                assert removed['result']['completed'] and removed['result']['new_authority'] != removed['result']['old_authority'], removed
+                assert not (self.home / 'state.db').exists()
+                assert before == {str(p.relative_to(self.root)): hashlib.sha256(p.read_bytes()).digest()
+                                  for p in (self.root / 'exports').rglob('*') if p.is_file()}, 'ledger reset changed retained exported outputs'
+                print('PASS strict settled reset preview/apply after actual workload histories; exported outputs retained', flush=True)
         except (AssertionError, subprocess.TimeoutExpired, OSError) as error:
             print('Retained unresolved real-tool fixture:', self.root, error, file=sys.stderr)
             raise RuntimeError('real-tool fixture shutdown was not verified') from error
@@ -204,13 +217,16 @@ def cargo_scenarios(f, tools):
             env=f.env, capture_output=True, text=True, timeout=30)
         assert rejected.returncode != 0 and 'profile_conflict' in rejected.stderr, rejected.stderr
     assert not (project / 'unowned-target').exists()
-    binary = Path(store['managed_dir']) / 'target/debug/arm_real_rust'
+    assert lease['cargo']['state'] == 'finished' and lease['cargo'].get('authorized_at') and lease['cargo'].get('command_started_at'), lease
+    binary = Path(lease['cargo']['target']) / 'debug/arm_real_rust'
+    assert lease['cargo']['target'] != lease['cargo']['build'] and lease['cargo']['control'] != lease['cargo']['build']
+    binary_source = str(binary.relative_to(Path(store['managed_dir'])))
     assert binary.is_file() and not (project / 'target').exists()
     directory = Path(store['managed_dir'])
     (directory / 'runtime.dat').write_text('arm-runtime-data')
     bundle = f.root / 'exports/rust-bundle'
     export_args = ['storage', 'export', store['id'], str(bundle),
-                   '--file', 'target/debug/arm_real_rust=bin/arm_real_rust',
+                   '--file', binary_source + '=bin/arm_real_rust',
                    '--file', 'runtime.dat=share/runtime.dat',
                    '--reason', 'Keep the requested executable and its explicit runtime data',
                    '--key', 'cargo-export']
@@ -232,6 +248,10 @@ def cargo_scenarios(f, tools):
     exported = bundle / 'bin/arm_real_rust'
     verify = lambda: assert_output([str(exported)], 'arm-real-rust', f.env)
     verify()
+    for subcommand in (['check'], ['test', '--no-run']):
+        checked_lease, _ = f.finish(f.launch('cargo-' + subcommand[0], project, store,
+            [tools['cargo']] + subcommand + ['--offline'], 'rust-build'))
+        assert checked_lease['outcome'] == 'completed' and checked_lease['cargo']['target'] != lease['cargo']['target']
     retained = f.cli('storage', 'retain', store['id'], '--ttl', '3m',
                      '--reason', 'Briefly retain intermediates for failure and cancellation checks')
     assert retained['artifact']['retention']['reason'].startswith('Briefly retain')
@@ -242,7 +262,7 @@ def cargo_scenarios(f, tools):
     (project / 'slow').touch()
     def refuse_live_export():
         live = subprocess.run(f.prefix + ['storage', 'export', store['id'],
-            str(f.root / 'exports/live-must-not-publish'), '--file', 'target/debug/arm_real_rust',
+            str(f.root / 'exports/live-must-not-publish'), '--file', binary_source,
             '--reason', 'Verify active Cargo artifacts remain protected', '--dry-run'],
             env=f.env, capture_output=True, text=True, timeout=30)
         assert live.returncode != 0 and 'storage_in_use' in live.stderr, live.stderr
@@ -251,7 +271,7 @@ def cargo_scenarios(f, tools):
              directory / 'cargo.ready', before_cancel=refuse_live_export)
     f.cleanup(store, exported, verify)
     assert (bundle / 'share/runtime.dat').read_text() == 'arm-runtime-data'
-    print('PASS Cargo/rustc: real compilation, jobs=1, owned target, ARM export with runtime file, internal/external hardlink evidence, exact retry, short retention, active-build refusal, compile error/101, cancellation and executable survives cleanup', flush=True)
+    print('PASS Cargo/rustc: real build/check/test-no-run, jobs=1, distinct owned target/build/control, ARM export with runtime file, internal/external hardlink evidence, exact retry, short retention, active-build refusal, compile error/101, cancellation and executable survives cleanup', flush=True)
 
 
 def gradle_scenarios(f, tools):
@@ -377,8 +397,12 @@ def main():
     parser.add_argument('--arm', default='bin/arm')
     parser.add_argument('--tools', nargs='+', choices=('cargo', 'gradle', 'uv'), default=['cargo', 'gradle', 'uv'])
     parser.add_argument('--allow-missing', action='store_true', help='explicitly skip missing prerequisites (default: fail)')
+    parser.add_argument('--reset-ledger', action='store_true', help='after verified fixture shutdown, prove and apply a private ledger reset while retaining exported outputs')
     opts = parser.parse_args()
     tools = {name: shutil.which(name) for name in ('cargo', 'rustc', 'gradle', 'java', 'uv')}
+    toolbin = os.environ.get('ARM_TEST_TOOLCHAIN_BIN')
+    if toolbin:
+        tools['cargo'], tools['rustc'] = str(Path(toolbin) / 'cargo'), str(Path(toolbin) / 'rustc')
     tools['python'] = sys.executable
     selected = []
     for name in dict.fromkeys(opts.tools):
@@ -402,7 +426,11 @@ def main():
                GRADLE_USER_HOME=str(root / 'gradle-version-home'), UV_CACHE_DIR=str(root / 'uv-version-cache'),
                UV_PYTHON_DOWNLOADS='never', UV_OFFLINE='1', CARGO_NET_OFFLINE='true',
                XDG_CONFIG_HOME=str(root / 'config'), XDG_CACHE_HOME=str(root / 'cache'))
-    fixture = Fixture(str(Path(opts.arm).resolve()), root, env)
+    if toolbin:
+        env.update(RUSTC=str(Path(toolbin) / 'rustc'), RUSTDOC=str(Path(toolbin) / 'rustdoc'))
+    if os.environ.get('ARM_TEST_TOOL_LIBRARY_PATH'):
+        env['LD_LIBRARY_PATH'] = os.environ['ARM_TEST_TOOL_LIBRARY_PATH']
+    fixture = Fixture(str(Path(opts.arm).resolve()), root, env, opts.reset_ledger)
     try:
         for name in selected:
             version = checked([tools[name], '--version'], env)
@@ -413,7 +441,7 @@ def main():
         fixture.cli('start', '--cpu', '2', '--disk', '2GiB')
         for name in selected:
             {'cargo': cargo_scenarios, 'gradle': gradle_scenarios, 'uv': uv_scenarios}[name](fixture, tools)
-        print('All selected real-tool scenarios passed; Gradle/uv use generic supervision, not dedicated profiles.', flush=True)
+        print('All selected real-tool scenarios passed; Gradle/uv fixtures exercise generic supervision.', flush=True)
     finally:
         fixture.close()
 

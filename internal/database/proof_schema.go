@@ -95,7 +95,8 @@ func normalizedSchema(raw string) string {
 }
 
 var resetAutoIndexes = map[string]int{
-	"pool_lineage": 1, "pool_claim_bindings": 1,
+	"cargo_workloads": 1,
+	"pool_lineage":    1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
 }
@@ -160,6 +161,13 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			if kind != "table" || name != "ssh_key_fences" || table != name {
 				return nil, fmt.Errorf("SSH fence schema identity differs")
 			}
+			continue
+		}
+		if normal == normalizedSchema(cargoResetSchema) {
+			if kind != "table" || name != "cargo_workloads" || table != "cargo_workloads" {
+				return nil, fmt.Errorf("Cargo optional schema identity differs")
+			}
+			catalog[table] = nil
 			continue
 		}
 		if normal == mesh || normal == ssh {

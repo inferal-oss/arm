@@ -8,11 +8,18 @@ adapter: rust-build
 ---
 # Rust builds and temporary artifacts
 
-Use `--profile rust-build` with supervised `arm run` for Cargo work. The profile
-sets `CARGO_BUILD_JOBS` to the granted whole-core budget, rounded down with a
-minimum of one. Request at least one CPU. ARM rejects explicit `-j` / `--jobs`
-and `--config` arguments instead of silently accepting a conflicting jobs limit.
-This is a cooperative concurrency setting, not a hard CPU or memory quota.
+Use `--profile rust-build` with supervised `arm run` and an active managed
+storage lease for literal `cargo build`, `cargo check` or `cargo test --no-run`.
+Request at least one CPU: Cargo jobs are the granted whole-core budget, rounded
+down. The profile sets `CARGO_BUILD_JOBS` and a final private Cargo policy. These
+are cooperative settings, not hard CPU, memory or disk quotas; build scripts and
+linkers can exceed them or detach from the supervised group.
+
+Preparation is charged to the lease before installed-tool queries, metadata or
+output creation. ARM records owned directories and configuration/tool evidence,
+then separately authorizes compilation after rechecking the lease, deadline and
+evidence. Inspect `lease.cargo` for preparation, authorization and command start.
+A lost acknowledgement is not permission to repeat the build with another key.
 
 ## Give build directories a short, explicit lifetime
 
@@ -23,24 +30,28 @@ TTL rather than keeping a large build tree for the rest of the agent session.
 
 ```sh
 arm storage create 10GiB --ttl 20m --reason "Temporary Cargo artifacts until the requested executable is exported"
-arm run --storage STORAGE_LEASE_ID --profile rust-build --cpu 2 --ttl 10m --reason "Build the requested release executable" -- cargo build --release --bin APP
+arm run --storage STORAGE_LEASE_ID --profile rust-build --cpu 2 --ttl 10m --cwd /absolute/project --reason "Build the requested release executable" -- cargo build --release --bin APP
 ```
 
 Replace the storage ID and binary name with actual returned values. Add your
 registered `--agent CONTACT` and project attribution when applicable. The storage
-grant returns its managed path. With this attachment, ARM sets `CARGO_TARGET_DIR`,
-`CARGO_BUILD_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR` to the managed `target`
-subdirectory. Successful command exit does not by itself discard retained files.
+grant returns its managed path. Each build exclusively creates
+`cargo-BUILD_LEASE_ID/{target,build,control}` beneath that allocation. The returned
+build lease's `cargo.target`, `cargo.build` and `cargo.control` give the exact
+paths; target and intermediate build directories are distinct. A preexisting
+name is refused, never adopted or overwritten. Successful command exit retains
+these files until ordinary storage cleanup.
 
 Export the actual requested executable and explicitly chosen required runtime
 files into a new bundle at the operator-approved output location:
 
 ```sh
-arm storage export STORAGE_LEASE_ID /approved/output/app --file target/release/APP=bin/APP --reason "Keep the requested executable" --dry-run
-arm storage export STORAGE_LEASE_ID /approved/output/app --file target/release/APP=bin/APP --reason "Keep the requested executable" --key EXPORT_KEY --wait
+arm storage export STORAGE_LEASE_ID /approved/output/app --file cargo-BUILD_LEASE_ID/target/release/APP=bin/APP --reason "Keep the requested executable" --dry-run
+arm storage export STORAGE_LEASE_ID /approved/output/app --file cargo-BUILD_LEASE_ID/target/release/APP=bin/APP --reason "Keep the requested executable" --key EXPORT_KEY --wait
 ```
 
-Choose an unused bundle name: export never overwrites an existing destination.
+Replace `BUILD_LEASE_ID` with the returned build lease ID. Choose an unused
+bundle name: export never overwrites an existing destination.
 Its parent must exist, belong to ARM's user and not be writable by group/others.
 Add repeated `--file SOURCE=RELATIVE_OUTPUT` selections for actual required
 libraries, configuration or runtime data. Sources are relative to the managed
@@ -113,14 +124,34 @@ when ownership or observation is uncertain. Do not run `rm -rf target`, delete a
 shared Cargo registry/cache, or remove another process's artifacts to satisfy a
 warning. Unmanaged target directories are not adopted merely by naming a path.
 
-The current Cargo profile does not fully resolve Cargo aliases, arbitrary shell
-wrappers, workspace configuration, separate Cargo build directories or every
-override mechanism. The profile's argument validation and environment settings
-are implemented in code; this card does not extend their enforcement. Check the
-effective paths before relying on cleanup. Shared caches, persistent services,
-automatic idle-artifact detection and broader export/dependency discovery remain
-planned. Current idle checks cover explicit owned allocations during an export
-or cleanup, not discovery of arbitrary abandoned project directories.
+ARM resolves an existing native Cargo/rustc/rustdoc installation, including an
+already-installed Rustup selection; it never installs a toolchain automatically.
+It observes supported Cargo configuration from the physical invocation directory
+and ancestors, member manifests, lock presence and compiler-supported targets.
+It does not snapshot all source, libraries or sysroot contents, and cannot prevent
+adversarial changes after its checks.
+
+The supported grammar refuses Cargo aliases/custom commands, shell wrappers,
+`-j`/`--jobs`, caller `--config`, output overrides, included/symlink configuration,
+custom target JSON/search paths, nightly/bootstrap and unmodeled compiler,
+linker or runner settings. Runtime tests and remote rust-build are not supported.
+Normal fetching is allowed according to caller Cargo settings; `--offline` and
+`--frozen` retain their meaning. Shared Cargo caches, registry locks and downloads
+remain external activity and never become cleanup authority.
+
+The ledger currently retains up to 4,096 Cargo histories. Further new admissions
+are refused atomically; exact existing-key retries remain available. Routine
+history archival is not implemented; do not purge evidence to bypass refusal.
+
+Preparation is bounded and cannot be renewed. Queue/start deadlines can prevent
+launch without creating any build roots. A lost post-authorization receipt or
+failed final persistence retains responsibility and storage protection; inspect
+the exact lease and use explicit reconciliation where verified evidence permits.
+A missing PID is not proof that an unknown spawn never happened. Full Cargo
+compatibility, persistent/shared caches, automatic idle-artifact detection and
+runtime dependency discovery are not implemented. Current idle checks cover
+explicit owned allocations during export or cleanup, not abandoned-directory
+discovery throughout a project.
 
 On APFS and other sharing filesystems, logical or allocated file sizes do not
 prove exclusive reclaimable bytes: clones, snapshots and open files can retain

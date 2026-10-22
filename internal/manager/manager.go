@@ -17,6 +17,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/yrashk/arm/internal/cargoprofile"
 	"github.com/yrashk/arm/internal/database"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
@@ -42,6 +43,8 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
+	cargoHelper        CargoHelperSource
+	cargoWorkers       map[string]*cargoWorker
 	workspaces         *workspaceBoundary
 	mu                 sync.Mutex
 	db                 *sql.DB
@@ -160,6 +163,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
+	if e = m.initCargoRecords(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	if e = m.initGradleRecords(); e != nil {
 		db.Close()
 		return nil, e
@@ -194,6 +201,24 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		if e = db.QueryRow(`SELECT run FROM leases WHERE id=?`, l.ID).Scan(&run); e != nil {
 			db.Close()
 			return nil, e
+		}
+		if l.Cargo != nil {
+			if e = m.recoverCargo(l); e != nil {
+				db.Close()
+				return nil, e
+			}
+			continue
+		}
+		if l.Request.Profile == "rust-build" && consuming(l.State) {
+			l.State = "needs_attention"
+			l.Outcome = "cargo_record_missing"
+			l.Failure = "Managed Cargo record is missing; no automatic execution or PID0 settlement is permitted"
+			l.Revision++
+			if e = m.put(l, "cargo.recovery_required"); e != nil {
+				db.Close()
+				return nil, e
+			}
+			continue
 		}
 		if consuming(l.State) && len(l.Request.Ports) > 0 {
 			l.State = "needs_attention"
@@ -340,6 +365,9 @@ func (m *Manager) Close() error {
 		m.workspaces.close()
 	}
 	m.mu.Lock()
+	for id := range m.cargoWorkers {
+		_, _ = m.end(id, "cancelled")
+	}
 	for id := range m.jobs {
 		_, _ = m.end(id, "cancelled")
 	}
@@ -689,6 +717,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if err := m.budgetPolicyError(); err != nil {
 		return empty, err
 	}
+	if err := m.validateCargoRequest(r, run); err != nil {
+		return empty, err
+	}
 	if err := m.validateGradleRequest(r, run); err != nil {
 		return empty, err
 	}
@@ -698,7 +729,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if err := m.poolAdmissionAncestry(r.Pools); err != nil {
 		return empty, err
 	}
-	if r.StorageLease != "" {
+	if r.StorageLease != "" && r.Profile != "rust-build" {
 		if _, e := m.storageForRun(r); e != nil {
 			return empty, e
 		}
@@ -804,6 +835,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if len(poolBinding.Claims) > 0 {
 		l.PoolBinding = &poolBinding
 	}
+	if r.Profile == "rust-build" {
+		projectCargo(&l, cargoNewRecord(l, run))
+	}
 	b, _ := json.Marshal(l)
 	tx, e := m.db.Begin()
 	if e != nil {
@@ -815,6 +849,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 		key = r.Key
 	}
 	if _, e = tx.Exec(`INSERT INTO leases VALUES(?,?,?,?)`, l.ID, key, string(b), rb); e != nil {
+		return empty, e
+	}
+	if e = insertCargoRecord(tx, l, run); e != nil {
 		return empty, e
 	}
 	if e = m.insertSSHOperation(tx, l, run); e != nil {
@@ -923,6 +960,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if l.Cargo != nil || l.Request.Profile == "rust-build" {
+		return m.endCargo(l, outcome)
+	}
 	if l.State == "terminal" || l.State == "ending" {
 		return l, nil
 	}
@@ -1003,7 +1043,14 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if l.Request.StorageLease != "" {
 		r := l.Request
 		r.TTL = ttl
-		if _, err := m.storageForRun(r); err != nil {
+		if l.Cargo != nil {
+			if l.Cargo.State != "compiling" {
+				return l, model.Err("lease_inactive", "Cargo preparation cannot be renewed")
+			}
+			if _, err := m.cargoStorageParent(r, nil); err != nil {
+				return l, err
+			}
+		} else if _, err := m.storageForRun(r); err != nil {
 			return l, err
 		}
 	}
@@ -1144,8 +1191,11 @@ func (m *Manager) tick() {
 		if l.State != "queued" {
 			continue
 		}
+		if l.Cargo != nil && m.cargoHelper == nil {
+			break
+		}
 		if l.Request.StorageLease != "" {
-			if _, err := m.storageForRun(l.Request); err != nil {
+			if _, err := m.storageParentForProfile(l.Request, nil); err != nil {
 				_, _ = m.end(l.ID, "storage_unavailable")
 				continue
 			}
@@ -1229,6 +1279,9 @@ func (m *Manager) tick() {
 }
 
 func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
+	if l.Request.Profile == "rust-build" {
+		return m.launchCargo(l, r)
+	}
 	if (r.SSH != nil || r.sshRuntime != nil) && (r.SSH == nil || r.sshRuntime == nil) {
 		return m.launchFailed(l, model.Err("ssh_replay_denied", "a stored/wire SSH descriptor cannot reconstruct a runtime"))
 	}
@@ -1484,6 +1537,9 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 	if l.State == "terminal" {
 		return l, nil
 	}
+	if l.Cargo != nil || l.Request.Profile == "rust-build" {
+		return m.reconcileCargo(l)
+	}
 	if m.gradleObligation(l) {
 		return m.reconcileGradle(l, "")
 	}
@@ -1508,13 +1564,9 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 }
 
 func validateCargo(args []string, cpu float64) error {
-	if cpu < 1 {
-		return model.Err("invalid_request", "rust-build requires at least one CPU")
-	}
-	for _, arg := range args[1:] {
-		if arg == "-j" || strings.HasPrefix(arg, "-j") || arg == "--jobs" || strings.HasPrefix(arg, "--jobs=") || arg == "--config" || strings.HasPrefix(arg, "--config=") {
-			return model.Err("profile_conflict", "rust-build supplies the jobs budget; remove explicit jobs or config overrides")
-		}
+	_, e := cargoprofile.Parse(args, cpu)
+	if e != nil {
+		return model.Err("profile_conflict", e.Error())
 	}
 	return nil
 }

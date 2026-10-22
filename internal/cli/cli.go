@@ -45,6 +45,9 @@ type app struct {
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
+	if len(args) > 0 && args[0] == "_cargo-helper" {
+		return cargoHelperMain(args[1:], out, errout)
+	}
 	if len(args) > 0 && args[0] == "_ssh-proxy" {
 		return sshProxyMain(args[1:], in, out, errout)
 	}

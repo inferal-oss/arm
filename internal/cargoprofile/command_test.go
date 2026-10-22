@@ -40,7 +40,7 @@ func TestMetadataArgumentsKeepManifestAndFeaturesWithoutCompileControls(t *testi
 	if e != nil {
 		t.Fatal(e)
 	}
-	want := []string{"metadata", "--format-version", "1", "--no-deps", "--offline", "--features", "f", "--manifest-path", "elsewhere/Cargo.toml", "--locked"}
+	want := []string{"metadata", "--format-version", "1", "--no-deps", "--features", "f", "--manifest-path", "elsewhere/Cargo.toml", "--locked"}
 	if !reflect.DeepEqual(c.MetadataArguments(), want) {
 		t.Fatal(c.MetadataArguments())
 	}
@@ -61,5 +61,26 @@ func TestInvalidUTF8AndCustomTargetSearchRefused(t *testing.T) {
 	write(t, filepath.Join(root, ".cargo", "config.toml"), "[env]\nRUST_TARGET_PATH={value='private-secret',force=true}\n")
 	if _, e := Discover(t.Context(), root, root, nil); e == nil || strings.Contains(e.Error(), "private-secret") {
 		t.Fatal("config custom target search accepted/leaked", e)
+	}
+}
+
+func TestMetadataPreservesOnlyCallerOfflineControls(t *testing.T) {
+	for _, flag := range []string{"", "--offline", "--frozen"} {
+		args := []string{"cargo", "check"}
+		if flag != "" {
+			args = append(args, flag)
+		}
+		c, e := Parse(args, 1)
+		if e != nil {
+			t.Fatal(e)
+		}
+		got := c.MetadataArguments()
+		want := []string{"metadata", "--format-version", "1", "--no-deps"}
+		if flag != "" {
+			want = append(want, flag)
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Fatal(got, want)
+		}
 	}
 }

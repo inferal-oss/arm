@@ -159,15 +159,16 @@ func targetTriple(v string) bool {
 
 // MetadataArguments preserves the discovery cwd; manifest-path does not change
 // config discovery. Package/target selection is compilation-specific; metadata
-// reports the entire workspace with matching manifest/features and no fetching.
+// reports the entire workspace with matching manifest/features and preserves the
+// caller's offline/frozen controls; admission must precede any resolution work.
 func (c Command) MetadataArguments() []string {
-	out := []string{"metadata", "--format-version", "1", "--no-deps", "--offline"}
+	out := []string{"metadata", "--format-version", "1", "--no-deps"}
 	for i := 1; i < len(c.Arguments); i++ {
 		a := c.Arguments[i]
 		if a == "--manifest-path" || a == "--features" {
 			out = append(out, a, c.Arguments[i+1])
 			i++
-		} else if a == "--all-features" || a == "--no-default-features" || a == "--locked" || a == "--frozen" {
+		} else if a == "--all-features" || a == "--no-default-features" || a == "--locked" || a == "--frozen" || a == "--offline" {
 			out = append(out, a)
 		} else if _, ok := valueFlags[a]; ok {
 			i++

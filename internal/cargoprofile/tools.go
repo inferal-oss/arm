@@ -214,14 +214,12 @@ func ResolveTools(parent context.Context, command Command, audit Audit, environm
 		return Toolchain{}, e
 	}
 	targets := append([]Target{}, configured...)
-	for i := 1; i < len(command.Arguments); i++ {
-		if command.Arguments[i] == "--target" {
-			i++
-			targets = append(targets, Target{Selector: command.Arguments[i], Origin: "explicit-command"})
-		} else if _, ok := valueFlags[command.Arguments[i]]; ok {
-			i++
-		}
+	explicit, e := command.ExplicitTargets()
+	if e != nil {
+		return Toolchain{}, e
 	}
+	targets = append(targets, explicit...)
+
 	result.CheckedTargets, e = checkBuiltinTargets(targets, result.BuiltinTargets)
 	if e != nil {
 		return Toolchain{}, e

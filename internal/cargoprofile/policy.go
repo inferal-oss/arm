@@ -43,6 +43,7 @@ var protected = map[string]bool{
 	"RUSTFLAGS": true, "CARGO_ENCODED_RUSTFLAGS": true, "RUSTDOCFLAGS": true, "CARGO_ENCODED_RUSTDOCFLAGS": true, "CARGO_BUILD_RUSTFLAGS": true, "CARGO_BUILD_RUSTDOCFLAGS": true,
 	"CARGO_BUILD_RUSTC": true, "CARGO_BUILD_RUSTDOC": true, "CARGO_BUILD_RUSTC_WRAPPER": true, "CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER": true,
 	"MAKEFLAGS": true, "MFLAGS": true, "CARGO_MAKEFLAGS": true,
+	"RUSTUP_AUTO_INSTALL": true, "RUSTUP_SKIP_UPDATE_CHECK": true, "RUSTUP_TERM_COLOR": true, "RUSTUP_LOG": true, "RUSTUP_TRACE_DIR": true,
 }
 
 func protectedKey(key string) bool {
@@ -146,7 +147,7 @@ func Compile(command Command, audit Audit, roots Roots, tools Tools, environment
 			return plan, fmt.Errorf("compiler replacement differs from selected verified tool (value omitted)")
 		}
 	}
-	fixed := map[string]string{"CARGO_HOME": audit.CargoHome, "CARGO_BUILD_JOBS": strconv.Itoa(command.Jobs), "CARGO_TARGET_DIR": roots.Target, "CARGO_BUILD_TARGET_DIR": roots.Target, "CARGO_BUILD_BUILD_DIR": roots.Build, "RUSTC": tools.Rustc, "RUSTDOC": tools.Rustdoc, "RUSTC_BOOTSTRAP": "", "RUST_TARGET_PATH": "", "RUSTC_WRAPPER": "", "RUSTC_WORKSPACE_WRAPPER": "", "CARGO_BUILD_RUSTC": tools.Rustc, "CARGO_BUILD_RUSTDOC": tools.Rustdoc, "CARGO_BUILD_RUSTC_WRAPPER": "", "CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER": "", "RUSTFLAGS": "", "CARGO_ENCODED_RUSTFLAGS": "", "RUSTDOCFLAGS": "", "CARGO_ENCODED_RUSTDOCFLAGS": "", "CARGO_BUILD_RUSTFLAGS": "", "CARGO_BUILD_RUSTDOCFLAGS": ""}
+	fixed := map[string]string{"RUSTUP_AUTO_INSTALL": "0", "RUSTUP_SKIP_UPDATE_CHECK": "1", "RUSTUP_TERM_COLOR": "never", "RUSTUP_LOG": "", "RUSTUP_TRACE_DIR": "", "CARGO_HOME": audit.CargoHome, "CARGO_BUILD_JOBS": strconv.Itoa(command.Jobs), "CARGO_TARGET_DIR": roots.Target, "CARGO_BUILD_TARGET_DIR": roots.Target, "CARGO_BUILD_BUILD_DIR": roots.Build, "RUSTC": tools.Rustc, "RUSTDOC": tools.Rustdoc, "RUSTC_BOOTSTRAP": "", "RUST_TARGET_PATH": "", "RUSTC_WRAPPER": "", "RUSTC_WORKSPACE_WRAPPER": "", "CARGO_BUILD_RUSTC": tools.Rustc, "CARGO_BUILD_RUSTDOC": tools.Rustdoc, "CARGO_BUILD_RUSTC_WRAPPER": "", "CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER": "", "RUSTFLAGS": "", "CARGO_ENCODED_RUSTFLAGS": "", "RUSTDOCFLAGS": "", "CARGO_ENCODED_RUSTDOCFLAGS": "", "CARGO_BUILD_RUSTFLAGS": "", "CARGO_BUILD_RUSTDOCFLAGS": ""}
 	for key := range values {
 		if protectedKey(key) {
 			delete(values, key)
