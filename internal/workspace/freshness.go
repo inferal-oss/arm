@@ -183,6 +183,7 @@ type refreshTicket struct {
 	lifetime               time.Duration
 	workspace, nonce, boot string
 	request                RefreshRequest
+	directory              Identity
 	startWall              time.Time
 	startElapsed           time.Duration
 }
@@ -208,6 +209,7 @@ func (r *Runtime) RefreshStart(q RefreshRequest) (RefreshStart, error) {
 }
 
 type authorizedSnapshot struct {
+	publication   string
 	graph         string
 	graphDeadline time.Duration
 	boot          string
@@ -298,7 +300,7 @@ func (r *Runtime) Begin(ctx context.Context, id string) (RefreshRequest, error) 
 			return RefreshRequest{}, problem("operation_busy", "a refresh is already pending for this workspace")
 		}
 	}
-	r.pending[q.Nonce] = refreshTicket{lifetime: root.Policy.MembershipTTL, workspace: id, nonce: q.Nonce, boot: r.store.boot, request: q, startWall: wall, startElapsed: elapsed}
+	r.pending[q.Nonce] = refreshTicket{lifetime: root.Policy.MembershipTTL, workspace: id, nonce: q.Nonce, boot: r.store.boot, request: q, directory: root.Directory, startWall: wall, startElapsed: elapsed}
 	return q, nil
 }
 
@@ -325,78 +327,99 @@ type DirectoryAcceptance struct {
 func (r *Runtime) Accept(ctx context.Context, directory Identity, snapshot Snapshot) error {
 	return r.AcceptChecked(ctx, directory, snapshot, nil)
 }
-func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Identity, snapshot Snapshot, dependent func(context.Context, *sql.Tx, DirectoryAcceptance) (DirectoryDependent, error)) error {
+func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Identity, snapshot Snapshot, dependent func(context.Context, *sql.Tx, DirectoryAcceptance) (DirectoryDependent, error)) (err error) {
 	r.mu.Lock()
 	t, ok := r.pending[snapshot.Nonce]
-	if ok {
-		delete(r.pending, snapshot.Nonce)
-	}
-	closed := r.closed
-	if !ok || closed || t.boot != r.store.boot {
+	if !ok || r.closed || t.boot != r.store.boot {
 		r.mu.Unlock()
 		return problem("stale_refresh", "no current process refresh matches this nonce")
 	}
+	// Only the exact authenticated directory for this pending request may
+	// consume it or invalidate its previous authority. An unrelated peer or a
+	// stale/replayed nonce is not a failed authenticated refresh.
+	if authenticatedDirectory != t.directory {
+		r.mu.Unlock()
+		return problem("forbidden", "refresh response is not from the exact pending directory")
+	}
+	delete(r.pending, snapshot.Nonce)
+	previousPublication := r.active[t.workspace].publication
 	life, cancel := context.WithCancel(r.life)
 	r.finalizing.Add(1)
 	r.mu.Unlock()
 	defer r.finalizing.Done()
+	// Only authenticated response/graph rejection withdraws prior authority.
+	// A known local rollback after valid checks does not extend or replace it.
+	rejected := false
+	refuse := func(e error) error { rejected = true; return e }
+	defer func() {
+		if err != nil && rejected {
+			r.withdrawFailedRefresh(t.workspace, previousPublication)
+		}
+	}()
 	defer cancel()
 	stop := context.AfterFunc(ctx, cancel)
 	defer stop()
 	ctx = life
 	if e := validateSnapshot(snapshot); e != nil {
-		return e
+		return refuse(e)
 	}
 	if snapshot.Workspace != t.workspace || snapshot.Generation != t.request.Source.Generation || snapshot.Requester != t.request.Source.Host || snapshot.RequesterGeneration != t.request.Source.MembershipGeneration {
-		return problem("invalid_snapshot", "response differs from exact request source/target")
+		return refuse(problem("invalid_snapshot", "response differs from exact request source/target"))
 	}
 	var deadline time.Duration
 	var graph DirectoryDependent
 	var graphDeadline time.Duration
+	// Transaction callbacks already hold Store.mu: withdraw before releasing
+	// the rejected ledger view so a queued reader cannot observe a mixed result.
+	refuseLocked := func(e error) error {
+		rejected = true
+		r.withdrawFailedRefreshLocked(t.workspace, previousPublication)
+		return e
+	}
 	e := r.store.transactionPublished(ctx, false, func(tx *sql.Tx, v *Records) error {
 		root, e := rootOf(v, t.workspace)
 		if e != nil {
 			return e
 		}
 		if root.Role != "member" || !known(root.State, "joining", "active") || root.Self != r.store.self || root.Directory != authenticatedDirectory || snapshot.Directory != root.Directory || root.Policy != snapshot.Policy || root.PolicyRevision != snapshot.PolicyRevision || denied(v, root.ID, root.Directory.Host) || denied(v, root.ID, root.Self.Host) {
-			return problem("forbidden", "current local membership/policy/pins/deny changed")
+			return refuseLocked(problem("forbidden", "current local membership/policy/pins/deny changed"))
 		}
 		clock, e := clockOf(v, root.ID)
 		if e != nil {
 			return e
 		}
 		if e = r.store.checkClock(clock.WallFloor); e != nil {
-			return e
+			return refuseLocked(e)
 		}
 		now := r.store.now()
 		elapsed := r.store.clock.Elapsed()
 		if elapsed < t.startElapsed || snapshot.Issued.Before(t.startWall.Add(-root.Policy.ClockSkew)) || snapshot.Issued.After(now.Add(root.Policy.ClockSkew)) {
-			return problem("workspace_clock_unavailable", "directory time/request clock evidence differs")
+			return refuseLocked(problem("workspace_clock_unavailable", "directory time/request clock evidence differs"))
 		}
 		if e = identityCurrent(root.Self, now); e != nil {
-			return e
+			return refuseLocked(e)
 		}
 		if e = identityCurrent(root.Directory, now); e != nil {
-			return e
+			return refuseLocked(e)
 		}
 		source, ok := cardOf(snapshot, root.Self.Host)
 		if !ok || source.State != "active" || source.Identity != root.Self || source.MembershipGeneration != t.request.Source.MembershipGeneration {
-			return problem("forbidden", "directory has no exact active source membership")
+			return refuseLocked(problem("forbidden", "directory has no exact active source membership"))
 		}
 		dir, ok := cardOf(snapshot, root.Directory.Host)
 		if !ok || dir.State != "active" || dir.Identity != root.Directory {
-			return problem("directory_changed", "directory identity/admission changed")
+			return refuseLocked(problem("directory_changed", "directory identity/admission changed"))
 		}
 		deadline = min(t.startElapsed+snapshot.TTL, elapsed+snapshot.ValidUntil.Sub(now), elapsed+root.Self.Expires.Sub(now), elapsed+root.Directory.Expires.Sub(now))
 		if deadline <= elapsed {
-			return problem("stale_refresh", "directory response consumed its request-start validity window")
+			return refuseLocked(problem("stale_refresh", "directory response consumed its request-start validity window"))
 		}
 		for _, o := range v.Observations {
 			if o.Workspace == root.ID && snapshot.Revision == o.Revision && membershipHash(snapshot) != membershipHash(o.Snapshot) {
-				return problem("invalid_snapshot", "same directory revision changed immutable membership content")
+				return refuseLocked(problem("invalid_snapshot", "same directory revision changed immutable membership content"))
 			}
 			if o.Workspace == root.ID && snapshot.Revision < o.Revision {
-				return problem("stale_revision", "directory observation moved backwards")
+				return refuseLocked(problem("stale_revision", "directory observation moved backwards"))
 			}
 		}
 		before := root
@@ -440,7 +463,7 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 		for _, old := range v.Trusted {
 			if old.Workspace == root.ID {
 				if _, ok := cardOf(snapshot, old.Identity.Host); !ok {
-					return problem("invalid_snapshot", "complete directory snapshot omitted retained identity/tombstone")
+					return refuseLocked(problem("invalid_snapshot", "complete directory snapshot omitted retained identity/tombstone"))
 				}
 			}
 		}
@@ -480,14 +503,14 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 		if dependent != nil {
 			graph, e = dependent(ctx, tx, DirectoryAcceptance{Snapshot: snapshot, Authority: r.store.authority, Local: root.Self, At: now, Boot: r.store.boot, StartWall: t.startWall, StartElapsed: t.startElapsed, Elapsed: elapsed, Deadline: deadline})
 			if e != nil {
-				return e
+				return refuseLocked(e)
 			}
 			if !validHex(graph.Hash, 32) || graph.Issued.IsZero() || !graph.ValidUntil.After(graph.Issued) || graph.Issued.Before(t.startWall.Add(-root.Policy.ClockSkew)) || graph.Issued.After(now.Add(root.Policy.ClockSkew)) || graph.ValidUntil.After(snapshot.ValidUntil) || graph.ValidUntil.Sub(graph.Issued) > snapshot.TTL {
-				return problem("invalid_snapshot", "dependent graph did not return an exact committed snapshot hash and bounded original validity")
+				return refuseLocked(problem("invalid_snapshot", "dependent graph did not return an exact committed snapshot hash and bounded original validity"))
 			}
 			graphDeadline = min(deadline, t.startElapsed+graph.ValidUntil.Sub(graph.Issued), elapsed+graph.ValidUntil.Sub(now))
 			if graphDeadline <= elapsed {
-				return problem("stale_refresh", "dependent graph consumed original request-start validity")
+				return refuseLocked(problem("stale_refresh", "dependent graph consumed original request-start validity"))
 			}
 		}
 		return nil
@@ -497,24 +520,24 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 			return e
 		}
 		if root.Role != "member" || !known(root.State, "joining", "active") || root.Self != r.store.self || root.Directory != authenticatedDirectory || root.Policy != snapshot.Policy || root.PolicyRevision != snapshot.PolicyRevision || denied(v, root.ID, root.Directory.Host) || denied(v, root.ID, root.Self.Host) {
-			return problem("forbidden", "refresh authority changed before final commit")
+			return refuseLocked(problem("forbidden", "refresh authority changed before final commit"))
 		}
 		clock, e := clockOf(v, root.ID)
 		if e != nil {
 			return e
 		}
 		if e = r.store.checkClock(clock.WallFloor); e != nil {
-			return e
+			return refuseLocked(e)
 		}
 		now, elapsed := r.store.now(), r.store.clock.Elapsed()
 		if elapsed < t.startElapsed || elapsed >= deadline || !now.Before(snapshot.ValidUntil) || graph.Hash != "" && (elapsed >= graphDeadline || !now.Before(graph.ValidUntil)) {
-			return problem("stale_refresh", "refresh bundle consumed its ORIGINAL request-start validity before final commit")
+			return refuseLocked(problem("stale_refresh", "refresh bundle consumed its ORIGINAL request-start validity before final commit"))
 		}
 		if e = identityCurrent(root.Self, now); e != nil {
-			return e
+			return refuseLocked(e)
 		}
 		if e = identityCurrent(root.Directory, now); e != nil {
-			return e
+			return refuseLocked(e)
 		}
 		found := false
 		for _, o := range v.Observations {
@@ -524,7 +547,7 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 			}
 		}
 		if !found {
-			return problem("invalid_snapshot", "refresh dependent changed the exact membership observation")
+			return refuseLocked(problem("invalid_snapshot", "refresh dependent changed the exact membership observation"))
 		}
 		return nil
 	}, func(acknowledged bool) error {
@@ -535,15 +558,40 @@ func (r *Runtime) AcceptChecked(ctx context.Context, authenticatedDirectory Iden
 			return nil
 		}
 		if r.closed {
-			return problem("backend_stopping", "runtime closed during refresh; persisted observation remains display-only")
+			return refuse(problem("backend_stopping", "runtime closed during refresh; persisted observation remains display-only"))
 		}
 		if r.store.clock.Elapsed() >= deadline {
-			return problem("stale_refresh", "committed bundle consumed original validity before runtime activation; observations remain display-only")
+			return refuse(problem("stale_refresh", "committed bundle consumed original validity before runtime activation; observations remain display-only"))
 		}
-		r.active[t.workspace] = authorizedSnapshot{boot: r.store.boot, deadline: deadline, hash: snapshot.Hash, generation: snapshot.RequesterGeneration, graph: graph.Hash, graphDeadline: graphDeadline}
+		r.active[t.workspace] = authorizedSnapshot{publication: t.request.Nonce, boot: r.store.boot, deadline: deadline, hash: snapshot.Hash, generation: snapshot.RequesterGeneration, graph: graph.Hash, graphDeadline: graphDeadline}
 		return nil
 	})
 	return e
+}
+
+// withdrawFailedRefresh serializes failure publication with ledger readers and
+// successful refresh commits. A delayed failure may withdraw only the authority
+// that preceded its own acceptance, never a newer successfully published view.
+// No caller may hold Runtime.mu while entering this Store.mu -> Runtime.mu order.
+func (r *Runtime) withdrawFailedRefresh(workspace, publication string) {
+	if publication == "" {
+		return
+	}
+	r.store.mu.Lock()
+	defer r.store.mu.Unlock()
+	r.withdrawFailedRefreshLocked(workspace, publication)
+}
+
+// Called with Store.mu held, including before a rejected transaction releases it.
+func (r *Runtime) withdrawFailedRefreshLocked(workspace, publication string) {
+	if publication == "" {
+		return
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.active[workspace].publication == publication {
+		delete(r.active, workspace)
+	}
 }
 
 // Access is a bounded observation for the future destination-owned dispatcher,
