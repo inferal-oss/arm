@@ -1,8 +1,10 @@
-# Mesh node lifecycle — proposed extension
+# Mesh node lifecycle — approved extension
 
-Requested October 22, 2026. This design extends the existing reviewed direct-peer
-lifecycle. Reconnect needs a first-class CLI/dashboard workflow; remote shutdown
-and uninstall need new destination-authorized operations. Those new operations
+Requested October 22, 2026; approved by the operator October 23, 2026. Approval
+authorizes staged implementation of this scheme; its runtime and interface gates
+remain pending. This design extends the existing reviewed direct-peer lifecycle.
+Reconnect needs a first-class CLI/dashboard workflow; remote shutdown and
+uninstall need new destination-authorized operations. Those new operations
 are not implemented or enabled by existing grants.
 
 ## Current boundary
@@ -44,7 +46,7 @@ existing lifecycle contract.
 
 ## Stop ARM on a node
 
-Offer **Stop ARM…** separately from **Disconnect**, with a proposed CLI
+Offer **Stop ARM…** separately from **Disconnect**, with CLI
 `arm mesh stop HOST_ID`. This stops ARM for the selected authority/home, not the
 host OS. The review must show that all connections to that backend are affected,
 including other peers, operator sessions and workspace routes.
