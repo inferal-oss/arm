@@ -15,6 +15,9 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"plugins":                             {usage: "[list|inspect NAME] [OPTIONS]", summary: "Discover optional arm-NAME CLI extensions without executing them. Built-ins always win. Use plugins inspect NAME or arm help NAME for metadata; arm NAME --help explicitly executes that extension. This does not register a managed provider.", max: -1},
+	"plugins list":                        {summary: "List bounded PATH metadata without running candidates. Discovery does not check versions, dependencies or provider capabilities; warnings and truncation are explicit.", max: 0},
+	"plugins inspect":                     {usage: "NAME [OPTIONS]", summary: "Resolve one CLI extension without executing it. Root --home/--json are consumed before NAME; every later argument belongs to the extension. Invocation inherits the environment except ARM_HOME is the absolute effective home and ARM_JSON is 1 for ARM's effective JSON mode, otherwise 0. Extension streams remain raw, even with --json. CLI code runs with normal OS privileges; no provider registration or implicit backend startup.", min: 1, max: 1},
 	"history ssh-source plan":             {summary: "Read an exact local plan for verified settled SSH receipts. No initialization, exclusive worker lock or remote contact.", max: 0},
 	"history ssh-source archive":          {summary: "Archive reviewed existing local receipts while preserving permanent old-key fences. New scripts require --key, --reason, --expect-plan and --yes. Existing keys inspect only; no implicit reconciliation. --dry-run writes nothing.", max: 0},
 	"history ssh-source inspect":          {usage: "KEY [OPTIONS]", summary: "Read the exact original archive operation offline, including unfinished or uncertain outcomes.", min: 1, max: 1},
