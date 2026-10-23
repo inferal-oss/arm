@@ -1,5 +1,11 @@
 # Validation record
 
+## October 23, 2026: reconnect child-consent source review — isolated
+
+The active-child correction separates the original workflow's historical approval from the current attempt's own review, required approval field and delegated callback acceptance. Independent native races pass in 12.710s with zero skips: child approval/decline, acceptance followed by revision refusal, five actual child-record alterations, detached attempt inputs and existing input/output bounds. All 1,042 declared source inputs remain unchanged. Independent projection checks consume the same bounded bytes they hash and validate eight fresh cases/103 observations against actual private Store records and captured callback inputs. The first root run passed scenario assertions but correctly refused a nonexistent private output parent; that failed setup is retained, and the corrected setup passes.
+
+Separate review reproduced an evidence-reader defect: it hashed an artifact, then reopened the path for JSON parsing. A controlled actual file replacement was accepted even though those parsed bytes had not been hashed. A single-read/hash/strict-parse correction and per-case streaming reader are under validation. These are test-tooling findings, not an established production consent bypass. No new reconnect TLC/TLAPM, real SSH, rendered UI or current-tree feature integration is claimed. Per-artifact caps do not establish an aggregate RSS bound; the eight-case evidence includes roughly 18MB of encoded files.
+
 ## October 23, 2026: developer SSH fixture and source checkpoints
 
 The fixed-command developer SSH fixture is integrated after independent review. A before/after native regression reproduced two shutdown defects: returning before an actual child joined, and failure to close a transport on parent cancellation. The corrected fixture passes the same regressions. A separate live-connection test reproduced a self-signalled helper returning SSH success; preserving the actual Wait failure now returns nonzero and suppresses incomplete output while leaving the transport usable. A real native exit-zero/ErrWaitDelay control also refuses success after the owned output copier joins. Pre-bind literal-loopback validation closes the temporary wildcard-listener gap.
