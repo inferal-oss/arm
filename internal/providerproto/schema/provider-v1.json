@@ -1,0 +1,1177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:arm:resource-provider:1",
+  "title": "ARM resource provider v1 structural wire schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/response"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[!-~]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z](?:[a-z0-9-]*[a-z0-9])?$"
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 4096,
+      "pattern": "^[^\\u0000]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "uint": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,18})$",
+      "description": "Semantic decoder additionally checks <= 9223372036854775807."
+    },
+    "native_identity": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "enum": [
+            "darwin",
+            "linux"
+          ]
+        },
+        "device": {
+          "$ref": "#/$defs/uint"
+        },
+        "inode": {
+          "$ref": "#/$defs/uint"
+        },
+        "owner_uid": {
+          "$ref": "#/$defs/uint"
+        },
+        "mode": {
+          "$ref": "#/$defs/uint"
+        },
+        "nlink": {
+          "$ref": "#/$defs/uint"
+        },
+        "born_seconds": {
+          "$ref": "#/$defs/uint"
+        },
+        "born_nanoseconds": {
+          "$ref": "#/$defs/uint"
+        },
+        "ctime_seconds": {
+          "$ref": "#/$defs/uint"
+        },
+        "ctime_nanoseconds": {
+          "$ref": "#/$defs/uint"
+        },
+        "mtime_seconds": {
+          "$ref": "#/$defs/uint"
+        },
+        "mtime_nanoseconds": {
+          "$ref": "#/$defs/uint"
+        }
+      },
+      "required": [
+        "os",
+        "device",
+        "inode",
+        "owner_uid",
+        "mode",
+        "nlink",
+        "born_seconds",
+        "born_nanoseconds",
+        "ctime_seconds",
+        "ctime_nanoseconds",
+        "mtime_seconds",
+        "mtime_nanoseconds"
+      ],
+      "additionalProperties": false
+    },
+    "timestamp": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Canonical UTC RFC3339 with bounded precision. Go checks actual date and normalization; current time, policy lifetime and authorization belong to the future managed caller."
+    },
+    "data": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/data"
+          },
+          "maxItems": 256
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/data"
+          },
+          "maxProperties": 64
+        }
+      ],
+      "description": "No JSON numbers: exact quantities/config numerics use canonical decimal strings. Global UTF-8-byte/depth/member limits apply."
+    },
+    "method": {
+      "enum": [
+        "describe",
+        "validate",
+        "plan",
+        "create",
+        "lookup",
+        "renew",
+        "release",
+        "reconcile"
+      ]
+    },
+    "external_scope": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/$defs/id"
+        },
+        "project": {
+          "$ref": "#/$defs/id"
+        },
+        "namespace": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "account",
+        "project",
+        "namespace"
+      ],
+      "additionalProperties": false
+    },
+    "registration": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "generation": {
+          "$ref": "#/$defs/uint"
+        },
+        "code_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "implementation_version": {
+          "$ref": "#/$defs/id"
+        },
+        "resource_type": {
+          "$ref": "#/$defs/name"
+        },
+        "config_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "external_scope": {
+          "$ref": "#/$defs/external_scope"
+        }
+      },
+      "required": [
+        "id",
+        "generation",
+        "code_sha256",
+        "implementation_version",
+        "resource_type",
+        "config_sha256",
+        "external_scope"
+      ],
+      "additionalProperties": false
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "host"
+            },
+            "host_id": {
+              "$ref": "#/$defs/id"
+            }
+          },
+          "required": [
+            "kind",
+            "host_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "global"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "$ref": "#/$defs/id"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "owner_uid": {
+          "$ref": "#/$defs/uint"
+        },
+        "owner_name": {
+          "$ref": "#/$defs/username"
+        },
+        "agent": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\u0000]*$",
+          "allOf": [
+            {
+              "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]"
+            }
+          ]
+        },
+        "operation_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+$"
+        },
+        "intent_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "authority",
+        "scope",
+        "owner_uid",
+        "owner_name",
+        "agent",
+        "session",
+        "project",
+        "reason",
+        "operation_key",
+        "intent_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/id"
+        },
+        "limit": {
+          "$ref": "#/$defs/uint"
+        }
+      },
+      "required": [
+        "unit",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "external_scope": {
+          "$ref": "#/$defs/external_scope"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "incarnation": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "external_scope",
+        "id",
+        "incarnation"
+      ],
+      "additionalProperties": false
+    },
+    "lookup_params": {
+      "type": "object",
+      "properties": {
+        "target_method": {
+          "enum": [
+            "create",
+            "renew",
+            "release"
+          ]
+        },
+        "external_identity": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prior_receipt_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "target_method",
+        "external_identity",
+        "prior_receipt_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "const": "arm.resource-provider"
+        },
+        "version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "request"
+        },
+        "request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "registration": {
+          "$ref": "#/$defs/registration"
+        },
+        "configuration": {
+          "$ref": "#/$defs/data"
+        },
+        "credential_refs": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "method": {
+          "$ref": "#/$defs/method"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "params": {}
+      },
+      "required": [
+        "protocol",
+        "version",
+        "kind",
+        "request_id",
+        "registration",
+        "configuration",
+        "credential_refs",
+        "method",
+        "context",
+        "params"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "describe"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "validate"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "plan"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "properties": {
+                  "specification": {
+                    "$ref": "#/$defs/data"
+                  },
+                  "budgets": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/budget"
+                    },
+                    "maxItems": 64
+                  },
+                  "expires_at": {
+                    "$ref": "#/$defs/timestamp"
+                  }
+                },
+                "required": [
+                  "specification",
+                  "budgets",
+                  "expires_at"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "create"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "properties": {
+                  "specification": {
+                    "$ref": "#/$defs/data"
+                  },
+                  "specification_sha256": {
+                    "$ref": "#/$defs/sha256"
+                  },
+                  "budgets": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/budget"
+                    },
+                    "maxItems": 64
+                  },
+                  "expires_at": {
+                    "$ref": "#/$defs/timestamp"
+                  },
+                  "dependencies": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/identity"
+                    },
+                    "maxItems": 64
+                  }
+                },
+                "required": [
+                  "specification",
+                  "specification_sha256",
+                  "budgets",
+                  "expires_at",
+                  "dependencies"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "lookup"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "$ref": "#/$defs/lookup_params"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "renew"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "properties": {
+                  "external_identity": {
+                    "$ref": "#/$defs/identity"
+                  },
+                  "prior_receipt_sha256": {
+                    "$ref": "#/$defs/sha256"
+                  },
+                  "expected_revision": {
+                    "$ref": "#/$defs/uint"
+                  },
+                  "expires_at": {
+                    "$ref": "#/$defs/timestamp"
+                  }
+                },
+                "required": [
+                  "external_identity",
+                  "prior_receipt_sha256",
+                  "expected_revision",
+                  "expires_at"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "release"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "properties": {
+                  "external_identity": {
+                    "$ref": "#/$defs/identity"
+                  },
+                  "prior_receipt_sha256": {
+                    "$ref": "#/$defs/sha256"
+                  },
+                  "expected_revision": {
+                    "$ref": "#/$defs/uint"
+                  },
+                  "action": {
+                    "const": "delete"
+                  }
+                },
+                "required": [
+                  "external_identity",
+                  "prior_receipt_sha256",
+                  "expected_revision",
+                  "action"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "reconcile"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "$ref": "#/$defs/lookup_params"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "descriptor": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "descriptor"
+        },
+        "implementation_id": {
+          "$ref": "#/$defs/id"
+        },
+        "implementation_version": {
+          "$ref": "#/$defs/id"
+        },
+        "protocol_versions": {
+          "type": "array",
+          "items": {
+            "const": 1
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true
+        },
+        "resource_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/name"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/method"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "durable_create_dedup": {
+          "type": "boolean"
+        },
+        "durable_terminal_tombstones": {
+          "type": "boolean"
+        },
+        "key_lookup": {
+          "type": "boolean"
+        },
+        "immutable_identity": {
+          "type": "boolean"
+        },
+        "read_only_reconcile": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "$ref": "#/$defs/data"
+        }
+      },
+      "required": [
+        "kind",
+        "implementation_id",
+        "implementation_version",
+        "protocol_versions",
+        "resource_types",
+        "methods",
+        "durable_create_dedup",
+        "durable_terminal_tombstones",
+        "key_lookup",
+        "immutable_identity",
+        "read_only_reconcile",
+        "metadata"
+      ],
+      "additionalProperties": false
+    },
+    "validated": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "validated"
+        },
+        "configuration_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "kind",
+        "configuration_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "planned": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "planned"
+        },
+        "specification_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "estimated_budgets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/budget"
+          },
+          "maxItems": 64
+        },
+        "readiness": {
+          "enum": [
+            "immediate",
+            "delayed",
+            "unavailable"
+          ]
+        },
+        "metadata": {
+          "$ref": "#/$defs/data"
+        }
+      },
+      "required": [
+        "kind",
+        "specification_sha256",
+        "estimated_budgets",
+        "readiness",
+        "metadata"
+      ],
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "operation"
+        },
+        "provider_request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "ready",
+            "ending",
+            "released",
+            "failed",
+            "unknown",
+            "no_effect"
+          ]
+        },
+        "external_identity": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/uint",
+          "description": "0 explicitly denotes unknown; ready/ending/released require a positive value. Trusted matching rejects EVERY positive revision below a known target floor, regardless of outcome, and never replaces that floor with unknown 0."
+        },
+        "specification_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "prior_receipt_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "$ref": "#/$defs/id"
+            },
+            "data": {
+              "$ref": "#/$defs/data"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          },
+          "required": [
+            "format",
+            "data",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "metadata": {
+          "$ref": "#/$defs/data"
+        }
+      },
+      "required": [
+        "kind",
+        "provider_request_id",
+        "state",
+        "external_identity",
+        "revision",
+        "specification_sha256",
+        "prior_receipt_sha256",
+        "evidence",
+        "metadata"
+      ],
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "enum": [
+            "unsupported",
+            "unavailable",
+            "invalid_configuration",
+            "invalid_specification",
+            "conflict",
+            "denied",
+            "not_found",
+            "failed",
+            "internal"
+          ]
+        },
+        "message": {
+          "$ref": "#/$defs/text"
+        },
+        "retry_after_seconds": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/uint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retry_after_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "const": "arm.resource-provider"
+        },
+        "version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "response"
+        },
+        "request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "registration": {
+          "$ref": "#/$defs/registration"
+        },
+        "method": {
+          "$ref": "#/$defs/method"
+        },
+        "operation_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+$"
+        },
+        "intent_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "result": {
+          "oneOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/descriptor"
+                },
+                {
+                  "$ref": "#/$defs/validated"
+                },
+                {
+                  "$ref": "#/$defs/planned"
+                },
+                {
+                  "$ref": "#/$defs/receipt"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol",
+        "version",
+        "kind",
+        "request_id",
+        "registration",
+        "method",
+        "operation_key",
+        "intent_sha256",
+        "result",
+        "error"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "result": {
+              "not": {
+                "type": "null"
+              }
+            },
+            "error": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "result": {
+              "type": "null"
+            },
+            "error": {
+              "$ref": "#/$defs/error"
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "describe"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/descriptor"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "validate"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/validated"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "plan"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/planned"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "create"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/receipt"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "lookup"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/receipt"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "renew"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/receipt"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "release"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/receipt"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "reconcile"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/receipt"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "username": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000]*$",
+      "description": "Human OS attribution: 1\u2013256 valid UTF-8 bytes, unchanged and not normalized. UID remains the principal selector."
+    }
+  },
+  "$comment": "Pure P1a codec only. Exactly literal integer 1 is permitted for envelope version and descriptor protocol_versions. Configuration/specification/metadata/evidence data contain no JSON numbers. Duplicate decoded keys, malformed UTF-8, unpaired surrogates, NUL, UTF-8 byte/depth/node bounds, positive generations, canonical timestamps, unique budget units/dependencies and trusted saved-original matching are additional mandatory Go checks. Schema validation alone grants no authority or external outcome proof."
+}
