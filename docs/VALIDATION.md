@@ -1,5 +1,13 @@
 # Validation record
 
+## October 23, 2026: complete workspace physical keys
+
+Independent review reproduced a preexisting SQLite alias: an instance's physical key containing its valid ID followed by NUL and a suffix was accepted as the original ID. The complete malformed bytes were verified in SQLite before the failing read. The correction checks complete bounded TEXT bytes, UTF-8 and NUL across all eight workspace table families, including operation requests, and requires positive INTEGER journal sequences. It is integrated independently of the unfinished coherent-clock schema/provenance changes.
+
+The same regression fails on pre-fix HEAD (0.331s). After correction, the full native workspace suite passes (7.740s), as do focused native race suites for workspace/database/manager (4.625s/7.114s/1.891s) and affected vet. Tests cover all physical text columns, malformed storage classes/bytes, legitimate UTF-8 at the byte limit, journal sequences, independent reset refusal and ordinary manager restart/admission/release with invalid optional workspace evidence. Mutations rejected by SQLite constraints are identified separately from malformed rows actually refused by readers.
+
+Three source-bound CGo-free Linux arm64 binaries pass the selected cases with zero skips. Their SHA256 values are `e00a83c86bb17560ab5b87cb96b6b7e73e269a50130aa9a9b39cc44c6fd1403f` (workspace), `b6cb613b160f2ac73c78379379ec0232c2a9914d7f5115db97d0614e98063a10` (database) and `feaed355ec0c62c163b3b9566bffa39027e66d5f30256b465d1e0b0e3c3277ef` (manager). All884 Go/module source hashes were rechecked. Exact native fixture identity, UID, mode, link count, hashes and complete roster were verified before removal. The five existing user edits remain untouched. No OS clock, running backend, authenticated agent session or administrative grant changed.
+
 ## October 23, 2026: consumer causal-cut correction — isolated acceptance
 
 Independent review of the exact successor fixes both strict-wire findings below and a further ownership omission: cache entry ownership must be recorded when admitted, rather than inferred from a later fill. Runtime/object/call admission and retirement, native observations and recorder closure now share ordered tickets. Scope/session and required typed catalog fields are checked without erasing malformed values. These changes remain in an isolated consumer composition, not the supported root runtime.

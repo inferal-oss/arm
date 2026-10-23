@@ -12,6 +12,8 @@ Updated October 23, 2026 against the current worktree. The complete scope remain
 
 **Latest reviewed delivery:** private share publication/retirement is integrated after complete native/Linux, actual-trace and strict-proof acceptance. Direct-peer leased SSH, workspace host messaging and explicitly published poll-agent messaging are supported within their reviewed scopes. Library origin/cache/codec join primitives, external CLI extensions and the pure internal provider codec are implemented. Consumer sessions, public file access, mounted shares and managed provider registration remain unfinished. See [implemented behavior](IMPLEMENTATION.md) and [validation history](VALIDATION.md) for the exact boundaries and evidence.
 
+**Workspace key correction:** complete physical SQLite key/type validation is independently reviewed and implemented separately from the clock work. Native full workspace tests, focused three-package race/vet checks and actual Linux cases pass; malformed optional workspace records still allow ordinary startup and resource cleanup. The coherent-clock schema, provenance, model and integration gates below remain pending.
+
 **Running now:**
 
 1. **Coordinator — review and integration.** Independently review each frozen patch, reproduce findings, verify fixes, run the affected native/Linux gates and commit completed features. The focused consumer causal-cut/wire/runner correction passed isolated review. The first provider-worker checkpoint passes independent native tests; executable namespace protection still needs correction. Preserve existing user edits and keep public file authority closed until its own gates pass.

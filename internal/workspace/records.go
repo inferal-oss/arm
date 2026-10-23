@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
+	"unicode/utf8"
 )
 
 func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) {
@@ -50,14 +52,25 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 				return e
 			}
 			keys := make([]string, len(names)-1)
+			physical := make([]sql.NullString, len(keys))
 			dest := make([]any, len(names))
 			for i := range keys {
-				dest[i] = &keys[i]
+				dest[i] = &physical[i]
 			}
 			var raw []byte
 			dest[len(dest)-1] = &raw
 			if e = rows.Scan(dest...); e != nil {
 				return e
+			}
+			for i, value := range physical {
+				if !value.Valid {
+					return invalidf("workspace %s physical key/request has unsupported storage class or byte length", table)
+				}
+				key := value.String
+				keys[i] = key
+				if !utf8.ValidString(key) || strings.IndexByte(key, 0) >= 0 {
+					return invalidf("workspace %s physical key/request is not complete UTF-8 text", table)
+				}
 			}
 			total += len(raw)
 			if total > MaxLedgerBytes {
@@ -69,7 +82,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 		}
 		return rows.Err()
 	}
-	if e = read(tables[0], MaxWorkspaces, `substr(id,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[0], MaxWorkspaces, rawWorkspaceText("id", 32), func(k []string, b []byte) error {
 		var x Instance
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -82,7 +95,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[1], MaxWorkspaces*MaxMembers, `substr(workspace,1,33),substr(host,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[1], MaxWorkspaces*MaxMembers, rawWorkspaceText("workspace", 32)+","+rawWorkspaceText("host", 32), func(k []string, b []byte) error {
 		var x Member
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -95,7 +108,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[2], MaxWorkspaces*MaxMembers, `substr(workspace,1,33),substr(host,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[2], MaxWorkspaces*MaxMembers, rawWorkspaceText("workspace", 32)+","+rawWorkspaceText("host", 32), func(k []string, b []byte) error {
 		var x TrustedMember
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -108,7 +121,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[3], MaxWorkspaces, `substr(workspace,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[3], MaxWorkspaces, rawWorkspaceText("workspace", 32), func(k []string, b []byte) error {
 		var x Observation
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -121,7 +134,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[4], MaxWorkspaces*MaxOperations, `substr(workspace,1,33),substr(principal,1,513),substr(key,1,129),substr(CAST(request AS BLOB),1,1048577)`, func(k []string, b []byte) error {
+	if e = read(tables[4], MaxWorkspaces*MaxOperations, strings.Join([]string{rawWorkspaceText("workspace", 32), rawWorkspaceText("principal", 512), rawWorkspaceText("key", 128), rawWorkspaceText("request", MaxRecordBytes)}, ","), func(k []string, b []byte) error {
 		var x Operation
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -134,7 +147,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[5], MaxWorkspaces*MaxChanges, `CAST(sequence AS TEXT),substr(workspace,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[5], MaxWorkspaces*MaxChanges, "CASE WHEN typeof(sequence)='integer' AND sequence>0 THEN CAST(sequence AS TEXT) ELSE NULL END,"+rawWorkspaceText("workspace", 32), func(k []string, b []byte) error {
 		var x Change
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -147,7 +160,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[6], MaxWorkspaces*MaxMembers, `substr(workspace,1,33),substr(host,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[6], MaxWorkspaces*MaxMembers, rawWorkspaceText("workspace", 32)+","+rawWorkspaceText("host", 32), func(k []string, b []byte) error {
 		var x Deny
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -160,7 +173,7 @@ func readRecords(ctx context.Context, tx *sql.Tx, a Authority) (Records, error) 
 	}); e != nil {
 		return v, e
 	}
-	if e = read(tables[7], MaxWorkspaces, `substr(workspace,1,33)`, func(k []string, b []byte) error {
+	if e = read(tables[7], MaxWorkspaces, rawWorkspaceText("workspace", 32), func(k []string, b []byte) error {
 		var x ClockRecord
 		if e := Decode(b, &x); e != nil {
 			return e
@@ -387,4 +400,12 @@ func ValidateRecords(v Records, a Authority) error {
 		return e
 	}
 	return validateTransitions(v, a)
+}
+
+// Only closed internal column names reach this expression. SQLite TEXT substr
+// counts characters and truncates at NUL; it is not a complete physical key.
+// Refuse another storage class or byte length before slicing raw bytes, then
+// validate UTF-8/NUL in Go before comparison with the complete embedded value.
+func rawWorkspaceText(column string, maxBytes int) string {
+	return fmt.Sprintf("CASE WHEN typeof(%s)='text' AND length(CAST(%s AS BLOB)) BETWEEN 1 AND %d THEN substr(CAST(%s AS BLOB),1,%d) ELSE NULL END", column, column, maxBytes, column, maxBytes+1)
 }
