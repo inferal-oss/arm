@@ -32,7 +32,7 @@ type Store struct {
 	mu              sync.Mutex
 	wallStart       time.Time
 	elapsedStart    time.Duration
-	clockInvalid    bool
+	clockInvalid    string // first failure observation; retained under mu for this process
 	directoryGraphs map[string]directoryGraphWitness
 	// Optional deterministic failure injection for in-package transactional
 	// tests. Never a public RPC/CLI option; no callback spans network I/O.
@@ -56,17 +56,27 @@ func Open(ctx context.Context, db *sql.DB, authority Authority, self Identity, c
 	return s, nil
 }
 func (s *Store) checkClock(floor time.Time) error {
-	if s.clockInvalid {
-		return problem("workspace_clock_unavailable", "workspace clock evidence is invalid for this process")
+	if s.clockInvalid != "" {
+		return problem("workspace_clock_unavailable", s.clockInvalid)
 	}
 	wall := s.clock.Wall()
 	elapsed := s.clock.Elapsed() - s.elapsedStart
 	delta := wall.Sub(s.wallStart) - elapsed
-	if elapsed < 0 || delta > MaxClockSkew || delta < -MaxClockSkew || !floor.IsZero() && wall.Before(floor) {
-		s.clockInvalid = true
-		return problem("workspace_clock_unavailable", "clock rollback/step requires a fresh verified clock before workspace authorization")
+	var reason string
+	switch {
+	case elapsed < 0:
+		reason = fmt.Sprintf("elapsed clock moved backwards (relative elapsed %s)", elapsed)
+	case delta > MaxClockSkew || delta < -MaxClockSkew:
+		reason = fmt.Sprintf("wall and elapsed time differ by %s", delta)
+	case !floor.IsZero() && wall.Before(floor):
+		reason = fmt.Sprintf("wall time is before the recorded workspace floor by %s", floor.Sub(wall))
+	default:
+		return nil
 	}
-	return nil
+	// Preserve only the first bounded observation, never an inferred cause such
+	// as suspend/NTP. Return a fresh error so callers cannot mutate the latch.
+	s.clockInvalid = fmt.Sprintf("workspace clock invalidated at %s: %s; workspace authorization remains disabled for this process", wall.UTC().Format(time.RFC3339Nano), reason)
+	return problem("workspace_clock_unavailable", s.clockInvalid)
 }
 func (s *Store) now() time.Time { return s.clock.Wall().UTC() }
 func (s *Store) fail(stage string) error {
