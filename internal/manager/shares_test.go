@@ -332,10 +332,30 @@ func TestShareCrashChildWriter(t *testing.T) {
 	defer write.Close()
 	defer read.Close()
 	entered := make(chan struct{})
-	m.shares.beforeNativeBuild = func(context.Context) { close(entered); var b [1]byte; _, _ = read.Read(b[:]) }
+	block := func(context.Context) { close(entered); var b [1]byte; _, _ = read.Read(b[:]) }
+	verification := os.Getenv("ARM_PRIVATE_SHARE_CRASH_PHASE") == "verification"
+	if !verification {
+		m.shares.beforeNativeBuild = block
+	}
 	p, err := m.PrepareShare(context.Background(), shareRequest(source, "crash-prepare"))
 	if err != nil {
 		t.Fatal(err)
+	}
+	if verification {
+		shareWait(t, func() bool {
+			m.mu.Lock()
+			defer m.mu.Unlock()
+			return m.shares.state.Publications[p.ID].State == "prepared" && m.shares.workers[p.ID] == nil
+		})
+		p, err = m.InspectShare(p.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		m.shares.beforeNativeBuild = block
+		p, err = m.PublishShare(context.Background(), publicationRequest(p))
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 	<-entered
 	raw, _ := json.Marshal(struct {

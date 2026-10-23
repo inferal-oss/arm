@@ -52,7 +52,7 @@ func (m *Manager) prepareShareAdmission(a shareAdmission, l *model.Lease) error 
 		return model.Err("lease_inactive", "share/storage lifetime ended before atomic admission")
 	}
 	at := time.Now().UTC()
-	publication := sharelease.Publication{Schema: 1, Authority: m.host, Owner: m.owner, ID: local.ID(), Generation: local.ID(), Request: p.request, Lease: l.ID, StorageIdentity: *source.Artifact.Identity, Worker: p.worker, WorkerState: "reserved", State: "preparing", Revision: 1, Created: at, Updated: at, Expires: *l.Expires, Reason: p.request.Reason, JournalSlots: sharelease.PublicationFinalSlots}
+	publication := sharelease.Publication{Schema: 2, Authority: m.host, Owner: m.owner, ID: local.ID(), Generation: local.ID(), Request: p.request, Lease: l.ID, StorageIdentity: *source.Artifact.Identity, PreparationWorker: p.worker, WorkerPhase: "preparation", Worker: p.worker, WorkerState: "reserved", State: "preparing", Revision: 1, Created: at, Updated: at, Expires: *l.Expires, Reason: p.request.Reason, JournalSlots: sharelease.PublicationFinalSlots}
 	p.change, err = m.planSharePublication(publication, "reserved")
 	if err != nil {
 		return err

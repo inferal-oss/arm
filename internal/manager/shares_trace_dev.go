@@ -85,6 +85,7 @@ func (m *Manager) shareFormalObserver() *shareFormalObserver {
 // Caller holds Mu. Trace append is bounded memory only: no log/file writes,
 // user callback, native filesystem inspection or barrier while holding Mu.
 func (m *Manager) traceShareLocked(action, id string) {
+	m.tracePublicationLocked(action, id)
 	o := m.shareFormalObserver()
 	if o == nil {
 		return
@@ -224,6 +225,7 @@ func (m *Manager) traceShareLocked(action, id string) {
 }
 
 func (m *Manager) traceShareNative(id, event string) {
+	m.tracePublicationNative(id, event)
 	o := m.shareFormalObserver()
 	if o == nil {
 		return
@@ -254,6 +256,7 @@ func (m *Manager) traceShareNative(id, event string) {
 	m.traceShareLocked(event, id)
 }
 func (m *Manager) traceShareBarrier(ctx context.Context, id, point string) {
+	m.tracePublicationBarrier(ctx, id, point)
 	o := m.shareFormalObserver()
 	if o == nil {
 		return
@@ -273,6 +276,7 @@ func (m *Manager) traceShareBarrier(ctx context.Context, id, point string) {
 	}
 }
 func (m *Manager) traceShareBeforeCommit(tx *sql.Tx) {
+	m.tracePublicationBeforeCommit(tx)
 	o := m.shareFormalObserver()
 	if o == nil {
 		return

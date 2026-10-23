@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/yrashk/arm/internal/model"
@@ -32,7 +33,7 @@ func (m *Manager) planSharePublication(next sharelease.Publication, transition s
 		return nil, err
 	}
 	if err := next.Validate(); err != nil {
-		return nil, err
+		return nil, model.Err("share_evidence_unavailable", err.Error())
 	}
 	b := m.shares
 	change := &sharePublicationChange{next: next, manifestRaw: b.state.ManifestRaw, manifestStored: b.state.ManifestStored, evidence: b.state.EvidenceReserved}
@@ -40,13 +41,27 @@ func (m *Manager) planSharePublication(next sharelease.Publication, transition s
 	if err != nil {
 		return nil, err
 	}
+	if transition == "reserved" || transition == "verify_reserved" {
+		final := next
+		final.Reason = strings.Repeat("x", 256)
+		final.Failure = strings.Repeat("x", 3700)
+		finalRaw, e := sharelease.Canonical(final)
+		// Timestamps, revision digits and a maximum summary add under1KiB.
+		// The diagnostic is bounded by encoded JSON bytes in shareDiagnostic.
+		if e != nil || len(finalRaw)+1024 > sharelease.MaxRecordBytes {
+			return nil, model.Err("share_capacity_exceeded", "publication intent lacks bounded diagnostic/finalization record headroom; no native work started")
+		}
+	}
 	change.raw = raw
 	old, found := b.state.Publications[next.ID]
 	oldSlots := 0
 	before := ""
 	if found {
-		if old.Retired != nil || next.Revision != old.Revision+1 || next.Authority != old.Authority || next.Owner != old.Owner || next.ID != old.ID || next.Generation != old.Generation || next.Request != old.Request || next.Lease != old.Lease || next.StorageIdentity != old.StorageIdentity || next.Worker != old.Worker || !next.Created.Equal(old.Created) || !next.Expires.Equal(old.Expires) || next.Updated.Before(old.Updated) {
+		if old.Retired != nil || next.Revision != old.Revision+1 || next.Authority != old.Authority || next.Owner != old.Owner || next.ID != old.ID || next.Generation != old.Generation || next.Request != old.Request || next.Lease != old.Lease || next.StorageIdentity != old.StorageIdentity || next.PreparationWorker != old.PreparationWorker || !next.Created.Equal(old.Created) || !next.Expires.Equal(old.Expires) || next.Updated.Before(old.Updated) {
 			return nil, model.Err("revision_conflict", "publication immutable scope or revision changed")
+		}
+		if !reflect.DeepEqual(old.Publish, next.Publish) && (old.Publish != nil || transition != "verify_reserved") || (next.Worker != old.Worker || next.WorkerPhase != old.WorkerPhase) && transition != "verify_reserved" {
+			return nil, model.Err("share_evidence_unavailable", "immutable publication intent or phase worker changed")
 		}
 		if err := sharePreparationTransition(old, next, transition); err != nil {
 			return nil, err
@@ -173,6 +188,9 @@ func (m *Manager) putSharePublication(p sharelease.Publication, l model.Lease, t
 	if err != nil {
 		return err
 	}
+	if transition == "retired" && (oldLease.State != "ending" || !validShareEndOutcome(oldLease.Outcome) || l.Outcome != oldLease.Outcome) {
+		return model.Err("share_evidence_unavailable", "retirement must preserve its exact committed ordinary end decision")
+	}
 	if oldLease.Revision+1 != l.Revision || oldLease.ID != p.Lease || !reflect.DeepEqual(oldLease.Request, l.Request) {
 		return model.Err("revision_conflict", "ordinary share lease changed")
 	}
@@ -213,12 +231,21 @@ func (m *Manager) putSharePublication(p sharelease.Publication, l model.Lease, t
 	return nil
 }
 
-// This private checkpoint admits preparation only. Explicit publication/consumer
-// transitions require a separately reviewed joined-worker phase and cannot be
-// smuggled through a generic row update.
+// Every private preparation/verification transition binds exact worker phase.
+// Consumer admission remains unavailable; generic row updates cannot grant it.
 func sharePreparationTransition(old, next sharelease.Publication, transition string) error {
 	ok := false
 	switch transition {
+	case "verify_reserved":
+		ok = old.State == "prepared" && old.WorkerState == "joined" && old.Publish == nil && next.Publish != nil && next.Publish.Revision == old.Revision && next.State == "verifying" && next.WorkerState == "reserved" && next.WorkerPhase == "verification" && old.JournalSlots >= 6
+	case "verify_started":
+		ok = old.State == "verifying" && old.WorkerState == "reserved" && next.State == "verifying" && next.WorkerState == "running"
+	case "published":
+		ok = old.State == "verifying" && old.WorkerState == "running" && next.State == "published" && next.WorkerState == "joined" && next.Published != nil
+	case "retiring":
+		ok = old.State == "published" && old.WorkerState == "joined" && next.State == "retiring" && next.WorkerState == "joined"
+	case "retired":
+		ok = old.State == "retiring" && old.WorkerState == "joined" && next.State == "retired" && next.WorkerState == "joined" && next.Retired != nil
 	case "worker_started":
 		ok = old.State == "preparing" && old.WorkerState == "reserved" && next.State == "preparing" && next.WorkerState == "running"
 	case "prepared":

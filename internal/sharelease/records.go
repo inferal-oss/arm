@@ -77,29 +77,51 @@ func (q PrepareRequest) Validate() error {
 	return nil
 }
 
+// PublishRequest is one immutable decision per generation. Exact retries only
+// inspect its recorded phase; they never enter native verification again.
+type PublishRequest struct {
+	Schema         int    `json:"schema"`
+	Key            string `json:"key"`
+	Share          string `json:"share"`
+	Generation     string `json:"generation"`
+	Revision       int64  `json:"revision"`
+	PreparedSHA256 string `json:"prepared_sha256"`
+	Reason         string `json:"reason"`
+}
+
+func (q PublishRequest) Validate() error {
+	if q.Schema != 1 || !key(q.Key) || !id(q.Share) || !id(q.Generation) || q.Revision < 1 || !digest(q.PreparedSHA256) || !text(q.Reason, 4096) {
+		return fmt.Errorf("exact keyed publication approval required")
+	}
+	return nil
+}
+
 type Publication struct {
-	Schema          int                `json:"schema"`
-	Authority       string             `json:"authority"`
-	Owner           string             `json:"owner"`
-	ID              string             `json:"id"`
-	Generation      string             `json:"generation"`
-	Request         PrepareRequest     `json:"request"`
-	Lease           string             `json:"lease"`
-	StorageIdentity model.FileIdentity `json:"storage_identity"`
-	Worker          Worker             `json:"worker"`
-	WorkerState     string             `json:"worker_state"`
-	State           string             `json:"state"`
-	Revision        int64              `json:"revision"`
-	Created         time.Time          `json:"created_at"`
-	Updated         time.Time          `json:"updated_at"`
-	Expires         time.Time          `json:"expires_at"`
-	Summary         *ManifestSummary   `json:"summary,omitempty"`
-	Prepared        *time.Time         `json:"prepared_at,omitempty"`
-	Published       *time.Time         `json:"published_at,omitempty"`
-	Retired         *time.Time         `json:"retired_at,omitempty"`
-	Reason          string             `json:"transition_reason"`
-	Failure         string             `json:"failure"`
-	JournalSlots    int                `json:"journal_slots"`
+	Schema            int                `json:"schema"`
+	Authority         string             `json:"authority"`
+	Owner             string             `json:"owner"`
+	ID                string             `json:"id"`
+	Generation        string             `json:"generation"`
+	Request           PrepareRequest     `json:"request"`
+	Lease             string             `json:"lease"`
+	StorageIdentity   model.FileIdentity `json:"storage_identity"`
+	PreparationWorker Worker             `json:"preparation_worker"`
+	WorkerPhase       string             `json:"worker_phase"`
+	Publish           *PublishRequest    `json:"publish_request,omitempty"`
+	Worker            Worker             `json:"worker"`
+	WorkerState       string             `json:"worker_state"`
+	State             string             `json:"state"`
+	Revision          int64              `json:"revision"`
+	Created           time.Time          `json:"created_at"`
+	Updated           time.Time          `json:"updated_at"`
+	Expires           time.Time          `json:"expires_at"`
+	Summary           *ManifestSummary   `json:"summary,omitempty"`
+	Prepared          *time.Time         `json:"prepared_at,omitempty"`
+	Published         *time.Time         `json:"published_at,omitempty"`
+	Retired           *time.Time         `json:"retired_at,omitempty"`
+	Reason            string             `json:"transition_reason"`
+	Failure           string             `json:"failure"`
+	JournalSlots      int                `json:"journal_slots"`
 }
 type ManifestSummary struct {
 	SHA256       string `json:"sha256"`
@@ -112,12 +134,27 @@ type ManifestSummary struct {
 }
 
 func (p Publication) Validate() error {
-	if p.Schema != 1 || !id(p.Authority) || !uid(p.Owner) || !id(p.ID) || !id(p.Generation) || !id(p.Lease) || p.Revision < 1 || p.Request.Validate() != nil || p.Worker.Validate(p.Owner) != nil || !stamp(p.Created) || !stamp(p.Updated) || !stamp(p.Expires) || p.Updated.Before(p.Created) || !p.Expires.After(p.Created) || p.Expires.After(p.Created.Add(p.Request.TTL)) || !text(p.Reason, 4096) || (p.Failure != "" && !text(p.Failure, 4096)) || p.JournalSlots < 0 || p.JournalSlots > PublicationFinalSlots {
+	if p.Schema != 2 || !id(p.Authority) || !uid(p.Owner) || !id(p.ID) || !id(p.Generation) || !id(p.Lease) || p.Revision < 1 || p.Request.Validate() != nil || p.Worker.Validate(p.Owner) != nil || p.PreparationWorker.Validate(p.Owner) != nil || !stamp(p.Created) || !stamp(p.Updated) || !stamp(p.Expires) || p.Updated.Before(p.Created) || !p.Expires.After(p.Created) || p.Expires.After(p.Created.Add(p.Request.TTL)) || !text(p.Reason, 4096) || (p.Failure != "" && !text(p.Failure, 4096)) || p.JournalSlots < 0 || p.JournalSlots > PublicationFinalSlots {
 		return fmt.Errorf("publication evidence differs")
 	}
 	u, _ := strconv.ParseUint(p.Owner, 10, 32)
 	if p.StorageIdentity.Owner != uint32(u) || !p.StorageIdentity.BirthKnown || p.StorageIdentity.Inode == 0 || p.StorageIdentity.BornSeconds < 1 || p.StorageIdentity.BornNanoseconds < 0 || p.StorageIdentity.BornNanoseconds >= 1e9 {
 		return fmt.Errorf("publication backing identity differs")
+	}
+	if p.WorkerPhase != "preparation" && p.WorkerPhase != "verification" {
+		return fmt.Errorf("unknown native worker phase")
+	}
+	if p.WorkerPhase == "preparation" && (p.Worker != p.PreparationWorker || p.Publish != nil) {
+		return fmt.Errorf("preparation evidence changed phase")
+	}
+	if p.WorkerPhase == "verification" {
+		q := p.Publish
+		if q == nil || q.Validate() != nil || q.Share != p.ID || q.Generation != p.Generation || q.Revision >= p.Revision || p.Summary == nil || q.PreparedSHA256 != p.Summary.SHA256 {
+			return fmt.Errorf("verification lacks exact immutable intent")
+		}
+	}
+	if p.State == "verifying" && p.WorkerPhase != "verification" || p.State == "preparing" && p.WorkerPhase != "preparation" || p.State == "prepared" && p.WorkerPhase != "preparation" || p.Published != nil && p.WorkerPhase != "verification" {
+		return fmt.Errorf("publication/native phase differs")
 	}
 	switch p.WorkerState {
 	case "reserved", "running", "joined", "unknown":
@@ -125,7 +162,7 @@ func (p Publication) Validate() error {
 		return fmt.Errorf("unknown preparation worker state")
 	}
 	switch p.State {
-	case "preparing", "ending", "needs_attention":
+	case "preparing", "verifying", "ending", "needs_attention":
 	case "prepared", "published", "retiring", "retired", "cancelled", "failed":
 		if p.WorkerState != "joined" {
 			return fmt.Errorf("unjoined preparation")
@@ -147,7 +184,7 @@ func (p Publication) Validate() error {
 	if p.Retired != nil && p.Published != nil && p.Retired.Before(*p.Published) {
 		return fmt.Errorf("retirement precedes publication")
 	}
-	if p.State == "prepared" || p.State == "published" || p.State == "retiring" || p.State == "retired" {
+	if p.State == "verifying" || p.State == "prepared" || p.State == "published" || p.State == "retiring" || p.State == "retired" {
 		if p.Summary == nil {
 			return fmt.Errorf("publication lacks manifest")
 		}
@@ -160,7 +197,7 @@ func (p Publication) Validate() error {
 	if p.State == "preparing" && (p.Prepared != nil || p.Published != nil || p.Retired != nil) {
 		return fmt.Errorf("premature publication evidence")
 	}
-	if p.State == "prepared" && (p.Published != nil || p.Retired != nil) {
+	if (p.State == "prepared" || p.State == "verifying") && (p.Published != nil || p.Retired != nil) {
 		return fmt.Errorf("prepared data already exposed")
 	}
 	terminal := p.State == "retired" || p.State == "cancelled" || p.State == "failed"

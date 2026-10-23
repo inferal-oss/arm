@@ -146,6 +146,9 @@ func (m *Manager) checkPublicationLease(p sharelease.Publication, l model.Lease)
 		return fmt.Errorf("unsettled share lacks its pinned managed storage obligation")
 	}
 
+	if p.State == "retiring" && !validShareEndOutcome(l.Outcome) {
+		return fmt.Errorf("retiring publication lacks a recognized ordinary end decision")
+	}
 	if p.Retired != nil {
 		if l.State != "terminal" || l.Ended == nil || !l.Ended.Equal(*p.Retired) {
 			return fmt.Errorf("publication final ordinary lease differs")
@@ -237,7 +240,7 @@ func (m *Manager) shareRetry(q sharelease.PrepareRequest) (sharelease.Publicatio
 	for _, p := range m.shares.state.Publications {
 		if p.Request.Key == q.Key {
 			if !reflect.DeepEqual(p.Request, q) {
-				return p, true, model.Err("idempotency_conflict", "share preparation key already records a different exact request")
+				return clonePublication(p), true, model.Err("idempotency_conflict", "share preparation key already records a different exact request")
 			}
 			return clonePublication(p), true, nil
 		}

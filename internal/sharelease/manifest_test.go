@@ -247,6 +247,7 @@ func TestMaximumLedgerEncodingAllocationFitsPreparationHeadroom(t *testing.T) {
 	p.Request.StorageRevision = int(m.Binding.StorageRevision)
 	p.StorageIdentity = m.Entries[0].Version.Identity
 	p.Worker.UID = p.Owner
+	p.PreparationWorker = p.Worker
 	writePublication(t, db, p)
 	update := func(next Publication, transition string) {
 		t.Helper()

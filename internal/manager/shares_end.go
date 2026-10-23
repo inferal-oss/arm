@@ -50,10 +50,52 @@ func (m *Manager) endShareIfNeeded(l model.Lease, outcome string) (bool, model.L
 		worker.requestStop()
 		return true, l, nil
 	}
-	// Public publication/session lifetimes are not enabled by this checkpoint.
-	// Never infer cleanup for even a well-formed future/existing exposed row.
 	if p.Published != nil {
-		return true, l, model.Err("needs_attention", "publication retirement requires its exact consumer/session join boundary; this preparation-only checkpoint does not release exposed shares")
+		// A committed retiring decision survives lost acknowledgment and restart.
+		// A later release/cancel/expiry only finishes that exact prior decision.
+		if p.State == "retiring" {
+			if l.State != "ending" || l.Ended != nil || !validShareEndOutcome(l.Outcome) {
+				return true, l, model.Err("share_evidence_unavailable", "retiring publication lacks its exact recorded ordinary end decision; obligations remain charged")
+			}
+		} else if !validShareEndOutcome(outcome) {
+			return true, l, model.Err("invalid_request", "publication retirement requires a recognized ordinary end outcome")
+		}
+
+		if err := m.sharePublicationConsumersEmpty(p); err != nil {
+			return true, l, err
+		}
+		if m.shares.workers[id] != nil {
+			return true, l, model.Err("operation_busy", "publication supervisor still holds its runtime handle")
+		}
+		if p.State != "retiring" {
+			p.State = "retiring"
+			p.Revision++
+			p.JournalSlots--
+			p.Updated = shareMaxTime(p.Updated, time.Now().UTC())
+			p.Reason = "Retirement admitted with positively empty consumers and no native worker handle"
+			l.State = "ending"
+			l.Outcome = outcome
+			l.Revision++
+			if err := m.putSharePublication(p, l, "retiring", nil); err != nil {
+				return true, l, err
+			}
+		}
+		at := shareMaxTime(p.Updated, time.Now().UTC())
+		p.State = "retired"
+		p.Revision++
+		p.Updated = at
+		p.Retired = &at
+		p.JournalSlots = 0
+		p.Reason = "Published generation retired after joined verifier and positively empty consumers"
+		l.State = "terminal"
+		// Keep the exact committed retiring outcome, including after recovery.
+		l.Ended = &at
+		l.Revision++
+		if err := m.putSharePublication(p, l, "retired", nil); err != nil {
+			return true, l, err
+		}
+		m.resumeStorageAfterShare(p.Request.Storage)
+		return true, l, nil
 	}
 	now := shareMaxTime(p.Updated, time.Now().UTC())
 	p.State = "cancelled"
@@ -125,7 +167,7 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 	}
 	if p.Revision != revision {
 		m.mu.Unlock()
-		return p, model.Err("revision_conflict", "preparation changed; inspect before reconciling")
+		return clonePublication(p), model.Err("revision_conflict", "preparation changed; inspect before reconciling")
 	}
 	if p.Retired != nil {
 		m.mu.Unlock()
@@ -133,7 +175,7 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 	}
 	if m.shares.workers[id] != nil || p.Published != nil || p.WorkerState == "joined" {
 		m.mu.Unlock()
-		return p, model.Err("operation_busy", "reconciliation requires an unexposed lost worker; use ordinary release for a joined private preparation")
+		return clonePublication(p), model.Err("operation_busy", "reconciliation requires an unexposed lost worker; use ordinary release for a joined private preparation")
 	}
 	control, finish, err := m.beginShareControl(ctx)
 	if err != nil {
@@ -145,7 +187,7 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 	ctx = control
 	current, err := usage.Capture(os.Getpid())
 	if err != nil || current.Namespace != p.Worker.Namespace {
-		return p, model.Err("observation_unavailable", "prior worker namespace cannot be observed; no absence or cleanup is inferred")
+		return clonePublication(p), model.Err("observation_unavailable", "prior worker namespace cannot be observed; no absence or cleanup is inferred")
 	}
 	actual, probeErr := usage.Capture(p.Worker.PID)
 	absent := errors.Is(probeErr, os.ErrNotExist) || errors.Is(probeErr, unix.ESRCH)
@@ -160,10 +202,10 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 		absent = actual.Namespace == p.Worker.Namespace && actual.Start != p.Worker.Start
 	}
 	if !absent {
-		return p, model.Err("needs_attention", "prior worker process may still be alive or observation is incomplete; no process is signaled and obligations stay charged")
+		return clonePublication(p), model.Err("needs_attention", "prior worker process may still be alive or observation is incomplete; no process is signaled and obligations stay charged")
 	}
 	if err = ctx.Err(); err != nil {
-		return p, err
+		return clonePublication(p), err
 	}
 	m.traceShareNative(id, "observed_absent")
 	m.traceShareBarrier(ctx, id, "reconcile")
@@ -171,11 +213,11 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 	defer m.mu.Unlock()
 	now, ok := m.shares.state.Publications[id]
 	if m.closing || !ok || now.Revision != p.Revision || now.Worker != p.Worker || m.shares.workers[id] != nil {
-		return now, model.Err("revision_conflict", "preparation changed during native absence observation")
+		return clonePublication(now), model.Err("revision_conflict", "preparation changed during native absence observation")
 	}
 	l, err := m.get(p.Lease)
 	if err != nil {
-		return p, err
+		return clonePublication(p), err
 	}
 	at := shareMaxTime(p.Updated, time.Now().UTC())
 	p.State = "cancelled"
@@ -190,8 +232,17 @@ func (m *Manager) ReconcileShare(ctx context.Context, id string, revision int64,
 	l.Ended = &at
 	l.Revision++
 	if err = m.putSharePublication(p, l, "cancelled", nil); err != nil {
-		return p, err
+		return clonePublication(p), err
 	}
 	m.resumeStorageAfterShare(p.Request.Storage)
 	return clonePublication(p), nil
+}
+
+// A private share can retire only with an explicit ordinary end decision.
+func validShareEndOutcome(outcome string) bool {
+	switch outcome {
+	case "released", "cancelled", "expired", "revoked", "interrupted", "failed":
+		return true
+	}
+	return false
 }

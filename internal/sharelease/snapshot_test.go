@@ -119,7 +119,7 @@ func TestOptionalGroupAtomicRollbackAndCompleteRead(t *testing.T) {
 func TestShareSnapshotRefusesChangedSchemaMissingMarkerAndHistory(t *testing.T) {
 	for name, sqlText := range map[string]string{
 		"missing-marker":           `DELETE FROM metadata WHERE key='share_schema'`,
-		"unknown-marker":           `UPDATE metadata SET value='2' WHERE key='share_schema'`,
+		"unknown-marker":           `UPDATE metadata SET value='99' WHERE key='share_schema'`,
 		"missing-table":            `DROP TABLE share_key_fences`,
 		"unknown-table":            `CREATE TABLE share_future(value TEXT)`,
 		"hidden-trigger":           `CREATE TRIGGER share_rewrite AFTER INSERT ON share_publications BEGIN DELETE FROM share_consumers; END`,

@@ -157,6 +157,15 @@ func (s *Snapshot) readJournal(ctx context.Context, tx *sql.Tx, authority, owner
 	for _, p := range s.Publications {
 		j := last["publication:"+p.ID]
 		transition := p.State
+		if p.State == "verifying" {
+			if p.WorkerState == "reserved" {
+				transition = "verify_reserved"
+			} else if p.WorkerState == "running" {
+				transition = "verify_started"
+			} else {
+				return fmt.Errorf("verifying worker lacks exact state")
+			}
+		}
 		if p.State == "preparing" {
 			if p.WorkerState == "reserved" {
 				transition = "reserved"

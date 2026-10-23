@@ -13,7 +13,9 @@ import (
 
 func evidenceFixture() (Publication, Consumer, Fence) {
 	at := time.Date(2026, 10, 22, 10, 0, 0, 0, time.UTC)
-	p := Publication{Schema: 1, Authority: strings.Repeat("a", 32), Owner: "501", ID: strings.Repeat("b", 32), Generation: strings.Repeat("c", 32), Request: PrepareRequest{MemoryPolicy: PreparationMemory().Policy, Key: "prepare-1", Storage: strings.Repeat("d", 32), StorageRevision: 1, Reason: "publish an immutable input", TTL: time.Hour, Resources: model.Resources{CPU: 1, Memory: PreparationMemory().Total}}, Lease: strings.Repeat("e", 32), StorageIdentity: model.FileIdentity{Device: 1, Inode: 3, Owner: 501, BornSeconds: 1, BirthKnown: true}, Worker: Worker{PID: 123, PGID: 0, UID: "501", Start: "native-start", Namespace: "private-machine"}, WorkerState: "reserved", State: "preparing", Revision: 1, Created: at, Updated: at, Expires: at.Add(time.Hour), Reason: "publish an immutable input", JournalSlots: PublicationFinalSlots}
+	p := Publication{Schema: 2, Authority: strings.Repeat("a", 32), Owner: "501", ID: strings.Repeat("b", 32), Generation: strings.Repeat("c", 32), Request: PrepareRequest{MemoryPolicy: PreparationMemory().Policy, Key: "prepare-1", Storage: strings.Repeat("d", 32), StorageRevision: 1, Reason: "publish an immutable input", TTL: time.Hour, Resources: model.Resources{CPU: 1, Memory: PreparationMemory().Total}}, Lease: strings.Repeat("e", 32), StorageIdentity: model.FileIdentity{Device: 1, Inode: 3, Owner: 501, BornSeconds: 1, BirthKnown: true}, Worker: Worker{PID: 123, PGID: 0, UID: "501", Start: "native-start", Namespace: "private-machine"}, WorkerState: "reserved", State: "preparing", Revision: 1, Created: at, Updated: at, Expires: at.Add(time.Hour), Reason: "publish an immutable input", JournalSlots: PublicationFinalSlots}
+	p.PreparationWorker = p.Worker
+	p.WorkerPhase = "preparation"
 	q := Control{Schema: 1, Source: strings.Repeat("f", 32), SourceOwner: "502", Target: p.Authority, TargetOwner: p.Owner, Pair: strings.Repeat("1", 64), Revision: 1, Certificate: strings.Repeat("2", 64), Share: p.ID, Generation: p.Generation, ManifestSHA256: strings.Repeat("3", 64), Key: "read-key", Purpose: "file-read", Path: "dir/file", Reason: "read exact published input", TTL: time.Minute, Resources: model.Resources{CPU: 1, Memory: sharecodec.AdmissionMemory().Session}}
 	a := Admission{Schema: 1, Control: q, Lease: strings.Repeat("4", 32), At: at.Add(time.Second), Expires: at.Add(time.Minute), Worker: p.Worker}
 	c := Consumer{Schema: 1, Admission: a, State: "admitted", WorkerState: "reserved", Revision: 1, Updated: a.At, Reason: q.Reason, JournalSlots: ConsumerFinalSlots}
@@ -39,11 +41,15 @@ func TestCanonicalRecordsRejectAliasesNullMissingAndExtraFields(t *testing.T) {
 			if err != nil || fixture.decode(raw) != nil {
 				t.Fatalf("valid producer %v", err)
 			}
+			schema := []byte(`"schema":1`)
+			if fixture.name == "publication" {
+				schema = []byte(`"schema":2`)
+			}
 			bad := [][]byte{
-				bytes.Replace(raw, []byte(`"schema":1`), []byte(`"Schema":1`), 1),
-				bytes.Replace(raw, []byte(`"schema":1`), []byte(`"schema":1,"Schema":1`), 1),
-				bytes.Replace(raw, []byte(`"schema":1,`), nil, 1),
-				bytes.Replace(raw, []byte(`"schema":1`), []byte(`"schema":null`), 1),
+				bytes.Replace(raw, schema, []byte(`"Schema":1`), 1),
+				bytes.Replace(raw, schema, []byte(`"schema":1,"Schema":1`), 1),
+				bytes.Replace(raw, append(append([]byte{}, schema...), ','), nil, 1),
+				bytes.Replace(raw, schema, []byte(`"schema":null`), 1),
 				bytes.Replace(raw, []byte(`"reason":`), []byte(`"Reason":`), 1),
 				append(append([]byte{}, raw...), []byte(` {}`)...),
 				append([]byte(`{"extra":true,`), raw[1:]...),

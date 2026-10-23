@@ -33,7 +33,7 @@ func (j Journal) Validate() error {
 			return fmt.Errorf("publication identity differs")
 		}
 		switch j.Transition {
-		case "reserved", "worker_started", "prepared", "published", "ending", "worker_joined", "needs_attention", "retiring", "retired", "cancelled", "failed":
+		case "reserved", "verify_reserved", "verify_started", "worker_started", "prepared", "published", "ending", "worker_joined", "needs_attention", "retiring", "retired", "cancelled", "failed":
 		default:
 			return fmt.Errorf("unknown publication transition")
 		}

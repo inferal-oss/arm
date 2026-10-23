@@ -47,7 +47,7 @@ func Initialize(ctx context.Context, tx *sql.Tx) error {
 			return err
 		}
 	}
-	_, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('share_schema','1')`)
+	_, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('share_schema','2')`)
 	return err
 }
 
@@ -240,9 +240,16 @@ func Load(ctx context.Context, db *sql.DB, authority, owner string) (Snapshot, e
 func (s Snapshot) validateRelations() error {
 	leases := map[string]bool{}
 	keys := map[string]bool{}
+	publishKeys := map[string]bool{}
 	for _, p := range s.Publications {
 		if leases[p.Lease] || keys[p.Request.Key] {
 			return fmt.Errorf("duplicate publication lease/preparation key")
+		}
+		if p.Publish != nil {
+			if publishKeys[p.Publish.Key] {
+				return fmt.Errorf("duplicate immutable publication key")
+			}
+			publishKeys[p.Publish.Key] = true
 		}
 		leases[p.Lease] = true
 		keys[p.Request.Key] = true
@@ -287,7 +294,7 @@ func checkSchema(ctx context.Context, tx *sql.Tx) (bool, error) {
 	if err != nil && !absent {
 		return false, err
 	}
-	if !absent && marker != "1" {
+	if !absent && marker != "2" {
 		return false, fmt.Errorf("unknown share schema")
 	}
 	tables := []string{"share_publications", "share_manifest_parts", "share_consumers", "share_key_fences", "share_journal"}

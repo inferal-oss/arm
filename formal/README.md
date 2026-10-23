@@ -19,8 +19,14 @@ also run the [published-agent model](published-agents/README.md), with its separ
 `TLA_AGENT_WORK_DIR` (default `.tla/published-agents`). Its finite safety gate checks
 2,971 reachable states, compares 15 scenarios/103 actual Go observations and rejects
 seven actual corruptions plus eight altered transition traces. All 1,531 strict
-proof obligations passed for the reviewed model. The Make gate also runs both
-runners' input, source-scope, snapshot and process-cleanup regressions.
+proof obligations passed for the reviewed model. The same targets also run the [private publication model](share-publication/README.md),
+with `TLA_PUBLICATION_WORK_DIR` (default `.tla/share-publication`). Its gates check
+6,098 publication states and798 capacity states,18 actual scenarios, five actual
+negative traces and288 real journal-capacity cases. All27 independently invoked
+proof modules pass2,956 freshly parsed strict obligations. This covers private
+verification/retirement, with no consumer or public file authority. The Make gate
+also runs all three runners' input, source-scope, snapshot and process-cleanup
+regressions.
 
 Models, configurations, mapping notes and proof source are tracked under
 `formal/`. Downloads and installed tools live under `.tla/downloads/` and
@@ -52,8 +58,8 @@ TLC finite exploration, matching observed Go execution traces and TLAPM theorem
 checking provide different evidence. Record model bounds, abstraction mappings,
 solver/proof results and negative checks separately. A model proof is not an
 implementation refinement proof, and traces cannot prove unobserved executions.
-Charged share preparation and the scoped poll-only published-agent lifecycle
-have model/trace/proof gates. Share publication, consumer joins, broader graph
+Charged share preparation, private publication and the scoped poll-only
+published-agent lifecycle have model/trace/proof gates. Consumer joins, broader graph
 routing/recovery and SSH archive commit/recovery remain separate protocol work.
 A complete bounded gate does not establish native agent delivery, arbitrary
 transport security or the entire project specification.

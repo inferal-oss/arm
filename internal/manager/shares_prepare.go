@@ -177,8 +177,10 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 	defer func() {
 		w.cancel()
 		<-watcherDone
+		m.traceShareBarrier(w.ctx, id, "supervisor_drop")
 		m.mu.Lock()
 		delete(m.shares.workers, id)
+		m.tracePublicationLocked("supervisor_drop", id)
 		m.mu.Unlock()
 		close(w.done)
 	}()
@@ -191,7 +193,7 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 		return
 	}
 	lease, err := m.get(p.Lease)
-	if err == nil && p.State == "preparing" && !m.closing && w.ctx.Err() == nil && w.initial.Err() == nil && time.Now().Before(p.Expires) {
+	if err == nil && (p.State == "preparing" || p.State == "verifying") && !m.closing && w.ctx.Err() == nil && w.initial.Err() == nil && time.Now().Before(p.Expires) {
 		_, err = m.shareStorageSourceForWorker(p, w)
 		if err == nil {
 			p.WorkerState = "running"
@@ -199,8 +201,13 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 			p.JournalSlots--
 			p.Updated = shareMaxTime(p.Updated, time.Now().UTC())
 			p.Reason = "Admitted preparation worker begins the complete immutable manifest"
+			transition := "worker_started"
+			if p.WorkerPhase == "verification" {
+				transition = "verify_started"
+				p.Reason = "Admitted verifier recomputes the original exact manifest commitment"
+			}
 			lease.Revision++
-			err = m.putSharePublication(p, lease, "worker_started", nil)
+			err = m.putSharePublication(p, lease, transition, nil)
 		}
 	} else if err == nil {
 		err = context.Canceled
@@ -239,10 +246,27 @@ func (m *Manager) runSharePreparation(id string, w *shareWorker) {
 		}
 		manifest, err := m.shares.engine.Build(w.ctx, w.provider, w.artifact, binding)
 		if err != nil {
+			if p.WorkerPhase == "verification" {
+				m.tracePublicationCompare(id, "error")
+			}
 			result <- sharePreparedResult{err: err}
 			return
 		}
 		parts, summary, err := sharelease.EncodeManifest(manifest)
+		if p.WorkerPhase == "verification" {
+			// No original manifest decode/copy, replacement or SQL parts are needed.
+			// Encoding/hashing uses the same charged complete preparation memory plan.
+			parts = nil
+			comparison := "error"
+			if err == nil {
+				comparison = "match"
+			}
+			if err == nil && (p.Summary == nil || summary != *p.Summary) {
+				comparison = "mismatch"
+				err = model.Err("manifest_changed", "current complete manifest differs from the immutable prepared commitment")
+			}
+			m.tracePublicationCompare(id, comparison)
+		}
 		result <- sharePreparedResult{parts, summary, err}
 	}()
 	prepared := <-result
@@ -311,6 +335,13 @@ func (m *Manager) finishSharePreparation(id string, w *shareWorker, result share
 		lease.State = "terminal"
 		lease.Ended = &at
 		result.parts = nil
+	} else if p.WorkerPhase == "verification" {
+		p.State = "published"
+		p.Published = &at
+		p.JournalSlots--
+		p.Reason = "Exact original manifest verified; publication remains charged and storage pinned"
+		transition = "published"
+		lease.State = "active"
 	} else {
 		p.State = "prepared"
 		p.Summary = &result.summary
