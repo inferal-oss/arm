@@ -248,20 +248,35 @@ class Gate:
                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    start_new_session=True)
 
-        group_killed = False
+        kill_attempted = False
+        signal_errors = []
+
+        def write_log(output):
+            diagnostics = ''.join(
+                '\n[arm formal runner] ' + signal.Signals(sig).name +
+                ' process-group ' + str(process.pid) + ' failed (errno=' +
+                str(number) + '); cleanup unconfirmed\n'
+                for sig, number in signal_errors)
+            log.write_text(output + diagnostics)
 
         def signal_group(sig):
-            nonlocal group_killed
-            if group_killed:
+            nonlocal kill_attempted
+            if kill_attempted:
                 return
+            # An attempted KILL is not proof of cleanup. Do not retry a denied
+            # KILL in the outer exception handler and mask the original failure.
+            if sig == signal.SIGKILL:
+                kill_attempted = True
             try:
                 os.killpg(process.pid, sig)
             except ProcessLookupError:
                 pass
-            if sig == signal.SIGKILL:
-                group_killed = True
+            except OSError as error:
+                # Keep collecting output even when signalling is refused. Only
+                # TERM and KILL are attempted, so this metadata is bounded.
+                signal_errors.append((sig, error.errno))
 
-        cleanup_complete = False
+        cleanup_attempted = False
         try:
             try:
                 output, _ = process.communicate(timeout=timeout)
@@ -279,21 +294,22 @@ class Gate:
                         output = stuck.output or expired.output or ''
                         if isinstance(output, bytes):
                             output = output.decode(errors='replace')
-                        log.write_text(output)
+                        write_log(output)
                         process.stdout.close()
                         try:
                             process.wait(timeout=1)
                         except subprocess.TimeoutExpired:
                             pass
+                        cleanup_attempted = True
                         raise RuntimeError(name + ' timed out and process-group cleanup did not finish; see ' + str(log)) from stuck
                 # A descendant may close stdout yet keep running after its parent
                 # exits on TERM. Finish cleanup even when communicate returned early.
                 signal_group(signal.SIGKILL)
-                log.write_text(output)
-                cleanup_complete = True
+                write_log(output)
+                cleanup_attempted = True
                 raise subprocess.TimeoutExpired(args, timeout, output=output) from expired
         except BaseException:
-            if cleanup_complete:
+            if cleanup_attempted:
                 raise
             # The runner, not its isolated tool group, receives Ctrl-C/TERM.
             # Stop owned work before propagating cancellation or another error.
@@ -309,9 +325,9 @@ class Gate:
                     process.wait(timeout=1)
                 except subprocess.TimeoutExpired:
                     pass
-            log.write_text(output)
+            write_log(output)
             raise
-        log.write_text(output)
+        write_log(output)
         if process.returncode != expected:
             raise RuntimeError(name + ' exited ' + str(process.returncode) + '; see ' + str(log))
         return output

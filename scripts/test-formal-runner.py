@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline regressions for snapshot provenance and hostile trace inputs."""
 import argparse
+import errno
 import hashlib
 import importlib.util
 import json
@@ -198,6 +199,45 @@ class RunnerTests(unittest.TestCase):
                     while self.process_is_running(pid) and time.monotonic() < deadline:
                         time.sleep(0.02)
                     self.assertFalse(self.process_is_running(pid), 'owned descendant is still executing after timeout')
+                finally:
+                    if pidfile.exists():
+                        pid = int(pidfile.read_text())
+                        if self.process_is_running(pid):
+                            os.kill(pid, signal.SIGKILL)
+
+    def test_signal_failure_keeps_timeout_and_drained_output(self):
+        # Inject only the signal refusal; the owned tool and its timeout/drain
+        # are real. A denied cleanup attempt never establishes process absence.
+        actual_killpg = os.killpg
+        for denied in (signal.SIGTERM, signal.SIGKILL):
+            with self.subTest(denied=denied):
+                gate = formal.Gate(argparse.Namespace(work_dir=str(self.root / 'runs'),
+                                                      mode='prove', targets=[]))
+                pidfile = self.root / ('denied-' + str(denied) + '.pid')
+                command = ('import os, sys, time; from pathlib import Path; '
+                           'Path(sys.argv[1]).write_text(str(os.getpid())); '
+                           'print("owned tool ready", flush=True); time.sleep(60)')
+                attempts = []
+                def killpg(pid, sig):
+                    attempts.append(sig)
+                    if sig == denied:
+                        raise PermissionError(errno.EPERM, 'injected signal denial')
+                    return actual_killpg(pid, sig)
+                try:
+                    with patch.object(formal.os, 'killpg', side_effect=killpg):
+                        with self.assertRaises(subprocess.TimeoutExpired) as failure:
+                            gate.command([sys.executable, '-u', '-c', command, pidfile],
+                                         'denied-signal', timeout=2)
+                    self.assertIn('owned tool ready', failure.exception.output)
+                    log = (gate.run / 'denied-signal.log').read_text()
+                    self.assertIn('owned tool ready', log)
+                    self.assertIn(signal.Signals(denied).name, log)
+                    self.assertIn('errno=' + str(errno.EPERM), log)
+                    self.assertIn('cleanup unconfirmed', log)
+                    self.assertEqual(attempts.count(signal.SIGKILL), 1)
+                    self.assertEqual(attempts.count(signal.SIGTERM), 1)
+                    self.assertFalse(self.process_is_running(int(pidfile.read_text())))
+                    self.assertEqual(gate.summary['gates'], [])
                 finally:
                     if pidfile.exists():
                         pid = int(pidfile.read_text())
