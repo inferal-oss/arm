@@ -28,6 +28,7 @@ import (
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/providerexec"
 	"github.com/yrashk/arm/internal/server"
 )
 
@@ -47,6 +48,9 @@ type app struct {
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
+	if len(args) > 0 && args[0] == providerexec.HelperArgument {
+		return providerexec.HelperMain(args[1:], out, errout)
+	}
 	if len(args) > 0 && args[0] == "_cargo-helper" {
 		return cargoHelperMain(args[1:], out, errout)
 	}

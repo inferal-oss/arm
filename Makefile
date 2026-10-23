@@ -169,26 +169,38 @@ tla-tool-check: tla-tools
 TLA_WORK_DIR ?= $(CURDIR)/.tla/share-preparation
 TLA_AGENT_WORK_DIR ?= $(CURDIR)/.tla/published-agents
 TLA_PUBLICATION_WORK_DIR ?= $(CURDIR)/.tla/share-publication
+TLA_PROVIDER_WORK_DIR ?= $(CURDIR)/.tla/provider-worker
 .PHONY: tla-check tla-traces tla-prove test-formal
 tla-check: tla-tlc
 	$(PYTHON) scripts/test-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-provider-worker-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 tla-traces: tla-tlc
 	$(PYTHON) scripts/test-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-provider-worker-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 tla-prove: tla-tlapm
 	$(PYTHON) scripts/test-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-provider-worker-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 test-formal: tla-tools
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-publication-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-published-agents-formal-runner.py
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provider-worker-formal-runner.py
 	$(PYTHON) scripts/test-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-provider-worker-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
+
+# Run only the bounded diagnostic worker/capacity gates.
+.PHONY: test-provider-worker-formal
+test-provider-worker-formal: tla-tools
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provider-worker-formal-runner.py
+	$(PYTHON) scripts/test-provider-worker-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
