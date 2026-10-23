@@ -61,16 +61,16 @@ type Registration struct {
 	ExternalScope         ExternalScope `json:"external_scope"`
 }
 type Context struct {
-	Authority    ID       `json:"authority"`
-	Scope        Scope    `json:"scope"`
-	OwnerUID     Uint     `json:"owner_uid"`
-	OwnerName    Username `json:"owner_name"`
-	Agent        *ID      `json:"agent"`
-	Session      *ID      `json:"session"`
-	Project      *Text    `json:"project"`
-	Reason       Text     `json:"reason"`
-	OperationKey Key      `json:"operation_key"`
-	IntentSHA256 Digest   `json:"intent_sha256"`
+	Authority    ID        `json:"authority"`
+	Scope        Scope     `json:"scope"`
+	OwnerUID     Uint      `json:"owner_uid"`
+	OwnerName    *Username `json:"owner_name"`
+	Agent        *ID       `json:"agent"`
+	Session      *ID       `json:"session"`
+	Project      *Text     `json:"project"`
+	Reason       Text      `json:"reason"`
+	OperationKey Key       `json:"operation_key"`
+	IntentSHA256 Digest    `json:"intent_sha256"`
 }
 type Budget struct {
 	Unit  ID   `json:"unit"`

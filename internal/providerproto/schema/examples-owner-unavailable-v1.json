@@ -1,0 +1,432 @@
+{
+  "requests": {
+    "describe": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-describe-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "describe",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "describe the selected test resource",
+        "operation_key": "describe-example",
+        "intent_sha256": "7af8864df3b4aadb906d7d34c3595db5b679808d353b5f8dce63f1d55622fc32"
+      },
+      "params": {}
+    },
+    "validate": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-validate-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "validate",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "validate the selected test resource",
+        "operation_key": "validate-example",
+        "intent_sha256": "0dcbef03727c5812a2c042f565844fe786ee0b4163e0e60e9401e93dea5e7350"
+      },
+      "params": {}
+    },
+    "plan": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-plan-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "plan",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "plan the selected test resource",
+        "operation_key": "plan-example",
+        "intent_sha256": "dad78ee5dfb0d1133f58e24faf7384be16ebffb5b3f0e49e4a128c484cd24bc9"
+      },
+      "params": {
+        "specification": {
+          "display_name": "example-object",
+          "payload": "example-owned-value"
+        },
+        "budgets": [
+          {
+            "unit": "objects",
+            "limit": "1"
+          },
+          {
+            "unit": "fixture-cost-units",
+            "limit": "100"
+          }
+        ],
+        "expires_at": "2030-01-01T00:00:00Z"
+      }
+    },
+    "create": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-create-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "create",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "create the selected test resource",
+        "operation_key": "create-example",
+        "intent_sha256": "31153a2a86a15150a0ca2bf47561423f3ff0c6bf020bbe6a03fb49f532a099e9"
+      },
+      "params": {
+        "specification": {
+          "display_name": "example-object",
+          "payload": "example-owned-value"
+        },
+        "specification_sha256": "aca2483c1f66269661db0bed9db3b72643603cac5cc43628878ff1cc68c9b212",
+        "budgets": [
+          {
+            "unit": "objects",
+            "limit": "1"
+          },
+          {
+            "unit": "fixture-cost-units",
+            "limit": "100"
+          }
+        ],
+        "expires_at": "2030-01-01T00:00:00Z",
+        "dependencies": []
+      }
+    },
+    "lookup": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-lookup-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "lookup",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "create the selected test resource",
+        "operation_key": "create-example",
+        "intent_sha256": "31153a2a86a15150a0ca2bf47561423f3ff0c6bf020bbe6a03fb49f532a099e9"
+      },
+      "params": {
+        "target_method": "create",
+        "external_identity": null,
+        "prior_receipt_sha256": null
+      }
+    },
+    "renew": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-renew-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "renew",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "renew the selected test resource",
+        "operation_key": "renew-example",
+        "intent_sha256": "5c2f207909831df5127cfbae24134f5f9463a72212df010f59823021cbb23e30"
+      },
+      "params": {
+        "external_identity": {
+          "external_scope": {
+            "account": "fixture-account",
+            "project": "fixture-project",
+            "namespace": "isolated-test"
+          },
+          "id": "object-opaque-123",
+          "incarnation": "incarnation-1"
+        },
+        "prior_receipt_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "expected_revision": "1",
+        "expires_at": "2030-01-02T00:00:00Z"
+      }
+    },
+    "release": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-release-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "release",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "release the selected test resource",
+        "operation_key": "release-example",
+        "intent_sha256": "b3cc4feefb68deb5be9594137d085ddcda108a756b0d089428a2dc7009dd3b01"
+      },
+      "params": {
+        "external_identity": {
+          "external_scope": {
+            "account": "fixture-account",
+            "project": "fixture-project",
+            "namespace": "isolated-test"
+          },
+          "id": "object-opaque-123",
+          "incarnation": "incarnation-1"
+        },
+        "prior_receipt_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "expected_revision": "1",
+        "action": "delete"
+      }
+    },
+    "reconcile": {
+      "protocol": "arm.resource-provider",
+      "version": 1,
+      "kind": "request",
+      "request_id": "wire-reconcile-1",
+      "registration": {
+        "id": "provider-example",
+        "generation": "1",
+        "code_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "implementation_version": "fixture-1",
+        "resource_type": "durable-object",
+        "config_sha256": "6bb5f153bb1b038f0747c3ddbc649b7900f6ae772351f540347006ceee65fd76",
+        "external_scope": {
+          "account": "fixture-account",
+          "project": "fixture-project",
+          "namespace": "isolated-test"
+        }
+      },
+      "configuration": {
+        "account": "fixture-account",
+        "namespace": "isolated-test",
+        "project": "fixture-project",
+        "readiness": "external-gate",
+        "state_root": "/absolute/owned-test-root"
+      },
+      "credential_refs": [],
+      "method": "reconcile",
+      "context": {
+        "authority": "local-authority-example",
+        "scope": {
+          "kind": "host",
+          "host_id": "host-example"
+        },
+        "owner_uid": "1000",
+        "owner_name": null,
+        "agent": null,
+        "session": null,
+        "project": "fixture-example",
+        "reason": "release the selected test resource",
+        "operation_key": "release-example",
+        "intent_sha256": "b3cc4feefb68deb5be9594137d085ddcda108a756b0d089428a2dc7009dd3b01"
+      },
+      "params": {
+        "target_method": "release",
+        "external_identity": {
+          "external_scope": {
+            "account": "fixture-account",
+            "project": "fixture-project",
+            "namespace": "isolated-test"
+          },
+          "id": "object-opaque-123",
+          "incarnation": "incarnation-1"
+        },
+        "prior_receipt_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+      }
+    }
+  }
+}

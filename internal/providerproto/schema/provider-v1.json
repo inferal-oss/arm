@@ -242,7 +242,14 @@
           "$ref": "#/$defs/uint"
         },
         "owner_name": {
-          "$ref": "#/$defs/username"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/username"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "agent": {
           "oneOf": [
@@ -1170,7 +1177,7 @@
       "minLength": 1,
       "maxLength": 256,
       "pattern": "^[^\\u0000]*$",
-      "description": "Human OS attribution: 1\u2013256 valid UTF-8 bytes, unchanged and not normalized. UID remains the principal selector."
+      "description": "Human OS attribution: 1–256 valid UTF-8 bytes, unchanged and not normalized. UID remains the principal selector."
     }
   },
   "$comment": "Pure P1a codec only. Exactly literal integer 1 is permitted for envelope version and descriptor protocol_versions. Configuration/specification/metadata/evidence data contain no JSON numbers. Duplicate decoded keys, malformed UTF-8, unpaired surrogates, NUL, UTF-8 byte/depth/node bounds, positive generations, canonical timestamps, unique budget units/dependencies and trusted saved-original matching are additional mandatory Go checks. Schema validation alone grants no authority or external outcome proof."

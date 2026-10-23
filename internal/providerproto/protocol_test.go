@@ -16,6 +16,8 @@ import (
 	"testing"
 )
 
+func username(s Username) *Username { return &s }
+
 func data(t *testing.T, s string) Data {
 	t.Helper()
 	d, e := ParseData([]byte(s))
@@ -38,7 +40,7 @@ func base(t *testing.T, m Method) Request {
 	spec := data(t, `{"payload":"test"}`)
 	c := data(t, `{"account":"account","state_root":"/unused"}`)
 	r := Registration{ID: "registration", Generation: "1", CodeSHA256: Digest(strings.Repeat("1", 64)), ImplementationVersion: "fixture-1", ResourceType: "object", ConfigSHA256: c.SHA256(), ExternalScope: ExternalScope{"account", "project", "namespace"}}
-	q := Request{Protocol: Protocol, Version: Version, Kind: "request", RequestID: "wire", Registration: r, Configuration: c, CredentialRefs: []string{}, Method: m, Context: Context{Authority: "authority", Scope: Scope{Kind: "host", HostID: "host"}, OwnerUID: "1000", OwnerName: "owner", Reason: "test operation", OperationKey: "operation"}}
+	q := Request{Protocol: Protocol, Version: Version, Kind: "request", RequestID: "wire", Registration: r, Configuration: c, CredentialRefs: []string{}, Method: m, Context: Context{Authority: "authority", Scope: Scope{Kind: "host", HostID: "host"}, OwnerUID: "1000", OwnerName: username("owner"), Reason: "test operation", OperationKey: "operation"}}
 	i := Identity{r.ExternalScope, "external-immutable", "incarnation-1"}
 	d := Digest(strings.Repeat("2", 64))
 	switch m {
@@ -508,6 +510,7 @@ func TestAllEightFreshProcessesReceiveActualConfiguration(t *testing.T) {
 				om = Release
 			}
 			q := base(t, om)
+			q.Context.OwnerName = nil // OS lookup may be unavailable in a fresh invocation.
 			spec := data(t, `{"payload":"test"}`).SHA256()
 			raw, e := json.Marshal(map[string]string{"account": "account", "state_root": root, "specification_sha256": string(spec)})
 			if e != nil {
@@ -714,12 +717,12 @@ func FuzzRequestRoundTrip(f *testing.F) {
 func TestHumanUsernamesAndRequiredReasonText(t *testing.T) {
 	for _, name := range []Username{"rémy", "re\u0301my", Username(strings.Repeat("é", 128))} {
 		q := base(t, Validate)
-		q.Context.OwnerName = name
+		q.Context.OwnerName = &name
 		q.Context.Reason = "  exact reason\nwith spacing\t"
 		q = seal(t, q)
 		reg, o, target := trust(t, q)
 		d := dec(t, q)
-		if d.request.Context.OwnerName != name || d.request.Context.Reason != q.Context.Reason || d.request.Context.OwnerUID != "1000" {
+		if d.request.Context.OwnerName == nil || *d.request.Context.OwnerName != name || d.request.Context.Reason != q.Context.Reason || d.request.Context.OwnerUID != "1000" {
 			t.Fatal("human attribution changed")
 		}
 		if _, e := MatchRequest(d, reg, o, target); e != nil {
@@ -727,11 +730,11 @@ func TestHumanUsernamesAndRequiredReasonText(t *testing.T) {
 		}
 	}
 	q := base(t, Validate)
-	q.Context.OwnerName = "rémy"
+	q.Context.OwnerName = username("rémy")
 	q = seal(t, q)
 	reg, o, target := trust(t, q)
 	changed := cloneRequest(q)
-	changed.Context.OwnerName = "re\u0301my"
+	changed.Context.OwnerName = username("re\u0301my")
 	if _, e := MatchRequest(dec(t, changed), reg, o, target); e == nil {
 		t.Fatal("silently normalized changed username")
 	}
@@ -749,7 +752,7 @@ func TestHumanUsernamesAndRequiredReasonText(t *testing.T) {
 	}
 	for _, bad := range []Username{"", Username(strings.Repeat("é", 129)), Username(string([]byte{0xff})), "a\x00b"} {
 		v := cloneRequest(q)
-		v.Context.OwnerName = bad
+		v.Context.OwnerName = &bad
 		if _, e := EncodeRequest(v); e == nil {
 			t.Fatal("invalid username", bad)
 		}

@@ -9,7 +9,7 @@ external admission, readiness grant, resource creation/deletion or runner here.
 `schema/provider-v1.json` describes structural wire shapes. Additional mandatory
 Go checks reject duplicate **decoded** keys (including escaped aliases), malformed
 raw UTF-8, unpaired escaped surrogates, NUL, unknown/case-alias fields, absent/null
-required fields, unknown method/result/error codes, excessive bytes/depth/member/
+required fields (except explicitly nullable values), unknown method/result/error codes, excessive bytes/depth/member/
 array/aggregate counts and noncanonical bounded integer/timestamp values. Schema
 validation alone is insufficient. Configuration/specification/metadata/evidence
 contain no JSON numbers. The envelope version and advertised supported version are
@@ -17,8 +17,12 @@ exactly the integer literal `1` (not `1.0`, `1e0` or a quoted string).
 
 Limits: request 64 KiB, response 256 KiB, canonical Data 16 KiB, decoded strings
 4096 UTF-8 bytes, depth 16 including the root value, array 256, object 64 members,
-and 4096 aggregate values/containers/decoded keys. Human OS usernames are 1–256
-valid UTF-8 bytes, preserved without normalization; only UID selects the principal.
+and 4096 aggregate values/containers/decoded keys. `context.owner_name` is always
+present: `null` means OS username lookup was unavailable. A present human OS
+username is 1–256 valid UTF-8 bytes, preserved without normalization; an empty
+string is invalid. No fallback username is invented. Only UID selects the principal.
+Null and a known name remain distinct immutable intent attribution, including
+queries matched against a saved original; a later lookup does not rewrite it.
 Opaque protocol IDs remain printable ASCII. Required reasons retain exact text but
 reject empty or Unicode-whitespace-only values. Raw input size is checked before
 copy/parse; per-node limits are checked before materializing further members.
@@ -92,9 +96,10 @@ fences, concurrent matching, pointer/slice detachment and callback rejection.
 The fresh helper only reads an owned sentinel via request configuration: it is
 **not** the P1c durable create/delete fixture and proves no provisioning lifecycle.
 
-Still required: P1b explicit resolved executable/configuration registration and
-independent reset proof; P1c bounded owned process runner and real durable external
-fixture/crash tests; P2 transactional intent/dispatch/readiness/renewal/reclamation,
+Still required, in implementation order: the P1c bounded owned process runner
+primitive, then P1b explicit resolved executable/configuration registration with
+consented describe/validate and independent reset proof, then the full P1c real
+durable external fixture/crash tests; P2 transactional intent/dispatch/readiness/renewal/reclamation,
 parent/concurrency/cost/dependency accounting, unknown recovery and actual formal
 traces/TLC/TLAPM; P3 matching reviewed web/TUI controls and separately authorized
 real integrations. CLI PATH extensions confer no provider authority.
