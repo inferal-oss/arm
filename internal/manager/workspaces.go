@@ -3,8 +3,10 @@ package manager
 import (
 	"context"
 	"database/sql"
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/routing"
 	"github.com/yrashk/arm/internal/workspace"
+	"time"
 )
 
 // These are internal, native-owned lifecycle adapters. No server dispatcher,
@@ -56,7 +58,10 @@ func (m *Manager) WorkspaceRevoke(ctx context.Context, id string, q workspace.Mu
 func (m *Manager) WorkspaceRetire(ctx context.Context, id string, q workspace.MutationRequest) (workspace.Operation, error) {
 	return workspaceCall(ctx, m, false, func(ctx context.Context, w *workspaceBoundary, _ *workspace.Store) (workspace.Operation, error) {
 		return w.operator.RetireChecked(ctx, id, q, func(tx *sql.Tx) error {
-			return routing.CheckWorkspaceRetirement(ctx, tx, workspace.Authority{Host: m.host, UID: m.owner}, id)
+			if e := routing.CheckWorkspaceRetirement(ctx, tx, workspace.Authority{Host: m.host, UID: m.owner}, id); e != nil {
+				return e
+			}
+			return published.WithdrawWorkspace(ctx, tx, workspace.Authority{Host: m.host, UID: m.owner}, id, q.Key, time.Now().UTC())
 		})
 	})
 }

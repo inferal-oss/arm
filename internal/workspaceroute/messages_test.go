@@ -8,7 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/routing"
+	"github.com/yrashk/arm/internal/workspace"
+	"github.com/yrashk/arm/internal/workspacegraph"
 )
 
 func messageFixture() (Open, Request) {
@@ -114,5 +117,44 @@ func TestClosedMessageWireStrictJSONAndLengthBeforeAllocation(t *testing.T) {
 		if WriteRequest(&bytes.Buffer{}, o, changed) == nil {
 			t.Fatal("invalid immutable message admitted")
 		}
+	}
+}
+
+func TestPublishedEndpointPageClosedWireAndPollOnlyCards(t *testing.T) {
+	o, q := messageFixture()
+	o.Class = ClassLookup
+	q.Operation = OperationEndpoints
+	q.Envelope = nil
+	q.Endpoints = &published.Query{Workspace: o.Workspace, Nonce: strings.Repeat("7", 32), Limit: 16}
+	if e := q.Validate(o); e != nil {
+		t.Fatal(e)
+	}
+	r := q.Response()
+	r.Endpoints = &published.Page{Workspace: o.Workspace, Generation: o.Generation, Host: o.Target, Nonce: q.Endpoints.Nonce, Expires: o.Expires, Cards: []published.Card{{Endpoint: published.Address{Kind: "agent", ID: strings.Repeat("8", 32), Generation: strings.Repeat("9", 32)}, Label: "Minimal public label", Delivery: "poll", Revision: 1}}, Total: 1, Next: 1}
+	var b bytes.Buffer
+	if e := WriteRequest(&b, o, q); e != nil {
+		t.Fatal(e)
+	}
+	if _, e := ReadRequest(&b, o); e != nil {
+		t.Fatal(e)
+	}
+	if e := r.Validate(q); e != nil {
+		t.Fatal(e)
+	}
+	for _, mutate := range []func(*Request){func(v *Request) { v.Refresh = &workspace.RefreshRequest{} }, func(v *Request) { _, original := messageFixture(); v.Envelope = original.Envelope }, func(v *Request) { v.Report = &workspacegraph.Report{} }} {
+		bad := q
+		mutate(&bad)
+		if bad.Validate(o) == nil {
+			t.Fatal("mixed endpoint query admitted")
+		}
+	}
+	r.Endpoints.Cards[0].Delivery = "native"
+	if r.Validate(q) == nil {
+		t.Fatal("poll endpoint discovery promoted to native")
+	}
+	r.Endpoints.Cards[0].Delivery = "poll"
+	r.Endpoints.Nonce = strings.Repeat("0", 32)
+	if r.Validate(q) == nil {
+		t.Fatal("page retargeted query nonce")
 	}
 }

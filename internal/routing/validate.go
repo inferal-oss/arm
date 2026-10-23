@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/workspace"
 )
 
@@ -149,8 +150,17 @@ func Validate(v Records) error {
 	for _, o := range v.Outbox {
 		r, ok := roots[o.Workspace]
 		e := o.Envelope
-		if !ok || o.Schema != Schema || e.From.Kind != "host" || e.To.Kind != "host" || o.Authority != r.Authority || o.Workspace != e.Workspace || o.Workspace != o.Intent.Workspace || e.Generation != r.Generation || e.Origin != r.Authority.Host || !e.Validate() || o.IntentHash != hash(o.Intent) || o.Intent.Key != e.Key || o.Intent.Target != e.Target || o.Intent.From != e.From || o.Intent.To != e.To || o.Intent.Body != e.Body || o.Intent.TTL != e.Expires.Sub(e.Created) || hash(o.Intent.ReplyTo) != hash(e.ReplyTo) || o.Revision < 1 || o.Created != e.Created || o.Updated.Before(o.Created) || !known(o.Phase, "prepared", "dispatching", "unknown", "completed", "cancelled") {
+		if !ok || o.Schema != Schema || o.Authority != r.Authority || o.Workspace != e.Workspace || o.Workspace != o.Intent.Workspace || e.Generation != r.Generation || e.Origin != r.Authority.Host || !e.Validate() || o.IntentHash != hash(o.Intent) || o.Intent.Key != e.Key || o.Intent.Target != e.Target || o.Intent.From != e.From || o.Intent.To != e.To || o.Intent.Body != e.Body || o.Intent.TTL != e.Expires.Sub(e.Created) || hash(o.Intent.ReplyTo) != hash(e.ReplyTo) || o.Revision < 1 || o.Created != e.Created || o.Updated.Before(o.Created) || !known(o.Phase, "prepared", "dispatching", "unknown", "completed", "cancelled") {
 			return invalid("outbox immutable request/scope invalid")
+		}
+		if e.From.Kind == "agent" {
+			if v.Published == nil {
+				return invalid("agent outbox lacks complete publication group")
+			}
+			p, ok := published.Find(*v.Published, o.Workspace, published.Address(e.From))
+			if !ok || p.Scope.Generation != e.Generation || p.Scope.Authority != r.Authority || p.Scope.Pin != e.OriginPin || p.Scope.Membership != e.OriginMembership {
+				return invalid("outbox lost immutable sender publication")
+			}
 		}
 		if o.Phase == "completed" {
 			if o.Receipt == nil || !o.Receipt.Matches(e) {
@@ -177,8 +187,22 @@ func Validate(v Records) error {
 	for _, in := range v.Inbox {
 		r, ok := roots[in.Workspace]
 		e := in.Envelope
-		if !ok || (e.From.Kind != "host" || e.To.Kind != "host") || in.Schema != Schema || e.Workspace != in.Workspace || e.Generation != r.Generation || e.Target != r.Authority.Host || !e.Validate() || !in.Receipt.Matches(e) || in.Received.IsZero() || in.Receipt.At.Before(in.Received) {
+		if !ok || in.Schema != Schema || e.Workspace != in.Workspace || e.Generation != r.Generation || e.Target != r.Authority.Host || !e.Validate() || !in.Receipt.Matches(e) || in.Received.IsZero() || in.Receipt.At.Before(in.Received) {
 			return invalid("inbox immutable request/scope invalid")
+		}
+		if e.To.Kind == "agent" && known(in.Receipt.State, "accepted", "acknowledged") {
+			if v.Published == nil {
+				return invalid("agent inbox lacks complete publication group")
+			}
+			found := false
+			for _, l := range v.Published.Links {
+				if l.Context.Workspace == in.Workspace && l.Context.Message == e.ID && l.Context.Digest == e.Digest() && l.Context.From == published.Address(e.From) && l.Context.To == published.Address(e.To) {
+					found = true
+				}
+			}
+			if !found {
+				return invalid("accepted agent inbox lacks exact local delivery link")
+			}
 		}
 		key := in.Workspace + ":in:" + e.ID
 		c, ok := lastItem[key]
@@ -202,6 +226,9 @@ func Validate(v Records) error {
 }
 func capacity(v Records) error {
 	bytes := 0
+	if v.Published != nil {
+		bytes += v.Published.BudgetBytes()
+	}
 	add := func(x any) { raw, _ := json.Marshal(x); bytes += len(raw) }
 	for _, r := range v.Roots {
 		add(r)
@@ -234,6 +261,10 @@ func capacity(v Records) error {
 		for _, i := range v.Inbox {
 			if i.Workspace == r.Workspace {
 				in++
+				if i.Envelope.To.Kind == "agent" && i.Receipt.State == "accepted" {
+					events++
+					bytes += 4096
+				}
 				add(i)
 			}
 		}

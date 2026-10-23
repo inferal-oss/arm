@@ -25,6 +25,9 @@ var routingResetSchema = []string{
 var routingResetTables = []string{"routing_roots", "routing_outbox", "routing_inbox", "routing_events"}
 
 func routeProofEndpoint(e proofRouteEndpoint, generation int64) bool {
+	if e.Kind == "agent" {
+		return sshProofHex(e.ID, 16) && sshProofHex(e.Generation, 16)
+	}
 	return e.Kind == "host" && e.ID == "operator" && generation > 0 && e.Generation == strconv.FormatInt(generation, 10)
 }
 func routeProofEnvelope(e proofRouteEnvelope) bool {
@@ -55,7 +58,7 @@ func routeProofText(s string, limit int) bool {
 }
 func validIntentKey(s string) bool { return routeProofText(s, 128) }
 func routeProofReceipt(r proofRouteReceipt, e proofRouteEnvelope) bool {
-	return r.Schema == 1 && r.Workspace == e.Workspace && r.Generation == e.Generation && r.ID == e.ID && r.Digest == workspaceProofHash(e) && r.Origin == e.Origin && r.Target == e.Target && r.From == e.From && r.To == e.To && r.Revision > 0 && !r.At.IsZero() && oneOf(r.State, "accepted", "rejected", "superseded", "expired") && (r.Code == "" || routeProofText(r.Code, 128))
+	return r.Schema == 1 && r.Workspace == e.Workspace && r.Generation == e.Generation && r.ID == e.ID && r.Digest == workspaceProofHash(e) && r.Origin == e.Origin && r.Target == e.Target && r.From == e.From && r.To == e.To && r.Revision > 0 && !r.At.IsZero() && oneOf(r.State, "accepted", "acknowledged", "rejected", "superseded", "expired") && (r.Code == "" || routeProofText(r.Code, 128))
 }
 func (p *proofReader) readRouting() error {
 	present := 0
@@ -74,7 +77,7 @@ func (p *proofReader) readRouting() error {
 	outboxes := []proofRouteOutbox{}
 	inboxes := []proofRouteInbox{}
 	changes := []proofRouteChange{}
-	producer := routing.Records{Initialized: true}
+	producer := routing.Records{Initialized: true, Published: p.publishedRecords}
 	bytesRead := 0
 	limits := []int{8, 8 * 256, 8 * 256, 8 * 2048}
 	for i, table := range routingResetTables {
@@ -276,9 +279,17 @@ func (p *proofReader) readRouting() error {
 						return fmt.Errorf("unknown routing outbound event")
 					}
 				} else {
-					if !oneOf(c.Kind, "inbound_accepted", "inbound_rejected") || had || len(c.Actor) != 37 || !sshProofHex(strings.TrimPrefix(c.Actor, "host:"), 16) || !oneOf(c.Phase, "accepted", "rejected", "superseded", "expired") || !sshProofHex(c.ReceiptHash, 32) {
+					if len(c.Actor) != 37 || !strings.HasPrefix(c.Actor, "host:") || !sshProofHex(c.Actor[5:], 16) || !sshProofHex(c.ReceiptHash, 32) {
+						return fmt.Errorf("routing inbox actor/receipt invalid")
+					}
+					if c.Kind == "inbound_receipt" {
+						if !had || prior.Phase != "accepted" || c.Phase != "acknowledged" || c.Actor != prior.Actor {
+							return fmt.Errorf("routing poll acknowledgement lacks original exact accepted history")
+						}
+					} else if !oneOf(c.Kind, "inbound_accepted", "inbound_rejected") || had || !oneOf(c.Phase, "accepted", "rejected", "superseded", "expired") {
 						return fmt.Errorf("unsupported routing inbox outcome history")
 					}
+
 				}
 				if !had {
 					firstItems[k] = c
@@ -312,6 +323,11 @@ func (p *proofReader) readRouting() error {
 		if !ok || !had || retained[k] || o.Schema != 1 || o.Authority != root.Authority || o.Workspace != env.Workspace || env.Generation != root.Generation || env.Origin != p.result.Host || env.OriginPin != root.LocalPin || !routeProofEnvelope(env) || o.IntentHash != workspaceProofHash(o.Intent) || o.Intent.Workspace != env.Workspace || o.Intent.Target != env.Target || o.Intent.Key != env.Key || o.Intent.From != env.From || o.Intent.To != env.To || o.Intent.Body != env.Body || o.Intent.TTL != env.Expires.Sub(env.Created) || !reflect.DeepEqual(o.Intent.ReplyTo, env.ReplyTo) || o.Created != env.Created || o.Created != firstItems[k].After.Updated || o.Revision != itemCounts[k] || o.Updated != c.After.Updated || c.Key != env.Key || c.Digest != workspaceProofHash(env) || c.Phase != o.Phase {
 			return fmt.Errorf("routing outbox identity/request/current history differs")
 		}
+		if env.From.Kind == "agent" {
+			if e := p.proofPublishedSource(o.Workspace, env); e != nil {
+				return e
+			}
+		}
 		if o.Phase == "completed" {
 			if o.Receipt == nil || !routeProofReceipt(*o.Receipt, env) || workspaceProofHash(o.Receipt) != c.ReceiptHash {
 				return fmt.Errorf("routing completion lacks exact final outcome")
@@ -340,6 +356,17 @@ func (p *proofReader) readRouting() error {
 		c, had := lastItems[k]
 		if !ok || !had || retained[k] || in.Schema != 1 || !routeProofEnvelope(env) || env.Workspace != in.Workspace || env.Generation != root.Generation || env.Target != p.result.Host || env.TargetPin != root.LocalPin || !routeProofReceipt(in.Receipt, env) || in.Receipt.Revision != itemCounts[k] || in.Receipt.At != c.After.Updated || in.Received != firstItems[k].After.Updated || in.Receipt.At.Before(in.Received) || c.Actor != "host:"+env.Origin || c.Key != env.Key || c.Digest != workspaceProofHash(env) || c.Phase != in.Receipt.State || c.ReceiptHash != workspaceProofHash(in.Receipt) {
 			return fmt.Errorf("routing inbox identity/outcome/history differs")
+		}
+		if env.To.Kind == "agent" && oneOf(in.Receipt.State, "accepted", "acknowledged") {
+			found := false
+			for _, l := range p.publishedLinks {
+				if l.Context.Workspace == in.Workspace && l.Context.Message == env.ID && l.Context.Digest == workspaceProofHash(env) {
+					found = true
+				}
+			}
+			if !found {
+				return fmt.Errorf("accepted routed agent inbox lost independent local delivery link")
+			}
 		}
 		if messageIDs[in.Workspace+":"+env.ID] {
 			return fmt.Errorf("routing message ID collision")

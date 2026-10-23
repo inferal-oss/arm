@@ -860,9 +860,15 @@ func (a *app) daemon(command string, args []string) (int, error) {
 
 func (a *app) agent(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("agent requires probe, register, list, send, reply, message-lookup, inbox, watch, receive, or ack")
+		return fmt.Errorf("agent requires probe, register, list, publish, endpoints, send, reply, message-lookup, inbox, watch, receive, or ack")
 	}
 	action, args := args[0], args[1:]
+	if action == "publish" {
+		return a.agentPublished(args)
+	}
+	if action == "endpoints" {
+		return a.agentEndpoints(args)
+	}
 	if action == "send" || action == "reply" || action == "message-lookup" {
 		return a.agentMessage(action, args)
 	}

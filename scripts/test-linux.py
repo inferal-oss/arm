@@ -28,7 +28,7 @@ def main():
     env.setdefault("GOPATH", str(root / ".cache" / "gopath"))
     with tempfile.TemporaryDirectory(prefix="arm-linux-tests-") as staging:
         target = Path(staging)
-        for package in ("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "sharelease", "ports", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "workspaceroute", "manager", "server", "client", "tui", "cli"):
+        for package in ("agents", "model", "database", "historypack", "local", "install", "observe", "usage", "storage", "sharefs", "sharecodec", "sharelease", "ports", "certverify", "mesh", "meshssh", "meshops", "meshstream", "sshservice", "cargoprofile", "workspace", "workspacegraph", "workspacetransport", "routing", "published", "workspaceroute", "manager", "server", "client", "tui", "cli"):
             subprocess.run([opts.go, "test", "-c", "-o", str(target / (package + ".test")), "./internal/" + package], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "arm"), "./cmd/arm"], cwd=root, env=env, check=True)
         subprocess.run([opts.go, "build", "-o", str(target / "node-registry-probe"), "./scripts/node-registry-probe"], cwd=root, env=env, check=True)
@@ -61,6 +61,7 @@ def main():
         shutil.copyfile(root / "scripts" / "test-workspaces.py", target / "test-workspaces.py")
         shutil.copyfile(root / "scripts" / "test-workspace-routing.py", target / "test-workspace-routing.py")
         shutil.copyfile(root / "scripts" / "test-workspace-graph.py", target / "test-workspace-graph.py")
+        shutil.copyfile(root / "scripts" / "test-published-agents.py", target / "test-published-agents.py")
         shutil.copyfile(root / "scripts" / "test-mesh.py", target / "test-mesh.py")
         shutil.copyfile(root / "scripts" / "test-agent-messages.py", target / "test-agent-messages.py")
         os.chmod(target, 0o755)
@@ -101,6 +102,7 @@ python3 /tests/test-workspace-lifecycle.py --arm /tests/arm --manager-tests /tes
 python3 /tests/test-workspaces.py --arm /tests/arm
 python3 /tests/test-workspace-routing.py --arm /tests/arm
 python3 /tests/test-workspace-graph.py --arm /tests/arm
+python3 /tests/test-published-agents.py --arm /tests/arm
 python3 /tests/test-agent-messages.py --arm /tests/arm
 '''
         subprocess.run([

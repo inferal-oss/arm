@@ -9,12 +9,18 @@ SMT proof to check the installed toolchain. It makes no claim about ARM behavior
 The ARM protocol targets are `make tla-check` (finite TLC safety checks),
 `make tla-traces` (TLC witnesses compared with actual development-tag Go
 executions, reverse checking and invalid-trace tests), `make tla-prove` (strict
-TLAPM proofs), and `make test-formal` (all three). The first
+TLAPM proofs), and `make test-formal` (all three). The
 [share-preparation model](share-preparation/README.md) checks 950 reachable states, compares 18 scenarios/93 real Go observations, rejects twelve
 invalid traces and proves all 509 strict TLAPM obligations. Each gate fails on
 missing evidence or an unproved/mismatched result; a dry-run Make expansion is
 not validation. `GO` selects the Go toolchain and `TLA_WORK_DIR`
-selects the generated artifact directory (default `.tla/share-preparation`).
+selects the generated artifact directory (default `.tla/share-preparation`). The same targets
+also run the [published-agent model](published-agents/README.md), with its separate
+`TLA_AGENT_WORK_DIR` (default `.tla/published-agents`). Its finite safety gate checks
+2,971 reachable states, compares 15 scenarios/103 actual Go observations and rejects
+seven actual corruptions plus eight altered transition traces. All 1,531 strict
+proof obligations passed for the reviewed model. The Make gate also runs both
+runners' input, source-scope, snapshot and process-cleanup regressions.
 
 Models, configurations, mapping notes and proof source are tracked under
 `formal/`. Downloads and installed tools live under `.tla/downloads/` and
@@ -46,10 +52,11 @@ TLC finite exploration, matching observed Go execution traces and TLAPM theorem
 checking provide different evidence. Record model bounds, abstraction mappings,
 solver/proof results and negative checks separately. A model proof is not an
 implementation refinement proof, and traces cannot prove unobserved executions.
-The first ARM model targets charged share preparation; graph routing/recovery and
-SSH archive commit/recovery are subsequent protocols. Share preparation has
-passed its actual model/trace/proof gates; the subsequent protocol integrations
-remain in development.
+Charged share preparation and the scoped poll-only published-agent lifecycle
+have model/trace/proof gates. Share publication, consumer joins, broader graph
+routing/recovery and SSH archive commit/recovery remain separate protocol work.
+A complete bounded gate does not establish native agent delivery, arbitrary
+transport security or the entire project specification.
 
 Upstream references: [TLC command-line tools](https://github.com/tlaplus/tlaplus/blob/master/general/docs/current-tools.md),
 [TLAPM installation/use](https://github.com/tlaplus/tlapm),

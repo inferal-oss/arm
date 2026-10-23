@@ -11,6 +11,9 @@ import (
 	"github.com/yrashk/arm/internal/agents"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/published"
+	"github.com/yrashk/arm/internal/routing"
+	"github.com/yrashk/arm/internal/workspace"
 )
 
 type InboxRequest struct {
@@ -328,6 +331,13 @@ func (m *Manager) AgentReceipt(p ReceiptRequest) (agents.Receipt, error) {
 	if r.Received != nil && !p.Acknowledge {
 		return r, nil
 	}
+	originalMessage, err := m.message(p.Message)
+	if err != nil {
+		return r, err
+	}
+	if originalMessage.RoutedOrigin != nil && p.Text != "" {
+		return r, model.Err("explicit_routed_reply_required", "use arm agent reply --workspace for a routed reply; receipt text cannot trigger native or implicit delivery")
+	}
 	now := time.Now().UTC()
 	if r.Received == nil {
 		r.Received = &now
@@ -380,6 +390,24 @@ func (m *Manager) AgentReceipt(p ReceiptRequest) (agents.Receipt, error) {
 		}
 		if err = event(tx, "message.received", reply.ID, reply); err != nil {
 			return r, err
+		}
+	}
+	if originalMessage.RoutedOrigin != nil && p.Acknowledge {
+		v, e := published.Read(context.Background(), tx)
+		if e != nil {
+			return r, e
+		}
+		found := false
+		for _, l := range v.Links {
+			if l.LocalMessage == p.Message && l.Recipient == c.ID && l.Registration == c.Registration {
+				found = true
+				if e = routing.AcknowledgePoll(context.Background(), tx, workspace.Authority{Host: m.host, UID: m.owner}, l, now); e != nil {
+					return r, e
+				}
+			}
+		}
+		if !found {
+			return r, model.Err("publication_invalid", "routed acknowledgement lost exact delivery link")
 		}
 	}
 	if err = event(tx, "message.receipt", p.Message, map[string]any{"recipient": c.ID, "registration": c.Registration, "receipt": r}); err != nil {

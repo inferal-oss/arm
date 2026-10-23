@@ -95,6 +95,7 @@ func normalizedSchema(raw string) string {
 }
 
 var resetAutoIndexes = map[string]int{
+	"published_agents": 2, "published_agent_changes": 1, "routed_agent_links": 2,
 	"routing_roots": 1, "routing_outbox": 2, "routing_inbox": 2,
 	"routing_graph_issuance": 1, "routing_graph_reports": 1, "routing_graph_observations": 1,
 	"cargo_workloads": 1,
@@ -118,6 +119,9 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	for i, q := range routingGraphResetSchema {
 		routingObjects[normalizedSchema(q)] = routingGraphResetTables[i]
+	}
+	for i, q := range publishedResetSchema {
+		routingObjects[normalizedSchema(q)] = publishedResetTables[i]
 	}
 	mesh := normalizedSchema(meshResetSchema)
 	ssh := normalizedSchema(sshResetSchema)
@@ -222,6 +226,15 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	if routingCount != 0 && routingCount != len(routingResetTables) {
 		return nil, fmt.Errorf("partial routing reset schema group")
+	}
+	publicationCount := 0
+	for _, table := range publishedResetTables {
+		if _, ok := catalog[table]; ok {
+			publicationCount++
+		}
+	}
+	if publicationCount != 0 && (publicationCount != 3 || workspaceCount != len(workspaceResetTables)) {
+		return nil, fmt.Errorf("partial published agent reset schema group")
 	}
 	graphCount := 0
 	for _, table := range routingGraphResetTables {

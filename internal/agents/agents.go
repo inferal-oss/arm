@@ -156,6 +156,7 @@ func (c Contact) env() []string {
 }
 
 func Deliver(ctx context.Context, c Contact, body string) Delivery {
+	traceNativeDelivery(c)
 	if e := c.Validate(); e != nil {
 		return Delivery{State: "failed", Error: e.Error()}
 	}

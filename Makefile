@@ -5,7 +5,7 @@ BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
 
-.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-ssh-history test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph validate-knowledge
+.PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-ssh-history test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph test-published-agents validate-knowledge
 build: validate-knowledge
 	CGO_ENABLED=0 $(GO) build -o bin/arm ./cmd/arm
 
@@ -93,7 +93,11 @@ test-workspace-routing: build
 test-workspace-graph: build
 	$(PYTHON) scripts/test-workspace-graph.py --arm bin/arm
 
-test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph test-ssh-history
+# Actual three-daemon explicitly published poll-agent send/reply and lost-ACK recovery.
+test-published-agents: build
+	$(PYTHON) scripts/test-published-agents.py --arm bin/arm
+
+test-local: build test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph test-ssh-history test-published-agents
 	python3 scripts/test-local.py
 	python3 scripts/test-ports.py
 	python3 scripts/test-inbox.py
@@ -163,16 +167,22 @@ tla-tool-check: tla-tools
 # ARM protocol models, implementation trace comparison and checked proofs.
 # Explicit modes support shorter local iterations; test-formal runs every gate.
 TLA_WORK_DIR ?= $(CURDIR)/.tla/share-preparation
+TLA_AGENT_WORK_DIR ?= $(CURDIR)/.tla/published-agents
 .PHONY: tla-check tla-traces tla-prove test-formal
 tla-check: tla-tlc
 	$(PYTHON) scripts/test-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_WORK_DIR)"
+	$(PYTHON) scripts/test-published-agents-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 
 tla-traces: tla-tlc
 	$(PYTHON) scripts/test-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
+	$(PYTHON) scripts/test-published-agents-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 
 tla-prove: tla-tlapm
 	$(PYTHON) scripts/test-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_WORK_DIR)"
+	$(PYTHON) scripts/test-published-agents-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 
 test-formal: tla-tools
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-runner.py
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-published-agents-formal-runner.py
 	$(PYTHON) scripts/test-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
+	$(PYTHON) scripts/test-published-agents-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"

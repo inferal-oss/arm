@@ -14,6 +14,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/workspace"
 )
 
@@ -200,6 +201,7 @@ type Change struct {
 }
 type Records struct {
 	Initialized bool
+	Published   *published.Records
 	Graph       *GraphRecords
 	Roots       []Root
 	Outbox      []Outbox

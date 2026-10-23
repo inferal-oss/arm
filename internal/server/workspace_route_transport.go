@@ -122,6 +122,13 @@ func (m *meshService) newRoutedHandler() *route.Handler {
 			if e == nil {
 				result.Lookup = &route.LookupResult{Found: receipt != nil, Receipt: receipt}
 			}
+		case route.OperationEndpoints:
+			page, err := m.owner.Manager.AgentEndpointPage(ctx, p.Origin, *q.Endpoints)
+			e = err
+			if e == nil {
+				page.Expires = minStamp(page.Expires, p.Expires)
+				result.Endpoints = &page
+			}
 		case route.OperationRefresh:
 			if q.Refresh.Source.Host != p.Origin.Host || q.Refresh.Source.Fingerprint != p.Origin.Fingerprint || q.Refresh.Source.MembershipGeneration != o.SourceGeneration {
 				e = model.Err("forbidden", "directory requester differs from authenticated original member")

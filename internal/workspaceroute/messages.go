@@ -8,16 +8,18 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/routing"
 	"github.com/yrashk/arm/internal/workspace"
 	"github.com/yrashk/arm/internal/workspacegraph"
 )
 
 const (
-	MaxRequestBytes  = 60 << 10
-	OperationMessage = "message_accept"
-	OperationLookup  = "message_lookup"
-	OperationRefresh = "directory_refresh"
+	MaxRequestBytes    = 60 << 10
+	OperationMessage   = "message_accept"
+	OperationLookup    = "message_lookup"
+	OperationRefresh   = "directory_refresh"
+	OperationEndpoints = "endpoint_page"
 )
 
 // Request is the ENTIRE routed endpoint namespace. It has no generic params,
@@ -34,6 +36,7 @@ type Request struct {
 	Operation  string                    `json:"operation"`
 	Envelope   *routing.Envelope         `json:"envelope,omitempty"`
 	Refresh    *workspace.RefreshRequest `json:"refresh,omitempty"`
+	Endpoints  *published.Query          `json:"endpoint_query,omitempty"`
 	Report     *workspacegraph.Report    `json:"graph_report,omitempty"`
 }
 type Failure struct {
@@ -59,6 +62,7 @@ type Reply struct {
 	Lookup     *LookupResult        `json:"lookup,omitempty"`
 	Page       *workspace.Page      `json:"page,omitempty"`
 	GraphPage  *workspacegraph.Page `json:"graph_page,omitempty"`
+	Endpoints  *published.Page      `json:"endpoint_page,omitempty"`
 	Failure    *Failure             `json:"error,omitempty"`
 }
 
@@ -73,12 +77,12 @@ func (q Request) Validate(o Open) error {
 			want = ClassLookup
 		}
 		e := q.Envelope
-		if o.Class != want || e == nil || q.Refresh != nil || q.Report != nil || e.From.Kind != "host" || e.To.Kind != "host" || !e.Validate() || e.Workspace != q.Workspace || e.Generation != q.Generation || e.Origin != q.Source || e.Target != q.Target || e.OriginMembership != o.SourceGeneration || e.TargetMembership != o.TargetGeneration {
+		if o.Class != want || e == nil || q.Refresh != nil || q.Report != nil || q.Endpoints != nil || !e.Validate() || e.Workspace != q.Workspace || e.Generation != q.Generation || e.Origin != q.Source || e.Target != q.Target || e.OriginMembership != o.SourceGeneration || e.TargetMembership != o.TargetGeneration {
 			return errors.New("message payload/class differs from admitted routed scope")
 		}
 	case OperationRefresh:
 		p := q.Refresh
-		if o.Class != ClassDirectory || p == nil || q.Envelope != nil || p.Source.Workspace != q.Workspace || p.Source.Generation != q.Generation || p.Source.Host != q.Source || p.Source.MembershipGeneration != o.SourceGeneration || !validHex(p.Source.Fingerprint, 32) || !validHex(p.Nonce, 32) {
+		if o.Class != ClassDirectory || p == nil || q.Envelope != nil || q.Endpoints != nil || p.Source.Workspace != q.Workspace || p.Source.Generation != q.Generation || p.Source.Host != q.Source || p.Source.MembershipGeneration != o.SourceGeneration || !validHex(p.Source.Fingerprint, 32) || !validHex(p.Nonce, 32) {
 			return errors.New("directory refresh differs from admitted original member")
 		}
 		if r := q.Report; r != nil {
@@ -87,6 +91,11 @@ func (q Request) Validate(o Open) error {
 			}
 		}
 
+	case OperationEndpoints:
+		p := q.Endpoints
+		if o.Class != ClassLookup || p == nil || q.Envelope != nil || q.Refresh != nil || q.Report != nil || p.Validate() != nil || p.Workspace != q.Workspace {
+			return errors.New("endpoint query differs from admitted lookup scope")
+		}
 	default:
 		return errors.New("operation is outside the closed routed endpoint protocol")
 	}
@@ -100,7 +109,7 @@ func (r Reply) Validate(q Request) error {
 		return errors.New("routed reply differs from pinned exact request")
 	}
 	count := 0
-	for _, p := range []bool{r.Receipt != nil, r.Lookup != nil, r.Page != nil, r.GraphPage != nil, r.Failure != nil} {
+	for _, p := range []bool{r.Receipt != nil, r.Lookup != nil, r.Page != nil, r.GraphPage != nil, r.Endpoints != nil, r.Failure != nil} {
 		if p {
 			count++
 		}
@@ -122,6 +131,11 @@ func (r Reply) Validate(q Request) error {
 	case OperationLookup:
 		if q.Envelope == nil || r.Lookup == nil || r.Lookup.Found != (r.Lookup.Receipt != nil) || r.Lookup.Receipt != nil && !r.Lookup.Receipt.Matches(*q.Envelope) {
 			return errors.New("lookup result differs from exact queried envelope")
+		}
+	case OperationEndpoints:
+		p := r.Endpoints
+		if q.Endpoints == nil || p == nil || p.Validate() != nil || p.Workspace != q.Workspace || p.Generation != q.Generation || p.Host != q.Target || p.Nonce != q.Endpoints.Nonce || p.Offset != q.Endpoints.Offset || q.Endpoints.Revision != 0 && p.Revision != q.Endpoints.Revision || len(p.Cards) > q.Endpoints.Limit {
+			return errors.New("endpoint page differs from exact admitted query")
 		}
 	case OperationRefresh:
 		if q.Refresh == nil || r.Page == nil && r.GraphPage == nil {

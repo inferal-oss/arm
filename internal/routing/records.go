@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/workspace"
 )
 
@@ -14,6 +15,13 @@ const MaxEvents = 2048
 
 func Read(ctx context.Context, tx *sql.Tx) (Records, error) {
 	out := Records{Roots: []Root{}, Outbox: []Outbox{}, Inbox: []Inbox{}, Events: []Change{}}
+	pubs, e := published.Read(ctx, tx)
+	if e != nil {
+		return out, e
+	}
+	if pubs.Initialized {
+		out.Published = &pubs
+	}
 	initialized, e := schema(ctx, tx, false)
 	if e != nil || !initialized {
 		return out, e

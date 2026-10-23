@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/routing"
 	"github.com/yrashk/arm/internal/workspace"
 )
@@ -74,13 +75,19 @@ func (m *Manager) WorkspaceRoutingComplete(ctx context.Context, o routing.Outbox
 // Accept/Lookup are called ONLY by the dedicated routed inner-TLS handler. The
 // source identity is not selected by an ordinary browser/mesh/native request.
 func (m *Manager) WorkspaceRoutingAccept(ctx context.Context, origin workspace.Identity, q routing.Envelope) (routing.Inbox, error) {
-	return routeCall(ctx, m, q.Workspace, origin.Host, m.host, workspace.RouteMessage, func(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess) (routing.Inbox, error) {
+	v, e := routeCall(ctx, m, q.Workspace, origin.Host, m.host, workspace.RouteMessage, func(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess) (routing.Inbox, error) {
 		if a.Origin != origin {
 			return routing.Inbox{}, model.Err("forbidden", "routed source differs from currently pinned TLS member")
 		}
-		in, _, e := routing.Accept(ctx, tx, a, q)
+		in, _, e := routing.AcceptWithDelivery(ctx, tx, a, q, func(in routing.Inbox, p published.Publication) error { return m.agentPollBridge(ctx, tx, in, p) })
 		return in, e
 	})
+	if e == nil {
+		m.mu.Lock()
+		m.notifyInbox()
+		m.mu.Unlock()
+	}
+	return v, e
 }
 func (m *Manager) WorkspaceRoutingLookup(ctx context.Context, origin workspace.Identity, q routing.Envelope) (*routing.Receipt, error) {
 	return routeCall(ctx, m, q.Workspace, origin.Host, m.host, workspace.RouteMessage, func(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess) (*routing.Receipt, error) {

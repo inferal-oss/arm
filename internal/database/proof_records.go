@@ -14,6 +14,7 @@ import (
 // Mirrors are deliberately local because importing manager would create a
 // cycle. Unknown fields fail closed until this independent proof is reviewed.
 type proofMessage struct {
+	RoutedOrigin        *proofPublishedContext     `json:"routed_origin,omitempty"`
 	SenderContact       *agents.Contact            `json:"sender_contact,omitempty"`
 	AgentKey            string                     `json:"agent_operation_key,omitempty"`
 	NativeReplies       map[string]string          `json:"native_replies,omitempty"`
@@ -99,6 +100,12 @@ func (p *proofReader) readMessages() error {
 		}
 		if v.SenderContact != nil && !validHistoricalContact(*v.SenderContact) {
 			return fmt.Errorf("invalid recorded agent sender identity")
+		}
+		if v.RoutedOrigin != nil {
+			link, ok := p.publishedLinks[id]
+			if !ok || link.Context != *v.RoutedOrigin {
+				return fmt.Errorf("routed message lost independent publication link")
+			}
 		}
 		p.messages[id] = v
 		return nil

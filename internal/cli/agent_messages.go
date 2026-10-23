@@ -3,7 +3,10 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"github.com/yrashk/arm/internal/routing"
+	api "github.com/yrashk/arm/internal/workspaceapi"
 	"io"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/yrashk/arm/internal/agents"
@@ -33,6 +36,12 @@ func (a *app) agentMessage(action string, args []string) error {
 		f.StringVar(&request.Body, "text", "", "message text, or - to read stdin")
 		f.StringVar(&request.Lease, "lease", "", "related lease ID")
 	}
+	workspaceID := f.String("workspace", "", "explicit workspace routing; otherwise this host only")
+	host := f.String("host", "", "exact admitted destination host for a workspace send")
+	endpoint := f.String("endpoint", "", "opaque published destination endpoint ID")
+	generation := f.String("generation", "", "exact destination publication generation")
+	ttl := f.Duration("ttl", time.Hour, "workspace message lifetime, maximum 24h")
+	reconcile := f.Bool("reconcile", false, "lookup final routed receipt without resending")
 	f.Bool("json", false, "force JSON output")
 	if err := a.parse(f, args, false); err != nil {
 		return err
@@ -44,6 +53,15 @@ func (a *app) agentMessage(action string, args []string) error {
 	request.Session = id.String()
 	if len(request.Key) > 128 {
 		return model.Err("invalid_request", "message key must be at most 128 bytes")
+	}
+	if *workspaceID != "" {
+		if request.Lease != "" || request.Audience != "" || toRegistration != "" {
+			return model.Err("invalid_request", "workspace messages use --host/--endpoint/--generation rather than local --to/--lease selectors")
+		}
+		return a.workspaceAgentMessage(action, api.AgentMessage{Workspace: *workspaceID, ID: request.ID, Session: request.Session, Registration: request.Registration, Key: request.Key, Target: *host, To: routing.Endpoint{Kind: "agent", ID: *endpoint, Generation: *generation}, Message: request.ReplyTo, Body: request.Body, TTL: *ttl, Reconcile: *reconcile})
+	}
+	if *host != "" || *endpoint != "" || *generation != "" || *reconcile {
+		return model.Err("invalid_request", "routed selectors require explicit --workspace")
 	}
 	if action == "message-lookup" {
 		if request.Key == "" {

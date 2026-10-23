@@ -11,6 +11,7 @@ import (
 
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/published"
 	"github.com/yrashk/arm/internal/workspace"
 )
 
@@ -134,8 +135,19 @@ func Prepare(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, q Intent)
 		}
 		return old, false, nil
 	}
-	if q.From != HostEndpoint(a.OriginGeneration) || q.To != HostEndpoint(a.DestinationGeneration) {
-		return Outbox{}, false, model.Err("endpoint_unpublished", "agent endpoints require explicit current publication; no contact was selected")
+	if q.From.Kind == "agent" {
+		p, e := published.Current(ctx, tx, q.Workspace, published.Address(q.From))
+		if e != nil {
+			return Outbox{}, false, e
+		}
+		if p.Scope.Membership != a.OriginGeneration || p.Scope.Pin != a.Origin.Fingerprint {
+			return Outbox{}, false, model.Err("forbidden", "current publication source membership differs")
+		}
+	} else if q.From != HostEndpoint(a.OriginGeneration) {
+		return Outbox{}, false, model.Err("forbidden", "exact host source membership required")
+	}
+	if q.To.Kind == "host" && q.To != HostEndpoint(a.DestinationGeneration) {
+		return Outbox{}, false, model.Err("forbidden", "exact host destination membership required")
 	}
 	if q.ReplyTo != nil {
 		found := false
@@ -178,6 +190,15 @@ func Begin(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, from Endpoi
 	if out.Envelope.Origin != a.Local.Host || a.Local != a.Origin || out.Envelope.Target != a.Destination.Host || out.Envelope.OriginPin != a.Origin.Fingerprint || out.Envelope.TargetPin != a.Destination.Fingerprint || out.Envelope.OriginMembership != a.OriginGeneration || out.Envelope.TargetMembership != a.DestinationGeneration || !a.At.Before(out.Envelope.Expires) {
 		return out, model.Err("forbidden", "current exact origin/destination membership or expiry differs")
 	}
+	if out.Envelope.From.Kind == "agent" {
+		p, e := published.Current(ctx, tx, a.Workspace, published.Address(out.Envelope.From))
+		if e != nil {
+			return out, e
+		}
+		if p.Scope.Membership != a.OriginGeneration {
+			return out, model.Err("forbidden", "published source membership changed")
+		}
+	}
 	out.Phase = "dispatching"
 	out.Revision++
 	out.Updated = a.At
@@ -216,9 +237,12 @@ func Unknown(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, from Endp
 // route transaction validated both admitted endpoints. Message, exact target
 // inbox and dedup outcome are one destination commit. There is no native call.
 func Accept(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, q Envelope) (Inbox, bool, error) {
-	if q.From.Kind != "host" || q.To.Kind != "host" {
-		return Inbox{}, false, model.Err("endpoint_unpublished", "this host-message schema does not publish or deliver agent endpoints")
-	}
+	return AcceptWithDelivery(ctx, tx, a, q, nil)
+}
+
+// The bridge only inserts SQL records on this same transaction. It must not
+// acquire Manager.mu, call a manager API, perform IO, or deliver natively.
+func AcceptWithDelivery(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, q Envelope, bridge func(Inbox, published.Publication) error) (Inbox, bool, error) {
 	if a.Local != a.Destination || !q.Validate() || q.Workspace != a.Workspace || q.Generation != a.Generation || q.Origin != a.Origin.Host || q.Target != a.Local.Host || q.OriginPin != a.Origin.Fingerprint || q.TargetPin != a.Destination.Fingerprint || q.OriginMembership != a.OriginGeneration || q.TargetMembership != a.DestinationGeneration {
 		return Inbox{}, false, model.Err("forbidden", "message origin/target differ from authenticated final workspace scope")
 	}
@@ -241,7 +265,7 @@ func Accept(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, q Envelope
 		state, code = "expired", "message_expired"
 	case q.Created.After(a.At.Add(workspace.MaxClockSkew)):
 		return Inbox{}, false, model.Err("workspace_clock_unavailable", "message source creation time is in the future")
-	case !a.DestinationInbox:
+	case q.To.Kind == "host" && !a.DestinationInbox:
 		state, code = "rejected", "host_inbox_disabled"
 	}
 	if q.ReplyTo != nil && state == "accepted" {
@@ -256,9 +280,23 @@ func Accept(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, q Envelope
 			state, code = "rejected", "original_recipient_proof_missing"
 		}
 	}
+	var target published.Publication
+	if state == "accepted" && q.To.Kind == "agent" {
+		target, e = published.Current(ctx, tx, q.Workspace, published.Address(q.To))
+		if e != nil || target.Scope.Membership != a.DestinationGeneration || target.Scope.Pin != a.Destination.Fingerprint {
+			state, code = "superseded", "published_endpoint_unavailable"
+		} else if bridge == nil {
+			return Inbox{}, false, model.Err("endpoint_unavailable", "poll delivery bridge required")
+		}
+	}
 	in := Inbox{Schema: Schema, Workspace: q.Workspace, Envelope: q, Receipt: receipt(q, a.At, state, code), Received: a.At}
 	if e = writeInbox(ctx, tx, in); e != nil {
 		return in, false, e
+	}
+	if state == "accepted" && q.To.Kind == "agent" {
+		if e = bridge(in, target); e != nil {
+			return in, false, e
+		}
 	}
 	kind := "inbound_accepted"
 	if !known(state, "accepted", "delivery_pending") {
@@ -311,9 +349,6 @@ func Complete(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, from End
 // Lookup accepts the original full envelope and authenticates its original
 // source even for an absent result. An empty lookup is NEVER nonexecution proof.
 func Lookup(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, q Envelope) (*Receipt, error) {
-	if q.From.Kind != "host" || q.To.Kind != "host" {
-		return nil, model.Err("endpoint_unpublished", "agent endpoint publication is unavailable in this schema")
-	}
 	if !q.Validate() || q.Workspace != a.Workspace || q.Generation != a.Generation || q.Origin != a.Origin.Host || q.Target != a.Local.Host || q.OriginPin != a.Origin.Fingerprint || q.TargetPin != a.Destination.Fingerprint || a.Local != a.Destination {
 		return nil, model.Err("forbidden", "lookup differs from authenticated original source/destination")
 	}
