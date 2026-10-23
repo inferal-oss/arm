@@ -14,27 +14,51 @@ import (
 // Decode validates canonical keys/required fields before encoding/json can
 // collapse duplicate/case aliases, null primitives or missing values to zero.
 func Decode(raw []byte, out any) error {
-	if len(raw) == 0 || len(raw) > MaxRecordBytes || !utf8.Valid(raw) {
+	return decodeWithMemo(raw, out, &strictValidationMemo)
+}
+func decodeWithMemo(raw []byte, out any, memo *validationMemo) error {
+	if len(raw) == 0 || len(raw) > MaxRecordBytes {
 		return fmt.Errorf("invalid bounded UTF-8 workspace record")
 	}
-	d := json.NewDecoder(bytes.NewReader(raw))
-	if e := unique(d, 0); e != nil {
-		return e
-	}
-	if _, e := d.Token(); e != io.EOF {
-		return fmt.Errorf("trailing workspace JSON")
+	// Copy BEFORE verification/cache lookup. A retained positive key must own
+	// exactly the immutable bytes that were verified, never a caller's buffer.
+	owned := string(raw)
+	if !utf8.ValidString(owned) {
+		return fmt.Errorf("invalid bounded UTF-8 workspace record")
 	}
 	t := reflect.TypeOf(out)
-	if t == nil || t.Kind() != reflect.Pointer || t.Elem().Kind() != reflect.Struct {
-		return fmt.Errorf("workspace decoder requires struct pointer")
+	structPointer := t != nil && t.Kind() == reflect.Pointer && t.Elem().Kind() == reflect.Struct
+	key := validationKey{typ: t, raw: owned}
+	hit := structPointer && memo.contains(key)
+	if !hit {
+		d := json.NewDecoder(strings.NewReader(owned))
+		if e := unique(d, 0); e != nil {
+			return e
+		}
+		if _, e := d.Token(); e != io.EOF {
+			return fmt.Errorf("trailing workspace JSON")
+		}
+		// Preserve rejection/error precedence for invalid targets as well as JSON.
+		if !structPointer {
+			return fmt.Errorf("workspace decoder requires struct pointer")
+		}
+		if e := fields([]byte(owned), t.Elem()); e != nil {
+			return e
+		}
 	}
-	if e := fields(raw, t.Elem()); e != nil {
-		return e
-	}
-	d = json.NewDecoder(bytes.NewReader(raw))
+	// Always decode afresh, including every primitive/type/custom-UnmarshalJSON
+	// check. This memo stores no parsed objects, permission, time or certificate
+	// policy result. A failing final decode never adds a positive key.
+	d := json.NewDecoder(strings.NewReader(owned))
 	d.DisallowUnknownFields()
 	d.UseNumber()
-	return d.Decode(out)
+	if e := d.Decode(out); e != nil {
+		return e
+	}
+	if !hit {
+		memo.remember(key)
+	}
+	return nil
 }
 func unique(d *json.Decoder, depth int) error {
 	if depth > 32 {

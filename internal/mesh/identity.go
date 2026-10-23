@@ -13,6 +13,7 @@ import (
 	"encoding/hex"
 	"encoding/pem"
 	"fmt"
+	"github.com/yrashk/arm/internal/certverify"
 	"github.com/yrashk/arm/internal/local"
 	"math/big"
 	"net"
@@ -72,7 +73,7 @@ func parseIdentity(i Identity, checkTime bool) (*x509.Certificate, error) {
 	if cert.IsCA || cert.PublicKeyAlgorithm != x509.Ed25519 || len(cert.DNSNames) != 1 || cert.DNSNames[0] != SAN(i.Host) || cert.KeyUsage != x509.KeyUsageDigitalSignature || len(cert.ExtKeyUsage) != 2 {
 		return nil, fmt.Errorf("unexpected node certificate constraints")
 	}
-	if err = cert.CheckSignature(cert.SignatureAlgorithm, cert.RawTBSCertificate, cert.Signature); err != nil {
+	if err = certverify.SelfSignature(cert.Raw); err != nil {
 		return nil, fmt.Errorf("node certificate is not self-signed: %w", err)
 	}
 	hasClient, hasServer := false, false

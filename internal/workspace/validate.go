@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"github.com/yrashk/arm/internal/certverify"
 	"math"
 	"strconv"
 	"strings"
@@ -80,7 +81,7 @@ func ValidateIdentity(i Identity) (*x509.Certificate, error) {
 	if !(c.ExtKeyUsage[0] == x509.ExtKeyUsageClientAuth && c.ExtKeyUsage[1] == x509.ExtKeyUsageServerAuth || c.ExtKeyUsage[1] == x509.ExtKeyUsageClientAuth && c.ExtKeyUsage[0] == x509.ExtKeyUsageServerAuth) {
 		return nil, fmt.Errorf("workspace certificate requires both EKUs")
 	}
-	if e = c.CheckSignature(c.SignatureAlgorithm, c.RawTBSCertificate, c.Signature); e != nil {
+	if e = certverify.SelfSignature(c.Raw); e != nil {
 		return nil, e
 	}
 	digest := sha256.Sum256(c.Raw)
