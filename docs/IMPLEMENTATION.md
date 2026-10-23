@@ -26,6 +26,12 @@ First-class reconnect now has an independently reviewed isolated source checkpoi
 
 New acceptance requirements include near-network-speed mounted-share performance and consistently polished web/Charm terminal interfaces with capable-terminal truecolor/highcolor styling and readable fallbacks. These are requirements recorded in SPEC/PLAN, not completed performance benchmarks or a claim of full web/TUI functional parity. The shared coordinator, subpool backend/CLI and local web/TUI hierarchy controls are implemented below. Scoped mesh interfaces, terminal presentation and confirmed private-fixture database reset have reviewed checkpoints below; full remote/UI parity and broader recovery remain in progress.
 
+## Developer mesh SSH fixture
+
+`scripts/fixtures/mesh-reconnect-sshd` is a fixed-command, loopback-only developer endpoint for isolated mesh tests. It accepts an exact fixture account/key and `ARM_BINARY mesh bootstrap` for one private home, with bounded input/output, sessions and helper lifetimes. Literal loopback validation occurs before binding. Parent cancellation and whole-connection closure join the helper's actual Wait and output copying; individual session closure is not a separate cancellation trigger. Signalled helpers and incomplete output cannot report SSH success, and their native exit/Wait outcome and output hashes remain in the event log.
+
+Independent macOS race/vet and actual CGo-free Linux tests pass. This fixture is not exposed by the ARM CLI, does not change SSH settings, and does not prove cleanup of ARM backends or descendants launched by a helper. The public reconnect transport, rendered interfaces and model/proof gates remain outstanding.
+
 ## Components
 
 The offline `arm agents` guide includes the implemented workspace host-inbox graph/send/reply/lookup workflow and leased SSH execution/pending/lookup/local-history workflow. Installed instructions point to these sections and distinguish direct-peer messaging from workspace forwarding. Membership does not grant resource or execution authority; unknown operations retain their original keys, and historical receipts are not fresh remote status. SSH takes one remote shell command string, unlike `arm run`'s argument vector. The guide now includes reviewed poll-only workspace agent publication, scoped discovery, original-destination replies, acknowledgements and unknown-outcome reconciliation. Native workspace delivery remains refused. Reading the guide does not start a backend or create state.
