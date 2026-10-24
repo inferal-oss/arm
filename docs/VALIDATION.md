@@ -1,5 +1,21 @@
 # Validation record
 
+## October 24, 2026: corrected finite primitive component passes
+
+The fresh successor changes only the reporting invariant to require both 33 cases and cursor membership in 1..34. The original cases, Init/Next/CasesHold, configuration and terminal readout remain exact. No warning is suppressed or allowlisted. The accepted 36-root graph is unchanged; a separate finite-stage overlay contains the one-line wrapper strengthening.
+
+One two-phase run passes wrapper source processing and the full finite check. Actual outer session 99510 exits 0; native phase times are 0.229065833s and 5.012907209s. TLC records one initial state, 34 generated/distinct states, depth 34, empty queue, the exact terminal tuple 34/33 and Finished, without warnings. Both native owners have one Wait, exit 0, retired/reaped state, no signals, unknown or quarantine, and PID/group absence. Source/tool/current-runner/user-file closure remains exact. The earlier warning refusal stays failed and retained.
+
+A separate pure invocation passes sixteen output-oracle controls: the unchanged real successful capture is accepted, while fifteen altered copies with missing/duplicate markers, incorrect initial/count/queue/depth/PID/worker evidence, missing semantic processing or Finished, warnings/errors and trailing output are refused. Only the reviewed finite function is compiled from its pinned source; no process owner is imported and no model or native child is rerun. These are parser controls, not additional model executions.
+
+Root's closed seventeen-artifact result manifest is `d6c159f330b37738bb1abbcb5d0fb017db4798e05ec9eae028bd88d6626c9772`; independent actual review is `b5aab750aed8d610d8d419c67e5a9735b1160e18d15c520d0730f2be80b98ecc`, under ignored `.cache/`. This accepts only the 33 handwritten primitive/source-class checks. Full raw policy/time/numeric correspondence, all partial-row/control stages and 77-row mappings, strict proofs, current publication/memo/provider composition, native/Linux implementation gates and the composed 384 MiB limit remain outstanding.
+
+## October 24, 2026: finite primitive attempt refuses a reporting-wrapper warning
+
+The separate two-phase invocation passes wrapper source processing, then runs TLC with the original 33 cases, 128 MiB heap, one worker and a 180-second phase limit. Raw output records one initial state, all 34 distinct states, depth 34, empty queue, the exact terminal tuple 34/33 and Finished. TLC also warns that PrimitiveRoster is a constant-only invariant. The unchanged strict warning oracle therefore refuses the run; actual outer session 64567 exits 1. These traversal observations do not establish an accepted finite gate.
+
+Both child commands exit 0 with one native Wait, retired/reaped ownership, no signals, unknown owner or quarantine, and PID/group absence. Source-processing native time is 0.33194275s; TLC native time is 5.038230458s. Root and independent review verify all thirteen retained artifacts and source/tool/user-file closure. Failed manifest is `ab8d0ef7af4e16314c3141518d7563d65177865c109ae63446b870746426c3eb`; independent review is `1714c85030cdb803c461930a381a7b371e0c440c15116cd1d31f161d42738e10`. A fresh successor must add a meaningful cursor-domain conjunct to the reporting invariant, retaining all original cases, transitions and strict warning rejection. No warning suppression, retrospective pass or automatic rerun occurs.
+
 ## October 24, 2026: complete consumer source graph passes all 36 roots
 
 After the reviewed one-space Startup token repair and committed Darwin runner correction, one fresh complete graph invocation passes all 36 root commands. Exact parsing, semantic processing and private-module lint sets match every root's full dependency closure, with the root last and no warnings, errors or unknown output. All 36 native receipts bind the planned source/argv/deadline, exit 0, one Wait, retired/reaped ownership, no signals or unknown state, and PID/group absence. The native aggregate is 10.05317075s, within the unchanged 300-second aggregate and 30-second phase limits; the 128 MiB heap/8 MiB stack settings are not a total RSS guarantee.
