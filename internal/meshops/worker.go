@@ -71,7 +71,7 @@ func (a *Coordinator) saveResult(result any, err error) error {
 	}
 	// Adopt a separately persisted review decision before final settlement.
 	if _, e := a.guard.Read(); e != nil {
-		return e
+		return newSettlementFailure("worker-read", e)
 	}
 	e := a.guard.Change(func(op *mesh.Coordination) error {
 		op.Phase = "completed"
@@ -101,9 +101,12 @@ func (a *Coordinator) saveResult(result any, err error) error {
 		return nil
 	})
 	if e != nil {
-		return e
+		return newSettlementFailure("outcome-save", e)
 	}
-	return mesh.ResolveCoordinationParent(a.Home, a.guard.Key())
+	if e := mesh.ResolveCoordinationParent(a.Home, a.guard.Key()); e != nil {
+		return newSettlementFailure("parent-resolution", e)
+	}
+	return nil
 }
 
 // run defers machine output until the exact durable outcome is recorded.
@@ -139,7 +142,7 @@ func (a *Coordinator) run(fn func() (int, error)) (int, error) {
 	defer func() { a.Print = original }()
 	code, e := fn()
 	if save := a.saveResult(result, e); save != nil {
-		return 1, model.Err("mesh_operation_incomplete", "operation outcome could not be durably settled; inspect its exact key before recovery")
+		return 1, save
 	}
 	if result != nil {
 		if printErr := original(result); printErr != nil {
