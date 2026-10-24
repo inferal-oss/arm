@@ -1,5 +1,11 @@
 # Validation record
 
+## October 24, 2026: first PrepareJoin producer run fails — evidence retained
+
+The reviewed isolated source2 passes its complete source/tool preflight, then its one direct development race command exits1. Across both packages,544 cases run,514 pass and30 fail: workspace517/487/30 in100.011s and manager27/27/0 in18.548s. Normal tests and vet are not launched. All49 frozen artifacts,999 owned inputs, two probes, seven formal inputs, nine Go tools and12,031 standard sources remain exact afterward. Failed result manifest is `f2ccffd096bb22e5a1b6e5807c648c7d6c7f570d89b2bf35178f017f772b63ad` (nine artifacts under ignored `.cache/`).
+
+The first raw refusal is `crossed or missing raw definition`. Independent source inspection traces original Directory role37/class1 to a classifier with no method2 mapping; the actual offending row was not retained, so this is a source-derived diagnosis with matching runtime error, not a fresh executed reproducer. Inspection also identifies missing method2 input/hash/RawMessage classes and origin ownership admission, which are follow-on source findings. A separate successor will add only those exact mappings and same-call origins, with live-admission/full-decoder positives and altered-history refusals. No broad method2 exemption, weakened decoder, native-policy change or increased recorder bounds is accepted. No corrected run, Linux test or full clock lifecycle acceptance is claimed.
+
 ## October 24, 2026: shared formal runner integrated — macOS and Linux guards pass
 
 After reviewed composition, direct trusted-tool commands pass all89 current-tree cases on macOS arm64:35 pure, six native,14 publication,15 preparation, nine provider-worker and ten published-agent guards. The complete named rosters have no skips; all1,037 source inputs and45 selected pins remain exact. Twelve native logs/receipts remain retained, including the deliberately failed timeout and oversized-output commands. The current-tree result manifest is `e3ed1b63c0c2eb43cff11c7e94286a15eb05268216dafc3b7fa47988bcf26537` (42 artifacts). All five preexisting user edits retain their original bytes and modes.
