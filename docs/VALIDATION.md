@@ -1,5 +1,19 @@
 # Validation record
 
+## October 24, 2026: provider shutdown reproduced; focused suite remains failed
+
+The separate old-order negative reproduces `Close` waiting for provider SQL before it can cancel a workspace callback holding the sole database connection. Its intended assertion fires, and explicit fallback cleanup positively joins both the callback and Close. The fixed candidate passes both shutdown cases with cancellation observed and no fallback. Its complete focused race command nevertheless exits 1: all 104 named cases run, 100 pass, four fail (including a parent), with three assertion-error outputs and no skips or reported race/panic. The package reports 61.100s; this is not a whole-command deadline.
+
+Independent raw/source review confirms that queued work stayed queued while Inspect correctly returned `provider_hold_unavailable`; the test incorrectly required success. Two reset cases fail earlier because the temporary path contains macOS's `/tmp` symlink. The frozen successor canonicalizes the owned fixture root before opening it and checks persisted queued bytes independently of the intentionally refused public view. Production code and all 104 names remain unchanged. Fresh matching old-order and fixed-suite validation are pending; 100 passes do not establish component acceptance.
+
+The fifteen-artifact failed result manifest is `7143f2f0a93a80d8ce81fe685876b0e086debb62f289d5d190b6fb95add04d8b`. Independent reviews are `88470253d8694876687dc879e3815d9b52ac49d01a3326e1a068517947e07f12` and `da71967692ac6be1b621ceee5a929a707b2637a27a5c6f3911de48bf41c4e8a0`, retained under ignored `.cache/`. Source/tool/formal and protected-file closure stays exact. Broader regression, Linux, proof, current integration and native provider dispatch are not accepted by this run.
+
+## October 24, 2026: first chronology model fails before TLC
+
+The first 17-case consumer chronology attempt exits 1 during SANY level checking with `OutOfMemoryError: Java heap space`, after 1.073606708s, under the unchanged 128 MiB heap limit. TLC never launches. The actual native owner records one Wait, known exit 1, retirement/reaping, joined capture and PID/group absence without signals. Before/after source/tool/protected-file closure stays exact. Module names printed before the exception do not prove completed semantic analysis.
+
+The nine-artifact failed result manifest is `20dd8f8d35c49ddc00f558fdd06b3600be748b37acc98d3cdcb9a55f8406fb32`; independent reviews are `e4f2a44f651267004f2e7fb47ce77928759492127f6c0f33e66e93f68c2e5a73` and `959713a75affd5183ff024a099e7d222901082c22aad17e1af67fd4ea428f6a1`. A source correction shares the repeated instance instead of increasing the budget. Independent pinned-source review identifies a writable-substitution compatibility risk, so a successor with an explicit variable argument is being prepared before execution. Preserve all 17 cases, 24 entry cuts and original limits. These synthetic component controls leave complete outer replay and actual implementation correspondence outstanding.
+
 ## October 24, 2026: provider shutdown-order review finding
 
 The first five provider-retention findings have independently reviewed source corrections. A separate test-only successor adds a coherent changed-current-outcome control: after a real first End, the current hold and both ordinary outcomes are changed canonically while the original journal remains unchanged; a repeated End before any Status must refuse. Its 101 proposed named cases have not compiled or run.
