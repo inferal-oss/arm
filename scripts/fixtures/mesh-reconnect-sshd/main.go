@@ -513,26 +513,13 @@ func run(ctx context.Context, o options) error {
 	if e != nil || host != "127.0.0.1" {
 		return fmt.Errorf("fixture listens only on loopback")
 	}
-	ready, e := os.OpenFile(o.ready, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if e != nil {
-		return e
-	}
 	imageSHA, e := imageDigest(o.arm, 512<<20)
 	if e != nil {
-		ready.Close()
 		return e
 	}
 	raw, _ := json.Marshal(map[string]any{"address": listener.Addr().String(), "account": s.account, "server_key": strings.TrimSpace(string(ssh.MarshalAuthorizedKey(signer.PublicKey()))), "pid": os.Getpid(), "arm_sha256": imageSHA})
-	_, e = ready.Write(append(raw, '\n'))
-	if e == nil {
-		e = ready.Sync()
-	}
-	closeErr := ready.Close()
-	if e != nil {
+	if e = publishReady(o.ready, append(raw, '\n'), nil); e != nil {
 		return e
-	}
-	if closeErr != nil {
-		return closeErr
 	}
 	watcherJoined := make(chan struct{})
 	go func() {

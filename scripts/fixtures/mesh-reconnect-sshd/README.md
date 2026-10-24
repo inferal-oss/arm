@@ -35,3 +35,9 @@ session while retaining the connection is not a separate cancellation trigger;
 its helper is still bounded by the fixture timeout. This joins the fixed helper; ARM backends
 that it starts must be stopped and verified separately by the integration
 harness. It does not establish descendant or resource-obligation cleanup.
+
+Readiness is published only after its complete private stage is synced and
+closed, using an atomic no-overwrite link. Existing final entries and unrelated
+staging names are never adopted or replaced. Changed staging identities are
+preserved and reported as errors. Readers wait for absence only; malformed or
+empty published readiness is a failure, never a retry instruction.

@@ -114,8 +114,10 @@ func TestActualZeroExitWaitDelayCannotBecomeSuccessfulResponse(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := filepath.Join(root, "fixed-output-helper")
-	// No child/daemon is spawned: the actual helper prints one byte and exits0.
-	if err = os.WriteFile(image, []byte("#!/bin/sh\nprintf x\nexit 0\n"), 0700); err != nil {
+	// No child/daemon is spawned: the actual helper prints one byte, then its
+	// builtin read awaits the parent-owned exit gate on descriptor4. Native exit
+	// cannot outrun the owned output copier entering below.
+	if err = os.WriteFile(image, []byte("#!/bin/sh\nprintf x\nIFS= read -r arm_fixture_gate <&4 || :\nexit 0\n"), 0700); err != nil {
 		t.Fatal(err)
 	}
 	reader, writer, err := os.Pipe()
@@ -123,11 +125,18 @@ func TestActualZeroExitWaitDelayCannotBecomeSuccessfulResponse(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer reader.Close()
+	defer writer.Close()
+	gateReader, gateWriter, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer gateReader.Close()
+	defer gateWriter.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	command := fixtureCommand(ctx, image)
 	command.WaitDelay = 50 * time.Millisecond
-	command.ExtraFiles = []*os.File{writer}
+	command.ExtraFiles = []*os.File{writer, gateReader}
 	output := &fixtureBlockedOutput{entered: make(chan struct{}), release: make(chan struct{})}
 	defer output.close()
 	command.Stdout = output
@@ -136,11 +145,13 @@ func TestActualZeroExitWaitDelayCannotBecomeSuccessfulResponse(t *testing.T) {
 		t.Fatal(err)
 	}
 	writer.Close()
+	gateReader.Close()
 	waited := make(chan error, 1)
 	go func() { waited <- command.Wait() }()
 	var waitErr error
 	joined := false
 	defer func() {
+		gateWriter.Close()
 		output.close()
 		cancel()
 		if !joined {
@@ -155,6 +166,11 @@ func TestActualZeroExitWaitDelayCannotBecomeSuccessfulResponse(t *testing.T) {
 	case <-output.entered:
 	case <-time.After(2 * time.Second):
 		t.Fatal("owned output copy did not enter")
+	}
+	// Release only after the real copier has entered. The helper remains the
+	// sole native holder of descriptor3 and exits0 after this exact EOF.
+	if err := gateWriter.Close(); err != nil {
+		t.Fatal(err)
 	}
 	// Descriptor3 is inherited only by this helper and is never explicitly
 	// closed by the script. EOF observes its native teardown, with no saved PID
