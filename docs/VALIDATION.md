@@ -1,5 +1,13 @@
 # Validation record
 
+## October 24, 2026: ordinary active-lease clock scope remains open
+
+The accompanying read-only provider live-hold proposal binds 32 inspected source/evidence inputs and is retained under ignored `.cache/` with manifest `8accb074c04d0cfd7f5a7c4b5e9ec9525c560b191071192a16bec211e57546f6`. It selects manager-owned paired retention and a separate coordinator, records start/grant/release race contracts and preserves written-scratch/clock limitations. This is an implementation direction, not adapter code, native validation or authority to expose public dispatch.
+
+Source inspection distinguishes two existing paths. In `internal/manager/manager.go`, activation records a UTC expiry, renewal compares wall time with that persisted expiry, and tick expires active/provisioning leases by the same wall-time comparison. A backwards wall change can defer that comparison. `internal/manager/scheduling.go` separately retains elapsed deadlines and detects wall rollback for queued latest-start waits; it does not establish equivalent protection for ordinary active lifetimes.
+
+The specification requires sleep to count and clock changes not to silently extend leases. The workspace-clock candidate and its scoped source/model gates do not prove this separate manager requirement. Record active expiry/renewal, suspend, rollback, restart and provider live-hold eligibility as explicit follow-up work. This checkpoint is source inspection only: no system clock change, injected-clock test, new native workflow or active-lifetime acceptance is claimed.
+
 ## October 24, 2026: corrected finite primitive component passes
 
 The fresh successor changes only the reporting invariant to require both 33 cases and cursor membership in 1..34. The original cases, Init/Next/CasesHold, configuration and terminal readout remain exact. No warning is suppressed or allowlisted. The accepted 36-root graph is unchanged; a separate finite-stage overlay contains the one-line wrapper strengthening.
