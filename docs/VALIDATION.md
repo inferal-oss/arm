@@ -1,5 +1,13 @@
 # Validation record
 
+## October 24, 2026: narrow Darwin restoration correction — scoped controls pass
+
+The successor compares terminal configuration separately from exactly two documented Darwin state bits: PENDIN may change, and FWASWRITTEN may become set but cannot disappear. Every other flag, unknown bit, control character and speed remains exact; other platforms retain exact comparison. It adds bounded exclusive raw restoration evidence and changes no native setter, input read/flush, process ownership or quota. The original failures and subsequent diagnostic remain retained failures.
+
+Direct pinned-Python commands pass29 pure terminal methods,12 unchanged web methods, four native Wait methods and all four harmless PTY methods, with no skips. The first native invocation mistakenly supplies a relative evidence path and exits2 at argument validation; its output is retained separately before the reviewed absolute-path invocation passes. All1,196 source files and13 selected pins remain exact after each successful phase. The PTY run exits0 in2.221s: normal resize and active cancellation obtain positive Wait/drain/group/configuration closure; injected descriptor-close and transcript-sync failures retain unknown ledgers without child receipts. Cancellation retains its existing failed-abort status and KILL errno1; the passing control does not erase that error. All cases retain raw before/request/after values.
+
+Root result SHA-256 is `79676ed7397c8b29ce3becaed560ecadeef707e3992c35705b22bc4ac9df9c7a`, cataloguing249 artifacts under ignored `.cache/`. These controls run fixed harmless Python children in private PTYs. They open no Terminal window, start no ARM backend and do not establish rendered dashboard or current-tree reconnect acceptance. Those gates remain required before integration.
+
 ## October 23, 2026: full duplicate-COMMIT prefix — accepted scoped control
 
 Read-only wrapper review found three acceptance gaps before execution: elapsed command bounds were recorded without being enforced, the nineteen named hashes did not exclude extra staged modules, and native owner PID was not joined to the phase checkpoint. The fresh wrapper enforces exact30/1800 command deadlines with finite nonnegative elapsed values, exact nonsymlink staged-file closure, and PID/PGID/SID plus planned controller/Java argv joins. All49 pure AST/private-file controls pass once, no skips/warnings; the model, oracle and three accepted native helper files remain unchanged. Earlier unexecuted wrapper freezes and the original325-state failure remain retained.
