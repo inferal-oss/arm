@@ -1,5 +1,11 @@
 # Validation record
 
+## October 24, 2026: complete consumer source graph passes all 36 roots
+
+After the reviewed one-space Startup token repair and committed Darwin runner correction, one fresh complete graph invocation passes all 36 root commands. Exact parsing, semantic processing and private-module lint sets match every root's full dependency closure, with the root last and no warnings, errors or unknown output. All 36 native receipts bind the planned source/argv/deadline, exit 0, one Wait, retired/reaped ownership, no signals or unknown state, and PID/group absence. The native aggregate is 10.05317075s, within the unchanged 300-second aggregate and 30-second phase limits; the 128 MiB heap/8 MiB stack settings are not a total RSS guarantee.
+
+Root and independent review verify the exact 189-artifact result roster, its 183-file raw index, source snapshots, selected tools, current eleven runner files and five protected user edits. Actual outer session 57199 reaches terminal exit 0; no retry or finite check occurs. Result manifest is `f13408d554d432f1cfdfe87d6375e98dd68183dc0ec842e7fa435910657bded6`; independent review is `b38fca622ca9c914e9a9c487aa653c33a4cb507688c56020470072e4337b7df5`, under ignored `.cache/`. The earlier failed graph and unknown owner remain failed and retained. This accepts complete source processing only. The separate finite controls, policy/math proofs, partial-row semantics and full consumer composition remain required.
+
 ## October 24, 2026: Darwin exit normalization passes macOS and Linux regression gates
 
 The focused correction changes only Darwin's CLD_EXITED return value to its low eight bits. The original raw ctypes storage remains unchanged; receipts do not newly store it. Exact PID/signo/error/code checks, killed/dumped signal limits, Linux's eight-bit domain, authority retirement and the sole native Wait comparison remain unchanged. Source review catches and corrects a Linux portability error in the new fake-Darwin tests before execution: those controls must pin SIGCHLD as well as NSIG.
