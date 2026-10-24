@@ -1,5 +1,13 @@
 # Validation record
 
+## October 24, 2026: later consumer source review finds five replay blockers
+
+The new isolated stage 15–29 candidate adds source-order control, typed manifest outcomes, partial return/cache comparisons and a real partial-journal fixture. Root and independent read-only review verify all 118 source artifacts. The journal return-field correction matches the actual observer: `Capacity.Rows` is assigned before journal decoding and can exceed the successfully appended prefix after a late failure.
+
+Review finds five concrete source gaps before execution: inherited global shape checks exclude actual startup events; bounds-query retirement is required before the native source retires it; empty core queries lack literal source order; absent-schema completion incorrectly requires an ignored Close error to be nil; and eager manifest syntax reconstruction can reject a partial SQL read even when the native decoder was never reached. The bounds query must have successful EOF and a Close receipt before the row query, but its deferred retirement occurs after that table read. These are model/exporter findings, not demonstrated production failures.
+
+Source manifest is `ca3354f34aca47a78d87969a56440ac6198bf56355f21727ec661acea43e9adb`; independent review is `40414f8ec26b31b77a90a9ea6c14c4671883de638fb896270263d79a3dae080c`, retained under ignored `.cache/`. The candidate and initial pure-test bootstrap remain unexecuted. Corrected successors must preserve the full event/cut history and exact ownership, source availability and error distinctions; source-processing or primitive success cannot substitute for actual replay. Full outer composition, decoder/policy/math/resource proofs, native/Linux and memory gates remain open.
+
 ## October 24, 2026: ordinary active-lease clock scope remains open
 
 The accompanying read-only provider live-hold proposal binds 32 inspected source/evidence inputs and is retained under ignored `.cache/` with manifest `8accb074c04d0cfd7f5a7c4b5e9ec9525c560b191071192a16bec211e57546f6`. It selects manager-owned paired retention and a separate coordinator, records start/grant/release race contracts and preserves written-scratch/clock limitations. This is an implementation direction, not adapter code, native validation or authority to expose public dispatch.
