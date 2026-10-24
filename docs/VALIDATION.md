@@ -1,5 +1,13 @@
 # Validation record
 
+## October 24, 2026: first Decide producer native gate fails
+
+The isolated `Decide` producer freezes 21 changed files over the accepted Join component. Source review corrects a failed-recordTime continuation gap before execution and preserves the normal production method body. The first source plan contains stale copied validation counts; its metadata-only successor binds 1,012 source inputs and the exact 90/769/68 test rosters without changing source or commands. Root's initial preflight checker separately mistakes package/name pairs for bare names and fails before any native launch. That checker and failure are retained; the narrow tuple-conversion correction passes complete preflight.
+
+One focused race-test command then runs through actual tool session 25555 to terminal exit 1. Raw JSON records 63 named cases started, 36 passed and 27 failed; the expected 90-case set is not reached. Failures include closed source-row/reference validation, an extra projection field/closure and an identity invocation reference. The package reports 3.747s; this is not a compilation or whole-command duration. Full development, normal and vet phases remain unlaunched. Complete source, probe, formal, Go-tool/standard-source and protected root-file postflight stays exact.
+
+The failed eleven-artifact result manifest is `5789702c9ef215b6b799354f756d05a025f06ba7b9d86b9a2936409db981efc4`, under ignored `.cache/`; raw log hash is `1977039c8718e8efb676ca01f6d2151f4f9ca4d287ce81256180a2bee6cd1d47`. The original source-review receipt pins the pre-correction root checker; a separate correction receipt binds the actual checker used before and after testing. This is failed development instrumentation acceptance, not a demonstrated production behavior failure. Preserve the source and failed evidence, diagnose every failure class, then review a fresh correction before another invocation. Full clock lifecycle/proof/current-composition/Linux and authenticated-agent gates remain open.
+
 ## October 24, 2026: later consumer source review finds five replay blockers
 
 The new isolated stage 15–29 candidate adds source-order control, typed manifest outcomes, partial return/cache comparisons and a real partial-journal fixture. Root and independent read-only review verify all 118 source artifacts. The journal return-field correction matches the actual observer: `Capacity.Rows` is assigned before journal decoding and can exceed the successfully appended prefix after a late failure.
