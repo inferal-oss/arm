@@ -261,35 +261,61 @@ func TestStatePrivatePathsFenceAndCancellation(t *testing.T) {
 			home, b := stateFixture(t)
 			s := setupState(t, home, b)
 			path := filepath.Join(home, "mesh", ServiceFile)
+			checkMutation := func(operation string, err error) {
+				t.Helper()
+				if err != nil {
+					t.Fatalf("fixture %s failed: %v", operation, err)
+				}
+			}
+			setMode := func(path string, mode os.FileMode) {
+				t.Helper()
+				checkMutation("chmod", os.Chmod(path, mode))
+				info, err := os.Lstat(path)
+				checkMutation("stat mode", err)
+				const fixtureModeBits = os.ModePerm | os.ModeSetuid | os.ModeSetgid | os.ModeSticky
+				if got := info.Mode() & fixtureModeBits; got != mode {
+					t.Fatalf("fixture %s mode mismatch: got %v, want %v", kind, got, mode)
+				}
+			}
 			switch kind {
 			case "symlink":
-				os.Rename(path, path+".old")
-				os.Symlink(path+".old", path)
+				checkMutation("rename", os.Rename(path, path+".old"))
+				checkMutation("symlink", os.Symlink(path+".old", path))
 			case "hardlink":
-				os.Link(path, path+".copy")
+				checkMutation("hardlink", os.Link(path, path+".copy"))
 			case "public":
-				os.Chmod(path, 0644)
+				setMode(path, 0644)
 			case "executable":
-				os.Chmod(path, 0700)
+				setMode(path, 0700)
 			case "special":
-				os.Chmod(path, 0600|os.ModeSetuid)
+				setMode(path, 0600|os.ModeSetuid)
 			case "lock-executable":
-				os.Chmod(filepath.Join(home, "mesh", StateLockName), 0700)
+				setMode(filepath.Join(home, "mesh", StateLockName), 0700)
 			case "lock-special":
-				os.Chmod(filepath.Join(home, "mesh", StateLockName), 0600|os.ModeSetgid)
+				lockPath := filepath.Join(home, "mesh", StateLockName)
+				// A private temp directory may inherit a group other than our effective group.
+				// Set our own group so the kernel can retain the intended SGID fixture bit.
+				checkMutation("chown effective group", os.Chown(lockPath, -1, os.Getegid()))
+				var lockStat unix.Stat_t
+				checkMutation("stat effective group", unix.Lstat(lockPath, &lockStat))
+				if lockStat.Gid != uint32(os.Getegid()) {
+					t.Fatal("fixture lock effective group mismatch")
+				}
+				setMode(lockPath, 0600|os.ModeSetgid)
 			case "directory-special":
-				os.Chmod(filepath.Join(home, "mesh"), 0700|os.ModeSticky)
+				setMode(filepath.Join(home, "mesh"), 0700|os.ModeSticky)
 			case "changed-account":
 				s.Service.Binding.Account = "changed-account"
-				raw, _ := json.Marshal(s.Service)
-				os.WriteFile(path, raw, 0600)
+				raw, err := json.Marshal(s.Service)
+				checkMutation("marshal changed account", err)
+				checkMutation("write changed account", os.WriteFile(path, raw, 0600))
 			case "unknown":
-				os.WriteFile(filepath.Join(home, "mesh", ".ssh-write-interrupted"), []byte("evidence"), 0600)
+				checkMutation("write interrupted marker", os.WriteFile(filepath.Join(home, "mesh", ".ssh-write-interrupted"), []byte("evidence"), 0600))
 			case "fence":
-				os.WriteFile(filepath.Join(home, local.ResetFenceName), []byte("{}"), 0600)
+				checkMutation("write reset fence", os.WriteFile(filepath.Join(home, local.ResetFenceName), []byte("{}"), 0600))
 			}
 			if _, e := ReadState(context.Background(), home, b); e == nil {
-				t.Fatal("unsafe state accepted", s)
+				t.Fatalf("unsafe state accepted (%s)", kind)
 			}
 			if kind == "changed-account" {
 				if _, e := ReviewService(context.Background(), home, b, true, "new service review"); e == nil {
@@ -310,7 +336,11 @@ func TestStatePrivatePathsFenceAndCancellation(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	defer lock.Close()
+	t.Cleanup(func() {
+		if err := lock.Close(); err != nil {
+			t.Fatalf("fixture cancellation lock close failed: %v", err)
+		}
+	})
 	if e = unix.Flock(int(lock.Fd()), unix.LOCK_EX); e != nil {
 		t.Fatal(e)
 	}
