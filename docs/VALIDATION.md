@@ -1,5 +1,19 @@
 # Validation record
 
+## October 24, 2026: Darwin exit normalization passes macOS and Linux regression gates
+
+The focused correction changes only Darwin's CLD_EXITED return value to its low eight bits. The original raw ctypes storage remains unchanged; receipts do not newly store it. Exact PID/signo/error/code checks, killed/dumped signal limits, Linux's eight-bit domain, authority retirement and the sole native Wait comparison remain unchanged. Source review catches and corrects a Linux portability error in the new fake-Darwin tests before execution: those controls must pin SIGCHLD as well as NSIG.
+
+All 40 pure, eight native and 48 offline caller methods pass once on each platform, with exact named rosters and no top-level warnings or skips. The two new native methods execute eight wide/negative exit arguments; each has one native Wait, matching normalized actual exit, retired/reaped ownership, no signals or unknown outcome and positive PID/group absence. All fourteen native command receipts are retained per platform. The original timeout and output-cap commands remain deliberate failures. The Darwin output-cap receipt still retains denied TERM/KILL and its cleanup error; a passing negative test does not turn that into successful cleanup.
+
+The actual Linux snapshot contains 1,179 source files, checked before and after testing. All collected result hashes agree with the remote verification receipt. Exact fixture identity/content checks precede removal, and a separate SSH query confirms absence. Existing user edits retain their original bytes/modes. The 79-file result manifest is `ae377c62c1f74b1030f4cc09aab6cd2fe0bf2caffd8c439ee8adb845579509d0`, retained under ignored `.cache/`. This accepts the narrow runner correction and its caller guards, which use fake prover tools. It runs no new model or proof and does not recover the previous unknown SANY exit.
+
+## October 24, 2026: native Darwin exit-status probe
+
+A fresh compiled C probe runs sixteen children: both `exit` and `_exit`, each with 0, 42, 127, 255, -1, 256, INT_MIN and INT_MAX. Every child has two non-reaping observations followed by exactly one native Wait. All sixteen are reaped, and the compiler and probe parent also have positive native closure without cancellation or signals. On this macOS arm64 host, -1 and INT_MAX produce `waitid` status 16,777,215 and Wait exit code 255; 256 produces status 256 and exit code 0. The low eight bits agree with the native Wait in every measured case. This demonstrates that the helper's existing 0–255 observation guard rejects legitimate Darwin exits.
+
+Root and independent review verify all raw siginfo fields, exact child identities, artifact/source/tool closure and native receipts. The result manifest is `4d8b395c488e14a7944e88bc2b94a21b76a1593b81d9e3289a6aee2f7166009d`; independent review is `94193b074d32e787ba7e40997032355b65b8cf1c98c43cb3e1c116a8d8a1a326`, retained under ignored `.cache/`. This is a measured exit-status diagnostic, not a model pass or a universal kernel-domain proof. It does not reconstruct the missing raw status of the earlier SANY process. The helper correction and regression validation follow separately.
+
 ## October 24, 2026: complete consumer graph attempt fails — parser and native observation
 
 One externally pinned, independently reviewed 36-root SANY invocation passes the first root, AcknowledgedLedgerTrace, including complete parsing/semantic/lint closure and native exit 0/one Wait in 0.307817083s. The second root, ApplyRowProtocol, emits a fatal parse error in the captured historical StartupLedgerTrace dependency at line 339, column 86, at the unspaced `e.lengths=<<0,...>>` boundary. Its independent raw output cannot establish a graph pass. The other 34 root commands remain unlaunched; finite checking and TLAPM do not run.

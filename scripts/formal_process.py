@@ -191,8 +191,12 @@ class DarwinBackend:
             return None
         if value.pid != pid or value.signo != signal.SIGCHLD or value.error != 0:
             raise RuntimeError('crossed or malformed Darwin waitid result')
-        if value.code == 1 and 0 <= value.status <= 255:
-            return value.status
+        if value.code == 1:
+            # Darwin may expose a wider signed C-int exit value here. Leave
+            # raw storage untouched (not saved in receipts); normalize only
+            # CLD_EXITED to waitpid's low8.
+            # Owned.reap still requires the exact native Wait to agree.
+            return value.status & 0xff
         if value.code in (2, 3) and 1 <= value.status < signal.NSIG:
             return -value.status
         raise RuntimeError('unsupported Darwin waitid result')

@@ -453,6 +453,106 @@ class Pure(unittest.TestCase):
             with self.subTest(cut=cut):
                 self.fixture_constructor_failure(RuntimeError('constructor'), ValueError('cleanup'), cut)
 
+    def darwin_result(self, *, pid=3210, signo=20, error=0, code=1, status=0,
+                      result=0, native_errno=0):
+        # Bypass __init__: real ctypes storage, but no CDLL/native call.
+        backend = owner.DarwinBackend.__new__(owner.DarwinBackend)
+        observations = []
+        def native(kind, selected, pointer, flags):
+            self.assertEqual((kind, selected, flags), (1, 3210, 37))
+            value = pointer._obj
+            value.pid, value.signo, value.error = pid, signo, error
+            value.code, value.status = code, status
+            raw = bytes(value)
+            observations.append((value, raw))
+            owner.ctypes.set_errno(native_errno)
+            return result
+        backend.function = Mock(side_effect=native)
+        return backend, observations
+
+    @patch.object(owner.signal,'NSIG',32)
+    @patch.object(owner.signal,'SIGCHLD',20)
+    def test_darwin_exit_signed_int_normalizes_without_changing_raw(self):
+        for raw in (0, 42, 127, 255, 256, 257, 65536, 0xffffff,
+                    0x7fffffff, -1, -256, -0x80000000):
+            with self.subTest(raw=raw):
+                backend, captured = self.darwin_result(status=raw)
+                self.assertEqual(backend.observe(3210), raw & 255)
+                self.assertEqual(len(captured), 1)
+                value, before = captured[0]
+                self.assertEqual(value.status, raw)
+                self.assertEqual(bytes(value), before)
+                backend.function.assert_called_once()
+
+    @patch.object(owner.signal,'NSIG',32)
+    @patch.object(owner.signal,'SIGCHLD',20)
+    def test_darwin_exit_normalization_keeps_exact_identity_and_code_guards(self):
+        changes = ({'pid':3211}, {'signo':19}, {'error':1},
+                   {'code':0}, {'code':4}, {'code':5}, {'code':6},
+                   {'code':2,'status':0}, {'code':2,'status':32},
+                   {'code':3,'status':256}, {'code':3,'status':-1})
+        for change in changes:
+            with self.subTest(change=change):
+                backend, _ = self.darwin_result(**change)
+                with self.assertRaises(RuntimeError):backend.observe(3210)
+        backend, _ = self.darwin_result(pid=0)
+        self.assertIsNone(backend.observe(3210))
+        for code in (2, 3):
+            for status in (1, 15, 31):
+                with self.subTest(code=code,status=status):
+                    backend, _ = self.darwin_result(code=code,status=status)
+                    self.assertEqual(backend.observe(3210), -status)
+
+    @patch.object(owner.signal,'NSIG',32)
+    @patch.object(owner.signal,'SIGCHLD',20)
+    def test_darwin_native_error_and_invalid_pid_never_normalize(self):
+        backend, _ = self.darwin_result(result=-1,native_errno=10)
+        with self.assertRaises(OSError) as error:backend.observe(3210)
+        self.assertEqual(error.exception.errno,10)
+        for pid in (True,None,0,-1,0x80000000):
+            with self.subTest(pid=pid):
+                backend, _ = self.darwin_result()
+                with self.assertRaises(ValueError):backend.observe(pid)
+                backend.function.assert_not_called()
+
+    @patch.object(owner.signal,'NSIG',32)
+    @patch.object(owner.signal,'SIGCHLD',20)
+    def test_darwin_normalized_exit_still_requires_exact_sole_wait(self):
+        for raw, waited in ((0xffffff,255), (256,0), (256,7)):
+            with self.subTest(raw=raw,waited=waited):
+                value = fake_owned()
+                value.backend, _ = self.darwin_result(status=raw)
+                self.assertEqual(value.observe(),raw & 255)
+                with patch.object(owner.os,'waitpid',return_value=(3210,waited << 8)) as wait, \
+                        patch.object(owner.os,'killpg') as send:
+                    if waited == (raw & 255):
+                        self.assertEqual(value.reap(),waited)
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'disagrees'):value.reap()
+                        self.assertIsNotNone(value.unknown)
+                    with self.assertRaises(RuntimeError):value.reap()
+                    with self.assertRaises(RuntimeError):value.cancel()
+                    self.assertEqual(wait.call_count,1)
+                    send.assert_not_called()
+                self.assertFalse(value.authority)
+                self.assertTrue(value.retired)
+                self.assertTrue(value.reaped)
+                self.assertEqual(value.process.returncode,waited)
+
+
+    def test_linux_exited_domain_remains_eight_bit(self):
+        backend = owner.LinuxBackend.__new__(owner.LinuxBackend)
+        constants = {'P_PID':1,'WEXITED':4,'WNOHANG':1,'WNOWAIT':32,
+                     'CLD_EXITED':1,'CLD_KILLED':2,'CLD_DUMPED':3}
+        with ExitStack() as stack:
+            for name,value in constants.items():
+                stack.enter_context(patch.object(owner.os,name,value,create=True))
+            native = stack.enter_context(patch.object(owner.os,'waitid',create=True))
+            for status in (-1,256,0xffffff):
+                with self.subTest(status=status):
+                    native.return_value=types.SimpleNamespace(si_pid=3210,si_code=1,si_status=status)
+                    with self.assertRaises(RuntimeError):backend.observe(3210)
+
 
 class Native(unittest.TestCase):
     def setUp(self):
@@ -474,6 +574,32 @@ class Native(unittest.TestCase):
     def test_nonzero_expected_status(self):
         self.assertEqual(self.run_python("raise SystemExit(7)",'nonzero',expected=7),'')
         self.assertEqual(self.receipt('nonzero')['owner']['observed_exit'],7)
+
+    def checked_exit_argument(self, requested, name):
+        self.run_python('import os,signal;signal.alarm(3);os._exit(' + str(requested) + ')',
+                        name,expected=requested & 255,timeout=5)
+        receipt = self.receipt(name)
+        value = receipt['owner']
+        self.assertEqual(receipt['status'],'passed_native_command_only')
+        self.assertEqual(receipt['actual_exit'],requested & 255)
+        self.assertEqual(value['observed_exit'],requested & 255)
+        self.assertEqual(value['native_wait_calls'],1)
+        self.assertEqual(value['native_wait_status'] >> 8 & 255,requested & 255)
+        self.assertTrue(value['retired']);self.assertTrue(value['reaped'])
+        self.assertFalse(value['authority'])
+        self.assertFalse(value['strongly_quarantined_until_native_reap'])
+        self.assertIsNone(value['unknown']);self.assertEqual(value['signals'],[])
+        self.assertEqual(value['post_wait_absence'],{'pid':'absent','group':'absent'})
+
+    def test_wide_exit_arguments_match_native_wait(self):
+        for index, requested in enumerate((256,257,65536,0xffffff,0x7fffffff)):
+            with self.subTest(requested=requested):
+                self.checked_exit_argument(requested,'wide-'+str(index))
+
+    def test_negative_exit_arguments_match_native_wait(self):
+        for index, requested in enumerate((-1,-256,-0x80000000)):
+            with self.subTest(requested=requested):
+                self.checked_exit_argument(requested,'negative-'+str(index))
 
     def test_signal_status(self):
         self.run_python('import os,signal;os.kill(os.getpid(),signal.SIGTERM)','signal',expected=-15)
