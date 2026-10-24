@@ -1,5 +1,11 @@
 # Validation record
 
+## October 24, 2026: provider shutdown-order review finding
+
+The first five provider-retention findings have independently reviewed source corrections. A separate test-only successor adds a coherent changed-current-outcome control: after a real first End, the current hold and both ordinary outcomes are changed canonically while the original journal remains unchanged; a repeated End before any Status must refuse. Its 101 proposed named cases have not compiled or run.
+
+Further root and independent source inspection finds a shutdown-order defect before that gate: the candidate queries and ends held leases under the initial manager lock before `cancelShareScopes` and workspace cancellation/join. The database permits one open connection; an admitted workspace callback can hold it while awaiting cancellation, as the existing workspace transaction/Close regression demonstrates. The new query can prevent Close from reaching that cancellation. This is a source-derived candidate defect, not a native reproduction or a current-main regression. All candidate freezes remain unchanged and unexecuted. The correction must retain early stop notification, cancel/join outside the manager lock, and perform provider ending SQL only in the later locked phase. A real held-provider/workspace-transaction regression and separate old-order negative control are being prepared before execution.
+
 ## October 24, 2026: actual Decide Linux and complete consumer source graph pass
 
 Four CGo-free Linux/AArch64 test images cross-compile through direct trusted tool commands, with complete source/tool/probe/standard-source and protected-file checks before and after each build. Actual remote execution passes every case from the native roster once: workspace 780 plus manager 27 development cases and workspace 61 plus manager seven normal cases, with no failures or skips. Four native ownership receipts establish actual zero exits, reaping, retirement and post-Wait PID/group absence. The worker reports 15.194152537s. Linux standalone execution is separate from the earlier native race evidence; the existing owned cleanup can signal under its retained authority, so this is not a no-signals or universal descendant-containment claim.
