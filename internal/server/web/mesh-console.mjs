@@ -149,7 +149,8 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     if(!ui.d.contains(document.activeElement))(ui.foot.querySelector('.mesh-decline')??ui.foot.querySelector('button'))?.focus();
   }
   function editHandoff(op){
-    const ui=modal('Hand off unresolved operation','MESH / WORKFLOW EXCLUSION'),facts=el('dl','mesh-facts');row(facts,'Exact operation',op.key,true);row(facts,'Recorded phase',phaseLabel(op));ui.body.append(facts);
+    const ui=modal('Hand off unresolved operation','MESH / WORKFLOW EXCLUSION'),facts=el('dl','mesh-facts');row(facts,'Exact operation',op.key,true);row(facts,'Recorded phase',phaseLabel(op));row(facts,'Operation revision',String(op.revision));ui.body.append(facts);
+    const fingerprint=el('details','mesh-trust metric-technical'),full=el('code','mesh-mono',op.recovery_sha256);full.setAttribute('aria-label','Full handoff review SHA-256 fingerprint');fingerprint.append(el('summary','','Handoff review fingerprint · SHA-256'),el('p','mesh-muted','This fingerprint binds the exact operation snapshot being handed off. A changed operation requires a fresh review.'),full);ui.body.append(fingerprint);
     note(ui.body,op.recovery_effect||'Release only this workflow exclusion. This does not establish remote cleanup, revoke trust, close listeners or release any lease.','warning');
     note(ui.body,'Inspect the recorded review and result before proceeding. Other operators may be able to prepare a new change after handoff; unresolved resource and trust obligations remain.');
     const form=el('form'),reason=field(form,'Reason and operator recovery plan',{type:'textarea',required:true}),error=el('p','mesh-form-error');form.id='mesh-handoff-form';form.append(error);ui.body.append(form);

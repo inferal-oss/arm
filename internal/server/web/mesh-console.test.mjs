@@ -143,3 +143,30 @@ test('unknown install review is readable but cannot acquire a misleading trust/d
  await f.find('Connect a node…').fire('click');await flush();const form=f.form();form.all().find(n=>n.tagName==='input').value='fixture';form.all().find(n=>n.tagName==='textarea').value='unsupported review';await form.fire('submit');
  assert.equal(f.find('Trust and connect'),undefined);assert.equal(f.find('Confirm disconnect'),undefined);assert.match(f.dialog().textContent,/no approval is available here/);
 });
+
+async function exactHandoffFixture(){
+ const f=fixture(['key']);Object.assign(f.op,{kind:'disconnect',phase:'incomplete',revision:8,worker_live:false,recovery_sha256:'b'.repeat(64),recovery_effect:'Workflow exclusion only; old obligations remain.'});
+ await f.find('Look up uncertain operation · key').fire('click');
+ await f.find('Hand off unresolved operation…').fire('click');return f;
+}
+test('handoff review exposes exact operation revision and full recovery fingerprint while keeping default no',async()=>{
+ const f=await exactHandoffFixture(),body=f.dialog().querySelector('.mesh-dialog-body');
+ assert.ok(body.all().some(n=>n.className==='mesh-fact'&&n.textContent==='Operation revision8'));
+ const disclosure=body.all().find(n=>n.tagName==='details'&&n.all().some(c=>c.tagName==='summary'&&c.textContent==='Handoff review fingerprint · SHA-256'));
+ assert.ok(disclosure,'human-labelled recovery fingerprint disclosure required');
+ assert.notEqual(disclosure.open,true,'technical digest stays behind optional disclosure');
+ const full=disclosure.all().find(n=>n.tagName==='code');assert.equal(full.textContent,'b'.repeat(64));
+ assert.notEqual(full.textContent,f.op.review_sha256,'handoff uses recovery snapshot fingerprint, not original trust review');
+ assert.equal(full.getAttribute('aria-label'),'Full handoff review SHA-256 fingerprint');
+ assert.equal(f.doc.activeElement.textContent,'Keep operation protected');
+ const before=JSON.stringify(f.op);await f.find('Keep operation protected').fire('click');
+ assert.equal(f.dialog(),undefined);assert.equal(JSON.stringify(f.op),before);
+ assert.equal(f.calls.filter(([name])=>name==='mesh_operator_handoff').length,0);
+});
+test('handoff review sends unchanged exact key revision recovery digest and reason only after explicit submit',async()=>{
+ const f=await exactHandoffFixture();await f.form().fire('submit');
+ assert.equal(f.calls.filter(([name])=>name==='mesh_operator_handoff').length,0,'blank reason sends nothing');
+ f.form().all().find(n=>n.tagName==='textarea').value='Preserve exact old obligations for manual recovery';
+ await f.form().fire('submit');
+ assert.deepEqual(f.calls.filter(([name])=>name==='mesh_operator_handoff'),[['mesh_operator_handoff',{key:'key',revision:8,review_sha256:'b'.repeat(64),reason:'Preserve exact old obligations for manual recovery'}]]);
+});
