@@ -1,5 +1,13 @@
 # Validation record
 
+## October 24, 2026: Linux terminal controls pass; rendered Terminal access refused
+
+The exact five terminal helper/test scripts pass four actual native Wait and four harmless PTY cases on Linux arm64 with Python3.14.4. Each command exits0; all eight raw method names occur once, with no skips. Each PTY case restores termios and FD flags exactly, without Darwin allowances. Normal resize/cancellation obtain positive native closure; the descriptor-close and transcript-sync fault ledgers remain unknown without child receipts. Selected interpreter/standard-library and script hashes match before/after; this is not universal runtime closure. The existing invalid-escape SyntaxWarning remains visible.
+
+A passive report checker first fails because its regex/newline literals are overescaped. The corrected checker inspects the same completed tests; no candidate rerun occurs. All89 remote content files are collected and rehashed. Cleanup then rechecks the exact private directory identity, complete file/directory rosters and read-only parent/child PID/group absence before removing only that test fixture. A separate SSH postflight confirms it absent. Root result manifest is `a6cf16e076543e5800c66193a4dfb64e1d72b40c6315c506cc64f1a349071e51`, retaining115 artifacts under ignored `.cache/`. No ARM backend, user configuration or service is modified.
+
+The subsequent rendered-window attempt stops at the computer-use entry point: `cua.getApp('Terminal')` refuses access to Terminal.app for safety reasons. No controller, backend or new window starts, and no alternate access path is attempted. This is an unavailable UI capability, not rendered acceptance; that gate and current-tree reconnect integration remain pending.
+
 ## October 24, 2026: narrow Darwin restoration correction — scoped controls pass
 
 The successor compares terminal configuration separately from exactly two documented Darwin state bits: PENDIN may change, and FWASWRITTEN may become set but cannot disappear. Every other flag, unknown bit, control character and speed remains exact; other platforms retain exact comparison. It adds bounded exclusive raw restoration evidence and changes no native setter, input read/flush, process ownership or quota. The original failures and subsequent diagnostic remain retained failures.
