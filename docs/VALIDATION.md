@@ -1,5 +1,13 @@
 # Validation record
 
+## October 24, 2026: consumer lexical correction passes 35 pure controls
+
+The focused two-file successor fixes both source-review findings: empty JSON slots require the original exact four-field empty document, including field types; expected old syntax trees come from the separately hash-bound original parser rather than the new implementation. All other 26 source files, both 77-row mappings and original trace chronology remain unchanged.
+
+One direct trusted-tool invocation uses the pinned isolated, unoptimized Python interpreter and the committed native command owner with a 15-second acceptance deadline and 16 MiB output cap. All 35 named methods run exactly once and pass, with zero warnings, skipped tests, failures or errors. Unittest reports 0.014s; native command elapsed time is 0.223086917s. Its receipt records one actual native Wait, zero exit, retired signalling authority, no signals/cancellation/cleanup error or unknown owner, and PID/group absence. The retained 2,905-byte log still matches its original descriptor identity. All 160 source artifacts, 28 source files, selected interpreter/framework, eleven current runner files and five existing user edits remain exact before/after. Independent review reparses the complete output and verifies the receipt, current file identity and closed artifact roster without rerunning tests.
+
+The seven-artifact result manifest is `ad991033e454948e51a5b8a67c1c640997ca453717d127e9b8c44815ea0ad4c0`; source manifest is `0a5b028582fd1dfc70188c36d386af6ae8a5075348398daabd6aad43cfd8c615`; independent actual review is `6d9691b059b778e5882f84bf5ccba827605489561356df8e09b3d51775dbfcf2`, all retained under ignored `.cache/`. This accepts pure syntax and tested old-parser correspondence only. Complete TLA+ graph parsing, primitive model checks, partial-row policy/math, all 29 stages/77-row mappings, actual histories, current composition and the 384 MiB gate remain unfinished.
+
 ## October 24, 2026: corrected PrepareJoin native component passes
 
 The combined source correction addresses all four audited gaps without changing native policy, original observations or recorder limits. Independent source review catches an additional mismatch before execution: the exact transaction-view literal omitted call fields already populated by the live recorder. That source remains unexecuted; the minimal one-line successor includes those fields and retains all reviewed controls.
