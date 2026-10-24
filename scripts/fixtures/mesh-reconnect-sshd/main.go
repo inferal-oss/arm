@@ -26,6 +26,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshssh"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -262,10 +263,35 @@ func (s *endpoint) observe(v observation) error {
 	}
 	return e
 }
+
+type fixedInvocation struct {
+	action string
+	argv   []string
+	input  string
+}
+
+// Only these two commands are eligible: the selected ARM bootstrap and the
+// product's exact fixed read-only probe for the same private image/home. Native
+// argv always comes from this trusted builder, never from received shell text.
+func (s *endpoint) fixedCommand(command string) (fixedInvocation, bool) {
+	if command == s.arm+" mesh bootstrap" {
+		return fixedInvocation{action: "bootstrap", argv: []string{s.arm, "mesh", "bootstrap"}}, true
+	}
+	probe, err := meshssh.FixedReadOnlyProbe(s.arm, s.home)
+	if err != nil || command != strings.Join(probe.Remote, " ") {
+		return fixedInvocation{}, false
+	}
+	return fixedInvocation{action: "read_only_probe", argv: probe.Argv, input: probe.Input}, true
+}
+
 func (s *endpoint) execute(ctx context.Context, c ssh.Channel, payload []byte, connection net.Conn) {
 	defer c.Close()
 	var request struct{ Command string }
-	if ssh.Unmarshal(payload, &request) != nil || request.Command != s.arm+" mesh bootstrap" {
+	if ssh.Unmarshal(payload, &request) != nil {
+		return
+	}
+	invocation, allowed := s.fixedCommand(request.Command)
+	if !allowed {
 		return
 	}
 	// Reject sessions beyond the fixed fixture budget before reading/launching.
@@ -280,9 +306,17 @@ func (s *endpoint) execute(ctx context.Context, c ssh.Channel, payload []byte, c
 	if e != nil {
 		return
 	}
-	p, e := parsePacket(raw, s.home)
-	if e != nil {
-		return
+	var p packet
+	if invocation.action == "read_only_probe" {
+		if string(raw) != invocation.input {
+			return
+		}
+		p = packet{Action: invocation.action, Home: s.home}
+	} else {
+		p, e = parsePacket(raw, s.home)
+		if e != nil {
+			return
+		}
 	}
 	s.mu.Lock()
 	stage, e := s.takeFault(p)
@@ -295,10 +329,13 @@ func (s *endpoint) execute(ctx context.Context, c ssh.Channel, payload []byte, c
 	var waitErr error
 	if stage != "before" {
 		childCtx, cancel := context.WithTimeout(ctx, 25*time.Second)
-		command := fixtureCommand(childCtx, s.arm, "mesh", "bootstrap")
+		command := fixtureCommand(childCtx, invocation.argv[0], invocation.argv[1:]...)
 		clientIP, clientPort, _ := net.SplitHostPort(connection.RemoteAddr().String())
 		serverIP, serverPort, _ := net.SplitHostPort(connection.LocalAddr().String())
-		command.Env = append(os.Environ(), "ARM_MESH_BOOTSTRAP=1", "SSH_CONNECTION="+strings.Join([]string{clientIP, clientPort, serverIP, serverPort}, " "))
+		command.Env = os.Environ()
+		if invocation.action == "bootstrap" {
+			command.Env = append(command.Env, "ARM_MESH_BOOTSTRAP=1", "SSH_CONNECTION="+strings.Join([]string{clientIP, clientPort, serverIP, serverPort}, " "))
+		}
 		command.Stdin = bytes.NewReader(raw)
 		command.Stdout = stdout
 		command.Stderr = stderr
@@ -437,7 +474,10 @@ func (s *endpoint) serve(ctx context.Context, connection net.Conn) {
 					request.Reply(ok, nil)
 				case "exec":
 					var v struct{ Command string }
-					ok := ssh.Unmarshal(request.Payload, &v) == nil && v.Command == s.arm+" mesh bootstrap"
+					ok := ssh.Unmarshal(request.Payload, &v) == nil
+					if ok {
+						_, ok = s.fixedCommand(v.Command)
+					}
 					request.Reply(ok, nil)
 					if ok {
 						s.execute(sessionCtx, c, request.Payload, connection)

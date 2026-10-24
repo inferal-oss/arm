@@ -86,7 +86,11 @@ func ProbeHost(ctx context.Context, destination, binary, home string, expected I
 	if !validDestination(destination) || !regexp.MustCompile(`^(arm|/[A-Za-z0-9_./-]+)$`).MatchString(binary) {
 		return p, expected, fmt.Errorf("safe direct destination/installed binary required")
 	}
-	observed, raw, e := exchange(ctx, destination, []string{"/bin/sh", "-c", quote(probeScript), "arm-probe", quote(binary), quote(home)}, strings.NewReader("ARM_READONLY_PROBE\n"), expected, 20*time.Second)
+	invocation, e := FixedReadOnlyProbe(binary, home)
+	if e != nil {
+		return p, expected, e
+	}
+	observed, raw, e := exchange(ctx, destination, invocation.Remote, strings.NewReader(invocation.Input), expected, 20*time.Second)
 	if e != nil {
 		return p, observed, e
 	}
