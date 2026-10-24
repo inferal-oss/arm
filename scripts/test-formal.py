@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import types
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL = ROOT / 'formal' / 'share-preparation'
@@ -182,6 +183,32 @@ def tla_value(value):
     raise ValueError('unsupported TLA literal')
 
 
+def process_runtime():
+    requested = Path(__file__).with_name('formal_process.py')
+    if requested.is_symlink() or not requested.is_file():
+        raise RuntimeError('formal process helper must be a regular source file')
+    path = requested.resolve(strict=True)
+    name_key = '_arm_formal_process_' + hashlib.sha256(str(path).encode()).hexdigest()
+    raw = path.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    runtime = sys.modules.get(name_key)
+    if runtime is None:
+        # Execute these exact captured source bytes, never an mtime/size-valid
+        # __pycache__ file whose executable contents were not hash-captured.
+        runtime = types.ModuleType(name_key)
+        runtime.__file__ = str(path)
+        sys.modules[name_key] = runtime
+        try:
+            exec(compile(raw, str(path), 'exec'), runtime.__dict__)
+        except BaseException:
+            sys.modules.pop(name_key, None)
+            raise
+    if Path(runtime.__file__).resolve() != path or runtime.SOURCE_SHA256 != digest:
+        raise RuntimeError('formal process helper source changed')
+    return runtime
+
+
+
 class Gate:
     def __init__(self, args):
         self.args = args
@@ -205,6 +232,12 @@ class Gate:
             for p in sorted(self.run.iterdir()) if p.suffix in ('.tla', '.cfg')}
         self.summary['tools'] = {}
         self.initial_state = None
+        self.capture_runner_sources()
+
+    def capture_runner_sources(self):
+        self.runner_sources = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in
+            (Path(__file__).resolve(), Path(__file__).with_name('formal_process.py').resolve())}
+        self.summary['runner_sources'] = dict(self.runner_sources)
 
     def tool(self, name, path, version_args=None):
         resolved = Path(shutil.which(str(path)) or path).resolve(strict=True)
@@ -242,95 +275,19 @@ class Gate:
                 raise ValueError('cannot identify actual bundled default SMT backend')
 
     def command(self, argv, name, expected=0, env=None, timeout=180):
-        args = list(map(str, argv))
-        log = self.run / (name + '.log')
-        process = subprocess.Popen(args, cwd=ROOT, env=env, text=True,
-                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                   start_new_session=True)
-
-        kill_attempted = False
-        signal_errors = []
-
-        def write_log(output):
-            diagnostics = ''.join(
-                '\n[arm formal runner] ' + signal.Signals(sig).name +
-                ' process-group ' + str(process.pid) + ' failed (errno=' +
-                str(number) + '); cleanup unconfirmed\n'
-                for sig, number in signal_errors)
-            log.write_text(output + diagnostics)
-
-        def signal_group(sig):
-            nonlocal kill_attempted
-            if kill_attempted:
-                return
-            # An attempted KILL is not proof of cleanup. Do not retry a denied
-            # KILL in the outer exception handler and mask the original failure.
-            if sig == signal.SIGKILL:
-                kill_attempted = True
-            try:
-                os.killpg(process.pid, sig)
-            except ProcessLookupError:
-                pass
-            except OSError as error:
-                # Keep collecting output even when signalling is refused. Only
-                # TERM and KILL are attempted, so this metadata is bounded.
-                signal_errors.append((sig, error.errno))
-
-        cleanup_attempted = False
-        try:
-            try:
-                output, _ = process.communicate(timeout=timeout)
-            except subprocess.TimeoutExpired as expired:
-                # A prover or Go test can own further processes. Killing only its
-                # parent leaves that work running and can keep the output pipe open.
-                signal_group(signal.SIGTERM)
-                try:
-                    output, _ = process.communicate(timeout=0.5)
-                except subprocess.TimeoutExpired:
-                    signal_group(signal.SIGKILL)
-                    try:
-                        output, _ = process.communicate(timeout=5)
-                    except subprocess.TimeoutExpired as stuck:
-                        output = stuck.output or expired.output or ''
-                        if isinstance(output, bytes):
-                            output = output.decode(errors='replace')
-                        write_log(output)
-                        process.stdout.close()
-                        try:
-                            process.wait(timeout=1)
-                        except subprocess.TimeoutExpired:
-                            pass
-                        cleanup_attempted = True
-                        raise RuntimeError(name + ' timed out and process-group cleanup did not finish; see ' + str(log)) from stuck
-                # A descendant may close stdout yet keep running after its parent
-                # exits on TERM. Finish cleanup even when communicate returned early.
-                signal_group(signal.SIGKILL)
-                write_log(output)
-                cleanup_attempted = True
-                raise subprocess.TimeoutExpired(args, timeout, output=output) from expired
-        except BaseException:
-            if cleanup_attempted:
-                raise
-            # The runner, not its isolated tool group, receives Ctrl-C/TERM.
-            # Stop owned work before propagating cancellation or another error.
-            signal_group(signal.SIGKILL)
-            try:
-                output, _ = process.communicate(timeout=5)
-            except subprocess.TimeoutExpired as stuck:
-                output = stuck.output or ''
-                if isinstance(output, bytes):
-                    output = output.decode(errors='replace')
-                process.stdout.close()
-                try:
-                    process.wait(timeout=1)
-                except subprocess.TimeoutExpired:
-                    pass
-            write_log(output)
-            raise
-        write_log(output)
-        if process.returncode != expected:
-            raise RuntimeError(name + ' exited ' + str(process.returncode) + '; see ' + str(log))
-        return output
+        # Lazy construction also supports imported Gate.__new__/run callers.
+        # The helper installs one process-wide main-thread cancellation owner;
+        # importing this runner alone never changes signal/native state.
+        captured = getattr(self, 'runner_sources', None)
+        if captured is not None and captured != {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in captured}:
+            raise RuntimeError('captured formal runner/helper source changed')
+        runtime = process_runtime()
+        if captured is not None:
+            helper = str(Path(__file__).with_name('formal_process.py').resolve())
+            if captured.get(helper) != runtime.SOURCE_SHA256:
+                raise RuntimeError('loaded formal helper differs from initial capture')
+        command = runtime.Command(self.run, ROOT)
+        return command.command(argv, name, expected=expected, env=env, timeout=timeout)
 
     def tlc(self, module, config, name, extra=(), expected=0):
         return self.command([self.args.java, '-Djava.io.tmpdir=' + str(self.java_tmp), '-XX:+UseParallelGC', '-Xmx512m', '-cp',

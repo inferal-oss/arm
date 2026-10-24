@@ -89,7 +89,7 @@ class PublishedGate(base.Gate):
         super().__init__(args)
         self.summary['proof_roster']=['PublishedAgentsProof.tla']
         self.summary['scope']='one source lifecycle; second destination key has a fixed externally admitted source'
-        paths=[ROOT/'go.mod',ROOT/'go.sum',Path(__file__),ROOT/'scripts/test-formal.py']
+        paths=[ROOT/'go.mod',ROOT/'go.sum',Path(__file__),ROOT/'scripts/test-formal.py',ROOT/'scripts/formal_process.py']
         paths.extend(sorted((ROOT/'internal').rglob('*.go')))
         self.summary['go_source_sha256']={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     def check(self):

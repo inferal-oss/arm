@@ -59,8 +59,9 @@ class Gate(base.Gate):
   self.summary['inputs']=self.input_hashes()
   self.export=load('worker_observations',self.run/'export_trace.py');self.capacity=load('worker_capacity_observations',self.run/'export_capacity.py')
   self.proof_tools={}
+  self.capture_runner_sources()
  def input_hashes(self):
-  paths=[ROOT/'go.mod',ROOT/'go.sum',ROOT/'scripts/test-formal.py',Path(__file__)]
+  paths=[ROOT/'go.mod',ROOT/'go.sum',ROOT/'scripts/test-formal.py',ROOT/'scripts/formal_process.py',Path(__file__)]
   for folder in ('internal','cmd'):paths.extend((ROOT/folder).rglob('*.go'))
   paths.extend(MODEL/name for name in MODEL_FILES)
   return {str(p.relative_to(ROOT)):digest(p) for p in sorted(set(paths))}

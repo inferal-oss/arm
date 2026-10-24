@@ -71,7 +71,7 @@ PROOF_MODULES = ('JournalCapacityProof','SharePublicationFieldsProof',
     'SharePublicationNativeProof','SharePublicationInitProof',*ACTION_MODULES,
     'SharePublicationProof')
 FORMAL_FILES = frozenset(m+'.tla' for m in MODULE_IMPORTS)|{'capacity.cfg','safety.cfg'}
-CODE_FILES = ('scripts/test-formal-publication.py','scripts/test-formal.py')
+CODE_FILES = ('scripts/test-formal-publication.py','scripts/test-formal.py','scripts/formal_process.py')
 
 
 def file_digest(path):
@@ -229,6 +229,7 @@ class PublicationGate(base.Gate):
         self.summary['sources']={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(self.run.iterdir()) if p.suffix in ('.tla','.cfg')}
         self.initial_state=None
         self.code_sources={name:file_receipt(ROOT/name) for name in CODE_FILES}
+        self.capture_runner_sources()
     def check(self):
         log=self.tlc('SharePublication.tla',self.run/'safety.cfg','safety')
         explored=re.findall(r'(\d+) distinct states found, (\d+) states left on queue',log)

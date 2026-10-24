@@ -10,6 +10,8 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+from types import SimpleNamespace
 
 path=Path(__file__).with_name('test-published-agents-formal.py')
 spec=importlib.util.spec_from_file_location('publication_suite',path)
@@ -17,6 +19,29 @@ suite=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(suite)
 
 class PublicationRunnerGuards(unittest.TestCase):
+
+    def test_changed_helper_after_constructor_refuses_before_child(self):
+        with tempfile.TemporaryDirectory(prefix='formal-initial-binding-') as directory:
+            captured = Path(directory)
+            fake_runner = captured/'test-formal.py'
+            fake_helper = captured/'formal_process.py'
+            fake_runner.write_bytes(b'captured runner')
+            fake_helper.write_bytes(b'captured helper')
+            work = suite.base.ROOT/'.tla'/('binding-'+captured.name)
+            args = SimpleNamespace(mode='check', targets=[], work_dir=str(work))
+            try:
+                with patch.object(suite.base, '__file__', str(fake_runner)):
+                    instance = suite.PublishedGate(args)
+                    self.assertIn(str(fake_helper.resolve()), instance.runner_sources)
+                    fake_helper.write_bytes(b'changed helper before first child')
+                    with patch.object(suite.base, 'process_runtime', side_effect=AssertionError('no runtime/child')):
+                        with self.assertRaisesRegex(RuntimeError, 'source changed'):
+                            instance.command(['never-started'], 'binding')
+            finally:
+                import shutil
+                if work.exists():
+                    shutil.rmtree(work)
+
     def state(self):
         row={name:False if kind is bool else 0 if kind is int else '' for name,kind in suite.FIELDS.items()}
         row['schema']='arm.published-agents/v1'
@@ -159,7 +184,7 @@ class PublicationCLIProcessGuards(unittest.TestCase):
                 case=Path(tmp)
                 leader,child=case/'leader.pid',case/'child.pid'
                 helper=case/'java'
-                child_code="import os,signal,sys,time;from pathlib import Path;signal.signal(signal.SIGTERM,signal.SIG_IGN);print('child ready',flush=True);Path(sys.argv[1]).write_text(str(os.getpid()));time.sleep(60)"
+                child_code="import os,signal,sys,time;from pathlib import Path;signal.signal(signal.SIGTERM,signal.SIG_IGN);print('child ready',flush=True);Path(sys.argv[1]).write_text(str(os.getpid()));time.sleep(20)"
                 helper.write_text('#!'+sys.executable+'\n'+
                     'import os,signal,subprocess,sys,time\nfrom pathlib import Path\n'+
                     "if '-version' in sys.argv: print('offline Java fixture');raise SystemExit(0)\n"+
@@ -167,22 +192,22 @@ class PublicationCLIProcessGuards(unittest.TestCase):
                     'signal.signal(signal.SIGTERM,signal.SIG_IGN)\n'+
                     'Path(os.environ["REVIEW_LEADER"]).write_text(str(os.getpid()))\n'+
                     'subprocess.Popen([sys.executable,"-u","-c",'+repr(child_code)+',os.environ["REVIEW_CHILD"]])\n'+
-                    'print("tool ready",flush=True)\ntime.sleep(60)\n')
+                    'print("tool ready",flush=True)\ntime.sleep(20)\n')
                 helper.chmod(0o700)
                 jar=case/'fixture.jar';jar.write_text('offline fixture')
                 work=case/'work'
                 env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',REVIEW_LEADER=str(leader),REVIEW_CHILD=str(child))
-                process=subprocess.Popen([sys.executable,str(path),'--mode','check','--java',str(helper),'--tlc-jar',str(jar),'--work-dir',str(work)],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+                process=suite.base.process_runtime().Fixture([sys.executable,str(path),'--mode','check','--java',str(helper),'--tlc-jar',str(jar),'--work-dir',str(work)],case/'outer.log',suite.ROOT,env=env)
                 try:
                     until=time.monotonic()+10
                     while (not child.exists() or not child.stat().st_size) and time.monotonic()<until:
-                        if process.poll() is not None:self.fail('wrapper exited before owned fixture: '+process.communicate()[0])
+                        if process.terminal() is not None:self.fail('wrapper exited before owned fixture: '+process.wait()[1])
                         time.sleep(.02)
                     self.assertTrue(child.exists() and child.stat().st_size,'owned child did not start')
                     pids=[int(p.read_text()) for p in (leader,child)]
-                    process.send_signal(sig)
-                    output,_=process.communicate(timeout=10)
-                    self.assertEqual(process.returncode,128+sig,output)
+                    process.send(sig)
+                    actual_exit,output=process.wait(timeout=10)
+                    self.assertEqual(actual_exit,128+sig,output)
                     logs=list(work.glob('run-*/safety.log'))
                     self.assertEqual(len(logs),1)
                     self.assertIn('tool ready',logs[0].read_text())
@@ -193,11 +218,7 @@ class PublicationCLIProcessGuards(unittest.TestCase):
                         self.assertTrue(not status or status.startswith(('Z','X')),'owned tool or descendant survived signal')
                     self.assertFalse(list(work.glob('run-*/summary.json')),'interrupted run emitted success receipt')
                 finally:
-                    # Cleanup is restricted to this exact fixture-created tool group.
-                    if leader.exists() and leader.stat().st_size:
-                        try:os.killpg(int(leader.read_text()),signal.SIGKILL)
-                        except ProcessLookupError:pass
-                    if process.poll() is None:process.kill()
-                    process.communicate(timeout=5)
+                    process.close()  # Never signal a PID/group from saved files.
+                    # The inner harmless parent/child are independently20s bounded.
 
 if __name__=='__main__':unittest.main()

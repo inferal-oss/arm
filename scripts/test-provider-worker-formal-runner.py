@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Real offline worker-runner guards; fake tools never validate a theorem."""
 import importlib.util,json,os,shutil,signal,subprocess,sys,tempfile,time,unittest
+from unittest.mock import patch
+from types import SimpleNamespace
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 SCRIPT=ROOT/'scripts/test-provider-worker-formal.py'
@@ -16,6 +18,30 @@ def running(pid):
  return result.returncode==0 and bool(result.stdout.strip()) and not result.stdout.lstrip().startswith('Z')
 
 class Guards(unittest.TestCase):
+
+ def test_changed_helper_after_constructor_refuses_before_child(self):
+     with tempfile.TemporaryDirectory(prefix='formal-initial-binding-') as directory:
+         captured = Path(directory)
+         fake_runner = captured/'test-formal.py'
+         fake_helper = captured/'formal_process.py'
+         fake_runner.write_bytes(b'captured runner')
+         fake_helper.write_bytes(b'captured helper')
+         module = load(SCRIPT)
+         work = module.base.ROOT/'.tla'/('binding-'+captured.name)
+         args = SimpleNamespace(mode='check', targets=[], work_dir=str(work))
+         try:
+             with patch.object(module.base, '__file__', str(fake_runner)):
+                 instance = module.Gate(args)
+                 self.assertIn(str(fake_helper.resolve()), instance.runner_sources)
+                 fake_helper.write_bytes(b'changed helper before first child')
+                 with patch.object(module.base, 'process_runtime', side_effect=AssertionError('no runtime/child')):
+                     with self.assertRaisesRegex(RuntimeError, 'source changed'):
+                         instance.command(['never-started'], 'binding')
+         finally:
+             import shutil
+             if work.exists():
+                 shutil.rmtree(work)
+
  def setUp(self):
   (ROOT/'.tla').mkdir(exist_ok=True)
   self.temp=tempfile.TemporaryDirectory(prefix='worker-runner-guard-',dir=ROOT/'.tla')
@@ -63,7 +89,7 @@ class Guards(unittest.TestCase):
     clone=self.path/('clone-'+kind)
     (clone/'scripts').mkdir(parents=True);(clone/'formal/provider-worker').mkdir(parents=True);(clone/'internal').mkdir()
     for name in ('go.mod','go.sum'):shutil.copyfile(ROOT/name,clone/name)
-    for name in ('test-formal.py','test-provider-worker-formal.py'):shutil.copyfile(ROOT/'scripts'/name,clone/'scripts'/name)
+    for name in ('test-formal.py','formal_process.py','test-provider-worker-formal.py'):shutil.copyfile(ROOT/'scripts'/name,clone/'scripts'/name)
     original_module=load(SCRIPT)
     for name in original_module.MODEL_FILES:shutil.copyfile(ROOT/'formal/provider-worker'/name,clone/'formal/provider-worker'/name)
     actual_go=clone/'internal/owned.go';actual_go.write_text('package owned\n')
@@ -82,28 +108,24 @@ class Guards(unittest.TestCase):
   self.assertFalse(marker.exists())
  def signal_case(self,number):
   config=self.fixture();ready=self.path/'ready.json'
-  tool=self.fake_tool("if '--version' in sys.argv: print('fixture version')\nelif '--config' in sys.argv: print("+repr(config)+")\nelif '--summary' in sys.argv: print('obligations_count = 5')\nelse:\n child=subprocess.Popen([sys.executable,'-c','import time;time.sleep(120)'])\n open("+repr(str(ready))+",'w').write(json.dumps({'leader':os.getpid(),'child':child.pid,'pgid':os.getpgrp()}))\n time.sleep(120)\n")
-  process=subprocess.Popen([sys.executable,str(SCRIPT),'--mode','prove','--tlapm',str(tool),'--work-dir',str(self.path/'signal-work')],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True)
+  tool=self.fake_tool("if '--version' in sys.argv: print('fixture version')\nelif '--config' in sys.argv: print("+repr(config)+")\nelif '--summary' in sys.argv: print('obligations_count = 5')\nelse:\n child=subprocess.Popen([sys.executable,'-c','import time;time.sleep(20)'])\n open("+repr(str(ready))+",'w').write(json.dumps({'leader':os.getpid(),'child':child.pid,'pgid':os.getpgrp()}))\n time.sleep(20)\n")
+  process=load(SCRIPT).base.process_runtime().Fixture([sys.executable,str(SCRIPT),'--mode','prove','--tlapm',str(tool),'--work-dir',str(self.path/'signal-work')],self.path/'outer.log',ROOT)
   metadata=None
   try:
    until=time.monotonic()+10
-   while not ready.exists() and time.monotonic()<until and process.poll() is None:time.sleep(.02)
+   while not ready.exists() and time.monotonic()<until and process.terminal() is None:time.sleep(.02)
    if not ready.exists():
-    out,err=process.communicate(timeout=3);self.fail('owned fake prover did not start: '+out+err)
+    _,out=process.wait(timeout=3);self.fail('owned fake prover did not start: '+out)
    metadata=json.loads(ready.read_text());self.assertTrue(running(metadata['leader']));self.assertTrue(running(metadata['child']))
-   os.kill(process.pid,number);out,err=process.communicate(timeout=10)
-   self.assertEqual(process.returncode,128+number,(out,err));self.assertFalse(running(metadata['leader']));self.assertFalse(running(metadata['child']))
+   process.send(number);actual_exit,out=process.wait(timeout=10)
+   self.assertEqual(actual_exit,128+number,out);self.assertFalse(running(metadata['leader']));self.assertFalse(running(metadata['child']))
    reports=list((self.path/'signal-work').glob('run-*/summary.json'));self.assertEqual(len(reports),1)
    report=json.loads(reports[0].read_text());self.assertEqual(report['result'],'failed')
    self.assertTrue(list(reports[0].parent.glob('prove-*.log')))
   finally:
-   if process.poll() is None:
-    os.kill(process.pid,signal.SIGTERM)
-    try:process.communicate(timeout=3)
-    except subprocess.TimeoutExpired:os.killpg(process.pid,signal.SIGKILL);process.communicate(timeout=3)
-   if metadata and any(running(metadata[k]) for k in ('leader','child')):
-    try:os.killpg(metadata['pgid'],signal.SIGKILL)
-    except ProcessLookupError:pass
+   process.close() # Only the still-retained outer native owner may signal.
+   # Inner fixed harmless children independently expire at20s; saved IDs never
+   # grant a post-Wait cleanup authority, including on a failed assertion.
  def test_actual_cli_sigterm_cleans_descendants_and_reports(self):self.signal_case(signal.SIGTERM)
  def test_actual_cli_sigint_cleans_descendants_and_reports(self):self.signal_case(signal.SIGINT)
 

@@ -189,7 +189,12 @@ tla-prove: tla-tlapm
 	$(PYTHON) scripts/test-published-agents-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
-test-formal: tla-tools
+.PHONY: test-formal-process
+test-formal-process:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-process.py pure
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-process.py native "$(CURDIR)/.tla/formal-process-evidence"
+
+test-formal: tla-tools test-formal-process
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-publication-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-published-agents-formal-runner.py

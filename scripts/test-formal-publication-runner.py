@@ -26,6 +26,29 @@ def rows():
     return [row,copy.deepcopy(row)]
 
 class PublicationGuards(unittest.TestCase):
+
+    def test_changed_helper_after_constructor_refuses_before_child(self):
+        with tempfile.TemporaryDirectory(prefix='formal-initial-binding-') as directory:
+            captured = Path(directory)
+            fake_runner = captured/'test-formal.py'
+            fake_helper = captured/'formal_process.py'
+            fake_runner.write_bytes(b'captured runner')
+            fake_helper.write_bytes(b'captured helper')
+            work = gate.base.ROOT/'.tla'/('binding-'+captured.name)
+            args = SimpleNamespace(mode='check', targets=[], work_dir=str(work))
+            try:
+                with mock.patch.object(gate.base, '__file__', str(fake_runner)):
+                    instance = gate.PublicationGate(args)
+                    self.assertIn(str(fake_helper.resolve()), instance.runner_sources)
+                    fake_helper.write_bytes(b'changed helper before first child')
+                    with mock.patch.object(gate.base, 'process_runtime', side_effect=AssertionError('no runtime/child')):
+                        with self.assertRaisesRegex(RuntimeError, 'source changed'):
+                            instance.command(['never-started'], 'binding')
+            finally:
+                import shutil
+                if work.exists():
+                    shutil.rmtree(work)
+
     def test_closed_native_scopes_and_scalar_types(self):
         valid=rows();gate.states(valid)
         for mutate in (lambda r:r[1]['native'].pop('verification'),
@@ -223,28 +246,27 @@ class PublicationGuards(unittest.TestCase):
 import json,os,signal,subprocess,sys,time
 if '--version' in sys.argv:print('synthetic cancellation fixture');sys.exit(0)
 if '--config' in sys.argv:print(CONFIG,end='');sys.exit(0)
-child=subprocess.Popen([sys.executable,'-c','import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(120)'])
+child=subprocess.Popen([sys.executable,'-c','import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(20)'])
 print('owned fixture child '+str(child.pid),flush=True)
 with open(READY+'.tmp','w') as f:json.dump({'child':child.pid,'group':os.getpgrp()},f)
 os.replace(READY+'.tmp',READY)
 while True:time.sleep(1)
 """.replace('CONFIG',repr(self.config)).replace('READY',repr(str(ready)))
             exe.write_text(program);exe.chmod(0o700)
-            process=subprocess.Popen([sys.executable,str(g.test_root/'scripts/test-formal-publication.py'),
+            process=gate.base.process_runtime().Fixture([sys.executable,str(g.test_root/'scripts/test-formal-publication.py'),
                 '--mode','prove','--tlapm',str(exe),'--work-dir',str(g.test_root/'.tla/cli')],
-                stdout=subprocess.PIPE,stderr=subprocess.STDOUT,start_new_session=True,
-                env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),text=True)
+                g.test_root/'outer.log',g.test_root,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
             owned=None
             try:
                 deadline=time.monotonic()+15
-                while not ready.exists() and time.monotonic()<deadline and process.poll() is None:time.sleep(0.02)
+                while not ready.exists() and time.monotonic()<deadline and process.terminal() is None:time.sleep(0.02)
                 if not ready.exists():
-                    output,_=process.communicate(timeout=2)
+                    _,output=process.wait(timeout=2)
                     self.fail('fixture did not reach parser child: '+output)
                 owned=json.loads(ready.read_text())
-                process.send_signal(sig)
-                output,_=process.communicate(timeout=10)
-                self.assertEqual(process.returncode,code,output)
+                process.send(sig)
+                actual_exit,output=process.wait(timeout=10)
+                self.assertEqual(actual_exit,code,output)
                 summaries=list((g.test_root/'.tla/cli').glob('run-*/summary.json'))
                 self.assertEqual(len(summaries),1)
                 doc=json.loads(summaries[0].read_text());self.assertEqual(doc['status'],'incomplete')
@@ -273,10 +295,7 @@ while True:time.sleep(1)
                     time.sleep(0.02)
                 self.assertTrue(not state or state.startswith('Z'),'owned child still live: '+state)
             finally:
-                if process.poll() is None:
-                    os.killpg(process.pid,signal.SIGKILL);process.communicate(timeout=5)
-                if owned:
-                    try:os.killpg(owned['group'],signal.SIGKILL)
-                    except ProcessLookupError:pass
+                process.close()  # Fresh outer owner only; no historical group.
+                # Inner harmless fixture children independently expire at20s.
 
 if __name__=='__main__':unittest.main()

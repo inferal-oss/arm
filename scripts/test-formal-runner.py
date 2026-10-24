@@ -22,6 +22,29 @@ formal = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(formal)
 
 class RunnerTests(unittest.TestCase):
+
+    def test_changed_helper_after_constructor_refuses_before_child(self):
+        with tempfile.TemporaryDirectory(prefix='formal-initial-binding-') as directory:
+            captured = Path(directory)
+            fake_runner = captured/'test-formal.py'
+            fake_helper = captured/'formal_process.py'
+            fake_runner.write_bytes(b'captured runner')
+            fake_helper.write_bytes(b'captured helper')
+            work = formal.ROOT/'.tla'/('binding-'+captured.name)
+            args = argparse.Namespace(mode='check', targets=[], work_dir=str(work))
+            try:
+                with patch.object(formal, '__file__', str(fake_runner)):
+                    instance = formal.Gate(args)
+                    self.assertIn(str(fake_helper.resolve()), instance.runner_sources)
+                    fake_helper.write_bytes(b'changed helper before first child')
+                    with patch.object(formal, 'process_runtime', side_effect=AssertionError('no runtime/child')):
+                        with self.assertRaisesRegex(RuntimeError, 'source changed'):
+                            instance.command(['never-started'], 'binding')
+            finally:
+                import shutil
+                if work.exists():
+                    shutil.rmtree(work)
+
     def setUp(self):
         (formal.ROOT / '.tla').mkdir(exist_ok=True)
         self.temp = tempfile.TemporaryDirectory(prefix='runner-test-', dir=formal.ROOT / '.tla')
@@ -172,10 +195,10 @@ class RunnerTests(unittest.TestCase):
         child = ('import os, signal, sys, time; from pathlib import Path; '
                  'signal.signal(signal.SIGTERM, signal.SIG_IGN); '
                  'Path(sys.argv[1]).write_text(str(os.getpid())); '
-                 'print("child ready", flush=True); time.sleep(60)')
+                 'print("child ready", flush=True); time.sleep(20)')
         parent = ('import subprocess, sys, time; '
                   'subprocess.Popen([sys.executable, "-u", "-c", sys.argv[1], sys.argv[2]]); '
-                  'print("parent ready", flush=True); time.sleep(60)')
+                  'print("parent ready", flush=True); time.sleep(20)')
 
         for closed_output in (False, True):
             with self.subTest(closed_output=closed_output):
@@ -200,10 +223,9 @@ class RunnerTests(unittest.TestCase):
                         time.sleep(0.02)
                     self.assertFalse(self.process_is_running(pid), 'owned descendant is still executing after timeout')
                 finally:
-                    if pidfile.exists():
-                        pid = int(pidfile.read_text())
-                        if self.process_is_running(pid):
-                            os.kill(pid, signal.SIGKILL)
+                    # No historical PID signal: this fixed harmless tool and its
+                    # descendant have independent20s lifetime bounds.
+                    pass
 
     def test_signal_failure_keeps_timeout_and_drained_output(self):
         # Inject only the signal refusal; the owned tool and its timeout/drain
@@ -216,7 +238,7 @@ class RunnerTests(unittest.TestCase):
                 pidfile = self.root / ('denied-' + str(denied) + '.pid')
                 command = ('import os, sys, time; from pathlib import Path; '
                            'Path(sys.argv[1]).write_text(str(os.getpid())); '
-                           'print("owned tool ready", flush=True); time.sleep(60)')
+                           'print("owned tool ready", flush=True); time.sleep(20)')
                 attempts = []
                 def killpg(pid, sig):
                     attempts.append(sig)
@@ -239,10 +261,9 @@ class RunnerTests(unittest.TestCase):
                     self.assertFalse(self.process_is_running(int(pidfile.read_text())))
                     self.assertEqual(gate.summary['gates'], [])
                 finally:
-                    if pidfile.exists():
-                        pid = int(pidfile.read_text())
-                        if self.process_is_running(pid):
-                            os.kill(pid, signal.SIGKILL)
+                    # No historical PID signal: this fixed harmless tool and its
+                    # descendant have independent20s lifetime bounds.
+                    pass
 
     def test_cli_signals_preserve_output_and_stop_owned_work(self):
         for sig in (signal.SIGINT, signal.SIGTERM):
@@ -261,11 +282,11 @@ if '-help' in sys.argv:
     raise SystemExit(1)
 signal.signal(signal.SIGTERM, signal.SIG_IGN)
 Path(os.environ['FORMAL_TEST_LEADER']).write_text(str(os.getpid()))
-code = "import os, signal, sys, time; from pathlib import Path; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('child ready', flush=True); Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(60)"
+code = "import os, signal, sys, time; from pathlib import Path; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('child ready', flush=True); Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(20)"
 subprocess.Popen([sys.executable, '-u', '-c', code, os.environ['FORMAL_TEST_CHILD']])
 print('tool ready', flush=True)
 Path(os.environ['FORMAL_TEST_READY']).write_text('ready')
-time.sleep(60)
+time.sleep(20)
 ''')
                 java = case / 'java'
                 java.write_text('#!/bin/sh\nexec ' + shlex.quote(sys.executable) + ' -u ' + shlex.quote(str(helper)) + ' "$@"\n')
@@ -277,18 +298,18 @@ time.sleep(60)
                            FORMAL_TEST_READY=str(ready_file))
                 command = [sys.executable, str(formal.ROOT / 'scripts/test-formal.py'), '--mode', 'check',
                            '--java', str(java), '--tlc-jar', str(jar), '--work-dir', str(work)]
-                runner = subprocess.Popen(command, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                runner = formal.process_runtime().Fixture(command, case/'outer.log', formal.ROOT, env=env)
                 try:
                     deadline = time.monotonic() + 10
                     while (not child_file.exists() or child_file.stat().st_size == 0 or not ready_file.exists()) and time.monotonic() < deadline:
-                        if runner.poll() is not None:
-                            self.fail('runner exited before signal fixture started: ' + runner.communicate()[0])
+                        if runner.terminal() is not None:
+                            self.fail('runner exited before signal fixture started: ' + runner.wait()[1])
                         time.sleep(0.02)
                     self.assertTrue(child_file.exists(), 'tool descendant did not start')
                     self.assertTrue(ready_file.exists(), 'tool did not publish output readiness')
-                    os.kill(runner.pid, sig)
-                    output, _ = runner.communicate(timeout=10)
-                    self.assertEqual(runner.returncode, 128 + sig, output)
+                    runner.send(sig)
+                    actual_exit, output = runner.wait(timeout=10)
+                    self.assertEqual(actual_exit, 128 + sig, output)
                     logs = list(work.glob('run-*/safety.log'))
                     self.assertEqual(len(logs), 1)
                     self.assertIn('tool ready', logs[0].read_text())
@@ -300,14 +321,9 @@ time.sleep(60)
                             time.sleep(0.02)
                         self.assertFalse(self.process_is_running(pid), 'owned work is live after runner signal')
                 finally:
-                    for path in (leader_file, child_file):
-                        if path.exists() and path.stat().st_size:
-                            pid = int(path.read_text())
-                            if self.process_is_running(pid):
-                                os.kill(pid, signal.SIGKILL)
-                    if runner.poll() is None:
-                        runner.kill()
-                    runner.communicate(timeout=5)
+                    runner.close()  # Only this still-retained fresh outer child.
+                    # Inner tools are independently20s bounded; saved PID files
+                    # never authorize a signal after native Wait or unknown.
 
     def test_closed_tlc_edges_and_scalar_types(self):
         states = [{k: False if t is bool else 0 if t is int else 'x' for k, t in formal.FIELDS.items()} for _ in range(2)]
@@ -334,10 +350,10 @@ time.sleep(60)
 from pathlib import Path
 signal.signal(signal.SIGTERM, lambda *_: Path(sys.argv[3]).write_text('TERM observed'))
 Path(sys.argv[1]).write_text(str(os.getpid()))
-code = "import os, signal, sys, time; from pathlib import Path; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('child ready', flush=True); Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(60)"
+code = "import os, signal, sys, time; from pathlib import Path; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('child ready', flush=True); Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(20)"
 subprocess.Popen([sys.executable, '-u', '-c', code, sys.argv[2]])
 print('tool ready', flush=True)
-time.sleep(60)
+time.sleep(20)
 ''')
         work = case / 'runs'
         harness = '''import argparse, importlib.util, sys
@@ -353,17 +369,17 @@ except KeyboardInterrupt:
 '''
         command = [sys.executable, '-u', '-c', harness, str(formal.ROOT / 'scripts/test-formal.py'),
                    str(work), str(helper), str(leader_file), str(child_file), str(term_file)]
-        runner = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        runner = formal.process_runtime().Fixture(command, case/'outer.log', formal.ROOT)
         try:
             deadline = time.monotonic() + 10
             while not term_file.exists() and time.monotonic() < deadline:
-                if runner.poll() is not None:
-                    self.fail('timeout fixture exited before TERM grace: ' + runner.communicate()[0])
+                if runner.terminal() is not None:
+                    self.fail('timeout fixture exited before TERM grace: ' + runner.wait()[1])
                 time.sleep(0.01)
             self.assertTrue(term_file.exists(), 'tool did not reach timeout TERM grace')
-            os.kill(runner.pid, signal.SIGINT)
-            output, _ = runner.communicate(timeout=10)
-            self.assertEqual(runner.returncode, 130, output)
+            runner.send(signal.SIGINT)
+            actual_exit, output = runner.wait(timeout=10)
+            self.assertEqual(actual_exit, 130, output)
             logs = list(work.glob('run-*/timeout-interrupt.log'))
             self.assertEqual(len(logs), 1)
             self.assertIn('tool ready', logs[0].read_text())
@@ -375,14 +391,7 @@ except KeyboardInterrupt:
                     time.sleep(0.02)
                 self.assertFalse(self.process_is_running(pid), 'owned work is live after timeout interruption')
         finally:
-            for path in (leader_file, child_file):
-                if path.exists() and path.stat().st_size:
-                    pid = int(path.read_text())
-                    if self.process_is_running(pid):
-                        os.kill(pid, signal.SIGKILL)
-            if runner.poll() is None:
-                runner.kill()
-            runner.communicate(timeout=5)
+            runner.close()  # No historical leader/child PID cleanup.
 
     def test_empty_or_incomplete_proof_is_not_acceptance(self):
         args = argparse.Namespace(work_dir=str(self.root / 'runs'), mode='prove',
