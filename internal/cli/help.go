@@ -15,6 +15,12 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"reviews list":      {usage: "[--agent ID] [--lease ID] [--pending] [--after CURSOR]", summary: "Page bounded retained lease review checkpoints and agent explanations. Reading never acknowledges a checkpoint.", max: 0},
+	"reviews inspect":   {usage: "ID", summary: "Read a checkpoint's captured claims, reason, usage quality, queued demand and exact recipient. Replies and silence never renew or authorize actions.", min: 1, max: 1},
+	"reviews policy":    {usage: "LEASE", summary: "Inspect the optional per-lease policy. Reviews are off by default; profile defaults are not yet supported.", min: 1, max: 1},
+	"reviews configure": {usage: "LEASE --revision N --policy-generation G [OPTIONS]", summary: "Enable optional polling reviews at the exact current lease revision and policy generation, or disable with --off. This changes conversation policy only, never lease entitlement.", min: 1, max: 1},
+	"reviews reply":     {usage: "ID --agent ID --session SESSION --registration GENERATION --why TEXT [--intent needed|release|renew|resize]", summary: "Record exact-session progress and intent idempotently. This never renews, resizes or releases a lease; use ordinary guarded lease operations separately. Free text is data.", min: 1, max: 1},
+
 	"plugins":                             {usage: "[list|inspect NAME] [OPTIONS]", summary: "Discover optional arm-NAME CLI extensions without executing them. Built-ins always win. Use plugins inspect NAME or arm help NAME for metadata; arm NAME --help explicitly executes that extension. This does not register a managed provider.", max: -1},
 	"plugins list":                        {summary: "List bounded PATH metadata without running candidates. Discovery does not check versions, dependencies or provider capabilities; warnings and truncation are explicit.", max: 0},
 	"plugins inspect":                     {usage: "NAME [OPTIONS]", summary: "Resolve one CLI extension without executing it. Root --home/--json are consumed before NAME; every later argument belongs to the extension. Invocation inherits the environment except ARM_HOME is the absolute effective home and ARM_JSON is 1 for ARM's effective JSON mode, otherwise 0. Extension streams remain raw, even with --json. CLI code runs with normal OS privileges; no provider registration or implicit backend startup.", min: 1, max: 1},
@@ -187,6 +193,8 @@ var commandHelps = map[string]commandHelp{
 	"version":                {summary: "Print ARM, Go and platform versions."},
 }
 var groupHelps = map[string]string{
+	"reviews": "  list              Page checkpoints and pending reviews\n  inspect ID        Read claims, reason, usage quality and replies\n  policy LEASE      Inspect optional per-lease cadence\n  configure LEASE   Enable/disable at --revision N --policy-generation G\n  reply ID          Record exact-session explanation; intent only\n",
+
 	"history":                     "  ssh-source                 Review local SSH receipt archival and recovery\n",
 	"history ssh-source":          "  plan                       Read a concrete settled source receipt plan\n  archive                    Archive only reviewed existing receipts\n  inspect KEY                Read the original archive operation\n  reconcile KEY              Explicitly continue only its original steps\n  receipt HOST_ID --key KEY   Read immutable local source evidence\n  recovery plan|inspect|apply Review exact SQLite recovery\n",
 	"history ssh-source recovery": "  plan --key KEY --reason TEXT   Read a full typed journal review\n  inspect KEY                   Read the original saved attempt\n  apply                         Explicitly recover the exact reviewed journal\n",

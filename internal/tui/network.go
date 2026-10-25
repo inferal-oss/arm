@@ -21,9 +21,11 @@ type transport interface {
 }
 
 type snapshot struct {
-	status   model.Status
-	messages []manager.Message
-	contacts []agents.Contact
+	status      model.Status
+	messages    []manager.Message
+	contacts    []agents.Contact
+	reviews     model.LeaseReviewPage
+	reviewError string
 }
 type connectedMsg struct {
 	session transport
@@ -57,6 +59,11 @@ func readSnapshot(ctx context.Context, session transport) (snapshot, error) {
 	}
 	if err := session.Call(ctx, "agents", nil, &data.contacts); err != nil {
 		return data, err
+	}
+	if hasLeaseCheckins(data.status) {
+		if err := session.Call(ctx, "lease_review_list", model.LeaseReviewQuery{Pending: true}, &data.reviews); err != nil {
+			data.reviewError = err.Error()
+		}
 	}
 	return data, nil
 }

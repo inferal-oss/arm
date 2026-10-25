@@ -1,5 +1,30 @@
 # Validation record
 
+## October 25, 2026: optional local lease check-ins — integrated
+
+Current-composition race checks pass 343 named Go cases (manager53/database58/server4/CLI6/TUI222), with six existing TUI preview/worker skips. All134 web cases pass. The original workflow failed only because its reader expected TAP while Node emitted successful spec output; a separate strict reader and ten controls verify the retained original result without relabeling the failed workflow. Targeted vet and six CGo-free Linux/arm64 builds pass. Actual Linux runs the selected147 normal cases (53/58/4/6/26), all passing with six clean original native-command owners. The transport initially refused retained `.config` metadata and known original-owner receipt modes; read-only collection preserves the original failures, verifies the original test bytes/chronology and never reruns tests or reads that directory's contents. Linux collection manifest: `dffdba53d60aba6bd914eb19bad271d4980f8b124953170577129f0591303020`. No Linux race/full-suite claim follows.
+
+The scoped formal workflow completes finite safety (5608 generated/1471 distinct states, depth12, empty queue), nine real producer controls, the actual eight-row Go trace against the complete16-variable safety/witness relation, and four altered-history refusals. Strict TLAPM discharges exactly `ConversationsPreserveEntitlement` and `ConfigureAdvancesWithoutOverflow`. All17 original command receipts close positively. Formal result manifest: `120414f670a6ab76cab48f86e991c43accec7d6e94b3c131a745542f769b93c1`. This is the one-lease/one-checkpoint conversation abstraction, not proof of SQL atomicity, fairness, authentication, kernel enforcement or native clocks.
+
+Actual web and browser-rendered native macOS PTY checks cover pending context, saved explanations, collapsible records, untouched settings review, decline and identical save. The live terminal resizes from144×48 to132×40 while connected, exits0 and restores/drains/closes its owned resources. Read-only before/after CLI captures establish complete policy and lease-entitlement equality; fixed explicit private stop and original backend join both pass. Sixteen actual JPEG observations are retained. Root rehashes all82 final artifacts and independently checks capture equality and matching raw/accepted terminal observations. Final manifest: `baced76dde85b674529b94e6e83924c330bd26a9859a924dc018339763488612`. The original final binder's strict0600 assumption rejected an unchanged original-owner0644 receipt; a reviewed file-only successor accepts only the five exact known receipts inside owned0700 parents and passes without another UI run. Earlier fixture, deadline, cleanup-denial and reader failures remain failures; the old missing inner observation remains unknown. A preliminary mislabelled history screenshot is excluded from pending acceptance. The adapter's close response can race its own HTTP shutdown, despite positive native closure. Web compact resizing and native Terminal.app were not exercised. Check-ins invoke no Codex/Claude CLI; fresh routed real-agent acceptance remains separately pending.
+
+## October 25, 2026: complete paired share comparison and targeted CPU diagnostics
+
+A corrected fixed scheduler completes all36 interleaved128 MiB samples, all43 auxiliary commands and four original server owners with exit0. All12 mounted samples ordinarily unmount, join/drain and report zero handles. Full selected source/tool/module inputs remain equal. Result manifest: `16c51e77ce9dac3002b1c0385dd7f26d28047e0694103ddba0d6afa00c67d38a`. Medians below include all samples and outliers; sizes/rates use MiB.
+
+| Direction / mode | Baseline MiB/s | A1 MiB/s |
+| --- | ---: | ---: |
+| Native → Linux raw TLS | 1214.2 | 1211.4 |
+| Native → Linux verified stream | 509.4 | 535.3 |
+| Native → Linux ordinary mount | 42.9 | 42.0 |
+| Native → Linux explicit1MiB mount | 164.7 | 137.2 |
+| Linux → native raw TLS | 1412.1 | 1410.3 |
+| Linux → native verified stream | 662.7 | 678.0 |
+
+The85–90% practical target is unmet. Three samples per cell do not establish an A1 improvement or statistical causation. The earlier scheduler attempt yielded zero samples after fixture expiry and remains failed.
+
+A separate targeted diagnostic completes20 mounted rows over four lifetimes, with all ordinary mount closures and original owners positive. Eight raw CPU profiles fully decode through16 offline local `go tool pprof -symbolize=none` commands with unchanged profiles and matching producer binaries. Root rehashes all112 artifacts; manifest `1cdcbe68001fa2ad7a5b030fd380347444eaf80e458261d0d84a8f23d39f5593`. Ordinary server sampled CPU is dominated by syscalls (74.55% baseline/76.36%A1 flat); A1 resolution accounts for61.58% cumulative CPU, which overlaps other entries. Ordinary callbacks are about4102 at32KiB versus129 at1MiB. These identify verification/filesystem costs and a possible per-callback transport bottleneck, not measured RTT or exclusive causal attribution. Instrumented rates never replace the clean36; no new cache, permission relaxation or speedup is claimed. Sources and prior unknown external observations remain retained; all-host quiescence is not established.
+
 ## October 24, 2026: positive composite terminal durations — integrated fix
 
 The shared terminal duration parser previously rejected a zero component in valid positive values such as Go's `10m0s`, blocking unchanged default settings from reaching review. It now allows zero components while retaining the positive-total, seven-day, syntax, precision and overflow guards. Three current-tree race cases pass with no skips or stderr: the existing duration/queue contract, generated positive/invalid input cases, and the actual ordinary extension-review path using a generated value. Opening review issues no resource mutation. The heartbeat candidate's separate real-backend unchanged-default confirmation regression also passes, without implying that the heartbeat feature is integrated.
@@ -14,7 +39,7 @@ Eighteen runner controls pass separately. The original cooperative fixture still
 
 The reviewed 19-path subtree-view, Linux FUSE, explicit benchmark and fresh opened-root observation component is integrated. All 1,192 non-document inputs of its 1,195-file frozen source match the current tree; only the three project status documents differ. Current-tree native race checks pass storage50 and view3 cases. The first sandboxed command fails sharefs socket/special-mode fixtures and a codec loopback socket fixture; its raw failure is retained. Repeating only those affected packages outside the sandbox passes all sharefs97 and codec32 named cases. Linux-only FUSE has no runnable macOS tests, rather than a claimed native pass. Affected native vet (including manager), Linux cross-vet and the explicit tagged native benchmark build pass. Prior scoped Linux runtime results apply to these identical component inputs; no new Linux race run is claimed.
 
-The internal component exposes no public mount, consumer grant or settlement authority. Full Linux storage's known unreadable-live-process failures remain unresolved; current read-only checks do not establish host-wide cleanup capability. The 120 MiB plan is admission headroom, not a measured total memory bound. Existing throughput results remain below the agreed target and no optimized benchmark has run.
+The internal component exposes no public mount, consumer grant or settlement authority. Full Linux storage's known unreadable-live-process failures remain unresolved; current read-only checks do not establish host-wide cleanup capability. The 120 MiB plan is admission headroom, not a measured total memory bound. At this checkpoint, existing throughput results remained below target and the optimized benchmark had not yet run; the completed October25 comparison is recorded above.
 
 ## October 24, 2026: prioritized mount optimization correctness — isolated
 

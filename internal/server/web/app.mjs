@@ -5,6 +5,7 @@ import {createIOSelector} from './io-selector.mjs';
 import {jsonView} from './json-view.mjs';
 import {metricHelp, diskBudgetFields} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
+import {leaseReviewPanel, REVIEW_CAPABILITY} from './lease-reviews.mjs';
 import {createDashboardHistory} from './route.mjs';
 import {installDashboardShortcuts} from './dashboard-shortcuts.mjs';
 import {createActivityFeed} from './activity-feed.mjs';
@@ -50,7 +51,8 @@ let leasePreferenceStorage; try { leasePreferenceStorage = localStorage; } catch
 let hideInactiveLeases = readHideInactive(leasePreferenceStorage);
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
 let session = null, retry = 0, retryTimer, refreshTimer, refreshBusy = false, refreshAgain = false;
-let detailPanel = null;
+let detailPanel = null, detailReviews = null;
+const pendingReviewConfigurations = new Set();
 let poolConsole = null;
 let meshConsole = null;
 let detailLeaseID = '';
@@ -67,7 +69,7 @@ function connectionState(text, live = false) {
   $('connection').textContent = text;
   $('connection').dataset.state = live ? 'live' : 'offline';
   state.connected = live;
-  detailPanel?.updateConnection();
+  detailPanel?.updateConnection(); detailReviews?.updateConnection();
   if (!remoteDashboard) { updateActivityFeed(); updateOperatorMessaging(); }
   else if (!live) remoteDashboard.disconnect();
   poolConsole?.updateConnection();
@@ -276,7 +278,7 @@ function applyDashboardRoute(route) {
   poolConsole?.applyRoute(route);
   if (route.lease) loadLease(route.lease);
   else {
-    detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
+    detailRequest++; detailLeaseID = ''; detailReviews?.dispose(); detailReviews = null; detailPanel?.dispose(); detailPanel = null;
     if ($('detail').open) $('detail').close();
     if (hadDetail && route.view === 'resources' && route.pool && poolConsole?.focusLease(previousLease)) return;
     if (hadDetail || previousView !== route.view) document.querySelector('nav button[aria-current]')?.focus();
@@ -540,7 +542,7 @@ function showLease(id) { navigation.navigate({...navigation.current, view, lease
 async function loadLease(id) {
   const request = ++detailRequest;
   detailLeaseID = id;
-  detailPanel?.dispose(); detailPanel = null;
+  detailReviews?.dispose(); detailReviews = null; detailPanel?.dispose(); detailPanel = null;
   $('detail-body').replaceChildren(empty('Loading lease…')); if (!$('detail').open) $('detail').showModal();
   if (!state.connected) { $('detail-body').replaceChildren(empty('Waiting for a connection to inspect this lease…')); return; }
   try {
@@ -551,7 +553,7 @@ async function loadLease(id) {
   } catch (error) { if (request === detailRequest && $('detail').open) $('detail-body').replaceChildren(empty(error.message)); }
 }
 function renderLeaseDetail(lease, leases, request, resultNote = '') {
-  detailPanel?.dispose();
+  detailReviews?.dispose(); detailReviews = null; detailPanel?.dispose();
   const body = $('detail-body'), dl = node('dl');
   for (const [label, value] of [['ID', lease.id], ['State', leaseStateLabel(lease)], ['Reason', lease.request.reason], ['Owner', ownerLabel(lease)], ['Agent', lease.request.agent || '—'], ['Project', lease.request.project || '—'], ['Expires', when(lease.expires_at)]]) dl.append(node('dt', '', label), node('dd', '', value));
   if (lease.exit_code != null) dl.append(node('dt', '', 'Exit code'), node('dd', '', String(lease.exit_code)));
@@ -559,7 +561,7 @@ function renderLeaseDetail(lease, leases, request, resultNote = '') {
   detailPanel = leaseActionPanel({lease, leases, call: (...args) => current.call(...args), connected: () => state.connected && connection === current,
     busy: () => pendingLeaseActions.has(lease.id), onPending: pending => {
       if (pending) pendingLeaseActions.add(lease.id); else pendingLeaseActions.delete(lease.id);
-      detailPanel?.updateConnection();
+      detailPanel?.updateConnection(); detailReviews?.updateConnection();
       // Reopening a detail during a request must not leave its pre-response
       // snapshot actionable when that request finishes with an uncertain result.
       if (!pending && request !== detailRequest && detailLeaseID === lease.id && $('detail').open) loadLease(lease.id);
@@ -570,7 +572,8 @@ function renderLeaseDetail(lease, leases, request, resultNote = '') {
     }});
   body.replaceChildren(dl);
   if (resultNote) { const note = node('p', 'lease-action-feedback', resultNote); note.setAttribute('role', 'status'); body.append(note); }
-  body.append(detailPanel.element, recordJSON(lease, 'Full lease record', `lease:${lease.id}`, true));
+  detailReviews = leaseReviewPanel({lease, renderJSON: recordJSON, call: (...args) => current.call(...args), connected: () => state.connected && connection === current, supported: !session?.context && (state.status?.capabilities ?? []).includes(REVIEW_CAPABILITY), busy: () => pendingReviewConfigurations.has(lease.id), onPending: pending => { if (pending) pendingReviewConfigurations.add(lease.id); else pendingReviewConfigurations.delete(lease.id); detailReviews?.updateConnection(); if (!pending && request !== detailRequest && detailLeaseID === lease.id && $('detail').open) loadLease(lease.id); }, onRefresh: () => loadLease(lease.id)});
+  body.append(detailPanel.element, detailReviews.element, recordJSON(lease, 'Full lease record', `lease:${lease.id}`, true));
   $('close-detail').focus();
 }
 $('close-detail').addEventListener('click', () => $('detail').close());
@@ -579,7 +582,7 @@ $('detail').addEventListener('close', () => {
   // quick Forward. The URL is already authoritative for history-driven closes.
   if ($('detail').open) return;
   if (navigation.current.lease) { navigation.navigate({...navigation.current, view, lease: null}); return; }
-  detailRequest++; detailLeaseID = ''; detailPanel?.dispose(); detailPanel = null;
+  detailRequest++; detailLeaseID = ''; detailReviews?.dispose(); detailReviews = null; detailPanel?.dispose(); detailPanel = null;
 });
 function renderMessages() { updateOperatorMessaging(); }
 

@@ -563,6 +563,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "lease_review_list", "lease_review_inspect", "lease_review_policy", "lease_review_configure", "lease_review_reply":
+		return s.leaseReviewOperation(r.Operation, r.Params)
 	case "ssh_account", "ssh_close", "ssh_key_status", "ssh_key_seal":
 		return s.sshNative(ctx, r.Operation, r.Params)
 	case "provision_runtime":

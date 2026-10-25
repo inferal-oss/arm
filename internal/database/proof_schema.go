@@ -98,8 +98,8 @@ var resetAutoIndexes = map[string]int{
 	"published_agents": 2, "published_agent_changes": 1, "routed_agent_links": 2,
 	"routing_roots": 1, "routing_outbox": 2, "routing_inbox": 2,
 	"routing_graph_issuance": 1, "routing_graph_reports": 1, "routing_graph_observations": 1,
-	"cargo_workloads": 1,
-	"pool_lineage":    1, "pool_claim_bindings": 1,
+	"cargo_workloads": 1, "lease_reviews": 1, "lease_review_policies": 1,
+	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
 }
@@ -108,6 +108,11 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	expected := map[string]bool{}
 	for _, query := range resetSchema {
 		expected[normalizedSchema(query)] = false
+	}
+	reviewObjects := map[string][3]string{}
+	reviewSeen := map[string]bool{}
+	for i, q := range leaseReviewResetSchema {
+		reviewObjects[normalizedSchema(q)] = leaseReviewObjectIdentity[i]
 	}
 	workspaceObjects := map[string]string{}
 	for i, q := range workspaceResetSchema {
@@ -163,6 +168,19 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
+		if identity, ok := reviewObjects[normal]; ok {
+			if kind != identity[0] || name != identity[1] || table != identity[2] {
+				return nil, fmt.Errorf("lease review schema object identity differs")
+			}
+			if reviewSeen[normal] {
+				return nil, fmt.Errorf("duplicate lease review schema object")
+			}
+			reviewSeen[normal] = true
+			if kind == "table" {
+				catalog[table] = nil
+			}
+			continue
+		}
 		if expectedTable, ok := routingObjects[normal]; ok {
 			if kind != "table" || name != expectedTable || table != expectedTable {
 				return nil, fmt.Errorf("routing schema object identity differs")
@@ -208,6 +226,9 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if !seen {
 			return nil, fmt.Errorf("required reset schema object missing: %.160s", query)
 		}
+	}
+	if len(reviewSeen) != 0 && len(reviewSeen) != len(leaseReviewResetSchema) {
+		return nil, fmt.Errorf("partial lease review schema group")
 	}
 	workspaceCount := 0
 	for _, table := range workspaceResetTables {

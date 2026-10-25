@@ -23,6 +23,8 @@ import (
 var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh"}
 
 type dashboardModel struct {
+	checkins                          *leaseCheckins
+	checkinPending                    bool
 	recovery                          *recoveryBrowser
 	pendingRecords                    []pendingRecord
 	pendingStoreError                 string
@@ -86,6 +88,12 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 		}
 		if result.nodeUI != nil && result.nodeUI.session != nil {
 			result.nodeUI.session.Close()
+		}
+		if result.checkinPending && result.checkins != nil {
+			fmt.Fprintln(output, "Check-in settings outcome may be unknown; inspect lease", safe(result.checkins.lease.ID), "and its policy before another change. No retry was sent.")
+			if raw, e := json.Marshal(result.checkins.request); e == nil {
+				fmt.Fprintln(output, "Exact reviewed settings:", safe(string(raw)))
+			}
 		}
 		if result.pending || result.unknownLease != "" {
 			fmt.Fprintln(output, "Lease action outcome may be unknown; inspect lease", safe(result.unknownLease), "before another action.")
@@ -308,6 +316,10 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case poolResultMsg:
 		return m, m.acceptPoolResult(msg)
+	case checkinsReadMsg:
+		return m, m.acceptCheckins(msg)
+	case checkinsResultMsg:
+		return m, m.acceptCheckinResult(msg)
 	case detailMsg:
 		return m, m.acceptDetail(msg)
 	case leaseResultMsg:
@@ -364,6 +376,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		m.input, cmd = m.input.Update(key)
 		return cmd
 	}
+	if m.checkins != nil && m.record == nil {
+		return m.checkinKey(k)
+	}
 	if m.ioPicker != nil {
 		return m.pickerKey(k)
 	}
@@ -416,6 +431,8 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 				m.detail = nil
 				m.viewport.GotoTop()
 			}
+		case "h":
+			return m.openCheckins()
 		case "e":
 			return m.startReview("renew")
 		case "x":
@@ -581,6 +598,17 @@ func (m *dashboardModel) acceptInput() tea.Cmd {
 	m.input.Blur()
 	if strings.HasPrefix(mode, "pool:") {
 		return m.poolAcceptInput(value)
+	}
+	if strings.HasPrefix(mode, "checkin:") && m.checkins != nil {
+		switch strings.TrimPrefix(mode, "checkin:") {
+		case "1":
+			m.checkins.interval = value
+		case "2":
+			m.checkins.contention = value
+		case "3":
+			m.checkins.timeout = value
+		}
+		return nil
 	}
 	switch mode {
 	case "filter":

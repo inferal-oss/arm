@@ -36,6 +36,8 @@ func (m *dashboardModel) controls() []mouseControl {
 		return []mouseControl{{"a", "All"}, {"n", "None"}, {"esc", "Done"}, {"enter", "Toggle"}, {"?", "Help"}}
 	case m.inputMode != "":
 		return []mouseControl{{"enter", "Continue"}, {"esc", "Back"}}
+	case m.checkins != nil && m.record == nil:
+		return m.checkinControls()
 	case m.review != nil:
 		if m.pending {
 			return nil
@@ -55,7 +57,7 @@ func (m *dashboardModel) controls() []mouseControl {
 	case m.record != nil:
 		return []mouseControl{{"enter", "Expand"}, {"esc", "Back"}, {"pgup", "↑"}, {"pgdown", "↓"}}
 	case m.detail != nil:
-		return []mouseControl{{"e", "Extend"}, {"x", "Release"}, {"c", "Cancel"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Back"}}
+		return []mouseControl{{"e", "Extend"}, {"x", "Release"}, {"c", "Cancel"}, {"h", "Check-ins"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Back"}}
 	case m.poolUI != nil:
 		return m.poolControls()
 	case m.view == 6:

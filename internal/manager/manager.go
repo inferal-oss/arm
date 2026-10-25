@@ -43,51 +43,53 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
-	shares             *shareBoundary
-	cargoHelper        CargoHelperSource
-	cargoWorkers       map[string]*cargoWorker
-	workspaces         *workspaceBoundary
-	mu                 sync.Mutex
-	db                 *sql.DB
-	databaseSlot       chan struct{}
-	home, host, owner  string
-	budgetStartupError *model.Error
-	poolStartupError   *model.Error
-	ownerUsername      string
-	capacity           model.Resources
-	jobs               map[string]*job
-	stop               chan struct{}
-	wg                 sync.WaitGroup
-	closing            bool
-	draining           bool
-	shutdownDeadline   time.Time
-	observationMu      sync.RWMutex
-	observations       map[string]model.ResourceMeasurement
-	memoryAvailability model.MemoryAvailability
-	memoryObserved     time.Time
-	diskAvailability   model.DiskAvailability
-	diskObserved       time.Time
-	diskScopeVolume    string
-	diskSampleSlots    chan struct{}
-	diskCollector      func(context.Context, string) model.DiskAvailability
-	storage            *storage.Provider
-	storageErr         error
-	storageJobs        map[string]bool
-	storageExportSlots chan struct{}
-	portSockets        map[string][]*ports.Socket
-	portNamespace      string
-	portErr            error
-	infrastructure     []model.PortBinding
-	inboxChanged       chan struct{}
-	inboxSlots         chan struct{}
-	usages             map[string]workloadSample
-	policyClocks       map[string]incidentClock
-	startClocks        map[string]time.Time
-	scheduleHighwater  time.Time
-	scheduleCheckpoint time.Time
-	scheduleRollback   bool
-	scheduleWallNow    func() time.Time
-	scheduleElapsedNow func() time.Time
+	leaseReviewsUnavailable bool
+	leaseReviewError        string
+	shares                  *shareBoundary
+	cargoHelper             CargoHelperSource
+	cargoWorkers            map[string]*cargoWorker
+	workspaces              *workspaceBoundary
+	mu                      sync.Mutex
+	db                      *sql.DB
+	databaseSlot            chan struct{}
+	home, host, owner       string
+	budgetStartupError      *model.Error
+	poolStartupError        *model.Error
+	ownerUsername           string
+	capacity                model.Resources
+	jobs                    map[string]*job
+	stop                    chan struct{}
+	wg                      sync.WaitGroup
+	closing                 bool
+	draining                bool
+	shutdownDeadline        time.Time
+	observationMu           sync.RWMutex
+	observations            map[string]model.ResourceMeasurement
+	memoryAvailability      model.MemoryAvailability
+	memoryObserved          time.Time
+	diskAvailability        model.DiskAvailability
+	diskObserved            time.Time
+	diskScopeVolume         string
+	diskSampleSlots         chan struct{}
+	diskCollector           func(context.Context, string) model.DiskAvailability
+	storage                 *storage.Provider
+	storageErr              error
+	storageJobs             map[string]bool
+	storageExportSlots      chan struct{}
+	portSockets             map[string][]*ports.Socket
+	portNamespace           string
+	portErr                 error
+	infrastructure          []model.PortBinding
+	inboxChanged            chan struct{}
+	inboxSlots              chan struct{}
+	usages                  map[string]workloadSample
+	policyClocks            map[string]incidentClock
+	startClocks             map[string]time.Time
+	scheduleHighwater       time.Time
+	scheduleCheckpoint      time.Time
+	scheduleRollback        bool
+	scheduleWallNow         func() time.Time
+	scheduleElapsedNow      func() time.Time
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets", "counted-resource-subpools"}
@@ -171,6 +173,13 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	if e = m.initGradleRecords(); e != nil {
 		db.Close()
 		return nil, e
+	}
+	if e = m.initLeaseReviews(); e != nil {
+		if !errors.Is(e, database.ErrLeaseReviewSchema) {
+			db.Close()
+			return nil, e
+		}
+		m.leaseReviewsUnavailable = true // Sticky for this manager; no implicit repair/retry.
 	}
 	if e = m.initStorageExports(); e != nil {
 		db.Close()
@@ -466,6 +475,11 @@ func (m *Manager) Status() (model.Status, error) {
 	defer m.mu.Unlock()
 	ls, e := m.list()
 	s := model.Status{PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "workspace-published-agents-poll-v1", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	if !m.leaseReviewsUnavailable {
+		s.Capabilities = append(s.Capabilities, "local-lease-reviews-v1")
+	} else {
+		s.ReviewError = &model.Error{Code: "reviews_unavailable", Message: reviewUnavailableMessage}
+	}
 	if m.workspaces != nil {
 		s.Workspaces = m.workspaces.projection()
 	}
@@ -1195,6 +1209,23 @@ func (m *Manager) tick() {
 	if m.closing {
 		return
 	}
+	reviewsReady := false
+	// Optional review work runs only after ordinary expiry, incidents, queue
+	// reconciliation and admission have had their turn. Always read fresh rows.
+	defer func() {
+		if !reviewsReady || m.leaseReviewsUnavailable {
+			return
+		}
+		fresh, err := m.list()
+		if err == nil {
+			err = m.tickLeaseReviews(time.Now().UTC(), fresh)
+		}
+		if err != nil {
+			m.leaseReviewError = "Optional check-in scheduling failed. Inspect stored policy and checkpoint integrity; ordinary lease expiry and admission continue."
+		} else {
+			m.leaseReviewError = ""
+		}
+	}()
 	ls, e := m.list()
 	if e != nil {
 		return
@@ -1212,6 +1243,7 @@ func (m *Manager) tick() {
 	if err := m.reconcileQueued(); err != nil {
 		return
 	}
+	reviewsReady = true
 	ls, e = m.list()
 	if e != nil {
 		return

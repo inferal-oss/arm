@@ -1125,3 +1125,25 @@ dialog.pool-editor::backdrop { background:#05090edb; backdrop-filter:blur(4px); 
 .pool-subtree > h4 { font-size:16px; margin:0 0 10px; }
 .pool-subtree .consumer { margin:10px 0; padding:14px; border:1px solid var(--line); border-radius:8px; }
 @media(max-width:620px){.pool-table .pool-tree-cell{padding-inline-start:calc(5px + var(--pool-depth,0) * 9px)}.pool-lineage{font-size:12px}.pool-detail-budget{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Optional, operator-reviewed conversations share the lease control language. */
+.review-console {margin-top:24px;border:1px solid var(--line);border-radius:12px;padding:20px;background:linear-gradient(135deg,#121c23,#10171c)}
+.review-console-heading,.review-checkpoint-heading {display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.review-console h3,.review-checkpoint h4 {margin:0}
+.review-status {display:inline-flex;padding:4px 9px;border:1px solid #425d69;border-radius:99px;font:11px var(--mono);color:#a9d8d1;background:#193038}
+.review-state-pending {border-color:#92754a;color:#f1d29a;background:#322a20}
+.review-state-timed_out,.review-state-superseded {color:var(--muted);background:#1c242b;border-color:var(--line)}
+.review-principle {font-size:13px;line-height:1.7;color:#b4c9ce;max-width:72ch}
+.review-summary {border-left:2px solid #658c91;padding-left:12px;margin:16px 0}
+.review-checkpoint {border:1px solid var(--line);border-radius:9px;background:#10171d;padding:16px;margin:12px 0}
+.review-context {margin:14px 0;border-top:1px solid var(--line);padding-top:14px}
+.review-metrics {display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,2fr);gap:7px 14px;font-size:12px}
+.review-metrics dt {color:var(--muted)}
+.review-metrics dd {margin:0;overflow-wrap:anywhere}
+.review-explanation {margin:12px 0;border-left:3px solid #78bbb0;padding:12px 16px;background:#182b2d;white-space:pre-wrap;overflow-wrap:anywhere}
+.review-intent {font-size:12px;font-weight:600;color:#9ed3c7}
+.review-provenance {border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:12px}
+.review-provenance pre {white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto}
+.review-toggle {display:flex!important;align-items:center;gap:12px}
+.review-toggle input {width:auto!important;margin:0!important;accent-color:#81c4b6}
+@media(max-width:540px) {.review-console{padding:14px}.review-metrics{grid-template-columns:1fr}.review-metrics dd{margin-bottom:8px}}

@@ -295,7 +295,7 @@ func (p *proofReader) readOther() error {
 		if e != nil {
 			return e
 		}
-		if seq < 0 || !oneOf(name, "events", "agent_inbox", "pool_changes", "budget_changes", "workspace_changes", "routing_events") || name == "workspace_changes" && !p.workspaceSchema || name == "routing_events" && !p.routingSchema {
+		if seq < 0 || !oneOf(name, "events", "agent_inbox", "pool_changes", "budget_changes", "workspace_changes", "routing_events", "lease_reviews") || name == "workspace_changes" && !p.workspaceSchema || name == "routing_events" && !p.routingSchema || name == "lease_reviews" && !p.leaseReviewSchema {
 			return fmt.Errorf("unknown sequence authority")
 		}
 		if _, exists := p.recordedSequences[name]; exists {

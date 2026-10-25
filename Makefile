@@ -168,6 +168,7 @@ tla-tool-check: tla-tools
 # Explicit modes support shorter local iterations; test-formal runs every gate.
 TLA_WORK_DIR ?= $(CURDIR)/.tla/share-preparation
 TLA_AGENT_WORK_DIR ?= $(CURDIR)/.tla/published-agents
+TLA_REVIEW_WORK_DIR ?= $(CURDIR)/.tla/lease-reviews
 TLA_PUBLICATION_WORK_DIR ?= $(CURDIR)/.tla/share-publication
 TLA_PROVIDER_WORK_DIR ?= $(CURDIR)/.tla/provider-worker
 .PHONY: tla-check tla-traces tla-prove test-formal
@@ -175,18 +176,21 @@ tla-check: tla-tlc
 	$(PYTHON) scripts/test-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 tla-traces: tla-tlc
 	$(PYTHON) scripts/test-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 tla-prove: tla-tlapm
 	$(PYTHON) scripts/test-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 .PHONY: test-formal-process
@@ -198,10 +202,12 @@ test-formal: tla-tools test-formal-process
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-publication-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-published-agents-formal-runner.py
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-lease-reviews-formal-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provider-worker-formal-runner.py
 	$(PYTHON) scripts/test-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
 	$(PYTHON) scripts/test-formal-publication.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 # Run only the bounded diagnostic worker/capacity gates.
@@ -235,3 +241,15 @@ tla-check: tla-reconnect-check
 tla-traces: tla-reconnect-traces
 tla-prove: tla-reconnect-prove
 test-formal: test-mesh-reconnect-formal
+
+# Bounded optional conversation model; shared owner, no production authority.
+.PHONY: test-lease-reviews-formal tla-check-reviews tla-traces-reviews tla-prove-reviews
+tla-check-reviews: tla-tools
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
+tla-traces-reviews: tla-tools
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
+tla-prove-reviews: tla-tools
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
+test-lease-reviews-formal: tla-tools
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-lease-reviews-formal-runner.py
+	$(PYTHON) scripts/test-lease-reviews-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"

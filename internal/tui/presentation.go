@@ -14,7 +14,7 @@ func (m *dashboardModel) modal() bool {
 	if m.recovery != nil {
 		return false
 	}
-	return m.meshModal() || m.poolModal() || m.ioPicker != nil || m.review != nil || m.composer != nil || m.inputMode != ""
+	return m.meshModal() || m.poolModal() || m.ioPicker != nil || m.checkins != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
 	return m.nodeUI == nil && m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
@@ -48,6 +48,9 @@ func (m *dashboardModel) editorDisplay() string {
 	if strings.HasPrefix(m.inputMode, "pool:") {
 		return m.poolEditorDisplay()
 	}
+	if strings.HasPrefix(m.inputMode, "checkin:") {
+		return strong.Render("Edit check-in duration") + "\n\n" + m.input.View() + "\n\nExamples: 15s · 10m · 1h. Contention may be 0s.\nEnter keeps this draft field; a separate review precedes saving.\n\n" + keycap("Enter", "Keep draft field", "") + "  " + keycap("Esc", "Back", "quiet")
+	}
 	field := panelStyle.Background(lipgloss.Color("#24343d")).Padding(0, 1).Render(m.input.View())
 	switch m.inputMode {
 	case "filter":
@@ -71,6 +74,9 @@ func (m *dashboardModel) editorDisplay() string {
 }
 
 func (m *dashboardModel) windowTitle() (string, string) {
+	if m.checkins != nil && m.record == nil {
+		return "AGENT CHECK-INS · CONVERSATIONS", "accent"
+	}
 	if m.nodeUI != nil && m.record == nil {
 		return "SELECTED REMOTE NODE · READ ONLY", "blue"
 	}

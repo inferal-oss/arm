@@ -92,6 +92,7 @@ type Event struct {
 }
 
 type Status struct {
+	ReviewError    *Error                 `json:"review_error,omitempty"`
 	Workspaces     *WorkspaceAvailability `json:"workspaces,omitempty"`
 	PoolError      *Error                 `json:"pool_error,omitempty"`
 	BudgetError    *Error                 `json:"budget_error,omitempty"`

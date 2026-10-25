@@ -75,6 +75,9 @@ func (m *dashboardModel) displayContent() string {
 	if m.feedFocus && m.detail == nil {
 		body = m.feedText(max(1, m.mainWidth()-4), true)
 	}
+	if m.checkins != nil {
+		body = m.checkinText()
+	}
 	if m.record != nil {
 		body = m.record.text(max(1, m.mainWidth()-4))
 	}
@@ -355,7 +358,7 @@ func (m *dashboardModel) leaseDetailText() string {
 	for _, c := range l.Request.Pools {
 		fmt.Fprintf(&out, "Custom: %s\n", safe(fmt.Sprint(c)))
 	}
-	out.WriteString("\nControls: e extend · x release · c cancel\nOnly active leases can extend/release; queued requests can cancel.\nAll actions require a review tied to this exact revision.\n\ni opens the collapsible complete record.")
+	out.WriteString("\nControls: e extend · x release · c cancel · h agent check-ins\nOnly active leases can extend/release; queued requests can cancel.\nAll actions require a review tied to this exact revision.\n\ni opens the collapsible complete record.")
 	return out.String()
 }
 func (m *dashboardModel) leaseReviewText() string {
@@ -384,6 +387,24 @@ func (m *dashboardModel) leaseReviewText() string {
 }
 func (m *dashboardModel) messagesText() string {
 	var out strings.Builder
+	if hasLeaseCheckins(m.data.status) {
+		out.WriteString(strong.Render("Agent check-ins") + "\n")
+		if m.data.reviewError != "" {
+			out.WriteString("Check-ins unavailable: " + safe(m.data.reviewError) + "\n")
+		} else {
+			fmt.Fprintf(&out, "%d awaiting replies on this page", len(m.data.reviews.Items))
+			if m.data.reviews.More {
+				out.WriteString(" · more pending records")
+			}
+			out.WriteString("\n")
+			for _, r := range m.data.reviews.Items {
+				for _, c := range r.Context {
+					fmt.Fprintf(&out, "  %s · lease %s · reply by %s\n", safe(r.Agent), safe(c.Lease), date(&r.Deadline))
+				}
+			}
+			out.WriteString("Open the lease in Leases [3], then h for context, explanations and settings.\nReplies and silence never change entitlement.\n\n")
+		}
+	}
 	out.WriteString("Registered recipients: ")
 	for i, c := range m.data.contacts {
 		if i > 0 {

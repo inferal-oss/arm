@@ -142,6 +142,7 @@ Commands:
   daemon start|stop|status    Manage the local backend
   serve                     Run the backend in the foreground
   status                    Show host budgets and leases
+  reviews                   Optional exact-session lease reviews
   usage LEASE_ID            Show supervised CPU/memory observations
   incidents                 Show durable usage incidents and warnings
   resources                 Show budgets, availability, owners, and reasons
@@ -186,6 +187,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, nil
 	}
 	switch cmd {
+	case "reviews":
+		return a.leaseReviews(args)
 	case "help":
 		if len(args) > 0 {
 			name := strings.Join(args, " ")
