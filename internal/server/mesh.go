@@ -162,11 +162,11 @@ func (s *Server) closeMesh() {
 		if s.mesh.routed != nil {
 			s.mesh.routed.Stop()
 		}
-		if s.mesh.ssh != nil {
-			s.mesh.ssh.ClosePeer("")
-		}
 		if s.mesh.workspace != nil {
 			s.mesh.workspace.Stop()
+		}
+		if s.mesh.ssh != nil {
+			s.mesh.ssh.ClosePeer("")
 		}
 		_ = s.mesh.http.Close()
 		closeErr := s.mesh.listener.Close()
@@ -182,16 +182,16 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 		m.routed.ServeHTTP(w, r)
 		return
 	}
+	if r.URL.Path == workspacetransport.Path {
+		m.workspace.ServeHTTP(w, r)
+		return
+	}
 	if r.URL.Path == meshstream.Path {
 		if m.ssh == nil {
 			http.Error(w, "SSH unavailable", http.StatusForbidden)
 			return
 		}
 		m.ssh.ServeHTTP(w, r)
-		return
-	}
-	if r.URL.Path == workspacetransport.Path {
-		m.workspace.ServeHTTP(w, r)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
