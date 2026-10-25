@@ -27,7 +27,7 @@ type Grant struct {
 	MaxTTL        time.Duration   `json:"max_ttl_ns"`
 }
 
-var permissions = []string{"observe-host", "observe-own", "observe-all", "lease-own", "run", "message", "contact-read", "ssh-exec", "node-stop"}
+var permissions = []string{"observe-host", "observe-own", "observe-all", "lease-own", "run", "message", "contact-read", "ssh-exec", "node-stop", "node-uninstall"}
 
 func (g Grant) Validate() error {
 	if len(g.Contacts) > 64 {
@@ -139,16 +139,8 @@ func open(home string, recovery bool) (*Store, error) {
 	if e = validateListen(c.Listen); e != nil {
 		return nil, e
 	}
-	seen := map[string]bool{}
-	for _, p := range c.Peers {
-		// Expired peers remain inspectable and cannot authenticate. Do not disable healthy peers.
-		if p.Identity.Host == c.Identity.Host || seen[p.Identity.Host] {
-			return nil, fmt.Errorf("duplicate/self peer")
-		}
-		seen[p.Identity.Host] = true
-		if e = p.Grant.Validate(); e != nil {
-			return nil, e
-		}
+	if e = validateStoredPeerRoster(c); e != nil {
+		return nil, e
 	}
 	cert, e := loadCertificate(home, c.Identity)
 	if e != nil {
@@ -548,4 +540,21 @@ func (s *Store) Renew(reason string) (Identity, error) {
 	}
 	s.cert, e = loadCertificate(s.home, identity)
 	return identity, e
+}
+
+// validateStoredPeerRoster is shared by live loading and offline original-key
+// maintenance; ambiguous grants never authorize an outliving native helper.
+func validateStoredPeerRoster(c Config) error {
+	seen := map[string]bool{}
+	for _, p := range c.Peers {
+		// Expired peers remain inspectable and cannot authenticate. Do not disable healthy peers.
+		if p.Identity.Host == c.Identity.Host || seen[p.Identity.Host] {
+			return fmt.Errorf("duplicate/self peer")
+		}
+		seen[p.Identity.Host] = true
+		if e := p.Grant.Validate(); e != nil {
+			return e
+		}
+	}
+	return nil
 }

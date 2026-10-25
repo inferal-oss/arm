@@ -18,6 +18,20 @@ type NodeStopObservation = nodestop.Observation
 // A busy/new authority is conservatively unknown here; a future live inspector
 // may add positive replacement-generation evidence without changing this rule.
 func InspectNodeStop(ctx context.Context, home string, target nodestop.Target, key string) (out NodeStopObservation, resultErr error) {
+	return inspectNodeStopLocked(ctx, home, target, key, nil)
+}
+
+// WithInspectedNodeStop retains the actual original daemon lock, directory and
+// committed read source through a narrowly scoped native maintenance action.
+// It confers no process or file authority: the action must prove its own scope.
+func WithInspectedNodeStop(ctx context.Context, home string, target nodestop.Target, key string, action func(NodeStopObservation) error) (NodeStopObservation, error) {
+	if action == nil {
+		return NodeStopObservation{}, fmt.Errorf("scoped maintenance action required")
+	}
+	return inspectNodeStopLocked(ctx, home, target, key, action)
+}
+
+func inspectNodeStopLocked(ctx context.Context, home string, target nodestop.Target, key string, action func(NodeStopObservation) error) (out NodeStopObservation, resultErr error) {
 	dir, err := database.OpenDirectory(home)
 	if err != nil {
 		return out, err
@@ -90,5 +104,19 @@ func InspectNodeStop(ctx context.Context, home string, target nodestop.Target, k
 	// describe this generation only, never all hosts/services or old PIDs.
 	observation := NodeStopObservation{Record: record, Desired: state, ServerJoined: true, OriginalGenerationAbsent: true}
 	traceStopObserved(home, observation, traceRows)
+	if action != nil {
+		traceUninstallNativeBoundary("native-enter", home, observation, nil)
+		// End of the maintenance-action authority, not an invented FD/process join.
+		defer func() { traceUninstallNativeBoundary("native-leave", home, observation, resultErr) }()
+		if err = action(observation); err != nil {
+			return out, err
+		}
+		if err = source.Validate(ctx); err != nil {
+			return out, err
+		}
+		if err = dir.Validate(); err != nil {
+			return out, err
+		}
+	}
 	return observation, nil
 }

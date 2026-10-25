@@ -15,6 +15,7 @@ import (
 // StartRequest contains a resolved native connector, never arbitrary browser
 // executable/home/options. Browser adapters must resolve their closed draft.
 type StartRequest struct {
+	Uninstall  *UninstallDraft   `json:"uninstall,omitempty"`
 	Stop       *StopDraft        `json:"stop,omitempty"`
 	Key        string            `json:"key"`
 	Kind       string            `json:"kind"`
@@ -68,9 +69,9 @@ type Operation struct {
 
 func Project(op mesh.Coordination) Operation {
 	out := Operation{HasReview: len(op.Review) > 0, HasResult: len(op.Result) > 0, Notice: PreparationNotice, ResumeFrom: op.ResumeFrom, ParentKey: op.ParentKey, ResolvedBy: op.ResolvedBy, Key: op.Key, Kind: op.Kind, Revision: op.Revision, Phase: op.Phase, Targets: op.Targets, Updated: op.Updated, WorkerLive: op.Worker != "" && time.Now().Before(op.WorkerExpires), Review: op.Review, ReviewRevision: op.ReviewRevision, ReviewHash: op.ReviewHash, ReviewExpires: op.ReviewExpires, CancelRequested: op.CancelRequested, Approved: op.Approved, Result: op.Result, Error: op.Error}
-	if op.Kind == "stop" {
+	if op.Kind == "stop" || op.Kind == "uninstall" {
 		out.LookupOnly = op.Approved
-		out.CanPrepareFresh = !out.WorkerLive && !op.Approved && (op.Phase == "declined" || op.Phase == "cancelled" || op.Phase == "rejected")
+		out.CanPrepareFresh = op.Kind == "stop" && !out.WorkerLive && !op.Approved && (op.Phase == "declined" || op.Phase == "cancelled" || op.Phase == "rejected")
 	}
 	out.Handoff = op.Handoff
 	if op.Error != nil {
@@ -80,7 +81,7 @@ func Project(op mesh.Coordination) Operation {
 		}
 		out.Error = &model.Error{Code: op.Error.Code, Message: message}
 	}
-	if op.Kind != "stop" && op.ResolvedBy == "" && !out.WorkerLive && (op.Phase == "incomplete" || op.Worker != "") {
+	if op.Kind != "stop" && op.Kind != "uninstall" && op.ResolvedBy == "" && !out.WorkerLive && (op.Phase == "incomplete" || op.Worker != "") {
 		out.RecoveryHash, _ = mesh.CoordinationRecoveryHash(op)
 		out.RecoveryEffect = mesh.CoordinationHandoffEffect
 	}
@@ -406,7 +407,7 @@ func (s *Service) Resume(key string, revision int64) (Operation, error) {
 	if !ok {
 		return Operation{}, model.Err("not_found", "operator key not found")
 	}
-	if original.Kind == "stop" {
+	if original.Kind == "stop" || original.Kind == "uninstall" {
 		return Operation{}, model.Err("lookup_only", "Stop recovery only inspects its original key; resume cannot reapply it")
 	}
 	if original.Revision != revision || original.Phase != "incomplete" || original.Worker != "" || original.ResolvedBy != "" {

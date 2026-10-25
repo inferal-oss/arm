@@ -164,7 +164,7 @@ func saveCoordination(home string, op Coordination) error {
 // have committed. A new worker never silently steals their target or retries it.
 func ClaimCoordination(home, key, kind, digest, target string) (*CoordinationGuard, error) {
 	decoded, decodeErr := hex.DecodeString(digest)
-	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "reconnect" && kind != "disconnect" && kind != "provision" && kind != "stop") || len(digest) != 64 || target == "" || len(target) > 512 {
+	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "reconnect" && kind != "disconnect" && kind != "provision" && kind != "stop" && kind != "uninstall") || len(digest) != 64 || target == "" || len(target) > 512 {
 		return nil, model.Err("invalid_request", "invalid operator coordination intent")
 	}
 	unlock, e := coordinationLock(home)
@@ -420,8 +420,8 @@ func HandoffCoordination(home, key string, revision int64, hash, reason string) 
 	if !ok {
 		return op, model.Err("not_found", "operator key not found")
 	}
-	if op.Kind == "stop" {
-		return op, model.Err("lookup_only", "Stop has no handoff/replay path; inspect its original key")
+	if op.Kind == "stop" || op.Kind == "uninstall" {
+		return op, model.Err("lookup_only", "Stop/uninstall have no handoff/replay path; inspect the original key")
 	}
 	expected, e := CoordinationRecoveryHash(op)
 	if e != nil {
@@ -466,6 +466,9 @@ func ClaimCoordinationAttempt(home, parent, target string) (*CoordinationGuard, 
 	}
 	if !ok {
 		return nil, model.Err("not_found", "original operation not found")
+	}
+	if original.Kind == "uninstall" {
+		return nil, model.Err("lookup_only", "Uninstall has no repeat attempt; inspect its original key")
 	}
 	requestedParent := parent
 	seen := map[string]bool{parent: true}

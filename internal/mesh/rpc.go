@@ -102,7 +102,7 @@ func Decode(raw []byte, v any) error {
 	return nil
 }
 func Mutating(op string) bool {
-	return op == "acquire" || op == "run" || op == "release" || op == "cancel" || op == "renew" || op == "message" || op == "ssh_key_seal" || op == "node_stop_apply"
+	return op == "acquire" || op == "run" || op == "release" || op == "cancel" || op == "renew" || op == "message" || op == "ssh_key_seal" || op == "node_stop_apply" || op == "node_uninstall_apply"
 }
 func (s *Store) Call(ctx context.Context, target string, r Request) (json.RawMessage, error) {
 	peer, e := s.Resolve(target)

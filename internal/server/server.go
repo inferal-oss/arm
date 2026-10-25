@@ -100,6 +100,9 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	if e != nil {
 		return e
 	}
+	if e = mesh.RegisterManagedExecutable(home); e != nil {
+		return e
+	}
 	directory, e := database.OpenDirectory(home)
 	if e != nil {
 		return e

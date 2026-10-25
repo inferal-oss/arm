@@ -20,6 +20,7 @@ import (
 // ProvisionReceipt is target-side publication/start evidence. It is not peer
 // trust and never grants remote execution. Unknown intent remains inspectable.
 type ProvisionReceipt struct {
+	Ownership    *InstallOwnership   `json:"publication_ownership,omitempty"`
 	CatalogSeed  *CatalogSeedReceipt `json:"catalog_seed,omitempty"`
 	ReusedBinary bool                `json:"reused_binary,omitempty"`
 	Runtime      *RuntimeProof       `json:"runtime,omitempty"`
@@ -49,6 +50,12 @@ func checkProvisionRequest(q meshssh.Transfer) error {
 	return nil
 }
 func provisionLock(q meshssh.Transfer) (*os.File, func(), error) {
+	return provisionLockMode(q, true)
+}
+func provisionExistingLock(q meshssh.Transfer) (*os.File, func(), error) {
+	return provisionLockMode(q, false)
+}
+func provisionLockMode(q meshssh.Transfer, create bool) (*os.File, func(), error) {
 	if e := checkProvisionRequest(q); e != nil {
 		return nil, nil, e
 	}
@@ -56,7 +63,11 @@ func provisionLock(q meshssh.Transfer) (*os.File, func(), error) {
 	if e != nil {
 		return nil, nil, e
 	}
-	fd, e := unix.Openat(int(root.Fd()), ".provision.lock", unix.O_CREAT|unix.O_RDWR|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0600)
+	flags := unix.O_RDWR | unix.O_NOFOLLOW | unix.O_CLOEXEC
+	if create {
+		flags |= unix.O_CREAT
+	}
+	fd, e := unix.Openat(int(root.Fd()), ".provision.lock", flags, 0600)
 	if e != nil {
 		root.Close()
 		return nil, nil, e
@@ -222,6 +233,12 @@ func FinalizeProvision(q meshssh.Transfer) (ProvisionReceipt, error) {
 	check.Close()
 	if e = provisionRootNamed(root, q.Root); e != nil {
 		return r, e
+	}
+	if !r.ReusedBinary {
+		r.Ownership, e = captureInstallOwnership(root, final, q)
+		if e != nil {
+			return r, e
+		}
 	}
 	r.Phase = "published_verified"
 	if e = saveProvision(q, &r); e != nil {

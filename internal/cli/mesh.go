@@ -73,7 +73,7 @@ func (a *app) meshConfirm(plan any, yes, dry bool) error {
 		return nil
 	}
 	if !a.inputTTY || a.machine() {
-		return model.Err("confirmation_required", "review --dry-run then pass --yes for mesh trust/listener changes")
+		return model.Err("confirmation_required", "review --dry-run, then pass --yes to approve the exact mesh change")
 	}
 	fmt.Fprint(a.out, "\n"+a.paint("1;33", "Apply this mesh change? [y/N] "))
 	type answer struct {
@@ -100,9 +100,12 @@ type meshBootstrap = meshops.Bootstrap
 
 func (a *app) meshCommand(args []string) (int, error) {
 	if len(args) == 0 {
-		return 2, fmt.Errorf("mesh requires connect, disconnect, lookup, identity, peers or an advanced operation")
+		return 2, fmt.Errorf("mesh requires connect, reconnect, disconnect, stop, uninstall, lookup, identity, peers or an advanced operation")
 	}
 	action, args := args[0], args[1:]
+	if action == "uninstall" {
+		return a.meshUninstall(args)
+	}
 	if action == "stop" {
 		return a.meshStop(args)
 	}
@@ -221,6 +224,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		}
 		if header.Action == "node_stop_probe" {
 			return a.meshStopProbeHelper(raw)
+		}
+		if header.Action == "node_uninstall_lookup" || header.Action == "node_uninstall_finish" {
+			return a.meshUninstallHelper(raw)
 		}
 		if header.Action == "node_stop_inspect" {
 			return a.meshStopInspectHelper(raw)

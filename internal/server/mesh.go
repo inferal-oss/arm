@@ -289,7 +289,15 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
 	var value any
-	if request.Operation == "node_stop_plan" || request.Operation == "node_stop_apply" || request.Operation == "node_stop_lookup" {
+	if request.Operation == "node_uninstall_plan" || request.Operation == "node_uninstall_apply" || request.Operation == "node_uninstall_lookup" {
+		if e = m.owner.decodeStopEnvelope(raw, &request); e != nil {
+			respond(nil, e)
+			return
+		}
+		value, e = m.store.WithPeerSnapshot(peer.Identity.Host, func(current mesh.Peer, identity mesh.Identity, peers []mesh.PeerImpact) (any, error) {
+			return m.dispatchUninstall(ctx, current, request, identity, peers)
+		})
+	} else if request.Operation == "node_stop_plan" || request.Operation == "node_stop_apply" || request.Operation == "node_stop_lookup" {
 		if e = m.owner.decodeStopEnvelope(raw, &request); e != nil {
 			respond(nil, e)
 			return

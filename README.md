@@ -315,7 +315,17 @@ arm mesh stop HOST_ID --key STOP_KEY --reason "Maintenance"
 arm mesh stop HOST_ID --key STOP_KEY --lookup
 ```
 
-The default refuses outstanding work. `--wait` waits for it; `--wait --timeout SECONDS` reclaims ARM-owned work after the timeout, and `--force` requests immediate reclamation. Unresolved duties remain charged. Disconnection or an accepted request alone does not prove completion; look up the original key without resending Stop. The host OS remains running. Managed remote uninstall remains planned; see [the lifecycle contract](docs/MESH-NODE-LIFECYCLE.md).
+The default refuses outstanding work. `--wait` waits for it; `--wait --timeout SECONDS` reclaims ARM-owned work after the timeout, and `--force` requests immediate reclamation. Unresolved duties remain charged. Disconnection or an accepted request alone does not prove completion; look up the original key without resending Stop. The host OS remains running. Managed remote uninstall requires both destination-local `node-stop` and `node-uninstall` grants plus an exact completed source provisioning receipt:
+
+```sh
+arm mesh uninstall HOST_ID --provision-key PROVISION_KEY --reason "Retire this installation" --dry-run
+arm mesh uninstall HOST_ID --provision-key PROVISION_KEY --key UNINSTALL_KEY --reason "Retire this installation"
+arm mesh uninstall HOST_ID --key UNINSTALL_KEY --lookup
+# Only if the original admitted removal needs explicit reconciliation:
+arm mesh uninstall HOST_ID --key UNINSTALL_KEY --finish
+```
+
+The concrete review defaults to keeping the installation; scripts require `--yes`. Only the proven owned executable is removed after positive observation of the exact stopped backend. Database, identity, configuration, history, backups, ownership records and a verified recovery companion remain. Reused, changed, shared or legacy installations without ownership proof are preserved. Lost replies retain the original key for inspection; Stop and helper creation are never blindly replayed. Web/terminal uninstall controls remain in progress. See [the lifecycle contract](docs/MESH-NODE-LIFECYCLE.md).
 
 `arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Scoped read-only web/terminal node views are implemented, and reviewed workspaces add explicit discovery and host inbox messages through a directory relay. Private-key rotation, complete remote operational parity, general graph messaging, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
 

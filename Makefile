@@ -297,3 +297,19 @@ tla-check: tla-check-snapshot-reservation
 tla-traces: tla-traces-snapshot-reservation
 tla-prove: tla-prove-snapshot-reservation
 test-formal: test-formal-snapshot-reservation
+
+# Managed uninstall component: owned executable only, no data/service purge.
+TLA_UNINSTALL_WORK_DIR ?= $(CURDIR)/.tla/uninstall
+.PHONY: tla-uninstall-check tla-uninstall-traces tla-uninstall-prove test-uninstall-formal
+tla-uninstall-check:
+	$(PYTHON) scripts/test-uninstall-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_UNINSTALL_WORK_DIR)"
+tla-uninstall-traces:
+	$(PYTHON) scripts/test-uninstall-formal.py --mode traces --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_UNINSTALL_WORK_DIR)"
+tla-uninstall-prove:
+	$(PYTHON) scripts/test-uninstall-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_UNINSTALL_WORK_DIR)"
+test-uninstall-formal:
+	$(PYTHON) scripts/test-uninstall-formal.py --mode all --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --work-dir "$(TLA_UNINSTALL_WORK_DIR)"
+tla-check: tla-uninstall-check
+tla-traces: tla-uninstall-traces
+tla-prove: tla-uninstall-prove
+test-formal: test-uninstall-formal

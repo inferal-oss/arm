@@ -2,9 +2,10 @@
 
 Requested October 22, 2026; approved by the operator October 23, 2026. First-class
 reconnect is implemented in the CLI and both dashboards after scoped runtime,
-formal and interface validation. Remote shutdown and uninstall still need the
-separate destination-authorized operations specified here; they are not enabled
-by existing grants. This design extends the reviewed direct-peer lifecycle.
+formal and interface validation. Remote Stop is implemented in the backend, CLI
+and both dashboards. Managed executable uninstall is implemented in the backend
+and CLI; its dashboard integration remains in progress. The separately granted
+operations below extend the reviewed direct-peer lifecycle.
 
 ## Current boundary
 
@@ -108,6 +109,39 @@ tombstones and workspace records survive as audit evidence; directory membership
 retirement and affected routes are shown explicitly, not silently declared cleaned
 across a partition. The initiating dashboard keeps the final report after the
 destination backend disappears.
+
+## Supported managed-executable workflow
+
+`arm mesh uninstall HOST_ID --provision-key PROVISION_KEY --reason TEXT`
+prepares the exact current installation/Stop review and asks before applying it;
+`--dry-run` previews without admission and scripts must explicitly pass `--yes`.
+The source provisioning operation must be completed, approved and bound to the
+same verified SSH account/host key, ARM home, binary image and destination host.
+The destination independently requires both current administrative grants.
+
+An original private publication records root, artifact-directory and executable
+birth identities. Ordinary backend startup records its home reference. Removal
+refuses missing, reused, changed or shared ownership evidence. An admitted intent
+precedes recovery-copy allocation; another key cannot bypass an unresolved copy.
+The recovery executable lives outside the removable artifact and checks its exact
+native identity and image digest before handling the fixed request.
+
+The first approved operation admits Stop once and attempts original completion.
+`arm mesh uninstall HOST_ID --key KEY --lookup` inspects that same result.
+If needed, `--finish` separately reviews completion of only the original admitted
+removal. The current stopped generation, positive joined marker, authoritative
+SQL intent and native daemon lock must agree; the maintenance lock remains held
+through the exact namespace/ownership checks and executable unlink. A restarted
+backend, revoked mutation grant, changed identity or ambiguous ownership refuses
+removal. Read-only receipt inspection has its own current original-principal
+permission check and never acquires removal rights.
+
+This milestone removes only the original executable. Artifact directories and
+ownership tombstones remain, along with databases, identity/grants, configuration,
+history, backups, retained artifacts, companion catalog configuration and recovery
+receipts/helpers. It is not a purge, service-manager teardown or general cleanup
+of old installations. Source completion is revision-bound and monotone; unknown
+native outcomes and unjoined source owners remain inspectable obligations.
 
 ## Interface and acceptance
 
