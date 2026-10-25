@@ -6,13 +6,15 @@ Updated October 25, 2026 against the current worktree. The complete scope remain
 
 ## Active delivery priorities
 
-The operator reprioritized work on October 24: keep the entire plan, but put mesh operations, mounted shares and the broader provider/agent experience ahead of the standalone clock/provider verification backlog. The original plan items **3, 4 and 5** are the active delivery priorities, in that order. These three portfolios run in parallel:
+The operator reprioritized work on October 24 and reaffirmed it on October 25: keep the entire plan, but put mesh operations, mounted shares and the broader provider/agent experience ahead of the standalone clock/provider verification backlog. The original plan items **3, 4 and 5** are the active delivery priorities, in that order. These three portfolios run in parallel, with temporary cross-review assignments when a delivery needs them:
 
 1. **Mesh lifecycle and dashboards:** first-class reconnect is integrated; next deliver destination-authorized Stop ARM and managed-installation uninstall. Complete shared provisioning/workspace controls, operational host parity and polished matching web/TUI flows. Preserve exact identity, permission, generation, review and unknown-outcome guards.
 2. **Mounted shares and throughput:** reuse the Linux FUSE and authenticated macOS SMB feasibility work; implement leased read-only mounts, then writable/build semantics. Establish confinement, ownership, accounting and recovery at the boundaries being exposed. Measure real native-to-Linux throughput against the agreed 85–90% link target; loopback success alone is insufficient. No privileged setup or weaker authentication is a fallback.
 3. **Providers, coordination and agent experience:** build on the integrated optional local lease check-ins, then continue GPU/network resources, distributed global pools, workload adapters, accounting/credits and operational services/recovery/retention. Profile defaults, native agent wake-up and remote review routing remain. Delivering local heartbeats does not complete this portfolio.
 
 Clock correctness, provider live-hold verification and full consumer semantics remain required. Their current artifacts and failures are retained at safe checkpoints; standalone work there is parked while the priorities above advance. Required consumer/accounting/security work may be pulled forward when it is a concrete dependency of a prioritized feature. Prioritization does not waive tests, model/trace/proof obligations or honest acceptance limits, and unresolved clock behavior still blocks claiming fresh routed Codex/Claude acceptance.
+
+**Immediate delivery sequence:** finish the reviewed mesh Stop/restart backend and matching web/TUI controls, including verified completion-observer availability and inspection after the remote listener has stopped; validate and integrate that feature before managed uninstall. In parallel, prepare the paired measurement of the committed named-metadata share refactor; timing remains pending review and a quiet measurement window. Resume broader provider/agent work as these bounded delivery and review assignments close. No remaining specification item is removed.
 
 ## Current checkpoint
 
@@ -193,9 +195,9 @@ Continue assigning focused work to individual subagents as slots become availabl
 
 | Subagent | Running now | Ready for coordinating review | Next queued assignment |
 | --- | --- | --- | --- |
-| `compact_design_review` | Continue provider/agent workflows and independent interface review following integrated local check-ins | Native/Linux, scoped formal and actual web/PTY acceptance completed; historical failures and platform limitations retained | Broader provider/coordination/adapters/operations portfolio and remote check-in delivery |
-| `provider_corrections` | Address demonstrated mounted-share verification/transport costs and review the public consumer boundary | Complete paired comparison and targeted CPU diagnostics accepted; target unmet; standalone proof/model work parked | Public leased read-only mounts, then writable/build semantics and matching accounting/recovery controls |
-| `compact_clock_implementation` | Deliver reviewed local Start/recovery and destination-authorized mesh Stop, with coordinator/CLI and matching web/TUI | Reconnect is integrated; isolated Stop foundation passes independent source review, 78 native race cases and targeted vet | Managed-installation uninstall, shared provisioning/workspace UI and remaining operational parity |
+| `compact_design_review` | Implement matching reviewed mesh Stop web/TUI controls and independently review the backend/interface contract | Local check-ins are integrated; mesh Stop UI sources remain under review and have not passed runtime/rendered acceptance | Broader provider/coordination/adapters/operations portfolio and remote check-in delivery |
+| `provider_corrections` | Prepare the exact paired share-refactor measurement and cross-review mesh Stop completion/recovery | Named-metadata correctness is accepted; its new speed comparison has not run. Previous paired comparison and targeted diagnostics are retained; throughput target remains unmet | Public leased read-only mounts, then writable/build semantics and matching accounting/recovery controls |
+| `compact_clock_implementation` | Deliver reviewed local Start/recovery and destination-authorized mesh Stop coordinator/CLI; fix verified-observer and offline-lookup findings | Reconnect is integrated; isolated Stop foundation passes 78 native race cases and targeted vet. The expanded coordinator/restart source remains under review, before its native gate | Managed-installation uninstall, shared provisioning/workspace UI and remaining operational parity |
 
 The rest of the specification is also divided into downstream portfolios. These are sequential queues, not claims that all work is running:
 
