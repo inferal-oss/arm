@@ -12,6 +12,7 @@ require (
 	github.com/creack/pty v1.1.24
 	github.com/ebitengine/purego v0.11.2
 	github.com/google/uuid v1.6.0
+	github.com/hanwen/go-fuse/v2 v2.12.1
 	github.com/mattn/go-isatty v0.0.24
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/pkg/sftp v1.13.11

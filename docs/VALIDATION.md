@@ -1,5 +1,11 @@
 # Validation record
 
+## October 24, 2026: internal read-only mount foundation — current-tree integration
+
+The reviewed 19-path subtree-view, Linux FUSE, explicit benchmark and fresh opened-root observation component is integrated. All 1,192 non-document inputs of its 1,195-file frozen source match the current tree; only the three project status documents differ. Current-tree native race checks pass storage50 and view3 cases. The first sandboxed command fails sharefs socket/special-mode fixtures and a codec loopback socket fixture; its raw failure is retained. Repeating only those affected packages outside the sandbox passes all sharefs97 and codec32 named cases. Linux-only FUSE has no runnable macOS tests, rather than a claimed native pass. Affected native vet (including manager), Linux cross-vet and the explicit tagged native benchmark build pass. Prior scoped Linux runtime results apply to these identical component inputs; no new Linux race run is claimed.
+
+The internal component exposes no public mount, consumer grant or settlement authority. Full Linux storage's known unreadable-live-process failures remain unresolved; current read-only checks do not establish host-wide cleanup capability. The 120 MiB plan is admission headroom, not a measured total memory bound. Existing throughput results remain below the agreed target and no optimized benchmark has run.
+
 ## October 24, 2026: prioritized mount optimization correctness — isolated
 
 The same-operation opened-root observation candidate passes 182 named native race cases, including 43 new cases, plus affected native and Linux cross-vet checks. Its first full Linux storage run fails 19 existing cleanup/export cases because live same-user process activity cannot be inspected. A separately authorized comparison runs the unchanged baseline once and reproduces the same original case and failure rosters. Both full storage runs remain failures; no process exclusion, permission change or privileged workaround is applied.

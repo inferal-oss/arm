@@ -176,7 +176,7 @@ func (o *Origin) resolve(ctx context.Context, path string) (*os.File, error) {
 	if _, ok := o.entries[path]; !ok {
 		return nil, os.ErrNotExist
 	}
-	f, err := o.provider.OpenArtifactReadOnly(ctx, o.artifact)
+	f, observed, err := o.provider.OpenArtifactReadOnlyObserved(ctx, o.artifact)
 	if err != nil {
 		return nil, err
 	}
@@ -191,9 +191,13 @@ func (o *Origin) resolve(ctx context.Context, path string) (*os.File, error) {
 		}
 		return nil
 	}
-	if err = check(f, ""); err != nil {
+	// This complete opened-FD observation is fresh for this resolve only.
+	// Conversion requires the full field/type shape to agree at compile time;
+	// it cannot silently omit a future Version field. Provider/name checks and
+	// every child/version/finish/authorization cut remain unchanged.
+	if Version(observed) != o.entries[""].Version {
 		f.Close()
-		return nil, err
+		return nil, ErrChanged
 	}
 	current := ""
 	if path != "" {
