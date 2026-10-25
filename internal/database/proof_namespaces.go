@@ -145,7 +145,7 @@ func ReviewSettled(ctx context.Context, home, owner string) (review *SettledRevi
 				return nil, e
 			}
 			path, e := mesh.LifecycleOperationPath(home, op.Key)
-			if e != nil || filepath.Base(path) != name || op.Actor.UID != owner || !oneOf(op.Kind, "connect", "disconnect") || op.At.IsZero() || op.Updated.Before(op.At) || len(op.Transitions) == 0 || op.Transitions[len(op.Transitions)-1].Phase != op.Phase || op.LocalHost != "" && op.LocalHost != r.Proof.Host {
+			if e != nil || filepath.Base(path) != name || op.Actor.UID != owner || !oneOf(op.Kind, "connect", "reconnect", "disconnect") || op.At.IsZero() || op.Updated.Before(op.At) || len(op.Transitions) == 0 || op.Transitions[len(op.Transitions)-1].Phase != op.Phase || op.LocalHost != "" && op.LocalHost != r.Proof.Host {
 				return nil, fmt.Errorf("invalid lifecycle operation identity/authority")
 			}
 			if !oneOf(op.Phase, "connected", "disconnected") {

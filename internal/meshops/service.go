@@ -18,6 +18,7 @@ type StartRequest struct {
 	Key        string            `json:"key"`
 	Kind       string            `json:"kind"`
 	Connect    *ConnectRequest   `json:"connect,omitempty"`
+	Reconnect  *ReconnectRequest `json:"reconnect,omitempty"`
 	Disconnect *DisconnectDraft  `json:"disconnect,omitempty"`
 	Provision  *ProvisionRequest `json:"provision,omitempty"`
 }
@@ -128,7 +129,7 @@ func validateStart(q StartRequest) (any, string, error) {
 	}
 	switch q.Kind {
 	case "connect":
-		if q.Connect == nil || q.Disconnect != nil || q.Provision != nil {
+		if q.Connect == nil || q.Connect.Reconnect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
 			return nil, "", model.Err("invalid_request", "connect draft required")
 		}
 		r := q.Connect
@@ -145,13 +146,21 @@ func validateStart(q StartRequest) (any, string, error) {
 			return nil, "", e
 		}
 		return *r, "ssh:" + r.Destination, nil
+	case "reconnect":
+		if q.Reconnect == nil || q.Connect != nil || q.Disconnect != nil || q.Provision != nil {
+			return nil, "", model.Err("invalid_request", "exact reconnect draft required")
+		}
+		if e := q.Reconnect.validate(); e != nil {
+			return nil, "", e
+		}
+		return *q.Reconnect, "host:" + q.Reconnect.Draft.Host, nil
 	case "disconnect":
-		if q.Disconnect == nil || q.Connect != nil || q.Provision != nil || len(q.Disconnect.Host) != 32 || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
+		if q.Disconnect == nil || q.Connect != nil || q.Reconnect != nil || q.Provision != nil || len(q.Disconnect.Host) != 32 || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
 			return nil, "", model.Err("invalid_request", "exact stable target and reason required")
 		}
 		return struct{ Host, Pair, Reason string }{Host: q.Disconnect.Host, Pair: q.Disconnect.Pair, Reason: q.Disconnect.Reason}, "host:" + q.Disconnect.Host, nil
 	default:
-		return nil, "", model.Err("invalid_request", "operation must be connect or disconnect")
+		return nil, "", model.Err("invalid_request", "operation must be connect, reconnect or disconnect")
 	}
 }
 func (s *Service) Start(q StartRequest) (Operation, error) {
@@ -219,6 +228,8 @@ func (s *Service) Start(q StartRequest) (Operation, error) {
 		defer func() { s.mu.Lock(); delete(s.workers, q.Key); s.mu.Unlock() }()
 		if q.Kind == "connect" {
 			_, _ = c.Connect(q.Key, *q.Connect, true, false)
+		} else if q.Kind == "reconnect" {
+			_, _ = c.Reconnect(q.Key, *q.Reconnect, true, false)
 		} else {
 			_, _ = c.Disconnect(q.Key, q.Disconnect.Host, q.Disconnect.Reason, true, false)
 		}
@@ -376,6 +387,8 @@ func (s *Service) Resume(key string, revision int64) (Operation, error) {
 		defer func() { s.mu.Lock(); delete(s.workers, attemptKey); s.mu.Unlock() }()
 		if q.Kind == "connect" {
 			_, _ = c.Connect(q.Key, *q.Connect, true, false)
+		} else if q.Kind == "reconnect" {
+			_, _ = c.Reconnect(q.Key, *q.Reconnect, true, false)
 		} else {
 			_, _ = c.Disconnect(q.Key, q.Disconnect.Host, q.Disconnect.Reason, true, false)
 		}

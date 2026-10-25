@@ -23,8 +23,7 @@ forwarding and PTY requests. Readiness records its selected address, public host
 image hash; it never edits `authorized_keys` or SSH configuration.
 
 Input/output, concurrent connections/sessions, request count and helper lifetimes
-are bounded. An exact-key, one-shot fault can drop a revocation request before
-execution or discard its reply after the real helper returns. Its event log
+are bounded. A closed one-shot fault selects exactly one revocation key (`{"key":"...","stage":"before|after"}`) or bootstrap Pair (`{"pair":"<64 lowercase hex>","stage":"before|after"}`), never both. It can drop that selected request before execution or discard its reply after the real helper returns. Pair controls do not match revocations, and revoke controls do not match Pair; wrong selectors leave the control unconsumed. Its event log
 retains the actual helper exit, whether `Wait` failed, and input/output hashes.
 Only a zero native exit with a successful `Wait` forwards captured output and
 returns SSH success. Signalled helpers, cancellation and incomplete output

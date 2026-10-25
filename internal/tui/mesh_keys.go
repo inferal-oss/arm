@@ -69,7 +69,39 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			m.inputMode = "mesh:field"
 			m.input.SetValue(form.fields[form.selected].value)
 			return m.input.Focus()
+		case "[":
+			if len(form.blockers) > 0 {
+				form.blockerIndex = min(len(form.blockers)-1, max(0, form.blockerIndex-1))
+			}
+		case "]":
+			if len(form.blockers) > 0 {
+				form.blockerIndex = min(len(form.blockers)-1, max(0, form.blockerIndex+1))
+			}
+		case "l":
+			if len(form.blockers) > 0 && (form.blockerIndex < 0 || form.blockerIndex >= len(form.blockers)) {
+				ui.err = "The previously selected workflow is no longer in this list. Select an exact pending key with [ or ] before inspecting it."
+				return nil
+			}
+			if len(form.blockers) > 0 {
+				key := form.blockers[form.blockerIndex].Key
+				cmd := m.readMesh("operation", key)
+				if cmd == nil {
+					ui.err = "Exact workflow inspection is waiting for the current read or connection. The editor and selected key are retained; press l after the read finishes."
+					return nil
+				}
+				ui.form = nil
+				return cmd
+			}
+		case "r":
+			if form.reconnectHost != "" {
+				form.contextReady = false
+				return m.readMesh("reconnect", form.reconnectHost)
+			}
 		case "p":
+			if form.reconnectHost != "" && (!form.contextReady || len(form.blockers) > 0) {
+				ui.err = "Read the exact pending workflow and settle it or review its explicit handoff before preparing a fresh reconnect. [r] refreshes context; [l] inspects the selected blocker."
+				return nil
+			}
 			q, err := form.request()
 			if err != nil {
 				ui.err = safe(err.Error())
@@ -102,7 +134,7 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		if key == "l" || key == "t" {
 			return nil
 		}
-		if strings.Contains("ancshd", key) && len(key) == 1 {
+		if strings.Contains("anceshd", key) && len(key) == 1 {
 			ui.err = "Resolve the exact retained uncertain request before preparing another Mesh mutation."
 			return nil
 		}
@@ -150,6 +182,18 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		ui.form = newMeshForm()
 		ui.err = ""
 		m.viewport.GotoTop()
+	case "e":
+		if ui.node == nil || ui.node.Local || ui.node.Trust.State != "revoked" {
+			ui.err = "Select an exact revoked direct peer to reconnect."
+			return nil
+		}
+		ui.form = newMeshForm()
+		ui.form.reconnectHost = ui.node.Host
+		ui.form.fields = ui.form.fields[:18]
+		ui.form.fields[0].label = "Replacement SSH locator or @connector (blank: retained)"
+		ui.err = ""
+		m.viewport.GotoTop()
+		return m.readMesh("reconnect", ui.node.Host)
 	case "d":
 		if ui.node == nil || ui.node.Local {
 			ui.err = "Select an exact direct peer to disconnect."

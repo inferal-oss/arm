@@ -88,10 +88,10 @@ class Element {
 
 
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
-function fixture(saved=[],savedResumes=[]){
+function fixture(saved=[],savedResumes=[],entries=[],blockers=[]){
  const doc={activeElement:null,createElement:tag=>new Element(tag,doc)};doc.body=doc.createElement('body');const root=doc.createElement('section');doc.body.append(root);let live=true;const calls=[],pending=new Map([['arm-mesh-pending',JSON.stringify(saved)],['arm-mesh-resume-pending',JSON.stringify(savedResumes)]]);let held=false;
  const op={key:'key',kind:'connect',revision:2,phase:'awaiting_review',worker_live:true,review_revision:2,review_sha256:'a'.repeat(64),review_expires_at:'2030-01-01',review:{operation:'connect-direct-peers',local_prepared:{identity:{host:'a'.repeat(32),name:'source'}},remote_prepared:{identity:{host:'b'.repeat(32),name:'target'}},request:{source_permissions_on_target:{permissions:['observe-host']},target_permissions_on_source:{permissions:[]},reason:'test'}}};
- const ui=createMeshConsole({root,document:doc,connected:()=>live,storage:{getItem:k=>pending.get(k),setItem:(k,v)=>pending.set(k,v)},call:async(operation,q)=>{calls.push([operation,q]);if(operation==='node_list')return{nodes:[]};if(operation==='mesh_operator_list')return[];if(operation==='mesh_operator_connectors')return[];if(operation==='mesh_operator_prepare'){op.key=q.key;if(held)throw Error('connection lost');return op;}if(operation==='mesh_operator_get')return op;if(operation==='mesh_operator_decide')return{...op,phase:'rejected',revision:3,worker_live:false};throw Error(operation);}});
+ const ui=createMeshConsole({root,document:doc,connected:()=>live,storage:{getItem:k=>pending.get(k),setItem:(k,v)=>pending.set(k,v)},call:async(operation,q)=>{calls.push([operation,q]);if(operation==='mesh_operator_reconnect_context')return{host:q.host,blockers};if(operation==='node_list')return{nodes:entries};if(operation==='node_inspect')return entries.find(e=>e.host===q.host);if(operation==='mesh_operator_list')return[];if(operation==='mesh_operator_connectors')return[];if(operation==='mesh_operator_prepare'){op.key=q.key;if(held)throw Error('connection lost');return op;}if(operation==='mesh_operator_get')return op;if(operation==='mesh_operator_decide')return{...op,phase:'rejected',revision:3,worker_live:false};throw Error(operation);}});
  const find=text=>doc.body.all().find(n=>n.tagName==='button'&&n.textContent===text),dialog=()=>doc.body.all().find(n=>n.tagName==='dialog'&&n.open),form=()=>dialog().all().find(n=>n.tagName==='form');
  return{doc,root,ui,calls,pending,find,dialog,form,op,advance:()=>op.revision++,hold:()=>held=true,offline:()=>{live=false;ui.updateConnection();}};
 }
@@ -142,6 +142,27 @@ test('unknown install review is readable but cannot acquire a misleading trust/d
  const f=fixture();f.op.kind='provision';f.op.review={operation:'install-arm',effect:'Install a binary'};
  await f.find('Connect a node…').fire('click');await flush();const form=f.form();form.all().find(n=>n.tagName==='input').value='fixture';form.all().find(n=>n.tagName==='textarea').value='unsupported review';await form.fire('submit');
  assert.equal(f.find('Trust and connect'),undefined);assert.equal(f.find('Confirm disconnect'),undefined);assert.match(f.dialog().textContent,/no approval is available here/);
+});
+
+test('revoked-node reconnect uses exact host with new defaults and no native path fields',async()=>{
+ const entry={host:'b'.repeat(32),name:'target',health:'disconnected',trust:{state:'revoked',pair:'c'.repeat(64),inbound_grant:{permissions:['run']}},outbound_scope:{grant:{permissions:['run']}}};
+ const f=fixture([],[],[entry]);await f.ui.refresh();await f.find('Reconnect…').fire('click');await flush();
+ assert.equal(f.doc.activeElement.textContent,'Cancel');const form=f.form();const locator=form.all().find(n=>n.tagName==='input');assert.equal(locator.value,'');assert.equal(locator.required,false);
+ form.all().find(n=>n.tagName==='textarea').value='fresh least privilege';await form.fire('submit');
+ const q=f.calls.find(([name])=>name==='mesh_operator_prepare')[1];assert.equal(q.kind,'reconnect');assert.equal(q.reconnect.host,entry.host);assert.equal(q.connect,undefined);assert.equal(q.reconnect.remote_binary,undefined);assert.equal(q.reconnect.remote_home,undefined);assert.deepEqual(q.reconnect.source_permissions_on_target.permissions,['observe-host']);assert.deepEqual(q.reconnect.target_permissions_on_source.permissions,[]);
+ assert.equal(f.calls.filter(([name])=>name==='mesh_operator_prepare').length,1);
+});
+
+test('reconnect blocker links exact pending recovery and guards even a synthetic submit',async()=>{
+ const entry={host:'b'.repeat(32),name:'target',health:'disconnected',trust:{state:'revoked'}};
+ const pending={key:'old-disconnect',kind:'disconnect',phase:'incomplete',worker_live:false};
+ const f=fixture([],[],[entry],[pending]);await f.ui.refresh();await f.find('Reconnect…').fire('click');await flush();
+ assert.equal(f.find('Prepare reconnect review').disabled,true);
+ f.form().all().find(n=>n.tagName==='textarea').value='not yet';await f.form().fire('submit');
+ assert.equal(f.calls.filter(([name])=>name==='mesh_operator_prepare').length,0);
+ assert.match(f.dialog().textContent,/old obligations remain/i);
+ await f.find('Inspect pending operation old-disconnect').fire('click');
+ assert.deepEqual(f.calls.find(([name])=>name==='mesh_operator_get')[1],{key:'old-disconnect'});
 });
 
 async function exactHandoffFixture(){

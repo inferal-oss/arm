@@ -21,6 +21,16 @@ type meshConnectDraft struct {
 	ReplaceRevoked bool       `json:"replace_revoked"`
 }
 
+// ReconnectDraft keeps browser input separate from native binding evidence.
+type meshReconnectDraft struct {
+	Host        string     `json:"host"`
+	Destination string     `json:"ssh_destination,omitempty"`
+	Connector   string     `json:"connector,omitempty"`
+	Reason      string     `json:"reason"`
+	Forward     mesh.Grant `json:"source_permissions_on_target"`
+	Reverse     mesh.Grant `json:"target_permissions_on_source"`
+}
+
 func (s *Server) closeMeshOperator() {
 	s.meshOperatorMu.Lock()
 	service := s.meshOperator
@@ -104,6 +114,19 @@ func (s *Server) meshOperatorService() (*meshops.Service, error) {
 func (s *Server) meshOperatorOperation(ctx context.Context, operation string, raw json.RawMessage) (any, error) {
 	// Raw native setup remains excluded from browserAllowedOperation. Only this
 	// narrow typed workflow, never an arbitrary mesh dispatch, is exposed there.
+	if operation == "mesh_operator_reconnect_context" {
+		var q struct {
+			Host string `json:"host"`
+		}
+		if e := mesh.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		blockers, e := meshops.ReconnectBlockers(s.home, q.Host)
+		if e != nil {
+			return nil, e
+		}
+		return map[string]any{"host": q.Host, "blockers": blockers}, nil
+	}
 	if operation == "mesh_operator_connectors" {
 		if len(raw) > 0 && string(raw) != "{}" && string(raw) != "null" {
 			return nil, model.Err("invalid_request", "connector listing has no parameters")
@@ -158,12 +181,25 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 			Key        string                   `json:"key"`
 			Kind       string                   `json:"kind"`
 			Connect    *meshConnectDraft        `json:"connect,omitempty"`
+			Reconnect  *meshReconnectDraft      `json:"reconnect,omitempty"`
 			Disconnect *meshops.DisconnectDraft `json:"disconnect,omitempty"`
 		}
 		if e = mesh.Decode(raw, &q); e != nil {
 			return nil, e
 		}
 		start := meshops.StartRequest{Key: q.Key, Kind: q.Kind, Disconnect: q.Disconnect}
+		if q.Reconnect != nil {
+			if q.Kind != "reconnect" || q.Connect != nil || q.Disconnect != nil {
+				return nil, model.Err("invalid_request", "one exact reconnect draft is required")
+			}
+			d := q.Reconnect
+			resolved, e := meshops.ResolveReconnect(s.home, q.Key, meshops.ReconnectDraft{Host: d.Host, Destination: d.Destination, Connector: d.Connector, Reason: d.Reason, Forward: d.Forward, Reverse: d.Reverse})
+			if e != nil {
+				return nil, e
+			}
+			start.Reconnect = &resolved
+		}
+
 		if q.Disconnect != nil {
 			inspection, e := mesh.InspectLifecycle(s.home, buildinfo.Version)
 			if e != nil {

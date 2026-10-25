@@ -57,7 +57,7 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 		var digest string
 		switch op.Kind {
 		case "connect":
-			if q.Connect == nil || q.Disconnect != nil || q.Provision != nil {
+			if q.Connect == nil || q.Connect.Reconnect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
 				return nil, fmt.Errorf("invalid connect payload")
 			}
 			c := q.Connect
@@ -76,14 +76,22 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 				}
 			}
 			digest, err = mesh.ReviewDigest(*c)
+		case "reconnect":
+			if q.Reconnect == nil || q.Connect != nil || q.Disconnect != nil || q.Provision != nil {
+				return nil, fmt.Errorf("invalid reconnect payload")
+			}
+			if err = validateProofReconnect(*q.Reconnect, owner, host); err != nil {
+				return nil, err
+			}
+			digest, err = mesh.ReviewDigest(*q.Reconnect)
 		case "disconnect":
-			if q.Disconnect == nil || q.Connect != nil || q.Provision != nil || !validHost(q.Disconnect.Host) || !validDigest(q.Disconnect.Pair) || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
+			if q.Disconnect == nil || q.Connect != nil || q.Reconnect != nil || q.Provision != nil || !validHost(q.Disconnect.Host) || !validDigest(q.Disconnect.Pair) || strings.TrimSpace(q.Disconnect.Reason) == "" || len(q.Disconnect.Reason) > 4096 {
 				return nil, fmt.Errorf("invalid disconnect payload")
 			}
 			d := q.Disconnect
 			digest, err = mesh.ReviewDigest(struct{ Host, Pair, Reason string }{d.Host, d.Pair, d.Reason})
 		case "provision":
-			if q.Provision == nil || q.Connect != nil || q.Disconnect != nil || q.Key != q.Provision.Transfer.Key {
+			if q.Provision == nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Key != q.Provision.Transfer.Key {
 				return nil, fmt.Errorf("invalid linked provision request")
 			}
 			if err = q.Provision.Validate(); err != nil {
@@ -235,12 +243,16 @@ func parseCoordReview(r *proofCoordRecord) error {
 			return fmt.Errorf("provision verification has no immutable original")
 		}
 		r.provisionReview = &v
-	case "connect-direct-peers":
+	case "connect-direct-peers", "reconnect-direct-peers":
 		var v proofCoordConnectReview
 		if err = strictEvidence(string(op.Review), &v); err != nil {
 			return err
 		}
-		if r.request.Connect == nil || v.Key != r.request.Key || !reflect.DeepEqual(v.Request, *r.request.Connect) || v.Warning == "" || v.SSH.Account == "" || v.SSH.HostKey == "" || v.LocalPrepared == nil || v.RemotePrepared == nil {
+		expected := proofConnectRequest(r.request)
+		if (operation == "reconnect-direct-peers") != (op.Kind == "reconnect") {
+			return fmt.Errorf("connection review kind changed")
+		}
+		if expected == nil || v.Key != r.request.Key || !reflect.DeepEqual(v.Request, *expected) || v.Warning == "" || v.SSH.Account == "" || v.SSH.HostKey == "" || v.LocalPrepared == nil || v.RemotePrepared == nil {
 			return fmt.Errorf("connect review differs from immutable request")
 		}
 		if err = validCoordNode(v.Local); err != nil {
@@ -275,7 +287,7 @@ func parseCoordReview(r *proofCoordRecord) error {
 		if err = strictEvidence(string(op.Review), &v); err != nil {
 			return err
 		}
-		if op.Kind != "connect" || op.ParentKey == "" || v.Original != r.request.Key || !validDigest(v.Pair) || !literalCoordAddress(v.LocalListen) || !literalCoordAddress(v.RemoteListen) || v.LocalRevision < 1 || v.RemoteRevision < 1 || v.Effect == "" || !reflect.DeepEqual(v.Forward, r.request.Connect.Forward) || !reflect.DeepEqual(v.Reverse, r.request.Connect.Reverse) {
+		if !oneOf(op.Kind, "connect", "reconnect") || op.ParentKey == "" || v.Original != r.request.Key || !validDigest(v.Pair) || !literalCoordAddress(v.LocalListen) || !literalCoordAddress(v.RemoteListen) || v.LocalRevision < 1 || v.RemoteRevision < 1 || v.Effect == "" || proofConnectRequest(r.request) == nil || !reflect.DeepEqual(v.Forward, proofConnectRequest(r.request).Forward) || !reflect.DeepEqual(v.Reverse, proofConnectRequest(r.request).Reverse) {
 			return fmt.Errorf("verify-existing review differs from immutable intent")
 		}
 		if err = validCoordNode(v.Local); err != nil {
@@ -318,12 +330,12 @@ func parseCoordResult(r *proofCoordRecord) error {
 		r.provisionResult = &v
 		return nil
 	}
-	if r.op.Kind == "connect" {
+	if oneOf(r.op.Kind, "connect", "reconnect") {
 		var v proofCoordConnectResult
 		if err := strictEvidence(string(r.op.Result), &v); err != nil {
 			return err
 		}
-		c := r.request.Connect
+		c := proofConnectRequest(r.request)
 		if c == nil || v.Key != r.request.Key || v.Host != v.Remote.Host || v.Name != v.Remote.Name || !validDigest(v.Pair) || !reflect.DeepEqual(v.Forward, c.Forward) || !reflect.DeepEqual(v.Reverse, c.Reverse) {
 			return fmt.Errorf("completed connect result differs from exact request")
 		}
@@ -359,6 +371,9 @@ func parseCoordResult(r *proofCoordRecord) error {
 }
 func validateCoordPayload(r, root *proofCoordRecord, host string, lifecycles map[string]mesh.LifecycleOperation) error {
 	op := r.op
+	if e := validateProofReconnectHistory(r, root, host, lifecycles); e != nil {
+		return e
+	}
 	target := map[string]bool{}
 	for _, v := range op.Targets {
 		if v == "" || len(v) > 512 || target[v] {
@@ -388,7 +403,7 @@ func validateCoordPayload(r, root *proofCoordRecord, host string, lifecycles map
 	if r.connectResult != nil {
 		result := r.connectResult
 		life, ok := lifecycles[root.op.Key]
-		if !ok || life.Kind != "connect" || life.Phase != "connected" || life.LocalHost != host || life.Pair != result.Pair || life.LocalIdentity == nil || life.RemoteIdentity == nil || *life.LocalIdentity != result.Local || *life.RemoteIdentity != result.Remote || result.Local.Host != host || !target["host:"+result.Remote.Host] {
+		if !ok || life.Kind != op.Kind || life.Phase != "connected" || life.LocalHost != host || life.Pair != result.Pair || life.LocalIdentity == nil || life.RemoteIdentity == nil || *life.LocalIdentity != result.Local || *life.RemoteIdentity != result.Remote || result.Local.Host != host || !target["host:"+result.Remote.Host] {
 			return fmt.Errorf("connect outcome differs from complete lifecycle receipt")
 		}
 		review := r.connectReview

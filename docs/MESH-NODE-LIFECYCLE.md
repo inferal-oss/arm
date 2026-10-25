@@ -1,11 +1,10 @@
 # Mesh node lifecycle — approved extension
 
-Requested October 22, 2026; approved by the operator October 23, 2026. Approval
-authorizes staged implementation of this scheme; its runtime and interface gates
-remain pending. This design extends the existing reviewed direct-peer lifecycle.
-Reconnect needs a first-class CLI/dashboard workflow; remote shutdown and
-uninstall need new destination-authorized operations. Those new operations
-are not implemented or enabled by existing grants.
+Requested October 22, 2026; approved by the operator October 23, 2026. First-class
+reconnect is implemented in the CLI and both dashboards after scoped runtime,
+formal and interface validation. Remote shutdown and uninstall still need the
+separate destination-authorized operations specified here; they are not enabled
+by existing grants. This design extends the reviewed direct-peer lifecycle.
 
 ## Current boundary
 
@@ -16,7 +15,7 @@ does not remove workspace membership or ban a node reachable by another path.
 
 The current CLI can explicitly re-pair revoked records using
 `arm mesh connect SSH_DEST --replace-revoked`, with fresh concrete review. This
-is not a dedicated reconnect action in node details. Connect can prepare/start a
+remains available alongside the dedicated reconnect action in node details. Connect can prepare/start a
 compatible backend through verified SSH; it does not imply permission to stop or
 remove another installation. Provisioning has durable receipts, including whether
 binary bytes were reused. A receipt or a remembered path alone is not deletion

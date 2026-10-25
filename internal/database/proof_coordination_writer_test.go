@@ -21,7 +21,7 @@ import (
 // Uses the actual public coordinator/receipt writer with deterministic setup
 // callbacks. This validates producer JSON shapes and journal relationships; it
 // does not claim SSH/TLS transport acceptance (covered by separate live gates).
-func coordWriterFixture(t *testing.T) (*meshops.Service, meshops.StartRequest, func(), string) {
+func coordWriterFixture(t *testing.T, reconnecting ...bool) (*meshops.Service, meshops.StartRequest, func(), string) {
 	t.Helper()
 	fixture, lifecycles := coordHistoryFixture(t, "connect")
 	life := lifecycles[fixture.Key]
@@ -37,6 +37,32 @@ func coordWriterFixture(t *testing.T) (*meshops.Service, meshops.StartRequest, f
 	remote := mesh.Config{Identity: *life.RemoteIdentity, Listen: life.RemoteIdentity.Address, Peers: []mesh.Peer{}}
 	oi := mesh.LifecycleInspection{Protocol: 1, Version: buildinfo.Version, OS: review.Local.OS, Arch: review.Local.Arch, Home: review.Local.Home, Owner: local.CurrentIdentity(), Running: true, Host: own.Identity.Host, Identity: &own.Identity, Config: &own, Startup: mesh.DefaultStartup(), StartupSource: "saved", PrivateIPs: []string{"127.0.0.1"}}
 	ri := mesh.LifecycleInspection{Protocol: 1, Version: buildinfo.Version, OS: review.Remote.OS, Arch: review.Remote.Arch, Home: review.Remote.Home, Owner: local.CurrentIdentity(), Running: true, Host: remote.Identity.Host, Identity: &remote.Identity, Config: &remote, Startup: mesh.DefaultStartup(), StartupSource: "saved", PrivateIPs: []string{"127.0.0.1"}, Route: &mesh.SSHRoute{ClientIP: "127.0.0.1", ServerIP: "127.0.0.1"}}
+
+	if len(reconnecting) > 0 && reconnecting[0] {
+		old := life
+		old.Key = "previous-actual-writer-connection"
+		old.Pair = strings.Repeat("e", 64)
+		old.Kind = "connect"
+		old.Phase = "connected"
+		prior := mesh.Peer{Identity: remote.Identity, Pair: old.Pair, State: "revoked", Revision: 4, Grant: mesh.Grant{Permissions: []string{"observe-host", "message"}, OperatorInbox: true}, Reason: "old reviewed retirement"}
+		own.Peers = []mesh.Peer{prior}
+		remote.Peers = []mesh.Peer{{Identity: own.Identity, Pair: old.Pair, State: "revoked", Revision: 4, Grant: prior.Grant, Reason: prior.Reason}}
+		oi.Config = &own
+		ri.Config = &remote
+		if e := mesh.SaveLifecycleOperation(oi.Home, old); e != nil {
+			t.Fatal(e)
+		}
+		var e error
+		old, _, e = mesh.ReadLifecycleOperation(oi.Home, old.Key)
+		if e != nil {
+			t.Fatal(e)
+		}
+		d := meshops.ReconnectDraft{Host: remote.Identity.Host, Reason: q.Connect.Reason, Forward: q.Connect.Forward, Reverse: q.Connect.Reverse}
+		r := &meshops.ReconnectRequest{Draft: d, Binding: meshops.ReconnectBinding{Local: own.Identity, Prior: prior, Connection: &old, Selected: mesh.Connector{ID: "reconnect", Destination: old.SSHLocator, Binary: old.Binary, Home: old.RemoteHome, Reason: d.Reason}}}
+		q.Kind = "reconnect"
+		q.Connect = nil
+		q.Reconnect = r
+	}
 	assign := func(out, value any) error {
 		if out == nil {
 			return nil
@@ -192,5 +218,58 @@ func TestStrictCoordinatorArchivalActualConnectRestoreAndVerificationWriters(t *
 			}
 			coordProveWriter(t, home)
 		})
+	}
+}
+
+func TestStrictReconnectActualCoordinatorServiceWriter(t *testing.T) {
+	s, q, _, home := coordWriterFixture(t, true)
+	if _, e := s.Start(q); e != nil {
+		t.Fatal(e)
+	}
+	review := coordAwait(t, s, q.Key, "awaiting_review")
+	if review.Kind != "reconnect" || !strings.Contains(string(review.Review), "reconnect-direct-peers") {
+		t.Fatal("not a concrete reconnect review", review)
+	}
+	if _, e := s.Decide(meshops.Decision{Key: q.Key, ReviewRevision: review.ReviewRevision, ReviewHash: review.ReviewHash, Approve: true}); e != nil {
+		t.Fatal(e)
+	}
+	coordAwait(t, s, q.Key, "completed")
+	s.Close()
+	coordProveWriter(t, home)
+	op, ok, e := mesh.ReadCoordination(home, q.Key)
+	if e != nil || !ok {
+		t.Fatal(e)
+	}
+	// Independent archival must also reject a genuine writer record whose
+	// original previous-enrollment binding is corrupted after publication.
+	var original meshops.StartRequest
+	if e = json.Unmarshal(op.Request, &original); e != nil {
+		t.Fatal(e)
+	}
+	original.Reconnect.Binding.Prior.Pair = strings.Repeat("f", 64)
+	op.Request = coordJSON(t, original)
+	op.Digest, _ = mesh.ReviewDigest(*original.Reconnect)
+	raw := map[string][]byte{coordName(t, op.Key): coordJSON(t, op)}
+	entries, e := os.ReadDir(filepath.Join(home, "mesh-lifecycle"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	lifes := map[string]mesh.LifecycleOperation{}
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), "coordinator-") {
+			continue
+		}
+		b, e := os.ReadFile(filepath.Join(home, "mesh-lifecycle", entry.Name()))
+		if e != nil {
+			t.Fatal(e)
+		}
+		var v mesh.LifecycleOperation
+		if e = strictEvidence(string(b), &v); e != nil {
+			t.Fatal(e)
+		}
+		lifes[v.Key] = v
+	}
+	if _, e = proveResetCoordinations(raw, local.CurrentIdentity().UID, q.Reconnect.Binding.Local.Host, lifes); e == nil {
+		t.Fatal("corrupt actual writer reconnect accepted")
 	}
 }

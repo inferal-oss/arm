@@ -13,6 +13,9 @@ func TestBrowserMeshWorkflowHasClosedTypedExecutionInputs(t *testing.T) {
 	ctx := context.WithValue(t.Context(), browserContextKey{}, true)
 	for _, raw := range []string{
 		`{"key":"bad","kind":"connect","connect":{"ssh_destination":"fixture","remote_binary":"/bad/command","reason":"test"}}`,
+		`{"key":"bad","kind":"reconnect","reconnect":{"host":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","remote_binary":"/bad/command","reason":"test"}}`,
+		`{"key":"bad","kind":"reconnect","reconnect":{"host":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","remote_home":"/private/other","reason":"test"}}`,
+		`{"key":"bad","kind":"reconnect","reconnect":{"host":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","binding":{"selected_helper":{"remote_binary":"/bad/command"}},"reason":"test"}}`,
 		`{"key":"bad","kind":"connect","connect":{"ssh_destination":"fixture","remote_home":"/private/other","reason":"test"}}`,
 		`{"key":"bad","kind":"connect","connect":{"connector":"unknown","ssh_destination":"fixture","reason":"test"}}`,
 		`{"key":"bad","kind":"connect","connect":{"connector":"unknown","reason":"test"}}`,

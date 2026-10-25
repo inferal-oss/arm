@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -31,6 +32,11 @@ type meshDashboard struct {
 	dirty      bool
 }
 
+type meshReconnectContext struct {
+	Host     string                     `json:"host"`
+	Blockers []meshops.ReconnectBlocker `json:"blockers"`
+}
+
 type meshReadMsg struct {
 	ui         *meshDashboard
 	session    transport
@@ -40,6 +46,7 @@ type meshReadMsg struct {
 	operations []meshops.Operation
 	node       *model.NodeEntry
 	operation  *meshops.Operation
+	reconnect  *meshReconnectContext
 	err        error
 }
 
@@ -87,8 +94,14 @@ func (q meshIntent) validate() error {
 		if err := strictPendingJSON(q.Params, &p); err != nil {
 			return err
 		}
-		if (p.Kind == "connect" && (p.Connect == nil || p.Disconnect != nil)) || (p.Kind == "disconnect" && (p.Disconnect == nil || p.Connect != nil)) || (p.Kind != "connect" && p.Kind != "disconnect") {
-			return fmt.Errorf("exact connect or disconnect draft required")
+		if (p.Kind == "connect" && (p.Connect == nil || p.Reconnect != nil || p.Disconnect != nil)) || (p.Kind == "reconnect" && (p.Reconnect == nil || p.Connect != nil || p.Disconnect != nil)) || (p.Kind == "disconnect" && (p.Disconnect == nil || p.Connect != nil || p.Reconnect != nil)) || (p.Kind != "connect" && p.Kind != "reconnect" && p.Kind != "disconnect") {
+			return fmt.Errorf("exact connect, reconnect or disconnect draft required")
+		}
+		if p.Reconnect != nil {
+			raw, e := hex.DecodeString(p.Reconnect.Host)
+			if e != nil || len(raw) != 16 || hex.EncodeToString(raw) != p.Reconnect.Host {
+				return fmt.Errorf("reconnect requires an exact stable host")
+			}
 		}
 	case "mesh_operator_decide":
 		var p meshops.Decision
@@ -143,6 +156,12 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 			if msg.err == nil {
 				msg.err = session.Call(ctx, "mesh_operator_list", nil, &msg.operations)
 			}
+		case "reconnect":
+			msg.reconnect = &meshReconnectContext{}
+			msg.err = session.Call(ctx, "mesh_operator_reconnect_context", map[string]string{"host": id}, msg.reconnect)
+			if msg.err == nil && (msg.reconnect.Host != id || msg.reconnect.Blockers == nil) {
+				msg.err = fmt.Errorf("exact reconnect context unavailable")
+			}
 		case "node":
 			msg.node = &model.NodeEntry{}
 			msg.err = session.Call(ctx, "node_inspect", map[string]string{"host": id}, msg.node)
@@ -166,6 +185,29 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 	}
 	ui.err = ""
 	switch msg.mode {
+	case "reconnect":
+		if ui.form != nil && msg.reconnect != nil && ui.form.reconnectHost == msg.reconnect.Host {
+			form := ui.form
+			selectedKey := ""
+			if form.blockerIndex >= 0 && form.blockerIndex < len(form.blockers) {
+				selectedKey = form.blockers[form.blockerIndex].Key
+			}
+			form.blockerIndex = -1
+			for i, blocker := range msg.reconnect.Blockers {
+				if selectedKey != "" && blocker.Key == selectedKey {
+					form.blockerIndex = i
+					break
+				}
+			}
+			// The first observation may select its first item. Later changed lists
+			// preserve only an exact selected key; removal never retargets inspection.
+			if !form.contextSeen && len(msg.reconnect.Blockers) > 0 {
+				form.blockerIndex = 0
+			}
+			form.contextSeen = true
+			form.contextReady = true
+			form.blockers = msg.reconnect.Blockers
+		}
 	case "list":
 		ui.registry, ui.operations = msg.registry, msg.operations
 		if ui.mode == "operation" && ui.operation != nil || ui.mode == "node" && ui.node != nil {
@@ -243,8 +285,14 @@ func (m *dashboardModel) sendMesh(q meshIntent, retry bool) tea.Cmd {
 }
 
 func validateMeshOutcome(q meshIntent, op meshops.Operation) error {
-	if !mesh.ValidKey(op.Key) || op.Revision <= 0 || (op.Kind != "connect" && op.Kind != "disconnect") || op.Phase == "" {
+	if !mesh.ValidKey(op.Key) || op.Revision <= 0 || (op.Kind != "connect" && op.Kind != "reconnect" && op.Kind != "disconnect") || op.Phase == "" {
 		return fmt.Errorf("invalid coordinator receipt; retain exact request/key and inspect its durable outcome")
+	}
+	if q.Operation == "mesh_operator_prepare" {
+		var p meshPrepareRequest
+		if strictPendingJSON(q.Params, &p) != nil || p.Kind != op.Kind {
+			return fmt.Errorf("coordinator result kind differs from exact prepared intent")
+		}
 	}
 	if q.Operation == "mesh_operator_resume" {
 		if op.ParentKey != q.Key {

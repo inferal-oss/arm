@@ -40,7 +40,23 @@ func (m *dashboardModel) meshText() string {
 		return out.String() + ui.prompt.text + "\n\n" + keycap("y", "Confirm exact request", "") + "  " + keycap("n/Esc", "Keep unchanged", "quiet")
 	}
 	if ui.form != nil {
-		out.WriteString("CONNECT NODE · LOCAL OPERATOR\n\nUse an SSH destination or @native-reviewed-connector.\n[Enter] edit · [Space] cycle choices · [p] prepare · Esc back\nResource ceilings apply to leases/run; mode none grants nothing.\n\n")
+		out.WriteString("NODE ENROLLMENT · LOCAL OPERATOR\n\nUse an SSH destination or @native-reviewed-connector.\n[Enter] edit · [Space] cycle choices · [p] prepare · Esc back\nResource ceilings apply to leases/run; mode none grants nothing.\n\n")
+		if ui.form.reconnectHost != "" {
+			fmt.Fprintf(&out, "RECONNECT EXACT NODE %s\nNew enrollment and fresh permissions; previous grants are not restored.\nA blank locator uses the retained record only after fresh verification.\n\n", safe(ui.form.reconnectHost))
+			if !ui.form.contextReady {
+				out.WriteString("READING RECONNECT CONTEXT · preparation is disabled. [r] retry read.\n\n")
+			}
+			if len(ui.form.blockers) > 0 {
+				out.WriteString("PENDING WORKFLOW · preparation is disabled.\nSettle the original operation or explicitly review its handoff; old obligations remain.\n[ / ] select blocker · [l] inspect its recovery actions · [r] refresh context\n")
+				if ui.form.blockerIndex < 0 || ui.form.blockerIndex >= len(ui.form.blockers) {
+					out.WriteString("No workflow selected · press [ or ] to choose an exact pending key.\n")
+				}
+				for i, b := range ui.form.blockers {
+					fmt.Fprintf(&out, "%s%s · %s · %s\n", selectedPrefix(ui.form.blockerIndex, i), safe(b.Key), safe(b.Kind), safe(b.Phase))
+				}
+				out.WriteString("\n")
+			}
+		}
 		for i, field := range ui.form.fields {
 			value := safe(field.value)
 			if value == "" {
@@ -90,7 +106,7 @@ func (m *dashboardModel) meshText() string {
 		if n.Error != nil {
 			out.WriteString("\n" + safe(n.Error.Error()) + "\n")
 		}
-		out.WriteString("\n[v] Open exact node dashboard · [d] Review disconnect · [r] Refresh exact node\n[i] Complete reported/trust record · Esc node list\nMetadata/capabilities are observations, never grants.")
+		out.WriteString("\n[v] Open exact node dashboard · [d] Review disconnect · [e] Reconnect revoked node · [r] Refresh exact node\n[i] Complete reported/trust record · Esc node list\nMetadata/capabilities are observations, never grants.")
 	case "operation":
 		if ui.operation == nil {
 			return out.String() + "No operation selected."

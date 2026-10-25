@@ -209,3 +209,29 @@ test-formal: tla-tools test-formal-process
 test-provider-worker-formal: tla-tools
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provider-worker-formal-runner.py
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
+
+# Focused reconnect component: finite safety, all24 actual Go traces/replays,
+# rejection controls and the complete27-theorem strict proof. Aggregate gates
+# include this component; focused targets never select proof leaves.
+TLA_RECONNECT_WORK_DIR ?= $(CURDIR)/.tla/mesh-reconnect
+.PHONY: test-mesh-reconnect-formal-runner tla-reconnect-check tla-reconnect-traces tla-reconnect-prove test-mesh-reconnect-formal
+test-mesh-reconnect-formal-runner:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-mesh-reconnect-formal-runner.py
+
+tla-reconnect-check: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-mesh-reconnect-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_RECONNECT_WORK_DIR)"
+
+tla-reconnect-traces: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-mesh-reconnect-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_RECONNECT_WORK_DIR)"
+
+tla-reconnect-prove: tla-tlapm
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-mesh-reconnect-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_RECONNECT_WORK_DIR)"
+
+test-mesh-reconnect-formal: tla-tools test-mesh-reconnect-formal-runner
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-mesh-reconnect-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_RECONNECT_WORK_DIR)"
+
+# Keep the complete formal entry points complete as components are added.
+tla-check: tla-reconnect-check
+tla-traces: tla-reconnect-traces
+tla-prove: tla-reconnect-prove
+test-formal: test-mesh-reconnect-formal

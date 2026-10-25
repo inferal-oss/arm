@@ -21,10 +21,19 @@ type meshConnectDraft struct {
 	Reverse        mesh.Grant `json:"target_permissions_on_source"`
 	ReplaceRevoked bool       `json:"replace_revoked"`
 }
+type meshReconnectDraft struct {
+	Host        string     `json:"host"`
+	Destination string     `json:"ssh_destination,omitempty"`
+	Connector   string     `json:"connector,omitempty"`
+	Reason      string     `json:"reason"`
+	Forward     mesh.Grant `json:"source_permissions_on_target"`
+	Reverse     mesh.Grant `json:"target_permissions_on_source"`
+}
 type meshPrepareRequest struct {
 	Key        string                   `json:"key"`
 	Kind       string                   `json:"kind"`
 	Connect    *meshConnectDraft        `json:"connect,omitempty"`
+	Reconnect  *meshReconnectDraft      `json:"reconnect,omitempty"`
 	Disconnect *meshops.DisconnectDraft `json:"disconnect,omitempty"`
 }
 type meshRevisionRequest struct {
@@ -43,8 +52,13 @@ type meshField struct {
 	choices      []string
 }
 type meshForm struct {
-	fields   []meshField
-	selected int
+	contextReady  bool
+	contextSeen   bool
+	blockers      []meshops.ReconnectBlocker
+	blockerIndex  int
+	reconnectHost string
+	fields        []meshField
+	selected      int
 }
 
 func newMeshForm() *meshForm {
@@ -140,6 +154,23 @@ func (f *meshForm) request() (meshIntent, error) {
 	reverse, err := f.grant(10)
 	if err != nil {
 		return meshIntent{}, fmt.Errorf("Peer may do HERE: %w", err)
+	}
+	if f.reconnectHost != "" {
+		d := &meshReconnectDraft{Host: f.reconnectHost, Destination: strings.TrimSpace(f.fields[0].value), Reason: f.fields[1].value, Forward: forward, Reverse: reverse}
+		if strings.HasPrefix(d.Destination, "@") {
+			d.Connector = strings.TrimPrefix(d.Destination, "@")
+			d.Destination = ""
+		}
+		if strings.TrimSpace(d.Reason) == "" || len(d.Reason) > 4096 {
+			return meshIntent{}, fmt.Errorf("reason is required, up to 4096 bytes")
+		}
+		if d.Destination != "" {
+			if err = (mesh.Connector{ID: "terminal", Destination: d.Destination, Binary: "arm", Reason: d.Reason}).Validate(); err != nil {
+				return meshIntent{}, err
+			}
+		}
+		key := local.ID()
+		return newMeshIntent("mesh_operator_prepare", key, meshPrepareRequest{Key: key, Kind: "reconnect", Reconnect: d})
 	}
 	d := &meshConnectDraft{Destination: strings.TrimSpace(f.fields[0].value), Reason: f.fields[1].value, Forward: forward, Reverse: reverse, ReplaceRevoked: f.fields[18].value == "yes"}
 	if strings.HasPrefix(d.Destination, "@") {

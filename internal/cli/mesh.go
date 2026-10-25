@@ -103,6 +103,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		return 2, fmt.Errorf("mesh requires connect, disconnect, lookup, identity, peers or an advanced operation")
 	}
 	action, args := args[0], args[1:]
+	if action == "reconnect" {
+		return a.meshReconnect(args)
+	}
 	if action == "connector" {
 		return a.meshConnector(args)
 	}

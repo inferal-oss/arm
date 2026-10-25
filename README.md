@@ -276,6 +276,8 @@ arm mesh peers
 arm status --host HOST_ID
 arm resources --host HOST_ID
 arm mesh disconnect HOST_ID
+arm mesh reconnect HOST_ID --dry-run
+arm mesh reconnect HOST_ID
 # Inspect an interrupted result without retrying it:
 arm mesh lookup OPERATION_KEY
 ```
@@ -303,6 +305,8 @@ arm mesh message-lookup HOST_ID --key UNIQUE_SEND_KEY
 ```
 
 These send examples require the corresponding grants. Unknown or ambiguous host names fail closed; prefer stable host IDs in scripts. Remote mutations never retry automatically. Preserve the authority and original operation key after a lost response; inspect or retry the same request/key instead of creating new work. Single-lease remote `release`, `cancel` and `renew` accept `--key` for this purpose.
+
+`arm mesh reconnect HOST_ID` and the dashboards' Reconnect action review a new enrollment for the exact revoked node, with fresh grants. Previous permissions are not restored automatically. Reusing `--key KEY` reads its recorded outcome without repeating native work; `--resume --key KEY` prepares separately reviewed recovery of an incomplete operation. Reconnect preserves unresolved earlier obligations. Remote Stop/Uninstall remain planned; see [the lifecycle contract](docs/MESH-NODE-LIFECYCLE.md).
 
 `arm mesh disconnect HOST_ID` revokes this exact automatic enrollment locally first, then remotely over verified SSH. An unreachable remote remains explicitly pending with a retry key; existing leases and other peers remain. `arm mesh revoke HOST_ID --reason TEXT` closes peer sessions and denies further operations, while already committed leases remain the destination's obligations. `arm mesh renew --reason TEXT` explicitly renews the local certificate with the same key, closes sessions and revokes local peer grants. Review and re-pair revoked records with `mesh join --replace-revoked`; active pins are never silently replaced. Scoped read-only web/terminal node views are implemented, and reviewed workspaces add explicit discovery and host inbox messages through a directory relay. Private-key rotation, complete remote operational parity, general graph messaging, ProxyJump bootstrap, distributed/global-pool coordination and automatic NAT traversal remain future work. See [the security contract](docs/MESH-SECURITY.md) for the exact boundary.
 

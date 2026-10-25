@@ -54,17 +54,18 @@ type DisconnectRequest struct {
 	Revision                             int
 }
 type ConnectRequest struct {
-	Destination    string     `json:"ssh_destination"`
-	ProvisionKey   string     `json:"provision_key,omitempty"`
-	RemoteHome     string     `json:"remote_home"`
-	Binary         string     `json:"remote_binary"`
-	LocalIP        string     `json:"local_ip,omitempty"`
-	RemoteIP       string     `json:"remote_ip,omitempty"`
-	Reason         string     `json:"reason"`
-	Forward        mesh.Grant `json:"source_permissions_on_target"`
-	Reverse        mesh.Grant `json:"target_permissions_on_source"`
-	Public         bool       `json:"allow_public_listen"`
-	ReplaceRevoked bool       `json:"replace_revoked"`
+	Reconnect      *ReconnectRequest `json:"reconnect,omitempty"`
+	Destination    string            `json:"ssh_destination"`
+	ProvisionKey   string            `json:"provision_key,omitempty"`
+	RemoteHome     string            `json:"remote_home"`
+	Binary         string            `json:"remote_binary"`
+	LocalIP        string            `json:"local_ip,omitempty"`
+	RemoteIP       string            `json:"remote_ip,omitempty"`
+	Reason         string            `json:"reason"`
+	Forward        mesh.Grant        `json:"source_permissions_on_target"`
+	Reverse        mesh.Grant        `json:"target_permissions_on_source"`
+	Public         bool              `json:"allow_public_listen"`
+	ReplaceRevoked bool              `json:"replace_revoked"`
 }
 type Plan struct {
 	Operation      string           `json:"operation"`
@@ -79,13 +80,25 @@ type Plan struct {
 }
 
 func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool) (int, error) {
+	kind, canonical, start := reconnectIntent(request)
+	start.Key = key
 	own, err := a.Inspect()
 	if err != nil {
 		return 1, err
 	}
 	sshIdentity := meshssh.Identity{}
+	if request.Reconnect != nil && request.Reconnect.Binding.Connection != nil {
+		c := request.Reconnect.Binding.Connection
+		sshIdentity = meshssh.Identity{Account: c.SSHAccount, HostKey: c.SSHHostKey}
+	}
 	ssh := func(q any, result any) error {
 		observed, e := a.ssh(request.Destination, request.Binary, q, sshIdentity, result)
+		if e == nil && request.Reconnect != nil && request.Reconnect.Binding.Connection != nil {
+			prior := request.Reconnect.Binding.Connection
+			if observed.Account != prior.SSHAccount || observed.HostKey != prior.SSHHostKey {
+				return model.Err("reconnect_ssh_identity_changed", "verified SSH account or host key differs from retained connection; use a separate connect review")
+			}
+		}
 		if e == nil {
 			sshIdentity = observed
 		}
@@ -93,6 +106,9 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	}
 	var remote mesh.LifecycleInspection
 	if err = ssh(Helper{Home: request.RemoteHome, Action: "lifecycle_inspect"}, &remote); err != nil {
+		return 1, err
+	}
+	if err = a.checkReconnect(key, request.Reconnect, own, remote); err != nil {
 		return 1, err
 	}
 	if remote.Protocol != mesh.LifecycleProtocol || remote.Version != buildinfo.Version {
@@ -134,6 +150,10 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 		}
 	}
 	plan := Plan{Operation: "connect-direct-peers", Key: key, Request: request, SSH: sshIdentity, Local: lifecycleNodePreview(own, remote.Host), Remote: lifecycleNodePreview(remote, own.Host), Warning: "Preparation may restart ordinary backends and restore previously approved enabled listeners. No NEW listener, endpoint or peer trust is enabled until this review. Declining closes new pending reservations or lets them expire; private identities, ordinary backends and pre-existing trust/listeners remain. Reverse grants default to none. Existing backend budgets are preserved."}
+	if request.Reconnect != nil {
+		plan.Operation = "reconnect-direct-peers"
+		plan.Warning += " Reconnect creates a new enrollment with newly selected grants; old disconnect receipts and obligations remain. The installed helper path/version is reviewed, not historic byte-hash equality. No binary is installed or upgraded."
+	}
 	if request.Forward.Has("run") || request.Reverse.Has("run") {
 		plan.Warning += " RUN executes as the destination OS user with that user's file and credential access; it is not a sandbox."
 	}
@@ -149,7 +169,7 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	if err = local.Prepare(a.Home); err != nil {
 		return 1, err
 	}
-	digest, _ := mesh.ReviewDigest(request)
+	digest, _ := mesh.ReviewDigest(canonical)
 	if a.guard == nil {
 		if prior, ok, e := mesh.ReadCoordination(a.Home, key); e != nil {
 			return 1, e
@@ -157,7 +177,7 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 			if prior.ParentKey != "" {
 				return 1, model.Err("original_intent_required", "this key identifies a recovery attempt; retry the original immutable intent key, not its child receipt")
 			}
-			if prior.Kind != "connect" || prior.Digest != digest {
+			if prior.Kind != kind || prior.Digest != digest {
 				return 1, model.Err("idempotency_conflict", "operator key belongs to another immutable intent")
 			}
 			if prior.Phase == "completed" {
@@ -170,10 +190,10 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 			}
 		}
 	}
-	if err = a.begin(key, "connect", digest, "ssh:"+request.Destination); err != nil {
+	if err = a.begin(key, kind, digest, "ssh:"+request.Destination); err != nil {
 		return 1, err
 	}
-	if err = a.recordRequest(StartRequest{Key: key, Kind: "connect", Connect: &request}); err != nil {
+	if err = a.recordRequest(start); err != nil {
 		return 1, err
 	}
 	if remote.Host != "" {
@@ -185,11 +205,11 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	if err != nil {
 		return 1, err
 	}
-	if exists && (operation.Kind != "connect" || operation.Digest != digest || operation.SSHAccount != sshIdentity.Account || operation.SSHHostKey != sshIdentity.HostKey) {
+	if exists && (operation.Kind != kind || operation.Digest != digest || operation.SSHAccount != sshIdentity.Account || operation.SSHHostKey != sshIdentity.HostKey) {
 		return 1, model.Err("idempotency_conflict", "lifecycle key belongs to a different request or SSH identity")
 	}
 	if !exists {
-		operation = mesh.LifecycleOperation{Key: key, Kind: "connect", Digest: digest, At: time.Now().UTC(), Phase: "inspected", SSHLocator: request.Destination, SSHAccount: sshIdentity.Account, SSHHostKey: sshIdentity.HostKey, RemoteHome: remote.Home, Binary: request.Binary, Reason: request.Reason}
+		operation = mesh.LifecycleOperation{Key: key, Kind: kind, Digest: digest, At: time.Now().UTC(), Phase: "inspected", SSHLocator: request.Destination, SSHAccount: sshIdentity.Account, SSHHostKey: sshIdentity.HostKey, RemoteHome: remote.Home, Binary: request.Binary, Reason: request.Reason}
 	}
 
 	if exists && operation.Phase == "connected" && own.Identity != nil && remote.Identity != nil && operation.LocalIdentity != nil && operation.RemoteIdentity != nil && *own.Identity == *operation.LocalIdentity && *remote.Identity == *operation.RemoteIdentity {
@@ -221,6 +241,9 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	if err = ssh(Helper{Home: request.RemoteHome, Action: "lifecycle_ensure", Startup: remote.Startup, ExpectedHost: remote.Host, ExpectedOwner: remote.Owner.UID}, &remote); err != nil {
 		return 1, err
 	}
+	if err = a.checkReconnect(key, request.Reconnect, own, remote); err != nil {
+		return 1, err
+	}
 	if remote.Route == nil {
 		return 1, model.Err("unsupported_route", "target direct route disappeared")
 	}
@@ -232,8 +255,7 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	}
 	operation.LocalHost, operation.RemoteHost = own.Host, remote.Host
 	if operation.Pair == "" {
-		sum := sha256.Sum256([]byte("arm-connect:" + key + ":" + own.Host + ":" + remote.Host))
-		operation.Pair = hex.EncodeToString(sum[:])
+		operation.Pair = connectPair(key, own.Host, remote.Host)
 	}
 	if err = a.guard.SaveLifecycle(operation); err != nil {
 		return 1, err
@@ -315,6 +337,19 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	}
 	if err = a.Confirm(plan, yes, false); err != nil {
 		return 1, err
+	}
+	if request.Reconnect != nil {
+		currentOwn, e := a.Inspect()
+		if e != nil {
+			return 1, e
+		}
+		var currentRemote mesh.LifecycleInspection
+		if e = ssh(Helper{Home: request.RemoteHome, Action: "lifecycle_inspect"}, &currentRemote); e != nil {
+			return 1, e
+		}
+		if e = a.checkReconnect(key, request.Reconnect, currentOwn, currentRemote); e != nil {
+			return 1, e
+		}
 	}
 	if err = a.markApproved(); err != nil {
 		return 1, err
@@ -538,4 +573,9 @@ func lifecycleNodePreview(inspection mesh.LifecycleInspection, peerHost string) 
 }
 func lifecyclePreparedPreview(prepared mesh.PreparedSetup) map[string]any {
 	return map[string]any{"identity": lifecycleIdentityPreview(prepared.Identity), "listen": prepared.Listen, "reservation_expires": prepared.Expires, "existing_listener": prepared.Existing}
+}
+
+func connectPair(key, source, target string) string {
+	sum := sha256.Sum256([]byte("arm-connect:" + key + ":" + source + ":" + target))
+	return hex.EncodeToString(sum[:])
 }

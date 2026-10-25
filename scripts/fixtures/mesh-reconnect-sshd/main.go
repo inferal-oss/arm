@@ -45,16 +45,19 @@ type endpoint struct {
 }
 type packet struct {
 	Action, Home string
+	Pair         string
 	Revoke       struct{ Key string }
 }
 type fault struct {
-	Key   string `json:"key"`
+	Key   string `json:"key,omitempty"`
+	Pair  string `json:"pair,omitempty"`
 	Stage string `json:"stage"`
 }
 type observation struct {
 	Sequence     int    `json:"sequence"`
 	Action       string `json:"action"`
 	Key          string `json:"key,omitempty"`
+	Pair         string `json:"pair,omitempty"`
 	InputSHA     string `json:"input_sha256"`
 	ChildStarted bool   `json:"child_started"`
 	WaitFailed   bool   `json:"child_wait_failed"`
@@ -205,7 +208,7 @@ func parsePacket(raw []byte, home string) (packet, error) {
 	return p, nil
 }
 func (s *endpoint) takeFault(p packet) (string, error) {
-	if p.Action != "lifecycle_revoke" {
+	if p.Action != "lifecycle_revoke" && p.Action != "pair" {
 		return "", nil
 	}
 	raw, e := regularPrivate(s.control, 1024)
@@ -216,10 +219,31 @@ func (s *endpoint) takeFault(p packet) (string, error) {
 		return "", e
 	}
 	var f fault
-	if strictJSON(raw) != nil || mesh.Decode(raw, &f) != nil || f.Key == "" || (f.Stage != "before" && f.Stage != "after") {
+	var fields map[string]json.RawMessage
+	if strictJSON(raw) != nil || mesh.Decode(raw, &fields) != nil || len(fields) != 2 {
+		return "", fmt.Errorf("closed exact-selector fixture fault required")
+	}
+	for key := range fields {
+		if key != "key" && key != "pair" && key != "stage" {
+			return "", fmt.Errorf("unexpected fixture fault field")
+		}
+	}
+	if mesh.Decode(raw, &f) != nil || (f.Stage != "before" && f.Stage != "after") {
 		return "", fmt.Errorf("invalid one-shot fixture fault")
 	}
-	if f.Key != p.Revoke.Key {
+	// A control selects exactly one reviewed native action. No key/Pair
+	// fallback or wildcard is permitted; malformed controls remain retained.
+	if (f.Key == "") == (f.Pair == "") || (f.Key != "" && len(f.Key) > 128) {
+		return "", fmt.Errorf("one exact bounded revoke key or Pair required")
+	}
+	if f.Pair != "" {
+		if len(f.Pair) != 64 || strings.Trim(f.Pair, "0123456789abcdef") != "" {
+			return "", fmt.Errorf("Pair must be exactly 64 lowercase hexadecimal characters")
+		}
+		if p.Action != "pair" || p.Pair != f.Pair {
+			return "", nil
+		}
+	} else if p.Action != "lifecycle_revoke" || f.Key != p.Revoke.Key {
 		return "", nil
 	}
 	if e = os.Remove(s.control); e != nil {
@@ -325,7 +349,7 @@ func (s *endpoint) execute(ctx context.Context, c ssh.Channel, payload []byte, c
 		return
 	}
 	stdout, stderr := &capture{limit: outputLimit}, &capture{limit: 65536}
-	event := observation{Sequence: sequence, Action: p.Action, Key: p.Revoke.Key, InputSHA: digest(raw), Exit: -1, Fault: stage}
+	event := observation{Sequence: sequence, Action: p.Action, Key: p.Revoke.Key, Pair: p.Pair, InputSHA: digest(raw), Exit: -1, Fault: stage}
 	var waitErr error
 	if stage != "before" {
 		childCtx, cancel := context.WithTimeout(ctx, 25*time.Second)

@@ -22,6 +22,8 @@ type meshReviewIdentity struct {
 	Expires     time.Time `json:"certificate_expires"`
 }
 type meshReviewNode struct {
+	Home     string              `json:"home"`
+	Version  string              `json:"version"`
 	Identity *meshReviewIdentity `json:"identity"`
 	Prior    *struct {
 		Pair     string      `json:"pair"`
@@ -88,7 +90,7 @@ func meshReviewSummary(raw json.RawMessage) (string, bool) {
 	}
 	var out strings.Builder
 	switch review.Operation {
-	case "connect-direct-peers":
+	case "connect-direct-peers", "reconnect-direct-peers":
 		left, right := review.LocalPrepared.Identity, review.RemotePrepared.Identity
 		if left == nil {
 			left = review.Local.Identity
@@ -102,6 +104,13 @@ func meshReviewSummary(raw json.RawMessage) (string, bool) {
 		out.WriteString(meshIdentitySummary("THIS SOURCE NODE", left, review.LocalPrepared, review.Local) + "\n")
 		out.WriteString(meshIdentitySummary("DESTINATION NODE", right, review.RemotePrepared, review.Remote) + "\n")
 		fmt.Fprintf(&out, "VERIFIED SSH BOOTSTRAP\nAccount: %s\nHost key: %s\nDestination: %s\n\n", safe(review.SSH.Account), safe(review.SSH.HostKey), safe(review.Request.Destination))
+		if review.Operation == "reconnect-direct-peers" {
+			previous := review.Request.Reconnect
+			if previous == nil {
+				return "Exact previous reconnect binding missing; approval unavailable.", false
+			}
+			fmt.Fprintf(&out, "RECONNECT · NEW ENROLLMENT\nPrevious pair: %s · revision %d\nInstalled helper command: %s\nReported ARM home: %s\nReported ARM version: %s\nHistoric executable byte equality is not established; no install or upgrade occurs.\n\n", safe(previous.Binding.Prior.Pair), previous.Binding.Prior.Revision, safe(review.Request.Binary), safe(review.Remote.Home), safe(review.Remote.Version))
+		}
 		out.WriteString("WE MAY DO THERE · source → destination\n" + meshGrantText(grantView(review.Request.Forward)) + "\n\n")
 		out.WriteString("PEER MAY DO HERE · destination → source\n" + meshGrantText(grantView(review.Request.Reverse)) + "\n\n")
 		fmt.Fprintf(&out, "Replace revoked enrollment: %t\nWhy: %s\n\nCONSEQUENCES\n%s\n", review.Request.ReplaceRevoked, safe(review.Request.Reason), safe(review.Warning))
@@ -133,6 +142,17 @@ func meshDraftSummary(raw json.RawMessage) string {
 	var q meshPrepareRequest
 	if json.Unmarshal(raw, &q) != nil {
 		return "Draft unavailable"
+	}
+	if q.Reconnect != nil {
+		d := q.Reconnect
+		locator := d.Destination
+		if d.Connector != "" {
+			locator = "Reviewed connector @" + d.Connector
+		}
+		if locator == "" {
+			locator = "Retained locator, verified anew"
+		}
+		return "Exact revoked host: " + safe(d.Host) + "\nSSH locator: " + safe(locator) + "\nWhy: " + safe(d.Reason) + "\n\nNEW PERMISSIONS THERE\n" + meshGrantText(grantView(d.Forward)) + "\n\nNEW PERMISSIONS HERE\n" + meshGrantText(grantView(d.Reverse)) + "\nPrevious grants and pending disconnect receipts remain context, not restored authority.\nExact preparation key: " + safe(q.Key)
 	}
 	if q.Connect != nil {
 		d := q.Connect

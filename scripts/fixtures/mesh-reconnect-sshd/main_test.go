@@ -237,3 +237,59 @@ func TestHelperResponseRequiresSuccessfulWaitAndNativeExit(t *testing.T) {
 		})
 	}
 }
+
+// The Pair control is developer-fixture-only. It never changes the fixed
+// command, ARM home, native launch policy or actual Wait response gate.
+func TestOneShotPairFaultIsClosedExactAndDisjoint(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "control")
+	s := endpoint{options: options{control: path}}
+	pair := strings.Repeat("a", 64)
+	exact := packet{Action: "pair", Pair: pair}
+	write := func(raw string) {
+		t.Helper()
+		if err := os.WriteFile(path, []byte(raw), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	raw := `{"pair":"` + pair + `","stage":"after"}`
+	write(raw)
+	wrong := exact
+	wrong.Pair = strings.Repeat("b", 64)
+	if stage, err := s.takeFault(wrong); err != nil || stage != "" {
+		t.Fatal(stage, err)
+	}
+	wrong = packet{Action: "lifecycle_revoke"}
+	wrong.Revoke.Key = pair
+	if stage, err := s.takeFault(wrong); err != nil || stage != "" {
+		t.Fatal(stage, err)
+	}
+	if _, err := os.Stat(path); err != nil {
+		t.Fatal("unrelated action consumed Pair fault", err)
+	}
+	if stage, err := s.takeFault(exact); err != nil || stage != "after" {
+		t.Fatal(stage, err)
+	}
+	if stage, err := s.takeFault(exact); err != nil || stage != "" {
+		t.Fatal("Pair fault replayed", stage, err)
+	}
+	for _, bad := range []string{
+		`{"pair":"` + pair + `","key":"key","stage":"after"}`,
+		`{"stage":"after"}`, `{"Pair":"` + pair + `","stage":"after"}`, `{"pair":"short","stage":"after"}`,
+		`{"pair":"` + strings.Repeat("A", 64) + `","stage":"after"}`,
+		`{"pair":"` + pair + `","pair":"` + pair + `","stage":"after"}`,
+		`{"pair":"` + pair + `","stage":"later"}`,
+		`{"pair":"` + pair + `","stage":"after","command":"shell"}`,
+	} {
+		write(bad)
+		if _, err := s.takeFault(exact); err == nil {
+			t.Fatal("malformed Pair fault accepted", bad)
+		}
+		if _, err := os.Stat(path); err != nil {
+			t.Fatal("malformed control lost", err)
+		}
+	}
+	write(`{"key":"saved","stage":"before"}`)
+	if stage, err := s.takeFault(exact); err != nil || stage != "" {
+		t.Fatal("revoke control applies to Pair", stage, err)
+	}
+}

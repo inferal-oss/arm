@@ -16,7 +16,7 @@ export function phaseLabel(op) {
 export function operationAdvice(op) {
   if (op.resolved_by) return `Recovery ${op.resolved_by} recorded the outcome. The original receipt is preserved.`;
   if (op.phase === 'awaiting_review') return op.kind === 'disconnect' ? 'Review the exact enrollment to revoke. Existing leases and their cleanup obligations remain.' : 'Nothing new is trusted yet. Check the exact identities, endpoints and permissions before deciding.';
-  if (op.phase === 'completed' && !['connect','disconnect'].includes(op.kind)) return 'This operation recorded a result. Inspect its receipt using the CLI; this dashboard does not manage this operation type.';
+  if (op.phase === 'completed' && !['connect','reconnect','disconnect'].includes(op.kind)) return 'This operation recorded a result. Inspect its receipt using the CLI; this dashboard does not manage this operation type.';
   if (op.phase === 'completed') return op.kind === 'disconnect' ? 'This enrollment is disconnected. Existing leases and cleanup obligations keep their lifetimes.' : 'The reviewed connection is established. Permissions remain directional and destination-enforced.';
   if (op.phase === 'incomplete' || (!op.worker_live && !['completed','rejected','declined','cancelled','handed_off'].includes(op.phase))) return 'The outcome may be partial or unknown. Inspect this exact receipt. Reconnecting or closing this dialog never retries it.';
   if (op.phase === 'handed_off') return 'Workflow exclusion was released. This does not prove cleanup, revoke trust, or release leases.';
@@ -56,7 +56,14 @@ export function reviewIdentities(review) {
   if (review.operation === 'disconnect-direct-peer') return [{label:'Disconnect this enrollment',identity:normalize(review.host)}].filter(x=>x.identity);
   return [{label:'This node',identity:identity('local'),listen:review.local_prepared?.listen??review.local_listen},{label:'Destination node',identity:identity('remote'),listen:review.remote_prepared?.listen??review.remote_listen}].filter(x => x.identity);
 }
-export function supportedReview(op){return (op?.kind==='connect'&&['connect-direct-peers','restore-existing-connection','verify-existing-connection'].includes(op.review?.operation))||(op?.kind==='disconnect'&&op.review?.operation==='disconnect-direct-peer');}
+export function supportedReview(op){
+ if(op?.kind==='reconnect'){
+  if(op.review?.operation==='verify-existing-connection')return true;
+  const r=op.review?.request?.reconnect,p=r?.binding?.previous_enrollment;
+  return op.review?.operation==='reconnect-direct-peers'&&validHostID(r?.draft?.host)&&p?.identity?.host===r.draft.host&&p.state==='revoked'&&/^[a-f0-9]{64}$/.test(p.pair??'')&&Number.isInteger(p.revision)&&p.revision>0;
+ }
+ return (op?.kind==='connect'&&['connect-direct-peers','restore-existing-connection','verify-existing-connection'].includes(op.review?.operation))||(op?.kind==='disconnect'&&op.review?.operation==='disconnect-direct-peer');
+}
 export function canReview(op, now = Date.now()) {
   return supportedReview(op) && op?.phase === 'awaiting_review' && op.worker_live && Boolean(op.review) && Number(op.review_revision) > 0 && /^[a-f0-9]{64}$/.test(op.review_sha256 ?? '') && now < Date.parse(op.review_expires_at);
 }

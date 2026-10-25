@@ -55,6 +55,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
       card.append(facts);
       const controls=el('div','mesh-node-actions');controls.append(button('View node',()=>inspect(entry.host)));
       if(openNode)controls.append(button('Open dashboard ↗',()=>openNode(entry)));
+      if(!entry.local&&entry.trust?.state==='revoked')controls.append(button('Reconnect…',()=>editConnect(entry),'primary'));
       card.append(controls);nodes.append(card);
     }
     if(roster.error)announce(roster.error.message);
@@ -79,6 +80,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     if(entry.error)note(ui.body,entry.error.message,'warning');
     ui.foot.replaceChildren(button('Close',()=>ui.d.close()));if(openNode)ui.foot.append(button('Open dashboard ↗',()=>openNode(entry),'primary'));
     if(!entry.local&&entry.trust?.state==='active')ui.foot.append(button('Disconnect this node…',()=>editDisconnect(entry),'danger'));
+    if(!entry.local&&entry.trust?.state==='revoked')ui.foot.append(button('Reconnect this node…',()=>editConnect(entry),'primary'));
   }
   function field(parent,label,{type='text',value='',placeholder='',required=false}={}){const wrap=el('label','mesh-field'),input=el(type==='textarea'?'textarea':'input');if(type!=='textarea')input.type=type;input.value=value;input.placeholder=placeholder;input.required=required;if(type==='textarea')input.maxLength=4096;wrap.append(el('span','',label),input);parent.append(wrap);return input;}
   function grantEditor(parent,title,initial){
@@ -90,19 +92,22 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     const update=()=>{limits.hidden=!['leases','run'].includes(mode.value);for(const input of[cpu,memory,disk,ttl])input.disabled=limits.hidden;warning.hidden=mode.value!=='run';messaging.hidden=mode.value==='none';};mode.addEventListener('change',update);update();parent.append(box);
     return()=>grantFromDraft({mode:mode.value,cpu:cpu.value,memory:memory.value,disk:disk.value,ttl:ttl.value,messages:allow.checked,operatorInbox:inbox.checked,contacts:contacts.value});
   }
-  async function editConnect(){
-    const ui=modal('Connect a node','MESH / NEW CONNECTION'),form=el('form','mesh-form'),error=el('p','mesh-form-error');error.setAttribute('role','alert');
-    note(form,meshPreparationNotice);const target=el('section','mesh-form-section');target.append(el('h3','','1. Choose a destination'));
+  async function editConnect(entry=null){
+    const ui=modal(entry?'Reconnect this exact node':'Connect a node',entry?'MESH / NEW ENROLLMENT':'MESH / NEW CONNECTION'),form=el('form','mesh-form'),error=el('p','mesh-form-error');error.setAttribute('role','alert');
+    note(form,meshPreparationNotice);if(entry){const exact=el('dl','mesh-facts');row(exact,'Exact node',entry.name||entry.host);row(exact,'Stable host',entry.host,true);row(exact,'Previous enrollment',entry.trust?.pair,true);form.append(exact);note(form,'This creates a new enrollment. Previous grants are context only; choose new permissions below. Pending disconnect receipts and all old resource obligations remain.','warning');}const target=el('section','mesh-form-section');target.append(el('h3','','1. Choose a destination'));
     const source=el('select'),direct=el('option','','SSH destination');direct.value='';source.append(direct);const sourceLabel=el('label','mesh-field');sourceLabel.append(el('span','','Connection method'),source);target.append(sourceLabel);
-    const destination=field(target,'Verified SSH destination',{placeholder:'user@host or a configured SSH alias',required:true});note(target,'Uses your existing known_hosts trust. ARM must already be installed there; no credentials or private keys are copied.');
+    const destination=field(target,entry?'Replacement SSH destination (optional)':'Verified SSH destination',{placeholder:entry?'Blank uses the exact retained verified locator':'user@host or a configured SSH alias',required:!entry});note(target,'Uses your existing known_hosts trust. ARM must already be installed there; no credentials or private keys are copied.');
     const reason=field(target,'Reason for connecting',{type:'textarea',required:true,placeholder:'What will this connection be used for?'});form.append(target);
     call('mesh_operator_connectors').then(profiles=>{if(dialog!==ui.d)return;for(const profile of profiles??[]){const option=el('option','',`${profile.id} · ${profile.ssh_destination}`);option.value=profile.id;source.append(option);}}).catch(e=>{if(dialog===ui.d)note(target,`Reviewed connectors unavailable: ${e.message}`,'warning');});
-    source.addEventListener('change',()=>{destination.disabled=Boolean(source.value);destination.required=!source.value;});
+    source.addEventListener('change',()=>{destination.disabled=Boolean(source.value);destination.required=!entry&&!source.value;});
     const directions=el('section','mesh-form-section');directions.append(el('h3','','2. Set directional permissions'));const grid=el('div','mesh-direction-grid'),forward=grantEditor(grid,'This node → destination','summary'),reverse=grantEditor(grid,'Destination → this node','none');directions.append(grid);form.append(directions);
-    const replace=field(form,'Explicitly replace a previously revoked enrollment, if present',{type:'checkbox'});form.append(error);ui.body.append(form);
-    const cancel=button('Cancel',()=>ui.d.close()),prepare=el('button','primary','Prepare connection review');prepare.type='submit';prepare.setAttribute('form','mesh-connect-form');form.id='mesh-connect-form';ui.foot.append(cancel,prepare);cancel.autofocus=true;cancel.focus();
-    form.addEventListener('submit',async event=>{event.preventDefault();error.textContent='';if(!connected()){error.textContent='Reconnect and inspect before preparing a change.';return;}if(!reason.value.trim()||(!source.value&&!destination.value.trim())){error.textContent='A destination and a meaningful reason are required.';return;}
-      let q;try{validateMeshReason(reason.value);q={key:crypto.randomUUID(),kind:'connect',connect:{...(source.value?{connector:source.value}:{ssh_destination:destination.value.trim()}),reason:reason.value,source_permissions_on_target:forward(),target_permissions_on_source:reverse(),replace_revoked:Boolean(replace.checked)}};}catch(e){error.textContent=e.message;return;}
+    const replace=entry?null:field(form,'Explicitly replace a previously revoked enrollment, if present',{type:'checkbox'});form.append(error);ui.body.append(form);
+    const cancel=button('Cancel',()=>ui.d.close()),prepare=el('button','primary',entry?'Prepare reconnect review':'Prepare connection review');prepare.type='submit';prepare.setAttribute('form','mesh-connect-form');form.id='mesh-connect-form';ui.foot.append(cancel,prepare);cancel.autofocus=true;cancel.focus();
+    let contextReady=!entry;
+    if(entry){prepare.disabled=true;call('mesh_operator_reconnect_context',{host:entry.host}).then(context=>{if(dialog!==ui.d)return;if(context.host!==entry.host||!Array.isArray(context.blockers))throw Error('Exact reconnect context unavailable');if(context.blockers.length){note(form,'A previous workflow still owns this node. Resolve it or explicitly hand off its workflow exclusion, then return for a fresh reconnect review. Old obligations remain.','warning');for(const pending of context.blockers){note(form,`${pending.kind} · ${pending.phase}`);form.append(button(`Inspect pending operation ${pending.key}`,()=>lookup(pending.key)));}}else {contextReady=true;prepare.disabled=false;}}).catch(e=>{if(dialog===ui.d)error.textContent=e.message;});}
+
+    form.addEventListener('submit',async event=>{event.preventDefault();error.textContent='';if(!contextReady){error.textContent='Inspect and resolve the pending workflow before preparing a fresh reconnect.';return;}if(!connected()){error.textContent='Reconnect and inspect before preparing a change.';return;}if(!reason.value.trim()||(!entry&&!source.value&&!destination.value.trim())){error.textContent='A destination and a meaningful reason are required.';return;}
+      let q;try{validateMeshReason(reason.value);const draft={...(source.value?{connector:source.value}:(destination.value.trim()?{ssh_destination:destination.value.trim()}:{})),reason:reason.value,source_permissions_on_target:forward(),target_permissions_on_source:reverse()};q=entry?{key:crypto.randomUUID(),kind:'reconnect',reconnect:{...draft,host:entry.host}}:{key:crypto.randomUUID(),kind:'connect',connect:{...draft,replace_revoked:Boolean(replace.checked)}};}catch(e){error.textContent=e.message;return;}
       try{remember(q.key);}catch(e){error.textContent=e.message;return;}prepare.disabled=true;try{const op=await call('mesh_operator_prepare',q);if(dialog===ui.d){ui.d.close();showOperation(op);}else{announce(`Operation ${op.key} recorded. View its receipt under Connection operations.`);refresh();}}catch(e){error.textContent=`${e.message}. The exact operation key is ${q.key}. Inspect its receipt before preparing anything again.`;announce(`Connection outcome requires lookup: ${q.key}`);renderOperations();}
     });
   }
@@ -120,7 +125,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     if(dialog!==ui.d||!ui.d.open)return;
     forget(op.key);currentOperation=op;renderedSemantic=semantic(op);renderedRevision=String(op.revision);
     ui.heading.textContent=phaseLabel(op);ui.body.replaceChildren();ui.foot.replaceChildren();
-    const banner=el('div','mesh-operation-banner');banner.setAttribute('role','status');banner.dataset.phase=op.phase;banner.append(el('span','mesh-step',op.kind==='connect'?'CONNECT':op.kind==='disconnect'?'DISCONNECT':'OTHER OPERATION'),el('p','',operationAdvice(op)));ui.body.append(banner);
+    const banner=el('div','mesh-operation-banner');banner.setAttribute('role','status');banner.dataset.phase=op.phase;banner.append(el('span','mesh-step',op.kind==='connect'?'CONNECT':op.kind==='reconnect'?'RECONNECT':op.kind==='disconnect'?'DISCONNECT':'OTHER OPERATION'),el('p','',operationAdvice(op)));ui.body.append(banner);
     const facts=el('dl','mesh-facts mesh-receipt-key');row(facts,'Exact operation',op.key,true);row(facts,'Updated',when(op.updated_at));if(op.parent_key)row(facts,'Original intent',op.parent_key,true);ui.body.append(facts);
     if(op.error)note(ui.body,`${op.error.code}: ${op.error.message}`,'warning');
     const review=op.review;
@@ -130,6 +135,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
       if(review.ssh_identity||review.ssh_account){const ssh=el('dl','mesh-facts');for(const [key,value]of Object.entries(review.ssh_identity??{account:review.ssh_account,host_key:review.ssh_host_key}))row(ssh,`SSH ${key.replaceAll('_',' ')}`,String(value),true);ui.body.append(ssh);}
       if(review.request||review.source_permissions_on_target){const request=review.request??review;const grants=el('div','mesh-direction-grid');grants.append(grantCard('This node → destination',request.source_permissions_on_target),grantCard('Destination → this node',request.target_permissions_on_source));ui.body.append(grants);}
       if(review.reason??review.request?.reason)row(facts,'Reason',review.reason??review.request.reason);
+      if(review.request?.reconnect){const binding=review.request.reconnect.binding;row(facts,'Previous exact enrollment',binding?.previous_enrollment?.pair,true);row(facts,'Previous revision',binding?.previous_enrollment?.revision);row(facts,'Installed helper (path/version evidence)',review.request.remote_binary,true);row(facts,'Reported ARM home',review.remote?.home,true);row(facts,'Reported ARM version',review.remote?.version);note(ui.body,'The helper is reused without installation or upgrade. Historical executable byte equality is not established.');}
       if(review.operation==='disconnect-direct-peer'){row(facts,'Exact enrollment',review.pair,true);row(facts,'Local enrollment revision',review.local_revision);row(facts,'Destination enrollment revision',review.remote_revision);}
       note(ui.body,review.warning||review.effect||op.notice||meshPreparationNotice,'warning');
       if(canReview(op)){note(ui.body,`This review expires ${when(op.review_expires_at)}. Confirmation binds these exact identities, endpoints, permissions and revisions.`);}
@@ -138,7 +144,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     if(op.result)ui.body.append(jsonView(op.result,{label:'Recorded result',document}));
     const close=button('Close',()=>ui.d.close());ui.foot.append(close);
     if(canReview(op)){
-      close.textContent='Keep review open later';const decline=button('Decline this review',()=>decide(false),'mesh-decline'),approve=button(op.kind==='disconnect'?'Confirm disconnect':'Trust and connect',()=>decide(true),op.kind==='disconnect'?'danger':'primary');ui.foot.append(decline,approve);decline.autofocus=true;
+      close.textContent='Keep review open later';const decline=button('Decline this review',()=>decide(false),'mesh-decline'),approve=button(op.kind==='disconnect'?'Confirm disconnect':op.kind==='reconnect'?'Trust and reconnect':'Trust and connect',()=>decide(true),op.kind==='disconnect'?'danger':'primary');ui.foot.append(decline,approve);decline.autofocus=true;
       async function decide(approved){if(!connected()){note(ui.body,'Reconnect and refresh this review before deciding.','warning');return;}if(!canReview(op)){note(ui.body,'This review expired. Inspect the receipt and prepare a fresh review.','warning');return;}decline.disabled=approve.disabled=true;try{const next=await call('mesh_operator_decide',{key:op.key,review_revision:op.review_revision,review_sha256:op.review_sha256,approve:approved});renderOperation(ui,next);onActivity();}catch(e){note(ui.body,`${e.message}. The decision may have been recorded. Refresh this exact receipt; no decision will be resent.`, 'warning');ui.foot.append(button('Look up recorded outcome',()=>lookup(op.key)));}}
     }else if(op.worker_live&&!op.cancel_requested){ui.foot.append(button('Request cancellation',async()=>{if(!connected())return;try{renderOperation(ui,await call('mesh_operator_cancel',{key:op.key,revision:(currentOperation?.key===op.key?currentOperation.revision:op.revision)}));}catch(e){note(ui.body,`${e.message}. Inspect this exact operation before another action.`,'warning');}}));}
     if(op.phase==='incomplete'&&!op.worker_live&&!op.resolved_by){

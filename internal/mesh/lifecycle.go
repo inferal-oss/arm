@@ -245,7 +245,7 @@ func SaveLifecycleOperation(home string, operation LifecycleOperation) error {
 	if err != nil {
 		return err
 	}
-	if operation.Kind != "connect" && operation.Kind != "disconnect" || len(operation.Reason) == 0 || len(operation.Reason) > 4096 {
+	if operation.Kind != "connect" && operation.Kind != "reconnect" && operation.Kind != "disconnect" || len(operation.Reason) == 0 || len(operation.Reason) > 4096 {
 		return fmt.Errorf("invalid lifecycle operation")
 	}
 	previous, exists, err := ReadLifecycleOperation(home, operation.Key)
@@ -324,7 +324,7 @@ func LifecycleConnections(home string) ([]LifecycleOperation, error) {
 		if err = Decode(raw, &op); err != nil {
 			return nil, err
 		}
-		if op.Kind == "connect" {
+		if op.Kind == "connect" || op.Kind == "reconnect" {
 			results = append(results, op)
 		}
 	}
