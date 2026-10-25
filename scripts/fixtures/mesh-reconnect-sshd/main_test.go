@@ -14,6 +14,49 @@ import (
 )
 
 // These unit tests do not open an SSH listener or launch an ARM helper.
+func TestFixtureLifetimeCoversVisualWindowAndHonorsParent(t *testing.T) {
+	before := time.Now()
+	ctx, cancel := fixtureContext(context.Background())
+	after := time.Now()
+	defer cancel()
+	deadline, ok := ctx.Deadline()
+	if !ok || deadline.Before(before.Add(30*time.Minute)) || deadline.After(after.Add(30*time.Minute)) {
+		t.Fatal("actual helper context does not have the fixed thirty-minute lifetime", deadline, ok)
+	}
+	// The fixture's outer original owner is bounded to 1500s, including its
+	// 1350s active phase and independently bounded cleanup. The SSH helper must
+	// remain available throughout that budget without becoming unbounded.
+	if deadline.Sub(before) < 1500*time.Second || fixtureLifetime != 30*time.Minute {
+		t.Fatal("helper cannot cover the complete fixed visual fixture budget")
+	}
+	cancel()
+	select {
+	case <-ctx.Done():
+		if ctx.Err() != context.Canceled {
+			t.Fatal(ctx.Err())
+		}
+	default:
+		t.Fatal("explicit owner cancellation did not close helper context")
+	}
+	parentDeadline := time.Now().Add(time.Minute)
+	parent, parentCancel := context.WithDeadline(context.Background(), parentDeadline)
+	child, childCancel := fixtureContext(parent)
+	defer childCancel()
+	actual, ok := child.Deadline()
+	if !ok || !actual.Equal(parentDeadline) {
+		t.Fatal("fixture lifetime extended a shorter parent deadline", actual, parentDeadline)
+	}
+	parentCancel()
+	select {
+	case <-child.Done():
+		if child.Err() != context.Canceled {
+			t.Fatal(child.Err())
+		}
+	default:
+		t.Fatal("parent cancellation did not propagate to helper context")
+	}
+}
+
 func TestListenAddressRefusesNonLoopbackBeforeBinding(t *testing.T) {
 	for _, address := range []string{"127.0.0.1:0", "127.0.0.1:12345", "127.0.0.1:65535"} {
 		if err := validateListenAddress(address); err != nil {

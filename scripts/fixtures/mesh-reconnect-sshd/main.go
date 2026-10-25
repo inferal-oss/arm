@@ -611,6 +611,16 @@ func run(ctx context.Context, o options) error {
 		}
 	}
 }
+
+// A private visual fixture can spend twenty minutes in its bounded operator
+// interaction. This fixed outer helper lifetime covers its setup and cleanup;
+// each SSH session and child command retains its own shorter deadline.
+const fixtureLifetime = 30 * time.Minute
+
+func fixtureContext(parent context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(parent, fixtureLifetime)
+}
+
 func main() {
 	var o options
 	flag.StringVar(&o.arm, "arm", "", "exact private executable")
@@ -624,7 +634,7 @@ func main() {
 	flag.Parse()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
+	ctx, cancel := fixtureContext(ctx)
 	defer cancel()
 	if e := run(ctx, o); e != nil {
 		fmt.Fprintln(os.Stderr, e)
