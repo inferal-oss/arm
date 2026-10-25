@@ -117,7 +117,9 @@ func parseTTL(text string) (time.Duration, error) {
 		}
 		// Convert seconds via quotient/remainder without float rounding.
 		v := part/time.Second*mult + (part%time.Second)*(mult/time.Second)
-		if v <= 0 || total > 7*24*time.Hour-v {
+		// Zero components occur in Go duration strings such as 10m0s;
+		// the final total below must still be positive and bounded.
+		if v < 0 || total > 7*24*time.Hour-v {
 			return 0, fmt.Errorf("duration must be greater than zero and at most 7 days")
 		}
 		total += v

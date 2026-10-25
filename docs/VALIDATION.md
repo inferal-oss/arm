@@ -1,5 +1,9 @@
 # Validation record
 
+## October 24, 2026: positive composite terminal durations — integrated fix
+
+The shared terminal duration parser previously rejected a zero component in valid positive values such as Go's `10m0s`, blocking unchanged default settings from reaching review. It now allows zero components while retaining the positive-total, seven-day, syntax, precision and overflow guards. Three current-tree race cases pass with no skips or stderr: the existing duration/queue contract, generated positive/invalid input cases, and the actual ordinary extension-review path using a generated value. Opening review issues no resource mutation. The heartbeat candidate's separate real-backend unchanged-default confirmation regression also passes, without implying that the heartbeat feature is integrated.
+
 ## October 24, 2026: first-class reconnect — current-composition integration
 
 The composition on the integrated mount foundation preserves all 19 mount paths, current modules and shared workers/helpers. Root rehashes all 680 retained final artifacts and independently checks all 67 formal-run native receipts: expected exits, one Wait, matching capture identity, reaping/retirement and scoped PID/group absence, with no signal, unknown outcome or cleanup error. Focused development races and five Make dry-runs pass. The complete finite graph has 94 generated/45 distinct states, depth15 and an empty queue. All24 actual Go histories/171 observations and all eight actual plus six altered refusals pass; the Go producer reports47 named passes across seven roots, zero failures/skips. Full source/tool/module/alias/selected-SDK closure passes. Result manifest is `3599bbeeae3d50270b936cfd85f8285911782e5f6053c781c49dbb7632f52ea8`. Integration adds four aggregate Make prerequisites; dry-run checks route reconnect check/traces/prove/all exactly once, and the integrated normal CGo-free ARM build passes.
