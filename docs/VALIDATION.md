@@ -1,5 +1,11 @@
 # Validation record
 
+## October 25, 2026: Stop wait, force and storage-obligation regressions
+
+Three new native Manager test roots pass under race, with seven named entries across the focused runs; affected vet passes. They exercise real queued storage cancellation without allocation, refusal of late acquisition/renewal after durable Stop, ordinary active-lease release and explicit storage handoff before drain-ready. Real one-second timeout and immediate force both join an original supervised process while retaining replaced-storage identity, disk charge and the accepted Stop receipt; neither can certify drain-ready. A creator-owned unrelated process answers a bounded stdin/stdout exchange after Stop. Foreign host/owner ledger obligations refuse force without changing their bytes or recording stopped intent.
+
+Review replaced a weak PID-existence assertion with that live pipe exchange and checked EOF/single-Wait cleanup. The affected force/timeout root then passes its fresh three named entries; the four unchanged entries retain their earlier run. The first attempted setup had put an active acquisition behind a queue head; fair admission correctly refused it. Setup now creates active work before queuing, without changing policy. A sandbox Go-cache denial occurs before compilation and is not coverage. This accepts focused native Manager/provider/process behavior, not cross-user OS isolation, the full mesh TLS workflow or actual Linux execution of these new scenarios.
+
 ## October 25, 2026: remote Stop dashboard controls — integrated
 
 The 15 reviewed web/Charm implementation/test paths and two static-asset registrations are integrated. Independent review confirms exact accepted Source8 bytes before one final text-only clarification: terminal advice now says to read the exact Stop receipt, avoiding an uncertainty sentence after a confirmed outcome. Its focused recovery test passes. The guarded embedded-asset route test passes on the current composition; server and terminal packages compile. CGo-free macOS ARM64 and Linux ARM64 builds pass. A cross-build does not establish Linux rendering.
