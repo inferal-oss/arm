@@ -66,35 +66,68 @@ type SnapshotReadResult struct {
 	Native SnapshotNativeReceipt `json:"native_read"`
 }
 
-func (p *Provider) ReadSnapshotChunk(ctx context.Context, generation SnapshotGeneration, path string, chunk int, current func(context.Context) error) (result SnapshotReadResult, resultErr error) {
+// SnapshotReader freezes and validates one complete generation manifest once.
+// It owns no native descriptors and caches no file bytes or authorizations.
+// Each ReadChunk still opens and verifies the current destination and performs
+// both current-authority checks. The admitting service must bound reader/read
+// concurrency and keep its metadata and per-operation resource promises.
+type SnapshotReader struct {
+	provider   *Provider
+	generation SnapshotGeneration
+	files      map[string]int
+	current    func(context.Context) error
+}
+
+// NewSnapshotReader prepares immutable metadata only. Calling it neither
+// publishes a generation nor grants consumer authority. current must check the
+// exact committed generation/consumer admission on every invocation, and the
+// transport must additionally fence its final owned response handoff.
+func (p *Provider) NewSnapshotReader(generation SnapshotGeneration, current func(context.Context) error) (*SnapshotReader, error) {
+	if p == nil || current == nil {
+		return nil, fmt.Errorf("provider and current published-generation authority required")
+	}
 	raw, err := json.Marshal(generation)
 	if err != nil || len(raw) > snapshotManifestLimit {
-		return result, fmt.Errorf("bounded snapshot generation required")
+		return nil, fmt.Errorf("bounded snapshot generation required")
 	}
 	var detachedGeneration SnapshotGeneration
 	if err = json.Unmarshal(raw, &detachedGeneration); err != nil {
-		return result, err
+		return nil, err
 	}
 	generation = detachedGeneration
 	if err := generation.validate(); err != nil {
-		return result, err
+		return nil, err
 	}
-	if current == nil || chunk < 0 {
+	files := make(map[string]int, len(generation.Files))
+	for i, f := range generation.Files {
+		files[f.Output.Path] = i
+	}
+	return &SnapshotReader{provider: p, generation: generation, files: files, current: current}, nil
+}
+
+// ReadSnapshotChunk is convenient for a single read. An admitted service can
+// reuse a NewSnapshotReader to avoid re-encoding/hashing its entire immutable
+// manifest for each chunk; it cannot reuse a previous authorization verdict.
+func (p *Provider) ReadSnapshotChunk(ctx context.Context, generation SnapshotGeneration, path string, chunk int, current func(context.Context) error) (SnapshotReadResult, error) {
+	r, err := p.NewSnapshotReader(generation, current)
+	if err != nil {
+		return SnapshotReadResult{}, err
+	}
+	return r.ReadChunk(ctx, path, chunk)
+}
+
+func (r *SnapshotReader) ReadChunk(ctx context.Context, path string, chunk int) (result SnapshotReadResult, resultErr error) {
+	if r == nil || r.provider == nil || r.current == nil || ctx == nil || chunk < 0 {
 		return result, fmt.Errorf("current published-generation authority and exact chunk required")
 	}
-	if err := snapshotCurrent(ctx, current); err != nil {
+	if err := snapshotCurrent(ctx, r.current); err != nil {
 		return result, err
 	}
-	var selected *SnapshotCopiedFile
-	for i := range generation.Files {
-		if generation.Files[i].Output.Path == path {
-			selected = &generation.Files[i]
-			break
-		}
-	}
-	if selected == nil || chunk >= len(selected.Source.Chunks) {
+	i, ok := r.files[path]
+	if !ok || chunk >= len(r.generation.Files[i].Source.Chunks) {
 		return result, fmt.Errorf("snapshot path/canonical chunk is not in this generation")
 	}
+	selected := &r.generation.Files[i]
 	owners := newSnapshotFDSet()
 	defer func() {
 		resultErr = errors.Join(resultErr, owners.closeAll())
@@ -103,11 +136,11 @@ func (p *Provider) ReadSnapshotChunk(ctx context.Context, generation SnapshotGen
 			result.Data = nil
 		}
 	}()
-	provider, err := p.snapshotRetain(owners)
+	provider, err := r.provider.snapshotRetain(owners)
 	if err != nil {
 		return result, err
 	}
-	root, err := provider.snapshotOpenArtifact(ctx, generation.Artifact, owners, "generation-root")
+	root, err := provider.snapshotOpenArtifact(ctx, r.generation.Artifact, owners, "generation-root")
 	if err != nil {
 		return result, err
 	}
@@ -137,14 +170,14 @@ func (p *Provider) ReadSnapshotChunk(ctx context.Context, generation SnapshotGen
 	}
 	// Recheck the current managed namespace after the read; a held descriptor
 	// alone cannot authorize a substituted/quarantined destination allocation.
-	check, err := provider.snapshotOpenArtifact(ctx, generation.Artifact, owners, "generation-final-check")
+	check, err := provider.snapshotOpenArtifact(ctx, r.generation.Artifact, owners, "generation-final-check")
 	if err != nil {
 		return result, err
 	}
 	if err = owners.close(check); err != nil {
 		return result, errors.Join(errSnapshotClose, err)
 	}
-	if err = snapshotCurrent(ctx, current); err != nil {
+	if err = snapshotCurrent(ctx, r.current); err != nil {
 		return result, err
 	}
 	result.Data = data
