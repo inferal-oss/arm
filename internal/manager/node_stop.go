@@ -46,6 +46,14 @@ func (m *Manager) nodeStopCensus(external nodestop.Impact, view nodestop.LeaseRe
 	// Caller holds the existing final server registration/admission fence, so a
 	// new SSH lookup cannot enter after this snapshot and before Stop commit.
 	accountLookupPending := len(sshAccountSlot) != 0
+	snapshotControls := m.snapshotStopControls()
+	for _, c := range snapshotControls {
+		impact.Blockers = append(impact.Blockers, nodestop.Blocker{Class: "unjoined", ID: "snapshot-control:" + c.ID, Detail: "An original snapshot preflight control or unresolved close is retained; no payload work was admitted."})
+	}
+	snapshotUnavailable := m.snapshots != nil && (m.snapshots.failure != nil || m.snapshots.commitPending)
+	if snapshotUnavailable {
+		impact.Blockers = append(impact.Blockers, nodestop.Blocker{Class: "unknown", ID: "snapshot-ledger", Detail: "Snapshot evidence or transaction acknowledgment is unresolved; its promises remain charged."})
+	}
 	if accountLookupPending {
 		impact.Blockers = append(impact.Blockers, nodestop.Blocker{Class: "unjoined", ID: "ssh-account-lookup", Detail: "An SSH account lookup is still finishing. Its original native call remains tracked; caller cancellation does not establish completion."})
 	}
@@ -97,10 +105,12 @@ func (m *Manager) nodeStopCensus(external nodestop.Impact, view nodestop.LeaseRe
 		return impact.Blockers[i].ID < impact.Blockers[j].ID
 	})
 	encoded, err := json.Marshal(struct {
-		External                string        `json:"external"`
-		Leases                  []model.Lease `json:"leases"`
-		SSHAccountLookupPending bool          `json:"ssh_account_lookup_pending"`
-	}{external.SHA256, private, accountLookupPending})
+		External                string                `json:"external"`
+		Leases                  []model.Lease         `json:"leases"`
+		SSHAccountLookupPending bool                  `json:"ssh_account_lookup_pending"`
+		SnapshotControls        []snapshotStopControl `json:"snapshot_controls"`
+		SnapshotUnavailable     bool                  `json:"snapshot_unavailable"`
+	}{external.SHA256, private, accountLookupPending, snapshotControls, snapshotUnavailable})
 	if err != nil {
 		return impact, nil, err
 	}

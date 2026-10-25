@@ -96,6 +96,9 @@ func (m *Manager) sharePolicyError() error {
 	return nil
 }
 func (m *Manager) shareStorageBusy(storage string) (string, error) {
+	if id, err := m.snapshotStorageBusy(storage, ""); err != nil || id != "" {
+		return id, err
+	}
 	if err := m.sharePolicyError(); err != nil {
 		return "", err
 	}

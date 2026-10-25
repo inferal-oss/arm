@@ -51,6 +51,7 @@ type Manager struct {
 	leaseReviewsUnavailable bool
 	leaseReviewError        string
 	shares                  *shareBoundary
+	snapshots               *snapshotBoundary
 	cargoHelper             CargoHelperSource
 	cargoWorkers            map[string]*cargoWorker
 	workspaces              *workspaceBoundary
@@ -195,6 +196,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m.initShares()
+	if e = m.initSnapshots(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	m.recoverShares()
 	m.traceShareLocked("restart", "")
 	m.loadStorage()
@@ -417,13 +422,20 @@ func (m *Manager) Close() error {
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
+	m.mu.Lock()
+	closeErr = errors.Join(closeErr, m.snapshotCloseError())
+	m.mu.Unlock()
 	for _, sockets := range m.portSockets {
 		closeErr = errors.Join(closeErr, ports.CloseChecked(sockets))
 	}
 	if m.storage != nil {
 		closeErr = errors.Join(closeErr, m.storage.Close())
 	}
-	return errors.Join(closeErr, m.db.Close())
+	dbCloseErr := m.db.Close()
+	m.mu.Lock()
+	m.traceSnapshotCut("sql-close-return", "", snapshotTraceCut{APIError: snapshotTraceError(dbCloseErr), ReportError: snapshotTraceError(closeErr)})
+	m.mu.Unlock()
+	return errors.Join(closeErr, dbCloseErr)
 }
 func consuming(s string) bool {
 	return s == "active" || s == "provisioning" || s == "ending" || s == "needs_attention"
@@ -641,6 +653,9 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 
 func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmission) (model.Lease, error) {
 	var empty model.Lease
+	if r.Kind == "share-snapshot-work" {
+		return empty, model.Err("invalid_request", "snapshot work requires exact private atomic reservation; public descriptors cannot start work")
+	}
 	if len(shares) > 1 {
 		return empty, model.Err("invalid_request", "at most one typed share admission is allowed")
 	}
@@ -1039,6 +1054,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if handled, result, err := m.endSnapshotIfNeeded(l, outcome); handled {
+		return result, err
+	}
 	if handled, result, err := m.endShareIfNeeded(l, outcome); handled {
 		return result, err
 	}
@@ -1106,6 +1124,9 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
+	}
+	if _, bound := m.snapshotLease(l.ID); bound || l.Request.Kind == "share-snapshot-work" {
+		return l, model.Err("snapshot_lifetime_fixed", "snapshot reservation promises cannot be renewed or handed to execution")
 	}
 	if m.shareNonRuntimeLease(l) {
 		return l, model.Err("share_lifetime_fixed", "share lifetimes are fixed to their reviewed storage/generation; retire and prepare a new share, or finish this consumer before requesting a new lease")

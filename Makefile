@@ -281,3 +281,19 @@ tla-check: tla-node-stop-check
 tla-traces: tla-node-stop-traces
 tla-prove: tla-node-stop-prove
 test-formal: test-node-stop-formal
+
+# Private no-work snapshot reservation only; no copy/publication authority.
+TLA_SNAPSHOT_RESERVATION_WORK_DIR ?= $(CURDIR)/.tla/snapshot-reservation
+.PHONY: tla-check-snapshot-reservation tla-traces-snapshot-reservation tla-prove-snapshot-reservation test-formal-snapshot-reservation
+tla-check-snapshot-reservation:
+	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
+tla-traces-snapshot-reservation:
+	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode traces --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
+tla-prove-snapshot-reservation:
+	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
+test-formal-snapshot-reservation:
+	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode all --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
+tla-check: tla-check-snapshot-reservation
+tla-traces: tla-traces-snapshot-reservation
+tla-prove: tla-prove-snapshot-reservation
+test-formal: test-formal-snapshot-reservation

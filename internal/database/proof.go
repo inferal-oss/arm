@@ -76,6 +76,8 @@ func rowJSON[T any](r proofRow, key string, required ...string) (T, error) {
 }
 
 type proofReader struct {
+	snapshotSchema           bool // complete closed S reader and all three table walks succeeded
+	snapshotDeferred         map[string]bool
 	leaseReviewSchema        bool
 	home                     string
 	ctx                      context.Context
@@ -141,7 +143,7 @@ func ProveDatabaseSettled(ctx context.Context, s *Source, owner string) (Settled
 		return result, err
 	}
 	p := &proofReader{ctx: ctx, home: s.Directory.Path, tx: tx, catalog: catalog, result: result, digest: sha256.New(), leases: map[string]model.Lease{}, pools: map[string]model.Pool{}, budgets: map[string]model.Budget{}, bindings: map[string]model.BudgetBinding{}, messages: map[string]proofMessage{}, incidents: map[string]model.UsageIncident{}, poolChanges: map[int64]model.PoolChange{}, budgetChanges: map[int64]model.BudgetChange{}, gradle: map[string]proofGradle{}, poolOperationSequences: map[int64]bool{}, budgetOperationSequences: map[int64]bool{}, maxSequence: map[string]int64{}, recordedSequences: map[string]int64{}}
-	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSSH, p.readWorkspaces, p.readPublished, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readLeaseReviews, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
+	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSnapshots, p.readSSH, p.readWorkspaces, p.readPublished, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readLeaseReviews, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
 		if err = step(); err != nil {
 			return p.result, err
 		}
@@ -225,7 +227,7 @@ func (p *proofReader) walk(table string, visit func(proofRow) error) error {
 				return fmt.Errorf("settled proof exceeds 64 MiB evidence bound")
 			}
 			value := values[3*i+2]
-			if kind != "text" && kind != "integer" && kind != "null" {
+			if kind != "text" && kind != "integer" && kind != "null" && !(kind == "blob" && table == "snapshot_copy_parts" && name == "data") {
 				return fmt.Errorf("unsupported SQLite evidence type for %s.%s", table, name)
 			}
 			r[name] = value
@@ -267,6 +269,10 @@ func (p *proofReader) metadata() error {
 				return fmt.Errorf("invalid host authority")
 			}
 			p.result.Host = raw
+		case "snapshot_copy_schema":
+			if raw != "1" {
+				return fmt.Errorf("unknown snapshot reservation schema")
+			}
 		case "storage_root":
 			var id model.FileIdentity
 			if err = strictEvidence(raw, &id, "device", "inode", "owner", "birth_known"); err != nil {
@@ -424,7 +430,7 @@ func (p *proofReader) readLeases() error {
 		if !oneOf(l.State, "queued", "provisioning", "active", "ending", "needs_attention", "reclaiming", "terminal") {
 			return fmt.Errorf("unknown lease lifecycle")
 		}
-		if !oneOf(l.Request.Kind, "", "storage", "ports") {
+		if !oneOf(l.Request.Kind, "", "storage", "ports", "share-snapshot-work") {
 			return fmt.Errorf("unknown lease provider kind")
 		}
 		if l.State != "terminal" {
@@ -439,7 +445,12 @@ func (p *proofReader) readLeases() error {
 				if p.result.StorageRoot == nil || a.Name != id || l.ManagedDir != filepath.Join(p.home, "storage", id) || !oneOf(a.Path, l.ManagedDir, filepath.Join(p.home, "storage", ".reclaim-"+id)) || a.Updated.IsZero() {
 					return fmt.Errorf("invalid storage artifact identity")
 				}
-				if a.Phase == "handed_off" {
+				if a.Phase == "creating" && a.Policy == "snapshot-reservation-no-work/v1; no allocation attempted" && a.Identity == nil {
+					if p.snapshotDeferred == nil {
+						p.snapshotDeferred = map[string]bool{}
+					}
+					p.snapshotDeferred[id] = true
+				} else if a.Phase == "handed_off" {
 					if l.Outcome != "handed_off" {
 						return fmt.Errorf("artifact handoff differs from lease outcome")
 					}

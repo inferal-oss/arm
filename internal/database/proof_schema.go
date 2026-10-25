@@ -95,6 +95,7 @@ func normalizedSchema(raw string) string {
 }
 
 var resetAutoIndexes = map[string]int{
+	"snapshot_copies": 4, "snapshot_copy_parts": 1,
 	"published_agents": 2, "published_agent_changes": 1, "routed_agent_links": 2,
 	"routing_roots": 1, "routing_outbox": 2, "routing_inbox": 2,
 	"routing_graph_issuance": 1, "routing_graph_reports": 1, "routing_graph_observations": 1,
@@ -113,6 +114,10 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	reviewSeen := map[string]bool{}
 	for i, q := range leaseReviewResetSchema {
 		reviewObjects[normalizedSchema(q)] = leaseReviewObjectIdentity[i]
+	}
+	snapshotObjects := map[string]string{}
+	for i, q := range snapshotCopyResetSchema {
+		snapshotObjects[normalizedSchema(q)] = snapshotCopyResetTables[i]
 	}
 	workspaceObjects := map[string]string{}
 	for i, q := range workspaceResetSchema {
@@ -188,6 +193,13 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			catalog[expectedTable] = nil
 			continue
 		}
+		if expectedTable, ok := snapshotObjects[normal]; ok {
+			if kind != "table" || name != expectedTable || table != expectedTable {
+				return nil, fmt.Errorf("snapshot schema object identity differs")
+			}
+			catalog[table] = nil
+			continue
+		}
 		if expectedTable, ok := workspaceObjects[normal]; ok {
 			if kind != "table" || name != expectedTable || table != expectedTable {
 				return nil, fmt.Errorf("workspace schema object identity differs")
@@ -229,6 +241,15 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	if len(reviewSeen) != 0 && len(reviewSeen) != len(leaseReviewResetSchema) {
 		return nil, fmt.Errorf("partial lease review schema group")
+	}
+	snapshotCount := 0
+	for _, table := range snapshotCopyResetTables {
+		if _, ok := catalog[table]; ok {
+			snapshotCount++
+		}
+	}
+	if snapshotCount != 0 && snapshotCount != len(snapshotCopyResetTables) {
+		return nil, fmt.Errorf("partial snapshot reset schema group")
 	}
 	workspaceCount := 0
 	for _, table := range workspaceResetTables {

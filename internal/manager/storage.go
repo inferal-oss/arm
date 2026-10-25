@@ -54,6 +54,12 @@ func (m *Manager) ensureStorage() error {
 }
 
 func (m *Manager) provisionStorage(l model.Lease) (model.Lease, error) {
+	if _, bound := m.snapshotLease(l.ID); bound {
+		return l, model.Err("snapshot_no_work", "snapshot destination cannot be auto-provisioned")
+	}
+	if m.snapshots != nil && m.snapshots.failure != nil {
+		return l, m.snapshotPolicyError()
+	}
 	if reason := m.startDeadlineProblem(l); reason != nil {
 		return m.rejectUnstarted(l, reason)
 	}
