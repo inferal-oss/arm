@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/crypto/ssh"
@@ -26,13 +27,43 @@ type Exit struct {
 	Signal string
 }
 
-// Process must represent a NEW destination-owned lease and process group. The
-// execution adapter, not SSH transport, owns its authorization and cleanup.
+// On successful Execute, Process represents a NEW destination-owned lease and
+// process group. A nonnil Process returned with an error carries cleanup only:
+// Serve retains it for JoinTransport, never accepts it or calls execution methods.
+// The execution adapter owns authorization and native-process cleanup.
 type Process interface {
 	Wait(context.Context) (Exit, error)
 	Signal(context.Context, string) error
 	Resize(context.Context, Window) error
+	// JoinTransport is called only after connection/channel shutdown and all
+	// protocol/session/Wait workers returned. It joins the adapter's actual IO
+	// and cleanup callbacks, never the managed native job's completion.
+	JoinTransport()
 }
+
+type sessionStartTimer struct {
+	timer   *time.Timer
+	done    chan struct{}
+	once    sync.Once
+	stopped bool
+}
+
+func newSessionStartTimer(duration time.Duration, closeConnection func()) *sessionStartTimer {
+	owner := &sessionStartTimer{done: make(chan struct{})}
+	owner.timer = time.AfterFunc(duration, func() { defer close(owner.done); closeConnection() })
+	return owner
+}
+func (owner *sessionStartTimer) stop() bool {
+	owner.once.Do(func() {
+		owner.stopped = owner.timer.Stop()
+		if owner.stopped {
+			close(owner.done)
+		}
+	})
+	return owner.stopped
+}
+func (owner *sessionStartTimer) join() { owner.stop(); <-owner.done }
+
 type Permit struct {
 	Account   string
 	PublicKey ssh.PublicKey
@@ -54,8 +85,13 @@ func (s Server) Serve(ctx context.Context, c net.Conn, p Permit) error {
 	if err := s.Revalidate(ctx); err != nil {
 		return err
 	}
-	stop := context.AfterFunc(ctx, func() { _ = c.Close() })
-	defer stop()
+	closeDone := make(chan struct{})
+	stop := context.AfterFunc(ctx, func() { defer close(closeDone); _ = c.Close() })
+	defer func() {
+		if !stop() {
+			<-closeDone
+		}
+	}()
 	defer c.Close()
 	deadline := time.Now().Add(s.Handshake)
 	if d, ok := ctx.Deadline(); ok && d.Before(deadline) {
@@ -75,14 +111,33 @@ func (s Server) Serve(ctx context.Context, c net.Conn, p Permit) error {
 	if err != nil {
 		return err
 	}
-	defer conn.Close()
+	runCtx, cancel := context.WithCancel(ctx)
+	connectionDone := make(chan struct{})
+	go func() { defer close(connectionDone); _ = conn.Wait(); cancel() }()
+	// A successful handshake has started transport workers. Own their actual
+	// completion before the first subsequent fallible operation (deadline clear).
+	defer func() { cancel(); _ = conn.Close(); <-connectionDone }()
 	if err = c.SetDeadline(time.Time{}); err != nil {
 		return err
 	}
-	runCtx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	go func() { _ = conn.Wait(); cancel() }()
+	var workers sync.WaitGroup
+	joiners := make(chan Process, 1) // one admitted execution, published before Wait starts
+	start := newSessionStartTimer(s.StartTimeout, func() { _ = conn.Close() })
+	defer func() {
+		cancel()
+		_ = conn.Close()
+		start.join()
+		<-connectionDone
+		workers.Wait()
+		select {
+		case process := <-joiners:
+			process.JoinTransport()
+		default:
+		}
+	}()
+	workers.Add(1)
 	go func() {
+		defer workers.Done()
 		for {
 			select {
 			case <-runCtx.Done():
@@ -97,8 +152,6 @@ func (s Server) Serve(ctx context.Context, c net.Conn, p Permit) error {
 			}
 		}
 	}()
-	start := time.AfterFunc(s.StartTimeout, func() { _ = conn.Close() })
-	defer start.Stop()
 	seen := false
 	for {
 		select {
@@ -119,16 +172,18 @@ func (s Server) Serve(ctx context.Context, c net.Conn, p Permit) error {
 			}
 			// Keep the main channel loop alive to reject additional channels while the
 			// sole session executes. Completion closes the entire admitted connection.
+			workers.Add(1)
 			go func() {
+				defer workers.Done()
 				defer cancel()
 				defer conn.Close()
-				s.session(runCtx, channel, reqs, start)
+				s.session(runCtx, channel, reqs, start, &workers, joiners)
 				closeSession(runCtx, channel, reqs)
 			}()
 		}
 	}
 }
-func (s Server) session(ctx context.Context, ch ssh.Channel, requests <-chan *ssh.Request, start *time.Timer) {
+func (s Server) session(ctx context.Context, ch ssh.Channel, requests <-chan *ssh.Request, start *sessionStartTimer, workers *sync.WaitGroup, joiners chan<- Process) {
 	var terminal *Terminal
 	var process Process
 	var finished <-chan Exit
@@ -185,16 +240,21 @@ func (s Server) session(ctx context.Context, ch ssh.Channel, requests <-chan *ss
 					if valid && s.Revalidate(ctx) == nil {
 						// Stop the waiting-for-execution timer before the synchronous adapter;
 						// the stream's independent lifetime/cancellation still bounds it.
-						if !start.Stop() || ctx.Err() != nil {
+						if !start.stop() || ctx.Err() != nil {
 							return
 						}
 						started, err := s.Execute(ctx, execution, ch)
+						if started != nil {
+							joiners <- started // includes cleanup-only failed admissions
+						}
 						if err == nil && started != nil {
 							process = started
 							accepted = true
 							done := make(chan Exit, 1)
 							finished = done
+							workers.Add(1) // session worker remains owned while adding its child
 							go func() {
+								defer workers.Done()
 								exit, err := started.Wait(ctx)
 								if err != nil {
 									exit = Exit{Code: 255}

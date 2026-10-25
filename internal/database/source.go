@@ -177,7 +177,21 @@ func Live(ctx context.Context, home string) (s *Source, err error) {
 
 // Offline pins the stopped authority and copies only stable main/WAL files.
 // SQLite may build its own WAL index in private OS-temp, never in ARM home.
-func Offline(ctx context.Context, home string) (s *Source, err error) {
+func Offline(ctx context.Context, home string) (*Source, error) {
+	return offline(ctx, home, nil)
+}
+
+// OfflineHeld reuses the caller's retained daemon.lock; it never unlocks or
+// closes that descriptor. The caller must keep the exclusive lock through all
+// observations and the following startup/close transaction.
+func OfflineHeld(ctx context.Context, home string, held *os.File) (*Source, error) {
+	if held == nil {
+		return nil, fmt.Errorf("retained daemon lock required")
+	}
+	return offline(ctx, home, held)
+}
+
+func offline(ctx context.Context, home string, retained *os.File) (s *Source, err error) {
 	d, err := OpenDirectory(home)
 	if err != nil {
 		return nil, err
@@ -188,16 +202,22 @@ func Offline(ctx context.Context, home string) (s *Source, err error) {
 			opened.Close()
 		}
 	}(s)
-	s.lock, _, err = d.Open("daemon.lock", unix.O_RDONLY)
-	if err != nil {
-		return nil, err
+	authority := retained
+	if authority == nil {
+		s.lock, _, err = d.Open("daemon.lock", unix.O_RDONLY)
+		if err != nil {
+			return nil, err
+		}
+		authority = s.lock
 	}
-	if s.lock == nil {
-		return nil, fmt.Errorf("existing authority lock is required; no stopped authority was fabricated")
+	if authority == nil {
+		return nil, fmt.Errorf("existing authority lock is required")
 	}
-	if err = unix.Flock(int(s.lock.Fd()), unix.LOCK_EX|unix.LOCK_NB); err != nil {
+	// Acquiring on the retained open-file description is idempotent. Failure
+	// never falls back to a named PID or an independently opened lock.
+	if err = unix.Flock(int(authority.Fd()), unix.LOCK_EX|unix.LOCK_NB); err != nil {
 		if errors.Is(err, unix.EWOULDBLOCK) || errors.Is(err, unix.EAGAIN) {
-			return nil, fmt.Errorf("%w; use online inspection or stop it before removal", ErrAuthorityBusy)
+			return nil, fmt.Errorf("%w", ErrAuthorityBusy)
 		}
 		return nil, err
 	}
@@ -205,7 +225,7 @@ func Offline(ctx context.Context, home string) (s *Source, err error) {
 	if err != nil {
 		return nil, err
 	}
-	held, err := nativeFile(s.lock, "daemon.lock", false)
+	held, err := nativeFile(authority, "daemon.lock", false)
 	if err != nil || !sameIdentity(named, held) {
 		return nil, fmt.Errorf("authority lock identity changed")
 	}

@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -26,21 +27,47 @@ import (
 )
 
 type sshManagerFixture struct {
-	m       *Manager
-	client  *ssh.Client
-	ctx     context.Context
-	cancel  context.CancelFunc
-	mu      sync.Mutex
-	q       model.SSHExecutionRequest
-	channel ssh.Channel
-	lease   model.Lease
+	m          *Manager
+	client     *ssh.Client
+	ctx        context.Context
+	cancel     context.CancelFunc
+	mu         sync.Mutex
+	q          model.SSHExecutionRequest
+	channel    ssh.Channel
+	lease      model.Lease
+	serverDone <-chan struct{}
+	peerReads  *heldSSHPeerReads
 }
+
+// A fixed test peer can withhold receipt of the next encrypted SSH packet,
+// hence withhold its automatic channel-close response, without closing stdin.
+type heldSSHPeerReads struct {
+	net.Conn
+	hold                  atomic.Bool
+	held, release         chan struct{}
+	heldOnce, releaseOnce sync.Once
+}
+
+func (c *heldSSHPeerReads) Read(p []byte) (int, error) {
+	n, err := c.Conn.Read(p)
+	if n > 0 && c.hold.Load() {
+		c.heldOnce.Do(func() { close(c.held) })
+		<-c.release
+	}
+	return n, err
+}
+func (c *heldSSHPeerReads) releaseRead() { c.releaseOnce.Do(func() { close(c.release) }) }
+func (c *heldSSHPeerReads) Close() error { c.releaseRead(); return c.Conn.Close() }
 
 func newSSHManagerFixture(t *testing.T, m *Manager, ttl time.Duration) *sshManagerFixture {
 	return newSSHManagerFixtureWithAdmission(t, m, ttl, nil)
 }
 
 func newSSHManagerFixtureWithAdmission(t *testing.T, m *Manager, ttl time.Duration, admit func(context.Context, model.SSHExecutionRequest, sshservice.Execution, ssh.Channel) (model.Lease, sshservice.Process, error)) *sshManagerFixture {
+	return newSSHManagerFixtureWithAdmissionReadHold(t, m, ttl, admit, false)
+}
+
+func newSSHManagerFixtureWithAdmissionReadHold(t *testing.T, m *Manager, ttl time.Duration, admit func(context.Context, model.SSHExecutionRequest, sshservice.Execution, ssh.Channel) (model.Lease, sshservice.Process, error), holdPeerReads bool) *sshManagerFixture {
 	t.Helper()
 	if m == nil {
 		m = newManager(t)
@@ -59,6 +86,7 @@ func newSSHManagerFixtureWithAdmission(t *testing.T, m *Manager, ttl time.Durati
 	ctx, cancel := context.WithCancel(context.Background())
 	f := &sshManagerFixture{m: m, ctx: ctx, cancel: cancel, q: model.SSHExecutionRequest{Source: strings.Repeat("a", 32), Target: m.host, Pair: strings.Repeat("b", 64), Revision: 1, Certificate: strings.Repeat("c", 64), PublicKeySHA256: sshDigest(signer.PublicKey().Marshal()), Key: local.ID(), Account: m.ownerUsername, Reason: "private execution integration", TTL: ttl, Resources: model.Resources{CPU: .5}, CWD: t.TempDir()}}
 	serverDone := make(chan struct{})
+	f.serverDone = serverDone
 	go func() {
 		defer close(serverDone)
 		c, err := listener.Accept()
@@ -90,7 +118,36 @@ func newSSHManagerFixtureWithAdmission(t *testing.T, m *Manager, ttl time.Durati
 		}}
 		_ = service.Serve(ctx, c, sshservice.Permit{Account: m.ownerUsername, PublicKey: signer.PublicKey()})
 	}()
-	client, err := ssh.Dial("tcp", listener.Addr().String(), &ssh.ClientConfig{User: m.ownerUsername, Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)}, HostKeyCallback: ssh.FixedHostKey(host.PublicKey()), Timeout: time.Second})
+	config := &ssh.ClientConfig{User: m.ownerUsername, Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)}, HostKeyCallback: ssh.FixedHostKey(host.PublicKey()), Timeout: time.Second}
+	var client *ssh.Client
+	if holdPeerReads {
+		var raw net.Conn
+		raw, err = net.DialTimeout("tcp", listener.Addr().String(), time.Second)
+		if err == nil {
+			f.peerReads = &heldSSHPeerReads{Conn: raw, held: make(chan struct{}), release: make(chan struct{})}
+			err = raw.SetDeadline(time.Now().Add(time.Second))
+			if err == nil {
+				var connection ssh.Conn
+				var channels <-chan ssh.NewChannel
+				var requests <-chan *ssh.Request
+				connection, channels, requests, err = ssh.NewClientConn(f.peerReads, listener.Addr().String(), config)
+				if err == nil {
+					err = raw.SetDeadline(time.Time{})
+					if err == nil {
+						client = ssh.NewClient(connection, channels, requests)
+					} else {
+						_ = connection.Close()
+						_ = connection.Wait()
+					}
+				}
+			}
+			if err != nil {
+				_ = f.peerReads.Close()
+			}
+		}
+	} else {
+		client, err = ssh.Dial("tcp", listener.Addr().String(), config)
+	}
 	if err != nil {
 		cancel()
 		listener.Close()

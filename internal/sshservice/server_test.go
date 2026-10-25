@@ -27,12 +27,15 @@ func testKey(t *testing.T) ssh.Signer {
 }
 
 type fixtureProcess struct {
-	done    chan struct{}
-	signals chan string
-	windows chan Window
+	done          chan struct{}
+	signals       chan string
+	windows       chan Window
+	transportDone chan struct{}
 }
 
 func (p *fixtureProcess) Wait(ctx context.Context) (Exit, error) {
+	p.transportDone = make(chan struct{})
+	defer close(p.transportDone)
 	select {
 	case <-ctx.Done():
 		return Exit{}, ctx.Err()
@@ -40,6 +43,7 @@ func (p *fixtureProcess) Wait(ctx context.Context) (Exit, error) {
 		return Exit{Code: 23}, nil
 	}
 }
+func (p *fixtureProcess) JoinTransport() { <-p.transportDone }
 func (p *fixtureProcess) Signal(ctx context.Context, s string) error {
 	select {
 	case p.signals <- s:
@@ -94,7 +98,7 @@ func TestSSHOneAuthenticatedSessionAndClosedRequests(t *testing.T) {
 	user := testKey(t)
 	var calls atomic.Int32
 	captured := make(chan Execution, 1)
-	p := &fixtureProcess{make(chan struct{}), make(chan string, 2), make(chan Window, 2)}
+	p := &fixtureProcess{done: make(chan struct{}), signals: make(chan string, 2), windows: make(chan Window, 2)}
 	s := Server{HostKey: testKey(t), Handshake: time.Second, StartTimeout: time.Second, Revalidate: func(context.Context) error { return nil }, Execute: func(ctx context.Context, q Execution, ch ssh.Channel) (Process, error) {
 		calls.Add(1)
 		captured <- q

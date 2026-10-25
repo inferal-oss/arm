@@ -102,9 +102,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer abort()
 	ws.SetReadLimit(MaxControlBytes)
 	initial, cancel := context.WithTimeout(r.Context(), h.Limits.Handshake)
-	stopInitialAbort := context.AfterFunc(initial, capture.socket.close)
+	initialAbort := newJoinedAbort(initial, capture.socket.close)
+	defer initialAbort.stopAndJoin()
 	kind, raw, err := ws.Read(initial)
-	stopInitialAbort()
+	initialAbort.stopAndJoin()
 	cancel()
 	if err != nil || kind != websocket.MessageBinary {
 		return
@@ -140,7 +141,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	go conn.watch(ctx, h.Limits, func() error { return h.Revalidate(ctx, scope) })
+	watchDone := conn.startWatch(ctx, h.Limits, func() error { return h.Revalidate(ctx, scope) })
+	defer func() { _ = conn.Close(); <-watchDone }()
 	h.Handle(ctx, scope, control, conn)
 }
 
@@ -183,8 +185,8 @@ func Dial(ctx context.Context, address string, policy *tls.Config, control Contr
 	client := &http.Client{Transport: tr, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	initial, stop := context.WithTimeout(ctx, limits.Handshake)
 	defer stop()
-	stopInitialAbort := context.AfterFunc(initial, socket.close)
-	defer stopInitialAbort()
+	initialAbort := newJoinedAbort(initial, socket.close)
+	defer initialAbort.stopAndJoin()
 	ws, _, err := websocket.Dial(initial, "wss://"+address+Path, &websocket.DialOptions{HTTPClient: client, Subprotocols: []string{Protocol}, CompressionMode: websocket.CompressionDisabled})
 	tr.CloseIdleConnections()
 	if err != nil {
@@ -215,14 +217,48 @@ func Dial(ctx context.Context, address string, policy *tls.Config, control Contr
 	if err = json.Unmarshal(raw, &accepted); err != nil || accepted != control.Ready() || !bytes.Equal(raw, expectedAck) {
 		return fail(fmt.Errorf("SSH stream admission identity changed"))
 	}
-	if !stopInitialAbort() || initial.Err() != nil {
+	if !initialAbort.stopAndJoin() || initial.Err() != nil {
 		return fail(fmt.Errorf("SSH stream admission timed out"))
 	}
 	life, cancel := context.WithTimeout(ctx, min(limits.Lifetime, control.TTL+limits.Handshake))
 	conn := newBounded(websocket.NetConn(life, ws, websocket.MessageBinary), limits, cancel, abort)
 	ws.SetReadLimit(MaxPayloadBytes) // Restore after NetConn construction.
-	go conn.watch(life, limits, nil)
-	return conn, nil
+	watchDone := conn.startWatch(life, limits, nil)
+	return &watchedConn{boundedConn: conn, done: watchDone}, nil
+}
+
+type joinedAbort struct {
+	stop    func() bool
+	done    chan struct{}
+	once    sync.Once
+	stopped bool
+}
+
+func newJoinedAbort(ctx context.Context, abort func()) *joinedAbort {
+	owner := &joinedAbort{done: make(chan struct{})}
+	owner.stop = context.AfterFunc(ctx, func() { defer close(owner.done); abort() })
+	return owner
+}
+func (owner *joinedAbort) stopAndJoin() bool {
+	owner.once.Do(func() {
+		owner.stopped = owner.stop()
+		if owner.stopped {
+			close(owner.done)
+		}
+	})
+	<-owner.done
+	return owner.stopped
+}
+
+type watchedConn struct {
+	*boundedConn
+	done <-chan struct{}
+}
+
+func (c *watchedConn) Close() error {
+	err := c.boundedConn.Close()
+	<-c.done
+	return err
 }
 
 type boundedConn struct {
@@ -319,6 +355,11 @@ func (c *boundedConn) watch(ctx context.Context, l Limits, check func() error) {
 			}
 		}
 	}
+}
+func (c *boundedConn) startWatch(ctx context.Context, l Limits, check func() error) <-chan struct{} {
+	done := make(chan struct{})
+	go func() { defer close(done); c.watch(ctx, l, check) }()
+	return done
 }
 
 // Go's HTTP transport suppresses ALPN for Upgrade requests in its built-in TLS

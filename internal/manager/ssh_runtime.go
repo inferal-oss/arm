@@ -75,6 +75,11 @@ type sshRuntime struct {
 	stdout, stderr *os.File
 	master         *os.File
 	outputDone     chan struct{}
+	inputDone      chan struct{}
+	copiesStarted  bool
+	closeDone      chan struct{}
+	closeStarted   chan struct{}
+	retireClose    sync.Once
 	stopClose      func() bool
 	closeOnce      sync.Once
 }
@@ -93,8 +98,8 @@ func newSSHRuntime(ctx context.Context, q model.SSHExecutionRequest, e sshservic
 		expiry = until
 	}
 	run, cancel := context.WithDeadline(ctx, expiry)
-	r := &sshRuntime{ctx: run, cancel: cancel, request: q, execution: e, channel: ch, account: account, outputDone: make(chan struct{})}
-	r.stopClose = context.AfterFunc(run, r.closeFiles)
+	r := &sshRuntime{ctx: run, cancel: cancel, request: q, execution: e, channel: ch, account: account, outputDone: make(chan struct{}), inputDone: make(chan struct{}), closeDone: make(chan struct{}), closeStarted: make(chan struct{})}
+	r.stopClose = context.AfterFunc(run, func() { close(r.closeStarted); defer close(r.closeDone); r.closeFiles() })
 	return r, nil
 }
 func (r *sshRuntime) closeFiles() {
@@ -110,7 +115,11 @@ func (r *sshRuntime) closeAll() {
 	r.cancel()
 	r.closeFiles()
 	if r.stopClose != nil {
-		r.stopClose()
+		r.retireClose.Do(func() {
+			if r.stopClose() {
+				close(r.closeDone)
+			}
+		})
 	}
 }
 func (r *sshRuntime) check() error { return r.ctx.Err() }
@@ -183,16 +192,17 @@ func (r *sshRuntime) prepare(cmd *exec.Cmd) (io.Closer, error) {
 func (r *sshRuntime) startCopies() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	r.copiesStarted = true
 	// Only retained child descriptors close here; stdin's parent writer stays
 	// open until client EOF or command completion.
 	for _, f := range r.child {
 		_ = f.Close()
 	}
 	if r.master != nil {
-		go func() { _, _ = io.Copy(r.master, r.channel) }()
+		go func() { defer close(r.inputDone); _, _ = io.Copy(r.master, r.channel) }()
 		go func() { defer close(r.outputDone); _, _ = io.Copy(r.channel, r.master) }()
 	} else {
-		go func() { _, _ = io.Copy(r.input, r.channel); _ = r.input.Close() }()
+		go func() { defer close(r.inputDone); _, _ = io.Copy(r.input, r.channel); _ = r.input.Close() }()
 		go func() {
 			defer close(r.outputDone)
 			var wg sync.WaitGroup
@@ -209,6 +219,41 @@ type sshProcess struct {
 	lease   string
 	runtime *sshRuntime
 	job     *job
+}
+
+// A failed admission may already own IO copies but has no executable Process
+// authority to return. Serve retains this handle even with Execute's error and
+// invokes only JoinTransport after closing/joining the actual SSH connection.
+type failedSSHTransport struct{ runtime *sshRuntime }
+
+func (*failedSSHTransport) Wait(context.Context) (sshservice.Exit, error) {
+	return sshservice.Exit{}, model.Err("ssh_launch_failed", "failed SSH admission carries transport cleanup only")
+}
+func (*failedSSHTransport) Signal(context.Context, string) error {
+	return model.Err("ssh_launch_failed", "failed SSH admission cannot signal a process")
+}
+func (*failedSSHTransport) Resize(context.Context, sshservice.Window) error {
+	return model.Err("ssh_launch_failed", "failed SSH admission cannot resize a process")
+}
+func (p *failedSSHTransport) JoinTransport() { p.runtime.joinTransport() }
+
+func (p *sshProcess) JoinTransport() {
+	p.runtime.joinTransport()
+}
+
+func (r *sshRuntime) joinTransport() {
+	r.closeAll()
+	// Serve already closed and joined the actual SSH connection. Channel.Close
+	// alone only sends an SSH close request and cannot establish inbound EOF.
+	_ = r.channel.Close()
+	r.mu.Lock()
+	started := r.copiesStarted
+	r.mu.Unlock()
+	if started {
+		<-r.inputDone
+		<-r.outputDone
+	}
+	<-r.closeDone // mandatory original callback retirement, never nil→success
 }
 
 func (p *sshProcess) Wait(ctx context.Context) (sshservice.Exit, error) {

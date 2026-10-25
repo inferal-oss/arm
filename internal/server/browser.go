@@ -134,7 +134,7 @@ func browserAllowedOperation(op string) bool {
 	switch op {
 	case "lease_review_list", "lease_review_inspect", "lease_review_policy", "lease_review_configure":
 		return true // Same local reviewed lease revision; replies require the exact agent polling workflow.
-	case "mesh_operator_watch", "mesh_operator_reconnect_context", "mesh_operator_prepare", "mesh_operator_get", "mesh_operator_list", "mesh_operator_decide", "mesh_operator_cancel", "mesh_operator_resume", "mesh_operator_handoff", "mesh_operator_connectors":
+	case "mesh_operator_watch", "mesh_operator_stop_lease", "mesh_operator_stop_lookup", "mesh_operator_reconnect_context", "mesh_operator_prepare", "mesh_operator_get", "mesh_operator_list", "mesh_operator_decide", "mesh_operator_cancel", "mesh_operator_resume", "mesh_operator_handoff", "mesh_operator_connectors":
 		return true
 	case "node_open", "node_list", "node_inspect", "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_children", "pool_consumers", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
 		return true

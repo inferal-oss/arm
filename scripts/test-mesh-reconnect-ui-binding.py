@@ -17,7 +17,7 @@ class Binding(unittest.TestCase):
         self.source='a'*32;self.target='b'*32;self.arm=b'owned synthetic non-executable bytes';self.sha=hashlib.sha256(self.arm).hexdigest()
         (self.root/'arm').write_bytes(self.arm);(self.root/'arm').chmod(0o700)
         self.ready={'mode':'web','dashboard_url':'http://127.0.0.1:12345/#connect='+'c'*64,'source_home':str(self.root/'source'),'arm':str(self.root/'arm'),'host':self.target,'pending_key':'lost-disconnect','outcome_file':str(self.root/'ui-outcome.json'),'required':b.REQUIRED_TEXT}
-        self.endpoint={'url':'ws://127.0.0.1:12345/v1/ws','pid':123,'token':'d'*64}
+        self.endpoint={'url':'ws://127.0.0.1:12345/v1/ws','pid':123,'token':'d'*64,'backend_generation':'e'*32}
         def identity(host):return {'host':host,'owner':str(os.getuid()),'owner_username':'fixture-user','name':'fixture','address':'127.0.0.1:23456','certificate':'synthetic bounded certificate','spki_sha256':'e'*64,'fingerprint':'f'*64,'expires_at':'2027-01-01T00:00:00Z'}
         self.left=identity(self.source);self.right=identity(self.target)
         self.put('ui-ready.json',self.ready);self.put('source/endpoint.json',self.endpoint)
@@ -38,7 +38,7 @@ class Binding(unittest.TestCase):
         done=dict(common,key='approved',phase='completed',approved=True,result={'connected':self.target},request={'key':'approved','kind':'reconnect','reconnect':{'draft':{'host':self.target}}})
         self.save_op(declined);self.save_op(done);return pending,declined,done
     def test_begin_and_complete_are_file_only_and_exclusive(self):
-        p,sha,value=self.begun();self.assertEqual(value['origin'],'http://127.0.0.1:12345');self.assertNotIn('token',value)
+        p,sha,value=self.begun();self.assertEqual(value['origin'],'http://127.0.0.1:12345');self.assertNotIn('token',value);self.assertEqual(value['endpoint_generation'],self.endpoint['backend_generation'])
         self.complete();path,outcome,proof=b.finish(p,sha,'declined','approved')
         self.assertEqual(path,self.root/'ui-outcome.json');self.assertEqual(outcome,{'handoff_key':'lost-disconnect','declined_key':'declined','reconnect_key':'approved'})
         self.assertFalse(path.exists());self.assertEqual(set(proof['receipts']),{'handoff','declined','completed'})
@@ -58,6 +58,15 @@ class Binding(unittest.TestCase):
         self.put('source/endpoint.json',self.endpoint)
         self.assertEqual(b.begin(self.root,self.sha)['origin'],'http://127.0.0.1:12345')
 
+    def test_actual_four_field_endpoint_required(self):
+        variants=[{k:v for k,v in self.endpoint.items() if k!='backend_generation'},dict(self.endpoint,unexpected=True)]
+        variants += [dict(self.endpoint,backend_generation=value) for value in ('', 'e'*31, 'E'*32, None, True, [])]
+        for value in variants:
+            self.put('source/endpoint.json',value)
+            with self.subTest(value=value),self.assertRaises(ValueError):b.begin(self.root,self.sha)
+        self.put('source/endpoint.json',self.endpoint)
+        self.assertEqual(b.begin(self.root,self.sha)['endpoint_generation'],'e'*32)
+
     def test_raw_malformed_duplicate_size_symlink_mode(self):
         p=self.root/'ui-ready.json'
         for raw in [b'',b'{} trailing',b'{"mode":"web","mode":"web"}',b'{"mode":"\xff"}',b'x'*16385]:
@@ -69,7 +78,7 @@ class Binding(unittest.TestCase):
         with self.assertRaises(ValueError):b.begin(self.root,self.sha)
     def test_endpoint_generation_changes_refuse_finish(self):
         p,sha,_=self.begun();self.complete()
-        variants=[dict(self.endpoint,pid=124),dict(self.endpoint,token='a'*64),dict(self.endpoint,url='ws://127.0.0.1:12346/v1/ws')]
+        variants=[dict(self.endpoint,backend_generation='f'*32),dict(self.endpoint,pid=124),dict(self.endpoint,token='a'*64),dict(self.endpoint,url='ws://127.0.0.1:12346/v1/ws')]
         for v in variants:
             self.put('source/endpoint.json',v)
             with self.subTest(v=v),self.assertRaises(ValueError):b.finish(p,sha,'declined','approved')

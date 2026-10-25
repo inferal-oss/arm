@@ -1,0 +1,64 @@
+{
+  "schema": "arm.node-stop.source-control-roster/v1",
+  "status": "source-only; no validation run",
+  "actual_scenarios": [
+    "two-generation",
+    "two-generation-no-source-observation",
+    "force-owned",
+    "wait-owned",
+    "active-default",
+    "unknown-work",
+    "expired-permit",
+    "clock-fault",
+    "revoked-grant",
+    "changed-grant",
+    "changed-generation",
+    "interrupted-history",
+    "restart-expired",
+    "restart-clock-fault"
+  ],
+  "safety_checks": [
+    "TypeOK",
+    "StoppedNeedsPositiveObservation",
+    "ClosedEffectIsGenerationBound",
+    "RestartLatchSafety",
+    "ContinuousReviewSafety",
+    "ExactReviewExpirySafety",
+    "HistoryFenceSafety"
+  ],
+  "raw_provenance_negatives": [
+    "altered-boundary-generation",
+    "missing-real-component-closure",
+    "missing-original-native-marker-match",
+    "refreshed-original-issue-tick",
+    "revived-failed-permit-owner",
+    "unrelated-refusal-code",
+    "unmatched-original-restart-failure"
+  ],
+  "state_correspondence_negatives": [
+    "retargeted-admission",
+    "missing-joined-effect",
+    "stale-review-admission",
+    "revived-exact-review",
+    "overtaken-prior-stop-duty"
+  ],
+  "raw_tlc_negatives": [
+    "boolean-state-id",
+    "float-state-id",
+    "middle-complete-state",
+    "final-complete-state",
+    "adjacent-edge-endpoint",
+    "skipped-position",
+    "premature-final-row",
+    "missing-original-variable",
+    "boolean-for-integer-state",
+    "duplicate-json-key"
+  ],
+  "observer_controls": [
+    "unrelated-home zero SQL/elapsed reads",
+    "selected-home positive SQL/elapsed read counters"
+  ],
+  "native_command_owner": "original formal_process.py SHA221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76",
+  "proof_obligations": 102,
+  "model_variables": 24
+}

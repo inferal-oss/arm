@@ -15,6 +15,7 @@ import (
 // StartRequest contains a resolved native connector, never arbitrary browser
 // executable/home/options. Browser adapters must resolve their closed draft.
 type StartRequest struct {
+	Stop       *StopDraft        `json:"stop,omitempty"`
 	Key        string            `json:"key"`
 	Kind       string            `json:"kind"`
 	Connect    *ConnectRequest   `json:"connect,omitempty"`
@@ -37,6 +38,8 @@ type Decision struct {
 const PreparationNotice = "Preparation may start ordinary ARM backends and restore previously approved enabled listeners. New sockets are reserved without listening; new endpoints and peer trust require exact confirmation. Cancelling preserves ordinary backends, identities and pre-existing trust/listeners; new pending reservations are closed or expire."
 
 type Operation struct {
+	LookupOnly      bool                      `json:"lookup_only"`
+	CanPrepareFresh bool                      `json:"can_prepare_fresh"`
 	Notice          string                    `json:"notice"`
 	ResumeFrom      string                    `json:"resume_from,omitempty"`
 	ParentKey       string                    `json:"parent_key,omitempty"`
@@ -65,6 +68,10 @@ type Operation struct {
 
 func Project(op mesh.Coordination) Operation {
 	out := Operation{HasReview: len(op.Review) > 0, HasResult: len(op.Result) > 0, Notice: PreparationNotice, ResumeFrom: op.ResumeFrom, ParentKey: op.ParentKey, ResolvedBy: op.ResolvedBy, Key: op.Key, Kind: op.Kind, Revision: op.Revision, Phase: op.Phase, Targets: op.Targets, Updated: op.Updated, WorkerLive: op.Worker != "" && time.Now().Before(op.WorkerExpires), Review: op.Review, ReviewRevision: op.ReviewRevision, ReviewHash: op.ReviewHash, ReviewExpires: op.ReviewExpires, CancelRequested: op.CancelRequested, Approved: op.Approved, Result: op.Result, Error: op.Error}
+	if op.Kind == "stop" {
+		out.LookupOnly = op.Approved
+		out.CanPrepareFresh = !out.WorkerLive && !op.Approved && (op.Phase == "declined" || op.Phase == "cancelled" || op.Phase == "rejected")
+	}
 	out.Handoff = op.Handoff
 	if op.Error != nil {
 		message := op.Error.Message
@@ -73,7 +80,7 @@ func Project(op mesh.Coordination) Operation {
 		}
 		out.Error = &model.Error{Code: op.Error.Code, Message: message}
 	}
-	if op.ResolvedBy == "" && !out.WorkerLive && (op.Phase == "incomplete" || op.Worker != "") {
+	if op.Kind != "stop" && op.ResolvedBy == "" && !out.WorkerLive && (op.Phase == "incomplete" || op.Worker != "") {
 		out.RecoveryHash, _ = mesh.CoordinationRecoveryHash(op)
 		out.RecoveryEffect = mesh.CoordinationHandoffEffect
 	}
@@ -88,11 +95,15 @@ func ProjectSummary(op mesh.Coordination) Operation {
 }
 
 type Service struct {
+	// Register retains the backend native-admission interval through worker exit.
+	// It is called BEFORE Service.mu and never during a worker join.
+	Register      func() (func(), error)
 	Home          string
 	Context       context.Context
 	New           func(context.Context) *Coordinator
 	mu            sync.Mutex
 	workers       map[string]context.CancelFunc
+	inspections   int
 	closing       bool
 	wg            sync.WaitGroup
 	watchers      map[uint64]watcher
@@ -127,7 +138,18 @@ func validateStart(q StartRequest) (any, string, error) {
 	if !mesh.ValidKey(q.Key) {
 		return nil, "", model.Err("invalid_request", "exact operation key is required")
 	}
+	if q.Stop != nil && q.Kind != "stop" {
+		return nil, "", model.Err("invalid_request", "Stop draft cannot be combined with another operation")
+	}
 	switch q.Kind {
+	case "stop":
+		if q.Stop == nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
+			return nil, "", model.Err("invalid_request", "one closed Stop draft required")
+		}
+		if e := q.Stop.Validate(); e != nil {
+			return nil, "", e
+		}
+		return *q.Stop, "host:" + q.Stop.Host, nil
 	case "connect":
 		if q.Connect == nil || q.Connect.Reconnect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
 			return nil, "", model.Err("invalid_request", "connect draft required")
@@ -164,6 +186,21 @@ func validateStart(q StartRequest) (any, string, error) {
 	}
 }
 func (s *Service) Start(q StartRequest) (Operation, error) {
+	release := func() {}
+	if s.Register != nil {
+		var err error
+		release, err = s.Register()
+		if err != nil {
+			return Operation{}, err
+		}
+	}
+	transferred := false
+	defer func() {
+		if !transferred {
+			release()
+		}
+	}()
+
 	immutable, e := json.Marshal(q)
 	if e != nil {
 		return Operation{}, e
@@ -222,11 +259,15 @@ func (s *Service) Start(q StartRequest) (Operation, error) {
 	}
 	s.workers[q.Key] = cancel
 	s.wg.Add(1)
+	transferred = true
 	go func() {
+		defer release()
 		defer s.wg.Done()
 		defer cancel()
 		defer func() { s.mu.Lock(); delete(s.workers, q.Key); s.mu.Unlock() }()
-		if q.Kind == "connect" {
+		if q.Kind == "stop" {
+			_, _ = c.Stop(q.Key, *q.Stop, true, false)
+		} else if q.Kind == "connect" {
 			_, _ = c.Connect(q.Key, *q.Connect, true, false)
 		} else if q.Kind == "reconnect" {
 			_, _ = c.Reconnect(q.Key, *q.Reconnect, true, false)
@@ -335,6 +376,21 @@ func (s *Service) Close() {
 // Resume is an explicit new bounded attempt of the original immutable draft.
 // It never changes the source receipt and does not accept replacement options.
 func (s *Service) Resume(key string, revision int64) (Operation, error) {
+	release := func() {}
+	if s.Register != nil {
+		var err error
+		release, err = s.Register()
+		if err != nil {
+			return Operation{}, err
+		}
+	}
+	transferred := false
+	defer func() {
+		if !transferred {
+			release()
+		}
+	}()
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.closing || s.Context.Err() != nil {
@@ -349,6 +405,9 @@ func (s *Service) Resume(key string, revision int64) (Operation, error) {
 	}
 	if !ok {
 		return Operation{}, model.Err("not_found", "operator key not found")
+	}
+	if original.Kind == "stop" {
+		return Operation{}, model.Err("lookup_only", "Stop recovery only inspects its original key; resume cannot reapply it")
 	}
 	if original.Revision != revision || original.Phase != "incomplete" || original.Worker != "" || original.ResolvedBy != "" {
 		return Operation{}, model.Err("review_changed", "only this exact inactive incomplete receipt may resume")
@@ -381,7 +440,9 @@ func (s *Service) Resume(key string, revision int64) (Operation, error) {
 	}
 	s.workers[attemptKey] = cancel
 	s.wg.Add(1)
+	transferred = true
 	go func() {
+		defer release()
 		defer s.wg.Done()
 		defer cancel()
 		defer func() { s.mu.Lock(); delete(s.workers, attemptKey); s.mu.Unlock() }()

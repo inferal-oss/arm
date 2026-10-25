@@ -122,6 +122,8 @@ type proofCoordPendingResult struct {
 	Retry   string `json:"retry"`
 }
 type proofCoordRecord struct {
+	stopReview       *meshops.StopReview
+	stopResult       *meshops.StopResult
 	provisionReview  *meshops.ProvisionPlan
 	provisionResult  *meshops.ProvisionResult
 	op               mesh.Coordination

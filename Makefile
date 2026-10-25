@@ -253,3 +253,31 @@ tla-prove-reviews: tla-tools
 test-lease-reviews-formal: tla-tools
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-lease-reviews-formal-runner.py
 	$(PYTHON) scripts/test-lease-reviews-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
+
+# Reviewed node Stop/restart: same24-variable Source8 model, full scoped proof,
+# actual native Go cuts, final-row correspondence and meaningful negatives.
+TLA_NODE_STOP_WORK_DIR ?= $(CURDIR)/.tla/node-stop
+TLA_NODE_STOP_MODEL_DIR ?= $(CURDIR)/formal/node-stop
+TLA_NODE_STOP_PROOF_DIR ?= $(CURDIR)/formal/node-stop
+NODE_STOP_RACE ?= --race
+.PHONY: test-node-stop-formal-runner tla-node-stop-check tla-node-stop-traces tla-node-stop-prove test-node-stop-formal
+
+test-node-stop-formal-runner:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-node-stop-formal-runner.py
+
+tla-node-stop-check: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-node-stop-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --model-dir "$(TLA_NODE_STOP_MODEL_DIR)" --proof-dir "$(TLA_NODE_STOP_PROOF_DIR)" --work-dir "$(TLA_NODE_STOP_WORK_DIR)"
+
+tla-node-stop-traces: tla-tlc test-node-stop-formal-runner
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-node-stop-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" $(NODE_STOP_RACE) --model-dir "$(TLA_NODE_STOP_MODEL_DIR)" --proof-dir "$(TLA_NODE_STOP_PROOF_DIR)" --work-dir "$(TLA_NODE_STOP_WORK_DIR)"
+
+tla-node-stop-prove: tla-tlapm
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-node-stop-formal.py --mode prove --tlapm "$(TLAPM)" --model-dir "$(TLA_NODE_STOP_MODEL_DIR)" --proof-dir "$(TLA_NODE_STOP_PROOF_DIR)" --work-dir "$(TLA_NODE_STOP_WORK_DIR)"
+
+test-node-stop-formal: tla-tools test-node-stop-formal-runner
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-node-stop-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" $(NODE_STOP_RACE) --model-dir "$(TLA_NODE_STOP_MODEL_DIR)" --proof-dir "$(TLA_NODE_STOP_PROOF_DIR)" --work-dir "$(TLA_NODE_STOP_WORK_DIR)"
+
+tla-check: tla-node-stop-check
+tla-traces: tla-node-stop-traces
+tla-prove: tla-node-stop-prove
+test-formal: test-node-stop-formal

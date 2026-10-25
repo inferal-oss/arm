@@ -103,6 +103,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		return 2, fmt.Errorf("mesh requires connect, disconnect, lookup, identity, peers or an advanced operation")
 	}
 	action, args := args[0], args[1:]
+	if action == "stop" {
+		return a.meshStop(args)
+	}
 	if action == "reconnect" {
 		return a.meshReconnect(args)
 	}
@@ -215,6 +218,12 @@ func (a *app) meshCommand(args []string) (int, error) {
 		}
 		if header.Action == "provision_start" {
 			return a.meshProvisionStartHelper(raw)
+		}
+		if header.Action == "node_stop_probe" {
+			return a.meshStopProbeHelper(raw)
+		}
+		if header.Action == "node_stop_inspect" {
+			return a.meshStopInspectHelper(raw)
 		}
 		if strings.HasPrefix(header.Action, "lifecycle_") {
 			return a.meshLifecycleBootstrap(raw)

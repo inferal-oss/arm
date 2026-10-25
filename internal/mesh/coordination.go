@@ -15,6 +15,7 @@ import (
 
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/nodestop"
 )
 
 // Coordination is durable operator workflow evidence, separate from peer trust.
@@ -163,7 +164,7 @@ func saveCoordination(home string, op Coordination) error {
 // have committed. A new worker never silently steals their target or retries it.
 func ClaimCoordination(home, key, kind, digest, target string) (*CoordinationGuard, error) {
 	decoded, decodeErr := hex.DecodeString(digest)
-	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "reconnect" && kind != "disconnect" && kind != "provision") || len(digest) != 64 || target == "" || len(target) > 512 {
+	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "reconnect" && kind != "disconnect" && kind != "provision" && kind != "stop") || len(digest) != 64 || target == "" || len(target) > 512 {
 		return nil, model.Err("invalid_request", "invalid operator coordination intent")
 	}
 	unlock, e := coordinationLock(home)
@@ -419,6 +420,9 @@ func HandoffCoordination(home, key string, revision int64, hash, reason string) 
 	if !ok {
 		return op, model.Err("not_found", "operator key not found")
 	}
+	if op.Kind == "stop" {
+		return op, model.Err("lookup_only", "Stop has no handoff/replay path; inspect its original key")
+	}
 	expected, e := CoordinationRecoveryHash(op)
 	if e != nil {
 		return op, e
@@ -574,3 +578,62 @@ func ResolveCoordinationParent(home, child string) error {
 }
 
 func (g *CoordinationGuard) Key() string { return g.key }
+
+// RecordStopLookup records only the source-side result of explicit inspection;
+// it never grants a worker, changes request/review/approval or sends a mutation.
+func RecordStopLookup(home, key string, revision int64, result json.RawMessage, inspectionError error) (Coordination, error) {
+	unlock, err := coordinationLock(home)
+	if err != nil {
+		return Coordination{}, err
+	}
+	defer unlock()
+	op, ok, err := ReadCoordination(home, key)
+	if err != nil {
+		return op, err
+	}
+	if !ok || op.Kind != "stop" || op.Revision != revision || !op.Approved || op.Worker != "" && time.Now().Before(op.WorkerExpires) {
+		return op, model.Err("review_changed", "original Stop receipt changed during inspection")
+	}
+	var review nodestop.SourceReview
+	if err = nodestop.Decode(op.Review, &review); err != nil {
+		return op, err
+	}
+	var value nodestop.Result
+	if err = nodestop.Decode(result, &value); err != nil {
+		return op, err
+	}
+	if err = value.Validate(review); err != nil {
+		return op, err
+	}
+	if len(op.Result) > 0 {
+		var prior nodestop.Result
+		if err = nodestop.Decode(op.Result, &prior); err != nil {
+			return op, err
+		}
+		if err = prior.Validate(review); err != nil {
+			return op, err
+		}
+		if prior.Status == "stopped" {
+			return op, nil
+		} // Original generation closure is irreversible.
+	}
+	if op.Revision == 1<<63-1 {
+		return op, model.Err("history_full", "Stop lookup revision capacity reached")
+	}
+	op.Result = append(json.RawMessage(nil), result...)
+	op.Phase = "incomplete"
+	op.Error = &model.Error{Code: "node_stop_completion_unknown", Message: "Original stop has no positive exact-generation completion; check this key only"}
+	if value.Status == "stopped" && inspectionError == nil && op.Worker == "" {
+		op.Phase = "completed"
+		op.Error = nil
+	}
+	if op.Worker != "" {
+		op.Error = &model.Error{Code: "source_owner_unresolved", Message: "Original target outcome was inspected; prior source worker has no retained native join and remains recorded. No effect was replayed."}
+	}
+	op.Revision++
+	op.Updated = time.Now().UTC()
+	if err = saveCoordination(home, op); err != nil {
+		return op, err
+	}
+	return op, nil
+}

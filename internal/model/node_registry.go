@@ -4,13 +4,23 @@ import "time"
 
 // NodeAccessScope reports only this authenticated source's current rights at a
 // destination. It is an observation, never a transferable authorization token.
+type NodeStopAvailability struct {
+	Supported       bool   `json:"supported"`
+	Reason          string `json:"reason"`
+	Generation      string `json:"backend_generation"`
+	DesiredRevision uint64 `json:"desired_state_revision"`
+	HistoryUsed     int    `json:"history_used"`
+	HistoryCapacity int    `json:"history_capacity"`
+}
+
 type NodeAccessScope struct {
-	Source   string    `json:"source_host"`
-	Target   string    `json:"target_host"`
-	Pair     string    `json:"pair"`
-	Revision int       `json:"revision"`
-	Grant    NodeGrant `json:"grant"`
-	Observed time.Time `json:"observed_at"`
+	NodeStop *NodeStopAvailability `json:"node_stop,omitempty"`
+	Source   string                `json:"source_host"`
+	Target   string                `json:"target_host"`
+	Pair     string                `json:"pair"`
+	Revision int                   `json:"revision"`
+	Grant    NodeGrant             `json:"grant"`
+	Observed time.Time             `json:"observed_at"`
 }
 
 type NodeGrant struct {

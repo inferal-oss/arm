@@ -200,3 +200,65 @@ func TestNativeClientCannotAssertPeerAdmissionIdentity(t *testing.T) {
 		t.Fatal("native attribution impersonated mesh authentication", lease)
 	}
 }
+
+func TestMeshInspectReadScopeAndExactGenerationDoNotExpandOtherOperations(t *testing.T) {
+	s := meshFixture(t)
+	s.generation = strings.Repeat("a", 32)
+	l, e := s.Manager.Acquire(model.Request{Resources: model.Resources{CPU: .25}, Reason: "private local purpose", TTL: time.Minute, Key: "inspect-local"}, nil)
+	if e != nil {
+		t.Fatal(e)
+	}
+	service := &meshService{owner: s}
+	peer := mesh.Peer{Identity: mesh.Identity{Host: strings.Repeat("b", 32)}, Grant: mesh.Grant{Permissions: []string{"observe-all"}}}
+	good, _ := json.Marshal(map[string]string{"id": l.ID, "backend_generation": s.generation})
+	v, e := service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: good})
+	if e != nil || v.(model.Lease).Request.Reason != l.Request.Reason {
+		t.Fatal("observe-all read refused", v, e)
+	}
+	peer.Grant.Permissions = []string{"observe-own"}
+	if _, e = service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: good}); e == nil {
+		t.Fatal("same UID read foreign-origin lease")
+	}
+	own, e := s.Manager.AcquirePeer(peer.Identity.Host, model.Request{Resources: model.Resources{CPU: .25}, Reason: "own origin purpose", TTL: time.Minute, Key: "own-inspect"}, nil, model.Resources{CPU: 1}, time.Minute)
+	if e != nil {
+		t.Fatal(e)
+	}
+	ownRead, _ := json.Marshal(map[string]string{"id": own.ID, "backend_generation": s.generation})
+	if value, e := service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: ownRead}); e != nil || value.(model.Lease).ID != own.ID {
+		t.Fatal("observe-own lost exact origin read", value, e)
+	}
+	peer.Pair = strings.Repeat("d", 64)
+	peer.Revision = 1
+	if _, e = service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: ownRead, Expected: &mesh.ExpectedEnrollment{Pair: peer.Pair, Revision: 2}}); e == nil {
+		t.Fatal("stale Expected enrollment read lease data")
+	}
+	peer.Grant.Permissions = []string{"node-stop"}
+	if _, e = service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: good}); e == nil {
+		t.Fatal("node-stop became a lease read grant")
+	}
+	peer.Grant.Permissions = []string{"observe-all", "observe-own", "lease-own", "run"}
+	for _, gen := range []string{strings.Repeat("c", 32), "", strings.Repeat("A", 32), "short"} {
+		raw, _ := json.Marshal(map[string]string{"id": l.ID, "backend_generation": gen})
+		if _, e = service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: raw}); e == nil {
+			t.Fatal("invalid/stale generation accepted", gen)
+		}
+	}
+	for _, op := range []string{"output", "release", "cancel", "renew"} {
+		for _, generation := range []string{`""`, `null`, `"` + s.generation + `"`} {
+			raw := json.RawMessage(`{"id":"` + l.ID + `","backend_generation":` + generation + `}`)
+			if _, e = service.dispatch(t.Context(), peer, mesh.Request{Operation: op, Params: raw, Key: "not-sent"}); e == nil {
+				t.Fatal("read generation field accepted by other operation", op, generation)
+			}
+		}
+	}
+	if _, e = service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: json.RawMessage(`{"id":"` + l.ID + `","backend_generation":null}`)}); e == nil {
+		t.Fatal("null generation accepted")
+	}
+	after, e := s.Manager.Inspect(l.ID)
+	if e != nil || after.Revision != l.Revision || after.State != l.State {
+		t.Fatal("read or rejected mutation changed lease", after, e)
+	}
+	if !browserAllowedOperation("mesh_operator_stop_lease") || browserAllowedOperation("mesh_dispatch") {
+		t.Fatal("browser lease-read wrapper missing or generic dispatch exposed")
+	}
+}

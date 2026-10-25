@@ -291,15 +291,13 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	run := &RunRequest{Request: r, Command: []string{sshRedactedCommand}, CWD: q.CWD, SSH: sshDescriptor(q), sshRuntime: runtime}
 	l, err := m.acquire(r, run)
 	if err != nil || l.State != "active" {
-		runtime.closeAll()
 		if err == nil {
 			err = model.Err("ssh_launch_failed", fmt.Sprintf("execution did not become active (%s)", l.Outcome))
 		}
-		return l, nil, err
+		return l, &failedSSHTransport{runtime: runtime}, err
 	}
 	if m.jobs[l.ID] == nil {
-		runtime.closeAll()
-		return l, nil, model.Err("ssh_evidence_unavailable", "admission did not return a newly owned process")
+		return l, &failedSSHTransport{runtime: runtime}, model.Err("ssh_evidence_unavailable", "admission did not return a newly owned process")
 	}
 	process := &sshProcess{manager: m, lease: l.ID, runtime: runtime, job: m.jobs[l.ID]}
 	m.wg.Go(func() {

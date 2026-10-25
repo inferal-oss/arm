@@ -776,6 +776,12 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if action != "serve" {
 		f.Bool("json", false, "force JSON output (default: automatic)")
 	}
+	restartReason, restartYes, restartDry := new(string), new(bool), new(bool)
+	if action == "start" {
+		f.StringVar(restartReason, "reason", "", "audited purpose when explicitly restarting an intentionally stopped authority")
+		f.BoolVar(restartYes, "yes", false, "approve the exact stopped-revision restart review")
+		f.BoolVar(restartDry, "dry-run", false, "inspect startup/restart without changing desired state or launching a backend")
+	}
 	force, wait, timeout := new(bool), new(bool), new(int64)
 	if action == "stop" {
 		f.BoolVar(force, "force", false, "release leases now using normal provider safeguards")
@@ -829,12 +835,18 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if action != "start" {
 		return 2, fmt.Errorf("unknown daemon action")
 	}
-	ctx, cancel := context.WithTimeout(a.ctx, time.Second)
-	var existing model.Status
-	e = client.Call(ctx, a.home, "status", nil, &existing)
-	cancel()
-	if e == nil {
+	existing, running, e := a.existingStartup()
+	if e != nil {
+		return 1, e
+	}
+	if running {
 		return 0, a.print(map[string]any{"running": true, "host": existing.Host})
+	}
+	if handled, err := a.reviewStoppedRestart(*restartReason, *restartYes, *restartDry); handled || err != nil {
+		if err != nil {
+			return 1, err
+		}
+		return 0, nil
 	}
 	if e = local.Prepare(a.home); e != nil {
 		return 1, e

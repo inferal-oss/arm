@@ -38,8 +38,8 @@ def mixed():
 
 def encoded(rows):return b''.join(json.dumps(r,separators=(',',':')).encode()+b'\n' for r in rows)
 
-def endpoint(pid=2147483000,token='private-generation'):
-    return json.dumps({'url':'http://127.0.0.1:12345','pid':pid,'token':token}).encode()
+def endpoint(pid=2147483000,token='d'*64,generation='a'*32):
+    return json.dumps({'url':'ws://127.0.0.1:12345/v1/ws','pid':pid,'token':token,'backend_generation':generation}).encode()
 
 
 def stopped(**fields):return json.dumps(dict(stopped=True,phase='stopped',id='e'*32,**fields))
@@ -103,6 +103,7 @@ class ShutdownEvidence(unittest.TestCase):
         seen=[];reused=tracker.reuse('/private/source',None,lambda pid:seen.append(pid) or True)
         self.assertEqual(seen,[before['pid']]);self.assertTrue(reused['independent_pid_absence_observed'])
         self.assertEqual(reused['endpoint_sha256'],before['endpoint_sha256'])
+        self.assertEqual(reused['backend_generation'],'a'*32)
         record['result']['stopped']=False;reused['result']['phase']='fake'
         self.assertIs(tracker.reuse('/private/source',None,lambda _:True)['result']['stopped'],True)
 
@@ -130,18 +131,18 @@ class ShutdownEvidence(unittest.TestCase):
         with self.assertRaises(ValueError):tracker.reuse('/private/source',None,lambda _:True)
 
     def test_mismatched_replaced_late_or_reappeared_endpoint_retires_old_receipt(self):
-        for change in ('new-token','new-pid','same-reappeared'):
+        for change in ('new-token','new-pid','new-generation','same-reappeared'):
             with self.subTest(change=change):
                 tracker,before=self.tracker();tracker.record_stop('/private/source',before,0,stopped(),None)
-                raw=endpoint(token='replacement') if change=='new-token' else endpoint(pid=2147483001) if change=='new-pid' else endpoint()
+                raw=endpoint(token='f'*64) if change=='new-token' else endpoint(pid=2147483001) if change=='new-pid' else endpoint(generation='f'*32) if change=='new-generation' else endpoint()
                 self.assertIsNone(tracker.reuse('/private/source',raw,lambda _:True))
                 with self.assertRaises(ValueError):tracker.reuse('/private/source',None,lambda _:True)
         tracker,before=self.tracker()
-        for field,value in [('home','/private/destination'),('pid',2147483001),('endpoint_sha256','f'*64)]:
+        for field,value in [('home','/private/destination'),('pid',2147483001),('endpoint_sha256','f'*64),('backend_generation','f'*32)]:
             with self.subTest(field=field):
                 wrong=dict(before,**{field:value})
                 with self.assertRaises(ValueError):tracker.record_stop('/private/source',wrong,0,stopped(),None)
-        with self.assertRaises(ValueError):tracker.record_stop('/private/source',before,0,stopped(),endpoint(token='late-start'))
+        with self.assertRaises(ValueError):tracker.record_stop('/private/source',before,0,stopped(),endpoint(token='f'*64))
         with self.assertRaises(ValueError):tracker.reuse('/private/source',None,lambda _:True)
 
     def test_live_reused_pid_and_permission_unknown_never_allow_duplicate_skip(self):
@@ -165,6 +166,20 @@ class ShutdownEvidence(unittest.TestCase):
             with self.assertRaises(ValueError):module.read_fixture_endpoint(home)
             path.unlink();target=home/'other';target.write_bytes(endpoint());target.chmod(0o600);path.symlink_to(target)
             with self.assertRaises(ValueError):module.read_fixture_endpoint(home)
+
+    def test_current_generation_credential_and_native_url_are_closed(self):
+        value=json.loads(endpoint())
+        self.assertIs(module.validate_fixture_endpoint(value),value)
+        changes=[('backend_generation',None),('backend_generation','A'*32),('backend_generation','a'*31),('token','a'*63),('token','A'*64),('pid',True),('url','http://127.0.0.1:12345/v1/ws'),('url','ws://localhost:12345/v1/ws'),('url','ws://127.0.0.1:12345/v1/ws?extra=1')]
+        for field,item in changes:
+            with self.subTest(field=field,item=item):
+                invalid=dict(value,**{field:item})
+                with self.assertRaises(ValueError):module.validate_fixture_endpoint(invalid)
+        for field in ('backend_generation','token','pid','url'):
+            with self.subTest(missing=field):
+                invalid=dict(value);del invalid[field]
+                with self.assertRaises(ValueError):module.validate_fixture_endpoint(invalid)
+        with self.assertRaises(ValueError):module.validate_fixture_endpoint(dict(value,unchecked=True))
 
 
 class CleanupPositiveRecords(unittest.TestCase):
@@ -211,7 +226,7 @@ class CleanupPositiveRecords(unittest.TestCase):
             events=[];fixture=self.fixture(Path(name),events);fixture.observe_backend_endpoints()
             first,second=fixture.homes
             before=fixture.shutdown_evidence.selected(first);(first/'endpoint.json').unlink();fixture.shutdown_evidence.record_stop(first,before,0,stopped(),None)
-            (first/'endpoint.json').write_bytes(endpoint(pid=2147483002,token='replacement'));(first/'endpoint.json').chmod(0o600)
+            (first/'endpoint.json').write_bytes(endpoint(pid=2147483002,token='f'*64));(first/'endpoint.json').chmod(0o600)
             (second/'endpoint.json').unlink()
             with mock.patch.object(harness.os,'kill',side_effect=self.absent):errors=fixture.cleanup()
             self.assertEqual(len([x for x in events if x.startswith('stop-')]),1)
@@ -287,7 +302,7 @@ class CleanupPositiveRecords(unittest.TestCase):
             def observe(pid,sig):
                 self.assertEqual(sig,0)
                 if pid==oldpid and not created:
-                    path=first/'endpoint.json';path.write_bytes(endpoint(pid=2147483002,token='late-start'));path.chmod(0o600);created.append(True)
+                    path=first/'endpoint.json';path.write_bytes(endpoint(pid=2147483002,token='f'*64));path.chmod(0o600);created.append(True)
                 raise ProcessLookupError()
             with mock.patch.object(harness.os,'kill',side_effect=observe):errors=fixture.cleanup()
             self.assertTrue(any('endpoint appeared during shutdown observation' in error for error in errors))

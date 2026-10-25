@@ -8,12 +8,16 @@ contain a one-shot browser ticket; console output deliberately does not.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import re
 import stat
 import urllib.parse
+
+_endpoint_spec=importlib.util.spec_from_file_location('shared_fixture_endpoint_schema',Path(__file__).with_name('mesh_reconnect_fixture_evidence.py'))
+_endpoint_evidence=importlib.util.module_from_spec(_endpoint_spec);_endpoint_spec.loader.exec_module(_endpoint_evidence)
 
 MAX_JSON=1<<20
 READY_KEYS=frozenset(('mode','dashboard_url','source_home','arm','host','pending_key','outcome_file','required'))
@@ -112,8 +116,7 @@ def context(root,arm_sha):
     _,arm_proof=read(root/'arm',64<<20,True)
     if arm_proof['sha256']!=arm_sha:raise ValueError('selected ARM image changed')
     ep,ep_proof=read_json(root/'source/endpoint.json',16384)
-    if type(ep) is not dict or set(ep)!={'url','pid','token'} or type(ep['pid']) is not int or ep['pid']<=0 or type(ep['token']) is not str or re.fullmatch('[0-9a-f]{64}',ep['token']) is None:
-        raise ValueError('exact native endpoint generation required')
+    _endpoint_evidence.validate_fixture_endpoint(ep)
     endpoint_origin,endpoint_url=origin(ep['url'],endpoint=True)
     dashboard_origin,url=origin(ready['dashboard_url'])
     if endpoint_url.fragment or dashboard_origin!=endpoint_origin or re.fullmatch('connect=[0-9a-f]{64}',url.fragment) is None:
@@ -127,7 +130,7 @@ def context(root,arm_sha):
     for q in (root,root/'source',root/'source/mesh',root/'source/mesh-lifecycle',root/'destination',root/'destination/mesh'):
         if directory(q)!=dirs[str(q.relative_to(root))]:raise ValueError('fixture directory changed')
     return {'schema':'arm.mesh-reconnect-private-web-binding/v1','root':str(root),'directories':dirs,'ready':ready,'ready_proof':ready_proof,
-        'arm_proof':arm_proof,'endpoint_proof':ep_proof,'endpoint_pid':ep['pid'],'origin':endpoint_origin,
+        'arm_proof':arm_proof,'endpoint_proof':ep_proof,'endpoint_pid':ep['pid'],'endpoint_generation':ep['backend_generation'],'origin':endpoint_origin,
         'source_principal':source_principal,'target_principal':target_principal}
 
 def begin(root,arm_sha):
@@ -145,7 +148,7 @@ def finish(binding,binding_sha,declined_key,completed_key):
     if proof['sha256']!=binding_sha or type(saved) is not dict or saved.get('schema')!='arm.mesh-reconnect-private-web-binding/v1':
         raise ValueError('exact saved web binding required')
     root=Path(saved['root']);now=context(root,saved['arm_proof']['sha256'])
-    for name in ('root','directories','ready','ready_proof','arm_proof','endpoint_proof','endpoint_pid','origin','source_principal','target_principal'):
+    for name in ('root','directories','ready','ready_proof','arm_proof','endpoint_proof','endpoint_pid','endpoint_generation','origin','source_principal','target_principal'):
         if now[name]!=saved[name]:raise ValueError('web fixture generation changed: '+name)
     selected=saved['pending_receipt']['key'];keys=(key(selected),key(declined_key),key(completed_key))
     if len(set(keys))!=3:raise ValueError('handoff, declined and approved keys must be distinct')
@@ -168,7 +171,7 @@ def finish(binding,binding_sha,declined_key,completed_key):
             raise ValueError('fresh review request target differs from selected node')
     outcome={'handoff_key':selected,'declined_key':declined_key,'reconnect_key':completed_key}
     return root/'ui-outcome.json',outcome,{'schema':'arm.mesh-reconnect-private-web-completion/v1','binding_sha256':binding_sha,'origin':saved['origin'],
-        'endpoint_pid':saved['endpoint_pid'],'receipts':{'handoff':pending_proof,'declined':declined_proof,'completed':completed_proof},'outcome':outcome}
+        'endpoint_pid':saved['endpoint_pid'],'endpoint_generation':saved['endpoint_generation'],'receipts':{'handoff':pending_proof,'declined':declined_proof,'completed':completed_proof},'outcome':outcome}
 
 def exclusive(path,value):
     directory(path.parent)
@@ -185,7 +188,7 @@ def main():
     a=p.parse_args()
     if a.verb=='begin':
         value=begin(a.root,a.arm_sha256);h=exclusive(a.out,value)
-        print(json.dumps({'binding':str(a.out),'sha256':h,'origin':value['origin'],'endpoint_pid':value['endpoint_pid'],'pending_key':value['pending_receipt']['key']}))
+        print(json.dumps({'binding':str(a.out),'sha256':h,'origin':value['origin'],'endpoint_pid':value['endpoint_pid'],'endpoint_generation':value['endpoint_generation'],'pending_key':value['pending_receipt']['key']}))
     else:
         path,value,receipt=finish(a.binding,a.binding_sha256,a.declined_key,a.completed_key)
         # Evidence must exist before notifying the harness. Any failed publication

@@ -178,7 +178,7 @@ func Open(ctx context.Context, claims []model.PortClaim, blocked []model.PortBin
 				}
 			}
 			if conflict {
-				s.File.Close()
+				err = errors.Join(err, s.File.Close())
 				last = model.Err("port_conflict", "kernel-selected port overlaps a cooperative reservation")
 				if claim.Port == 0 && attempts < 15 {
 					attempts++
@@ -261,13 +261,18 @@ func bind(ctx context.Context, c model.PortClaim) (*Socket, error) {
 	return &Socket{Binding: model.PortBinding{PortClaim: c, State: "held", SocketID: socketID}, File: file}, nil
 }
 
-func Close(sockets []*Socket) {
+func Close(sockets []*Socket) { _ = CloseChecked(sockets) }
+
+// CloseChecked retains original owned-FD close errors for authority teardown.
+func CloseChecked(sockets []*Socket) error {
+	var err error
 	for _, s := range sockets {
 		if s.File != nil {
-			s.File.Close()
+			err = errors.Join(err, s.File.Close())
 			s.File = nil
 		}
 	}
+	return err
 }
 
 // Probe only observes whether the exact allocation can be bound now. It neither

@@ -41,13 +41,17 @@ func (m *Manager) saveShutdown(report model.ShutdownReport, kind string) error {
 		return err
 	}
 	defer tx.Rollback()
-	if _, err = tx.Exec(`INSERT INTO metadata(key,value) VALUES('shutdown',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, string(b)); err != nil {
-		return err
-	}
-	if err = event(tx, kind, report.ID, report); err != nil {
+	if err = saveShutdownTx(tx, report, kind, b); err != nil {
 		return err
 	}
 	return tx.Commit()
+}
+
+func saveShutdownTx(tx *sql.Tx, report model.ShutdownReport, kind string, encoded []byte) error {
+	if _, err := tx.Exec(`INSERT INTO metadata(key,value) VALUES('shutdown',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, string(encoded)); err != nil {
+		return err
+	}
+	return event(tx, kind, report.ID, report)
 }
 
 // Restart creates a fresh authority lifetime. Never silently carry a previous
@@ -112,23 +116,7 @@ func (m *Manager) BeginShutdown(request model.ShutdownRequest) (model.ShutdownRe
 			}
 		}
 	}
-	r = model.ShutdownReport{ID: local.ID(), Actor: m.owner, ActorUsername: m.ownerUsername, Phase: "draining", Started: time.Now().UTC(), CancelledQueued: []model.LeaseResult{}, Results: []model.LeaseResult{}, Remaining: []model.LeaseResult{}, Detail: "Admission and renewal are paused; existing work can finish or expire. Queued requests are cancelled."}
-	m.shutdownDeadline = time.Time{}
-	if request.Timeout > 0 {
-		r.Timeout = request.Timeout
-		m.shutdownDeadline = time.Now().Add(request.Timeout)
-		deadline := m.shutdownDeadline.UTC()
-		r.Deadline = &deadline
-	}
-	if request.Force {
-		r.Phase = "forcing"
-		r.Detail = "Releasing leases through their normal providers; unresolved resources remain charged."
-	}
-	for _, l := range ls {
-		if l.State == "queued" && l.Host == m.host && l.Owner == m.owner {
-			r.CancelledQueued = append(r.CancelledQueued, leaseResult(l, nil))
-		}
-	}
+	r, m.shutdownDeadline = m.newShutdownRecord(request, ls)
 	// Persist the intention before cancellation; a restart explicitly journals
 	// interruption instead of pretending this process-owned drain survived.
 	if err = m.saveShutdown(r, "shutdown.started"); err != nil {
@@ -142,6 +130,29 @@ func (m *Manager) BeginShutdown(request model.ShutdownRequest) (model.ShutdownRe
 		return r, model.Err("shutdown_in_progress", "shutdown "+r.ID+" started but initial queue cancellation reporting failed; backend continuation remains active")
 	}
 	return r, nil
+}
+
+// newShutdownRecord only constructs the original ordinary drain intent. Caller
+// holds Manager.mu; no cancellation/provider/native effect happens here.
+func (m *Manager) newShutdownRecord(request model.ShutdownRequest, ls []model.Lease) (model.ShutdownReport, time.Time) {
+	r := model.ShutdownReport{ID: local.ID(), Actor: m.owner, ActorUsername: m.ownerUsername, Phase: "draining", Started: time.Now().UTC(), CancelledQueued: []model.LeaseResult{}, Results: []model.LeaseResult{}, Remaining: []model.LeaseResult{}, Detail: "Admission and renewal are paused; existing work can finish or expire. Queued requests are cancelled."}
+	deadline := time.Time{}
+	if request.Timeout > 0 {
+		r.Timeout = request.Timeout
+		deadline = time.Now().Add(request.Timeout)
+		wallDeadline := deadline.UTC()
+		r.Deadline = &wallDeadline
+	}
+	if request.Force {
+		r.Phase = "forcing"
+		r.Detail = "Releasing leases through their normal providers; unresolved resources remain charged."
+	}
+	for _, l := range ls {
+		if l.State == "queued" && l.Host == m.host && l.Owner == m.owner {
+			r.CancelledQueued = append(r.CancelledQueued, leaseResult(l, nil))
+		}
+	}
+	return r, deadline
 }
 
 // Scope is saved before any queued request is changed. Partial failures can be
@@ -203,6 +214,9 @@ func (m *Manager) refreshShutdown(r model.ShutdownReport) (model.ShutdownReport,
 func (m *Manager) AdvanceShutdown() (model.ShutdownReport, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.nodeStopUnknown {
+		return model.ShutdownReport{}, model.Err("node_stop_outcome_unknown", "stop commit requires exact original-key reconciliation; no provider effects dispatched")
+	}
 	r, err := m.shutdownRecord()
 	if err != nil || !m.draining || m.closing {
 		return r, err

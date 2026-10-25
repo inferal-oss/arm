@@ -17,6 +17,19 @@ func (s *Server) requestShutdown(request model.ShutdownRequest) (model.ShutdownR
 	if err != nil && !s.Manager.ShutdownActive() {
 		return r, err
 	}
+	s.startShutdownWorkerLocked()
+	return r, err
+}
+
+func (s *Server) startShutdownWorker() {
+	s.lifecycleMu.Lock()
+	defer s.lifecycleMu.Unlock()
+	if !s.lifecycleClosing {
+		s.startShutdownWorkerLocked()
+	}
+}
+
+func (s *Server) startShutdownWorkerLocked() {
 	s.shutdownWorker.Do(func() {
 		s.shutdownWG.Go(func() {
 			ticker := time.NewTicker(100 * time.Millisecond)
@@ -25,9 +38,12 @@ func (s *Server) requestShutdown(request model.ShutdownRequest) (model.ShutdownR
 			if ctx == nil {
 				ctx = context.Background()
 			}
+			if traceStopWorkerPause(s, ctx) {
+				return
+			}
 			for {
 				report, err := s.Manager.AdvanceShutdown()
-				if err == nil && report.Phase == "ready" {
+				if err == nil && report.Phase == "ready" && s.nodeStopDrainReady(report) == nil {
 					s.admission.Lock()
 					s.stopping = true
 					s.admission.Unlock()
@@ -52,5 +68,4 @@ func (s *Server) requestShutdown(request model.ShutdownRequest) (model.ShutdownR
 			}
 		})
 	})
-	return r, err
 }

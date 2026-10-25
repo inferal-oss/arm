@@ -7,7 +7,7 @@ The selected 'arm' image is visibly a fixed self-alarming Python test child.
 All directories/evidence retained; failfast prevents another case after failure.
 """
 from pathlib import Path
-import argparse,errno,fcntl,hashlib,importlib.util,json,os,pty,selectors,signal,stat,struct,subprocess,sys,termios,time,unittest
+import argparse,errno,fcntl,hashlib,importlib.util,json,os,pty,selectors,signal,stat,struct,subprocess,sys,tempfile,termios,time,unittest
 SCRIPTS=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('pty_frozen_owner',SCRIPTS/'mesh_reconnect_terminal.py');terminal=importlib.util.module_from_spec(spec);spec.loader.exec_module(terminal);binding=terminal.binding;state=terminal.state
 ACTIVE=4;PARENT_ACTIVE=14;CHILD_ALARM=6;OWNER_ALARM=18;CAP=5<<20
@@ -42,7 +42,7 @@ def fixture(root,rendered):
  def principal(host):return {'host':host,'owner':str(os.getuid()),'owner_username':'synthetic-pty-files','name':'fixture','address':'127.0.0.1:23456','certificate':'synthetic file-only certificate','spki_sha256':'e'*64,'fingerprint':'f'*64,'expires_at':'2027-01-01T00:00:00Z'}
  left=principal('a'*32);right=principal(target)
  put(root/'ui-ready.json',{'mode':'terminal','dashboard_url':'http://127.0.0.1:12345/#connect='+'c'*64,'source_home':str(root/'source'),'arm':str(root/'arm'),'host':target,'pending_key':'lost-disconnect','outcome_file':str(root/'ui-outcome.json'),'required':binding.REQUIRED_TEXT})
- endpoint={'url':'ws://127.0.0.1:12345/v1/ws','pid':123,'token':'d'*64};put(root/'source/endpoint.json',endpoint)
+ endpoint={'url':'ws://127.0.0.1:12345/v1/ws','pid':123,'token':'d'*64,'backend_generation':'e'*32};put(root/'source/endpoint.json',endpoint)
  put(root/'source/mesh/config.json',{'identity':left,'peers':[{'identity':right,'state':'revoked'}]});put(root/'destination/mesh/config.json',{'identity':right})
  op={'schema':1,'key':'lost-disconnect','kind':'disconnect','revision':1,'phase':'incomplete','approved':True,'targets':['host:'+target],'request':{'key':'lost-disconnect','kind':'disconnect','disconnect':{'host':target}},'review':{'exact':'synthetic file-only review'},'review_sha256':'a'*64}
  put(root/'source/mesh-lifecycle'/('coordinator-operation-'+hashlib.sha256(op['key'].encode()).hexdigest()+'.json'),op)
@@ -79,6 +79,30 @@ def owner_child(path,want,fault):
  raw=terminal.restoration_evidence(before,termios.tcgetattr(0),flags,{fd:fcntl.fcntl(fd,fcntl.F_GETFL) for fd in flags},sys.platform)
  observed.update(exit=code,termios_restored=raw['termios_configuration_equal'],fd_flags_restored=all(item['configuration_equal'] for item in raw['fd_status'].values()),raw_restoration=raw)
  put(root/'owner-observation.json',observed);return code
+
+class EndpointBinding(unittest.TestCase):
+ def setUp(self):
+  self.tmp=tempfile.TemporaryDirectory(prefix='arm-terminal-binding-schema-');self.addCleanup(self.tmp.cleanup)
+  parent=Path(self.tmp.name);self.root=parent/'fixture';self.rendered=parent/'rendered'
+  self.chosen,self.path,self.want=fixture(self.root,self.rendered)
+  self.endpoint=json.loads((self.root/'source/endpoint.json').read_text());self.arm_sha=hashlib.sha256((self.root/'arm').read_bytes()).hexdigest()
+ def replace_endpoint(self,value):
+  path=self.root/'source/endpoint.json';path.write_text(json.dumps(value));path.chmod(0o600)
+ def test_current_endpoint_generation_bound_before_child(self):
+  saved,_=binding.selected_binding(self.path,self.want)
+  self.assertEqual(saved['endpoint_generation'],'e'*32)
+  self.assertEqual(state.observe(self.chosen)['state'],'open')
+ def test_missing_malformed_or_extra_generation_refused(self):
+  variants=[{k:v for k,v in self.endpoint.items() if k!='backend_generation'},dict(self.endpoint,extra=True)]
+  variants += [dict(self.endpoint,backend_generation=value) for value in ('', 'e'*31, 'E'*32, None, True, [])]
+  for value in variants:
+   self.replace_endpoint(value)
+   with self.subTest(value=value),self.assertRaises(ValueError):binding.context(self.root,self.arm_sha)
+  self.assertEqual(state.observe(self.chosen)['state'],'open')
+ def test_generation_change_refuses_original_selected_binding(self):
+  self.replace_endpoint(dict(self.endpoint,backend_generation='f'*32))
+  with self.assertRaises(ValueError):binding.selected_binding(self.path,self.want)
+  self.assertEqual(state.observe(self.chosen)['state'],'open')
 
 class PTY(unittest.TestCase):
  output=None
@@ -164,7 +188,11 @@ class PTY(unittest.TestCase):
  def test_descriptor_close_failure_retains_unknown(self):self.run_case('close-fault','normal','close')
 
 if __name__=='__main__':
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--native-pty',action='store_true');parser.add_argument('--output-dir',type=Path);parser.add_argument('--owner-child',type=Path);parser.add_argument('--binding-sha256');parser.add_argument('--fault',choices=('none','fsync','close'),default='none');args=parser.parse_args()
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--binding-only',action='store_true');parser.add_argument('--native-pty',action='store_true');parser.add_argument('--output-dir',type=Path);parser.add_argument('--owner-child',type=Path);parser.add_argument('--binding-sha256');parser.add_argument('--fault',choices=('none','fsync','close'),default='none');args=parser.parse_args()
+ if args.binding_only:
+  if args.native_pty or args.output_dir or args.owner_child or args.binding_sha256 or args.fault!='none':parser.error('binding-only accepts no native/output/owner arguments')
+  unittest.main(argv=[sys.argv[0],'EndpointBinding'],verbosity=2,failfast=True)
+  raise SystemExit(0)
  if args.owner_child:
   if args.native_pty or args.output_dir or not args.binding_sha256:parser.error('closed owner-child arguments required')
   raise SystemExit(owner_child(args.owner_child,args.binding_sha256,args.fault))
@@ -174,4 +202,4 @@ if __name__=='__main__':
  output.mkdir(mode=0o700)
  if binding.directory(output)!=binding.native(output.lstat()):raise ValueError('private output selection changed')
  PTY.output=output
- unittest.main(argv=[sys.argv[0]],verbosity=2,failfast=True)
+ unittest.main(argv=[sys.argv[0],'PTY'],verbosity=2,failfast=True)

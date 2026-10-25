@@ -55,7 +55,18 @@ func proveResetCoordinations(raws map[string][]byte, owner, host string, lifecyc
 		}
 		r.canonicalRequest = string(canonical)
 		var digest string
+		if q.Stop != nil && op.Kind != "stop" {
+			return nil, fmt.Errorf("Stop draft mixed with other coordinator kind")
+		}
 		switch op.Kind {
+		case "stop":
+			if q.Stop == nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
+				return nil, fmt.Errorf("invalid Stop coordinator draft")
+			}
+			if err = q.Stop.Validate(); err != nil {
+				return nil, err
+			}
+			digest, err = mesh.ReviewDigest(*q.Stop)
 		case "connect":
 			if q.Connect == nil || q.Connect.Reconnect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
 				return nil, fmt.Errorf("invalid connect payload")
@@ -227,6 +238,19 @@ func parseCoordReview(r *proofCoordRecord) error {
 	}
 	r.reviewOperation = operation
 	switch operation {
+	case "stop-arm-node":
+		var v meshops.StopReview
+		if err = strictEvidence(string(op.Review), &v); err != nil {
+			return err
+		}
+		if err = v.Validate(); err != nil {
+			return err
+		}
+		q := r.request.Stop
+		if op.Kind != "stop" || q == nil || v.Key != r.request.Key || v.Plan.Target.Host != q.Host || v.Plan.Reason != q.Reason || v.Plan.Policy != q.Policy {
+			return fmt.Errorf("Stop review differs from immutable draft")
+		}
+		r.stopReview = &v
 	case "install-and-start-arm-node", "verify-existing-provision":
 		var v meshops.ProvisionPlan
 		if err = strictEvidence(string(op.Review), &v); err != nil {
@@ -316,6 +340,20 @@ func parseCoordResult(r *proofCoordRecord) error {
 	if len(r.op.Result) == 0 {
 		return nil
 	}
+	if r.op.Kind == "stop" {
+		var v meshops.StopResult
+		if err := strictEvidence(string(r.op.Result), &v); err != nil {
+			return err
+		}
+		if r.stopReview == nil {
+			return fmt.Errorf("Stop outcome lacks original review")
+		}
+		if err := v.Validate(*r.stopReview); err != nil {
+			return err
+		}
+		r.stopResult = &v
+		return nil
+	}
 	if r.op.Kind == "provision" {
 		var v meshops.ProvisionResult
 		if err := strictEvidence(string(r.op.Result), &v); err != nil {
@@ -380,6 +418,18 @@ func validateCoordPayload(r, root *proofCoordRecord, host string, lifecycles map
 			return fmt.Errorf("invalid duplicate coordinator target")
 		}
 		target[v] = true
+	}
+	if op.Kind == "stop" {
+		q := r.request.Stop
+		if q == nil || len(target) != 1 || !target["host:"+q.Host] || op.ParentKey != "" || op.ResumeFrom != "" || op.ResolvedBy != "" || op.Handoff != nil {
+			return fmt.Errorf("Stop source cannot borrow target or recovery authority")
+		}
+		if r.stopReview != nil && r.stopReview.Plan.Actor.Host != host {
+			return fmt.Errorf("Stop review belongs to another source authority")
+		}
+		if op.Phase == "completed" && (r.stopResult == nil || r.stopResult.Status != "stopped" || !op.Approved) {
+			return fmt.Errorf("Stop completed without positive original-generation outcome")
+		}
 	}
 	if r.request.Provision != nil {
 		q := r.request.Provision
@@ -451,7 +501,7 @@ func validateCoordPayload(r, root *proofCoordRecord, host string, lifecycles map
 			return err
 		}
 	}
-	if op.Phase == "completed" && r.connectResult == nil && r.disconnectResult == nil && r.provisionResult == nil {
+	if op.Phase == "completed" && r.connectResult == nil && r.disconnectResult == nil && r.provisionResult == nil && r.stopResult == nil {
 		return fmt.Errorf("completed coordinator lacks known final result")
 	}
 	return nil

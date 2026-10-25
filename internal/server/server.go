@@ -24,12 +24,26 @@ import (
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/nodestop"
 	"github.com/yrashk/arm/internal/observe"
 	"github.com/yrashk/arm/internal/workspaceroute"
 	"github.com/yrashk/arm/internal/workspacetransport"
 )
 
 type Server struct {
+	generation            string
+	nodeStopDirectory     *database.Directory
+	nodeStopTarget        nodestop.Target
+	nodeStopTargetMu      sync.RWMutex
+	nodeStopUnavailable   string
+	nodeStopMu            sync.Mutex
+	nodeStopClosed        bool
+	nodeStopAdminEnabled  bool // remains false until reviewed public recovery is delivered
+	nodeStopLock          *os.File
+	nodeStopClosing       bool
+	nodeStopCalls         map[string]int
+	nodeStopCallsWG       sync.WaitGroup
+	nodeStopClosure       *nodestop.Closure
 	runtimeExecutable     *mesh.RuntimeExecutable
 	meshOperatorMu        sync.Mutex
 	meshOperator          *meshops.Service
@@ -46,6 +60,9 @@ type Server struct {
 	workspaceCalls        sync.WaitGroup
 	graph                 *workspaceGraphState
 	meshMu                sync.Mutex
+	meshClosing           bool
+	meshCloseEvidenceMu   sync.Mutex
+	meshClosers           map[*meshService]*meshClose
 	meshAdminMu           sync.Mutex
 	mesh                  *meshService
 	meshPending           *preparedMeshSetup
@@ -68,18 +85,41 @@ type Server struct {
 }
 
 func Serve(ctx context.Context, home, address string, capacity model.Resources) error {
+	return serveNode(ctx, home, address, capacity, nil)
+}
+
+func serveNode(ctx context.Context, home, address string, capacity model.Resources, restart *nodestop.Restart) (resultErr error) {
 	if e := local.Prepare(home); e != nil {
 		return e
 	}
-	lock, e := os.OpenFile(filepath.Join(home, "daemon.lock"), os.O_CREATE|os.O_RDWR, 0600)
+	physical, e := filepath.EvalSymlinks(home)
 	if e != nil {
 		return e
 	}
-	defer lock.Close()
+	home, e = filepath.Abs(physical)
+	if e != nil {
+		return e
+	}
+	directory, e := database.OpenDirectory(home)
+	if e != nil {
+		return e
+	}
+	defer func() { resultErr = errors.Join(resultErr, directory.Close()) }()
+	lock, _, e := directory.Open("daemon.lock", os.O_CREATE|os.O_RDWR)
+	if e != nil {
+		return e
+	}
+	if lock == nil {
+		return fmt.Errorf("actual authority lock required")
+	}
+	defer func() { resultErr = errors.Join(resultErr, lock.Close()) }()
 	if e = syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); e != nil {
 		return fmt.Errorf("another ARM authority owns this state directory: %w", e)
 	}
-	defer syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)
+	defer func() { resultErr = errors.Join(resultErr, syscall.Flock(int(lock.Fd()), syscall.LOCK_UN)) }()
+	if e = checkNodeStopStartup(ctx, home, lock, restart); e != nil {
+		return e
+	}
 	host, _, e := net.SplitHostPort(address)
 	if e != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
 		return model.Err("invalid_address", "backend must listen on a literal loopback address")
@@ -91,22 +131,129 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	if e != nil {
 		return e
 	}
-	defer m.Close()
-	listener, e := net.Listen("tcp", address)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	var s *Server
+	var listener net.Listener
+	var monitorStop context.CancelFunc
+	var monitorDone <-chan struct{}
+	var runtimeExecutable *mesh.RuntimeExecutable
+	var endpointPublished bool
+	var httpClosed error
+	var httpServer *http.Server
+	defer func() {
+		defer func() { traceStopServeEnd(s, resultErr) }()
+		if s != nil {
+			s.nodeStopMu.Lock()
+			s.nodeStopClosing = true
+			s.nodeStopMu.Unlock()
+		}
+		if cancel != nil {
+			cancel()
+		}
+		if httpServer != nil {
+			httpClosed = errors.Join(httpClosed, httpServer.Close())
+		}
+		stages := []struct {
+			name string
+			err  error
+		}{{"http", httpClosed}}
+		var endpointErr error
+		if endpointPublished {
+			endpointErr = os.Remove(filepath.Join(home, "endpoint.json"))
+		}
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"endpoint", endpointErr})
+		if monitorStop != nil {
+			monitorStop()
+			<-monitorDone
+		}
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"monitor", nil})
+		if s != nil {
+			s.lifecycleMu.Lock()
+			s.lifecycleClosing = true
+			s.lifecycleMu.Unlock()
+			s.shutdownWG.Wait()
+		}
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"lifecycle", nil})
+		if s != nil {
+			s.closeMeshOperator()
+		}
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"operator", nil})
+		if s != nil {
+			s.closeWorkspaceStreams()
+		}
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"workspace", nil})
+		var meshErr error
+		if s != nil {
+			meshErr = s.closeStopMesh()
+			s.nodeStopCallsWG.Wait()
+		}
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"mesh", meshErr})
+		managerErr := m.Close()
+		stages = append(stages, struct {
+			name string
+			err  error
+		}{"manager", managerErr})
+		if runtimeExecutable != nil {
+			resultErr = errors.Join(resultErr, runtimeExecutable.Close())
+		}
+		for _, stage := range stages {
+			if stage.err != nil {
+				resultErr = errors.Join(resultErr, fmt.Errorf("%s teardown: %w", stage.name, stage.err))
+			}
+		}
+		if listener != nil {
+			e := listener.Close()
+			if !errors.Is(e, net.ErrClosed) {
+				resultErr = errors.Join(resultErr, e)
+			}
+		}
+		if s != nil {
+			s.nodeStopMu.Lock()
+			closure := s.nodeStopClosure
+			s.nodeStopMu.Unlock()
+			if closure != nil {
+				for _, stage := range stages {
+					closure.Stage(stage.name, stage.err)
+				}
+				traceStopTeardown(s, resultErr)
+				if resultErr != nil {
+					resultErr = errors.Join(resultErr, fmt.Errorf("node stop has incomplete closure; no joined marker written"))
+				} else {
+					resultErr = errors.Join(resultErr, closure.WriteClosed(directory.FD, lock))
+				}
+			}
+		}
+	}()
+	listener, e = net.Listen("tcp", address)
 	if e != nil {
 		return e
 	}
-	defer listener.Close()
 	if e = m.TrackInfrastructure(listener.Addr()); e != nil {
 		return e
 	}
 	if e = saveMeshStartupPolicy(home, address, capacity); e != nil {
 		return e
 	}
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	runtimeExecutable, _ := mesh.CaptureRuntimeExecutable()
-	defer runtimeExecutable.Close()
+	runtimeExecutable, _ = mesh.CaptureRuntimeExecutable()
 	if e = m.ConfigureCargoHelper(func() (string, cargoprofile.HelperRuntime, error) {
 		path, e := runtimeExecutable.VerifiedPath()
 		if e != nil {
@@ -120,22 +267,15 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	}); e != nil {
 		return e
 	}
-	s := &Server{Manager: m, home: home, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable}
+	s = &Server{nodeStopAdminEnabled: true, Manager: m, home: home, generation: local.ID(), nodeStopDirectory: directory, nodeStopLock: lock, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable}
 	s.lifecycleContext = ctx
 	// A mesh configuration failure never disables the authenticated local authority.
 	if meshErr := s.loadMesh(); meshErr != nil {
 		fmt.Fprintln(os.Stderr, "ARM mesh unavailable:", meshErr)
 	}
-	defer s.closeMesh()
-	defer s.closeWorkspaceStreams()
-	defer s.closeMeshOperator()
-	defer func() {
-		s.lifecycleMu.Lock()
-		s.lifecycleClosing = true
-		cancel()
-		s.lifecycleMu.Unlock()
-		s.shutdownWG.Wait()
-	}()
+	if e = s.configureNodeStop(); e != nil {
+		fmt.Fprintln(os.Stderr, "ARM node-stop unavailable:", e)
+	}
 	s.authority = listener.Addr().String()
 	s.storageScan = make(chan struct{}, 1)
 	s.portScan = make(chan struct{}, 1)
@@ -145,36 +285,55 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 	}
 	s.monitor = observe.NewMonitor(initial.Host, func() model.ResourceMeasurement { return m.Observation("disk") })
 	s.monitorSlots = make(chan struct{}, 32)
-	monitorCtx, monitorStop := context.WithCancel(ctx)
-	monitorDone := make(chan struct{})
-	go func() { defer close(monitorDone); s.monitor.Run(monitorCtx) }()
-	defer func() { monitorStop(); <-monitorDone }()
-	ep := local.Endpoint{URL: "ws://" + listener.Addr().String() + "/v1/ws", Token: s.token, PID: os.Getpid()}
+	monitorCtx, stopMonitor := context.WithCancel(ctx)
+	monitorStop = stopMonitor
+	monitorFinished := make(chan struct{})
+	monitorDone = monitorFinished
+	go func() { defer close(monitorFinished); s.monitor.Run(monitorCtx) }()
+	ep := local.Endpoint{URL: "ws://" + listener.Addr().String() + "/v1/ws", Token: s.token, PID: os.Getpid(), Generation: s.generation}
 	if e = local.AtomicJSON(filepath.Join(home, "endpoint.json"), ep); e != nil {
 		return e
 	}
-	defer os.Remove(filepath.Join(home, "endpoint.json"))
+	endpointPublished = true
 	m.Start()
 	s.startGraphRefresh()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/ws", s.ws)
 	s.registerBrowser(mux)
 	h := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, MaxHeaderBytes: 8192, BaseContext: func(net.Listener) context.Context { return ctx }}
+	httpServer = h
 	done := make(chan error, 1)
+	httpJoined := false
 	go func() { done <- h.Serve(listener) }()
+	traceStopPublished(s)
 	select {
 	case e = <-done:
+		httpJoined = true
 		if !errors.Is(e, http.ErrServerClosed) {
+			httpClosed = e
 			return e
 		}
 	case <-ctx.Done():
 	}
 	shutdownCtx, stop := context.WithTimeout(context.Background(), 3*time.Second)
 	defer stop()
-	return h.Shutdown(shutdownCtx)
+	httpClosed = h.Shutdown(shutdownCtx)
+	if !httpJoined {
+		serveErr := <-done
+		if !errors.Is(serveErr, http.ErrServerClosed) {
+			httpClosed = errors.Join(httpClosed, serveErr)
+		}
+	}
+	return httpClosed
 }
 
 func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
+	leave, err := s.beginStopWork("websocket")
+	if err != nil {
+		http.Error(w, "backend stopping", http.StatusServiceUnavailable)
+		return
+	}
+	defer leave()
 	if !s.validHost(r.Host) {
 		http.Error(w, "invalid host", http.StatusForbidden)
 		return
@@ -201,14 +360,19 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 	defer c.CloseNow()
 	c.SetReadLimit(65536)
 	ctx, cancel := context.WithCancel(r.Context())
-	defer cancel()
+	var wsWG sync.WaitGroup
+	defer func() { cancel(); wsWG.Wait() }()
 	if len(nativeNode) == 1 {
 		bound, err := s.negotiateNativeNode(ctx, c)
 		if err != nil {
 			return
 		}
 		ctx = context.WithValue(ctx, nodeSessionKey{}, bound)
-		go s.watchNodeSession(ctx, cancel, bound)
+		wsWG.Add(1)
+		go func(watchCtx context.Context, b nodeSession) {
+			defer wsWG.Done()
+			s.watchNodeSession(watchCtx, cancel, b)
+		}(ctx, bound)
 	}
 	if browser {
 		ctx = context.WithValue(ctx, browserContextKey{}, true)
@@ -220,13 +384,22 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 				_ = c.Close(websocket.StatusPolicyViolation, "node_context_changed")
 				return
 			}
-			go s.watchNodeSession(ctx, cancel, *bound)
+			wsWG.Add(1)
+			go func(watchCtx context.Context, b nodeSession) {
+				defer wsWG.Done()
+				s.watchNodeSession(watchCtx, cancel, b)
+			}(ctx, *bound)
 		}
 		timer := time.AfterFunc(time.Until(expires), cancel)
 		defer timer.Stop()
 	}
 	out := make(chan model.WireResponse, 64)
+	writerDone := make(chan struct{})
+	defer func() { cancel(); <-writerDone }()
+	wsWG.Add(1)
 	go func() {
+		defer wsWG.Done()
+		defer close(writerDone)
 		defer cancel()
 		for {
 			select {
@@ -346,7 +519,9 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 				}
 				return send(response)
 			}
+			wsWG.Add(1)
 			go func() {
+				defer wsWG.Done()
 				for {
 					select {
 					case <-subctx.Done():
@@ -385,7 +560,9 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			if !send(resp) {
 				return
 			}
+			wsWG.Add(1)
 			go func(after int64) {
+				defer wsWG.Done()
 				ticker := time.NewTicker(100 * time.Millisecond)
 				defer ticker.Stop()
 				for {
@@ -461,7 +638,9 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			if !send(resp) {
 				return
 			}
+			wsWG.Add(1)
 			go func(page model.MonitorPage, changed <-chan struct{}) {
+				defer wsWG.Done()
 				for {
 					select {
 					case <-subctx.Done():
@@ -490,7 +669,9 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		case requests <- struct{}{}:
 			// Long polling must not block the reader: it needs to notice a
 			// disconnected client and multiplex other requests and events.
+			wsWG.Add(1)
 			go func(req model.WireRequest) {
+				defer wsWG.Done()
 				defer func() { <-requests }()
 				resp := model.WireResponse{Version: 1, ID: req.ID}
 				result, err := s.dispatch(ctx, req)
@@ -516,6 +697,11 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error) {
+	leave, e := s.registerStopOperation(r.Operation)
+	if e != nil {
+		return nil, e
+	}
+	defer leave()
 	if bound, ok := ctx.Value(nodeSessionKey{}).(nodeSession); ok {
 		if !bound.Local {
 			return s.nodeSessionOperation(ctx, bound, r)
@@ -838,6 +1024,16 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, model.Err("observation_failed", err.Error())
 		}
 		return result, nil
+	case "node_stop_observer_context":
+		if len(r.Params) > 0 && string(r.Params) != "{}" {
+			return nil, model.Err("invalid_request", "observer context has no parameters")
+		}
+		return s.nodeStopBinding()
+	case "startup_inspect":
+		if len(r.Params) > 0 && string(r.Params) != "{}" {
+			return nil, model.Err("invalid_request", "startup inspection has no parameters")
+		}
+		return s.startupInspection()
 	case "status":
 		status, err := s.Manager.Status()
 		return s.withServerCapabilities(status), err

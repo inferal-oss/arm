@@ -11,6 +11,7 @@ import json
 import os
 import re
 import stat
+import urllib.parse
 
 EVENT_REQUIRED = frozenset(('sequence','action','input_sha256','child_started',
     'child_wait_failed','child_exit','stdout_sha256','stderr_sha256'))
@@ -91,6 +92,21 @@ def committed_revoke_fault(events,key):
     return row
 
 
+def validate_fixture_endpoint(value):
+    """Actual current producer schema, unchanged value/raw bytes; no legacy path."""
+    if type(value) is not dict or set(value)!={'url','pid','token','backend_generation'}:
+        raise ValueError('exact current endpoint fields required')
+    if type(value['pid']) is not int or not 1<value['pid']<=2**31-1:
+        raise ValueError('bounded positive native PID required')
+    if type(value['token']) is not str or re.fullmatch('[0-9a-f]{64}',value['token']) is None or type(value['backend_generation']) is not str or re.fullmatch('[0-9a-f]{32}',value['backend_generation']) is None:
+        raise ValueError('exact endpoint credential and nonsecret generation required')
+    if type(value['url']) is not str or not 1<=len(value['url'])<=256:
+        raise ValueError('bounded fixture endpoint URL required')
+    url=urllib.parse.urlsplit(value['url'])
+    if url.scheme!='ws' or url.hostname!='127.0.0.1' or url.username is not None or url.password is not None or url.path!='/v1/ws' or url.query or url.fragment or url.port is None or not 1<=url.port<=65535:
+        raise ValueError('exact local native WebSocket endpoint required')
+    return value
+
 def read_fixture_endpoint(home):
     path=Path(home)/'endpoint.json'
     try:before=path.lstat()
@@ -103,6 +119,7 @@ def read_fixture_endpoint(home):
         if not os.path.samestat(before,current):raise ValueError('endpoint identity changed during read')
         raw=stream.read(16385)
     if len(raw)>16384:raise ValueError('bounded fixture endpoint required')
+    validate_fixture_endpoint(strict_json(raw))
     return raw
 
 
@@ -113,10 +130,9 @@ class BackendShutdownEvidence:
 
     def observe(self,home,raw):
         if type(raw) is not bytes or len(raw)>16384:raise ValueError('bounded raw endpoint required')
-        value=strict_json(raw)
-        if type(value) is not dict or set(value)!={'url','pid','token'} or type(value['pid']) is not int or value['pid']<=1 or value['pid']>2**31-1 or type(value['url']) is not str or not 1<=len(value['url'])<=256 or type(value['token']) is not str or not 1<=len(value['token'])<=256:
-            raise ValueError('exact bounded endpoint authority required')
+        value=validate_fixture_endpoint(strict_json(raw))
         authority={'home':str(home),'pid':value['pid'],
+            'backend_generation':value['backend_generation'],
             'endpoint_sha256':hashlib.sha256(raw).hexdigest()}
         # Even reappearance of the same bytes after a positive stop is not
         # permission to reuse that stopped lifetime's receipt.
@@ -142,6 +158,7 @@ class BackendShutdownEvidence:
         if type(result) is not dict or result.get('stopped') is not True or result.get('phase')!='stopped' or type(result.get('id')) is not str or re.fullmatch('[0-9a-f]{32}',result['id']) is None:
             raise ValueError('positive stopped/phase/report-ID result required')
         record={'home':home,'pid':before['pid'],'endpoint_sha256':before['endpoint_sha256'],
+            'backend_generation':before['backend_generation'],
             'returncode':returncode,'report_id':result['id'],
             'stdout_sha256':hashlib.sha256(stdout.encode('utf-8')).hexdigest(),
             'result':result}
@@ -155,7 +172,7 @@ class BackendShutdownEvidence:
             self.observe(home,current_endpoint)
             return None  # A current endpoint needs its own authorized stop.
         record=self.stops.get(home);current=self.authorities.get(home)
-        if record is None or current is None or any(record[key]!=current[key] for key in ('home','pid','endpoint_sha256')):
+        if record is None or current is None or any(record[key]!=current[key] for key in ('home','pid','endpoint_sha256','backend_generation')):
             raise ValueError('endpoint absence without positive exact-generation shutdown is unknown')
         return copy.deepcopy(record)
 

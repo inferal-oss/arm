@@ -98,7 +98,7 @@ while True: time.sleep(.01)
                 for index,home in enumerate(fixture.homes):
                     home.mkdir(mode=0o700)
                     endpoint=home/'endpoint.json'
-                    endpoint.write_text(json.dumps({'url':'http://127.0.0.1:12345','pid':2147483000+index,'token':'private-test-generation'}))
+                    endpoint.write_text(json.dumps({'url':'ws://127.0.0.1:12345/v1/ws','pid':2147483000+index,'token':'d'*64,'backend_generation':'a'*32}))
                     endpoint.chmod(0o600)
                 calls=[]
                 def observed_stop(argv,**kwargs):

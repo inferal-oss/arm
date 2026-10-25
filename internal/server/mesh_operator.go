@@ -8,6 +8,7 @@ import (
 	"github.com/yrashk/arm/internal/meshops"
 	"github.com/yrashk/arm/internal/meshssh"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/nodestop"
 )
 
 // ConnectDraft deliberately has no binary/home/SSH-options/public-listen input.
@@ -61,7 +62,7 @@ func (s *Server) meshOperatorService() (*meshops.Service, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	service := &meshops.Service{Home: s.home, Context: ctx}
+	service := &meshops.Service{Home: s.home, Context: ctx, Register: func() (func(), error) { return s.beginStopWork("operator") }}
 	service.New = func(ctx context.Context) *meshops.Coordinator {
 		inspect := func() (mesh.LifecycleInspection, error) {
 			q, e := mesh.InspectLifecycle(s.home, buildinfo.Version)
@@ -176,6 +177,21 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 		return nil, e
 	}
 	switch operation {
+	case "mesh_operator_stop_lease":
+		var q meshops.StopLeaseRequest
+		if e = nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return service.InspectStopLease(q)
+	case "mesh_operator_stop_lookup":
+		var q struct {
+			Key      string `json:"key"`
+			Revision int64  `json:"revision"`
+		}
+		if e = nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return service.LookupStop(q.Key, q.Revision)
 	case "mesh_operator_prepare":
 		var q struct {
 			Key        string                   `json:"key"`
@@ -183,11 +199,28 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 			Connect    *meshConnectDraft        `json:"connect,omitempty"`
 			Reconnect  *meshReconnectDraft      `json:"reconnect,omitempty"`
 			Disconnect *meshops.DisconnectDraft `json:"disconnect,omitempty"`
+			Stop       *meshops.StopDraft       `json:"stop,omitempty"`
 		}
 		if e = mesh.Decode(raw, &q); e != nil {
 			return nil, e
 		}
-		start := meshops.StartRequest{Key: q.Key, Kind: q.Kind, Disconnect: q.Disconnect}
+		if q.Kind == "stop" {
+			var closed struct {
+				Key  string            `json:"key"`
+				Kind string            `json:"kind"`
+				Stop meshops.StopDraft `json:"stop"`
+			}
+			if e = nodestop.Decode(raw, &closed); e != nil {
+				return nil, e
+			}
+			q.Key = closed.Key
+			q.Kind = closed.Kind
+			q.Stop = &closed.Stop
+		}
+		start := meshops.StartRequest{Key: q.Key, Kind: q.Kind, Disconnect: q.Disconnect, Stop: q.Stop}
+		if q.Stop != nil && (q.Kind != "stop" || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil) {
+			return nil, model.Err("invalid_request", "one closed Stop draft required")
+		}
 		if q.Reconnect != nil {
 			if q.Kind != "reconnect" || q.Connect != nil || q.Disconnect != nil {
 				return nil, model.Err("invalid_request", "one exact reconnect draft is required")

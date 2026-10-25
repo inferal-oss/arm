@@ -11,9 +11,10 @@ import (
 )
 
 type Endpoint struct {
-	URL   string `json:"url"`
-	Token string `json:"token"`
-	PID   int    `json:"pid"`
+	Generation string `json:"backend_generation,omitempty"`
+	URL        string `json:"url"`
+	Token      string `json:"token"`
+	PID        int    `json:"pid"`
 }
 
 func ID() string {

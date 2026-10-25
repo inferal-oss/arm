@@ -49,6 +49,46 @@ func (s *Store) WithPeer(host string, fn func(Peer) (any, error)) (any, error) {
 	}
 	return nil, model.Err("forbidden", "peer is not active")
 }
+
+// WithPeerSnapshot captures complete peer impact under the SAME authorization
+// lock. The callback must not reenter Config/meshMu or join native work.
+type PeerImpact struct {
+	Proven      bool
+	Host        string
+	Pair        string
+	Revision    int
+	State       string
+	Certificate string
+	SPKI        string
+	GrantSHA256 string
+}
+
+func (s *Store) WithPeerSnapshot(host string, fn func(Peer, Identity, []PeerImpact) (any, error)) (any, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.closed {
+		return nil, model.Err("mesh_unavailable", "mesh store closed")
+	}
+	for _, p := range s.config.Peers {
+		_, blocked := s.revoking.Load(p.Identity.Host)
+		if !blocked && p.Identity.Host == host && p.State == "active" {
+			peers := []PeerImpact{}
+			for _, other := range s.config.Peers {
+				raw, err := json.Marshal(other.Grant)
+				if err != nil {
+					return nil, err
+				}
+				hash := sha256.Sum256(raw)
+				peers = append(peers, PeerImpact{Proven: other.Proven, Host: other.Identity.Host, Pair: other.Pair, Revision: other.Revision, State: other.State, Certificate: other.Identity.Fingerprint, SPKI: other.Identity.SPKI, GrantSHA256: hex.EncodeToString(hash[:])})
+			}
+			return fn(clonePeer(p), s.config.Identity, peers)
+		}
+	}
+	err := model.Err("forbidden", "peer is not active")
+	traceNodeStopGrantRefused(s, host, err)
+	return nil, err
+}
+
 func Decode(raw []byte, v any) error {
 	d := json.NewDecoder(bytes.NewReader(raw))
 	d.DisallowUnknownFields()
@@ -62,7 +102,7 @@ func Decode(raw []byte, v any) error {
 	return nil
 }
 func Mutating(op string) bool {
-	return op == "acquire" || op == "run" || op == "release" || op == "cancel" || op == "renew" || op == "message" || op == "ssh_key_seal"
+	return op == "acquire" || op == "run" || op == "release" || op == "cancel" || op == "renew" || op == "message" || op == "ssh_key_seal" || op == "node_stop_apply"
 }
 func (s *Store) Call(ctx context.Context, target string, r Request) (json.RawMessage, error) {
 	peer, e := s.Resolve(target)

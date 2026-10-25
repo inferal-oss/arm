@@ -142,9 +142,14 @@ def validate_states(states):
     return states
 
 
-def tlc_states(path):
+def tlc_states(path, *, variables=None, validator=None):
     doc = read_json(path)
-    if not isinstance(doc, dict) or set(doc) != {'counterexample', 'vars'} or doc['vars'] != ['state']:
+    expected = ['state'] if variables is None else list(variables)
+    roster = doc.get('vars') if isinstance(doc, dict) else None
+    valid_roster = (roster == expected) if variables is None else (
+        type(roster) is list and all(type(v) is str for v in roster) and
+        len(roster) == len(expected) and len(set(roster)) == len(roster) and set(roster) == set(expected))
+    if not isinstance(doc, dict) or set(doc) != {'counterexample', 'vars'} or not valid_roster:
         raise ValueError('unexpected pinned TLC JSON envelope')
     ce = doc['counterexample']
     if not isinstance(ce, dict) or set(ce) != {'action', 'state'}:
@@ -153,15 +158,15 @@ def tlc_states(path):
     if not isinstance(ce['state'], list) or len(ce['state']) > 128:
         raise ValueError('invalid TLC state roster')
     for index, item in enumerate(ce['state'], 1):
-        if not isinstance(item, list) or len(item) != 2 or item[0] != index or not isinstance(item[1], dict) or set(item[1]) != {'state'}:
+        if not isinstance(item, list) or len(item) != 2 or type(item[0]) is not int or item[0] != index or not isinstance(item[1], dict) or set(item[1]) != set(expected):
             raise ValueError('noncontiguous TLC state roster')
-        states.append(item[1]['state'])
+        states.append(item[1]['state'] if variables is None else item[1])
     if not isinstance(ce['action'], list) or len(ce['action']) != len(states)-1:
         raise ValueError('missing TLC transition edges')
     for index, edge in enumerate(ce['action']):
-        if not isinstance(edge, list) or len(edge) != 3 or edge[0] != ce['state'][index] or edge[2] != ce['state'][index+1] or not isinstance(edge[1], dict):
+        if not isinstance(edge, list) or len(edge) != 3 or json.dumps(edge[0], sort_keys=True, allow_nan=False) != json.dumps(ce['state'][index], sort_keys=True, allow_nan=False) or json.dumps(edge[2], sort_keys=True, allow_nan=False) != json.dumps(ce['state'][index+1], sort_keys=True, allow_nan=False) or not isinstance(edge[1], dict):
             raise ValueError('TLC action edge does not match exact adjacent states')
-    return validate_states(states)
+    return validate_states(states) if validator is None else validator(states)
 
 
 def envelope(states):

@@ -21,6 +21,7 @@ import (
 	"github.com/yrashk/arm/internal/database"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/nodestop"
 	"github.com/yrashk/arm/internal/observe"
 	"github.com/yrashk/arm/internal/ports"
 	"github.com/yrashk/arm/internal/storage"
@@ -43,6 +44,10 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
+	nodeStopBoundary        *nodestop.Boundary
+	nodeStopUnknown         bool
+	nodeStopAccepted        bool
+	nodeStopAcceptedTarget  nodestop.Target // current successful admission only, never restored from history
 	leaseReviewsUnavailable bool
 	leaseReviewError        string
 	shares                  *shareBoundary
@@ -368,6 +373,7 @@ func (m *Manager) Observation(kind string) model.ResourceMeasurement {
 	return m.observations[kind]
 }
 func (m *Manager) Close() error {
+	var closeErr error
 	m.mu.Lock()
 	m.closing = true
 	m.mu.Unlock()
@@ -382,26 +388,42 @@ func (m *Manager) Close() error {
 	if m.shares != nil {
 		for _, p := range m.shares.state.Publications {
 			if m.shares.workers[p.ID] != nil {
-				_, _ = m.end(p.Lease, "cancelled")
+				_, e := m.end(p.Lease, "cancelled")
+				closeErr = errors.Join(closeErr, e)
 			}
 		}
 	}
 	for id := range m.cargoWorkers {
-		_, _ = m.end(id, "cancelled")
+		_, e := m.end(id, "cancelled")
+		closeErr = errors.Join(closeErr, e)
 	}
 	for id := range m.jobs {
-		_, _ = m.end(id, "cancelled")
+		_, e := m.end(id, "cancelled")
+		closeErr = errors.Join(closeErr, e)
+	}
+	if m.nodeStopAccepted || m.nodeStopUnknown {
+		ls, e := m.list()
+		closeErr = errors.Join(closeErr, e)
+		for _, lease := range ls {
+			if outstanding(lease) {
+				closeErr = errors.Join(closeErr, model.Err("node_stop_unsettled", "an obligation remains charged at Manager.Close"))
+				break
+			}
+		}
+		if m.nodeStopUnknown {
+			closeErr = errors.Join(closeErr, model.Err("node_stop_outcome_unknown", "stop commit was not reconciled"))
+		}
 	}
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
 	for _, sockets := range m.portSockets {
-		ports.Close(sockets)
+		closeErr = errors.Join(closeErr, ports.CloseChecked(sockets))
 	}
 	if m.storage != nil {
-		m.storage.Close()
+		closeErr = errors.Join(closeErr, m.storage.Close())
 	}
-	return m.db.Close()
+	return errors.Join(closeErr, m.db.Close())
 }
 func consuming(s string) bool {
 	return s == "active" || s == "provisioning" || s == "ending" || s == "needs_attention"
@@ -613,6 +635,7 @@ func (m *Manager) Inspect(id string) (model.Lease, error) {
 func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	defer m.traceNodeStop("acquire-return")
 	return m.acquire(r, run)
 }
 
@@ -1011,6 +1034,7 @@ func (m *Manager) CancelRequest(key string) error {
 	return e
 }
 func (m *Manager) end(id, outcome string) (model.Lease, error) {
+	defer m.traceNodeStop("end-return")
 	l, e := m.get(id)
 	if e != nil {
 		return l, e

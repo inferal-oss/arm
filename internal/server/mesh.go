@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"crypto/tls"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshstream"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/nodestop"
 	"github.com/yrashk/arm/internal/workspaceroute"
 	"github.com/yrashk/arm/internal/workspacetransport"
 	"io"
@@ -25,12 +27,19 @@ import (
 // Mesh is a separate transport and closed RPC surface. It never authenticates a
 // peer by forwarding the privileged local bearer token or browser credential.
 type meshService struct {
+	serveDone   chan error
 	owner       *Server
 	store       *mesh.Store
 	http        *http.Server
 	listener    net.Listener
 	mu          sync.Mutex
 	connections map[net.Conn]struct{}
+	requests    int
+	sealed      bool
+	serveJoined bool
+	drainDone   chan struct{}
+	drainClosed bool
+	closeOwner  *meshClose // installed once under owner.meshMu
 	slots       chan struct{}
 	peerSlots   sync.Map
 	ssh         *meshstream.Handler
@@ -65,8 +74,11 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	defer s.meshMu.Unlock()
 	s.lifecycleMu.Lock()
 	defer s.lifecycleMu.Unlock()
-	if s.mesh != nil {
-		return fmt.Errorf("mesh already running")
+	if s.meshClosing || s.mesh != nil {
+		return fmt.Errorf("mesh already running or closing")
+	}
+	if !s.canRetainMeshCloser() {
+		return model.Err("mesh_close_pending", "Too many original mesh closures remain pending or unresolved; inspect them before opening another listener")
 	}
 	if s.lifecycleClosing || (s.lifecycleContext != nil && s.lifecycleContext.Err() != nil) {
 		return model.Err("backend_stopping", "mesh setup unavailable during shutdown")
@@ -103,24 +115,19 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 		listener.Close()
 		return e
 	}
-	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32)}
+	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32), serveDone: make(chan error, 1), drainDone: make(chan struct{})}
 	service.ssh = service.newSSHHandler()
 	service.workspace = service.newWorkspaceHandler()
 	service.routed = service.newRoutedHandler()
-	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: func(c net.Conn, state http.ConnState) {
-		service.mu.Lock()
-		defer service.mu.Unlock()
-		if state == http.StateNew {
-			service.connections[c] = struct{}{}
-		}
-		if state == http.StateClosed || state == http.StateHijacked {
-			delete(service.connections, c)
-		}
-	}}
+	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: service.connectionState}
 	store.OnChange(service.revoke)
 	s.mesh = service
+	if err := s.installNodeStop(store.Config().Identity); err != nil {
+		fmt.Fprintln(os.Stderr, "ARM node-stop unavailable:", err)
+	}
+	serveDone := service.serveDone
 	go func() {
-		_ = service.http.Serve(tls.NewListener(&meshLimitedListener{Listener: listener, slots: make(chan struct{}, 64)}, store.ServerTLS()))
+		serveDone <- service.http.Serve(tls.NewListener(&meshLimitedListener{Listener: listener, slots: make(chan struct{}, 64)}, store.ServerTLS()))
 	}()
 	return nil
 }
@@ -152,32 +159,31 @@ func (m *meshService) revoke(host string) {
 }
 
 func (s *Server) closeMesh() {
-	s.meshMu.Lock()
-	defer s.meshMu.Unlock()
-	if s.meshPending != nil {
-		s.meshPending.close()
-		s.meshPending = nil
-	}
-	if s.mesh != nil {
-		if s.mesh.routed != nil {
-			s.mesh.routed.Stop()
-		}
-		if s.mesh.workspace != nil {
-			s.mesh.workspace.Stop()
-		}
-		if s.mesh.ssh != nil {
-			s.mesh.ssh.ClosePeer("")
-		}
-		_ = s.mesh.http.Close()
-		closeErr := s.mesh.listener.Close()
-		if closeErr == nil || errors.Is(closeErr, net.ErrClosed) {
-			s.Manager.RemoveMeshInfrastructure()
-		}
-		_ = s.mesh.store.Close()
-		s.mesh = nil
-	}
+	// Ordinary disconnect closes admission/IO but never waits for an existing
+	// managed SSH execution. The exact original close owner remains in census
+	// until its own Serve/connection/handler/stream joins finish.
+	_, _ = s.beginMeshClose()
 }
 func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
+	if !m.enterRequest() {
+		http.Error(w, "mesh closing", http.StatusServiceUnavailable)
+		return
+	}
+	defer m.leaveRequest()
+	leaveHTTP, registrationErr := m.owner.beginStopWork("inspection")
+	if registrationErr != nil {
+		http.Error(w, "backend stopping", http.StatusServiceUnavailable)
+		return
+	}
+	defer leaveHTTP()
+	if r.URL.Path != "/v1/mesh" {
+		leave, e := m.owner.beginStopWork("mesh-stream")
+		if e != nil {
+			http.Error(w, "backend stopping", http.StatusServiceUnavailable)
+			return
+		}
+		defer leave()
+	}
 	if r.URL.Path == workspaceroute.Path {
 		m.routed.ServeHTTP(w, r)
 		return
@@ -257,6 +263,12 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if request.Operation == "hello" {
+		leave, e := m.owner.registerStopOperation("hello")
+		if e != nil {
+			respond(nil, e)
+			return
+		}
+		defer leave()
 		if request.Expected != nil {
 			respond(nil, model.Err("invalid_request", "conditional enrollment reads do not perform pairing proof"))
 			return
@@ -276,10 +288,26 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
-	value, e := m.store.WithPeer(peer.Identity.Host, func(current mesh.Peer) (any, error) { return m.dispatch(ctx, current, request) })
+	var value any
+	if request.Operation == "node_stop_plan" || request.Operation == "node_stop_apply" || request.Operation == "node_stop_lookup" {
+		if e = m.owner.decodeStopEnvelope(raw, &request); e != nil {
+			respond(nil, e)
+			return
+		}
+		value, e = m.store.WithPeerSnapshot(peer.Identity.Host, func(current mesh.Peer, identity mesh.Identity, peers []mesh.PeerImpact) (any, error) {
+			return m.dispatchStop(ctx, current, request, identity, peers)
+		})
+	} else {
+		value, e = m.store.WithPeer(peer.Identity.Host, func(current mesh.Peer) (any, error) { return m.dispatch(ctx, current, request) })
+	}
 	respond(value, e)
 }
 func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh.Request) (value any, err error) {
+	leave, e := m.owner.registerStopOperation(request.Operation)
+	if e != nil {
+		return nil, e
+	}
+	defer leave()
 	// serve invokes dispatch inside Store.WithPeer. This condition and grant
 	// authorization therefore share one immutable, locked admission snapshot.
 	if request.Expected != nil && (request.Expected.Revision < 1 || len(request.Expected.Pair) != 64 || request.Expected.Pair != peer.Pair || request.Expected.Revision != peer.Revision) {
@@ -313,7 +341,7 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		if e := nodeMetadataParams(request.Params); e != nil {
 			return nil, e
 		}
-		return model.NodeAccessScope{Source: peer.Identity.Host, Target: request.Host, Pair: peer.Pair, Revision: peer.Revision, Grant: nodeGrant(peer.Grant), Observed: time.Now().UTC()}, nil
+		return model.NodeAccessScope{NodeStop: m.owner.stopAvailability(peer), Source: peer.Identity.Host, Target: request.Host, Pair: peer.Pair, Revision: peer.Revision, Grant: nodeGrant(peer.Grant), Observed: time.Now().UTC()}, nil
 	case "node_metadata":
 		if e := require("observe-host"); e != nil {
 			return nil, e
@@ -402,7 +430,34 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 			return m.owner.Manager.AcquirePeer(peer.Identity.Host, q, &run, grant.Limits, grant.MaxTTL)
 		}
 		return m.owner.Manager.AcquirePeer(peer.Identity.Host, q, nil, grant.Limits, grant.MaxTTL)
-	case "inspect", "output", "release", "cancel", "renew":
+	case "inspect":
+		var q struct {
+			ID         string  `json:"id"`
+			Generation *string `json:"backend_generation,omitempty"`
+		}
+		if e := nodestop.Decode(request.Params, &q); e != nil {
+			return nil, model.Err("invalid_request", e.Error())
+		}
+		if q.Generation != nil {
+			generation := *q.Generation
+			raw, e := hex.DecodeString(generation)
+			if e != nil || len(raw) != 16 || hex.EncodeToString(raw) != generation {
+				return nil, model.Err("invalid_request", "Exact 32-character backend generation required when present")
+			}
+			if generation != m.owner.generation {
+				return nil, model.Err("node_generation_changed", "Exact reviewed backend generation changed; no lease details returned")
+			}
+		}
+		// observe-all already shares these lease fields through status. It
+		// changes this read only; output and mutations retain their own gates.
+		if grant.Has("observe-all") {
+			return m.owner.Manager.Inspect(q.ID)
+		}
+		if e := require("observe-own"); e != nil {
+			return nil, e
+		}
+		return m.owner.Manager.PeerLease(peer.Identity.Host, q.ID)
+	case "output", "release", "cancel", "renew":
 		var q struct {
 			ID     string        `json:"id"`
 			TTL    time.Duration `json:"ttl_ns,omitempty"`
@@ -421,9 +476,6 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		l, e := m.owner.Manager.PeerLease(peer.Identity.Host, q.ID)
 		if e != nil {
 			return nil, e
-		}
-		if request.Operation == "inspect" {
-			return l, nil
 		}
 		if request.Operation == "output" {
 			if e = require("run"); e != nil {
