@@ -1,5 +1,11 @@
 # Validation record
 
+## October 25, 2026: actual Linux Stop lifecycle components
+
+A fresh current-root Manager test image from `d362f75` passes all three lifecycle roots/seven named cases on actual Linux ARM64, without CGo or race instrumentation. Cases cover wait/queued-storage cancellation, real one-second timeout and immediate force with original ARM-owned child completion, retained obligations/contents after native storage path replacement, continued ping/reply with an unrelated process, and foreign-host/user-ledger refusal. No platform correction was needed. These component tests do not establish complete mesh transport/UI acceptance or cross-user OS containment.
+
+The test image SHA256 is `9b0467e2b2f93af19e228991fd3bb883e58a6c42fddcfe0de3275afeabff9065`. Native architecture/non-root execution and before/after image hashes are checked; all 11 SSH/SCP commands exit successfully, followed by ordinary removal of only the disposable test image and empty directory. Logs/results are in ignored `.cache/node-stop-linux-1/`; private connection details are not tracked.
+
 ## October 25, 2026: managed remote executable uninstall — backend and CLI
 
 `arm mesh uninstall HOST_ID` now uses a concrete plan/apply/original-key lookup and explicit-finish workflow. Both current destination-local administrative grants are required. Fresh publications capture native ownership, startup records home references, and a durable copy intent precedes allocation of a retained verified recovery image. Missing/reused/shared/replaced evidence, new-key escape from an unknown copy and changed enrollment/generation refuse removal. Only the original executable is removed under the current stopped-generation maintenance lock; databases, identity, configuration, history, backups, ownership tombstones and recovery remain. Source settlement is revision-bound and completed results never regress. Finite filesystem checks/unlink are not one atomic OS operation or a universal containment theorem.
