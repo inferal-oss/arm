@@ -84,6 +84,12 @@ func meshIdentitySummary(label string, identity *meshReviewIdentity, prepared me
 }
 
 func meshReviewSummary(raw json.RawMessage) (string, bool) {
+	var schema struct {
+		Schema string `json:"schema"`
+	}
+	if json.Unmarshal(raw, &schema) == nil && schema.Schema == mesh.UninstallSchema {
+		return meshUninstallReviewSummary(raw)
+	}
 	var review meshTrustReview
 	if json.Unmarshal(raw, &review) != nil {
 		return "Review could not be decoded. Inspect the full record; approval is unavailable.", false

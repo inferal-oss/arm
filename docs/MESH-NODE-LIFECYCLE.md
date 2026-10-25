@@ -3,8 +3,8 @@
 Requested October 22, 2026; approved by the operator October 23, 2026. First-class
 reconnect is implemented in the CLI and both dashboards after scoped runtime,
 formal and interface validation. Remote Stop is implemented in the backend, CLI
-and both dashboards. Managed executable uninstall is implemented in the backend
-and CLI; its dashboard integration remains in progress. The separately granted
+and both dashboards. Managed executable uninstall is implemented in the backend,
+CLI and both dashboards, with scoped browser and browser-PTY acceptance. The separately granted
 operations below extend the reviewed direct-peer lifecycle.
 
 ## Current boundary

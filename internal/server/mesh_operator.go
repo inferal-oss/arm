@@ -115,6 +115,15 @@ func (s *Server) meshOperatorService() (*meshops.Service, error) {
 func (s *Server) meshOperatorOperation(ctx context.Context, operation string, raw json.RawMessage) (any, error) {
 	// Raw native setup remains excluded from browserAllowedOperation. Only this
 	// narrow typed workflow, never an arbitrary mesh dispatch, is exposed there.
+	if operation == "mesh_operator_uninstall_context" {
+		var q struct {
+			Host string `json:"host"`
+		}
+		if e := nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return meshops.UninstallCandidates(s.home, q.Host)
+	}
 	if operation == "mesh_operator_reconnect_context" {
 		var q struct {
 			Host string `json:"host"`
@@ -183,6 +192,25 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 			return nil, e
 		}
 		return service.InspectStopLease(q)
+	case "mesh_operator_uninstall_lookup":
+		var q struct {
+			Key      string `json:"key"`
+			Revision int64  `json:"revision"`
+		}
+		if e = nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return service.LookupUninstall(q.Key, q.Revision, false, "")
+	case "mesh_operator_uninstall_finish":
+		var q struct {
+			Key      string `json:"key"`
+			Revision int64  `json:"revision"`
+			Hash     string `json:"review_sha256"`
+		}
+		if e = nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return service.LookupUninstall(q.Key, q.Revision, true, q.Hash)
 	case "mesh_operator_stop_lookup":
 		var q struct {
 			Key      string `json:"key"`
@@ -200,9 +228,23 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 			Reconnect  *meshReconnectDraft      `json:"reconnect,omitempty"`
 			Disconnect *meshops.DisconnectDraft `json:"disconnect,omitempty"`
 			Stop       *meshops.StopDraft       `json:"stop,omitempty"`
+			Uninstall  *meshops.UninstallDraft  `json:"uninstall,omitempty"`
 		}
 		if e = mesh.Decode(raw, &q); e != nil {
 			return nil, e
+		}
+		if q.Kind == "uninstall" {
+			var closed struct {
+				Key       string                 `json:"key"`
+				Kind      string                 `json:"kind"`
+				Uninstall meshops.UninstallDraft `json:"uninstall"`
+			}
+			if e = nodestop.Decode(raw, &closed); e != nil {
+				return nil, e
+			}
+			q.Key = closed.Key
+			q.Kind = closed.Kind
+			q.Uninstall = &closed.Uninstall
 		}
 		if q.Kind == "stop" {
 			var closed struct {
@@ -217,7 +259,10 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 			q.Kind = closed.Kind
 			q.Stop = &closed.Stop
 		}
-		start := meshops.StartRequest{Key: q.Key, Kind: q.Kind, Disconnect: q.Disconnect, Stop: q.Stop}
+		start := meshops.StartRequest{Key: q.Key, Kind: q.Kind, Disconnect: q.Disconnect, Stop: q.Stop, Uninstall: q.Uninstall}
+		if q.Uninstall != nil && (q.Kind != "uninstall" || q.Stop != nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil) {
+			return nil, model.Err("invalid_request", "one closed uninstall draft required")
+		}
 		if q.Stop != nil && (q.Kind != "stop" || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil) {
 			return nil, model.Err("invalid_request", "one closed Stop draft required")
 		}

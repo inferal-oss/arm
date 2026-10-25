@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/x/ansi"
 	"github.com/yrashk/arm/internal/meshops"
 )
 
@@ -44,10 +45,29 @@ func (m *dashboardModel) meshText() string {
 			// resizing must not wrap previously rendered borders or change consent.
 			text = meshStopReviewWindows(ui.prompt.stopReview, m.meshStopPaneWidth()) + "\n\n" + text
 		}
+		if len(ui.prompt.uninstallReview) > 0 {
+			text = meshUninstallReviewWindows(ui.prompt.uninstallReview, m.meshStopPaneWidth()) + "\n\n" + text
+		}
 		return out.String() + text + "\n\n" + keycap("y", "Confirm exact request", "") + "  " + keycap("n/Esc", "Keep unchanged", "quiet")
 	}
 	if ui.form != nil {
-		if ui.form.stopHost != "" {
+		if ui.form.uninstallHost != "" {
+			width := m.meshStopPaneWidth()
+			out.WriteString(meshStopWindow("UNINSTALL ARM · SELECT MANAGED INSTALLATION", "Exact host "+safe(ui.form.uninstallHost)+"\nStop the reviewed backend; remove only its proven managed executable. Database, identity, configuration, history, backups and recovery remain. A separate concrete approval follows.", width, "warning") + "\n\n")
+			provenance := safe(ui.form.provenanceReason)
+			if !ui.form.contextReady {
+				provenance = "Reading current permissions and completed source provenance. Preparation is disabled."
+			}
+			for _, candidate := range ui.form.provisions {
+				prefix := "  "
+				if candidate.ProvisionKey == ui.form.provisionKey {
+					prefix = "▸ "
+				}
+				provenance += "\n\n" + prefix + "Source receipt " + safe(candidate.ProvisionKey) + "\n" + safe(candidate.Binary) + "\n" + safe(candidate.OS) + " / " + safe(candidate.Arch) + " · " + byteCount(fmt.Sprint(candidate.Size)) + "\nSHA-256 " + safe(candidate.SHA256)
+			}
+			provenance += "\n\n[ / ] select exact receipt · [r] refresh provenance"
+			out.WriteString(meshStopWindow("ORIGINAL PUBLICATION", provenance, width, "") + "\n\n")
+		} else if ui.form.stopHost != "" {
 			width := m.meshStopPaneWidth()
 			out.WriteString(meshStopWindow("EXACT BACKEND", "Exact host "+safe(ui.form.stopHost)+"\nStops this ARM backend and its connections. The host remains running.\nA separate current review follows; default is to refuse outstanding work.", width, "warning") + "\n\n")
 		} else {
@@ -80,6 +100,9 @@ func (m *dashboardModel) meshText() string {
 			if value == "" {
 				value = "(empty)"
 			}
+			if ui.form.uninstallHost != "" {
+				value = ansi.Wrap(value, max(1, m.meshStopPaneWidth()-6), "")
+			}
 			fmt.Fprintf(&out, "%s%s\n  %s\n", selectedPrefix(ui.form.selected, i), safe(field.label), value)
 		}
 		if ui.form.stopHost == "" {
@@ -92,7 +115,7 @@ func (m *dashboardModel) meshText() string {
 	if ui.unknown != nil {
 		advice := "[l] Read durable keyed receipt · [t] Retry this exact request only"
 		if ui.unknown.LookupOnly {
-			advice = "RESEND DISABLED · Stop outcome is uncertain.\n[l] Read the exact source receipt; no decision, apply, resume or handoff is resent."
+			advice = "RESEND DISABLED · Lifecycle outcome is uncertain.\n[l] Read the exact original receipt; no decision, apply, resume or handoff is resent."
 		} else if ui.unknown.Operation == "mesh_operator_resume" {
 			advice = "RESEND DISABLED · Resume can create another child attempt.\n[l] Read exact parent · [o] Read durable attempts; inspect the recorded child before any separate new recovery. This retained uncertainty cannot be automatically resolved."
 		}
@@ -136,6 +159,11 @@ func (m *dashboardModel) meshText() string {
 		} else if !n.Local {
 			out.WriteString("\nStop ARM unavailable · " + safe(why) + "\n")
 		}
+		if allowed, why := meshUninstallAvailability(n); allowed {
+			out.WriteString("[u] Review uninstall · remove managed executable; keep data and identity\n")
+		} else if !n.Local {
+			out.WriteString("Uninstall unavailable · " + safe(why) + "\n")
+		}
 		out.WriteString("\n[v] Open exact node dashboard · [d] Review disconnect · [e] Reconnect revoked node · [r] Refresh exact node\n[i] Complete reported/trust record · Esc node list\nMetadata/capabilities are observations, never grants.")
 	case "operation":
 		if ui.operation == nil {
@@ -154,6 +182,9 @@ func (m *dashboardModel) meshText() string {
 		}
 		if len(op.Review) > 0 {
 			summary, _ := meshReviewSummary(op.Review)
+			if op.Kind == "uninstall" {
+				summary = meshUninstallReviewWindows(op.Review, m.meshStopPaneWidth())
+			}
 			if op.Kind == "stop" {
 				summary = meshStopReviewWindows(op.Review, m.meshStopPaneWidth())
 				leases := meshStopLeases(&op)
@@ -168,13 +199,33 @@ func (m *dashboardModel) meshText() string {
 			fmt.Fprintf(&out, "EXACT IMMUTABLE REVIEW\nReview revision: %d\nSHA256: %s\nExpires: %s\n\n%s\n\n", op.ReviewRevision, safe(op.ReviewHash), op.ReviewExpires.Local().Format("Jan 02 15:04:05 MST"), summary)
 		}
 		if len(op.Result) > 0 {
-			if op.Kind == "stop" {
+			if op.Kind == "uninstall" {
+				out.WriteString(meshStopWindow("RECORDED UNINSTALL OUTCOME", meshUninstallOutcome(op), m.meshStopPaneWidth(), "warning") + "\n\n")
+			} else if op.Kind == "stop" {
 				out.WriteString(window("RECORDED STOP OUTCOME", meshStopOperationResult(op), max(16, m.mainWidth()-8), 0, false, "warning") + "\n\n")
 			} else {
 				out.WriteString("A durable result is recorded. [i] opens its complete collapsible record.\n\n")
 			}
 		}
-		if op.Kind == "stop" {
+		if op.Kind == "uninstall" {
+			out.WriteString("[r] Read exact source receipt · [i] Complete record · Esc operations\n")
+			if op.Approved {
+				out.WriteString("[l] Check original uninstall · explicit read only; no Stop is resent.\n")
+				if meshUninstallFinishReady(ui) {
+					out.WriteString("[f] Review original finish · separate default-No confirmation\n")
+				} else {
+					out.WriteString("Finish requires a fresh original-key check, positive original Stop and a still-present owned executable.\n")
+				}
+			} else {
+				if meshCanReview(op, time.Now()) {
+					out.WriteString("[a] Review uninstall · ")
+				}
+				if meshUninstallCanDecline(op, time.Now()) {
+					out.WriteString("[n] Keep installation unchanged\n")
+				}
+			}
+			out.WriteString("No resume, handoff or automatic retry. Retained data and history stay.\n")
+		} else if op.Kind == "stop" {
 			out.WriteString("[r] Read exact source receipt · [i] Complete collapsible record · Esc operations\n")
 			if op.LookupOnly || op.Approved {
 				out.WriteString("[l] Check original stop · explicit read only; nothing is reapplied.\n")

@@ -73,6 +73,9 @@ func Project(op mesh.Coordination) Operation {
 		out.LookupOnly = op.Approved
 		out.CanPrepareFresh = op.Kind == "stop" && !out.WorkerLive && !op.Approved && (op.Phase == "declined" || op.Phase == "cancelled" || op.Phase == "rejected")
 	}
+	if op.Kind == "uninstall" {
+		out.Notice = "Preparing an exact installation and Stop review. Stop, recovery copying and removal require a separate decision; keeping the installation is the default."
+	}
 	out.Handoff = op.Handoff
 	if op.Error != nil {
 		message := op.Error.Message
@@ -142,7 +145,22 @@ func validateStart(q StartRequest) (any, string, error) {
 	if q.Stop != nil && q.Kind != "stop" {
 		return nil, "", model.Err("invalid_request", "Stop draft cannot be combined with another operation")
 	}
+	if q.Uninstall != nil && q.Kind != "uninstall" {
+		return nil, "", model.Err("invalid_request", "uninstall cannot be combined with another draft")
+	}
 	switch q.Kind {
+	case "uninstall":
+		if q.Uninstall == nil || q.Stop != nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
+			return nil, "", model.Err("invalid_request", "one closed uninstall draft required")
+		}
+		draft := q.Uninstall
+		if !mesh.ValidKey(draft.ProvisionKey) {
+			return nil, "", model.Err("invalid_request", "exact source provisioning key required")
+		}
+		if e := (StopDraft{Host: draft.Host, Reason: draft.Reason, Policy: draft.Policy}).Validate(); e != nil {
+			return nil, "", e
+		}
+		return *draft, "host:" + draft.Host, nil
 	case "stop":
 		if q.Stop == nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
 			return nil, "", model.Err("invalid_request", "one closed Stop draft required")
@@ -266,7 +284,9 @@ func (s *Service) Start(q StartRequest) (Operation, error) {
 		defer s.wg.Done()
 		defer cancel()
 		defer func() { s.mu.Lock(); delete(s.workers, q.Key); s.mu.Unlock() }()
-		if q.Kind == "stop" {
+		if q.Kind == "uninstall" {
+			_, _ = c.Uninstall(q.Key, *q.Uninstall, true, false)
+		} else if q.Kind == "stop" {
 			_, _ = c.Stop(q.Key, *q.Stop, true, false)
 		} else if q.Kind == "connect" {
 			_, _ = c.Connect(q.Key, *q.Connect, true, false)

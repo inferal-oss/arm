@@ -13,6 +13,9 @@ import (
 // These are presentation descriptions, never permission checks. The destination
 // and coordinator independently authorize each operation against current facts.
 func meshPhaseLabel(op meshops.Operation) string {
+	if op.Kind == "uninstall" && len(op.Result) > 0 {
+		return strings.SplitN(meshUninstallOutcome(op), "\n", 2)[0]
+	}
 	if op.Kind == "stop" {
 		if len(op.Result) > 0 {
 			return strings.SplitN(meshStopOperationResult(op), "\n", 2)[0]
@@ -62,6 +65,12 @@ func meshPhaseLabel(op meshops.Operation) string {
 }
 
 func meshCanReview(op meshops.Operation, now time.Time) bool {
+	if op.Kind == "uninstall" {
+		p, allowed := parseMeshUninstallReview(op.Review)
+		if !meshUninstallOperationBound(op) || !allowed || op.Approved || op.LookupOnly || now.Before(p.Stop.Plan.Observed) || !now.Before(p.Stop.Plan.Expires) {
+			return false
+		}
+	}
 	if op.Kind == "stop" {
 		r, valid := parseMeshStopReview(op.Review)
 		if !meshStopOperationBound(op) || !valid || now.Before(r.Plan.Observed) || !now.Before(r.Plan.Expires) {
@@ -75,6 +84,12 @@ func meshCanReview(op meshops.Operation, now time.Time) bool {
 }
 
 func meshOperationAdvice(op meshops.Operation) string {
+	if op.Kind == "uninstall" {
+		if op.Approved || op.LookupOnly {
+			return "Original uninstall is lookup-only. Explicit finish completes only its admitted removal after fresh ownership and Stop checks; it never reapplies Stop."
+		}
+		return "No uninstall is approved yet. Review the exact managed executable, affected work and retained data. Decline keeps this installation unchanged."
+	}
 	if op.Kind == "stop" {
 		if op.LookupOnly || op.Approved {
 			return "Read this exact Stop receipt; it will never be resent or resumed here."
@@ -117,7 +132,7 @@ func meshGrantText(grant *model.NodeGrant) string {
 	if len(grant.Permissions) == 0 {
 		return "No access"
 	}
-	labels := map[string]string{"observe-host": "Host summary", "observe-own": "Our leases", "observe-all": "All leases", "lease-own": "Manage our leases", "run": "Run programs", "node-stop": "Stop this ARM backend", "message": "Send messages", "contact-read": "Read allowed contacts"}
+	labels := map[string]string{"observe-host": "Host summary", "observe-own": "Our leases", "observe-all": "All leases", "lease-own": "Manage our leases", "run": "Run programs", "node-stop": "Stop this ARM backend", "node-uninstall": "Remove managed ARM executable", "message": "Send messages", "contact-read": "Read allowed contacts"}
 	parts := make([]string, 0, len(grant.Permissions))
 	for _, permission := range grant.Permissions {
 		label, ok := labels[permission]

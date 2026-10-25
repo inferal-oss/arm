@@ -88,6 +88,23 @@ class Element {
 
 
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
+function uninstallConsoleFixture(options={}){
+ const f=stopConsoleFixture({saved:options.saved,storageFailure:options.storageFailure}),op=f.op,stop=structuredClone(op.review.plan),id={device:7,inode:50,owner:501,born_seconds:1700000000,born_nanoseconds:1,birth_known:true};
+ stop.key='uninstall-'+'1'.repeat(64);stop.impact.obligations=[];stop.impact.outstanding=0;
+ const installation={install_root:'/private/install',key:'2'.repeat(64),sha256:'3'.repeat(64),size_bytes:4096,expected_uid:'501',os:'darwin',arch:'arm64',expected_arm_version:'dev',expected_lifecycle_protocol:1,reason:'managed publication'};
+ const review={schema:'arm.node-uninstall/v1',key:op.key,reason:stop.reason,installation,ownership:{schema:1,transfer:structuredClone(installation),root_identity:id,artifact_identity:{...id,inode:51},binary_identity:{...id,inode:52},referenced_homes:[stop.target.home]},stop:{plan:stop,review_sha256:'4'.repeat(64),owner_username:'operator'},retained_recovery_helper:'/private/install/recovery-'+'5'.repeat(64)+'/arm',preserved:['database','node identity and grants','configuration and startup policy','lease and operation history','backups and retained artifacts','companion catalog configuration','recovery helper and uninstall receipt']};
+ Object.assign(op,{kind:'uninstall',review});f.node.outbound_scope.grant.permissions.push('node-uninstall');let held=null;
+ f.route((name,q)=>{
+  if(held){const value=held(name,q);if(value!==undefined)return value;}
+  if(name==='mesh_operator_uninstall_context')return{host:f.node.host,candidates:[{provision_key:'publication-original',home:stop.target.home,binary:'/private/install/artifact-'+installation.sha256+'/arm',sha256:installation.sha256,size_bytes:4096,os:'darwin',arch:'arm64'}]};
+  if(name==='mesh_operator_prepare'){op.key=q.key;review.key=q.key;review.reason=stop.reason=q.uninstall.reason;stop.policy=q.uninstall.policy;if(options.losePrepare)throw Error('prepare reply lost');return op;}
+  if(name==='mesh_operator_decide'){if(options.loseDecision)throw Error('decision reply lost');Object.assign(op,{phase:q.approve?'incomplete':'rejected',approved:q.approve,lookup_only:q.approve,worker_live:false,revision:op.revision+1,error:q.approve?undefined:{code:'confirmation_declined',message:'Kept installed'}});if(q.approve)op.result={receipt:{schema:'arm.node-uninstall/v1',plan:structuredClone(review),review_sha256:op.review_sha256,phase:'stop-unknown',recovery_identity:{...id,inode:53}},original_stop_observed:false,artifact_absent:false};return op;}
+  if(name==='mesh_operator_uninstall_lookup'){if(op.result)op.result.original_stop_observed=true;op.revision++;return op;}
+  if(name==='mesh_operator_uninstall_finish'){if(options.loseFinish)throw Error('finish reply lost');op.result.receipt.phase='removed';op.result.original_stop_observed=op.result.artifact_absent=true;op.phase='completed';op.revision++;return op;}
+ });
+ const prepare=async()=>{await f.open();await f.find('Uninstall managed ARM…').fire('click');const choice=f.form().all().find(n=>n.tagName==='select');choice.value='publication-original';await choice.fire('change');f.form().all().find(n=>n.tagName==='textarea').value='Finish maintenance';await f.form().fire('submit');};
+ return{...f,prepare,intercept:fn=>{held=fn;}};
+}
 function fixture(saved=[],savedResumes=[],entries=[],blockers=[]){
  const doc={activeElement:null,createElement:tag=>new Element(tag,doc)};doc.body=doc.createElement('body');const root=doc.createElement('section');doc.body.append(root);let live=true;const calls=[],pending=new Map([['arm-mesh-pending',JSON.stringify(saved)],['arm-mesh-resume-pending',JSON.stringify(savedResumes)]]);let held=false;
  const op={key:'key',kind:'connect',revision:2,phase:'awaiting_review',worker_live:true,review_revision:2,review_sha256:'a'.repeat(64),review_expires_at:'2030-01-01',review:{operation:'connect-direct-peers',local_prepared:{identity:{host:'a'.repeat(32),name:'source'}},remote_prepared:{identity:{host:'b'.repeat(32),name:'target'}},request:{source_permissions_on_target:{permissions:['observe-host']},target_permissions_on_source:{permissions:[]},reason:'test'}}};
@@ -199,7 +216,7 @@ function stopConsoleFixture(options={}){
  const plan={schema:'arm.node-stop.plan/v1',key:'stop-ui',target:{host,owner:'501',home:'/home/operator/arm',backend_generation:'c'.repeat(32),certificate_sha256:'d'.repeat(64),spki_sha256:'e'.repeat(64),directory:{owner:501,inode:42,device:7},startup_contract:'arm-desired-state-gated-v1'},actor:{source_host:'a'.repeat(32),pair:'f'.repeat(64),grant_revision:7,certificate_sha256:'1'.repeat(64),spki_sha256:'2'.repeat(64)},desired_state_revision:9,policy:{force:false,wait:false},reason:'Finish maintenance',impact:{complete:true,scope_sha256:'3'.repeat(64),outstanding:1,obligations:[{id:'compile-lease',kind:'lease',state:'active',revision:4}],blockers:[],affected_peers:['a'.repeat(32)]},observed_at:new Date(now).toISOString(),expires_at:new Date(now+120000).toISOString(),supervisor_scope:'The host stays running. External service-manager ownership is unverified.'};
  const op=options.op??{key:'stop-ui',kind:'stop',targets:['host:'+host],revision:3,phase:'awaiting_review',worker_live:true,approved:false,lookup_only:false,can_prepare_fresh:false,review_revision:2,review_sha256:'a'.repeat(64),review_expires_at:plan.expires_at,review:{operation:'stop-arm-node',key:'stop-ui',review_sha256:'a'.repeat(64),owner_username:'operator',history_used:4,history_capacity:128,completion_check:{available:true,detail:'Checks only the original ARM backend.'},plan}};
  let known=Boolean(options.op),live=true,hook=null;
- const ui=createMeshConsole({root,document:doc,connected:()=>live,storage:{getItem:k=>saved.get(k),setItem:(k,v)=>{if(options.storageFailure)throw Error('storage unavailable');saved.set(k,v);}},call:async(name,q)=>{
+ const ui=createMeshConsole({root,document:doc,connected:()=>live,storage:{getItem:k=>saved.get(k),setItem:(k,v)=>{if(options.storageFailure)throw Error('storage unavailable');saved.set(k,v);}},call:async(name,q)=>structuredClone(await(async()=>{
   calls.push([name,q]);if(hook){const answer=hook(name,q);if(answer!==undefined)return await answer;}
   if(name==='node_list')return{nodes:[node]};if(name==='node_inspect')return node;if(name==='mesh_operator_list')return known?[op]:[];
   if(name==='mesh_operator_prepare'){known=true;op.key=q.key;op.review.key=q.key;op.review.plan.key=q.key;op.review.plan.policy=q.stop.policy;op.review.plan.reason=q.stop.reason;if(options.losePrepare)throw Error('prepare reply lost');return op;}
@@ -207,7 +224,7 @@ function stopConsoleFixture(options={}){
   if(name==='mesh_operator_decide'){if(options.loseDecision)throw Error('decision reply lost');Object.assign(op,{phase:'rejected',worker_live:false,approved:false,can_prepare_fresh:true});return op;}
   if(name==='mesh_operator_stop_lookup')return op;
   throw Error(name);
- }});
+ })())});
  const find=text=>doc.body.all().find(n=>n.tagName==='button'&&n.textContent===text),dialog=()=>doc.body.all().find(n=>n.tagName==='dialog'&&n.open),form=()=>dialog().all().find(n=>n.tagName==='form');
  const open=async()=>{await ui.refresh();await find('View node').fire('click');};
  const prepare=async()=>{await open();await find('Stop ARM…').fire('click');const mode=form().all().find(n=>n.tagName==='select');mode.value='wait';await mode.fire('change');form().all().find(n=>n.tagName==='textarea').value='Finish maintenance';await form().fire('submit');};
@@ -303,4 +320,61 @@ test('Stop completion diagnostics are complete in an initially closed disclosure
  assert.equal(f.doc.activeElement.textContent,'Keep running');assert.equal(JSON.stringify(f.op.review),original);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_decide').length,0);
  const unavailable=stopConsoleFixture();unavailable.op.review.completion_check={available:false,detail:'Cannot inspect the original helper: '+ 'f'.repeat(64)};await unavailable.prepare();
  assert.match(unavailable.dialog().textContent,/Cannot inspect the original helper/);assert.equal(unavailable.dialog().all().some(n=>n.className==='mesh-stop-completion'),false);assert.equal(unavailable.find('Stop this ARM backend'),undefined);assert.ok(unavailable.find('Keep running'));
+});
+
+test('uninstall requires an explicit original installation selection and defaults to keep installed',async()=>{
+ const f=uninstallConsoleFixture();await f.open();await f.find('Uninstall managed ARM…').fire('click');assert.equal(f.doc.activeElement.textContent,'Keep installed');assert.equal(f.form().all().find(n=>n.tagName==='select').value,'');await f.form().fire('submit');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_prepare').length,0);const choice=f.form().all().find(n=>n.tagName==='select');choice.value='publication-original';await choice.fire('change');f.form().all().find(n=>n.tagName==='textarea').value='Remove owned executable';await f.form().fire('submit');const q=f.calls.find(([n])=>n==='mesh_operator_prepare')[1];assert.deepEqual(q.uninstall,{host:f.node.host,provision_key:'publication-original',reason:'Remove owned executable',policy:{force:false,wait:false}});assert.equal(f.doc.activeElement.textContent,'Keep installed');assert.match(f.dialog().textContent,/operator \(UID 501\)/);assert.match(f.dialog().textContent,/WHAT STAYS/);assert.match(f.dialog().textContent,/backups and retained artifacts/);assert.ok(f.dialog().all().some(n=>n.className==='json-view'));await f.find('Keep installed').fire('click');assert.deepEqual(f.calls.filter(([n])=>n==='mesh_operator_decide').map(([,q])=>q.approve),[false]);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_finish').length,0);
+});
+test('uninstall entry cannot borrow Stop-only permission even through synthetic click',async()=>{
+ const f=uninstallConsoleFixture();f.node.outbound_scope.grant.permissions=['node-stop'];await f.open();const action=f.find('Uninstall managed ARM…');assert.equal(action.disabled,true);await action.fire('click');assert.equal(f.form(),undefined);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_context').length,0);
+});
+test('provisional uninstall review can become ready without freezing its preliminary revision',async()=>{
+ const f=uninstallConsoleFixture();f.op.phase='preparing';
+ // Cross the same serialized boundary as the real backend. Sharing the mock
+ // object with the client would silently update its old revision in place.
+ f.intercept((name,q)=>{
+  if(name==='mesh_operator_prepare'){f.op.key=q.key;f.op.review.key=q.key;f.op.review.reason=f.op.review.stop.plan.reason=q.uninstall.reason;return structuredClone(f.op);}
+  if(name==='mesh_operator_get')return structuredClone(f.op);
+ });
+ await f.prepare();assert.equal(f.find('Keep installed'),undefined);
+ const readyRevision=f.op.review_revision+2;Object.assign(f.op,{phase:'awaiting_review',revision:f.op.revision+3,review_revision:readyRevision});
+ await f.ui.refresh();assert.ok(f.find('Keep installed'),'same immutable plan must reach its actual decision state');assert.equal(f.doc.activeElement.textContent,'Keep installed');
+ await f.find('Keep installed').fire('click');const decision=f.calls.find(([name])=>name==='mesh_operator_decide')[1];assert.equal(decision.review_revision,readyRevision);assert.equal(decision.approve,false);
+ assert.equal(f.calls.filter(([name])=>name==='mesh_operator_prepare').length,1);
+});
+test('a ready uninstall review never accepts another decision revision',async()=>{
+ const f=uninstallConsoleFixture();f.intercept(name=>name==='mesh_operator_get'?structuredClone(f.op):undefined);await f.prepare();
+ // Initial ready API result also needs its own detached snapshot.
+ const original=structuredClone(f.op);f.dialog().close();await f.ui.refresh();
+ f.intercept(name=>name==='mesh_operator_list'?[structuredClone(original)]:name==='mesh_operator_get'?structuredClone(original):undefined);await f.ui.refresh();await f.root.all().find(n=>n.className==='mesh-operation-row').fire('click');
+ const changed=structuredClone(original);changed.revision++;changed.review_revision++;
+ f.intercept(name=>name==='mesh_operator_get'?changed:undefined);await f.ui.refresh();assert.match(f.root.textContent,/immutable uninstall review changed/);assert.equal(f.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
+});
+test('lost uninstall preparation retains its original key and cannot resend',async()=>{
+ const f=uninstallConsoleFixture({losePrepare:true});await f.prepare();assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-pending')),[f.op.key]);await f.form().fire('submit');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_prepare').length,1);assert.equal(f.find('Prepare uninstall review').disabled,true);const choice=f.form().all().find(n=>n.tagName==='select');await choice.fire('change');await f.form().fire('submit');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_prepare').length,1);
+});
+test('uncertain uninstall decision persists across reload and offers neither approval nor generic recovery',async()=>{
+ const f=uninstallConsoleFixture({loseDecision:true});await f.prepare();await f.find('Approve managed uninstall').fire('click');const pending=JSON.parse(f.saved.get('arm-mesh-uninstall-pending'));assert.deepEqual(pending.decisions,[f.op.key]);const restored=uninstallConsoleFixture({saved:f.saved});Object.assign(restored.op,structuredClone(f.op));restored.intercept((name)=>name==='mesh_operator_list'?[restored.op]:undefined);await restored.ui.refresh();await restored.root.all().find(n=>n.className==='mesh-operation-row').fire('click');assert.equal(restored.find('Approve managed uninstall'),undefined);assert.equal(restored.find('Prepare recovery review…'),undefined);assert.equal(restored.find('Hand off unresolved operation…'),undefined);assert.equal(restored.find('Request cancellation'),undefined);assert.match(restored.dialog().textContent,/may already be recorded/);assert.equal(restored.calls.filter(([n])=>n==='mesh_operator_decide').length,0);
+});
+test('uninstall finish is separate default-no and a lost reply permits inspection without resend',async()=>{
+ const f=uninstallConsoleFixture({loseFinish:true});await f.prepare();await f.find('Approve managed uninstall').fire('click');assert.equal(f.find('Review finishing removal…'),undefined);await f.find('Inspect original uninstall').fire('click');assert.ok(f.find('Review finishing removal…'));await f.find('Review finishing removal…').fire('click');assert.equal(f.doc.activeElement.textContent,'Keep unchanged');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_finish').length,0);await f.find('Finish exact removal').fire('click');assert.deepEqual(f.calls.find(([n])=>n==='mesh_operator_uninstall_finish')[1],{key:f.op.key,revision:f.op.revision,review_sha256:f.op.review_sha256});assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-uninstall-pending')).finishes,[{key:f.op.key,revision:String(f.op.revision),review_sha256:f.op.review_sha256}]);await f.find('Finish exact removal').fire('click');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_finish').length,1);f.dialog().close();await f.ui.refresh();await f.find('Inspect uncertain uninstall · '+f.op.key).fire('click');assert.equal(f.find('Review finishing removal…'),undefined);assert.equal(JSON.parse(f.saved.get('arm-mesh-uninstall-pending')).finishes.length,1,'generic Get cannot clear finish uncertainty');await f.find('Inspect original uninstall').fire('click');assert.ok(f.find('Review finishing removal…'));assert.equal(JSON.parse(f.saved.get('arm-mesh-uninstall-pending')).finishes.length,0,'higher-revision explicit native lookup reconciles an unremoved original image');f.op.result.receipt.phase='removed';f.op.result.original_stop_observed=f.op.result.artifact_absent=true;f.op.phase='completed';f.op.revision++;await f.find('Inspect original uninstall').fire('click');assert.match(f.dialog().textContent,/Managed ARM executable removed/);assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-uninstall-pending')).finishes,[]);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_finish').length,1);
+});
+test('uninstall context and preparation refuse foreign host before any decision',async()=>{
+ const f=uninstallConsoleFixture();f.intercept(name=>name==='mesh_operator_uninstall_context'?{host:'e'.repeat(32),candidates:[]}:undefined);await f.open();await f.find('Uninstall managed ARM…').fire('click');assert.match(f.dialog().textContent,/differs from the selected host/);assert.equal(f.find('Prepare uninstall review').disabled,true);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_prepare').length,0);
+ const g=uninstallConsoleFixture();g.intercept((name,q)=>{if(name!=='mesh_operator_prepare')return;const op=structuredClone(g.op);op.key=q.key;op.review.key=q.key;op.targets=['host:'+'e'.repeat(32)];op.review.stop.plan.target.host='e'.repeat(32);return op;});await g.prepare();assert.equal(g.find('Approve managed uninstall'),undefined);assert.deepEqual(JSON.parse(g.saved.get('arm-mesh-pending')),[g.calls.find(([n])=>n==='mesh_operator_prepare')[1].key]);
+});
+test('late original uninstall lookup success and error cannot replace another dialog',async()=>{
+ for(const reject of [false,true]){const f=uninstallConsoleFixture();await f.prepare();await f.find('Approve managed uninstall').fire('click');let resolve,rejectRead;f.intercept(name=>name==='mesh_operator_uninstall_lookup'?new Promise((yes,no)=>{resolve=yes;rejectRead=no;}):undefined);const read=f.find('Inspect original uninstall').fire('click');f.dialog().close();await f.find('View node').fire('click');const other=f.dialog();if(reject)rejectRead(Error('late old read'));else resolve(f.op);await read;assert.equal(f.dialog(),other);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_finish').length,0);}
+});
+test('uninstall decision rejects changed immutable hash and storage failure before another effect',async()=>{
+ const f=uninstallConsoleFixture();await f.prepare();f.intercept(name=>name==='mesh_operator_decide'?{...f.op,review_sha256:'e'.repeat(64),phase:'incomplete',approved:true,lookup_only:true}:undefined);await f.find('Approve managed uninstall').fire('click');assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-uninstall-pending')).decisions,[f.op.key]);assert.match(f.dialog().textContent,/immutable uninstall review changed/);await f.ui.refresh();assert.equal(f.find('Approve managed uninstall'),undefined);
+ const g=uninstallConsoleFixture({storageFailure:true});await g.prepare();assert.equal(g.calls.filter(([n])=>n==='mesh_operator_prepare').length,0);
+});
+test('refresh cannot replace a current uninstall with another operation kind',async()=>{
+ const f=uninstallConsoleFixture();await f.prepare();const original=f.dialog();f.intercept(name=>name==='mesh_operator_get'?{...f.op,kind:'connect'}:undefined);await f.ui.refresh();assert.equal(f.dialog(),original);assert.match(original.textContent,/Remove this managed ARM executable/);assert.equal(f.find('Trust and connect'),undefined);assert.equal(f.find('Request cancellation'),undefined);assert.equal(f.calls.filter(([name])=>['mesh_operator_cancel','mesh_operator_resume','mesh_operator_handoff'].includes(name)).length,0);assert.match(f.root.textContent,/does not match the exact requested key and host/);
+});
+test('offline preserves local Keep installed and Keep running dismissals but disables recorded declines',async()=>{
+ const stop=stopConsoleFixture();await stop.open();await stop.find('Stop ARM…').fire('click');stop.offline();assert.equal(stop.find('Keep running').disabled,false);await stop.find('Keep running').fire('click');assert.equal(stop.dialog(),undefined);assert.equal(stop.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
+ const edit=uninstallConsoleFixture();await edit.open();await edit.find('Uninstall managed ARM…').fire('click');edit.offline();assert.equal(edit.find('Keep installed').disabled,false);await edit.find('Keep installed').fire('click');assert.equal(edit.dialog(),undefined);assert.equal(edit.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
+ const review=uninstallConsoleFixture();await review.prepare();review.offline();assert.equal(review.find('Keep installed').disabled,true);await review.find('Keep installed').fire('click');assert.equal(review.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
 });

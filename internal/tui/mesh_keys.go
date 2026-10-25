@@ -39,6 +39,11 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 					Review  json.RawMessage `json:"reviewed_stop_snapshot"`
 					Request meshIntent      `json:"exact_request"`
 				}{ui.prompt.stopReview, ui.prompt.request}
+			} else if len(ui.prompt.uninstallReview) > 0 {
+				record = struct {
+					Review  json.RawMessage `json:"reviewed_uninstall_snapshot"`
+					Request meshIntent      `json:"exact_request"`
+				}{ui.prompt.uninstallReview, ui.prompt.request}
 			} else if ui.operation != nil {
 				record = struct {
 					Operation *meshops.Operation `json:"operation"`
@@ -85,10 +90,18 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			m.input.SetValue(form.fields[form.selected].value)
 			return m.input.Focus()
 		case "[":
+			if form.uninstallHost != "" {
+				cycleMeshProvenance(form, -1)
+				return nil
+			}
 			if len(form.blockers) > 0 {
 				form.blockerIndex = min(len(form.blockers)-1, max(0, form.blockerIndex-1))
 			}
 		case "]":
+			if form.uninstallHost != "" {
+				cycleMeshProvenance(form, 1)
+				return nil
+			}
 			if len(form.blockers) > 0 {
 				form.blockerIndex = min(len(form.blockers)-1, max(0, form.blockerIndex+1))
 			}
@@ -108,6 +121,10 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 				return cmd
 			}
 		case "r":
+			if form.uninstallHost != "" {
+				form.contextReady = false
+				return m.readMesh("uninstall-context", form.uninstallHost)
+			}
 			if form.reconnectHost != "" {
 				form.contextReady = false
 				return m.readMesh("reconnect", form.reconnectHost)
@@ -125,6 +142,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			ui.prompt = &meshPrompt{title: "PREPARE CONNECTION · CONSEQUENCES", text: meshops.PreparationNotice + "\n\nEXACT DRAFT\n" + meshDraftSummary(q.Params), request: q}
 			if form.stopHost != "" {
 				ui.prompt = &meshPrompt{title: "PREPARE STOP REVIEW", text: "Requests a current plan for this exact ARM backend. No stop is approved before the separate concrete review.\n\n" + meshStopDraftSummary(q.Params), request: q}
+			}
+			if form.uninstallHost != "" {
+				ui.prompt = &meshPrompt{title: "PREPARE UNINSTALL REVIEW", text: "Read a current plan for the selected source-managed installation. No Stop or removal is approved yet.\n\nExact host " + safe(form.uninstallHost) + "\nOriginal source receipt " + safe(form.provisionKey) + "\nThe database, identity, history, configuration and backups remain.", request: q}
 			}
 			m.viewport.GotoTop()
 		}
@@ -163,6 +183,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 	if ui.unknown != nil {
 		switch key {
 		case "l":
+			if ui.unknown.Operation == "mesh_operator_uninstall_finish" && ui.operation != nil && ui.operation.Kind == "uninstall" && ui.operation.Approved {
+				return m.readMesh("uninstall-lookup", ui.unknown.Key)
+			}
 			return m.readMesh("operation", ui.unknown.Key)
 		case "t":
 			q := *ui.unknown
@@ -186,7 +209,7 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		if key == "l" || key == "t" {
 			return nil
 		}
-		if strings.Contains("anceshdg", key) && len(key) == 1 {
+		if (strings.Contains("anceshdgu", key) || (key == "f" && ui.operation != nil && ui.operation.Kind == "uninstall")) && len(key) == 1 {
 			ui.err = "Resolve the exact retained uncertain request before preparing another Mesh mutation."
 			return nil
 		}
@@ -254,11 +277,25 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		m.inputMode = "mesh:disconnect_reason"
 		m.input.SetValue("")
 		return m.input.Focus()
+	case "u":
+		if allowed, why := meshUninstallAvailability(ui.node); !allowed {
+			ui.err = why
+			return nil
+		}
+		ui.form = newMeshStopForm(ui.node.Host)
+		ui.form.uninstallHost = ui.node.Host
+		ui.form.contextReady = false
+		ui.err = ""
+		m.viewport.GotoTop()
+		return m.readMesh("uninstall-context", ui.node.Host)
 	case "v":
 		return m.openSelectedNode()
 	case "a":
 		return m.meshDecision(true)
 	case "l":
+		if ui.operation != nil && ui.operation.Kind == "uninstall" && ui.operation.Approved {
+			return m.readMesh("uninstall-lookup", ui.operation.Key)
+		}
 		if ui.operation != nil && ui.operation.Kind == "stop" && (ui.operation.LookupOnly || ui.operation.Approved) {
 			return m.readMesh("stop-lookup", ui.operation.Key)
 		}
@@ -277,6 +314,10 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			return nil
 		}
 		op := ui.operation
+		if op.Kind == "uninstall" {
+			ui.err = "Uninstall has no resend, resume or handoff. Read the original key; finish is separately reviewed."
+			return nil
+		}
 		if op.Kind == "stop" && (key != "c" || op.LookupOnly || op.Approved) {
 			ui.err = "Stop recovery is lookup-only; no resume or handoff is available."
 			return nil
@@ -327,6 +368,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			return m.readMesh("operation", ui.operation.ParentKey)
 		}
 	case "f":
+		if ui.operation != nil && ui.operation.Kind == "uninstall" {
+			return m.meshFinishUninstall()
+		}
 		if ui.operation != nil && ui.operation.ResolvedBy != "" {
 			return m.readMesh("operation", ui.operation.ResolvedBy)
 		}
@@ -358,7 +402,7 @@ func (m *dashboardModel) meshDecision(approve bool) tea.Cmd {
 	if now.IsZero() {
 		now = time.Now()
 	}
-	if !meshCanReview(op, now) && !(!approve && meshStopCanDecline(op, now)) {
+	if !meshCanReview(op, now) && !(!approve && (meshStopCanDecline(op, now) || meshUninstallCanDecline(op, now))) {
 		ui.err = "Review is not current/live. Read the exact operation and review its current revision before deciding."
 		return nil
 	}
@@ -372,7 +416,7 @@ func (m *dashboardModel) meshDecision(approve bool) tea.Cmd {
 		ui.err = err.Error()
 		return nil
 	}
-	if op.Kind == "stop" {
+	if op.Kind == "stop" || op.Kind == "uninstall" {
 		q.LookupOnly = true
 	}
 	action := "DECLINE"
@@ -386,6 +430,13 @@ func (m *dashboardModel) meshDecision(approve bool) tea.Cmd {
 			title = "STOP ARM · FINAL REVIEW"
 		}
 		ui.prompt = &meshPrompt{title: title, text: fmt.Sprintf("Exact review revision %d · expires %s\n[i] Complete immutable review. Default: keep running.", op.ReviewRevision, op.ReviewExpires.Format(time.RFC3339)), request: q, stopReview: append(json.RawMessage(nil), op.Review...)}
+	}
+	if op.Kind == "uninstall" {
+		title := "KEEP INSTALLATION UNCHANGED"
+		if approve {
+			title = "UNINSTALL ARM · FINAL REVIEW"
+		}
+		ui.prompt = &meshPrompt{title: title, text: fmt.Sprintf("Exact review revision %d · expires %s\nDefault: keep this installation unchanged.", op.ReviewRevision, op.ReviewExpires.Format(time.RFC3339)), request: q, uninstallReview: append(json.RawMessage(nil), op.Review...)}
 	}
 	m.viewport.GotoTop()
 	return nil
@@ -462,6 +513,9 @@ func (m *dashboardModel) meshControls() []mouseControl {
 			if ui.prompt.request.Operation == "mesh_operator_prepare" {
 				yes = "Prepare review"
 			}
+			if ui.prompt.request.Operation == "mesh_operator_uninstall_finish" {
+				yes = "Finish original uninstall"
+			}
 			if ui.prompt.request.Operation == "mesh_operator_decide" {
 				var q meshops.Decision
 				if json.Unmarshal(ui.prompt.request.Params, &q) == nil {
@@ -471,11 +525,27 @@ func (m *dashboardModel) meshControls() []mouseControl {
 					}
 				}
 			}
+			if len(ui.prompt.uninstallReview) > 0 && ui.prompt.request.Operation == "mesh_operator_decide" {
+				var d meshops.Decision
+				if json.Unmarshal(ui.prompt.request.Params, &d) == nil {
+					yes = "Keep installation"
+					if d.Approve {
+						yes = "Uninstall ARM"
+					}
+				}
+			}
 			return []mouseControl{{"n", "Keep unchanged"}, {"y", yes}, {"i", "Record"}}
 		}
 		return []mouseControl{{"n", "Keep"}, {"y", "Confirm"}, {"i", "Record"}}
 	}
 	if ui.form != nil {
+		if ui.form.uninstallHost != "" {
+			controls := []mouseControl{{"[", "Previous receipt"}, {"]", "Next receipt"}, {"r", "Refresh provenance"}, {"enter", "Edit field"}, {"space", "Policy"}, {"esc", "Keep installed"}}
+			if ui.form.contextReady && ui.form.provisionKey != "" {
+				controls = append([]mouseControl{{"p", "Prepare review"}}, controls...)
+			}
+			return controls
+		}
 		return []mouseControl{{"enter", "Edit field"}, {"space", "Cycle"}, {"p", "Prepare"}, {"esc", "Back"}}
 	}
 	if ui.unknown != nil && ui.operation != nil && ui.operation.Kind == "stop" && ui.mode == "operation" {
@@ -496,9 +566,28 @@ func (m *dashboardModel) meshControls() []mouseControl {
 		if allowed, _ := meshStopAvailability(ui.node); allowed {
 			controls = append([]mouseControl{{"s", "Stop ARM"}}, controls...)
 		}
+		if allowed, _ := meshUninstallAvailability(ui.node); allowed {
+			controls = append([]mouseControl{{"u", "Uninstall ARM"}}, controls...)
+		}
 		return controls
 
 	case "operation":
+		if ui.operation != nil && ui.operation.Kind == "uninstall" {
+			controls := []mouseControl{{"r", "Read receipt"}, {"i", "Record"}, {"esc", "Back"}}
+			if meshUninstallCanDecline(*ui.operation, time.Now()) {
+				controls = append([]mouseControl{{"n", "Keep installation"}}, controls...)
+			}
+			if meshCanReview(*ui.operation, time.Now()) {
+				controls = append([]mouseControl{{"a", "Review uninstall"}}, controls...)
+			}
+			if ui.operation.Approved {
+				controls = append([]mouseControl{{"l", "Check original uninstall"}}, controls...)
+				if meshUninstallFinishReady(ui) {
+					controls = append([]mouseControl{{"f", "Review finish"}}, controls...)
+				}
+			}
+			return controls
+		}
 		if ui.operation != nil && ui.operation.Kind == "stop" {
 			controls := []mouseControl{{"[", "Previous lease"}, {"]", "Next lease"}, {"d", "Lease details"}, {"r", "Lookup"}, {"i", "Record"}, {"esc", "Back"}}
 			if meshStopCanDecline(*ui.operation, time.Now()) {

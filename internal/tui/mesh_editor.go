@@ -30,6 +30,7 @@ type meshReconnectDraft struct {
 	Reverse     mesh.Grant `json:"target_permissions_on_source"`
 }
 type meshPrepareRequest struct {
+	Uninstall  *meshops.UninstallDraft  `json:"uninstall,omitempty"`
 	Key        string                   `json:"key"`
 	Kind       string                   `json:"kind"`
 	Connect    *meshConnectDraft        `json:"connect,omitempty"`
@@ -48,21 +49,26 @@ type meshPrompt struct {
 	request     meshIntent
 	retry       bool
 	// Display snapshot only. The exact request remains the decision authority.
-	stopReview json.RawMessage
+	stopReview      json.RawMessage
+	uninstallReview json.RawMessage
 }
 type meshField struct {
 	label, value string
 	choices      []string
 }
 type meshForm struct {
-	stopHost      string
-	contextReady  bool
-	contextSeen   bool
-	blockers      []meshops.ReconnectBlocker
-	blockerIndex  int
-	reconnectHost string
-	fields        []meshField
-	selected      int
+	uninstallHost    string
+	provisions       []meshops.UninstallCandidate
+	provisionKey     string
+	provenanceReason string
+	stopHost         string
+	contextReady     bool
+	contextSeen      bool
+	blockers         []meshops.ReconnectBlocker
+	blockerIndex     int
+	reconnectHost    string
+	fields           []meshField
+	selected         int
 }
 
 func newMeshForm() *meshForm {
@@ -151,6 +157,9 @@ func (f *meshForm) grant(offset int) (mesh.Grant, error) {
 	return g, g.Validate()
 }
 func (f *meshForm) request() (meshIntent, error) {
+	if f.uninstallHost != "" {
+		return f.uninstallRequest()
+	}
 	if f.stopHost != "" {
 		return f.stopRequest()
 	}

@@ -26,7 +26,7 @@ func (m *dashboardModel) refreshPending() {
 	}
 }
 func (m *dashboardModel) canOpenRecovery() bool {
-	return m.inputMode == "" && m.review == nil && m.ioPicker == nil && !m.pending && (m.composer == nil || m.composer.unknown) && !m.poolModal()
+	return m.inputMode == "" && m.review == nil && m.ioPicker == nil && !m.pending && (m.composer == nil || m.composer.unknown) && !m.poolModal() && !m.meshOwnsUninstallShortcut()
 }
 func (m *dashboardModel) openRecovery() tea.Cmd {
 	if m.messageBusy != "" || (m.poolPending != nil && m.poolPending.busy != "") {

@@ -14,25 +14,28 @@ import (
 )
 
 type meshDashboard struct {
-	stopLeaseIndex     int
-	stopLeaseSelection uint64
-	stopLease          *meshops.StopLeaseDetail
-	mode               string
-	registry           model.NodeRegistry
-	operations         []meshops.Operation
-	node               *model.NodeEntry
-	operation          *meshops.Operation
-	selected           int
-	sequence           uint64
-	loading            bool
-	err                string
-	form               *meshForm
-	prompt             *meshPrompt
-	unknown            *meshIntent
-	intent             *pendingRecord
-	busy               bool
-	watching           bool
-	dirty              bool
+	uninstallCheckedKey      string
+	uninstallCheckedRevision int64
+	uninstallCheckedHash     string
+	stopLeaseIndex           int
+	stopLeaseSelection       uint64
+	stopLease                *meshops.StopLeaseDetail
+	mode                     string
+	registry                 model.NodeRegistry
+	operations               []meshops.Operation
+	node                     *model.NodeEntry
+	operation                *meshops.Operation
+	selected                 int
+	sequence                 uint64
+	loading                  bool
+	err                      string
+	form                     *meshForm
+	prompt                   *meshPrompt
+	unknown                  *meshIntent
+	intent                   *pendingRecord
+	busy                     bool
+	watching                 bool
+	dirty                    bool
 }
 
 type meshReconnectContext struct {
@@ -41,6 +44,7 @@ type meshReconnectContext struct {
 }
 
 type meshReadMsg struct {
+	uninstall          *meshops.UninstallContext
 	stopLease          *meshops.StopLeaseDetail
 	stopLeaseRequest   *meshops.StopLeaseRequest
 	stopLeaseSelection uint64
@@ -79,7 +83,10 @@ type meshIntent struct {
 func newMeshIntent(operation, key string, params any) (meshIntent, error) {
 	raw, err := json.Marshal(params)
 	q := meshIntent{Key: key, Operation: operation, Params: raw}
-	if draft, ok := params.(meshPrepareRequest); ok && draft.Kind == "stop" {
+	if draft, ok := params.(meshPrepareRequest); ok && (draft.Kind == "stop" || draft.Kind == "uninstall") {
+		q.LookupOnly = true
+	}
+	if operation == "mesh_operator_uninstall_finish" {
 		q.LookupOnly = true
 	}
 	if err == nil {
@@ -89,7 +96,7 @@ func newMeshIntent(operation, key string, params any) (meshIntent, error) {
 }
 
 func (q meshIntent) validate() error {
-	if q.LookupOnly && q.Operation != "mesh_operator_prepare" && q.Operation != "mesh_operator_decide" && q.Operation != "mesh_operator_cancel" {
+	if q.LookupOnly && q.Operation != "mesh_operator_prepare" && q.Operation != "mesh_operator_decide" && q.Operation != "mesh_operator_cancel" && q.Operation != "mesh_operator_uninstall_finish" {
 		return fmt.Errorf("Stop recovery permits lookup only, no resume or handoff")
 	}
 	if !mesh.ValidKey(q.Key) || len(q.Params) > pendingRequestLimit {
@@ -108,16 +115,19 @@ func (q meshIntent) validate() error {
 			return err
 		}
 		count := 0
-		for _, present := range []bool{p.Connect != nil, p.Reconnect != nil, p.Disconnect != nil, p.Stop != nil} {
+		for _, present := range []bool{p.Connect != nil, p.Reconnect != nil, p.Disconnect != nil, p.Stop != nil, p.Uninstall != nil} {
 			if present {
 				count++
 			}
 		}
-		if count != 1 || (p.Kind == "connect" && p.Connect == nil) || (p.Kind == "reconnect" && p.Reconnect == nil) || (p.Kind == "disconnect" && p.Disconnect == nil) || (p.Kind == "stop" && (p.Stop == nil || !q.LookupOnly)) || (p.Kind != "connect" && p.Kind != "reconnect" && p.Kind != "disconnect" && p.Kind != "stop") {
+		if count != 1 || (p.Kind == "connect" && p.Connect == nil) || (p.Kind == "reconnect" && p.Reconnect == nil) || (p.Kind == "disconnect" && p.Disconnect == nil) || (p.Kind == "stop" && (p.Stop == nil || !q.LookupOnly)) || (p.Kind == "uninstall" && (p.Uninstall == nil || !q.LookupOnly)) || (p.Kind != "connect" && p.Kind != "reconnect" && p.Kind != "disconnect" && p.Kind != "stop" && p.Kind != "uninstall") {
 			return fmt.Errorf("exact connect, reconnect, disconnect or lookup-only Stop draft required")
 		}
-		if q.LookupOnly && p.Kind != "stop" {
+		if q.LookupOnly && p.Kind != "stop" && p.Kind != "uninstall" {
 			return fmt.Errorf("lookup-only Stop envelope changed operation kind")
+		}
+		if p.Uninstall != nil && (!validMeshStopHost(p.Uninstall.Host) || !mesh.ValidKey(p.Uninstall.ProvisionKey)) {
+			return fmt.Errorf("exact uninstall host and source receipt required")
 		}
 		if p.Stop != nil && !validMeshStopHost(p.Stop.Host) {
 			return fmt.Errorf("stop requires an exact stable host")
@@ -128,6 +138,15 @@ func (q meshIntent) validate() error {
 			if e != nil || len(raw) != 16 || hex.EncodeToString(raw) != p.Reconnect.Host {
 				return fmt.Errorf("reconnect requires an exact stable host")
 			}
+		}
+	case "mesh_operator_uninstall_finish":
+		var p meshUninstallFinishRequest
+		if e := strictPendingJSON(q.Params, &p); e != nil {
+			return e
+		}
+		hash, e := hex.DecodeString(p.Hash)
+		if e != nil || len(hash) != 32 || hex.EncodeToString(hash) != p.Hash || p.Revision <= 0 || !q.LookupOnly {
+			return fmt.Errorf("exact original uninstall finish revision/hash required")
 		}
 	case "mesh_operator_decide":
 		var p meshops.Decision
@@ -171,14 +190,26 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 	}
 	var stopRevision int64
 	expectedStopTarget := ""
-	if ui.operation != nil && ui.operation.Kind == "stop" && ui.operation.Key == id && len(ui.operation.Targets) == 1 {
+	if ui.operation != nil && (ui.operation.Kind == "stop" || ui.operation.Kind == "uninstall") && ui.operation.Key == id && len(ui.operation.Targets) == 1 {
 		expectedStopTarget = ui.operation.Targets[0]
 	}
 	if ui.unknown != nil && ui.unknown.LookupOnly && ui.unknown.Key == id && ui.unknown.Operation == "mesh_operator_prepare" {
 		var draft meshPrepareRequest
-		if json.Unmarshal(ui.unknown.Params, &draft) == nil && draft.Stop != nil {
-			expectedStopTarget = "host:" + draft.Stop.Host
+		if json.Unmarshal(ui.unknown.Params, &draft) == nil {
+			if draft.Stop != nil {
+				expectedStopTarget = "host:" + draft.Stop.Host
+			}
+			if draft.Uninstall != nil {
+				expectedStopTarget = "host:" + draft.Uninstall.Host
+			}
 		}
+	}
+	if mode == "uninstall-lookup" {
+		if ui.operation == nil || ui.operation.Key != id || ui.operation.Kind != "uninstall" || !ui.operation.Approved || !meshUninstallOperationBound(*ui.operation) {
+			ui.err = "Read the exact approved original uninstall before checking it."
+			return nil
+		}
+		stopRevision = ui.operation.Revision
 	}
 	if mode == "stop-lookup" {
 		if ui.operation == nil || ui.operation.Key != id || ui.operation.Kind != "stop" || (!ui.operation.LookupOnly && !ui.operation.Approved) {
@@ -215,6 +246,25 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 			if msg.err == nil {
 				msg.err = session.Call(ctx, "mesh_operator_list", nil, &msg.operations)
 			}
+		case "uninstall-context":
+			msg.node = &model.NodeEntry{}
+			msg.err = session.Call(ctx, "node_inspect", map[string]string{"host": id}, msg.node)
+			if msg.err == nil {
+				allowed, why := meshUninstallAvailability(msg.node)
+				if msg.node.Host != id || !allowed {
+					msg.err = fmt.Errorf("%s", why)
+				}
+			}
+			if msg.err == nil {
+				msg.uninstall = &meshops.UninstallContext{}
+				msg.err = session.Call(ctx, "mesh_operator_uninstall_context", map[string]string{"host": id}, msg.uninstall)
+				if msg.err == nil && (msg.uninstall.Host != id || msg.uninstall.Candidates == nil) {
+					msg.err = fmt.Errorf("exact managed-installation context unavailable")
+				}
+			}
+		case "uninstall-lookup":
+			msg.operation = &meshops.Operation{}
+			msg.err = session.Call(ctx, "mesh_operator_uninstall_lookup", map[string]any{"key": id, "revision": stopRevision}, msg.operation)
 		case "reconnect":
 			msg.reconnect = &meshReconnectContext{}
 			msg.err = session.Call(ctx, "mesh_operator_reconnect_context", map[string]string{"host": id}, msg.reconnect)
@@ -245,8 +295,8 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 			msg.operation = &meshops.Operation{}
 			msg.err = session.Call(ctx, "mesh_operator_get", map[string]string{"key": id}, msg.operation)
 		}
-		if msg.err == nil && msg.operation != nil && (msg.operation.Kind == "stop" || expectedStopTarget != "") {
-			if msg.operation.Key != id || !meshStopOperationBound(*msg.operation) || (expectedStopTarget != "" && msg.operation.Targets[0] != expectedStopTarget) {
+		if msg.err == nil && msg.operation != nil && (msg.operation.Kind == "stop" || msg.operation.Kind == "uninstall" || expectedStopTarget != "") {
+			if msg.operation.Key != id || !((msg.operation.Kind == "stop" && meshStopOperationBound(*msg.operation)) || (msg.operation.Kind == "uninstall" && meshUninstallOperationBound(*msg.operation))) || (expectedStopTarget != "" && msg.operation.Targets[0] != expectedStopTarget) {
 				msg.err = fmt.Errorf("Stop lookup returned a different exact host/review")
 			}
 		}
@@ -268,12 +318,33 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 			return nil
 		}
 	}
+	if msg.mode == "uninstall-context" && (ui.form == nil || ui.form.uninstallHost == "" || msg.uninstall != nil && ui.form.uninstallHost != msg.uninstall.Host) {
+		return nil
+	}
 	if msg.err != nil {
 		ui.err = safe(msg.err.Error())
 		return nil
 	}
 	ui.err = ""
 	switch msg.mode {
+	case "uninstall-context":
+		f := ui.form
+		previous := f.provisionKey
+		f.provisions = append([]meshops.UninstallCandidate(nil), msg.uninstall.Candidates...)
+		f.provisionKey = ""
+		for _, p := range f.provisions {
+			if p.ProvisionKey == previous {
+				f.provisionKey = previous
+			}
+		}
+		if !f.contextSeen && len(f.provisions) == 1 {
+			f.provisionKey = f.provisions[0].ProvisionKey
+		}
+		f.contextSeen = true
+		f.contextReady = true
+		f.provenanceReason = msg.uninstall.Reason
+		ui.node = msg.node
+		m.viewport.GotoTop()
 	case "stop-lease":
 		if msg.stopLeaseRequest == nil || msg.stopLease == nil || !meshStopLeaseMatches(ui.operation, *msg.stopLeaseRequest, *msg.stopLease) {
 			ui.err = "Stop review changed while reading lease details. Refresh its exact receipt."
@@ -342,14 +413,21 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 		if changed {
 			m.viewport.GotoTop()
 		}
-	case "operation", "stop-lookup":
+	case "operation", "stop-lookup", "uninstall-lookup":
 		changed := ui.operation == nil || msg.operation == nil || ui.operation.Key != msg.operation.Key
 		if changed || ui.operation.ReviewRevision != msg.operation.ReviewRevision || ui.operation.ReviewHash != msg.operation.ReviewHash {
 			ui.stopLeaseIndex = 0
 			ui.stopLease = nil
 		}
 		ui.operation = msg.operation
-		if ui.unknown != nil && ui.unknown.LookupOnly && msg.operation != nil && msg.operation.Kind == "stop" && msg.operation.Key == ui.unknown.Key {
+		if msg.operation != nil && msg.mode == "uninstall-lookup" {
+			ui.uninstallCheckedKey = msg.operation.Key
+			ui.uninstallCheckedRevision = msg.operation.Revision
+			ui.uninstallCheckedHash = msg.operation.ReviewHash
+		} else if msg.operation != nil && (ui.uninstallCheckedKey != msg.operation.Key || ui.uninstallCheckedRevision != msg.operation.Revision || ui.uninstallCheckedHash != msg.operation.ReviewHash) {
+			ui.uninstallCheckedKey = ""
+		}
+		if ui.unknown != nil && ui.unknown.LookupOnly && msg.operation != nil && (msg.operation.Kind == "stop" || msg.operation.Kind == "uninstall") && msg.operation.Key == ui.unknown.Key {
 			known := msg.operation.LookupOnly || msg.operation.CanPrepareFresh || ui.unknown.Operation == "mesh_operator_prepare"
 			if known && validateMeshOutcome(*ui.unknown, *msg.operation) == nil && m.finishDurable(ui.intent, false) {
 				ui.unknown = nil
@@ -415,11 +493,20 @@ func (m *dashboardModel) sendMesh(q meshIntent, retry bool) tea.Cmd {
 }
 
 func validateMeshOutcome(q meshIntent, op meshops.Operation) error {
-	if !mesh.ValidKey(op.Key) || op.Revision <= 0 || (op.Kind != "connect" && op.Kind != "reconnect" && op.Kind != "disconnect" && op.Kind != "stop") || op.Phase == "" {
+	if !mesh.ValidKey(op.Key) || op.Revision <= 0 || (op.Kind != "connect" && op.Kind != "reconnect" && op.Kind != "disconnect" && op.Kind != "stop" && op.Kind != "uninstall") || op.Phase == "" {
 		return fmt.Errorf("invalid coordinator receipt; retain exact request/key and inspect its durable outcome")
 	}
-	if q.LookupOnly && op.Kind != "stop" {
+	if q.LookupOnly && op.Kind != "stop" && op.Kind != "uninstall" {
 		return fmt.Errorf("lookup-only Stop receipt changed operation kind")
+	}
+	if op.Kind == "uninstall" && !meshUninstallOperationBound(op) {
+		return fmt.Errorf("uninstall receipt differs from exact host/review")
+	}
+	if q.Operation == "mesh_operator_uninstall_finish" {
+		var p meshUninstallFinishRequest
+		if strictPendingJSON(q.Params, &p) != nil || op.ReviewHash != p.Hash || op.Revision <= p.Revision {
+			return fmt.Errorf("original uninstall finish response changed review")
+		}
 	}
 	if op.Kind == "stop" && !meshStopOperationBound(op) {
 		return fmt.Errorf("Stop receipt differs from its exact host target or review")
@@ -434,6 +521,9 @@ func validateMeshOutcome(q meshIntent, op meshops.Operation) error {
 		var p meshPrepareRequest
 		if strictPendingJSON(q.Params, &p) != nil || p.Kind != op.Kind {
 			return fmt.Errorf("coordinator result kind differs from exact prepared intent")
+		}
+		if p.Uninstall != nil && (op.Kind != "uninstall" || len(op.Targets) != 1 || op.Targets[0] != "host:"+p.Uninstall.Host) {
+			return fmt.Errorf("uninstall preparation changed selected host")
 		}
 		if p.Stop != nil && (op.Kind != "stop" || len(op.Targets) != 1 || op.Targets[0] != "host:"+p.Stop.Host) {
 			return fmt.Errorf("Stop preparation changed selected host")

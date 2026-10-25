@@ -132,6 +132,12 @@ func (m *dashboardModel) windowTitle() (string, string) {
 			return m.meshUI.prompt.title, "warning"
 		}
 		if m.meshUI.form != nil {
+			if m.meshUI.form.uninstallHost != "" {
+				return "UNINSTALL ARM · DRAFT", "warning"
+			}
+			if m.meshUI.form.stopHost != "" {
+				return "STOP ARM · DRAFT", "warning"
+			}
 			return "MESH · CONNECT NODE", ""
 		}
 		return "MESH · LOCAL OPERATOR", ""
@@ -375,6 +381,9 @@ func (m *dashboardModel) exitFooter() string {
 	right := "Local operator · [u] Recovery · [f] Feed "
 	if m.width < 82 {
 		right = "Local operator · [u] Recovery"
+	}
+	if m.meshOwnsUninstallShortcut() {
+		right = strings.Replace(right, " · [u] Recovery", "", 1)
 	}
 	return fitBlock(align(keycap("q", "Exit", "quiet")+muted.Render(" leases keep running"), muted.Render(right), m.width), m.width, 1)
 }

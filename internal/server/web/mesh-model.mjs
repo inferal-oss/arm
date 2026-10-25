@@ -1,14 +1,16 @@
 import {supportedStopReview,stopAdvice,stopResultLabel,stopOperationTarget} from './mesh-stop.mjs';
+import {supportedUninstallReview,uninstallOperationTarget,uninstallLabel,uninstallAdvice} from './mesh-uninstall.mjs';
 // Public UI descriptions. These never authorize a request; the destination
 // enforces current grants and the coordinator binds its immutable review.
 export const meshPreparationNotice = 'Preparation may start ordinary ARM backends and restore previously approved listeners. New endpoints and trust wait for your confirmation. Cancelling keeps ordinary backends, identities and existing connections.';
 export const meshPermissions = Object.freeze({
   'observe-host':'Host summary', 'observe-own':'Our leases', 'observe-all':'All leases',
-  'lease-own':'Create and manage our leases', run:'Run programs', 'node-stop':'Stop this ARM backend',
+  'lease-own':'Create and manage our leases', run:'Run programs', 'node-stop':'Stop this ARM backend', 'node-uninstall':'Remove an ARM-managed executable',
   message:'Send messages', 'contact-read':'Read allowed agent contacts',
 });
 export const validHostID = value => typeof value === 'string' && /^[a-f0-9]{32}$/.test(value);
 export function phaseLabel(op) {
+  if(op.kind==='uninstall')return uninstallLabel(op);
   if(op.kind==='stop'){if(op.result)return stopOperationTarget(op)?stopResultLabel(op.result,op.key,op.review??{}):'Stop outcome unknown';if(op.lookup_only||op.approved)return op.has_result?'Stop result recorded':'Stop decision recorded';if(op.can_prepare_fresh)return 'Stop not applied';if(op.phase==='awaiting_review')return 'Waiting for stop review';if(op.phase==='preparing')return 'Preparing stop review';return 'Recorded stop operation';}
   if (op.resolved_by) return 'Resolved by recovery';
   if (op.cancel_requested && op.worker_live) return 'Cancellation requested';
@@ -16,6 +18,7 @@ export function phaseLabel(op) {
   return ({preparing:'Preparing review',awaiting_review:'Waiting for your review',review_approved:'Review approved',review_declined:'Declining review',applying:'Applying reviewed change',completed:'Completed',incomplete:'Needs attention',rejected:'Not applied',declined:'Declined',cancelled:'Cancelled',handed_off:'Handed off · inspect independently'})[op.phase] ?? op.phase ?? 'Unknown';
 }
 export function operationAdvice(op) {
+  if(op.kind==='uninstall')return uninstallAdvice(op);
   if(op.kind==='stop')return stopAdvice(op);
   if (op.resolved_by) return `Recovery ${op.resolved_by} recorded the outcome. The original receipt is preserved.`;
   if (op.phase === 'awaiting_review') return op.kind === 'disconnect' ? 'Review the exact enrollment to revoke. Existing leases and their cleanup obligations remain.' : 'Nothing new is trusted yet. Check the exact identities, endpoints and permissions before deciding.';
@@ -60,6 +63,7 @@ export function reviewIdentities(review) {
   return [{label:'This node',identity:identity('local'),listen:review.local_prepared?.listen??review.local_listen},{label:'Destination node',identity:identity('remote'),listen:review.remote_prepared?.listen??review.remote_listen}].filter(x => x.identity);
 }
 export function supportedReview(op){
+ if(op?.kind==='uninstall')return uninstallOperationTarget(op)===op.review?.stop?.plan?.target?.host&&op.review?.key===op.key&&supportedUninstallReview(op.review);
  if(op?.kind==='stop')return stopOperationTarget(op)===op.review?.plan?.target?.host&&op.review?.key===op.key&&op.review?.plan?.key===op.key&&supportedStopReview(op.review);
  if(op?.kind==='reconnect'){
   if(op.review?.operation==='verify-existing-connection')return true;
@@ -69,6 +73,7 @@ export function supportedReview(op){
  return (op?.kind==='connect'&&['connect-direct-peers','restore-existing-connection','verify-existing-connection'].includes(op.review?.operation))||(op?.kind==='disconnect'&&op.review?.operation==='disconnect-direct-peer');
 }
 export function canReview(op, now = Date.now()) {
+  if(op?.kind==='uninstall'&&(op.lookup_only===true||op.approved===true||now<Date.parse(op.review?.stop?.plan?.observed_at)||now>=Date.parse(op.review?.stop?.plan?.expires_at)))return false;
   if(op?.kind==='stop'&&(op.lookup_only===true||op.approved===true||now<Date.parse(op.review?.plan?.observed_at)||now>=Date.parse(op.review?.plan?.expires_at)))return false;
   return supportedReview(op) && op?.phase === 'awaiting_review' && op.worker_live && Boolean(op.review) && Number(op.review_revision) > 0 && /^[a-f0-9]{64}$/.test(op.review_sha256 ?? '') && now < Date.parse(op.review_expires_at);
 }
