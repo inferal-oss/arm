@@ -1,5 +1,11 @@
 # Validation record
 
+## October 24, 2026: prioritized mount optimization correctness — isolated
+
+The same-operation opened-root observation candidate passes 182 named native race cases, including 43 new cases, plus affected native and Linux cross-vet checks. Its first full Linux storage run fails 19 existing cleanup/export cases because live same-user process activity cannot be inspected. A separately authorized comparison runs the unchanged baseline once and reproduces the same original case and failure rosters. Both full storage runs remain failures; no process exclusion, permission change or privileged workaround is applied.
+
+Independent Linux read-only gates pass 97 sharefs, 32 codec, three subtree-view and four mount cases. The actual non-root FUSE case verifies 2,400,000 bytes, rejects writes and revoked reads, retains the mount and counted handle after busy ordinary unmount, then completes ordinary unmount and server join. All 43 new Linux cases pass across the explicitly scoped rounds; these cross-built normal binaries are not Linux race evidence. Root rehashes all 28 comparison artifacts and checks the raw passing case rosters and FUSE result. Comparison manifest is `926a769dd0fc18d43832a00a32a2305fda8c5f4ba4da363d016bcef942423474`; original failed-round manifest is `d0980968129a7eb778a3407e5e48120c2e35400f6cba3a0fc472c271d43ffef5`. No optimized benchmark, public mount/accounting or macOS mount acceptance follows from these checks.
+
 ## October 24, 2026: finite-only caching still reaches the original timeout
 
 The independently reviewed SOURCE10 adapter runs the unchanged two finite configurations with the single audited caching property. Java-version inspection passes, but the first Hold root times out after 180.53007675 native seconds and exits 143; no finite root completes and Capacity never launches. Last printed progress is 9,178,591 generated/1,637,421 distinct/465,407 queued at depth 24. These remain partial observations, not a completed graph or a speedup result. TERM is recorded sent, followed by a denied/unknown SIGKILL attempt with errno 1; the cleanup error remains failed despite one native Wait, retirement/reaping and recorded PID/group absence.
