@@ -75,11 +75,12 @@ func (p *Provider) OpenArtifactReadOnlyObserved(ctx context.Context, a model.Art
 
 // The pre-open predicates/cuts below deliberately match locate. This separate
 // read-only path changes no general cleanup caller or stored artifact schema.
-// Neither the provider-root checks nor the named-entry identity checks are
-// coalesced: that wider change is outside observed-open's scope.
+// Each named type/permission/identity predicate uses one coherent native
+// observation in this resolve only. All opened-FD and final sharefs checks are
+// separate fresh phases; general locate/cleanup callers remain unchanged.
 func (p *Provider) locateReadOnlyObserved(a model.Artifact) (string, *os.File, ReadOnlyObservation, error) {
 	zero := ReadOnlyObservation{}
-	if err := p.validate(); err != nil {
+	if err := p.validateReadOnlyNamed(); err != nil {
 		return "", nil, zero, err
 	}
 	if !validName.MatchString(a.Name) || a.Identity == nil {
@@ -87,8 +88,7 @@ func (p *Provider) locateReadOnlyObserved(a model.Artifact) (string, *os.File, R
 	}
 	var found string
 	for _, name := range []string{a.Name, ".reclaim-" + a.Name} {
-		var s unix.Stat_t
-		err := unix.Fstatat(int(p.root.Fd()), name, &s, unix.AT_SYMLINK_NOFOLLOW)
+		observed, err := readOnlyNamedAt(int(p.root.Fd()), name)
 		if errors.Is(err, unix.ENOENT) {
 			continue
 		}
@@ -98,11 +98,7 @@ func (p *Provider) locateReadOnlyObserved(a model.Artifact) (string, *os.File, R
 		if found != "" {
 			return "", nil, zero, fmt.Errorf("both artifact and quarantine names exist")
 		}
-		id, err := durableIdentity(int(p.root.Fd()), name)
-		if err != nil {
-			return "", nil, zero, err
-		}
-		if s.Mode&unix.S_IFMT != unix.S_IFDIR || id != *a.Identity {
+		if observed.Mode&unix.S_IFMT != unix.S_IFDIR || observed.Identity != *a.Identity {
 			return "", nil, zero, fmt.Errorf("artifact directory was replaced")
 		}
 		found = name
