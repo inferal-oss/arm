@@ -1,6 +1,6 @@
 # Optional snapshot generations and bounded read delivery
 
-**S and the explicit [verified-copy policy](MESH-SNAPSHOT-VERIFIED-COPY.md) approved October 25, 2026; implementation and runtime acceptance pending. F is unapproved and disabled.** Strict live-path shares remain available with their current native checks. This proposal adds a distinct read-only mode; it does not complete public mounts, writable/build coherence, the macOS adapter, or the performance target.
+**S and the explicit [verified-copy policy](MESH-SNAPSHOT-VERIFIED-COPY.md) approved October 25, 2026. The internal storage primitive is implemented; Manager/publication integration and public runtime acceptance remain pending. F is unapproved and disabled.** Strict live-path shares remain available with their current native checks. This proposal adds a distinct read-only mode; it does not complete public mounts, writable/build coherence, the macOS adapter, or the performance target.
 
 ## Snapshot behavior and optional delegation
 

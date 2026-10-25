@@ -20,11 +20,12 @@ import (
 var validName = regexp.MustCompile(`^[a-f0-9]{32}$`)
 
 type Provider struct {
-	mu       sync.Mutex
-	path     string
-	root     *os.File
-	identity model.FileIdentity
-	mount    string
+	mu            sync.Mutex
+	path          string
+	root          *os.File
+	identity      model.FileIdentity
+	mount         string
+	snapshotSlots chan struct{} // runtime-only owned S copy slots; never reconstructed from rows
 }
 
 func Identity(s *unix.Stat_t) model.FileIdentity {
