@@ -1,8 +1,8 @@
 # Optional snapshot generations and bounded read delivery
 
-**Proposed, disabled, not approved or implemented.** Strict live-path shares remain available with their current native checks. This proposal adds a distinct read-only mode; it does not complete public mounts, writable/build coherence, the macOS adapter, or the performance target.
+**S approved October 25, 2026; implementation and runtime acceptance pending. F is unapproved and disabled.** Strict live-path shares remain available with their current native checks. This proposal adds a distinct read-only mode; it does not complete public mounts, writable/build coherence, the macOS adapter, or the performance target.
 
-## The behavior being approved
+## Snapshot behavior and optional delegation
 
 Initial S copies explicitly selected regular files into a **new private managed allocation on the same origin host/account/provider**. Cross-host consumers are separate staged admissions; cross-host snapshot creation/replication is not enabled by this initial approval. An agent can request a **snapshot generation** of explicitly selected regular files in its ARM-managed storage. ARM reserves a separate storage lease, makes an independent private copy (or supported copy-on-write clone), verifies its complete contents, then publishes that exact generation. The operator reviews source identity/revision, selected files, recipient hosts/accounts, reason, resource budgets, retention and snapshot semantics.
 
@@ -21,7 +21,7 @@ The snapshot itself remains an ARM-owned, charged storage object. It is not adop
 
 These are simultaneous ownership/authority limits, **not** an eight-MiB-per-250-ms rate limit. A spent or expired credit does not free still-owned buffers, fetches or work. Fresh credits require fresh origin admission and a new request anchor, with all eight-slot/eight-MiB and aggregate limits still enforced. Metadata/open/list operations retain S's current origin checks; data possession is never permission.
 
-Recommendation: approve **S only** first if the source-decoupling behavior is wanted. F is a separate optional semantic approval; implement it only after the exact chunk/control/handoff contract and its clock, recall, replay, accounting and real ordinary-application gates pass. Either can remain disabled. Immediate recall policy excludes F. Both ends must explicitly allow the selected mode and limits; an existing connection or strict share grant does not opt anyone in.
+The operator selected **S only**. Implement its reviewed independent-copy semantics and complete its acceptance gates. F still needs a separate explicit semantic approval as well as the exact chunk/control/handoff contract and its clock, recall, replay, accounting and real ordinary-application gates. Either can remain disabled. Immediate recall policy excludes F. Both ends must explicitly allow the selected mode and limits; an existing connection or strict share grant does not opt anyone in.
 
 ## Why this may help, and what is unknown
 
@@ -49,13 +49,13 @@ Admission records explicit CPU/copy concurrency, disk ceiling, manifest, FD, mem
 
 On restart, exact recorded keys are lookup/reconcile only; no blind recopy or second publication. Unknown workers/streams/mounts keep obligations charged. Publication/retirement requires a durable journal and exact identity checks. No cleanup of arbitrary originals, export destinations, unrelated mounts or unknown files is authorized. Uninstall/database reset must respect these obligations.
 
-## Approval scope and next work
+## Approved scope and next work
 
-Before approval, source-only codec/model/test design and a separately reviewed **private synthetic local** copy/read-cost prototype can be prepared without enabling either mode, exposing real files or adding grants. A real private run still needs its own reviewed bounded run plan. No such prototype has run in this proposal.
+The S-only design approval authorizes implementation toward the full snapshot lifecycle, including reviewed private correctness and performance tests. It does not authorize arbitrary source publication or grant a consumer access. Source/model work and separately reviewed private synthetic cost prototypes may explore F without enabling delegation or exercising real F grants. No snapshot prototype has run in this proposal.
 
-Enabling S on a mesh, retaining copied source data under a new policy, introducing F credits or exercising delegated remote delivery requires approval of these changed semantics first. No changes to host security, filesystem features, installed dependencies or OS services are requested. Unsupported capabilities report unavailable; they do not invoke privileged setup.
+S semantics are approved; enabling the implementation still requires the complete review, native/formal, accounting, recovery and public-consumer gates, followed by explicit per-operation grants. Introducing F credits or exercising delegated remote delivery requires a future explicit approval. No changes to host security, filesystem features, installed dependencies or OS services are requested. Unsupported capabilities report unavailable; they do not invoke privileged setup.
 
-Concise approval choices (none enables runtime by itself):
+Recorded operator choice: **1, S only**. The original choices are retained below for scope clarity; choices 2 and 3 were not selected. Approval does not enable runtime by itself.
 
 1. **S only — recommended:** “Approve optional snapshot generations with independent charged storage, source authority retained through publication and the bounded prepared-review lifetime. Original-source changes after publication do not recall the generation. Keep F disabled and strict live-path behavior unchanged. Review and test implementation before enabling S.”
 2. **S plus F semantics:** “Approve S and separately opt-in F: exact canonical chunk credits, at most eight simultaneous owned slots/eight MiB per consumer, 32 MiB per consumer authority, and at most 250 ms from each original pre-request anchor. Accept the stated bounded remote-recall/partition handoff tail and already-disclosed-data limits. Keep both disabled until all protocol, clock, lifecycle, accounting and native gates pass.”

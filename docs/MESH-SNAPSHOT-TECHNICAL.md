@@ -1,4 +1,6 @@
-# Snapshot generation technical contract — proposal only
+# Snapshot generation technical contract — S approved, implementation pending
+
+The operator approved S only on October 25, 2026. F remains a proposal with no authority to enable delegated delivery. Neither mode has completed runtime acceptance.
 
 ## Existing implementation and extension points
 
