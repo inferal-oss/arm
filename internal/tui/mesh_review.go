@@ -90,6 +90,8 @@ func meshReviewSummary(raw json.RawMessage) (string, bool) {
 	}
 	var out strings.Builder
 	switch review.Operation {
+	case "stop-arm-node":
+		return meshStopReviewSummary(raw)
 	case "connect-direct-peers", "reconnect-direct-peers":
 		left, right := review.LocalPrepared.Identity, review.RemotePrepared.Identity
 		if left == nil {

@@ -13,6 +13,27 @@ import (
 // These are presentation descriptions, never permission checks. The destination
 // and coordinator independently authorize each operation against current facts.
 func meshPhaseLabel(op meshops.Operation) string {
+	if op.Kind == "stop" {
+		if len(op.Result) > 0 {
+			return strings.SplitN(meshStopOperationResult(op), "\n", 2)[0]
+		}
+		if op.LookupOnly || op.Approved {
+			if op.HasResult {
+				return "Stop result recorded"
+			}
+			return "Stop decision recorded"
+		}
+		if op.CanPrepareFresh {
+			return "Stop not applied"
+		}
+		if op.Phase == "awaiting_review" {
+			return "Waiting for stop review"
+		}
+		if op.Phase == "preparing" {
+			return "Preparing stop review"
+		}
+		return "Recorded stop operation"
+	}
 	if op.ResolvedBy != "" {
 		return "Resolved by recovery"
 	}
@@ -41,13 +62,28 @@ func meshPhaseLabel(op meshops.Operation) string {
 }
 
 func meshCanReview(op meshops.Operation, now time.Time) bool {
+	if op.Kind == "stop" {
+		r, valid := parseMeshStopReview(op.Review)
+		if !meshStopOperationBound(op) || !valid || now.Before(r.Plan.Observed) || !now.Before(r.Plan.Expires) {
+			return false
+		}
+	}
 	hash, err := hex.DecodeString(op.ReviewHash)
-	return op.Phase == "awaiting_review" && op.WorkerLive && op.ReviewRevision > 0 &&
+	return !(op.Kind == "stop" && (op.LookupOnly || op.Approved)) && op.Phase == "awaiting_review" && op.WorkerLive && op.ReviewRevision > 0 &&
 		len(op.Review) > 0 && err == nil && len(hash) == 32 &&
 		op.ReviewHash == strings.ToLower(op.ReviewHash) && now.Before(op.ReviewExpires)
 }
 
 func meshOperationAdvice(op meshops.Operation) string {
+	if op.Kind == "stop" {
+		if op.LookupOnly || op.Approved {
+			return "Read this exact Stop receipt; it will never be resent or resumed here."
+		}
+		if op.CanPrepareFresh {
+			return "This attempt ended before admission. A new stop requires a fresh review and key; the old receipt remains."
+		}
+		return "ARM is still running until a positive stop result is recorded. Review its exact backend and affected work."
+	}
 	if op.ResolvedBy != "" {
 		return "Recovery " + safe(op.ResolvedBy) + " recorded the outcome. The original receipt is preserved."
 	}
@@ -81,7 +117,7 @@ func meshGrantText(grant *model.NodeGrant) string {
 	if len(grant.Permissions) == 0 {
 		return "No access"
 	}
-	labels := map[string]string{"observe-host": "Host summary", "observe-own": "Our leases", "observe-all": "All leases", "lease-own": "Manage our leases", "run": "Run programs", "message": "Send messages", "contact-read": "Read allowed contacts"}
+	labels := map[string]string{"observe-host": "Host summary", "observe-own": "Our leases", "observe-all": "All leases", "lease-own": "Manage our leases", "run": "Run programs", "node-stop": "Stop this ARM backend", "message": "Send messages", "contact-read": "Read allowed contacts"}
 	parts := make([]string, 0, len(grant.Permissions))
 	for _, permission := range grant.Permissions {
 		label, ok := labels[permission]

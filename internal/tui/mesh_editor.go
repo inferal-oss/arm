@@ -35,6 +35,7 @@ type meshPrepareRequest struct {
 	Connect    *meshConnectDraft        `json:"connect,omitempty"`
 	Reconnect  *meshReconnectDraft      `json:"reconnect,omitempty"`
 	Disconnect *meshops.DisconnectDraft `json:"disconnect,omitempty"`
+	Stop       *meshops.StopDraft       `json:"stop,omitempty"`
 }
 type meshRevisionRequest struct {
 	Key      string `json:"key"`
@@ -46,12 +47,15 @@ type meshPrompt struct {
 	title, text string
 	request     meshIntent
 	retry       bool
+	// Display snapshot only. The exact request remains the decision authority.
+	stopReview json.RawMessage
 }
 type meshField struct {
 	label, value string
 	choices      []string
 }
 type meshForm struct {
+	stopHost      string
 	contextReady  bool
 	contextSeen   bool
 	blockers      []meshops.ReconnectBlocker
@@ -147,6 +151,9 @@ func (f *meshForm) grant(offset int) (mesh.Grant, error) {
 	return g, g.Validate()
 }
 func (f *meshForm) request() (meshIntent, error) {
+	if f.stopHost != "" {
+		return f.stopRequest()
+	}
 	forward, err := f.grant(2)
 	if err != nil {
 		return meshIntent{}, fmt.Errorf("We may do THERE: %w", err)

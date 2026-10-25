@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/yrashk/arm/internal/meshops"
 )
@@ -37,10 +38,21 @@ func (m *dashboardModel) meshText() string {
 		out.WriteString("REQUEST IN FLIGHT · closing does not cancel the backend workflow\nNo automatic retry; exact request is retained.\n\n")
 	}
 	if ui.prompt != nil {
-		return out.String() + ui.prompt.text + "\n\n" + keycap("y", "Confirm exact request", "") + "  " + keycap("n/Esc", "Keep unchanged", "quiet")
+		text := ui.prompt.text
+		if len(ui.prompt.stopReview) > 0 {
+			// Reframe the immutable display snapshot at the current modal width;
+			// resizing must not wrap previously rendered borders or change consent.
+			text = meshStopReviewWindows(ui.prompt.stopReview, m.meshStopPaneWidth()) + "\n\n" + text
+		}
+		return out.String() + text + "\n\n" + keycap("y", "Confirm exact request", "") + "  " + keycap("n/Esc", "Keep unchanged", "quiet")
 	}
 	if ui.form != nil {
-		out.WriteString("NODE ENROLLMENT · LOCAL OPERATOR\n\nUse an SSH destination or @native-reviewed-connector.\n[Enter] edit · [Space] cycle choices · [p] prepare · Esc back\nResource ceilings apply to leases/run; mode none grants nothing.\n\n")
+		if ui.form.stopHost != "" {
+			width := m.meshStopPaneWidth()
+			out.WriteString(meshStopWindow("EXACT BACKEND", "Exact host "+safe(ui.form.stopHost)+"\nStops this ARM backend and its connections. The host remains running.\nA separate current review follows; default is to refuse outstanding work.", width, "warning") + "\n\n")
+		} else {
+			out.WriteString("NODE ENROLLMENT · LOCAL OPERATOR\n\nUse an SSH destination or @native-reviewed-connector.\n[Enter] edit · [Space] cycle choices · [p] prepare · Esc back\nResource ceilings apply to leases/run; mode none grants nothing.\n\n")
+		}
 		if ui.form.reconnectHost != "" {
 			fmt.Fprintf(&out, "RECONNECT EXACT NODE %s\nNew enrollment and fresh permissions; previous grants are not restored.\nA blank locator uses the retained record only after fresh verification.\n\n", safe(ui.form.reconnectHost))
 			if !ui.form.contextReady {
@@ -59,17 +71,29 @@ func (m *dashboardModel) meshText() string {
 		}
 		for i, field := range ui.form.fields {
 			value := safe(field.value)
+			if ui.form.stopHost != "" && i == 0 {
+				value = map[string]string{"refuse": "Refuse while work remains", "wait": "Wait for existing work", "force": "Reclaim ARM-owned work"}[field.value]
+			}
+			if ui.form.stopHost != "" && i == 1 && field.value == "" {
+				value = "No timeout"
+			}
 			if value == "" {
 				value = "(empty)"
 			}
 			fmt.Fprintf(&out, "%s%s\n  %s\n", selectedPrefix(ui.form.selected, i), safe(field.label), value)
 		}
-		out.WriteString("\n" + meshops.PreparationNotice)
+		if ui.form.stopHost == "" {
+			out.WriteString("\n" + meshops.PreparationNotice)
+		} else {
+			out.WriteString("\n[Enter] edit · [Space] choose policy · [p] prepare review · Esc keep running\nTimeout is whole seconds, Wait only; positive timeout requests ARM-owned reclamation. Force never discards foreign or unknown work.")
+		}
 		return out.String()
 	}
 	if ui.unknown != nil {
 		advice := "[l] Read durable keyed receipt · [t] Retry this exact request only"
-		if ui.unknown.Operation == "mesh_operator_resume" {
+		if ui.unknown.LookupOnly {
+			advice = "RESEND DISABLED · Stop outcome is uncertain.\n[l] Read the exact source receipt; no decision, apply, resume or handoff is resent."
+		} else if ui.unknown.Operation == "mesh_operator_resume" {
 			advice = "RESEND DISABLED · Resume can create another child attempt.\n[l] Read exact parent · [o] Read durable attempts; inspect the recorded child before any separate new recovery. This retained uncertainty cannot be automatically resolved."
 		}
 		fmt.Fprintf(&out, "RETAINED UNCERTAIN REQUEST\nOperation: %s\nKey: %s\n%s\n[u] Private Recovery across restarts · [i] Exact retained envelope\n\n", safe(ui.unknown.Operation), safe(ui.unknown.Key), advice)
@@ -106,6 +130,12 @@ func (m *dashboardModel) meshText() string {
 		if n.Error != nil {
 			out.WriteString("\n" + safe(n.Error.Error()) + "\n")
 		}
+		allowed, why := meshStopAvailability(ui.node)
+		if allowed {
+			out.WriteString("\n[s] Review Stop ARM · affects every connection to this backend\n")
+		} else if !n.Local {
+			out.WriteString("\nStop ARM unavailable · " + safe(why) + "\n")
+		}
 		out.WriteString("\n[v] Open exact node dashboard · [d] Review disconnect · [e] Reconnect revoked node · [r] Refresh exact node\n[i] Complete reported/trust record · Esc node list\nMetadata/capabilities are observations, never grants.")
 	case "operation":
 		if ui.operation == nil {
@@ -124,12 +154,41 @@ func (m *dashboardModel) meshText() string {
 		}
 		if len(op.Review) > 0 {
 			summary, _ := meshReviewSummary(op.Review)
+			if op.Kind == "stop" {
+				summary = meshStopReviewWindows(op.Review, m.meshStopPaneWidth())
+				leases := meshStopLeases(&op)
+				if len(leases) > 0 {
+					selected := min(ui.stopLeaseIndex, len(leases)-1)
+					summary = "Selected lease " + safe(leases[selected].ID) + fmt.Sprintf(" · %d/%d\n[ / ] select lease · [d] read-only details · original review retained\n\n", selected+1, len(leases)) + summary
+				}
+				if ui.stopLease != nil {
+					summary = meshStopLeaseWindow(*ui.stopLease, m.meshStopPaneWidth()) + "\n\n" + summary
+				}
+			}
 			fmt.Fprintf(&out, "EXACT IMMUTABLE REVIEW\nReview revision: %d\nSHA256: %s\nExpires: %s\n\n%s\n\n", op.ReviewRevision, safe(op.ReviewHash), op.ReviewExpires.Local().Format("Jan 02 15:04:05 MST"), summary)
 		}
 		if len(op.Result) > 0 {
-			out.WriteString("A durable result is recorded. [i] opens its complete collapsible record.\n\n")
+			if op.Kind == "stop" {
+				out.WriteString(window("RECORDED STOP OUTCOME", meshStopOperationResult(op), max(16, m.mainWidth()-8), 0, false, "warning") + "\n\n")
+			} else {
+				out.WriteString("A durable result is recorded. [i] opens its complete collapsible record.\n\n")
+			}
 		}
-		out.WriteString("[a] Review approval · [n] Review decline · [c] Review cancellation\n[s] Explicit recovery/resume · [h] Review handoff · [r] Read current receipt\n[i] Complete collapsible operation · Esc operation list")
+		if op.Kind == "stop" {
+			out.WriteString("[r] Read exact source receipt · [i] Complete collapsible record · Esc operations\n")
+			if op.LookupOnly || op.Approved {
+				out.WriteString("[l] Check original stop · explicit read only; nothing is reapplied.\n")
+			} else if meshCanReview(op, time.Now()) {
+				out.WriteString("[a] Review Stop ARM · [n] Keep running · [c] Request cancellation\n")
+			} else if meshStopCanDecline(op, time.Now()) {
+				out.WriteString("[n] Keep running · [c] Request cancellation; no stop is approved.\n")
+			}
+			if op.CanPrepareFresh && !op.LookupOnly && !op.Approved {
+				out.WriteString("[g] Prepare fresh review with new key; old receipt remains.\n")
+			}
+		} else {
+			out.WriteString("[a] Review approval · [n] Review decline · [c] Review cancellation\n[s] Explicit recovery/resume · [h] Review handoff · [r] Read current receipt\n[i] Complete collapsible operation · Esc operation list")
+		}
 	case "operations":
 		out.WriteString("DURABLE MESH OPERATIONS · LOCAL COORDINATOR\nClosing or reconnecting never retries a mutation.\n\n")
 		for i, op := range ui.operations {

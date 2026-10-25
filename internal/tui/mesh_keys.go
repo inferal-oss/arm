@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -31,7 +32,14 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		switch key {
 		case "i":
 			var record any = ui.prompt.request
-			if ui.operation != nil {
+			if len(ui.prompt.stopReview) > 0 {
+				// The record and framed final dialog inspect the same captured
+				// review, independently of live operation refreshes.
+				record = struct {
+					Review  json.RawMessage `json:"reviewed_stop_snapshot"`
+					Request meshIntent      `json:"exact_request"`
+				}{ui.prompt.stopReview, ui.prompt.request}
+			} else if ui.operation != nil {
 				record = struct {
 					Operation *meshops.Operation `json:"operation"`
 					Request   meshIntent         `json:"exact_request"`
@@ -62,10 +70,17 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			for i, value := range field.choices {
 				if value == field.value {
 					field.value = field.choices[(i+1)%len(field.choices)]
+					if form.stopHost != "" && form.selected == 0 && field.value != "wait" {
+						form.fields[1].value = ""
+					}
 					break
 				}
 			}
 		case "enter":
+			if form.stopHost != "" && form.selected == 1 && form.fields[0].value != "wait" {
+				ui.err = "Choose Wait for existing work before adding a reclaim timeout."
+				return nil
+			}
 			m.inputMode = "mesh:field"
 			m.input.SetValue(form.fields[form.selected].value)
 			return m.input.Focus()
@@ -108,9 +123,42 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 				return nil
 			}
 			ui.prompt = &meshPrompt{title: "PREPARE CONNECTION · CONSEQUENCES", text: meshops.PreparationNotice + "\n\nEXACT DRAFT\n" + meshDraftSummary(q.Params), request: q}
+			if form.stopHost != "" {
+				ui.prompt = &meshPrompt{title: "PREPARE STOP REVIEW", text: "Requests a current plan for this exact ARM backend. No stop is approved before the separate concrete review.\n\n" + meshStopDraftSummary(q.Params), request: q}
+			}
 			m.viewport.GotoTop()
 		}
 		return nil
+	}
+	// These actions are reads only, including for an unresolved Stop outcome.
+	if ui.mode == "operation" && ui.operation != nil && ui.operation.Kind == "stop" {
+		switch key {
+		case "[", "]":
+			before := ui.stopLeaseIndex
+			count := len(meshStopLeases(ui.operation))
+			if count > 0 {
+				if key == "[" {
+					ui.stopLeaseIndex = max(0, ui.stopLeaseIndex-1)
+				} else {
+					ui.stopLeaseIndex = min(count-1, ui.stopLeaseIndex+1)
+				}
+			}
+			if ui.stopLeaseIndex != before {
+				ui.stopLeaseSelection++
+				ui.err = ""
+			}
+			ui.stopLease = nil
+			m.viewport.GotoTop()
+			return nil
+		case "d":
+			return m.readMesh("stop-lease", ui.operation.Key)
+		case "esc":
+			if ui.stopLease != nil {
+				ui.stopLease = nil
+				m.viewport.GotoTop()
+				return nil
+			}
+		}
 	}
 	if ui.unknown != nil {
 		switch key {
@@ -118,6 +166,10 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 			return m.readMesh("operation", ui.unknown.Key)
 		case "t":
 			q := *ui.unknown
+			if q.LookupOnly {
+				ui.err = "Stop outcome is uncertain. Read this exact receipt; no request, decision, resume or handoff is resent."
+				return nil
+			}
 			if q.Operation == "mesh_operator_resume" {
 				ui.err = "Resume outcome is uncertain. Resend is disabled because it can create another child attempt. [l] reads the exact parent; [o] reads durable attempts. Inspect the recorded child before separately requesting any new recovery. The exact request remains retained."
 				return nil
@@ -134,7 +186,7 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		if key == "l" || key == "t" {
 			return nil
 		}
-		if strings.Contains("anceshd", key) && len(key) == 1 {
+		if strings.Contains("anceshdg", key) && len(key) == 1 {
 			ui.err = "Resolve the exact retained uncertain request before preparing another Mesh mutation."
 			return nil
 		}
@@ -206,11 +258,29 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		return m.openSelectedNode()
 	case "a":
 		return m.meshDecision(true)
+	case "l":
+		if ui.operation != nil && ui.operation.Kind == "stop" && (ui.operation.LookupOnly || ui.operation.Approved) {
+			return m.readMesh("stop-lookup", ui.operation.Key)
+		}
+	case "g":
+		if ui.operation != nil && ui.operation.Kind == "stop" && ui.operation.CanPrepareFresh && !ui.operation.LookupOnly && !ui.operation.Approved {
+			var review meshStopReview
+			if json.Unmarshal(ui.operation.Review, &review) == nil && validMeshStopHost(review.Plan.Target.Host) {
+				return m.readMesh("stop", review.Plan.Target.Host)
+			}
+		}
 	case "c", "s", "h":
+		if key == "s" && ui.mode == "node" && ui.node != nil && !ui.node.Local {
+			return m.readMesh("stop", ui.node.Host)
+		}
 		if ui.operation == nil {
 			return nil
 		}
 		op := ui.operation
+		if op.Kind == "stop" && (key != "c" || op.LookupOnly || op.Approved) {
+			ui.err = "Stop recovery is lookup-only; no resume or handoff is available."
+			return nil
+		}
 		operation := map[string]string{"c": "mesh_operator_cancel", "s": "mesh_operator_resume", "h": "mesh_operator_handoff"}[key]
 		if key == "h" {
 			if op.RecoveryHash == "" {
@@ -225,6 +295,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		if err != nil {
 			ui.err = err.Error()
 			return nil
+		}
+		if op.Kind == "stop" {
+			q.LookupOnly = true
 		}
 		text := "Cancellation is a request, not proof that trust or prior effects were removed. Existing leases keep their lifetimes."
 		if key == "s" {
@@ -285,7 +358,7 @@ func (m *dashboardModel) meshDecision(approve bool) tea.Cmd {
 	if now.IsZero() {
 		now = time.Now()
 	}
-	if !meshCanReview(op, now) {
+	if !meshCanReview(op, now) && !(!approve && meshStopCanDecline(op, now)) {
 		ui.err = "Review is not current/live. Read the exact operation and review its current revision before deciding."
 		return nil
 	}
@@ -299,11 +372,21 @@ func (m *dashboardModel) meshDecision(approve bool) tea.Cmd {
 		ui.err = err.Error()
 		return nil
 	}
+	if op.Kind == "stop" {
+		q.LookupOnly = true
+	}
 	action := "DECLINE"
 	if approve {
 		action = "APPROVE"
 	}
 	ui.prompt = &meshPrompt{title: "REVIEW " + action + " · EXACT ENROLLMENT", text: fmt.Sprintf("%s this immutable review only. Revision %d\nHash: %s\nExpires: %s\n\n%s\n\n%s", action, op.ReviewRevision, safe(op.ReviewHash), op.ReviewExpires.Format(time.RFC3339), summary, safe(op.Notice)), request: q}
+	if op.Kind == "stop" {
+		title := "KEEP ARM RUNNING"
+		if approve {
+			title = "STOP ARM · FINAL REVIEW"
+		}
+		ui.prompt = &meshPrompt{title: title, text: fmt.Sprintf("Exact review revision %d · expires %s\n[i] Complete immutable review. Default: keep running.", op.ReviewRevision, op.ReviewExpires.Format(time.RFC3339)), request: q, stopReview: append(json.RawMessage(nil), op.Review...)}
+	}
 	m.viewport.GotoTop()
 	return nil
 }
@@ -374,12 +457,34 @@ func (m *dashboardModel) meshControls() []mouseControl {
 		return []mouseControl{{"i", "Exact request"}}
 	}
 	if ui.prompt != nil {
+		if ui.prompt.request.LookupOnly {
+			yes := "Confirm"
+			if ui.prompt.request.Operation == "mesh_operator_prepare" {
+				yes = "Prepare review"
+			}
+			if ui.prompt.request.Operation == "mesh_operator_decide" {
+				var q meshops.Decision
+				if json.Unmarshal(ui.prompt.request.Params, &q) == nil {
+					yes = "Keep running"
+					if q.Approve {
+						yes = "Stop ARM"
+					}
+				}
+			}
+			return []mouseControl{{"n", "Keep unchanged"}, {"y", yes}, {"i", "Record"}}
+		}
 		return []mouseControl{{"n", "Keep"}, {"y", "Confirm"}, {"i", "Record"}}
 	}
 	if ui.form != nil {
 		return []mouseControl{{"enter", "Edit field"}, {"space", "Cycle"}, {"p", "Prepare"}, {"esc", "Back"}}
 	}
+	if ui.unknown != nil && ui.operation != nil && ui.operation.Kind == "stop" && ui.mode == "operation" {
+		return []mouseControl{{"[", "Previous lease"}, {"]", "Next lease"}, {"d", "Lease details"}, {"l", "Read receipt"}, {"i", "Request"}, {"esc", "Back"}}
+	}
 	if ui.unknown != nil {
+		if ui.unknown.LookupOnly {
+			return []mouseControl{{"l", "Read receipt"}, {"o", "Operations"}, {"i", "Request"}, {"esc", "Back"}}
+		}
 		if ui.unknown.Operation == "mesh_operator_resume" {
 			return []mouseControl{{"l", "Read parent"}, {"o", "Attempts"}, {"i", "Request"}, {"esc", "Back"}}
 		}
@@ -387,8 +492,32 @@ func (m *dashboardModel) meshControls() []mouseControl {
 	}
 	switch ui.mode {
 	case "node":
-		return []mouseControl{{"v", "Open node"}, {"d", "Disconnect"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Nodes"}}
+		controls := []mouseControl{{"v", "Open node"}, {"d", "Disconnect"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Nodes"}}
+		if allowed, _ := meshStopAvailability(ui.node); allowed {
+			controls = append([]mouseControl{{"s", "Stop ARM"}}, controls...)
+		}
+		return controls
+
 	case "operation":
+		if ui.operation != nil && ui.operation.Kind == "stop" {
+			controls := []mouseControl{{"[", "Previous lease"}, {"]", "Next lease"}, {"d", "Lease details"}, {"r", "Lookup"}, {"i", "Record"}, {"esc", "Back"}}
+			if meshStopCanDecline(*ui.operation, time.Now()) {
+				controls = append([]mouseControl{{"n", "Keep running"}}, controls...)
+			}
+			if meshCanReview(*ui.operation, time.Now()) {
+				controls = append([]mouseControl{{"a", "Review stop"}}, controls...)
+			}
+			if ui.operation.WorkerLive && !ui.operation.Approved && !ui.operation.LookupOnly {
+				controls = append([]mouseControl{{"c", "Cancel review"}}, controls...)
+			}
+			if ui.operation.LookupOnly || ui.operation.Approved {
+				controls = append([]mouseControl{{"l", "Check original stop"}}, controls...)
+			}
+			if ui.operation.CanPrepareFresh && !ui.operation.LookupOnly && !ui.operation.Approved {
+				controls = append([]mouseControl{{"g", "Fresh review"}}, controls...)
+			}
+			return controls
+		}
 		return []mouseControl{{"n", "Decline"}, {"a", "Approve"}, {"c", "Cancel"}, {"s", "Recover"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Operations"}}
 	case "operations":
 		return []mouseControl{{"enter", "Inspect"}, {"o", "Nodes"}, {"r", "Refresh"}}
