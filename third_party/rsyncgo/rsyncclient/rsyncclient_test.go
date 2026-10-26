@@ -11,14 +11,14 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncos"
-	"github.com/gokrazy/rsync/internal/rsyncostest"
-	"github.com/gokrazy/rsync/internal/rsynctest"
-	"github.com/gokrazy/rsync/internal/testlogger"
-	"github.com/gokrazy/rsync/rsyncclient"
-	"github.com/gokrazy/rsync/rsyncd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncostest"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 	"github.com/google/go-cmp/cmp"
 )
 

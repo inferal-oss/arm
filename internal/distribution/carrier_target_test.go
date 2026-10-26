@@ -54,13 +54,12 @@ func TestCarrierSelectedTargetMatchesActualGoExecutableMetadata(t *testing.T) {
 		}
 	}
 	files := map[string]string{
-		"go.mod":                        "module github.com/yrashk/arm\n\ngo 1.27.3\nrequire github.com/gokrazy/rsync v0.0.0\nreplace github.com/gokrazy/rsync => ./third_party/rsyncgo\n",
+		"go.mod":                        "module github.com/inferal-oss/arm\n\ngo 1.27.3\n",
 		"go.sum":                        "",
 		"internal/buildinfo/tag.go":     "package buildinfo\nvar BundleTag string\n",
-		"third_party/rsyncgo/go.mod":    "module github.com/gokrazy/rsync\n\ngo 1.27.3\n",
-		"third_party/rsyncgo/engine.go": "package rsync\nconst Fixture = \"local-replace-input\"\n",
+		"third_party/rsyncgo/engine.go": "package rsync\nconst Fixture = \"main-module-fork-input\"\n",
 		"third_party/rsyncgo/LICENSE":   "fixture license copied with source",
-		"cmd/arm/main.go":               "package main\nimport b \"github.com/yrashk/arm/internal/buildinfo\"\nimport r \"github.com/gokrazy/rsync\"\nfunc main(){println(b.BundleTag,r.Fixture)}\n",
+		"cmd/arm/main.go":               "package main\nimport b \"github.com/inferal-oss/arm/internal/buildinfo\"\nimport r \"github.com/inferal-oss/arm/third_party/rsyncgo\"\nfunc main(){println(b.BundleTag,r.Fixture)}\n",
 	}
 	for name, data := range files {
 		if err := os.WriteFile(filepath.Join(root, name), []byte(data), 0600); err != nil {

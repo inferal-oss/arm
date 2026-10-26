@@ -8,7 +8,7 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 type gradleRecord struct {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 const MaxFrameBytes = 64 << 10

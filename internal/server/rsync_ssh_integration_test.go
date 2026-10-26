@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/rsyncengine"
+	"github.com/inferal-oss/arm/internal/rsyncengine"
 	"golang.org/x/crypto/ssh"
 )
 

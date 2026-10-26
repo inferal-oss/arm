@@ -9,7 +9,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // The absolute deadline is durable; the process-local clock additionally bounds

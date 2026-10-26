@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 func stopLedgerText(t *testing.T, m *Manager) []string {

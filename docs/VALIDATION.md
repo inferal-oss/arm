@@ -4051,3 +4051,29 @@ Integrated internal source/test bytes match this final tested composition exactl
 Only documentation is reconciled centrally. All deletion/startup fixtures are
 disposable; no user database wipe or installation was performed. No secure-media
 erasure, external cleanup or remote settlement is claimed.
+
+## Canonical module migration — candidate evidence, public gate pending
+
+Candidate base: reviewed `67e9e3b`; branch `codex/canonical-module-distribution`.
+Static byte comparison covers all 133 tracked fork files: 57 Go files differ
+only by quoted import-prefix substitution, 75 other inputs match the expected
+namespace/layout transformation (including unchanged license and verbatim
+renamed module/sum metadata), and `ARM-CHANGES.md` records the packaging change.
+No fork algorithm/protocol/limit behavior change is part of this delta. License
+SHA256: `33bcc6a4bea2187b74a9ac5ed747a8f4631aec0d59eec3e6b32557fc9e408cb8`.
+Historical upstream references and old validation package records are retained.
+
+Added a regression for active nested module/workspace omissions, stale fork
+imports, root replacement incompatibility and actual production snapshot
+preservation of stream/internal engine/license/provenance inputs. The real
+cross-target carrier fixture now imports a main-module fork rather than a
+local-replace fixture. Linker and binary-inspection paths use the canonical
+namespace; formal trace validators require new-source package names.
+
+Heavy validation is queued via the required shared FIFO, `GOMAXPROCS=1` and
+`-p=1`, using the existing pinned project toolchain. No test success is claimed
+while queued. Independent source review, exact final-source validation and
+coordinator publication remain gates. Public `@commit` and `@latest` installs
+must use disposable GOBIN/GOMODCACHE/GOCACHE and an external public source query;
+local source, fixture proxies and prepopulated private caches do not count.
+The user's installed binary and backend/state are untouched.

@@ -1,6 +1,6 @@
 package server
 
-import "github.com/yrashk/arm/internal/model"
+import "github.com/inferal-oss/arm/internal/model"
 
 // Export only target headroom/freshness. Native affinity and cgroup paths,
 // collector diagnostics and local process evidence stay on their own host.

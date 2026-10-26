@@ -1,10 +1,10 @@
 package manager
 
 import (
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/published"
-	"github.com/yrashk/arm/internal/routing"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/published"
+	"github.com/inferal-oss/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/workspace"
 	"path/filepath"
 	"strings"
 	"testing"

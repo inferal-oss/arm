@@ -7,7 +7,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestIOChecklistMouseKeyboardAllNoneAndNoBackendMutations(t *testing.T) {

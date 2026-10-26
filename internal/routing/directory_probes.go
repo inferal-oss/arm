@@ -8,8 +8,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/yrashk/arm/internal/workspace"
-	"github.com/yrashk/arm/internal/workspacegraph"
+	"github.com/inferal-oss/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspacegraph"
 )
 
 // DirectoryProbe is a historical native observation of an actually completed

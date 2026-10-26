@@ -2,8 +2,14 @@
 
 This directory is a source-preserving fork of `github.com/gokrazy/rsync`
 v0.3.8, commit `7a9e59b40898516def209eb944c49f2ba42d4007`. Its upstream
-license is retained in `LICENSE`. The module path remains
-`github.com/gokrazy/rsync` for a local Go module replacement.
+license is retained in `LICENSE`. The fork is compiled as part of ARM's main module at
+`github.com/inferal-oss/arm/third_party/rsyncgo`. Its Go imports and local
+Makefile command paths use that namespace. The original nested module metadata
+is retained verbatim as `UPSTREAM-go.mod.txt` and `UPSTREAM-go.sum.txt`; these
+are provenance records, not active modules. Dependencies (including fork tests)
+are resolved by ARM's root `go.mod`/`go.sum`. No fork algorithms, protocol,
+limits or reviewed fixes changed during this packaging migration. The upstream
+README, license and author identifiers remain historical upstream material.
 
 ARM changes:
 

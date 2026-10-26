@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func claim(network, address string, port int) model.PortClaim {

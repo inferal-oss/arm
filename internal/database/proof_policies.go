@@ -8,7 +8,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func (p *proofReader) validPool(v model.Pool) error {

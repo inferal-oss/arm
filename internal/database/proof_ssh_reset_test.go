@@ -8,11 +8,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
 )
 
 func TestSSHResetArchivesCompleteNamespaceAndStartsFreshAuthority(t *testing.T) {

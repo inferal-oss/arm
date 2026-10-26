@@ -15,7 +15,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/yrashk/arm/internal/companions"
+	"github.com/inferal-oss/arm/internal/companions"
 )
 
 // BuildCarrier stages a private source snapshot, builds four thin payloads with

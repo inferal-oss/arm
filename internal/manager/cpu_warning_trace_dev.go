@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/observe"
-	"github.com/yrashk/arm/internal/pressure"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/observe"
+	"github.com/inferal-oss/arm/internal/pressure"
 )
 
 // Installed only by tagged tests for one original Manager. No request, wire

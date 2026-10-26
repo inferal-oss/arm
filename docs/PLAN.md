@@ -733,3 +733,22 @@ site's initial Terminal choice; product dashboard migration owner retains its
 explicit Terminal default. Public site deployment, exact DNS records, ownership
 verification, both HTTPS endpoints/redirect and final screenshot build remain
 unaccepted until actually verified.
+
+
+## Canonical module and versioned installation migration — in progress
+
+Owner: canonical-module-distribution task, isolated branch
+`codex/canonical-module-distribution`, based on reviewed `67e9e3b`. This task
+owns the shared root module/import namespace and audited rsync fork packaging.
+Other active portfolios retain their isolated feature work; integrate this
+focused dependency and migrate any newly added imports before final validation.
+Canonical namespace: `github.com/inferal-oss/arm`; fork imports:
+`github.com/inferal-oss/arm/third_party/rsyncgo`. Fork code stays in place with
+no active nested module or replace; original metadata stays as provenance.
+
+Gates: independent final-source review, module-layout and source-snapshot
+regressions, rsync interoperability, full package compile, scoped race/vet and
+platform checks. Coordinator owns reviewed main integration/publication and
+public disposable-cache `go install ...@commit` then `...@latest` evidence.
+No local/proxy fixture or old-source validation establishes that public gate.
+No new `arm install` carrier-assembly contract is included.

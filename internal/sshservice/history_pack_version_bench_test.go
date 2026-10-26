@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/historypack"
+	"github.com/inferal-oss/arm/internal/historypack"
 )
 
 // This exercises the same native identity/version capture used immediately

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 func TestStopOptionalNamespaceCannotBeErasedByOldResetProof(t *testing.T) {

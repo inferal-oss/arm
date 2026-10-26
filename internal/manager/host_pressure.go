@@ -9,10 +9,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/yrashk/arm/internal/agents"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/pressure"
+	"github.com/inferal-oss/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/pressure"
 )
 
 // The warning-only runtime uses measured coverage to recover and possible

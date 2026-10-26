@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // peers off/on is a private local preference. The daemon observes it on its

@@ -11,9 +11,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 )
 
 func readWorkspaceDocument(path string, value any) error {

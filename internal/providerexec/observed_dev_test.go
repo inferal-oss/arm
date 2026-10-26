@@ -5,7 +5,7 @@ package providerexec
 import (
 	"context"
 	"encoding/json"
-	"github.com/yrashk/arm/internal/providerproto"
+	"github.com/inferal-oss/arm/internal/providerproto"
 	"os"
 	"path/filepath"
 	"testing"

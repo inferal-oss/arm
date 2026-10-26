@@ -1,7 +1,7 @@
 package syncworker
 
 import (
-	"github.com/yrashk/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/manager"
 	"testing"
 )
 

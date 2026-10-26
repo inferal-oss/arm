@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // This producer exercises real admission/renewal/queue and durable SQL. Only

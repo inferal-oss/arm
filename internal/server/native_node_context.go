@@ -8,8 +8,8 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 const nativeNodeHandshakeTimeout = 10 * time.Second

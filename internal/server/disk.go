@@ -1,6 +1,6 @@
 package server
 
-import "github.com/yrashk/arm/internal/model"
+import "github.com/inferal-oss/arm/internal/model"
 
 // Peer summaries report target availability without local paths, filesystem
 // identities, raw provider errors or any private owner-policy evidence.

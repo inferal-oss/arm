@@ -3,7 +3,7 @@ package manager
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 	"reflect"
 )
 

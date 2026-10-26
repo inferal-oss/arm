@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 //go:embed web/peer-poll.mjs web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/monitor-capacity.mjs web/lease-actions.mjs web/lease-reviews.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/dashboard-shortcuts.mjs web/activity-feed.mjs web/operator-messaging.mjs web/pool-model.mjs web/pool-operations.mjs web/pool-console.mjs web/mesh-console.mjs web/mesh-forward-console.mjs web/mesh-model.mjs web/mesh-stop.mjs web/mesh-uninstall.mjs web/mesh-provision.mjs web/kube-inventory.mjs web/node-window.mjs web/remote-node.mjs web/connection-links.mjs web/style.css web/screen-viewer.mjs web/screen-mode.mjs web/screen-clipboard.mjs web/novnc web/ard

@@ -17,14 +17,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/log"
-	"github.com/gokrazy/rsync/internal/progress"
-	"github.com/gokrazy/rsync/internal/receiver"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncos"
-	"github.com/gokrazy/rsync/internal/rsyncwire"
-	"github.com/gokrazy/rsync/internal/sender"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/log"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender"
 )
 
 type Module struct {

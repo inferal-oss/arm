@@ -2,7 +2,7 @@ package cli_test
 
 import (
 	"bytes"
-	"github.com/yrashk/arm/internal/cli"
+	"github.com/inferal-oss/arm/internal/cli"
 	"path/filepath"
 	"strings"
 	"testing"

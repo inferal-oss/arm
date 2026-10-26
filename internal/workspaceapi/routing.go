@@ -1,7 +1,7 @@
 package workspaceapi
 
 import (
-	"github.com/yrashk/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/routing"
 	"time"
 )
 

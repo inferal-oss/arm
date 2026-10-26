@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/yrashk/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/agents"
 	"time"
 )
 

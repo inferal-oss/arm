@@ -1,7 +1,7 @@
 package workspaceapi
 
 import (
-	"github.com/yrashk/arm/internal/workspacegraph"
+	"github.com/inferal-oss/arm/internal/workspacegraph"
 	"time"
 )
 

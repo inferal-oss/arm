@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 const (

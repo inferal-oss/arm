@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshssh"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshssh"
 )
 
 // Only a fixed native verified-SSH helper accepts this framed stream. Neither

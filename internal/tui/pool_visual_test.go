@@ -2,7 +2,7 @@ package tui
 
 import (
 	"github.com/charmbracelet/x/ansi"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 	"os"
 	"path/filepath"
 	"testing"

@@ -1,6 +1,6 @@
 package tui
 
-import "github.com/yrashk/arm/internal/model"
+import "github.com/inferal-oss/arm/internal/model"
 
 // Keep live admission evidence with the resource's structured read-only record;
 // the older physical measurement alone cannot explain stale headroom.

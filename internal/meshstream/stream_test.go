@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 type transportFixture struct {

@@ -11,10 +11,10 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/yrashk/arm/internal/companions"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshops"
-	"github.com/yrashk/arm/internal/meshssh"
+	"github.com/inferal-oss/arm/internal/companions"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/meshssh"
 )
 
 func provisionSeedFixture(t *testing.T, transfer meshssh.Transfer, selected []byte) (*meshssh.CatalogSeed, *companions.Catalog) {

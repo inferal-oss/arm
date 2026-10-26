@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 // This is an actual process-exit rollback journal, not a handcrafted SQLite

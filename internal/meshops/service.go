@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // StartRequest contains a resolved native connector, never arbitrary browser

@@ -1,7 +1,7 @@
 package meshsshrelay
 
 import (
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 	"strings"
 	"testing"
 	"time"

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func checkinFixture(t *testing.T) (*dashboardModel, *testTransport) {

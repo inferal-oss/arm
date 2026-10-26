@@ -131,7 +131,7 @@ func TestCarrierSourceSnapshotExcludesGeneratedAssetsAndPreservesCaller(t *testi
 			t.Fatal(err)
 		}
 	}
-	for name, text := range map[string]string{"go.mod": "module fixture\n", "go.sum": "", "cmd/main.go": "package main\n", "internal/companions/assets_enabled.go": "package companions\n", "internal/companions/generated/operator-file": "must remain untouched", "knowledge/index.json": "[]", "third_party/rsyncgo/go.mod": "module github.com/gokrazy/rsync\n", "third_party/rsyncgo/LICENSE": "reviewed fork license", "third_party/rsyncgo/engine.go": "package rsync\n", "third_party/unreviewed/secret": "must not copy unrelated third parties", ".cache/generated": "must not copy caches"} {
+	for name, text := range map[string]string{"go.mod": "module fixture\n", "go.sum": "", "cmd/main.go": "package main\n", "internal/companions/assets_enabled.go": "package companions\n", "internal/companions/generated/operator-file": "must remain untouched", "knowledge/index.json": "[]", "third_party/rsyncgo/UPSTREAM-go.mod.txt": "module github.com/gokrazy/rsync\n", "third_party/rsyncgo/LICENSE": "reviewed fork license", "third_party/rsyncgo/engine.go": "package rsync\n", "third_party/unreviewed/secret": "must not copy unrelated third parties", ".cache/generated": "must not copy caches"} {
 		if err := os.WriteFile(filepath.Join(source, name), []byte(text), 0600); err != nil {
 			t.Fatal(err)
 		}
@@ -142,7 +142,7 @@ func TestCarrierSourceSnapshotExcludesGeneratedAssetsAndPreservesCaller(t *testi
 	if _, err := os.Lstat(filepath.Join(target, "internal/companions/generated")); !os.IsNotExist(err) {
 		t.Fatal("generated payloads copied recursively", err)
 	}
-	for _, name := range []string{"third_party/rsyncgo/go.mod", "third_party/rsyncgo/LICENSE", "third_party/rsyncgo/engine.go"} {
+	for _, name := range []string{"third_party/rsyncgo/UPSTREAM-go.mod.txt", "third_party/rsyncgo/LICENSE", "third_party/rsyncgo/engine.go"} {
 		original, err := os.ReadFile(filepath.Join(source, name))
 		if err != nil {
 			t.Fatal(err)

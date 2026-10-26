@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func gradleEvidenceFixture(t *testing.T) (*Manager, model.Lease, gradleRecord, string) {

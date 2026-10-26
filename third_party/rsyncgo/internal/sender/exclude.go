@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 type filterRuleList struct {

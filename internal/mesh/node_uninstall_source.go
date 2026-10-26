@@ -3,7 +3,7 @@ package mesh
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 	"time"
 )
 

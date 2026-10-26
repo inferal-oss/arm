@@ -1514,3 +1514,23 @@ including progress keys, newline and maximum timestamp widths, before intent is
 created. Oversized or unsafe inventories refuse without erasure. Logical file
 removal does not claim physical-media erasure. Actual user state and the installed
 binary were untouched during implementation, review and native acceptance.
+
+## Canonical source installation and rsync module layout
+
+ARM's module is `github.com/inferal-oss/arm`. The audited rsync fork stays under
+`third_party/rsyncgo` inside that module; it no longer requires a local replace
+or active nested module. Its original upstream module/sum files are retained
+verbatim as `UPSTREAM-go.mod.txt` and `UPSTREAM-go.sum.txt`, alongside unchanged
+license/attribution. Root dependencies include the fork's runtime and test
+requirements. Root `./...` compile/test/vet now includes fork packages; the
+focused `make test-rsync` addresses them with main-module paths.
+
+`go install github.com/inferal-oss/arm/cmd/arm@latest` builds a thin native
+executable. Carrier packaging remains an explicit source build using
+`make carrier` / `make install`. Versioned-install acceptance still requires
+reviewed public publication and disposable-cache remote evidence; source tests
+alone cannot establish it. Existing `arm install` agent-integration behavior is
+unchanged. A possible future explicit opt-in carrier assembler could reuse
+`internal/distribution.BuildCarrier`, but needs a reviewed source identity,
+installed compatible Go toolchain, bounded CPU/memory/disk and output ownership;
+this migration adds no such command or automatic download/build authority.

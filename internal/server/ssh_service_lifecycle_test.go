@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/sshservice"
 )
 
 func TestSSHDisableReenableKeepsKeyButNeverRevivesPriorScope(t *testing.T) {

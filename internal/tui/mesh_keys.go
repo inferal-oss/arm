@@ -7,8 +7,8 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/meshops"
 )
 
 func (m *dashboardModel) meshModal() bool {

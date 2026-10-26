@@ -15,7 +15,7 @@ See [SPEC.md](SPEC.md) for the complete design and [the implementation notes](do
 
 ## Build
 
-Use Go 1.27.3 or newer. The current build uses Go 1.27.3, selected from the [official stable release feed](https://go.dev/dl/?mode=json). SQLite uses `modernc.org/sqlite`; the release build disables CGo.
+Use the minimum Go version declared in [go.mod](go.mod). SQLite uses `modernc.org/sqlite`; the release build disables CGo.
 
 ```sh
 make build
@@ -39,7 +39,21 @@ For an optional archive with four sibling binaries and a platform-selecting laun
 
 ## Run locally
 
-To install the executable for your user, with no administrator privileges:
+To install the thin executable with Go:
+
+```sh
+go install github.com/inferal-oss/arm/cmd/arm@latest
+arm version
+arm help
+```
+
+Go installs into `GOBIN` (or the default Go binary directory); put it on your
+PATH. This builds the native executable from public source and includes the
+audited rsync engine. It carries no embedded companion payloads. Use the
+carrier build below for provisioning missing mesh nodes across platforms.
+`arm install` configures agent integrations; it does not assemble a carrier.
+
+To build and install the carrier for your user, with no administrator privileges:
 
 ```sh
 make install              # builds and installs the carrier as ~/.local/bin/arm

@@ -1,4 +1,4 @@
-module github.com/yrashk/arm
+module github.com/inferal-oss/arm
 
 go 1.27.3
 
@@ -11,7 +11,7 @@ require (
 	github.com/coder/websocket v1.8.15
 	github.com/creack/pty v1.1.24
 	github.com/ebitengine/purego v0.11.2
-	github.com/gokrazy/rsync v0.3.8
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-isatty v0.0.24
 	github.com/pelletier/go-toml/v2 v2.4.3
@@ -96,5 +96,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.4.2 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
-
-replace github.com/gokrazy/rsync => ./third_party/rsyncgo

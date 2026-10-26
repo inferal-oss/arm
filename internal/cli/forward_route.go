@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshsshrelay"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshsshrelay"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 )
 
 func (a *app) forwardContext(ctx context.Context, workspaceID, source, target string) (workspace.RouteAccess, error) {

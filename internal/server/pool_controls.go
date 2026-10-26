@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func browserPoolMutation(request model.PoolMutation) error {

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 func meshCloseFixture(t *testing.T) (*Server, *meshService) {

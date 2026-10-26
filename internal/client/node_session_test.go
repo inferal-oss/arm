@@ -9,7 +9,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestNodeReportRequiresExactAuthorityAndDestinationScope(t *testing.T) {

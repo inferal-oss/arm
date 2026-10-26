@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	api "github.com/yrashk/arm/internal/workspaceapi"
-	"github.com/yrashk/arm/internal/workspacegraph"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/workspacegraph"
 )
 
 func TestGraphRefreshCoalescesAndFollowerCancellationDoesNotRestart(t *testing.T) {

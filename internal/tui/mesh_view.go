@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/yrashk/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/meshops"
 )
 
 func (m *dashboardModel) meshItemCount() int {

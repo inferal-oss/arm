@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/server"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/server"
 )
 
 func TestResetMissingSeedPointerChild(t *testing.T) {

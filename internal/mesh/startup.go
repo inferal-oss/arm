@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // StartupPolicy records configured ceilings, never observed free memory. A

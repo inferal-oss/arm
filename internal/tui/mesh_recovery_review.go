@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 // Existing recovery reviews are distinct from granting new trust. Their

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshsshrelay"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshsshrelay"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 // forwardSourceDial selects a current graph path without treating reachability

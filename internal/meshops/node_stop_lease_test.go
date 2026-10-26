@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshops"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 // This uses actual manager leases and stored coordination. The injected peer

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // This control has a separate selected test/log from the sole exported actual

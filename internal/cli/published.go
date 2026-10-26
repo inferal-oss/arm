@@ -3,10 +3,10 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/published"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/published"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 	"io"
 	"time"
 )

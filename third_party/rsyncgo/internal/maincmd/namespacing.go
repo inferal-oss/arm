@@ -10,8 +10,8 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/gokrazy/rsync/internal/rsyncos"
-	"github.com/gokrazy/rsync/rsyncd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 )
 
 func namespace(osenv *rsyncos.Env, modules []rsyncd.Module, listen string) error {

@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/progress"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 func wireInt(b *bytes.Buffer, v int32) { _ = binary.Write(b, binary.LittleEndian, v) }

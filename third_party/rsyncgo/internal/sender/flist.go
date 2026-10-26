@@ -13,10 +13,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/rsyncchecksum"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 type file struct {

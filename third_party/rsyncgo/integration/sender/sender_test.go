@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gokrazy/rsync/internal/rsynctest"
-	"github.com/gokrazy/rsync/internal/testlogger"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
 	"github.com/google/go-cmp/cmp"
 )
 

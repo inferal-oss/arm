@@ -19,8 +19,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 // Outer is a destination-owned snapshot of one authenticated direct pair. It

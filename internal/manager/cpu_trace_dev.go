@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Private tagged collectors are installed by a test for one original Manager.

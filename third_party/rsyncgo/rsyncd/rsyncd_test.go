@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing/fstest"
 
-	"github.com/gokrazy/rsync/rsyncd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 )
 
 func ExampleNewServer() {

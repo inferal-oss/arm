@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/routing"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 func routedProofFixture(t *testing.T, phase string) string {

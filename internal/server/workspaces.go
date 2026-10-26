@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 )
 
 const maxWorkspaceNativeReply = 48 << 10

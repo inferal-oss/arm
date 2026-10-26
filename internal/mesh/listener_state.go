@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 	"time"
 )
 

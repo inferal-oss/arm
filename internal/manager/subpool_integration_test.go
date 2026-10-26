@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func makeChild(t *testing.T, m *Manager, parent model.Pool, name string, n int64) model.Pool {

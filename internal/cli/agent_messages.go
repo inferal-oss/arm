@@ -3,16 +3,16 @@ package cli
 import (
 	"errors"
 	"fmt"
-	"github.com/yrashk/arm/internal/routing"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/routing"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 	"io"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yrashk/arm/internal/agents"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 var errAgentDeliveryReported = errors.New("recorded agent delivery failure already printed")

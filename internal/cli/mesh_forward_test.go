@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/yrashk/arm/internal/meshforward"
+	"github.com/inferal-oss/arm/internal/meshforward"
 	"io"
 	"net"
 	"strings"

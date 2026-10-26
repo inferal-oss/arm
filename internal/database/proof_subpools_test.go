@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func subpoolProofFixture(t *testing.T) string {

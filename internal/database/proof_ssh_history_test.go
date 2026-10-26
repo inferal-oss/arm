@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
 	"golang.org/x/sys/unix"
 )
 

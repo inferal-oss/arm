@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/nodestop"
-	"github.com/yrashk/arm/internal/storage"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/storage"
 	"golang.org/x/sys/unix"
 )
 

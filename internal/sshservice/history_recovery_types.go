@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yrashk/arm/internal/historypack"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/historypack"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 const SourceHistoryRecoveryName = "ssh-history-recovery.json"

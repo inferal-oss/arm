@@ -2,7 +2,7 @@ package mesh
 
 import (
 	"encoding/json"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 	"os"
 	"path/filepath"
 	"strings"

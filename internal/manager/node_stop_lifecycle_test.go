@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestNodeStopWaitCancelsQueuedStorageWithoutAllocation(t *testing.T) {

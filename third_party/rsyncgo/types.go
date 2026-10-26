@@ -3,7 +3,7 @@ package rsync
 import (
 	"fmt"
 
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 // These limits bound peer-controlled allocations in the protocol 27 engine.

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/usage"
+	"github.com/inferal-oss/arm/internal/usage"
 )
 
 func TestManagedCPUNormalizationIsConservativePerOwner(t *testing.T) {

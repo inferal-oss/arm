@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"github.com/creack/pty"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
-	"github.com/yrashk/arm/internal/usage"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/usage"
 	"golang.org/x/crypto/ssh"
 )
 

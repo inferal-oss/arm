@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
 	"github.com/mmcloughlin/md4"
 )
 
