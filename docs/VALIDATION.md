@@ -3913,3 +3913,45 @@ After all seven feature integrations and approval-message alignment,
 module. This compiles all test packages and executes no test bodies. Exact log:
 `.cache/coordinator-final-approved-module-compile.log`. Earlier per-feature
 executed checks and retained failures/skips remain separate evidence.
+
+
+## Database removal schema diagnostics — independent and primary acceptance
+
+Author 9bc7eb4 reproduces the exact missing-pressure-table diagnostic with a
+disposable current ledger. The former missing-object path printed internal
+U+001F SQL token keys and selected the first missing object nondeterministically.
+The correction reports trusted names in declaration order with stable
+`database_schema_unsupported` and practical read-only diagnosis/backup,
+matching-build and separate-empty-home guidance. Original normalization, SQL
+constraints, catalog bounds, supported schemas, obligation proof and reset-seed
+predicates are unchanged. No compatibility disposal, schema repair or migration
+is introduced. Actual user schema inventory read no row payloads and showed
+both pressure tables absent and no reset pointer; observed empty WAL/immutable
+read evidence cannot establish exact provenance or settlement. User state was
+not removed, started or migrated.
+
+Author native PTY/JSON refusal snapshots preserve source bytes/modes/names. Two
+complete confirmed disposable reset/startup cycles pass. Author native broad
+races retain three pre-proof CPU-admission fixture failures; their unchanged
+18-case root passes once in an isolated successor. These are separate outcomes,
+not a relabeled broad pass. Author vet and focused tests pass. Receipts remain
+in `/Users/yrashk/.codex/worktrees/c1b6/arm/.cache/database-remove-schema/`.
+
+Independent review composes c182cbd and adds regressions 8f6f655. It reproduces
+original direct proof, terminal and parsed-JSON leakage with unchanged complete
+disposable homes, then passes exact successor database 7 roots/17 cases (6.867s)
+and CLI 2 roots/9 cases (8.272s), without failures/skips. That includes both
+missing pressure tables, no-confirmation human/JSON refusal, token/constraint
+boundaries and all three sparse-seed guard roots. Static DDL, normalizer and
+implicit-index catalogs match their original bytes. Index/source evidence is in
+`/private/tmp/arm-database-remove-diagnostic-review/.cache/`; its final manifest
+SHA256 is `a14237171f8bb3c1da12d1f5b19e92fb9e218f2b9dd1669495b2645f2036a1bf`.
+
+Primary all-internal sources match the reviewed 8f6f655 composition exactly.
+The author CLI regression passes six named cases; a separate exact schema run
+passes all three roots; independent both-pressure missing proof and human/JSON
+regressions pass one database and three CLI cases, all without failures/skips.
+Logs are `.cache/reset-schema-primary-{focused,schema,independent}-race.jsonl`.
+A fresh self-contained thin diagnostic executable is built at
+`.cache/arm-schema-diagnostic-reviewed`; the installed carrier is not replaced
+by this source correction. No new Linux/formal acceptance is claimed.

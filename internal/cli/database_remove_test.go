@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"io/fs"
 	"os"
@@ -217,5 +218,63 @@ func TestDatabaseRemoveInvalidFlagsNeverCreateState(t *testing.T) {
 		if _, err := os.Stat(home); !os.IsNotExist(err) {
 			t.Fatal("invalid reset created state")
 		}
+	}
+}
+
+func TestDatabaseRemoveSchemaRefusalIsReadableAndPreservesLedger(t *testing.T) {
+	for _, kind := range []string{"missing-pressure-table", "pre-pressure-pair", "altered-table", "unknown-table", "missing-index"} {
+		t.Run(kind, func(t *testing.T) {
+			home := resetCLIState(t, false, false)
+			db, err := sql.Open("sqlite", filepath.Join(home, "state.db"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			queries := map[string]string{
+				"missing-pressure-table": `DROP TABLE host_pressure_state`,
+				"pre-pressure-pair":      `DROP TABLE host_pressure_state; DROP TABLE host_pressure_outbox`,
+				"altered-table":          `ALTER TABLE host_pressure_state ADD COLUMN future TEXT`,
+				"unknown-table":          `CREATE TABLE future_obligations(data TEXT)`,
+				"missing-index":          `DROP INDEX pools_name`,
+			}
+			_, err = db.Exec(queries[kind])
+			db.Close()
+			if err != nil {
+				t.Fatal(err)
+			}
+			before := resetCLITree(t, home)
+			for _, format := range []string{"pipe", "terminal", "forced-json"} {
+				var out, errout bytes.Buffer
+				a := app{home: home, ctx: t.Context(), in: strings.NewReader("y\n"), out: &out, err: &errout}
+				a.outputTTY, a.inputTTY, a.errorTTY = format != "pipe", true, format != "pipe"
+				a.forceJSON = format == "forced-json"
+				code, err := a.database([]string{"remove", "--yes", "--reason", "wipe"})
+				if code == 0 || err == nil {
+					t.Fatal("incompatible schema removed")
+				}
+				a.reportError(err)
+				if out.Len() != 0 {
+					t.Fatal("refused schema produced an approvable preview")
+				}
+				text := errout.String()
+				if strings.ContainsAny(text, "\x1f\x1b") || strings.Contains(text, `\u001f`) || strings.Contains(text, "create\\u") {
+					t.Fatal("internal SQL formatting leaked", text)
+				}
+				if format == "terminal" {
+					if !strings.HasPrefix(text, "Error: ") || !strings.Contains(text, "Code: database_schema_unsupported") {
+						t.Fatal("missing readable terminal error", text)
+					}
+				} else {
+					var envelope struct {
+						Error model.Error `json:"error"`
+					}
+					if err := json.Unmarshal(errout.Bytes(), &envelope); err != nil || envelope.Error.Code != "database_schema_unsupported" {
+						t.Fatal("missing structured schema refusal", text, err)
+					}
+				}
+				if after := resetCLITree(t, home); !reflect.DeepEqual(before, after) {
+					t.Fatal("refusal migrated, repaired or erased state")
+				}
+			}
+		})
 	}
 }

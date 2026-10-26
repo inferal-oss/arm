@@ -7,6 +7,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/syncservice"
 )
 
@@ -166,7 +167,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			return nil, err
 		}
 		if count > 144 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
-			return nil, fmt.Errorf("reset schema catalog exceeds bound")
+			return nil, resetSchemaError("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
 			allowed := false
@@ -176,7 +177,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 				}
 			}
 			if !allowed || autoIndexes[name] {
-				return nil, fmt.Errorf("unknown/duplicate internal reset index %q", name)
+				return nil, resetSchemaError("unknown/duplicate internal reset index %q", name)
 			}
 			autoIndexes[name] = true
 			continue
@@ -189,7 +190,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		normal := normalizedSchema(raw.String)
 		if object, ok := syncObjects[normal]; ok {
 			if kind != object.kind || name != object.name || table != object.table || syncSeen[name] {
-				return nil, fmt.Errorf("sync schema object identity differs")
+				return nil, resetSchemaError("sync schema object identity differs")
 			}
 			syncSeen[name] = true
 			if kind == "table" {
@@ -199,10 +200,10 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 		if identity, ok := reviewObjects[normal]; ok {
 			if kind != identity[0] || name != identity[1] || table != identity[2] {
-				return nil, fmt.Errorf("lease review schema object identity differs")
+				return nil, resetSchemaError("lease review schema object identity differs")
 			}
 			if reviewSeen[normal] {
-				return nil, fmt.Errorf("duplicate lease review schema object")
+				return nil, resetSchemaError("duplicate lease review schema object")
 			}
 			reviewSeen[normal] = true
 			if kind == "table" {
@@ -212,27 +213,27 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 		if expectedTable, ok := routingObjects[normal]; ok {
 			if kind != "table" || name != expectedTable || table != expectedTable {
-				return nil, fmt.Errorf("routing schema object identity differs")
+				return nil, resetSchemaError("routing schema object identity differs")
 			}
 			catalog[expectedTable] = nil
 			continue
 		}
 		if expectedTable, ok := workspaceObjects[normal]; ok {
 			if kind != "table" || name != expectedTable || table != expectedTable {
-				return nil, fmt.Errorf("workspace schema object identity differs")
+				return nil, resetSchemaError("workspace schema object identity differs")
 			}
 			catalog[expectedTable] = nil
 			continue
 		}
 		if normal == sshFence {
 			if kind != "table" || name != "ssh_key_fences" || table != name {
-				return nil, fmt.Errorf("SSH fence schema identity differs")
+				return nil, resetSchemaError("SSH fence schema identity differs")
 			}
 			continue
 		}
 		if normal == normalizedSchema(cargoResetSchema) {
 			if kind != "table" || name != "cargo_workloads" || table != "cargo_workloads" {
-				return nil, fmt.Errorf("Cargo optional schema identity differs")
+				return nil, resetSchemaError("Cargo optional schema identity differs")
 			}
 			catalog[table] = nil
 			continue
@@ -241,7 +242,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		if _, ok := expected[normal]; !ok {
-			return nil, fmt.Errorf("unsupported reset schema object %q (%s); no migration or destructive proof inferred", name, kind)
+			return nil, resetSchemaError("unsupported reset schema object %q (%s); no migration or destructive proof inferred", name, kind)
 		}
 		expected[normal] = true
 		if kind == "table" {
@@ -251,16 +252,26 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	for query, seen := range expected {
-		if !seen {
-			return nil, fmt.Errorf("required reset schema object missing: %.160s", query)
+	// Report trusted object identities in declaration order, never the internal
+	// token-comparison keys (which contain control-character separators).
+	missing := []string{}
+	for _, query := range resetSchema {
+		if !expected[normalizedSchema(query)] {
+			fields := strings.Fields(query) // only the static reviewed DDL above
+			if fields[1] == "UNIQUE" {
+				fields = fields[1:]
+			}
+			missing = append(missing, fmt.Sprintf("%s %q", strings.ToLower(fields[1]), fields[2]))
 		}
 	}
+	if len(missing) > 0 {
+		return nil, resetSchemaError("required schema objects missing: %s", strings.Join(missing, ", "))
+	}
 	if len(reviewSeen) != 0 && len(reviewSeen) != len(leaseReviewResetSchema) {
-		return nil, fmt.Errorf("partial lease review schema group")
+		return nil, resetSchemaError("partial lease review schema group")
 	}
 	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) {
-		return nil, fmt.Errorf("partial sync reset schema group")
+		return nil, resetSchemaError("partial sync reset schema group")
 	}
 	workspaceCount := 0
 	for _, table := range workspaceResetTables {
@@ -269,7 +280,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 	}
 	if workspaceCount != 0 && workspaceCount != len(workspaceResetTables) {
-		return nil, fmt.Errorf("partial workspace reset schema group")
+		return nil, resetSchemaError("partial workspace reset schema group")
 	}
 	routingCount := 0
 	for _, table := range routingResetTables {
@@ -278,7 +289,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 	}
 	if routingCount != 0 && routingCount != len(routingResetTables) {
-		return nil, fmt.Errorf("partial routing reset schema group")
+		return nil, resetSchemaError("partial routing reset schema group")
 	}
 	publicationCount := 0
 	for _, table := range publishedResetTables {
@@ -287,7 +298,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 	}
 	if publicationCount != 0 && (publicationCount != 3 || workspaceCount != len(workspaceResetTables)) {
-		return nil, fmt.Errorf("partial published agent reset schema group")
+		return nil, resetSchemaError("partial published agent reset schema group")
 	}
 	graphCount := 0
 	for _, table := range routingGraphResetTables {
@@ -296,7 +307,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 	}
 	if graphCount != 0 && (graphCount != len(routingGraphResetTables) || routingCount != len(routingResetTables)) {
-		return nil, fmt.Errorf("partial routing graph reset schema group")
+		return nil, resetSchemaError("partial routing graph reset schema group")
 	}
 	// Retrieve columns only after the exact schema/constraints have been checked.
 	rows.Close()
@@ -322,7 +333,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		for i := 1; i <= resetAutoIndexes[table]; i++ {
 			name := fmt.Sprintf("sqlite_autoindex_%s_%d", table, i)
 			if !autoIndexes[name] {
-				return nil, fmt.Errorf("required implicit reset constraint index missing: %s", name)
+				return nil, resetSchemaError("required implicit reset constraint index missing: %s", name)
 			}
 		}
 	}
@@ -349,4 +360,15 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		}
 	}
 	return catalog, nil
+}
+
+// Schema refusal is a supported outcome with a stable machine code. The proof
+// never upgrades a ledger, and missing objects alone cannot identify its origin
+// or establish that older native obligations are settled.
+func resetSchemaError(format string, args ...any) error {
+	return model.Err("database_schema_unsupported", fmt.Sprintf(format, args...)+
+		". The ledger schema is incomplete or incompatible with this ARM build; removal is not authorized and no schema repair was attempted."+
+		" Preserve the state directory; use arm database check and arm database backup DESTINATION for diagnosis and a consistent backup."+
+		" Use the ARM build that created the ledger to inspect and resolve obligations, or choose a separate empty --home for a fresh installation."+
+		" Automatic migration and removal of incompatible schemas are unsupported.")
 }

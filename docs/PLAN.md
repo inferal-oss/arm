@@ -64,11 +64,13 @@ denies CPU; the separate capacity-observer proposal is not approved or enabled.
 
 **Current validation gates.** Bounded, durable SSH history cleanup and complete expected-row binding are integrated after the full composed SSH race suite and native Linux suite pass; earlier deadline and stale-row failures remain recorded. Stable Darwin boot identity is integrated, and the scoped CPU TLC/actual-Go/TLAPM gate is renewed. Warning-runtime exact-recipient/lease/incident start checks are integrated with focused platform evidence; automatic pause stays disabled. Kubernetes endpoint/CA/origin fences and owned helpers are integrated. The private Manager/schema/worker components are integrated; production orchestration, allocation/cleanup, relayed public sync and full Kubernetes delivery remain required.
 
-**Pressure warnings integrated.** The reviewed decision/journal core now feeds durable Manager warnings, operator/agent inboxes and an exact-registration native-delivery outbox. Sampling, warning commits, shutdown fences and contact/lease/incident checks at command start pass scoped composed macOS race and native Linux tests. CPU warning confidence now separates verified current usage from possible compliant original-owner use. Bare promises cannot manufacture measured coverage; uncertain/missing attribution does not itself certify healthy recovery or blame supervised work. Structured status exposes these bounds. The inline sync-worker adapter checks the same observed original hold/runtime/context/join plus exact current lease and volume binding; it can contribute only possible compliant use, never native usage credit. Independent review also guards retired/missing sampled members, original transit context/join/row identity and outward arithmetic at fractional thresholds; sufficient physical idle still supports recovery. Small capacities may remain uncertain at millicore resolution. Complete attribution of short-lived work remains open. Automatic pause/resume remains disabled. Stronger pressure evidence, unknown-delivery reconciliation, configurable policy, UI controls and pressure-specific formal gates remain required.
+**Pressure warnings integrated.** The reviewed decision/journal core now feeds durable Manager warnings, operator/agent inboxes and an exact-registration native-delivery outbox. Sampling, warning commits, shutdown fences and contact/lease/incident checks at command start pass scoped composed macOS race and native Linux tests. CPU warning confidence now separates verified current usage from possible compliant original-owner use. Bare promises cannot manufacture measured coverage; uncertain/missing attribution does not itself certify healthy recovery or blame supervised work. Structured status exposes these bounds. The inline sync-worker adapter checks the same observed original hold/runtime/context/join plus exact current lease and volume binding; it can contribute only possible compliant use, never native usage credit. Independent review also guards retired/missing sampled members, original transit context/join/row identity and outward arithmetic at fractional thresholds; sufficient physical idle still supports recovery. Small capacities may remain uncertain at millicore resolution. Complete attribution of short-lived work remains open. Automatic pause/resume remains disabled. Stronger pressure evidence, unknown-delivery reconciliation, configurable policy, UI controls and full pressure-runtime formal gates remain required; the scoped CPU warning
+confidence gate is integrated in 113f738.
 
 **Selected sync staging delivered.** Only reviewed source actions are materialized for rsync, including keep-both remapping; receiver bases are private copies and directory sidecars restore reviewed metadata. Native root ID v2 adds creation evidence and bound publication rejects changed roots. Review fixed stage/receiver overlap and replaced staged directories. All 29 current cases pass on macOS and native Linux ARM64. Resource admission, actual filesystem overhead, filesystem identity capability policy, endpoint receipts and public sync remain separate integration gates.
 
-**Current integration handoffs.** The planner, selected native staging, creation-bound root identity and Manager-owned relay holds are integrated. The internal sync operation/receipt layer is reviewed and integrated: exact manifests, original-key effect evidence, dual receipt baseline confirmation and admitted-memory preflight. The unchanged 768-effect regression passes after removing repeated large-row updates. The private fixed SSH sync worker is integrated with control-frame allocation preflight and joined cancellation; the private Manager admission adapter is integrated; production worker orchestration remains required before public dispatch. The routed SSH public CLI passes scoped Linux guest workflows and alternate-route recovery; cleanup-gate and stored-pin canonicality fixes are reviewed and integrated, with separate focused race and harness checks. The earlier guest binaries were deleted before hashing, so those historical observations do not prove an exact binary digest. Its same-guest throughput remains about 40% of the direct path, with physical cross-host performance and OS-blocked direct paths unverified. Kubernetes has an integrated reviewed-plan/client-go foundation with owned exec/forwarding helpers and tested endpoint/origin fences; public dispatch, real Pod bootstrap/enrollment and dashboard/cluster acceptance remain. Warning-only host-pressure Manager/outbox code is integrated after independent review and composed platform checks; native pause/resume remains disabled. Standard VNC and QUIC work stay in their separate chats/worktrees; QUIC does not gate this integration.
+**Current integration handoffs.** The planner, selected native staging, creation-bound root identity and Manager-owned relay holds are integrated. The internal sync operation/receipt layer is reviewed and integrated: exact manifests, original-key effect evidence, dual receipt baseline confirmation and admitted-memory preflight. The unchanged 768-effect regression passes after removing repeated large-row updates. The private fixed SSH sync worker is integrated with control-frame allocation preflight and joined cancellation; the private Manager admission adapter is integrated; production worker orchestration remains required before public dispatch. The routed SSH public CLI passes scoped Linux guest workflows and alternate-route recovery; cleanup-gate and stored-pin canonicality fixes are reviewed and integrated, with separate focused race and harness checks. The earlier guest binaries were deleted before hashing, so those historical observations do not prove an exact binary digest. Its same-guest throughput remains about 40% of the direct path, with physical cross-host performance and OS-blocked direct paths unverified. Kubernetes has an integrated reviewed-plan/client-go foundation with owned exec/forwarding helpers and tested endpoint/origin fences; public dispatch, real Pod bootstrap/enrollment and dashboard/cluster acceptance remain. Warning-only host-pressure Manager/outbox code is integrated after independent review and composed platform checks; native pause/resume remains disabled. Standard direct-peer VNC is now integrated in 228ccff with remaining live/decoder/
+multi-hop gates; QUIC work stays in its separate chat/worktree; QUIC does not gate this integration.
 
 **October 25 scope change — synchronization replaces mounting.** The operator explicitly removed the entire mesh mount direction. Replace it with rsync-compatible Go delta sync over the existing leased SSH transport: push/pull/both, independent additive/full receive policy at each end, common bidirectional baselines/deletion records, conflict resolution and reviewed changes. SSH **and** sync must relay through mesh peers with end-to-end authentication and destination-local authority. The private mount/share/snapshot stack is removed after dependency review, preserving messaging graph transport, leased SSH, operational history and ordinary local storage safeguards. Earlier mount/consumer/snapshot sections below are retained historical checkpoints and are superseded as product deliverables; they must not drive new implementation. See [the revised scope](../SPEC.md#mesh-ssh-and-synchronized-data). CPU protection remains priority #1; sync implementation proceeds in three separately delegated Codex tasks: audited Go rsync engine (`internal/rsyncengine` and an owned third-party fork), pure bidirectional reconciliation (`internal/syncreconcile`), and reviewed SSH/sync relay (`internal/meshsshrelay`). The coordinator owns shared CLI/backend/schema/module integration and commits. Tasks must not share the Git index or edit one another's paths.
 
@@ -314,7 +316,10 @@ Node selection must also open an independent, clearly host-labeled dashboard win
 
 Localhost uses the same implemented reported metadata schema/provider/API as every peer, including its real stable host identity; `arm node [--host HOST]` is available. Native/browser/pinned-peer and actual Linux gates passed. Read-only `node_list` and exact stable-ID `node_inspect` now provide bounded local/direct-peer registry entries, selected-only refresh, current destination-reported outbound scope, separately labeled inbound grants/account snapshots, and explicit independent staleness. Root isolated race/vet/native/Linux and actual two-host gates passed. Shared rendered web node-details/windows are implemented; custom annotations and full remote operational views remain queued. The scoped-session foundation supplies immutable read-only remote contexts in both interfaces; full remote operational parity is still required.
 
-### October 26 integration queue
+### October 26 integration queue — handoff snapshot
+
+The following queue records the handoff before the current integrated checkpoint
+above. Later review/composition receipts below supersede its pending statuses.
 
 Pressure warnings and the private fixed sync worker are integrated. Independent review reproduced full scan/hash before admission and missing outgoing source-stage disk coverage; the corrected private adapter is now integrated after charged preparation, exact-owner handoff and composed platform checks. Durable schema
 installation and conservative reset/Stop evidence retention are integrated
@@ -378,8 +383,9 @@ closed until complete endpoint/worker/admission/recovery paths are reviewed.
 and do not choose applications. Application/service/SSH/sync permissions belong
 at endpoints; relay resource, lifetime, routing and drain controls remain. The
 forwarding branch is implementing a generic transport envelope accordingly.
-That proposed change is isolated pending the revised concrete security review;
-the current production route controls are not silently broadened.
+That handoff candidate was subsequently integrated behind a normal-build fence
+in 5ecd9f7. Its concrete scheme is now operator-approved; remaining acceptance
+gates still prevent production route widening.
 
 **Scope alignment:** SPEC now explicitly retains general multi-hop TCP forwarding
 and the operator's application-agnostic relay correction, alongside separately
@@ -399,7 +405,8 @@ UID privacy assertion in the actual source; native races and full web tests
 pass. Actual browser rendering was checked; Charm, native macOS different-user
 and broader formal coverage remain.
 
-The next independent integration reviews use isolated branches/worktrees:
+The following independent integration reviews were assigned at handoff (now
+integrated in the current checkpoint above):
 CPU warning formal 106a989/f5f2d6a with final correction cf73d0c; source sync
 5548af6/ab0dacc/73a30a2/86209b0 with reviewer 1fc94b1 is integrated in c64a49c; generic forwarding cfbf79b and its concrete operator
 security-review gate. These reviewers return focused integration candidates,
@@ -417,7 +424,8 @@ branch codex/source-sync-final-composition records final macOS races and exact
 runtime equivalence to accepted Linux source. Primary renews affected Manager
 and protocol/transport checks after composing with 975d4b9. Kubernetes final
 review is active in codex/kubernetes-final-runtime-review; forwarding review
-adds a normal-build refusal fence pending the retained operator design review.
+adds a normal-build refusal fence. The design review was subsequently approved;
+remaining acceptance is still required.
 **CPU warning confidence verification:** a scoped model/actual-Go/strict-proof
 gate passes against the reviewed classifier, including original owner lifetime,
 physical-idle recovery, rounding and frozen-input fences. It does not close the
@@ -447,10 +455,11 @@ Peer awareness is integrated in 975d4b9 and the private source sync/charged-fram
 feature in c64a49c. CPU warning formal review now passes independent complete
 checking and renewed actual primary traces. Kubernetes runtime final correction
 c118a01 refuses authenticated probe redirects; accepted focused sequence is
-2d3f069/b8d89d4/7d644e7/3f27e36/eafd55b/c118a01, awaiting primary composition.
+2d3f069/b8d89d4/7d644e7/3f27e36/eafd55b/c118a01, integrated as ebbc6da.
 VNC final corrections are under a new independent review; dual-endpoint sync
 recovery f507478/8a8130d is independently reviewed separately. Forwarding keeps
-a normal-build production refusal pending its exact retained operator review.
+a normal-build production refusal for remaining acceptance after operator
+approval of its exact scheme.
 
 
 Forwarding final reviewer 59a180f closes three blockers: ordinary-build authority
@@ -498,3 +507,22 @@ fix actionable human/JSON diagnostics and any warranted workflow defect without
 weakening settled-obligation/schema/provenance checks. Actual user state removal
 or migration is not authorized by this issue report. Independent review and
 composed native CLI/schema/proof validation precede primary integration.
+
+
+Peer Charm parity continues in existing owner chat
+01a178d3-2fda-7822-b84b-1da957037062 after the reviewed backend/CLI/web
+integration. It must use a new isolated branch/worktree from 79bf0d8, retain
+readonly advisory scope, bound in-flight polling and stale/session ownership,
+and keep remote-selected contexts distinct. Focused TUI state/race plus scoped
+rendered navigation/resize evidence and independent review precede integration.
+The reset-schema user issue above has priority.
+
+
+Reset-schema author 9bc7eb4 completed deterministic readable missing-object
+diagnostics and stable database_schema_unsupported errors without predicate
+changes. Independent review reproduces original direct/TTY/JSON separator
+leakage and nondeterministic selection, then verifies final refusals preserve
+complete disposable home/database state. Actual read-only user inventory lacks
+both pressure tables and reset pointer; its origin is unproved. Compatibility
+removal remains refused. Two current-schema reset/startup cycles pass; original
+CPU-fixture setup failures and scoped successor are retained separately.

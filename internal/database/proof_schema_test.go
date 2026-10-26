@@ -3,9 +3,12 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/yrashk/arm/internal/model"
 )
 
 func TestResetSchemaRetainsSQLiteTokenAndConstraintBoundaries(t *testing.T) {
@@ -33,6 +36,52 @@ func TestResetSchemaRetainsSQLiteTokenAndConstraintBoundaries(t *testing.T) {
 	}
 	if normalizedSchema(`CREATE TABLE leases(value TEXT DEFAULT 'a''b')`) == normalizedSchema(`CREATE TABLE leases(value TEXT DEFAULT 'ab')`) {
 		t.Fatal("escaped quote literal was discarded")
+	}
+}
+
+func TestResetSchemaMissingObjectsAreDeterministicReadableRefusals(t *testing.T) {
+	for _, drops := range [][]string{
+		{`DROP TABLE host_pressure_state`},
+		{`DROP TABLE host_pressure_state`, `DROP TABLE host_pressure_outbox`, `DROP INDEX pools_name`},
+	} {
+		db, err := sql.Open("sqlite", filepath.Join(t.TempDir(), "schema.db"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer db.Close()
+		for _, query := range append(append([]string{}, resetSchema...), drops...) {
+			if _, err = db.Exec(query); err != nil {
+				t.Fatal(err)
+			}
+		}
+		var first string
+		for i := 0; i < 20; i++ {
+			tx, err := db.BeginTx(t.Context(), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = verifyResetSchema(t.Context(), tx)
+			tx.Rollback()
+			var detail *model.Error
+			if !errors.As(err, &detail) || detail.Code != "database_schema_unsupported" {
+				t.Fatalf("missing structured schema refusal: %v", err)
+			}
+			for _, want := range []string{`table "host_pressure_state"`, "incomplete or incompatible", "database backup DESTINATION", "separate empty --home"} {
+				if !strings.Contains(detail.Message, want) {
+					t.Fatalf("missing %q: %s", want, detail.Message)
+				}
+			}
+			if len(drops) > 1 && (!strings.Contains(detail.Message, `table "host_pressure_outbox"`) || !strings.Contains(detail.Message, `index "pools_name"`)) {
+				t.Fatal("missing objects omitted", detail.Message)
+			}
+			if strings.ContainsAny(detail.Message, "\x1f\x1b") || strings.Contains(strings.ToLower(detail.Message), "create table") {
+				t.Fatal("internal SQL presentation leaked", detail.Message)
+			}
+			if i > 0 && detail.Message != first {
+				t.Fatal("missing schema diagnostic is nondeterministic")
+			}
+			first = detail.Message
+		}
 	}
 }
 func TestResetSchemaRequiresImplicitConstraintIndexes(t *testing.T) {

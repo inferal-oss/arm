@@ -69,7 +69,7 @@ An internal rsync staging engine is implemented using a licensed, audited Go for
 
 The pure bidirectional reconciliation component is integrated. It plans push/pull/both with independent additive/full receive policies, per-end confirmed states/tombstones, explicit conflict resolution and immutable reviewed digests. Review fixed retained subtree edits, directory deletion versus peer edits, exclusion ancestors, native-name aliases and changed historical name scope. Native comparison keys and matching durable completion receipts remain caller obligations. No public sync command, filesystem effect or baseline commit is enabled by this package. See [the reconciliation contract](SYNC-RECONCILIATION.md).
 
-The internal sync operation layer now persists original-key intents, reviewed manifests, per-effect prepare/outcome evidence and separate endpoint completion receipts. A new baseline requires both matching endpoint receipts and exact retained local evidence; unknown effects remain lookup-only. Writing transactions require a durable SQLite journal and synchronous policy. Control decoding checks active admitted memory before allocating the frame and preflights sparse collections, bounded parser bookkeeping and canonical string expansion. Native publication uses creation-bound roots and a durable ledger. These tables are not installed during ordinary startup: Manager admission/schema proof, authenticated peer receipt exchange, actual volume charging, fixed SSH worker and public sync remain unfinished. See [the integration contract](../internal/syncservice/README.md).
+The internal sync operation layer now persists original-key intents, reviewed manifests, per-effect prepare/outcome evidence and separate endpoint completion receipts. A new baseline requires both matching endpoint receipts and exact retained local evidence; unknown effects remain lookup-only. Writing transactions require a durable SQLite journal and synchronous policy. Control decoding checks active admitted memory before allocating the frame and preflights sparse collections, bounded parser bookkeeping and canonical string expansion. Native publication uses creation-bound roots and a durable ledger. These tables are installed transactionally by the private Manager sync path, rather than blindly during ordinary startup. Reviewed admission/schema proof, charged volume promises, the fixed worker and internal dual receipts are integrated. Actual allocation enforcement/settlement, public authenticated routing and full sync workflows remain unfinished. See [the integration contract](../internal/syncservice/README.md).
 
 The native `syncfs` component now supplies held-root scans, SHA-256 fingerprints, ASCII native comparison keys, private same-filesystem staging/quarantine and single-use reviewed publication. Creates are exclusive; replacements retain preimages; removals quarantine exact reviewed entries. Each effect requires durable prepare/outcome callbacks and rechecks native bindings and fingerprints. Final review fixed scratch-probe replacement and newly created workspace binding checks. All 19 cases pass on native macOS and Linux ARM64, with macOS race/vet checks. Non-ASCII names, directory type replacement and stronger metadata fidelity remain unsupported. Selective sender trees, isolated receiver delta bases, directory metadata sidecars and mechanical native root-to-plan checks are integrated, with all 29 current cases passing on macOS and Linux ARM64. Native root ID v2 includes reported creation evidence and refuses absent platform evidence; persisted reuse still depends on stable, sufficiently precise filesystem evidence. Receiving account/root authorization, actual resource admission, operation receipts, joint baseline confirmation and public commands remain orchestration work. See [the filesystem contract](../internal/syncfs/README.md).
 
@@ -1445,3 +1445,17 @@ The October 26 concrete forwarding design is operator-approved. Ordinary builds
 remain disabled for outstanding acceptance; approval does not close the retained
 EOF, Linux/formal/browser/client or interface gates. Current refusal messages
 refer to those unfinished gates rather than requesting the same review again.
+
+
+## Readable unsupported-schema removal diagnostics
+
+`arm database remove` reports `database_schema_unsupported` for unsupported or
+incomplete proof catalogs. Missing required tables/indexes are named in stable
+declaration order; internal SQL token-comparison keys never appear in that
+diagnostic. The error explains the compatibility boundary and diagnosis/backup,
+matching-build or separate-empty-home options. Exact supported schemas,
+constraints, obligations, native ownership and pristine reset-seed provenance
+remain required. No automatic schema repair, migration or incompatible-ledger
+disposal is added. The reported user's read-only inventory lacks both pressure
+tables and a reset pointer, consistent with pre-pressure state but without
+proof of its exact history. No actual user removal or migration was performed.
