@@ -292,24 +292,18 @@ peers when wired: general port forwarding does not replace sync's own endpoint
 permissions, resource admission, fixed worker, receipts or recovery. The current
 sync route class remains refused until that complete destination path is ready.
 
-**Secure multi-user cooperation — research requested:** retain independent
-per-user daemons while designing authenticated, consent-based coordination
-across local instances sharing physical resources. Research OS-bound identity,
-private endpoint discovery, one-time reservation accounting, per-user policy,
-minimal disclosed summaries, freshness/revocation/recovery and resistance to
-false claims or many instances. Uncooperative users remain external pressure;
-no user's process, private state or mesh grants become another user's authority.
-Compare an optional broker with unprivileged peer coordination and state their
-limits. No cross-user production behavior or privileged installation is enabled
-by this research; a concrete security scheme remains for operator review.
-
-
-**Multi-user research reviewed:** [the proposal](MULTI-USER-COOPERATION-PROPOSAL.md)
-recommends an optional dedicated non-root broker with explicit per-user consent.
-OS-authenticated settlement is an owner assertion, not independent proof of
-cross-user cleanup or physical reclamation. Settlement trust policy, protected
-service provisioning, scope mappings, per-user limits and aggregate disclosure
-remain operator decisions. No multi-user runtime authority is enabled.
+**Local instance awareness — clarified and implementation authorized:** the
+operator narrowed multi-user cooperation to default-on, opt-out discovery and
+read-only peer-reported held/queued demand, including itemized quantities,
+durations and lease expiries. Public `/tmp` announcements discover the existing
+loopback WebSocket; private control tokens and metadata remain private. No
+broker, election, shared admission ledger or cross-user process authority is
+needed. Keep native admission independent of these advisory reports. The
+isolated implementation `45e3dc5` is awaiting independent security, accounting and
+interface review; it is not integrated. Its author reports separate-process
+tests but native different-UID execution and interactive visual QA remain open.
+The original [broker research](MULTI-USER-COOPERATION-PROPOSAL.md) is historical
+design context until the reviewed narrowed proposal is integrated.
 
 **Native macOS routed SSH checkpoint:** the public CLI fixture now passes on
 Darwin ARM64 with both selected peer paths, lost reply/exact-key recovery,
@@ -334,6 +328,7 @@ the current production route controls are not silently broadened.
 
 **Scope alignment:** SPEC now explicitly retains general multi-hop TCP forwarding
 and the operator's application-agnostic relay correction, alongside separately
-authorized typed multi-hop sync. The secure multi-user proposal remains research
-with no enabled cross-user authority. Forwarding implementation and operator
-review remain separate from recording these requirements.
+authorized typed multi-hop sync. Local instance awareness now follows the
+operator's authorized advisory discovery scope, rather than the earlier broker
+proposal; its isolated implementation remains under review. Forwarding
+implementation and operator review remain separate from recording requirements.

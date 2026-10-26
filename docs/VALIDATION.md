@@ -2967,6 +2967,12 @@ No broker, cross-user IPC/native account experiment, model/proof or production
 authority was implemented or accepted. Cooperative settlement versus retention
 until independently supported recovery remains a required operator decision.
 
+The operator later authorized a narrower advisory-discovery implementation in
+the separate multi-user chat. Candidate `45e3dc5` reports separate-process exchange,
+focused races/vet and web tests. Those are author-reported branch results,
+pending independent integration review; native different-user execution and
+interactive visual QA remain open. No broker is needed for the narrowed scope.
+
 ## Native macOS routed SSH public CLI acceptance
 
 The first native Darwin ARM64 attempt fails because the planned pre-admission

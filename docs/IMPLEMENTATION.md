@@ -1182,6 +1182,13 @@ unknown outcomes, coordinator fencing, namespace mapping, privacy and fairness
 limits are explicit. The settlement trust choice and service provisioning need
 operator review before implementation or production activation.
 
+The operator subsequently narrowed the requested feature and authorized
+default-on, opt-out read-only local instance awareness. That implementation is
+isolated in `45e3dc5` pending independent review, rather than enabled in this
+checkout. It exchanges advisory held/queued quantities and timing through
+public temporary-directory discovery and the existing loopback WebSocket.
+It does not require the earlier broker or any shared admission authority.
+
 ## Native macOS public routed SSH workflow
 
 The portable public CLI harness also runs on native macOS. Fault injection

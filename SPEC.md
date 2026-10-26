@@ -616,14 +616,31 @@ General TCP forwarding is also required: publish an HTTP or other TCP service on
 Target approximately 85–90% of same-pair encrypted streaming throughput for large sequential transfers. Measure changed-file delta transfers, first copies, removals, metadata-heavy trees and real Cargo/Gradle/uv workflows separately, disclosing CPU, disk and cache limits. Verify data hashes, preservation of excluded/outside paths, both per-end policies, conflict handling, cancellation/restart/lost replies and full relay paths on actual macOS and Linux. TLA+/TLC/actual-Go-trace/TLAPM gates cover reconciliation generation, deletion authority and recovery where applicable. Dashboards expose sync configuration, both endpoint policies, progress, conflicts, review and history with web/Charm parity.
 
 
-## Secure multi-user cooperation research
+## Local instance awareness across users
 
-Investigate secure cooperation among independently started per-user daemons and
-multiple local instances sharing physical resources. Preserve private state,
-process authority and mesh grants. Evaluate OS-authenticated IPC, explicit
-consent, protected coordinator/discovery alternatives, per-user aggregate
-accounting, privacy, fairness, freshness, restart/unknown-outcome behavior and
-malicious or nonparticipating users. Authenticated owner assertions are not
-independent native cleanup or physical reservation evidence. This is a research
-requirement with an operator-review proposal; it does not approve a broker,
-privileged installation, cross-user authority or a settlement trust policy.
+The operator narrowed the initial multi-user feature to automatic information
+sharing: independently started daemons announce their existing loopback
+WebSocket endpoint and exchange bounded, read-only held and queued resource
+summaries. Enable this by default with a persistent per-instance opt-out. Use
+safe public discovery records in a verified shared temporary directory on
+macOS and Linux, without publishing the private control token. Authenticate
+the discovered instance and distinguish its OS account, instance and restart
+generation. Do not claim complete discovery across isolated filesystem or
+network namespaces.
+
+Expose aggregate and itemized quantities, queue positions, requested durations,
+lease expiries and clearly qualified start estimates so operators and agents
+can understand other participating instances' demand. Omit reasons, paths,
+contacts, command lines and private identifiers. Bound discovery, parsing,
+connections and retained snapshots; reject forged, malformed, stale and
+replayed evidence and render peer text safely. Show incomplete or unavailable
+discovery explicitly. Validate separate processes and different OS users on
+native macOS and Linux, plus opt-out, restart and hostile announcements.
+
+Reports are advisory assertions, not measured consumption or shared reservation
+authority. They cannot increase admission headroom, justify usage credit,
+release another daemon's resources or authorize its processes or mesh grants.
+Each daemon retains its own database, observations, admission and enforcement.
+No broker, leader election, shared database, privileged service or cross-user
+settlement trust is needed for this initial scope. Stronger coordination is a
+separate future security decision.
