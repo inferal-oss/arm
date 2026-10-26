@@ -43,6 +43,7 @@ type MonitorPoint struct {
 	At                  time.Time          `json:"at"`
 	CPU                 *float64           `json:"cpu_busy_percent"`
 	MemoryUsed          *float64           `json:"memory_used_bytes"`
+	MemoryAvailable     *float64           `json:"memory_available_bytes"`
 	SwapUsed            *float64           `json:"swap_used_bytes"`
 	FilesystemAvailable *float64           `json:"filesystem_available_bytes"`
 	FilesystemAt        time.Time          `json:"filesystem_at"`

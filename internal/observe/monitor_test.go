@@ -100,6 +100,22 @@ func TestMonitorBoundedHistoryCursorEpochFreshnessAndCopies(t *testing.T) {
 		t.Fatal("old collection was live", page, e)
 	}
 }
+
+func TestMonitorHistoryRetainsObservedAvailableMemory(t *testing.T) {
+	m := NewMonitor("host-fixture", nil)
+	at := time.Now()
+	view := model.MonitorSnapshot{At: at, Memory: memoryValues(100, 37, "host", "fixture", at)}
+	m.publish(view, at)
+	page, _, err := m.Read(model.MonitorQuery{})
+	if err != nil || len(page.History) != 1 || page.History[0].MemoryAvailable == nil || *page.History[0].MemoryAvailable != 37 || page.History[0].MemoryUsed == nil || *page.History[0].MemoryUsed != 63 {
+		t.Fatalf("history lost observed availability: %+v, %v", page.History, err)
+	}
+	m.publish(model.MonitorSnapshot{At: at.Add(time.Second)}, at.Add(time.Second))
+	page, _, err = m.Read(model.MonitorQuery{})
+	if err != nil || len(page.History) != 2 || page.History[1].MemoryAvailable != nil {
+		t.Fatalf("unknown availability became zero: %+v, %v", page.History, err)
+	}
+}
 func TestMonitorDoesNotPollPerReaderAndStopsWithContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	m := NewMonitor("host", func() model.ResourceMeasurement { return model.ResourceMeasurement{} })

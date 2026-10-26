@@ -270,5 +270,5 @@ export function poolTreeRows(views) {
 // descendants, so resource cards show commitments once rather than summing rows.
 export function poolBudgetFields(resource) {
  const a=resource.custom?.partition;
- return a ? [['TOTAL',a.configured],['COMMITTED',a.committed],['AVAILABLE',a.uncarved_available]] : [['POOL',resource.budget_total],['RESERVED',resource.reserved],['AVAILABLE',resource.available]];
+ return a ? [['AVAILABLE',a.uncarved_available],['TOTAL',a.configured],['COMMITTED',a.committed]] : [['AVAILABLE',resource.available],['POOL',resource.budget_total],['RESERVED',resource.reserved]];
 }

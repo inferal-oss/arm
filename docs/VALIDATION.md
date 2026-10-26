@@ -1,5 +1,13 @@
 # Validation record
 
+## October 26, 2026: held resource-status freshness review fix
+
+The reviewer found that memory and disk cards only used backend stale flags and connection state, so a still-connected browser holding an old status could continue to show “to lease” after those budgets expired. The web view now applies the same local elapsed-age calculation to CPU, memory and disk, and the Resources freshness check redraws when any one of their known/unknown states changes. A regression holds a connected status across staggered memory, disk and CPU deadlines; each “to lease” field becomes unavailable at its own deadline while promises remain visible and the original status object is unchanged. The complete web suite passes 201 tests; JavaScript syntax and staged diff checks pass. This is a browser presentation freshness fix, not a new backend admission rule or terminal layout change. The native observe full-suite counter limitation recorded below remains unchanged.
+
+## October 25, 2026: web remaining-capacity overview
+
+The changed web suite passes all 200 JavaScript tests, including direct available-value/unknown/stale checks, backend CPU/disk/memory field order and custom-pool overlap cases. The focused Go monitor history tests and the observe package with only its native-counter test excluded pass with one CPU; `go vet ./internal/observe` passes. The dashboard bootstrap/shared-WebSocket integration test passes with native loopback permission and verifies the newly embedded browser module. A one-CPU CLI build succeeds. A disposable local backend and actual in-app browser show RAM remaining and swap remaining from physical observations, space remaining on ARM's state filesystem, CPU activity and unchanged I/O rates on Monitor; Resources leads with CPU/memory/disk/port availability from backend budgets. Wide rendered layout and accessible text were inspected. Stopping the disposable backend makes RAM, swap, filesystem and CPU/memory/disk admission headlines unavailable while preserving visible promises and a stale badge. The first browser load stayed at Connecting because the new module was omitted from embedded assets; that was corrected before the passing browser run. The full `internal/observe` package run remains failed in this sandbox because native `vm.swapusage` counters were unavailable; no native swap-provider validation is claimed. Terminal Monitor is a separate renderer and still leads with memory used; terminal layout parity is outside this web scope.
+
 ## October 25, 2026: routed SSH three-node integration
 
 The new `internal/meshsshrelay` carrier/policy tests pass with actual loopback WebSocket hops, nested pinned TLS, opaque transit bytes, route replay refusal and active edge revocation. A compiled server fixture runs three mesh services with B↔A and A↔C only. A separately reviewed transit grant and C's original-B destination grant admit a real SSH command from B through A to C; output matches, the destination's exact key receipt names B and the virtual destination grant pair, and C has no direct B enrollment. The same routed control path returns an exact original-source nonexecution seal. Removing A's relay grant closes an active held stream, settles its local transit hold only after copy/watch/cancellation joins, and rejects a subsequent identity stream. Its live charge records B, C, the route class and workspace. A source-side implementation preserves the original routed pin for lookup/seal and probes candidate paths before execution, but the public CLI workflow has not been exercised end to end by this fixture. Actual independent macOS/Linux CLI workflows, changed-route recovery, sync worker and encrypted throughput remain required before claiming full specification acceptance.
@@ -2537,3 +2545,22 @@ No public sync command is enabled. Persistent schema/reset/recovery proof,
 authenticated receipt exchange, atomic Manager/SSH admission, actual-volume
 resource accounting, fixed workers, operator interfaces and formal
 implementation trace/refinement gates remain required.
+
+### October 26: independent remaining-capacity integration checks
+
+The exact `9b69e28` web successor passes all 201 JavaScript tests (zero skips)
+and the complete affected observer race suite outside the sandbox with
+`ARM_TEST_NATIVE_MONITOR=1` (8.889s). The required native test checks real CPU,
+RAM, swap, network and disk counters. A direct swap query in the sandbox
+returns EPERM; the same query outside succeeds with a 32-byte response. The
+earlier restricted native-counter failure remains historical, and no test
+expectation was relaxed. The composed dashboard bootstrap/assets/WebSocket
+race test passes (3.342s), as does affected server/observer vet. Ignored logs:
+`.cache/remaining-capacity-{web-root,native-observe-root-race,dashboard-root-race}.log`.
+
+The task's earlier actual browser check covers rendered remaining RAM/swap/
+storage, available-to-lease resource cards and disconnected states. The later
+held-budget aging correction adds a staggered connected-snapshot regression;
+it does not claim a second rendered browser run. CPU's large activity view and
+I/O rates keep their semantics. The terminal Monitor still needs the matching
+remaining-first presentation.

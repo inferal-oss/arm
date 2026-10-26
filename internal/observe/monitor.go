@@ -85,7 +85,7 @@ func (m *Monitor) publish(view model.MonitorSnapshot, now time.Time) {
 	m.sequence++
 	m.latest = &view
 	m.sampled = now
-	point := model.MonitorPoint{Sequence: m.sequence, At: view.At, CPU: view.CPU.Value, MemoryUsed: view.Memory.Used.Value, SwapUsed: view.Swap.Used.Value, FilesystemAvailable: view.Filesystem.Available.Value, FilesystemAt: view.Filesystem.Available.At, DiskIO: []model.MonitorHistoryIO{}, Network: []model.MonitorHistoryIO{}}
+	point := model.MonitorPoint{Sequence: m.sequence, At: view.At, CPU: view.CPU.Value, MemoryUsed: view.Memory.Used.Value, MemoryAvailable: view.Memory.Available.Value, SwapUsed: view.Swap.Used.Value, FilesystemAvailable: view.Filesystem.Available.Value, FilesystemAt: view.Filesystem.Available.At, DiskIO: []model.MonitorHistoryIO{}, Network: []model.MonitorHistoryIO{}}
 	for _, v := range view.DiskIO {
 		point.DiskIO = append(point.DiskIO, model.MonitorHistoryIO{ID: v.ID, Read: v.Read.Value, Write: v.Write.Value})
 	}

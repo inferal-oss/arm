@@ -3,8 +3,8 @@
 export function metricHelp(kind, {measurements = [], filesystem, accounting, cpu, memory, disk} = {}) {
   const copy = {
     cpu: ['CPU activity', 'How busy the host’s processors have been since the previous sample. This includes work outside ARM.', 'A core count reserves capacity in ARM; it does not guarantee a particular speed.'],
-    memory: ['Memory & swap', 'Available memory estimates how much RAM the system could make available, including supported reclaimable caches. Used is total RAM minus that estimate.', 'Swap is memory stored on disk. These host readings are separate from the promises made to individual leases.'],
-    filesystem: ['Storage space', 'Space available to your user on the filesystem where ARM stores its data. Other disks and volumes may have different limits.', 'File size is not the same as space that deletion will free: snapshots, clones and shared files can retain data.'],
+    memory: ['Memory & swap', 'RAM remaining is the system’s current estimate of available physical memory, including supported reclaimable caches. Swap remaining is available swap space on disk.', 'These host readings are separate from ARM’s remaining reservable capacity after lease promises. See Resources for what ARM can lease.'],
+    filesystem: ['Storage space', 'Space remaining is currently available to your user on the filesystem where ARM stores its data. Other disks and volumes may have different limits.', 'This physical reading is separate from ARM’s remaining reservable disk budget after lease promises. File size is not the same as space that deletion will free: snapshots, clones and shared files can retain data.'],
     disk_io: ['Disk activity', 'Read and write rates add the reports from every selected device, including work outside ARM. This is a sum of reported counters, not exclusive physical throughput.', 'Virtual devices and their underlying drives can report the same activity. Adding their rates can count it twice.'],
     network: ['Network activity', 'Receive and send rates add the reports from every selected interface, including work outside ARM. This is a sum of reported counters, not exclusive physical throughput.', 'A VPN or virtual interface may report traffic also counted by another interface. The rates are not bandwidth reservations.'],
     gpu: ['GPU monitoring', 'GPU activity is not available in this build. An unavailable reading does not mean the GPU is idle.'],
@@ -30,7 +30,7 @@ export function metricHelp(kind, {measurements = [], filesystem, accounting, cpu
     paragraphs[0] = 'The pool follows space currently available to your user on ARM’s state filesystem, up to an optional operator ceiling. It can shrink while leases are active.';
     paragraphs[1] = 'ARM subtracts full outstanding disk promises, even when those jobs have already written files. This is conservative headroom, not exclusive free space or a hard disk quota.';
     paragraphs.push('APFS volumes may share one container. Snapshots and clones can retain blocks after files are removed; ARM does not count them as guaranteed reclamation. Other mounted filesystems have separate limits.');
-    if (!disk.known) paragraphs.push('The latest availability reading is missing or stale. New disk grants wait; outstanding promises and ordinary cleanup remain visible.');
+    if (!diskBudgetKnown(disk)) paragraphs.push('The latest availability reading is missing or stale. New disk grants wait; outstanding promises and ordinary cleanup remain visible.');
   }
   const technical = [];
   if (kind === 'resource-cpu' && cpu?.observation) {
@@ -67,11 +67,32 @@ export function cpuCores(value) {
   return Number.isFinite(n)&&n>=0?(n>0&&n<.01?'<0.01':n.toLocaleString('en-US',{maximumFractionDigits:2}))+' cores':'unavailable';
 }
 
-// Add time spent holding this snapshot; no comparison with a remote clock.
-export function cpuBudgetForView(cpu,{connected=true,elapsedMS=0}={}){
-  if(!cpu)return null;
-  const age=Number(cpu.age_ns)/1e6+Math.max(0,elapsedMS),after=Number(cpu.stale_after_ns)/1e6;
-  return {...cpu,stale:cpu.stale||!connected||!Number.isFinite(age)||age<0||!Number.isFinite(after)||after<=0||age>=after};
+// Add time spent holding a status snapshot; no comparison with a remote clock.
+export function budgetForView(budget,{connected=true,elapsedMS=0}={}){
+  if(!budget)return null;
+  const age=Number(budget.age_ns)/1e6+Math.max(0,elapsedMS),after=Number(budget.stale_after_ns)/1e6;
+  return {...budget,stale:budget.stale||!connected||!Number.isFinite(age)||age<0||!Number.isFinite(after)||after<=0||age>=after};
+}
+export const cpuBudgetForView = budgetForView;
+
+export function capacityBudgetsForView(status, options) {
+  return {cpu:budgetForView(status?.cpu_budget,options),memory:budgetForView(status?.memory_budget,options),disk:budgetForView(status?.disk_budget,options)};
+}
+
+export function memoryBudgetKnown(memory) {
+  const total=Number(memory?.observation?.total_bytes),available=Number(memory?.observation?.available_bytes);
+  return memory != null && !memory.stale && memory.observation?.total_bytes != null && memory.observation?.available_bytes != null && Number.isFinite(total) && total>0 && Number.isFinite(available) && available>=0 && available<=total;
+}
+
+export function diskBudgetKnown(disk) { return disk?.known === true && disk.stale !== true; }
+
+export function capacityFreshnessKey({cpu,memory,disk}) {
+  return `${Number(cpuBudgetKnown(cpu))}${Number(memoryBudgetKnown(memory))}${Number(diskBudgetKnown(disk))}`;
+}
+
+export function memoryBudgetFields(resource, memory) {
+  const known = memoryBudgetKnown(memory);
+  return [['TO LEASE', known ? resource.available : null], ['LIVE POOL', known ? resource.budget_total : null], ['PROMISED', resource.reserved], ['SHORTFALL', known ? resource.deficit : null]];
 }
 
 export function remoteCPUBudget(cpu){
@@ -82,15 +103,16 @@ export function remoteCPUBudget(cpu){
 // A live zero is distinct from unknown; full promises remain visible in both.
 export function cpuBudgetFields(resource, cpu) {
   const known=cpuBudgetKnown(cpu);
-  return [['LIVE HEADROOM',known?cpu.capacity_cores:null],['PROMISED',cpu?.reserved_cores??resource.reserved],['TO LEASE',known?cpu.available_cores:null],['SHORTFALL',known?cpu.deficit_cores:null]];
+  return [['TO LEASE',known?cpu.available_cores:null],['LIVE HEADROOM',known?cpu.capacity_cores:null],['PROMISED',cpu?.reserved_cores??resource.reserved],['SHORTFALL',known?cpu.deficit_cores:null]];
 }
 
 // Unknown effective admission capacity is deliberately unavailable in the UI,
 // while full outstanding promises remain visible (never a false idle zero).
 export function diskBudgetFields(resource, disk) {
+  const known = diskBudgetKnown(disk);
   return [
-    ['LIVE POOL', disk?.known ? resource.budget_total : null],
+    ['TO LEASE', known ? resource.available : null],
+    ['LIVE POOL', known ? resource.budget_total : null],
     ['PROMISED', resource.reserved],
-    ['TO LEASE', disk?.known ? resource.available : null],
   ];
 }

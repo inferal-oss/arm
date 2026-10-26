@@ -288,7 +288,7 @@ test('subpool creation inherits identity and binds parent/tree review; reduction
 });
 
 test('resource cards use backend child commitments without adding overlapping tree totals',()=>{
- for(const a of [{configured:12,direct_reserved:1,child_backing:7,committed:8,uncarved_available:4},{configured:2,direct_reserved:3,child_backing:2,committed:5,uncarved_available:0},{configured:2,direct_reserved:2,child_backing:0,committed:2,uncarved_available:0}])assert.deepEqual(poolBudgetFields({custom:{partition:a},reserved:a.direct_reserved}),[['TOTAL',a.configured],['COMMITTED',a.committed],['AVAILABLE',a.uncarved_available]]);
+ for(const a of [{configured:12,direct_reserved:1,child_backing:7,committed:8,uncarved_available:4},{configured:2,direct_reserved:3,child_backing:2,committed:5,uncarved_available:0},{configured:2,direct_reserved:2,child_backing:0,committed:2,uncarved_available:0}])assert.deepEqual(poolBudgetFields({custom:{partition:a},reserved:a.direct_reserved}),[['AVAILABLE',a.uncarved_available],['TOTAL',a.configured],['COMMITTED',a.committed]]);
  assert.equal(validPoolHierarchy({schema_version:1,pool:'p',root:'p',pool_count:1.5,consumer_count:0,snapshot_sha256:'a'.repeat(64)},'p'),false);
 });
 

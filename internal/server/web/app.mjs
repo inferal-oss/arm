@@ -3,7 +3,8 @@ import {leaseStateLabel, leaseVisible, isInactiveLease, readHideInactive, saveHi
 import {allDevices,selectedDeviceIDs,aggregateIO,aggregateIOWindow} from './io-devices.mjs';
 import {createIOSelector} from './io-selector.mjs';
 import {jsonView} from './json-view.mjs';
-import {metricHelp, diskBudgetFields, cpuBudgetFields, cpuBudgetKnown, cpuCores, cpuBudgetForView} from './metric-help.mjs';
+import {metricHelp, diskBudgetFields, diskBudgetKnown, memoryBudgetFields, memoryBudgetKnown, cpuBudgetFields, cpuBudgetKnown, cpuCores, capacityBudgetsForView, capacityFreshnessKey} from './metric-help.mjs';
+import {monitorStale, remainingValue} from './monitor-capacity.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {leaseReviewPanel, REVIEW_CAPABILITY} from './lease-reviews.mjs';
 import {createDashboardHistory} from './route.mjs';
@@ -47,7 +48,7 @@ const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
 const badge = (text, kind = text) => { const el = node('span', 'badge', text); el.dataset.kind = kind; return el; };
 const state = {status: null, statusReceived: 0, statusTime: null, messages: [], contacts: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, connected: false};
-let cpuDisplayKnown=null;
+let capacityDisplayFreshness=null;
 let leasePreferenceStorage; try { leasePreferenceStorage = localStorage; } catch { /* A blocked preference store keeps this session's choice in memory. */ }
 let hideInactiveLeases = readHideInactive(leasePreferenceStorage);
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
@@ -232,7 +233,7 @@ function acceptMonitor(page) {
 }
 function updateFreshness() {
   remoteDashboard?.updateFreshness();
-  if(view==='resources'&&state.status&&cpuDisplayKnown!==cpuBudgetKnown(cpuBudgetForView(state.status.cpu_budget,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived})))resourceCards();
+  if(view==='resources'&&state.status&&capacityDisplayFreshness!==capacityFreshnessKey(capacityBudgetsForView(state.status,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived})))resourceCards();
   if (view !== 'monitor' && state.status) {
     const age = Math.max(0, Math.floor((performance.now() - state.statusReceived) / 1000));
     $('freshness').textContent = `${state.connected ? '' : 'STALE · '}state updated ${age}s ago`;
@@ -243,7 +244,8 @@ function updateFreshness() {
   const page = state.monitor;
   if (!page) return;
   const age = Number(page.age_ns) / 1e6 + performance.now() - state.received;
-  const stale = !state.connected || page.stale || age > Number(page.stale_after_ns) / 1e6;
+  const stale = monitorStale(page, state.connected, performance.now() - state.received);
+  if ($('monitor').dataset.stale !== String(stale) && view === 'monitor') renderMonitor();
   $('freshness').textContent = `${stale ? 'STALE · ' : ''}${$('monitor').dataset.paused ? 'view paused · ' : ''}sample ${Math.max(0, Math.floor(age / 1000))}s ago`;
   $('freshness').title = `Last sample: ${when(page.latest?.at)}`;
   $('cadence').textContent = `${Number(page.cadence_ns) / 1e9}s cadence · ${state.history.length}/60 history points`;
@@ -368,6 +370,7 @@ function stat(parent, label, value) { const row = node('div', 'stat-row'); row.a
 function renderMonitor() {
   const root = $('monitor'), sample = state.monitor?.latest;
   if (!sample) { root.replaceChildren(empty('Waiting for the shared host collector…')); return; }
+  const stale = monitorStale(state.monitor, state.connected, performance.now() - state.received);
   // Keep a focused help source stable until its dialog opens. I/O selectors
   // have persistent cards and update in place while telemetry continues.
   if (root.contains(document.activeElement) && document.activeElement.classList.contains('info-button')) {
@@ -375,6 +378,7 @@ function renderMonitor() {
     return;
   }
   delete root.dataset.paused;
+  root.dataset.stale = String(stale);
   const cards = [];
   let grid = root.querySelector('.grid');
   if (!grid) { grid = node('div', 'grid'); root.replaceChildren(grid); }
@@ -387,17 +391,21 @@ function renderMonitor() {
     labels.append(node('span', '', core.id), node('span', '', percent(core.busy_percent.value))); box.append(labels, bar(core.busy_percent.value)); cores.append(box);
   }
   cpu.body.append(cores); cards.push(cpu.box);
-  const memory = panel('Memory & swap', sample.memory.used.value == null ? 'UNAVAILABLE' : 'HOST MEMORY', 'span4', metricHelp('memory', {measurements: [['RAM', sample.memory.used], ['Available RAM', sample.memory.available], ['Swap', sample.swap.used]]}));
-  metric(memory.body, bytes(sample.memory.used.value), 'memory used');
-  memory.body.append(chart(p => p.memory_used_bytes, numeric(sample.memory.total.value))); chartLabels(memory.body);
-  stat(memory.body, 'Total', bytes(sample.memory.total.value)); stat(memory.body, 'Available', bytes(sample.memory.available.value));
+  const ramRemaining = remainingValue(sample.memory.available, stale);
+  const swapRemaining = remainingValue(sample.swap.available, stale);
+  const memory = panel('Memory & swap', stale ? 'STALE' : ramRemaining == null ? 'UNAVAILABLE' : 'HOST RAM', 'span4', metricHelp('memory', {measurements: [['Available RAM', sample.memory.available], ['RAM used', sample.memory.used], ['Available swap', sample.swap.available]]}));
+  metric(memory.body, bytes(ramRemaining), 'RAM remaining');
+  memory.body.append(chart(p => p.memory_available_bytes, numeric(sample.memory.total.value))); chartLabels(memory.body);
+  stat(memory.body, 'RAM total', bytes(sample.memory.total.value)); stat(memory.body, 'RAM used', bytes(sample.memory.used.value));
   memory.body.append(node('div', 'divider'));
-  stat(memory.body, 'Swap used', bytes(sample.swap.used.value)); memory.body.append(bar(sample.swap.used.value, numeric(sample.swap.total.value)));
-  stat(memory.body, 'Swap total', bytes(sample.swap.total.value)); cards.push(memory.box);
-  const fs = panel('Storage space', sample.filesystem_stale ? 'STALE' : sample.filesystem.available.value == null ? 'UNAVAILABLE' : 'ON THIS DISK', 'span4', metricHelp('filesystem', {measurements: [['Available space', sample.filesystem.available]], filesystem: sample.filesystem.filesystem}));
-  metric(fs.body, bytes(sample.filesystem.available.value), 'available');
+  stat(memory.body, 'Swap remaining', bytes(swapRemaining)); memory.body.append(bar(swapRemaining, numeric(sample.swap.total.value)));
+  stat(memory.body, 'Swap total', bytes(sample.swap.total.value)); stat(memory.body, 'Swap used', bytes(sample.swap.used.value)); cards.push(memory.box);
+  const diskStale = stale || sample.filesystem_stale;
+  const diskRemaining = remainingValue(sample.filesystem.available, diskStale);
+  const fs = panel('Storage space', diskStale ? 'STALE' : diskRemaining == null ? 'UNAVAILABLE' : 'ON THIS DISK', 'span4', metricHelp('filesystem', {measurements: [['Available space', sample.filesystem.available]], filesystem: sample.filesystem.filesystem}));
+  metric(fs.body, bytes(diskRemaining), 'space remaining');
   fs.body.append(chart(p => p.filesystem_available_bytes, numeric(sample.filesystem.total.value))); chartLabels(fs.body);
-  stat(fs.body, 'Total', bytes(sample.filesystem.total.value)); stat(fs.body, 'Used', bytes(sample.filesystem.used.value));
+  stat(fs.body, 'Space total', bytes(sample.filesystem.total.value)); stat(fs.body, 'Space used', bytes(sample.filesystem.used.value));
   cards.push(fs.box);
   cards.push(ioPanel('Disk I/O', 'disk_io', sample.disk_io ?? [], sample.disk_quality, sample.disk_detail));
   cards.push(ioPanel('Network', 'network', sample.network ?? [], sample.network_quality, sample.network_detail));
@@ -454,7 +462,8 @@ function renderResources() {
   poolConsole.update({status: state.status, route: navigation.current});
 }
 function resourceCards() {
-  cpuDisplayKnown=cpuBudgetKnown(cpuBudgetForView(state.status?.cpu_budget,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived}));
+  const budgets=capacityBudgetsForView(state.status,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived});
+  capacityDisplayFreshness=capacityFreshnessKey(budgets);
   const root = $('resources');
   const focusedHelpKey = root.contains(document.activeElement) ? document.activeElement?.dataset.helpKey : null;
   root.querySelector('.resource-grid')?.remove();
@@ -464,14 +473,15 @@ function resourceCards() {
     if (!stringifyJSON(r).toLowerCase().includes(filter)) continue;
     const custom = r.custom?.pool;
     const label = custom?.name || ({cpu: 'CPU', memory: 'Memory', disk: 'Disk', port: 'Port'})[r.kind] || r.kind;
-    const cpu=r.kind==='cpu'?cpuBudgetForView(state.status.cpu_budget,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived}):null;
-    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, cpu, memory: r.kind === 'memory' ? state.status.memory_budget : null, disk: r.kind === 'disk' ? state.status.disk_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
+    const cpu=r.kind==='cpu'?budgets.cpu:null;
+    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, cpu, memory: r.kind === 'memory' ? budgets.memory : null, disk: r.kind === 'disk' ? budgets.disk : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
     const budget = node('div', 'budget');
-    const disk = r.kind === 'disk' ? state.status.disk_budget : null;
-    const fields = r.kind === 'cpu' ? cpuBudgetFields(r,cpu) : disk ? diskBudgetFields(r, disk) : poolBudgetFields(r);
+    const disk = r.kind === 'disk' ? budgets.disk : null;
+    const memory = r.kind === 'memory' ? budgets.memory : null;
+    const fields = r.kind === 'cpu' ? cpuBudgetFields(r,cpu) : r.kind === 'memory' ? memoryBudgetFields(r, memory) : r.kind === 'disk' ? diskBudgetFields(r, disk) : poolBudgetFields(r);
     if(r.kind==='cpu')budget.classList.add('cpu-budget');
     for (const [label, value] of fields) {
-      const item = node('div'); item.append(node('small', '', label), node('strong', (label === 'AVAILABLE' || label === 'TO LEASE') ? 'accent' : label==='SHORTFALL'&&Number(value)>0?'cpu-shortfall':'', r.kind==='cpu'?cpuCores(value):quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
+      const item = node('div'); item.append(node('small', '', label), node('strong', (label === 'AVAILABLE' || label === 'TO LEASE') ? 'accent' : label==='SHORTFALL'&&Number(value)>0?'cpu-shortfall':'', r.kind==='cpu'?cpuCores(value):quantity(value, r.unit))); item.title = value == null ? `${label}: unavailable` : `${label}: ${String(value)} ${r.unit}`; budget.append(item);
     }
     p.body.append(budget, bar(r.custom?.partition?.committed ?? r.reserved, r.kind==='cpu' ? (cpuBudgetKnown(cpu)?cpu.capacity_cores:null) : numeric(r.budget_total)));
     if(r.kind==='cpu') {
@@ -484,16 +494,15 @@ function resourceCards() {
       const a=r.custom.partition;
       p.body.append(node('p','measure-note', `Direct leases ${count(a.direct_reserved)} · Child backing ${count(a.child_backing)} ${r.unit}. Parent and child totals overlap.`));
     }
-    if(r.kind==='memory' && state.status.memory_budget) {
-      const memory=state.status.memory_budget;
+    if(r.kind==='memory' && memory) {
       stat(p.body,'Physical memory',bytes(memory?.observation.total_bytes));
       if(memory?.ceiling_bytes!=null) stat(p.body,'Operator ceiling',bytes(memory.ceiling_bytes));
-      if(memory?.stale || memory?.observation.available_bytes==null) p.body.append(node('p','measure-note','New memory grants paused: waiting for an availability estimate.'));
-      if(r.deficit>0) p.body.append(node('p','',`Memory shortfall: ${bytes(r.deficit)}`));
+      if(!memoryBudgetKnown(memory)) p.body.append(node('p','measure-note','New memory grants paused: waiting for a fresh availability estimate.'));
+      else if(r.deficit>0) p.body.append(node('p','',`Memory shortfall: ${bytes(r.deficit)}`));
     }
     if (disk) {
       if (disk.ceiling_bytes != null) stat(p.body, 'Operator ceiling', bytes(disk.ceiling_bytes));
-      if (!disk.known) p.body.append(node('p', 'measure-note', 'New disk grants paused: waiting for fresh availability.'));
+      if (!diskBudgetKnown(disk)) p.body.append(node('p', 'measure-note', 'New disk grants paused: waiting for fresh availability.'));
       else if (disk.deficit_bytes > 0) p.body.append(node('p', '', `Disk shortfall: ${bytes(disk.deficit_bytes)}`));
     }
     if (r.custom?.deficit > 0) p.body.append(node('p', '', `Deficit: ${count(r.custom.deficit)} ${r.unit}`));
