@@ -2240,3 +2240,24 @@ This accepts the pure planner, not public sync, native publication, durable
 joint receipts, resource admission, recovery, Linux execution or formal
 refinement. Those remain required integration work. QUIC remains isolated
 research and does not gate current sync/SSH/Kubernetes integration.
+
+## October 25: native sync filesystem publication
+
+Current `internal/syncfs` passes all 19 native macOS cases with race detection
+(exit 0, 1.653s) and affected vet (exit 0). A CGo-free Linux ARM64 test binary
+passes the same 19 cases on an actual Linux machine under a one-CPU-affinity,
+50% CPU scope. The original native command, SSH and cleanup each exited 0;
+the exact scope was inactive and the owned disposable directory absent after
+cleanup. Evidence: ignored `.cache/syncfs-linux-native.log` and intent. The
+first connection using ordinary user SSH keys failed authentication (255);
+the existing machine key succeeded without host configuration changes.
+
+Review fixed unchecked scratch-probe unlink and workspace adoption through a
+replaced named parent/new directory. Regression cases preserve substituted
+entries and reject changed bindings. Other cases cover exclusive creation,
+SHA-256 preflight, preimage retention, full removals, directory metadata,
+symlinks, changed roots/parents, cancellation and lost outcome persistence.
+The prior 16-case Linux run remains valid only for its earlier source revision.
+Linux AMD64 is compile-only. These native cuts do not establish malicious
+same-account isolation, an atomic filesystem snapshot, public sync, actual
+resource charging, a durable joint baseline or formal refinement.
