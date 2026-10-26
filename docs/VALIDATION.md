@@ -4077,3 +4077,9 @@ coordinator publication remain gates. Public `@commit` and `@latest` installs
 must use disposable GOBIN/GOMODCACHE/GOCACHE and an external public source query;
 local source, fixture proxies and prepopulated private caches do not count.
 The user's installed binary and backend/state are untouched.
+
+Static fork import inventory additionally promotes already pinned root entries
+for toml, systemd, renameio, shlex, landlock, md4 and x/sync to direct requirements;
+`google/go-cmp` (already checksummed) is now direct for fork tests. No dependency
+versions are upgraded. The pending `go mod tidy -diff` gate must confirm this
+classification and root sums against all platforms, including fork tests.

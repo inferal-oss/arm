@@ -752,3 +752,11 @@ platform checks. Coordinator owns reviewed main integration/publication and
 public disposable-cache `go install ...@commit` then `...@latest` evidence.
 No local/proxy fixture or old-source validation establishes that public gate.
 No new `arm install` carrier-assembly contract is included.
+
+Coordination: the launch owner retains root README/site install-copy ownership.
+The tagged-release owner retains workflow/scripts and the separate Version
+variable/linker-injection change. Apply this namespace/fork-layout dependency
+first, then compose the release metadata commit using canonical package paths;
+re-run carrier/source-metadata checks against the composition. This migration's
+runtime distribution edits only change module/linker path literals, preserving
+Version behavior and the existing snapshot whitelist.
