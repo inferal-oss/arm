@@ -19,6 +19,7 @@ import (
 )
 
 type Coordinator struct {
+	provisionCleanup   func() error
 	ProvisionCatalog   *companions.Catalog
 	ProvisionTransport *ProvisionTransport
 	Context            context.Context
@@ -54,18 +55,19 @@ type DisconnectRequest struct {
 	Revision                             int
 }
 type ConnectRequest struct {
-	Reconnect      *ReconnectRequest `json:"reconnect,omitempty"`
-	Destination    string            `json:"ssh_destination"`
-	ProvisionKey   string            `json:"provision_key,omitempty"`
-	RemoteHome     string            `json:"remote_home"`
-	Binary         string            `json:"remote_binary"`
-	LocalIP        string            `json:"local_ip,omitempty"`
-	RemoteIP       string            `json:"remote_ip,omitempty"`
-	Reason         string            `json:"reason"`
-	Forward        mesh.Grant        `json:"source_permissions_on_target"`
-	Reverse        mesh.Grant        `json:"target_permissions_on_source"`
-	Public         bool              `json:"allow_public_listen"`
-	ReplaceRevoked bool              `json:"replace_revoked"`
+	ProvisionBinding *ProvisionConnectionBinding `json:"provision_binding,omitempty"`
+	Reconnect        *ReconnectRequest           `json:"reconnect,omitempty"`
+	Destination      string                      `json:"ssh_destination"`
+	ProvisionKey     string                      `json:"provision_key,omitempty"`
+	RemoteHome       string                      `json:"remote_home"`
+	Binary           string                      `json:"remote_binary"`
+	LocalIP          string                      `json:"local_ip,omitempty"`
+	RemoteIP         string                      `json:"remote_ip,omitempty"`
+	Reason           string                      `json:"reason"`
+	Forward          mesh.Grant                  `json:"source_permissions_on_target"`
+	Reverse          mesh.Grant                  `json:"target_permissions_on_source"`
+	Public           bool                        `json:"allow_public_listen"`
+	ReplaceRevoked   bool                        `json:"replace_revoked"`
 }
 type Plan struct {
 	Operation      string           `json:"operation"`
@@ -87,12 +89,37 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 		return 1, err
 	}
 	sshIdentity := meshssh.Identity{}
+	provisionedHost := ""
+	if request.ProvisionBinding != nil {
+		q, result, e := ProvisionedConnection(a.Home, request.ProvisionKey, key)
+		if e != nil {
+			return 1, e
+		}
+		if e = request.ProvisionBinding.matches(q, result); e != nil {
+			return 1, e
+		}
+		currentBinding, e := ProvisionConnectionBindingFor(a.Home, request.ProvisionKey, key)
+		if e != nil {
+			return 1, e
+		}
+		if currentBinding != *request.ProvisionBinding {
+			return 1, model.Err("setup_changed", "original provisioning review changed since dashboard selection")
+		}
+		if request.Destination != q.Destination || request.Binary != result.Provisioned || request.RemoteHome != q.Home || request.Reconnect != nil {
+			return 1, model.Err("setup_changed", "connection differs from exact original provisioning provenance")
+		}
+		sshIdentity = q.SSH
+		provisionedHost = result.Receipt.StartedHost
+	}
 	if request.Reconnect != nil && request.Reconnect.Binding.Connection != nil {
 		c := request.Reconnect.Binding.Connection
 		sshIdentity = meshssh.Identity{Account: c.SSHAccount, HostKey: c.SSHHostKey}
 	}
 	ssh := func(q any, result any) error {
 		observed, e := a.ssh(request.Destination, request.Binary, q, sshIdentity, result)
+		if e == nil && provisionedHost != "" && observed != sshIdentity {
+			return model.Err("setup_changed", "SSH account or host key changed since original provisioning")
+		}
 		if e == nil && request.Reconnect != nil && request.Reconnect.Binding.Connection != nil {
 			prior := request.Reconnect.Binding.Connection
 			if observed.Account != prior.SSHAccount || observed.HostKey != prior.SSHHostKey {
@@ -107,6 +134,9 @@ func (a *Coordinator) connect(key string, request ConnectRequest, yes, dry bool)
 	var remote mesh.LifecycleInspection
 	if err = ssh(Helper{Home: request.RemoteHome, Action: "lifecycle_inspect"}, &remote); err != nil {
 		return 1, err
+	}
+	if provisionedHost != "" && (remote.Host != provisionedHost || remote.Home != request.RemoteHome) {
+		return 1, model.Err("setup_changed", "remote authority differs from the original provisioned node; no connection approved")
 	}
 	if err = a.checkReconnect(key, request.Reconnect, own, remote); err != nil {
 		return 1, err

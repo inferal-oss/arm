@@ -13,6 +13,26 @@ import (
 // These are presentation descriptions, never permission checks. The destination
 // and coordinator independently authorize each operation against current facts.
 func meshPhaseLabel(op meshops.Operation) string {
+	if op.Kind == "provision" {
+		if meshProvisionConfirmed(op) {
+			return "ARM installation completed"
+		}
+		if op.Approved && op.Error == nil && op.Phase == "completed" && !op.WorkerLive && op.HasResult && len(op.Review) == 0 && len(op.Result) == 0 {
+			return "Installation result recorded"
+		}
+		if op.Approved && op.Error == nil && op.WorkerLive && (op.Phase == "applying" || op.Phase == "review_approved") {
+			return "Installing reviewed ARM node"
+		}
+		if !op.Approved && op.Error == nil && op.WorkerLive && op.Phase == "review_declined" {
+			return "Keeping host unchanged"
+		}
+		if op.Phase == "rejected" && op.Error != nil && op.Error.Code == "confirmation_declined" {
+			return "Installation declined · unchanged"
+		}
+		if op.Approved {
+			return "Original installation needs inspection"
+		}
+	}
 	if op.Kind == "uninstall" && len(op.Result) > 0 {
 		return strings.SplitN(meshUninstallOutcome(op), "\n", 2)[0]
 	}
@@ -65,6 +85,9 @@ func meshPhaseLabel(op meshops.Operation) string {
 }
 
 func meshCanReview(op meshops.Operation, now time.Time) bool {
+	if op.Kind == "provision" && (!meshProvisionOperationBound(op) || op.Approved || op.LookupOnly) {
+		return false
+	}
 	if op.Kind == "uninstall" {
 		p, allowed := parseMeshUninstallReview(op.Review)
 		if !meshUninstallOperationBound(op) || !allowed || op.Approved || op.LookupOnly || now.Before(p.Stop.Plan.Observed) || !now.Before(p.Stop.Plan.Expires) {
@@ -84,6 +107,21 @@ func meshCanReview(op meshops.Operation, now time.Time) bool {
 }
 
 func meshOperationAdvice(op meshops.Operation) string {
+	if op.Kind == "provision" {
+		if meshProvisionConfirmed(op) {
+			return "This receipt records the verified installation and startup at that time. Current node availability and peer trust are separate. [g] inspects a known linked connection or opens its separate review."
+		}
+		if op.Approved && op.Error == nil && op.Phase == "completed" && !op.WorkerLive && op.HasResult && len(op.Review) == 0 && len(op.Result) == 0 {
+			return "A completed installation result is recorded. Open its exact receipt to inspect the original evidence; this summary does not establish current availability or peer trust."
+		}
+		if !op.Approved && op.Error != nil && op.Error.Code == "confirmation_declined" {
+			return "You kept this host unchanged. No installation was approved. The exact review and decision remain recorded."
+		}
+		if op.Approved || op.LookupOnly {
+			return "Installation may already have effects. Inspect this exact original key; upload, startup and catalog streaming are never resent here."
+		}
+		return "Review only the managed installation and startup. Keep this host unchanged by default; mesh trust requires a separate later decision."
+	}
 	if op.Kind == "uninstall" {
 		if op.Approved || op.LookupOnly {
 			return "Original uninstall is lookup-only. Explicit finish completes only its admitted removal after fresh ownership and Stop checks; it never reapplies Stop."

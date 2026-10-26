@@ -48,10 +48,17 @@ func (m *dashboardModel) meshText() string {
 		if len(ui.prompt.uninstallReview) > 0 {
 			text = meshUninstallReviewWindows(ui.prompt.uninstallReview, m.meshStopPaneWidth()) + "\n\n" + text
 		}
+		if len(ui.prompt.provisionReview) > 0 {
+			text = meshProvisionReviewWindows(ui.prompt.provisionReview, m.meshStopPaneWidth()) + "\n\n" + text
+		}
 		return out.String() + text + "\n\n" + keycap("y", "Confirm exact request", "") + "  " + keycap("n/Esc", "Keep unchanged", "quiet")
 	}
 	if ui.form != nil {
-		if ui.form.uninstallHost != "" {
+		if ui.form.provisionInstall {
+			out.WriteString(meshStopWindow("INSTALL ARM · USER-OWNED NODE", "Enter an SSH destination or a reviewed native connector ID. ARM selects trusted embedded/catalog payloads for the verified platform and derives private user paths.\nNo executable, shell, home, startup or payload overrides are accepted here.\nPreparation is read-only; installation and later mesh trust are separate decisions.", m.meshStopPaneWidth(), "warning") + "\n\n")
+		} else if ui.form.provisionSourceKey != "" {
+			out.WriteString(meshStopWindow("SEPARATE MESH TRUST REVIEW", "Installation completed. Mesh trust is managed separately.\nOriginal provisioning "+safe(ui.form.provisionSourceKey)+"\nConnection key "+safe(ui.form.provisionConnectionKey)+"\nThe destination and executable are fixed by that receipt. Choose fresh directional permissions below; a separate exact review follows.", m.meshStopPaneWidth(), "warning") + "\n\n")
+		} else if ui.form.uninstallHost != "" {
 			width := m.meshStopPaneWidth()
 			out.WriteString(meshStopWindow("UNINSTALL ARM · SELECT MANAGED INSTALLATION", "Exact host "+safe(ui.form.uninstallHost)+"\nStop the reviewed backend; remove only its proven managed executable. Database, identity, configuration, history, backups and recovery remain. A separate concrete approval follows.", width, "warning") + "\n\n")
 			provenance := safe(ui.form.provenanceReason)
@@ -105,7 +112,9 @@ func (m *dashboardModel) meshText() string {
 			}
 			fmt.Fprintf(&out, "%s%s\n  %s\n", selectedPrefix(ui.form.selected, i), safe(field.label), value)
 		}
-		if ui.form.stopHost == "" {
+		if ui.form.provisionInstall {
+			out.WriteString("\n[Enter] edit · [p] prepare read-only installation review · Esc keep host unchanged")
+		} else if ui.form.stopHost == "" {
 			out.WriteString("\n" + meshops.PreparationNotice)
 		} else {
 			out.WriteString("\n[Enter] edit · [Space] choose policy · [p] prepare review · Esc keep running\nTimeout is whole seconds, Wait only; positive timeout requests ARM-owned reclamation. Force never discards foreign or unknown work.")
@@ -178,12 +187,19 @@ func (m *dashboardModel) meshText() string {
 			fmt.Fprintf(&out, "Resolved by: %s · [f] inspect recorded recovery\n", safe(op.ResolvedBy))
 		}
 		if op.Error != nil {
-			out.WriteString(safe(op.Error.Error()) + "\n\n")
+			if op.Kind == "provision" && op.Error.Code == "confirmation_declined" {
+				out.WriteString("You kept this host unchanged; no installation was approved.\n\n")
+			} else {
+				out.WriteString(safe(op.Error.Error()) + "\n\n")
+			}
 		}
 		if len(op.Review) > 0 {
 			summary, _ := meshReviewSummary(op.Review)
 			if op.Kind == "uninstall" {
 				summary = meshUninstallReviewWindows(op.Review, m.meshStopPaneWidth())
+			}
+			if op.Kind == "provision" {
+				summary = meshProvisionReviewWindows(op.Review, m.meshStopPaneWidth())
 			}
 			if op.Kind == "stop" {
 				summary = meshStopReviewWindows(op.Review, m.meshStopPaneWidth())
@@ -199,13 +215,32 @@ func (m *dashboardModel) meshText() string {
 			fmt.Fprintf(&out, "EXACT IMMUTABLE REVIEW\nReview revision: %d\nSHA256: %s\nExpires: %s\n\n%s\n\n", op.ReviewRevision, safe(op.ReviewHash), op.ReviewExpires.Local().Format("Jan 02 15:04:05 MST"), summary)
 		}
 		if len(op.Result) > 0 {
-			if op.Kind == "uninstall" {
+			if op.Kind == "provision" {
+				text := "Installation outcome is unresolved. Read the exact original receipt; no upload/start/seed is repeated."
+				if meshProvisionConfirmed(op) {
+					text = "This receipt records verified ARM installation and startup. Installation itself grants no mesh trust or permissions; current availability and current trust are separate."
+				}
+				out.WriteString(meshStopWindow("RECORDED INSTALLATION OUTCOME", text, m.meshStopPaneWidth(), "warning") + "\n\n")
+			} else if op.Kind == "uninstall" {
 				out.WriteString(meshStopWindow("RECORDED UNINSTALL OUTCOME", meshUninstallOutcome(op), m.meshStopPaneWidth(), "warning") + "\n\n")
 			} else if op.Kind == "stop" {
 				out.WriteString(window("RECORDED STOP OUTCOME", meshStopOperationResult(op), max(16, m.mainWidth()-8), 0, false, "warning") + "\n\n")
 			} else {
 				out.WriteString("A durable result is recorded. [i] opens its complete collapsible record.\n\n")
 			}
+		}
+		if op.Kind == "provision" {
+			out.WriteString("[r] Read exact source receipt · [i] Complete collapsible record · Esc operations\n")
+			if meshCanReview(op, time.Now()) {
+				out.WriteString("[a] Review installation · [n] Keep host unchanged\n")
+			}
+			if op.Approved {
+				out.WriteString("[l] Inspect original installation · read only; no upload/start/seed resent\n")
+			}
+			if meshProvisionConfirmed(op) {
+				out.WriteString("[g] Review separate mesh connection · new trust/permissions decision\n")
+			}
+			return out.String()
 		}
 		if op.Kind == "uninstall" {
 			out.WriteString("[r] Read exact source receipt · [i] Complete record · Esc operations\n")

@@ -16,7 +16,7 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/lease-reviews.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/dashboard-shortcuts.mjs web/activity-feed.mjs web/operator-messaging.mjs web/pool-model.mjs web/pool-operations.mjs web/pool-console.mjs web/mesh-console.mjs web/mesh-model.mjs web/mesh-stop.mjs web/mesh-uninstall.mjs web/node-window.mjs web/remote-node.mjs web/connection-links.mjs web/style.css
+//go:embed web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/lease-actions.mjs web/lease-reviews.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/dashboard-shortcuts.mjs web/activity-feed.mjs web/operator-messaging.mjs web/pool-model.mjs web/pool-operations.mjs web/pool-console.mjs web/mesh-console.mjs web/mesh-model.mjs web/mesh-stop.mjs web/mesh-uninstall.mjs web/mesh-provision.mjs web/node-window.mjs web/remote-node.mjs web/connection-links.mjs web/style.css
 var browserAssets embed.FS
 
 type browserContextKey struct{}
@@ -134,7 +134,7 @@ func browserAllowedOperation(op string) bool {
 	switch op {
 	case "lease_review_list", "lease_review_inspect", "lease_review_policy", "lease_review_configure":
 		return true // Same local reviewed lease revision; replies require the exact agent polling workflow.
-	case "mesh_operator_uninstall_context", "mesh_operator_uninstall_lookup", "mesh_operator_uninstall_finish", "mesh_operator_watch", "mesh_operator_stop_lease", "mesh_operator_stop_lookup", "mesh_operator_reconnect_context", "mesh_operator_prepare", "mesh_operator_get", "mesh_operator_list", "mesh_operator_decide", "mesh_operator_cancel", "mesh_operator_resume", "mesh_operator_handoff", "mesh_operator_connectors":
+	case "mesh_operator_provision_prepare", "mesh_operator_provision_lookup", "mesh_operator_uninstall_context", "mesh_operator_uninstall_lookup", "mesh_operator_uninstall_finish", "mesh_operator_watch", "mesh_operator_stop_lease", "mesh_operator_stop_lookup", "mesh_operator_reconnect_context", "mesh_operator_prepare", "mesh_operator_get", "mesh_operator_list", "mesh_operator_decide", "mesh_operator_cancel", "mesh_operator_resume", "mesh_operator_handoff", "mesh_operator_connectors":
 		return true
 	case "node_open", "node_list", "node_inspect", "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_children", "pool_consumers", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
 		return true
@@ -162,7 +162,7 @@ func (s *Server) registerBrowser(mux *http.ServeMux) {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
-	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/lease-reviews.mjs": "lease-reviews.mjs", "/lease-state.mjs": "lease-state.mjs", "/io-devices.mjs": "io-devices.mjs", "/io-selector.mjs": "io-selector.mjs", "/route.mjs": "route.mjs", "/dashboard-shortcuts.mjs": "dashboard-shortcuts.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/operator-messaging.mjs": "operator-messaging.mjs", "/connection-links.mjs": "connection-links.mjs", "/pool-model.mjs": "pool-model.mjs", "/pool-operations.mjs": "pool-operations.mjs", "/pool-console.mjs": "pool-console.mjs", "/mesh-console.mjs": "mesh-console.mjs", "/mesh-model.mjs": "mesh-model.mjs", "/mesh-stop.mjs": "mesh-stop.mjs", "/mesh-uninstall.mjs": "mesh-uninstall.mjs", "/node-window.mjs": "node-window.mjs", "/remote-node.mjs": "remote-node.mjs", "/style.css": "style.css"} {
+	for path, asset := range map[string]string{"/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/lease-reviews.mjs": "lease-reviews.mjs", "/lease-state.mjs": "lease-state.mjs", "/io-devices.mjs": "io-devices.mjs", "/io-selector.mjs": "io-selector.mjs", "/route.mjs": "route.mjs", "/dashboard-shortcuts.mjs": "dashboard-shortcuts.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/operator-messaging.mjs": "operator-messaging.mjs", "/connection-links.mjs": "connection-links.mjs", "/pool-model.mjs": "pool-model.mjs", "/pool-operations.mjs": "pool-operations.mjs", "/pool-console.mjs": "pool-console.mjs", "/mesh-console.mjs": "mesh-console.mjs", "/mesh-model.mjs": "mesh-model.mjs", "/mesh-stop.mjs": "mesh-stop.mjs", "/mesh-uninstall.mjs": "mesh-uninstall.mjs", "/mesh-provision.mjs": "mesh-provision.mjs", "/node-window.mjs": "node-window.mjs", "/remote-node.mjs": "remote-node.mjs", "/style.css": "style.css"} {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			s.browserHeaders(w)
 			if !s.validHost(r.Host) {

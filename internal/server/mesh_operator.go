@@ -14,6 +14,7 @@ import (
 // ConnectDraft deliberately has no binary/home/SSH-options/public-listen input.
 // A reviewed native connector may be selected by its immutable local ID.
 type meshConnectDraft struct {
+	ProvisionKey   string     `json:"provision_key,omitempty"`
 	Destination    string     `json:"ssh_destination,omitempty"`
 	Connector      string     `json:"connector,omitempty"`
 	Reason         string     `json:"reason"`
@@ -186,6 +187,24 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 		return nil, e
 	}
 	switch operation {
+	case "mesh_operator_provision_prepare":
+		var q struct {
+			Key       string                 `json:"key"`
+			Provision meshops.ProvisionDraft `json:"provision"`
+		}
+		if e = nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return service.PrepareProvision(q.Key, q.Provision)
+	case "mesh_operator_provision_lookup":
+		var q struct {
+			Key      string `json:"key"`
+			Revision int64  `json:"revision"`
+		}
+		if e = nodestop.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		return service.LookupProvision(q.Key, q.Revision)
 	case "mesh_operator_stop_lease":
 		var q meshops.StopLeaseRequest
 		if e = nodestop.Decode(raw, &q); e != nil {
@@ -301,6 +320,24 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 		if q.Connect != nil {
 			r := q.Connect
 			target := meshops.ConnectRequest{Destination: r.Destination, Binary: "arm", Reason: r.Reason, Forward: r.Forward, Reverse: r.Reverse, ReplaceRevoked: r.ReplaceRevoked}
+			if r.ProvisionKey != "" {
+				if r.Destination != "" || r.Connector != "" {
+					return nil, model.Err("invalid_request", "choose exact completed provisioning provenance without another destination")
+				}
+				original, result, e := meshops.ProvisionedConnection(s.home, r.ProvisionKey, q.Key)
+				if e != nil {
+					return nil, e
+				}
+				target.Destination = original.Destination
+				target.Binary = result.Provisioned
+				target.RemoteHome = original.Home
+				target.ProvisionKey = r.ProvisionKey
+				binding, e := meshops.ProvisionConnectionBindingFor(s.home, r.ProvisionKey, q.Key)
+				if e != nil {
+					return nil, e
+				}
+				target.ProvisionBinding = &binding
+			}
 			if r.Connector != "" {
 				if r.Destination != "" {
 					return nil, model.Err("invalid_request", "choose connector or destination, not both")

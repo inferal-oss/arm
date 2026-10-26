@@ -15,14 +15,15 @@ import (
 // StartRequest contains a resolved native connector, never arbitrary browser
 // executable/home/options. Browser adapters must resolve their closed draft.
 type StartRequest struct {
-	Uninstall  *UninstallDraft   `json:"uninstall,omitempty"`
-	Stop       *StopDraft        `json:"stop,omitempty"`
-	Key        string            `json:"key"`
-	Kind       string            `json:"kind"`
-	Connect    *ConnectRequest   `json:"connect,omitempty"`
-	Reconnect  *ReconnectRequest `json:"reconnect,omitempty"`
-	Disconnect *DisconnectDraft  `json:"disconnect,omitempty"`
-	Provision  *ProvisionRequest `json:"provision,omitempty"`
+	provisionMaterial *provisionMaterial
+	Uninstall         *UninstallDraft   `json:"uninstall,omitempty"`
+	Stop              *StopDraft        `json:"stop,omitempty"`
+	Key               string            `json:"key"`
+	Kind              string            `json:"kind"`
+	Connect           *ConnectRequest   `json:"connect,omitempty"`
+	Reconnect         *ReconnectRequest `json:"reconnect,omitempty"`
+	Disconnect        *DisconnectDraft  `json:"disconnect,omitempty"`
+	Provision         *ProvisionRequest `json:"provision,omitempty"`
 }
 type DisconnectDraft struct {
 	Pair   string `json:"pair,omitempty"`
@@ -39,32 +40,33 @@ type Decision struct {
 const PreparationNotice = "Preparation may start ordinary ARM backends and restore previously approved enabled listeners. New sockets are reserved without listening; new endpoints and peer trust require exact confirmation. Cancelling preserves ordinary backends, identities and pre-existing trust/listeners; new pending reservations are closed or expire."
 
 type Operation struct {
-	LookupOnly      bool                      `json:"lookup_only"`
-	CanPrepareFresh bool                      `json:"can_prepare_fresh"`
-	Notice          string                    `json:"notice"`
-	ResumeFrom      string                    `json:"resume_from,omitempty"`
-	ParentKey       string                    `json:"parent_key,omitempty"`
-	ResolvedBy      string                    `json:"resolved_by,omitempty"`
-	Key             string                    `json:"key"`
-	Kind            string                    `json:"kind"`
-	Revision        int64                     `json:"revision"`
-	Phase           string                    `json:"phase"`
-	Targets         []string                  `json:"targets"`
-	Updated         time.Time                 `json:"updated_at"`
-	WorkerLive      bool                      `json:"worker_live"`
-	HasReview       bool                      `json:"has_review"`
-	HasResult       bool                      `json:"has_result"`
-	Review          json.RawMessage           `json:"review,omitempty"`
-	ReviewRevision  int64                     `json:"review_revision"`
-	ReviewHash      string                    `json:"review_sha256,omitempty"`
-	ReviewExpires   time.Time                 `json:"review_expires_at,omitempty"`
-	CancelRequested bool                      `json:"cancel_requested"`
-	Approved        bool                      `json:"approved"`
-	Result          json.RawMessage           `json:"result,omitempty"`
-	RecoveryHash    string                    `json:"recovery_sha256,omitempty"`
-	RecoveryEffect  string                    `json:"recovery_effect,omitempty"`
-	Handoff         *mesh.CoordinationHandoff `json:"handoff,omitempty"`
-	Error           *model.Error              `json:"error,omitempty"`
+	ProvisionConnectionReady bool                      `json:"provision_connection_ready"`
+	LookupOnly               bool                      `json:"lookup_only"`
+	CanPrepareFresh          bool                      `json:"can_prepare_fresh"`
+	Notice                   string                    `json:"notice"`
+	ResumeFrom               string                    `json:"resume_from,omitempty"`
+	ParentKey                string                    `json:"parent_key,omitempty"`
+	ResolvedBy               string                    `json:"resolved_by,omitempty"`
+	Key                      string                    `json:"key"`
+	Kind                     string                    `json:"kind"`
+	Revision                 int64                     `json:"revision"`
+	Phase                    string                    `json:"phase"`
+	Targets                  []string                  `json:"targets"`
+	Updated                  time.Time                 `json:"updated_at"`
+	WorkerLive               bool                      `json:"worker_live"`
+	HasReview                bool                      `json:"has_review"`
+	HasResult                bool                      `json:"has_result"`
+	Review                   json.RawMessage           `json:"review,omitempty"`
+	ReviewRevision           int64                     `json:"review_revision"`
+	ReviewHash               string                    `json:"review_sha256,omitempty"`
+	ReviewExpires            time.Time                 `json:"review_expires_at,omitempty"`
+	CancelRequested          bool                      `json:"cancel_requested"`
+	Approved                 bool                      `json:"approved"`
+	Result                   json.RawMessage           `json:"result,omitempty"`
+	RecoveryHash             string                    `json:"recovery_sha256,omitempty"`
+	RecoveryEffect           string                    `json:"recovery_effect,omitempty"`
+	Handoff                  *mesh.CoordinationHandoff `json:"handoff,omitempty"`
+	Error                    *model.Error              `json:"error,omitempty"`
 }
 
 func Project(op mesh.Coordination) Operation {
@@ -76,6 +78,12 @@ func Project(op mesh.Coordination) Operation {
 	if op.Kind == "uninstall" {
 		out.Notice = "Preparing an exact installation and Stop review. Stop, recovery copying and removal require a separate decision; keeping the installation is the default."
 	}
+	if op.Kind == "provision" {
+		_, _, err := completedProvision(op)
+		out.ProvisionConnectionReady = err == nil
+		out.LookupOnly = op.Approved
+		out.Notice = "Preparing installation only. Verified payloads, exact account and startup require a separate installation decision. No peer trust or permissions are granted; a fresh connection review follows only after verified completion."
+	}
 	out.Handoff = op.Handoff
 	if op.Error != nil {
 		message := op.Error.Message
@@ -84,7 +92,7 @@ func Project(op mesh.Coordination) Operation {
 		}
 		out.Error = &model.Error{Code: op.Error.Code, Message: message}
 	}
-	if op.Kind != "stop" && op.Kind != "uninstall" && op.ResolvedBy == "" && !out.WorkerLive && (op.Phase == "incomplete" || op.Worker != "") {
+	if op.Kind != "stop" && op.Kind != "uninstall" && op.Kind != "provision" && op.ResolvedBy == "" && !out.WorkerLive && (op.Phase == "incomplete" || op.Worker != "") {
 		out.RecoveryHash, _ = mesh.CoordinationRecoveryHash(op)
 		out.RecoveryEffect = mesh.CoordinationHandoffEffect
 	}
@@ -149,6 +157,17 @@ func validateStart(q StartRequest) (any, string, error) {
 		return nil, "", model.Err("invalid_request", "uninstall cannot be combined with another draft")
 	}
 	switch q.Kind {
+	case "provision":
+		if q.Provision == nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Stop != nil || q.Uninstall != nil || q.Key != q.Provision.Transfer.Key || q.provisionMaterial == nil {
+			return nil, "", model.Err("invalid_request", "one native-resolved trusted provisioning request required")
+		}
+		if e := q.Provision.Validate(); e != nil {
+			return nil, "", e
+		}
+		if e := q.provisionMaterial.matches(*q.Provision); e != nil {
+			return nil, "", e
+		}
+		return *q.Provision, "ssh:" + q.Provision.Destination, nil
 	case "uninstall":
 		if q.Uninstall == nil || q.Stop != nil || q.Connect != nil || q.Reconnect != nil || q.Disconnect != nil || q.Provision != nil {
 			return nil, "", model.Err("invalid_request", "one closed uninstall draft required")
@@ -205,6 +224,13 @@ func validateStart(q StartRequest) (any, string, error) {
 	}
 }
 func (s *Service) Start(q StartRequest) (Operation, error) {
+	material := q.provisionMaterial
+	materialTransferred := false
+	defer func() {
+		if !materialTransferred {
+			_ = material.Close()
+		}
+	}()
 	release := func() {}
 	if s.Register != nil {
 		var err error
@@ -227,6 +253,7 @@ func (s *Service) Start(q StartRequest) (Operation, error) {
 	if e = mesh.Decode(immutable, &q); e != nil {
 		return Operation{}, e
 	}
+	q.provisionMaterial = material
 	canonical, target, e := validateStart(q)
 	if e != nil {
 		return Operation{}, e
@@ -271,6 +298,9 @@ func (s *Service) Start(q StartRequest) (Operation, error) {
 		return Operation{}, e
 	}
 	c.Machine = false
+	if material != nil {
+		material.configure(c)
+	}
 	c.Print = func(any) error { return nil }
 	c.Confirm = func(plan any, yes, dry bool) error { return awaitReview(ctx, c.guard, plan) }
 	if s.workers == nil {
@@ -279,12 +309,16 @@ func (s *Service) Start(q StartRequest) (Operation, error) {
 	s.workers[q.Key] = cancel
 	s.wg.Add(1)
 	transferred = true
+	materialTransferred = true
 	go func() {
 		defer release()
 		defer s.wg.Done()
 		defer cancel()
 		defer func() { s.mu.Lock(); delete(s.workers, q.Key); s.mu.Unlock() }()
-		if q.Kind == "uninstall" {
+		defer material.Close()
+		if q.Kind == "provision" {
+			_, _ = c.Provision(*q.Provision, material.artifact, true, false)
+		} else if q.Kind == "uninstall" {
 			_, _ = c.Uninstall(q.Key, *q.Uninstall, true, false)
 		} else if q.Kind == "stop" {
 			_, _ = c.Stop(q.Key, *q.Stop, true, false)
@@ -427,8 +461,8 @@ func (s *Service) Resume(key string, revision int64) (Operation, error) {
 	if !ok {
 		return Operation{}, model.Err("not_found", "operator key not found")
 	}
-	if original.Kind == "stop" || original.Kind == "uninstall" {
-		return Operation{}, model.Err("lookup_only", "Stop recovery only inspects its original key; resume cannot reapply it")
+	if original.Kind == "stop" || original.Kind == "uninstall" || original.Kind == "provision" {
+		return Operation{}, model.Err("lookup_only", "lifecycle recovery only inspects its original key; resume cannot reapply it")
 	}
 	if original.Revision != revision || original.Phase != "incomplete" || original.Worker != "" || original.ResolvedBy != "" {
 		return Operation{}, model.Err("review_changed", "only this exact inactive incomplete receipt may resume")

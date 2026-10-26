@@ -132,6 +132,12 @@ func (m *dashboardModel) windowTitle() (string, string) {
 			return m.meshUI.prompt.title, "warning"
 		}
 		if m.meshUI.form != nil {
+			if m.meshUI.form.provisionInstall {
+				return "INSTALL ARM · DRAFT", "warning"
+			}
+			if m.meshUI.form.provisionSourceKey != "" {
+				return "MESH CONNECTION · INSTALLED NODE", "warning"
+			}
 			if m.meshUI.form.uninstallHost != "" {
 				return "UNINSTALL ARM · DRAFT", "warning"
 			}

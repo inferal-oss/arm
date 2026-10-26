@@ -14,6 +14,7 @@ import (
 )
 
 type meshConnectDraft struct {
+	ProvisionKey   string     `json:"provision_key,omitempty"`
 	Destination    string     `json:"ssh_destination,omitempty"`
 	Connector      string     `json:"connector,omitempty"`
 	Reason         string     `json:"reason"`
@@ -51,24 +52,28 @@ type meshPrompt struct {
 	// Display snapshot only. The exact request remains the decision authority.
 	stopReview      json.RawMessage
 	uninstallReview json.RawMessage
+	provisionReview json.RawMessage
 }
 type meshField struct {
 	label, value string
 	choices      []string
 }
 type meshForm struct {
-	uninstallHost    string
-	provisions       []meshops.UninstallCandidate
-	provisionKey     string
-	provenanceReason string
-	stopHost         string
-	contextReady     bool
-	contextSeen      bool
-	blockers         []meshops.ReconnectBlocker
-	blockerIndex     int
-	reconnectHost    string
-	fields           []meshField
-	selected         int
+	provisionInstall       bool
+	provisionSourceKey     string
+	provisionConnectionKey string
+	uninstallHost          string
+	provisions             []meshops.UninstallCandidate
+	provisionKey           string
+	provenanceReason       string
+	stopHost               string
+	contextReady           bool
+	contextSeen            bool
+	blockers               []meshops.ReconnectBlocker
+	blockerIndex           int
+	reconnectHost          string
+	fields                 []meshField
+	selected               int
 }
 
 func newMeshForm() *meshForm {
@@ -157,6 +162,9 @@ func (f *meshForm) grant(offset int) (mesh.Grant, error) {
 	return g, g.Validate()
 }
 func (f *meshForm) request() (meshIntent, error) {
+	if f.provisionInstall {
+		return f.provisionRequest()
+	}
 	if f.uninstallHost != "" {
 		return f.uninstallRequest()
 	}
@@ -187,6 +195,13 @@ func (f *meshForm) request() (meshIntent, error) {
 		}
 		key := local.ID()
 		return newMeshIntent("mesh_operator_prepare", key, meshPrepareRequest{Key: key, Kind: "reconnect", Reconnect: d})
+	}
+	if f.provisionSourceKey != "" {
+		if !mesh.ValidKey(f.provisionSourceKey) || !mesh.ValidKey(f.provisionConnectionKey) || strings.TrimSpace(f.fields[1].value) == "" || len(f.fields[1].value) > 4096 {
+			return meshIntent{}, fmt.Errorf("exact original provisioning and separate connection purpose required")
+		}
+		d := &meshConnectDraft{ProvisionKey: f.provisionSourceKey, Reason: f.fields[1].value, Forward: forward, Reverse: reverse}
+		return newMeshIntent("mesh_operator_prepare", f.provisionConnectionKey, meshPrepareRequest{Key: f.provisionConnectionKey, Kind: "connect", Connect: d})
 	}
 	d := &meshConnectDraft{Destination: strings.TrimSpace(f.fields[0].value), Reason: f.fields[1].value, Forward: forward, Reverse: reverse, ReplaceRevoked: f.fields[18].value == "yes"}
 	if strings.HasPrefix(d.Destination, "@") {

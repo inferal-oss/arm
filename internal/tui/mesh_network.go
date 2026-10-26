@@ -44,6 +44,7 @@ type meshReconnectContext struct {
 }
 
 type meshReadMsg struct {
+	provisionSource    string
 	uninstall          *meshops.UninstallContext
 	stopLease          *meshops.StopLeaseDetail
 	stopLeaseRequest   *meshops.StopLeaseRequest
@@ -89,6 +90,9 @@ func newMeshIntent(operation, key string, params any) (meshIntent, error) {
 	if operation == "mesh_operator_uninstall_finish" {
 		q.LookupOnly = true
 	}
+	if operation == "mesh_operator_provision_prepare" {
+		q.LookupOnly = true
+	}
 	if err == nil {
 		err = q.validate()
 	}
@@ -96,7 +100,7 @@ func newMeshIntent(operation, key string, params any) (meshIntent, error) {
 }
 
 func (q meshIntent) validate() error {
-	if q.LookupOnly && q.Operation != "mesh_operator_prepare" && q.Operation != "mesh_operator_decide" && q.Operation != "mesh_operator_cancel" && q.Operation != "mesh_operator_uninstall_finish" {
+	if q.LookupOnly && q.Operation != "mesh_operator_prepare" && q.Operation != "mesh_operator_provision_prepare" && q.Operation != "mesh_operator_decide" && q.Operation != "mesh_operator_cancel" && q.Operation != "mesh_operator_uninstall_finish" {
 		return fmt.Errorf("Stop recovery permits lookup only, no resume or handoff")
 	}
 	if !mesh.ValidKey(q.Key) || len(q.Params) > pendingRequestLimit {
@@ -109,6 +113,17 @@ func (q meshIntent) validate() error {
 		return fmt.Errorf("coordinator request key differs from retained envelope")
 	}
 	switch q.Operation {
+	case "mesh_operator_provision_prepare":
+		var p meshProvisionPrepareRequest
+		if e := strictPendingJSON(q.Params, &p); e != nil {
+			return e
+		}
+		if !q.LookupOnly {
+			return fmt.Errorf("installation preparation must retain lookup-only recovery")
+		}
+		if e := p.Provision.Validate(q.Key); e != nil {
+			return e
+		}
 	case "mesh_operator_prepare":
 		var p meshPrepareRequest
 		if err := strictPendingJSON(q.Params, &p); err != nil {
@@ -189,6 +204,31 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 		return nil
 	}
 	var stopRevision int64
+	var expectedProvision *meshops.Operation
+	var provisionLink *meshops.ProvisionPlan
+	if mode == "provision-connection" {
+		if ui.operation == nil || !meshProvisionConfirmed(*ui.operation) {
+			return nil
+		}
+		p, ok := parseMeshProvisionReview(ui.operation.Review)
+		if !ok || p.Request.ConnectionKey != id {
+			return nil
+		}
+		provisionLink = &p
+	}
+	if ui.operation != nil && ui.operation.Kind == "provision" && ui.operation.Key == id {
+		copy := *ui.operation
+		copy.Review = append(json.RawMessage(nil), ui.operation.Review...)
+		copy.Targets = append([]string(nil), ui.operation.Targets...)
+		expectedProvision = &copy
+	}
+	if mode == "provision-lookup" {
+		if expectedProvision == nil || !expectedProvision.Approved || !meshProvisionOperationBound(*expectedProvision) {
+			ui.err = "Read the exact approved original installation before inspecting it."
+			return nil
+		}
+		stopRevision = expectedProvision.Revision
+	}
 	expectedStopTarget := ""
 	if ui.operation != nil && (ui.operation.Kind == "stop" || ui.operation.Kind == "uninstall") && ui.operation.Key == id && len(ui.operation.Targets) == 1 {
 		expectedStopTarget = ui.operation.Targets[0]
@@ -291,9 +331,23 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 			if msg.err == nil && (msg.operation.Key != id || msg.operation.Kind != "stop") {
 				msg.err = fmt.Errorf("original Stop lookup returned a different receipt")
 			}
-		case "operation":
+		case "provision-lookup":
+			msg.operation = &meshops.Operation{}
+			msg.err = session.Call(ctx, "mesh_operator_provision_lookup", map[string]any{"key": id, "revision": stopRevision}, msg.operation)
+		case "operation", "provision-connection":
 			msg.operation = &meshops.Operation{}
 			msg.err = session.Call(ctx, "mesh_operator_get", map[string]string{"key": id}, msg.operation)
+		}
+		if provisionLink != nil {
+			msg.provisionSource = provisionLink.Key
+			if msg.err == nil && (msg.operation == nil || msg.operation.Key != id || msg.operation.Kind != "connect" || len(msg.operation.Targets) != 1 || msg.operation.Targets[0] != "ssh:"+provisionLink.Request.Destination) {
+				msg.err = fmt.Errorf("linked connection receipt differs from original installation")
+			}
+		}
+		if msg.err == nil && msg.operation != nil && (msg.operation.Kind == "provision" || expectedProvision != nil) {
+			if msg.operation.Key != id || !meshProvisionOperationBound(*msg.operation) || expectedProvision != nil && !meshProvisionSameReview(*expectedProvision, *msg.operation) {
+				msg.err = fmt.Errorf("original installation lookup returned a different key, destination or committed review")
+			}
 		}
 		if msg.err == nil && msg.operation != nil && (msg.operation.Kind == "stop" || msg.operation.Kind == "uninstall" || expectedStopTarget != "") {
 			if msg.operation.Key != id || !((msg.operation.Kind == "stop" && meshStopOperationBound(*msg.operation)) || (msg.operation.Kind == "uninstall" && meshUninstallOperationBound(*msg.operation))) || (expectedStopTarget != "" && msg.operation.Targets[0] != expectedStopTarget) {
@@ -310,6 +364,9 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 		return nil
 	}
 	ui.loading = false
+	if msg.mode == "provision-connection" && (ui.operation == nil || ui.operation.Kind != "provision" || ui.operation.Key != msg.provisionSource) {
+		return nil
+	}
 	// Retire the original call only when its actual result arrives. Selection
 	// uses its own epoch; it never abandons loading or the Service read owner.
 	if msg.mode == "stop-lease" {
@@ -413,7 +470,7 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 		if changed {
 			m.viewport.GotoTop()
 		}
-	case "operation", "stop-lookup", "uninstall-lookup":
+	case "operation", "stop-lookup", "uninstall-lookup", "provision-lookup", "provision-connection":
 		changed := ui.operation == nil || msg.operation == nil || ui.operation.Key != msg.operation.Key
 		if changed || ui.operation.ReviewRevision != msg.operation.ReviewRevision || ui.operation.ReviewHash != msg.operation.ReviewHash {
 			ui.stopLeaseIndex = 0
@@ -427,8 +484,9 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 		} else if msg.operation != nil && (ui.uninstallCheckedKey != msg.operation.Key || ui.uninstallCheckedRevision != msg.operation.Revision || ui.uninstallCheckedHash != msg.operation.ReviewHash) {
 			ui.uninstallCheckedKey = ""
 		}
-		if ui.unknown != nil && ui.unknown.LookupOnly && msg.operation != nil && (msg.operation.Kind == "stop" || msg.operation.Kind == "uninstall") && msg.operation.Key == ui.unknown.Key {
+		if ui.unknown != nil && ui.unknown.LookupOnly && msg.operation != nil && (msg.operation.Kind == "stop" || msg.operation.Kind == "uninstall" || msg.operation.Kind == "provision") && msg.operation.Key == ui.unknown.Key {
 			known := msg.operation.LookupOnly || msg.operation.CanPrepareFresh || ui.unknown.Operation == "mesh_operator_prepare"
+			known = known || ui.unknown.Operation == "mesh_operator_provision_prepare"
 			if known && validateMeshOutcome(*ui.unknown, *msg.operation) == nil && m.finishDurable(ui.intent, false) {
 				ui.unknown = nil
 				ui.intent = nil
@@ -493,11 +551,29 @@ func (m *dashboardModel) sendMesh(q meshIntent, retry bool) tea.Cmd {
 }
 
 func validateMeshOutcome(q meshIntent, op meshops.Operation) error {
-	if !mesh.ValidKey(op.Key) || op.Revision <= 0 || (op.Kind != "connect" && op.Kind != "reconnect" && op.Kind != "disconnect" && op.Kind != "stop" && op.Kind != "uninstall") || op.Phase == "" {
+	if !mesh.ValidKey(op.Key) || op.Revision <= 0 || (op.Kind != "connect" && op.Kind != "reconnect" && op.Kind != "disconnect" && op.Kind != "stop" && op.Kind != "uninstall" && op.Kind != "provision") || op.Phase == "" {
 		return fmt.Errorf("invalid coordinator receipt; retain exact request/key and inspect its durable outcome")
 	}
-	if q.LookupOnly && op.Kind != "stop" && op.Kind != "uninstall" {
+	if q.LookupOnly && op.Kind != "stop" && op.Kind != "uninstall" && op.Kind != "provision" {
 		return fmt.Errorf("lookup-only Stop receipt changed operation kind")
+	}
+	if op.Kind == "provision" && !meshProvisionOperationBound(op) {
+		return fmt.Errorf("installation receipt differs from original destination or review")
+	}
+	if q.Operation == "mesh_operator_provision_prepare" {
+		var p meshProvisionPrepareRequest
+		if strictPendingJSON(q.Params, &p) != nil || op.Kind != "provision" || p.Provision.Validate(q.Key) != nil {
+			return fmt.Errorf("original installation preparation changed kind or key")
+		}
+		if p.Provision.Destination != "" && (len(op.Targets) != 1 || op.Targets[0] != "ssh:"+p.Provision.Destination) {
+			return fmt.Errorf("installation preparation changed requested destination")
+		}
+		if len(op.Review) > 0 {
+			review, _ := parseMeshProvisionReview(op.Review)
+			if review.Request.ConnectionKey != p.Provision.ConnectionKey || review.Request.Transfer.Reason != p.Provision.Reason {
+				return fmt.Errorf("installation preparation changed linked key or purpose")
+			}
+		}
 	}
 	if op.Kind == "uninstall" && !meshUninstallOperationBound(op) {
 		return fmt.Errorf("uninstall receipt differs from exact host/review")
@@ -573,7 +649,7 @@ func (m *dashboardModel) acceptMeshSend(msg meshSendMsg) tea.Cmd {
 		}
 		ui.err = "Outcome may be unknown: " + safe(msg.err.Error()) + ". The exact key/request is retained; lookup or same-request retry is explicit."
 		if msg.request.LookupOnly {
-			ui.err = "Stop outcome may be unknown: " + safe(msg.err.Error()) + ". Read this exact key; resend is disabled."
+			ui.err = "Lifecycle outcome may be unknown: " + safe(msg.err.Error()) + ". Read this exact key; resend is disabled."
 		}
 		return nil
 	}

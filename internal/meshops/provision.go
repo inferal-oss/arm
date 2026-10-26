@@ -97,7 +97,17 @@ func (q ProvisionRequest) Validate() error {
 // Provision is native orchestration only. Operator/browser connect cannot
 // silently upload through this path; it needs its own separate installation API.
 func (a *Coordinator) Provision(q ProvisionRequest, artifact mesh.Artifact, yes, dry bool) (int, error) {
-	code, e := a.run(func() (int, error) { return a.provision(q, artifact, yes, dry) })
+	code, e := a.run(func() (code int, err error) {
+		defer func() {
+			if a.provisionCleanup != nil {
+				if closeErr := a.provisionCleanup(); closeErr != nil {
+					code = 1
+					err = model.Err("provision_source_cleanup_unknown", fmt.Sprintf("source companion reader cleanup failed: %v; original installation outcome: %v. Retain the original key; target inspection cannot prove source cleanup", closeErr, err))
+				}
+			}
+		}()
+		return a.provision(q, artifact, yes, dry)
+	})
 	if e != nil {
 		kind, message := "provision_failed", e.Error()
 		var api *model.Error
@@ -164,50 +174,68 @@ func (a *Coordinator) provision(q ProvisionRequest, artifact mesh.Artifact, yes,
 		return 1, e
 	}
 	if exists {
-		if prior.Kind != "provision" || prior.Digest != digest {
-			return 1, model.Err("idempotency_conflict", "provision key belongs to another artifact/account/path/startup request")
-		}
-		var receipt mesh.ProvisionReceipt
-		_, e = a.lookupProvision(q, &receipt)
-		if e != nil || !provisionSettled(q, receipt) {
-			return 1, model.Err("provision_outcome_unknown", fmt.Sprintf("provision key %s: target publication/start is unknown; inspect this exact receipt; no upload/start was resent", key))
-		}
-		if prior.Phase == "completed" {
-			return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, receipt, time.Now().UTC(), true})
-		}
-		if prior.Phase == "incomplete" && prior.ResolvedBy != "" {
-			child, ok, readErr := mesh.ReadCoordination(a.Home, prior.ResolvedBy)
-			if readErr != nil || !ok || child.ParentKey != key || child.Kind != "provision" || child.Digest != digest || child.Phase != "completed" || !child.Approved || child.Worker != "" || child.Error != nil {
-				return 1, model.Err("provision_outcome_unknown", "original installation has no exact durable settled recovery receipt")
+		if a.guard != nil {
+			owned, err := a.guard.Read()
+			if err != nil {
+				return 1, err
 			}
-			// Preserve both immutable receipts; a healthy resolved exact retry is
-			// a fresh read-only target lookup, never a new review or worker.
-			return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, receipt, time.Now().UTC(), true})
+			if owned.Key != key || owned.Kind != "provision" || owned.Digest != digest || owned.Worker == "" || owned.Worker != prior.Worker || len(owned.Targets) != 1 || owned.Targets[0] != "ssh:"+q.Destination {
+				return 1, model.Err("idempotency_conflict", "in-process provisioning owner differs from exact admitted request")
+			}
+			var saved StartRequest
+			if err = mesh.Decode(owned.Request, &saved); err != nil || saved.Key != key || saved.Kind != "provision" || saved.Provision == nil {
+				return 1, model.Err("idempotency_conflict", "in-process provisioning request is absent or differs")
+			}
+			savedDigest, err := mesh.ReviewDigest(*saved.Provision)
+			if err != nil || savedDigest != digest {
+				return 1, model.Err("idempotency_conflict", "in-process provisioning canonical request differs")
+			}
+		} else {
+			if prior.Kind != "provision" || prior.Digest != digest {
+				return 1, model.Err("idempotency_conflict", "provision key belongs to another artifact/account/path/startup request")
+			}
+			var receipt mesh.ProvisionReceipt
+			_, e = a.lookupProvision(q, &receipt)
+			if e != nil || !provisionSettled(q, receipt) {
+				return 1, model.Err("provision_outcome_unknown", fmt.Sprintf("provision key %s: target publication/start is unknown; inspect this exact receipt; no upload/start was resent", key))
+			}
+			if prior.Phase == "completed" {
+				return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, receipt, time.Now().UTC(), true})
+			}
+			if prior.Phase == "incomplete" && prior.ResolvedBy != "" {
+				child, ok, readErr := mesh.ReadCoordination(a.Home, prior.ResolvedBy)
+				if readErr != nil || !ok || child.ParentKey != key || child.Kind != "provision" || child.Digest != digest || child.Phase != "completed" || !child.Approved || child.Worker != "" || child.Error != nil {
+					return 1, model.Err("provision_outcome_unknown", "original installation has no exact durable settled recovery receipt")
+				}
+				// Preserve both immutable receipts; a healthy resolved exact retry is
+				// a fresh read-only target lookup, never a new review or worker.
+				return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, receipt, time.Now().UTC(), true})
+			}
+			if prior.Phase != "incomplete" || prior.Worker != "" || prior.ResolvedBy != "" {
+				return 1, model.Err("terminal_or_active_key", "provision key is terminal/active; use a fresh explicit reviewed intent")
+			}
+			a.attemptParent = key
+			if e = a.begin(key, "provision", digest, "ssh:"+q.Destination); e != nil {
+				return 1, e
+			}
+			if e = a.recordProvisionRequest(key, q); e != nil {
+				return 1, e
+			}
+			plan.Operation = "verify-existing-provision"
+			plan.Effect = "Read-only recovery: verify the exact already-published artifact and durable started receipt. Do not upload, publish, start a backend or retry execution."
+			if e = a.Confirm(plan, yes, false); e != nil {
+				return 1, e
+			}
+			if e = a.markApproved(); e != nil {
+				return 1, e
+			}
+			var checked mesh.ProvisionReceipt
+			_, e = a.lookupProvision(q, &checked)
+			if e != nil || !provisionSettled(q, checked) {
+				return 1, model.Err("provision_outcome_unknown", "target provision changed during recovery; no execution retried")
+			}
+			return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, checked, time.Now().UTC(), true})
 		}
-		if prior.Phase != "incomplete" || prior.Worker != "" || prior.ResolvedBy != "" {
-			return 1, model.Err("terminal_or_active_key", "provision key is terminal/active; use a fresh explicit reviewed intent")
-		}
-		a.attemptParent = key
-		if e = a.begin(key, "provision", digest, "ssh:"+q.Destination); e != nil {
-			return 1, e
-		}
-		if e = a.recordProvisionRequest(key, q); e != nil {
-			return 1, e
-		}
-		plan.Operation = "verify-existing-provision"
-		plan.Effect = "Read-only recovery: verify the exact already-published artifact and durable started receipt. Do not upload, publish, start a backend or retry execution."
-		if e = a.Confirm(plan, yes, false); e != nil {
-			return 1, e
-		}
-		if e = a.markApproved(); e != nil {
-			return 1, e
-		}
-		var checked mesh.ProvisionReceipt
-		_, e = a.lookupProvision(q, &checked)
-		if e != nil || !provisionSettled(q, checked) {
-			return 1, model.Err("provision_outcome_unknown", "target provision changed during recovery; no execution retried")
-		}
-		return 0, a.Print(ProvisionResult{binary, key, q.ConnectionKey, checked, time.Now().UTC(), true})
 	}
 	if e = local.Prepare(a.Home); e != nil {
 		return 1, e

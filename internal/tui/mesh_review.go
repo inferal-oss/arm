@@ -84,6 +84,12 @@ func meshIdentitySummary(label string, identity *meshReviewIdentity, prepared me
 }
 
 func meshReviewSummary(raw json.RawMessage) (string, bool) {
+	var operation struct {
+		Operation string `json:"operation"`
+	}
+	if json.Unmarshal(raw, &operation) == nil && operation.Operation == "install-and-start-arm-node" {
+		return meshProvisionReviewSummary(raw)
+	}
 	var schema struct {
 		Schema string `json:"schema"`
 	}

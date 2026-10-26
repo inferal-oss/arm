@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createMeshConsole} from './mesh-console.mjs';
+import {provisionKey} from './mesh-provision.mjs';
 class Element {
   constructor(tag, doc) {
     this.tagName = tag;
@@ -155,10 +156,10 @@ test('uncertain Resume is retained across reload and cannot create another child
 });
 
 
-test('unknown install review is readable but cannot acquire a misleading trust/disconnect approval',async()=>{
+test('a foreign provisioning receipt cannot replace a connection review or acquire approval',async()=>{
  const f=fixture();f.op.kind='provision';f.op.review={operation:'install-arm',effect:'Install a binary'};
  await f.find('Connect a node…').fire('click');await flush();const form=f.form();form.all().find(n=>n.tagName==='input').value='fixture';form.all().find(n=>n.tagName==='textarea').value='unsupported review';await form.fire('submit');
- assert.equal(f.find('Trust and connect'),undefined);assert.equal(f.find('Confirm disconnect'),undefined);assert.match(f.dialog().textContent,/no approval is available here/);
+ assert.equal(f.find('Trust and connect'),undefined);assert.equal(f.find('Confirm disconnect'),undefined);assert.match(f.dialog().textContent,/exact original operation/);assert.ok(f.form());
 });
 
 test('revoked-node reconnect uses exact host with new defaults and no native path fields',async()=>{
@@ -377,4 +378,75 @@ test('offline preserves local Keep installed and Keep running dismissals but dis
  const stop=stopConsoleFixture();await stop.open();await stop.find('Stop ARM…').fire('click');stop.offline();assert.equal(stop.find('Keep running').disabled,false);await stop.find('Keep running').fire('click');assert.equal(stop.dialog(),undefined);assert.equal(stop.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
  const edit=uninstallConsoleFixture();await edit.open();await edit.find('Uninstall managed ARM…').fire('click');edit.offline();assert.equal(edit.find('Keep installed').disabled,false);await edit.find('Keep installed').fire('click');assert.equal(edit.dialog(),undefined);assert.equal(edit.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
  const review=uninstallConsoleFixture();await review.prepare();review.offline();assert.equal(review.find('Keep installed').disabled,true);await review.find('Keep installed').fire('click');assert.equal(review.calls.filter(([name])=>name==='mesh_operator_decide').length,0);
+});
+
+function provisionConsoleFixture(options={}){
+ const doc={activeElement:null,createElement:tag=>new Element(tag,doc)};doc.body=doc.createElement('body');const root=doc.createElement('section');doc.body.append(root);
+ const saved=options.saved??new Map(),calls=[];let op=options.op?structuredClone(options.op):null,hook=null,live=true,preparedReview=null;
+ const make=q=>{const image='b'.repeat(64),transfer={install_root:'/home/operator/.local/share/arm/provisioned',key:q.key,sha256:image,size_bytes:4096,expected_uid:'1000',os:'linux',arch:'arm64',expected_arm_version:'0.1.0-dev',expected_lifecycle_protocol:1,reason:q.provision.reason};return{key:q.key,kind:'provision',targets:['ssh:build-host'],revision:3,phase:'awaiting_review',worker_live:true,approved:false,lookup_only:false,review_revision:2,review_sha256:'d'.repeat(64),review_expires_at:new Date(Date.now()+120000).toISOString(),review:{operation:'install-and-start-arm-node',key:q.key,request:{connection_key:q.provision.connection_key,ssh_destination:'build-host',transfer,ssh_identity:{account:'operator',host_key:'ssh-ed25519 SHA256:pinned'},remote_home:'/home/operator/.local/share/arm',startup:{schema:1,resources:{cpu:2,memory_bytes:0,disk_bytes:0},listen:'127.0.0.1:0'}},artifact_source:'verified local catalog',final_binary:transfer.install_root+'/artifact-'+image+'/arm',effect:'Install these exact user-level bytes. Review mesh trust separately.'}};};
+ const ui=createMeshConsole({root,document:doc,connected:()=>live,storage:{getItem:k=>saved.get(k),setItem:(k,v)=>{if(options.storageFailure)throw Error('storage unavailable');saved.set(k,v);}},call:async(name,q)=>structuredClone(await(async()=>{
+  calls.push([name,structuredClone(q)]);if(hook){const answer=hook(name,q);if(answer!==undefined)return await answer;}
+  if(name==='node_list')return{nodes:[]};if(name==='mesh_operator_list')return op?[op]:[];if(name==='mesh_operator_connectors')return[{id:'native-profile',ssh_destination:'build-host'}];
+  if(name==='mesh_operator_provision_prepare'){op=make(q);if(options.planless){preparedReview=op.review;delete op.review;op.phase='preparing';op.review_revision=0;}if(options.losePrepare)throw Error('preparation reply lost');return op;}
+  if(name==='mesh_operator_get'||name==='mesh_operator_provision_lookup')return op;
+  if(name==='mesh_operator_decide'){if(options.loseDecision)throw Error('decision reply lost');Object.assign(op,{phase:q.approve?'applying':'rejected',approved:q.approve,revision:op.revision+1,worker_live:q.approve,lookup_only:q.approve,...(!q.approve?{error:{code:'confirmation_declined',message:'Kept unchanged'}}:{})});return op;}
+  if(name==='mesh_operator_prepare')return{key:q.key,kind:'connect',phase:'preparing',revision:1,worker_live:true};
+  throw Error(name);
+ })())});
+ const find=text=>doc.body.all().find(n=>n.tagName==='button'&&n.textContent===text),dialog=()=>doc.body.all().find(n=>n.tagName==='dialog'&&n.open),form=()=>dialog().all().find(n=>n.tagName==='form');
+ const prepare=async()=>{await find('Install ARM on a host…').fire('click');await flush();form().all().find(n=>n.tagName==='input').value='build-host';form().all().find(n=>n.tagName==='textarea').value='Build on spare capacity';await form().fire('submit');};
+ const complete=()=>{const p=op.review,q=p.request,t=q.transfer,host='c'.repeat(32);Object.assign(op,{phase:'completed',approved:true,worker_live:false,lookup_only:true,provision_connection_ready:true,revision:op.revision+1});delete op.error;op.result={provisioned:p.final_binary,key:op.key,connection_key:q.connection_key,receipt:{schema:1,request:structuredClone(t),phase:'started_verified',binary:p.final_binary,started_host:host,start_home:q.remote_home,startup:structuredClone(q.startup),runtime:{host,uid:t.expected_uid,sha256:t.sha256,size_bytes:t.size_bytes,arm_version:t.expected_arm_version,lifecycle_protocol:1,method:'kernel-self-executable',captured_at:new Date().toISOString()}}};};
+ return{doc,root,ui,calls,saved,find,dialog,form,prepare,complete,readyReview:()=>{op.review=preparedReview;op.phase='awaiting_review';op.revision=4;op.review_revision=3;},get op(){return op;},route:fn=>{hook=fn;},offline:()=>{live=false;ui.updateConnection();}};
+}
+
+test('installation editor prepares only native-resolved intent and defaults to keeping the host unchanged',async()=>{
+ const f=provisionConsoleFixture();await f.find('Install ARM on a host…').fire('click');await flush();assert.equal(f.doc.activeElement.textContent,'Keep host unchanged');assert.equal(f.form().all().filter(n=>n.tagName==='input').length,1);assert.equal(f.form().all().filter(n=>n.tagName==='textarea').length,1);assert.equal(f.form().all().some(n=>n.tagName==='fieldset'),false);
+ await f.form().fire('submit');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_provision_prepare').length,0);
+ f.form().all().find(n=>n.tagName==='input').value='build-host';f.form().all().find(n=>n.tagName==='textarea').value='Build on spare capacity';await f.form().fire('submit');
+ const q=f.calls.find(([n])=>n==='mesh_operator_provision_prepare')[1];assert.equal(q.key,await provisionKey(q.provision.connection_key));assert.deepEqual(Object.keys(q.provision).sort(),['connection_key','reason','ssh_destination']);assert.equal(f.doc.activeElement.textContent,'Keep host unchanged');assert.ok(f.find('Install reviewed ARM node'));assert.equal(f.find('Trust and connect'),undefined);assert.match(f.dialog().textContent,/operator \(UID 1000\)/);assert.match(f.dialog().textContent,/TWO SEPARATE DECISIONS/);
+ await f.find('Keep host unchanged').fire('click');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_decide').length,1);assert.equal(f.calls.find(([n])=>n==='mesh_operator_decide')[1].approve,false);assert.match(f.dialog().textContent,/Installation declined/);assert.equal(f.find('Review mesh connection…'),undefined);
+});
+
+test('lost installation preparation retains its native key across reload and never resends',async()=>{
+ const f=provisionConsoleFixture({losePrepare:true});await f.prepare();assert.equal(f.find('Prepare installation review').disabled,true);assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-provision-pending')).prepares.map(q=>q.key),[f.op.key]);await f.form().fire('submit');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_provision_prepare').length,1);
+ const g=provisionConsoleFixture({saved:f.saved,op:f.op});await g.find('Inspect uncertain installation · '+f.op.key).fire('click');assert.ok(g.find('Install reviewed ARM node'));assert.deepEqual(JSON.parse(g.saved.get('arm-mesh-provision-pending')).prepares,[]);assert.equal(g.calls.filter(([n])=>n==='mesh_operator_provision_prepare').length,0);
+});
+
+test('lost installation decision remains disabled after refresh and reload; original inspection is read-only',async()=>{
+ const f=provisionConsoleFixture({loseDecision:true});await f.prepare();await f.find('Install reviewed ARM node').fire('click');assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-provision-pending')).decisions,[f.op.key]);await f.ui.refresh();assert.equal(f.find('Install reviewed ARM node'),undefined);assert.equal(f.find('Request cancellation'),undefined);
+ const g=provisionConsoleFixture({saved:f.saved,op:f.op});await g.find('Inspect uncertain installation · '+f.op.key).fire('click');assert.equal(g.find('Install reviewed ARM node'),undefined);Object.assign(g.op,{phase:'incomplete',approved:true,worker_live:false,lookup_only:true,revision:5,error:{code:'source_owner_unresolved',message:'Original owner has not joined'}});await g.ui.refresh();await g.find('Inspect original installation').fire('click');assert.equal(g.calls.filter(([n])=>n==='mesh_operator_provision_lookup').length,1);assert.deepEqual(g.calls.find(([n])=>n==='mesh_operator_provision_lookup')[1],{key:f.op.key,revision:5});for(const label of ['Review mesh connection…','Prepare recovery review…','Hand off unresolved operation…','Request cancellation'])assert.equal(g.find(label),undefined);assert.equal(g.calls.filter(([n])=>['mesh_operator_decide','mesh_operator_provision_prepare'].includes(n)).length,0);
+});
+
+test('completed installation offers a separate pinned connection review with no browser path knobs',async()=>{
+ const f=provisionConsoleFixture();await f.prepare();await f.find('Install reviewed ARM node').fire('click');assert.equal(f.find('Review mesh connection…'),undefined);f.complete();await f.ui.refresh();assert.ok(f.find('Review mesh connection…'));await f.find('Review mesh connection…').fire('click');await flush();assert.equal(f.doc.activeElement.textContent,'Cancel');const inputs=f.form().all().filter(n=>n.tagName==='input');assert.equal(inputs[0].disabled,true);inputs[0].value='tampered-host';const selectors=f.form().all().filter(n=>n.tagName==='select');assert.equal(selectors[0].disabled,true);selectors[0].value='tampered-connector';f.form().all().find(n=>n.tagName==='textarea').value='Read node inventory';await f.form().fire('submit');
+ const q=f.calls.find(([n])=>n==='mesh_operator_prepare')[1];assert.equal(q.kind,'connect');assert.equal(q.key,f.op.review.request.connection_key);assert.equal(q.connect.provision_key,f.op.key);assert.equal(q.connect.ssh_destination,undefined);assert.equal(q.connect.connector,undefined);assert.equal(q.connect.remote_binary,undefined);assert.equal(q.connect.remote_home,undefined);assert.deepEqual(q.connect.source_permissions_on_target.permissions,['observe-host']);assert.deepEqual(q.connect.target_permissions_on_source.permissions,[]);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_decide').length,1,'installation approval never approves trust');
+});
+
+test('phase-only completion and changed installation identity never enable a connection link',async()=>{
+ const f=provisionConsoleFixture();await f.prepare();f.complete();f.op.provision_connection_ready=false;await f.ui.refresh();assert.equal(f.find('Review mesh connection…'),undefined);f.op.provision_connection_ready=true;f.op.result.receipt.runtime.uid='0';await f.ui.refresh();assert.equal(f.find('Review mesh connection…'),undefined);
+ f.op.review.request.ssh_identity.host_key='different pin';await f.ui.refresh();assert.match(f.root.textContent,/immutable installation review changed/);assert.equal(f.find('Review mesh connection…'),undefined);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_decide').length,0);
+});
+
+test('provisional installation revision may advance once while a ready review stays immutable',async()=>{
+ const f=provisionConsoleFixture();await f.prepare();Object.assign(f.op,{phase:'preparing',review_revision:2,revision:2});await f.ui.refresh();Object.assign(f.op,{phase:'awaiting_review',review_revision:3,revision:4});await f.ui.refresh();assert.ok(f.find('Install reviewed ARM node'));assert.equal(f.doc.activeElement.textContent,'Keep host unchanged');f.op.review_revision=4;f.op.revision=5;await f.ui.refresh();assert.match(f.root.textContent,/immutable installation review changed/);
+});
+
+test('storage failure blocks installation preparation and offline keeps only the local dismissal usable',async()=>{
+ const f=provisionConsoleFixture({storageFailure:true});await f.prepare();assert.equal(f.calls.filter(([n])=>n==='mesh_operator_provision_prepare').length,0);assert.match(f.dialog().textContent,/storage unavailable/);
+ const g=provisionConsoleFixture();await g.find('Install ARM on a host…').fire('click');g.offline();assert.equal(g.find('Keep host unchanged').disabled,false);await g.find('Keep host unchanged').fire('click');assert.equal(g.dialog(),undefined);assert.equal(g.calls.filter(([n])=>n==='mesh_operator_decide').length,0);
+});
+
+test('a lost linked connection preparation cannot upload again or prepare a second connection',async()=>{
+ const f=provisionConsoleFixture();await f.prepare();f.complete();await f.ui.refresh();await f.find('Review mesh connection…').fire('click');f.form().all().find(n=>n.tagName==='textarea').value='Read host summary';f.route(name=>{if(name==='mesh_operator_prepare')throw Error('linked connection reply lost');});await f.form().fire('submit');const key=f.op.review.request.connection_key;assert.deepEqual(JSON.parse(f.saved.get('arm-mesh-pending')),[key]);assert.equal(f.find('Prepare connection review').disabled,true);await f.form().fire('submit');assert.equal(f.calls.filter(([n])=>n==='mesh_operator_prepare').length,1);f.dialog().close();await f.ui.refresh();await f.root.all().find(n=>n.className==='mesh-operation-row').fire('click');assert.ok(f.find('Inspect mesh connection'));assert.equal(f.find('Review mesh connection…'),undefined);assert.equal(f.calls.filter(([n])=>n==='mesh_operator_provision_prepare').length,1);
+});
+
+test('late installation lookup and a changed operation kind cannot replace the selected dialog',async()=>{
+ const f=provisionConsoleFixture();await f.prepare();await f.find('Install reviewed ARM node').fire('click');Object.assign(f.op,{phase:'incomplete',worker_live:false,revision:5});await f.ui.refresh();let finish;f.route(name=>name==='mesh_operator_provision_lookup'?new Promise(resolve=>{finish=resolve;}):undefined);const reading=f.find('Inspect original installation').fire('click');await f.find('Install ARM on a host…').fire('click');const editor=f.dialog();finish(f.op);await reading;assert.equal(f.dialog(),editor);assert.ok(f.find('Prepare installation review'));editor.close();f.route(name=>name==='mesh_operator_get'?{...f.op,kind:'connect'}:undefined);await f.ui.refresh();await f.root.all().find(n=>n.className==='mesh-operation-row').fire('click');assert.equal(f.find('Trust and connect'),undefined);assert.match(f.root.textContent,/exact original operation/);
+});
+
+test('a plan-less lost preparation keeps its submitted purpose and connection key through reload',async()=>{
+ const f=provisionConsoleFixture({planless:true,losePrepare:true});await f.prepare();const intent=JSON.parse(f.saved.get('arm-mesh-provision-pending')).prepares[0];assert.equal(intent.key,f.op.key);assert.equal(intent.provision.reason,'Build on spare capacity');
+ const g=provisionConsoleFixture({saved:f.saved,op:f.op});await g.find('Inspect uncertain installation · '+f.op.key).fire('click');assert.equal(g.find('Install reviewed ARM node'),undefined);assert.equal(JSON.parse(g.saved.get('arm-mesh-provision-pending')).prepares.length,1);
+ f.readyReview();const original=structuredClone(f.op.review);f.op.review.request.connection_key='another-connection';f.op.review.request.transfer.reason='Another purpose';g.route(name=>name==='mesh_operator_get'?f.op:undefined);await g.ui.refresh();assert.match(g.root.textContent,/requested destination, linked key or purpose/);assert.equal(g.find('Install reviewed ARM node'),undefined);assert.equal(JSON.parse(g.saved.get('arm-mesh-provision-pending')).prepares.length,1);
+ f.op.review=original;await g.ui.refresh();assert.ok(g.find('Install reviewed ARM node'));assert.deepEqual(JSON.parse(g.saved.get('arm-mesh-provision-pending')).prepares,[]);assert.equal(g.calls.filter(([n])=>n==='mesh_operator_provision_prepare').length,0);
 });
