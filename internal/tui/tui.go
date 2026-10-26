@@ -30,6 +30,9 @@ type dashboardModel struct {
 	pendingStoreError                 string
 	messageIntent, poolIntent         *pendingRecord
 	poolUI                            *poolDashboard
+	peers                             *peerDashboard
+	peerOpen                          bool
+	peerStopped                       bool
 	poolPending                       *poolOperation
 	poolSequence                      uint64
 	meshUI                            *meshDashboard
@@ -83,6 +86,7 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 	}
 	final, err := tea.NewProgram(m, opts...).Run()
 	if result, ok := final.(*dashboardModel); ok {
+		result.stopPeerReads()
 		if result.session != nil {
 			result.session.Close()
 		}
@@ -130,7 +134,7 @@ func newDashboard(ctx context.Context, home string) *dashboardModel {
 	styles.Cursor.Color = colorAccent
 	input.SetStyles(styles)
 	input.SetWidth(50)
-	m := &dashboardModel{ctx: ctx, home: home, width: 100, height: 30, timeNow: time.Now(), connecting: true, diskSelection: ioSelection{All: true}, networkSelection: ioSelection{All: true}, viewport: viewport.New(viewport.WithWidth(65), viewport.WithHeight(20)), input: input}
+	m := &dashboardModel{ctx: ctx, home: home, width: 100, height: 30, timeNow: time.Now(), connecting: true, peers: &peerDashboard{}, diskSelection: ioSelection{All: true}, networkSelection: ioSelection{All: true}, viewport: viewport.New(viewport.WithWidth(65), viewport.WithHeight(20)), input: input}
 	m.viewport.SoftWrap = true
 	p, err := readPreferences(home)
 	m.hideInactive = p.HideInactive
@@ -175,6 +179,7 @@ func (m *dashboardModel) addEvent(event model.Event) {
 }
 func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	defer m.syncViewport()
+	defer m.retirePeerIfHidden()
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -188,6 +193,8 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.retry++
 			return m, tea.Tick(time.Duration(min(15, 1<<min(m.retry, 4)))*time.Second, func(time.Time) tea.Msg { return reconnectMsg{} })
 		}
+		m.retirePeerRead()
+		m.peers = &peerDashboard{}
 		m.session = msg.session
 		if m.meshUI != nil {
 			m.meshUI.watching = false
@@ -210,7 +217,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.view == 6 && m.meshUI != nil {
 			return m, tea.Batch(waitStream(m.ctx, m.session), m.readMesh("list", ""))
 		}
-		return m, waitStream(m.ctx, m.session)
+		return m, tea.Batch(waitStream(m.ctx, m.session), m.readPeers(false))
 	case reconnectMsg:
 		if !m.connected && !m.connecting {
 			m.connecting = true
@@ -233,6 +240,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if msg.err != nil {
 			m.connected = false
+			m.retirePeerRead()
 			if m.meshUI != nil {
 				m.meshUI.sequence++
 				m.meshUI.loading = false
@@ -277,6 +285,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, waitStream(m.ctx, m.session)
 	case tickMsg:
 		m.timeNow = time.Time(msg)
+		peerRead := m.readPeers(false)
 		if ui := m.meshUI; m.nodeUI == nil && m.view == 6 && m.connected && ui != nil && ui.dirty && !ui.loading && !ui.busy && !m.meshModal() {
 			mode, id := "list", ""
 			if ui.mode == "operation" && ui.operation != nil {
@@ -292,9 +301,11 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.connected && m.dirty && !m.refreshing && m.timeNow.Sub(m.lastRefresh) >= time.Second {
 			m.refreshing = true
 			m.dirty = false
-			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session))
+			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session), peerRead)
 		}
-		return m, clockTick()
+		return m, tea.Batch(clockTick(), peerRead)
+	case peerReadMsg:
+		return m, m.acceptPeerRead(msg)
 	case poolReadMsg:
 		return m, m.acceptPoolRead(msg)
 	case meshReadMsg:
@@ -350,12 +361,14 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	k := key.String()
 	if k == "ctrl+c" {
+		m.stopPeerReads()
 		return tea.Quit
 	}
 	if m.view == 6 && m.record == nil && m.meshUI != nil && m.meshUI.mode == "kubernetes" {
 		return m.meshKey(k)
 	}
 	if k == "q" && m.inputMode == "" {
+		m.stopPeerReads()
 		return tea.Quit
 	}
 	if m.nodeUI != nil && m.record == nil {
@@ -458,6 +471,22 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		}
 		return nil
 	}
+	if m.peerOpen && m.view == 1 && m.nodeUI == nil {
+		switch k {
+		case "v", "esc":
+			m.peerOpen = false
+			m.viewport.GotoTop()
+			return nil
+		case "r":
+			return m.readPeers(true)
+		case "j", "down":
+			m.viewport.ScrollDown(1)
+			return nil
+		case "k", "up":
+			m.viewport.ScrollUp(1)
+			return nil
+		}
+	}
 	if m.resourceID != "" {
 		resource := m.selectedResource()
 		switch k {
@@ -501,9 +530,15 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		if m.view == 6 {
 			return m.openMesh()
 		}
-		return nil
+		return m.readPeers(false)
 	}
 	switch k {
+	case "v":
+		if m.view == 1 && !m.feedFocus && m.nodeUI == nil {
+			m.peerOpen = true
+			m.viewport.GotoTop()
+			return m.readPeers(false)
+		}
 	case "p":
 		if m.view == 1 && !m.feedFocus {
 			return m.openPools()
@@ -521,6 +556,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			}
 		}
 	case "q":
+		m.stopPeerReads()
 		return tea.Quit
 	case "tab":
 		m.feedFocus = !m.feedFocus
@@ -543,7 +579,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	case "r":
 		if m.connected && !m.refreshing {
 			m.refreshing = true
-			return refresh(m.ctx, m.session)
+			return tea.Batch(refresh(m.ctx, m.session), m.readPeers(true))
 		}
 	case "n":
 		if m.view == 0 {

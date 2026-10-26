@@ -127,6 +127,9 @@ func (m *dashboardModel) windowTitle() (string, string) {
 	if m.poolUI != nil {
 		return m.poolWindowTitle()
 	}
+	if m.peerOpen && m.view == 1 {
+		return "NEARBY ARM INSTANCES · ADVISORY", "blue"
+	}
 	if m.view == 6 && m.meshUI != nil {
 		if m.meshUI.prompt != nil {
 			return m.meshUI.prompt.title, "warning"
@@ -261,6 +264,12 @@ func (m *dashboardModel) footer() string {
 	}
 	if m.resourceID != "" {
 		return "↑↓ select consumer · Enter open lease · [i] Record · Esc budgets"
+	}
+	if m.peerOpen && m.view == 1 {
+		return "↑↓ scroll · [r] Refresh · [v/Esc] Back to budgets · q exit"
+	}
+	if m.view == 1 {
+		return "↑↓ select resource · Enter inspect · [v] Nearby peers · [p] Pools · q exit"
 	}
 	if m.view == 0 {
 		return "[d] Select disks   [n] Select interfaces   [?] Help   [i] Record   PgDn scroll   q exit"

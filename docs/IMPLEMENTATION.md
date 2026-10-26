@@ -1258,8 +1258,8 @@ removed on the next refresh. `arm peers on` republishes on the next refresh.
 Private control tokens, lease identifiers, reasons, paths and recipients are
 not in the public projection. CLI and web Resources expose the advisory view;
 The actual desktop browser renders held/queued quantities and timing correctly;
-Charm peer-view parity, native macOS different-user and wider viewport
-acceptance remain outstanding.
+Native macOS different-user and wider viewport acceptance remain outstanding;
+reviewed Charm Resources summary/detail now adds terminal parity below.
 
 Native root-owned mode-1777 `/tmp` and regular, single-link, non-writable-by-others
 records establish announcement file ownership. A mutually signed server-first
@@ -1459,3 +1459,25 @@ remain required. No automatic schema repair, migration or incompatible-ledger
 disposal is added. The reported user's read-only inventory lacks both pressure
 tables and a reset pointer, consistent with pre-pressure state but without
 proof of its exact history. No actual user removal or migration was performed.
+
+
+## Charm local-instance demand view
+
+Local Resources shows advisory local/peer held and queued totals in a separate
+panel from native lease budgets. `v` opens read-only itemized quantities,
+expiries, queue position, requested duration and qualified start estimates;
+`v`/Escape returns to budgets. The detail view bounds rendered rows to 16 local,
+eight per peer and 128 overall, with explicit truncation and a JSON inspection
+hint. Partial, unavailable, stale and truncated state is explicit; deeper
+per-peer pagination remains a broader interface gate. Polling is bounded to one original in-flight read per session
+with a 10-second cadence and 20-second stale display threshold; hiding, changing
+session or quitting cancels/retires reads, and old completions cannot own a
+successor request or restart work after shutdown. Remote node contexts do not
+poll or silently display localhost peers. Bounded text/item counts and terminal
+sanitization preserve the existing viewport and native budget state.
+
+Focused state/race, real local-backend exchange and native PTY navigation/resize/
+restoration evidence cover this scope. PTY transcript checks are not a new
+reconstructed-screen visual, Linux/other-UID or complete interface acceptance.
+Peer data remains an advisory assertion and grants no admission, CPU credit,
+process control or shared authority.

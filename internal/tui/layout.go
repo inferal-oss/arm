@@ -218,6 +218,9 @@ func (m *dashboardModel) bodyText() string {
 	if m.resourceID != "" {
 		return m.resourceDetailText()
 	}
+	if m.peerOpen && m.view == 1 {
+		return m.peerDetailsText()
+	}
 	if !m.connected && m.data.status.Host == "" {
 		return "Connecting to the local backend…\n\nStart it with arm start if it is not running.\nThe dashboard will reconnect without retrying any mutation."
 	}
@@ -359,9 +362,12 @@ func (m *dashboardModel) resourcesText() string {
 		cards = append(cards, window(title, strings.Join(lines, "\n"), width, 0, i == m.selected, ""))
 	}
 	if len(cards) == 0 {
-		return "No matching resources.\n\nClear the filter or refresh the backend snapshot."
+		return m.peerSummaryText() + "\n\nNo matching resources.\n\nClear the filter or refresh the backend snapshot."
 	}
-	return strings.Join(cards, "\n")
+	if m.mainWidth() < 70 {
+		return strings.Join(cards, "\n") + "\n" + m.peerSummaryText()
+	}
+	return m.peerSummaryText() + "\n" + strings.Join(cards, "\n")
 }
 
 func (m *dashboardModel) leaseDetailText() string {

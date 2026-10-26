@@ -526,3 +526,27 @@ complete disposable home/database state. Actual read-only user inventory lacks
 both pressure tables and reset pointer; its origin is unproved. Compatibility
 removal remains refused. Two current-schema reset/startup cycles pass; original
 CPU-fixture setup failures and scoped successor are retained separately.
+
+
+Charm candidate d938319 is composed onto reset-fix main1e7b390 for final
+independent review and primary checks. Review found and the author fixed quit
+completion restarting a peer read; peerStopped now seals scheduling first.
+The shared /tmp integration fixture is also corrected to validate the selected
+original source exactly and fold all accepted global reports, rather than
+assume this test is the only publisher. Production discovery is unchanged.
+
+
+### Explicit database forgetting — user-authorized follow-up
+
+The user explicitly requests a total database wipe without keeping the DB.
+Existing owner chat 01a179d8-a2e2-7ef1-865a-d48fa7b47683 continues on a NEW
+isolated branch from 1e7b390; independent reviewer uses a separate checkout.
+A distinct explicit forget mode may bypass schema/settled-ledger proof by user
+intent, while normal remove remains strict. It must still enforce native owned
+home/file identities, exclusive stopped-daemon authority, confirmation/dry-run,
+exact SQLite group deletion with no retained DB payload after completion,
+interruption/recovery and fresh authority continuity. Forgetting is not native
+process termination, remote settlement or managed-file cleanup. Minimal audit
+identities/hashes may remain; no actual user removal/install occurs during
+implementation/review. Test disposable unsupported and live/changed-file cases
+and independently review before integration and handing over the usable command.

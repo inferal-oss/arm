@@ -3955,3 +3955,44 @@ Logs are `.cache/reset-schema-primary-{focused,schema,independent}-race.jsonl`.
 A fresh self-contained thin diagnostic executable is built at
 `.cache/arm-schema-diagnostic-reviewed`; the installed carrier is not replaced
 by this source correction. No new Linux/formal acceptance is claimed.
+
+
+## Charm peer Resources final review and primary composition
+
+Author d938319 adds local Resources advisory summary/detail, bounded 10-second
+polling, original-session/generation cancellation and explicit stale/partial/
+unavailable/truncated states. Draft review found quit could cancel a read while
+leaving scheduling open; the committed peerStopped fence and q/Ctrl+C late
+completion cases close it. Review regressions 1947549 independently cover
+retired completion versus successor ownership, remote/modal suppression, global
+128-item rendering bounds, terminal controls and narrow geometry. Test-only
+correction c40ec93 removes the shared-/tmp single-publisher assumption: a
+controlled third backend holds 13 bytes, the original source stays exactly
+700 held/600 queued, and all accepted reports are independently folded into
+aggregate resources/counts. No production discovery or admission is changed.
+
+Final independent native races pass 9 roots/17 cases in 5.900s without failures
+or skips; index/source manifest is
+`/private/tmp/arm-charm-peers-integration-review/.cache/charm-peers-review/summary.json`
+(manifest SHA256 `e0a469192f63c85f09242e55f032e8bc4520c593f6ef936bff309dd76aa63f6c`).
+Primary internal and PTY-harness sources match the final reviewed head exactly.
+Final composed primary races pass the same 9 roots/17 cases in 6.039s without
+failures/skips; TUI vet and diff checks pass. Logs are
+`.cache/charm-peer-primary-final-race.jsonl` and `.cache/charm-peer-primary-vet.log`.
+Earlier state and real-backend passes remain separately retained.
+
+Author native PTY workflow after the shutdown fix checks summary/detail/back,
+resize and q/SIGTERM terminal restoration. Only initial summary recognition
+uses complete transcript; detail and back use fresh distinct DISCOVERED and
+To lease markers, so old summary text cannot itself satisfy those transitions.
+The first new title assertion failure and corrected successor remain retained.
+Production TUI/harness bytes are unchanged by review, so this scoped evidence
+is reused. It is PTY transcript behavior, not reconstructed-screen visual QA,
+Linux/other-UID or complete interface acceptance. Per-peer deeper pagination
+and broader visual/platform gates remain; no native capacity or authority is
+conferred by advisory peer data.
+
+The complete peer/reset-composed module also passes
+`go test -mod=readonly -p=1 -run '^$' ./...`; this compiles all test packages and
+executes no test bodies. Log:
+`.cache/coordinator-final-reset-charm-module-compile.log`.

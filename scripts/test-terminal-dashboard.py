@@ -103,6 +103,11 @@ def main():
         wait_seen('space remaining')
         send('2')
         wait_text('To lease')
+        wait_seen('NEARBY ARM INSTANCES')
+        send('v')
+        wait_text('DISCOVERED')
+        send('\x1b')
+        wait_text('To lease')
         assert b'\x1b[?1002h' in transcript and b'\x1b[?1006h' in transcript, 'terminal mouse mode was not enabled'
         mouse(30, 1)  # Visible Leases navigation tab.
         wait_text('PTY build fixture')
@@ -234,7 +239,7 @@ def main():
         send('q')
         process.wait(timeout=5)
         assert process.returncode == 0, 'disconnected dashboard did not exit cleanly'
-        print('Terminal dashboard PTY: remaining-first Monitor and lease-available Resources, stale disconnected values, six-view navigation, exact counts, declined/reviewed extension+release, polling message review/send, disk/network multi-select All/None/custom, resize/feed, q/SIGTERM raw mode and alternate-screen restoration, surviving active lease passed')
+        print('Terminal dashboard PTY: remaining-first Monitor and lease-available Resources, advisory nearby-peer panel/detail/back navigation, stale disconnected values, six-view navigation, exact counts, declined/reviewed extension+release, polling message review/send, disk/network multi-select All/None/custom, resize/feed, q/SIGTERM raw mode and alternate-screen restoration, surviving active lease passed')
     finally:
         if process is not None and process.poll() is None:
             process.kill()
