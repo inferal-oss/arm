@@ -50,8 +50,7 @@ func (p Policy) Validate(local, localPin string) error {
 	}
 	seen := map[string]bool{}
 	for _, g := range p.Relays {
-		if !hexBytes(g.Workspace, 16) || !hexBytes(g.Generation, 16) || g.Local != local || g.Revision < 1 ||
-			!g.SSH && !g.Sync || g.Expires.IsZero() {
+		if (g.Validate() != nil && !g.legacyUnbudgeted()) || g.Local != local {
 			return errors.New("invalid SSH relay opt-in")
 		}
 		key := g.Workspace + ":" + g.Generation

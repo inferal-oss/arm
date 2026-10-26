@@ -39,6 +39,9 @@ func (a *app) meshSSHRelay(args []string) (int, error) {
 	cpu := f.Float64("cpu", 1, "destination logical CPU ceiling")
 	memory := f.String("memory", "0", "destination memory ceiling")
 	disk := f.String("disk", "0", "destination disk ceiling")
+	relayCPU := f.Float64("relay-cpu", .05, "local CPU reservation for each active transit stream")
+	relayMemory := f.String("relay-memory", "8MiB", "local memory reservation for each active transit stream")
+	relayRate := f.String("relay-rate", "64MiB", "shared byte-per-second limit for both transit directions")
 	ssh := f.Bool("ssh", true, "permit ordinary routed SSH class")
 	syncClass := f.Bool("sync", false, "permit routed sync class when its fixed worker is supported")
 	reason := f.String("reason", "", "required operator review reason")
@@ -80,13 +83,23 @@ func (a *app) meshSSHRelay(args []string) (int, error) {
 	if e != nil {
 		return 2, e
 	}
+	transitMemory, e := sshBytes(*relayMemory)
+	if e != nil {
+		return 2, e
+	}
+	bytesPerSecond, e := sshBytes(*relayRate)
+	if e != nil {
+		return 2, e
+	}
 	change := func(p *meshsshrelay.Policy) error {
 		switch action {
 		case "grant-relay":
 			if *generation == "" {
 				return fmt.Errorf("exact --generation required for relay opt-in")
 			}
-			g := meshsshrelay.RelayGrant{Workspace: *workspace, Generation: *generation, Local: local.Host, Revision: 1, SSH: *ssh, Sync: *syncClass, Expires: time.Now().UTC().Add(*expires)}
+			g := meshsshrelay.RelayGrant{Workspace: *workspace, Generation: *generation, Local: local.Host, Revision: 1,
+				SSH: *ssh, Sync: *syncClass, Transit: model.Resources{CPU: *relayCPU, Memory: transitMemory},
+				BytesPerSecond: bytesPerSecond, Expires: time.Now().UTC().Add(*expires)}
 			for i, old := range p.Relays {
 				if old.Workspace == g.Workspace && old.Generation == g.Generation {
 					g.Revision = old.Revision + 1

@@ -8,6 +8,9 @@ import (
 	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"io"
+	"net"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -27,6 +30,27 @@ import (
 // no direct enrollment, and the middle server uses its production route handler.
 func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 	directory, source, destination, id := graphStreamFixture(t)
+	// The transport hold depends on current native CPU and memory samples, as
+	// it does in a running daemon. The shared graph fixture opens Managers but
+	// leaves their recurring observation workers stopped.
+	directory.Manager.Start()
+	destination.Manager.Start()
+	awaitTransitHeadroom := func() {
+		deadline := time.Now().Add(5 * time.Second)
+		for {
+			status, statusErr := directory.Manager.Status()
+			if statusErr != nil {
+				t.Fatal(statusErr)
+			}
+			if status.CPU != nil && status.CPU.Known && status.Memory != nil && !status.Memory.Stale && status.Memory.Available >= 4<<20 {
+				return
+			}
+			if time.Now().After(deadline) {
+				t.Fatalf("relay fixture lacks fresh CPU/memory observations: cpu=%+v memory=%+v", status.CPU, status.Memory)
+			}
+			time.Sleep(20 * time.Millisecond)
+		}
+	}
 	dirService, err := directory.workspaceService()
 	if err != nil {
 		t.Fatal(err)
@@ -91,7 +115,8 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 	relayReview, err := meshsshrelay.ReviewPolicy(directory.home, dirID.Host, dirID.Fingerprint, "grant", "opaque middle hop test",
 		func(p *meshsshrelay.Policy) error {
 			p.Relays = append(p.Relays, meshsshrelay.RelayGrant{
-				Workspace: id, Generation: access.Generation, Local: dirID.Host, Revision: 1, SSH: true, Expires: time.Now().Add(time.Hour)})
+				Workspace: id, Generation: access.Generation, Local: dirID.Host, Revision: 1, SSH: true,
+				Transit: model.Resources{CPU: .01, Memory: 4 << 20}, BytesPerSecond: 64 << 20, Expires: time.Now().Add(time.Hour)})
 			return nil
 		})
 	if err != nil {
@@ -119,9 +144,20 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 		Pair: scope.Pair, EnrollmentRevision: scope.Revision, Expires: time.Now().Add(2 * time.Minute)}
 	probe := open
 	probe.Class, probe.SSHHostKeyPin = meshsshrelay.ClassSSHIdentity, strings.Repeat("0", 64)
-	if _, err = dirService.routedSSHAdmission(t.Context(), meshsshrelay.Outer{Source: srcID.Host, Target: dirID.Host, Pair: scope.Pair,
-		Certificate: srcID.Fingerprint, Revision: scope.Revision, Expires: time.Now().Add(time.Minute)}, probe); err != nil {
+	middlePermit, err := dirService.routedSSHAdmission(t.Context(), meshsshrelay.Outer{Source: srcID.Host, Target: dirID.Host, Pair: scope.Pair,
+		Certificate: srcID.Fingerprint, Revision: scope.Revision, Expires: time.Now().Add(time.Minute)}, probe)
+	if err != nil {
 		t.Fatal("middle-hop admission:", err)
+	}
+	awaitTransitHeadroom()
+	preflightJoined := make(chan struct{})
+	if reservation, reserveErr := dirService.reserveSSHRelayTransit(t.Context(), t.Context(), preflightJoined, meshsshrelay.Outer{}, probe, middlePermit); reserveErr != nil {
+		status, _ := directory.Manager.Status()
+		t.Fatalf("middle-hop transit reservation: %v; reserved=%+v cpu=%+v memory=%+v", reserveErr, status.Reserved, status.CPU, status.Memory)
+	} else {
+		reservation.End()
+		close(preflightJoined)
+		reservation.Finish()
 	}
 	nextPeer, err := dirStore.Resolve(dstID.Host)
 	if err != nil {
@@ -154,6 +190,7 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 		t.Fatal(err)
 	}
 	connect := func(class, hostKey string, q meshsshrelay.Request) (*tls.Conn, meshsshrelay.Response, error) {
+		awaitTransitHeadroom()
 		o := open
 		o.Route = local.ID()
 		o.Class, o.SSHHostKeyPin = class, hostKey
@@ -180,11 +217,16 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 		}
 		return conn, response, nil
 	}
+	waitRelayIdle := func() {
+		dirService.sshRouted.Wait()
+		dstService.sshRouted.Wait()
+	}
 	identityConn, identityResponse, err := connect(meshsshrelay.ClassSSHIdentity, strings.Repeat("0", 64), meshsshrelay.Request{Version: meshsshrelay.Version, Operation: meshsshrelay.OperationIdentity})
 	if err != nil {
 		t.Fatal(err)
 	}
 	_ = identityConn.Close()
+	waitRelayIdle()
 	if identityResponse.Identity == nil || identityResponse.Identity.Source != srcID.Host || identityResponse.Identity.Target != dstID.Host {
 		t.Fatal(identityResponse)
 	}
@@ -204,7 +246,7 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 	hash := sha256.Sum256([]byte(command))
 	control := meshstream.Control{Version: 1, Source: srcID.Host, Target: dstID.Host, Pair: identity.Pair, Revision: identity.Revision,
 		Account: identity.Account, Key: local.ID(), PublicKey: strings.TrimSpace(string(ssh.MarshalAuthorizedKey(signer.PublicKey()))),
-		Reason: "actual three node opaque SSH execution", TTL: 30 * time.Second, Resources: model.Resources{CPU: 1},
+		Reason: "actual three node opaque SSH execution", TTL: 30 * time.Second, Resources: model.Resources{CPU: .1},
 		CWD: identity.Home, TargetOwner: identity.Owner, HostKeySHA256: grant.SSHHostKeyPin, Kind: "exec", CommandSHA256: hex.EncodeToString(hash[:])}
 	if err = control.Validate(); err != nil {
 		t.Fatal(err)
@@ -212,7 +254,8 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 	conn, accepted, err := connect(meshsshrelay.ClassSSH, grant.SSHHostKeyPin,
 		meshsshrelay.Request{Version: meshsshrelay.Version, Operation: meshsshrelay.OperationExecute, Control: &control})
 	if err != nil {
-		t.Fatal(err)
+		status, _ := directory.Manager.Status()
+		t.Fatalf("routed SSH execution admission: %v; reserved=%+v cpu=%+v memory=%+v", err, status.Reserved, status.CPU, status.Memory)
 	}
 	if !accepted.Accepted {
 		conn.Close()
@@ -237,6 +280,7 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 	}
 	out, err := session.CombinedOutput(command)
 	_ = client.Close()
+	waitRelayIdle()
 	if err != nil || string(out) != "routed-ssh-works" {
 		t.Fatalf("routed original-source execution: %q: %v", out, err)
 	}
@@ -246,6 +290,7 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = lookupConn.Close()
+	waitRelayIdle()
 	if lookup.Status == nil || lookup.Status.Execution == nil || lookup.Status.Execution.Operation == nil ||
 		lookup.Status.Execution.Operation.Request.Source != srcID.Host || lookup.Status.Execution.Operation.Request.Pair != identity.Pair {
 		t.Fatal("routed SSH receipt lost exact original source", lookup)
@@ -263,9 +308,40 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = sealConn.Close()
+	waitRelayIdle()
 	if sealed.Status == nil || sealed.Status.State != "sealed" || sealed.Status.Fence == nil ||
 		sealed.Status.Fence.Control == nil || sealed.Status.Fence.Control.Pair != identity.Pair {
 		t.Fatal("routed SSH seal lost original-source control", sealed)
+	}
+	liveControl := control
+	liveControl.Key = local.ID()
+	liveConn, liveResponse, err := connect(meshsshrelay.ClassSSH, grant.SSHHostKeyPin,
+		meshsshrelay.Request{Version: meshsshrelay.Version, Operation: meshsshrelay.OperationExecute, Control: &liveControl})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer liveConn.Close()
+	if !liveResponse.Accepted {
+		t.Fatal("destination did not admit held SSH stream", liveResponse)
+	}
+	status, err := directory.Manager.Status()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var transitID string
+	for _, lease := range status.Leases {
+		if lease.State == "active" && strings.HasPrefix(lease.Request.Key, "ssh-relay:") &&
+			lease.Request.Resources == (model.Resources{CPU: .01, Memory: 4 << 20}) {
+			if lease.Request.Project != "mesh:"+id || !strings.Contains(lease.Request.Reason, srcID.Host) ||
+				!strings.Contains(lease.Request.Reason, dstID.Host) || !strings.Contains(lease.Request.Reason, meshsshrelay.ClassSSH) {
+				t.Fatal("transit charge omitted exact original source, destination or route class", lease.Request)
+			}
+			transitID = lease.ID
+			break
+		}
+	}
+	if transitID == "" {
+		t.Fatal("held SSH relay stream has no active reviewed CPU/memory reservation")
 	}
 	revoke, err := meshsshrelay.ReviewPolicy(directory.home, dirID.Host, dirID.Fingerprint, "revoke", "close middle hop",
 		func(p *meshsshrelay.Policy) error { p.Relays = nil; return nil })
@@ -274,6 +350,29 @@ func TestRoutedSSHThreeNodesOriginalSourceExecAndRevocation(t *testing.T) {
 	}
 	if err = meshsshrelay.CommitPolicy(revoke); err != nil {
 		t.Fatal(err)
+	}
+	if err = liveConn.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	_, err = io.Copy(io.Discard, liveConn)
+	var timeout net.Error
+	if errors.As(err, &timeout) && timeout.Timeout() {
+		t.Fatal("revoked relay left held SSH stream open until read deadline")
+	}
+	_ = liveConn.Close()
+	deadline := time.Now().Add(3 * time.Second)
+	for {
+		lease, inspectErr := directory.Manager.Inspect(transitID)
+		if inspectErr != nil {
+			t.Fatal(inspectErr)
+		}
+		if lease.State == "terminal" && lease.Outcome == "relay_closed" {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("revoked relay transit reservation was not released: state=%s outcome=%s", lease.State, lease.Outcome)
+		}
+		time.Sleep(20 * time.Millisecond)
 	}
 	_, _, err = connect(meshsshrelay.ClassSSHIdentity, strings.Repeat("0", 64), meshsshrelay.Request{Version: meshsshrelay.Version, Operation: meshsshrelay.OperationIdentity})
 	if err == nil {

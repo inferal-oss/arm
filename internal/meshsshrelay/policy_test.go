@@ -72,9 +72,20 @@ func TestDestinationGrantOriginalSourceNotRelayAndStableKeyNamespace(t *testing.
 func TestTransitGrantSeparateFromMessageRelay(t *testing.T) {
 	now := time.Now().UTC()
 	o, a, _ := fixture(now)
-	g := RelayGrant{Workspace: o.Workspace, Generation: o.Generation, Local: a.Local, Revision: 1, SSH: true, Expires: now.Add(time.Minute)}
+	g := RelayGrant{Workspace: o.Workspace, Generation: o.Generation, Local: a.Local, Revision: 1, SSH: true,
+		Transit: model.Resources{CPU: .05, Memory: 4 << 20}, BytesPerSecond: 64 << 20, Expires: now.Add(time.Minute)}
 	if err := g.Authorize(now, o); err != nil {
 		t.Fatal(err)
+	}
+	withoutBudget := g
+	withoutBudget.Transit = model.Resources{}
+	if err := withoutBudget.Authorize(now, o); err == nil {
+		t.Fatal("unbudgeted legacy relay grant admitted transit")
+	}
+	withoutRate := g
+	withoutRate.BytesPerSecond = 0
+	if err := withoutRate.Authorize(now, o); err == nil {
+		t.Fatal("relay grant without a byte rate admitted transit")
 	}
 	g.SSH = false
 	if err := g.Authorize(now, o); err == nil {

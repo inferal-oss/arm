@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/meshsshrelay"
@@ -17,7 +19,9 @@ func (a *app) recoverRoutedSSH(store *mesh.Store, intent sshservice.SourceIntent
 	if pin.RouteWorkspace == "" || (action != "lookup" && action != "seal") {
 		return model.SSHKeyStatus{}, model.Err("invalid_request", "exact routed SSH recovery intent required")
 	}
-	selection, err := a.selectSSHRoute(store, pin.Target, pin.RouteWorkspace)
+	ctx, cancel := context.WithTimeout(a.ctx, 5*time.Second)
+	defer cancel()
+	selection, err := a.selectSSHRoute(ctx, store, pin.Target, pin.RouteWorkspace)
 	if err != nil {
 		return model.SSHKeyStatus{}, err
 	}
@@ -46,7 +50,7 @@ func (a *app) recoverRoutedSSH(store *mesh.Store, intent sshservice.SourceIntent
 		q.Commitment = &commitment
 		q.Reason = reason
 	}
-	out, conn, err := selection.request(a.ctx, meshsshrelay.ClassSSH, hostHash, q)
+	out, conn, err := selection.request(ctx, meshsshrelay.ClassSSH, hostHash, q)
 	if conn != nil {
 		_ = conn.Close()
 	}

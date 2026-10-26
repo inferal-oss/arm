@@ -85,13 +85,16 @@ func routeTransportFixture(t *testing.T) *routeFixture {
 			if o.Workspace != f.open.Workspace || o.Generation != f.open.Generation || o.Source != b.Host || o.Target != c.Host {
 				return Permit{}, fmt.Errorf("test ledger binding differs")
 			}
-			p := Permit{Local: identity(store.Config().Identity), Origin: b, Destination: c, Expires: o.Expires}
+			p := Permit{Local: identity(store.Config().Identity), Origin: b, Destination: c, Expires: o.Expires, TransitRate: 64 << 20}
 			if o.Final() {
 				var e error
 				p.Inner, e = store.RoutedSSHTLS(c, b, true)
 				return p, e
 			}
 			return p, nil
+		}
+		h.ReserveTransit = func(_ context.Context, life context.Context, _ <-chan struct{}, _ Outer, _ Open, _ Permit) (TransitReservation, error) {
+			return TransitReservation{Context: life, End: func() {}, Finish: func() {}}, nil
 		}
 		h.Revalidate = func(ctx context.Context, o Outer, open Open, p Permit) error {
 			peer, e := store.Resolve(o.Source)

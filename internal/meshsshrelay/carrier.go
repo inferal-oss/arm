@@ -39,10 +39,17 @@ type Permit struct {
 	Inner            *tls.Config
 	RelayGrant       RelayGrant
 	DestinationGrant DestinationGrant
+	TransitRate      int64
+}
+type TransitReservation struct {
+	Context context.Context
+	End     func()
+	Finish  func()
 }
 type Handler struct {
 	AuthorizeOuter func(context.Context, []byte) (Outer, error)
 	Authorize      func(context.Context, Outer, Open) (Permit, error)
+	ReserveTransit func(admission, lifetime context.Context, joined <-chan struct{}, outer Outer, open Open, permit Permit) (TransitReservation, error)
 	Revalidate     func(context.Context, Outer, Open, Permit) error
 	Forward        func(context.Context, Outer, Open, Permit, net.Conn)
 	Final          func(context.Context, Outer, Open, Permit, *tls.Conn)
@@ -54,6 +61,7 @@ type Handler struct {
 	origins        map[string]int
 	workers        sync.WaitGroup
 	budget         admissionBudget
+	abortHook      func() // test-only hook after socket abort, set before ServeHTTP
 }
 type routeStream struct {
 	cancel context.CancelFunc
@@ -120,6 +128,12 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.workers.Add(1)
 	h.mu.Unlock()
 	defer h.workers.Done()
+	abortSocket := func() {
+		capture.socket.close()
+		if h.abortHook != nil {
+			h.abortHook()
+		}
+	}
 	defer func() {
 		cancel()
 		capture.socket.close()
@@ -132,8 +146,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		h.mu.Unlock()
 	}()
-	abortOnCancel := context.AfterFunc(ctx, capture.socket.close)
-	defer abortOnCancel()
+	abortOnCancel := startAbortWorker(ctx, abortSocket)
+	defer abortOnCancel.StopAndJoin()
 	ws, e := websocket.Accept(capture, r, &websocket.AcceptOptions{Subprotocols: []string{Protocol}, CompressionMode: websocket.CompressionDisabled})
 	if e != nil {
 		return
@@ -141,57 +155,101 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer func() { capture.socket.close(); _ = ws.CloseNow() }()
 	ws.SetReadLimit(MaxControlBytes)
 	initial, stop := context.WithTimeout(ctx, 5*time.Second)
-	abortInitial := context.AfterFunc(initial, capture.socket.close)
+	abortInitial := startAbortWorker(initial, abortSocket)
+	defer abortInitial.StopAndJoin()
 	kind, raw, e := ws.Read(initial)
 	if e != nil || kind != websocket.MessageBinary {
-		abortInitial()
+		abortInitial.StopAndJoin()
 		stop()
 		return
 	}
 	o, e := DecodeOpen(raw, time.Now())
 	if e != nil || o.Class != class || o.ImmediateSource() != outer.Source || o.ImmediateTarget() != outer.Target || o.Pair != outer.Pair || o.EnrollmentRevision != outer.Revision {
-		abortInitial()
+		abortInitial.StopAndJoin()
 		stop()
 		return
 	}
 	permit, e := h.Authorize(initial, outer, o)
 	if e != nil || permit.Local.Host != outer.Target || permit.Origin.Host != o.Source || permit.Destination.Host != o.Target || !time.Now().Before(permit.Expires) || !h.budget.admit(outer.Source, o.Workspace+":"+o.Generation+":"+o.Route, minTime(o.Expires, permit.Expires), class) {
-		abortInitial()
+		abortInitial.StopAndJoin()
 		stop()
 		return
 	}
 	if o.Final() {
 		if !validInner(permit, true) {
-			abortInitial()
+			abortInitial.StopAndJoin()
 			stop()
 			return
 		}
 	} else if permit.Inner != nil {
-		abortInitial()
+		abortInitial.StopAndJoin()
 		stop()
 		return
+	}
+	lifetime := ctx
+	if !o.Final() {
+		if h.ReserveTransit == nil || permit.TransitRate < 64<<10 || permit.TransitRate > 1<<30 {
+			abortInitial.StopAndJoin()
+			stop()
+			return
+		}
+		joined := make(chan struct{})
+		reservation, reserveErr := h.ReserveTransit(initial, ctx, joined, outer, o, permit)
+		if reserveErr != nil || reservation.Context == nil || reservation.End == nil || reservation.Finish == nil {
+			// A reservation may already own durable resources even when its
+			// final admission check fails. Join every pre-reservation abort
+			// callback and close the WebSocket before publishing its witness.
+			capture.socket.close()
+			_ = ws.CloseNow()
+			abortInitial.StopAndJoin()
+			abortOnCancel.StopAndJoin()
+			if reservation.End != nil {
+				reservation.End()
+			}
+			close(joined)
+			if reservation.Finish != nil {
+				reservation.Finish()
+			}
+			stop()
+			return
+		}
+		lifetime = reservation.Context
+		// Manager end and expiry abort even an admission ACK that is still in
+		// flight; the durable allocation remains charged until all work joins.
+		holdAbort := startAbortWorker(lifetime, abortSocket)
+		// Later stream defers close/join both directions and the watcher before
+		// this transit CPU/memory reservation is released.
+		defer func() {
+			// Admission may fail before boundedConn exists. In that path the
+			// earlier WebSocket defer has not run yet, so close its carrier
+			// explicitly before recording the original transport join.
+			capture.socket.close()
+			_ = ws.CloseNow()
+			holdAbort.StopAndJoin()
+			abortInitial.StopAndJoin()
+			abortOnCancel.StopAndJoin()
+			reservation.End()
+			close(joined)
+			reservation.Finish()
+		}()
 	}
 	ack, _ := json.Marshal(ready{Version, o.Route, o.WireDigest()})
 	if e = ws.Write(initial, websocket.MessageBinary, ack); e != nil {
-		abortInitial()
+		abortInitial.StopAndJoin()
 		stop()
 		return
 	}
-	if !abortInitial() || initial.Err() != nil {
+	if !abortInitial.StopAndJoin() || initial.Err() != nil {
 		stop()
 		return
 	}
 	stop()
-	life, finish := context.WithTimeout(ctx, min(time.Until(o.Expires), time.Until(permit.Expires)))
+	life, finish := context.WithTimeout(lifetime, min(time.Until(o.Expires), time.Until(permit.Expires)))
 	defer finish()
 	conn := newBounded(websocket.NetConn(life, ws, websocket.MessageBinary), finish, func() error { capture.socket.close(); return ws.CloseNow() })
 	ws.SetReadLimit(MaxPayloadBytes)
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		conn.watch(life, func() error { return h.Revalidate(life, outer, o, permit) })
-	}()
-	defer func() { _ = conn.Close(); <-done }()
+	conn.startWatch(life, func() error { return h.Revalidate(life, outer, o, permit) })
+	defer conn.Close()
 	if e = h.Revalidate(life, outer, o, permit); e != nil {
 		return
 	}
@@ -287,8 +345,8 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	}}
 	initial, stop := context.WithTimeout(ctx, 5*time.Second)
 	defer stop()
-	initialAbort := context.AfterFunc(initial, socket.close)
-	defer initialAbort()
+	initialAbort := startAbortWorker(initial, socket.close)
+	defer initialAbort.StopAndJoin()
 	client := &http.Client{Transport: tr, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	ws, _, e := websocket.Dial(initial, "wss://"+address+Path, &websocket.DialOptions{HTTPClient: client, HTTPHeader: http.Header{"Arm-SSH-Route-Class": []string{o.Class}}, Subprotocols: []string{Protocol}, CompressionMode: websocket.CompressionDisabled})
 	tr.CloseIdleConnections()
@@ -311,13 +369,13 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	if e != nil || kind != websocket.MessageBinary || !bytes.Equal(raw, expected) {
 		return fail(fmt.Errorf("SSH relay admission unavailable or changed"))
 	}
-	if !initialAbort() || initial.Err() != nil {
+	if !initialAbort.StopAndJoin() || initial.Err() != nil {
 		return fail(fmt.Errorf("SSH relay admission timed out"))
 	}
 	life, cancel := context.WithTimeout(ctx, min(MaxLifetime, time.Until(o.Expires)))
 	conn := newBounded(websocket.NetConn(life, ws, websocket.MessageBinary), cancel, abort)
 	ws.SetReadLimit(MaxPayloadBytes)
-	go conn.watch(life, func() error { return revalidate(life) })
+	conn.startWatch(life, func() error { return revalidate(life) })
 	return conn, nil
 }
 

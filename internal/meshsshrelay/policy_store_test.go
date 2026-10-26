@@ -21,7 +21,8 @@ func TestReviewedPolicyCommitCASAndNoFollow(t *testing.T) {
 	}
 	makeReview := func() Review {
 		r, err := ReviewPolicy(home, local, pin, "grant", "operator reviewed relay opt-in", func(p *Policy) error {
-			p.Relays = append(p.Relays, RelayGrant{Workspace: h("1", 16), Generation: h("2", 16), Local: local, Revision: 1, SSH: true, Expires: time.Now().Add(time.Hour)})
+			p.Relays = append(p.Relays, RelayGrant{Workspace: h("1", 16), Generation: h("2", 16), Local: local, Revision: 1, SSH: true,
+				Transit: model.Resources{CPU: .05, Memory: 4 << 20}, BytesPerSecond: 64 << 20, Expires: time.Now().Add(time.Hour)})
 			return nil
 		})
 		if err != nil {
@@ -104,5 +105,55 @@ func TestDestinationPolicyRoundTripAndRevocation(t *testing.T) {
 	}
 	if _, err = p.Destination(o); err == nil {
 		t.Fatal("revoked destination grant admitted")
+	}
+}
+
+func TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward(t *testing.T) {
+	home := t.TempDir()
+	if err := os.Mkdir(filepath.Join(home, "mesh"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Now().UTC()
+	o, access, _ := fixture(now)
+	pin := h("b", 32)
+	legacy := RelayGrant{Workspace: o.Workspace, Generation: o.Generation, Local: access.Local,
+		Revision: 1, SSH: true, Expires: now.Add(time.Hour)}
+	review, err := ReviewPolicy(home, access.Local, pin, "grant", "fixture from prior policy format", func(p *Policy) error {
+		p.Relays = append(p.Relays, legacy)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = CommitPolicy(review); err != nil {
+		t.Fatal(err)
+	}
+	policy, err := ReadPolicy(home, access.Local, pin)
+	if err != nil || len(policy.Relays) != 1 {
+		t.Fatal("legacy policy must remain readable for review", err)
+	}
+	if _, err = policy.Relay(o); err == nil {
+		t.Fatal("legacy grant forwarded without a transit budget")
+	}
+	replacement := legacy
+	replacement.Revision++
+	replacement.Transit = model.Resources{CPU: .05, Memory: 4 << 20}
+	replacement.BytesPerSecond = 64 << 20
+	upgrade, err := ReviewPolicy(home, access.Local, pin, "grant", "review explicit transit budget", func(p *Policy) error {
+		p.Relays[0] = replacement
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = CommitPolicy(upgrade); err != nil {
+		t.Fatal(err)
+	}
+	policy, err = ReadPolicy(home, access.Local, pin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = policy.Relay(o); err != nil {
+		t.Fatal("reviewed replacement grant did not authorize transit", err)
 	}
 }

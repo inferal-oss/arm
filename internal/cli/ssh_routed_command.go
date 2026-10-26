@@ -25,7 +25,7 @@ type sshRoutedOptions struct {
 }
 
 func (a *app) sshRoutedCommand(store *mesh.Store, account sshLocalAccount, opt sshRoutedOptions) (int, error) {
-	selection, e := a.selectSSHRoute(store, opt.Target, opt.Workspace)
+	selection, e := a.selectSSHRoute(a.ctx, store, opt.Target, opt.Workspace)
 	if e != nil {
 		return 1, e
 	}

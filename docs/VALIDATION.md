@@ -2,7 +2,9 @@
 
 ## October 25, 2026: routed SSH three-node integration
 
-The new `internal/meshsshrelay` carrier/policy tests pass with actual loopback WebSocket hops, nested pinned TLS, opaque transit bytes, route replay refusal and active edge revocation. A compiled server fixture runs three mesh services with B↔A and A↔C only. A separately reviewed transit grant and C's original-B destination grant admit a real SSH command from B through A to C; output matches, the destination's exact key receipt names B and the virtual destination grant pair, and C has no direct B enrollment. The same routed control path returns an exact original-source nonexecution seal. Removing A's relay grant rejects a subsequent identity stream. A source-side implementation preserves the original routed pin for lookup/seal and probes candidate paths before execution, but the public CLI workflow has not been exercised end to end by this fixture. Actual independent macOS/Linux CLI workflows, active session revocation, changed-route recovery, sync worker and encrypted throughput remain required before claiming full specification acceptance.
+The new `internal/meshsshrelay` carrier/policy tests pass with actual loopback WebSocket hops, nested pinned TLS, opaque transit bytes, route replay refusal and active edge revocation. A compiled server fixture runs three mesh services with B↔A and A↔C only. A separately reviewed transit grant and C's original-B destination grant admit a real SSH command from B through A to C; output matches, the destination's exact key receipt names B and the virtual destination grant pair, and C has no direct B enrollment. The same routed control path returns an exact original-source nonexecution seal. Removing A's relay grant closes an active held stream, settles its local transit hold only after copy/watch/cancellation joins, and rejects a subsequent identity stream. Its live charge records B, C, the route class and workspace. A source-side implementation preserves the original routed pin for lookup/seal and probes candidate paths before execution, but the public CLI workflow has not been exercised end to end by this fixture. Actual independent macOS/Linux CLI workflows, changed-route recovery, sync worker and encrypted throughput remain required before claiming full specification acceptance.
+
+The isolated routed SSH hardening worktree at base `7f6812f` adds a per-relay reviewed CPU/memory promise and shared bidirectional byte rate. A legacy unbudgeted grant stays readable for replacement/revocation but refuses forwarding. Focused normal tests pass across `internal/meshsshrelay`, `internal/server` and `internal/cli`, including exact CLI recheck cancellation. The callback and watcher race test passes, and the held-callback test passes three normal repetitions. A first final focused run failed because the three-node fixture's destination CPU observation aged out before its one-core command; starting the destination's normal sampler and using a 0.1-core test claim made the three-node test pass twice. The later failed-admission regression additionally proves a timed-out reservation remains charged while its abort callback is held, then settles after join. Affected package vet passes. These tests do not exercise the public `arm ssh` command, native Linux SSH relay, alternate-route recovery or encrypted throughput.
 
 The final focused routed/direct SSH tests pass across `internal/meshsshrelay`, `internal/sshservice`, `internal/server` and `internal/cli`; affected package vet and compilation pass. The earlier broad local suite first failed because the sandbox denied loopback listeners and Unix sockets. With native socket permission, `meshsshrelay`, `workspace` and `sshservice` passed, while the full server package retained three unrelated current-worktree failures: budget mesh lease projection rejected a node-stop `ttl_ns` field, and two operator/server fixtures reported insufficient live CPU capacity. CLI compilation in that run overlapped the directory-pin edit and failed transiently; a clean affected-package compile and focused suite pass afterward. This is not a full green repository gate.
 
@@ -2312,3 +2314,21 @@ also exited 0; the directory was absent. Ignored evidence:
 native execution, not a Kubernetes Pod, mesh enrollment, onward provisioning
 or sync workflow. `make -n carrier` verifies the new paired target variables;
 `make install` retains its native-only builder invocation.
+
+### Independent routed SSH hardening integration check
+
+The exact isolated `2bbc824` source passes two complementary macOS race runs:
+seven focused names across relay/server/CLI (packages 8.165s/22.512s/1.634s)
+and six additional carrier/callback/pacing names (relay 4.915s). Both original
+commands exited 0, with no failures or skips. The runs cover real three-node
+execution and active revocation, original-source preservation without direct
+enrollment, replay/loop denial, shared pacing, exact CLI cancellation,
+outgoing watcher joins and resources retained through held cancellation
+callbacks, including failed admission. Evidence is in ignored
+`.cache/routed-ssh-final-root-{race,additional-race}.jsonl`.
+
+The server fixture reported unavailable node-stop generation binding; no
+remote Stop acceptance is inferred from this run. Its normal recurring
+observers supply current CPU/memory data; this does not bypass admission with
+an injected reading. Public CLI, native Linux traffic, alternate-route
+recovery, routed sync, formal conformance and throughput remain required.

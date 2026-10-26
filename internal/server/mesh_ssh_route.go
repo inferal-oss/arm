@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"io"
+	"log"
 	"net"
 	"time"
 
@@ -88,6 +88,7 @@ func (m *meshService) routedSSHAdmission(ctx context.Context, outer meshsshrelay
 			p.Expires = grant.Expires
 		}
 		p.RelayGrant = grant
+		p.TransitRate = grant.BytesPerSecond
 	}
 	if !time.Now().Before(p.Expires) {
 		return meshsshrelay.Permit{}, model.Err("forbidden", "routed SSH grant expired")
@@ -128,6 +129,7 @@ func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
 		return meshsshrelay.Outer{Source: o.Source, Target: o.Target, Pair: o.Pair, Certificate: o.Certificate, Revision: o.Revision, Expires: o.Expires}, err
 	}
 	h.Authorize = m.routedSSHAdmission
+	h.ReserveTransit = m.reserveSSHRelayTransit
 	h.Revalidate = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) error {
 		a, err := m.routedSSHAdmission(ctx, outer, o)
 		if err != nil {
@@ -159,9 +161,18 @@ func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
 			return
 		}
 		defer conn.Close()
+		pacer, err := meshsshrelay.NewPacer(p.TransitRate)
+		if err != nil {
+			return
+		}
 		copied := make(chan struct{})
-		go func() { defer close(copied); _, _ = io.Copy(conn, previous); _ = conn.Close(); _ = previous.Close() }()
-		_, _ = io.Copy(previous, conn)
+		go func() {
+			defer close(copied)
+			_, _ = meshsshrelay.CopyPaced(ctx, conn, previous, pacer)
+			_ = conn.Close()
+			_ = previous.Close()
+		}()
+		_, _ = meshsshrelay.CopyPaced(ctx, previous, conn, pacer)
 		_ = conn.Close()
 		_ = previous.Close()
 		<-copied
@@ -170,6 +181,54 @@ func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
 		m.serveRoutedSSH(ctx, h, outer, o, p, inner)
 	}
 	return h
+}
+
+func (m *meshService) reserveSSHRelayTransit(admission, lifetime context.Context, joined <-chan struct{}, _ meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) (meshsshrelay.TransitReservation, error) {
+	if o.Final() || p.RelayGrant.Validate() != nil || p.TransitRate != p.RelayGrant.BytesPerSecond {
+		return meshsshrelay.TransitReservation{}, model.Err("forbidden", "reviewed SSH relay transit budget required")
+	}
+	var reservation meshsshrelay.TransitReservation
+	err := meshsshrelay.WithPolicyRead(m.owner.home, p.Local.Host, p.Local.Fingerprint, func(policy meshsshrelay.Policy) error {
+		grant, e := policy.Relay(o)
+		if e != nil || grant != p.RelayGrant {
+			return model.Err("forbidden", "SSH relay grant changed before transit reservation")
+		}
+		if e = admission.Err(); e != nil {
+			return e
+		}
+		ttl := time.Until(p.Expires)
+		if ttl <= 0 || ttl > meshsshrelay.MaxLifetime {
+			return model.Err("forbidden", "SSH relay transit lifetime differs")
+		}
+		hold, e := m.owner.Manager.AcquireRelayTransit(lifetime, model.Request{
+			Key:       "ssh-relay:" + o.Route + ":" + p.Local.Host,
+			Reason:    "reviewed opaque " + o.Class + " transit from " + o.Source + " to " + o.Target + " via " + p.Local.Host + " in workspace " + o.Workspace,
+			Project:   "mesh:" + o.Workspace,
+			Resources: grant.Transit, TTL: ttl}, joined)
+		if e != nil {
+			return e
+		}
+		lease, e := hold.Lease()
+		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), End: func() {
+			if lease.ID != "" {
+				if _, endErr := m.owner.Manager.End(lease.ID, "relay_closed"); endErr != nil {
+					log.Printf("routed SSH transit hold end remains unconfirmed: %v", endErr)
+				}
+			}
+		}, Finish: func() {
+			if _, finishErr := hold.FinishAfterJoin(); finishErr != nil {
+				log.Printf("routed SSH transit hold remains charged after join: %v", finishErr)
+			}
+		}}
+		if e != nil {
+			return e
+		}
+		if lease.State != "active" {
+			return model.Err("capacity_exceeded", "SSH relay transit CPU/memory hold is not active")
+		}
+		return nil
+	})
+	return reservation, err
 }
 
 func (m *meshService) sshRouteHop(ctx context.Context, peer mesh.Peer, o meshsshrelay.Open, outgoing meshsshrelay.NextAuthority, check func(context.Context) error) (net.Conn, error) {

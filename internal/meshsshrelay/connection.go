@@ -23,6 +23,7 @@ type boundedConn struct {
 	elapsed               func() time.Duration
 	cancel                context.CancelFunc
 	once                  sync.Once
+	watchDone             chan struct{}
 }
 
 func newBounded(c net.Conn, cancel context.CancelFunc, abort func() error) *boundedConn {
@@ -33,6 +34,13 @@ func newBounded(c net.Conn, cancel context.CancelFunc, abort func() error) *boun
 	return b
 }
 func (c *boundedConn) Close() error {
+	err := c.shutdown()
+	if c.watchDone != nil {
+		<-c.watchDone
+	}
+	return err
+}
+func (c *boundedConn) shutdown() error {
 	var err error
 	c.once.Do(func() {
 		c.cancel()
@@ -42,6 +50,13 @@ func (c *boundedConn) Close() error {
 		err = c.Conn.Close()
 	})
 	return err
+}
+func (c *boundedConn) startWatch(ctx context.Context, check func() error) {
+	c.watchDone = make(chan struct{})
+	go func() {
+		defer close(c.watchDone)
+		c.watch(ctx, check)
+	}()
 }
 func (c *boundedConn) Read(p []byte) (int, error) {
 	if len(p) == 0 {
@@ -98,11 +113,11 @@ func (c *boundedConn) watch(ctx context.Context, check func() error) {
 	for {
 		select {
 		case <-ctx.Done():
-			_ = c.Close()
+			_ = c.shutdown()
 			return
 		case <-tick.C:
 			if c.idleFor() >= MaxIdle || check != nil && check() != nil {
-				_ = c.Close()
+				_ = c.shutdown()
 				return
 			}
 		}

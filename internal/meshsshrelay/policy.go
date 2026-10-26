@@ -17,16 +17,40 @@ import (
 // RelayGrant is explicit local opt-in for SSH/sync forwarding in one exact
 // workspace generation. It is independent of messaging relay membership.
 type RelayGrant struct {
-	Workspace  string    `json:"workspace"`
-	Generation string    `json:"generation"`
-	Local      string    `json:"local"`
-	Revision   int       `json:"revision"`
-	SSH        bool      `json:"ssh"`
-	Sync       bool      `json:"sync"`
-	Expires    time.Time `json:"expires_at"`
+	Workspace      string          `json:"workspace"`
+	Generation     string          `json:"generation"`
+	Local          string          `json:"local"`
+	Revision       int             `json:"revision"`
+	SSH            bool            `json:"ssh"`
+	Sync           bool            `json:"sync"`
+	Transit        model.Resources `json:"transit_resources"`
+	BytesPerSecond int64           `json:"bytes_per_second"`
+	Expires        time.Time       `json:"expires_at"`
+}
+
+func (g RelayGrant) Validate() error {
+	if !hexBytes(g.Workspace, 16) || !hexBytes(g.Generation, 16) || !hexBytes(g.Local, 16) || g.Revision < 1 ||
+		!g.SSH && !g.Sync || g.Expires.IsZero() || math.IsNaN(g.Transit.CPU) || math.IsInf(g.Transit.CPU, 0) ||
+		g.Transit.CPU <= 0 || g.Transit.CPU > 64 || g.Transit.Memory < 1<<20 || g.Transit.Memory > 1<<30 ||
+		g.Transit.Disk != 0 || g.BytesPerSecond < 64<<10 || g.BytesPerSecond > 1<<30 {
+		return errors.New("invalid reviewed SSH relay transit CPU, memory or byte rate")
+	}
+	return nil
+}
+
+// Policies written before transit budgets existed remain readable so an
+// operator can review and replace or revoke them. Authorize still rejects
+// these legacy entries because Validate requires a live transit budget.
+func (g RelayGrant) legacyUnbudgeted() bool {
+	return hexBytes(g.Workspace, 16) && hexBytes(g.Generation, 16) && hexBytes(g.Local, 16) &&
+		g.Revision > 0 && (g.SSH || g.Sync) && !g.Expires.IsZero() &&
+		g.Transit == (model.Resources{}) && g.BytesPerSecond == 0
 }
 
 func (g RelayGrant) Authorize(now time.Time, o Open) error {
+	if err := g.Validate(); err != nil {
+		return err
+	}
 	if err := o.Validate(now); err != nil {
 		return err
 	}
