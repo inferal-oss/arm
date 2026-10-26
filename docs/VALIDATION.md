@@ -4173,3 +4173,42 @@ The workflow remains candidate-branch push/manual only, pinned-action,
 contents-read, no persisted checkout credential, no shared cache, and uploads
 only the generated receipt directory. No main/tag/release/deployment action is
 added. Exact CI command results remain pending actual publication/run.
+
+### Central canonical-module source and hosted-runner review
+
+The central reviewer composes the focused module commits on `67e9e3b`, then
+reuses the author's portable runner `343c6f1`/`4a313de` instead of creating a
+second validation contract. Independent byte classification confirms exactly
+850 changed existing Go/Python inputs are quoted namespace substitutions; the
+only exceptions are two distribution fixtures and the new layout regression,
+all inspected directly. All133 fork files satisfy the expected packaging
+transformation, including unchanged algorithms, original license and verbatim
+archived module/sum metadata. Root go.sum is unchanged. The explicit root
+requirements add no new dependency versions; actual tidy/verify remains a gate.
+The material publication delta extends the already-public/audited `a6e7f3b`
+through two root-reviewed coordination-doc commits, the reviewed module delta,
+and the inspected CI runner; no unrelated private refs are included.
+
+Hosted-runner corrections pin verified official action commits, install modern
+real rsync on both target operating systems, explicitly include only the hidden
+generated-receipt directory in artifact upload, and bind checkout HEAD to the
+immutable hosted event commit. Public installation uses only the ordinary public
+proxy with a fresh private GOPATH/module/build/bin scope and no checksum bypass.
+Downloaded module declarations, fork engine inputs, license and provenance must
+match the reviewed source bytes; the checkout is an expected-hash oracle only,
+never the installation source or working directory. The installed version and
+module checksum remain bound to the public query. Normal hosted CGo defaults
+are retained and recorded, rather than limiting the plain installation claim
+to an overridden CGo-free environment. Source-build CGo-free platform checks
+remain separate. Python syntax, YAML parsing and diff checks pass; these are
+runner/source checks, not executed Go or public-install acceptance.
+
+Official [Go install documentation](https://pkg.go.dev/cmd/go#hdr-Compile_and_install_packages_and_dependencies)
+confirms that version-suffixed installation resolves independently of a caller's
+module and imposes replacement/exclusion constraints. The remaining gate is the
+actual source compile/tidy/fork/interoperability/distribution/race/vet and public
+immutable-commit installation run on the inspected candidate CI branch. No main,
+tag, release, website deployment, installed-user binary or backend/state change
+is performed by candidate validation; literal latest acceptance follows separate
+root-approved main publication. Separate release metadata `97be9f5` is not
+silently included in this candidate.

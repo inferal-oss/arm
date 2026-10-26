@@ -25,13 +25,26 @@ jobs:
       GOFLAGS: '-p=1'
       GOTOOLCHAIN: local
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
           cache: false
+      - name: Install modern rsync for actual interoperability
+        shell: bash
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          set -euo pipefail
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y rsync
+          else
+            brew install rsync
+            echo "$(brew --prefix rsync)/bin" >> "$GITHUB_PATH"
+          fi
       - name: Validate exact source and collect original command receipts
         run: python3 -B scripts/validate-module.py --output .cache/module-ci
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -41,6 +54,7 @@ jobs:
           path: .cache/module-ci/
           if-no-files-found: error
           retention-days: 7
+          include-hidden-files: true
 
   public-install:
     runs-on: ubuntu-24.04
@@ -50,10 +64,10 @@ jobs:
       GOFLAGS: '-p=1'
       GOTOOLCHAIN: local
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
           cache: false
@@ -68,3 +82,4 @@ jobs:
           path: .cache/module-public-install/
           if-no-files-found: error
           retention-days: 7
+          include-hidden-files: true

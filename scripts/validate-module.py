@@ -95,6 +95,8 @@ def main():
             print("FAIL", message, flush=True)
 
     run("source-commit", ["git", "rev-parse", "HEAD"])
+    if os.environ.get("GITHUB_SHA"):
+        require((output / "source-commit.stdout.txt").read_text().strip() == os.environ["GITHUB_SHA"], "checkout differs from the immutable hosted workflow commit")
     run("source-tree", ["git", "rev-parse", "HEAD^{tree}"])
     run("source-status", ["git", "status", "--porcelain"])
     require(not (output / "source-status.stdout.txt").read_text().strip(), "source is dirty")
@@ -111,10 +113,10 @@ def main():
                 work = temporary / "work"
                 work.mkdir()
                 private = dict(GOBIN=str(temporary / "bin"), GOMODCACHE=str(temporary / "modules"), GOCACHE=str(temporary / "build"),
-                               GOPROXY="https://proxy.golang.org,direct", GOSUMDB="sum.golang.org", GOPRIVATE="", GONOPROXY="", GONOSUMDB="",
-                               GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, CGO_ENABLED="0")
+                               GOPATH=str(temporary / "gopath"), GOPROXY="https://proxy.golang.org", GOSUMDB="sum.golang.org", GOPRIVATE="", GONOPROXY="", GONOSUMDB="",
+                               GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GOINSECURE="", GO111MODULE="on")
                 require(all(not Path(private[key]).exists() for key in ("GOBIN", "GOMODCACHE", "GOCACHE")), "public caches were not empty")
-                run("public-environment", [go, "env", "-json", "GOBIN", "GOMODCACHE", "GOCACHE", "GOPROXY", "GOSUMDB", "GOWORK", "GOENV", "GOTOOLCHAIN"], work, private)
+                run("public-environment", [go, "env", "-json", "GOBIN", "GOMODCACHE", "GOCACHE", "GOPROXY", "GOSUMDB", "GOWORK", "GOENV", "GOTOOLCHAIN", "GOPATH", "CGO_ENABLED", "GOINSECURE", "GO111MODULE"], work, private)
                 resolved = None
                 code = run("public-query", [go, "mod", "download", "-json", MODULE + "@" + args.public_install], work, private)
                 if not code:
@@ -123,7 +125,23 @@ def main():
                     if args.public_install != "latest":
                         require(resolved.get("Origin", {}).get("Hash") == args.public_install, "public query resolved to a different source commit")
                     downloaded = Path(resolved["Dir"])
-                    require((downloaded / "third_party/rsyncgo/rsyncstream/stream.go").is_file(), "public module zip omitted audited fork")
+                    # Compare the actual public ZIP closure with the reviewed
+                    # checkout; the checkout supplies expected hashes only and
+                    # is never the install/build working directory or source.
+                    closure = ["go.mod", "go.sum", "third_party/rsyncgo/LICENSE",
+                               "third_party/rsyncgo/ARM-CHANGES.md",
+                               "third_party/rsyncgo/UPSTREAM-go.mod.txt",
+                               "third_party/rsyncgo/UPSTREAM-go.sum.txt",
+                               "third_party/rsyncgo/rsyncstream/stream.go",
+                               "third_party/rsyncgo/internal/sender/sender.go",
+                               "third_party/rsyncgo/internal/receiver/receiver.go"]
+                    hashes = {}
+                    for name in closure:
+                        actual = downloaded / name
+                        require(actual.is_file() and actual.read_bytes() == (ROOT / name).read_bytes(), "public module ZIP differs at " + name)
+                        if actual.is_file():
+                            hashes[name] = digest(actual)
+                    (output / "public-source-closure.json").write_text(json.dumps(hashes, indent=2, sort_keys=True) + "\n")
                     require(not (downloaded / "third_party/rsyncgo/go.mod").exists(), "public fork still has active nested module")
                 # The original installation command executes even if the prior
                 # query failed, preserving its own real public error/exit.
@@ -139,6 +157,8 @@ def main():
                         expected = ["mod", MODULE, resolved.get("Version", ""), resolved.get("Sum", "")]
                         require(expected in module_records, "installed version/checksum differ from the recorded public query")
                     require("github.com/gokrazy/rsync\t" not in info and "=>" not in info, "installed buildinfo has replacement/upstream fork dependency")
+                    public_environment = json.loads((output / "public-environment.stdout.txt").read_text())
+                    require("build\tCGO_ENABLED=" + public_environment["CGO_ENABLED"] in info, "public installation changed the normal CGo environment")
                     home = temporary / "state"
                     for name, command in [("installed-version", ["version"]), ("installed-help", ["help"]), ("installed-empty-catalog", ["mesh", "artifacts", "list", "--json"])]:
                         run(name, [str(binary), "--home", str(home)] + command, work, private)
