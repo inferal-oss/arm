@@ -2942,6 +2942,13 @@ carrier release or broader platform acceptance. QUIC stays separate.
 The final composition, including the integrated pressure, sync admission/worker,
 reset guard and Kubernetes dependency closure, passes the complete all-package
 compile-only gate (`.cache/integration-seven-features-compile.log`). Every test
-package compiles/links; this is not a full-suite execution claim. A fresh scoped
-CPU all-mode gate is running separately after the shared admission-core changes;
-its result will be recorded when terminal.
+package compiles/links; this is not a full-suite execution claim. The fresh scoped CPU all-mode gate also passes after the shared admission-core
+changes: complete12,281-state exploration (763,728 generated, queue0), five
+actual Go paths with69 states/64 edges from196 observed rows, all24 altered
+histories refused and all60 obligations across17 theorems proved. Raw terminals
+and all eight original native-owner receipts confirm expected statuses, exactly
+one Wait, retired/reaped ownership, absent PID/group and no signal/cleanup
+errors. Evidence is `.tla/cpu-admission-integrated-sync/run-rihui7ds/` and
+`.cache/cpu-admission-integrated-sync-formal.log`. This renews the controlled-input
+admission/credit relation; it does not prove native counter accuracy, new sync
+or Kubernetes protocols, or whole-program refinement.
