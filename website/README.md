@@ -1,10 +1,11 @@
 # ARM public website
 
 The public site is an actual Semblance application. `app.ttl` holds the content,
-stock components, navigation model and Terminal theme selection. `main.ts` only
+stock components, navigation model and Semblance theme selection with the system color scheme. `main.ts` only
 loads the engine, projects the graph, and attaches Semblance's DOM/event/history
-host effects. There are no custom components or CSS overrides. The color-scheme
-control changes graph state; the theme remains Terminal.
+host effects. The only site-specific rendering binds the existing dashboard logo SVG to an
+image; the interface and diagram use stock components, with no CSS overrides. The color-scheme
+control changes graph state; the theme remains Semblance.
 
 The source lives on the same branch as ARM. The static build works at a domain
 root or a GitHub Pages repository prefix (`base: './'`); navigation uses fragments
@@ -62,3 +63,24 @@ direct fragments (`#overview`, `#start`, `#capabilities`, `#docs`), mouse and
 keyboard disclosure actions, the color-scheme controls, all source links and the
 license link. Inspect desktop and narrow layouts. A successful local build does
 not establish custom-domain DNS, HTTPS or deployment acceptance.
+
+## Existing identity and diagram
+
+`public/brand-lockup.svg` and `public/favicon.svg` are exact copies of the
+embedded dashboard assets in `internal/server/web/`. The light logo variant
+is copied from `docs/branding/carve/lockup-light.svg`. The graph's BrandLogo
+rendering chooses the readable asset for Day mode, and a native picture source
+follows the OS color preference in Match mode, with meaningful
+Screen and Text modalities; it does not reconstruct or recolor the identity.
+The lifecycle diagram uses stock Stack/Card/Text components and a reading order
+that states each transition, including queued admission and uncertain settlement.
+
+The install examples use a source checkout and `go install ./cmd/arm`, then
+`arm` on PATH. `go.mod` is the minimum Go-version authority. A local checkout
+also retains ARM's reviewed local rsync replacement; remote versioned
+`go install` is not advertised by this site.
+
+Asset SHA-256 values:
+
+- Dashboard logo: `9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87`
+- Dashboard favicon: `fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373`
