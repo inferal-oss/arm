@@ -100,7 +100,7 @@ func pinFixture(t *testing.T, dir string) Pin {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return Pin{1, strings.Repeat("a", 32), strings.Repeat("b", 32), strings.Repeat("c", 64), 1, strings.Repeat("d", 64), strings.Repeat("e", 64), "armuser", strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key.PublicKey()))), time.Now().UTC()}
+	return Pin{Schema: 1, Source: strings.Repeat("a", 32), Target: strings.Repeat("b", 32), Pair: strings.Repeat("c", 64), Revision: 1, TLSFingerprint: strings.Repeat("d", 64), TLSSPKI: strings.Repeat("e", 64), Account: "armuser", PublicKey: strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key.PublicKey()))), At: time.Now().UTC()}
 }
 func TestPinExplicitReviewCASAndNoSilentRotation(t *testing.T) {
 	dir := privateFixture(t)

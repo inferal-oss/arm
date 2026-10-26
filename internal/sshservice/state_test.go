@@ -56,7 +56,7 @@ func setupState(t *testing.T, home string, b Binding) *State {
 func statePin(t *testing.T, home string, b Binding) Pin {
 	t.Helper()
 	s := setupState(t, home, b)
-	p := Pin{1, b.Host, strings.Repeat("b", 32), strings.Repeat("c", 64), 3, strings.Repeat("d", 64), strings.Repeat("e", 64), "destination", s.PublicKey, time.Now().UTC()}
+	p := Pin{Schema: 1, Source: b.Host, Target: strings.Repeat("b", 32), Pair: strings.Repeat("c", 64), Revision: 3, TLSFingerprint: strings.Repeat("d", 64), TLSSPKI: strings.Repeat("e", 64), Account: "destination", PublicKey: s.PublicKey, At: time.Now().UTC()}
 	review, e := ReviewPin(filepath.Join(home, "mesh"), p)
 	if e != nil {
 		t.Fatal(e)

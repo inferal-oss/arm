@@ -8,6 +8,7 @@ import (
 
 const RouteMessage = "message"
 const RouteDirectory = "directory"
+const RouteSSH = "ssh"
 
 // RouteAccess is ephemeral current ledger authorization, never a wire grant.
 // The immediate direct-pair identity is authenticated separately by transport.
@@ -29,7 +30,7 @@ func (s *Store) routeAccess(v *Records, cached authorizedSnapshot, id, origin, t
 	if e != nil {
 		return RouteAccess{}, e
 	}
-	if !validHex(origin, 16) || !validHex(target, 16) || origin == target || !known(class, RouteMessage, RouteDirectory) || (root.State != "active" && !(root.Role == "member" && root.State == "joining" && class == RouteDirectory && origin == root.Self.Host && target == root.Directory.Host)) || root.Self != s.self || denied(v, id, root.Self.Host) || denied(v, id, root.Directory.Host) || denied(v, id, origin) || denied(v, id, target) {
+	if !validHex(origin, 16) || !validHex(target, 16) || origin == target || !known(class, RouteMessage, RouteDirectory, RouteSSH) || (root.State != "active" && !(root.Role == "member" && root.State == "joining" && class == RouteDirectory && origin == root.Self.Host && target == root.Directory.Host)) || root.Self != s.self || denied(v, id, root.Self.Host) || denied(v, id, root.Directory.Host) || denied(v, id, origin) || denied(v, id, target) {
 		return RouteAccess{}, problem("forbidden", "current workspace state/pins/deny do not permit this route")
 	}
 	if class == RouteDirectory && target != root.Directory.Host {

@@ -150,7 +150,7 @@ Commands:
   monitor                   Observe physical host usage and short history
   dashboard                 Open the authenticated local web console
   mesh                      Connect, inspect and disconnect trusted hosts
-  ssh                       Execute through a pinned, leased direct-peer SSH channel
+  ssh                       Execute through pinned, leased direct or reviewed mesh-routed SSH
   history ssh-source        Review and archive local settled SSH receipts
   storage COMMAND           Manage files, exports and short retention
   ports reserve|list|discover Manage port reservations and native inventory

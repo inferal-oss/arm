@@ -20,16 +20,22 @@ import (
 )
 
 type Pin struct {
-	Schema         int       `json:"schema"`
-	Source         string    `json:"source"`
-	Target         string    `json:"target"`
-	Pair           string    `json:"pair"`
-	Revision       int       `json:"revision"`
-	TLSFingerprint string    `json:"tls_fingerprint"`
-	TLSSPKI        string    `json:"tls_spki"`
-	Account        string    `json:"account"`
-	PublicKey      string    `json:"public_key"`
-	At             time.Time `json:"at"`
+	Schema                int       `json:"schema"`
+	Source                string    `json:"source"`
+	Target                string    `json:"target"`
+	Pair                  string    `json:"pair"`
+	Revision              int       `json:"revision"`
+	TLSFingerprint        string    `json:"tls_fingerprint"`
+	TLSSPKI               string    `json:"tls_spki"`
+	Account               string    `json:"account"`
+	PublicKey             string    `json:"public_key"`
+	At                    time.Time `json:"at"`
+	RouteWorkspace        string    `json:"route_workspace,omitempty"`
+	RouteGeneration       string    `json:"route_generation,omitempty"`
+	RouteDirectoryPin     string    `json:"route_directory_pin,omitempty"`
+	RouteDirectorySPKI    string    `json:"route_directory_spki,omitempty"`
+	RouteSourceGeneration int64     `json:"route_source_generation,omitempty"`
+	RouteTargetGeneration int64     `json:"route_target_generation,omitempty"`
 }
 type pinSnapshot struct {
 	Present       bool
@@ -55,6 +61,13 @@ func (p Pin) Validate() error {
 	key, _, _, rest, err := ssh.ParseAuthorizedKey([]byte(p.PublicKey))
 	if err != nil || key.Type() != ssh.KeyAlgoED25519 || len(rest) != 0 || strings.TrimSpace(p.PublicKey) != strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key))) {
 		return fmt.Errorf("canonical Ed25519 SSH pin required")
+	}
+	if p.RouteWorkspace != "" || p.RouteGeneration != "" || p.RouteDirectoryPin != "" || p.RouteDirectorySPKI != "" ||
+		p.RouteSourceGeneration != 0 || p.RouteTargetGeneration != 0 {
+		if !hexString(p.RouteWorkspace, 32) || !hexString(p.RouteGeneration, 32) || !hexString(p.RouteDirectoryPin, 64) ||
+			!hexString(p.RouteDirectorySPKI, 64) || p.RouteSourceGeneration < 1 || p.RouteTargetGeneration < 1 {
+			return fmt.Errorf("invalid exact routed SSH workspace binding")
+		}
 	}
 	return nil
 }

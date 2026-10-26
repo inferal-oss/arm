@@ -54,11 +54,18 @@ func (s *Store) WorkspaceTLS(expectedLocal, expectedRemote workspace.Identity, s
 }
 
 const WorkspaceMessageProtocol = "arm.workspace.message.v1"
+const WorkspaceSSHProtocol = "arm.workspace.ssh.v1"
 
 // RoutedWorkspaceTLS authenticates the final workspace endpoints only. It does
 // not authorize a route, expose ordinary mesh handlers or promote direct peers.
 func (s *Store) RoutedWorkspaceTLS(local, remote workspace.Identity, server bool) (*tls.Config, error) {
 	return s.workspaceTLS(local, remote, server, WorkspaceMessageProtocol)
+}
+
+// RoutedSSHTLS authenticates only the original SSH/sync endpoints with a
+// distinct ALPN. Callers must separately prove current routed SSH grants.
+func (s *Store) RoutedSSHTLS(local, remote workspace.Identity, server bool) (*tls.Config, error) {
+	return s.workspaceTLS(local, remote, server, WorkspaceSSHProtocol)
 }
 func (s *Store) workspaceTLS(expectedLocal, expectedRemote workspace.Identity, server bool, protocol string) (*tls.Config, error) {
 	if expectedLocal.Host == expectedRemote.Host {

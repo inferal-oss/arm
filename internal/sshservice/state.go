@@ -110,6 +110,11 @@ func readSourceState(ctx context.Context, home string, b Binding, checkHistory b
 		if name == "config.json" {
 			limit = 1 << 20
 		}
+		if name == "ssh-relay-policy.json" {
+			// The separately reviewed SSH relay ledger shares this private
+			// directory. Its own reader validates schema and local identity.
+			limit = 256 << 10
+		}
 		raw, id, e := readStateFile(ctx, d, name, limit)
 		if e != nil {
 			return nil, e
@@ -121,7 +126,11 @@ func readSourceState(ctx context.Context, home string, b Binding, checkHistory b
 		s.files[name] = id
 		s.contents[name] = raw
 		switch {
-		case name == "config.json", name == "node-key.pem":
+		case name == "config.json", name == "node-key.pem", name == "ssh-relay-policy.json":
+		case name == "ssh-relay-policy.lock":
+			if id.Size != 0 {
+				return nil, fmt.Errorf("SSH relay coordination lock must be empty")
+			}
 		case name == StateLockName:
 			if id.Size != 0 {
 				return nil, fmt.Errorf("SSH coordination lock must be empty")

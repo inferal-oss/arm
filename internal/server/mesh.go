@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshsshrelay"
 	"github.com/yrashk/arm/internal/meshstream"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/yrashk/arm/internal/workspace"
 	"github.com/yrashk/arm/internal/workspaceroute"
 	"github.com/yrashk/arm/internal/workspacetransport"
 	"io"
@@ -43,6 +45,7 @@ type meshService struct {
 	slots       chan struct{}
 	peerSlots   sync.Map
 	ssh         *meshstream.Handler
+	sshRouted   *meshsshrelay.Handler
 	workspace   *workspacetransport.Handler
 	routed      *workspaceroute.Handler
 }
@@ -117,6 +120,7 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	}
 	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32), serveDone: make(chan error, 1), drainDone: make(chan struct{})}
 	service.ssh = service.newSSHHandler()
+	service.sshRouted = service.newSSHRouteHandler()
 	service.workspace = service.newWorkspaceHandler()
 	service.routed = service.newRoutedHandler()
 	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: service.connectionState}
@@ -136,6 +140,9 @@ func (m *meshService) revoke(host string) {
 	// service.mu; cancellation never waits for manager lease cleanup.
 	if m.ssh != nil {
 		m.ssh.ClosePeer(host)
+	}
+	if m.sshRouted != nil {
+		m.sshRouted.ClosePeer(host)
 	}
 	if m.workspace != nil {
 		m.workspace.ClosePeer(host)
@@ -198,6 +205,14 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		m.ssh.ServeHTTP(w, r)
+		return
+	}
+	if r.URL.Path == meshsshrelay.Path {
+		if m.sshRouted == nil {
+			http.Error(w, "routed SSH unavailable", http.StatusForbidden)
+			return
+		}
+		m.sshRouted.ServeHTTP(w, r)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -657,6 +672,37 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 		return nil, model.Err("mesh_unavailable", "mesh is disabled; connect a node with arm mesh connect SSH_DEST")
 	}
 	switch operation {
+	case "mesh_ssh_route_context":
+		var q struct {
+			Workspace string `json:"workspace"`
+			Source    string `json:"source"`
+			Target    string `json:"target"`
+		}
+		if e := mesh.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		local := service.store.Config().Identity.Host
+		if local != q.Source && local != q.Target {
+			return nil, model.Err("forbidden", "SSH route context must include this original endpoint")
+		}
+		a, e := s.Manager.WorkspaceRouteAccess(ctx, q.Workspace, q.Source, q.Target, workspace.RouteSSH)
+		if e != nil {
+			return nil, e
+		}
+		out := meshsshrelay.Context{Access: a}
+		if local == q.Target {
+			snapshot, e := service.sshSnapshot(ctx)
+			if e != nil {
+				return nil, e
+			}
+			out.Account = snapshot.state.Binding.Account
+			out.Owner = snapshot.state.Binding.Owner
+			out.Home = snapshot.home
+			out.HostKeySHA256 = sshPublicHash(snapshot.key.PublicKey())
+			out.PublicKey = snapshot.state.PublicKey
+			out.ServiceRevision = snapshot.state.Service.Revision
+		}
+		return out, nil
 	case "mesh_identity":
 		return service.store.Config().Identity, nil
 	case "mesh_peers":

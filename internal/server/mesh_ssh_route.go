@@ -1,0 +1,369 @@
+package server
+
+import (
+	"context"
+	"crypto/sha256"
+	"crypto/tls"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"io"
+	"net"
+	"time"
+
+	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshsshrelay"
+	"github.com/yrashk/arm/internal/meshstream"
+	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/yrashk/arm/internal/workspace"
+	direct "github.com/yrashk/arm/internal/workspacetransport"
+	"golang.org/x/crypto/ssh"
+)
+
+func sshRouteOuter(o meshsshrelay.Outer) direct.Outer {
+	return direct.Outer{Source: o.Source, Target: o.Target, Pair: o.Pair, Certificate: o.Certificate, Revision: o.Revision, Expires: o.Expires}
+}
+
+// routedSSHAdmission combines fresh workspace membership with an entirely
+// separate local relay/destination grant. A messaging route never calls this.
+func (m *meshService) routedSSHAdmission(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open) (meshsshrelay.Permit, error) {
+	if err := m.recheckWorkspaceOuter(sshRouteOuter(outer)); err != nil {
+		return meshsshrelay.Permit{}, err
+	}
+	a, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, o.Target, workspace.RouteSSH)
+	if err != nil {
+		return meshsshrelay.Permit{}, err
+	}
+	if a.Generation != o.Generation || a.Local.Host != outer.Target || a.Local.Host != o.ImmediateTarget() ||
+		a.OriginGeneration != o.SourceGeneration || a.DestinationGeneration != o.TargetGeneration ||
+		a.Directory.Fingerprint != o.DirectoryPin || a.Directory.SPKI != o.DirectorySPKI ||
+		a.Origin.Fingerprint != o.SourcePin || a.Destination.Fingerprint != o.TargetPin ||
+		o.DirectoryRevision > a.DirectoryRevision {
+		return meshsshrelay.Permit{}, model.Err("forbidden", "SSH route differs from fresh original/final pinned membership")
+	}
+	if outer.Source != o.Source {
+		hop, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, outer.Source, workspace.RouteSSH)
+		if err != nil || hop.Destination.Fingerprint != outer.Certificate {
+			return meshsshrelay.Permit{}, model.Err("forbidden", "SSH relay's preceding member pin changed")
+		}
+	}
+	policy, err := meshsshrelay.ReadPolicy(m.owner.home, a.Local.Host, a.Local.Fingerprint)
+	if err != nil {
+		return meshsshrelay.Permit{}, err
+	}
+	p := meshsshrelay.Permit{Local: a.Local, Origin: a.Origin, Destination: a.Destination, Expires: o.Expires}
+	if outer.Expires.Before(p.Expires) {
+		p.Expires = outer.Expires
+	}
+	if o.Final() {
+		grant, err := policy.Destination(o)
+		if err != nil {
+			return meshsshrelay.Permit{}, err
+		}
+		if grant.SourceSPKI != a.Origin.SPKI || grant.TargetSPKI != a.Destination.SPKI {
+			return meshsshrelay.Permit{}, model.Err("forbidden", "routed SSH source/target SPKI differs from review")
+		}
+		snapshot, err := m.sshSnapshot(ctx)
+		if err != nil {
+			return meshsshrelay.Permit{}, err
+		}
+		if grant.Account != snapshot.state.Binding.Account || grant.Owner != snapshot.state.Binding.Owner || grant.SSHHostKeyPin != sshPublicHash(snapshot.key.PublicKey()) {
+			return meshsshrelay.Permit{}, model.Err("forbidden", "routed SSH destination account or host key changed")
+		}
+		if grant.Expires.Before(p.Expires) {
+			p.Expires = grant.Expires
+		}
+		p.DestinationGrant = grant
+		p.Inner, err = m.store.RoutedSSHTLS(a.Local, a.Origin, true)
+		if err != nil {
+			return meshsshrelay.Permit{}, err
+		}
+	} else {
+		grant, err := policy.Relay(o)
+		if err != nil {
+			return meshsshrelay.Permit{}, err
+		}
+		if grant.Expires.Before(p.Expires) {
+			p.Expires = grant.Expires
+		}
+		p.RelayGrant = grant
+	}
+	if !time.Now().Before(p.Expires) {
+		return meshsshrelay.Permit{}, model.Err("forbidden", "routed SSH grant expired")
+	}
+	if err = m.recheckWorkspaceOuter(sshRouteOuter(outer)); err != nil {
+		return meshsshrelay.Permit{}, err
+	}
+	return p, nil
+}
+
+func (m *meshService) routedSSHScope(ctx context.Context, o meshsshrelay.Open, p meshsshrelay.Permit) (meshstream.Scope, sshDestinationSnapshot, error) {
+	var none meshstream.Scope
+	if !o.Final() {
+		return none, sshDestinationSnapshot{}, model.Err("forbidden", "only final SSH destination has execution scope")
+	}
+	snapshot, err := m.sshSnapshot(ctx)
+	if err != nil {
+		return none, snapshot, err
+	}
+	g := p.DestinationGrant
+	if o.Class != meshsshrelay.ClassSSHIdentity && g.Authorize(time.Now(), o, p.Origin.Fingerprint, p.Origin.SPKI, p.Destination.Fingerprint, p.Destination.SPKI,
+		sshPublicHash(snapshot.key.PublicKey()), snapshot.state.Binding.Account, snapshot.state.Binding.Owner, time.Nanosecond, model.Resources{}) != nil {
+		return none, snapshot, model.Err("forbidden", "current original-source destination SSH grant differs")
+	}
+	pair, err := g.VirtualPair()
+	if err != nil {
+		return none, snapshot, err
+	}
+	return meshstream.Scope{Source: o.Source, Target: o.Target, Pair: pair, Revision: g.Revision, Account: g.Account,
+		Certificate: g.SourcePin, MaxTTL: g.MaxTTL, Limits: g.Limits, ValidUntil: g.Expires, Owner: g.Owner,
+		HostKeySHA256: g.SSHHostKeyPin, ServiceRevision: snapshot.state.Service.Revision}, snapshot, nil
+}
+
+func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
+	h := &meshsshrelay.Handler{}
+	h.AuthorizeOuter = func(ctx context.Context, raw []byte) (meshsshrelay.Outer, error) {
+		o, err := m.workspaceOuter(ctx, raw)
+		return meshsshrelay.Outer{Source: o.Source, Target: o.Target, Pair: o.Pair, Certificate: o.Certificate, Revision: o.Revision, Expires: o.Expires}, err
+	}
+	h.Authorize = m.routedSSHAdmission
+	h.Revalidate = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) error {
+		a, err := m.routedSSHAdmission(ctx, outer, o)
+		if err != nil {
+			return err
+		}
+		if a.Local != p.Local || a.Origin != p.Origin || a.Destination != p.Destination ||
+			a.RelayGrant != p.RelayGrant || a.DestinationGrant != p.DestinationGrant || !time.Now().Before(p.Expires) {
+			return model.Err("forbidden", "routed SSH membership, grant or endpoint identity changed")
+		}
+		return nil
+	}
+	h.Forward = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, previous net.Conn) {
+		nextHost := o.Path[o.Hop+1]
+		next, err := m.store.Resolve(nextHost)
+		if err != nil || next.State != "active" || !next.Proven {
+			return
+		}
+		a, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, nextHost, workspace.RouteSSH)
+		if err != nil || a.Destination.Fingerprint != next.Identity.Fingerprint {
+			return
+		}
+		outgoing := meshsshrelay.NextAuthority{Local: p.Local.Host, DirectPeer: nextHost, Pair: next.Pair,
+			EnrollmentRevision: next.Revision, Workspace: o.Workspace, Generation: o.Generation, SSHRelayPermit: true, ValidUntil: a.Expires}
+		if err = o.AuthorizeNext(time.Now(), outgoing); err != nil {
+			return
+		}
+		conn, err := m.sshRouteHop(ctx, next, o, outgoing, func(ctx context.Context) error { return h.Revalidate(ctx, outer, o, p) })
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+		copied := make(chan struct{})
+		go func() { defer close(copied); _, _ = io.Copy(conn, previous); _ = conn.Close(); _ = previous.Close() }()
+		_, _ = io.Copy(previous, conn)
+		_ = conn.Close()
+		_ = previous.Close()
+		<-copied
+	}
+	h.Final = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, inner *tls.Conn) {
+		m.serveRoutedSSH(ctx, h, outer, o, p, inner)
+	}
+	return h
+}
+
+func (m *meshService) sshRouteHop(ctx context.Context, peer mesh.Peer, o meshsshrelay.Open, outgoing meshsshrelay.NextAuthority, check func(context.Context) error) (net.Conn, error) {
+	raw, err := m.store.Call(ctx, peer.Identity.Host, mesh.Request{Operation: "access_scope", Params: json.RawMessage(`{}`)})
+	if err != nil {
+		return nil, err
+	}
+	var scope model.NodeAccessScope
+	if err = mesh.Decode(raw, &scope); err != nil || scope.Source != m.store.Config().Identity.Host || scope.Target != peer.Identity.Host || scope.Pair != peer.Pair || scope.Revision < 1 {
+		return nil, model.Err("forbidden", "outgoing SSH relay pair differs")
+	}
+	outgoing.EnrollmentRevision = scope.Revision
+	next, err := o.Forward(time.Now(), outgoing)
+	if err != nil {
+		return nil, err
+	}
+	config, err := m.store.ClientTLS(peer)
+	if err != nil {
+		return nil, err
+	}
+	recheck := func(ctx context.Context) error {
+		current, err := m.store.Resolve(peer.Identity.Host)
+		if err != nil {
+			return err
+		}
+		if current.State != "active" || !current.Proven || current.Pair != peer.Pair || current.Revision != peer.Revision || current.Identity != peer.Identity {
+			return model.Err("forbidden", "outgoing SSH relay enrollment changed")
+		}
+		return check(ctx)
+	}
+	return meshsshrelay.DialCarrier(ctx, peer.Identity.Address, config, next, recheck)
+}
+
+func (m *meshService) serveRoutedSSH(ctx context.Context, h *meshsshrelay.Handler, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, inner *tls.Conn) {
+	if o.Class == meshsshrelay.ClassSync {
+		return
+	} // Sync requires its fixed worker gate.
+	if err := inner.SetDeadline(time.Now().Add(meshsshrelay.RequestDeadline)); err != nil {
+		return
+	}
+	q, err := meshsshrelay.ReadRequest(inner)
+	if err != nil || h.Revalidate(ctx, outer, o, p) != nil {
+		return
+	}
+	if o.Class == meshsshrelay.ClassSSHIdentity && q.Operation != meshsshrelay.OperationIdentity {
+		return
+	}
+	scope, snapshot, err := m.routedSSHScope(ctx, o, p)
+	if err != nil {
+		return
+	}
+	recheck := func(ctx context.Context) error {
+		if err := h.Revalidate(ctx, outer, o, p); err != nil {
+			return err
+		}
+		actual, _, err := m.routedSSHScope(ctx, o, p)
+		if err != nil {
+			return err
+		}
+		if actual != scope {
+			return model.Err("ssh_context_changed", "routed SSH grant/account/host key changed")
+		}
+		return nil
+	}
+	out := q.Reply()
+	switch q.Operation {
+	case meshsshrelay.OperationIdentity:
+		local := snapshot.state.MeshIdentity()
+		out.Identity = &model.SSHDestinationIdentity{Schema: 1, Source: scope.Source, Target: scope.Target, Owner: scope.Owner,
+			Account: scope.Account, Home: snapshot.home, Pair: scope.Pair, Revision: scope.Revision, Certificate: local.Fingerprint,
+			SPKI: local.SPKI, PublicKey: snapshot.state.PublicKey, ServiceRevision: scope.ServiceRevision,
+			MaxTTL: int64(scope.MaxTTL), Limits: scope.Limits}
+	case meshsshrelay.OperationLookup:
+		status, e := m.owner.Manager.LookupSSHKey(ctx, scope.Source, q.Key)
+		if e == nil && status.Fence != nil && status.Fence.Control != nil &&
+			(status.Fence.Control.Certificate != scope.Certificate || status.Fence.Control.Pair != scope.Pair || status.Fence.Control.Revision != scope.Revision) {
+			e = model.Err("forbidden", "routed SSH key belongs to another original endpoint grant")
+		}
+		if e == nil && status.Execution != nil && status.Execution.Operation != nil && status.Execution.Operation.Request.Certificate != scope.Certificate {
+			e = model.Err("forbidden", "routed SSH key belongs to previous original certificate")
+		}
+		if e == nil {
+			status, e = compactSSHKeyStatus(status)
+		}
+		if e == nil {
+			out.Status = &status
+		} else {
+			err = e
+		}
+	case meshsshrelay.OperationSeal:
+		c := *q.Commitment
+		if c.Source != scope.Source || c.Target != scope.Target || c.Pair != scope.Pair || c.Revision != scope.Revision ||
+			c.Certificate != scope.Certificate || c.Owner != scope.Owner || c.Account != scope.Account || c.HostKeySHA256 != scope.HostKeySHA256 {
+			err = model.Err("forbidden", "routed SSH seal differs from original source and destination grant")
+		} else {
+			status, e := m.owner.Manager.SealSSHKey(ctx, c, q.Reason)
+			if e == nil {
+				status, e = compactSSHKeyStatus(status)
+			}
+			if e == nil {
+				out.Status = &status
+			} else {
+				err = e
+			}
+		}
+	case meshsshrelay.OperationExecute:
+		control := *q.Control
+		if err = control.Authorize(scope); err == nil {
+			err = p.DestinationGrant.Authorize(time.Now(), o, p.Origin.Fingerprint, p.Origin.SPKI, p.Destination.Fingerprint,
+				p.Destination.SPKI, scope.HostKeySHA256, scope.Account, scope.Owner, control.TTL, control.Resources)
+		}
+		if err == nil {
+			out.Accepted = true
+		}
+	}
+	if err == nil {
+		err = recheck(ctx)
+	}
+	if err != nil {
+		code := "ssh_unavailable"
+		var api *model.Error
+		if errors.As(err, &api) {
+			code = api.Code
+		}
+		out = q.Reply()
+		out.Failure = &meshsshrelay.Failure{Code: code, Message: "Routed SSH operation unavailable; inspect the retained original key. No execution was retried."}
+	}
+	if meshsshrelay.WriteResponse(inner, q, out) != nil {
+		return
+	}
+	if q.Operation != meshsshrelay.OperationExecute || err != nil {
+		return
+	}
+	if inner.SetDeadline(time.Time{}) != nil {
+		return
+	}
+	control := *q.Control
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(control.PublicKey))
+	if err != nil {
+		return
+	}
+	service := sshservice.Server{HostKey: snapshot.key, Handshake: 10 * time.Second, StartTimeout: 10 * time.Second,
+		Revalidate: recheck, Execute: func(ctx context.Context, execution sshservice.Execution, ch ssh.Channel) (sshservice.Process, error) {
+			var process sshservice.Process
+			err := meshsshrelay.WithPolicyRead(m.owner.home, p.Local.Host, p.Local.Fingerprint, func(policy meshsshrelay.Policy) error {
+				grant, e := policy.Destination(o)
+				if e != nil || grant != p.DestinationGrant {
+					return model.Err("forbidden", "original-source SSH destination grant changed before exec")
+				}
+				if e = recheck(ctx); e != nil {
+					return e
+				}
+				actual, _, e := m.routedSSHScope(ctx, o, p)
+				if e != nil {
+					return e
+				}
+				if actual != scope {
+					return model.Err("ssh_context_changed", "routed SSH service/account/grant changed before exec")
+				}
+				if e = control.Authorize(actual); e != nil {
+					return e
+				}
+				if e = grant.Authorize(time.Now(), o, p.Origin.Fingerprint, p.Origin.SPKI, p.Destination.Fingerprint, p.Destination.SPKI,
+					actual.HostKeySHA256, actual.Account, actual.Owner, control.TTL, control.Resources); e != nil {
+					return e
+				}
+				commitment, e := control.Commitment(actual.Certificate)
+				if e != nil {
+					return e
+				}
+				commandHash := sha256.Sum256([]byte(execution.Command))
+				terminalHash := ""
+				if execution.Terminal != nil {
+					raw, _ := json.Marshal(execution.Terminal)
+					sum := sha256.Sum256(raw)
+					terminalHash = hex.EncodeToString(sum[:])
+				}
+				request := model.SSHExecutionRequest{Source: actual.Source, Target: actual.Target, Pair: actual.Pair,
+					Revision: actual.Revision, Certificate: actual.Certificate, Account: actual.Account, Key: control.Key,
+					PublicKeySHA256: sshPublicHash(key), Reason: control.Reason, TTL: control.TTL, Resources: control.Resources,
+					CWD: control.CWD, Kind: execution.Kind, CommandSHA256: hex.EncodeToString(commandHash[:]), TerminalSHA256: terminalHash}
+				if !commitment.Matches(request) {
+					return model.Err("invalid_request", "routed SSH exec/shell/PTY differs from source intent")
+				}
+				_, process, e = m.owner.Manager.AcquireSSHCommitted(ctx, request, execution, ch, actual.Limits, actual.MaxTTL, actual.ValidUntil, commitment)
+				if e != nil {
+					return e
+				}
+				if process == nil {
+					return model.Err("ssh_key_exists", "SSH key already submitted; inspect exact outcome without retry")
+				}
+				return nil
+			})
+			return process, err
+		}}
+	_ = service.Serve(ctx, inner, sshservice.Permit{Account: scope.Account, PublicKey: key})
+}

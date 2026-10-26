@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"math/big"
+	"net"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -80,6 +81,7 @@ func (a *app) sshCommand(args []string) (int, error) {
 	disk := f.String("disk", "0", "disk reservation in exact bytes or units")
 	cwd := f.String("cwd", "", "absolute destination directory (default destination account home)")
 	key := f.String("key", "", "unique source intent key (existing keys are inspection-only)")
+	workspaceID := f.String("workspace", "", "exact messaging workspace for SSH relay when the destination has no direct link")
 	yes := f.Bool("yes", false, "accept concrete initial host-key pin review")
 	update := f.Bool("update-pin", false, "allow separately reviewed changed enrollment/account/host-key pin")
 	dry := f.Bool("dry-run", false, "review identity/admission without writes or execution")
@@ -143,8 +145,14 @@ func (a *app) sshCommand(args []string) (int, error) {
 	}
 	defer store.Close()
 	peer, e := store.Resolve(f.Args()[0])
-	if e != nil {
-		return 1, e
+	if *workspaceID != "" || e != nil {
+		terminal := !*noTTY && a.inputTTY && a.outputTTY
+		if *tty {
+			terminal = true
+		}
+		return a.sshRoutedCommand(store, account, sshRoutedOptions{Target: f.Args()[0], Workspace: *workspaceID, Reason: *reason, Key: *key,
+			CWD: *cwd, Command: command, TTL: *ttl, Resources: model.Resources{CPU: *cpu, Memory: mem, Disk: ds}, Terminal: terminal,
+			HasCommand: hasCommand, Dry: *dry, UpdatePin: *update, Yes: *yes})
 	}
 	if peer.State != "active" || !peer.Proven {
 		return 1, model.Err("forbidden", "SSH requires an active proven direct peer")
@@ -326,13 +334,9 @@ func (a *app) sshRecover(action string, args []string) (int, error) {
 		return 1, e
 	}
 	defer store.Close()
-	peer, e := store.Resolve(f.Args()[0])
-	if e != nil {
-		return 1, e
-	}
 	var intent *sshservice.SourceIntent
 	for _, r := range state.Intents {
-		if r.Request.Pin.Target == peer.Identity.Host && r.Request.Key == *key {
+		if r.Request.Pin.Target == localTarget && r.Request.Key == *key {
 			copy := r
 			intent = &copy
 		}
@@ -341,8 +345,15 @@ func (a *app) sshRecover(action string, args []string) (int, error) {
 		return 1, model.Err("not_found", "exact pending source intent required; no execution retry is available")
 	}
 	original := intent.Request.Pin
-	if original.Pair != peer.Pair || original.TLSFingerprint != peer.Identity.Fingerprint || original.TLSSPKI != peer.Identity.SPKI {
-		return 1, model.Err("ssh_context_changed", "original target pin/enrollment changed; preserve pending evidence for destination operator inspection")
+	var peer mesh.Peer
+	if original.RouteWorkspace == "" {
+		peer, e = store.Resolve(localTarget)
+		if e != nil {
+			return 1, e
+		}
+		if original.Pair != peer.Pair || original.TLSFingerprint != peer.Identity.Fingerprint || original.TLSSPKI != peer.Identity.SPKI {
+			return 1, model.Err("ssh_context_changed", "original target pin/enrollment changed; preserve pending evidence for destination operator inspection")
+		}
 	}
 	expected := &mesh.ExpectedEnrollment{Pair: original.Pair, Revision: original.Revision}
 	var status model.SSHKeyStatus
@@ -361,17 +372,25 @@ func (a *app) sshRecover(action string, args []string) (int, error) {
 		if *dry {
 			return 0, nil
 		}
-		e = sshRPC(a.ctx, store, peer.Identity.Host, "ssh_key_seal", *key, expected, struct {
-			Control model.SSHControlCommitment `json:"control"`
-			Reason  string                     `json:"reason"`
-		}{control, *reason}, &status)
+		if original.RouteWorkspace != "" {
+			status, e = a.recoverRoutedSSH(store, *intent, "seal", control, *reason)
+		} else {
+			e = sshRPC(a.ctx, store, peer.Identity.Host, "ssh_key_seal", *key, expected, struct {
+				Control model.SSHControlCommitment `json:"control"`
+				Reason  string                     `json:"reason"`
+			}{control, *reason}, &status)
+		}
 		if e != nil {
 			return 1, sshUnknown(*intent, e)
 		}
 	} else {
-		e = sshRPC(a.ctx, store, peer.Identity.Host, "ssh_key_status", "", expected, struct {
-			Key string `json:"key"`
-		}{*key}, &status)
+		if original.RouteWorkspace != "" {
+			status, e = a.recoverRoutedSSH(store, *intent, "lookup", model.SSHControlCommitment{}, "")
+		} else {
+			e = sshRPC(a.ctx, store, peer.Identity.Host, "ssh_key_status", "", expected, struct {
+				Key string `json:"key"`
+			}{*key}, &status)
+		}
 		if e != nil {
 			return 1, e
 		}
@@ -459,6 +478,24 @@ func sshProxyMain(args []string, in io.Reader, out, errout io.Writer) int {
 }
 
 func (a *app) sshExecute(store *mesh.Store, peer mesh.Peer, account sshLocalAccount, control meshstream.Control, pin sshservice.Pin, signer *sshservice.UserSigner, command string, hasCommand bool) (int, error) {
+	return a.sshExecuteWithTransport(account, control, pin, signer, command, hasCommand, store.Config().Identity.Fingerprint,
+		func(ctx context.Context) (net.Conn, error) {
+			policy, e := store.ClientTLS(peer)
+			if e != nil {
+				return nil, e
+			}
+			return meshstream.Dial(ctx, peer.Identity.Address, policy, control, meshstream.DefaultLimits())
+		}, func(ctx context.Context) (model.SSHKeyStatus, error) {
+			var status model.SSHKeyStatus
+			e := sshRPC(ctx, store, control.Target, "ssh_key_status", "", &mesh.ExpectedEnrollment{Pair: control.Pair, Revision: control.Revision}, struct {
+				Key string `json:"key"`
+			}{control.Key}, &status)
+			return status, e
+		})
+}
+
+func (a *app) sshExecuteWithTransport(account sshLocalAccount, control meshstream.Control, pin sshservice.Pin, signer *sshservice.UserSigner,
+	command string, hasCommand bool, sourceCertificate string, dial func(context.Context) (net.Conn, error), lookup func(context.Context) (model.SSHKeyStatus, error)) (int, error) {
 	binary, e := exec.LookPath("ssh")
 	if e != nil {
 		return 1, e
@@ -480,7 +517,7 @@ func (a *app) sshExecute(store *mesh.Store, peer mesh.Peer, account sshLocalAcco
 	if e != nil {
 		return 1, e
 	}
-	intent := sshservice.SourceIntent{Schema: 1, Source: control.Source, Owner: account.Binding.Owner, Request: sshservice.SourceRequest{Key: control.Key, Pin: pin, TargetOwner: control.TargetOwner, SourceCertificate: store.Config().Identity.Fingerprint, PublicKey: control.PublicKey, Reason: control.Reason, TTL: control.TTL, Resources: control.Resources, CWD: control.CWD, Kind: control.Kind, CommandSHA256: control.CommandSHA256, PTY: control.PTY}, Worker: worker, Directory: dir, Created: time.Now().UTC()}
+	intent := sshservice.SourceIntent{Schema: 1, Source: control.Source, Owner: account.Binding.Owner, Request: sshservice.SourceRequest{Key: control.Key, Pin: pin, TargetOwner: control.TargetOwner, SourceCertificate: sourceCertificate, PublicKey: control.PublicKey, Reason: control.Reason, TTL: control.TTL, Resources: control.Resources, CWD: control.CWD, Kind: control.Kind, CommandSHA256: control.CommandSHA256, PTY: control.PTY}, Worker: worker, Directory: dir, Created: time.Now().UTC()}
 	if e = sshservice.ReserveSource(a.ctx, account.StateHome, account.Binding, intent); e != nil {
 		if refusal, definite := sshReservationRefusal(a.ctx, intent, e); definite {
 			return 1, refusal
@@ -502,10 +539,6 @@ func (a *app) sshExecute(store *mesh.Store, peer mesh.Peer, account sshLocalAcco
 	}
 	ctx, cancel := context.WithTimeout(a.ctx, control.TTL+15*time.Second)
 	defer cancel()
-	policy, e := store.ClientTLS(peer)
-	if e != nil {
-		return 1, sshUnknown(intent, e)
-	}
 	agentDone := make(chan struct{})
 	go func() {
 		defer close(agentDone)
@@ -525,7 +558,7 @@ func (a *app) sshExecute(store *mesh.Store, peer mesh.Peer, account sshLocalAcco
 			return
 		}
 		defer c.Close()
-		remote, e := meshstream.Dial(ctx, peer.Identity.Address, policy, control, meshstream.DefaultLimits())
+		remote, e := dial(ctx)
 		if e != nil {
 			streamDone <- e
 			return
@@ -597,12 +630,9 @@ func (a *app) sshExecute(store *mesh.Store, peer mesh.Peer, account sshLocalAcco
 	case <-streamDone:
 	case <-time.After(time.Second):
 	}
-	var status model.SSHKeyStatus
 	lookupCtx, lookupCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer lookupCancel()
-	e = sshRPC(lookupCtx, store, control.Target, "ssh_key_status", "", &mesh.ExpectedEnrollment{Pair: control.Pair, Revision: control.Revision}, struct {
-		Key string `json:"key"`
-	}{control.Key}, &status)
+	status, e := lookup(lookupCtx)
 	lookupErr := e
 	if lookupErr == nil {
 		if e = sshservice.ValidateKeyStatus(intent, status); e != nil {
