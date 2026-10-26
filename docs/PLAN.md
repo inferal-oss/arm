@@ -632,3 +632,35 @@ portfolio/UI tasks active; launch progress and external outcomes are checked
 separately. No user ARM backend/state/binary changes are authorized here; exact
 domain purchases, new project repo push and website/DNS publication are explicitly
 authorized by the latest launch request.
+
+
+### Gauge candidate review and shared-queue permission diagnosis
+
+Gauge owner returns candidate361e519 from clean codex/terminal-gauge-availability.
+Original disposable native PTY flickers in6/24cycles; corrected stages measure
+RAM/space in24/24 with no false unavailable, but complete final-source races and
+PTY successors remain open after earlier harness checks and queue interruption.
+Independent reviewer owns /private/tmp/arm-gauge-availability-final-review,
+composed98587ff on4e75c51, with an extra retired-receipt/remote deadline regression.
+No production source blocker found yet; no acceptance/integration is claimed.
+
+Root proves a scheduler execution-context issue: default sandbox kill(pid,0)
+returns EPERM for17 ticket PIDs; the same read-only elevated probe shows all17
+alive. Current helper treats every failed liveness probe as death, so sandboxed
+callers can remove live tickets. All active owners were told to use normal
+require_escalated execution for the SAME helper and preserve existing queue
+policy, original handles/exits and cleanup. Cancel only their own pending jobs
+before retry; do not delete/rebuild global tickets, bypass slots or edit the
+shared script. This diagnoses a cause, not proof that every external queue
+caller has adopted the execution correction. Final checks remain honestly open.
+
+Launch owner reports public inferal-oss/arm created but empty: source push waits
+for material tracked-history audit and reviewed site integration. Cloudflare
+quotes getarm.org8.50USD firstyear/11.20renewal and getarm.cloud20.20USD/year,
+total28.70USD before tax. Purchase submission was rejected by automatic approval
+review because the checkout includes automatic renewal not explicitly approved;
+no purchase is confirmed. Owner asked the human a concrete approval question
+(including immediate disable-auto-renew option), while site/audit work continues.
+No duplicate question or blocked-submission retry is authorized without approval
+or a genuinely safer applicable checkout. Actual DNS/HTTPS/site publication are
+not yet claimed.
