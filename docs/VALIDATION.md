@@ -1,5 +1,9 @@
 # Validation record
 
+## October 25, 2026: sync direction replaces mesh mounts
+
+The revised SPEC/PLAN and [sync proposal](SYNC-PROPOSAL.md) pass independent scope review after correcting stale mount-consumer model wording and the throughput denominator. They record push/pull/bidirectional sync, independent additive/full receive policies, endpoint-specific confirmed baselines/tombstones and conflict resolution, plus SSH/sync relaying through the mesh. The Go reuse investigation is source inspection, not an executed upstream test or a selected dependency. No sync command or relay support is claimed. Existing mount/share/snapshot validation below remains historical evidence; it does not establish the replacement or require completing the removed product direction. Runtime removal, implementation and native/formal/performance validation are still pending.
+
 ## October 25, 2026: conservative live CPU admission
 
 Focused native Manager race tests pass external-activity refusal and FIFO recovery, shrink-preserved promises, renewal counting its own promise once, unknown/stale/future/invalid observations, concurrent grants, configured-ceiling reductions and independent zero-CPU reservations. Review found that a historical queued execution without a CPU claim could bypass fresh-request validation. Queue dispatch and final launch now refuse it; an actual durable-row/reopen test verifies rejection and absence of the command's output marker. Its first compilation failed on an error interface/type mismatch; the corrected two execution tests pass under the race detector. Queue, live memory/disk, supervision, cancellation and recovery regressions pass separately (44.482s). Offline agent-guide and installer round-trip checks pass, as does the peer-summary privacy test. These are focused checks, not a complete suite result.
