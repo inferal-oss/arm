@@ -3,8 +3,9 @@
 The public site is an actual Semblance application. `app.ttl` holds the content,
 stock components, navigation model and Semblance theme selection with the system color scheme. `main.ts` only
 loads the engine, projects the graph, and attaches Semblance's DOM/event/history
-host effects. The only site-specific rendering binds the existing dashboard logo SVG to an
-image; the interface and diagram use stock components, with no CSS overrides. The color-scheme
+host effects. Two small site-specific renderings bind existing brand assets and the system-map
+content image to RDF/HTML. Layout and sizing use stock components and measure
+styles, with no CSS overrides. The color-scheme
 control changes graph state; the theme remains Semblance.
 
 The source lives on the same branch as ARM. The static build works at a domain
@@ -72,8 +73,10 @@ is copied from `docs/branding/carve/lockup-light.svg`. The graph's BrandLogo
 rendering chooses the readable asset for Day mode, and a native picture source
 follows the OS color preference in Match mode, with meaningful
 Screen and Text modalities; it does not reconstruct or recolor the identity.
-The lifecycle diagram uses stock Stack/Card/Text components and a reading order
-that states each transition, including queued admission and uncertain settlement.
+The operational system map is a repository-native SVG content asset shown by a
+small RDF/HTML image binding and the stock measure layer. It maps workloads and operator interfaces to the per-host backend,
+resource capabilities and explicitly authorized peers; its SVG description and
+graph alt text provide equivalent relationship labels.
 
 The install examples use a source checkout and `go install ./cmd/arm`, then
 `arm` on PATH. `go.mod` is the minimum Go-version authority. A local checkout

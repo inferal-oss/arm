@@ -87,49 +87,57 @@ ui:BrandLogoShape a sh:NodeShape ; sh:targetClass ui:BrandLogo ;
 ui:home a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-7 ;
     c:children ( ui:hero ui:diagram ui:screenshots ui:exampleCard ui:interfaces ui:homeNext ) .
 ui:hero a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ;
-    c:children ( ui:eyebrow ui:title ui:summary ui:platforms ui:heroLinks ) .
+    c:children ( ui:eyebrow ui:title ui:summary ui:heroLinks ) .
 ui:eyebrow a c:Text ; sty:textStyle sty:Overline ; c:label "Agent Resource Manager" .
-ui:title a c:Heading ; c:level 1 ; sty:textStyle sty:Display ; c:label "Time-bounded resource leases for agents." .
+ui:title a c:Heading ; c:level 1 ; sty:textStyle sty:Display ; c:label "Builds, tests and analysis compete for resources." .
 ui:summary a c:Text ; sty:textStyle sty:Subtitle ; pos:measure pos:ReadingMeasure ;
-    c:label "ARM is a local daemon and CLI that admits resource requests against shared CPU, memory, storage and port budgets. A SQLite ledger records each lease’s owner, reason, resource quantities and expiry." .
-ui:platforms a c:Text ; sty:textStyle sty:Mono ; c:label "macOS + Linux  /  Go + SQLite  /  Local CLI, web & terminal" .
+    c:label "AI agents often run builds, tests and analysis at the same time. On laptops and servers, those jobs share finite CPU, memory, storage and ports. ARM coordinates their resource requests with per-host budgets, queued admission and time-limited leases, recording who holds each resource and why." .
 ui:heroLinks a c:Stack ; pos:direction pos:Row ; pos:gap tok:space-5 ; c:children ( ui:startLink ui:sourceLink ) .
 ui:startLink a c:Link ; c:label "Install and run ARM →" ; c:to ui:start ; c:href "#start" .
 ui:sourceLink a c:Link ; c:label "Source repository" ; c:href "https://github.com/inferal-oss/arm" .
 
-# A responsive flow diagram made entirely from stock layout, cards and text.
-# The arrow labels describe transitions, so the reading order is also its text alternative.
-ui:diagram a c:Card ; c:label "How a supervised job uses ARM" ; c:content ui:flow .
-ui:flow a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-3 ;
-    c:children ( ui:requestNode ui:requestArrow ui:managerNode ui:decisionNodes ui:grantArrow ui:workNode ui:endArrow ui:cleanupNode ui:resultNodes ui:flowBoundary ) .
-ui:requestNode a c:Card ; c:label "1 / Agent or operator" ; c:content ui:requestText .
-ui:requestText a c:Text ; c:label "Request resources + reason + TTL. For example: 2 CPUs and 1 GiB of memory for a two-minute test run." .
-ui:requestArrow a c:Text ; sty:textStyle sty:Mono ; c:label "↓ request through the CLI or local API" .
-ui:managerNode a c:Card ; c:label "2 / ARM backend" ; c:content ui:managerText .
-ui:managerText a c:Text ; c:label "Check pool budgets and admission policy. Record the owner, requested quantities, expiry and lifecycle in the SQLite ledger." .
-ui:decisionNodes a c:Stack ; pos:layout pos:Grid ; pos:gap tok:space-3 ; c:children ( ui:queuedNode ui:grantedNode ) .
-ui:queuedNode a c:Card ; c:label "Capacity unavailable → queued" ; c:content ui:queuedText .
-ui:queuedText a c:Text ; c:label "With --wait, keep the request pending and reconsider admission when capacity changes. A queued request has not started the command. Other refusals are reported explicitly." .
-ui:grantedNode a c:Card ; c:label "Capacity available → granted" ; c:content ui:grantedText .
-ui:grantedText a c:Text ; c:label "Reserve the requested budget and give the lease an identity and expiry. Only the granted path continues to execution." .
-ui:grantArrow a c:Text ; sty:textStyle sty:Mono ; c:label "↓ granted lease" .
-ui:workNode a c:Card ; c:label "3 / Supervised command" ; c:content ui:workText .
-ui:workText a c:Text ; c:label "Run the command, attribute observed resource use, and expose the lease in CLI, web and terminal views. These CPU and memory promises are cooperative budgets, not OS quotas." .
-ui:endArrow a c:Text ; sty:textStyle sty:Mono ; c:label "↓ command exit, explicit release or TTL expiry" .
-ui:cleanupNode a c:Card ; c:label "4 / Stop and cleanup" ; c:content ui:cleanupText .
-ui:cleanupText a c:Text ; c:label "Stop only owned supervised work and reclaim only ARM-owned resources. Expiry or a cancellation request alone does not prove that the work stopped or storage was reclaimed." .
-ui:resultNodes a c:Stack ; pos:layout pos:Grid ; pos:gap tok:space-3 ; c:children ( ui:settledNode ui:uncertainNode ) .
-ui:settledNode a c:Card ; c:label "Closure proven → settled" ; c:content ui:settledText .
-ui:settledText a c:Text ; c:label "Return the corresponding capacity to the pool after the required stop, join or reclamation evidence. Keep the lifecycle history for inspection." .
-ui:uncertainNode a c:Card ; c:label "Closure uncertain → still charged" ; c:content ui:uncertainText .
-ui:uncertainText a c:Text ; c:label "Retain the resource obligation and report needs_attention until exact-owner recovery or reconciliation establishes the outcome." .
-ui:flowBoundary a c:Text ; sty:textStyle sty:Caption ; c:label "This diagram describes local supervised execution. Storage, ports and remote operations have their own ownership and settlement contracts; the implementation notes specify their supported scope." .
+
+# Content images use the stock measure layer for fluid sizing, without CSS overrides.
+ui:AssetImage a owl:Class ; rdfs:subClassOf sem:Component ; sem:slug "arm-asset-image" .
+ui:AssetImageRendering a sem:Rendering ; sem:targets ui:AssetImage ; sem:stratum 0 .
+ui:AssetImageScreen a sem:Rule ; sem:implements ui:AssetImageRendering ; sem:modality mod:Screen ;
+    sem:construct """
+PREFIX ui: <https://getarm.org/ui#>
+CONSTRUCT { ?root a rdfhtml:Img ; sem:renders $this ; rdfhtml:src ?src ; rdfhtml:alt ?alt . }
+WHERE {
+  $this a ui:AssetImage ; c:image ?src ; c:alt ?alt .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+}""" .
+ui:AssetImageText a sem:Rule ; sem:implements ui:AssetImageRendering ; sem:modality mod:Text ;
+    sem:construct """
+PREFIX ui: <https://getarm.org/ui#>
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?alt .
+}
+WHERE {
+  $this a ui:AssetImage ; c:alt ?alt .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
+ui:AssetImageShape a sh:NodeShape ; sh:targetClass ui:AssetImage ;
+    sh:property [ sh:path c:image ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^(https?://|/|[.]/|[.][.]/|[^:]+$)" ] ,
+                [ sh:path c:alt ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+# Operational system map: a repo-native content asset with the stock measure layer.
+ui:diagram a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-3 ;
+    c:children ( ui:diagramTitle ui:systemMap ui:diagramDescription ui:diagramLink ) .
+ui:diagramTitle a c:Heading ; c:level 2 ; c:label "System map" .
+ui:systemMap a ui:AssetImage ; pos:measure pos:PageMeasure ; c:image "system-map.svg" ;
+    c:alt "Agents running builds, tests and analysis use the CLI or local API. Operators use the web and terminal dashboards. Both connect to a per-host ARM backend, which coordinates CPU and memory budgets, custom pools, managed storage, held ports, supervised commands and a SQLite lease/event ledger. Explicit grants connect an optional peer host for scoped remote leases, execution and messages." .
+ui:diagramDescription a c:Text ; sty:textStyle sty:Caption ; c:label "Each host runs its own ARM backend. Agents request leases through the CLI or local API; operators inspect and manage the same leases through web and terminal dashboards. Explicit grants authorize scoped operations on peer hosts." .
+ui:diagramLink a c:Link ; c:label "Open system map at full size" ; c:href "./system-map.svg" .
 
 ui:exampleCard a c:Card ; c:label "Run a command under a lease" ; c:badge "CLI example" ; c:content ui:exampleBody .
 ui:exampleBody a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ; c:children ( ui:exampleCode ui:exampleNote ) .
 ui:exampleCode a c:Code ; c:block true ; c:language "sh" ; c:label """arm run --cpu 2 --memory 1GiB --ttl 2m --wait \\
   --reason "Run the project tests" -- go test ./...""" .
-ui:exampleNote a c:Text ; c:label "Ask for capacity, queue when it is busy, and supervise a command within its lease. Resource budgets are cooperative reservations; they are not kernel CPU or memory quotas." .
+ui:exampleNote a c:Text ; c:label "The request reserves cooperative CPU and memory budgets for the command. --wait queues it until capacity is available; --ttl sets its lease duration." .
 ui:interfaces a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ;
     c:children ( ui:interfacesTitle ui:interfacesText ui:interfacesCode ) .
 ui:interfacesTitle a c:Heading ; c:level 2 ; c:label "CLI, web and terminal interfaces" .
@@ -137,20 +145,20 @@ ui:interfacesText a c:Text ; c:label "Use the CLI from agent workflows, open the
 ui:interfacesCode a c:Code ; c:block true ; c:language "sh" ; c:label """arm resources
 arm dashboard
 arm dashboard terminal""" .
-ui:homeNext a c:Link ; c:label "Supported operations and limitations →" ; c:to ui:capabilities ; c:href "#capabilities" .
+ui:homeNext a c:Link ; c:label "Resource and operation details →" ; c:to ui:capabilities ; c:href "#capabilities" .
 
 # Getting started: every snippet follows the checked-in ARM README; no install script or imaginary releases.
 ui:start a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-6 ;
     c:children ( ui:startTitle ui:startIntro ui:buildCard ui:runCard ui:inspectCard ui:leaseCard ui:installCard ui:startReadme ) .
-ui:startTitle a c:Heading ; c:level 1 ; c:label "Install ARM and run a leased command" .
-ui:startIntro a c:Text ; c:label "Install from a source checkout with Go. The minimum Go version is declared in go.mod. ARM uses CGo-free SQLite and embeds its dashboard assets; running ARM does not require Node.js." .
+ui:startTitle a c:Heading ; c:level 1 ; c:label "Install ARM" .
+ui:startIntro a c:Text ; c:label "Use a Go source checkout to install ARM. go.mod declares the required Go version." .
 ui:buildCard a c:Card ; c:label "01 / Install" ; c:content ui:buildBody .
 ui:buildBody a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ; c:children ( ui:buildCode ui:buildNote ) .
 ui:buildCode a c:Code ; c:block true ; c:language "sh" ; c:label """git clone https://github.com/inferal-oss/arm.git
 cd arm
 go install ./cmd/arm
 arm version""" .
-ui:buildNote a c:Text ; c:label "go install places arm in GOBIN, or GOPATH/bin when GOBIN is unset. Ensure that directory is on PATH. No prebuilt release downloads are provided by this site." .
+ui:buildNote a c:Text ; c:label "go install places arm in GOBIN, or GOPATH/bin when GOBIN is unset. Add that directory to PATH." .
 ui:runCard a c:Card ; c:label "02 / Start a backend and run a job" ; c:content ui:runBody .
 ui:runBody a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ; c:children ( ui:runNote ui:runCode ) .
 ui:runNote a c:Text ; c:label "Choose an isolated state directory and capacity appropriate to your machine. The explicit CPU, memory and disk values below are example budgets. Keep ARM options before --; everything after it belongs to the child command." .
@@ -165,7 +173,7 @@ arm --home /tmp/arm-demo dashboard
 arm --home /tmp/arm-demo events --follow
 # Stop following events with Ctrl+C, then:
 arm --home /tmp/arm-demo daemon stop""" .
-ui:inspectNote a c:Text ; c:label "The dashboard opens a short-lived, one-use local link. Host observations and cooperative reservations are separate measurements. A stop or cleanup request can remain unresolved; inspect the reported outcome." .
+ui:inspectNote a c:Text ; c:label "The dashboard opens a short-lived local link. Use resources to inspect lease budgets and events to follow lifecycle changes. Stop following events with Ctrl+C before stopping the daemon." .
 ui:leaseCard a c:Card ; c:label "Work with an explicit lease" ; c:content ui:leaseBody .
 ui:leaseBody a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ; c:children ( ui:leaseCode ui:leaseNote ) .
 ui:leaseCode a c:Code ; c:block true ; c:language "sh" ; c:label """arm acquire --cpu 2 --memory 1GiB --ttl 10m \\
@@ -181,20 +189,19 @@ ui:installCode a c:Code ; c:block true ; c:language "sh" ; c:label """make insta
 # Ensure ~/.local/bin is on PATH, then:
 arm version
 arm install --dry-run""" .
-ui:installNote a c:Text ; c:label "make install builds a carrier with macOS/Linux payloads for arm64 and amd64, then installs it under ~/.local/bin. It does not start the backend or change agent configuration. The separate arm install command reviews agent integration changes." .
+ui:installNote a c:Text ; c:label "make install builds a carrier with macOS/Linux payloads for arm64 and amd64, then installs it under ~/.local/bin. Use arm install --dry-run to review agent configuration changes." .
 ui:startReadme a c:Link ; c:label "Continue with the full README →" ; c:href "https://github.com/inferal-oss/arm#readme" .
 
 # Capability claims intentionally distinguish current local support from ongoing delivery.
 ui:capabilities a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-6 ;
-    c:children ( ui:capabilitiesTitle ui:capabilitiesIntro ui:capabilityCards ui:boundariesTitle ui:boundaries ui:limitsLink ) .
-ui:capabilitiesTitle a c:Heading ; c:level 1 ; c:label "Supported operations and limitations" .
-ui:capabilitiesIntro a c:Text ; c:label "The implemented local operations are listed below. The full specification also describes planned workflows that have separate delivery and validation gates." .
+    c:children ( ui:capabilitiesTitle ui:capabilityCards ui:boundariesTitle ui:boundaries ui:limitsLink ) .
+ui:capabilitiesTitle a c:Heading ; c:level 1 ; c:label "Resources and operations" .
 ui:capabilityCards a c:Stack ; pos:layout pos:Grid ; pos:gap tok:space-4 ;
     c:children ( ui:leasesFeature ui:portsFeature ui:storageFeature ui:poolsFeature ui:visibilityFeature ui:meshFeature ) .
 ui:leasesFeature a c:Card ; c:label "Leases & admission" ; c:content ui:leasesFeatureText .
 ui:leasesFeatureText a c:Text ; c:label "Durable requests, queued admission, TTLs, renewals, release, supervised commands and owner attribution. Unknown or stale resource estimates can block new grants." .
 ui:portsFeature a c:Card ; c:label "Listener ports" ; c:content ui:portsFeatureText .
-ui:portsFeatureText a c:Text ; c:label "Reserve exact TCP/UDP bindings, kernel-selected ports or a bounded range. Socket-aware commands receive inherited descriptors; cooperative mode supports other programs with an explicit bind-race limitation." .
+ui:portsFeatureText a c:Text ; c:label "Reserve exact TCP/UDP bindings, kernel-selected ports or a bounded range. Pass held sockets to socket-aware commands, or use cooperative mode when the program needs to bind its own port." .
 ui:storageFeature a c:Card ; c:label "Managed storage" ; c:content ui:storageFeatureText .
 ui:storageFeatureText a c:Text ; c:label "Create time-bounded owned storage, inspect logical allocation, export selected artifacts and request reviewed cleanup. Shared APFS capacity and uncertain reclamation remain conservatively accounted." .
 ui:poolsFeature a c:Card ; c:label "Custom pools" ; c:content ui:poolsFeatureText .
@@ -202,24 +209,20 @@ ui:poolsFeatureText a c:Text ; c:label "Count browser slots, deployment permits 
 ui:visibilityFeature a c:Card ; c:label "Observation & messages" ; c:content ui:visibilityFeatureText .
 ui:visibilityFeatureText a c:Text ; c:label "Inspect native host CPU, memory, filesystem, disk I/O and network observations. View leases and activity, exchange agent/operator messages, and review supported controls in web and terminal interfaces." .
 ui:meshFeature a c:Card ; c:label "Opt-in direct peers" ; c:content ui:meshFeatureText .
-ui:meshFeatureText a c:Text ; c:label "Explicitly authorized direct peers support host selection, scoped remote leases/execution and host-directed messages. Nearby daemon reports are advisory; they do not reserve capacity across authorities." .
-ui:boundariesTitle a c:Heading ; c:level 2 ; c:label "Operational boundaries" .
-ui:boundaries a c:Accordion ; c:items ( ui:cooperativeLimit ui:roadmapLimit ui:filesystemLimit ui:securityLimit ) .
-ui:cooperativeLimit a c:AccordionItem ; c:label "Cooperative budgets are not OS isolation" ; c:expanded true ; c:content ui:cooperativeLimitText .
-ui:cooperativeLimitText a c:Text ; c:label "CPU and memory claims coordinate cooperating agents; they are not kernel quotas or allocation guarantees. Native samples have platform-specific scope and can miss escaped or exited processes. Automatic pause and GPU telemetry are not delivered." .
-ui:roadmapLimit a c:AccordionItem ; c:label "The roadmap includes unfinished runtime workflows" ; c:content ui:roadmapLimitText .
-ui:roadmapLimitText a c:Text ; c:label "Public bidirectional sync, generally usable TCP forwarding, complete Kubernetes enrollment, VNC access, managed provider lifecycles, full interface parity and distributed scheduling have remaining delivery gates. Internal components or passing scoped tests do not establish a supported public workflow." .
-ui:filesystemLimit a c:AccordionItem ; c:label "A removed directory does not prove reclaimed capacity" ; c:content ui:filesystemLimitText .
-ui:filesystemLimitText a c:Text ; c:label "Clones, snapshots, shared extents, open files and APFS containers complicate physical allocation. Logical size and reported allocation are separate from exclusive or reclaimable bytes. Inspection never grants deletion authority." .
-ui:securityLimit a c:AccordionItem ; c:label "Remote authority is explicit and scoped" ; c:content ui:securityLimitText .
-ui:securityLimitText a c:Text ; c:label "A supplied agent name is attribution, not authorization. The opt-in direct-peer mesh uses explicit grants and independent authorities. It does not provide distributed capacity consensus or isolation from arbitrary programs with the same user privileges." .
-ui:limitsLink a c:Link ; c:label "Read the current implementation boundaries →" ; c:href "https://github.com/inferal-oss/arm/blob/main/docs/IMPLEMENTATION.md" .
+ui:meshFeatureText a c:Text ; c:label "Explicitly authorized direct peers support host selection, scoped remote leases, execution and host-directed messages. Nearby daemon reports provide advisory resource observations." .
+ui:boundariesTitle a c:Heading ; c:level 2 ; c:label "Resource accounting and recovery" .
+ui:boundaries a c:Accordion ; c:items ( ui:cooperativeLimit ui:filesystemLimit ) .
+ui:cooperativeLimit a c:AccordionItem ; c:label "Admission budgets and observations" ; c:expanded true ; c:content ui:cooperativeLimitText .
+ui:cooperativeLimitText a c:Text ; c:label "CPU and memory claims are cooperative reservations. ARM reports host measurements alongside lease budgets and uses freshness checks when granting or renewing memory and disk claims." .
+ui:filesystemLimit a c:AccordionItem ; c:label "Cleanup and reconciliation" ; c:content ui:filesystemLimitText .
+ui:filesystemLimitText a c:Text ; c:label "Unresolved work and uncertain storage reclamation remain charged. Inspect the lease outcome and use the provider's recovery or reconciliation operation to settle the exact obligation." .
+ui:limitsLink a c:Link ; c:label "Implementation contracts and current limits →" ; c:href "https://github.com/inferal-oss/arm/blob/main/docs/IMPLEMENTATION.md" .
 
 # Source, documentation and honest download guidance.
 ui:docs a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-6 ;
-    c:children ( ui:docsTitle ui:docsIntro ui:docsLinks ui:contributeTitle ui:contributeText ui:contributeLinks ui:siteTitle ui:siteText ) .
-ui:docsTitle a c:Heading ; c:level 1 ; c:label "Documentation and source" .
-ui:docsIntro a c:Text ; c:label "The repository is the source of truth for setup, supported behavior, validation evidence and remaining delivery gates. Build from source with the getting-started guide; no binary releases are advertised here." .
+    c:children ( ui:docsTitle ui:docsIntro ui:docsLinks ui:contributeTitle ui:contributeText ui:contributeLinks ) .
+ui:docsTitle a c:Heading ; c:level 1 ; c:label "Documentation" .
+ui:docsIntro a c:Text ; c:label "Setup instructions, operation contracts, validation evidence and delivery work are maintained in the repository." .
 ui:docsLinks a c:Stack ; pos:layout pos:Grid ; pos:gap tok:space-4 ; c:children ( ui:readmeCard ui:implementationCard ui:specCard ui:validationCard ui:planCard ui:securityCard ) .
 ui:readmeCard a c:Card ; c:label "Setup & usage" ; c:note "Build, run, leases, storage, ports and integrations" ; c:content ui:readmeLink .
 ui:readmeLink a c:Link ; c:label "README" ; c:href "https://github.com/inferal-oss/arm#readme" .
@@ -234,14 +237,12 @@ ui:planLink a c:Link ; c:label "Delivery plan" ; c:href "https://github.com/infe
 ui:securityCard a c:Card ; c:label "Mesh authority" ; c:note "Authentication and directional authorization model" ; c:content ui:securityLink .
 ui:securityLink a c:Link ; c:label "Mesh security" ; c:href "https://github.com/inferal-oss/arm/blob/main/docs/MESH-SECURITY.md" .
 ui:contributeTitle a c:Heading ; c:level 2 ; c:label "Contributing" .
-ui:contributeText a c:Text ; c:label "ARM is licensed under MIT OR Apache-2.0. Read AGENTS.md for the review and validation workflow before contributing. Bug reports should include a reproducible example and avoid credentials, private paths or account data." .
+ui:contributeText a c:Text ; c:label "ARM is licensed under MIT OR Apache-2.0. AGENTS.md describes the review and validation workflow for contributions." .
 ui:contributeLinks a c:Stack ; pos:direction pos:Row ; pos:gap tok:space-5 ; c:children ( ui:issuesLink ui:contributingLink ui:mitLink ui:apacheLink ) .
 ui:issuesLink a c:Link ; c:label "Issues" ; c:href "https://github.com/inferal-oss/arm/issues" .
 ui:contributingLink a c:Link ; c:label "Contributor workflow" ; c:href "https://github.com/inferal-oss/arm/blob/main/AGENTS.md" .
 ui:mitLink a c:Link ; c:label "MIT license" ; c:href "https://github.com/inferal-oss/arm/blob/main/LICENSE-MIT" .
 ui:apacheLink a c:Link ; c:label "Apache-2.0 license" ; c:href "https://github.com/inferal-oss/arm/blob/main/LICENSE-APACHE" .
-ui:siteTitle a c:Heading ; c:level 2 ; c:label "Website implementation" .
-ui:siteText a c:Text ; c:label "This public website runs on the actual Semblance graph/component/event framework with its stock Semblance theme. Navigation, content and interactive disclosures are RDF graph data projected through Semblance rules. The website source lives beside ARM on the same main branch." .
 
 # Actual dashboard images are generated from isolated current-source runs on CI.
 # c:Picture is gallery data; the Gallery is a stock component.
@@ -256,4 +257,4 @@ ui:monitorShot a c:Picture ; c:image "screenshots/web-monitor.png" ;
 ui:resourcesShot a c:Picture ; c:image "screenshots/web-resources.png" ;
     c:alt "Web dashboard — Resources" ; c:caption "Web dashboard — Resources" .
 ui:terminalShot a c:Picture ; c:image "screenshots/terminal.png" ;
-    c:alt "Terminal dashboard — Monitor" ; c:caption "Terminal dashboard — Monitor" .
+    c:alt "Terminal dashboard — Resources" ; c:caption "Terminal dashboard — Resources" .

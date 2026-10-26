@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="780" viewBox="0 0 1440 780" role="img" aria-labelledby="system-title system-desc">
+<title id="system-title">ARM operational system map</title>
+<desc id="system-desc">Agents running builds, tests and analysis use the CLI or local API. Operators use web and terminal dashboards. Both connect to the same per-host ARM backend. It coordinates CPU and memory budgets, custom pools, managed storage, held TCP and UDP ports, supervised commands, and a SQLite ownership and event ledger. Explicit grants authorize scoped remote leases, execution and messages with an optional peer host.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker></defs>
+<rect width="1440" height="780" fill="#ffffff"/>
+<g font-family="system-ui, sans-serif" fill="#17232f">
+
+<rect x="40" y="50" width="300" height="130" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+<text x="190.0" y="85" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">AI agent workflows</text>
+<text x="190.0" y="120" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Builds · tests · analysis</text>
+<rect x="40" y="245" width="300" height="110" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+<text x="190.0" y="280" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Human operator</text>
+<text x="190.0" y="315" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Inspect and manage leases</text>
+<rect x="400" y="70" width="260" height="90" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+<text x="530.0" y="105" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">CLI / local API</text>
+<rect x="400" y="255" width="260" height="90" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+<text x="530.0" y="290" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Web + terminal</text>
+<rect x="740" y="85" width="310" height="270" rx="8" fill="#e9faf5" stroke="#177d69" stroke-width="2"/>
+<text x="895.0" y="120" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">ARM backend</text>
+<text x="895.0" y="155" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">One per host</text>
+<text x="895.0" y="183" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Admission and leases</text>
+<text x="895.0" y="211" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Owner · reason · expiry</text>
+<rect x="1130" y="130" width="270" height="190" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+<text x="1265.0" y="165" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Optional peer host</text>
+<text x="1265.0" y="200" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Explicit grants</text>
+<text x="1265.0" y="228" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Scoped remote leases,</text>
+<text x="1265.0" y="256" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">execution and messages</text>
+<path d="M340 115H400" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M340 300H400" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M660 115H700V165H740" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M660 300H700V275H740" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1050 225H1130" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="1090" y="203" font-size="16" font-weight="400" text-anchor="middle" fill="#17232f">Peer</text>
+<path d="M895 355V425H250M895 425H1190" fill="none" stroke="#475569" stroke-width="2.5"/>
+<text x="915" y="397" font-size="18" font-weight="500" text-anchor="start" fill="#17232f">Coordinates resources and records</text>
+<path d="M250 425V470" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M720 425V470" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1190 425V470" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="470" width="420" height="260" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="250" y="508" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Budgets</text>
+<rect x="510" y="470" width="420" height="260" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="720" y="508" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Owned resources</text>
+<rect x="980" y="470" width="420" height="260" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+<text x="1190" y="508" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Work and records</text>
+<rect x="60" y="535" width="380" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="250.0" y="570" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">CPU + memory budgets</text>
+<rect x="60" y="625" width="380" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="250.0" y="660" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Custom pools</text>
+<rect x="530" y="535" width="380" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="720.0" y="570" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Managed storage</text>
+<rect x="530" y="625" width="380" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="720.0" y="660" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Held TCP / UDP ports</text>
+<rect x="1000" y="535" width="380" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="1190.0" y="570" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Supervised commands</text>
+<rect x="1000" y="625" width="380" height="70" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="1190.0" y="660" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">SQLite ownership/event ledger</text>
+</g></svg>
