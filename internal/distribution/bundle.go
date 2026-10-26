@@ -50,9 +50,12 @@ type Manifest struct {
 }
 type Options struct {
 	Root, GoBinary, Output, Version string
-	Protocol                        int
-	Jobs                            int
-	Log                             io.Writer
+	// CarrierOS and CarrierArch are paired and apply only to BuildCarrier.
+	// Empty values select the builder's native supported platform.
+	CarrierOS, CarrierArch string
+	Protocol               int
+	Jobs                   int
+	Log                    io.Writer
 }
 
 // Build uses the selected Go to build four CGo-free siblings, verifies build
@@ -60,6 +63,9 @@ type Options struct {
 // downloads or compilers on the destination are involved.
 func Build(ctx context.Context, o Options) (string, Manifest, error) {
 	var manifest Manifest
+	if o.CarrierOS != "" || o.CarrierArch != "" {
+		return "", manifest, fmt.Errorf("carrier target options require BuildCarrier, not an archive build")
+	}
 	if _, _, e := payloadBudget(o.Jobs); e != nil {
 		return "", manifest, e
 	}

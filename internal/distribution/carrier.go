@@ -19,10 +19,15 @@ import (
 )
 
 // BuildCarrier stages a private source snapshot, builds four thin payloads with
-// embedding disabled, then embeds their compressed bytes into ONE native ARM.
+// embedding disabled, then embeds their compressed bytes into ONE ARM for the
+// selected supported platform (native by default).
 // Generated assets never touch the caller checkout and cannot race make build.
 func BuildCarrier(ctx context.Context, o Options) (string, companions.Manifest, error) {
 	var manifest companions.Manifest
+	goos, arch, e := carrierTarget(o)
+	if e != nil {
+		return "", manifest, e
+	}
 	if _, _, e := payloadBudget(o.Jobs); e != nil {
 		return "", manifest, e
 	}
@@ -118,19 +123,7 @@ func BuildCarrier(ctx context.Context, o Options) (string, companions.Manifest, 
 		}
 	}
 	staged := filepath.Join(temp, "arm")
-	flags := "-X=" + tagVariable + "=arm-bundle-v1:" + o.Version + ":" + fmt.Sprint(o.Protocol)
-	if o.Log != nil {
-		fmt.Fprintf(o.Log, "Building native carrier %s/%s with four compressed thin payloads\n", runtime.GOOS, runtime.GOARCH)
-	}
-	cmd := exec.CommandContext(ctx, goPath, "build", "-mod=readonly", "-trimpath", "-buildvcs=false", "-tags=armcarrier", "-ldflags="+flags, "-o", staged, "./cmd/arm")
-	cmd.Dir = source
-	cmd.Env = buildEnvironment(runtime.GOOS, runtime.GOARCH, runtime.GOMAXPROCS(0))
-	cmd.Stdout = o.Log
-	cmd.Stderr = o.Log
-	if e = cmd.Run(); e != nil {
-		return "", manifest, e
-	}
-	if _, e = inspect(staged, "arm", runtime.GOOS, runtime.GOARCH, flags); e != nil {
+	if e = buildCarrierExecutable(ctx, o, goPath, source, staged, goos, arch); e != nil {
 		return "", manifest, e
 	}
 	file, e := os.Open(staged)
@@ -158,6 +151,40 @@ func BuildCarrier(ctx context.Context, o Options) (string, companions.Manifest, 
 		return "", manifest, e
 	}
 	return final, manifest, nil
+}
+
+func carrierTarget(o Options) (string, string, error) {
+	goos, arch := o.CarrierOS, o.CarrierArch
+	if (goos == "") != (arch == "") {
+		return "", "", fmt.Errorf("carrier OS and architecture must be supplied together")
+	}
+	if goos == "" {
+		goos, arch = runtime.GOOS, runtime.GOARCH
+	}
+	for _, platform := range platforms {
+		if platform == [2]string{goos, arch} {
+			return goos, arch, nil
+		}
+	}
+	return "", "", fmt.Errorf("unsupported carrier platform %q/%q; use darwin/linux and amd64/arm64", goos, arch)
+}
+
+// This final compile is shared by native and explicitly targeted carriers. The
+// inspected Go build metadata must match the chosen target before publication.
+func buildCarrierExecutable(ctx context.Context, o Options, goPath, source, staged, goos, arch string) error {
+	flags := "-X=" + tagVariable + "=arm-bundle-v1:" + o.Version + ":" + fmt.Sprint(o.Protocol)
+	if o.Log != nil {
+		fmt.Fprintf(o.Log, "Building carrier %s/%s with four compressed thin payloads\n", goos, arch)
+	}
+	cmd := exec.CommandContext(ctx, goPath, "build", "-mod=readonly", "-trimpath", "-buildvcs=false", "-tags=armcarrier", "-ldflags="+flags, "-o", staged, "./cmd/arm")
+	cmd.Dir = source
+	cmd.Env = buildEnvironment(goos, arch, runtime.GOMAXPROCS(0))
+	cmd.Stdout, cmd.Stderr = o.Log, o.Log
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	_, err := inspect(staged, "arm", goos, arch, flags)
+	return err
 }
 func compressPayload(destination, source string) (int64, string, error) {
 	input, e := os.Open(source)
@@ -198,7 +225,7 @@ func copySource(ctx context.Context, source, target string) error {
 	}
 	var total int64
 	count := 0
-	for _, entry := range []string{"go.mod", "go.sum", "cmd", "internal", "knowledge"} {
+	for _, entry := range []string{"go.mod", "go.sum", "cmd", "internal", "knowledge", "third_party/rsyncgo"} {
 		e := filepath.WalkDir(filepath.Join(source, entry), func(path string, d fs.DirEntry, walkErr error) error {
 			if walkErr != nil {
 				return walkErr

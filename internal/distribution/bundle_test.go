@@ -126,12 +126,12 @@ func TestVersionCannotSelectArchivePathOrShellSyntax(t *testing.T) {
 func TestCarrierSourceSnapshotExcludesGeneratedAssetsAndPreservesCaller(t *testing.T) {
 	source := t.TempDir()
 	target := filepath.Join(t.TempDir(), "snapshot")
-	for _, d := range []string{"cmd", "internal/companions/generated", "knowledge"} {
+	for _, d := range []string{"cmd", "internal/companions/generated", "knowledge", "third_party/rsyncgo", "third_party/unreviewed", ".cache"} {
 		if err := os.MkdirAll(filepath.Join(source, d), 0700); err != nil {
 			t.Fatal(err)
 		}
 	}
-	for name, text := range map[string]string{"go.mod": "module fixture\n", "go.sum": "", "cmd/main.go": "package main\n", "internal/companions/assets_enabled.go": "package companions\n", "internal/companions/generated/operator-file": "must remain untouched", "knowledge/index.json": "[]"} {
+	for name, text := range map[string]string{"go.mod": "module fixture\n", "go.sum": "", "cmd/main.go": "package main\n", "internal/companions/assets_enabled.go": "package companions\n", "internal/companions/generated/operator-file": "must remain untouched", "knowledge/index.json": "[]", "third_party/rsyncgo/go.mod": "module github.com/gokrazy/rsync\n", "third_party/rsyncgo/LICENSE": "reviewed fork license", "third_party/rsyncgo/engine.go": "package rsync\n", "third_party/unreviewed/secret": "must not copy unrelated third parties", ".cache/generated": "must not copy caches"} {
 		if err := os.WriteFile(filepath.Join(source, name), []byte(text), 0600); err != nil {
 			t.Fatal(err)
 		}
@@ -141,6 +141,21 @@ func TestCarrierSourceSnapshotExcludesGeneratedAssetsAndPreservesCaller(t *testi
 	}
 	if _, err := os.Lstat(filepath.Join(target, "internal/companions/generated")); !os.IsNotExist(err) {
 		t.Fatal("generated payloads copied recursively", err)
+	}
+	for _, name := range []string{"third_party/rsyncgo/go.mod", "third_party/rsyncgo/LICENSE", "third_party/rsyncgo/engine.go"} {
+		original, err := os.ReadFile(filepath.Join(source, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		copied, err := os.ReadFile(filepath.Join(target, name))
+		if err != nil || string(copied) != string(original) {
+			t.Fatal("reviewed fork input missing or changed", name, err)
+		}
+	}
+	for _, name := range []string{"third_party/unreviewed", ".cache"} {
+		if _, err := os.Lstat(filepath.Join(target, name)); !os.IsNotExist(err) {
+			t.Fatal("unreviewed input copied", name, err)
+		}
 	}
 	raw, err := os.ReadFile(filepath.Join(source, "internal/companions/generated/operator-file"))
 	if err != nil || string(raw) != "must remain untouched" {
