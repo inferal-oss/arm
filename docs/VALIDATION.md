@@ -3286,3 +3286,16 @@ all test packages with `-run '^$'`; CLI races/vet are renewed after the help-onl
 change. Neither check is a complete server test-body run. Primary evidence is
 `.cache/kube-inventory-reviewed-module-compile.log` and
 `.cache/kube-inventory-integrated-cli-{help-race.jsonl,vet.log}`.
+
+## Mesh budget projection fixture correction
+
+The retained broad-server failure is reproduced on current `bf2010d`: the test
+passes `ttl_ns` to inspection, whose closed schema correctly rejects it. The
+fixture now supplies the TTL only for renewal and explicitly checks that the
+invalid inspection still returns `invalid_request`. All original private-budget
+redaction and fresh/durable replay assertions remain. The corrected focused
+native macOS race run passes in 2.649s; the original failure and successful runs
+remain in `/private/tmp/arm-mesh-budget-projection-fixture-fix/.cache/`.
+Production decoders and permissions are unchanged. This corrects that specific
+fixture failure; it is not a complete server-suite acceptance or a new Linux
+native CPU-capacity claim.

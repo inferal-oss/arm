@@ -88,8 +88,26 @@ func TestBudgetMeshLeaseProjectionAppliesToFreshStatusAndDurableReplay(t *testin
 	if lease.Budget != nil || lease.Request.Budget != "" {
 		t.Fatal(lease)
 	}
-	params, _ := json.Marshal(map[string]any{"id": lease.ID, "ttl_ns": int64(2 * time.Minute)})
+	// Inspection has a closed schema; a renewal-only field must not be
+	// accepted merely to accommodate this redaction/replay fixture.
+	invalid, err := json.Marshal(map[string]any{"id": lease.ID, "ttl_ns": int64(2 * time.Minute)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = service.dispatch(t.Context(), peer, mesh.Request{Operation: "inspect", Params: invalid})
+	var api *model.Error
+	if !errors.As(err, &api) || api.Code != "invalid_request" {
+		t.Fatalf("inspection accepted an unknown renewal field: %v", err)
+	}
 	for _, op := range []string{"inspect", "renew", "release"} {
+		fields := map[string]any{"id": lease.ID}
+		if op == "renew" {
+			fields["ttl_ns"] = int64(2 * time.Minute)
+		}
+		params, err := json.Marshal(fields)
+		if err != nil {
+			t.Fatal(err)
+		}
 		request := mesh.Request{Operation: op, Key: "peer-projection-" + op, Params: params}
 		first, err := service.dispatch(t.Context(), peer, request)
 		if err != nil {
