@@ -17,11 +17,13 @@ class Element {
 test('Kubernetes web inventory typeahead shows resources and preserves exact selected UID',async()=>{
   const document={createElement:tag=>new Element(tag,document)},root=document.createElement('section'),calls=[];
   const node={name:'arm-worker',uid:'node-uid',os:'linux',arch:'arm64',ready:true,allocatable_cpu:'1900m',allocatable_memory:'7Gi',allocatable_ephemeral:'20Gi'};
-  const inventory=createKubeInventory({root,document,connected:()=>true,call:async(op,params)=>{calls.push([op,params]);if(op==='kube_contexts')return[{name:'local',cluster_name:'disposable',namespace:'default',current:true},{name:'second',cluster_name:'another',namespace:'work'}];if(op==='kube_nodes')return{namespace:{name:params.namespace},nodes:[node]};throw Error(op);}});
+  const tainted={...node,name:'tainted-worker',uid:'tainted-uid',taints:['dedicated=elsewhere:NoSchedule']};
+  const inventory=createKubeInventory({root,document,connected:()=>true,call:async(op,params)=>{calls.push([op,params]);if(op==='kube_contexts')return[{name:'local',cluster_name:'disposable',namespace:'default',current:true},{name:'second',cluster_name:'another',namespace:'work'}];if(op==='kube_nodes')return{namespace:{name:params.namespace},nodes:[node,tainted]};throw Error(op);}});
   const find=(tag,text)=>root.all().find(element=>element.tagName===tag&&element.textContent===text);
   await find('button','Browse Kubernetes Nodes').fire('click');
   assert.equal(calls[1][0],'kube_nodes');
   assert.match(root.textContent,/arm64/);assert.match(root.textContent,/1900m/);assert.match(root.textContent,/7Gi/);assert.match(root.textContent,/20Gi/);
+  assert.equal(root.all().filter(element=>element.tagName==='button'&&element.textContent==='Select this Node')[1].disabled,true);
   await find('button','Select this Node').fire('click');
   assert.equal(inventory.getSelection().node.uid,'node-uid');
   const query=root.all().find(element=>element.tagName==='input'&&element.placeholder?.startsWith('Type'));
@@ -35,7 +37,7 @@ test('changing context immediately retires old Node selection and click handlers
   const document={createElement:tag=>new Element(tag,document)},root=document.createElement('section');
   let release;
   const gate=new Promise(resolve=>{release=resolve;});
-  const node={name:'original',uid:'original-uid',ready:true};
+  const node={name:'original',uid:'original-uid',os:'linux',arch:'amd64',ready:true};
   const inventory=createKubeInventory({root,document,connected:()=>true,call:async(op,params)=>{
     if(op==='kube_contexts')return [{name:'one',namespace:'default',current:true},{name:'two',namespace:'work'}];
     if(params.context==='two')return gate;
@@ -60,7 +62,7 @@ test('editing retires selection before debounce and hidden inventory cancels que
   let reads=0;
   const inventory=createKubeInventory({root,document,connected:()=>true,call:async(op,params)=>{
     if(op==='kube_contexts')return[{name:'one',namespace:'default',current:true}];
-    reads++;return{namespace:{name:params.namespace},nodes:[{name:'node',uid:'uid',ready:true}]};
+    reads++;return{namespace:{name:params.namespace},nodes:[{name:'node',uid:'uid',os:'linux',arch:'amd64',ready:true}]};
   }});
   const find=(tag,text)=>root.all().find(element=>element.tagName===tag&&element.textContent===text);
   await find('button','Browse Kubernetes Nodes').fire('click');

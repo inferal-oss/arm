@@ -33,7 +33,7 @@ func TestPublicKubernetesGroupHelpIsOffline(t *testing.T) {
 }
 
 func TestPublicKubernetesLeafHelpIsOffline(t *testing.T) {
-	for _, action := range []string{"contexts", "nodes", "keygen", "plan", "apply", "lookup", "ship"} {
+	for _, action := range []string{"contexts", "nodes", "keygen", "plan", "apply", "lookup", "reconcile", "ship"} {
 		var out, stderr bytes.Buffer
 		code := Main([]string{"--home", t.TempDir(), "mesh", "kubernetes", action, "--help"}, strings.NewReader(""), &out, &stderr)
 		if code != 0 || !strings.Contains(out.String(), "Usage: arm mesh kubernetes "+action) {

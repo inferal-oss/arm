@@ -7,7 +7,8 @@ import (
 )
 
 const startMarkerScript = `set -eu
-key=$1; digest=$2; size=$3; expected_uid=$4
+umask 077
+key=$1; digest=$2; size=$3; expected_uid=$4; catalog=$5
 test "${ARM_POD_UID:-}" = "$expected_uid"
 root=/arm/private
 test ! -e "$root/verified-start"
@@ -15,6 +16,12 @@ test "$(cat "$root/binary-receipt-$key")" = "$key $digest $size"
 actual=$(sha256sum "$root/arm")
 test "${actual%% *}" = "$digest"
 test "$(wc -c < "$root/arm" | tr -d ' ')" = "$size"
+proof="$root/catalog-proof-$key"
+test ! -e "$proof"
+"$root/arm" _kube-catalog-proof > "$proof"
+test "$(wc -c < "$proof" | tr -d ' ')" = 86
+test "$(cat "$proof")" = "ARM_CATALOG_VERIFIED $catalog"
+rm "$proof"
 printf '%s %s %s %s\n' "$key" "$digest" "$size" "$expected_uid" > "$root/start-stage-$key"
 ln "$root/start-stage-$key" "$root/verified-start"
 rm "$root/start-stage-$key"
@@ -72,6 +79,9 @@ func (p Provider) RequestStart(ctx context.Context, key string, transport ExecAP
 	if !ok || r.BinaryPhase != "binary_verified" {
 		return r, ErrUnknown
 	}
+	if _, err := p.LookupCatalog(ctx, key, transport); err != nil {
+		return r, err
+	}
 	if r.StartPhase != "" {
 		return p.ReconcileStartMarker(ctx, key, transport)
 	}
@@ -80,7 +90,7 @@ func (p Provider) RequestStart(ctx context.Context, key string, transport ExecAP
 		return r, err
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
-	args := []string{"/bin/sh", "-ec", startMarkerScript, "arm-start", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
+	args := []string{"/bin/sh", "-ec", startMarkerScript, "arm-start", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID, r.Plan.Review.CatalogSHA256}
 	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.Len() != 0 || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
 		return r, ErrUnknown
 	}

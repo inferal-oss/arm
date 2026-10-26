@@ -1215,7 +1215,7 @@ a trusted CA does not authorize another origin. Refused request bodies close.
 
 This foundation includes hidden inherited-pipe helper dispatch. Public
 `arm mesh kubernetes` now routes contexts, Node inventory, keygen, reviewed
-plan/apply, original-key lookup and exact binary shipment. Local authenticated
+plan/apply, original-key lookup/reconcile and exact binary shipment. Local authenticated
 web and Charm Mesh views support explicit context selection, Node typeahead
 and exact UID selection, showing reported architecture and allocatable CPU,
 memory and ephemeral storage. The inventory constructor rejects credential
@@ -1230,7 +1230,7 @@ stream limits. The browser retires selections and old click handlers as soon
 as context/search/namespace changes and cancels hidden queued searches.
 
 Selection remains read-only. Dashboard apply/recovery, actual Pod bootstrap and
-readiness, carrier catalog/enrollment, leased SSH connection, real-cluster
+readiness, real carrier/enrollment, leased SSH connection, real-cluster
 acceptance and wider rendered/PTY coverage remain required. Pod requests are ceilings
 and scheduler declarations, not proven live capacity; hidden Linux quota
 ancestry still refuses native CPU grants. No Kubernetes entitlement exception
@@ -1379,3 +1379,22 @@ Inspection never redials to diagnose or replays application bytes. An unexplaine
 primary development EOF remains retained; later exact-composition diagnostic
 runs pass, while a separate final start refuses insufficient native headroom.
 These limits do not change the ordinary-build authority fence.
+
+
+## Kubernetes runtime and catalog verification — scoped foundation
+
+Node selection now rejects unsupported OS/architecture, taints, unready and
+unschedulable Nodes in web and Charm. Read-only inventory disables kubeconfig
+migration and is refused after Stop admission seals. Original-key reconciliation
+is exposed without replaying Pod creation. Fixed owned exec helpers verify every
+embedded carrier payload and exact catalog digest before the start marker.
+A fresh authenticated Pod-local runtime observation binds backend host/generation
+and configured CPU/memory/disk ceilings to the reviewed plan before owned TCP
+forwarding. The private bearer proof uses an exact endpoint with proxies and
+redirects disabled; it rechecks the private endpoint after the response.
+
+These are configured-ceiling and runtime-identity proofs, not native live CPU
+availability, enrollment or SSH authority. Hidden quota ancestry stays refused.
+Native component/helper and selection tests pass; no new actual Pod/cluster,
+Linux runtime, dashboard apply/recovery, mesh enrollment, pinned SSH or wider
+rendered/PTY acceptance is claimed.

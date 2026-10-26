@@ -449,3 +449,12 @@ correction, preserving peer assets/help and the integrated source-sync Manager
 owners. The concrete operator review is docs/MESH-FORWARD-PROPOSAL.md; ordinary
 builds stay refused. Development-only public macOS CLI and three-daemon evidence
 does not close browser/general-client, Linux, physical-network or formal gates.
+
+
+Kubernetes runtime/catalog final candidate c118a01 is composed after forwarding
+5ecd9f7 using only the focused reviewed code and provider-contract changes.
+Shared delivery records remain centrally maintained. It adds Node eligibility,
+read-only/Stop-safe discovery, original-key reconciliation, catalog proof and
+exact authenticated runtime ceiling proof before forwarding; independent review
+fixes bearer-bearing probe redirects. Actual Pod/bootstrap/enrollment/pinned SSH,
+Linux runtime and dashboard apply/recovery remain separate gates.

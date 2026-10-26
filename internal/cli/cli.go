@@ -58,6 +58,12 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	if len(args) > 0 && args[0] == kubeprovision.ForwardHelperArgument {
 		return kubeprovision.ForwardHelperMain(args[1:])
 	}
+	if len(args) > 0 && args[0] == kubeprovision.CatalogProofArgument {
+		return kubeCatalogProofMain(args[1:], out)
+	}
+	if len(args) > 0 && args[0] == kubeprovision.RuntimeProofArgument {
+		return kubeRuntimeProofMain(args[1:], out)
+	}
 	if len(args) > 0 && args[0] == providerexec.HelperArgument {
 		return providerexec.HelperMain(args[1:], out, errout)
 	}

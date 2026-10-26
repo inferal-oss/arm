@@ -58,6 +58,16 @@ func (p Provider) ForwardOwned(ctx context.Context, key string) (*OwnedForwardSe
 	if err != nil {
 		return nil, err
 	}
+	transport, err := NewOwnedExec(r.Plan)
+	if err != nil {
+		return nil, err
+	}
+	if proof, err := p.LookupRuntime(ctx, key, transport); err != nil || proof.PodUID != pod.UID {
+		if err != nil {
+			return nil, err
+		}
+		return nil, ErrIdentity
+	}
 	return StartOwnedForward(ctx, r.Plan, pod)
 }
 

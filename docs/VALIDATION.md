@@ -3800,3 +3800,30 @@ Final primary ordinary fence and exact original-opener privacy/no-replay races
 each pass one root/case in 1.620s and 1.551s, without skips. Their receipts are
 `.cache/forward-primary-final-diagnostic-race.jsonl` and
 `.cache/forward-primary-final-opener-race.jsonl`.
+
+
+## Kubernetes runtime final review and primary composition
+
+Independent final review c118a01 composes the focused runtime/catalog sequence
+onto peer main and reproduces an authenticated Pod-local probe following a
+redirect to another listener. The correction uses a private no-proxy transport
+and rejects redirects; the original counterexample is retained and the final
+regression asserts zero requests reach the target. Final independent native
+provider/helper, CLI/server/TUI and web checks pass; exact evidence and fresh
+helper-image digest are indexed at
+`/private/tmp/arm-kubernetes-final-runtime-review/.cache/kube-runtime-review-summary.json`.
+
+Primary composes that exact candidate onto 5ecd9f7. All Kubernetes-specific
+sources match the independent head. A new CGo-free executable SHA256
+`c44c7de3e4d1b76773976f4544a4b70822d4d61ac64aec9820ce9c093ec41d8d`
+remains unchanged before/after actual helper execution. Complete provider races
+pass 57 roots/76 named cases in 7.638s. Focused CLI 6/6 (1.666s), server 5/5
+(1.770s, including preserved peer asset and default-off forwarding fence), and
+TUI 1/1 (1.747s) pass without failures/skips. All 210 web tests and four-package
+vet pass. Primary receipts are `.cache/kube-primary-{provider,components}-race.jsonl`,
+`.cache/kube-primary-{build,web,vet}.log` and `.cache/kube-primary-image.sha256`.
+
+This is native macOS component/owned-helper evidence, not a new actual Pod,
+cluster, Linux runtime, enrollment, pinned SSH, dashboard apply/recovery or
+visual/PTY workflow. Runtime ceilings are configuration proof, not native CPU
+headroom; no observer/RBAC/host-mount exception or QUIC change is introduced.

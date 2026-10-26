@@ -20,7 +20,7 @@ func (a *app) meshKubernetes(args []string) (int, error) {
 		return 0, nil
 	}
 	if len(args) == 0 {
-		return 2, fmt.Errorf("mesh kubernetes requires contexts, nodes, keygen, plan, apply, lookup or ship")
+		return 2, fmt.Errorf("mesh kubernetes requires contexts, nodes, keygen, plan, apply, lookup, reconcile or ship")
 	}
 	action, rest := args[0], args[1:]
 	switch action {
@@ -50,8 +50,8 @@ func (a *app) meshKubernetes(args []string) (int, error) {
 		return a.meshKubernetesNodes(rest)
 	case "plan", "apply":
 		return a.meshKubernetesPlan(action, rest)
-	case "lookup":
-		return a.meshKubernetesLookup(rest)
+	case "lookup", "reconcile":
+		return a.meshKubernetesObserve(action, rest)
 	case "ship":
 		return a.meshKubernetesShip(rest)
 	default:
@@ -221,13 +221,13 @@ func (a *app) kubeOriginal(ctx context.Context, key string) (kubeprovision.Provi
 	return kubeprovision.Provider{API: api, Journal: journal}, record, nil
 }
 
-func (a *app) meshKubernetesLookup(args []string) (int, error) {
-	f := a.flags("mesh kubernetes lookup")
+func (a *app) meshKubernetesObserve(action string, args []string) (int, error) {
+	f := a.flags("mesh kubernetes " + action)
 	if err := a.parse(f, args, false); err != nil {
 		return 2, err
 	}
 	if f.NArg() != 1 {
-		return 2, fmt.Errorf("lookup requires the original exact key")
+		return 2, fmt.Errorf("%s requires the original exact key", action)
 	}
 	ctx, cancel := context.WithTimeout(a.ctx, 30*time.Second)
 	defer cancel()
@@ -235,7 +235,12 @@ func (a *app) meshKubernetesLookup(args []string) (int, error) {
 	if err != nil {
 		return 1, err
 	}
-	observed, err := p.Lookup(ctx, f.Arg(0))
+	var observed kubeprovision.Record
+	if action == "reconcile" {
+		observed, err = p.Reconcile(ctx, f.Arg(0))
+	} else {
+		observed, err = p.Lookup(ctx, f.Arg(0))
+	}
 	if err == nil {
 		record = observed
 	}

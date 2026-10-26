@@ -1,12 +1,12 @@
 # Kubernetes mesh-node provisioning contract
 
-Status: isolated provider and native adapter milestone; no product UI or real
+Status: provider, CLI and read-only dashboard inventory milestone; no real
 cluster acceptance yet. This is an installation and
 transport portfolio; it does not grant mesh trust or remote execution.
 
 The native ARM executable has hidden, inherited-pipe-only Kubernetes helpers.
 The CLI shipment path uses a child for fixed Pod exec. The helper recognizes
-only the four existing shipment, lookup and start-marker scripts. An owned
+only six fixed shipment, binary/catalog/runtime lookup and start-marker scripts. An owned
 forwarding API puts the live client-go port-forward and its listener in a child
 as well. The parent verifies nonce/PID/process-group handshakes, keeps
 the original child handle, signals only its unreaped group on cancellation,
@@ -149,7 +149,7 @@ A timeout retains the session handle for later inspection. A disposable
 cluster has not yet verified the full carrier, so `Forward()` remains an
 isolated adapter rather than an enabled Mesh connection path.
 The public `arm mesh kubernetes` CLI now routes context/Node inventory,
-reviewed plan/apply, original-key lookup and exact binary shipment. Local
+reviewed plan/apply, original-key lookup/reconciliation and exact binary shipment. Local
 authenticated web and terminal dashboards have bounded context/Node inventory,
 typeahead search, exact UID selection and architecture/CPU/RAM/disk facts.
 Selection is read-only; dashboard apply, lookup and recovery controls remain
@@ -176,24 +176,34 @@ After review, the CLI reopens the selected binary with nonblocking, no-follow
 flags and verifies regular-file type, ownership, size and digest before shipment. A
 path replaced with a FIFO is rejected promptly, without waiting for a writer.
 The Pod bootstrap now derives positive ARM `serve` budgets from reviewed Pod
-requests; the generated command has been inspected in a Pod test, but an
+requests; the generated command has been inspected in a Pod test, but a
 live cluster readiness remains unverified. The optional
 `ARM_KUBE_TEST_BINARY` acceptance passed locally with a built ARM `serve`
 process: it used the generated positive budget arguments, returned an
 authenticated status, exited after owned SIGTERM and removed its endpoint.
 This does not exercise the Pod gate, catalog or cluster transport.
-The start-marker receipt does not prove that ARM is running or
-connectible. Catalog proof, runtime readiness, mesh enrollment and pinned SSH,
-dashboard apply/recovery, exact-UID destructive lifecycle and CPU capacity
-authority are not yet implemented. The public CLI can create an exactly
+An internal read-only proof now executes the exact shipped ARM binary in the
+owned Pod and requires its embedded carrier manifest digest to match the
+reviewed plan after all four payload streams verify. The fixed start-marker
+script repeats that proof before publishing its gate. A thin binary, changed
+payload or mismatched digest refuses start. This has fixture and helper
+tests, not real-cluster acceptance. The start-marker receipt does not prove
+that ARM is running or connectible. A separate internal read-only proof now
+authenticates to the exact Pod-local backend endpoint, checks current owner,
+host, generation and exact reviewed ceilings, and returns no bearer token.
+The owned forward path requires this proof before opening its TCP listener.
+It does not establish a mesh certificate, SSH host key or live CPU capacity.
+Complete runtime readiness, mesh enrollment, pinned SSH, dashboard
+apply/recovery, exact-UID destructive lifecycle and CPU capacity authority
+are not yet implemented. The public CLI can create an exactly
 reviewed Pod and ship its binary; that does not enable a mesh node or ARM CPU
-execution. It deliberately withholds `start` until
-destination catalog proof and runtime readiness checks exist.
+execution. It deliberately withholds public `start` until the complete
+readiness and mesh connection flow exists.
 The integrated module includes `k8s.io/client-go`, `k8s.io/api` and
 `k8s.io/apimachinery` at v0.37.1 (with `k8s.io/streaming` v0.37.1
 transitively). The adapter uses `clientcmd`, typed CoreV1, `remotecommand` and
-`portforward`. The current dashboard work is isolated pending coordinator
-review and integration.
+`portforward`. Read-only dashboard inventory is integrated; provisioning
+controls and real-cluster acceptance remain open.
 
 The narrow shared integration sequence is:
 

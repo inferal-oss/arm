@@ -16,7 +16,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// ExecHelperArgument admits only the four fixed Pod scripts below. It is not
+// ExecHelperArgument admits only the fixed Pod scripts below. It is not
 // an arbitrary Kubernetes command runner.
 const ExecHelperArgument = "_kube-exec-helper"
 
@@ -25,6 +25,8 @@ type reviewedExecKind string
 const (
 	execShip         reviewedExecKind = "ship"
 	execLookupBinary reviewedExecKind = "lookup_binary"
+	execCatalogProof reviewedExecKind = "catalog_proof"
+	execRuntimeProof reviewedExecKind = "runtime_proof"
 	execStart        reviewedExecKind = "start_marker"
 	execLookupStart  reviewedExecKind = "lookup_start_marker"
 )
@@ -50,6 +52,10 @@ func fixedExecCommand(plan Plan, pod Pod, kind reviewedExecKind) ([]string, erro
 		script, name = shipScript, "arm-ship"
 	case execLookupBinary:
 		script, name = lookupBinaryScript, "arm-lookup"
+	case execCatalogProof:
+		script, name = catalogProofScript, "arm-catalog-proof"
+	case execRuntimeProof:
+		script, name = runtimeProofScript, "arm-runtime-proof"
 	case execStart:
 		script, name = startMarkerScript, "arm-start"
 	case execLookupStart:
@@ -57,7 +63,11 @@ func fixedExecCommand(plan Plan, pod Pod, kind reviewedExecKind) ([]string, erro
 	default:
 		return nil, errors.New("unsupported Kubernetes helper operation")
 	}
-	return append([]string{"/bin/sh", "-ec", script, name}, common...), nil
+	command := append([]string{"/bin/sh", "-ec", script, name}, common...)
+	if kind == execStart {
+		command = append(command, plan.Review.CatalogSHA256)
+	}
+	return command, nil
 }
 
 func classifyReviewedExec(plan Plan, pod Pod, command []string, input io.Reader) (reviewedExecKind, error) {
@@ -67,7 +77,7 @@ func classifyReviewedExec(plan Plan, pod Pod, command []string, input io.Reader)
 	if err := checkPod(plan, pod); err != nil {
 		return "", err
 	}
-	for _, kind := range []reviewedExecKind{execShip, execLookupBinary, execStart, execLookupStart} {
+	for _, kind := range []reviewedExecKind{execShip, execLookupBinary, execCatalogProof, execStart, execLookupStart, execRuntimeProof} {
 		fixed, _ := fixedExecCommand(plan, pod, kind)
 		if reflect.DeepEqual(command, fixed) {
 			if (kind == execShip) != (input != nil) {
@@ -166,9 +176,17 @@ func executeReviewedPod(ctx context.Context, request reviewedExecRequest, payloa
 		if result.Output != "ARM_BINARY_VERIFIED\n" {
 			return failed(errors.New("binary receipt unavailable"))
 		}
+	case execCatalogProof:
+		if result.Output != "ARM_CATALOG_VERIFIED "+request.Plan.Review.CatalogSHA256+"\n" {
+			return failed(errors.New("carrier catalog proof unavailable"))
+		}
 	case execLookupStart:
 		if result.Output != "ARM_START_MARKER_VERIFIED\n" {
 			return failed(errors.New("start marker receipt unavailable"))
+		}
+	case execRuntimeProof:
+		if !runtimeProofPattern.MatchString(result.Output) {
+			return failed(errors.New("authenticated runtime proof unavailable"))
 		}
 	}
 	return result

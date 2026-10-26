@@ -443,12 +443,17 @@ func TestPrepareReadsExactCurrentReviewWithoutMutation(t *testing.T) {
 }
 
 type fakeBinaryExec struct {
-	ships        int
-	installed    bool
-	loseACK      bool
-	starts       int
-	marker       bool
-	loseStartACK bool
+	ships         int
+	installed     bool
+	loseACK       bool
+	catalogDigest string
+	starts        int
+	marker        bool
+	loseStartACK  bool
+	runtimeReady  bool
+	runtimeCPU    string
+	runtimeMemory string
+	runtimeDisk   string
 }
 
 func (f *fakeBinaryExec) Exec(_ context.Context, _ Pod, command []string, input io.Reader, stdout, stderr io.Writer) error {
@@ -474,6 +479,10 @@ func (f *fakeBinaryExec) Exec(_ context.Context, _ Pod, command []string, input 
 		_, err := io.WriteString(stdout, "ARM_BINARY_VERIFIED\n")
 		return err
 	}
+	if command[2] == catalogProofScript && f.installed {
+		_, err := io.WriteString(stdout, "ARM_CATALOG_VERIFIED "+f.catalogDigest+"\n")
+		return err
+	}
 	if command[2] == startMarkerScript && f.installed {
 		f.starts++
 		f.marker = true
@@ -484,6 +493,10 @@ func (f *fakeBinaryExec) Exec(_ context.Context, _ Pod, command []string, input 
 	}
 	if command[2] == lookupStartScript && f.marker {
 		_, err := io.WriteString(stdout, "ARM_START_MARKER_VERIFIED\n")
+		return err
+	}
+	if command[2] == runtimeProofScript && f.runtimeReady {
+		_, err := io.WriteString(stdout, "ARM_RUNTIME_VERIFIED "+strings.Repeat("a", 32)+" "+strings.Repeat("b", 32)+" "+f.runtimeCPU+" "+f.runtimeMemory+" "+f.runtimeDisk+"\n")
 		return err
 	}
 	return errors.New("not installed")
@@ -508,7 +521,7 @@ func TestBinaryLostACKLookupNeverResends(t *testing.T) {
 	if _, err := client.CoreV1().Pods("default").Update(t.Context(), obj, metav1.UpdateOptions{}); err != nil {
 		t.Fatal(err)
 	}
-	transport := &fakeBinaryExec{loseACK: true}
+	transport := &fakeBinaryExec{loseACK: true, catalogDigest: plan.Review.CatalogSHA256}
 	if _, err := p.ShipBinary(t.Context(), plan.Review.Key, strings.NewReader("payload"), transport); !errors.Is(err, ErrUnknown) {
 		t.Fatalf("lost ACK: %v", err)
 	}
@@ -519,6 +532,11 @@ func TestBinaryLostACKLookupNeverResends(t *testing.T) {
 	if err != nil || result.BinaryPhase != "binary_verified" || transport.ships != 1 {
 		t.Fatalf("recovery resent or failed: %+v %v ships=%d", result, err, transport.ships)
 	}
+	transport.catalogDigest = hash("wrong-catalog")
+	if _, err := p.RequestStart(t.Context(), plan.Review.Key, transport); !errors.Is(err, ErrUnknown) || transport.starts != 0 {
+		t.Fatalf("unverified carrier catalog admitted start: %v starts=%d", err, transport.starts)
+	}
+	transport.catalogDigest = plan.Review.CatalogSHA256
 	transport.loseStartACK = true
 	if _, err := p.RequestStart(t.Context(), plan.Review.Key, transport); !errors.Is(err, ErrUnknown) {
 		t.Fatalf("lost start ACK: %v", err)
@@ -526,6 +544,23 @@ func TestBinaryLostACKLookupNeverResends(t *testing.T) {
 	result, err = p.RequestStart(t.Context(), plan.Review.Key, transport)
 	if err != nil || result.StartPhase != "marker_verified" || transport.starts != 1 {
 		t.Fatalf("start marker replayed or lost: %+v %v starts=%d", result, err, transport.starts)
+	}
+	if _, err := p.LookupRuntime(t.Context(), plan.Review.Key, transport); !errors.Is(err, ErrUnknown) {
+		t.Fatalf("unready backend gained runtime proof: %v", err)
+	}
+	transport.runtimeReady = true
+	transport.runtimeCPU, transport.runtimeMemory, transport.runtimeDisk, err = bootstrapBudgets(plan.Review.Resources)
+	if err != nil {
+		t.Fatal(err)
+	}
+	transport.runtimeCPU = "1"
+	if _, err := p.LookupRuntime(t.Context(), plan.Review.Key, transport); !errors.Is(err, ErrIdentity) {
+		t.Fatalf("changed runtime CPU ceiling gained proof: %v", err)
+	}
+	transport.runtimeCPU, _, _, _ = bootstrapBudgets(plan.Review.Resources)
+	proof, err := p.LookupRuntime(t.Context(), plan.Review.Key, transport)
+	if err != nil || proof.PodUID != result.Pod.UID || proof.Host != strings.Repeat("a", 32) || proof.Generation != strings.Repeat("b", 32) {
+		t.Fatalf("exact runtime proof unavailable: %+v %v", proof, err)
 	}
 }
 

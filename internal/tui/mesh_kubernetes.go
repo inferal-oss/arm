@@ -23,6 +23,10 @@ type kubeInventoryUI struct {
 	err          string
 }
 
+func kubeNodeSelectable(node kubeprovision.Node) bool {
+	return node.Ready && !node.Unschedulable && node.UID != "" && node.OS == "linux" && (node.Arch == "amd64" || node.Arch == "arm64") && len(node.Taints) == 0
+}
+
 type kubeInventoryMsg struct {
 	ui       *kubeInventoryUI
 	session  transport
@@ -61,6 +65,8 @@ func (m *dashboardModel) readKubeNodes(ui *kubeInventoryUI) tea.Cmd {
 	sequence, session, ctx := ui.sequence, m.session, m.ctx
 	contextName, namespace, query := ui.contexts[ui.contextIndex].Name, ui.namespace, ui.query
 	ui.chosen = nil
+	ui.nodes = nil
+	ui.selected = 0
 	return func() tea.Msg {
 		msg := kubeInventoryMsg{ui: ui, session: session, sequence: sequence}
 		msg.err = session.Call(ctx, "kube_nodes", map[string]any{"context": contextName, "namespace": namespace, "query": query, "limit": 50}, &msg.result)
@@ -139,7 +145,7 @@ func (m *dashboardModel) kubeKey(key string) tea.Cmd {
 	case "enter":
 		if ui.selected < len(ui.nodes) {
 			node := ui.nodes[ui.selected]
-			if node.Ready && !node.Unschedulable && node.UID != "" {
+			if kubeNodeSelectable(node) {
 				ui.chosen = &node
 			} else {
 				ui.err = "This Node is unavailable for selection."
@@ -165,6 +171,10 @@ func (m *dashboardModel) scheduleKubeSearch(ui *kubeInventoryUI) tea.Cmd {
 	ui.sequence++
 	sequence := ui.sequence
 	ui.chosen = nil
+	ui.nodes = nil
+	ui.selected = 0
+	ui.loading = true
+	ui.err = ""
 	return tea.Tick(180*time.Millisecond, func(time.Time) tea.Msg { return kubeSearchTick{ui: ui, sequence: sequence} })
 }
 
@@ -196,8 +206,8 @@ func (m *dashboardModel) kubeText(ui *kubeInventoryUI) string {
 	}
 	for i, n := range ui.nodes {
 		state := "Ready"
-		if !n.Ready || n.Unschedulable {
-			state = "Unavailable"
+		if !kubeNodeSelectable(n) {
+			state = "Unavailable for ARM Pod"
 		}
 		fmt.Fprintf(&out, "%s%s · %s / %s · %s\n  CPU %s · RAM %s · disk %s\n  %s · %s · UID %s\n", selectedPrefix(ui.selected, i), safe(n.Name), safe(n.OS), safe(n.Arch), state, safe(n.AllocatableCPU), safe(n.AllocatableMemory), safe(n.AllocatableEphemeral), safe(n.Zone), safe(n.InstanceType), safe(n.UID))
 		if len(n.Taints) > 0 {

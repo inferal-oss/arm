@@ -41,6 +41,8 @@ type ContextChoice struct {
 
 func Contexts() ([]ContextChoice, error) {
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
+	// Inventory must not migrate legacy kubeconfig paths as a side effect.
+	rules.MigrationRules = nil
 	raw, err := rules.Load()
 	if err != nil {
 		return nil, err
@@ -94,6 +96,7 @@ func bootstrapCommand(r Resources) (string, error) {
 
 func resolveContext(name string) (string, *rest.Config, string, string, error) {
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
+	rules.MigrationRules = nil
 	raw, err := rules.Load()
 	if err != nil {
 		return "", nil, "", "", err

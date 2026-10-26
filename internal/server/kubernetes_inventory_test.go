@@ -11,6 +11,8 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/yrashk/arm/internal/model"
+
 	authv1 "k8s.io/api/authentication/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -66,6 +68,18 @@ func TestKubernetesInventoryTypeaheadReturnsCurrentResources(t *testing.T) {
 	}
 	if requests.Load() != 3 {
 		t.Fatalf("expected SSR, Namespace and Nodes reads, got %d", requests.Load())
+	}
+}
+
+func TestKubernetesInventoryIsNotAdmittedDuringBackendStop(t *testing.T) {
+	for _, operation := range []string{"kube_contexts", "kube_nodes"} {
+		if stopInspection(operation) {
+			t.Fatalf("%s was classified as a Stop-safe inspection", operation)
+		}
+		s := &Server{nodeStopClosing: true}
+		if _, err := s.dispatch(t.Context(), model.WireRequest{Operation: operation}); err == nil || !strings.Contains(err.Error(), "backend_stopping") {
+			t.Fatalf("%s reached kubeconfig work during Stop: %v", operation, err)
+		}
 	}
 }
 

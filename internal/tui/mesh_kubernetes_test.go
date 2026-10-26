@@ -52,9 +52,15 @@ func TestKubernetesTUITypeaheadSelectionAndStaleRead(t *testing.T) {
 	if text := m.meshText(); !strings.Contains(text, "context local") || !strings.Contains(text, "namespace default") || !strings.Contains(text, "exact UID exact-uid") {
 		t.Fatal("selected context, namespace or UID missing", text)
 	}
+	m.meshUI.kube.nodes[0].Taints = []string{"dedicated=elsewhere:NoSchedule"}
+	m.meshUI.kube.chosen = nil
+	press(m, "enter")
+	if m.meshUI.kube.chosen != nil || !strings.Contains(m.meshText(), "Unavailable for ARM Pod") {
+		t.Fatal("tainted Node remained selectable")
+	}
 	search := press(m, "a")
-	if search == nil || m.meshUI.kube.chosen != nil {
-		t.Fatal("typeahead failed to clear stale selection")
+	if search == nil || m.meshUI.kube.chosen != nil || len(m.meshUI.kube.nodes) != 0 {
+		t.Fatal("typeahead left a stale Node selectable")
 	}
 	press(m, "q")
 	press(m, "u")
