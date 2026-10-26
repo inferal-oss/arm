@@ -4,12 +4,71 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
 type retiredMountReader interface {
 	QueryRowContext(context.Context, string, ...any) *sql.Row
 	QueryContext(context.Context, string, ...any) (*sql.Rows, error)
+}
+
+// RefuseRetiredMountStateAtStartup permits only the pristine installed reset
+// seed to precede ordinary schema creation. Reset deliberately installs a
+// metadata-only database; absence of leases in any other established database
+// is not evidence of an empty obligation ledger. The destructive proof reader
+// continues to use the stricter RefuseRetiredMountState below.
+func RefuseRetiredMountStateAtStartup(ctx context.Context, home string, db *sql.DB) error {
+	var leasesPresent bool
+	if err := db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM sqlite_schema WHERE lower(name)='leases')`).Scan(&leasesPresent); err != nil {
+		return fmt.Errorf("retired mounting startup schema check failed: %w", err)
+	}
+	if leasesPresent {
+		return RefuseRetiredMountState(ctx, db)
+	}
+	if err := pristineInstalledResetSeed(ctx, home); err != nil {
+		return fmt.Errorf("established database lacks leases and is not the exact installed fresh reset seed; no recovery or schema changes permitted: %w", err)
+	}
+	return nil
+}
+
+func pristineInstalledResetSeed(ctx context.Context, home string) error {
+	d, err := OpenDirectory(home)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	seed, _, err := readResetJSON[ResetSeed](d, ResetSeedName)
+	if err != nil {
+		return err
+	}
+	if !seed.Installed {
+		return fmt.Errorf("reset seed has not been installed under the daemon lock")
+	}
+	s, err := openResetStore(d.Path, seed.Operation, false)
+	if err != nil {
+		return err
+	}
+	defer s.close()
+	receipt, _, err := s.readReceipt()
+	if err != nil {
+		return err
+	}
+	if err = validSeedReceipt(seed, receipt); err != nil {
+		return err
+	}
+	for _, name := range []string{"state.db-wal", "state.db-shm", "state.db-journal"} {
+		companion, err := d.Observe(name, false)
+		if err != nil || companion.Present {
+			return fmt.Errorf("pristine reset seed has unexpected SQLite companion %s", name)
+		}
+	}
+	expected := seed.File
+	expected.Name = "state.db"
+	if _, err = exactResetFile(ctx, d, expected, false); err != nil {
+		return err
+	}
+	return validateInstalledSeed(ctx, filepath.Join(d.Path, "state.db"), seed)
 }
 
 // RefuseRetiredMountState runs before generic lease/storage recovery and before

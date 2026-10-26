@@ -19,6 +19,8 @@ func TestRetiredMountRemovalPreservesOrdinaryLeaseHistoryOnReopen(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
+	// This checks durable history, not physical headroom admission.
+	memoryReading(m, 1024, 1024, 0)
 	lease, err := m.Acquire(model.Request{Reason: "ordinary preserved promise", Key: "ordinary", TTL: time.Minute, Resources: model.Resources{Memory: 1}}, nil)
 	if err != nil {
 		_ = m.Close()
@@ -66,6 +68,8 @@ func TestRetiredMountStartupRefusesBeforeRecoveryAndPreservesDuties(t *testing.T
 			if err != nil {
 				t.Fatal(err)
 			}
+			// Keep the real memory promise independent of current host pressure.
+			memoryReading(m, 1024, 1024, 0)
 			lease, err := m.Acquire(model.Request{Reason: "retired fixture obligation", Key: "retained", TTL: time.Minute, Resources: model.Resources{Memory: 1}}, nil)
 			if err != nil {
 				_ = m.Close()

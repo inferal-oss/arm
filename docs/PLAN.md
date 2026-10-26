@@ -275,3 +275,8 @@ installation and conservative reset/Stop evidence retention are integrated
 separately; complete cleanup/retirement remains required.
 SSH cleanup formal verification is integrated after independent review and a fresh complete primary gate. Kubernetes helper/provider composition remains in final transport review and native validation. Public sync, complete Kubernetes node
 bootstrap/enrollment and dashboard controls remain required.
+
+**Reset startup correction integrated:** only the exact installed, externally
+receipted pristine metadata-only reset seed may reach schema initialization.
+Changed/partial established databases and retired obligations stay refused;
+destructive settled proof retains its strict schema requirements.

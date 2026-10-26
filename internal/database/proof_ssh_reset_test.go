@@ -17,7 +17,10 @@ import (
 
 func TestSSHResetArchivesCompleteNamespaceAndStartsFreshAuthority(t *testing.T) {
 	ctx := context.Background()
-	home, binding, pin := sshProofState(t)
+	// This exercises only durable namespace/reset metadata, with no native SSH
+	// execution. Use the fixture's counted permit instead of an incidental CPU
+	// reservation whose availability depends on unrelated host workloads.
+	home, binding, pin := sshProofStateInHome(t, proofFixtureResources(t, false, model.Resources{}))
 	intent := sshProofIntent(t, home, binding, pin)
 	before := snapshotTree(t, home)
 	pending, err := database.ReviewReset(ctx, home, "refuse pending SSH even with retirement", true)

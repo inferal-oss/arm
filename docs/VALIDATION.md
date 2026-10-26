@@ -2871,3 +2871,30 @@ is not native positive CPU capacity validation or physical allocation proof.
 Root separately reproduces the reset/reopen regression on main without the
 admission patch (3.168s), and the retired-state startup guard is being corrected
 in an isolated branch. Full suites and public sync acceptance remain pending.
+
+### Installed reset seed startup regression (October 26, 2026)
+
+The namespace-retirement reset test reproduced an actual regression: mount-removal commit `0653d5c` added an unconditional pre-migration `leases` query, while the existing reset producer intentionally builds only fresh authority metadata. The original test failed on reopening at the absent table (2.667s native race package). A controlled old-call-site run against the metadata-only fixture also failed at that same query (7.695s), establishing the cause rather than attributing it to an unrelated pre-existing test.
+
+The startup-only wrapper accepts the exact installed pristine seed, bound to its completed external receipt, applied marker, original native inode, full file digest and absent SQLite companions. Ten changed/unbound cases refuse: missing, malformed or uninstalled pointer; missing external receipt; changed bytes; replaced inode; retired table or marker; forged applied marker; and a SQLite companion. An unrelated metadata-only established database also refuses. The original destructive settled-proof guard still rejects a missing obligation schema, and the positive startup check leaves seed bytes unchanged.
+
+Final native race validation passes all 12 database roots/36 named cases (38.291s) and both Manager roots/10 named cases (27.158s), with zero failures/skips. It includes the actual namespace reset/fresh-authority test, normal fresh and established startup, missing-authority refusal, actual backend Serve/restart, reset seed installation/recovery, large ordinary lease metadata, and preservation/refusal of retired obligations before recovery. Affected database/Manager vet passes. Evidence is retained in the isolated worktree's ignored `.cache/reset-old-guard-counterexample.log`, `.cache/reset-sparse-seed-final-race.jsonl` and `.cache/reset-sparse-seed-vet.log`.
+
+Two unchanged-test retries encountered unrelated live CPU admission refusals during fixture setup before exercising reset. This metadata-only test now uses its already-counted pool permit without an incidental CPU reservation; it launches no native workload. Production CPU admission and the general proof fixture's CPU claim are unchanged. The positive test still fails with the old startup guard. This focused correction does not provide automatic recovery for a mutated/partial startup seed or establish whole-program/formal reset refinement.
+
+The complete database test binary, including its Manager/server dependencies, also cross-compiles for Linux ARM64 with CGo disabled. That is compilation evidence only; this focused successor has not been executed on Linux.
+
+Primary composition passes selected database races14.745s and final retired-state
+Manager races19.940s plus affected vet. The first composed Manager attempt
+refuses its one-byte memory fixture under live headroom; this metadata test now
+uses a controlled fresh memory observation while retaining its actual memory
+lease/history. Production sampling/admission remain unchanged. The failed
+attempt stays in `.cache/reset-startup-composed-root-race.log`; final evidence
+is `.cache/reset-startup-final-root-manager-race.log` and affected vet log.
+Actual Linux runs all new startup-seed and existing retired-state scenarios
+plus reset/fresh-authority with zero failures/skips, verified binary hashes,
+original native/SSH/cleanup exit0, inactive scope and exact owned root absent.
+Its Manager fixture still uses live memory and passes; the later test-only
+controlled-observation specialization does not change production startup.
+Evidence: `.cache/reset-startup-reviewed-linux-{intent.json,native.log,run.log}`.
+This supersedes the author's compilation-only Linux scope for this guard.

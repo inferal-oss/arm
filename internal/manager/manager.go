@@ -142,7 +142,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			db.Close()
 			return nil, e
 		}
-		if e = database.RefuseRetiredMountState(context.Background(), db); e != nil {
+		if e = database.RefuseRetiredMountStateAtStartup(context.Background(), home, db); e != nil {
 			db.Close()
 			return nil, e
 		}
