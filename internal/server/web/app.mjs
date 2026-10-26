@@ -1,4 +1,5 @@
-import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths, ownerDisplay} from './core.mjs';
+import {createPeerPollGate} from './peer-poll.mjs';
+import {parseJSON, stringifyJSON, numeric, count, bytes, displayUnit, quantity, percent, mergeHistory, chartPaths, ownerDisplay, hostResourceSummary as peerQuantity} from './core.mjs';
 import {leaseStateLabel, leaseVisible, isInactiveLease, readHideInactive, saveHideInactive} from './lease-state.mjs';
 import {allDevices,selectedDeviceIDs,aggregateIO,aggregateIOWindow} from './io-devices.mjs';
 import {createIOSelector} from './io-selector.mjs';
@@ -58,6 +59,8 @@ const pendingReviewConfigurations = new Set();
 let poolConsole = null;
 let meshConsole = null;
 let detailLeaseID = '';
+let peerPicture = null;
+const peerPoll = createPeerPollGate();
 const pendingLeaseActions = new Set();
 const navigation = createDashboardHistory({location, history, onRoute: applyDashboardRoute});
 const activityFeed = createActivityFeed({root:$('live-feed'),toggle:$('feed-toggle'),drawer:$('feed-drawer'),onLease:id=>showLease(id),onMessages:()=>selectView('messages'),onActivity:()=>selectView('activity')});
@@ -145,6 +148,7 @@ const authentication = createDashboardAuthentication({
   clearSession: () => { try { sessionStorage.removeItem(sessionKey); } catch { /* Storage may be unavailable. */ } },
   onStart: fresh => {
     clearTimeout(retryTimer); clearTimeout(refreshTimer); refreshTimer = null; retry = 0;
+    peerPicture = null; peerPoll.reset(null);
     const previous = connection; connection = null; session = null;
     previous?.disconnect(); // Settle outstanding requests immediately, never replay.
     connectionState(fresh ? 'Authenticating' : 'Connecting'); notice();
@@ -159,6 +163,7 @@ async function connect() {
   clearTimeout(retryTimer);
   connectionState(retry ? 'Reconnecting' : 'Connecting');
   const current = connection = new Backend(session.token);
+  peerPoll.reset(current);
   try {
     await current.ready;
     if (session.context && !session.context.local) {
@@ -233,6 +238,7 @@ function acceptMonitor(page) {
 }
 function updateFreshness() {
   remoteDashboard?.updateFreshness();
+  if (view === 'resources' && !remoteDashboard) refreshPeerPicture();
   if(view==='resources'&&state.status&&capacityDisplayFreshness!==capacityFreshnessKey(capacityBudgetsForView(state.status,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived})))resourceCards();
   if (view !== 'monitor' && state.status) {
     const age = Math.max(0, Math.floor((performance.now() - state.statusReceived) / 1000));
@@ -449,6 +455,8 @@ function renderResources() {
   if (!state.status) { poolConsole?.dispose(); poolConsole=null; root.replaceChildren(empty('Waiting for resource budgets…')); return; }
   if (!root.querySelector('input')) { root.replaceChildren(); filterToolbar(root, 'Filter resources, owners or reasons…', resourceFilter, value => { resourceFilter = value; resourceCards(); }, 'Cooperative reservations · exact counts'); }
   resourceCards();
+  renderPeerPicture();
+  refreshPeerPicture();
   if (!poolConsole) {
     const slot = node('section', 'pool-console');
     root.append(slot);
@@ -460,6 +468,61 @@ function renderResources() {
     });
   }
   poolConsole.update({status: state.status, route: navigation.current});
+}
+function refreshPeerPicture() {
+  if (!state.connected) return;
+  const current = connection;
+  if (!peerPoll.begin(current,performance.now())) return;
+  current.call('peers_status').then(picture => {
+    if (connection !== current) return;
+    peerPicture = picture;
+    if (view === 'resources') renderPeerPicture();
+  }).catch(error => {
+    if (connection !== current) return;
+    peerPicture = {discovery_unavailable: error.message, instances: [], totals_complete: false};
+    if (view === 'resources') renderPeerPicture();
+  }).finally(() => { peerPoll.finish(current,performance.now()); });
+}
+function renderPeerPicture() {
+  const root = $('resources');
+  root.querySelector('.peer-picture')?.remove();
+  const section = node('section', 'peer-picture panel');
+  section.append(node('h2', '', 'Nearby ARM instances'));
+  if (!peerPicture) section.append(node('p', 'measure-note', 'Checking local announcements…'));
+  else {
+    const r = peerPicture;
+    section.append(node('p', 'measure-note', !state.connected ? 'Stale view · backend disconnected' : r.totals_complete ? 'Recent discovered peer reports' : 'Partial view · some announcements or peers are unavailable'));
+    if (r.local) {
+      const local = node('div', 'consumer');
+      local.append(node('strong', '', 'This ARM instance'));
+      local.append(node('p', '', `Held ${peerQuantity(r.local.held)} (${r.local.held_count}); queued ${peerQuantity(r.local.queued)} (${r.local.queued_count})`));
+      for (const item of r.local.items ?? []) local.append(node('p', 'measure-note', peerItemText(item)));
+      if (r.local.truncated) local.append(node('p', 'measure-note', 'Itemized list truncated; totals include all local claims.'));
+      section.append(local);
+    }
+    if (r.peer_held) section.append(node('p', '', `Peer-reported held: ${peerQuantity(r.peer_held)} across ${r.peer_held_count ?? 0} leases`));
+    if (r.peer_queued) section.append(node('p', '', `Peer-reported queued: ${peerQuantity(r.peer_queued)} across ${r.peer_queued_count ?? 0} requests`));
+    for (const peer of r.instances ?? []) {
+      const block = node('div', 'consumer');
+      block.append(node('strong', '', `UID ${peer.uid} · ${peer.host}`));
+      if (!peer.snapshot) block.append(node('p', 'measure-note', peer.error || 'Unavailable'));
+      else {
+        block.append(node('p', '', `Held ${peerQuantity(peer.snapshot.held)} (${peer.snapshot.held_count}); queued ${peerQuantity(peer.snapshot.queued)} (${peer.snapshot.queued_count})`));
+        for (const item of peer.snapshot.items ?? []) block.append(node('p', 'measure-note', peerItemText(item)));
+        if (peer.snapshot.truncated) block.append(node('p', 'measure-note', 'Itemized list truncated; totals include all reported claims.'));
+      }
+      section.append(block);
+    }
+    if (r.discovery_unavailable) section.append(node('p', 'measure-note', `Discovery: ${r.discovery_unavailable}`));
+    section.append(node('p', 'measure-note', r.advisory || 'Peer reports are advisory.'));
+  }
+  const poolSlot = root.querySelector('.pool-console');
+  if (poolSlot) root.insertBefore(section, poolSlot); else root.append(section);
+}
+function peerItemText(item) {
+  const duration = Number(item.requested_ttl_ns);
+  const timing = item.state === 'queued' ? `queue #${item.queue_position || '?'}${Number.isFinite(duration) && duration > 0 ? ` · requested for ${Math.round(duration / 1e9)}s` : ''}${item.estimated_start_at ? ` · estimated start ${when(item.estimated_start_at)}` : ''}${item.start_deadline_at ? ` · start by ${when(item.start_deadline_at)}` : ''}` : `expires ${when(item.expires_at)}`;
+  return `${item.state} · ${peerQuantity(item.resources)} · ${timing}`;
 }
 function resourceCards() {
   const budgets=capacityBudgetsForView(state.status,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived});
@@ -512,7 +575,7 @@ function resourceCards() {
     if (!r.users?.length) p.body.append(node('p', 'measure-note', 'No current consumers'));
     grid.append(p.box);
   }
-  if (!grid.childElementCount) grid.append(empty('No matching resources')); const poolSlot=root.querySelector('.pool-console');if(poolSlot)root.insertBefore(grid,poolSlot);else root.append(grid);
+  if (!grid.childElementCount) grid.append(empty('No matching resources')); const afterGrid=root.querySelector('.peer-picture') || root.querySelector('.pool-console');if(afterGrid)root.insertBefore(grid,afterGrid);else root.append(grid);
   if (focusedHelpKey && !$('metric-help').open) [...grid.querySelectorAll('[data-help-key]')].find(button => button.dataset.helpKey === focusedHelpKey)?.focus({preventScroll: true});
 }
 function leaseButton(id) { const b = node('button', 'link-button', id); b.addEventListener('click', () => showLease(id)); return b; }

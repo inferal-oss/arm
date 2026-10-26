@@ -1,3 +1,10 @@
+# Agent Resource Manager
+
+ARM is a Go resource manager for agents, coordinating time-bounded CPU, memory,
+storage and other resource leases with durable ownership, admission, recovery,
+CLI, web and terminal interfaces, and explicitly authorized mesh operations.
+The complete scope and current delivery boundaries are in SPEC.md and docs/.
+
 # Development workflow
 
 ## Coordinator operation

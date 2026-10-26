@@ -50,3 +50,9 @@ test('historical owner display uses current account only for the same UID and au
   assert.equal(ownerDisplay(null,current),'Unknown owner');
   assert.deepEqual(legacy,{host:'local-host',owner:'501'});
 });
+
+test('peer resource promises use exact backend wire fields for RAM and disk', async () => {
+  const {hostResourceSummary} = await import('./core.mjs');
+  assert.equal(hostResourceSummary({cpu:1.25,memory_bytes:734003200,disk_bytes:2147483648}), '1.25 cores · 700 MiB RAM · 2 GiB disk');
+  assert.equal(hostResourceSummary({cpu:0,memory_bytes:629145600,disk_bytes:0}), '0 cores · 600 MiB RAM · 0 B disk');
+});

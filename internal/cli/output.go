@@ -264,6 +264,9 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 	}
 }
 func (a *app) human(v any) error {
+	if report, ok := v.(model.PeerOverview); ok {
+		return a.peersHuman(report)
+	}
 	if report, ok := v.(install.Report); ok {
 		return a.installationReport(report)
 	}

@@ -1190,21 +1190,51 @@ does not authorize a host observer, new RBAC or a capacity exception.
 
 ## Multi-user cooperation research
 
-[The reviewed proposal](MULTI-USER-COOPERATION-PROPOSAL.md) is a research artifact,
-not implemented behavior. Independent per-user daemons and private authority
-remain current. The candidate broker would authenticate OS principals and
-serialize a consented promise ledger; it cannot independently establish another
-user's truthful consumption or cleanup. Evidence classes, durable activation,
-unknown outcomes, coordinator fencing, namespace mapping, privacy and fairness
-limits are explicit. The settlement trust choice and service provisioning need
-operator review before implementation or production activation.
+[The reviewed proposal](MULTI-USER-COOPERATION-PROPOSAL.md) records the narrowed
+advisory discovery scheme now integrated below. Earlier broker research is
+historical; shared admission and cross-user settlement authority remain outside
+this feature.
+
+### Multi-user cooperation status
 
 The operator subsequently narrowed the requested feature and authorized
-default-on, opt-out read-only local instance awareness. That implementation is
-isolated in `45e3dc5` pending independent review, rather than enabled in this
-checkout. It exchanges advisory held/queued quantities and timing through
-public temporary-directory discovery and the existing loopback WebSocket.
-It does not require the earlier broker or any shared admission authority.
+default-on, opt-out read-only local instance awareness. The integrated feature
+exchanges advisory held/queued physical quantities and itemized durations,
+expiries and queue estimates through public temporary-directory discovery and
+the existing loopback WebSocket. `arm peers off` creates a private per-instance
+opt-out marker; new peer requests refuse immediately and the public locator is
+removed on the next refresh. `arm peers on` republishes on the next refresh.
+Private control tokens, lease identifiers, reasons, paths and recipients are
+not in the public projection. CLI and web Resources expose the advisory view;
+The actual desktop browser renders held/queued quantities and timing correctly;
+Charm peer-view parity, native macOS different-user and wider viewport
+acceptance remain outstanding.
+
+Native root-owned mode-1777 `/tmp` and regular, single-link, non-writable-by-others
+records establish announcement file ownership. A mutually signed server-first
+challenge binds both ephemeral instance keys, native file UIDs, exact record
+names, canonical loopback endpoint URLs, host IDs and generations. No redirects,
+HTTP proxies, browser origins, cookies or private bearer tokens are accepted on
+the peer exchange. This proves possession of the announcement key, not a kernel
+attestation of TCP process identity, truthful quantities, physical exclusivity,
+or shared admission authority. Same-UID users and root are not isolated from
+their own native account state. Multiple same-UID independent instances are
+allowed; duplicate live UID/host claims are excluded from totals. Arbitrarily
+many identities can crowd bounded discovery, so completeness is best effort.
+
+One original server-owned worker refreshes a narrow SQL projection once per
+second, with a 250 ms context deadline, 4,096 nonterminal-row, 64 KiB per-row and
+8 MiB inventory bounds. It takes no manager status lock, samples no native
+resources and repairs no state. Peer requests copy only the cached projection;
+failed or older-than-three-second local caches refuse rather than trigger a
+probe or claim zero usage. The worker joins before the manager database closes.
+Itemized rows are limited to 128 while accepted totals include the full bounded
+inventory. Directory scans examine at most 4,096 entries/128 matching records;
+surveys poll at most 32 candidates within two seconds, with two simultaneous
+surveys and eight inbound handshakes. Oversized, stale, malformed, duplicate,
+unreachable or overflowing reports produce a partial view; one bad peer cannot
+erase other accepted reports. No peer report alters native admission or grants
+control, process or mesh authority.
 
 ## Native macOS public routed SSH workflow
 

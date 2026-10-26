@@ -120,3 +120,9 @@ export function ownerDisplay(record, current = null, host = record?.host) {
   }
   return `UID ${uid}`;
 }
+
+// Use the backend Resources wire names; these are promises, not usage.
+export function hostResourceSummary(resources = {}) {
+  const cpu = Number(resources.cpu ?? 0);
+  return `${cpu === 0 ? '0' : cpu.toPrecision(3)} cores · ${bytes(resources.memory_bytes ?? 0)} RAM · ${bytes(resources.disk_bytes ?? 0)} disk`;
+}

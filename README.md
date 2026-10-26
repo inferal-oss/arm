@@ -9,6 +9,8 @@ Agent Resource Manager (`arm`) gives agents time-limited leases for host resourc
 
 The implementation includes a local backend and CLI, durable SQLite leases, cooperative resource budgets, queued admission, supervised commands, expiry, resource attribution, agent messaging, an embedded web dashboard and an interactive terminal dashboard. An opt-in direct-peer mesh adds authenticated host selection, scoped remote leases/execution and host-directed messaging. Dedicated operational editors, full web/TUI parity and distributed scheduling remain planned.
 
+Nearby ARM daemons announce their existing loopback WebSocket ports through expiring `/tmp` records by default on supported POSIX hosts. `arm peers` and the web Resources view show their reported held leases, queued requests, itemized quantities, expiries and queue estimates. `arm peers off` opts this instance out; `arm peers on` re-enables it. These peer reports are advisory and never grant or reserve capacity across daemons. See [implementation limits](docs/IMPLEMENTATION.md#multi-user-cooperation-status).
+
 See [SPEC.md](SPEC.md) for the complete design and [the implementation notes](docs/IMPLEMENTATION.md) for supported behavior, validation, and remaining work.
 
 ## Build

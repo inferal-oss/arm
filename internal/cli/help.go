@@ -15,6 +15,7 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"peers": {usage: "[status|off|on]", summary: "Show nearby ARM instances' public held and queued quantities, per-request timing and discovery gaps. Default publication can be disabled for this ARM_HOME with peers off.", max: -1},
 
 	"reviews list":      {usage: "[--agent ID] [--lease ID] [--pending] [--after CURSOR]", summary: "Page bounded retained lease review checkpoints and agent explanations. Reading never acknowledges a checkpoint.", max: 0},
 	"reviews inspect":   {usage: "ID", summary: "Read a checkpoint's captured claims, reason, usage quality, queued demand and exact recipient. Replies and silence never renew or authorize actions.", min: 1, max: 1},

@@ -312,9 +312,15 @@ durations and lease expiries. Public `/tmp` announcements discover the existing
 loopback WebSocket; private control tokens and metadata remain private. No
 broker, election, shared admission ledger or cross-user process authority is
 needed. Keep native admission independent of these advisory reports. The
-isolated implementation `45e3dc5` is awaiting independent security, accounting and
-interface review; it is not integrated. Its author reports separate-process
-tests but native different-UID execution and interactive visual QA remain open.
+implementation and independent corrections cover CLI/web advisory reports,
+mutually signed announcement identity binding, bounded cached projections,
+malformed/overflow isolation and original worker shutdown joins. Focused native
+macOS races, separate-process exchange and web tests pass. The explicit opt-in
+existing-user Linux fixture and composed-main Manager/server gates now pass
+on final hashed Linux ARM64 images, with original scope and fixture cleanup.
+The actual desktop browser shows held/queued quantities and timing correctly.
+Charm peer-view parity, native macOS different-user acceptance, broader
+viewport coverage and formal coverage remain open.
 The original [broker research](MULTI-USER-COOPERATION-PROPOSAL.md) is historical
 design context until the reviewed narrowed proposal is integrated.
 
@@ -345,3 +351,24 @@ authorized typed multi-hop sync. Local instance awareness now follows the
 operator's authorized advisory discovery scope, rather than the earlier broker
 proposal; its isolated implementation remains under review. Forwarding
 implementation and operator review remain separate from recording requirements.
+
+
+### Coordinator handoff ownership — October 26
+
+The new coordinator chat owns primary integration; the preceding coordinator no
+longer edits this checkout. The existing staged peer composition was preserved and reviewed
+(author 45e3dc5, independent ae8d6a3, composed 2d178ff/88bea36 plus privacy-test
+correction). The final composed Linux rerun passed after correcting the numeric
+UID privacy assertion in the actual source; native races and full web tests
+pass. Actual browser rendering was checked; Charm, native macOS different-user
+and broader formal coverage remain.
+
+The next independent integration reviews use isolated branches/worktrees:
+CPU warning formal 106a989/f5f2d6a; source sync 5548af6/ab0dacc/73a30a2/86209b0
+with reviewer 1fc94b1; generic forwarding cfbf79b and its concrete operator
+security-review gate. These reviewers return focused integration candidates,
+findings/fixes and exact validation evidence. Coordinator rechecks composed
+boundaries before committing. Kubernetes runtime 42d841a, corrected VNC
+0cfae71 and sync recovery f507478/8a8130d remain queued for final review.
+Public sync, automatic CPU pause/resume and full SPEC acceptance remain open;
+QUIC stays paused and does not block these deliveries.

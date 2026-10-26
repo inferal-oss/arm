@@ -3299,3 +3299,104 @@ remain in `/private/tmp/arm-mesh-budget-projection-fixture-fix/.cache/`.
 Production decoders and permissions are unchanged. This corrects that specific
 fixture failure; it is not a complete server-suite acceptance or a new Linux
 native CPU-capacity claim.
+
+
+## Independent advisory peer-summary review
+
+Independent original-source reproducers failed for copied announcement UID/name
+misattribution, unsigned server challenges obtaining client signatures, followed
+loopback redirects, mismatched/retired native directory handles, poisoned totals,
+inconsistent complete itemizations and PeerSnapshot waiting behind Manager.mu.
+The corrected protocol binds both stable announcement identities and nonces,
+proves the server before the client signs, refuses redirect/proxy changes,
+retires native directory handles under their lifetime lock, preserves replaced
+publication identities and quarantines invalid/overflowing reports. A narrow
+bounded SQL projection replaces full Status and a fixed-rate original cache
+worker removes native/SQL work from the cross-user request path. Tests cover
+manager-lock independence, database-wait cancellation, oversized private rows,
+unavailable-manager cached responses, stale-cache refusal and worker joining.
+
+Actual final focused native macOS races pass: server23.442s; presence1.342s;
+Manager45.024s (the selection also includes existing Reviewed/Peer regressions);
+CLI1.705s. The narrower Manager lock/context/row/privacy gate passes8.742s.
+All203 web tests pass, including first-render polling and old-session completion
+versus replacement-request ownership. Affected-package vet passes. Final source
+review additionally moves immutable survey-slot initialization before HTTP
+starts and requires full stable announcement identity for publication cleanup;
+the successor races cover a changed URL with unchanged key/generation. An earlier cache test
+mistakenly called non-idempotent Manager.Close twice and panicked; the corrected
+fixture removes/restores its Manager dependency and verifies that protocol
+requests only use the fresh cache. That failed run is retained, not relabeled.
+
+`TestLocalPresenceAcrossExistingLinuxUsers` is explicitly opt-in with
+`ARM_TEST_PEERS_DIFFERENT_UID=1`, requires Linux root and two distinct existing
+non-root accounts (`ARM_PEER_TEST_OWNER`/`ARM_PEER_TEST_OTHER`, defaults daemon
+and nobody). It creates only fixture-owned private homes and a public-traversable
+binary directory, changes only their ownership/permissions, clears child
+supplementary groups and checks actual child UID/GID. Both original children run
+Serve and use only their own private control API. They observe each other through
+real announcement proof/WebSocket exchanges, held700/queued600 memory promises,
+expiries, queue positions, requested duration and privacy exclusions, and refuse
+public control RPCs. Successful completion requires own cancellation/release,
+original Serve and process Wait joins, decoder joins and exact public-record
+absence. Failures or unresolved ownership retain the fixture. This is controlled
+memory-promise acceptance, not native CPU/physical-isolation validation. Its
+CGo-free Linux ARM64 executable is built; the default skipped macOS case is not
+Linux or different-user acceptance.
+
+The coordinator executes this exact opt-in fixture as native Linux root with
+the existing daemon/nobody accounts: final-image acceptance passes1.36s, one
+PASS and no FAIL/SKIP, original native/Orb status0, original children/server/
+decoder/publication closure asserted, fixture scope inactive and exact owned
+upload root absent. The final image SHA256 is
+`bfe9a8a3067478e3e6c24dfd89d225a374f51c00858c2939cb987489ef30f481`;
+fixture source is
+`6f8f0d6d127c4559075e3bbf69c7f1c28aad7fdf5cad9c6f424c536b89e632d2`.
+The coordinator independently verifies all1,338 actual source/module/web files
+against manifest SHA256
+`4301f7088a1d780a534e174c9f1a7b1be1b641b80e11863851fd44be40312b12`.
+Image and fixture hashes remain unchanged before/after native execution.
+An earlier image passes1.24s separately before the startup-slot fix; it is not
+successor evidence. Logs remain under the coordinator's
+`.cache/peer-summary-different-uid-linux-*` and separately retained earlier-image
+prefix. No accounts or services are created or changed. This supports the
+isolated component, not the upcoming composed-main image. Interactive visual
+QA, composed-main acceptance and full Charm parity remain pending.
+
+
+## Advisory peer primary composition — October 26
+
+Primary integrates the independently corrected peer composition and fixes found
+at the actual integration boundary: refuse unclassifiable lease states rather
+than silently omit demand, serve the embedded polling module, and render
+`memory_bytes`/`disk_bytes` instead of nonexistent fields. The retained actual
+browser screenshot shows 700 MiB held and 600 MiB queued for both local and
+peer instances, itemized expiries and durations. Screenshot and fixture source
+remain in `/private/tmp/arm-peer-primary-composition/.cache/peer-ui/`.
+
+Fresh native macOS races pass presence 4.304s, Manager 10.527s, server 11.877s
+and CLI 1.652s; all 207 web tests pass without skips, and four-package vet
+passes. The sandboxed loopback attempt is retained as a denied-environment
+failure. A final focused Manager privacy race passes after correction.
+
+The handoff described a privacy-test correction, but inspection found the old
+UID-substring assertion still present in the actual source. Root UID `0` matched
+public numbers and caused the retained earlier Linux failure. The final test
+checks private field names recursively and retains private ID/reason/key value
+checks; production projection behavior is unchanged by that test correction.
+
+The final composed Linux ARM64 Manager/server images pass all selected roots
+and named cases without FAIL/SKIP, including the actual existing daemon/nobody
+UID exchange, held/queued timing, opt-out and embedded module serving. Exact
+source manifest SHA256 is
+`79575c7e4f68b23cad2a3885443c063453aaffabd655d66245d9a69241b0d3bd`
+for 1,353 source/module/web files. The retained intent records final image
+digests; source and image bytes match before/after execution. Original native
+command and Orb status are zero, the bounded scope is inactive, and its exact
+owned upload root is absent. No accounts or system services were changed.
+Evidence is `.cache/peer-primary-composed-linux-{intent.json,native.log,run.log}`,
+with failed prior receipts retained separately, plus
+`.cache/peer-coordinator-{final-native-race.log,final-privacy-race.log,web-full.log,vet.log}`.
+These are advisory promise/protocol checks, not native CPU credit, physical
+isolation, shared admission, native macOS cross-user, Charm or full formal
+acceptance. The complete specification remains unfinished.

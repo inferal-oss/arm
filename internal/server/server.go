@@ -26,11 +26,22 @@ import (
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/nodestop"
 	"github.com/yrashk/arm/internal/observe"
+	"github.com/yrashk/arm/internal/presence"
 	"github.com/yrashk/arm/internal/workspaceroute"
 	"github.com/yrashk/arm/internal/workspacetransport"
 )
 
 type Server struct {
+	peerCacheMu           sync.RWMutex
+	peerCache             model.PeerSnapshot
+	peerCacheErr          error
+	peerSurveySlots       chan struct{}
+	presenceMu            sync.RWMutex
+	presenceDir           *presence.Directory
+	presencePub           *presence.Publication
+	presenceError         string
+	presenceDone          chan struct{}
+	peerSlots             chan struct{}
 	generation            string
 	nodeStopDirectory     *database.Directory
 	nodeStopTarget        nodestop.Target
@@ -157,6 +168,9 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 		if httpServer != nil {
 			httpClosed = errors.Join(httpClosed, httpServer.Close())
 		}
+		if s != nil {
+			s.waitPresence()
+		}
 		stages := []struct {
 			name string
 			err  error
@@ -270,7 +284,7 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	}); e != nil {
 		return e
 	}
-	s = &Server{nodeStopAdminEnabled: true, Manager: m, home: home, generation: local.ID(), nodeStopDirectory: directory, nodeStopLock: lock, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable}
+	s = &Server{nodeStopAdminEnabled: true, Manager: m, home: home, generation: local.ID(), nodeStopDirectory: directory, nodeStopLock: lock, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable, peerSlots: make(chan struct{}, 8), peerSurveySlots: make(chan struct{}, 2)}
 	s.lifecycleContext = ctx
 	// A mesh configuration failure never disables the authenticated local authority.
 	if meshErr := s.loadMesh(); meshErr != nil {
@@ -302,12 +316,14 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	s.startGraphRefresh()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/ws", s.ws)
+	mux.HandleFunc("/v1/peers", s.peerWebSocket)
 	s.registerBrowser(mux)
 	h := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, MaxHeaderBytes: 8192, BaseContext: func(net.Listener) context.Context { return ctx }}
 	httpServer = h
 	done := make(chan error, 1)
 	httpJoined := false
 	go func() { done <- h.Serve(listener) }()
+	s.startPresence(ctx)
 	traceStopPublished(s)
 	select {
 	case e = <-done:
@@ -754,6 +770,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	switch r.Operation {
 	case "kube_contexts", "kube_nodes":
 		return s.kubernetesInventory(ctx, r.Operation, r.Params)
+	case "peers_status":
+		return s.peerOverview(ctx)
 	case "lease_review_list", "lease_review_inspect", "lease_review_policy", "lease_review_configure", "lease_review_reply":
 		return s.leaseReviewOperation(r.Operation, r.Params)
 	case "ssh_account", "ssh_close", "ssh_key_status", "ssh_key_seal":

@@ -152,6 +152,7 @@ Commands:
   daemon start|stop|status    Manage the local backend
   serve                     Run the backend in the foreground
   status                    Show host budgets and leases
+  peers                     Show discovered local ARM promises and queues
   reviews                   Optional exact-session lease reviews
   usage LEASE_ID            Show supervised CPU/memory observations
   incidents                 Show durable usage incidents and warnings
@@ -224,6 +225,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.plugins(args)
 	case "node":
 		return a.nodeMetadata(args)
+	case "peers":
+		return a.peers(args)
 	case "version":
 		f := a.flags("version")
 		f.Bool("json", false, "force JSON output (default: automatic)")
