@@ -2503,3 +2503,37 @@ the fast checks and both `make test` and `make check` depend on them. The
 earlier full SSH package race failure remains recorded above; it is not
 reclassified by these focused passes. No new VM or performance run is claimed
 for the later pin/cleanup correction.
+
+## October 26: reviewed sync operation layer integration
+
+The final `a60442f` decoder/ledger successor passes an independent complete
+macOS race run (9.854s), including the unchanged 768-effect case (7.1s),
+and affected vet. All 17 roots/26 named cases pass on actual Linux ARM64;
+original native command, SSH and cleanup exit 0, exact bounded scope inactive
+and disposable root absent. Source review confirms sparse collection bounds,
+case-alias handling, bounded path enums and precharged canonical string
+escaping; earlier review findings and failures remain above.
+
+The integration additionally replaces the local publisher test's path-only
+root identifiers with actual native identities, refuses the wrong receiver
+and uses `NewBoundPublisher` with the durable ledger. That composed test passes
+fresh macOS race (1.527s); the complete 17-root Linux component suite passes
+again after the change, with original native/SSH/cleanup exit 0 and scope/root
+closure. A changed VM SSH host key was verified through local VM management;
+the explicitly authorized public test key was added to the active test
+daemon's configured key file, preserving existing entries. Strict private
+host pinning was used; global user SSH configuration was not changed. The
+earlier host-pin and authorization refusals are retained in ignored logs.
+
+Evidence: ignored `.cache/syncservice-a604-root-race.jsonl`,
+`.cache/syncservice-a604-linux-{native,run}.log`,
+`.cache/syncservice-native-binding-root-race.log`, and
+`.cache/syncservice-integrated-verified-linux-{native,run}.log`. The primary
+composition also passes the all-package compile-only gate (original
+session33914 exit0; `.cache/integrated-sync-compile.log`). That gate executes
+no test bodies and does not erase the retained SSH archive race failure.
+
+No public sync command is enabled. Persistent schema/reset/recovery proof,
+authenticated receipt exchange, atomic Manager/SSH admission, actual-volume
+resource accounting, fixed workers, operator interfaces and formal
+implementation trace/refinement gates remain required.
