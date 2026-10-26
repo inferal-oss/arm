@@ -1,5 +1,10 @@
 # Private share publication verification
 
+> Historical design, superseded by [leased file synchronization](SYNC-PROPOSAL.md).
+> Mounting and S/F snapshot services are retired; this document grants no current
+> file-sharing authority or delivery commitment. Historical validation remains
+> scoped to the implementation and revision recorded below.
+
 This checkpoint extends the internal preparation lifecycle. It supplies no public CLI, peer file grant, consumer session, file stream, mount or writable share. Full consumer and mounted-share work remains required. The complete mathematical gate passes all27 modules/2,956 fresh parsed obligations, independently checked against the raw results and exact source/backend closure. Finite/actual-trace and native/Linux runtime gates are separate evidence; none establishes whole-program refinement or consumer support.
 
 ## Admission and verification

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the real share lifecycle, replay TLC witnesses in Go, and verify proofs.
+"""Common command ownership, strict decoding and source guards for formal suites.
 
 Generated artifacts stay beneath .tla/. Missing tools, incomplete proofs, empty
 traces and rejected positive replays are failures. Coverage witnesses deliberately
@@ -19,22 +19,9 @@ import tempfile
 import types
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL = ROOT / 'formal' / 'share-preparation'
-TARGETS = ('prepared', 'released', 'ending', 'expired', 'early_cancelled',
-           'crash_running', 'reconciled', 'admission_unknown', 'worker_unknown',
-           'ending_unknown', 'prepared_unknown', 'terminal_unknown', 'duplicate',
-           'rollback', 'failed', 'commit_unavailable', 'restart_unknown',
-           'restart_rollback_unknown')
-FIELDS = {'schema': str, 'action': str, 'phase': str, 'cache_phase': str,
-          'cache_revision': int, 'boundary': str, 'worker': str, 'lease': str,
-          'charged': bool, 'pin': bool, 'native': str, 'launches': int,
-          'join_known': bool, 'absence_proved': bool, 'skipped_proved': bool,
-          'revision': int, 'slots': int, 'outcome': str, 'manifest': bool}
-PREPARATION_THEOREMS = ('InitEstablishesInvariant', 'EveryStepPreservesInvariant',
-    'StutterPreserves', 'StrengthenedSafety', 'Safety', *('Preserve' + action for action in (
-        'Admit', 'Start', 'Prepare', 'End', 'Finish', 'NativeBegin', 'NativeJoin',
-        'SkipNative', 'Crash', 'Restart', 'ObserveAbsent', 'Lookup', 'LookupUnknown',
-        'Retry', 'Reject', 'CommitUnavailable')))
+
+
+MODEL = None  # Each current suite supplies its own model directory.
 
 
 def module_code(text):
@@ -124,22 +111,9 @@ def read_json(path):
     return json.loads(raw, object_pairs_hook=strict_object)
 
 
+
 def validate_states(states):
-    if not isinstance(states, list) or not 2 <= len(states) <= 128:
-        raise ValueError('complete bounded nonempty trace required')
-    for state in states:
-        if not isinstance(state, dict) or set(state) != set(FIELDS):
-            raise ValueError('unknown, missing or noncanonical state fields')
-        for key, kind in FIELDS.items():
-            if type(state[key]) is not kind:
-                raise ValueError('wrong trace scalar type: ' + key)
-            if kind is str and (len(state[key]) > 128 or not state[key].isascii()):
-                raise ValueError('invalid trace text: ' + key)
-            if kind is int and not 0 <= state[key] <= 10000:
-                raise ValueError('invalid bounded trace integer: ' + key)
-        if state['schema'] != 'arm.share-preparation/v1':
-            raise ValueError('unsupported trace schema')
-    return states
+    raise ValueError('suite-specific closed trace validator required')
 
 
 def tlc_states(path, *, variables=None, validator=None):
@@ -300,127 +274,6 @@ class Gate:
             self.run / (name + '-states'), '-noGenerateSpecTE', '-config', config,
             *extra, self.run / module], name, expected=expected)
 
-    def check(self):
-        config = self.run / 'Safety.cfg'
-        log = self.tlc('SharePreparation.tla', config, 'safety')
-        explored = re.findall(r'(\d+) distinct states found, (\d+) states left on queue', log)
-        if ('Model checking completed. No error has been found.' not in log or not explored
-                or int(explored[-1][0]) == 0 or int(explored[-1][1]) != 0):
-            raise RuntimeError('TLC did not complete nonempty exhaustive exploration')
-        self.summary['gates'].append({'safety': 'passed', 'statistics': re.findall(r'.*(?:states generated|depth of the complete).*', log)})
-
-    def witnesses(self):
-        paths = []
-        for target in self.args.targets:
-            config = self.run / (target + '.cfg')
-            config.write_text('SPECIFICATION Spec\nCHECK_DEADLOCK FALSE\nCONSTANT Target = ' + json.dumps(target) + '\nINVARIANT InductiveInvariant\nINVARIANT NotReached\n')
-            output = self.run / (target + '-tlc.json')
-            log = self.tlc('Witness.tla', config, target + '-witness', ('-dumpTrace', 'json', output), expected=12)
-            if 'Invariant NotReached is violated.' not in log:
-                raise RuntimeError('unexpected safety failure instead of requested coverage witness')
-            states = tlc_states(output)
-            normalized = self.run / (target + '-expected.json')
-            normalized.write_text(json.dumps(states, indent=2) + '\n')
-            paths.append({'target': target, 'path': str(normalized), 'output': str(self.run / (target + '-go.json'))})
-        manifest = self.run / 'witnesses.json'
-        manifest.write_text(json.dumps(paths, indent=2) + '\n')
-        return paths, manifest
-
-    def replay(self, states, name, accepted=True):
-        validate_states(states)
-        if not accepted and (self.initial_state is None or states[0] != self.initial_state):
-            raise ValueError('negative replay must preserve a previously validated exact initial observation')
-        module = 'Replay' + re.sub('[^A-Za-z0-9]', '', name)
-        source = '---- MODULE ' + module + ' ----\nEXTENDS SharePreparation, Sequences\nVARIABLE cursor\nObserved == <<' + ',\n'.join(tla_value(s) for s in states) + '>>\n'
-        source += 'ReplayInit == Init /\\ cursor = 1 /\\ state = Observed[1]\n'
-        # Each row is an observed event, not an unobserved passage of time.
-        # Temporal stuttering in Spec must not invent a second native entry.
-        source += 'ReplayNext == /\\ cursor < Len(Observed) /\\ state\' = Observed[cursor+1] /\\ cursor\' = cursor+1 /\\ Next\n'
-        source += 'NotEnd == cursor < Len(Observed)\n====\n'
-        (self.run / (module + '.tla')).write_text(source)
-        config = self.run / (module + '.cfg')
-        config.write_text('INIT ReplayInit\nNEXT ReplayNext\nCHECK_DEADLOCK FALSE\nINVARIANT InductiveInvariant\nINVARIANT NotEnd\n')
-        raw = self.run / (name + '-replay.json')
-        raw.write_text(json.dumps(envelope(states)) + '\n')
-        expected = 12 if accepted else 0
-        log = self.tlc(module + '.tla', config, name + '-reverse', ('-loadTrace', 'json', raw), expected=expected)
-        if accepted and ('Invariant NotEnd is violated.' not in log or not re.search(r'\b' + str(len(states)) + r' distinct states found', log)):
-            raise RuntimeError('TLC did not validate the complete observed trace')
-        if accepted:
-            if self.initial_state is not None and self.initial_state != states[0]:
-                raise ValueError('positive observations disagree on exact initial state')
-            self.initial_state = json.loads(json.dumps(states[0]))
-        if not accepted and 'Invariant NotEnd is violated.' in log:
-            raise RuntimeError('corrupted trace reached its final state')
-        explored = re.findall(r'(\d+) distinct states found', log)
-        if not accepted and (not explored or int(explored[-1]) < 1):
-            raise RuntimeError('negative replay did not explore its valid initial observation')
-
-    def traces(self):
-        self.check()
-        paths, manifest = self.witnesses()
-        negative_output = self.run / 'actual-negatives.json'
-        env = dict(os.environ, ARM_FORMAL_WITNESSES=str(manifest), ARM_FORMAL_NEGATIVES=str(negative_output))
-        private_tmp = self.run / 'tmp'
-        private_tmp.mkdir(mode=0o700)
-        env['TMPDIR'] = str(private_tmp)
-        env.setdefault('GOPATH', str(ROOT / '.cache' / 'gopath'))
-        env.setdefault('GOCACHE', str(ROOT / '.cache' / 'go-build'))
-        self.command([self.args.go, 'test', '-race', '-tags', 'arm_devtrace', './internal/manager',
-                      '-run', '^TestShareFormal(TLCWitnesses|ObservationNegatives|InputGuards|UnavailableSkipRetainsObligations)$', '-count=1', '-v', '-timeout=180s'],
-                     'go-witnesses', env=env, timeout=210)
-        observed = []
-        for item in paths:
-            expected = validate_states(read_json(item['path']))
-            actual = validate_states(read_json(item['output']))
-            if actual != expected:
-                raise RuntimeError('real Go trace differs from TLC witness: ' + item['target'])
-            self.replay(actual, item['target'])
-            observed.extend(actual)
-        negatives = []
-        actual_negatives = read_json(negative_output)
-        if type(actual_negatives) is not dict or set(actual_negatives) != {'actual-premature-release', 'actual-duplicate-native-entry'}:
-            raise ValueError('complete actual mutation inventory required')
-        for name, states in actual_negatives.items():
-            self.replay(states, name, accepted=False)
-            negatives.append(name)
-        required = ['charged', 'pin', 'launches', 'revision', 'native-before-admit',
-                    'action-reordered', 'remove-join', 'cache-unavailable', 'absence-required', 'duplicate-native-observation']
-        samples = {p['target']: read_json(p['output']) for p in paths}
-        for name in required:
-            source = 'admission_unknown' if name == 'cache-unavailable' else 'reconciled' if name == 'absence-required' else 'prepared'
-            if source not in samples:
-                continue  # Explicit incomplete coverage below; never count as pass.
-            corrupt = json.loads(json.dumps(samples[source]))
-            if name in ('charged', 'pin', 'launches', 'revision'):
-                position = next(i for i, s in enumerate(corrupt) if s['action'] == 'native_begin')
-                corrupt[position][name] = {'charged': False, 'pin': False, 'launches': 2, 'revision': 99}[name]
-            elif name == 'native-before-admit':
-                corrupt = [corrupt[0], next(s for s in corrupt if s['action'] == 'native_begin')]
-            elif name == 'action-reordered':
-                corrupt[1], corrupt[2] = corrupt[2], corrupt[1]
-            elif name == 'remove-join':
-                corrupt = [s for s in corrupt if s['action'] != 'native_join']
-            elif name == 'duplicate-native-observation':
-                position = next(i for i, s in enumerate(corrupt) if s['action'] == 'native_begin')
-                corrupt.insert(position+1, json.loads(json.dumps(corrupt[position])))
-            elif name == 'cache-unavailable':
-                corrupt[-1]['boundary'] = 'healthy'
-                corrupt[-1]['cache_phase'] = corrupt[-1]['phase']
-                corrupt[-1]['cache_revision'] = corrupt[-1]['revision']
-            elif name == 'absence-required':
-                corrupt = [s for s in corrupt if s['action'] != 'observed_absent']
-            self.replay(corrupt, 'corrupt-' + name, accepted=False)
-            negatives.append(name)
-        missing = sorted(set(required) - set(negatives))
-        complete = set(self.args.targets) == set(TARGETS)
-        if complete and missing:
-            raise RuntimeError('required negative coverage missing: ' + ', '.join(missing))
-        self.summary['gates'].append({'traces': 'passed', 'witnesses': len(paths), 'observed_rows': len(observed), 'coverage_complete': complete,
-            'negative_traces_rejected': negatives, 'negative_coverage_complete': not missing, 'negative_coverage_missing': missing,
-            'normalization_guards': ['wrong-key-refused', 'wrong-authority-refused'],
-            'conservative_abstraction_guards': ['unavailable-no-start-retains-obligations']})
-
     def check_captured_sources(self):
         sources = self.summary.get('sources')
         if not sources:
@@ -434,64 +287,10 @@ class Gate:
             if len(raw) > 1 << 20 or hashlib.sha256(raw).hexdigest() != digest:
                 raise RuntimeError('captured source changed: ' + name)
 
-    def prove(self):
-        self.check_captured_sources()
-        validate_module_source(self.run / 'SharePreparationProof.tla', PREPARATION_THEOREMS)
-        # TLAPM also limits obligation preprocessing (five seconds by default).
-        # Stretch all tool budgets without changing the theorem or assumptions.
-        log = self.command([self.args.tlapm, '--strict', '--nofp', '--threads', '2', '--stretch', '10', '--cache-dir',
-            self.run / 'proofs', '-I', self.run, self.run / 'SharePreparationProof.tla'], 'tlapm', timeout=3600)
-        self.check_captured_sources()
-        proved = re.search(r'All (\d+) obligations proved\.', log)
-        if proved is None or int(proved.group(1)) == 0 or '[ERROR]' in log:
-            raise RuntimeError('TLAPM did not discharge every proof obligation')
-        self.summary['gates'].append({'proofs': 'passed', 'result': re.findall(r'.*All \d+ obligations proved.*', log)})
-
     def finish(self):
         (self.run / 'summary.json').write_text(json.dumps(self.summary, indent=2) + '\n')
         print(json.dumps(self.summary, indent=2))
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--mode', choices=('check', 'traces', 'prove', 'all'), default='all')
-    parser.add_argument('--java', default='java')
-    parser.add_argument('--tlc-jar', default=str(ROOT / '.tla/tools/tlc/tla2tools.jar'))
-    parser.add_argument('--tlapm', default=str(ROOT / '.tla/tools/tlapm/tlapm/bin/tlapm'))
-    parser.add_argument('--go', default='go')
-    parser.add_argument('--work-dir', default=str(ROOT / '.tla/share-preparation'))
-    parser.add_argument('--targets', nargs='+', choices=TARGETS, default=list(TARGETS), help='focused development witnesses; default requires all scenario coverage')
-    args = parser.parse_args()
-    if len(set(args.targets)) != len(args.targets):
-        parser.error('duplicate targets')
-    if args.mode != 'prove' and not Path(args.tlc_jar).is_file():
-        parser.error('TLC missing: provision with make tla-tools')
-    if args.mode in ('prove', 'all') and not Path(args.tlapm).is_file():
-        parser.error('TLAPM missing: provision with make tla-tools')
-    gate = Gate(args)
-    gate.tools()
-    if args.mode in ('check',):
-        gate.check()
-    elif args.mode in ('traces',):
-        gate.traces()
-    elif args.mode == 'prove':
-        gate.prove()
-    else:
-        gate.traces()
-        gate.prove()
-    gate.finish()
-
-
 if __name__ == '__main__':
-    def terminate(signum, _frame):
-        raise SystemExit(128 + signum)
-
-    signal.signal(signal.SIGTERM, terminate)
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('formal verification interrupted', file=sys.stderr)
-        sys.exit(130)
-    except (ValueError, RuntimeError, subprocess.TimeoutExpired, OSError) as error:
-        print('formal verification failed: ' + str(error), file=sys.stderr)
-        sys.exit(1)
+    raise SystemExit('Use a focused formal suite or make test-formal; this file is a shared library.')

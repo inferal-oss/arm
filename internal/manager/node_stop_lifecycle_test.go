@@ -192,6 +192,9 @@ func checkNodeStopOwnedRunAndReplacedStorage(t *testing.T, policy model.Shutdown
 	deadline := time.Now().Add(8 * time.Second)
 	var report model.ShutdownReport
 	for time.Now().Before(deadline) {
+		// The real backend drives both continuations: lease ticks reschedule
+		// storage cleanup after its attached process has actually settled.
+		m.tick()
 		report, err = m.AdvanceShutdown()
 		if err != nil {
 			t.Fatal(err)

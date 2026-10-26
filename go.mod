@@ -12,10 +12,8 @@ require (
 	github.com/creack/pty v1.1.24
 	github.com/ebitengine/purego v0.11.2
 	github.com/google/uuid v1.6.0
-	github.com/hanwen/go-fuse/v2 v2.12.1
 	github.com/mattn/go-isatty v0.0.24
 	github.com/pelletier/go-toml/v2 v2.4.3
-	github.com/pkg/sftp v1.13.11
 	golang.org/x/crypto v0.58.0
 	golang.org/x/sys v0.49.0
 	modernc.org/sqlite v1.60.1
@@ -30,7 +28,6 @@ require (
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/kr/fs v0.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

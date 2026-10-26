@@ -50,8 +50,6 @@ type Manager struct {
 	nodeStopAcceptedTarget  nodestop.Target // current successful admission only, never restored from history
 	leaseReviewsUnavailable bool
 	leaseReviewError        string
-	shares                  *shareBoundary
-	snapshots               *snapshotBoundary
 	cargoHelper             CargoHelperSource
 	cargoWorkers            map[string]*cargoWorker
 	workspaces              *workspaceBoundary
@@ -124,6 +122,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	db.SetMaxOpenConns(1)
 	if !fresh {
 		if _, e = database.StartupAuthority(context.Background(), home, db); e != nil {
+			db.Close()
+			return nil, e
+		}
+		if e = database.RefuseRetiredMountState(context.Background(), db); e != nil {
 			db.Close()
 			return nil, e
 		}
@@ -202,13 +204,6 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
-	m.initShares()
-	if e = m.initSnapshots(); e != nil {
-		db.Close()
-		return nil, e
-	}
-	m.recoverShares()
-	m.traceShareLocked("restart", "")
 	m.loadStorage()
 	opened := false
 	defer func() {
@@ -391,7 +386,6 @@ func (m *Manager) Close() error {
 	m.mu.Lock()
 	m.closing = true
 	m.mu.Unlock()
-	m.cancelShareScopes()
 	// Workspace calls may hold the single database connection while awaiting
 	// cancellation. Join them before ordinary job-ending SQL, without holding
 	// Manager.mu: final proof gates also inspect manager lifecycle state.
@@ -399,14 +393,6 @@ func (m *Manager) Close() error {
 		m.workspaces.close()
 	}
 	m.mu.Lock()
-	if m.shares != nil {
-		for _, p := range m.shares.state.Publications {
-			if m.shares.workers[p.ID] != nil {
-				_, e := m.end(p.Lease, "cancelled")
-				closeErr = errors.Join(closeErr, e)
-			}
-		}
-	}
 	for id := range m.cargoWorkers {
 		_, e := m.end(id, "cancelled")
 		closeErr = errors.Join(closeErr, e)
@@ -431,9 +417,6 @@ func (m *Manager) Close() error {
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
-	m.mu.Lock()
-	closeErr = errors.Join(closeErr, m.snapshotCloseError())
-	m.mu.Unlock()
 	for _, sockets := range m.portSockets {
 		closeErr = errors.Join(closeErr, ports.CloseChecked(sockets))
 	}
@@ -441,9 +424,6 @@ func (m *Manager) Close() error {
 		closeErr = errors.Join(closeErr, m.storage.Close())
 	}
 	dbCloseErr := m.db.Close()
-	m.mu.Lock()
-	m.traceSnapshotCut("sql-close-return", "", snapshotTraceCut{APIError: snapshotTraceError(dbCloseErr), ReportError: snapshotTraceError(closeErr)})
-	m.mu.Unlock()
 	return errors.Join(closeErr, dbCloseErr)
 }
 func consuming(s string) bool {
@@ -669,21 +649,8 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	return m.acquire(r, run)
 }
 
-func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmission) (model.Lease, error) {
+func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error) {
 	var empty model.Lease
-	if r.Kind == "share-snapshot-work" {
-		return empty, model.Err("invalid_request", "snapshot work requires exact private atomic reservation; public descriptors cannot start work")
-	}
-	if len(shares) > 1 {
-		return empty, model.Err("invalid_request", "at most one typed share admission is allowed")
-	}
-	if len(shares) == 1 {
-		if err := shares[0].validate(r, run); err != nil {
-			return empty, err
-		}
-	} else if shareKind(r.Kind) {
-		return empty, model.Err("invalid_request", "share lease kinds are reserved for typed internal share lifecycle admission; public share commands are not enabled")
-	}
 
 	if run != nil && (run.SSH != nil || run.sshRuntime != nil) && (run.SSH == nil || run.sshRuntime == nil || !reflect.DeepEqual(run.SSH, sshDescriptor(run.sshRuntime.request)) || run.sshRuntime.check() != nil) {
 		return empty, model.Err("invalid_request", "a persisted/wire SSH descriptor cannot authorize execution")
@@ -734,7 +701,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	if run != nil && r.Resources.CPU <= 0 {
 		return empty, model.Err("invalid_request", "supervised execution requires a positive CPU claim; other resource claims do not authorize execution without CPU headroom")
 	}
-	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" && !(len(shares) == 1 && r.Kind == "share-publication") {
+	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
 	}
 	if r.Kind == "storage" && (len(r.Pools) > 0 || run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
@@ -746,7 +713,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	if r.PortLease != "" && (run == nil || len(r.Ports) > 0) {
 		return empty, model.Err("invalid_request", "a supervised run can attach one port lease or request its own ports")
 	}
-	if r.StorageLease != "" && run == nil && len(shares) == 0 {
+	if r.StorageLease != "" && run == nil {
 		return empty, model.Err("invalid_request", "only supervised commands can attach storage")
 	}
 	if r.Profile != "" && !SupportsProfile(r.Profile) {
@@ -825,7 +792,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	if err := m.poolAdmissionAncestry(r.Pools); err != nil {
 		return empty, err
 	}
-	if r.StorageLease != "" && r.Profile != "rust-build" && len(shares) == 0 {
+	if r.StorageLease != "" && r.Profile != "rust-build" {
 		if _, e := m.storageForRun(r); e != nil {
 			return empty, e
 		}
@@ -934,11 +901,6 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	if r.Profile == "rust-build" {
 		projectCargo(&l, cargoNewRecord(l, run))
 	}
-	if len(shares) == 1 {
-		if e = m.prepareShareAdmission(shares[0], &l); e != nil {
-			return empty, e
-		}
-	}
 	b, _ := json.Marshal(l)
 	tx, e := m.db.Begin()
 	if e != nil {
@@ -964,11 +926,6 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	if e = insertBudgetBinding(tx, l.ID, binding, "budget.bound"); e != nil {
 		return empty, e
 	}
-	if len(shares) == 1 {
-		if e = m.commitShareAdmission(shares[0], tx); e != nil {
-			return empty, e
-		}
-	}
 	if e = event(tx, "lease.created", l.ID, l); e != nil {
 		return empty, e
 	}
@@ -982,16 +939,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 			return empty, e
 		}
 	}
-	if len(shares) == 1 {
-		e = m.commitShareTransaction(tx)
-	} else {
-		e = tx.Commit()
-	}
+	e = tx.Commit()
 	if e != nil {
 		return empty, e
-	}
-	if len(shares) == 1 {
-		m.finishShareAdmission(shares[0])
 	}
 	if r.StartDeadline != nil {
 		m.scheduleCheckpoint = m.scheduleHighwater
@@ -1075,15 +1025,6 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
-	if handled, result, err := m.endSnapshotIfNeeded(l, outcome); handled {
-		return result, err
-	}
-	if handled, result, err := m.endShareIfNeeded(l, outcome); handled {
-		return result, err
-	}
-	if l.Cargo != nil || l.Request.Profile == "rust-build" {
-		return m.endCargo(l, outcome)
-	}
 	if l.State == "terminal" || l.State == "ending" {
 		return l, nil
 	}
@@ -1145,19 +1086,6 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
-	}
-	if _, bound := m.snapshotLease(l.ID); bound || l.Request.Kind == "share-snapshot-work" {
-		return l, model.Err("snapshot_lifetime_fixed", "snapshot reservation promises cannot be renewed or handed to execution")
-	}
-	if m.shareNonRuntimeLease(l) {
-		return l, model.Err("share_lifetime_fixed", "share lifetimes are fixed to their reviewed storage/generation; retire and prepare a new share, or finish this consumer before requesting a new lease")
-	}
-	if l.Request.Kind == "storage" {
-		if share, e := m.shareStorageBusy(id); e != nil {
-			return l, e
-		} else if share != "" {
-			return l, model.Err("storage_in_use", "retire share "+share+" before renewing/changing its exact backing storage revision")
-		}
 	}
 
 	if err := m.budgetPolicyError(); err != nil {

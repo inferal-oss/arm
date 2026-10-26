@@ -1,5 +1,10 @@
 # Primary sources consulted October 25, 2026
 
+> Historical design, superseded by [leased file synchronization](SYNC-PROPOSAL.md).
+> Mounting and S/F snapshot services are retired; this document grants no current
+> file-sharing authority or delivery commitment. Historical validation remains
+> scoped to the implementation and revision recorded below.
+
 These references describe platform/protocol primitives, not ARM acceptance results. All performance and lifecycle requirements in the proposal are design choices or separately pinned local evidence.
 
 | Source | Narrow conclusion used | Consequence for ARM |

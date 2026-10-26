@@ -1,5 +1,10 @@
 # Snapshot generation technical contract — S approved, implementation pending
 
+> Historical design, superseded by [leased file synchronization](SYNC-PROPOSAL.md).
+> Mounting and S/F snapshot services are retired; this document grants no current
+> file-sharing authority or delivery commitment. Historical validation remains
+> scoped to the implementation and revision recorded below.
+
 The operator approved S only on October 25, 2026, and subsequently approved the explicit [verified-copy policy and publication-check boundary](MESH-SNAPSHOT-VERIFIED-COPY.md). That amendment adds a separately selected nondestructive creation policy and supersedes the requirements below for source idleness and continuous authority through a blocking publication commit when that policy is selected. It preserves strict idle mode, all destructive cleanup checks and required acceptance gates. F remains a proposal with no authority to enable delegated delivery. Neither mode has completed runtime acceptance.
 
 ## Existing implementation and extension points

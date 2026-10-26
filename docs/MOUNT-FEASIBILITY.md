@@ -1,5 +1,10 @@
 # Mounted-share adapter evidence
 
+> Historical design, superseded by [leased file synchronization](SYNC-PROPOSAL.md).
+> Mounting and S/F snapshot services are retired; this document grants no current
+> file-sharing authority or delivery commitment. Historical validation remains
+> scoped to the implementation and revision recorded below.
+
 The approved [access scheme](MESH-ACCESS-PROPOSAL.md) requires unprivileged mounts on Linux and macOS, authenticated local access, destination-owned leases and near-network-speed transfers. No production mounted-share service or adapter is implemented. The results below retain that full requirement; an easier protocol or a fast loopback read does not complete it.
 
 | Candidate | Actual evidence | Outstanding boundary |

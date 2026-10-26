@@ -1,5 +1,10 @@
 # Optional snapshot generations and bounded read delivery
 
+> Historical design, superseded by [leased file synchronization](SYNC-PROPOSAL.md).
+> Mounting and S/F snapshot services are retired; this document grants no current
+> file-sharing authority or delivery commitment. Historical validation remains
+> scoped to the implementation and revision recorded below.
+
 **S and the explicit [verified-copy policy](MESH-SNAPSHOT-VERIFIED-COPY.md) approved October 25, 2026. The internal storage primitive is implemented; Manager/publication integration and public runtime acceptance remain pending. F is unapproved and disabled.** Strict live-path shares remain available with their current native checks. This proposal adds a distinct read-only mode; it does not complete public mounts, writable/build coherence, the macOS adapter, or the performance target.
 
 ## Snapshot behavior and optional delegation

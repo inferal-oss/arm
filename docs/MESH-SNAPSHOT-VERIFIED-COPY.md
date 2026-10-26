@@ -1,5 +1,10 @@
 # Approved explicit verified-copy policy
 
+> Historical design, superseded by [leased file synchronization](SYNC-PROPOSAL.md).
+> Mounting and S/F snapshot services are retired; this document grants no current
+> file-sharing authority or delivery commitment. Historical validation remains
+> scoped to the implementation and revision recorded below.
+
 The operator approved this S creation policy and its publication-check boundary on October 25, 2026. The internal storage primitive is implemented and tested; Manager/publication integration and public enablement remain unfinished. F prefetch and delegated delivery remain unapproved and disabled. This amendment changes the source-idleness and publication-cut requirements of the [S technical contract](MESH-SNAPSHOT-TECHNICAL.md) only as stated below.
 
 ## Selection and guarantees

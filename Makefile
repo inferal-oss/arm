@@ -166,29 +166,21 @@ tla-tool-check: tla-tools
 
 # ARM protocol models, implementation trace comparison and checked proofs.
 # Explicit modes support shorter local iterations; test-formal runs every gate.
-TLA_WORK_DIR ?= $(CURDIR)/.tla/share-preparation
 TLA_AGENT_WORK_DIR ?= $(CURDIR)/.tla/published-agents
 TLA_REVIEW_WORK_DIR ?= $(CURDIR)/.tla/lease-reviews
-TLA_PUBLICATION_WORK_DIR ?= $(CURDIR)/.tla/share-publication
 TLA_PROVIDER_WORK_DIR ?= $(CURDIR)/.tla/provider-worker
 .PHONY: tla-check tla-traces tla-prove test-formal
 tla-check: tla-tlc
-	$(PYTHON) scripts/test-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_WORK_DIR)"
-	$(PYTHON) scripts/test-formal-publication.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 	$(PYTHON) scripts/test-lease-reviews-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 tla-traces: tla-tlc
-	$(PYTHON) scripts/test-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
-	$(PYTHON) scripts/test-formal-publication.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 	$(PYTHON) scripts/test-lease-reviews-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode traces --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
 
 tla-prove: tla-tlapm
-	$(PYTHON) scripts/test-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_WORK_DIR)"
-	$(PYTHON) scripts/test-formal-publication.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 	$(PYTHON) scripts/test-lease-reviews-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
@@ -199,13 +191,9 @@ test-formal-process:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-process.py native "$(CURDIR)/.tla/formal-process-evidence"
 
 test-formal: tla-tools test-formal-process
-	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-runner.py
-	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-formal-publication-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-published-agents-formal-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-lease-reviews-formal-runner.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-provider-worker-formal-runner.py
-	$(PYTHON) scripts/test-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_WORK_DIR)"
-	$(PYTHON) scripts/test-formal-publication.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PUBLICATION_WORK_DIR)"
 	$(PYTHON) scripts/test-published-agents-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_AGENT_WORK_DIR)"
 	$(PYTHON) scripts/test-lease-reviews-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_REVIEW_WORK_DIR)"
 	$(PYTHON) scripts/test-provider-worker-formal.py --mode all --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --go "$(GO)" --work-dir "$(TLA_PROVIDER_WORK_DIR)"
@@ -282,21 +270,6 @@ tla-traces: tla-node-stop-traces
 tla-prove: tla-node-stop-prove
 test-formal: test-node-stop-formal
 
-# Private no-work snapshot reservation only; no copy/publication authority.
-TLA_SNAPSHOT_RESERVATION_WORK_DIR ?= $(CURDIR)/.tla/snapshot-reservation
-.PHONY: tla-check-snapshot-reservation tla-traces-snapshot-reservation tla-prove-snapshot-reservation test-formal-snapshot-reservation
-tla-check-snapshot-reservation:
-	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
-tla-traces-snapshot-reservation:
-	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode traces --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
-tla-prove-snapshot-reservation:
-	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
-test-formal-snapshot-reservation:
-	$(PYTHON) scripts/test-snapshot-reservation-formal.py --mode all --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --work-dir "$(TLA_SNAPSHOT_RESERVATION_WORK_DIR)"
-tla-check: tla-check-snapshot-reservation
-tla-traces: tla-traces-snapshot-reservation
-tla-prove: tla-prove-snapshot-reservation
-test-formal: test-formal-snapshot-reservation
 
 # Managed uninstall component: owned executable only, no data/service purge.
 TLA_UNINSTALL_WORK_DIR ?= $(CURDIR)/.tla/uninstall

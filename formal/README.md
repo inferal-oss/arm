@@ -9,24 +9,16 @@ SMT proof to check the installed toolchain. It makes no claim about ARM behavior
 The ARM protocol targets are `make tla-check` (finite TLC safety checks),
 `make tla-traces` (TLC witnesses compared with actual development-tag Go
 executions, reverse checking and invalid-trace tests), `make tla-prove` (strict
-TLAPM proofs), and `make test-formal` (all three). The
-[share-preparation model](share-preparation/README.md) checks 950 reachable states, compares 18 scenarios/93 real Go observations, rejects twelve
-invalid traces and proves all 509 strict TLAPM obligations. Each gate fails on
-missing evidence or an unproved/mismatched result; a dry-run Make expansion is
-not validation. `GO` selects the Go toolchain and `TLA_WORK_DIR`
-selects the generated artifact directory (default `.tla/share-preparation`). The same targets
-also run the [published-agent model](published-agents/README.md), with its separate
-`TLA_AGENT_WORK_DIR` (default `.tla/published-agents`). Its finite safety gate checks
-2,971 reachable states, compares 15 scenarios/103 actual Go observations and rejects
-seven actual corruptions plus eight altered transition traces. All 1,531 strict
-proof obligations passed for the reviewed model. The same targets also run the [private publication model](share-publication/README.md),
-with `TLA_PUBLICATION_WORK_DIR` (default `.tla/share-publication`). Its gates check
-6,098 publication states and798 capacity states,18 actual scenarios, five actual
-negative traces and288 real journal-capacity cases. All27 independently invoked
-proof modules pass2,956 freshly parsed strict obligations. This covers private
-verification/retirement, with no consumer or public file authority. The Make gate
-also runs all three runners' input, source-scope, snapshot and process-cleanup
-regressions.
+TLAPM proofs), and `make test-formal` (all three). Current suites cover
+[published agents](published-agents/README.md), lease reviews, provider workers,
+mesh reconnect, [node Stop](node-stop/README.md), managed uninstall and CPU
+admission. Each focused runner supplies its own model and closed trace schema;
+`scripts/test-formal.py` retains only shared source/decoder/command utilities.
+The retired mounted-share and snapshot suites are removed from these aggregates.
+Their historical results remain in Git history and do not validate file sync.
+A dry-run Make expansion is not validation; every invoked gate fails on missing
+or mismatched evidence. Use each focused target's work-directory variable to
+keep generated evidence under `.tla/`.
 
 Models, configurations, mapping notes and proof source are tracked under
 `formal/`. Downloads and installed tools live under `.tla/downloads/` and
@@ -47,7 +39,7 @@ replacing local tool files. Tool receipts retain the exact archive digest.
 The currently pinned upstream TLAPM binaries support macOS ARM64 and Linux AMD64.
 TLC supports any platform with a suitable Java runtime. On other platforms,
 provision TLC with `make tla-tlc`, then invoke
-`python3 scripts/test-formal.py --mode all --tlapm /absolute/path/to/tlapm`
+`make tla-prove TLAPM=/absolute/path/to/tlapm`
 with a separately installed prover. The default Make proof targets provision the
 pinned bundle and require one of its supported native platforms. Tool absence or
 an unsupported pinned platform fails explicitly. Configurable commands are `JAVA`, `TLC_JAR`, `TLAPM`
@@ -58,13 +50,7 @@ TLC finite exploration, matching observed Go execution traces and TLAPM theorem
 checking provide different evidence. Record model bounds, abstraction mappings,
 solver/proof results and negative checks separately. A model proof is not an
 implementation refinement proof, and traces cannot prove unobserved executions.
-Charged share preparation, private publication and the scoped poll-only
-published-agent lifecycle have model/trace/proof gates. Consumer joins, broader graph
-routing/recovery and SSH archive commit/recovery remain separate protocol work.
-A complete bounded gate does not establish native agent delivery, arbitrary
-transport security or the entire project specification.
-
-Upstream references: [TLC command-line tools](https://github.com/tlaplus/tlaplus/blob/master/general/docs/current-tools.md),
-[TLAPM installation/use](https://github.com/tlaplus/tlapm),
-[TLC pinned release](https://github.com/tlaplus/tlaplus/releases/tag/v1.8.0),
-[TLAPM rolling pre-release](https://github.com/tlaplus/tlapm/releases/tag/1.6.0-pre).
+Current component gates are scoped to the models and implementation paths each
+runner names. Broader graph routing/recovery and SSH archive commit/recovery
+remain separate protocol work. A complete bounded gate does not establish native
+agent delivery, arbitrary transport security or the entire project specification.
