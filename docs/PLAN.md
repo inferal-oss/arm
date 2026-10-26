@@ -770,3 +770,20 @@ Source review does not accept runtime/public installation gates. The original
 local FIFO session remains queued; do not launch a duplicate. Coordinator may
 publish reviewed/audited source to the authorized public repository for CI,
 then verify the immutable query and actual latest installation separately.
+
+### Tagged release metadata dependency (candidate `97be9f5`)
+
+Release owner candidate `97be9f5` remains separate and awaits central review;
+this module task does not import it. At composition, its new `identityPackage`
+in `internal/distribution/bundle.go` must be
+`github.com/inferal-oss/arm/internal/buildinfo`. Keep `identityFlags` injecting
+both Version and BundleTag through that canonical package for payload/carrier
+builds; do not restore this branch's superseded standalone `tagVariable`.
+Preserve the migrated carrier fixture's main-module go.mod (no replace or
+nested go.mod), canonical imports, and `main-module-fork-input` fixture value;
+carry forward the release candidate's Version variable/output and native
+execution assertion, with expected fixture output updated to that value.
+New build-bundle tests/files must use canonical imports if they introduce any.
+Re-run distribution/carrier native and cross-target metadata checks plus
+build-bundle tests against the actual composed source. Neither candidate's
+separate evidence accepts their untested composition or public installation.

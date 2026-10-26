@@ -4130,3 +4130,14 @@ if propagation delays occur. No local fixture proxy, source checkout install,
 user-installed binary overwrite, backend startup or prepopulated source cache
 establishes this gate. Remove disposable caches/state after preserving bounded
 receipts. Website copy stays with the launch owner until these gates pass.
+
+Inspected the separately owned release metadata candidate `97be9f5` for shared
+migration boundaries only. It replaces `tagVariable` with an old-namespace
+`identityPackage`, adds Version linker injection, and extends the carrier
+fixture with a native executable assertion expecting `local-replace-input`.
+Central composition must canonicalize `identityPackage`, retain this migration's
+single-module fixture/imports and update that expected token to
+`main-module-fork-input`. The candidate is not imported or accepted here;
+its independent review and exact composed native/cross-target metadata tests
+remain gates. The original local validation session `52228` still waits and
+has not produced a test result.
