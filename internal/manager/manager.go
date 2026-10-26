@@ -65,6 +65,7 @@ type Manager struct {
 	ownerUsername           string
 	capacity                model.Resources
 	jobs                    map[string]*job
+	relayTransits           map[string]*RelayTransit
 	stop                    chan struct{}
 	wg                      sync.WaitGroup
 	closing                 bool
@@ -232,6 +233,19 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			db.Close()
 			return nil, e
 		}
+		if l.Request.Kind == relayTransitKind && l.State != "terminal" {
+			// A recorded in-process allocation is not a positive join witness.
+			// In particular, PID0 must never settle a lost transport owner.
+			l.State = "needs_attention"
+			l.Outcome = "relay_supervision_lost"
+			l.Failure = "Original relay transport join was not recorded; resources remain charged pending explicit recovery"
+			l.Revision++
+			if e = m.put(l, "relay.recovery_required"); e != nil {
+				db.Close()
+				return nil, e
+			}
+			continue
+		}
 		if l.Cargo != nil {
 			if e = m.recoverCargo(l); e != nil {
 				db.Close()
@@ -397,6 +411,7 @@ func (m *Manager) Close() error {
 	if m.workspaces != nil {
 		m.workspaces.close()
 	}
+	closeErr = errors.Join(closeErr, m.closeRelayTransits())
 	m.mu.Lock()
 	for id := range m.cargoWorkers {
 		_, e := m.end(id, "cancelled")
@@ -658,6 +673,12 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 }
 
 func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error) {
+	return m.acquireWithRelay(r, run, false)
+}
+
+// relay is an in-process capability, never a field accepted from a wire
+// request. Only AcquireRelayTransit passes it after validating its owner.
+func (m *Manager) acquireWithRelay(r model.Request, run *RunRequest, relay bool) (model.Lease, error) {
 	var empty model.Lease
 
 	if run != nil && (run.SSH != nil || run.sshRuntime != nil) && (run.SSH == nil || run.sshRuntime == nil || !reflect.DeepEqual(run.SSH, sshDescriptor(run.sshRuntime.request)) || run.sshRuntime.check() != nil) {
@@ -709,7 +730,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error)
 	if run != nil && r.Resources.CPU <= 0 {
 		return empty, model.Err("invalid_request", "supervised execution requires a positive CPU claim; other resource claims do not authorize execution without CPU headroom")
 	}
-	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" {
+	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" && !(relay && r.Kind == relayTransitKind) {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
 	}
 	if r.Kind == "storage" && (len(r.Pools) > 0 || run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
@@ -1036,6 +1057,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.State == "terminal" || l.State == "ending" {
 		return l, nil
 	}
+	if l.Request.Kind == relayTransitKind {
+		return m.endRelayTransit(l, outcome)
+	}
 	if l.State == "needs_attention" {
 		return l, model.Err("needs_attention", "allocation remains charged pending reconciliation; storage leases support explicit cleanup retry or handoff")
 	}
@@ -1094,6 +1118,9 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
+	}
+	if l.Request.Kind == relayTransitKind {
+		return l, model.Err("invalid_request", "relay transit has a fixed reviewed lifetime and cannot be renewed")
 	}
 
 	if err := m.budgetPolicyError(); err != nil {
@@ -1651,6 +1678,9 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 	}
 	if l.State == "terminal" {
 		return l, nil
+	}
+	if l.Request.Kind == relayTransitKind {
+		return l, model.Err("needs_attention", "relay reconciliation requires its original transport join; a saved PID is never closure evidence")
 	}
 	if l.Cargo != nil || l.Request.Profile == "rust-build" {
 		return m.reconcileCargo(l)

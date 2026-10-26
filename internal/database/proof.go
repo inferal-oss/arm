@@ -427,14 +427,20 @@ func (p *proofReader) readLeases() error {
 		if !oneOf(l.State, "queued", "provisioning", "active", "ending", "needs_attention", "reclaiming", "terminal") {
 			return fmt.Errorf("unknown lease lifecycle")
 		}
-		if !oneOf(l.Request.Kind, "", "storage", "ports") {
+		if !oneOf(l.Request.Kind, "", "storage", "ports", "relay-transit") {
 			return fmt.Errorf("unknown lease provider kind")
+		}
+		if l.Request.Kind == "relay-transit" && (r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources.CPU <= 0 || l.Request.Resources.Memory <= 0 || l.Request.Resources.Disk != 0 || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 0 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || l.Request.Peer != "" || l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0 || l.Request.OriginKey != "") {
+			return fmt.Errorf("invalid in-process relay transit obligation")
+		}
+		if l.Request.Kind == "relay-transit" && !oneOf(l.State, "active", "ending", "needs_attention", "terminal") {
+			return fmt.Errorf("invalid in-process relay lifecycle")
 		}
 		if l.State != "terminal" {
 			if err = p.block("lease", id, "Lease still has queued or unsettled resource obligations"); err != nil {
 				return err
 			}
-		} else if l.Ended == nil || l.Ended.IsZero() || l.Ended.Before(l.Created) || !oneOf(l.Outcome, "released", "cancelled", "expired", "revoked", "completed", "failed", "launch_failed", "admission_failed", "interrupted", "reconciled", "handed_off", "rejected") {
+		} else if l.Ended == nil || l.Ended.IsZero() || l.Ended.Before(l.Created) || !(oneOf(l.Outcome, "released", "cancelled", "expired", "revoked", "completed", "failed", "launch_failed", "admission_failed", "interrupted", "reconciled", "handed_off", "rejected") || l.Request.Kind == "relay-transit" && l.Outcome == "relay_closed") {
 			return fmt.Errorf("terminal lease lacks a known settled outcome/time")
 		}
 		if l.Request.Kind == "storage" {

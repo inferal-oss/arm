@@ -2261,3 +2261,26 @@ The prior 16-case Linux run remains valid only for its earlier source revision.
 Linux AMD64 is compile-only. These native cuts do not establish malicious
 same-account isolation, an atomic filesystem snapshot, public sync, actual
 resource charging, a durable joint baseline or formal refinement.
+
+## October 25: Manager-owned relay resource lifetime
+
+The current typed relay hold component passes 12 focused roots/14 named cases
+under macOS race detection (exit 0, package 5.556s), affected Manager/database
+vet, and independent source review. All 12 roots/14 named cases also pass in a
+CPU-bounded native Linux ARM64 scope; original native command, SSH and cleanup
+exit 0, exact scope inactive, disposable root absent. Ignored evidence:
+`.cache/relay-holds-final-race.jsonl`, `.cache/relay-holds-linux-native.log`.
+These are controlled budget/worker witnesses, not native CPU headroom evidence.
+
+Cases verify positive join before reclamation, expiry/force cancellation with
+blocked workers still charged, rejected public/forged owners, changed durable
+bindings, admission and final-write failures, cancellation even when ending
+persistence fails, Close waiting outside the mutex, conservative restart and
+complete reset proofs for both unresolved and settled markers. Only the exact
+caller can supply the real worker-join witness; this component does not prove
+that any transport's witness is correctly placed.
+
+Fresh live-CPU/managed-credit regressions pass 14 roots/31 named cases under
+race detection (exit 0, 36.703s), with no failures/skips; evidence:
+`.cache/relay-holds-cpu-regression.jsonl`. Actual routed carrier, public CLI,
+platform traffic and formal conformance remain separate acceptance gates.
