@@ -4083,3 +4083,50 @@ for toml, systemd, renameio, shlex, landlock, md4 and x/sync to direct requireme
 `google/go-cmp` (already checksummed) is now direct for fork tests. No dependency
 versions are upgraded. The pending `go mod tidy -diff` gate must confirm this
 classification and root sums against all platforms, including fork tests.
+
+Independent final-source review covers `4dde3d0` (tree
+`fb17d2e0568448baa20efd9ad382e3fc4e25b9b6`), reproduced in isolated reviewer
+commit `53bf0c0` with the identical tree. No blocking findings. The reviewer
+identified an optional trimpath fragility in the added test; `4dde3d0` fixes it
+using the package working directory. A second independent byte inventory
+confirms 850 existing Go/Python files are namespace-only, with two explicitly
+reviewed distribution-fixture exceptions and one new layout regression.
+Changed Python scripts compile; `git diff --check` passes. The only active
+module file is root `go.mod`; root `go.sum` remains unchanged. Existing root
+module requirements supply all fork dependency versions.
+
+The exact delta from public-review baseline `67e9e3b` was inspected: executable
+changes above, root module classification, two Makefiles, packaging notes and
+these scoped delivery records; original license/provenance and historical
+records remain. This is a scoped new-source delta review, not a claim that the
+parent's entire future composed publication/history has been audited. Re-audit
+any additional composition before pushing public refs.
+
+Pinned toolchain reports `go1.27.3 darwin/arm64`. Original queued validation
+session is `52228`, executing `.cache/validate-module.sh`; output is
+`.cache/module-validation.log` in this task checkout. It checks clean source
+and its actual HEAD before `go mod tidy -diff`, all-package compile, focused
+race tests (including installed-rsync client/server interoperability), fork
+vet/interoperability suites and native/Linux ARM64 builds. All Go jobs are
+bounded by `GOMAXPROCS=1` and `-p=1`. At this checkpoint it has not started its
+child and remains behind 23 live jobs. Both global locks are held; one is an
+external long-running throttle. No other ticket, lock or policy was changed.
+This is waiting evidence, not a passing test result. Public remote installs
+remain unperformed until the coordinator publishes reviewed source.
+
+Publication acceptance sequence: integrate the three focused candidate commits
+without divergent feature history, compose separately reviewed release metadata
+if needed, recheck current source/dependencies and run exact-source validation.
+Publish through the coordinator. From a fresh temporary working directory for
+each query, set private empty GOBIN/GOMODCACHE/GOCACHE, GOWORK=off, GOENV=off,
+GOTOOLCHAIN=local and the ordinary public Go proxy. Query the canonical module
+at the immutable published commit, record its resolved Version/Sum/GoModSum,
+then run `go install github.com/inferal-oss/arm/cmd/arm@COMMIT`. Capture the
+original command exit, `go version -m` buildinfo, binary digest, `arm version`,
+`arm help`, and read-only empty-catalog behavior under a fresh explicit home.
+Repeat with new empty directories for literal `@latest`; record which source it
+actually resolves. Proxy visibility and GOPROXY=direct are separate observations
+if propagation delays occur. No local fixture proxy, source checkout install,
+user-installed binary overwrite, backend startup or prepopulated source cache
+establishes this gate. Remove disposable caches/state after preserving bounded
+receipts. Website copy stays with the launch owner until these gates pass.

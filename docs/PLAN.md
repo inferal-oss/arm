@@ -760,3 +760,13 @@ first, then compose the release metadata commit using canonical package paths;
 re-run carrier/source-metadata checks against the composition. This migration's
 runtime distribution edits only change module/linker path literals, preserving
 Version behavior and the existing snapshot whitelist.
+
+Source candidate: `f897c47` (canonical imports/fork layout), `a30edd7` (direct
+fork dependencies and launch-copy ownership), `4dde3d0` (review regression
+trimpath fix). Independent reviewer checkout `codex/canonical-module-review`
+at `53bf0c0` has the same tree as `4dde3d0`:
+`fb17d2e0568448baa20efd9ad382e3fc4e25b9b6`; no source findings remain.
+Source review does not accept runtime/public installation gates. The original
+local FIFO session remains queued; do not launch a duplicate. Coordinator may
+publish reviewed/audited source to the authorized public repository for CI,
+then verify the immutable query and actual latest installation separately.
