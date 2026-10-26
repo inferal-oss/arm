@@ -1,0 +1,202 @@
+package kubeprovision
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// ExecAPI is the client-go streaming adapter used for one fixed payload
+// transfer. Arbitrary shell commands are not accepted by the provider API.
+type ExecAPI interface {
+	Exec(context.Context, Pod, []string, io.Reader, io.Writer, io.Writer) error
+}
+
+// spoolBinary separates reading the caller's payload from the ambiguous
+// remote exec attempt. The unlinked 0600 file is owned until Exec has sealed
+// its input; an interrupted exec never retains the caller's reader or hash.
+func spoolBinary(ctx context.Context, source io.Reader, size int64, expected string) (*os.File, error) {
+	file, err := os.CreateTemp("", "arm-kube-payload-*")
+	if err != nil {
+		return nil, err
+	}
+	if err := os.Remove(file.Name()); err != nil {
+		file.Close()
+		return nil, err
+	}
+	failed := func(err error) (*os.File, error) { file.Close(); return nil, err }
+	h := sha256.New()
+	limited := &io.LimitedReader{R: &contextReader{ctx: ctx, reader: source}, N: size + 1}
+	n, err := io.Copy(io.MultiWriter(file, h), limited)
+	if err != nil {
+		return failed(err)
+	}
+	if n != size || hex.EncodeToString(h.Sum(nil)) != expected {
+		return failed(errors.New("reviewed Kubernetes binary bytes or digest changed"))
+	}
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return failed(err)
+	}
+	return file, nil
+}
+
+type contextReader struct {
+	ctx    context.Context
+	reader io.Reader
+}
+
+func (r *contextReader) Read(p []byte) (int, error) {
+	if err := r.ctx.Err(); err != nil {
+		return 0, err
+	}
+	return r.reader.Read(p)
+}
+
+const shipScript = `set -eu
+key=$1; digest=$2; size=$3; expected_uid=$4
+test "${ARM_POD_UID:-}" = "$expected_uid"
+umask 077
+root=/arm/private
+test -d "$root"; test ! -L "$root"
+test ! -e "$root/arm"; test ! -e "$root/binary-receipt-$key"
+stage="$root/stage-$key"
+mkdir "$stage"
+cat > "$stage/arm"
+test "$(wc -c < "$stage/arm" | tr -d ' ')" = "$size"
+actual=$(sha256sum "$stage/arm")
+test "${actual%% *}" = "$digest"
+chmod 700 "$stage/arm"
+ln "$stage/arm" "$root/arm"
+printf '%s %s %s\n' "$key" "$digest" "$size" > "$stage/receipt"
+ln "$stage/receipt" "$root/binary-receipt-$key"
+rm "$stage/arm" "$stage/receipt"
+rmdir "$stage"
+`
+
+const lookupBinaryScript = `set -eu
+key=$1; digest=$2; size=$3; expected_uid=$4
+test "${ARM_POD_UID:-}" = "$expected_uid"
+root=/arm/private
+test -f "$root/arm"; test ! -L "$root/arm"
+test "$(wc -c < "$root/arm" | tr -d ' ')" = "$size"
+actual=$(sha256sum "$root/arm")
+test "${actual%% *}" = "$digest"
+test "$(cat "$root/binary-receipt-$key")" = "$key $digest $size"
+printf '%s\n' ARM_BINARY_VERIFIED
+`
+
+func (p Provider) LookupBinary(ctx context.Context, key string, transport ExecAPI) (Record, error) {
+	if transport == nil {
+		return Record{}, errors.New("Kubernetes exec transport required")
+	}
+	pod, err := p.ExactPod(ctx, key)
+	if err != nil {
+		return Record{}, err
+	}
+	r, ok, err := p.Journal.Read(ctx, key)
+	if err != nil {
+		return r, err
+	}
+	if !ok || r.Pod == nil {
+		return r, ErrUnknown
+	}
+	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
+	args := []string{"/bin/sh", "-ec", lookupBinaryScript, "arm-lookup", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
+	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.String() != "ARM_BINARY_VERIFIED\n" || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
+		return r, ErrUnknown
+	}
+	return r, nil
+}
+
+// ShipBinary makes one bounded exec attempt after durably marking the source
+// intent. A lost stream or ACK remains unknown; calls with the original key do
+// read-only lookup and never send payload bytes again.
+func (p Provider) ShipBinary(ctx context.Context, key string, payload io.Reader, transport ExecAPI) (Record, error) {
+	if payload == nil || transport == nil {
+		return Record{}, errors.New("binary and Kubernetes exec transport required")
+	}
+	pod, err := p.ExactPod(ctx, key)
+	if err != nil {
+		return Record{}, err
+	}
+	if pod.Phase != "Running" || pod.NodeName == "" {
+		return Record{}, errors.New("selected Pod is not running")
+	}
+	r, ok, err := p.Journal.Read(ctx, key)
+	if err != nil {
+		return r, err
+	}
+	if !ok || r.Phase != PhaseCreated || r.Pod == nil {
+		return r, ErrUnknown
+	}
+	if r.BinaryPhase != "" {
+		return p.ReconcileBinary(ctx, key, transport)
+	}
+	spooled, err := spoolBinary(ctx, payload, r.Plan.Review.BinaryBytes, r.Plan.Review.BinarySHA256)
+	if err != nil {
+		return r, err
+	}
+	defer spooled.Close()
+	if fresh, err := p.ExactPod(ctx, key); err != nil || fresh.UID != pod.UID {
+		if err != nil {
+			return r, err
+		}
+		return r, ErrIdentity
+	}
+	r, err = p.Journal.Update(ctx, key, r.Revision, func(next *Record) error { next.BinaryPhase = "ship_attempted"; return nil })
+	if err != nil {
+		return r, err
+	}
+	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
+	args := []string{"/bin/sh", "-ec", shipScript, "arm-ship", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
+	streamErr := transport.Exec(ctx, pod, args, spooled, output, stderr)
+	if streamErr != nil || output.Len() != 0 || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
+		return r, ErrUnknown
+	}
+	if _, err := p.LookupBinary(ctx, key, transport); err != nil {
+		return r, ErrUnknown
+	}
+	return p.Journal.Update(ctx, key, r.Revision, func(next *Record) error {
+		if next.BinaryPhase != "ship_attempted" {
+			return ErrJournalConflict
+		}
+		next.BinaryPhase = "binary_verified"
+		return nil
+	})
+}
+
+// ReconcileBinary settles only positive exact-key read-only destination
+// evidence. A failed lookup preserves the attempted transfer as unknown.
+func (p Provider) ReconcileBinary(ctx context.Context, key string, transport ExecAPI) (Record, error) {
+	r, err := p.LookupBinary(ctx, key, transport)
+	if err != nil {
+		return r, err
+	}
+	if r.BinaryPhase == "binary_verified" {
+		return r, nil
+	}
+	if r.BinaryPhase != "ship_attempted" {
+		return r, ErrIdentity
+	}
+	return p.Journal.Update(ctx, key, r.Revision, func(next *Record) error {
+		if next.BinaryPhase != "ship_attempted" {
+			return ErrJournalConflict
+		}
+		next.BinaryPhase = "binary_verified"
+		return nil
+	})
+}
+
+// BinaryReceiptText is the exact file content the fixed Pod script publishes.
+func BinaryReceiptText(key, digest string, size int64) (string, error) {
+	if !digestPattern.MatchString(key) || !digestPattern.MatchString(digest) || size < 1 || size > MaxBinaryBytes {
+		return "", fmt.Errorf("invalid bounded binary receipt")
+	}
+	return strings.Join([]string{key, digest, strconv.FormatInt(size, 10)}, " ") + "\n", nil
+}

@@ -2898,3 +2898,50 @@ Its Manager fixture still uses live memory and passes; the later test-only
 controlled-observation specialization does not change production startup.
 Evidence: `.cache/reset-startup-reviewed-linux-{intent.json,native.log,run.log}`.
 This supersedes the author's compilation-only Linux scope for this guard.
+
+## Kubernetes provider and owned transport integration
+
+The composed foundation includes191519d/5ddc1d4/50553da/79db3e0/b260473 and
+reviewed origin successor ca77f0b. Review reproduced credential delivery through
+an unreviewed TLS redirect, then an incorrect Unicode lowercase origin alias.
+The shared origin fence fixes both before transport/dial; selected/saved typed
+clients and actual exec/forward helpers refuse cross-origin requests with zero
+target connections, requests or authenticated requests. Same-origin redirects,
+valid IDNA aliases and body closure pass. Endpoint/CA changes and credential
+plugins are refused before client construction.
+
+The first composed provider race fails the unchanged stalled-upgrade deadline
+assertion: the dial timer can finish before ctx.Err is published. The successor
+classifies an elapsed caller deadline correctly without relaxing the assertion;
+twenty repetitions and complete subsequent suites pass. An initial Linux run
+skips optional real-helper tests and is not acceptance. A later all-helper run
+fails the bootstrap fixture's assumption of positive dynamic CPU capacity under
+hidden quota ancestry. The corrected fixture checks exact reviewed ceilings
+and requires unknown CPU to remain capacity0; production admission is unchanged.
+Both incomplete/failed runs and exact owned cleanup are retained.
+
+With a fresh actual CGo-free CLI on current main, all53 provider roots/66 named
+cases pass under macOS race (14.651s), zero skips, plus affected vet. The exact
+Linux ARM64 test/CLI binaries pass all53 roots/66 named cases, zero skips or
+failures; both upload hashes match, original native/SSH/cleanup exit0, bounded
+scope inactive and exact owned directory absent. Tests cover owned child
+cancellation/early exit/parent-pipe loss, output/error/connection caps, Pod
+identity drift, immutable payload replacement/FIFO refusal, no POST retry and
+credential/redirect fences. Logs are ignored
+`.cache/kubernetes-main-final-root-{race,vet}.log` and
+`.cache/kubernetes-reviewed-linux-{intent.json,native.log,run.log}`; retained
+initial/pre-ceiling failures have separate log prefixes.
+
+The shared dependency closure passes full TUI races29.636s and real dashboard
+PTY navigation/actions/disconnect/terminal-restoration acceptance. Prior and
+final all-package compile-only gates are recorded separately; they do not run
+all test bodies. A thin CGo-free CLI builds. These are local provider/transport
+fixtures, not an actual cluster, Pod bootstrap, mesh enrollment, public CLI/UI,
+carrier release or broader platform acceptance. QUIC stays separate.
+
+The final composition, including the integrated pressure, sync admission/worker,
+reset guard and Kubernetes dependency closure, passes the complete all-package
+compile-only gate (`.cache/integration-seven-features-compile.log`). Every test
+package compiles/links; this is not a full-suite execution claim. A fresh scoped
+CPU all-mode gate is running separately after the shared admission-core changes;
+its result will be recorded when terminal.

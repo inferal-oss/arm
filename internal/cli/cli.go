@@ -24,6 +24,7 @@ import (
 	"github.com/yrashk/arm/internal/buildinfo"
 	"github.com/yrashk/arm/internal/client"
 	"github.com/yrashk/arm/internal/install"
+	"github.com/yrashk/arm/internal/kubeprovision"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
@@ -48,6 +49,15 @@ type app struct {
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
+	if len(args) > 0 && args[0] == kubeprovision.HelperArgument {
+		return kubeprovision.HelperMain(args[1:])
+	}
+	if len(args) > 0 && args[0] == kubeprovision.ExecHelperArgument {
+		return kubeprovision.ExecHelperMain(args[1:])
+	}
+	if len(args) > 0 && args[0] == kubeprovision.ForwardHelperArgument {
+		return kubeprovision.ForwardHelperMain(args[1:])
+	}
 	if len(args) > 0 && args[0] == providerexec.HelperArgument {
 		return providerexec.HelperMain(args[1:], out, errout)
 	}

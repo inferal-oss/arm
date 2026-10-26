@@ -1142,3 +1142,30 @@ Disk admission includes outgoing materialized source actions as well as receiver
 ### Startup after an installed database reset
 
 The reset writer intentionally builds a standalone database containing only the fresh authority metadata and applied-operation marker. Startup's retired-mount guard now permits that sparse database to reach ordinary schema creation only while its installed seed pointer, completed reset receipt, exact native inode and SHA-256 bytes still match the prebuilt seed, with no SQLite companions. An unrelated partial database, changed seed, replaced file, missing receipt or unsupported retired state remains refused without migration or cleanup. Once the ordinary leases table exists, the original retired-state guard applies. The independent destructive settled-proof guard remains strict and receives no sparse-schema exception. This is not automatic recovery of a partially mutated startup seed.
+
+## Kubernetes provisioning foundation
+
+The integrated client-go provider inventories kubeconfig contexts and Nodes,
+binds reviewed cluster/auth/Namespace/Node identity, and journals an exact Pod
+creation attempt without POST retries. Reviewed image digests, selected platform,
+positive scheduler requests/limits, private ephemeral storage and nonroot Pod
+security settings are checked. Ambiguous creation/shipment/start-marker results
+remain original-key observations; a marker is not running-backend readiness.
+
+Actual exec and TCP forwarding run in private ARM self-helper processes with
+bounded IPC, original child ownership, exact Wait and group-absence checks.
+They accept fixed reviewed operations; credential plugins are unsupported for
+owned streams. Each saved context checks endpoint/CA before client construction,
+rejects unreviewed SNI/proxy/custom transport settings, freezes credentials/CA
+and rechecks live effective user, Namespace, Node and Pod identity. A shared
+HTTPS-origin fence guards initial discovery and owned typed/SPDY/WebSocket
+requests before any redirect dial. It uses IDNA/IP identity and effective ports;
+a trusted CA does not authorize another origin. Refused request bodies close.
+
+This foundation includes hidden inherited-pipe helper dispatch and currently
+unrouted CLI methods. Public `arm mesh kubernetes`, actual Pod bootstrap and
+readiness, carrier catalog/enrollment, leased SSH connection, web/Charm Node
+selection and real-cluster acceptance remain required. Pod requests are ceilings
+and scheduler declarations, not proven live capacity; hidden Linux quota
+ancestry still refuses native CPU grants. No Kubernetes entitlement exception
+or QUIC transition is enabled. See [the provider contract](KUBERNETES-PROVISIONING.md).
