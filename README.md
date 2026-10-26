@@ -15,7 +15,20 @@ See [SPEC.md](SPEC.md) for the complete design and [the implementation notes](do
 
 ## Build
 
-Use Go 1.27.3 or newer. The current build uses Go 1.27.3, selected from the [official stable release feed](https://go.dev/dl/?mode=json). SQLite uses `modernc.org/sqlite`; the release build disables CGo.
+Use Go and make. The minimum Go version is declared in [go.mod](go.mod). SQLite uses `modernc.org/sqlite`; the release build disables CGo.
+
+Clone and install the CLI, then use `arm` from your shell:
+
+```sh
+git clone https://github.com/inferal-oss/arm.git
+cd arm
+go install ./cmd/arm
+arm version
+```
+
+Ensure the Go install directory (`GOBIN`, or `GOPATH/bin` by default) is on your PATH. The local install uses this checkout, including its checked-in dependency replacements.
+
+For a build artifact in this checkout:
 
 ```sh
 make build
@@ -48,15 +61,15 @@ arm version
 
 `make install` builds the carrier in a fresh temporary directory, installs it only after a successful build, and removes its build output afterwards. It works repeatedly without replacing `dist/arm`. Ensure `~/.local/bin` is on your shell's PATH. In Fish, if needed, run `fish_add_path ~/.local/bin`. Set `PREFIX` to change the installation root, for example `make install PREFIX="$HOME/tools"`; `BINDIR` and packaging `DESTDIR` are also supported. Installing the executable does not modify agent configuration or start the backend. Use `arm install --dry-run` and `arm install` to add the agent instructions described below.
 
-The executable is `bin/arm`. Set `ARM_HOME` or pass `--home DIR` before the subcommand to select an isolated state directory. The default is the user's platform configuration directory under `arm`.
+The installed command is `arm`. Set `ARM_HOME` or pass `--home DIR` before the subcommand to select an isolated state directory. The default is the user's platform configuration directory under `arm`.
 
 ```sh
-bin/arm --home /tmp/arm-demo daemon start --cpu 4 --memory 8GiB --disk 20GiB
-bin/arm --home /tmp/arm-demo resources --json
-bin/arm --home /tmp/arm-demo run --cpu 2 --ttl 2m \
+arm --home /tmp/arm-demo daemon start --cpu 4 --memory 8GiB --disk 20GiB
+arm --home /tmp/arm-demo resources --json
+arm --home /tmp/arm-demo run --cpu 2 --ttl 2m \
   --reason "Build the release binary" -- cargo build --release
-bin/arm --home /tmp/arm-demo events --follow
-bin/arm --home /tmp/arm-demo daemon stop
+arm --home /tmp/arm-demo events --follow
+arm --home /tmp/arm-demo daemon stop
 ```
 
 Use `--profile rust-build` with managed storage for supported Cargo build/check
@@ -64,14 +77,14 @@ or test compilation. ARM charges preparation, verifies existing installed tools,
 creates distinct owned output directories and separately authorizes compilation:
 
 ```sh
-bin/arm storage create 10GiB --ttl 30m --reason "Temporary Rust artifacts until output export"
+arm storage create 10GiB --ttl 30m --reason "Temporary Rust artifacts until output export"
 # Use the returned storage ID, then save the returned build lease ID:
-bin/arm run --storage STORAGE_ID --profile rust-build --cpu 2 --ttl 20m \
+arm run --storage STORAGE_ID --profile rust-build --cpu 2 --ttl 20m \
   --cwd /absolute/project --reason "Compile release binaries" -- cargo build --release
-bin/arm storage export STORAGE_ID /approved/output/app \
+arm storage export STORAGE_ID /approved/output/app \
   --file cargo-BUILD_LEASE_ID/target/release/APP=bin/APP --reason "Keep the requested executable" --wait
-bin/arm storage cleanup STORAGE_ID --dry-run
-bin/arm release STORAGE_ID
+arm storage cleanup STORAGE_ID --dry-run
+arm release STORAGE_ID
 ```
 
 Read `arm agents card rust-build` for the supported command/configuration grammar,
@@ -92,10 +105,10 @@ routine history archival and broader Cargo compatibility remain planned.
 For an explicit lease:
 
 ```sh
-bin/arm acquire --cpu 2 --memory 1GiB --ttl 10m --reason "Analysis workers" --json
-bin/arm inspect LEASE_ID
-bin/arm renew LEASE_ID --ttl 20m
-bin/arm release LEASE_ID
+arm acquire --cpu 2 --memory 1GiB --ttl 10m --reason "Analysis workers" --json
+arm inspect LEASE_ID
+arm renew LEASE_ID --ttl 20m
+arm release LEASE_ID
 ```
 
 Use `arm help COMMAND` or `arm GROUP COMMAND --help` for command-specific options and examples. Flags may surround positional arguments, so `arm storage create 10GiB --reason "Build outputs"` and `arm renew --ttl 20m LEASE_ID` work. For `run`, put ARM options before the command; everything after `--` belongs to the child. Both `-reason` and `--reason` work.
@@ -107,7 +120,7 @@ Use `--wait` with `acquire` or `run` to queue. Claims are cooperative reservatio
 Inspect native CPU and memory observations for a supervised command:
 
 ```sh
-bin/arm usage LEASE_ID
+arm usage LEASE_ID
 ```
 
 For physical host monitoring, use `arm monitor`, or `arm monitor --follow --json` to stream sample pages. The shared backend reports aggregate/per-core CPU, memory/swap, cached filesystem space, per-device disk I/O and network rates. It retains a two-minute window of compact history at a nominal two-second cadence. Restart changes the collector epoch and explicitly marks a history gap. Physical observations are separate from lease budgets and attribution; unavailable/reset counters remain null, and GPU telemetry is not yet implemented. Both dashboards consume this stream; GPU telemetry and fuller device/provider support remain upcoming.
@@ -135,7 +148,7 @@ Snapshots also appear in `inspect` and `status`. CPU needs two samples and repor
 Inspect a directory's logical size and reported allocation through the backend:
 
 ```sh
-bin/arm storage inspect /absolute/path/to/artifacts
+arm storage inspect /absolute/path/to/artifacts
 ```
 
 The read-only scan deduplicates hard links and skips symlinks and child mounts. It leaves exclusive and reclaimable bytes unknown because clones, snapshots, open files and shared extents can prevent deletion from returning the reported allocation. Inspection does not authorize cleanup.
@@ -145,15 +158,15 @@ The read-only scan deduplicates hard links and skips symlinks and child mounts. 
 Reserve exact TCP/UDP bindings, kernel-selected ports (`0`), or a bounded selection range. With no port argument, ARM holds one available TCP port on `127.0.0.1`:
 
 ```sh
-bin/arm ports reserve --reason "Testing"
-bin/arm ports reserve 8080 --reason "Preview server"
-bin/arm ports reserve --port web=tcp4://127.0.0.1:0 --ttl 15m --reason "Reserve the preview server"
-bin/arm ports list
-bin/arm ports discover
-bin/arm run --port-lease PORT_LEASE_ID --ttl 2m --reason "Serve the preview" -- ./socket-aware-server
+arm ports reserve --reason "Testing"
+arm ports reserve 8080 --reason "Preview server"
+arm ports reserve --port web=tcp4://127.0.0.1:0 --ttl 15m --reason "Reserve the preview server"
+arm ports list
+arm ports discover
+arm run --port-lease PORT_LEASE_ID --ttl 2m --reason "Serve the preview" -- ./socket-aware-server
 # Or request ports together with execution resources:
-bin/arm run --port web=tcp4://127.0.0.1:8000-8010 --cpu 1 --reason "Serve the preview" -- ./socket-aware-server
-bin/arm release PORT_LEASE_ID
+arm run --port web=tcp4://127.0.0.1:8000-8010 --cpu 1 --reason "Serve the preview" -- ./socket-aware-server
+arm release PORT_LEASE_ID
 ```
 
 Held bindings stay open through socket activation. A supervised command receives `ARM_PORTS`, a JSON array containing each binding's `name`, `network`, `address`, selected `port`, `namespace`, `mode` and inherited `fd`. The first socket descriptor is normally 4; always use the supplied numbers. In Go, wrap the descriptor with `os.NewFile` and `net.FileListener` or `net.FilePacketConn`, then close the original wrapper after duplication. Do not bind the address again. `ARM_PORT_LEASE` identifies the owning lease. A dedicated port lease permits one attached command at a time, must outlast it, and keeps its sockets after the command finishes.
@@ -220,11 +233,11 @@ List embedded workload policies with `arm agents card --list --json` (`arm agent
 Preview before choosing to install instructions into your agent configuration:
 
 ```sh
-bin/arm install --dry-run
-bin/arm install
-bin/arm agent probe
-bin/arm uninstall --dry-run
-bin/arm uninstall
+arm install --dry-run
+arm install
+arm agent probe
+arm uninstall --dry-run
+arm uninstall
 ```
 
 The installer discovers Codex and Claude, including Claude in `~/.local/bin`. Explicit `--codex-home DIR` and `--claude-home DIR` targets support isolated setups. Managed instructions include the actual ARM executable and state-directory prefix. Installation currently manages instruction blocks; daemon startup is separate, and native service registration is pending.
@@ -240,12 +253,12 @@ Uninstall preserves unrelated edits, edited managed blocks, state, and history. 
 Register an exact existing session before sending messages:
 
 ```sh
-bin/arm agent register --id build-agent --adapter codex \
+arm agent register --id build-agent --adapter codex \
   --session SESSION_UUID --cwd /absolute/project/path
-bin/arm message send --to build-agent --text "Please reduce build concurrency."
-bin/arm message operator --text "The build needs another five minutes."
-bin/arm message broadcast --text "Please release idle leases."
-bin/arm messages --json
+arm message send --to build-agent --text "Please reduce build concurrency."
+arm message operator --text "The build needs another five minutes."
+arm message broadcast --text "Please release idle leases."
+arm messages --json
 ```
 
 Codex delivery uses its native queue command. Claude currently supports explicitly idle sessions: register with `--adapter claude --idle`; delivery resumes the same session in a response-only turn and records its reply in the operator inbox. Active Claude injection is not implemented. CLI authentication must be available to the backend process. Register with `--config-dir` only when the agent actually uses that configuration root; optional Codex `--remote unix://PATH` supports a local app-server socket.
@@ -253,13 +266,13 @@ Codex delivery uses its native queue command. Claude currently supports explicit
 For active Claude sessions and other agents without live message injection, select the durable polling inbox:
 
 ```sh
-bin/arm agent register --id claude-worker --adapter claude --delivery poll \
+arm agent register --id claude-worker --adapter claude --delivery poll \
   --session SESSION_UUID --cwd /absolute/project/path
-bin/arm agent inbox --id claude-worker --session SESSION_UUID --pending
+arm agent inbox --id claude-worker --session SESSION_UUID --pending
 # Run in a background task or watcher subagent when supported:
-bin/arm agent watch --id claude-worker --session SESSION_UUID
+arm agent watch --id claude-worker --session SESSION_UUID
 # After handling the message:
-bin/arm agent ack --id claude-worker --session SESSION_UUID \
+arm agent ack --id claude-worker --session SESSION_UUID \
   --message MESSAGE_ID --text "Reduced build concurrency"
 ```
 
