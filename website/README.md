@@ -84,3 +84,9 @@ Asset SHA-256 values:
 
 - Dashboard logo: `9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87`
 - Dashboard favicon: `fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373`
+
+The screenshot gallery references build-generated `screenshots/web-monitor.png`,
+`screenshots/web-resources.png` and `screenshots/terminal.png`. No substitute or
+placeholder images are checked in. The Gallery and Picture data use
+stock framework vocabulary; final build acceptance must confirm all three
+actual generated images and their responsive layout.

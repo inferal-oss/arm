@@ -85,7 +85,7 @@ ui:BrandLogoShape a sh:NodeShape ; sh:targetClass ui:BrandLogo ;
 
 # Overview.
 ui:home a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-7 ;
-    c:children ( ui:hero ui:diagram ui:exampleCard ui:interfaces ui:homeNext ) .
+    c:children ( ui:hero ui:diagram ui:screenshots ui:exampleCard ui:interfaces ui:homeNext ) .
 ui:hero a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ;
     c:children ( ui:eyebrow ui:title ui:summary ui:platforms ui:heroLinks ) .
 ui:eyebrow a c:Text ; sty:textStyle sty:Overline ; c:label "Agent Resource Manager" .
@@ -242,3 +242,18 @@ ui:mitLink a c:Link ; c:label "MIT license" ; c:href "https://github.com/inferal
 ui:apacheLink a c:Link ; c:label "Apache-2.0 license" ; c:href "https://github.com/inferal-oss/arm/blob/main/LICENSE-APACHE" .
 ui:siteTitle a c:Heading ; c:level 2 ; c:label "Website implementation" .
 ui:siteText a c:Text ; c:label "This public website runs on the actual Semblance graph/component/event framework with its stock Semblance theme. Navigation, content and interactive disclosures are RDF graph data projected through Semblance rules. The website source lives beside ARM on the same main branch." .
+
+# Actual dashboard images are generated from isolated current-source runs on CI.
+# c:Picture is gallery data; the Gallery is a stock component.
+ui:screenshots a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ;
+    c:children ( ui:screenshotsTitle ui:screenshotsNote ui:screenshotGallery ) .
+ui:screenshotsTitle a c:Heading ; c:level 2 ; c:label "Dashboard views" .
+ui:screenshotsNote a c:Text ; c:label "Views of the web and terminal interfaces, captured from a disposable ARM backend during this site's build." .
+ui:screenshotGallery a c:Gallery ; c:label "ARM dashboard screenshots" ; c:galleryLayout c:GridLayout ;
+    c:images ( ui:monitorShot ui:resourcesShot ui:terminalShot ) .
+ui:monitorShot a c:Picture ; c:image "screenshots/web-monitor.png" ;
+    c:alt "Web dashboard — Monitor" ; c:caption "Web dashboard — Monitor" .
+ui:resourcesShot a c:Picture ; c:image "screenshots/web-resources.png" ;
+    c:alt "Web dashboard — Resources" ; c:caption "Web dashboard — Resources" .
+ui:terminalShot a c:Picture ; c:image "screenshots/terminal.png" ;
+    c:alt "Terminal dashboard — Monitor" ; c:caption "Terminal dashboard — Monitor" .
