@@ -567,3 +567,21 @@ matched all integrated source/test bytes, ran composed native regressions and
 compiled the full module. This supersedes the pending implementation wording
 above; evidence and limits are recorded in VALIDATION.md. No actual user DB
 removal, binary installation, workload termination or remote cleanup occurred.
+
+
+### Terminal dashboard gauge availability flicker — active issue
+
+Owner chat 01a17a63-41aa-7670-ba0d-446f6a48a0d3, titled
+“Fix terminal dashboard gauge availability…”, starts from main181a776 in
+its isolated /Users/yrashk/.codex/worktrees/28c4/arm checkout on a codex/ branch.
+The user reports RAM/space repeatedly switching between unavailable and a
+measurement in `arm dashboard terminal`; audit other gauges sharing the cause.
+Reproduce and trace collection, snapshot/event merges, client clocks/freshness
+and rendering before correcting it. Preserve honest unavailable/stale states,
+authority/session boundaries and unchanged fail-closed admission semantics.
+A possible refresh-between-ticks ordering issue is a hypothesis, not a finding.
+Return focused reviewed commits, meaningful transition/clock/reconnect tests,
+scoped races/vet and repeated-refresh real terminal/PTY evidence; native Linux
+checks apply if backend/platform behavior changes. No real user backend/state
+or installed binary changes. Coordinator independent review, fixes and composed
+validation are required before integration; no candidate is accepted yet.
