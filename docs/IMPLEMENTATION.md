@@ -1455,8 +1455,9 @@ declaration order; internal SQL token-comparison keys never appear in that
 diagnostic. The error explains the compatibility boundary and diagnosis/backup,
 matching-build or separate-empty-home options. Exact supported schemas,
 constraints, obligations, native ownership and pristine reset-seed provenance
-remain required. No automatic schema repair, migration or incompatible-ledger
-disposal is added. The reported user's read-only inventory lacks both pressure
+remain required for ordinary removal. No automatic schema repair or migration
+is added. Explicit incompatible-ledger forgetting is described below. The
+reported user's read-only inventory lacks both pressure
 tables and a reset pointer, consistent with pre-pressure state but without
 proof of its exact history. No actual user removal or migration was performed.
 
@@ -1481,3 +1482,35 @@ restoration evidence cover this scope. PTY transcript checks are not a new
 reconstructed-screen visual, Linux/other-UID or complete interface acceptance.
 Peer data remains an advisory assertion and grants no admission, CPU credit,
 process control or shared authority.
+
+
+## Explicit database forgetting
+
+`arm database remove --forget --dry-run` reviews intentional ledger loss without
+opening SQLite, copying its old payload, requiring its schema or proving settled
+obligations. Confirm with `--forget --yes --reason "wipe"`; include
+`--retire-mesh` when the preview requires local identity retirement. Terminal
+confirmation defaults to keeping state. Ordinary removal remains strict.
+Successful forgetting unlinks the exact reviewed DB/WAL/SHM/rollback-journal
+inodes and bounded dashboard-pending/ssh-source-history generations, including
+catalog/packs/locks. It leaves no old database/catalog payload or backup in the
+state directory. Mesh identity/lifecycle retirement is an explicit local archive;
+re-pairing is required and remote revocation is not implied.
+
+Stopped-daemon exclusion, owned private paths, links, identities, mount boundaries
+and unchanged inventory remain mandatory. Linux requires descriptor STATX_MNT_ID;
+Darwin uses descriptor filesystem ID and mountpoint. Recovery receipts record
+intent, identities/hashes and exact progress; interrupted original inodes can
+remain quarantined until `arm database remove --continue OPERATION --yes`
+finishes. Continuation cannot change mode or target a later fresh database.
+Failure before the first durable receipt requires manual inspection; no original
+payload is moved before that receipt exists.
+The next backend start installs the reviewed fresh authority once. Existing
+managed storage metadata/children are preserved and cannot be adopted into it.
+No processes, managed files or remote resources are cleaned up or settled.
+
+The accepted bounded inventory must fit the worst-case indented durable receipt,
+including progress keys, newline and maximum timestamp widths, before intent is
+created. Oversized or unsafe inventories refuse without erasure. Logical file
+removal does not claim physical-media erasure. Actual user state and the installed
+binary were untouched during implementation, review and native acceptance.

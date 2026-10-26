@@ -25,6 +25,9 @@ func (r *ResetReview) apply(ctx context.Context, checkpoint func(string) error) 
 	if r == nil || r.review == nil {
 		return ResetResult{}, fmt.Errorf("live stopped reset review required")
 	}
+	if r.Plan.Forget != r.review.source.opaque {
+		return ResetResult{}, fmt.Errorf("reset mode differs from the original review contract")
+	}
 	if err := validResetPlan(r.Plan, r.review.source.Directory.Path); err != nil {
 		return ResetResult{}, err
 	}
@@ -42,7 +45,21 @@ func (r *ResetReview) apply(ctx context.Context, checkpoint func(string) error) 
 		return ResetResult{}, err
 	}
 	defer s.close()
+	if err = s.checkForgetMount(r.Plan); err != nil {
+		return ResetResult{}, err
+	}
 	receipt := ResetReceipt{Schema: ResetSchema, Plan: r.Plan, Phase: "staged", Revision: 1, Moves: map[string]string{}, Archives: map[string]string{}, Protected: append([]NamespaceEvidence{}, r.review.Namespaces...)}
+	if r.Plan.Forget {
+		receipt.ForgetMoves = map[string]string{}
+		receipt.ForgetErased = map[string]bool{}
+		for _, tree := range r.Plan.ForgetTrees {
+			state := "absent"
+			if tree.Root.Present {
+				state = "source"
+			}
+			receipt.ForgetMoves[tree.Name] = state
+		}
+	}
 	for _, f := range r.Plan.Files {
 		if f.Present {
 			receipt.Moves[f.Name] = "source"
@@ -88,6 +105,9 @@ func resetCompletedResult(r ResetReceipt) ResetResult {
 	result := resetResult(r)
 	result.Completed = true
 	result.Detail = "The reviewed SQLite files were erased. Artifacts and local archives were retained. The next backend start installs the reviewed fresh authority once; old mesh trust requires re-pairing."
+	if r.Plan.Forget {
+		result.Detail = "The exact SQLite file group was forgotten without a retained database copy. Obligations were NOT checked: processes and external resources were not stopped or proven reclaimed. The next backend start installs the reviewed fresh authority once; preserved storage children are not adopted and retired mesh requires re-pairing."
+	}
 	return result
 }
 func resetCheckpoint(ctx context.Context, hook func(string) error, stage string) error {
@@ -102,6 +122,9 @@ func resetCheckpoint(ctx context.Context, hook func(string) error, stage string)
 
 func (s *resetStore) finishReset(ctx context.Context, r *ResetReceipt, file *File, hook func(string) error) (ResetResult, error) {
 	fail := func(err error) (ResetResult, error) { return resetResult(*r), err }
+	if err := s.checkForgetMount(r.Plan); err != nil {
+		return fail(err)
+	}
 	if err := s.validate(); err != nil {
 		return fail(err)
 	}
@@ -170,6 +193,11 @@ func (s *resetStore) finishReset(ctx context.Context, r *ResetReceipt, file *Fil
 			}
 		}
 	}
+	for _, tree := range r.Plan.ForgetTrees {
+		if err = s.moveForgetTree(ctx, r, file, tree, hook); err != nil {
+			return fail(err)
+		}
+	}
 	seed := ResetSeed{Schema: ResetSchema, Operation: r.Plan.ID, Authority: r.Plan.NewHost, PlanSHA256: r.Plan.SHA256, File: r.Seed}
 	current, pointer, err := readResetJSON[ResetSeed](s.home, ResetSeedName)
 	if err == nil && sameResetJSON(current, seed) {
@@ -203,6 +231,14 @@ func (s *resetStore) finishReset(ctx context.Context, r *ResetReceipt, file *Fil
 		if err = s.eraseResetDatabase(ctx, r, file, expected, hook); err != nil {
 			return fail(err)
 		}
+	}
+	for _, tree := range r.Plan.ForgetTrees {
+		if err = s.eraseForgetTree(ctx, r, file, tree, hook); err != nil {
+			return fail(err)
+		}
+	}
+	if err = s.validateForgetProgress(ctx, *r); err != nil {
+		return fail(err)
 	}
 	if err = s.validateResetNamespaces(ctx, *r); err != nil {
 		return fail(err)
@@ -283,6 +319,19 @@ func (s *resetStore) moveResetDatabase(ctx context.Context, r *ResetReceipt, fil
 		if _, err = exactResetFile(ctx, s.home, expected, true); err != nil {
 			return err
 		}
+		var guard *os.File
+		if r.Plan.Forget {
+			guard, err = forgetFileGuard(s.home, expected, r.Plan.ForgetMount)
+			if err != nil {
+				return err
+			}
+			if guard != nil {
+				defer guard.Close()
+			}
+			if err = s.checkForgetMount(r.Plan); err != nil {
+				return err
+			}
+		}
 		if err = renameResetExclusive(int(s.home.FD.Fd()), expected.Name, int(s.operation.FD.Fd()), expected.Name); err != nil {
 			return err
 		}
@@ -337,6 +386,19 @@ func (s *resetStore) eraseResetDatabase(ctx context.Context, r *ResetReceipt, fi
 		if _, err = exactResetFile(ctx, s.operation, expected, true); err != nil {
 			return err
 		}
+		var guard *os.File
+		if r.Plan.Forget {
+			guard, err = forgetFileGuard(s.operation, expected, r.Plan.ForgetMount)
+			if err != nil {
+				return err
+			}
+			if guard != nil {
+				defer guard.Close()
+			}
+			if err = s.checkForgetMount(r.Plan); err != nil {
+				return err
+			}
+		}
 		if err = unix.Unlinkat(int(s.operation.FD.Fd()), expected.Name, 0); err != nil {
 			return err
 		}
@@ -376,9 +438,11 @@ func (s *resetStore) validateResetFileLocations(ctx context.Context, r ResetRece
 			return fmt.Errorf("quarantined database still exists: %s", expected.Name)
 		}
 	}
-	journal, err := s.home.Observe("state.db-journal", false)
-	if err != nil || journal.Present {
-		return fmt.Errorf("unreviewed SQLite journal appeared")
+	if !r.Plan.Forget {
+		journal, err := s.home.Observe("state.db-journal", false)
+		if err != nil || journal.Present {
+			return fmt.Errorf("unreviewed SQLite journal appeared")
+		}
 	}
 	return ctx.Err()
 }

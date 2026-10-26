@@ -14,6 +14,9 @@ import (
 // namespaces. A damaged receipt must not omit the pending roster or retire a
 // different directory while still claiming the original settled proof.
 func validResetProtected(plan ResetPlan, protected []NamespaceEvidence) error {
+	if plan.Forget {
+		return validForgetProtected(plan, protected)
+	}
 	reviewed := map[string]NamespaceEvidence{}
 	for _, n := range plan.Namespaces {
 		if err := validSSHHistoryEvidence(n); err != nil {
@@ -103,7 +106,7 @@ func (s *resetStore) validateResetNamespaces(ctx context.Context, r ResetReceipt
 	if len(r.Protected) == 0 {
 		return fmt.Errorf("protected reset namespace evidence is missing")
 	}
-	if _, known := resetNamespace(r.Protected, "ssh-source-history"); !known {
+	if _, known := resetNamespace(r.Protected, "ssh-source-history"); !known && !r.Plan.Forget {
 		if _, err := os.Lstat(filepath.Join(s.home.Path, "ssh-source-history")); !os.IsNotExist(err) {
 			return fmt.Errorf("unreviewed source history cannot be retired or adopted")
 		}
@@ -186,6 +189,11 @@ func (s *resetStore) checkResetNamespace(ctx context.Context, n NamespaceEvidenc
 	if !sameIdentity(d.identity, n.Identity) {
 		return fmt.Errorf("protected reset namespace identity changed")
 	}
+	if s.forgetMount != "" {
+		if err := requireForgetMount(d.FD, s.forgetMount, forgetMountIdentity); err != nil {
+			return err
+		}
+	}
 	if n.Name == "ssh-source-history" {
 		return checkSSHHistoryEvidencePath(ctx, filepath.Join(parent.Path, n.Name), n)
 	}
@@ -202,6 +210,15 @@ func (s *resetStore) checkResetNamespace(ctx context.Context, n NamespaceEvidenc
 	for i, v := range n.Files {
 		if names[i] != v.Name {
 			return fmt.Errorf("protected reset namespace names changed")
+		}
+		if s.forgetMount != "" {
+			guard, e := forgetFileGuard(d, v, s.forgetMount)
+			if e != nil {
+				return e
+			}
+			if guard != nil {
+				guard.Close()
+			}
 		}
 		if _, err = exactResetFile(ctx, d, v, false); err != nil {
 			return err
@@ -221,7 +238,11 @@ func (s *resetStore) lockProtectedNamespaces(r ResetReceipt) ([]*os.File, error)
 		}
 		return nil, err
 	}
-	for _, item := range []struct{ dir, name string }{{"", "mesh-lifecycle.lock"}, {"dashboard-pending", ".lock"}} {
+	items := []struct{ dir, name string }{{"", "mesh-lifecycle.lock"}, {"dashboard-pending", ".lock"}}
+	if r.Plan.Forget {
+		items = items[:1]
+	}
+	for _, item := range items {
 		d := s.home
 		if item.dir != "" {
 			opened, err := resetChild(s.home, item.dir, false)
@@ -248,6 +269,33 @@ func (s *resetStore) lockProtectedNamespaces(r ResetReceipt) ([]*os.File, error)
 			return fail(fmt.Errorf("protected reset lock identity changed"))
 		}
 		locks = append(locks, f)
+	}
+	if r.Plan.Forget {
+		held, e := s.lockForgetTrees(r)
+		if e != nil {
+			return fail(e)
+		}
+		locks = append(locks, held...)
+		if len(r.Plan.ForgetTrees) == 2 && r.Plan.ForgetTrees[1].Root.Present {
+			mesh, e := s.resetHistoryLockDirectory(r, "mesh")
+			if e != nil {
+				return fail(e)
+			}
+			n, _ := resetNamespace(r.Protected, "mesh")
+			var pin File
+			for _, f := range n.Files {
+				if f.Name == "ssh-pins.lock" {
+					pin = f
+				}
+			}
+			f, e := plainHistoryLock(mesh, pin.Name, historyProofID(pin))
+			mesh.Close()
+			if e != nil {
+				return fail(e)
+			}
+			locks = append(locks, f)
+		}
+		return locks, nil
 	}
 	historyLocks, err := s.lockSSHSourceHistory(r)
 	if err != nil {

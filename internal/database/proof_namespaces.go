@@ -39,6 +39,7 @@ type MeshRetirement struct {
 // locks while evidence is reviewed. It does not create absent locks/namespaces.
 // Missing locks are exact absence observations, never permission to mutate.
 type SettledReview struct {
+	forgetTrees []ForgetTree
 	Proof       SettledProof        `json:"proof"`
 	Namespaces  []NamespaceEvidence `json:"namespaces"`
 	Mesh        *MeshRetirement     `json:"mesh,omitempty"`
@@ -372,6 +373,15 @@ func (r *SettledReview) Validate(ctx context.Context) error {
 	if err := r.source.Validate(ctx, true); err != nil {
 		return err
 	}
+	for _, tree := range r.forgetTrees {
+		current, e := scanForgetTree(ctx, r.source.Directory, tree.Name)
+		if e != nil {
+			return e
+		}
+		if !sameForgetTree(current, tree) {
+			return fmt.Errorf("reviewed forget bookkeeping changed")
+		}
+	}
 	for _, n := range r.Namespaces {
 		if err := validSSHHistoryEvidence(n); err != nil {
 			return err
@@ -399,6 +409,12 @@ func (r *SettledReview) Validate(ctx context.Context) error {
 			d, e := OpenDirectory(path)
 			if e != nil {
 				return e
+			}
+			if r.source.opaque {
+				if e := requireForgetMount(d.FD, r.source.mount, forgetMountIdentity); e != nil {
+					d.Close()
+					return e
+				}
 			}
 			if !sameIdentity(d.identity, n.Identity) {
 				d.Close()
@@ -428,6 +444,13 @@ func (r *SettledReview) Validate(ctx context.Context) error {
 					if e != nil || f == nil {
 						d.Close()
 						return fmt.Errorf("review file disappeared or became unsafe")
+					}
+					if r.source.opaque {
+						if e := requireForgetMount(f, r.source.mount, forgetMountIdentity); e != nil {
+							f.Close()
+							d.Close()
+							return e
+						}
 					}
 					hash, e := hashFile(ctx, f)
 					f.Close()

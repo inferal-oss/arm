@@ -3996,3 +3996,58 @@ The complete peer/reset-composed module also passes
 `go test -mod=readonly -p=1 -run '^$' ./...`; this compiles all test packages and
 executes no test bodies. Log:
 `.cache/coordinator-final-reset-charm-module-compile.log`.
+
+
+## Intentional database forgetting: final composed acceptance
+
+Author 3dcfbb5 was independently composed onto primary d7fab97. Review found a
+concrete bug: a bounded 526-entry plan passed compact-JSON budgeting while its
+later indented recovery receipt needed 1,050,131 bytes, exceeding 1,048,576.
+Retained counterexample logs are under
+`/private/tmp/arm-database-forget-final-review/.cache/database-forget-review/`.
+Correction ac9f47f reserves the actual durable writer encoding/newline and full
+UTC timestamp width. A real 530-entry private filesystem fixture now refuses
+before mutation with full snapshot equality. Independent fresh-authority/storage
+coverage retains active old storage bytes/metadata but denies their adoption.
+Final four focused review roots/cases pass in 9.073s; database/CLI vet passes.
+
+The wider independent review roster originally included one sandbox-denied
+localhost bind in TestResetHooksActualServeFreshAndEstablishedRestart; that
+failure is retained. Its unchanged frozen-source native successor passes alone
+in 3.302s. Other database 45 roots/146 cases and CLI 8 roots/24 cases passed.
+This is component/runtime evidence, not complete project acceptance.
+
+Coordinator composed races pass database 29 roots/106 named cases in 45.123s
+and CLI 8 roots/24 named cases in 25.000s, without failures/skips, in
+`.cache/database-forget-primary-composed-race.jsonl`. After the budget correction,
+the existing inventory-budget root passes separately in 1.637s and the three
+independent receipt/storage roots pass in 11.223s, no failures/skips. Logs are
+`.cache/database-forget-primary-corrected-race.jsonl` and
+`.cache/database-forget-primary-corrected-review-race.jsonl`. The complete module
+passes `go test -mod=readonly -p=1 -run '^$' ./...` against corrected composition;
+this compiles packages and executes no test bodies. Log:
+`.cache/database-forget-final-module-compile.log`.
+
+Native Linux ARM64 final composition 3b2b8b7 includes test-only ed05aa1:
+database 16 roots/64 named passes and CLI 7 roots/21 named passes, no failures or
+skips. Four real binds installed before preview (state.db, history root, nested
+pack directory, catalog.db) have the same device but distinct STATX_MNT_ID.
+Each receives mount-specific refusal; visible/covered source and outside-sentinel
+snapshots remain equal; original binds are unmounted. Original commands exit 0,
+the bounded scope is inactive, outer namespace unchanged, no original image/cwd/FD
+handles remain, scratch is empty and exact upload root is removed. No CPU override
+is used; one legacy one-core Remove fixture is excluded from this half-core scope.
+The new counted-obligation fixture covers ordinary refusal before explicit loss.
+
+Source manifest SHA256 is
+b4739fef8a6aa4abaf7fb548eb91cb0cb41af482d10ff04c4a3864d7b54f3568;
+DB image SHA256 is
+9efb4d27213f630225fe03e360b96960d0ca6ad1e53020bc38e73bbf85849429;
+CLI image SHA256 is
+1e1a38b034024e441fd347ac06cb13b05487709fd56a05425e10e0221e79275c.
+Exact rosters, hashes and cleanup:
+`/private/tmp/arm-database-forget-linux-validation/.cache/forget-linux-summary.json`.
+Integrated internal source/test bytes match this final tested composition exactly.
+Only documentation is reconciled centrally. All deletion/startup fixtures are
+disposable; no user database wipe or installation was performed. No secure-media
+erasure, external cleanup or remote settlement is claimed.

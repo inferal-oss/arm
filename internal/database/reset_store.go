@@ -27,6 +27,7 @@ const maxResetReceipts = 64
 // resetStore owns only its exact operation directory. It never recursively
 // deletes the state directory, an archive, or an unverified temporary child.
 type resetStore struct {
+	forgetMount                string
 	home, container, operation *Directory
 }
 
@@ -263,11 +264,22 @@ func validResetPlan(plan ResetPlan, home string) error {
 	if encodeErr != nil || len(encoded) > MaxRecordBytes {
 		return fmt.Errorf("complete reset plan exceeds 1 MiB")
 	}
+	if err := validForgetTrees(plan); err != nil {
+		return err
+	}
 	uid := local.CurrentIdentity().UID
-	if plan.Schema != ResetSchema || !validHost(plan.ID) || plan.Home != home || plan.Actor.UID != uid || strings.TrimSpace(plan.Reason) == "" || len(plan.Reason) > 4096 || plan.Created.IsZero() || !validHost(plan.OldHost) || !validHost(plan.NewHost) || plan.OldHost == plan.NewHost || !plan.Proof.Complete || !plan.Proof.Settled || plan.Proof.Host != plan.OldHost || plan.Proof.Owner != uid || len(plan.Proof.Blockers) != 0 {
+	if plan.Schema != ResetSchema || !validHost(plan.ID) || plan.Home != home || plan.Actor.UID != uid || strings.TrimSpace(plan.Reason) == "" || len(plan.Reason) > 4096 || plan.Created.IsZero() || !validHost(plan.NewHost) || plan.OldHost == plan.NewHost {
 		return fmt.Errorf("invalid reset plan authority/settled scope")
 	}
-	if len(plan.Files) != len(databaseNames) || plan.Mesh != nil && !plan.RetireMesh {
+	if plan.Forget {
+		if plan.OldHost != "" || plan.StorageRoot != nil || !reflect.DeepEqual(plan.Proof, forgetProof(uid, plan.Created)) {
+			return fmt.Errorf("forget plan must explicitly retain unproved scope and no adopted storage authority")
+		}
+	} else if !validHost(plan.OldHost) || !plan.Proof.Complete || !plan.Proof.Settled || plan.Proof.Host != plan.OldHost || plan.Proof.Owner != uid || len(plan.Proof.Blockers) != 0 {
+		return fmt.Errorf("invalid reset plan authority/settled scope")
+	}
+	names := resetDatabaseNames(plan)
+	if len(plan.Files) != len(names) || plan.Mesh != nil && !plan.RetireMesh {
 		return fmt.Errorf("reset plan file or mesh retirement scope incomplete")
 	}
 	if plan.PriorSeed.Name != ResetSeedName {
@@ -279,7 +291,7 @@ func validResetPlan(plan ResetPlan, home string) error {
 		}
 	}
 	for i, f := range plan.Files {
-		if f.Name != databaseNames[i] || i == 0 && !f.Present || f.Present && (f.Owner != uint32Owner(uid) || f.Mode&unix.S_IFMT != unix.S_IFREG || f.Mode&0022 != 0 || !validDigest(f.SHA256)) {
+		if f.Name != names[i] || i == 0 && !f.Present || f.Present && (f.Owner != uint32Owner(uid) || f.Mode&unix.S_IFMT != unix.S_IFREG || f.Mode&0022 != 0 || !validDigest(f.SHA256)) {
 			return fmt.Errorf("invalid exact reset database file scope")
 		}
 	}
@@ -310,13 +322,19 @@ func (s *resetStore) readReceipt() (ResetReceipt, File, error) {
 	if r.Schema != ResetSchema || r.Revision < 1 || r.Updated.Before(r.Plan.Created) || filepath.Base(s.operation.Path) != "reset-"+r.Plan.ID || !oneOf(r.Phase, "staged", "fenced", "moving", "retiring", "seed_ready", "erasing", "completed") {
 		return r, file, fmt.Errorf("invalid reset receipt schema/phase")
 	}
-	if r.Step != "" && !oneOf(r.Step, "state.db", "state.db-wal", "state.db-shm", "mesh", "mesh-lifecycle", "ssh-source-history", "seed", "fence") {
+	if r.Step != "" && !oneOf(r.Step, "state.db", "state.db-wal", "state.db-shm", "mesh", "mesh-lifecycle", "ssh-source-history", "seed", "fence") && !(r.Plan.Forget && (r.Step == "state.db-journal" || validForgetStep(r.Plan, r.Step))) {
 		return r, file, fmt.Errorf("invalid reset receipt step")
 	}
-	if r.Moves == nil || len(r.Moves) != 3 || r.Archives == nil {
+	if err := validForgetReceipt(r); err != nil {
+		return r, file, err
+	}
+	if r.Plan.Forget && r.ForgetErased == nil {
+		r.ForgetErased = map[string]bool{}
+	}
+	if r.Moves == nil || len(r.Moves) != len(resetDatabaseNames(r.Plan)) || r.Archives == nil {
 		return r, file, fmt.Errorf("reset receipt complete move scope missing")
 	}
-	for i, name := range databaseNames {
+	for i, name := range resetDatabaseNames(r.Plan) {
 		if !oneOf(r.Moves[name], "source", "absent", "quarantined", "erased") {
 			return r, file, fmt.Errorf("unknown database move state")
 		}

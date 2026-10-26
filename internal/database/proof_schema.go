@@ -370,5 +370,5 @@ func resetSchemaError(format string, args ...any) error {
 		". The ledger schema is incomplete or incompatible with this ARM build; removal is not authorized and no schema repair was attempted."+
 		" Preserve the state directory; use arm database check and arm database backup DESTINATION for diagnosis and a consistent backup."+
 		" Use the ARM build that created the ledger to inspect and resolve obligations, or choose a separate empty --home for a fresh installation."+
-		" Automatic migration and removal of incompatible schemas are unsupported.")
+		" Ordinary removal cannot migrate or remove incompatible schemas. To intentionally lose this ledger without proving cleanup, review arm database remove --forget --dry-run.")
 }

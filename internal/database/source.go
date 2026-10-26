@@ -27,6 +27,8 @@ type Source struct {
 	temp         string
 	tempIdentity File
 	live         bool
+	mount        string
+	opaque       bool // explicit forget: no SQLite open/copy; four-file native scope
 }
 
 func (s *Source) Close() (err error) {
@@ -80,9 +82,19 @@ func (s *Source) Close() (err error) {
 	return err
 }
 func sourceInventory(ctx context.Context, d *Directory, hash bool) ([]File, error) {
+	result, err := sourceInventoryNames(ctx, d, databaseNames, hash)
+	if err != nil {
+		return nil, err
+	}
+	if journal, err := d.Observe("state.db-journal", false); err != nil || journal.Present {
+		return nil, fmt.Errorf("unexpected rollback journal; preserve source and recover through ARM before maintenance")
+	}
+	return result, nil
+}
+func sourceInventoryNames(ctx context.Context, d *Directory, names []string, hash bool) ([]File, error) {
 	var result []File
 	var total int64
-	for _, name := range databaseNames {
+	for _, name := range names {
 		f, v, err := d.openSource(name)
 		if err != nil {
 			return nil, err
@@ -105,9 +117,6 @@ func sourceInventory(ctx context.Context, d *Directory, hash bool) ([]File, erro
 	if !result[0].Present {
 		return nil, fmt.Errorf("existing state.db required; no database was created")
 	}
-	if journal, err := d.Observe("state.db-journal", false); err != nil || journal.Present {
-		return nil, fmt.Errorf("unexpected rollback journal; preserve source and recover through ARM before maintenance")
-	}
 	return result, nil
 }
 func (s *Source) Validate(ctx context.Context, exact bool) error {
@@ -117,7 +126,25 @@ func (s *Source) Validate(ctx context.Context, exact bool) error {
 	if err := s.Directory.Validate(); err != nil {
 		return err
 	}
-	now, err := sourceInventory(ctx, s.Directory, exact)
+	var now []File
+	var err error
+	if s.opaque {
+		if err := requireForgetMount(s.Directory.FD, s.mount, forgetMountIdentity); err != nil {
+			return err
+		}
+		for _, expected := range s.Files {
+			f, e := forgetFileGuard(s.Directory, expected, s.mount)
+			if e != nil {
+				return e
+			}
+			if f != nil {
+				f.Close()
+			}
+		}
+		now, err = sourceInventoryNames(ctx, s.Directory, forgetDatabaseNames, exact)
+	} else {
+		now, err = sourceInventory(ctx, s.Directory, exact)
+	}
 	if err != nil {
 		return err
 	}

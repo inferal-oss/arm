@@ -22,6 +22,9 @@ func (r *ResetReview) prepareResetLocks(ctx context.Context) error {
 			return err
 		}
 	}
+	if r.Plan.Forget {
+		return review.Validate(ctx)
+	}
 	var pending *Directory
 	for _, d := range review.directories {
 		if filepath.Base(d.Path) == "dashboard-pending" {

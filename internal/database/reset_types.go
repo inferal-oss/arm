@@ -12,9 +12,13 @@ const ResetSeedName = local.ResetSeedPointerName
 const ResetSchema = 1
 
 // ResetPlan is exact local deletion scope, never a cleanup instruction for an
-// artifact or a remote machine. Only the three reviewed SQLite file names may
-// be erased. Retired mesh configuration and all operation receipts are kept.
+// artifact or a remote machine. Ordinary removal erases three reviewed SQLite
+// names. Explicit forgetting also covers the rollback journal and the two exact
+// reviewed local bookkeeping trees. Retired mesh and operation receipts remain.
 type ResetPlan struct {
+	ForgetMount string              `json:"forget_mount,omitempty"`
+	ForgetTrees []ForgetTree        `json:"forget_bookkeeping,omitempty"`
+	Forget      bool                `json:"forget,omitempty"`
 	Schema      int                 `json:"schema"`
 	ID          string              `json:"operation"`
 	Home        string              `json:"home"`
@@ -39,18 +43,20 @@ type ResetPlan struct {
 // action is preceded by a saved phase; recovery compares exact namespace
 // identities and never guesses a replacement path from a phase string.
 type ResetReceipt struct {
-	Schema    int                 `json:"schema"`
-	Plan      ResetPlan           `json:"plan"`
-	Phase     string              `json:"phase"`
-	Step      string              `json:"step,omitempty"`
-	Revision  int64               `json:"revision"`
-	Updated   time.Time           `json:"updated_at"`
-	Seed      File                `json:"fresh_database"`
-	SeedReady bool                `json:"fresh_database_ready"`
-	Moves     map[string]string   `json:"database_moves"`
-	Archives  map[string]string   `json:"archives"`
-	Protected []NamespaceEvidence `json:"protected_namespaces"`
-	Completed *time.Time          `json:"completed_at,omitempty"`
+	ForgetMoves  map[string]string   `json:"forget_moves,omitempty"`
+	ForgetErased map[string]bool     `json:"forget_erased,omitempty"`
+	Schema       int                 `json:"schema"`
+	Plan         ResetPlan           `json:"plan"`
+	Phase        string              `json:"phase"`
+	Step         string              `json:"step,omitempty"`
+	Revision     int64               `json:"revision"`
+	Updated      time.Time           `json:"updated_at"`
+	Seed         File                `json:"fresh_database"`
+	SeedReady    bool                `json:"fresh_database_ready"`
+	Moves        map[string]string   `json:"database_moves"`
+	Archives     map[string]string   `json:"archives"`
+	Protected    []NamespaceEvidence `json:"protected_namespaces"`
+	Completed    *time.Time          `json:"completed_at,omitempty"`
 }
 
 // ResetSeed references a prebuilt fresh authority, not permission to repair an

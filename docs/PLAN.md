@@ -17,8 +17,11 @@ Updated October 26, 2026 against the current worktree. The complete scope remain
 **Current coordinator checkpoint:** integrated peer awareness 975d4b9, private
 source sync c64a49c, warning formal 113f738, disabled forwarding foundation
 5ecd9f7, Kubernetes runtime/catalog ebbc6da, Standard direct-peer VNC 228ccff
-and read-only sync recovery f60c8c3. Independent review fixes and scoped primary
-checks are recorded below and in VALIDATION.md. The operator has now explicitly
+and read-only sync recovery f60c8c3, readable schema refusals 1e7b390 and Charm
+peer Resources d7fab97. Explicit user-authorized database forgetting is now
+reviewed and integrated with the receipt-size correction described below.
+Independent review fixes and scoped primary checks are recorded below and in
+VALIDATION.md. The operator has now explicitly
 approved the concrete forwarding scheme. Its ordinary-build fence stays in
 place for remaining implementation/acceptance, not another approval request.
 Public sync allocation/settlement/routing, forwarding platform/formal/browser
@@ -550,3 +553,17 @@ process termination, remote settlement or managed-file cleanup. Minimal audit
 identities/hashes may remain; no actual user removal/install occurs during
 implementation/review. Test disposable unsupported and live/changed-file cases
 and independently review before integration and handing over the usable command.
+
+The continuing owner delivered 3dcfbb5 on codex/database-forget-implementation
+in /private/tmp/arm-database-forget. Independent review in
+/private/tmp/arm-database-forget-final-review composed it onto d7fab97 and fixed
+a concrete late-receipt overflow in ac9f47f: budget the actual indented durable
+encoding, newline and maximum timestamp widths before accepting an intent.
+Independent native inventory/storage regressions accompany that fix. Linux
+review in /private/tmp/arm-database-forget-linux-validation adds test-only
+ed05aa1 and accepts final composed 3b2b8b7 on actual native ARM64, including
+same-device bind mounts. The coordinator reviewed the final production diff,
+matched all integrated source/test bytes, ran composed native regressions and
+compiled the full module. This supersedes the pending implementation wording
+above; evidence and limits are recorded in VALIDATION.md. No actual user DB
+removal, binary installation, workload termination or remote cleanup occurred.

@@ -480,9 +480,26 @@ Provide `arm database stats` with physical/logical database, WAL/shared-memory s
 
 Provide `arm database remove` to remove the entire local lease/accounting database, including its SQLite WAL/shared-memory companions when present, after a concrete review and explicit confirmation. Terminal interaction asks by default; decline/EOF/interruption makes no destructive change. Noninteractive mutation requires `--yes`; `--dry-run` returns the same plan without removing anything. Use readable terminal output and structured JSON for scripts.
 
-The plan identifies the exact authority, database files, lost lease/message/resource/policy history, and configuration/managed files that remain. Require exclusive stopped-backend ownership and refuse unresolved leases, managed storage/export or other durable obligations rather than erase their accounting or signal arbitrary processes. Revalidate identities and reviewed scope immediately before deletion and handle interrupted removal explicitly. Missing/unsafe/corrupt evidence cannot be guessed into proof that obligations settled. Host identity, mesh trust and the next startup's authority need an explicit consistent preservation/reset policy so deleting the database cannot silently reuse grants for an unintended authority or leave the installation broken. Database removal is separate from recursive ARM-home deletion, managed-artifact cleanup and ordinary uninstall. This is newly requested work, not current supported CLI behavior.
+The plan identifies the exact authority, database files, lost lease/message/resource/policy history, and configuration/managed files that remain. Require exclusive stopped-backend ownership and refuse unresolved leases, managed storage/export or other durable obligations rather than erase their accounting or signal arbitrary processes. Revalidate identities and reviewed scope immediately before deletion and handle interrupted removal explicitly. Missing/unsafe/corrupt evidence cannot be guessed into proof that obligations settled. Host identity, mesh trust and the next startup's authority need an explicit consistent preservation/reset policy so deleting the database cannot silently reuse grants for an unintended authority or leave the installation broken. Database removal is separate from recursive ARM-home deletion, managed-artifact cleanup and ordinary uninstall.
 
-The read-only current-schema settled-obligation proof and neutral startup/client fence are implemented foundations, independently checked on macOS/Linux. They do not remove anything, create a reset marker or expose a remove command. Strict subpool lineage/binding/journal evidence is supported. Destructive apply/recovery, authority replacement and explicit support for evolving coordinator evidence remain required before removal is supported.
+Current-schema settled-obligation proof, startup/client fencing, explicit removal/recovery and fresh authority replacement are implemented. Ordinary removal requires an exact supported schema and complete obligation evidence, including strict subpool lineage/binding/journal checks. Unsupported or incomplete schemas are refused without automatic repair or migration; the separate intentional-loss mode below does not certify settlement. Scoped macOS/Linux evidence and remaining limits are recorded in docs/VALIDATION.md.
+
+An explicitly named `arm database remove --forget` mode separately authorizes
+intentional ledger loss without supported-schema or settled-obligation proof.
+It must never report those obligations as settled. The concrete default-cancel
+review identifies the exact owned DB/WAL/SHM/rollback-journal group and bounded
+local pending-client/source-history bookkeeping generations to erase, so a new
+authority cannot replay or adopt them. Noninteractive mutation requires `--yes`
+and a reason; `--dry-run` remains read-only. This exception does not relax native
+stopped-authority, ownership, private path, link, exact identity or mount-boundary
+checks. Mesh identity retirement remains separately explicit. Workloads, managed
+storage/artifacts, operator configuration, arbitrary siblings and remote resources
+remain untouched; no reclamation, process termination, remote revocation or
+secure physical-media erasure is implied. Successful completion retains no old
+SQLite/catalog payload or backup, only minimal intent/identity/hash receipts and
+a new authority seed. Interruption may retain original quarantined inodes until
+explicit keyed continuation finishes; it is never represented as completed loss.
+Ordinary removal keeps its stronger settled-obligation requirements.
 
 ## Persistence and implementation
 

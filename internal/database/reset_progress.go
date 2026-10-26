@@ -9,6 +9,9 @@ import (
 // pre-syscall step can explain a lost rename/unlink acknowledgement; unrelated
 // disappearance or a replacement must refuse before another action is offered.
 func (s *resetStore) validateResetProgress(ctx context.Context, r ResetReceipt) error {
+	if err := s.checkForgetMount(r.Plan); err != nil {
+		return err
+	}
 	for _, expected := range r.Plan.Files {
 		observe := func(d *Directory) (File, error) {
 			f, v, err := d.openSource(expected.Name)
@@ -65,11 +68,16 @@ func (s *resetStore) validateResetProgress(ctx context.Context, r ResetReceipt) 
 			return fmt.Errorf("unknown reset database progress")
 		}
 	}
-	for _, d := range []*Directory{s.home, s.operation} {
-		v, err := d.Observe("state.db-journal", false)
-		if err != nil || v.Present {
-			return fmt.Errorf("unreviewed rollback journal retained")
+	if !r.Plan.Forget {
+		for _, d := range []*Directory{s.home, s.operation} {
+			v, err := d.Observe("state.db-journal", false)
+			if err != nil || v.Present {
+				return fmt.Errorf("unreviewed rollback journal retained")
+			}
 		}
+	}
+	if err := s.validateForgetProgress(ctx, r); err != nil {
+		return err
 	}
 	return ctx.Err()
 }

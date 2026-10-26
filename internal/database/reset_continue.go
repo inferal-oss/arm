@@ -58,6 +58,9 @@ func ReviewResetContinuation(ctx context.Context, home, id string) (c *ResetCont
 	if err != nil {
 		return nil, err
 	}
+	if err = s.checkForgetMount(c.Receipt.Plan); err != nil {
+		return nil, err
+	}
 	if err = ctx.Err(); err != nil {
 		return nil, err
 	}

@@ -28,6 +28,7 @@ type databaseRemoveOutcome struct {
 func (a *app) databaseRemove(args []string) (int, error) {
 	f := a.flags("database remove")
 	f.Bool("json", false, "structured preview/result, automatic when output is redirected")
+	forget := f.Bool("forget", false, "explicitly lose the ledger without settled-obligation/schema proof; external resources are not cleaned up; no database copy remains after success")
 	yes := f.Bool("yes", false, "apply the exact reviewed removal without an interactive prompt")
 	dry := f.Bool("dry-run", false, "read-only preview; never create reset receipts/locks or remove anything")
 	retire := f.Bool("retire-mesh", false, "explicitly archive local mesh identity/key and lifecycle records; requires re-pairing, no remote revocation")
@@ -39,8 +40,8 @@ func (a *app) databaseRemove(args []string) (int, error) {
 	if *dry && *yes {
 		return 2, fmt.Errorf("--dry-run cannot be combined with --yes")
 	}
-	if *continuation != "" && (*reason != "" || *retire) {
-		return 2, fmt.Errorf("--continue uses the immutable saved reason and retirement scope; omit --reason/--retire-mesh")
+	if *continuation != "" && (*reason != "" || *retire || *forget) {
+		return 2, fmt.Errorf("--continue uses the immutable saved reason and retirement scope; omit --reason/--retire-mesh/--forget")
 	}
 	if *continuation == "" && !*dry && strings.TrimSpace(*reason) == "" {
 		return 2, fmt.Errorf("--reason is required for removal; preview with --dry-run first")
@@ -58,7 +59,11 @@ func (a *app) databaseRemove(args []string) (int, error) {
 		defer review.Close()
 		plan, phase, apply = review.Receipt.Plan, review.Receipt.Phase, review.Continue
 	} else {
-		review, err := database.ReviewReset(ctx, a.home, *reason, *retire)
+		reviewer := database.ReviewReset
+		if *forget {
+			reviewer = database.ReviewForget
+		}
+		review, err := reviewer(ctx, a.home, *reason, *retire)
 		cancel()
 		if err != nil {
 			return 1, err
@@ -67,7 +72,7 @@ func (a *app) databaseRemove(args []string) (int, error) {
 		plan, apply = review.Plan, review.Apply
 	}
 	preview := databaseRemovePreview{Operation: "database_remove", DryRun: *dry, Confirmation: !*dry && !*yes, Continuation: *continuation != "", Phase: phase, Plan: plan}
-	if *dry || !*yes || !a.machine() || !plan.Proof.Settled || plan.Mesh != nil && !plan.RetireMesh {
+	if *dry || !*yes || !a.machine() || !plan.Forget && !plan.Proof.Settled || plan.Mesh != nil && !plan.RetireMesh {
 		if err := a.printDatabaseRemovalPreview(preview); err != nil {
 			return 1, err
 		}
@@ -75,7 +80,7 @@ func (a *app) databaseRemove(args []string) (int, error) {
 	if *dry {
 		return 0, nil
 	}
-	if !plan.Proof.Complete || !plan.Proof.Settled || len(plan.Proof.Blockers) > 0 {
+	if !plan.Forget && (!plan.Proof.Complete || !plan.Proof.Settled || len(plan.Proof.Blockers) > 0) {
 		return 1, model.Err("database_obligations_unsettled", "resource, provider or operation evidence remains unresolved; no removal was performed")
 	}
 	if plan.Mesh != nil && !plan.RetireMesh {
@@ -85,7 +90,7 @@ func (a *app) databaseRemove(args []string) (int, error) {
 		if a.machine() || !a.inputTTY {
 			return 1, model.Err("confirmation_required", "review the concrete preview, then pass --yes with a reason to authorize removal; nothing was removed")
 		}
-		if err := a.confirmDatabaseRemoval(); err != nil {
+		if err := a.confirmDatabaseRemoval(plan.Forget); err != nil {
 			return 1, err
 		}
 	}
@@ -123,8 +128,12 @@ func (a *app) printDatabaseRemovalOutcome(outcome databaseRemoveOutcome) error {
 	return nil
 }
 
-func (a *app) confirmDatabaseRemoval() error {
-	if _, err := fmt.Fprint(a.out, "\n"+a.paint("1;31", "Permanently erase ONLY these SQLite files? [y/N] ")); err != nil {
+func (a *app) confirmDatabaseRemoval(forget bool) error {
+	prompt := "Permanently erase ONLY these SQLite files? [y/N] "
+	if forget {
+		prompt = "Permanently FORGET this ledger without proving resource cleanup? [y/N] "
+	}
+	if _, err := fmt.Fprint(a.out, "\n"+a.paint("1;31", prompt)); err != nil {
 		return err
 	}
 	type response struct {
@@ -161,16 +170,36 @@ func (a *app) printDatabaseRemovalPreview(preview databaseRemovePreview) error {
 	fmt.Fprintln(&b, a.paint("1;36", "ARM · Database removal review"))
 	fmt.Fprintln(&b, "No removal has been performed by this review.")
 	fmt.Fprintf(&b, "\nState directory: %s\nOperation: %s\nPhase: %s\n", terminalSafe(plan.Home), terminalSafe(plan.ID), terminalSafe(preview.Phase))
-	fmt.Fprintf(&b, "Authority: %s → %s (new identity)\n", terminalSafe(plan.OldHost), terminalSafe(plan.NewHost))
+	oldHost := plan.OldHost
+	if plan.Forget {
+		oldHost = "unverified (ledger not read)"
+		fmt.Fprintln(&b, a.paint("1;31", "FORGET MODE · obligations NOT checked · no retained database copy after success"))
+	}
+	fmt.Fprintf(&b, "Authority: %s → %s (new identity)\n", terminalSafe(oldHost), terminalSafe(plan.NewHost))
 	fmt.Fprintf(&b, "Owner: %s (UID %s)\nReason: %s\n", terminalSafe(plan.Actor.Username), terminalSafe(plan.Actor.UID), terminalSafe(plan.Reason))
-	fmt.Fprintf(&b, "History to discard: %d leases; all database audit and idempotency history\n", plan.Proof.Tables["leases"])
-	fmt.Fprintf(&b, "Database definitions/messages to discard: %d agent registrations · %d messages · %d pools · %d policy budgets\n", plan.Proof.Tables["agents"], plan.Proof.Tables["messages"], plan.Proof.Tables["pools"], plan.Proof.Tables["budgets"])
+	if !plan.Forget {
+		fmt.Fprintf(&b, "History to discard: %d leases; all database audit and idempotency history\n", plan.Proof.Tables["leases"])
+		fmt.Fprintf(&b, "Database definitions/messages to discard: %d agent registrations · %d messages · %d pools · %d policy budgets\n", plan.Proof.Tables["agents"], plan.Proof.Tables["messages"], plan.Proof.Tables["pools"], plan.Proof.Tables["budgets"])
+	}
 	fmt.Fprintln(&b, "\n"+a.paint("1;31", "Exact SQLite erase scope"))
 	for _, file := range plan.Files {
 		if file.Present {
 			fmt.Fprintf(&b, "  %s · %d bytes\n", terminalSafe(file.Name), file.Size)
 		} else {
 			fmt.Fprintf(&b, "  %s · absent (must remain absent)\n", terminalSafe(file.Name))
+		}
+	}
+	if plan.Forget {
+		fmt.Fprintln(&b, "\n"+a.paint("1;31", "Exact local bookkeeping erase scope"))
+		for _, tree := range plan.ForgetTrees {
+			if !tree.Root.Present {
+				fmt.Fprintf(&b, "  %s · absent (must remain absent)\n", terminalSafe(tree.Name))
+				continue
+			}
+			fmt.Fprintf(&b, "  %s/ · %d reviewed entries; remove this directory generation\n", terminalSafe(tree.Name), len(tree.Entries))
+			for _, entry := range tree.Entries {
+				fmt.Fprintf(&b, "    %s · %d bytes\n", terminalSafe(tree.Name+"/"+entry.Path), entry.File.Size)
+			}
 		}
 	}
 	if plan.Mesh != nil {
