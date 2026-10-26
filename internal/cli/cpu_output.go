@@ -50,6 +50,7 @@ func (a *app) cpuBudgetStatus(w io.Writer, b map[string]any) {
 	fmt.Fprintln(w, "\nCPU · LIVE HEADROOM")
 	fmt.Fprintln(w, "  Live headroom: "+cores(value("capacity_cores")))
 	fmt.Fprintln(w, "  Promised: "+cores(b["reserved_cores"]))
+	fmt.Fprintln(w, "  Managed use credited: "+cores(value("managed_credit_cores")))
 	fmt.Fprintln(w, "  To lease: "+cores(value("available_cores")))
 	fmt.Fprintln(w, "  Shortfall: "+cores(value("deficit_cores")))
 	if b["ceiling_cores"] != nil {
@@ -58,7 +59,7 @@ func (a *app) cpuBudgetStatus(w io.Writer, b map[string]any) {
 	if !known {
 		fmt.Fprintln(w, "  CPU reading is unknown or stale; new CPU grants wait.")
 	}
-	fmt.Fprintln(w, "  Other apps share this CPU. Full promises stay charged, including CPU already counted in host activity; this can make new jobs wait.")
+	fmt.Fprintln(w, "  Other apps share this CPU. Full promises stay charged. Conservatively verified use from current owned jobs is credited where supported; unsupported or uncertain usage still receives no credit.")
 	fmt.Fprintln(w, "  Cooperative promises do not impose OS CPU limits or compare processor speed across hosts.")
 }
 

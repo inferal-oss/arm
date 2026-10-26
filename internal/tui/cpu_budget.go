@@ -51,13 +51,16 @@ func cpuBudgetValues(r *model.ResourceView, b *model.CPUBudget) (total, promised
 func cpuBudgetDetail(r *model.ResourceView, b *model.CPUBudget) string {
 	total, promised, available, deficit := cpuBudgetValues(r, b)
 	out := fmt.Sprintf("CPU · live host headroom\nHost: %s\n\nLive headroom: %s\nPromised: %s\nTo lease: %s\nShortfall: %s\n", safe(r.Host), total, promised, available, deficit)
+	if cpuBudgetKnown(b) {
+		out += "Managed use credited: " + cpuQuantity(model.FloatQuantity(b.ManagedCredit)) + "\n"
+	}
 	if b != nil && b.Ceiling != nil {
 		out += "Operator ceiling: " + cpuQuantity(model.FloatQuantity(*b.Ceiling)) + "\n"
 	}
 	if !cpuBudgetKnown(b) {
 		out += "\nNew CPU grants wait for a fresh headroom reading. Unknown does not mean idle.\n"
 	}
-	out += "\nOther apps share this CPU. Full promises remain charged, including CPU already counted in host activity. This can make new jobs wait. [?] Help · [i] Observation and accounting details\n\nCONSUMERS · Enter opens selected lease\n"
+	out += "\nOther apps share this CPU. Full promises remain charged. Verified aligned owned usage is credited where supported; unverified work can still be counted twice. [?] Help · [i] Observation and accounting details\n\nCONSUMERS · Enter opens selected lease\n"
 	return out
 }
 

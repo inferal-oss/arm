@@ -7,6 +7,7 @@ import (
 
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/observe"
+	"github.com/yrashk/arm/internal/usage"
 )
 
 const cpuStaleAfter = 3 * observe.CPUObservationCadence
@@ -22,9 +23,19 @@ func (m *Manager) sampleCPU() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	at := time.Now()
-	reading := m.cpuObserver.Sample(ctx)
+	var reading model.CPUAvailability
+	var frame observe.CPUCreditFrame
+	var credits []cpuCreditSample
+	if observer, ok := m.cpuObserver.(cpuManagedObserver); ok {
+		owners, jobs := m.cpuOwners()
+		reading, frame = observer.SampleManaged(ctx, func(ctx context.Context) usage.CPUCut { return usage.CollectCPU(ctx, owners) })
+		credits = bindCPUCredits(frame, jobs)
+	} else {
+		reading = m.cpuObserver.Sample(ctx)
+	}
 	m.observationMu.Lock()
 	m.cpuAvailability, m.cpuObserved = reading, at
+	m.cpuCredits, m.cpuCreditFrame = credits, frame
 	m.observationMu.Unlock()
 }
 
@@ -47,18 +58,17 @@ func (m *Manager) initializeCPU() {
 
 func finiteCPU(v float64) bool { return !math.IsNaN(v) && !math.IsInf(v, 0) }
 
-// Caller holds m.mu. The initial protection deliberately grants no credit for
-// unrelated-window process samples. Full promises remain charged even when
-// their workload contributes to observed activity. Aligned, verified managed
-// consumption is required before any such credit can be introduced.
+// Caller holds m.mu. Full promises remain charged. Only bounded, contained
+// native usage from the exact currently owned jobs can offset double charging.
 func (m *Manager) cpuBudget(reserved float64) model.CPUBudget {
 	m.observationMu.RLock()
 	reading, at := m.cpuAvailability, m.cpuObserved
+	credits := m.cpuCredits
 	m.observationMu.RUnlock()
 	age, wallAge := time.Since(at), time.Since(reading.At)
 	ceiling := m.capacity.CPU
 	r := model.CPUBudget{Observation: reading, Ceiling: &ceiling, Reserved: reserved, Age: max(age, wallAge), StaleAfter: cpuStaleAfter,
-		Accounting: "Current native idle headroom, capped by the configured ceiling; full outstanding CPU promises remain charged. Managed usage is not credited without aligned verification and may be conservatively counted twice."}
+		Accounting: "Current native idle headroom plus conservative aligned usage from currently owned jobs, capped by effective capacity and the configured ceiling. Full outstanding promises remain charged. Unsupported accounting scopes earn no credit; unverified or unobserved work may still be counted twice."}
 	r.Stale = at.IsZero() || reading.At.IsZero() || age < 0 || wallAge < 0 || r.Age > cpuStaleAfter
 	valid := reading.Known && !r.Stale && reading.Interval >= 100*time.Millisecond && reading.Interval <= observe.CPUObservationMaxGap &&
 		reading.EligibleCPUs != nil && *reading.EligibleCPUs > 0 && reading.Capacity != nil && finiteCPU(*reading.Capacity) && *reading.Capacity > 0 && *reading.Capacity <= float64(*reading.EligibleCPUs) &&
@@ -66,7 +76,8 @@ func (m *Manager) cpuBudget(reserved float64) model.CPUBudget {
 		reading.Busy != nil && finiteCPU(*reading.Busy) && *reading.Busy >= 0 && *reading.Busy <= float64(*reading.EligibleCPUs) && finiteCPU(ceiling) && ceiling >= 0 && finiteCPU(reserved) && reserved >= 0
 	if valid {
 		r.Known = true
-		r.Capacity = min(ceiling, *reading.Available)
+		r.ManagedCredit = m.currentCPUCredit(credits, reserved, *reading.Busy)
+		r.Capacity = min(ceiling, *reading.Capacity, *reading.Available+r.ManagedCredit)
 	}
 	r.Available = max(0, r.Capacity-reserved)
 	r.Deficit = max(0, reserved-r.Capacity)

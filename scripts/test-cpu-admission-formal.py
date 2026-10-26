@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Zero-credit CPU protection: finite safety, actual Go paths and scoped proof.
+"""Aligned-credit CPU protection: finite safety, actual Go paths and scoped proof.
 
 Uses the existing native owner and actual Manager/physical-SQL cuts. Native
-collector accuracy and aligned managed-use credit have separate acceptance.
+collector accuracy has separate acceptance. Current managed candidate inputs
+are controlled; real original job/lease ownership and decisions are observed.
 """
 import argparse
 import hashlib
@@ -102,7 +103,7 @@ def main():
     gate = base.Gate(args)
     gate.runner_sources[str(Path(__file__).resolve())] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     gate.summary['runner_sources'] = dict(gate.runner_sources)
-    gate.summary['scope'] = 'Zero-credit CPU protection; native collector accuracy and aligned managed-use credit are separate'
+    gate.summary['scope'] = 'Owned aligned-credit CPU admission; controlled native inputs, not native counter accuracy'
     for source in (MODEL/'export_actual.py',MODEL/'controls_actual.py'):
         gate.runner_sources[str(source)]=hashlib.sha256(source.read_bytes()).hexdigest()
     gate.summary['runner_sources']=dict(gate.runner_sources)
@@ -127,7 +128,7 @@ def main():
         if args.mode in ('prove', 'all'):
             gate.tool('tlapm', args.tlapm)
             roster = base.validate_module_source(gate.run / 'CPUAdmissionProof.tla')
-            if len(roster) != 14:
+            if len(roster) != 17:
                 raise RuntimeError('CPU proof theorem roster changed')
             log = gate.command([args.tlapm, '--strict', '--nofp', '--threads', '1',
                 '--stretch', '2', '--cache-dir', gate.run / 'proof-cache',

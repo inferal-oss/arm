@@ -288,18 +288,20 @@ func (m *dashboardModel) nodeText() string {
 				if unavailable {
 					available = "stale / unavailable"
 				}
-				deficit := "unavailable"
+				deficit, credited := "unavailable", "unavailable"
 				if unavailable {
 					total = "stale / unavailable"
 				} else {
 					var b struct {
-						Deficit float64 `json:"deficit_cores"`
+						Deficit       float64 `json:"deficit_cores"`
+						ManagedCredit float64 `json:"managed_credit_cores"`
 					}
 					if json.Unmarshal(ui.summary.CPU, &b) == nil {
 						deficit = cpuQuantity(model.FloatQuantity(b.Deficit))
+						credited = cpuQuantity(model.FloatQuantity(b.ManagedCredit))
 					}
 				}
-				fmt.Fprintf(&out, "%s\nLive headroom: %s\nPromised: %s · to lease %s\nShortfall: %s\nOther apps share this CPU · full promises stay charged\n\n", strong.Render("CPU · LIVE HEADROOM"), total, cpuQuantity(resource.Reserved), available, deficit)
+				fmt.Fprintf(&out, "%s\nLive headroom: %s\nPromised: %s · to lease %s\nShortfall: %s\nManaged use credited: %s\nOther apps share this CPU · full promises stay charged\n\n", strong.Render("CPU · LIVE HEADROOM"), total, cpuQuantity(resource.Reserved), available, deficit, credited)
 			} else {
 				fmt.Fprintf(&out, "%s\nAvailable: %s\nTotal: %s · reserved %s\n\n", strong.Render(safe(resource.Kind)), available, quantity(resource.Total, resource.Unit), quantity(resource.Reserved, resource.Unit))
 			}

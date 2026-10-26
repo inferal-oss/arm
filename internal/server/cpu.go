@@ -11,7 +11,7 @@ func meshCPUSummary(b *model.CPUBudget) any {
 	return map[string]any{"observation_at": b.Observation.At, "quality": b.Observation.Quality,
 		"eligible_cpus": b.Observation.EligibleCPUs, "observed_capacity_cores": b.Observation.Capacity,
 		"busy_cores": b.Observation.Busy, "observed_available_cores": b.Observation.Available,
-		"capacity_cores": b.Capacity, "reserved_cores": b.Reserved, "available_cores": b.Available,
+		"capacity_cores": b.Capacity, "reserved_cores": b.Reserved, "managed_credit_cores": b.ManagedCredit, "available_cores": b.Available,
 		"ceiling_cores": b.Ceiling, "deficit_cores": b.Deficit, "known": b.Known,
 		"stale": b.Stale, "age_ns": b.Age, "stale_after_ns": b.StaleAfter}
 }

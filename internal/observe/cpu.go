@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/usage"
 )
 
 const CPUObservationCadence = 2 * time.Second
@@ -19,12 +20,16 @@ const cpuObservationMaxCPUs = 8192
 // display inventory and its treatment of I/O wait are deliberately independent.
 // Sample never sleeps to obtain an interval. The caller supplies the cadence.
 type CPUSampler struct {
-	mu       sync.Mutex
-	previous cpuAvailabilityRaw
-	collect  func(context.Context) (cpuAvailabilityRaw, error)
+	mu           sync.Mutex
+	previous     cpuAvailabilityRaw
+	collect      func(context.Context) (cpuAvailabilityRaw, error)
+	previousPost usage.CPUCut
+	closed       bool
 }
 
 type cpuAvailabilityRaw struct {
+	started, finished     time.Time
+	fullHost              bool
 	at                    time.Time    // retain the monotonic component for interval calculation
 	rows                  []cpuCounter // only eligible CPUs, in stable ID order
 	capacity              float64
@@ -43,16 +48,49 @@ type cpuQuotaCounter struct {
 func NewCPUSampler() *CPUSampler { return &CPUSampler{collect: collectCPUAvailability} }
 
 func (s *CPUSampler) Sample(ctx context.Context) model.CPUAvailability {
+	r, _ := s.SampleManaged(ctx, nil)
+	return r
+}
+
+// SampleManaged owns both returned cuts. The exact collection order is
+// MANAGED_PRE -> HOST_READ -> MANAGED_POST. Only the previous POST to current
+// PRE increment can be credited; all native host reads enclose that interval.
+func (s *CPUSampler) SampleManaged(ctx context.Context, collect func(context.Context) usage.CPUCut) (model.CPUAvailability, CPUCreditFrame) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	raw, err := s.collect(ctx)
-	if err != nil {
-		s.previous = cpuAvailabilityRaw{}
-		return model.CPUAvailability{At: time.Now().UTC(), Scope: raw.scope, Method: raw.method, Quality: "unknown", Detail: err.Error()}
+	if s.closed {
+		return model.CPUAvailability{At: time.Now().UTC(), Quality: "unknown", Detail: "CPU sampler is closed"}, CPUCreditFrame{Reason: "CPU sampler is closed"}
 	}
-	before := s.previous
-	s.previous = raw
-	return cpuAvailabilityBetween(before, raw)
+	var pre, post usage.CPUCut
+	if collect != nil {
+		pre = collect(ctx)
+	}
+	started := time.Now()
+	raw, err := s.collect(ctx)
+	raw.started, raw.finished = started, time.Now()
+	if err != nil {
+		_ = pre.Close()
+		_ = s.previousPost.Close()
+		s.previous, s.previousPost = cpuAvailabilityRaw{}, usage.CPUCut{}
+		return model.CPUAvailability{At: time.Now().UTC(), Scope: raw.scope, Method: raw.method, Quality: "unknown", Detail: err.Error()}, CPUCreditFrame{Reason: "native CPU observation unavailable"}
+	}
+	if collect != nil {
+		post = collect(ctx)
+	}
+	reading := cpuAvailabilityBetween(s.previous, raw)
+	frame := cpuCreditFrame(s.previous, raw, s.previousPost, pre, reading)
+	_ = pre.Close()
+	_ = s.previousPost.Close()
+	s.previous, s.previousPost = raw, post
+	return reading, frame
+}
+
+func (s *CPUSampler) Close() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.closed = true
+	s.previous = cpuAvailabilityRaw{}
+	return s.previousPost.Close()
 }
 
 func cpuAvailabilityBetween(before, after cpuAvailabilityRaw) model.CPUAvailability {

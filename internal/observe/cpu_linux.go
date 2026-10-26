@@ -168,6 +168,7 @@ func collectCPUAvailability(ctx context.Context) (cpuAvailabilityRaw, error) {
 		return r, fmt.Errorf("CPU affinity or cgroup limits changed during observation")
 	}
 	r.at, r.capacity, r.signature, r.quotas = time.Now(), after.capacity, after.signature, after.quotas
+	r.fullHost = len(before.ids) == len(all)
 	return r, nil
 }
 

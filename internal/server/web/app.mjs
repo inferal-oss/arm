@@ -476,6 +476,7 @@ function resourceCards() {
     p.body.append(budget, bar(r.custom?.partition?.committed ?? r.reserved, r.kind==='cpu' ? (cpuBudgetKnown(cpu)?cpu.capacity_cores:null) : numeric(r.budget_total)));
     if(r.kind==='cpu') {
       p.body.append(node('p','measure-note','Other apps share this CPU · full promises remain charged'));
+      stat(p.body,'Managed use credited',cpuBudgetKnown(cpu)?cpuCores(cpu.managed_credit_cores??0):'unavailable');
       if(cpu?.ceiling_cores!=null)stat(p.body,'Operator ceiling',cpuCores(cpu.ceiling_cores));
       if(!cpuBudgetKnown(cpu))p.body.append(node('p','measure-note',cpu?.stale?'CPU headroom is stale. New CPU grants wait.':'CPU headroom is unavailable. New CPU grants wait.'));
     }

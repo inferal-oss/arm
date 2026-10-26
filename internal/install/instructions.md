@@ -16,8 +16,9 @@ and disk pools follow current OS headroom and may shrink or become stale; inspec
 current budgets and check grant/renewal outcomes instead of assuming fixed pools.
 Every supervised run needs a positive `--cpu` claim. CPU grants require fresh
 observations and visible effective limits; an uninspectable quota hierarchy blocks
-CPU work. CPU accounting currently charges full promises against measured idle
-headroom, so ARM-owned work can be conservatively counted twice. Use `--wait`
+CPU work. CPU accounting charges full promises. Aligned native observations can credit
+verified ARM-owned usage where supported; unsupported or uncertain accounting
+can still conservatively count managed work twice. Use `--wait`
 for capacity; do not bypass a refusal with unleased execution.
 Choose `--key OPERATION_ID` for acquisitions. Reuse it only for the same request.
 A timeout/lost acknowledgement is not rejection: keep the authority/key, inspect

@@ -8,7 +8,7 @@ import (
 )
 
 func cpuStatusPresentation() map[string]any {
-	return map[string]any{"host": "target-node", "resources": []any{map[string]any{"kind": "cpu", "budget_total": 64, "reserved": 1.25, "available": 62.75, "unit": "logical-core-equivalents", "availability_known": true}}, "cpu_budget": map[string]any{"known": true, "stale": false, "capacity_cores": 2.5, "reserved_cores": 1.25, "available_cores": 1.25, "deficit_cores": 0, "ceiling_cores": 8, "observation": map[string]any{"known": true, "available_cores": 2.5}}}
+	return map[string]any{"host": "target-node", "resources": []any{map[string]any{"kind": "cpu", "budget_total": 64, "reserved": 1.25, "available": 62.75, "unit": "logical-core-equivalents", "availability_known": true}}, "cpu_budget": map[string]any{"known": true, "stale": false, "capacity_cores": 2.5, "reserved_cores": 1.25, "managed_credit_cores": .5, "available_cores": 1.25, "deficit_cores": 0, "ceiling_cores": 8, "observation": map[string]any{"known": true, "available_cores": 2.5}}}
 }
 
 func TestCPUStatusHumanLiveHeadroomAndMachineOutput(t *testing.T) {
@@ -18,7 +18,7 @@ func TestCPUStatusHumanLiveHeadroomAndMachineOutput(t *testing.T) {
 	if e := a.print(value); e != nil {
 		t.Fatal(e)
 	}
-	for _, want := range []string{"Host: target-node", "CPU · LIVE HEADROOM", "Live headroom: 2.5 cores", "Promised: 1.25 cores", "To lease: 1.25 cores", "Shortfall: 0 cores", "counted in host activity"} {
+	for _, want := range []string{"Host: target-node", "CPU · LIVE HEADROOM", "Live headroom: 2.5 cores", "Promised: 1.25 cores", "To lease: 1.25 cores", "Shortfall: 0 cores", "Managed use credited: 0.5 cores", "unsupported or uncertain usage"} {
 		if !strings.Contains(out.String(), want) {
 			t.Fatal(want, out.String())
 		}

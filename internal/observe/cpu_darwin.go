@@ -31,7 +31,7 @@ func collectCPUAvailability(ctx context.Context) (cpuAvailabilityRaw, error) {
 	if err := validateCPURows(r.rows); err != nil {
 		return r, err
 	}
-	r.at, r.capacity = time.Now(), float64(after)
+	r.at, r.capacity, r.fullHost = time.Now(), float64(after), true
 	r.signature = fmt.Sprintf("mach-active:%d", after)
 	return r, ctx.Err()
 }

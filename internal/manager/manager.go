@@ -14,6 +14,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -40,6 +41,8 @@ type job struct {
 	cmd              *exec.Cmd
 	done             chan struct{}
 	identity         *model.ProcessIdentity
+	cpuAnchor        string
+	cpuExited        atomic.Bool
 	observationError string
 	lastUsage        *model.WorkloadUsage
 }
@@ -72,6 +75,8 @@ type Manager struct {
 	cpuObserver             cpuObserver
 	cpuAvailability         model.CPUAvailability
 	cpuObserved             time.Time
+	cpuCredits              []cpuCreditSample
+	cpuCreditFrame          observe.CPUCreditFrame
 	memoryAvailability      model.MemoryAvailability
 	memoryObserved          time.Time
 	diskAvailability        model.DiskAvailability
@@ -417,6 +422,9 @@ func (m *Manager) Close() error {
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
+	if observer, ok := m.cpuObserver.(interface{ Close() error }); ok {
+		closeErr = errors.Join(closeErr, observer.Close())
+	}
 	for _, sockets := range m.portSockets {
 		closeErr = errors.Join(closeErr, ports.CloseChecked(sockets))
 	}
@@ -1489,6 +1497,9 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	identity, identityErr := usage.Capture(cmd.Process.Pid)
 	if identityErr == nil && identity.PGID == cmd.Process.Pid && identity.UID == m.owner {
 		j.identity = &identity
+		// The original process has not been reaped and its launch gate is
+		// still closed. A missing native anchor only disables usage credit.
+		j.cpuAnchor, _ = usage.CaptureCPUAnchor(identity)
 		l.Process = &identity
 		l.Capabilities = append(append([]string{}, l.Capabilities...), "supervised-usage-observation")
 	} else {
@@ -1541,6 +1552,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	}
 	m.wg.Go(func() {
 		err := cmd.Wait()
+		j.cpuExited.Store(true)
 		sshOutcome := ""
 		if r.sshRuntime != nil && r.sshRuntime.ctx.Err() != nil {
 			sshOutcome = "interrupted"

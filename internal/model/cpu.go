@@ -20,15 +20,16 @@ type CPUAvailability struct {
 }
 
 type CPUBudget struct {
-	Observation CPUAvailability `json:"observation"`
-	Ceiling     *float64        `json:"ceiling_cores"`
-	Capacity    float64         `json:"capacity_cores"`
-	Reserved    float64         `json:"reserved_cores"`
-	Available   float64         `json:"available_cores"`
-	Deficit     float64         `json:"deficit_cores"`
-	Known       bool            `json:"known"`
-	Stale       bool            `json:"stale"`
-	Age         time.Duration   `json:"age_ns"`
-	StaleAfter  time.Duration   `json:"stale_after_ns"`
-	Accounting  string          `json:"accounting"`
+	Observation   CPUAvailability `json:"observation"`
+	Ceiling       *float64        `json:"ceiling_cores"`
+	Capacity      float64         `json:"capacity_cores"`
+	Reserved      float64         `json:"reserved_cores"`
+	ManagedCredit float64         `json:"managed_credit_cores"`
+	Available     float64         `json:"available_cores"`
+	Deficit       float64         `json:"deficit_cores"`
+	Known         bool            `json:"known"`
+	Stale         bool            `json:"stale"`
+	Age           time.Duration   `json:"age_ns"`
+	StaleAfter    time.Duration   `json:"stale_after_ns"`
+	Accounting    string          `json:"accounting"`
 }

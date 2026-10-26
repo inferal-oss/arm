@@ -333,6 +333,9 @@ func (m *dashboardModel) resourcesText() string {
 		}
 		if r.Kind == "cpu" {
 			lines = append(lines, muted.Render(ansi.Wrap("Other apps share this CPU · full promises stay charged", inner, "")))
+			if b := m.cpuBudgetForView(); cpuBudgetKnown(b) {
+				lines = append(lines, align(muted.Render("Managed use credited"), cpuQuantity(model.FloatQuantity(b.ManagedCredit)), inner))
+			}
 			if b := m.data.status.CPU; b != nil && b.Ceiling != nil {
 				lines = append(lines, align(muted.Render("Operator ceiling"), cpuQuantity(model.FloatQuantity(*b.Ceiling)), inner))
 			}

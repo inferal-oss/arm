@@ -58,7 +58,7 @@ test('CPU live headroom is separate from promises, physical core count and unkno
   assert.deepEqual(cpuBudgetFields(resource,unavailable),[['LIVE HEADROOM',null],['PROMISED',1.25],['TO LEASE',null],['SHORTFALL',null]]);
  const info=metricHelp('resource-cpu',{cpu:{...cpu,stale:true,observation:{scope:'/private/collector-scope',method:'native-counter-source',quality:'reported',detail:'literal <script> data'}}});
  assert.match(info.paragraphs.join(' '),/Other work on the host can shrink/);
- assert.match(info.paragraphs.join(' '),/counted again for now/);
+ assert.match(info.paragraphs.join(' '),/unsupported accounting scopes/);
  assert.match(info.paragraphs.join(' '),/Unknown does not mean the host is idle/);
  assert.doesNotMatch(info.paragraphs.join(' '),/logical-core budget|native-counter-source|private\/collector|<script>/);
  assert.ok(info.technical.some(([,v])=>v==='native-counter-source'));

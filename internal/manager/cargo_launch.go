@@ -128,6 +128,9 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 				_ = cmd.Process.Kill()
 			}
 			_ = cmd.Wait()
+			if j != nil {
+				j.cpuExited.Store(true)
+			}
 			childWaited = true
 		}
 		for _, f := range []*os.File{parentWrite, childRead, inRead, outWrite, log} {
@@ -300,6 +303,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		return
 	}
 	native = &identity
+	cpuAnchor, _ := usage.CaptureCPUAnchor(identity)
 	stopper, stopped = make(chan struct{}), make(chan struct{})
 	go func() {
 		defer close(stopped)
@@ -320,7 +324,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		l.PID = identity.PID
 		l.Process = native
 		l.Revision++
-		j = &job{cmd: cmd, done: make(chan struct{}), identity: native}
+		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor}
 		m.jobs[id] = j
 		e = m.putCargo(l, rec, "cargo.helper_bound")
 	}
