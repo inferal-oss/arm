@@ -2332,3 +2332,22 @@ remote Stop acceptance is inferred from this run. Its normal recurring
 observers supply current CPU/memory data; this does not bypass admission with
 an injected reading. Public CLI, native Linux traffic, alternate-route
 recovery, routed sync, formal conformance and throughput remain required.
+
+## October 25: reviewed pressure decision and journal core
+
+The isolated `776136b`/`f8981ce` successor passes fresh macOS race testing
+(exit 0, 1.549s) and affected vet. All 30 component roots also pass on native
+Linux ARM64 in a CPU-bounded owned scope; original native command, SSH and
+cleanup exit 0, exact scope inactive and disposable root absent. Evidence:
+ignored `.cache/pressure-linux-native.log` and its intent record.
+
+Independent review and counterexamples corrected unresolved controls lost on
+resume/epoch changes, delayed pause execution after recovery, permission loss,
+policy timing changes, invalid/oversized identities and journal decoding.
+Tests cover warning/grace and recovery windows, stale/unknown/future samples,
+wall-clock stalls, repeated provider outcomes, failed/pending resumes,
+exact identity/revision/policy fences, retained old-epoch reconciliation,
+Unicode identity preservation and bounded JSON state. These are controlled
+pure decisions and serialization, not actual host pressure, messages, signals,
+process suspension or crash-durable Manager/outbox behavior. Native runtime
+and formal refinement gates remain outstanding.
