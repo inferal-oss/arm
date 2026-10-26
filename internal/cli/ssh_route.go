@@ -18,6 +18,7 @@ import (
 
 type sshRouteSelection struct {
 	workspace string
+	service   string
 	access    workspace.RouteAccess
 	path      []string
 	first     mesh.Peer
@@ -160,7 +161,7 @@ func (s sshRouteSelection) dial(ctx context.Context, class, hostKeyPin string) (
 		SourceGeneration: a.OriginGeneration, TargetGeneration: a.DestinationGeneration, DirectoryRevision: a.DirectoryRevision,
 		DirectoryPin: a.Directory.Fingerprint, DirectorySPKI: a.Directory.SPKI,
 		SourcePin: a.Origin.Fingerprint, TargetPin: a.Destination.Fingerprint, SSHHostKeyPin: hostKeyPin, Path: append([]string(nil), s.path...),
-		Hop: 1, Class: class, Expires: until, Pair: peer.Pair, EnrollmentRevision: scope.Revision}
+		Service: s.service, Hop: 1, Class: class, Expires: until, Pair: peer.Pair, EnrollmentRevision: scope.Revision}
 	if e = o.Validate(now); e != nil {
 		return nil, o, e
 	}
@@ -168,7 +169,12 @@ func (s sshRouteSelection) dial(ctx context.Context, class, hostKeyPin string) (
 	if e != nil {
 		return nil, o, e
 	}
-	inner, e := s.store.RoutedSSHTLS(a.Local, a.Destination, false)
+	var inner *tls.Config
+	if class == meshsshrelay.ClassForward {
+		inner, e = s.store.RoutedForwardTLS(a.Local, a.Destination, false)
+	} else {
+		inner, e = s.store.RoutedSSHTLS(a.Local, a.Destination, false)
+	}
 	if e != nil {
 		return nil, o, e
 	}
@@ -180,11 +186,18 @@ func (s sshRouteSelection) dial(ctx context.Context, class, hostKeyPin string) (
 		if current.State != "active" || !current.Proven || current.Pair != peer.Pair || current.Revision != peer.Revision || current.Identity != peer.Identity {
 			return model.Err("forbidden", "routed SSH first-hop identity or grant changed")
 		}
-		fresh, e := s.app.routedSSHContext(checkCtx, s.workspace, a.Local.Host, a.Destination.Host)
-		if e != nil {
-			return e
+		var b workspace.RouteAccess
+		var checkErr error
+		if class == meshsshrelay.ClassForward {
+			b, checkErr = s.app.forwardContext(checkCtx, s.workspace, a.Local.Host, a.Destination.Host)
+		} else {
+			var fresh meshsshrelay.Context
+			fresh, checkErr = s.app.routedSSHContext(checkCtx, s.workspace, a.Local.Host, a.Destination.Host)
+			b = fresh.Access
 		}
-		b := fresh.Access
+		if checkErr != nil {
+			return checkErr
+		}
 		if b.Generation != a.Generation || b.Origin != a.Origin || b.Destination != a.Destination ||
 			b.Directory != a.Directory ||
 			b.OriginGeneration != a.OriginGeneration || b.DestinationGeneration != a.DestinationGeneration {

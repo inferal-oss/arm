@@ -114,6 +114,19 @@ conformance is claimed. The structural allowance is conservative policy under
 the original preparation charge; both endpoint final promises must cover it
 before handoff. Complete specification/platform/security/performance and
 web/Charm delivery remain separate work.
+## October 26, 2026: scoped TCP forwarding route
+
+Current source-listener validation: the focused Manager test passed exact port/resource hold, duplicate-key denial, cancellation, join-before-settlement and terminal port probe. The token-parser CLI test passed using the shared backend parser. The updated real B→A→C three-daemon test passed token-authenticated backend-owned source HTTP and raw duplex TCP connections, source list/status/stop, then the existing two HTTP streams and direct raw duplex echo, missing-grant denial, byte ceiling and live revoke cases. It accepts either terminal stop after exact port probe or retained `needs_attention` when the strict rebind probe finds a recent connection/TIME_WAIT; the latter does not silently release the CPU/memory/port charge. Generic relay transport grant acceptance has a focused test. Concurrent destination-proxy tests passed two distinct one-connection grants together, refused a second stream under one grant, and measured the combined rate of two streams under one shared 64-KiB/s budget. Reviewer-origin forward carrier tests passed both successful and failed-admission held abort callbacks; the final Manager hold remained charged until the original callback joined. A real child-process crash/restart test passed: the original source listener held its native socket and Manager charge, was killed without joining, the replacement process acquired the exclusive daemon lock, observed `needs_attention` with the charge retained, then explicitly reconciled the exact free port/resource obligation with a recorded reason. Settled database proof passed afterward. This proves local resource recovery only; no TCP application delivery is inferred. A settled source-listener reset-proof test and the reviewer's settled forward-transit reset proof passed after independent schema-shape and kind/outcome validation updates. A broader database proof run hit unrelated live host CPU `insufficient_capacity` in four fixture acquisitions; it did not pass as a suite. The expanded three-daemon test passed normally and under the Go race detector; focused race tests also passed for Manager crash recovery, destination proxy limits, relay callback joins, authentication and mesh close. Affected Go vet passed. The test is a server API/network workflow, not an end-to-end public CLI test or physical cross-host no-direct-path proof. Web/Charm, native Linux and formal gates remain open.
+
+The local browser source console's JavaScript cases and the existing Mesh dialog cases passed together (53 total). They cover 256-bit token generation, digest-only backend request, private-save confirmation, uncertain-start and uncertain-Stop no replay, and unchanged Mesh dialogs. The embedded asset and local browser operation allowlist passed a focused Go server test; raw route and destination grant operations remain denied to browser sessions. These are emulated DOM and server route checks, not rendered browser acceptance or a browser path to the forwarded TCP service. Destination grant review, Charm controls and cross-platform public CLI checks remain open.
+
+A compiled native macOS `cmd/arm` binary passed `scripts/test-routed-forward.py` with three independently enrolled CLI daemons and no B–C direct peer. The public CLI reviewed the generic A transport envelope and C's exact original-B literal loopback `web` grant, started B's mode-0600 token file/listener, denied tokenless local HTTP, returned the destination response with the bearer header removed, listed and inspected the exact source, denied a second request after C's grant revocation, then stopped the source. The strict source port probe returned `needs_attention` with a charged port after HTTP TCP TIME_WAIT; the harness verified its exact private daemon PID/command, stopped and joined that owner, restarted under the exclusive lock, observed exact retained status before each known-refusal retry, reconciled only the free port/resource charge, and confirmed all three private daemon locks and endpoint removals. Development attempts exposed harness-only mistakes in variable shadowing, cleanup timing and a peer query after the source had already exited; those attempts did not pass and their private fixtures were reconciled and removed after ownership checks. The final source rerun passed and removed its own fixture. A successor of that same compiled fixture also passed a separate destination-local `echo` grant and source token: binary payload round-tripped over raw duplex TCP, an invalid bearer failed, and exact echo-grant revocation denied the next stream. Both source listeners were stopped, any strict TIME_WAIT charges reconciled, and the fixture removed after daemon ownership checks. This is same-host loopback CLI acceptance on macOS; unmodified clients, actual Linux, physical cross-host isolation and route-loss fault acceptance remain open.
+
+The separately compiled Linux ARM64 binary and same CLI fixture reached source admission in a cached Linux container, but ARM correctly refused its positive CPU hold: `cpu_budget.known=false`, with the diagnostic `complete CPU quota ancestry requires the verified initial cgroup namespace`. Wider CPU/memory quotas and `--cgroupns host` did not change that result. All failed container fixtures reported daemon closure and were removed with their disposable tmpfs; no Linux forwarding pass is claimed. A Linux environment that exposes the required native CPU ancestry is still needed for public acceptance.
+
+The public macOS B→A→C fixture subsequently passed `arm mesh forward stream` against the separate raw echo service: a binary stdin payload returned byte-exact on stdout with no control text or stderr. A successor version-2 local admission exchange passed a focused race test for `READY`, `REFUSED` and application-byte separation; the compiled three-daemon fixture passed again and confirmed revoked destination grant makes the adapter exit nonzero with empty stdout. Existing version-1 raw clients still passed in the same fixture. The command's focused race test rejects a symlink, hard link, mode-0644 file and trailing data while accepting the private canonical token; affected CLI/meshforward vet passed. The initial sandboxed full CLI race suite failed where loopback binding and Darwin boot-session sysctl were unavailable. Its native-access rerun passed the forwarding token case but failed existing startup/argument fixtures (`stopped intent differs from exact native authority`, `directory path must contain no symlinks`, and an unrelated backend readiness case); the complete CLI suite is not claimed. This stdio adapter is a usable pipe interface, not ordinary browser navigation or a transparent TCP endpoint for unmodified clients.
+
+The expanded B→A→C server race test passed live relay transport withdrawal on an active echo stream, refusal of a surviving read before a four-second deadline, and terminal `relay_closed` Manager transit settlement after original workers joined. It then restored generic transport and still passed separate destination-grant live revocation. Its first development run failed because the test wrote `null` instead of the policy ledger's required empty relay array; the corrected test and final charge assertion passed under the race detector. This is a controlled local policy route loss, not a network partition, alternate-path selection or physical cross-host proof.
 
 ## October 26, 2026: Darwin boot-session process namespace
 
@@ -3730,3 +3743,60 @@ tool bundle match the independently accepted bytes, so their valid finite/proof
 evidence is reused. This remains controlled CPU input/owner confidence evidence,
 not native-counter correctness, Linux formal execution, complete pressure-runtime
 refinement, public sync or pause/resume authority.
+
+
+## Forwarding primary composition — disabled candidate
+
+Primary composes focused author chain 819d9e2/7074ab5/9135038/95548fa/be2bdd3/
+bf646d3/73eb9de/3bf72b8/cfbf79b and independent correction 59a180f onto
+113f738. Exact forwarding runtime sources match the reviewed candidate;
+central conflicts preserve peer polling assets/RPC/help and the source-sync
+Manager owner. Review correction keeps new source/destination/transit and
+generic-relay authority unavailable in ordinary builds, freezes original
+listener membership identities, and shares pacing across exact relay grants.
+
+Primary ordinary focused races pass 27 named cases, with two explicit skips:
+the development-only three-daemon forwarding test and Linux-only different-UID
+peer test. Separate exact ordinary authority-fence and shared-rate races each
+pass; the existing public routed-SSH execution/revocation check also passes
+within the focused run. All 210 web tests and five-package vet pass. Logs are
+`.cache/forward-primary-{default-race,fence-rate-race}.jsonl`,
+`.cache/forward-primary-{web,vet}.log`. Reviewer complete carrier/proxy races,
+normal SSH regressions, tagged three-daemon and final hash-bound development CLI
+harness are indexed by
+`/private/tmp/arm-forward-integration-audit/.cache/forward-integration-review/summary.json`.
+
+An actual primary tagged run fails at the Manager-owned source HTTP connection
+with unexpected EOF. It is retained in
+`.cache/forward-primary-development-three-node-race.jsonl`; its cause is not
+established. A fresh isolated checkout applies the exact primary patch onto
+113f738, then retains bounded original source-opener rejection evidence. Its
+initial diagnostic and three-attempt cohort pass; that does not prove the earlier
+EOF was pressure, identity refresh or a corrected product defect. A later
+explicit insufficient-capacity refusal happens before listener/opener creation
+and is retained separately. No guard or admission bypass is introduced.
+
+This accepts a default-off development foundation, not production forwarding.
+The exact operator security scheme is docs/MESH-FORWARD-PROPOSAL.md; production
+authority remains fenced while that review, unexplained EOF investigation,
+Linux public execution, physical no-direct-path networking, ordinary browser/
+general-client workflows, web/Charm parity and formal refinement remain open.
+Endpoint grants bind an address/port, not an independently proven service
+process. Forwarded application effects after loss remain unknown and are never
+automatically replayed.
+
+Final forwarding diagnostic correction 162b94d is applied without its copied
+investigation baseline. All internal, script, Makefile and formal source bytes
+now match that exact composed reviewer head; delivery notes alone differ. Its
+private original-opener evidence and generic connection-failure marker are
+bounded and exclude parser/application errors and bearer data. Four composed
+positive workflows (42.31/25.73/25.79/27.46s), final privacy/no-replay regression,
+and the separate final pre-opener insufficient-capacity refusal are indexed at
+`/private/tmp/arm-forward-composed-opener-audit/.cache/forward-composed-audit/summary.json`.
+The final helper extraction has no new positive full workflow result, and no
+cause is claimed for the earlier primary EOF. The final manifest hash is
+`a63e534d07441edc7cf77590399e8b6a1bb727896b6b2bb61cad9116418a46cb`.
+Final primary ordinary fence and exact original-opener privacy/no-replay races
+each pass one root/case in 1.620s and 1.551s, without skips. Their receipts are
+`.cache/forward-primary-final-diagnostic-race.jsonl` and
+`.cache/forward-primary-final-opener-race.jsonl`.

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -42,13 +43,24 @@ func (a *app) meshSSHRelay(args []string) (int, error) {
 	relayCPU := f.Float64("relay-cpu", .05, "local CPU reservation for each active transit stream")
 	relayMemory := f.String("relay-memory", "8MiB", "local memory reservation for each active transit stream")
 	relayRate := f.String("relay-rate", "64MiB", "shared byte-per-second limit for both transit directions")
-	ssh := f.Bool("ssh", true, "permit ordinary routed SSH class")
-	syncClass := f.Bool("sync", false, "permit routed sync class when its fixed worker is supported")
+	ssh := f.Bool("ssh", true, "permit ordinary routed SSH (legacy relay or destination grant)")
+	syncClass := f.Bool("sync", false, "permit routed sync when supported (legacy relay or destination grant)")
 	reason := f.String("reason", "", "required operator review reason")
 	yes := f.Bool("yes", false, "apply exact reviewed grant change")
 	dry := f.Bool("dry-run", false, "show exact grant change without mutation")
 	if e := a.parse(f, args, false); e != nil {
 		return 2, e
+	}
+	if action == "grant-relay" && meshsshrelay.ForwardReviewEnabled {
+		classFlag := false
+		f.Visit(func(v *flag.Flag) {
+			if v.Name == "ssh" || v.Name == "sync" {
+				classFlag = true
+			}
+		})
+		if classFlag {
+			return 2, fmt.Errorf("relay grants carry opaque workspace transport; --ssh and --sync select only destination grants")
+		}
 	}
 	if f.NArg() != 0 || *workspace == "" || *reason == "" || *expires <= 0 || *expires > 365*24*time.Hour {
 		return 2, fmt.Errorf("exact workspace, bounded expiry and reason required")
@@ -98,7 +110,7 @@ func (a *app) meshSSHRelay(args []string) (int, error) {
 				return fmt.Errorf("exact --generation required for relay opt-in")
 			}
 			g := meshsshrelay.RelayGrant{Workspace: *workspace, Generation: *generation, Local: local.Host, Revision: 1,
-				SSH: *ssh, Sync: *syncClass, Transit: model.Resources{CPU: *relayCPU, Memory: transitMemory},
+				Transport: meshsshrelay.ForwardReviewEnabled, SSH: !meshsshrelay.ForwardReviewEnabled && *ssh, Sync: !meshsshrelay.ForwardReviewEnabled && *syncClass, Transit: model.Resources{CPU: *relayCPU, Memory: transitMemory},
 				BytesPerSecond: bytesPerSecond, Expires: time.Now().UTC().Add(*expires)}
 			for i, old := range p.Relays {
 				if old.Workspace == g.Workspace && old.Generation == g.Generation {
@@ -155,7 +167,7 @@ func (a *app) meshSSHRelay(args []string) (int, error) {
 		return 1, e
 	}
 	plan := map[string]any{"operation": action, "before_sha256": review.BeforeSHA256, "after_sha256": review.AfterSHA256,
-		"before": review.Before, "after": review.After, "effect": "Separate routed SSH/sync policy; relays cannot lend execution authority. Current membership and final destination grant are rechecked at admission and execution."}
+		"before": review.Before, "after": review.After, "effect": "Generic bounded relay transport; only final destinations grant SSH execution or named TCP services. Current membership and final destination authority are rechecked."}
 	if e = a.meshConfirm(plan, *yes, *dry); e != nil {
 		return 1, e
 	}

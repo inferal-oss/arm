@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"hash"
 	"math"
+	"net"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -439,8 +440,25 @@ func (p *proofReader) readLeases() error {
 		if !oneOf(l.State, "queued", "provisioning", "active", "ending", "needs_attention", "reclaiming", "terminal") {
 			return fmt.Errorf("unknown lease lifecycle")
 		}
-		if !oneOf(l.Request.Kind, "", "storage", "ports", "relay-transit", "sync-preparation") {
+		if !oneOf(l.Request.Kind, "", "storage", "ports", "relay-transit", "sync-preparation", "forward-listener") {
 			return fmt.Errorf("unknown lease provider kind")
+		}
+		if l.Request.ForwardSource != nil && l.Request.Kind != "forward-listener" {
+			return fmt.Errorf("forward source binding on unrelated lease")
+		}
+		if l.Request.Kind == "forward-listener" {
+			b := l.Request.ForwardSource
+			if b == nil || r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources.CPU <= 0 || l.Request.Resources.Memory < 1<<20 || l.Request.Resources.Disk != 0 || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 1 || len(l.Ports) != 1 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || l.Request.Peer != "" || l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0 || l.Request.OriginKey != "" || !strings.HasPrefix(l.Request.Key, "forward-listener:") || !validHost(b.Target) || !validDigest(b.TokenSHA256) || b.Workspace == "" || b.Service == "" || b.GrantRevision < 1 || !oneOf(l.State, "active", "ending", "needs_attention", "terminal") {
+				return fmt.Errorf("invalid in-process forward listener obligation")
+			}
+			host, _, splitErr := net.SplitHostPort(b.Bind)
+			ip := net.ParseIP(host)
+			if splitErr != nil || ip == nil || !ip.IsLoopback() || l.Request.Ports[0].Mode != "hold" || l.Ports[0].Mode != "hold" {
+				return fmt.Errorf("invalid exact forward source port authority")
+			}
+			if l.State == "terminal" && l.Outcome == "reconciled" && strings.TrimSpace(l.RecoveryReason) == "" {
+				return fmt.Errorf("recovered source listener lacks reviewed reason")
+			}
 		}
 		if l.Request.Kind == "sync-preparation" && (r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources != (model.Resources{CPU: 1, Memory: 768 << 20, Disk: 1 << 20}) || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 0 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || (l.Request.Peer == "" && (l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0) || l.Request.Peer != "" && (!validHost(l.Request.Peer) || !validDigest(l.Request.PeerCertificate) || l.Request.PeerGrantRevision < 1)) || l.Request.OriginKey != "" || !oneOf(l.State, "active", "ending", "needs_attention", "terminal")) {
 			return fmt.Errorf("invalid in-process sync preparation obligation")
@@ -455,7 +473,7 @@ func (p *proofReader) readLeases() error {
 			if err = p.block("lease", id, "Lease still has queued or unsettled resource obligations"); err != nil {
 				return err
 			}
-		} else if l.Ended == nil || l.Ended.IsZero() || l.Ended.Before(l.Created) || !(oneOf(l.Outcome, "released", "cancelled", "expired", "revoked", "completed", "failed", "launch_failed", "admission_failed", "interrupted", "reconciled", "handed_off", "rejected") || l.Request.Kind == "relay-transit" && l.Outcome == "relay_closed") {
+		} else if l.Ended == nil || l.Ended.IsZero() || l.Ended.Before(l.Created) || !(oneOf(l.Outcome, "released", "cancelled", "expired", "revoked", "completed", "failed", "launch_failed", "admission_failed", "interrupted", "reconciled", "handed_off", "rejected") || l.Request.Kind == "relay-transit" && oneOf(l.Outcome, "relay_closed", "forward_closed") || l.Request.Kind == "forward-listener" && oneOf(l.Outcome, "stopped", "listener_closed", "mesh_closed", "forward_listener_closed", "listener_admission_failed", "start_failed")) {
 			return fmt.Errorf("terminal lease lacks a known settled outcome/time")
 		}
 		if l.Request.Kind == "storage" {

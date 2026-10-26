@@ -9,9 +9,11 @@ import (
 	"errors"
 	"log"
 	"net"
+	"os/user"
 	"time"
 
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshforward"
 	"github.com/yrashk/arm/internal/meshsshrelay"
 	"github.com/yrashk/arm/internal/meshstream"
 	"github.com/yrashk/arm/internal/model"
@@ -25,13 +27,23 @@ func sshRouteOuter(o meshsshrelay.Outer) direct.Outer {
 	return direct.Outer{Source: o.Source, Target: o.Target, Pair: o.Pair, Certificate: o.Certificate, Revision: o.Revision, Expires: o.Expires}
 }
 
+func routedMembershipClass(o meshsshrelay.Open) string {
+	if o.Class == meshsshrelay.ClassForward {
+		return workspace.RouteForward
+	}
+	return workspace.RouteSSH
+}
+
 // routedSSHAdmission combines fresh workspace membership with an entirely
 // separate local relay/destination grant. A messaging route never calls this.
 func (m *meshService) routedSSHAdmission(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open) (meshsshrelay.Permit, error) {
+	if o.Class == meshsshrelay.ClassForward && !meshsshrelay.ForwardReviewEnabled {
+		return meshsshrelay.Permit{}, model.Err("feature_unavailable", "TCP forwarding awaits concrete operator security review")
+	}
 	if err := m.recheckWorkspaceOuter(sshRouteOuter(outer)); err != nil {
 		return meshsshrelay.Permit{}, err
 	}
-	a, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, o.Target, workspace.RouteSSH)
+	a, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, o.Target, routedMembershipClass(o))
 	if err != nil {
 		return meshsshrelay.Permit{}, err
 	}
@@ -43,7 +55,7 @@ func (m *meshService) routedSSHAdmission(ctx context.Context, outer meshsshrelay
 		return meshsshrelay.Permit{}, model.Err("forbidden", "SSH route differs from fresh original/final pinned membership")
 	}
 	if outer.Source != o.Source {
-		hop, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, outer.Source, workspace.RouteSSH)
+		hop, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, outer.Source, routedMembershipClass(o))
 		if err != nil || hop.Destination.Fingerprint != outer.Certificate {
 			return meshsshrelay.Permit{}, model.Err("forbidden", "SSH relay's preceding member pin changed")
 		}
@@ -57,6 +69,31 @@ func (m *meshService) routedSSHAdmission(ctx context.Context, outer meshsshrelay
 		p.Expires = outer.Expires
 	}
 	if o.Final() {
+		if o.Class == meshsshrelay.ClassForward {
+			grant, e := policy.Forward(o)
+			if e != nil {
+				return meshsshrelay.Permit{}, e
+			}
+			account, e := user.Current()
+			if e != nil || grant.Account != account.Username || grant.SourceSPKI != a.Origin.SPKI || grant.TargetSPKI != a.Destination.SPKI {
+				return meshsshrelay.Permit{}, model.Err("forbidden", "TCP service account or original endpoint changed")
+			}
+			p.ForwardGrant = grant
+			if grant.Expires.Before(p.Expires) {
+				p.Expires = grant.Expires
+			}
+			p.Inner, e = m.store.RoutedForwardTLS(a.Local, a.Origin, true)
+			if e != nil {
+				return meshsshrelay.Permit{}, e
+			}
+			if !time.Now().Before(p.Expires) {
+				return meshsshrelay.Permit{}, model.Err("forbidden", "TCP service grant expired")
+			}
+			if e = m.recheckWorkspaceOuter(sshRouteOuter(outer)); e != nil {
+				return meshsshrelay.Permit{}, e
+			}
+			return p, nil
+		}
 		grant, err := policy.Destination(o)
 		if err != nil {
 			return meshsshrelay.Permit{}, err
@@ -123,20 +160,32 @@ func (m *meshService) routedSSHScope(ctx context.Context, o meshsshrelay.Open, p
 }
 
 func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
+	return m.newBoundedRouteHandler(false)
+}
+func (m *meshService) newForwardRouteHandler() *meshsshrelay.Handler {
+	return m.newBoundedRouteHandler(true)
+}
+func (m *meshService) newBoundedRouteHandler(forward bool) *meshsshrelay.Handler {
 	h := &meshsshrelay.Handler{}
+	if forward {
+		h.RoutePath, h.Subprotocol, h.AllowedClass = meshsshrelay.ForwardPath, meshsshrelay.ForwardProtocol, meshsshrelay.ClassForward
+	}
 	h.AuthorizeOuter = func(ctx context.Context, raw []byte) (meshsshrelay.Outer, error) {
 		o, err := m.workspaceOuter(ctx, raw)
 		return meshsshrelay.Outer{Source: o.Source, Target: o.Target, Pair: o.Pair, Certificate: o.Certificate, Revision: o.Revision, Expires: o.Expires}, err
 	}
 	h.Authorize = m.routedSSHAdmission
 	h.ReserveTransit = m.reserveSSHRelayTransit
+	if forward {
+		h.ReserveFinal = m.reserveForwardFinal
+	}
 	h.Revalidate = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) error {
 		a, err := m.routedSSHAdmission(ctx, outer, o)
 		if err != nil {
 			return err
 		}
 		if a.Local != p.Local || a.Origin != p.Origin || a.Destination != p.Destination ||
-			a.RelayGrant != p.RelayGrant || a.DestinationGrant != p.DestinationGrant || !time.Now().Before(p.Expires) {
+			a.RelayGrant != p.RelayGrant || a.DestinationGrant != p.DestinationGrant || a.ForwardGrant != p.ForwardGrant || !time.Now().Before(p.Expires) {
 			return model.Err("forbidden", "routed SSH membership, grant or endpoint identity changed")
 		}
 		return nil
@@ -147,7 +196,7 @@ func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
 		if err != nil || next.State != "active" || !next.Proven {
 			return
 		}
-		a, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, nextHost, workspace.RouteSSH)
+		a, err := m.owner.Manager.WorkspaceRouteAccess(ctx, o.Workspace, o.Source, nextHost, routedMembershipClass(o))
 		if err != nil || a.Destination.Fingerprint != next.Identity.Fingerprint {
 			return
 		}
@@ -161,7 +210,7 @@ func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
 			return
 		}
 		defer conn.Close()
-		pacer, err := meshsshrelay.NewPacer(p.TransitRate)
+		pacer, err := m.relayPacers.ForGrant(p.RelayGrant)
 		if err != nil {
 			return
 		}
@@ -178,9 +227,92 @@ func (m *meshService) newSSHRouteHandler() *meshsshrelay.Handler {
 		<-copied
 	}
 	h.Final = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, inner *tls.Conn) {
+		if o.Class == meshsshrelay.ClassForward {
+			m.serveRoutedForward(ctx, h, outer, o, p, inner)
+			return
+		}
 		m.serveRoutedSSH(ctx, h, outer, o, p, inner)
 	}
 	return h
+}
+
+func (m *meshService) reserveForwardFinal(admission, lifetime context.Context, joined <-chan struct{}, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) (meshsshrelay.TransitReservation, error) {
+	if !o.Final() || o.Class != meshsshrelay.ClassForward || p.ForwardGrant.Validate() != nil {
+		return meshsshrelay.TransitReservation{}, model.Err("forbidden", "exact reviewed TCP destination budget required")
+	}
+	var reservation meshsshrelay.TransitReservation
+	err := meshsshrelay.WithPolicyRead(m.owner.home, p.Local.Host, p.Local.Fingerprint, func(policy meshsshrelay.Policy) error {
+		grant, e := policy.Forward(o)
+		if e != nil || grant != p.ForwardGrant {
+			return model.Err("forbidden", "TCP destination grant changed before resource reservation")
+		}
+		if e = admission.Err(); e != nil {
+			return e
+		}
+		ttl := time.Until(p.Expires)
+		if ttl <= 0 || ttl > meshsshrelay.MaxLifetime {
+			return model.Err("forbidden", "TCP destination lifetime differs")
+		}
+		hold, e := m.owner.Manager.AcquireRelayTransit(lifetime, model.Request{Key: "tcp-final:" + o.Route + ":" + p.Local.Host, Reason: "reviewed original-source TCP service " + o.Service + " from " + o.Source + " in workspace " + o.Workspace, Project: "mesh:" + o.Workspace, Resources: grant.Transit, TTL: ttl}, joined)
+		if e != nil {
+			return e
+		}
+		lease, e := hold.Lease()
+		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), End: func() {
+			if lease.ID != "" {
+				if _, endErr := m.owner.Manager.End(lease.ID, "forward_closed"); endErr != nil {
+					log.Printf("TCP destination hold end remains unconfirmed: %v", endErr)
+				}
+			}
+		}, Finish: func() {
+			if _, finishErr := hold.FinishAfterJoin(); finishErr != nil {
+				log.Printf("TCP destination hold remains charged after join: %v", finishErr)
+			}
+		}}
+		if e != nil {
+			return e
+		}
+		if lease.State != "active" {
+			return model.Err("capacity_exceeded", "TCP destination CPU/memory hold is not active")
+		}
+		return nil
+	})
+	return reservation, err
+}
+
+func (m *meshService) serveRoutedForward(ctx context.Context, h *meshsshrelay.Handler, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, inner *tls.Conn) {
+	if o.Class != meshsshrelay.ClassForward || h.Revalidate(ctx, outer, o, p) != nil {
+		return
+	}
+	_ = inner.SetReadDeadline(time.Now().Add(meshsshrelay.RequestDeadline))
+	q, err := meshforward.ReadRequest(inner)
+	_ = inner.SetReadDeadline(time.Time{})
+	if err != nil {
+		return
+	}
+	binding, err := o.BindingDigest(time.Now())
+	if err != nil || q.RouteBindingHash != binding {
+		return
+	}
+	account, err := user.Current()
+	if err != nil {
+		return
+	}
+	who := meshforward.Identity{SourcePin: p.Origin.Fingerprint, SourceSPKI: p.Origin.SPKI, TargetPin: p.Destination.Fingerprint, TargetSPKI: p.Destination.SPKI, Account: account.Username}
+	loader := func(check context.Context) (meshforward.Grant, error) {
+		if err := h.Revalidate(check, outer, o, p); err != nil {
+			return meshforward.Grant{}, err
+		}
+		policy, err := meshsshrelay.ReadPolicy(m.owner.home, p.Local.Host, p.Local.Fingerprint)
+		if err != nil {
+			return meshforward.Grant{}, err
+		}
+		return policy.Forward(o)
+	}
+	if err := p.ForwardGrant.Authorize(time.Now(), who.SourcePin, who.SourceSPKI, who.TargetPin, who.TargetSPKI, who.Account, q); err != nil {
+		return
+	}
+	_ = m.forwardProxy.Open(ctx, q, who, inner, loader, func() error { return meshforward.WriteAccepted(inner, q) })
 }
 
 func (m *meshService) reserveSSHRelayTransit(admission, lifetime context.Context, joined <-chan struct{}, _ meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) (meshsshrelay.TransitReservation, error) {

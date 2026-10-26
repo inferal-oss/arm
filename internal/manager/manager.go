@@ -73,6 +73,7 @@ type Manager struct {
 	syncWorkers        map[string]*SyncWorkerHold
 	syncSourceWorkers  map[string]*SyncSourceHold
 	relayTransits      map[string]*RelayTransit
+	forwardListeners   map[string]*ForwardListener
 	stop               chan struct{}
 	wg                 sync.WaitGroup
 	closing            bool
@@ -260,7 +261,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			db.Close()
 			return nil, e
 		}
-		if (l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind) && l.State != "terminal" {
+		if (l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind) && l.State != "terminal" {
 			// A recorded in-process allocation is not a positive join witness.
 			// In particular, PID0 must never settle a lost transport owner.
 			l.State = "needs_attention"
@@ -269,6 +270,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			if l.Request.Kind == syncPreparationKind {
 				l.Outcome = "sync_preparation_supervision_lost"
 				l.Failure = "Original sync preparation join and scratch cleanup were not recorded; resources remain charged pending explicit recovery"
+			}
+			if l.Request.Kind == forwardListenerKind {
+				l.Outcome = "forward_listener_supervision_lost"
+				l.Failure = "Original source listener, connections and port cleanup were not joined; port and resources remain charged"
 			}
 			l.Revision++
 			if e = m.put(l, "relay.recovery_required"); e != nil {
@@ -462,6 +467,7 @@ func (m *Manager) Close() error {
 		m.workspaces.close()
 	}
 	closeErr = errors.Join(closeErr, m.closeRelayTransits())
+	closeErr = errors.Join(closeErr, m.closeForwardListeners())
 	m.mu.Lock()
 	for id := range m.cargoWorkers {
 		_, e := m.end(id, "cancelled")
@@ -817,8 +823,11 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 	if run != nil && r.Resources.CPU <= 0 {
 		return empty, model.Err("invalid_request", "supervised execution requires a positive CPU claim; other resource claims do not authorize execution without CPU headroom")
 	}
-	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" && !(relay && (r.Kind == relayTransitKind || r.Kind == syncPreparationKind)) {
+	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" && !(relay && (r.Kind == relayTransitKind || r.Kind == syncPreparationKind || r.Kind == forwardListenerKind)) {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
+	}
+	if r.ForwardSource != nil && (!relay || r.Kind != forwardListenerKind) {
+		return empty, model.Err("invalid_request", "forward source binding requires its in-process listener owner")
 	}
 	if r.Kind == "storage" && (len(r.Pools) > 0 || run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
 		return empty, model.Err("invalid_request", "a storage lease requires only a disk claim and no command, profile or parent storage lease")
@@ -1174,6 +1183,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind {
 		return m.endRelayTransit(l, outcome)
 	}
+	if l.Request.Kind == forwardListenerKind {
+		return m.endForwardListener(l, outcome)
+	}
 	if l.State == "needs_attention" {
 		return l, model.Err("needs_attention", "allocation remains charged pending reconciliation; storage leases support explicit cleanup retry or handoff")
 	}
@@ -1253,7 +1265,7 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
-	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind {
+	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind {
 		return l, model.Err("invalid_request", "in-process owned work has a fixed reviewed lifetime and cannot be renewed")
 	}
 	if bound, err := m.syncLeaseBound(id); err != nil {
@@ -1837,7 +1849,7 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 	} else if bound {
 		return l, model.Err("needs_attention", "sync reservation requires exact effect and native cleanup evidence")
 	}
-	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind {
+	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind {
 		return l, model.Err("needs_attention", "in-process work requires its original join and cleanup evidence; a saved PID is never closure evidence")
 	}
 	if l.Cargo != nil || l.Request.Profile == "rust-build" {

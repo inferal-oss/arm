@@ -1,5 +1,11 @@
 # Implementation plan
 
+**October 26 TCP forwarding milestone:** General TCP forwarding is an explicit requested feature. An exact destination-local grant decides service access; a generic relay transport grant supplies bounded CPU/memory/rate without selecting a service. The source listener is now a backend-owned Manager port/resource lease with token-gated local access and start/status/list/stop/recover CLI operations. The browser has local source listener controls with an in-memory token handoff; destination grant review remains native. The real three-daemon server path passes HTTP and raw duplex TCP through that listener. A compiled macOS public CLI B→A→C fixture also passed HTTP and raw duplex TCP with source status/list/stop, destination revocation, and exact resource-only recovery after a strict TCP TIME_WAIT hold. The authority model reflects the operator's relay clarification in [MESH-FORWARD-PROPOSAL.md](MESH-FORWARD-PROPOSAL.md). Remaining before full delivery: ordinary browser and unmodified TCP client access, destination grant review and Charm controls, rendered web acceptance, route-loss and Linux/cross-host evidence, and formal trace/proof gates. Routed sync still needs its separately typed worker, roots and receipts.
+
+`arm mesh forward stream --key KEY --token-file FILE` is a native stdin/stdout adapter for clients that can use a pipe. It keeps the bearer out of process arguments, URLs and output and was exercised against the compiled three-node raw service. Ordinary browser navigation and transparent access by unmodified TCP clients remain required product work; the [forwarding proposal](MESH-FORWARD-PROPOSAL.md) records browser alternatives for review without enabling a new authority scheme.
+
+The real B→A→C race fixture now withdraws A's generic transport envelope during an active raw stream, observes prompt closure and exact `relay_closed` charge settlement after join, restores only generic transport, then independently revokes C's service grant. Network partition, alternate-path and public cross-host route-loss breadth remain open.
+
 Updated October 26, 2026 against the current worktree. The complete scope remains [SPEC.md](../SPEC.md); the requested product is not complete. [IMPLEMENTATION.md](IMPLEMENTATION.md) describes supported behavior and [VALIDATION.md](VALIDATION.md) records evidence. Work in progress is distinguished below from committed support.
 
 **Darwin process namespace:** native identities now use the exact read-only boot-session UUID, because the former boot-wall-time discriminator can change with calendar correction. Independent-process identity and exact SSH artifact recovery gates are scoped component evidence. Old-format or other-boot records stay uncertain and cannot acquire cleanup or CPU authority; no migration is provided. Fresh scoped CPU model, actual Go traces and strict proof pass after this native identity change and the subsequent shared admission integration. Native counter accuracy, broader platform coverage and complete public workflow gates remain separate.
@@ -434,3 +440,12 @@ c118a01 refuses authenticated probe redirects; accepted focused sequence is
 VNC final corrections are under a new independent review; dual-endpoint sync
 recovery f507478/8a8130d is independently reviewed separately. Forwarding keeps
 a normal-build production refusal pending its exact retained operator review.
+
+
+Forwarding final reviewer 59a180f closes three blockers: ordinary-build authority
+fence, frozen original listener endpoint/directory membership, and exact-grant
+shared relay pacing. Primary composes its focused nine-commit author chain and
+correction, preserving peer assets/help and the integrated source-sync Manager
+owners. The concrete operator review is docs/MESH-FORWARD-PROPOSAL.md; ordinary
+builds stay refused. Development-only public macOS CLI and three-daemon evidence
+does not close browser/general-client, Linux, physical-network or formal gates.

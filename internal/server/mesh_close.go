@@ -17,12 +17,13 @@ const maxRetainedMeshClosers = 64
 type meshCloseResult struct {
 	serveJoined, connectionsAndHandlersJoined               bool
 	routedJoined, workspaceJoined, sshRoutedJoined, sshIdle bool
+	forwardSourcesJoined                                    bool
 	httpClosed, storeClosed, listenerClosed                 bool
 	err                                                     error
 }
 
 func (r meshCloseResult) complete() bool {
-	return r.err == nil && r.httpClosed && r.listenerClosed && r.storeClosed && r.serveJoined && r.connectionsAndHandlersJoined && r.routedJoined && r.workspaceJoined && r.sshRoutedJoined && r.sshIdle
+	return r.err == nil && r.httpClosed && r.listenerClosed && r.storeClosed && r.serveJoined && r.connectionsAndHandlersJoined && r.routedJoined && r.workspaceJoined && r.sshRoutedJoined && r.sshIdle && r.forwardSourcesJoined
 }
 
 type meshClose struct {
@@ -172,6 +173,13 @@ func (s *Server) beginMeshClose() (*meshClose, error) {
 	if m.sshRouted != nil {
 		m.sshRouted.Stop()
 	}
+	if m.forwardRouted != nil {
+		m.forwardRouted.Stop()
+	}
+	if m.forwardProxy != nil {
+		m.forwardProxy.Stop()
+	}
+	m.stopForwardSources()
 	if m.workspace != nil {
 		m.workspace.Stop()
 	}
@@ -179,6 +187,7 @@ func (s *Server) beginMeshClose() (*meshClose, error) {
 		m.ssh.ClosePeer("")
 	}
 	result := meshCloseResult{}
+	result.forwardSourcesJoined = true
 	httpErr := m.http.Close()
 	if errors.Is(httpErr, net.ErrClosed) || errors.Is(httpErr, http.ErrServerClosed) {
 		httpErr = nil
@@ -234,6 +243,9 @@ func (owner *meshClose) join() {
 	result.routedJoined = true
 	if m.sshRouted != nil {
 		m.sshRouted.Wait()
+	}
+	if m.forwardRouted != nil {
+		m.forwardRouted.Wait()
 	}
 	result.sshRoutedJoined = true
 	if m.workspace != nil {

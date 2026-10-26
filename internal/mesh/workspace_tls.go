@@ -67,6 +67,12 @@ func (s *Store) RoutedWorkspaceTLS(local, remote workspace.Identity, server bool
 func (s *Store) RoutedSSHTLS(local, remote workspace.Identity, server bool) (*tls.Config, error) {
 	return s.workspaceTLS(local, remote, server, WorkspaceSSHProtocol)
 }
+
+// RoutedForwardTLS gives exact original endpoints a distinct authenticated
+// protocol. It cannot be confused with the SSH or typed sync control stream.
+func (s *Store) RoutedForwardTLS(local, remote workspace.Identity, server bool) (*tls.Config, error) {
+	return s.workspaceTLS(local, remote, server, "arm.workspace.forward.v1")
+}
 func (s *Store) workspaceTLS(expectedLocal, expectedRemote workspace.Identity, server bool, protocol string) (*tls.Config, error) {
 	if expectedLocal.Host == expectedRemote.Host {
 		return nil, fmt.Errorf("workspace inner endpoints must be distinct")

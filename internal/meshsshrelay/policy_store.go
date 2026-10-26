@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/yrashk/arm/internal/meshforward"
 	"github.com/yrashk/arm/internal/workspace"
 	"golang.org/x/sys/unix"
 )
@@ -25,13 +26,14 @@ const maxPolicyBytes = 256 << 10
 // Policy is the local operator's durable, separately reviewed SSH routing
 // authority. An absent file means no relay or routed execution grants.
 type Policy struct {
-	Schema       int                `json:"schema"`
-	Local        string             `json:"local"`
-	LocalPin     string             `json:"local_pin"`
-	Revision     int64              `json:"revision"`
-	Relays       []RelayGrant       `json:"relays"`
-	Destinations []DestinationGrant `json:"destinations"`
-	Events       []PolicyEvent      `json:"events"`
+	Schema       int                 `json:"schema"`
+	Local        string              `json:"local"`
+	LocalPin     string              `json:"local_pin"`
+	Revision     int64               `json:"revision"`
+	Relays       []RelayGrant        `json:"relays"`
+	Destinations []DestinationGrant  `json:"destinations"`
+	Forwards     []meshforward.Grant `json:"forwards,omitempty"`
+	Events       []PolicyEvent       `json:"events"`
 }
 
 type PolicyEvent struct {
@@ -45,7 +47,7 @@ type PolicyEvent struct {
 
 func (p Policy) Validate(local, localPin string) error {
 	if p.Schema != 1 || !hexBytes(local, 16) || !hexBytes(localPin, 32) || p.Local != local || p.LocalPin != localPin ||
-		p.Revision < 1 || len(p.Relays) > 64 || len(p.Destinations) > 128 || len(p.Events) > 256 {
+		p.Revision < 1 || len(p.Relays) > 64 || len(p.Destinations) > 128 || len(p.Forwards) > 128 || len(p.Events) > 256 {
 		return errors.New("invalid local routed SSH policy binding or capacity")
 	}
 	seen := map[string]bool{}
@@ -56,6 +58,17 @@ func (p Policy) Validate(local, localPin string) error {
 		key := g.Workspace + ":" + g.Generation
 		if seen[key] {
 			return errors.New("duplicate SSH relay opt-in")
+		}
+		seen[key] = true
+	}
+	clear(seen)
+	for _, g := range p.Forwards {
+		if g.Validate() != nil || g.Target != local || g.TargetPin != localPin {
+			return errors.New("invalid local TCP service grant")
+		}
+		key := g.Workspace + ":" + g.Generation + ":" + g.Source + ":" + g.Endpoint.Name
+		if seen[key] {
+			return errors.New("duplicate exact TCP service grant")
 		}
 		seen[key] = true
 	}
@@ -91,7 +104,7 @@ func (p Policy) Relay(o Open) (RelayGrant, error) {
 			return g, g.Authorize(time.Now(), o)
 		}
 	}
-	return RelayGrant{}, errors.New("no reviewed SSH relay opt-in")
+	return RelayGrant{}, errors.New("no reviewed workspace transport grant")
 }
 
 func (p Policy) Destination(o Open) (DestinationGrant, error) {
@@ -108,6 +121,22 @@ func (p Policy) Destination(o Open) (DestinationGrant, error) {
 		}
 	}
 	return DestinationGrant{}, errors.New("no reviewed original-source routed SSH destination grant")
+}
+
+func (p Policy) Forward(o Open) (meshforward.Grant, error) {
+	if o.Class != ClassForward || o.Validate(time.Now()) != nil {
+		return meshforward.Grant{}, errors.New("invalid TCP route")
+	}
+	for _, g := range p.Forwards {
+		if g.Workspace == o.Workspace && g.Generation == o.Generation && g.Source == o.Source && g.Target == o.Target && g.Endpoint.Name == o.Service {
+			if g.Validate() != nil || !time.Now().Before(g.Expires) || g.SourceGeneration != o.SourceGeneration || g.TargetGeneration != o.TargetGeneration ||
+				g.DirectoryPin != o.DirectoryPin || g.DirectorySPKI != o.DirectorySPKI || g.SourcePin != o.SourcePin || g.TargetPin != o.TargetPin {
+				return meshforward.Grant{}, errors.New("exact TCP service grant changed")
+			}
+			return g, nil
+		}
+	}
+	return meshforward.Grant{}, errors.New("no reviewed original-source TCP service grant")
 }
 
 // ReadPolicy reads one owned no-follow file. A missing file has no authority.
@@ -197,6 +226,7 @@ func ReviewPolicy(home, local, localPin, action, reason string, change func(*Pol
 	after := before
 	after.Relays = append([]RelayGrant{}, before.Relays...)
 	after.Destinations = append([]DestinationGrant{}, before.Destinations...)
+	after.Forwards = append([]meshforward.Grant{}, before.Forwards...)
 	after.Events = append([]PolicyEvent{}, before.Events...)
 	if err = change(&after); err != nil {
 		return Review{}, err

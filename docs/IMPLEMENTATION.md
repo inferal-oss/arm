@@ -35,6 +35,20 @@ acceptance. Prior live-capacity skips remain archived. Workspace
 cleanup settlement, broader physical allocation enforcement, platform and
 formal/runtime gates, UI and routed production orchestration remain required.
 
+## Reviewed forwarding candidate — ordinary builds refuse authority
+
+Ordinary builds reject TCP source start, destination/forward route admission and
+generic relay transport grants pending the concrete operator review required
+by SPEC.md. Development candidate evidence is scoped separately below; the
+review tag is not a production enabling command. Existing class-specific
+SSH routing remains supported. See [the independent review](MESH-FORWARD-REVIEW.md).
+
+**TCP forwarding source and relay update:** The backend now owns the token-gated loopback listener through a Manager lease that holds its port and CPU/memory until the accept loop and active connections join. `arm mesh forward start|status|list|stop|recover` uses that durable source record; CLI start writes a new mode-0600 token file before requesting listener admission and retains the file after an uncertain reply so the exact key can be inspected. The local browser dashboard now offers source start/status/list/stop/recover. It generates the 256-bit bearer in browser memory, sends only its digest, and requires the operator to save the displayed key and token privately before start; it does not write a private token file or make ordinary browser navigation through the listener possible. A generic reviewed workspace transport grant carries opaque streams at relays; destination-local exact grants alone decide service access. The destination proxy now counts concurrent streams per exact grant and shares one byte-rate pacer across its active connections and both directions; different grants have independent limits. Legacy class-specific relay grants remain readable for replacement. An interrupted backend marks an unjoined listener `needs_attention` and retains its charge. Resource-only recovery is available under the replacement backend's exclusive daemon lock and exact port probe; recent TCP TIME_WAIT can keep the charge unresolved. It does not establish application delivery. The native child-process kill/reopen/lock/reconcile/reset-proof path and a compiled macOS public CLI B→A→C HTTP/raw-duplex/revocation/recovery fixture passed. Broader failure, ordinary browser/unmodified TCP client usability, Linux and physical cross-host coverage, destination grant web/Charm controls, and rendered web acceptance remain open.
+
+The native `mesh forward stream` command reads only a singly linked, current-user regular token file with mode 0600 and a canonical 256-bit token. It inspects the exact active daemon-owned loopback listener and sends the bearer with a version-2 local raw prefix. The listener replies `READY` only after the pinned route and destination grant/service connection are admitted; `REFUSED` or lost acknowledgement sends no application bytes. The adapter consumes that control reply and bridges stdin/stdout without control text on stdout. Version-1 raw clients remain supported without an acknowledgement. Application effects after a `READY` stream loses its route remain unknown; exit zero means the local byte transport ended without a reported I/O error, not that the application committed a request. The adapter serves pipe-based clients. It does not expose a tokenless TCP port to other local OS users, launch arbitrary client programs, or make browser navigation work.
+
+The three-daemon server fixture separately withdraws the relay's generic workspace transport while a raw destination service stream is active. Its watcher closes the stream; the relay's Manager transit charge settles as `relay_closed` only after the forward workers join. Generic relay transport is then restored so destination service revocation is verified independently. This establishes local reviewed policy withdrawal, not a physical partition or alternate-route failover.
+
 ## Backend baseline
 
 Darwin process identities now use `darwin:bootsessionuuid:` plus the exact uppercase UUID from `kern.bootsessionuuid`, read into a fixed 37-byte buffer. Missing/error returns, wrong lengths, malformed separators/hex/termination and nil UUIDs make native identity initialization unavailable. There is no wall-time fallback or translation of retained identities. SSH artifact recovery reports current-capture failure separately from a different retained namespace; it still requires the exact terminal/seal evidence and a dead original PID, and never signals or adopts a recovered PID. Obsolete `darwin:boot:` records remain uncertain for cleanup and CPU attribution. The shared native identity dependency affects both live usage and managed CPU ownership; it does not change the CPU counter/rounding derivation. See [CPU identity source assumptions](CPU-ACCOUNTING.md).
@@ -1355,3 +1369,13 @@ finite projection. Integer truth values and boolean quantities cannot enter
 that background evidence. This strengthens the trace reader only: classifier,
 model, proof and Go instrumentation are unchanged, and a background publication
 still cannot replace the original frozen observation.
+
+
+### Forwarding original-attempt evidence
+
+Private source status retains a bounded original opener rejection and a generic
+connection-failed marker, without local bearer or application/parser payloads.
+Inspection never redials to diagnose or replays application bytes. An unexplained
+primary development EOF remains retained; later exact-composition diagnostic
+runs pass, while a separate final start refuses insufficient native headroom.
+These limits do not change the ordinary-build authority fence.

@@ -121,6 +121,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 	if action == "ssh-relay" {
 		return a.meshSSHRelay(args)
 	}
+	if action == "forward" {
+		return a.meshForward(args)
+	}
 	if action == "connect" || action == "disconnect" {
 		return a.meshLifecycle(action, args)
 	}

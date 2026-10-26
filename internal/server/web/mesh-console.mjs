@@ -5,6 +5,7 @@ import {jsonView} from './json-view.mjs';
 import {createKubeInventory} from './kube-inventory.mjs';
 import {bytes,stringifyJSON} from './core.mjs';
 import {validHostID,meshPreparationNotice,phaseLabel,operationAdvice,grantFromDraft,grantDescription,reviewIdentities,canReview,supportedReview,validateMeshReason} from './mesh-model.mjs';
+import {createForwardConsole} from './mesh-forward-console.mjs';
 
 const when = value => value ? new Date(value).toLocaleString() : 'Not reported';
 export function createMeshConsole({root,call,connected,storage,openNode,document=root.ownerDocument,onActivity=()=>{}}) {
@@ -15,11 +16,13 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
   intro.append(el('p','eyebrow','DIRECT CONNECTIONS'),el('h2','','Your resource network'),el('p','mesh-muted','Each host owns its resources. Access is explicit, directional and revocable.'));
   const refreshButton=button('Refresh nodes',()=>refresh(true)),connectButton=button('Connect a node…',()=>editConnect(),'primary');
   const installButton=button('Install ARM on a host…',()=>editProvision());
-  actions.append(refreshButton,connectButton,installButton);toolbar.append(intro,actions);
+  const forwardButton=button('TCP forwarding…',()=>openForwarding());
+  actions.append(refreshButton,connectButton,installButton,forwardButton);toolbar.append(intro,actions);
   const nodes=el('div','mesh-nodes'),operations=el('section','mesh-operations');
   root.replaceChildren(toolbar,message,nodes,operations);
   createKubeInventory({root,call,connected,document});
   let rosterKey='',operationsKey='',roster=null,allOps=[],selectedHost='',detail=null,dialog=null,opKey='',opVersion=0,renderedRevision=null,renderedSemantic='',currentOperation=null,lookupVersion=0,refreshBusy=false,refreshQueued=false,disposed=false;
+  let forwardUI=null;
   const announce=text=>{message.textContent=text;};
   let pendingKeys=[],pendingStoreInvalid=false;
   try{const saved=storage?.getItem('arm-mesh-pending');if(saved){let parsed;try{parsed=JSON.parse(saved);}catch{if(/^[A-Za-z0-9_-]{1,128}$/.test(saved))parsed=[saved];else throw Error('Invalid pending key store');}if(!Array.isArray(parsed)||parsed.length>16||parsed.some(k=>typeof k!=='string'||!k.length||k.length>128))throw Error('Invalid pending operation store');pendingKeys=[...new Set(parsed)];}}catch{pendingStoreInvalid=true;announce('Saved pending keys could not be read. Inspect durable Mesh operations before starting another change.');}
@@ -58,6 +61,14 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     const text=el('div');text.append(el('p','eyebrow',eyebrow),heading);head.append(text,close);d.append(head,body,foot);document.body.append(d);dialog=d;
     d.addEventListener('close',()=>{const current=dialog===d;if(current){dialog=null;opKey='';opVersion++;}d.remove();if(current){if(opener?.isConnected)opener.focus();else connectButton.focus();}});
     d.showModal();return {d,body,foot,heading};
+  }
+  function openForwarding(){
+    const ui=modal('TCP source forwarding','MESH / LOCAL SOURCE LISTENERS');
+    const current=createForwardConsole({root:ui.body,call,connected,document});
+    forwardUI=current;
+    ui.d.addEventListener('close',()=>{current.dispose();if(forwardUI===current)forwardUI=null});
+    ui.foot.append(button('Close',()=>ui.d.close()));
+    current.refresh();
   }
   function note(parent,text,kind='') {parent.append(el('p','mesh-note '+kind,text));}
   function row(parent,label,value,mono=false){const r=el('div','mesh-fact');r.append(el('dt','',label),el('dd',mono?'mesh-mono':'',value??'Not reported'));parent.append(r);}
@@ -294,5 +305,5 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
   }
   async function refresh(inspectSelected=false){if(disposed||!connected())return;if(refreshBusy){refreshQueued=true;return;}refreshBusy=true;refreshButton.disabled=true;try{const next=await call('node_list');roster=next;renderRoster();allOps=await call('mesh_operator_list')??[];renderOperations();if(opKey&&dialog?.open){const key=opKey,version=++opVersion,op=await call('mesh_operator_get',{key});if(opKey===key&&version===opVersion&&(op.kind==='provision'||currentOperation?.kind==='provision'))assertProvisionCurrent(op,key);if(opKey===key&&version===opVersion&&(op.kind==='stop'||currentOperation?.kind==='stop'))assertStopOperation(op,key,currentOperation?.kind==='stop'?stopOperationTarget(currentOperation):null);if(opKey===key&&version===opVersion&&(op.kind==='uninstall'||currentOperation?.kind==='uninstall'))assertUninstallOperation(op,key,currentOperation?.kind==='uninstall'?uninstallOperationTarget(currentOperation):null,currentOperation?.kind==='uninstall'&&currentOperation.review?{plan:currentOperation.review,hash:currentOperation.review_sha256,revision:currentOperation.review_revision,provisional:currentOperation.phase==='preparing'&&!currentOperation.approved&&!currentOperation.lookup_only}:null);if(opKey===key&&version===opVersion&&!(['stop','uninstall','provision'].includes(op.kind)&&currentOperation?.key===op.key&&BigInt(op.revision)<BigInt(currentOperation.revision)))currentOperation=op;if(opKey===key&&version===opVersion&&dialog?.open&&semantic(op)!==renderedSemantic){const active=document.activeElement;renderOperation({d:dialog,heading:dialog.querySelector('h2'),body:dialog.querySelector('.mesh-dialog-body'),foot:dialog.querySelector('.mesh-dialog-foot')},op);if(active?.isConnected)active.focus();}}if(inspectSelected&&selectedHost&&detail?.d===dialog){const entry=await call('node_inspect',{host:selectedHost});if(detail?.d===dialog)renderNode(detail,entry);}announce('Registry refreshed. Peer metadata is fetched only when you inspect a node.');}catch(e){announce(`${e.message}. Existing data may be stale; no operation was replayed.`);}finally{refreshBusy=false;refreshButton.disabled=!connected();if(refreshQueued){refreshQueued=false;queueMicrotask(()=>refresh());}}}
   renderOperations();
-  return {refresh,invalidate:()=>refresh(),updateConnection(){installButton.disabled=connectButton.disabled=refreshButton.disabled=!connected();if(!connected()){announce('Disconnected. Cached nodes and receipts may be stale. Reconnect performs reads only.');if(dialog?.open)for(const control of dialog.querySelectorAll('button'))if(control.dataset.meshLocalDismiss!=='true'&&!['Close','Close ×','Keep review open later','Keep connection','Cancel'].includes(control.textContent))control.disabled=true;}else{renderedSemantic='';}},dispose(){disposed=true;dialog?.close();}};
+  return {refresh,invalidate:()=>refresh(),updateConnection(){installButton.disabled=connectButton.disabled=refreshButton.disabled=forwardButton.disabled=!connected();forwardUI?.updateConnection();if(!connected()){announce('Disconnected. Cached nodes and receipts may be stale. Reconnect performs reads only.');if(dialog?.open)for(const control of dialog.querySelectorAll('button'))if(control.dataset.meshLocalDismiss!=='true'&&!['Close','Close ×','Keep review open later','Keep connection','Cancel'].includes(control.textContent))control.disabled=true;}else{renderedSemantic='';}},dispose(){disposed=true;dialog?.close();forwardUI?.dispose();}};
 }

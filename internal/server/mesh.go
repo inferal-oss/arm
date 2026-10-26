@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshforward"
 	"github.com/yrashk/arm/internal/meshsshrelay"
 	"github.com/yrashk/arm/internal/meshstream"
 	"github.com/yrashk/arm/internal/model"
@@ -29,25 +30,31 @@ import (
 // Mesh is a separate transport and closed RPC surface. It never authenticates a
 // peer by forwarding the privileged local bearer token or browser credential.
 type meshService struct {
-	serveDone   chan error
-	owner       *Server
-	store       *mesh.Store
-	http        *http.Server
-	listener    net.Listener
-	mu          sync.Mutex
-	connections map[net.Conn]struct{}
-	requests    int
-	sealed      bool
-	serveJoined bool
-	drainDone   chan struct{}
-	drainClosed bool
-	closeOwner  *meshClose // installed once under owner.meshMu
-	slots       chan struct{}
-	peerSlots   sync.Map
-	ssh         *meshstream.Handler
-	sshRouted   *meshsshrelay.Handler
-	workspace   *workspacetransport.Handler
-	routed      *workspaceroute.Handler
+	serveDone            chan error
+	owner                *Server
+	store                *mesh.Store
+	http                 *http.Server
+	listener             net.Listener
+	mu                   sync.Mutex
+	connections          map[net.Conn]struct{}
+	requests             int
+	sealed               bool
+	serveJoined          bool
+	drainDone            chan struct{}
+	drainClosed          bool
+	closeOwner           *meshClose // installed once under owner.meshMu
+	slots                chan struct{}
+	peerSlots            sync.Map
+	ssh                  *meshstream.Handler
+	sshRouted            *meshsshrelay.Handler
+	forwardRouted        *meshsshrelay.Handler
+	forwardProxy         *meshforward.Proxy
+	relayPacers          meshsshrelay.PacerPool
+	forwardSourcesMu     sync.Mutex
+	forwardSources       map[string]*forwardSource
+	forwardSourcesClosed bool
+	workspace            *workspacetransport.Handler
+	routed               *workspaceroute.Handler
 }
 
 func (s *Server) loadMesh() error {
@@ -121,6 +128,8 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32), serveDone: make(chan error, 1), drainDone: make(chan struct{})}
 	service.ssh = service.newSSHHandler()
 	service.sshRouted = service.newSSHRouteHandler()
+	service.forwardRouted = service.newForwardRouteHandler()
+	service.forwardProxy = &meshforward.Proxy{}
 	service.workspace = service.newWorkspaceHandler()
 	service.routed = service.newRoutedHandler()
 	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: service.connectionState}
@@ -143,6 +152,9 @@ func (m *meshService) revoke(host string) {
 	}
 	if m.sshRouted != nil {
 		m.sshRouted.ClosePeer(host)
+	}
+	if m.forwardRouted != nil {
+		m.forwardRouted.ClosePeer(host)
 	}
 	if m.workspace != nil {
 		m.workspace.ClosePeer(host)
@@ -213,6 +225,14 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		m.sshRouted.ServeHTTP(w, r)
+		return
+	}
+	if r.URL.Path == meshsshrelay.ForwardPath {
+		if m.forwardRouted == nil {
+			http.Error(w, "TCP forward unavailable", http.StatusForbidden)
+			return
+		}
+		m.forwardRouted.ServeHTTP(w, r)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -669,9 +689,14 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 		return store.Config().Identity, nil
 	}
 	if service == nil {
+		if operation == "mesh_forward_status" || operation == "mesh_forward_list" || operation == "mesh_forward_stop" || operation == "mesh_forward_recover" {
+			return s.forwardSourceHistoryOperation(operation, raw)
+		}
 		return nil, model.Err("mesh_unavailable", "mesh is disabled; connect a node with arm mesh connect SSH_DEST")
 	}
 	switch operation {
+	case "mesh_forward_start", "mesh_forward_status", "mesh_forward_list", "mesh_forward_stop", "mesh_forward_recover":
+		return service.forwardSourceOperation(ctx, operation, raw)
 	case "mesh_ssh_route_context":
 		var q struct {
 			Workspace string `json:"workspace"`
@@ -703,6 +728,20 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 			out.ServiceRevision = snapshot.state.Service.Revision
 		}
 		return out, nil
+	case "mesh_forward_route_context":
+		var q struct {
+			Workspace string `json:"workspace"`
+			Source    string `json:"source"`
+			Target    string `json:"target"`
+		}
+		if e := mesh.Decode(raw, &q); e != nil {
+			return nil, e
+		}
+		local := service.store.Config().Identity.Host
+		if local != q.Source && local != q.Target {
+			return nil, model.Err("forbidden", "TCP route context must include this original endpoint")
+		}
+		return s.Manager.WorkspaceRouteAccess(ctx, q.Workspace, q.Source, q.Target, workspace.RouteForward)
 	case "mesh_identity":
 		return service.store.Config().Identity, nil
 	case "mesh_peers":

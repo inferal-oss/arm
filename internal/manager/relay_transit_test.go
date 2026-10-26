@@ -445,6 +445,15 @@ func TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset(t *testing.T) {
 }
 
 func TestRelayTransitSettledMarkerAllowsResetProof(t *testing.T) {
+	testJoinedTransitResetProof(t, "")
+}
+
+func TestForwardTransitSettledMarkerAllowsResetProof(t *testing.T) {
+	testJoinedTransitResetProof(t, "forward_closed")
+}
+
+func testJoinedTransitResetProof(t *testing.T, outcome string) {
+	t.Helper()
 	home, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
@@ -465,6 +474,11 @@ func TestRelayTransitSettledMarkerAllowsResetProof(t *testing.T) {
 	if err != nil {
 		m.Close()
 		t.Fatal(err)
+	}
+	if outcome != "" {
+		if _, err = m.End(h.id, outcome); err != nil {
+			t.Fatal(err)
+		}
 	}
 	close(joined)
 	if _, err = h.FinishAfterJoin(); err != nil {

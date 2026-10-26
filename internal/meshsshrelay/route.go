@@ -14,20 +14,24 @@ import (
 )
 
 const (
-	Version                = 1
-	Path                   = "/v1/mesh/ssh/route"
-	Protocol               = "arm.mesh.ssh.route.v1"
-	InnerProtocol          = "arm.workspace.ssh.v1"
-	MaxControlBytes        = 16 << 10
-	MaxFrameBytes          = 64 << 10
-	MaxPayloadBytes        = MaxFrameBytes - 1
-	MaxStreamBytes   int64 = 8 << 30
-	MaxIdle                = 30 * time.Second
-	MaxNodes               = 8
-	MaxLifetime            = 15 * time.Minute
-	ClassSSH               = "ssh"
-	ClassSSHIdentity       = "ssh_identity"
-	ClassSync              = "sync"
+	Version                    = 1
+	Path                       = "/v1/mesh/ssh/route"
+	Protocol                   = "arm.mesh.ssh.route.v1"
+	InnerProtocol              = "arm.workspace.ssh.v1"
+	MaxControlBytes            = 16 << 10
+	MaxFrameBytes              = 64 << 10
+	MaxPayloadBytes            = MaxFrameBytes - 1
+	MaxStreamBytes       int64 = 8 << 30
+	MaxIdle                    = 30 * time.Second
+	MaxNodes                   = 8
+	MaxLifetime                = 15 * time.Minute
+	ClassSSH                   = "ssh"
+	ClassSSHIdentity           = "ssh_identity"
+	ClassSync                  = "sync"
+	ClassForward               = "forward"
+	ForwardPath                = "/v1/mesh/forward/route"
+	ForwardProtocol            = "arm.mesh.forward.route.v1"
+	ForwardInnerProtocol       = "arm.workspace.forward.v1"
 )
 
 // Open is a hop assertion, never a credential. The immediate authenticated
@@ -47,6 +51,7 @@ type Open struct {
 	SourcePin          string    `json:"source_pin"`
 	TargetPin          string    `json:"target_pin"`
 	SSHHostKeyPin      string    `json:"ssh_host_key_pin"`
+	Service            string    `json:"service,omitempty"`
 	Path               []string  `json:"path"`
 	Hop                int       `json:"hop"`
 	Class              string    `json:"class"`
@@ -77,9 +82,11 @@ func (o Open) Validate(now time.Time) error {
 		!hexBytes(o.DirectoryPin, 32) || !hexBytes(o.DirectorySPKI, 32) ||
 		!hexBytes(o.SourcePin, 32) || !hexBytes(o.TargetPin, 32) || !hexBytes(o.SSHHostKeyPin, 32) ||
 		!hexBytes(o.Pair, 32) || o.SourceGeneration < 1 || o.TargetGeneration < 1 || o.DirectoryRevision < 1 ||
-		o.EnrollmentRevision < 1 || o.Class != ClassSSH && o.Class != ClassSync && o.Class != ClassSSHIdentity ||
+		o.EnrollmentRevision < 1 || o.Class != ClassSSH && o.Class != ClassSync && o.Class != ClassSSHIdentity && o.Class != ClassForward ||
 		o.Class == ClassSSHIdentity && o.SSHHostKeyPin != strings.Repeat("0", 64) ||
-		o.Class != ClassSSHIdentity && o.SSHHostKeyPin == strings.Repeat("0", 64) ||
+		o.Class == ClassForward && (o.SSHHostKeyPin != strings.Repeat("0", 64) || !validService(o.Service)) ||
+		o.Class != ClassForward && o.Service != "" ||
+		o.Class != ClassSSHIdentity && o.Class != ClassForward && o.SSHHostKeyPin == strings.Repeat("0", 64) ||
 		!o.Expires.After(now) || o.Expires.After(now.Add(MaxLifetime)) {
 		return errors.New("invalid bounded SSH relay identity, class or expiry")
 	}
@@ -95,6 +102,18 @@ func (o Open) Validate(now time.Time) error {
 		seen[host] = true
 	}
 	return nil
+}
+
+func validService(name string) bool {
+	if len(name) == 0 || len(name) > 64 || name[0] == '-' {
+		return false
+	}
+	for _, c := range name {
+		if c != '-' && c != '_' && c != '.' && (c < 'a' || c > 'z') && (c < '0' || c > '9') {
+			return false
+		}
+	}
+	return true
 }
 
 func DecodeOpen(raw []byte, now time.Time) (Open, error) {
@@ -129,12 +148,13 @@ func (o Open) BindingDigest(now time.Time) (string, error) {
 		Workspace, Generation, Route, Source, Target                     string
 		SourceGeneration, TargetGeneration, DirectoryRevision            int64
 		DirectoryPin, DirectorySPKI, SourcePin, TargetPin, SSHHostKeyPin string
+		Service                                                          string
 		Path                                                             []string
 		Class                                                            string
 		Expires                                                          time.Time
 	}{o.Workspace, o.Generation, o.Route, o.Source, o.Target,
 		o.SourceGeneration, o.TargetGeneration, o.DirectoryRevision,
-		o.DirectoryPin, o.DirectorySPKI, o.SourcePin, o.TargetPin, o.SSHHostKeyPin, o.Path, o.Class, o.Expires})
+		o.DirectoryPin, o.DirectorySPKI, o.SourcePin, o.TargetPin, o.SSHHostKeyPin, o.Service, o.Path, o.Class, o.Expires})
 	if err != nil {
 		return "", err
 	}

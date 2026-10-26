@@ -132,7 +132,11 @@ func (s *Server) graphCandidatePeer(ctx context.Context, m *meshService, a works
 			return mesh.Peer{}, e
 		}
 	} else {
-		hop, e := s.Manager.WorkspaceRouteAccess(ctx, a.Workspace, a.Local.Host, next, workspace.RouteMessage)
+		membershipClass := workspace.RouteMessage
+		if class == "forward" {
+			membershipClass = workspace.RouteForward
+		}
+		hop, e := s.Manager.WorkspaceRouteAccess(ctx, a.Workspace, a.Local.Host, next, membershipClass)
 		if e != nil {
 			return mesh.Peer{}, e
 		}

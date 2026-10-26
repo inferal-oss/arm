@@ -102,9 +102,13 @@ func AcceptBinding(c *tls.Conn, o Open) error {
 // Dial establishes the opaque outer carrier, exact pinned inner TLS and route
 // binding. It returns only the original endpoint's authenticated byte stream.
 func Dial(ctx context.Context, address string, outer, inner *tls.Config, o Open, revalidate func(context.Context) error) (*tls.Conn, error) {
+	protocol := InnerProtocol
+	if o.Class == ClassForward {
+		protocol = ForwardInnerProtocol
+	}
 	if inner == nil || inner.InsecureSkipVerify || inner.MinVersion != tls.VersionTLS13 || inner.MaxVersion != tls.VersionTLS13 ||
 		inner.RootCAs == nil || inner.VerifyConnection == nil || inner.ServerName != mesh.SAN(o.Target) ||
-		len(inner.NextProtos) != 1 || inner.NextProtos[0] != InnerProtocol || revalidate == nil {
+		len(inner.NextProtos) != 1 || inner.NextProtos[0] != protocol || revalidate == nil {
 		return nil, errors.New("exact pinned SSH relay endpoint TLS required")
 	}
 	raw, err := DialCarrier(ctx, address, outer, o, revalidate)

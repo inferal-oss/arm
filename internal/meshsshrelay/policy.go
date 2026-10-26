@@ -14,8 +14,9 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-// RelayGrant is explicit local opt-in for SSH/sync forwarding in one exact
-// workspace generation. It is independent of messaging relay membership.
+// RelayGrant is an exact workspace transport resource envelope. New grants
+// use Transport and carry opaque routed streams without choosing a final
+// service; legacy class flags remain readable until reviewed replacement.
 type RelayGrant struct {
 	Workspace      string          `json:"workspace"`
 	Generation     string          `json:"generation"`
@@ -23,6 +24,8 @@ type RelayGrant struct {
 	Revision       int             `json:"revision"`
 	SSH            bool            `json:"ssh"`
 	Sync           bool            `json:"sync"`
+	Forward        bool            `json:"forward"`
+	Transport      bool            `json:"transport,omitempty"`
 	Transit        model.Resources `json:"transit_resources"`
 	BytesPerSecond int64           `json:"bytes_per_second"`
 	Expires        time.Time       `json:"expires_at"`
@@ -30,7 +33,7 @@ type RelayGrant struct {
 
 func (g RelayGrant) Validate() error {
 	if !hexBytes(g.Workspace, 16) || !hexBytes(g.Generation, 16) || !hexBytes(g.Local, 16) || g.Revision < 1 ||
-		!g.SSH && !g.Sync || g.Expires.IsZero() || math.IsNaN(g.Transit.CPU) || math.IsInf(g.Transit.CPU, 0) ||
+		!g.SSH && !g.Sync && !g.Forward && !g.Transport || g.Expires.IsZero() || math.IsNaN(g.Transit.CPU) || math.IsInf(g.Transit.CPU, 0) ||
 		g.Transit.CPU <= 0 || g.Transit.CPU > 64 || g.Transit.Memory < 1<<20 || g.Transit.Memory > 1<<30 ||
 		g.Transit.Disk != 0 || g.BytesPerSecond < 64<<10 || g.BytesPerSecond > 1<<30 {
 		return errors.New("invalid reviewed SSH relay transit CPU, memory or byte rate")
@@ -43,11 +46,14 @@ func (g RelayGrant) Validate() error {
 // these legacy entries because Validate requires a live transit budget.
 func (g RelayGrant) legacyUnbudgeted() bool {
 	return hexBytes(g.Workspace, 16) && hexBytes(g.Generation, 16) && hexBytes(g.Local, 16) &&
-		g.Revision > 0 && (g.SSH || g.Sync) && !g.Expires.IsZero() &&
+		g.Revision > 0 && (g.SSH || g.Sync) && !g.Forward && !g.Expires.IsZero() &&
 		g.Transit == (model.Resources{}) && g.BytesPerSecond == 0
 }
 
 func (g RelayGrant) Authorize(now time.Time, o Open) error {
+	if !ForwardReviewEnabled && (g.Transport || g.Forward || o.Class == ClassForward) {
+		return errors.New("generic transport and TCP forwarding await concrete operator security review")
+	}
 	if err := g.Validate(); err != nil {
 		return err
 	}
@@ -56,8 +62,8 @@ func (g RelayGrant) Authorize(now time.Time, o Open) error {
 	}
 	if g.Workspace != o.Workspace || g.Generation != o.Generation || g.Local != o.ImmediateTarget() ||
 		g.Revision < 1 || !g.Expires.After(now) || o.Final() ||
-		((o.Class == ClassSSH || o.Class == ClassSSHIdentity) && !g.SSH) || (o.Class == ClassSync && !g.Sync) {
-		return errors.New("separate current SSH relay opt-in unavailable")
+		!g.Transport && (((o.Class == ClassSSH || o.Class == ClassSSHIdentity) && !g.SSH) || (o.Class == ClassSync && !g.Sync) || (o.Class == ClassForward && !g.Forward)) {
+		return errors.New("current workspace transit grant unavailable")
 	}
 	return nil
 }

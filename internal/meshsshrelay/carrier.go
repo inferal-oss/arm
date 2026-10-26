@@ -17,6 +17,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/yrashk/arm/internal/mesh"
+	"github.com/yrashk/arm/internal/meshforward"
 	"github.com/yrashk/arm/internal/workspace"
 )
 
@@ -39,6 +40,7 @@ type Permit struct {
 	Inner            *tls.Config
 	RelayGrant       RelayGrant
 	DestinationGrant DestinationGrant
+	ForwardGrant     meshforward.Grant
 	TransitRate      int64
 }
 type TransitReservation struct {
@@ -47,9 +49,13 @@ type TransitReservation struct {
 	Finish  func()
 }
 type Handler struct {
+	RoutePath      string
+	Subprotocol    string
+	AllowedClass   string
 	AuthorizeOuter func(context.Context, []byte) (Outer, error)
 	Authorize      func(context.Context, Outer, Open) (Permit, error)
 	ReserveTransit func(admission, lifetime context.Context, joined <-chan struct{}, outer Outer, open Open, permit Permit) (TransitReservation, error)
+	ReserveFinal   func(admission, lifetime context.Context, joined <-chan struct{}, outer Outer, open Open, permit Permit) (TransitReservation, error)
 	Revalidate     func(context.Context, Outer, Open, Permit) error
 	Forward        func(context.Context, Outer, Open, Permit, net.Conn)
 	Final          func(context.Context, Outer, Open, Permit, *tls.Conn)
@@ -85,20 +91,28 @@ func (h *Handler) ClosePeer(peer string) {
 func (h *Handler) Stop() { h.mu.Lock(); h.closed = true; h.mu.Unlock(); h.ClosePeer("") }
 func (h *Handler) Wait() { h.workers.Wait() }
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	path, protocol := h.RoutePath, h.Subprotocol
+	if path == "" {
+		path = Path
+	}
+	if protocol == "" {
+		protocol = Protocol
+	}
 	deny := func(n int) { http.Error(w, "SSH relay unavailable", n) }
-	if r.Method != "GET" || r.URL.Path != Path || r.URL.RawQuery != "" || r.URL.RawPath != "" || len(r.Header.Values("Origin")) != 0 || len(r.Header.Values("Authorization")) != 0 || len(r.Header.Values("Cookie")) != 0 || r.TLS == nil || r.TLS.Version != tls.VersionTLS13 || r.TLS.DidResume || r.TLS.NegotiatedProtocol != "http/1.1" || len(r.TLS.PeerCertificates) != 1 || len(r.TLS.VerifiedChains) == 0 || h.AuthorizeOuter == nil || h.Authorize == nil || h.Revalidate == nil || h.Forward == nil || h.Final == nil {
+	if r.Method != "GET" || r.URL.Path != path || r.URL.RawQuery != "" || r.URL.RawPath != "" || len(r.Header.Values("Origin")) != 0 || len(r.Header.Values("Authorization")) != 0 || len(r.Header.Values("Cookie")) != 0 || r.TLS == nil || r.TLS.Version != tls.VersionTLS13 || r.TLS.DidResume || r.TLS.NegotiatedProtocol != "http/1.1" || len(r.TLS.PeerCertificates) != 1 || len(r.TLS.VerifiedChains) == 0 || h.AuthorizeOuter == nil || h.Authorize == nil || h.Revalidate == nil || h.Forward == nil || h.Final == nil {
 		deny(http.StatusForbidden)
 		return
 	}
 	declared := r.Header.Values("Arm-SSH-Route-Class")
-	if len(declared) != 1 || declared[0] != ClassSSH && declared[0] != ClassSync && declared[0] != ClassSSHIdentity {
+	if len(declared) != 1 || declared[0] != ClassSSH && declared[0] != ClassSync && declared[0] != ClassSSHIdentity && declared[0] != ClassForward ||
+		h.AllowedClass != "" && declared[0] != h.AllowedClass || h.AllowedClass == "" && declared[0] == ClassForward {
 		deny(http.StatusBadRequest)
 		return
 	}
 	class := declared[0]
 	globalLimit, peerLimit := 8, 2
 	protocols := r.Header.Values("Sec-Websocket-Protocol")
-	if len(protocols) != 1 || strings.TrimSpace(protocols[0]) != Protocol {
+	if len(protocols) != 1 || strings.TrimSpace(protocols[0]) != protocol {
 		deny(http.StatusBadRequest)
 		return
 	}
@@ -148,7 +162,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}()
 	abortOnCancel := startAbortWorker(ctx, abortSocket)
 	defer abortOnCancel.StopAndJoin()
-	ws, e := websocket.Accept(capture, r, &websocket.AcceptOptions{Subprotocols: []string{Protocol}, CompressionMode: websocket.CompressionDisabled})
+	ws, e := websocket.Accept(capture, r, &websocket.AcceptOptions{Subprotocols: []string{protocol}, CompressionMode: websocket.CompressionDisabled})
 	if e != nil {
 		return
 	}
@@ -176,7 +190,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if o.Final() {
-		if !validInner(permit, true) {
+		if !validInner(permit, true, o.Class) {
 			abortInitial.StopAndJoin()
 			stop()
 			return
@@ -286,6 +300,42 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		h.mu.Unlock()
 	}()
+	if o.Class == ClassForward {
+		if h.ReserveFinal == nil {
+			return
+		}
+		joined := make(chan struct{})
+		reservation, reserveErr := h.ReserveFinal(life, life, joined, outer, o, permit)
+		if reserveErr != nil || reservation.Context == nil || reservation.End == nil || reservation.Finish == nil {
+			_ = conn.Close()
+			capture.socket.close()
+			_ = ws.CloseNow()
+			abortInitial.StopAndJoin()
+			abortOnCancel.StopAndJoin()
+			if reservation.End != nil {
+				reservation.End()
+			}
+			close(joined)
+			if reservation.Finish != nil {
+				reservation.Finish()
+			}
+			return
+		}
+		holdAbort := startAbortWorker(reservation.Context, abortSocket)
+		defer func() {
+			_ = conn.Close() // joins the original carrier revalidation watcher
+			capture.socket.close()
+			_ = ws.CloseNow()
+			holdAbort.StopAndJoin()
+			abortInitial.StopAndJoin()
+			abortOnCancel.StopAndJoin()
+			reservation.End()
+			close(joined)
+			reservation.Finish()
+		}()
+		h.Final(reservation.Context, outer, o, permit, inner)
+		return
+	}
 	h.Final(life, outer, o, permit, inner)
 }
 func captureSocket(c *captureHijacker) *socketAbort { return &c.socket }
@@ -296,9 +346,13 @@ type ready struct {
 	Digest  string `json:"open_sha256"`
 }
 
-func validInner(p Permit, server bool) bool {
+func validInner(p Permit, server bool, class string) bool {
 	c := p.Inner
-	if c == nil || c.InsecureSkipVerify || c.MinVersion != tls.VersionTLS13 || c.MaxVersion != tls.VersionTLS13 || c.VerifyConnection == nil || len(c.NextProtos) != 1 || c.NextProtos[0] != InnerProtocol {
+	innerProtocol := InnerProtocol
+	if class == ClassForward {
+		innerProtocol = ForwardInnerProtocol
+	}
+	if c == nil || c.InsecureSkipVerify || c.MinVersion != tls.VersionTLS13 || c.MaxVersion != tls.VersionTLS13 || c.VerifyConnection == nil || len(c.NextProtos) != 1 || c.NextProtos[0] != innerProtocol {
 		return false
 	}
 	if server {
@@ -311,6 +365,10 @@ func validInner(p Permit, server bool) bool {
 // stream. Relays MUST NOT wrap it in TLS: the original source performs the one
 // final-destination handshake, after all admitted hops have been connected.
 func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open, revalidate func(context.Context) error) (net.Conn, error) {
+	path, protocol := Path, Protocol
+	if o.Class == ClassForward {
+		path, protocol = ForwardPath, ForwardProtocol
+	}
 	if e := o.Validate(time.Now()); e != nil {
 		return nil, e
 	}
@@ -348,7 +406,7 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	initialAbort := startAbortWorker(initial, socket.close)
 	defer initialAbort.StopAndJoin()
 	client := &http.Client{Transport: tr, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	ws, _, e := websocket.Dial(initial, "wss://"+address+Path, &websocket.DialOptions{HTTPClient: client, HTTPHeader: http.Header{"Arm-SSH-Route-Class": []string{o.Class}}, Subprotocols: []string{Protocol}, CompressionMode: websocket.CompressionDisabled})
+	ws, _, e := websocket.Dial(initial, "wss://"+address+path, &websocket.DialOptions{HTTPClient: client, HTTPHeader: http.Header{"Arm-SSH-Route-Class": []string{o.Class}}, Subprotocols: []string{protocol}, CompressionMode: websocket.CompressionDisabled})
 	tr.CloseIdleConnections()
 	if e != nil {
 		socket.close()
@@ -356,7 +414,7 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	}
 	abort := func() error { socket.close(); return ws.CloseNow() }
 	fail := func(e error) (net.Conn, error) { _ = abort(); return nil, e }
-	if ws.Subprotocol() != Protocol {
+	if ws.Subprotocol() != protocol {
 		return fail(fmt.Errorf("SSH relay protocol differs"))
 	}
 	raw, _ := json.Marshal(o)
