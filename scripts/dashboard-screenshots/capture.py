@@ -26,10 +26,32 @@ import time
 
 REPO = Path(__file__).resolve().parents[2]
 HELPER = Path(__file__).resolve().parent
+PROCESS_STOP_TIMEOUT = 5
 
 
 class CaptureError(Exception):
     pass
+
+
+def stop_command_group(process):
+    # The group is retained from this exact start_new_session subprocess. A
+    # dead direct parent does not prove its pipe-owning children have stopped.
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(process.pid, sig)
+        except ProcessLookupError:
+            pass
+        try:
+            process.communicate(timeout=PROCESS_STOP_TIMEOUT)
+            return
+        except subprocess.TimeoutExpired:
+            pass
+    # A descendant outside the retained group may still hold a pipe. Do not
+    # signal unrelated groups or let that pipe defeat the command's join bound.
+    for stream in (process.stdout, process.stderr):
+        if stream is not None:
+            stream.close()
+    process.wait(timeout=PROCESS_STOP_TIMEOUT)
 
 
 def run(arguments, *, env, timeout=20, check=True):
@@ -38,16 +60,7 @@ def run(arguments, *, env, timeout=20, check=True):
     try:
         stdout, stderr = process.communicate(timeout=timeout)
     except BaseException:
-        # Build tools and the headless browser inherit this original private
-        # process group. Join it on timeout/interruption rather than leaving
-        # compiler/Chromium descendants behind when their parent is stopped.
-        if process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
-            try:
-                process.communicate(timeout=5)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.communicate(timeout=5)
+        stop_command_group(process)
         raise
     result = subprocess.CompletedProcess(arguments, process.returncode, stdout, stderr)
     if check and result.returncode:
