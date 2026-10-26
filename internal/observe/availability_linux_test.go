@@ -1,10 +1,98 @@
 package observe
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/yrashk/arm/internal/model"
 )
+
+func TestCgroupMemoryBudgetDoesNotInventResidentUsage(t *testing.T) {
+	total, available := int64(500), int64(100)
+	r := memoryAvailabilityValues(model.MemoryAvailability{
+		At: time.Now(), Total: &total, Available: &available,
+		Scope: "host+complete-memory-cgroup-ancestry", Method: "cgroup", Quality: "estimated",
+	})
+	if r.Total.Scope != "minimum-host-and-memory-cgroup-capacity" || r.Available.Value == nil || *r.Available.Value != 100 || r.Used.Value != nil {
+		t.Fatalf("cgroup headroom was presented as resident usage: %+v", r)
+	}
+}
+
+func TestLinuxMemoryCgroupHeadroomUsesEveryAncestor(t *testing.T) {
+	root := t.TempDir()
+	child := filepath.Join(root, "team", "worker")
+	if err := os.MkdirAll(child, 0700); err != nil {
+		t.Fatal(err)
+	}
+	write := func(dir, name, value string) {
+		t.Helper()
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(value), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write(filepath.Join(root, "team"), "memory.max", "1000\n")
+	write(filepath.Join(root, "team"), "memory.current", "900\n")
+	write(child, "memory.max", "500\n")
+	write(child, "memory.current", "100\n")
+	membership := []byte("0::/team/worker\n")
+	mounts := []byte(fmt.Sprintf("1 0 0:1 / %s rw - cgroup2 cgroup rw\n", root))
+	capacity, free, limited, err := memoryCgroupV2Headroom(t.Context(), membership, mounts)
+	if err != nil || !limited || capacity != 500 || free != 100 {
+		t.Fatalf("ancestor limit must bound headroom: capacity=%d free=%d limited=%t err=%v", capacity, free, limited, err)
+	}
+	write(filepath.Join(root, "team"), "memory.current", "1200\n")
+	_, free, _, err = memoryCgroupV2Headroom(t.Context(), membership, mounts)
+	if err != nil || free != 0 {
+		t.Fatalf("overdrawn ancestor must yield zero: free=%d err=%v", free, err)
+	}
+	write(filepath.Join(root, "team"), "memory.max", "max\n")
+	_, free, _, err = memoryCgroupV2Headroom(t.Context(), membership, mounts)
+	if err != nil || free != 400 {
+		t.Fatalf("unlimited ancestor must not hide child limit: free=%d err=%v", free, err)
+	}
+}
+
+func TestLinuxMemoryCgroupHeadroomRefusesHiddenOrInvalidScope(t *testing.T) {
+	root := t.TempDir()
+	child := filepath.Join(root, "worker")
+	if err := os.Mkdir(child, 0700); err != nil {
+		t.Fatal(err)
+	}
+	membership := []byte("0::/worker\n")
+	mount := func(rootField string) []byte {
+		return []byte(fmt.Sprintf("1 0 0:1 %s %s rw - cgroup2 cgroup rw\n", rootField, root))
+	}
+	for _, tc := range []struct {
+		name   string
+		member []byte
+		mounts []byte
+	}{
+		{"hidden-ancestor", membership, mount("/worker")},
+		{"unmapped-membership", []byte("0::/other\n"), mount("/")},
+		{"v1-memory", []byte("0::/worker\n5:memory:/worker\n"), mount("/")},
+		{"ambiguous-mount", membership, append(mount("/"), mount("/")...)},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, _, _, err := memoryCgroupV2Headroom(t.Context(), tc.member, tc.mounts); err == nil {
+				t.Fatal("unsafe scope was accepted")
+			}
+		})
+	}
+	if err := os.WriteFile(filepath.Join(child, "memory.max"), []byte("500\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, usage := range []string{"", "max", "18446744073709551615", "invalid"} {
+		if err := os.WriteFile(filepath.Join(child, "memory.current"), []byte(usage), 0600); err != nil {
+			t.Fatal(err)
+		}
+		if _, _, _, err := memoryCgroupV2Headroom(t.Context(), membership, mount("/")); err == nil {
+			t.Fatalf("invalid usage %q was accepted", usage)
+		}
+	}
+}
 
 func TestLinuxAvailabilityExactParsingAndUnknownCounters(t *testing.T) {
 	r := parseMemoryAvailability([]byte("MemTotal: 100000 kB\nMemAvailable: 45000 kB\n"), time.Now())
