@@ -11,9 +11,14 @@ services/builds. Cards explain code-backed behavior, not extra permissions.
 It works offline without creating state. `arm agent list` lists contacts.
 Use `arm run --cpu N --memory SIZE --ttl DURATION --reason "purpose" -- COMMAND`.
 Use `--wait` to queue locally for capacity. A grant is required before work begins.
-CPU/memory/disk promises are cooperative, not kernel hard limits. The memory
-pool follows current OS headroom and may shrink or become stale; inspect current
-budgets and check grant/renewal outcomes instead of assuming a fixed memory pool.
+CPU/memory/disk promises are cooperative, not kernel hard limits. CPU, memory
+and disk pools follow current OS headroom and may shrink or become stale; inspect
+current budgets and check grant/renewal outcomes instead of assuming fixed pools.
+Every supervised run needs a positive `--cpu` claim. CPU grants require fresh
+observations and visible effective limits; an uninspectable quota hierarchy blocks
+CPU work. CPU accounting currently charges full promises against measured idle
+headroom, so ARM-owned work can be conservatively counted twice. Use `--wait`
+for capacity; do not bypass a refusal with unleased execution.
 Choose `--key OPERATION_ID` for acquisitions. Reuse it only for the same request.
 A timeout/lost acknowledgement is not rejection: keep the authority/key, inspect
 the recorded outcome and never create duplicate work with a new key blindly.

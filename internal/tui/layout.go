@@ -288,6 +288,10 @@ func (m *dashboardModel) resourcesText() string {
 	for i, r := range m.filteredResources() {
 		totalLabel := "Capacity"
 		title := strings.ToUpper(safe(r.Kind))
+		if r.Kind == "cpu" {
+			totalLabel = "Live headroom"
+			title = "CPU · LIVE HEADROOM"
+		}
 		if r.Kind == "memory" {
 			totalLabel = "Reservable now"
 			title = "MEMORY · LIVE BUDGET"
@@ -304,16 +308,37 @@ func (m *dashboardModel) resourcesText() string {
 		}
 		inner := width - 4
 		totalText, availableText := quantity(r.BudgetTotal, r.Unit), quantity(r.Available, r.Unit)
+		promisedText := quantity(r.Reserved, r.Unit)
+		cpuDeficit := ""
+		if r.Kind == "cpu" {
+			totalText, promisedText, availableText, cpuDeficit = cpuBudgetValues(&r, m.cpuBudgetForView())
+		}
 		if r.Kind == "disk" && m.data.status.Disk != nil && !m.data.status.Disk.Known {
 			totalText = "unavailable"
 			availableText = "unavailable"
 		}
-		lines := []string{align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), quantity(r.Reserved, r.Unit), inner), align(muted.Render("Available"), strong.Foreground(colorAccent).Render(availableText), inner)}
-		if r.Deficit != "" && r.Deficit != "0" {
+		availableLabel := "Available"
+		if r.Kind == "cpu" {
+			availableLabel = "To lease"
+		}
+		lines := []string{align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), promisedText, inner), align(muted.Render(availableLabel), strong.Foreground(colorAccent).Render(availableText), inner)}
+		if r.Kind == "cpu" {
+			lines = append(lines, align(muted.Render("Shortfall"), cpuDeficit, inner))
+		}
+		if r.Kind != "cpu" && r.Deficit != "" && r.Deficit != "0" {
 			lines = append(lines, align(strong.Foreground(colorWarning).Render("SHORTFALL"), strong.Foreground(colorWarning).Render(quantity(r.Deficit, r.Unit)), inner))
 		}
 		if r.Kind == "memory" {
 			lines = append(lines, muted.Render("Changes with current host headroom · not physical RAM"))
+		}
+		if r.Kind == "cpu" {
+			lines = append(lines, muted.Render(ansi.Wrap("Other apps share this CPU · full promises stay charged", inner, "")))
+			if b := m.data.status.CPU; b != nil && b.Ceiling != nil {
+				lines = append(lines, align(muted.Render("Operator ceiling"), cpuQuantity(model.FloatQuantity(*b.Ceiling)), inner))
+			}
+			if !cpuBudgetKnown(m.cpuBudgetForView()) {
+				lines = append(lines, muted.Render("No fresh reading · new CPU grants wait"))
+			}
 		}
 		if r.Kind == "disk" && m.data.status.Disk != nil {
 			lines = append(lines, muted.Render("State filesystem · full promises remain charged"))
@@ -605,6 +630,9 @@ func (m *dashboardModel) resourceDetailText() string {
 		return "Resource no longer exists. Esc returns to budgets."
 	}
 	out := fmt.Sprintf("%s · %s\nHost: %s\n\nTotal: %s\nReserved: %s\nAvailable: %s\n\nCONSUMERS · Enter opens selected lease\n", safe(r.Kind), safe(r.Pool), safe(r.Host), quantity(r.BudgetTotal, r.Unit), quantity(r.Reserved, r.Unit), quantity(r.Available, r.Unit))
+	if r.Kind == "cpu" {
+		out = cpuBudgetDetail(r, m.cpuBudgetForView())
+	}
 	if r.Kind == "disk" && m.data.status.Disk != nil {
 		disk := m.data.status.Disk
 		if !disk.Known {

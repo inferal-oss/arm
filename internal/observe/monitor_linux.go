@@ -96,14 +96,17 @@ func collectMonitor(ctx context.Context) monitorRaw {
 	return r
 }
 func parseMonitorCPU(data []byte) ([]cpuCounter, error) {
+	return parseCPU(data, monitorCPUs)
+}
+func parseCPU(data []byte, limit int) ([]cpuCounter, error) {
 	rows := []cpuCounter{}
 	for _, line := range strings.Split(string(data), "\n") {
 		f := strings.Fields(line)
 		if len(f) == 0 || !strings.HasPrefix(f[0], "cpu") || f[0] == "cpu" {
 			continue
 		}
-		if len(rows) == monitorCPUs {
-			return rows, fmt.Errorf("CPU observation limited to %d rows", monitorCPUs)
+		if len(rows) == limit {
+			return rows, fmt.Errorf("CPU observation limited to %d rows", limit)
 		}
 		if _, e := strconv.ParseUint(strings.TrimPrefix(f[0], "cpu"), 10, 32); e != nil || len(f) < 5 {
 			return rows, fmt.Errorf("invalid per-CPU record")

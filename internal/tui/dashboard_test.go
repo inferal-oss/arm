@@ -372,12 +372,13 @@ func TestDashboardResourceConsumerDrilldownPreservesWhoAndWhy(t *testing.T) {
 	m, s := fixtureDashboard(t)
 	m.view = 1
 	m.data.status.Resources = []model.ResourceView{{ID: "cpu", Kind: "cpu", Unit: "logical-core-equivalents", BudgetTotal: "4", Reserved: "1", Available: "3", Users: []model.ResourceUse{{Lease: "build", Owner: "501", OwnerUsername: "alice", Reason: "compile needed binary", Quantity: "1"}}}}
+	cpuPresentationFixture(m, 4, 1, 3)
 	press(m, "enter")
 	if m.resourceID != "cpu" {
 		t.Fatal("resource did not open")
 	}
 	text := m.resourceDetailText()
-	for _, want := range []string{"alice (UID 501)", "compile needed binary", "build", "Available: 3 cores"} {
+	for _, want := range []string{"alice (UID 501)", "compile needed binary", "build", "To lease: 3 cores"} {
 		if !strings.Contains(text, want) {
 			t.Fatal("resource omitted attribution/budget", want, text)
 		}

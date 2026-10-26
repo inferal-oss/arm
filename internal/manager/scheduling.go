@@ -231,8 +231,16 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	if position > 1 {
 		info.Blockers = append(info.Blockers, model.QueueBlocker{Code: "queue_order", Leases: append([]string(nil), before...), BlockingCount: position - 1, Detail: "Earlier waiting requests have priority; later requests do not bypass the FIFO head."})
 	}
-	if l.Request.Resources.CPU > max(0, m.capacity.CPU-s.used.CPU) || s.used.CPU > m.capacity.CPU {
+	if l.Request.Resources.CPU > 0 && (l.Request.Resources.CPU > max(0, m.capacity.CPU-s.used.CPU) || s.used.CPU > m.capacity.CPU) {
 		add("budget_reserved", m.host+"/cpu", "logical-core-equivalents", "CPU budget is committed to existing leases.", number(model.FloatQuantity(l.Request.Resources.CPU)), number(model.FloatQuantity(max(0, m.capacity.CPU-s.used.CPU))))
+	}
+	if l.Request.Resources.CPU > 0 {
+		budget := m.cpuBudget(s.used.CPU)
+		if !budget.Known {
+			add("observation_unavailable", m.host+"/cpu", "logical-core-equivalents", "Fresh native CPU headroom is required before admission; the observation is missing, stale or incomplete.", number(model.FloatQuantity(l.Request.Resources.CPU)), nil)
+		} else if l.Request.Resources.CPU > budget.Available {
+			add("cpu_headroom", m.host+"/cpu", "logical-core-equivalents", "Current CPU headroom is insufficient after outstanding promises; other host activity and effective CPU limits reduce admission capacity.", number(model.FloatQuantity(l.Request.Resources.CPU)), number(model.FloatQuantity(budget.Available)))
+		}
 	}
 	if l.Request.Resources.Disk > 0 {
 		budget := m.diskBudget(s.used.Disk)
@@ -306,7 +314,13 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	return info, nil
 }
 func (m *Manager) estimateQueued(l model.Lease, s queueSnapshot, now time.Time) model.QueueEstimate {
-	unknown := model.QueueEstimate{Kind: "unknown", Detail: "Live memory/disk headroom, provider reclamation, port availability or earlier queue work cannot be predicted reliably."}
+	unknown := model.QueueEstimate{Kind: "unknown", Detail: "Live CPU/memory/disk headroom, provider reclamation, port availability or earlier queue work cannot be predicted reliably."}
+	if l.Request.Resources.CPU > 0 {
+		budget := m.cpuBudget(s.used.CPU)
+		if !budget.Known || budget.Capacity < m.capacity.CPU {
+			return model.QueueEstimate{Kind: "unknown", Detail: "Current CPU headroom is missing or reduced by host activity/effective limits; lease expiry alone cannot predict when capacity will recover."}
+		}
+	}
 	if l.Request.Resources.Disk > 0 || l.Request.Resources.Memory > 0 || len(l.Request.Ports) > 0 || len(l.Request.Pools) > 0 || l.Request.StorageLease != "" || l.Request.PortLease != "" || l.Request.Kind == "storage" {
 		return unknown
 	}

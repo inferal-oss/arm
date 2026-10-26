@@ -198,7 +198,7 @@ func quantity(value any, unit string) string {
 	}
 	return terminalSafe(fmt.Sprint(value))
 }
-func (a *app) resourceTable(w io.Writer, rows []any) {
+func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 	tw := tabwriter.NewWriter(w, 0, 4, 3, ' ', 0)
 	fmt.Fprintln(tw, "RESOURCE\tTOTAL\tRESERVED\tAVAILABLE\tUNIT")
 	for _, raw := range rows {
@@ -216,10 +216,29 @@ func (a *app) resourceTable(w io.Writer, rows []any) {
 			}
 		}
 		unit := fmt.Sprint(row["unit"])
-		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", terminalSafe(name), quantity(row["budget_total"], unit), quantity(row["reserved"], unit), quantity(row["available"], unit), terminalSafe(unit))
+		total, reserved, available := row["budget_total"], row["reserved"], row["available"]
+		if row["kind"] == "cpu" {
+			name = "cpu (live)"
+			unit = "cores"
+			known := row["availability_known"] == true && row["stale"] != true
+			if len(cpu) > 0 {
+				known = cpuBudgetMapKnown(cpu[0])
+				if cpu[0] != nil {
+					total = cpu[0]["capacity_cores"]
+					reserved = cpu[0]["reserved_cores"]
+					available = cpu[0]["available_cores"]
+				}
+			}
+			if !known {
+				total = nil
+				available = nil
+			}
+			total, reserved, available = cpuDisplayValue(total), cpuDisplayValue(reserved), cpuDisplayValue(available)
+		}
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", terminalSafe(name), quantity(total, unit), quantity(reserved, unit), quantity(available, unit), terminalSafe(unit))
 	}
 	tw.Flush()
-	fmt.Fprintln(w, "\nAvailability is a reservation budget; physical measurements have separate scopes.")
+	fmt.Fprintln(w, "\nAvailability describes what ARM can promise now; physical measurements have separate scopes.")
 	for _, raw := range rows {
 		row, ok := raw.(map[string]any)
 		if !ok {
@@ -273,7 +292,20 @@ func (a *app) human(v any) error {
 			fmt.Fprintln(&b, "Host: "+a.scalar("host", state["host"]))
 			fmt.Fprintln(&b)
 			rows, _ := state["resources"].([]any)
-			a.resourceTable(&b, rows)
+			cpu, _ := state["cpu_budget"].(map[string]any)
+			if cpu == nil {
+				cpu, _ = state["cpu"].(map[string]any)
+			} // remote allowlisted summary, never localhost
+			if cpu == nil {
+				for _, raw := range rows {
+					if row, ok := raw.(map[string]any); ok && row["kind"] == "cpu" {
+						cpu = map[string]any{"reserved_cores": row["reserved"]}
+						break
+					}
+				}
+			}
+			a.resourceTable(&b, rows, cpu)
+			a.cpuBudgetStatus(&b, cpu)
 			leases, _ := state["leases"].([]any)
 			fmt.Fprintf(&b, "\nLeases (%d)\n", len(leases))
 			for _, raw := range leases {

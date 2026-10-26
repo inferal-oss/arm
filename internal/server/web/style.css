@@ -538,6 +538,8 @@ dialog.metric-help {
   gap:12px;
   margin:18px 0 14px;
 }
+.budget.cpu-budget { grid-template-columns:repeat(2,1fr); }
+.budget strong.cpu-shortfall { color:var(--warn); }
 .budget small {
   font:10px var(--mono);
   display:block;

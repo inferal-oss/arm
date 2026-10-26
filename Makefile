@@ -313,3 +313,21 @@ tla-check: tla-uninstall-check
 tla-traces: tla-uninstall-traces
 tla-prove: tla-uninstall-prove
 test-formal: test-uninstall-formal
+
+# Conservative zero-credit CPU admission protection, actual Go cuts and proof.
+TLA_CPU_ADMISSION_WORK_DIR ?= $(CURDIR)/.tla/cpu-admission
+TLA_CPU_ADMISSION_ACTUAL_LOG ?=
+CPU_ADMISSION_ACTUAL_ARGS = $(if $(TLA_CPU_ADMISSION_ACTUAL_LOG),--actual-go-log "$(TLA_CPU_ADMISSION_ACTUAL_LOG)",)
+.PHONY: tla-cpu-admission-check tla-cpu-admission-traces tla-cpu-admission-prove test-cpu-admission-formal
+tla-cpu-admission-check: tla-tlc
+	$(PYTHON) scripts/test-cpu-admission-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_CPU_ADMISSION_WORK_DIR)"
+tla-cpu-admission-prove: tla-tlapm
+	$(PYTHON) scripts/test-cpu-admission-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_CPU_ADMISSION_WORK_DIR)"
+tla-cpu-admission-traces: tla-tlc
+	$(PYTHON) scripts/test-cpu-admission-formal.py --mode traces --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" $(CPU_ADMISSION_ACTUAL_ARGS) --work-dir "$(TLA_CPU_ADMISSION_WORK_DIR)"
+test-cpu-admission-formal: tla-tools
+	$(PYTHON) scripts/test-cpu-admission-formal.py --mode all --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" $(CPU_ADMISSION_ACTUAL_ARGS) --work-dir "$(TLA_CPU_ADMISSION_WORK_DIR)"
+tla-check: tla-cpu-admission-check
+tla-traces: tla-cpu-admission-traces
+tla-prove: tla-cpu-admission-prove
+test-formal: test-cpu-admission-formal

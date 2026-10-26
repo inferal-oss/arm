@@ -109,6 +109,7 @@ type Status struct {
 	Infrastructure []PortBinding          `json:"infrastructure_ports"`
 	Disk           *DiskBudget            `json:"disk_budget"`
 	Memory         *MemoryBudget          `json:"memory_budget"`
+	CPU            *CPUBudget             `json:"cpu_budget"`
 }
 
 type ResourceUse struct {
@@ -124,21 +125,23 @@ type ResourceUse struct {
 	Relationship  string      `json:"relationship,omitempty"`
 }
 type ResourceView struct {
-	ID          string               `json:"id"`
-	Host        string               `json:"host"`
-	Pool        string               `json:"pool"`
-	Kind        string               `json:"kind"`
-	Unit        string               `json:"unit"`
-	BudgetTotal json.Number          `json:"budget_total"`
-	Reserved    json.Number          `json:"reserved"`
-	Available   json.Number          `json:"available"`
-	Deficit     json.Number          `json:"deficit,omitempty"`
-	Accounting  string               `json:"accounting"`
-	Observed    *float64             `json:"observed"`
-	Users       []ResourceUse        `json:"users"`
-	Measurement *ResourceMeasurement `json:"measurement,omitempty"`
-	Port        *PortBinding         `json:"port,omitempty"`
-	Custom      *PoolView            `json:"custom,omitempty"`
+	AvailabilityKnown *bool                `json:"availability_known,omitempty"`
+	Stale             bool                 `json:"stale,omitempty"`
+	ID                string               `json:"id"`
+	Host              string               `json:"host"`
+	Pool              string               `json:"pool"`
+	Kind              string               `json:"kind"`
+	Unit              string               `json:"unit"`
+	BudgetTotal       json.Number          `json:"budget_total"`
+	Reserved          json.Number          `json:"reserved"`
+	Available         json.Number          `json:"available"`
+	Deficit           json.Number          `json:"deficit,omitempty"`
+	Accounting        string               `json:"accounting"`
+	Observed          *float64             `json:"observed"`
+	Users             []ResourceUse        `json:"users"`
+	Measurement       *ResourceMeasurement `json:"measurement,omitempty"`
+	Port              *PortBinding         `json:"port,omitempty"`
+	Custom            *PoolView            `json:"custom,omitempty"`
 }
 
 func FloatQuantity(v float64) json.Number { return json.Number(strconv.FormatFloat(v, 'g', -1, 64)) }

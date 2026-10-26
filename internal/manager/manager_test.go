@@ -20,6 +20,7 @@ func newManager(t *testing.T) *Manager {
 	if e != nil {
 		t.Fatal(e)
 	}
+	cpuReading(m, 64, 64, 0, 64, 0)
 	t.Cleanup(func() {
 		if e := m.Close(); e != nil {
 			t.Error(e)

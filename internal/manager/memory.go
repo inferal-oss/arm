@@ -53,6 +53,10 @@ func (m *Manager) memoryBudget(reserved int64) model.MemoryBudget {
 
 func (m *Manager) requestFitsCeiling(r model.Resources) bool {
 	capacity := m.capacity
+	cpu := m.cpuBudget(0)
+	if !cpu.Stale && cpu.Observation.EligibleCPUs != nil && *cpu.Observation.EligibleCPUs > 0 {
+		capacity.CPU = min(capacity.CPU, float64(*cpu.Observation.EligibleCPUs))
+	}
 	if capacity.Memory == 0 {
 		capacity.Memory = math.MaxInt64
 	}
@@ -72,10 +76,20 @@ func (m *Manager) requestFitsCeiling(r model.Resources) bool {
 
 func (m *Manager) fitsLiveResources(r, used model.Resources) bool {
 	capacity := m.capacity
+	if r.CPU == 0 {
+		capacity.CPU = math.MaxFloat64
+	}
 	capacity.Memory = math.MaxInt64
 	capacity.Disk = math.MaxInt64
 	if !r.FitsRemaining(used, capacity) {
 		return false
+	}
+	if r.CPU > 0 {
+		budget := m.cpuBudget(used.CPU)
+		traceCPUAdmission(m, budget, r.CPU)
+		if !budget.Known || r.CPU > budget.Available {
+			return false
+		}
 	}
 	if r.Memory > 0 {
 		budget := m.memoryBudget(used.Memory)

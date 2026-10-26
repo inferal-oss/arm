@@ -206,11 +206,19 @@ Cleanup runs in bounded, retryable steps, with progress and failures recorded. A
 
 CPU claims express capacity in explicit units, such as logical-core equivalents over time. Exclusive affinity, CPU bandwidth limits, and cooperative job counts are different capabilities and must have different semantics. A tool's worker count is useful regulation but is not proof of its entire process tree's CPU consumption.
 
+CPU admission must consult fresh native headroom on the selected host, including activity outside ARM. A configured ceiling and unreserved lease capacity do not establish available CPU time. Account for actual eligible CPUs and observable affinity, cpuset and quota constraints across supported architectures. Missing, stale, regressed or incomplete observations must not authorize CPU grants. Shrinking headroom preserves outstanding promises and exposes a deficit; admission, queue explanations and renewal use consistent accounting. Verified managed-use credit requires compatible native scopes and aligned intervals; unrelated process samples must not manufacture headroom. Sampling remains an estimate, not a guarantee against later OS activity.
+
 Memory admission pools follow fresh estimates of current host availability rather than assuming a fixed amount of RAM is available. An operator can set an upper ceiling; a shrinking pool may expose a shortfall below existing claims. Preserve those obligations and make freshness, uncertainty and accounting visible. Unknown availability must not authorize unsupported grants.
 
 Memory claims identify their accounting scope and whether the limit covers process resident memory, a supervised group, or a platform-specific charged total. Shared pages, caches, swap, and unified CPU/GPU memory must not be treated as independent additive capacities. Show observed usage separately from reservation and avoid counting a shared allocation twice when attribution supports deduplication.
 
 Workload adapters should configure tools to stay within grants, then providers observe or enforce the resulting workload. For Cargo, a CPU grant can set an appropriate jobs budget. Explicit CLI arguments or configuration that override that budget must be resolved and validated. A cooperative setting supplements platform enforcement where available.
+
+### Host pressure response
+
+CPU, memory and disk pressure can come from unleased workloads. In addition to refusing unavailable new capacity, ARM should support an explicit pressure policy: early warning, a bounded grace period, agent/operator notifications, and pausing suitable supervised execution if pressure persists. Record the reason, observation, original process ownership, policy decision and outcome. Resume requires fresh recovery evidence and hysteresis; avoid repeated pause/resume cycles and respect a bounded pause policy.
+
+A paused execution retains its lease and obligations. Suspending CPU execution does not free resident memory or occupied disk space, and buffered I/O may continue. Do not advertise those bytes as available. Memory/disk remediation may instead require an agent to checkpoint, reduce its footprint or release proven disposable artifacts. Bare leases receive cooperative requests through the registered agent's messaging/polling channel; ARM must not signal arbitrary processes. Native pause/resume applies only to the original captured, still-owned supervised execution and a capability/policy that permits it; never adopt a stored PID after restart. Shared services and workloads whose locks, deadlines or protocols make suspension unsafe need profile-specific policy. Lease expiry and renewal remain explicit; pausing must not silently extend a lease or suspend its accounting. Stronger termination/reclamation follows separately authorized provider rules.
 
 ## GPU and network resources
 

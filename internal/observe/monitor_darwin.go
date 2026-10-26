@@ -66,6 +66,9 @@ func collectMonitor(ctx context.Context) monitorRaw {
 	return r
 }
 func darwinMonitorCPU() ([]cpuCounter, error) {
+	return darwinCPU(monitorCPUs)
+}
+func darwinCPU(limit uint32) ([]cpuCounter, error) {
 	if err := initMonitorMach(); err != nil {
 		return nil, err
 	}
@@ -80,8 +83,8 @@ func darwinMonitorCPU() ([]cpuCounter, error) {
 	if data != nil && count > 0 {
 		defer monitorMach.deallocate(task, uintptr(data), uintptr(count)*4)
 	}
-	if status != 0 || data == nil || cpus == 0 || cpus > monitorCPUs || count != cpus*4 {
-		return nil, fmt.Errorf("native CPU array unavailable or exceeds %d CPUs", monitorCPUs)
+	if status != 0 || data == nil || cpus == 0 || cpus > limit || count != cpus*4 {
+		return nil, fmt.Errorf("native CPU array unavailable or exceeds %d CPUs", limit)
 	}
 	ticks := unsafe.Slice((*[4]uint32)(data), int(cpus))
 	rows := make([]cpuCounter, 0, cpus)

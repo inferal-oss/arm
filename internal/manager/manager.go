@@ -71,6 +71,9 @@ type Manager struct {
 	shutdownDeadline        time.Time
 	observationMu           sync.RWMutex
 	observations            map[string]model.ResourceMeasurement
+	cpuObserver             cpuObserver
+	cpuAvailability         model.CPUAvailability
+	cpuObserved             time.Time
 	memoryAvailability      model.MemoryAvailability
 	memoryObserved          time.Time
 	diskAvailability        model.DiskAvailability
@@ -101,6 +104,9 @@ type Manager struct {
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets", "counted-resource-subpools"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
+	if !finiteCPU(capacity.CPU) || capacity.CPU < 0 || capacity.CPU > 65536 {
+		return nil, model.Err("invalid_config", "CPU ceiling must be a finite nonnegative logical-core count at most 65536")
+	}
 	if capacity.Memory < 0 || capacity.Disk < 0 {
 		return nil, model.Err("invalid_config", "memory/disk ceilings must be nonnegative; zero selects live availability")
 	}
@@ -152,6 +158,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		}
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.cpuObserver = observe.NewCPUSampler()
 	m.diskSampleSlots = make(chan struct{}, 1)
 	m.usages = map[string]workloadSample{}
 	m.policyClocks = map[string]incidentClock{}
@@ -284,6 +291,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m.sample()
+	m.initializeCPU()
 	m.sampleMemory()
 	m.sampleDisk()
 	if e = m.recoverShutdown(); e != nil {
@@ -309,6 +317,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 }
 
 func (m *Manager) Start() {
+	m.startCPUSampling()
 	m.wg.Go(func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
@@ -540,13 +549,16 @@ func (m *Manager) Status() (model.Status, error) {
 		return s, err
 	}
 	s.Reserved.Disk = diskReserved
+	cpu := m.cpuBudget(s.Reserved.CPU)
+	s.CPU = &cpu
+	s.Capacity.CPU = cpu.Capacity
 	memory := m.memoryBudget(s.Reserved.Memory)
 	s.Memory = &memory
 	s.Capacity.Memory = memory.Capacity
 	disk := m.diskBudget(s.Reserved.Disk)
 	s.Disk = &disk
 	s.Capacity.Disk = disk.Capacity
-	s.Capabilities = append(s.Capabilities, "live-memory-admission", "live-disk-admission")
+	s.Capabilities = append(s.Capabilities, "live-cpu-admission", "live-memory-admission", "live-disk-admission")
 	for _, kind := range []string{"cpu", "memory", "disk"} {
 		total, reserved, unit := s.Capacity.CPU, s.Reserved.CPU, "logical-core-equivalents"
 		if kind == "memory" {
@@ -556,6 +568,12 @@ func (m *Manager) Status() (model.Status, error) {
 			total, reserved, unit = float64(s.Capacity.Disk), float64(s.Reserved.Disk), "bytes"
 		}
 		v := model.ResourceView{ID: m.host + "/" + kind, Host: m.host, Pool: m.host + "/" + kind + "-budget", Kind: kind, Unit: unit, BudgetTotal: model.FloatQuantity(total), Reserved: model.FloatQuantity(reserved), Available: model.FloatQuantity(max(0, total-reserved)), Accounting: "cooperative-reservation-budget", Users: []model.ResourceUse{}}
+		if kind == "cpu" {
+			known := cpu.Known
+			v.AvailabilityKnown, v.Stale = &known, cpu.Stale
+			v.Available, v.Deficit = model.FloatQuantity(cpu.Available), model.FloatQuantity(cpu.Deficit)
+			v.Accounting = cpu.Accounting
+		}
 		if kind == "memory" {
 			v.BudgetTotal = model.CountQuantity(s.Capacity.Memory)
 			v.Reserved = model.CountQuantity(s.Reserved.Memory)
@@ -712,6 +730,9 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	}
 	if math.IsNaN(r.Resources.CPU) || math.IsInf(r.Resources.CPU, 0) || r.Resources.CPU < 0 || r.Resources.Memory < 0 || r.Resources.Disk < 0 || (r.Resources == (model.Resources{}) && len(r.Ports) == 0 && r.PortLease == "" && len(r.Pools) == 0) {
 		return empty, model.Err("invalid_request", "request positive CPU/memory/disk, at least one port, an attached port lease, or counted pool claims")
+	}
+	if run != nil && r.Resources.CPU <= 0 {
+		return empty, model.Err("invalid_request", "supervised execution requires a positive CPU claim; other resource claims do not authorize execution without CPU headroom")
 	}
 	if r.Kind != "" && r.Kind != "execution" && r.Kind != "storage" && r.Kind != "ports" && !(len(shares) == 1 && r.Kind == "share-publication") {
 		return empty, model.Err("invalid_request", "kind must be execution, storage or ports")
@@ -877,7 +898,7 @@ func (m *Manager) acquire(r model.Request, run *RunRequest, shares ...shareAdmis
 	} else if !queued && m.fitsLiveResources(r.Resources, used) && poolFits && len(budgetBlockers) == 0 {
 		m.activate(&l, run != nil)
 	} else if !r.Queue {
-		return empty, model.Err("insufficient_capacity", "host capacity or policy ceilings are committed, or live memory/disk headroom is insufficient/unavailable; use --wait to queue")
+		return empty, model.Err("insufficient_capacity", "host capacity or policy ceilings are committed, or live CPU/memory/disk headroom is insufficient/unavailable; use --wait to queue")
 	}
 	var rb any
 	if run != nil {
@@ -1197,6 +1218,19 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 			return l, model.Err("renewal_denied", "live memory headroom cannot cover outstanding promises")
 		}
 	}
+	if l.Request.Resources.CPU > 0 {
+		var reserved float64
+		for _, lease := range ls {
+			if consuming(lease.State) {
+				reserved += lease.Request.Resources.CPU
+			}
+		}
+		budget := m.cpuBudget(reserved)
+		traceCPURenewal(m, budget)
+		if !budget.Known || budget.Deficit > 0 {
+			return l, model.Err("renewal_denied", "live CPU headroom cannot cover outstanding promises")
+		}
+	}
 	if e = m.poolRenewal(l, ls); e != nil {
 		return l, e
 	}
@@ -1323,6 +1357,16 @@ func (m *Manager) tick() {
 		if l.State != "queued" {
 			continue
 		}
+		var rb sql.NullString
+		if e = m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, l.ID).Scan(&rb); e != nil {
+			return
+		}
+		if rb.Valid && l.Request.Resources.CPU <= 0 {
+			if _, e = m.rejectUnstarted(l, &model.Error{Code: "invalid_request", Message: "supervised execution requires a positive CPU claim"}); e != nil {
+				return
+			}
+			continue
+		}
 		if l.Cargo != nil && m.cargoHelper == nil {
 			break
 		}
@@ -1354,10 +1398,6 @@ func (m *Manager) tick() {
 				return
 			}
 			continue
-		}
-		var rb sql.NullString
-		if e = m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, l.ID).Scan(&rb); e != nil {
-			return
 		}
 		m.attachBudgetEvidence(&l)
 		m.attachPoolEvidence(&l)
@@ -1411,6 +1451,9 @@ func (m *Manager) tick() {
 }
 
 func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
+	if l.Request.Resources.CPU <= 0 {
+		return m.rejectUnstarted(l, &model.Error{Code: "invalid_request", Message: "supervised execution requires a positive CPU claim"})
+	}
 	if l.Request.Profile == "rust-build" {
 		return m.launchCargo(l, r)
 	}

@@ -3,7 +3,7 @@ import {leaseStateLabel, leaseVisible, isInactiveLease, readHideInactive, saveHi
 import {allDevices,selectedDeviceIDs,aggregateIO,aggregateIOWindow} from './io-devices.mjs';
 import {createIOSelector} from './io-selector.mjs';
 import {jsonView} from './json-view.mjs';
-import {metricHelp, diskBudgetFields} from './metric-help.mjs';
+import {metricHelp, diskBudgetFields, cpuBudgetFields, cpuBudgetKnown, cpuCores, cpuBudgetForView} from './metric-help.mjs';
 import {leaseActionPanel, leaseActionResult} from './lease-actions.mjs';
 import {leaseReviewPanel, REVIEW_CAPABILITY} from './lease-reviews.mjs';
 import {createDashboardHistory} from './route.mjs';
@@ -47,6 +47,7 @@ const rate = value => value == null ? 'unavailable' : `${bytes(value)}/s`;
 const empty = text => node('div', 'empty', text);
 const badge = (text, kind = text) => { const el = node('span', 'badge', text); el.dataset.kind = kind; return el; };
 const state = {status: null, statusReceived: 0, statusTime: null, messages: [], contacts: [], events: [], history: [], epoch: '', cursor: 0, monitor: null, received: 0, connected: false};
+let cpuDisplayKnown=null;
 let leasePreferenceStorage; try { leasePreferenceStorage = localStorage; } catch { /* A blocked preference store keeps this session's choice in memory. */ }
 let hideInactiveLeases = readHideInactive(leasePreferenceStorage);
 let connection, view = 'monitor', leaseFilter = '', resourceFilter = '', detailRequest = 0;
@@ -230,6 +231,8 @@ function acceptMonitor(page) {
   updateFreshness();
 }
 function updateFreshness() {
+  remoteDashboard?.updateFreshness();
+  if(view==='resources'&&state.status&&cpuDisplayKnown!==cpuBudgetKnown(cpuBudgetForView(state.status.cpu_budget,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived})))resourceCards();
   if (view !== 'monitor' && state.status) {
     const age = Math.max(0, Math.floor((performance.now() - state.statusReceived) / 1000));
     $('freshness').textContent = `${state.connected ? '' : 'STALE · '}state updated ${age}s ago`;
@@ -451,6 +454,7 @@ function renderResources() {
   poolConsole.update({status: state.status, route: navigation.current});
 }
 function resourceCards() {
+  cpuDisplayKnown=cpuBudgetKnown(cpuBudgetForView(state.status?.cpu_budget,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived}));
   const root = $('resources');
   const focusedHelpKey = root.contains(document.activeElement) ? document.activeElement?.dataset.helpKey : null;
   root.querySelector('.resource-grid')?.remove();
@@ -460,14 +464,21 @@ function resourceCards() {
     if (!stringifyJSON(r).toLowerCase().includes(filter)) continue;
     const custom = r.custom?.pool;
     const label = custom?.name || ({cpu: 'CPU', memory: 'Memory', disk: 'Disk', port: 'Port'})[r.kind] || r.kind;
-    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, memory: r.kind === 'memory' ? state.status.memory_budget : null, disk: r.kind === 'disk' ? state.status.disk_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
+    const cpu=r.kind==='cpu'?cpuBudgetForView(state.status.cpu_budget,{connected:state.connected,elapsedMS:performance.now()-state.statusReceived}):null;
+    const p = panel(label, `${custom?.scope || 'host'} / ${displayUnit(r.unit)}`, '', metricHelp(custom ? 'resource-custom' : `resource-${r.kind}`, {accounting: r.accounting, cpu, memory: r.kind === 'memory' ? state.status.memory_budget : null, disk: r.kind === 'disk' ? state.status.disk_budget : null, measurements: [['Physical reading', r.measurement?.used]]}), `resource:${r.id}`);
     const budget = node('div', 'budget');
     const disk = r.kind === 'disk' ? state.status.disk_budget : null;
-    const fields = disk ? diskBudgetFields(r, disk) : poolBudgetFields(r);
+    const fields = r.kind === 'cpu' ? cpuBudgetFields(r,cpu) : disk ? diskBudgetFields(r, disk) : poolBudgetFields(r);
+    if(r.kind==='cpu')budget.classList.add('cpu-budget');
     for (const [label, value] of fields) {
-      const item = node('div'); item.append(node('small', '', label), node('strong', (label === 'AVAILABLE' || label === 'TO LEASE') ? 'accent' : '', quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
+      const item = node('div'); item.append(node('small', '', label), node('strong', (label === 'AVAILABLE' || label === 'TO LEASE') ? 'accent' : label==='SHORTFALL'&&Number(value)>0?'cpu-shortfall':'', r.kind==='cpu'?cpuCores(value):quantity(value, r.unit))); item.title = `${label}: ${String(value)} ${r.unit}`; budget.append(item);
     }
-    p.body.append(budget, bar(r.custom?.partition?.committed ?? r.reserved, numeric(r.budget_total)));
+    p.body.append(budget, bar(r.custom?.partition?.committed ?? r.reserved, r.kind==='cpu' ? (cpuBudgetKnown(cpu)?cpu.capacity_cores:null) : numeric(r.budget_total)));
+    if(r.kind==='cpu') {
+      p.body.append(node('p','measure-note','Other apps share this CPU · full promises remain charged'));
+      if(cpu?.ceiling_cores!=null)stat(p.body,'Operator ceiling',cpuCores(cpu.ceiling_cores));
+      if(!cpuBudgetKnown(cpu))p.body.append(node('p','measure-note',cpu?.stale?'CPU headroom is stale. New CPU grants wait.':'CPU headroom is unavailable. New CPU grants wait.'));
+    }
     if (r.custom?.partition) {
       const a=r.custom.partition;
       p.body.append(node('p','measure-note', `Direct leases ${count(a.direct_reserved)} · Child backing ${count(a.child_backing)} ${r.unit}. Parent and child totals overlap.`));

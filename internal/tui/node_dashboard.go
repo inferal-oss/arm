@@ -32,6 +32,7 @@ type nodeSummary struct {
 	Leases    []model.Lease         `json:"leases"`
 	Memory    json.RawMessage       `json:"memory"`
 	Disk      json.RawMessage       `json:"disk"`
+	CPU       json.RawMessage       `json:"cpu"`
 	Reported  time.Time             `json:"reported_at"`
 }
 type nodeDashboard struct {
@@ -277,10 +278,31 @@ func (m *dashboardModel) nodeText() string {
 	case 1:
 		for _, resource := range ui.summary.Resources {
 			available := quantity(resource.Available, resource.Unit)
-			if !ui.connected || ui.err != "" || !ui.lastRead.IsZero() && m.timeNow.Sub(ui.lastRead) > 5*time.Second || resource.Stale || resource.Known != nil && !*resource.Known || nodeBudgetUnavailable(ui, resource.Kind, m.timeNow) {
+			unavailable := !ui.connected || ui.err != "" || !ui.lastRead.IsZero() && m.timeNow.Sub(ui.lastRead) > 5*time.Second || resource.Stale || resource.Known != nil && !*resource.Known || nodeBudgetUnavailable(ui, resource.Kind, m.timeNow)
+			if unavailable {
 				available = "stale / unavailable"
 			}
-			fmt.Fprintf(&out, "%s\nAvailable: %s\nTotal: %s · reserved %s\n\n", strong.Render(safe(resource.Kind)), available, quantity(resource.Total, resource.Unit), quantity(resource.Reserved, resource.Unit))
+			if resource.Kind == "cpu" {
+				total := cpuQuantity(resource.Total)
+				available = cpuQuantity(resource.Available)
+				if unavailable {
+					available = "stale / unavailable"
+				}
+				deficit := "unavailable"
+				if unavailable {
+					total = "stale / unavailable"
+				} else {
+					var b struct {
+						Deficit float64 `json:"deficit_cores"`
+					}
+					if json.Unmarshal(ui.summary.CPU, &b) == nil {
+						deficit = cpuQuantity(model.FloatQuantity(b.Deficit))
+					}
+				}
+				fmt.Fprintf(&out, "%s\nLive headroom: %s\nPromised: %s · to lease %s\nShortfall: %s\nOther apps share this CPU · full promises stay charged\n\n", strong.Render("CPU · LIVE HEADROOM"), total, cpuQuantity(resource.Reserved), available, deficit)
+			} else {
+				fmt.Fprintf(&out, "%s\nAvailable: %s\nTotal: %s · reserved %s\n\n", strong.Render(safe(resource.Kind)), available, quantity(resource.Total, resource.Unit), quantity(resource.Reserved, resource.Unit))
+			}
 		}
 		if len(ui.summary.Resources) == 0 {
 			out.WriteString("No resource summary visible under the current grant.\n")
@@ -337,6 +359,31 @@ func nodeMetadataSummary(n model.NodeMetadata) string {
 }
 
 func nodeBudgetUnavailable(ui *nodeDashboard, kind string, now time.Time) bool {
+	if kind == "cpu" {
+		var b struct {
+			Known     bool          `json:"known"`
+			Stale     bool          `json:"stale"`
+			Observed  *float64      `json:"observed_available_cores"`
+			Capacity  *float64      `json:"capacity_cores"`
+			Reserved  *float64      `json:"reserved_cores"`
+			Available *float64      `json:"available_cores"`
+			Deficit   *float64      `json:"deficit_cores"`
+			Age       time.Duration `json:"age_ns"`
+			After     time.Duration `json:"stale_after_ns"`
+		}
+		if json.Unmarshal(ui.summary.CPU, &b) != nil || !b.Known || b.Stale || b.After <= 0 || ui.lastRead.IsZero() {
+			return true
+		}
+		for _, value := range []*float64{b.Observed, b.Capacity, b.Reserved, b.Available, b.Deficit} {
+			if value == nil || *value < 0 {
+				return true
+			}
+		}
+		if b.Age < 0 || b.Age >= b.After {
+			return true
+		}
+		return now.After(ui.lastRead) && now.Sub(ui.lastRead) >= b.After-b.Age
+	}
 	raw := ui.summary.Memory
 	if kind == "disk" {
 		raw = ui.summary.Disk

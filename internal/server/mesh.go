@@ -369,6 +369,12 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		resources := make([]map[string]any, 0, len(status.Resources))
 		for _, resource := range status.Resources {
 			summary := map[string]any{"id": resource.ID, "host": resource.Host, "kind": resource.Kind, "unit": resource.Unit, "budget_total": resource.BudgetTotal, "reserved": resource.Reserved, "available": resource.Available}
+			if resource.Kind == "cpu" && status.CPU != nil {
+				summary["availability_known"] = status.CPU.Known
+				summary["stale"] = status.CPU.Stale
+				summary["observation_at"] = status.CPU.Observation.At
+				summary["deficit"] = resource.Deficit
+			}
 			if resource.Kind == "disk" && status.Disk != nil {
 				summary["availability_known"] = status.Disk.Known
 				summary["stale"] = status.Disk.Stale
@@ -392,7 +398,7 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 			b := status.Memory
 			memory = map[string]any{"observation_at": b.Observation.At, "quality": b.Observation.Quality, "total_bytes": b.Observation.Total, "estimated_available_bytes": b.Observation.Available, "capacity_bytes": b.Capacity, "reserved_bytes": b.Reserved, "available_bytes": b.Available, "ceiling_bytes": b.Ceiling, "deficit_bytes": b.Deficit, "stale": b.Stale, "age_ns": b.Age, "stale_after_ns": b.StaleAfter}
 		}
-		return map[string]any{"host": status.Host, "capacity": status.Capacity, "reserved": status.Reserved, "leases": leases, "resources": resources, "capabilities": status.Capabilities, "memory": memory, "disk": meshDiskSummary(status.Disk), "reported_at": time.Now().UTC()}, nil
+		return map[string]any{"host": status.Host, "capacity": status.Capacity, "reserved": status.Reserved, "leases": leases, "resources": resources, "capabilities": status.Capabilities, "cpu": meshCPUSummary(status.CPU), "memory": memory, "disk": meshDiskSummary(status.Disk), "reported_at": time.Now().UTC()}, nil
 	case "contacts":
 		if e := require("contact-read"); e != nil {
 			return nil, e
