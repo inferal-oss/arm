@@ -1,0 +1,2 @@
+# Patch fixtures contain intentional context-line indentation and whitespace.
+third_party/rsyncgo/internal/rsyncopts/testdata/*.patch -whitespace
