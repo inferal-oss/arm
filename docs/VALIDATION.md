@@ -2284,3 +2284,31 @@ Fresh live-CPU/managed-credit regressions pass 14 roots/31 named cases under
 race detection (exit 0, 36.703s), with no failures/skips; evidence:
 `.cache/relay-holds-cpu-regression.jsonl`. Actual routed carrier, public CLI,
 platform traffic and formal conformance remain separate acceptance gates.
+
+## October 25: explicit carrier target and real Linux carrier
+
+The isolated `codex/carrier-target` feature (`a863074`, integrated as
+`fd2311e`) passes independent affected race tests: distribution 26.129s and
+build-bundle 1.439s, both exit 0. Earlier affected normal/race/vet checks also
+pass. Tests use a real small Go cross-compile and reject wrong executable
+metadata, invalid/partial targets and archive/verify target misuse before
+compiler/output effects. Source snapshot tests include the required licensed
+rsync fork and exclude unrelated third parties, caches and generated payloads.
+
+A full build from that clean isolated commit compiled all four thin payloads,
+verified their compressed bytes and manifest, then built a CGo-free Linux
+ARM64 carrier on native macOS (original build session 80153, exit 0). Its size
+is 110,226,254 bytes. Go metadata reports Go 1.27.3, linux/arm64, CGO_ENABLED=0
+and armcarrier; the executable is statically linked ELF. The initial local
+receipt helper failed because the system Python lacks `hashlib.file_digest`;
+a bounded chunked hash corrected that helper without rebuilding the carrier.
+
+The exact SHA-256-checked carrier ran on actual Linux ARM64. `version`,
+`agents --json`, `agents card rust-build --json` and `mesh artifacts list` each
+exited 0 and created no ARM state. Original SSH and owned-directory cleanup
+also exited 0; the directory was absent. Ignored evidence:
+`.cache/carrier-linux-validation.json`, `.cache/carrier-linux-build.log`,
+`.cache/carrier-linux-runtime.log`. This proves full packaging and scoped
+native execution, not a Kubernetes Pod, mesh enrollment, onward provisioning
+or sync workflow. `make -n carrier` verifies the new paired target variables;
+`make install` retains its native-only builder invocation.

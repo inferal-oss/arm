@@ -4,6 +4,8 @@ PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 BUNDLE_DIR ?= dist
 BUNDLE_JOBS ?= 0
+CARRIER_OS ?=
+CARRIER_ARCH ?=
 
 .PHONY: build install test check test-local test-live test-linux test-web test-workloads test-cargo-profile test-gradle-services test-mesh test-mesh-ssh test-ssh-history test-database-reset test-workspace-lifecycle test-workspaces test-workspace-routing test-workspace-graph test-published-agents validate-knowledge
 build: validate-knowledge
@@ -139,11 +141,11 @@ test-local: build test-workspace-lifecycle test-workspaces test-workspace-routin
 test-linux:
 	python3 scripts/test-linux.py --go $(GO) --image $(LINUX_IMAGE)
 
-# Explicit distribution build: four thin platform payloads, then one native
-# carrier containing their compressed bytes. Normal make build stays thin.
+# Explicit distribution build: four thin platform payloads, then one carrier
+# (native unless both target variables are set). Normal make build stays thin.
 .PHONY: bundle carrier bundle-archive
 bundle carrier: validate-knowledge
-	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/build-bundle --carrier --jobs "$(BUNDLE_JOBS)" --go "$(GO)" --output "$(BUNDLE_DIR)"
+	GOOS= GOARCH= CGO_ENABLED=0 $(GO) run ./scripts/build-bundle --carrier --carrier-os "$(CARRIER_OS)" --carrier-arch "$(CARRIER_ARCH)" --jobs "$(BUNDLE_JOBS)" --go "$(GO)" --output "$(BUNDLE_DIR)"
 
 # Optional extracted companion layout for development/distribution inspection.
 bundle-archive: validate-knowledge
