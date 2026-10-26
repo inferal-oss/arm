@@ -53,6 +53,11 @@ func TestLinuxMemoryCgroupHeadroomUsesEveryAncestor(t *testing.T) {
 	if err != nil || free != 400 {
 		t.Fatalf("unlimited ancestor must not hide child limit: free=%d err=%v", free, err)
 	}
+	write(child, "memory.max", "max\n")
+	capacity, free, limited, err = memoryCgroupV2Headroom(t.Context(), membership, mounts)
+	if err != nil || limited || capacity != 0 || free != 0 {
+		t.Fatalf("fully unlimited hierarchy must retain host estimate: capacity=%d free=%d limited=%t err=%v", capacity, free, limited, err)
+	}
 }
 
 func TestLinuxMemoryCgroupHeadroomRefusesHiddenOrInvalidScope(t *testing.T) {
