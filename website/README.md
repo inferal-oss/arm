@@ -42,7 +42,10 @@ source archive for commit `88eb230991c4f63d54fe47bee5cf3fb9f121e528`:
 `package-lock.json` pins the archive URL and SHA-512 integrity, plus each registry
 dependency. Build output includes the complete licenses from all production
 dependencies in `THIRD-PARTY-NOTICES.txt`; it is regenerated from those installed
-packages. Semblance itself is MIT OR Apache-2.0. Generated engine/build files and
+packages. When a package omits its license text, an exact-version/archive-bound
+copy from its immutable upstream release is retained under `licenses/` with
+source URLs and content hashes. Unknown or changed fallback identities fail the
+build. Semblance itself is MIT OR Apache-2.0. Generated engine/build files and
 `node_modules` are ignored and must not be committed or used as Pages artifacts.
 Only `dist/` is the publishable output.
 
