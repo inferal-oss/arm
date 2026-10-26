@@ -3,6 +3,7 @@ package distribution
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -56,11 +57,11 @@ func TestCarrierSelectedTargetMatchesActualGoExecutableMetadata(t *testing.T) {
 	files := map[string]string{
 		"go.mod":                        "module github.com/yrashk/arm\n\ngo 1.27.3\nrequire github.com/gokrazy/rsync v0.0.0\nreplace github.com/gokrazy/rsync => ./third_party/rsyncgo\n",
 		"go.sum":                        "",
-		"internal/buildinfo/tag.go":     "package buildinfo\nvar BundleTag string\n",
+		"internal/buildinfo/tag.go":     "package buildinfo\nvar Version = \"dev\"\nvar BundleTag string\n",
 		"third_party/rsyncgo/go.mod":    "module github.com/gokrazy/rsync\n\ngo 1.27.3\n",
 		"third_party/rsyncgo/engine.go": "package rsync\nconst Fixture = \"local-replace-input\"\n",
 		"third_party/rsyncgo/LICENSE":   "fixture license copied with source",
-		"cmd/arm/main.go":               "package main\nimport b \"github.com/yrashk/arm/internal/buildinfo\"\nimport r \"github.com/gokrazy/rsync\"\nfunc main(){println(b.BundleTag,r.Fixture)}\n",
+		"cmd/arm/main.go":               "package main\nimport b \"github.com/yrashk/arm/internal/buildinfo\"\nimport r \"github.com/gokrazy/rsync\"\nfunc main(){println(b.Version,b.BundleTag,r.Fixture)}\n",
 	}
 	for name, data := range files {
 		if err := os.WriteFile(filepath.Join(root, name), []byte(data), 0600); err != nil {
@@ -86,13 +87,24 @@ func TestCarrierSelectedTargetMatchesActualGoExecutableMetadata(t *testing.T) {
 	if err = buildCarrierExecutable(t.Context(), options, goBinary, snapshot, output, goos, arch); err != nil {
 		t.Fatal(err, log.String())
 	}
-	flags := "-X=" + tagVariable + "=arm-bundle-v1:test-target:1"
+	flags := identityFlags("test-target", 1)
 	artifact, err := inspect(output, "arm", target[0], target[1], flags)
 	if err != nil || artifact.OS != target[0] || artifact.Arch != target[1] || artifact.Size <= 0 {
 		t.Fatal("cross-target metadata mismatch", artifact, err)
 	}
 	if _, err = inspect(output, "arm", runtime.GOOS, runtime.GOARCH, flags); err == nil {
 		t.Fatal("cross-target binary was accepted as native")
+	}
+	// Run a native executable through the identical compile boundary: the version
+	// must be injected as well as the catalog tag, rather than retaining "dev".
+	native := filepath.Join(root, "arm-native")
+	if err = buildCarrierExecutable(t.Context(), options, goBinary, snapshot, native, runtime.GOOS, runtime.GOARCH); err != nil {
+		t.Fatal(err, log.String())
+	}
+	cmd := exec.CommandContext(t.Context(), native)
+	actual, err := cmd.CombinedOutput()
+	if err != nil || string(actual) != "test-target arm-bundle-v1:test-target:1 local-replace-input\n" {
+		t.Fatal("carrier executable version/tag drift", string(actual), err)
 	}
 	if !strings.Contains(log.String(), "Building carrier "+target[0]+"/"+target[1]) {
 		t.Fatal("carrier log obscures actual target", log.String())

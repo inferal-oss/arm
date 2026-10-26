@@ -31,7 +31,12 @@ func epochTime() time.Time { return time.Unix(0, 0).UTC() }
 var platforms = [][2]string{{"darwin", "amd64"}, {"darwin", "arm64"}, {"linux", "amd64"}, {"linux", "arm64"}}
 var versionRE = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,95}$`)
 
-const tagVariable = "github.com/yrashk/arm/internal/buildinfo.BundleTag"
+const identityPackage = "github.com/yrashk/arm/internal/buildinfo"
+
+// Every payload and carrier binds its executable identity to the same catalog.
+func identityFlags(version string, protocol int) string {
+	return "-X=" + identityPackage + ".Version=" + version + " -X=" + identityPackage + ".BundleTag=arm-bundle-v1:" + version + ":" + strconv.Itoa(protocol)
+}
 
 type Artifact struct {
 	Name   string `json:"name"`
@@ -274,8 +279,7 @@ func buildPayloads(ctx context.Context, o Options, root, goPath, temp string) (M
 		return manifest, e
 	}
 	manifest = Manifest{Schema: 1, Version: o.Version, Protocol: o.Protocol, Integrity: "Local build integrity only; not an authenticated release manifest or permission to download/execute arbitrary bytes.", Artifacts: []Artifact{}}
-	tag := "arm-bundle-v1:" + o.Version + ":" + fmt.Sprint(o.Protocol)
-	flags := "-X=" + tagVariable + "=" + tag
+	flags := identityFlags(o.Version, o.Protocol)
 	var log io.Writer
 	if o.Log != nil {
 		log = &lockedWriter{writer: o.Log}

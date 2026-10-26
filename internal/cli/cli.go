@@ -33,7 +33,7 @@ import (
 	"github.com/yrashk/arm/internal/server"
 )
 
-const Version = buildinfo.Version
+var Version = buildinfo.Version
 
 type app struct {
 	home                          string

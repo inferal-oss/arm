@@ -28,6 +28,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags.SetOutput(stderr)
 	goBinary := flags.String("go", "go", "exact Go executable used for all payload and carrier builds")
 	root := flags.String("root", ".", "ARM source module root")
+	version := flags.String("version", buildinfo.Version, "ARM version injected into every payload, carrier and catalog")
 	output := flags.String("output", "dist", "output directory; existing archives/carriers are refused")
 	carrier := flags.Bool("carrier", false, "build one ARM embedding four thin platform payloads; native by default")
 	carrierOS := flags.String("carrier-os", "", "final carrier OS (darwin/linux); requires --carrier and --carrier-arch")
@@ -67,7 +68,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		return 0
 	}
 	if *carrier {
-		binary, _, err := distribution.BuildCarrier(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Jobs: *jobs, CarrierOS: *carrierOS, CarrierArch: *carrierArch, Log: stderr})
+		binary, _, err := distribution.BuildCarrier(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: *version, Protocol: mesh.LifecycleProtocol, Jobs: *jobs, CarrierOS: *carrierOS, CarrierArch: *carrierArch, Log: stderr})
 		if err != nil {
 			fmt.Fprintln(stderr, err)
 			return 1
@@ -75,7 +76,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stdout, binary)
 		return 0
 	}
-	archive, _, err := distribution.Build(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: buildinfo.Version, Protocol: mesh.LifecycleProtocol, Jobs: *jobs, Log: stderr})
+	archive, _, err := distribution.Build(ctx, distribution.Options{Root: *root, GoBinary: *goBinary, Output: *output, Version: *version, Protocol: mesh.LifecycleProtocol, Jobs: *jobs, Log: stderr})
 	if err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
