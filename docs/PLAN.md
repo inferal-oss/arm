@@ -331,3 +331,9 @@ at endpoints; relay resource, lifetime, routing and drain controls remain. The
 forwarding branch is implementing a generic transport envelope accordingly.
 That proposed change is isolated pending the revised concrete security review;
 the current production route controls are not silently broadened.
+
+**Scope alignment:** SPEC now explicitly retains general multi-hop TCP forwarding
+and the operator's application-agnostic relay correction, alongside separately
+authorized typed multi-hop sync. The secure multi-user proposal remains research
+with no enabled cross-user authority. Forwarding implementation and operator
+review remain separate from recording these requirements.
