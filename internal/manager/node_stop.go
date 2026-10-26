@@ -146,6 +146,10 @@ func (m *Manager) PlanNodeStop(key string, actor nodestop.Actor, policy model.Sh
 // It commits the original request, ordinary drain and desired-stopped intent
 // together before any cancellation or provider effect. Known keys never replay.
 func (m *Manager) BeginNodeStop(q nodestop.Apply, actor nodestop.Actor, granted bool, external nodestop.Impact, views ...nodestop.LeaseReadScope) (nodestop.Record, error) {
+	// Match ordinary shutdown and Close: no native warning CLI can start after
+	// this accepted stop crosses its m.draining transition.
+	m.pressureLaunchMu.Lock()
+	defer m.pressureLaunchMu.Unlock()
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	var empty nodestop.Record

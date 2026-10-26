@@ -75,6 +75,8 @@ func (m *Manager) recoverShutdown() error {
 }
 
 func (m *Manager) BeginShutdown(request model.ShutdownRequest) (model.ShutdownReport, error) {
+	m.pressureLaunchMu.Lock()
+	defer m.pressureLaunchMu.Unlock()
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	var r model.ShutdownReport

@@ -35,6 +35,7 @@ func (m *Manager) sampleCPU() {
 	}
 	m.observationMu.Lock()
 	m.cpuAvailability, m.cpuObserved = reading, at
+	m.cpuPressureTick, _ = pressureNativeTick()
 	m.cpuCredits, m.cpuCreditFrame = credits, frame
 	m.observationMu.Unlock()
 }

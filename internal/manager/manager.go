@@ -25,6 +25,7 @@ import (
 	"github.com/yrashk/arm/internal/nodestop"
 	"github.com/yrashk/arm/internal/observe"
 	"github.com/yrashk/arm/internal/ports"
+	"github.com/yrashk/arm/internal/pressure"
 	"github.com/yrashk/arm/internal/storage"
 	"github.com/yrashk/arm/internal/usage"
 	_ "modernc.org/sqlite"
@@ -57,6 +58,9 @@ type Manager struct {
 	cargoWorkers            map[string]*cargoWorker
 	workspaces              *workspaceBoundary
 	mu                      sync.Mutex
+	// Acquire before mu when both are needed. Held through native CLI Start,
+	// never through Wait, so shutdown has a precise no-new-launch boundary.
+	pressureLaunchMu        sync.Mutex
 	db                      *sql.DB
 	databaseSlot            chan struct{}
 	home, host, owner       string
@@ -76,12 +80,18 @@ type Manager struct {
 	cpuObserver             cpuObserver
 	cpuAvailability         model.CPUAvailability
 	cpuObserved             time.Time
+	cpuPressureTick         time.Duration
 	cpuCredits              []cpuCreditSample
 	cpuCreditFrame          observe.CPUCreditFrame
 	memoryAvailability      model.MemoryAvailability
 	memoryObserved          time.Time
+	memoryPressureTick      time.Duration
 	diskAvailability        model.DiskAvailability
 	diskObserved            time.Time
+	diskPressureTick        time.Duration
+	pressureEpoch           string
+	pressureState           pressure.State
+	pressureLastError       string
 	diskScopeVolume         string
 	diskSampleSlots         chan struct{}
 	diskCollector           func(context.Context, string) model.DiskAvailability
@@ -146,6 +156,8 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		`CREATE TABLE IF NOT EXISTS usage_incidents (id TEXT PRIMARY KEY, lease TEXT NOT NULL, resource TEXT NOT NULL, data TEXT NOT NULL)`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS usage_incidents_open ON usage_incidents(lease,resource) WHERE json_extract(data,'$.state')<>'closed'`,
 		`CREATE TABLE IF NOT EXISTS policy_outbox (message TEXT PRIMARY KEY, state TEXT NOT NULL, data TEXT NOT NULL)`,
+		`CREATE TABLE IF NOT EXISTS host_pressure_state (id TEXT PRIMARY KEY, data TEXT NOT NULL)`,
+		`CREATE TABLE IF NOT EXISTS host_pressure_outbox (message TEXT PRIMARY KEY, state TEXT NOT NULL, data TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS agent_inbox (sequence INTEGER PRIMARY KEY AUTOINCREMENT, recipient TEXT NOT NULL, registration TEXT NOT NULL, message TEXT NOT NULL, receipt TEXT NOT NULL, UNIQUE(recipient,registration,message))`,
 		`CREATE INDEX IF NOT EXISTS agent_inbox_recipient ON agent_inbox(recipient,registration,sequence)`,
 		`CREATE TABLE IF NOT EXISTS pools (id TEXT PRIMARY KEY, scope TEXT NOT NULL, host TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL)`,
@@ -166,6 +178,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		}
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
 	m.diskSampleSlots = make(chan struct{}, 1)
 	m.usages = map[string]workloadSample{}
@@ -304,6 +317,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
+	if e = m.loadHostPressure(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	m.sample()
 	m.initializeCPU()
 	m.sampleMemory()
@@ -358,6 +375,8 @@ func (m *Manager) Start() {
 	})
 	m.wg.Go(m.sampleUsageLoop)
 	m.wg.Go(m.policyDeliveryLoop)
+	m.wg.Go(m.hostPressureLoop)
+	m.wg.Go(m.hostPressureDeliveryLoop)
 	m.wg.Go(func() {
 		t := time.NewTicker(5 * time.Second)
 		defer t.Stop()
@@ -402,9 +421,11 @@ func (m *Manager) Observation(kind string) model.ResourceMeasurement {
 }
 func (m *Manager) Close() error {
 	var closeErr error
+	m.pressureLaunchMu.Lock()
 	m.mu.Lock()
 	m.closing = true
 	m.mu.Unlock()
+	m.pressureLaunchMu.Unlock()
 	// Workspace calls may hold the single database connection while awaiting
 	// cancellation. Join them before ordinary job-ending SQL, without holding
 	// Manager.mu: final proof gates also inspect manager lifecycle state.
@@ -521,6 +542,9 @@ func (m *Manager) Status() (model.Status, error) {
 	defer m.mu.Unlock()
 	ls, e := m.list()
 	s := model.Status{PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "workspace-published-agents-poll-v1", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	if m.pressureLastError != "" {
+		s.PressureError = &model.Error{Code: "host_pressure_unavailable", Message: m.pressureLastError}
+	}
 	if !m.leaseReviewsUnavailable {
 		s.Capabilities = append(s.Capabilities, "local-lease-reviews-v1")
 	} else {

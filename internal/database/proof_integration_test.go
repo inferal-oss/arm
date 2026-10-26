@@ -16,6 +16,7 @@ import (
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/manager"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/pressure"
 )
 
 func proofFixture(t *testing.T, active bool) string {
@@ -99,6 +100,46 @@ func TestSettledProofActualWriterHistoryAndActiveBlock(t *testing.T) {
 				t.Fatal("proof leaked message body")
 			}
 		})
+	}
+}
+
+func TestSettledProofRefusesHostPressureControlState(t *testing.T) {
+	home, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = os.Chmod(home, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(home, "daemon.lock"), nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	m, err := manager.Open(home, model.Resources{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = m.Close(); err != nil {
+		t.Fatal(err)
+	}
+	state := pressure.State{Epoch: "warning-only", LastTick: time.Second, LastNow: time.Now().UTC(), Resources: map[pressure.Resource]pressure.Episode{}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	edit(t, home, `INSERT INTO host_pressure_state VALUES('current',?)`, string(raw))
+	baseline, err := prove(t, home)
+	if err != nil || !baseline.Complete || !baseline.Settled {
+		t.Fatalf("valid warning-only state did not prove settled: %+v %v", baseline, err)
+	}
+	state.ControlRevision = 1
+	raw, err = json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	edit(t, home, `UPDATE host_pressure_state SET data=? WHERE id='current'`, string(raw))
+	proof, err := prove(t, home)
+	if err == nil && proof.Complete && proof.Settled {
+		t.Fatal("unsupported native control state was treated as settled")
 	}
 }
 func TestSettledProofRefusesUnknownSchemaAndEvidence(t *testing.T) {

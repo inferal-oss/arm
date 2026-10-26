@@ -156,6 +156,17 @@ func (c Contact) env() []string {
 }
 
 func Deliver(ctx context.Context, c Contact, body string) Delivery {
+	return deliver(ctx, c, body, nil)
+}
+
+// DeliverWithStartFence lets the caller serialize only process start against
+// an authority transition. The fence must call start at most once when it
+// returns allowed=true; allowed=false means no native command was started.
+func DeliverWithStartFence(ctx context.Context, c Contact, body string, fence func(start func() error) (allowed bool, err error)) Delivery {
+	return deliver(ctx, c, body, fence)
+}
+
+func deliver(ctx context.Context, c Contact, body string, fence func(start func() error) (allowed bool, err error)) Delivery {
 	traceNativeDelivery(c)
 	if e := c.Validate(); e != nil {
 		return Delivery{State: "failed", Error: e.Error()}
@@ -205,7 +216,18 @@ func Deliver(ctx context.Context, c Contact, body string) Delivery {
 	var stdout, stderr limitedBuffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	e = cmd.Run()
+	if fence == nil {
+		e = cmd.Run()
+	} else {
+		var allowed bool
+		allowed, e = fence(cmd.Start)
+		if !allowed {
+			return Delivery{State: "superseded", Error: "delivery authority ended before native command start"}
+		}
+		if e == nil {
+			e = cmd.Wait()
+		}
+	}
 	if e != nil {
 		return Delivery{State: "failed", Error: fmt.Sprintf("%s: %s", e, strings.TrimSpace(stderr.String()))}
 	}

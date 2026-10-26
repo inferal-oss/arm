@@ -8,7 +8,16 @@ import (
 
 	"github.com/yrashk/arm/internal/agents"
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/pressure"
 )
+
+type proofHostPressureDelivery struct {
+	Target   agents.Contact    `json:"target"`
+	Epoch    string            `json:"epoch"`
+	Reason   pressure.Resource `json:"reason"`
+	Incident uint64            `json:"incident"`
+	Lease    string            `json:"lease"`
+}
 
 func (p *proofReader) readOperations() error {
 	if err := p.walk("pool_operations", func(r proofRow) error {
@@ -189,6 +198,72 @@ func (p *proofReader) readOperations() error {
 	})
 }
 func (p *proofReader) readOther() error {
+	if err := p.walk("host_pressure_state", func(r proofRow) error {
+		id, e := r.text("id")
+		if e != nil {
+			return e
+		}
+		if id != "current" {
+			return fmt.Errorf("invalid host pressure state identity")
+		}
+		raw, e := r.text("data")
+		if e != nil {
+			return e
+		}
+		var wire struct {
+			Epoch       string                                 `json:"epoch"`
+			LastTick    time.Duration                          `json:"last_tick"`
+			LastNow     time.Time                              `json:"last_now"`
+			Resources   map[pressure.Resource]pressure.Episode `json:"resources"`
+			Pauses      []pressure.PauseRecord                 `json:"pauses"`
+			JobWarnings []struct {
+				Resource pressure.Resource   `json:"resource"`
+				Job      pressure.JobID      `json:"job"`
+				Warning  pressure.JobWarning `json:"warning"`
+			} `json:"job_warnings"`
+			Unresolved      []pressure.UnresolvedControl `json:"unresolved"`
+			ControlRevision uint64                       `json:"control_revision"`
+		}
+		if e = strictEvidence(raw, &wire, "epoch", "last_tick", "last_now", "resources", "control_revision"); e != nil {
+			return e
+		}
+		var state pressure.State
+		if e = json.Unmarshal([]byte(raw), &state); e != nil {
+			return e
+		}
+		if state.Epoch == "" || state.LastTick < 0 || state.LastNow.IsZero() || len(state.Pauses) != 0 || len(state.Unresolved) != 0 || state.ControlRevision != 0 {
+			return p.block("host_pressure_state", id, "Unsettled or unsupported native host pressure control")
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
+	if err := p.walk("host_pressure_outbox", func(r proofRow) error {
+		id, e := r.text("message")
+		if e != nil {
+			return e
+		}
+		state, e := r.text("state")
+		if e != nil {
+			return e
+		}
+		item, e := rowJSON[proofHostPressureDelivery](r, "data", "target", "epoch", "reason", "incident", "lease")
+		if e != nil {
+			return e
+		}
+		msg, has := p.messages[id]
+		d, delivered := msg.Deliveries[item.Target.ID]
+		lease, leaseExists := p.leases[item.Lease]
+		if !has || !delivered || !leaseExists || lease.Request.Agent != item.Target.ID || msg.Lease != item.Lease || msg.Sender != "arm-host-pressure" || msg.Audience != item.Target.ID || item.Epoch == "" || item.Incident == 0 || !oneOf(string(item.Reason), "cpu", "memory", "disk") || !validHistoricalContact(item.Target) || item.Target.Delivery != "native" || d.Registration != item.Target.Registration || d.Mode != "native" {
+			return fmt.Errorf("host pressure outbox references missing/mismatched evidence")
+		}
+		if !oneOf(state, "done", "skipped") {
+			return p.block("host_pressure_outbox", id, "Native host pressure warning delivery is unsettled")
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
 	if err := p.walk("agents", func(r proofRow) error {
 		v, e := rowJSON[agents.Contact](r, "data", "id", "adapter", "session", "cwd", "registration")
 		if e != nil {

@@ -47,6 +47,7 @@ func (m *Manager) sampleDisk() {
 	}
 	m.diskAvailability = reading
 	m.diskObserved = observed
+	m.diskPressureTick, _ = pressureNativeTick()
 	m.observationMu.Unlock()
 }
 func (m *Manager) diskBudget(reserved int64) model.DiskBudget {

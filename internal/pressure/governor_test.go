@@ -16,7 +16,7 @@ func policy() Policy {
 		SustainFor: 5 * time.Second, Grace: 10 * time.Second, WarningEvery: 3 * time.Second,
 		RecoverFor: 4 * time.Second, MinPause: 3 * time.Second, MaxPause: 30 * time.Second,
 		MaxPauseJobs: 1,
-		MaxJobs:      4, PendingTimeout: 12 * time.Second,
+		MaxJobs:      4, MaxWarnings: 3, PendingTimeout: 12 * time.Second,
 	}
 }
 
@@ -320,6 +320,45 @@ func TestReplacementEarnsOwnWarningAndGrace(t *testing.T) {
 	_, a = advance(t, s, input(25, 10, j), p)
 	if len(a) == 0 || a[len(a)-1].Kind != RequestPause || a[len(a)-1].Job != id(j) {
 		t.Fatalf("replacement did not earn exact pause: %+v", a)
+	}
+}
+
+func TestWarningCapRetainsNewRecipientNotice(t *testing.T) {
+	p, j := policy(), owned()
+	p.Resources[CPU] = Threshold{EnterBelow: 20, ExitAbove: 40}
+	var s State
+	operator, original := 0, 0
+	for _, sec := range []int{0, 5, 8, 12, 16, 20} {
+		var actions []Action
+		s, actions = advance(t, s, input(sec, 10, j), p)
+		for _, a := range actions {
+			if a.Kind == WarnOperator {
+				operator++
+			}
+			if a.Kind == WarnAgent {
+				original++
+			}
+		}
+	}
+	if operator != 3 || original != 3 {
+		t.Fatalf("repeated warnings exceeded cap: operator=%d agent=%d", operator, original)
+	}
+	j.Generation = "replacement"
+	replacement := 0
+	for _, sec := range []int{24, 28, 32} {
+		var actions []Action
+		s, actions = advance(t, s, input(sec, 10, j), p)
+		for _, a := range actions {
+			if a.Kind == WarnOperator {
+				operator++
+			}
+			if a.Kind == WarnAgent && a.Job == id(j) {
+				replacement++
+			}
+		}
+	}
+	if operator != 3 || replacement != 2 {
+		t.Fatalf("new recipient notices: operator=%d replacement=%d", operator, replacement)
 	}
 }
 

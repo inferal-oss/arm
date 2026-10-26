@@ -239,7 +239,7 @@ func (m *Manager) deliverMessage(ctx context.Context, msg Message, targets []age
 }
 
 func (m *Manager) recoverDeliveries() error {
-	rows, e := m.db.Query(`SELECT m.data,COALESCE(o.state,'') FROM messages m LEFT JOIN policy_outbox o ON o.message=m.id`)
+	rows, e := m.db.Query(`SELECT m.data,COALESCE(o.state,h.state,'') FROM messages m LEFT JOIN policy_outbox o ON o.message=m.id LEFT JOIN host_pressure_outbox h ON h.message=m.id`)
 	if e != nil {
 		return e
 	}

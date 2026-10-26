@@ -2683,3 +2683,25 @@ controlled-input Manager admission relation; native counter accuracy,
 archive-specific models/traces/proof and whole-program refinement are
 separate requirements. No reboot, Intel runtime, physical cross-host
 throughput or public sync acceptance is inferred.
+
+## October 26: composed warning-only pressure integration
+
+Reviewed source through `7fa22c2`, composed with the stable Darwin identity
+and bounded SSH cleanup changes, passes selected Manager/database/agent race
+tests (20.330s/3.255s/4.606s), affected vet and all-module compile-only checks.
+The compile gate does not execute every package test. Start-fence regressions
+use real marker commands to reject withdrawn/replaced contacts, released
+leases, recovered incidents and draining backends while permitting the exact
+unchanged registration. Warning transaction rollback and reset evidence are
+covered. Earlier broad Manager failures remain recorded.
+
+The final composed Linux ARM64 binaries pass all selected component cases
+with no failures or skips. Upload hashes are verified; original native and SSH
+commands exit zero, the bounded scope is inactive and the exact owned test
+directory is absent after cleanup. Evidence is ignored
+`.cache/pressure-7fa-composed-{root-race,compile,linux-native,linux-run}.log`
+and the Linux intent record. These use controlled observations and test native
+delivery commands. They do not establish induced physical pressure, real
+Codex/Claude warning receipt, automatic pause, or pressure-specific formal
+refinement. CPU warnings remain a coverage heuristic; admission's separate
+fresh-headroom guard is unchanged.

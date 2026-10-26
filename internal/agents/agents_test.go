@@ -2,10 +2,44 @@ package agents
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+	"strconv"
 	"testing"
 
 	"github.com/google/uuid"
 )
+
+func TestNativeStartFenceDeniesCommandBeforeLaunch(t *testing.T) {
+	dir := t.TempDir()
+	marker := filepath.Join(dir, "launched")
+	script := []byte("#!/bin/sh\nprintf launched > " + strconv.Quote(marker) + "\n")
+	if err := os.WriteFile(filepath.Join(dir, "codex"), script, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	c := Contact{ID: "fixture", Adapter: "codex", Session: uuid.NewString(), CWD: dir, Delivery: "native", Registration: "test-registration"}
+	called := false
+	d := DeliverWithStartFence(context.Background(), c, "warning", func(start func() error) (bool, error) {
+		called = true
+		return false, nil
+	})
+	if !called || d.State != "superseded" {
+		t.Fatalf("denied start was not reported: called=%t delivery=%+v", called, d)
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatalf("denied native command ran: %v", err)
+	}
+	d = DeliverWithStartFence(context.Background(), c, "warning", func(start func() error) (bool, error) {
+		return true, start()
+	})
+	if d.State != "queued" {
+		t.Fatalf("allowed native command did not complete: %+v", d)
+	}
+	if _, err := os.Stat(marker); err != nil {
+		t.Fatalf("allowed command did not run: %v", err)
+	}
+}
 
 func TestUnsafeOrAmbiguousContactsAreRejected(t *testing.T) {
 	c := Contact{ID: "fixture", Adapter: "claude", Session: uuid.NewString(), CWD: t.TempDir()}

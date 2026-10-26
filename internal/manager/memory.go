@@ -19,6 +19,7 @@ func (m *Manager) sampleMemory() {
 	m.observationMu.Lock()
 	m.memoryAvailability = reading
 	m.memoryObserved = at
+	m.memoryPressureTick, _ = pressureNativeTick()
 	m.observationMu.Unlock()
 }
 

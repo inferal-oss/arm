@@ -34,7 +34,10 @@ type Policy struct {
 	RecoverFor, MinPause, MaxPause  time.Duration
 	MaxPauseJobs                    int
 	MaxJobs                         int
-	PendingTimeout                  time.Duration
+	// Limits routine operator/agent repeats per incident. A newly attributed
+	// job may still receive two notices before it can become pause-eligible.
+	MaxWarnings    int
+	PendingTimeout time.Duration
 }
 
 type Sample struct {
@@ -260,7 +263,20 @@ func Advance(old State, in Input, p Policy) (State, []Action, error) {
 				for jid, w := range s.JobWarnings[r] {
 					priorJobWarnings[jid] = w
 				}
-				if !e.Warned || (in.Tick-e.LastWarning >= p.WarningEvery && sample.ObservedTick > e.LastWarningSample) {
+				extraRecipients := false
+				if e.WarningCount >= uint64(p.MaxWarnings) {
+					for _, j := range jobs {
+						if j.AgentID == "" || j.Revoked || j.Stopping || !j.StillOwned || !j.ExpiresAt.After(in.Now) {
+							continue
+						}
+						w := s.JobWarnings[r][id(j)]
+						if w.Incident != e.Incident || w.Count < 2 {
+							extraRecipients = true
+							break
+						}
+					}
+				}
+				if (e.WarningCount < uint64(p.MaxWarnings) || extraRecipients) && (!e.Warned || (in.Tick-e.LastWarning >= p.WarningEvery && sample.ObservedTick > e.LastWarningSample)) {
 					e.Warned = true
 					if e.WarningCount == 0 {
 						e.WarnedAt = in.Tick
@@ -268,7 +284,11 @@ func Advance(old State, in Input, p Policy) (State, []Action, error) {
 					e.LastWarning = in.Tick
 					e.LastWarningSample = sample.ObservedTick
 					e.WarningCount++
-					actions = append(actions, warnings(r, e, jobs, in.Epoch, in.Now)...)
+					if priorWarnings < uint64(p.MaxWarnings) {
+						actions = append(actions, warnings(r, e, jobs, in.Epoch, in.Now, nil)...)
+					} else {
+						actions = append(actions, warnings(r, e, jobs, in.Epoch, in.Now, priorJobWarnings)...)
+					}
 					if s.JobWarnings[r] == nil {
 						s.JobWarnings[r] = make(map[JobID]JobWarning)
 					}
@@ -281,7 +301,9 @@ func Advance(old State, in Input, p Policy) (State, []Action, error) {
 						if w.Incident != e.Incident {
 							w = JobWarning{Incident: e.Incident, FirstAt: in.Tick}
 						}
-						w.Count++
+						if priorWarnings < uint64(p.MaxWarnings) || w.Count < 2 {
+							w.Count++
+						}
 						s.JobWarnings[r][jid] = w
 					}
 				}
@@ -488,7 +510,7 @@ func validate(in Input, p Policy) error {
 	if in.Epoch == "" || !boundedUTF8(in.Epoch, maxEpochBytes) || in.Now.IsZero() || in.Tick < 0 {
 		return errors.New("pressure: epoch, wall time, and nonnegative tick required")
 	}
-	if p.MaxAge <= 0 || p.MaxSampleGap <= 0 || p.SustainFor <= 0 || p.Grace <= 0 || p.WarningEvery <= 0 || p.WarningEvery >= p.Grace || p.RecoverFor <= 0 || p.MinPause < 0 || p.MaxPause <= 0 || p.MaxPauseJobs < 0 || p.MaxJobs <= 0 || p.MaxJobs > 256 || p.MaxPauseJobs > p.MaxJobs || p.PendingTimeout <= 0 {
+	if p.MaxAge <= 0 || p.MaxSampleGap <= 0 || p.SustainFor <= 0 || p.Grace <= 0 || p.WarningEvery <= 0 || p.WarningEvery >= p.Grace || p.RecoverFor <= 0 || p.MinPause < 0 || p.MaxPause <= 0 || p.MaxPauseJobs < 0 || p.MaxJobs <= 0 || p.MaxJobs > 256 || p.MaxPauseJobs > p.MaxJobs || p.MaxWarnings < 2 || p.MaxWarnings > 10 || p.PendingTimeout <= 0 {
 		return errors.New("pressure: invalid timing or pause policy")
 	}
 	if len(in.Jobs) > p.MaxJobs {
@@ -589,13 +611,19 @@ func eligible(j Job, now time.Time) bool {
 	return j.LeaseID != "" && j.ExecutionID != "" && j.Generation != "" && j.OwnershipID != "" && j.Supervised && j.StillOwned && j.PauseCapability && j.PauseAllowed && !j.Revoked && !j.Stopping && !j.ExpiresAt.IsZero() && now.Before(j.ExpiresAt)
 }
 
-func warnings(r Resource, e Episode, jobs []Job, epoch string, now time.Time) []Action {
-	a := []Action{action(WarnOperator, r, e.Incident, e.WarningCount, JobID{}, "", epoch, 0)}
+func warnings(r Resource, e Episode, jobs []Job, epoch string, now time.Time, extra map[JobID]JobWarning) []Action {
+	a := []Action{}
+	if extra == nil {
+		a = append(a, action(WarnOperator, r, e.Incident, e.WarningCount, JobID{}, "", epoch, 0))
+	}
 	for _, j := range jobs {
 		if j.Revoked || j.Stopping || !j.StillOwned || !j.ExpiresAt.After(now) || j.AgentID == "" {
 			continue
 		}
 		jid := id(j)
+		if extra != nil && extra[jid].Incident == e.Incident && extra[jid].Count >= 2 {
+			continue
+		}
 		a = append(a, action(WarnAgent, r, e.Incident, e.WarningCount, jid, j.AgentID, epoch, 0))
 		if !j.Supervised || !j.PauseCapability || !j.PauseAllowed {
 			a = append(a, action(RequestCooperation, r, e.Incident, e.WarningCount, jid, j.AgentID, epoch, 0))
