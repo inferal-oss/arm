@@ -1086,3 +1086,47 @@ namespace remains retained until complete native cleanup proof is implemented.
 Reviewed remote Stop likewise reports retained sync evidence as an unresolved
 blocker. This conservative milestone does not settle completed sync obligations
 or enable public transfer/admission entrypoints.
+
+
+## SSH source-history cleanup verification
+
+The development-only `formal/history-cleanup` component models the integrated
+four-member cleanup batches, retained original worker, separate unchanged
+five-second mutation contexts, known unlink/fsync progress and durable CAS
+checkpoints. Each invocation retains its original worker across its batches.
+Ordinary same-key retries are observations; explicit reconciliation alone
+resumes uncertain progress with a fresh admitted worker/context. The model distinguishes a checkpoint written
+in SQL from its acknowledgement and binds the complete preceding row before
+another effect. Cooperative full-row substitutions, false-completed rows,
+reappearing checkpointed files, cold-reference loss, worker replacement and
+cancellation lead to refusal without consuming a later member.
+
+`arm_devtrace` observes actual Go pre-unlink guards, successful unlink/fsync,
+SQL checkpoint rows and acknowledgements. Its reader retains each complete Go
+row once and checks exact JSON byte hashes, original request/actor/receipt,
+cleaned/native rosters, worker object/descriptor/native identity and actual
+per-window context/deadline ownership. It creates no expected Go rows and has no
+cleanup authority. Normal builds compile empty observation calls. The strict
+runner compares every observed state, adjacent model edge and final state;
+separate database tests exercise actual reset retirement and its three required
+partial/false-completion refusals.
+
+The finite instance has five members and batch size four. The complete
+parameterized proof checks19 named theorems/80 parser obligations for state
+shape and effect/checkpoint/completion/reset transition fences. Complete source
+byte pins, full-module parsing, theorem/obligation rosters, fresh `--strict --nofp` proof checking and source/tool-byte closure prevent a weakened or ignored
+proof prefix from being accepted. `make tla-history-cleanup-{check,traces,prove}`
+and `make test-history-cleanup-formal` expose the gates; all normal aggregate
+formal targets include them. Logs, TLC witnesses, failed attempts and native
+owner receipts stay in ignored `.tla`.
+
+This is a cooperative private-metadata cleanup abstraction and selected actual
+implementation correspondence. Pack/settlement verification, SQLite commit and
+native identity mechanisms remain explicit input premises at the modeled cuts.
+`removed` records observed unlink progress; reappearance is a separate live
+condition. `certified` denotes completion produced by a guarded checkpoint,
+while an external completed-row substitution can remain uncertified. Reset
+requires current absence and complete settled progress. There is no
+whole-program refinement, liveness, hostile same-UID exclusion, Linux formal
+trace acceptance, performance claim or broader history-family coverage from
+this component. The independent CPU admission proof remains a separate scope.

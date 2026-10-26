@@ -434,6 +434,7 @@ func cleanSourceArchive(ctx context.Context, home string, b Binding, expected So
 			return out, err
 		}
 		expected = out
+		historyCleanupObserve("ack", ctx, home, expected, worker, len(out.Cleaned))
 	}
 }
 
@@ -443,6 +444,7 @@ func cleanSourceArchiveBatch(ctx context.Context, home string, b Binding, expect
 		// Use this window's actual bounded context for SQLite and file I/O,
 		// in addition to the existing native owner guards before effects.
 		ctx := s.mutationContext
+		historyCleanupObserve("enter", ctx, home, expected, worker, len(expected.Cleaned))
 		if e := worker.check(c); e != nil {
 			return e
 		}
@@ -485,6 +487,7 @@ func cleanSourceArchiveBatch(ctx context.Context, home string, b Binding, expect
 				}
 			}
 		}
+		historyCleanupObserve("bound", ctx, home, expected, worker, len(out.Cleaned))
 		processed := 0
 		for _, m := range op.Request.Plan.Members {
 			if cleaned[m.File] {
@@ -541,9 +544,11 @@ func cleanSourceArchiveBatch(ctx context.Context, home string, b Binding, expect
 				if currentHot != hotVersion {
 					return fmt.Errorf("verified hot receipt native version changed; evidence retained")
 				}
+				historyCleanupObserve("guard", ctx, home, expected, worker, len(out.Cleaned))
 				if e = unix.Unlinkat(int(d.Fd()), item.name, 0); e != nil {
 					return e
 				}
+				historyCleanupObserve("unlink", ctx, home, expected, worker, len(out.Cleaned))
 				if e = historyCheckpoint(fault, "after_unlink"); e != nil {
 					return e
 				}
@@ -555,6 +560,7 @@ func cleanSourceArchiveBatch(ctx context.Context, home string, b Binding, expect
 				return e
 			}
 			out.Cleaned = append(out.Cleaned, m.File)
+			historyCleanupObserve("sync", ctx, home, expected, worker, len(out.Cleaned))
 			processed++
 		}
 		if e = historyCheckpoint(fault, "before_cleanup_checkpoint"); e != nil {
@@ -592,6 +598,7 @@ func cleanSourceArchiveBatch(ctx context.Context, home string, b Binding, expect
 		if n, e := result.RowsAffected(); e != nil || n != 1 {
 			return fmt.Errorf("archive cleanup checkpoint changed; inspect exact key")
 		}
+		historyCleanupObserve("checkpoint", ctx, home, expected, worker, len(out.Cleaned))
 		if e = c.guard(); e != nil {
 			return e
 		}

@@ -2742,3 +2742,79 @@ Generic CPU fixtures and production admission remain unchanged. This is not
 public sync or complete terminal cleanup proof; used namespaces still block reset and reviewed
 remote Stop. Admission work remains under correction after independent
 preparation-before-charge and outgoing-disk counterexamples.
+
+
+## SSH source-history cleanup formal acceptance
+
+The isolated archive component passes a fresh all-mode native Darwin ARM64 gate
+on the integrated bounded-cleanup implementation. TLC completely explores
+190,728 distinct states (876,524 generated, queue0) for five members with batch
+size four. Eleven actual Go race scenarios produce484 observed states and473
+adjacent edges; TLC traverses every state/edge and the exact final state. The
+64-member scenario alone traverses257 states/256 edges across16 independently
+observed mutation contexts, each bounded by the unchanged five-second deadline.
+Other scenarios cover lost acknowledgement before/after the checkpoint and
+immediately after unlink; ordinary read-only retry and explicit reconciliation;
+same-revision full-row replacement, false-completed substitution, checkpointed
+file reappearance, cancellation followed by fresh explicit reconciliation, worker replacement,
+CAS conflict and missing
+cold reference. Actual full SQL rows, original request/actor/receipt, complete
+member/native rosters, exact cold references, worker object/descriptor/native
+identity and per-window context/deadline bindings are retained and checked.
+
+The reader refuses11 altered raw histories, TLC refuses seven well-typed altered
+protocol paths, and four altered TLC witnesses fail exact state/edge/type/source
+checks. Eight additional runner controls reject early module termination,
+trailing or missing/duplicate theorems, weakened/all-omitted proof bytes and
+duplicate JSON fields. The independent database implementation separately
+passes positive whole-catalog reset retirement and rejects committed partial,
+committed fully-cleaned and falsely-completed partial progress; all five named
+outcomes (two roots, three subcases) pass with zero skips. These reset results
+come from the database parser/native implementation, not the cleanup projector.
+
+TLAPM parses the complete original19-theorem module and proves all80 obligations
+with `--strict --nofp`, a fresh cache and one prover thread. The runner pins the
+complete original model/proof/config bytes, verifies the complete module and
+exact theorem/parser-obligation rosters, captures actual runner/helper/Go
+sources and tool/backend hashes, and rechecks source/tool closure after the
+proof. Positive Go tests, model/proof tools and all intended negative witnesses
+must return their exact expected statuses. Native owner receipts show one sole
+Wait, retired/reaped authority, absent PID/group, no signals, no unknown owner
+and no cleanup error for every final command. Earlier failed fixture, sandbox,
+projection and proof attempts remain retained and are excluded from acceptance.
+
+Final ignored evidence in the author's isolated worktree is
+`.tla/history-cleanup/run-j46823ii/` (30 original native command receipts), with
+`.tla/all-reconcile-context-final.log` retaining the combined result. The separate normal
+regression receipt is `.tla/history-cleanup/regression-7r5e2lo9/`.
+
+Separate normal-build cleanup regressions pass six roots/12 named cases with
+zero skips, including the unchanged separate deadline windows and both reviewed
+row-substitution counterexamples. `go vet` passes for normal and `arm_devtrace`
+sshservice builds; `git diff --check` and focused Make target expansion pass.
+The original formal process helper is unchanged. All retained formal command
+receipts, including failed attempts, confirm known terminal cleanup.
+
+This adds development verification without new public cleanup authority or a
+normal product behavior change. Publication/settlement validation, SQLite
+atomicity and native identity checks are premises at the modeled guarded cuts;
+reappearance is observed separately from historical unlink progress. The result
+is finite safety, selected actual implementation correspondence and a scoped
+parameterized protocol proof. Whole-program refinement, liveness, arbitrary
+same-UID exclusion, Linux formal traces, broader history families and performance
+acceptance remain outside this gate. The separate renewed CPU admission model
+is not archive evidence. No peers were contacted and no clocks/settings or
+private credentials were changed.
+
+Independent review reruns finite TLC (190,728 distinct, queue0), strict fresh
+TLAPM (all80 obligations), all11 actual trace scenarios under race (94.963s),
+projection of484 states/473 edges, negative controls and development vet. It
+finds no narrow blocker and independently inspects all-mode raw witnesses and
+30 terminal native-owner receipts. Its evidence stays in the isolated review
+worktree under `.tla/`. The fresh composed all-mode gate also passes in the primary checkout:
+`.tla/history-cleanup-integrated/run-znyiei6r/summary.json`. Raw terminals confirm
+complete190,728-state exploration with queue0, all80 proof obligations, all484
+actual states/473 edges, required negative/reset controls and all30 original
+native owners terminal/reaped once with absent PID/group and no cleanup errors.
+The actual Go race package passes63.574s and affected normal vet passes. The
+complete original all-mode command exits0; no earlier failed run is reused.

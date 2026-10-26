@@ -320,3 +320,24 @@ tla-check: tla-cpu-admission-check
 tla-traces: tla-cpu-admission-traces
 tla-prove: tla-cpu-admission-prove
 test-formal: test-cpu-admission-formal
+
+# Source history cleanup: more-than-one-batch safety, actual SQL/native cuts,
+# strict complete proof; tools and all retained evidence remain development only.
+TLA_HISTORY_CLEANUP_WORK_DIR ?= $(CURDIR)/.tla/history-cleanup
+.PHONY: tla-history-cleanup-check tla-history-cleanup-traces tla-history-cleanup-prove test-history-cleanup-formal
+tla-history-cleanup-check: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-history-cleanup-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_HISTORY_CLEANUP_WORK_DIR)"
+tla-history-cleanup-traces: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-history-cleanup-formal.py --mode traces --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_HISTORY_CLEANUP_WORK_DIR)"
+tla-history-cleanup-prove: tla-tlapm
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-history-cleanup-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_HISTORY_CLEANUP_WORK_DIR)"
+test-history-cleanup-formal: tla-tools
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-history-cleanup-formal.py --mode all --go "$(GO)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --work-dir "$(TLA_HISTORY_CLEANUP_WORK_DIR)"
+tla-check: tla-history-cleanup-check
+tla-traces: tla-history-cleanup-traces
+tla-prove: tla-history-cleanup-prove
+test-formal: test-history-cleanup-formal
+
+.PHONY: test-history-cleanup-formal-runner
+test-history-cleanup-formal-runner:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-history-cleanup-formal-runner.py
