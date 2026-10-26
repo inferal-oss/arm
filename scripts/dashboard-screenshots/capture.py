@@ -27,6 +27,8 @@ import time
 REPO = Path(__file__).resolve().parents[2]
 HELPER = Path(__file__).resolve().parent
 PROCESS_STOP_TIMEOUT = 5
+BACKEND_SAMPLE_SECONDS = 6
+TERMINAL_FRAME_SECONDS = 6
 
 
 class CaptureError(Exception):
@@ -152,8 +154,10 @@ def main():
                        '--reason', 'Pages screenshot fixture')['after']['id']
             lease_id = cli('acquire', '--pool', pool + '=1', '--ttl', '5m',
                            '--reason', 'Example documentation build')['id']
-            link = cli('dashboard', '--json')['url']
-            endpoint = json.loads((home / 'endpoint.json').read_text())
+            # Let the real collector obtain multiple native samples before the
+            # terminal's first status read. Missing measurements remain missing.
+            stage = 'collect initial host observations'
+            time.sleep(BACKEND_SAMPLE_SECONDS)
             stage = 'capture terminal dashboard'
             master, slave = pty.openpty()
             fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 60, 140, 0, 0))
@@ -162,8 +166,9 @@ def main():
                                         stdin=slave, stdout=slave, stderr=slave, env=env, start_new_session=True)
             transcript = bytearray()
 
-            def read_until(text, seconds=15):
-                deadline = time.monotonic() + seconds
+            def read_until(text, seconds=15, minimum_seconds=0):
+                started = time.monotonic()
+                deadline = started + seconds
                 while time.monotonic() < deadline:
                     if select.select([master], [], [], .1)[0]:
                         try:
@@ -178,17 +183,21 @@ def main():
                         if len(transcript) > 4 * 1024 * 1024:
                             raise CaptureError('terminal_capture_limit')
                     plain = re.sub(rb'\x1b\[[0-?]*[ -/]*[@-~]', b'', transcript)
-                    if text.encode() in plain:
-                        return
                     if terminal.poll() is not None:
                         raise CaptureError('terminal_exited_early')
+                    if text.encode() in plain and time.monotonic() - started >= minimum_seconds:
+                        return
                 raise CaptureError('terminal_readiness_timeout')
 
             read_until('connected')
             read_until('RAM remaining')
             os.write(master, b'2')
             read_until('To lease')
-            read_until('documentation-builds')
+            # Drain subsequent real frames too: startup labels alone do not
+            # establish that the terminal consumed a measured status update.
+            # This finite window does not require healthy values or replace
+            # genuine unknowns when the host cannot report a measurement.
+            read_until('documentation-builds', minimum_seconds=TERMINAL_FRAME_SECONDS)
             # Replay the actual PTY byte stream while it still contains the active
             # alternate screen; the later orderly quit must not blank the image.
             transcript_path = private / 'terminal.ansi'
@@ -205,6 +214,9 @@ def main():
                 raise CaptureError('terminal_mode_not_restored')
             terminal = None
             stage = 'render real dashboard screenshots'
+            # Issue the short-lived browser ticket only after the PTY capture.
+            link = cli('dashboard', '--json')['url']
+            endpoint = json.loads((home / 'endpoint.json').read_text())
             config = private / 'capture.json'
             config.write_text(json.dumps({'url': link, 'endpointToken': endpoint['token'],
                                           'transcript': str(transcript_path), 'output': str(output)}))
@@ -226,7 +238,12 @@ def main():
                                 'width': width, 'height': height})
             metadata = {'source_commit': source, 'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
                         'scope': 'Disposable GitHub Actions backend, real host observations and example cooperative pool lease.',
-                        'terminal': 'Actual arm dashboard terminal PTY bytes rendered by xterm.js.', 'images': entries}
+                        'terminal': 'Actual arm dashboard terminal PTY bytes rendered by xterm.js.',
+                        'sampling': {'backend_warmup_seconds': BACKEND_SAMPLE_SECONDS,
+                                     'terminal_frame_seconds': TERMINAL_FRAME_SECONDS},
+                        'terminal_profile': {'background': '#101519', 'foreground': '#e1e9ed',
+                                             'font_family': 'DejaVu Sans Mono, monospace', 'font_size': 14},
+                        'images': entries}
             (output / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
             print('Captured real web Monitor, web Resources and terminal Resources dashboards.')
         except Exception as error:

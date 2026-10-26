@@ -14,6 +14,19 @@ It is not a separate implementation of the terminal dashboard. Native host
 measurements, timing and runner capacity are real and can vary between builds;
 these are illustrative CI captures, not a benchmark or a supported host limit.
 
+The backend collects native observations for six seconds before the terminal
+starts. Capture then drains at least six seconds of the Resources view's real
+PTY frames, so the first startup labels are not mistaken for an observed status
+update. This is a bounded collection window, not a requirement to show healthy
+values: genuine unavailable measurements stay unavailable. The browser ticket
+is issued after the PTY capture to preserve its short bootstrap lifetime.
+
+The xterm.js dark terminal profile uses background `#101519`, foreground
+`#e1e9ed`, and 14 px DejaVu Sans Mono, matching the dashboard's canvas/text colors
+in `internal/tui/theme.go`. This sets the terminal emulator's normal/reset colors;
+it does not alter application data, ANSI output, or the dashboard's panel colors.
+Sampling durations and this profile are recorded in the public metadata.
+
 Use a fresh GitHub Actions runner with Go selected by the repository's `go.mod`,
 Node.js 26, Python 3 and Chromium system libraries:
 
