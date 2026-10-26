@@ -419,6 +419,9 @@ Coordinate heavy work with the shared script in ~/Projects/semblance and share
 actual rendered screenshots regularly. This browser migration does not replace
 the native Charm terminal dashboard. The separately requested public project site
 also uses Semblance and lives on main alongside the ARM source.
+For that public site, the later operator instruction selects stock Semblance
+with the system color scheme by default. This supersedes its initial Terminal
+theme choice; the product dashboard's Terminal default remains unchanged.
 
 Both interfaces are first-class local clients with the same operational scope. The TUI is inspired by btop's dense, responsive resource view, adapted to ARM's leases, ownership, and policy. Terminal layout can differ from the browser, but viewing or changing a lease must not require switching interfaces.
 

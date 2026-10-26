@@ -695,3 +695,41 @@ oracle/transcript fixes59586f5. Original elevated queue session80582 progresses
 in FIFO; actual child/source-before receipt has not started yet. Shared slots
 are held by live lockf jobs. Root does not edit queue policy, reorder tickets
 or misreport this ordinary wait as a passing final validation.
+
+
+### Launch source refinements and registered-domain successor
+
+Launch owner confirms BOTH exact domain purchases after human approval to keep
+auto-renew enabled: getarm.org8.50USD and getarm.cloud20.20USD,28.70USD total.
+Cloudflare success pages are captured. The .org zone is Full DNS/RegistrarActive
+with reported expiry October26,2027; the .cloud active-zone detail still needs
+verification. No source approval or payment success substitutes for DNS/TLS
+acceptance. The .org GitHub ownership TXT value is generated but not yet written;
+new zone reported empty, unrelated domains/org Pages defaults stay untouched.
+
+Locked CI run40418656650 succeeds at candidate6e299ee after the exact Oxigraph
+license-notice fix. Root inspects fallback metadata: archive URL/integrity,
+upstream immutable commit2837810c8993da671d496eabf7677d7573c5c522 and full MIT/Apache
+texts/hashes are retained, with exact-version checks; no unknown-license skip.
+Downloaded artifact reportedly has9entries/7,976,538bytes and no Git/private
+paths. This validates that cut, not the final subsequent website refinements.
+
+The human adds technical copy, existing dashboard logo, outlined internal CTAs,
+a human-comprehensible ARM diagram, go.mod-linked minimum Go version, and
+checkout go-install then arm examples (remote @latest install is unsupported by
+current module identity/local rsync replacement). Refiner owns separate
+/private/tmp/arm-site-refine. Another independent branch/worktree under
+/private/tmp/arm-dashboard-shots owns a build-invoked script to capture actual
+compiled-source WEB and native-PTY terminal dashboard screenshots using disposable
+state and no installed binary/user backend. Whitelist published screenshots and
+provenance; do not upload tokens, raw state/logs/transcripts/private paths. Final
+script/workflow/resources/cleanup, resulting artifact and browser behavior need
+independent review and exact-source acceptance. Product migration stays isolated.
+
+LATEST public-site-only theme override: human in launch chat selects STOCK
+SEMBLANCE with SYSTEM color scheme by default. Refiner refreshes graph/bootstrap,
+copy/assets/gallery/provenance, review, CI and screenshots. This supersedes the
+site's initial Terminal choice; product dashboard migration owner retains its
+explicit Terminal default. Public site deployment, exact DNS records, ownership
+verification, both HTTPS endpoints/redirect and final screenshot build remain
+unaccepted until actually verified.
