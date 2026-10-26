@@ -3,8 +3,6 @@ package manager
 import (
 	"context"
 	"errors"
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/mesh"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -12,10 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/yrashk/arm/internal/database"
+	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/syncreconcile"
 	"github.com/yrashk/arm/internal/syncservice"
-	"github.com/yrashk/arm/internal/syncworker"
 	"golang.org/x/sys/unix"
 )
 
@@ -340,11 +339,8 @@ func TestSyncAdmissionSharesExactVersionedWorkerCommand(t *testing.T) {
 	if syncWorkerCommand != "arm sync-worker --protocol=1" {
 		t.Fatal("unexpected worker command version")
 	}
-	if syncWorkerCommand != syncworker.FixedCommand {
-		t.Fatal("Manager and worker command bytes differ")
-	}
-	if sshDigest([]byte(syncWorkerCommand)) != syncworker.FixedCommandSHA256() {
-		t.Fatal("Manager and worker command hashes differ")
+	if syncWorkerCommand != syncservice.FixedWorkerCommand {
+		t.Fatal("Manager and protocol command bytes differ")
 	}
 
 	m, root, parent := syncManagerFixture(t)

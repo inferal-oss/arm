@@ -61,59 +61,60 @@ type Manager struct {
 	mu                      sync.Mutex
 	// Acquire before mu when both are needed. Held through native CLI Start,
 	// never through Wait, so shutdown has a precise no-new-launch boundary.
-	pressureLaunchMu        sync.Mutex
-	db                      *sql.DB
-	databaseSlot            chan struct{}
-	home, host, owner       string
-	budgetStartupError      *model.Error
-	poolStartupError        *model.Error
-	ownerUsername           string
-	capacity                model.Resources
-	jobs                    map[string]*job
-	relayTransits           map[string]*RelayTransit
-	stop                    chan struct{}
-	wg                      sync.WaitGroup
-	closing                 bool
-	draining                bool
-	shutdownDeadline        time.Time
-	observationMu           sync.RWMutex
-	observations            map[string]model.ResourceMeasurement
-	cpuObserver             cpuObserver
-	cpuAvailability         model.CPUAvailability
-	cpuObserved             time.Time
-	cpuPressureTick         time.Duration
-	cpuCredits              []cpuCreditSample
-	cpuCreditFrame          observe.CPUCreditFrame
-	memoryAvailability      model.MemoryAvailability
-	memoryObserved          time.Time
-	memoryPressureTick      time.Duration
-	diskAvailability        model.DiskAvailability
-	diskObserved            time.Time
-	diskPressureTick        time.Duration
-	pressureEpoch           string
-	pressureState           pressure.State
-	pressureLastError       string
-	diskScopeVolume         string
-	diskSampleSlots         chan struct{}
-	diskCollector           func(context.Context, string) model.DiskAvailability
-	storage                 *storage.Provider
-	storageErr              error
-	storageJobs             map[string]bool
-	storageExportSlots      chan struct{}
-	portSockets             map[string][]*ports.Socket
-	portNamespace           string
-	portErr                 error
-	infrastructure          []model.PortBinding
-	inboxChanged            chan struct{}
-	inboxSlots              chan struct{}
-	usages                  map[string]workloadSample
-	policyClocks            map[string]incidentClock
-	startClocks             map[string]time.Time
-	scheduleHighwater       time.Time
-	scheduleCheckpoint      time.Time
-	scheduleRollback        bool
-	scheduleWallNow         func() time.Time
-	scheduleElapsedNow      func() time.Time
+	pressureLaunchMu   sync.Mutex
+	db                 *sql.DB
+	databaseSlot       chan struct{}
+	home, host, owner  string
+	budgetStartupError *model.Error
+	poolStartupError   *model.Error
+	ownerUsername      string
+	capacity           model.Resources
+	jobs               map[string]*job
+	syncWorkers        map[string]*SyncWorkerHold
+	relayTransits      map[string]*RelayTransit
+	stop               chan struct{}
+	wg                 sync.WaitGroup
+	closing            bool
+	draining           bool
+	shutdownDeadline   time.Time
+	observationMu      sync.RWMutex
+	observations       map[string]model.ResourceMeasurement
+	cpuObserver        cpuObserver
+	cpuAvailability    model.CPUAvailability
+	cpuObserved        time.Time
+	cpuPressureTick    time.Duration
+	cpuCredits         []cpuCreditSample
+	cpuCreditFrame     observe.CPUCreditFrame
+	memoryAvailability model.MemoryAvailability
+	memoryObserved     time.Time
+	memoryPressureTick time.Duration
+	diskAvailability   model.DiskAvailability
+	diskObserved       time.Time
+	diskPressureTick   time.Duration
+	pressureEpoch      string
+	pressureState      pressure.State
+	pressureLastError  string
+	diskScopeVolume    string
+	diskSampleSlots    chan struct{}
+	diskCollector      func(context.Context, string) model.DiskAvailability
+	storage            *storage.Provider
+	storageErr         error
+	storageJobs        map[string]bool
+	storageExportSlots chan struct{}
+	portSockets        map[string][]*ports.Socket
+	portNamespace      string
+	portErr            error
+	infrastructure     []model.PortBinding
+	inboxChanged       chan struct{}
+	inboxSlots         chan struct{}
+	usages             map[string]workloadSample
+	policyClocks       map[string]incidentClock
+	startClocks        map[string]time.Time
+	scheduleHighwater  time.Time
+	scheduleCheckpoint time.Time
+	scheduleRollback   bool
+	scheduleWallNow    func() time.Time
+	scheduleElapsedNow func() time.Time
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets", "counted-resource-subpools"}
@@ -182,7 +183,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
-	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
 	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
 	m.diskSampleSlots = make(chan struct{}, 1)
@@ -444,6 +445,7 @@ func (m *Manager) Observation(kind string) model.ResourceMeasurement {
 }
 func (m *Manager) Close() error {
 	var closeErr error
+	var syncOwners []*SyncWorkerHold
 	m.pressureLaunchMu.Lock()
 	m.mu.Lock()
 	m.closing = true
@@ -465,6 +467,12 @@ func (m *Manager) Close() error {
 		_, e := m.end(id, "cancelled")
 		closeErr = errors.Join(closeErr, e)
 	}
+	for id, hold := range m.syncWorkers {
+		syncOwners = append(syncOwners, hold)
+		hold.cancel()
+		_, e := m.end(id, "cancelled")
+		closeErr = errors.Join(closeErr, e)
+	}
 	if m.nodeStopAccepted || m.nodeStopUnknown {
 		ls, e := m.list()
 		closeErr = errors.Join(closeErr, e)
@@ -481,6 +489,12 @@ func (m *Manager) Close() error {
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
+	for _, hold := range syncOwners {
+		// This callback belongs to the original admitted runtime even when
+		// no runner was started or the lease already needs attention.
+		hold.runtime.closeAll()
+		<-hold.runtime.closeDone
+	}
 	if observer, ok := m.cpuObserver.(interface{ Close() error }); ok {
 		closeErr = errors.Join(closeErr, observer.Close())
 	}
@@ -1059,6 +1073,10 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 			l, e = m.provisionPorts(l, run, ls)
 		} else if r.Kind == "storage" {
 			l, e = m.provisionStorage(l)
+		} else if sync != nil && sync.inline {
+			l.State = "active"
+			l.Revision++
+			e = m.put(l, "lease.started")
 		} else {
 			l, e = m.launch(l, *run)
 		}
@@ -1123,6 +1141,9 @@ func (m *Manager) CancelRequest(key string) error {
 }
 func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	defer m.traceNodeStop("end-return")
+	if hold := m.syncWorkers[id]; hold != nil {
+		hold.cancel()
+	}
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
@@ -1135,6 +1156,13 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	}
 	if l.State == "needs_attention" {
 		return l, model.Err("needs_attention", "allocation remains charged pending reconciliation; storage leases support explicit cleanup retry or handoff")
+	}
+	if hold := m.syncWorkers[id]; hold != nil {
+		if err := hold.checkBindingLocked(context.Background()); err != nil {
+			return l, err
+		}
+		err := m.retainSyncLease(&l, outcome)
+		return l, err
 	}
 	if bound, err := m.syncLeaseBound(l.ID); err != nil {
 		return l, err
@@ -1200,6 +1228,11 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind {
 		return l, model.Err("invalid_request", "in-process owned work has a fixed reviewed lifetime and cannot be renewed")
+	}
+	if bound, err := m.syncLeaseBound(id); err != nil {
+		return l, err
+	} else if bound {
+		return l, model.Err("invalid_request", "sync work has a fixed reviewed lifetime and cannot be renewed")
 	}
 
 	if err := m.budgetPolicyError(); err != nil {

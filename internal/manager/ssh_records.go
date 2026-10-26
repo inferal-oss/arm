@@ -301,10 +301,20 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	run := &RunRequest{Request: r, Command: []string{sshRedactedCommand}, CWD: q.CWD, SSH: sshDescriptor(q), sshRuntime: runtime}
 	l, err := m.acquireWithAdmission(r, run, false, sync)
 	if err != nil || l.State != "active" {
+		if sync != nil && sync.inline {
+			runtime.closeAll()
+			<-runtime.closeDone
+			return l, nil, err
+		}
 		if err == nil {
 			err = model.Err("ssh_launch_failed", fmt.Sprintf("execution did not become active (%s)", l.Outcome))
 		}
 		return l, &failedSSHTransport{runtime: runtime}, err
+	}
+	if sync != nil && sync.inline {
+		hold := newSyncWorkerHold(m, l, sync, runtime)
+		m.syncWorkers[l.ID] = hold
+		return l, hold, nil
 	}
 	if m.jobs[l.ID] == nil {
 		return l, &failedSSHTransport{runtime: runtime}, model.Err("ssh_evidence_unavailable", "admission did not return a newly owned process")

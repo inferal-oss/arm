@@ -2998,3 +2998,67 @@ run lacks the new input hashes and is not the final source-bound receipt.
 The final successful run is distinct. This verifies local native CLI routes
 through real peers; no physical network barrier, cross-host speed target, new
 Linux harness run, native agent delivery or public multi-hop sync is inferred.
+
+## Destination worker bridge independent review
+
+Review on `be26cbd` plus destination bridge `1ca63a7` found and corrected a
+runner that accepted a caller replacement context/channel and bypassed the
+one-shot launch. `RunDestination(hold)` now consumes that launch, which supplies
+only the original admitted context and channel. Eight replaced lease/binding
+cases reproduced accepted authority before correction; complete immutable
+lease/intent and key/side/volume/disk checks now refuse them. Further retained
+counterexamples reproduced cancellation hidden by the waiter, End failing to
+cancel a needs-attention owner, and a failed retention checkpoint returning
+exit0. Corrected completion and End preserve changed successor rows and report
+uncertainty; fixed sync lifetime cannot be renewed.
+
+Native macOS focused Manager races pass 39 roots/73 named cases in117.138s,
+plus the supplemental force-stop case in4.443s. Complete syncworker races pass
+8 roots/12 named cases in8.820s and complete syncservice races pass17 roots/26
+named cases in18.716s. The union is65 executed roots/112 named passing cases.
+The broad Manager selection also selected one unrelated opt-in native CPU
+credit test without its enabling environment; that test skipped and supplies
+no renewed native CPU acceptance. All destination lifecycle and new refusal
+cases executed without skips. The protocol suite and supplemental stop gate
+have no skips. Affected Manager/syncworker/syncservice vet and diff checks pass.
+The initial sandbox attempt refused loopback binding; that failure and the
+successful permitted native run are retained separately.
+
+Actual authenticated loopback SSH tests exercise a blocked original channel
+reader through End, expiry and Manager Close, wait for the original worker and
+SSH service to join, and preserve the charged promise through reopen. Private
+hold tests separately exercise eight concurrent starts (one launches), exact
+original context/channel identity, changed predecessors, checkpoint refusal,
+callback retirement, force-stop blockage and zero invented native CPU credit.
+The foreign-context/channel call is also independently rejected by the Go type
+checker. These checks cover the private destination bridge only; the existing
+protocol SSH test uses its separate test admission hold. They do not establish
+a composed source worker, pre-exec frame admission, public direct/multi-hop
+sync, physical allocation enforcement, cleanup settlement, Linux execution,
+new CPU/formal acceptance or exclusion of arbitrary malicious same-UID writes.
+Public server/CLI dispatch and routed `ClassSync` remain closed.
+
+Evidence is retained under the isolated review worktree's ignored
+`.tla/destination-sync-review/`: `authority-counterexample.jsonl`,
+`checkpoint-counterexample.jsonl`, `foreign-channel-rejected.log`,
+`final-native-race.jsonl`, `stop-supplemental-native-race.jsonl`,
+`full-protocol-native-race.jsonl`, `final-vet.log` and `summary.json`.
+
+The primary composition independently passes selected Manager races138.667s,
+complete worker4.206s/service14.331s races and affected vet. Actual Linux ARM64
+passes77 roots/118 named cases without skips/failures, with all three uploaded
+binaries hash-verified, original native/SSH/cleanup exit0, inactive bounded
+scope and exact disposable root absent. CPU observations are controlled for
+transaction/owner tests; this is not positive native CPU-capacity acceptance.
+Evidence: `.cache/sync-destination-bridge-composed-*.log` and
+`.cache/sync-destination-reviewed-linux-{intent.json,native.log,run.log}`.
+
+A newly built CGo-free macOS CLI also completes the real public routed SSH
+fixture after the shared launch/close refactor, covering both peer paths,
+loss/recovery/seal/revocation and exact exit/output without direct B–C enrollment.
+Its executable and all loaded harness sources match pre/post hashes and every
+owned fixture closes before success. Evidence:
+`.cache/sync-destination-native-macos-routed-cli{.log,-receipt.json}`. This is
+ordinary routed SSH regression evidence, not public sync execution. No new sync
+formal refinement, physical allocation guarantee or cleanup settlement is
+inferred from these private component gates.

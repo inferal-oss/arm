@@ -1,6 +1,6 @@
 // Package syncworker contains the fixed, admitted sync execution state machine.
-// The runner is deliberately package-private until Manager can mint an exact
-// destination admission in the same transaction as the sync intent.
+// The runner is exposed only through a concrete Manager-minted destination
+// hold after exact admission; public server dispatch remains closed.
 package syncworker
 
 import (

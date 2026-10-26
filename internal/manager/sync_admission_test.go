@@ -148,21 +148,94 @@ func TestSyncSourceFailedReservationRollsBackLease(t *testing.T) {
 }
 
 func TestSyncDestinationSSHAdmissionJoinsFenceLeaseAndIntent(t *testing.T) {
-	runSyncDestinationAdmission(t, false)
+	runSyncDestinationAdmission(t, false, false)
 }
 
 func TestSyncDestinationRejectedIntentRollsBackEntireSSHAdmission(t *testing.T) {
-	runSyncDestinationAdmission(t, true)
+	runSyncDestinationAdmission(t, true, false)
 }
 
-func runSyncDestinationAdmission(t *testing.T, corrupt bool) {
+func TestSyncDestinationInlineWorkerUsesCommittedHold(t *testing.T) {
+	runSyncDestinationAdmission(t, false, true)
+}
+
+func TestSyncDestinationInlineWorkerRejectsChangedIntentBeforeDispatch(t *testing.T) {
+	runSyncDestinationAdmission(t, true, true)
+}
+
+func TestSyncDestinationInlineWorkerOriginalLifecycle(t *testing.T) {
+	for _, stop := range []string{"end", "expiry", "close"} {
+		t.Run(stop, func(t *testing.T) { runSyncDestinationAdmissionLifecycle(t, false, true, stop) })
+	}
+}
+
+func runSyncDestinationAdmission(t *testing.T, corrupt, inline bool) {
+	runSyncDestinationAdmissionLifecycle(t, corrupt, inline, "")
+}
+
+func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, stop string) {
 	m, root, parent := syncManagerFixture(t)
 	var intent syncservice.Intent
 	var rows []syncservice.ManifestRow
+	entered, workerJoined := make(chan struct{}), make(chan struct{})
+	stopped := make(chan error, 1)
 	f := newSSHManagerFixtureWithAdmission(t, m, time.Minute, func(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel) (model.Lease, sshservice.Process, error) {
+		if inline {
+			l, hold, err := m.AdmitSyncWorker(ctx, intent, rows, root, parent, q, e, ch, model.Resources{CPU: 1, Memory: 1 << 30, Disk: 4 << 20}, time.Minute, time.Now().Add(time.Minute), committedControl(m, q))
+			if err != nil {
+				return l, nil, err
+			}
+			if err := hold.CheckIntent(ctx, intent); err != nil {
+				hold.JoinTransport()
+				return l, nil, err
+			}
+			changed := intent
+			changed.PlanDigest = strings.Repeat("0", 64)
+			if err := hold.CheckIntent(ctx, changed); err == nil {
+				t.Error("inline hold accepted another plan")
+			}
+			if err := hold.Start(func(_ context.Context, original ssh.Channel) error {
+				if original != ch {
+					t.Error("worker received another SSH channel")
+				}
+				if stop != "" {
+					defer close(workerJoined)
+					close(entered)
+					_, readErr := original.Read(make([]byte, 1))
+					return readErr
+				}
+				_, writeErr := original.Write([]byte("inline-worker"))
+				return writeErr
+			}); err != nil {
+				hold.JoinTransport()
+				return l, nil, err
+			}
+			if stop != "" {
+				go func() {
+					<-entered
+					switch stop {
+					case "end":
+						_, err := m.End(l.ID, "cancelled")
+						stopped <- err
+					case "close":
+						stopped <- m.Close()
+					case "expiry":
+						<-hold.runtime.ctx.Done()
+						stopped <- nil
+					}
+				}()
+			}
+			if err := hold.Start(func(context.Context, ssh.Channel) error { t.Error("duplicate inline worker ran"); return nil }); err == nil {
+				t.Error("duplicate inline worker accepted")
+			}
+			return l, hold, nil
+		}
 		return m.AcquireSyncSSHCommitted(ctx, intent, rows, root, parent, q, e, ch, model.Resources{CPU: 1, Memory: 1 << 30, Disk: 4 << 20}, time.Minute, time.Now().Add(time.Minute), committedControl(m, q))
 	})
 	f.q.Resources = model.Resources{CPU: .25, Memory: 2 << 20, Disk: 2 << 20}
+	if stop == "expiry" {
+		f.q.TTL = 2 * time.Second
+	}
 	f.q.CWD = root.Path()
 	f.q.Reason = "reviewed sync destination"
 	f.q.Kind = "exec"
@@ -195,7 +268,7 @@ func runSyncDestinationAdmission(t *testing.T, corrupt bool) {
 	}
 	// The fixed worker is intentionally not installed yet; the command may
 	// fail, but its admission must already be durable and remain charged.
-	_, runErr := session.CombinedOutput(syncWorkerCommand)
+	output, runErr := session.CombinedOutput(syncWorkerCommand)
 	if corrupt {
 		if runErr == nil {
 			t.Fatal("changed manifest started the fixed worker")
@@ -206,9 +279,56 @@ func runSyncDestinationAdmission(t *testing.T, corrupt bool) {
 		}
 		return
 	}
+	if stop != "" {
+		if runErr == nil {
+			t.Error("cancelled inline worker reported success")
+		}
+		select {
+		case err := <-stopped:
+			if err != nil {
+				t.Fatal(err)
+			}
+		case <-time.After(3 * time.Second):
+			t.Fatal("original lifecycle did not finish")
+		}
+		select {
+		case <-workerJoined:
+		case <-time.After(time.Second):
+			t.Fatal("original worker read did not join")
+		}
+		select {
+		case <-f.serverDone:
+		case <-time.After(time.Second):
+			t.Fatal("original SSH transport did not join")
+		}
+		checkManager := m
+		if stop == "close" {
+			reopened, err := Open(m.home, m.capacity)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer reopened.Close()
+			checkManager = reopened
+		}
+		_, _, admitted := f.snapshot()
+		retained, err := checkManager.Inspect(admitted.ID)
+		if err != nil || retained.State != "needs_attention" || retained.Request.Resources != f.q.Resources {
+			t.Fatalf("cancel/restart lost promise: %+v %v", retained, err)
+		}
+		if err := checkManager.verifySyncRecords(context.Background(), true); err != nil {
+			t.Fatal(err)
+		}
+		return
+	}
+	if inline && (runErr != nil || string(output) != "inline-worker") {
+		t.Fatalf("in-process worker did not own SSH output: %q %v", output, runErr)
+	}
 	q, _, admitted := f.snapshot()
 	if admitted.ID == "" {
 		t.Fatal("fixed worker was not admitted")
+	}
+	if inline && m.jobs[admitted.ID] != nil {
+		t.Fatal("inline sync worker launched an external shell job")
 	}
 	var joined int
 	err = m.db.QueryRow(`SELECT COUNT(*) FROM sync_operations s JOIN sync_lease_bindings b ON s.key=b.key AND s.side=b.side JOIN leases l ON l.id=b.lease JOIN ssh_operations o ON o.lease=l.id JOIN ssh_key_fences f ON f.lease=l.id AND f.principal=o.principal AND f.key=o.key WHERE s.key=? AND s.side='remote' AND o.key=?`, intent.Key, q.Key).Scan(&joined)

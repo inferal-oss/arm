@@ -30,6 +30,7 @@ func SyncEndpointID(host, uid, account string) string {
 }
 
 type syncAdmission struct {
+	inline      bool
 	preparation *syncPreparation
 	handedOff   model.Lease
 	manager     *Manager
@@ -249,6 +250,52 @@ func (m *Manager) AcquireSyncSSHCommitted(ctx context.Context, i syncservice.Int
 	}
 	prep.nativeFinished()
 	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, &control, admission)
+}
+
+// AdmitSyncWorker reserves the fixed in-process destination worker. It never
+// launches a shell or reconstructs authority from the stored SSH descriptor.
+// The caller must Start the returned hold with the reviewed syncworker runner
+// before accepting the SSH exec request.
+func (m *Manager) AdmitSyncWorker(ctx context.Context, i syncservice.Intent, rows []syncservice.ManifestRow, root, parent *syncfs.Root, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time, control model.SSHControlCommitment) (out model.Lease, hold *SyncWorkerHold, err error) {
+	var empty model.Lease
+	if i.Side != syncreconcile.Remote || e.Kind != "exec" || e.Command != syncWorkerCommand || e.Terminal != nil || q.CWD != rootPath(root) {
+		return empty, nil, model.Err("invalid_request", "fixed destination worker required")
+	}
+	digest, err := control.Digest()
+	if err != nil || !control.Matches(q) || digest != i.SSHControlSHA256 || i.Key != q.Key || i.SSHKey != q.Key || i.Reason != q.Reason || i.RemoteResources != q.Resources || i.WorkerCommandSHA256 != q.CommandSHA256 || i.Binding.Remote.ID != SyncEndpointID(m.host, m.owner, m.ownerUsername) || !strings.HasPrefix(i.Binding.Local.ID, "arm-sync/v1/"+q.Source+"/") {
+		return empty, nil, model.Err("invalid_request", "destination worker intent differs from authenticated SSH control")
+	}
+	if control.Owner != m.owner || q.Target != m.host || q.Account != m.ownerUsername || q.TTL <= 0 || q.TTL > maxTTL || !q.Resources.Fits(limit) || validUntil.IsZero() || !time.Now().Before(validUntil) {
+		return empty, nil, model.Err("forbidden", "sync destination grant is unavailable")
+	}
+	prep, err := m.beginSyncPreparation(ctx, i.Key, i.Side, control.TTL, &syncPreparationGrant{source: q.Source, certificate: q.Certificate, revision: q.Revision, limit: limit, validUntil: validUntil})
+	if err != nil {
+		return empty, nil, err
+	}
+	defer func() {
+		if finishErr := prep.finish(); finishErr != nil {
+			if hold != nil {
+				hold.JoinTransport()
+				hold = nil
+			}
+			err = errors.Join(err, finishErr)
+		}
+	}()
+	admission, err := m.prepareSyncAdmission(prep.owner.Context(), i, rows, root, parent, prep)
+	if err != nil {
+		return empty, nil, err
+	}
+	prep.nativeFinished()
+	admission.inline = true
+	l, process, err := m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, &control, admission)
+	if err != nil {
+		return l, nil, err
+	}
+	hold, ok := process.(*SyncWorkerHold)
+	if !ok || hold == nil {
+		return l, nil, model.Err("sync_evidence_unavailable", "in-process worker admission lost its exact hold")
+	}
+	return l, hold, nil
 }
 
 func rootPath(root *syncfs.Root) string {

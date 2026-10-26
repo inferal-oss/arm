@@ -318,3 +318,16 @@ closures precede success; exact binary and loaded harness bytes are bound
 before/after the final run. Same-host loopback with no source–destination
 enrollment is scoped evidence, not a physical firewall or cross-host throughput
 proof. Public routed sync remains a separate incomplete destination flow.
+
+**Destination sync bridge integrated:** a reviewed one-shot Manager owner binds
+the original context/channel, complete admission and joined cancellation, with
+checkpoint failures retained as uncertain. The source counterpart is being
+implemented in its isolated task. Public direct and multi-hop sync remain
+closed until complete endpoint/worker/admission/recovery paths are reviewed.
+
+**Relay clarification:** the operator clarified that relays provide transport
+and do not choose applications. Application/service/SSH/sync permissions belong
+at endpoints; relay resource, lifetime, routing and drain controls remain. The
+forwarding branch is implementing a generic transport envelope accordingly.
+That proposed change is isolated pending the revised concrete security review;
+the current production route controls are not silently broadened.

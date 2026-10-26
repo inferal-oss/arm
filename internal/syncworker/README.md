@@ -24,9 +24,15 @@ closes and joins its transport before local baseline confirmation. A failed
 cut, channel, join or receipt leaves the original key for lookup; no worker
 replay is attempted.
 
-The package remains an internal integration seam. Manager/schema admission,
-an actual CLI dispatch into the fixed command, physical volume accounting,
-and public sync controls are still required. Tests include independent durable
+The package remains an internal integration seam. Manager now mints a one-use
+in-process destination worker hold and `RunDestination` consumes its exact
+roots, ledger and original SSH channel through its one-shot launch. The caller
+cannot substitute a context/channel or run a second worker. Complete lease and
+volume-binding replacements refuse further authority, and a failed retention
+checkpoint cannot report success. Public server dispatch is still closed. An
+actual source-side worker, pre-exec preparation frame admission, physical
+allocation enforcement, cleanup settlement, multi-hop route integration and
+public sync controls are still required. Tests include independent durable
 ledgers, push/pull/both, additive/full, second-generation keep-both resolution,
 join failure, cancellation, and one authenticated `sshservice.Server` session.
 The SSH test uses a test admission hold; it does not prove production Manager

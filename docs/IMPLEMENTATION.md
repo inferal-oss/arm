@@ -1191,3 +1191,20 @@ lookup, seal, no-replay and route/grant operations remain actual public CLI
 commands. Its final receipt binds the executable and all three loaded harness
 files before/after the run, reports observed OS/architecture, and is printed
 only after owned listener/daemon closure and exact fixture removal succeed.
+
+## Manager-owned destination sync worker
+
+The private destination bridge consumes a concrete one-shot Manager hold whose
+callback supplies the original admitted context and authenticated SSH channel.
+It does not create a shell job. Immutable lease/intent bytes and the exact
+key/side/volume/disk row fence launch, checks and completion. End, expiry,
+shutdown and channel closure cancel the original owner; blocked readers and
+runtime callbacks join before ownership is retired. Failed retention checkpoints
+and changed successors cannot report a successful exit or be overwritten.
+The original lifetime is fixed; generic renewal cannot extend it.
+
+Worker and transport completion retain the resource promise for exact native
+cleanup. In-process work earns no invented native CPU credit. This bridge has
+no production server/CLI caller. Source execution, pre-exec frame admission,
+actual workspace allocation enforcement, receipts/recovery/settlement, direct
+and multi-hop public sync, and equivalent web/Charm controls remain required.
