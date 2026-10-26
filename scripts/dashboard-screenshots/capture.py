@@ -60,6 +60,9 @@ def run(arguments, *, env, timeout=20, check=True):
                 code = candidate
         except (ValueError, AttributeError):
             pass
+        renderer_stage = re.fullmatch(rb'Dashboard renderer failed at safe stage: ([A-Za-z ]{1,80})\n?', result.stderr)
+        if renderer_stage:
+            code = 'renderer_' + renderer_stage.group(1).decode().lower().replace(' ', '_')
         raise CaptureError(code)
     return result
 
