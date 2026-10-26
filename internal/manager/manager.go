@@ -115,6 +115,9 @@ type Manager struct {
 	scheduleRollback   bool
 	scheduleWallNow    func() time.Time
 	scheduleElapsedNow func() time.Time
+
+	// Immutable native-sampling owner snapshot, protected by observationMu.
+	cpuWarningOwners map[string]cpuWarningOwner
 }
 
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets", "counted-resource-subpools"}
@@ -579,6 +582,15 @@ func (m *Manager) Status() (model.Status, error) {
 	defer m.mu.Unlock()
 	ls, e := m.list()
 	s := model.Status{PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "workspace-published-agents-poll-v1", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s.CPUWarning = &model.CPUWarningEvidence{State: "unavailable", Detail: "CPU warning lease accounting is unavailable"}
+	if e == nil {
+		if tick, err := pressureNativeTick(); err == nil {
+			_, evidence := m.cpuWarningSample(time.Now().UTC(), tick, ls)
+			s.CPUWarning = &evidence
+		} else {
+			s.CPUWarning = &model.CPUWarningEvidence{State: "unavailable", Detail: "Suspend-inclusive CPU warning clock is unavailable"}
+		}
+	}
 	if m.pressureLastError != "" {
 		s.PressureError = &model.Error{Code: "host_pressure_unavailable", Message: m.pressureLastError}
 	}

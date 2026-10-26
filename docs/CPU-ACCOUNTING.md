@@ -172,3 +172,69 @@ Even compatible credit can remain below a fully saturated job’s promise becaus
 the rounding margin is retained. Such a deficit can still refuse renewal; the
 margin is not waived for renewals. Broader high-resolution/scoped accounting and
 pressure response remain required.
+
+## Warning evidence and incomplete attribution
+
+Warning confidence is separate from admission. The Manager now exposes
+`cpu_warning_evidence` in status: fresh idle, verified current managed use,
+possible compliant supervised use, and the resulting minimum/possible coverage.
+The last quantity assumes work obeys its CPU promises; it is not a physical
+upper bound or proof of compliance. Bare leases contribute no measured use.
+
+Recovery requires the measured lower coverage to cross the recovery threshold.
+A busy-host warning is possible only when even the possible compliant supervised
+coverage is below the entry threshold. If the range straddles a decision,
+evidence is `uncertain`: it neither fabricates healthy recovery nor blames an
+unmeasured supervised workload. The comparison rounds minimum coverage down and
+possible coverage up in millicores. State labels describe this observation, not
+the incident lifecycle; actual recovery still needs the governor's hysteresis.
+
+Private usage candidates must belong to the same native frame and fresh
+suspend-inclusive observation. Credit uses the existing exact current
+job/native identity/cookie/lease guards; expired or foreign claims cannot lend
+credit. Possible-use bounds also require the original job or in-process transit
+owner captured before sampling to remain current and unjoined. A replaced or
+lost owner leaves uncertainty, rather than inferred permission. None of these
+fields authorize admission, signals, release, or native control.
+
+Admitted inline sync work has a separate original-owner snapshot: the exact
+hold, runtime, context and completion channel must remain unchanged, started,
+uncancelled and unjoined. The listed lease must match the frozen original
+full-row digest, and the current durable row and charged volume binding must
+still match that original hold. A hold created or started after sampling cannot
+be adopted into the earlier interval. These checks permit only possible
+compliant use; inline Go work is never a native process candidate and earns no
+measured CPU credit. A completed worker's retained promise cannot stand in for
+live ownership. This adapter does not change CPU admission or extend the
+existing admission model/proof to warning evidence.
+
+Matched-member native accounting is a lower bound. A zero delta cannot prove
+that supervised work is idle: short-lived or unobserved descendants may be
+missing. Linux and other unsupported attribution scopes earn no native credit;
+a fully occupied compliant supervised build can therefore leave warning
+evidence uncertain. Bare/untracked work may receive bounded cooperative busy-
+host warnings without a violation or external-culprit claim. Better completeness
+or native upper-use accounting, policy/UI configuration and safe native pause
+remain work. CPU admission and its conservative platform scopes are unchanged.
+
+Independent warning review retains every sampled/current original owner in the
+confidence decision, including a member that retired or expired after sampling.
+Such churn cannot establish shortfall from that same still-busy observation; a
+new stable sample is required unless independent measured coverage already
+supports recovery. The possible-use sum rounds upward per owner, using the
+exact addition residual, and coverage/threshold scaling checks the product
+residual. Entry thresholds round down and recovery thresholds round up; the
+minimum rounds down and possible coverage rounds up. Coarse millicore
+quantization can leave small fractional capacities uncertain. These bounds
+apply to the representable input quantities, not physical consumption accuracy.
+
+A retained native execution or in-process transport/sync obligation whose
+original private owner is absent also leaves low-idle observations uncertain,
+including after expiry or restart. Stored descriptors supply no measured or
+possible use. Independently sufficient fresh physical idle still supports
+recovery; retained metadata does not permanently poison that observation.
+
+Transit confidence additionally freezes the original context, join witness and
+canonical lease row at sample capture. A same-revision replacement or a new
+context/join cannot inherit that possible-use bound. No retained descriptor or
+changed private owner can mint a native accounting candidate.

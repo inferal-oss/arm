@@ -50,7 +50,8 @@ func TestNativeManagerAlignedCPUUsageCredit(t *testing.T) {
 	r := model.Request{Host: "localhost", Key: "native-aligned-manager-credit", Reason: "bounded native managed CPU credit acceptance", Resources: model.Resources{CPU: 1}, TTL: 30 * time.Second}
 	l, err := m.Acquire(r, &RunRequest{Request: r, Command: []string{"/usr/bin/env", "ARM_NATIVE_MANAGER_CREDIT_HELPER=1", "ARM_TEST_NATIVE_MANAGER_CREDIT=1", path, "-test.run=^TestNativeManagerAlignedCPUUsageCredit$", "-test.timeout=12s"}, CWD: filepath.Dir(m.home)})
 	if err != nil {
-		t.Fatal("actual idle headroom did not admit the one-core fixture", err)
+		s, statusErr := m.Status()
+		t.Fatal("actual idle headroom did not admit the one-core fixture", err, "native budget", s.CPU, "status error", statusErr)
 	}
 	m.mu.Lock()
 	original := m.jobs[l.ID]
@@ -60,13 +61,15 @@ func TestNativeManagerAlignedCPUUsageCredit(t *testing.T) {
 	}
 	deadline := time.Now().Add(6500 * time.Millisecond)
 	var observed *model.CPUBudget
+	var warning *model.CPUWarningEvidence
 	for time.Now().Before(deadline) {
 		s, err := m.Status()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if s.CPU != nil && s.CPU.Known && s.CPU.ManagedCredit > .2 {
-			observed = s.CPU
+		if s.CPU != nil && s.CPU.Known && s.CPU.ManagedCredit > .2 && s.CPUWarning != nil &&
+			s.CPUWarning.At.Equal(s.CPU.Observation.At) && s.CPUWarning.VerifiedManaged > .2 {
+			observed, warning = s.CPU, s.CPUWarning
 			break
 		}
 		select {
@@ -79,6 +82,9 @@ func TestNativeManagerAlignedCPUUsageCredit(t *testing.T) {
 	if observed == nil {
 		s, _ := m.Status()
 		t.Fatal("normal native sampling never credited owned work", s.CPU)
+	}
+	if warning == nil || !warning.NativeKnown || warning.VerifiedManaged > 1 || !closeCPUValue(warning.VerifiedManaged, observed.ManagedCredit) {
+		t.Fatal("native warning attribution diverged from exact current admission credit", warning, observed)
 	}
 	if observed.Reserved != 1 || observed.ManagedCredit > 1 || observed.Observation.Busy == nil || observed.ManagedCredit > *observed.Observation.Busy {
 		t.Fatal("native credit escaped its promise/host bounds", observed)
@@ -99,5 +105,42 @@ func TestNativeManagerAlignedCPUUsageCredit(t *testing.T) {
 	s, err := m.Status()
 	if err != nil || s.CPU.Reserved != 0 || s.CPU.ManagedCredit != 0 {
 		t.Fatal("retired native job left promises or credit", s.CPU, err)
+	}
+}
+
+// This exercises real current observation/frame binding without requesting a
+// CPU lease or generating load. It does not establish positive managed use.
+func TestNativeCPUWarningObservationBindingWithoutWork(t *testing.T) {
+	if os.Getenv("ARM_TEST_NATIVE_MANAGER_CREDIT") != "1" {
+		t.Skip("requires explicitly enabled native CPU observation check")
+	}
+	m, err := Open(filepath.Join(t.TempDir(), "arm"), model.Resources{CPU: float64(runtime.NumCPU())})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := m.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	tick, err := pressureNativeTick()
+	if err != nil {
+		t.Fatal(err)
+	}
+	m.mu.Lock()
+	ls, listErr := m.list()
+	sample, e := m.cpuWarningSample(time.Now().UTC(), tick, ls)
+	m.observationMu.RLock()
+	reading, frame := m.cpuAvailability, m.cpuCreditFrame
+	m.observationMu.RUnlock()
+	m.mu.Unlock()
+	if listErr != nil {
+		t.Fatal(listErr)
+	}
+	if !reading.Known || !e.NativeKnown || e.At != reading.At || e.VerifiedManaged != 0 || e.PossibleCompliant != 0 || reading.Available == nil || e.Idle != *reading.Available {
+		t.Fatal("native warning observation diverged", sample, e, reading)
+	}
+	if frame.Eligible && !cpuWarningFrameMatches(frame, reading) {
+		t.Fatal("native normalized frame was not bound to its observation", frame, reading)
 	}
 }

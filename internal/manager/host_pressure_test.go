@@ -19,7 +19,10 @@ import (
 
 func setHostPressureCPU(m *Manager, now time.Time, tick time.Duration, idle float64) {
 	eligible, capacity, busy := 1, 1.0, 1-idle
+	owners := m.captureCPUWarningOwners()
 	m.observationMu.Lock()
+	m.cpuObserved = now
+	m.cpuWarningOwners = owners
 	m.cpuAvailability = model.CPUAvailability{Known: true, At: now, Interval: time.Second, EligibleCPUs: &eligible,
 		Capacity: &capacity, Busy: &busy, Available: &idle, Scope: "controlled-test-host", Method: "controlled-counter-interval"}
 	m.cpuPressureTick = tick
@@ -164,19 +167,24 @@ func TestHostPressureCoverageAndDurableWarning(t *testing.T) {
 	r := request("host-pressure-covered")
 	r.Agent = contact.ID
 	r.Resources.CPU = 0.5
-	l, err := m.Acquire(r, nil)
+	l, err := m.Acquire(r, &RunRequest{Request: r, Command: []string{"/bin/sleep", "30"}, CWD: filepath.Dir(m.home)})
 	if err != nil {
 		t.Fatal(err)
 	}
+	j := m.jobs[l.ID]
+	if j.cpuAnchor == "" {
+		j.cpuAnchor = "controlled-warning-owner"
+	}
 	base, tick := time.Now().UTC(), time.Duration(100)*time.Second
 	setHostPressureCPU(m, base, tick, 0.5)
+	setHostPressureCredit(m, l, j, 0.5)
 	m.mu.Lock()
 	in, p, err := m.hostPressureInput(base, tick)
 	m.mu.Unlock()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := in.Samples[pressure.CPU].Available; got != 1000 {
+	if got := in.Samples[pressure.CPU].Available; !in.Samples[pressure.CPU].Known || got < 900 || got > 1000 {
 		t.Fatalf("compliant managed use exposed as pressure: %d", got)
 	}
 	var state pressure.State
@@ -185,6 +193,7 @@ func TestHostPressureCoverageAndDurableWarning(t *testing.T) {
 		t.Fatalf("healthy managed work produced incident: %v %+v", err, actions)
 	}
 	setHostPressureCPU(m, base.Add(6*time.Second), tick+6*time.Second, 0.5)
+	setHostPressureCredit(m, l, j, 0.5)
 	m.mu.Lock()
 	in, p, err = m.hostPressureInput(base.Add(6*time.Second), tick+6*time.Second)
 	m.mu.Unlock()
@@ -269,60 +278,68 @@ func TestHostPressureCoverageAndDurableWarning(t *testing.T) {
 }
 
 func TestHostPressureFullyAllocatedManagedCPUIsHealthy(t *testing.T) {
-	m := newManager(t)
-	if _, err := m.Acquire(request("fully-allocated-managed"), nil); err != nil {
-		t.Fatal(err)
-	}
-	base, tick := time.Now().UTC(), time.Duration(100)*time.Second
+	m, l, j := cpuCreditFixture(t)
+	base, tick := time.Now().UTC(), 100*time.Second
 	var state pressure.State
 	for _, sec := range []int{0, 6, 12, 18} {
 		now, observed := base.Add(time.Duration(sec)*time.Second), tick+time.Duration(sec)*time.Second
 		setHostPressureCPU(m, now, observed, 0)
+		setHostPressureCredit(m, l, j, 1)
 		m.mu.Lock()
 		in, p, err := m.hostPressureInput(now, observed)
 		m.mu.Unlock()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if in.Samples[pressure.CPU].Available != 1000 {
-			t.Fatalf("fully promised busy CPU coverage = %d", in.Samples[pressure.CPU].Available)
+		if !in.Samples[pressure.CPU].Known || in.Samples[pressure.CPU].Available < 900 {
+			t.Fatal("verified use did not establish recovery", in.Samples[pressure.CPU])
 		}
 		var actions []pressure.Action
 		state, actions, err = pressure.Advance(state, in, p)
 		if err != nil || len(actions) != 0 || state.Resources[pressure.CPU].Active {
-			t.Fatalf("compliant fully allocated CPU produced pressure: %v %+v %+v", err, actions, state.Resources[pressure.CPU])
+			t.Fatal("verified compliant work warned", err, actions, state)
 		}
 	}
 }
 
-func TestHostPressureUnusedBarePromiseCanMaskExternalBusy(t *testing.T) {
+func TestHostPressureUnusedBarePromiseDoesNotMaskHostBusy(t *testing.T) {
 	m := newManager(t)
 	r := request("unused-bare-promise")
 	r.Resources.CPU = 0.5
 	if _, err := m.Acquire(r, nil); err != nil {
 		t.Fatal(err)
 	}
-	// The bare lease may be idle while unrelated work uses half a core. This
-	// warning-only coverage metric cannot distinguish that from compliant use.
-	base, tick := time.Now().UTC(), time.Duration(100)*time.Second
+	base, tick := time.Now().UTC(), 100*time.Second
 	var state pressure.State
+	warned := false
 	for _, sec := range []int{0, 6, 12} {
 		now, observed := base.Add(time.Duration(sec)*time.Second), tick+time.Duration(sec)*time.Second
 		setHostPressureCPU(m, now, observed, 0.5)
 		m.mu.Lock()
 		in, p, err := m.hostPressureInput(now, observed)
+		ls, listErr := m.list()
+		_, e := m.cpuWarningSample(now, observed, ls)
 		m.mu.Unlock()
+		if listErr != nil {
+			t.Fatal(listErr)
+		}
 		if err != nil {
 			t.Fatal(err)
 		}
-		if in.Samples[pressure.CPU].Available != 1000 {
-			t.Fatalf("promised coverage changed: %d", in.Samples[pressure.CPU].Available)
+		if e.VerifiedManaged != 0 || e.PossibleCompliant != 0 || !in.Samples[pressure.CPU].Known || in.Samples[pressure.CPU].Available != 500 {
+			t.Fatal("bare promise manufactured coverage", e, in.Samples[pressure.CPU])
 		}
 		var actions []pressure.Action
 		state, actions, err = pressure.Advance(state, in, p)
-		if err != nil || len(actions) != 0 || state.Resources[pressure.CPU].Active {
-			t.Fatalf("coverage-only metric unexpectedly attributed external work: %v %+v", err, actions)
+		if err != nil {
+			t.Fatal(err)
 		}
+		for _, a := range actions {
+			warned = warned || a.Kind == pressure.WarnOperator
+		}
+	}
+	if !warned || !state.Resources[pressure.CPU].Active {
+		t.Fatal("bare promise masked sustained busy host", state)
 	}
 }
 

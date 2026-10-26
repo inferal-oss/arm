@@ -15,15 +15,14 @@ import (
 	"github.com/yrashk/arm/internal/pressure"
 )
 
-// The first runtime slice warns and asks for cooperation. CPU uses a coverage
-// metric: native idle plus all current CPU promises, capped at effective
-// capacity. Compliant managed use cannot create a CPU incident by itself.
-// A shortage is an uncovered busy fraction, not proof of an external culprit.
+// The warning-only runtime uses measured coverage to recover and possible
+// compliant supervised coverage to avoid blaming unmeasured managed work.
+// Ambiguous attribution is explicit and cannot establish healthy recovery.
 func hostPressurePolicy(cpu model.CPUAvailability, memory model.MemoryAvailability, disk model.DiskAvailability) pressure.Policy {
 	cpuLow, cpuHigh := uint64(1), uint64(2)
 	if cpu.Capacity != nil && finiteCPU(*cpu.Capacity) && *cpu.Capacity > 0 && *cpu.Capacity <= 65536 {
-		cpuLow = max(1, uint64(math.Floor(*cpu.Capacity*750)))
-		cpuHigh = max(cpuLow+1, uint64(math.Floor(*cpu.Capacity*900)))
+		cpuLow = max(1, uint64(math.Floor(cpuWarningProduct(*cpu.Capacity, 750, false))))
+		cpuHigh = max(cpuLow+1, uint64(math.Ceil(cpuWarningProduct(*cpu.Capacity, 900, true))))
 	}
 	memLow, memHigh := uint64(1), uint64(2)
 	if memory.Total != nil && *memory.Total > 0 {
@@ -74,7 +73,8 @@ func hostSample(at time.Time, tick, nowTick time.Duration, now time.Time, epoch 
 // inferred from a native observation or from a persisted lease record.
 func (m *Manager) hostPressureInput(now time.Time, tick time.Duration) (pressure.Input, pressure.Policy, error) {
 	m.observationMu.RLock()
-	cpu, cpuTick := m.cpuAvailability, m.cpuPressureTick
+	cpuSnapshot := m.cpuWarningSnapshotLocked()
+	cpu := cpuSnapshot.cpu
 	memory, memoryTick := m.memoryAvailability, m.memoryPressureTick
 	disk, diskTick := m.diskAvailability, m.diskPressureTick
 	m.observationMu.RUnlock()
@@ -91,8 +91,6 @@ func (m *Manager) hostPressureInput(now time.Time, tick time.Duration) (pressure
 	if err != nil {
 		return in, p, err
 	}
-	promisedCPU := 0.0
-	validPromises := true
 	for _, l := range ls {
 		if !consuming(l.State) || l.Expires == nil || !l.Expires.After(now) || l.ID == "" {
 			continue
@@ -103,18 +101,9 @@ func (m *Manager) hostPressureInput(now time.Time, tick time.Duration) (pressure
 		in.Jobs = append(in.Jobs, pressure.Job{LeaseID: l.ID, ExecutionID: l.ID, Generation: "warning-only", OwnershipID: m.host,
 			AgentID: l.Request.Agent, StillOwned: l.Host == m.host && l.Owner == m.owner, ExpiresAt: *l.Expires,
 			Supervised: m.jobs[l.ID] != nil, PauseCapability: false, PauseAllowed: false, Stopping: l.State == "ending"})
-		if !finiteCPU(l.Request.Resources.CPU) || l.Request.Resources.CPU < 0 {
-			validPromises = false
-		} else {
-			promisedCPU += l.Request.Resources.CPU
-		}
 	}
-	if validPromises && finiteCPU(promisedCPU) && cpu.Known && cpu.Available != nil && cpu.Capacity != nil && cpu.EligibleCPUs != nil && *cpu.EligibleCPUs > 0 &&
-		finiteCPU(*cpu.Available) && finiteCPU(*cpu.Capacity) && *cpu.Available >= 0 && *cpu.Available <= *cpu.Capacity && *cpu.Capacity >= 0.002 &&
-		cpu.Interval >= 100*time.Millisecond && cpu.Interval <= 6*time.Second {
-		covered := min(*cpu.Capacity, *cpu.Available+promisedCPU)
-		in.Samples[pressure.CPU] = hostSample(cpu.At, cpuTick, tick, now, m.pressureEpoch, uint64(math.Floor(covered*1000)), true)
-	}
+	sample, _ := m.cpuWarningSampleFrom(cpuSnapshot, now, tick, ls)
+	in.Samples[pressure.CPU] = sample
 	return in, p, nil
 }
 
@@ -207,8 +196,8 @@ func (m *Manager) advanceHostPressureAt(now time.Time, tick time.Duration) error
 		metric := "native available headroom"
 		explanation := ""
 		if a.Reason == pressure.CPU {
-			metric = "covered CPU headroom"
-			explanation = " CPU coverage is native idle plus current CPU promises, capped by effective capacity."
+			metric = "idle plus possible supervised use"
+			explanation = " Supervised budgets are a compliance assumption, not a measurement; bare or untracked work may be legitimate."
 		}
 		body := fmt.Sprintf("Host %s pressure: %s is %d %s; warning sequence %d, incident %d.%s This is host pressure and does not assert a lease violation or identify a culprit.", a.Reason, metric, a.Sample.Available, pressureUnit(a.Reason), a.Warning, a.Incident, explanation)
 		msg := Message{ID: local.ID(), Owner: m.owner, OwnerUsername: m.ownerUsername, Sender: "arm-host-pressure", Created: now,

@@ -3068,3 +3068,165 @@ owned fixture closes before success. Evidence:
 ordinary routed SSH regression evidence, not public sync execution. No new sync
 formal refinement, physical allocation guarantee or cleanup settlement is
 inferred from these private component gates.
+
+## CPU warning confidence and unused promises
+
+The warning classifier no longer treats every CPU promise as measured use.
+It records fresh native idle plus exact same-frame current managed credit as
+a lower coverage, and separately records possible compliant original-owner
+coverage. The latter is a policy assumption, not a physical upper-use bound or
+proof of compliance. Only measured coverage establishes recovery; ambiguous
+coverage cannot clear an existing incident. Bare/untracked work gets bounded
+cooperative busy-host messages without violation or external-culprit claims.
+
+Controlled race validation passes the full warning/managed-credit selection
+(22 roots/53 named outcomes,95.585s, zero skips/failures) and final focused
+source/ownership/status boundaries (5 roots/20 named,31.036s). These use real
+original sleeping processes and actual lease/journal/start-fence paths, but
+controlled CPU observations/candidates. Cases include fully used compliant
+owned work, unused bare promises, unsupported Linux-style attribution,
+foreign/expired/replaced/joined owners, cookie/frame/interval/age mismatch,
+per-job caps, outward rounding, inability to recover from uncertainty,
+original in-process owner/context replacement, unchanged admission, one frozen
+CPU observation/policy cycle, and unreadable-ledger refusal. Existing warning
+outbox, rollback, exact-recipient and shutdown-start fence cases pass in the
+full selection. Affected Manager/model vet passes.
+
+The actual no-grant/no-load native observation/frame binding check passes
+(8.125s) without fabricated native counters. The opt-in actual one-core managed
+workload attempt fails with real `insufficient_capacity` before launching its
+helper (6.016s); that is not positive managed-use acceptance. Its failure is
+retained, admission/assertions were not weakened, and the workload was not
+repeated merely to obtain a pass. A later diagnostic includes the actual native
+budget on this failure. Positive native warning-credit correlation remains
+unverified on this successor.
+
+The final complete Manager test binary cross-compiles CGo-free for Linux
+ARM64; it has not been executed there by this task. Logs/image/hash manifest
+remain in this worktree's ignored `.cache/pressure-attribution/`. No real
+Codex/Claude delivery, induced external pressure, native pausing, complete
+managed process inventory, new warning-specific TLC/Go/TLAPM refinement or full
+Manager-suite acceptance is claimed. The existing admission formula/native
+counter derivation and its separate proof scope remain unchanged. The first
+warning commit deliberately excluded the pending inline sync bridge. The
+separate inline-owner extension below composes the subsequently reviewed bridge.
+
+## Inline sync-worker CPU warning ownership
+
+The warning adapter recognizes an inline worker only through the original
+admitted hold captured before the native observation. It rechecks the same
+runtime/context/completion channel, started/live/unjoined state, original full
+lease digest, exact listed lease, and current durable lease/volume binding.
+These checks add possible compliant use only; neither an inline registry entry
+nor an injected credit candidate mints native CPU usage or changes admission.
+
+Controlled tests use the reviewed charged-row/original-hold fixture and actual
+worker Start/join mechanics with controlled CPU values. They cover replacement
+of the hold/runtime/context/completion channel, cancelled or declined workers,
+changed original/full listed/durable rows and volume bindings, post-observation
+start, duplicate owner kinds, completion, and a fully occupied compliant scope.
+The fixture is private hold-mechanics evidence; it is not a real destination SSH
+admission or native measurement of Go worker CPU. Separate composed destination
+SSH tests retain their original real admission/lifecycle assertions.
+
+The initial focused inline race gate passes 4 roots/13 named cases in 22.281s.
+After adding the listed-row/start/duplicate-kind and full-occupancy controls,
+the first broad composed gate reaches 40 roots/91 named cases, with 39/90
+passing and no test failure or skip before its original 180-second package
+deadline. The alarm catches the next original-hold test during native
+filesystem observation in Manager.Open, before its worker starts. That failed
+180.708s result is retained. A fresh unchanged complete roster with a planned
+240-second package limit passes all 43 roots/94 named cases in 186.511s,
+including warning outbox/recipient/rollback/start/shutdown fences, unchanged
+managed credit and actual destination SSH admission/worker lifecycle. The
+complete affected syncworker package passes 8 roots/12 named cases in 2.717s.
+Neither completed gate has test failures or skips. Affected Manager/model/
+syncworker vet passes, and the complete Manager test image cross-compiles
+CGo-free for Linux ARM64. This task has not executed that image on Linux.
+
+Ignored logs and the source/image hash manifest are under
+`.cache/pressure-attribution/inline-*.jsonl` and `inline-candidate.json`. This
+focused extension does not include the independently reviewed successor for
+the base classifier's missing/ended-owner, fractional recovery and repeated-sum
+counterexamples; those corrections need composition before broader warning
+acceptance. No new native positive managed-usage pass, full Manager-suite
+acceptance, automatic pausing or warning-specific model/trace/proof refinement
+is claimed here.
+
+## Independent composed CPU warning review
+
+Independent review starts from main `3a55969` and composes only warning `2f86b25`
+and inline owner `9f5bf50`; the author's copied bridge dependency is excluded.
+Retained controlled counterexamples reproduce a retired/expired/omitted sampled
+owner becoming known shortfall, repeated addition rounding 17 original transit
+promises below their exact possible-use sum, and fractional capacity 0.0026
+reporting recovery with only 0.002 idle (~77%). Further controls reproduce a
+missing native/inline owner being treated as a bare reservation, replacement
+transit contexts/join witnesses, and changed same-revision transit promises.
+
+The successor retains the union of sampled/current owner identities, freezes
+original transit context/join/canonical row, and rounds each possible-use sum
+and coverage/threshold conversion outward. Recovery thresholds round up.
+Retained execution/transport/sync evidence without its private owner contributes
+only uncertainty, including expiry and actual Manager Close/Open; it supplies
+neither native credit nor possible use. Positive fresh physical idle still
+supports recovery independently of missing owners. Millicore resolution can
+leave small fractional capacities uncertain. Exact-rational arithmetic tests
+independently check sum/product directions against representable input values.
+The frozen-snapshot test keeps its original idle/policy assertions and now
+expects 949m from the lower representation of binary 0.95, instead of rounding
+that lower value up to 950m. The earlier assertion failure is retained.
+
+Final native macOS composed Manager races pass all 40 roots/85 named cases in
+131.660s, zero failures/skips, including all inline-owner bounds, controlled
+warning/credit/status boundaries, delivery/outbox/rollback/shutdown fences,
+retirement/restart/transit changes, exact arithmetic and the explicitly enabled
+actual no-grant/no-load native observation check. Complete pressure-core races
+pass all 31 roots/56 named cases in 1.567s, zero failures/skips. Affected
+Manager/model vet and diff checks pass. Controlled CPU candidates are not
+physical usage measurements; native sleeping jobs retain original Manager
+cleanup, and transit/sync fixtures retain their original context/join paths.
+
+The initial sandboxed repair attempt lacks native process identity in three
+fixture setups and is retained as a failed attempt; the permitted native run
+passes. Counterexamples, the snapshot assertion failure, successful final races,
+vet, source/evidence hashes and exact rosters are in the review worktree's
+ignored `.tla/cpu-warning-review/`, with `summary.json` as the index. The author's
+unchanged 180-second timeout and subsequent 240-second composed pass remain in
+its separate retained evidence. Its actual one-core admission refusal remains
+a failure, not positive native warning-credit acceptance, and was not repeated
+by this review. This review performs no real agent delivery, induced CPU load,
+Linux execution, native pausing, complete process-inventory proof or new formal
+warning refinement. Admission, native counter derivation and signal authority
+are unchanged; no Linux physical attribution or public sync is inferred.
+
+## CPU warning primary integration acceptance
+
+The primary checkout composes only `2f86b25`, `9f5bf50` and independent correction
+`fb0624f`, preserving the previously integrated destination sync ownership.
+Classifier, policy and regression sources match the reviewed candidate bytes.
+Its fresh permitted macOS run passes all 40 Manager roots/85 named cases in
+154.427s, including the actual no-grant/no-load observation check, and all 31
+pressure-core roots/56 named cases in 1.641s. Neither run fails or skips; affected
+Manager/model/pressure vet passes. The package limit remains 240 seconds.
+
+Actual Linux ARM64 executes the two final CGo-free test binaries, with uploaded
+SHA-256 values checked before launch. All 70 roots/140 named cases pass without
+failures or skips, including the 39 cross-platform Manager roots and complete
+pressure core. Original native command and SSH exit0, the bounded test scope
+is inactive and the exact disposable root is absent after cleanup. Ownership
+and warning tests use controlled CPU observations on Linux; this is not positive
+native CPU-capacity or physical managed-use attribution acceptance. No static
+quota bypass is introduced. Evidence is in the primary checkout's ignored
+`.cache/cpu-warning-integrated-{root-race.jsonl,core-race.jsonl,root-vet.log}`
+and `cpu-warning-integrated-linux-{intent.json,native.log,run.log}`.
+
+The author's previous actual one-core admission refusal and timeout remain
+retained. Automatic pause/resume, real agent-delivery acceptance and a new
+warning-specific model/actual-Go-trace/strict-proof gate remain incomplete;
+the latter is assigned in an isolated worktree. Admission's existing proof
+does not establish warning refinement.
+
+The complete current module also passes `go test -mod=readonly -p=1 -run '^$' ./...`
+after composition. This compiles all test packages; it does not execute
+their test bodies. Its log is `.cache/cpu-warning-integrated-module-compile.log`.

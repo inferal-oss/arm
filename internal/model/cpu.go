@@ -33,3 +33,19 @@ type CPUBudget struct {
 	StaleAfter    time.Duration   `json:"stale_after_ns"`
 	Accounting    string          `json:"accounting"`
 }
+
+// CPUWarningEvidence describes warning confidence only. PossibleCompliant is
+// a policy bound assuming supervised work obeys its promises, never a native
+// consumption measurement or authority to admit work, pause, or release it.
+type CPUWarningEvidence struct {
+	State             string        `json:"state"`
+	NativeKnown       bool          `json:"native_known"`
+	At                time.Time     `json:"at"`
+	Interval          time.Duration `json:"interval_ns"`
+	Idle              float64       `json:"idle_cores"`
+	VerifiedManaged   float64       `json:"verified_managed_cores"`
+	PossibleCompliant float64       `json:"possible_compliant_supervised_cores"`
+	MinimumCoverage   float64       `json:"minimum_coverage_cores"`
+	PossibleCoverage  float64       `json:"possible_compliant_coverage_cores"`
+	Detail            string        `json:"detail"`
+}

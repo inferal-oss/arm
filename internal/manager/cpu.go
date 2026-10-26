@@ -23,6 +23,7 @@ func (m *Manager) sampleCPU() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	at := time.Now()
+	warningOwners := m.captureCPUWarningOwners()
 	var reading model.CPUAvailability
 	var frame observe.CPUCreditFrame
 	var credits []cpuCreditSample
@@ -37,6 +38,7 @@ func (m *Manager) sampleCPU() {
 	m.cpuAvailability, m.cpuObserved = reading, at
 	m.cpuPressureTick, _ = pressureNativeTick()
 	m.cpuCredits, m.cpuCreditFrame = credits, frame
+	m.cpuWarningOwners = warningOwners
 	m.observationMu.Unlock()
 }
 
