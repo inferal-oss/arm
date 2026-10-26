@@ -16,7 +16,7 @@ Updated October 26, 2026 against the current worktree. The complete scope remain
 
 **Carrier prerequisite delivered.** Explicit carrier targets are integrated: paired `CARRIER_OS`/`CARRIER_ARCH` build a self-contained Linux or macOS carrier from another supported host. Review also fixed the omitted local rsync fork in private source snapshots. A full four-payload Linux ARM64 carrier build and actual Linux offline CLI execution pass. Kubernetes Pod bootstrap, authenticated runtime/catalog readiness and mesh connection remain separate gates.
 
-**Current validation gates.** Bounded, durable SSH history cleanup and complete expected-row binding are integrated after the full composed SSH race suite and native Linux suite pass; earlier deadline and stale-row failures remain recorded. Stable Darwin boot identity is integrated, and the scoped CPU TLC/actual-Go/TLAPM gate is renewed. Warning-runtime exact-recipient/lease/incident start checks have fresh focused race evidence and remain in final integration review; automatic pause stays disabled. Kubernetes is tightening saved endpoint/CA/transport pins before authenticated requests. Public sync still needs the actual Manager/schema/worker integration.
+**Current validation gates.** Bounded, durable SSH history cleanup and complete expected-row binding are integrated after the full composed SSH race suite and native Linux suite pass; earlier deadline and stale-row failures remain recorded. Stable Darwin boot identity is integrated, and the scoped CPU TLC/actual-Go/TLAPM gate is renewed. Warning-runtime exact-recipient/lease/incident start checks are integrated with focused platform evidence; automatic pause stays disabled. Kubernetes endpoint/CA/origin fences and owned helpers are integrated. The private Manager/schema/worker components are integrated; production orchestration, allocation/cleanup, relayed public sync and full Kubernetes delivery remain required.
 
 **Pressure warnings integrated.** The reviewed decision/journal core now feeds durable Manager warnings, operator/agent inboxes and an exact-registration native-delivery outbox. Sampling, warning commits, shutdown fences and contact/lease/incident checks at command start pass scoped composed macOS race and native Linux tests. CPU warnings use idle-plus-promises coverage, which can mask external activity when promises are unused; it is not verified usage attribution. Automatic pause/resume remains disabled. Stronger pressure evidence, unknown-delivery reconciliation, configurable policy, UI controls and pressure-specific formal gates remain required.
 
@@ -302,3 +302,11 @@ no user's process, private state or mesh grants become another user's authority.
 Compare an optional broker with unprivileged peer coordination and state their
 limits. No cross-user production behavior or privileged installation is enabled
 by this research; a concrete security scheme remains for operator review.
+
+
+**Multi-user research reviewed:** [the proposal](MULTI-USER-COOPERATION-PROPOSAL.md)
+recommends an optional dedicated non-root broker with explicit per-user consent.
+OS-authenticated settlement is an owner assertion, not independent proof of
+cross-user cleanup or physical reclamation. Settlement trust policy, protected
+service provisioning, scope mappings, per-user limits and aggregate disclosure
+remain operator decisions. No multi-user runtime authority is enabled.

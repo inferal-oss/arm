@@ -2952,3 +2952,17 @@ errors. Evidence is `.tla/cpu-admission-integrated-sync/run-rihui7ds/` and
 `.cache/cpu-admission-integrated-sync-formal.log`. This renews the controlled-input
 admission/credit relation; it does not prove native counter accuracy, new sync
 or Kubernetes protocols, or whole-program refinement.
+
+
+## Multi-user cooperation research review
+
+Research16c293e and independent corrections9d543f4 produce the operator proposal.
+Review distinguishes UID-authenticated owner claims from independently observed
+facts, and corrects activation/expiry, rollback/fencing, namespace and reconnect
+identity, atomic pool vectors, lock ordering and privacy/fairness limitations.
+Primary Linux/kernel/systemd and Apple API sources were checked; local document
+targets and formatting were checked. A pre-existing broken link to retired
+share-preparation model source is replaced by an explicit historical note.
+No broker, cross-user IPC/native account experiment, model/proof or production
+authority was implemented or accepted. Cooperative settlement versus retention
+until independently supported recovery remains a required operator decision.

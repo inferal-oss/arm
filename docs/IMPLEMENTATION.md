@@ -1003,7 +1003,7 @@ Acceptance covers four-daemon alternate routing and a genuine three-hop chain wi
 
 The first model covers one exact immutable preparation identity, admission/charge/pin, native entry and join, no-start, cancellation/expiry, durable or nondurable failed commits, restart uncertainty and explicit absence reconciliation. SQL/cache observations come from actual private Manager state; native entry increments a count at the actual body checkpoint. Identity normalization checks key, owner, authority, resources, backing storage, reason, TTL and budget before erasing concrete IDs. It does not hide unsafe phase/lease state. Crash scenarios kill and wait an owned child, reread durable SQL and open a new Manager; they never infer native join from persisted worker labels.
 
-Normal builds contain only empty hooks, with no trace registry/output/environment activation or scheduling barriers. Dev capture is bounded in memory; barriers and file output run outside Manager.mu. Each formal run snapshots source/configuration/proof once, hashes those exact copies and records tool/back-end provenance. Empty exploration, zero or partial proofs and incomplete trace coverage refuse acceptance. Tool timeout/cancellation cleanup retains output and stops its owned process group; it does not contain intentionally detached processes. Generated tools, JVM/Go temporary fixtures, TLC states/traces and TLAPM caches stay under ignored `.tla/`. See the [mapping and limits](../formal/share-preparation/README.md).
+Normal builds contain only empty hooks, with no trace registry/output/environment activation or scheduling barriers. Dev capture is bounded in memory; barriers and file output run outside Manager.mu. Each formal run snapshots source/configuration/proof once, hashes those exact copies and records tool/back-end provenance. Empty exploration, zero or partial proofs and incomplete trace coverage refuse acceptance. Tool timeout/cancellation cleanup retains output and stops its owned process group; it does not contain intentionally detached processes. Generated tools, JVM/Go temporary fixtures, TLC states/traces and TLAPM caches stay under ignored `.tla/`. This historical share-preparation model was retired with mounting; its former source mapping is unavailable in the current tree. Current CPU and history-cleanup verification have separate maintained model directories.
 
 This is separate finite model, selected implementation trace and theorem evidence. It is not a whole-program refinement proof, OS/SQLite correctness proof, liveness guarantee or coverage of public share consumers, graph routing or SSH archival. Graph freshness/recovery and history settlement models remain follow-ons.
 
@@ -1169,3 +1169,15 @@ selection and real-cluster acceptance remain required. Pod requests are ceilings
 and scheduler declarations, not proven live capacity; hidden Linux quota
 ancestry still refuses native CPU grants. No Kubernetes entitlement exception
 or QUIC transition is enabled. See [the provider contract](KUBERNETES-PROVISIONING.md).
+
+
+## Multi-user cooperation research
+
+[The reviewed proposal](MULTI-USER-COOPERATION-PROPOSAL.md) is a research artifact,
+not implemented behavior. Independent per-user daemons and private authority
+remain current. The candidate broker would authenticate OS principals and
+serialize a consented promise ledger; it cannot independently establish another
+user's truthful consumption or cleanup. Evidence classes, durable activation,
+unknown outcomes, coordinator fencing, namespace mapping, privacy and fairness
+limits are explicit. The settlement trust choice and service provisioning need
+operator review before implementation or production activation.
