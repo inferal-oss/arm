@@ -2564,3 +2564,39 @@ held-budget aging correction adds a staggered connected-snapshot regression;
 it does not claim a second rendered browser run. CPU's large activity view and
 I/O rates keep their semantics. The terminal Monitor still needs the matching
 remaining-first presentation.
+
+## October 26: retained archive candidate failure and warning-runtime evidence
+
+The complete frozen SSH-service race binary composed from main `f04690e` and
+archive candidate `c3d6162` exits 1: 77 roots pass, while the unchanged
+64/65 archive test fails its hot-unlink proof context (92.07s) and
+`TestKeyStatusHostileEnvelopeNeverCleansOrSettlesPublishedArtifacts` fails
+with an unavailable original worker namespace. The latter error currently
+conflates a native capture error and a namespace mismatch; its cause is not
+proven. The binary hash, exact staged patch hash and original output are
+retained in ignored `.cache/sshservice-c3-integrated-{receipt.json,full-race.log}`.
+The five candidate files and patch are independently backed up with hashes
+and remain committed on their owning branch. They were restored out of main
+after the failed gate; no archive-reliability fix or package pass is claimed.
+
+The candidate's scoped sequential native ABBA capture benchmark reduces
+allocations from224 to138 and mean capture time by about32% in that run.
+An earlier500-capture comparison was slower for the candidate; both are
+retained. These are not exclusive-host or complete-workflow speed claims.
+The owning task is now changing the bounded cleanup architecture rather
+than increasing the five-second mutation deadline or reducing64 records.
+
+Separately, warning-runtime `ed7d2e7` passes fresh macOS race checks:
+pressure1.506s, agents1.603s, selected Manager14.042s and reset proof2.686s,
+plus affected vet. The independent real remote Stop regression passes
+unchanged after failing its predecessor. All44 selected component roots/69
+named cases pass on actual Linux ARM64 in an owned CPU-bounded scope; four
+uploaded binaries are hash-verified, original native/SSH/cleanup exit0, exact
+scope inactive and disposable root absent. Ignored evidence:
+`.cache/pressure-ed7-*-root-race.log` and
+`.cache/pressure-ed7-linux-{intent.json,native.log,run.log}`. These tests use
+controlled Manager observations and fake native delivery commands, not
+induced host pressure, real Codex/Claude warning acceptance or native pause.
+Final review is tightening recipient/lease/incident authority at actual
+command start; this successor is not yet integrated. Broad earlier Manager
+failures remain recorded; no full Manager-suite pass is inferred.
