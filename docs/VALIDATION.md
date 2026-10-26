@@ -2705,3 +2705,23 @@ delivery commands. They do not establish induced physical pressure, real
 Codex/Claude warning receipt, automatic pause, or pressure-specific formal
 refinement. CPU warnings remain a coverage heuristic; admission's separate
 fresh-headroom guard is unchanged.
+
+## October 26: fixed private sync worker integration
+
+The private worker from `4738309` plus reviewed `0e1635a` rejects a reproduced
+allocation overrun: a 120,070-byte frame previously allocated 40,000 directory
+structs under a 1 MiB hold. Structural preflight now refuses it before typed
+decode. Full worker race tests and affected vet pass in the composed checkout.
+Actual Linux ARM64 tests pass after upload-hash verification, with no skips,
+original native/SSH exit zero, scope inactive and exact disposable root absent.
+Tests exercise push/pull/both, additive/full policies, conflict keep-both,
+cancellation, failed joins, unchanged selected content on refused dispatch, and
+two directions over an actual authenticated ARM SSH session. Ignored logs are
+`.cache/sync-worker-final-root-{race,vet}.log` and
+`.cache/sync-worker-reviewed-linux-{intent.json,native.log,run.log}`.
+
+These tests use test admission holds. They do not establish production Manager
+volume/allocation enforcement, public CLI/UI dispatch, physical cross-host speed
+or complete bidirectional recovery. Separate admission review reproduced
+unadmitted preparation and missing outgoing disk coverage; those commits stay
+unintegrated pending correction.

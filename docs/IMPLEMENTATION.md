@@ -1060,3 +1060,18 @@ The private publication gate independently invokes27 modules, with242 qualified 
 
 
 Clock refusal errors retain the first observed UTC timestamp and measured reason (elapsed regression, wall/elapsed divergence or wall below the retained floor) for the backend process. Later refusals repeat that observation, and returned error objects cannot mutate it. This reports the detected condition rather than inferring suspend/NTP as its cause. The same strict skew/floor checks and sticky authorization refusal remain; no automatic clock recovery or membership refresh is introduced.
+
+## Fixed private sync worker
+
+The internal worker runs push/pull/both protocol-27 Go rsync batches and control
+frames on one admitted authenticated SSH exec stream. It verifies selected
+manifests, publishes through the bound native journal and requires exact endpoint
+receipts plus the original SSH exit status before confirming a baseline. Failure
+and cancellation close and join the transport; the cancellation callback is also
+joined before returning. Control frames receive a bounded token preflight before
+typed decoding, charging structure, strings and buffers against the live hold.
+
+The runner remains package-private: tests provide the hold. It is not a public
+`arm sync` command or production physical-allocation enforcement. Real Manager
+preparation admission, outgoing staging/volume charges, receipt exchange and
+exact cleanup/charge release remain integration requirements.
