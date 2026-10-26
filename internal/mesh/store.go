@@ -27,7 +27,7 @@ type Grant struct {
 	MaxTTL        time.Duration   `json:"max_ttl_ns"`
 }
 
-var permissions = []string{"observe-host", "observe-own", "observe-all", "lease-own", "run", "message", "contact-read", "ssh-exec", "node-stop", "node-uninstall"}
+var permissions = []string{"observe-host", "observe-own", "observe-all", "lease-own", "run", "message", "contact-read", "ssh-exec", "screen-view", "node-stop", "node-uninstall"}
 
 func (g Grant) Validate() error {
 	if len(g.Contacts) > 64 {

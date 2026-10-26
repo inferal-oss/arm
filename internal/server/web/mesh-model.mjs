@@ -8,6 +8,7 @@ export const meshPermissions = Object.freeze({
   'observe-host':'Host summary', 'observe-own':'Our leases', 'observe-all':'All leases',
   'lease-own':'Create and manage our leases', run:'Run programs', 'node-stop':'Stop this ARM backend', 'node-uninstall':'Remove an ARM-managed executable',
   message:'Send messages', 'contact-read':'Read allowed agent contacts',
+  'screen-view':'View and control the Mac screen after macOS sign-in',
 });
 export const validHostID = value => typeof value === 'string' && /^[a-f0-9]{32}$/.test(value);
 export function phaseLabel(op) {
@@ -44,6 +45,7 @@ export function grantFromDraft(draft) {
     grant.limits = {cpu,memory_bytes:Math.round(memory * 1073741824),disk_bytes:Math.round(disk * 1073741824)};
     grant.max_ttl_ns = Math.round(ttl * 60e9);
   }
+  if (draft.screenView) grant.permissions.push('screen-view');
   if (draft.messages) {
     grant.permissions.push('message'); grant.operator_inbox = Boolean(draft.operatorInbox);
     grant.contact_ids = [...new Set(String(draft.contacts || '').split(/[\s,]+/).filter(Boolean))];

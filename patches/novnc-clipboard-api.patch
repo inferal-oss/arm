@@ -1,0 +1,93 @@
+--- a/internal/server/web/ard/ard-patch.js
++++ b/internal/server/web/ard/ard-patch.js
+@@ -112,6 +112,7 @@
+ const _origSendMouse = RFB.prototype._sendMouse;
+ const _origHandleWheel = RFB.prototype._handleWheel;
+ const _origClipboardPasteFrom = RFB.prototype.clipboardPasteFrom;
++const MAX_ARD_CLIPBOARD_BYTES = 1024 * 1024;
+ 
+ const _origWsFlush = Websock.prototype.flush;
+ const _origWsRecvMessage = Websock.prototype._recvMessage;
+@@ -410,7 +411,8 @@
+     RFB.messages.ardSetMode(this._sock, this._ardControlMode ?? 1);
+     this._ardHpRequestVirtualDisplay();
+     RFB.messages.ardSetDisplay(this._sock, this._ardSelectedDisplay);
+-    RFB.messages.ardAutoPasteboard(this._sock, 1);
++    // The browser enables Apple's pasteboard subscription only after an
++    // explicit Clipboard action, never during screen connection setup.
+     this._sendEncodings();
+     RFB.messages.pixelFormat(this._sock, this._fbDepth, true);
+     this._sendEncodings();
+@@ -643,10 +645,8 @@
+             break;
+ 
+         case statePasteboardChanged:
+-            // Server pasteboard changed — request clipboard content
+-            Log.Info("ARD: PasteboardChanged — requesting clipboard");
+-            RFB.messages.ardClipboardRequest(this._sock,
+-                0, this._ardClipboardSessionId); // format=0 (pasteboard)
++            // Do not fetch private pasteboard contents until the operator asks.
++            Log.Debug("ARD: PasteboardChanged");
+             break;
+ 
+         case statePasteboardDataNeeded:
+@@ -699,6 +699,12 @@
+     const headerBytes = this._sock.rQpeekBytes(15);
+     const compressedSize = ((headerBytes[11] << 24) | (headerBytes[12] << 16) |
+                             (headerBytes[13] << 8)  |  headerBytes[14]) >>> 0;
++    const uncompressedSize = ((headerBytes[7] << 24) | (headerBytes[8] << 16) |
++                              (headerBytes[9] << 8) | headerBytes[10]) >>> 0;
++    if (compressedSize > MAX_ARD_CLIPBOARD_BYTES ||
++        uncompressedSize > MAX_ARD_CLIPBOARD_BYTES) {
++        return this._fail('ARD clipboard text exceeds the 1 MiB viewer limit');
++    }
+ 
+     if (this._sock.rQwait("ServerClipboard payload", 15 + compressedSize)) { return false; }
+ 
+@@ -719,7 +725,8 @@
+             const text = ardParsePasteboard(decompressed);
+             if (text !== null) {
+                 Log.Info("ARD: ServerClipboard — " + text.length + " chars");
+-                this._writeClipboard(text);
++                this.dispatchEvent(new CustomEvent('clipboard',
++                    { detail: { text } }));
+             } else {
+                 Log.Warn("ARD: ServerClipboard — no text type found in pasteboard");
+             }
+@@ -1365,6 +1372,9 @@
+ RFB.prototype.clipboardPasteFrom = function (text) {
+     if (this._rfbAppleARD) {
+         if (this._rfbConnectionState !== 'connected' || this._viewOnly) { return; }
++        if (typeof text !== 'string' || new TextEncoder().encode(text).length > MAX_ARD_CLIPBOARD_BYTES) {
++            throw new Error('Clipboard text exceeds the 1 MiB viewer limit');
++        }
+         this._ardClipboardOutgoing = text;
+         this._ardSendClipboard(text);
+         return;
+@@ -1377,19 +1387,23 @@
+ // Send local clipboard text to remote via ARD protocol
+ RFB.prototype.forceClipboardPaste = function (text) {
+     if (!this._rfbAppleARD || this._rfbConnectionState !== 'connected' || this._viewOnly) { return; }
+-    this._ardClipboardOutgoing = text;
+-    this._ardSendClipboard(text);
++    this.clipboardPasteFrom(text);
+ };
+ 
+ // Request clipboard contents from remote
+ RFB.prototype.requestRemoteClipboard = function () {
+     if (!this._rfbAppleARD || this._rfbConnectionState !== 'connected') { return; }
+-    RFB.messages.ardClipboardRequest(this._sock, 0, this._ardClipboardSessionId);
++    if (!this._ardClipboardExplicitEnabled) {
++        RFB.messages.ardAutoPasteboard(this._sock, 1);
++        this._ardClipboardExplicitEnabled = true;
++    }
++    RFB.messages.ardClipboardRequest(this._sock, 0, 0);
+ };
+ 
+ // Enable or disable automatic clipboard synchronization
+ RFB.prototype.enableClipboardSync = function (enabled) {
+     if (!this._rfbAppleARD || this._rfbConnectionState !== 'connected') { return; }
++    this._ardClipboardExplicitEnabled = !!enabled;
+     RFB.messages.ardAutoPasteboard(this._sock, enabled ? 1 : 0);
+ };
+ 

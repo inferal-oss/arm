@@ -18,10 +18,11 @@ import {createMeshConsole} from './mesh-console.mjs';
 import {nodeWindowRoute,openNodeWindow,receiveNodeWindow,nodeContextClosed} from './node-window.mjs';
 import {createRemoteNodeDashboard} from './remote-node.mjs';
 import {createConnectionLinkHandler, createDashboardAuthentication} from './connection-links.mjs';
+import {createScreenViewer} from './screen-viewer.mjs';
 
 const targetWindow = nodeWindowRoute(location.href);
 const sessionKey = targetWindow?.host ? 'arm-node-session:'+targetWindow.host : 'arm-session';
-let remoteDashboard = null, nodeContextInvalid = false;
+let remoteDashboard = null, remoteRoot = null, screenViewer = null, nodeContextInvalid = false;
 const jsonExpansions = new Map();
 function recordJSON(value, label, key, open = false) {
   if (!jsonExpansions.has(key)) {
@@ -79,6 +80,7 @@ function connectionState(text, live = false) {
   else if (!live) remoteDashboard.disconnect();
   poolConsole?.updateConnection();
   meshConsole?.updateConnection();
+  if (!live) screenViewer?.disconnect();
 }
 
 class Backend {
@@ -151,6 +153,7 @@ const authentication = createDashboardAuthentication({
     peerPicture = null; peerPoll.reset(null);
     const previous = connection; connection = null; session = null;
     previous?.disconnect(); // Settle outstanding requests immediately, never replay.
+    screenViewer?.disconnect(); screenViewer=null; $('screen').replaceChildren();
     connectionState(fresh ? 'Authenticating' : 'Connecting'); notice();
   },
   onSession: async value => { if (targetWindow?.host && value.context?.host !== targetWindow.host) throw Error('Open this exact node from the local Mesh page.'); session = value; await connect(); },
@@ -170,9 +173,10 @@ async function connect() {
       if (session.context.host !== targetWindow?.host) throw Error('Node session does not match this window.');
       if (!remoteDashboard) {
         for (const section of document.querySelectorAll('main>.view')) section.hidden=true;
-        const remoteRoot=node('section','view'); $('main').append(remoteRoot);
+        remoteRoot=node('section','view'); $('main').append(remoteRoot);
         remoteDashboard=createRemoteNodeDashboard({root:remoteRoot,feed:$('live-feed'),call:(...args)=>connection.call(...args),context:session.context,onError:error=>{if(error.code==='node_context_changed'){nodeContextInvalid=true;current.socket.close();}}});
-        for(const button of document.querySelectorAll('nav button'))button.hidden=!['resources','leases','host'].includes(button.dataset.view);
+        document.body.classList.add('remote-node');
+        for(const button of document.querySelectorAll('nav button'))button.hidden=!['resources','leases','host','screen'].includes(button.dataset.view);
         document.querySelector('.page-heading .eyebrow').textContent='DESTINATION NODE / SCOPED INSPECTION';
         document.querySelector('body>footer').replaceChildren(node('span','','REMOTE NODE · READ-ONLY GATEWAY'),node('span','mesh-mono',session.context.host));
       }
@@ -266,12 +270,22 @@ const titles = {
   activity: ['Activity', 'Durable operational events · latest 200 loaded entries'],
   host: ['Host & capabilities', 'Local authority, infrastructure allocations and supported capabilities'],
   mesh: ['Mesh', 'Direct peers · explicit trust · independent resource authorities'],
+  screen: ['Screen Sharing', 'Standard VNC · selected Mac · macOS authentication'],
 };
+function showScreen() {
+  if (!screenViewer) screenViewer=createScreenViewer({root:$('screen'),token:session?.token,context:session?.context??{local:true}});
+  $('screen').hidden=false;
+}
 function renderView(name) {
   if (remoteDashboard) {
-    name=['resources','leases','host'].includes(name)?name:'resources'; view=name;
+    name=['resources','leases','host','screen'].includes(name)?name:'resources'; view=name;
     for(const button of document.querySelectorAll('nav button')){if(button.dataset.view===name)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
-    $('title').textContent=({resources:'Destination resources',leases:'Destination leases',host:'Node metadata'})[name]; $('subtitle').textContent='Scoped through the local ARM gateway · destination permissions enforced';remoteDashboard.show(name);return;
+    $('title').textContent=({resources:'Destination resources',leases:'Destination leases',host:'Node metadata',screen:'Destination screen'})[name]; $('subtitle').textContent=name==='screen'?'Standard Screen Sharing · Mac sign-in required':'Scoped through the local ARM gateway · destination permissions enforced';
+    $('freshness').hidden=name==='screen'; $('cadence').hidden=name==='screen';
+    document.querySelector('.page-heading .eyebrow').textContent=name==='screen'?'DESTINATION NODE / SCREEN SHARING':'DESTINATION NODE / SCOPED INSPECTION';
+    document.querySelector('body>footer span:first-child').textContent=name==='screen'?'REMOTE NODE · SCREEN SHARING':'REMOTE NODE · READ-ONLY GATEWAY';
+    remoteRoot.hidden=name==='screen'; $('screen').hidden=name!=='screen';
+    if(name==='screen')showScreen();else {screenViewer?.disconnect();remoteDashboard.show(name);}return;
   }
   if (!titles[name]) return;
   view = name;
@@ -279,6 +293,7 @@ function renderView(name) {
     if (button.dataset.view === name) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
   }
   for (const [key] of Object.entries(titles)) $(key === 'host' ? 'host-view' : key).hidden = key !== name;
+  if(name==='screen')showScreen();else screenViewer?.disconnect();
   [$('title').textContent, $('subtitle').textContent] = titles[name];
   renderCurrent(); updateFreshness();
 }
@@ -299,7 +314,7 @@ function selectView(name) { navigation.navigate({view: name, lease: null}); }
 window.addEventListener('popstate', connectionLinks.change);
 window.addEventListener('hashchange', connectionLinks.change);
 function renderCurrent() {
-  ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost, mesh: renderMesh})[view]();
+  ({monitor: renderMonitor, resources: renderResources, leases: renderLeases, messages: renderMessages, activity: renderActivity, host: renderHost, mesh: renderMesh, screen: ()=>{}})[view]();
 }
 for (const [index, button] of [...document.querySelectorAll('nav button')].entries()) {
   button.setAttribute('aria-keyshortcuts', String(index + 1));
@@ -679,7 +694,7 @@ function renderActivity() {
   if (!root.childElementCount) root.append(empty('No operational events in the loaded window'));
 }
 function renderMesh() {
-  if (!meshConsole) meshConsole = createMeshConsole({root:$('mesh'),call:(...args)=>connection.call(...args),connected:()=>state.connected,storage:messageStorage,openNode:entry=>{try{openNodeWindow({entry,call:(...args)=>connection.call(...args),onError:error=>notice(error)});}catch(error){notice(error.message);}}});
+  if (!meshConsole) meshConsole = createMeshConsole({root:$('mesh'),call:(...args)=>connection.call(...args),connected:()=>state.connected,storage:messageStorage,openNode:(entry,view)=>{try{openNodeWindow({entry,view,call:(...args)=>connection.call(...args),onError:error=>notice(error)});}catch(error){notice(error.message);}}});
   meshConsole.refresh();
 }
 function renderHost() {

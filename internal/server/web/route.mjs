@@ -1,5 +1,5 @@
 export const dashboardViews = Object.freeze([
-  'monitor', 'resources', 'leases', 'messages', 'activity', 'host', 'mesh',
+  'monitor', 'resources', 'leases', 'messages', 'activity', 'host', 'mesh', 'screen',
 ]);
 const validLease = value => typeof value === 'string' && /^[a-f0-9]{32}$/.test(value);
 const validPool = value => typeof value === 'string' && /^pool_[a-f0-9]{32}$/.test(value);

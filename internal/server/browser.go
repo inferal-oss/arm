@@ -6,6 +6,7 @@ import (
 	"embed"
 	"encoding/json"
 	"io"
+	"io/fs"
 	"net"
 	"net/http"
 	"strings"
@@ -16,7 +17,7 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
-//go:embed web/peer-poll.mjs web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/monitor-capacity.mjs web/lease-actions.mjs web/lease-reviews.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/dashboard-shortcuts.mjs web/activity-feed.mjs web/operator-messaging.mjs web/pool-model.mjs web/pool-operations.mjs web/pool-console.mjs web/mesh-console.mjs web/mesh-forward-console.mjs web/mesh-model.mjs web/mesh-stop.mjs web/mesh-uninstall.mjs web/mesh-provision.mjs web/kube-inventory.mjs web/node-window.mjs web/remote-node.mjs web/connection-links.mjs web/style.css
+//go:embed web/peer-poll.mjs web/index.html web/app.mjs web/core.mjs web/json-view.mjs web/metric-help.mjs web/monitor-capacity.mjs web/lease-actions.mjs web/lease-reviews.mjs web/lease-state.mjs web/io-devices.mjs web/io-selector.mjs web/route.mjs web/dashboard-shortcuts.mjs web/activity-feed.mjs web/operator-messaging.mjs web/pool-model.mjs web/pool-operations.mjs web/pool-console.mjs web/mesh-console.mjs web/mesh-forward-console.mjs web/mesh-model.mjs web/mesh-stop.mjs web/mesh-uninstall.mjs web/mesh-provision.mjs web/kube-inventory.mjs web/node-window.mjs web/remote-node.mjs web/connection-links.mjs web/style.css web/screen-viewer.mjs web/screen-mode.mjs web/screen-clipboard.mjs web/novnc web/ard
 var browserAssets embed.FS
 
 type browserContextKey struct{}
@@ -151,6 +152,26 @@ func browserAllowedOperation(op string) bool {
 func (s *Server) registerBrowser(mux *http.ServeMux) {
 	s.registerBrand(mux)
 	mux.HandleFunc("/v1/browser/session", s.browserSession)
+	novnc, _ := fs.Sub(browserAssets, "web/novnc")
+	novncFiles := http.StripPrefix("/novnc/", http.FileServer(http.FS(novnc)))
+	mux.HandleFunc("/novnc/", func(w http.ResponseWriter, r *http.Request) {
+		s.browserHeaders(w)
+		if !s.validHost(r.Host) || (r.Method != http.MethodGet && r.Method != http.MethodHead) {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		novncFiles.ServeHTTP(w, r)
+	})
+	ard, _ := fs.Sub(browserAssets, "web/ard")
+	ardFiles := http.StripPrefix("/ard/", http.FileServer(http.FS(ard)))
+	mux.HandleFunc("/ard/", func(w http.ResponseWriter, r *http.Request) {
+		s.browserHeaders(w)
+		if !s.validHost(r.Host) || (r.Method != http.MethodGet && r.Method != http.MethodHead) {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		ardFiles.ServeHTTP(w, r)
+	})
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		s.browserHeaders(w)
 		if !s.validHost(r.Host) {
@@ -164,7 +185,7 @@ func (s *Server) registerBrowser(mux *http.ServeMux) {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
-	for path, asset := range map[string]string{"/peer-poll.mjs": "peer-poll.mjs", "/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/monitor-capacity.mjs": "monitor-capacity.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/lease-reviews.mjs": "lease-reviews.mjs", "/lease-state.mjs": "lease-state.mjs", "/io-devices.mjs": "io-devices.mjs", "/io-selector.mjs": "io-selector.mjs", "/route.mjs": "route.mjs", "/dashboard-shortcuts.mjs": "dashboard-shortcuts.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/operator-messaging.mjs": "operator-messaging.mjs", "/connection-links.mjs": "connection-links.mjs", "/pool-model.mjs": "pool-model.mjs", "/pool-operations.mjs": "pool-operations.mjs", "/pool-console.mjs": "pool-console.mjs", "/mesh-console.mjs": "mesh-console.mjs", "/mesh-forward-console.mjs": "mesh-forward-console.mjs", "/mesh-model.mjs": "mesh-model.mjs", "/mesh-stop.mjs": "mesh-stop.mjs", "/mesh-uninstall.mjs": "mesh-uninstall.mjs", "/mesh-provision.mjs": "mesh-provision.mjs", "/kube-inventory.mjs": "kube-inventory.mjs", "/node-window.mjs": "node-window.mjs", "/remote-node.mjs": "remote-node.mjs", "/style.css": "style.css"} {
+	for path, asset := range map[string]string{"/peer-poll.mjs": "peer-poll.mjs", "/": "index.html", "/app.mjs": "app.mjs", "/core.mjs": "core.mjs", "/json-view.mjs": "json-view.mjs", "/metric-help.mjs": "metric-help.mjs", "/monitor-capacity.mjs": "monitor-capacity.mjs", "/lease-actions.mjs": "lease-actions.mjs", "/lease-reviews.mjs": "lease-reviews.mjs", "/lease-state.mjs": "lease-state.mjs", "/io-devices.mjs": "io-devices.mjs", "/io-selector.mjs": "io-selector.mjs", "/route.mjs": "route.mjs", "/dashboard-shortcuts.mjs": "dashboard-shortcuts.mjs", "/activity-feed.mjs": "activity-feed.mjs", "/operator-messaging.mjs": "operator-messaging.mjs", "/connection-links.mjs": "connection-links.mjs", "/pool-model.mjs": "pool-model.mjs", "/pool-operations.mjs": "pool-operations.mjs", "/pool-console.mjs": "pool-console.mjs", "/mesh-console.mjs": "mesh-console.mjs", "/mesh-forward-console.mjs": "mesh-forward-console.mjs", "/mesh-model.mjs": "mesh-model.mjs", "/mesh-stop.mjs": "mesh-stop.mjs", "/mesh-uninstall.mjs": "mesh-uninstall.mjs", "/mesh-provision.mjs": "mesh-provision.mjs", "/kube-inventory.mjs": "kube-inventory.mjs", "/node-window.mjs": "node-window.mjs", "/remote-node.mjs": "remote-node.mjs", "/style.css": "style.css", "/screen-viewer.mjs": "screen-viewer.mjs", "/screen-mode.mjs": "screen-mode.mjs", "/screen-clipboard.mjs": "screen-clipboard.mjs"} {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			s.browserHeaders(w)
 			if !s.validHost(r.Host) {
@@ -203,7 +224,7 @@ func (s *Server) browserHeaders(w http.ResponseWriter) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Referrer-Policy", "no-referrer")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' ws://"+s.authority+"; img-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
+	w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' ws://"+s.authority+"; img-src 'self' data: blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
 }
 
 func (s *Server) browserSession(w http.ResponseWriter, r *http.Request) {

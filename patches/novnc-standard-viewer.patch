@@ -1,0 +1,243 @@
+--- a/ard/ard-patch.js
++++ b/ard/ard-patch.js
+@@ -13,16 +13,16 @@
+  *           DeviceInfo, KeyboardInput, connection info panel.
+  */
+ 
+-import RFB from '../noVNC/core/rfb.js';
+-import Websock from '../noVNC/core/websock.js';
+-import * as Log from '../noVNC/core/util/logging.js';
+-import { clientToElement } from '../noVNC/core/util/element.js';
+-import { encodeUTF8, decodeUTF8 } from '../noVNC/core/util/strings.js';
+-import { encodings } from '../noVNC/core/encodings.js';
+-import legacyCrypto from '../noVNC/core/crypto/crypto.js';
+-import { RSACipher } from '../noVNC/core/crypto/rsa.js';
+-import Inflator from '../noVNC/core/inflator.js';
+-import Deflator from '../noVNC/core/deflator.js';
++import RFB from '../novnc/core/rfb.js';
++import Websock from '../novnc/core/websock.js';
++import * as Log from '../novnc/core/util/logging.js';
++import { clientToElement } from '../novnc/core/util/element.js';
++import { encodeUTF8, decodeUTF8 } from '../novnc/core/util/strings.js';
++import { encodings } from '../novnc/core/encodings.js';
++import legacyCrypto from '../novnc/core/crypto/crypto.js';
++import { RSACipher } from '../novnc/core/crypto/rsa.js';
++import Inflator from '../novnc/core/inflator.js';
++import Deflator from '../novnc/core/deflator.js';
+ 
+ import { AES128ECB, AES128CBC } from './crypto/aes128.js';
+ import { parsePKCS1PublicKey } from './crypto/pkcs1.js';
+@@ -36,6 +36,7 @@
+          reconcileSelection } from './display-info.js';
+ import { sessionCommand, sessionSelectAction } from './session-select.js';
+ import { ardKeysym } from './keysyms.js';
++import { buildArdPointerBlock } from './pointer-event.js';
+ import { HpSession } from './hp/session.js';
+ import { VideoSink } from './hp/video-sink.js';
+ import { buildVirtualDisplayMessage, virtualDisplayFor } from './hp/virtual-display.js';
+@@ -49,6 +50,7 @@
+     encodingArdProMode,
+     pseudoEncodingArdMediaStream,
+     clientInitARD,
++    securityTypeARD,
+     securityTypeRSATunnel,
+     serverFlagSessionSelect,
+     serverMsgTypeAck,
+@@ -250,9 +252,12 @@
+     const types = this._sock.rQshiftBytes(numTypes);
+     Log.Debug("ARD: Server security types: " + Array.from(types));
+ 
+-    // Prefer RSATunnel (33) if offered, else pick first supported
++    // The existing ARM Standard viewer already uses Apple's DH account auth
++    // (30). Preserve that known working choice while adding ARD control.
+     let chosen = -1;
+-    if (types.includes(securityTypeRSATunnel)) {
++    if (types.includes(securityTypeARD)) {
++        chosen = securityTypeARD;
++    } else if (types.includes(securityTypeRSATunnel)) {
+         chosen = securityTypeRSATunnel;
+     } else {
+         for (const type of types) {
+@@ -369,7 +374,6 @@
+ 
+     if (!this._viewOnly) {
+         this._keyboard.grab();
+-        this._asyncClipboard.grab();
+     }
+ 
+     this._fbDepth = 24;
+@@ -393,13 +397,17 @@
+ };
+ 
+ // What is asked of the server once the session is open, in ARD's order:
+-// ViewerInfo → SetMode → VirtualDisplay (High Performance) → SetDisplay
+-// → AutoPasteboard → SetEncodings → PixelFormat → SetEncodings
+-// → SetEncryption. The first framebuffer update request follows, when the
+-// size of the screen is known.
++// ViewerInfo → SetEncryption(1) → SetMode → display/encoding setup.
++// Apple's native prelude requests encryption before control mode. The
++// SetEncryption(2) acknowledgement is sent after the rekey rectangle.
++// The first framebuffer request follows when the screen size is known.
+ RFB.prototype._ardSendSessionSetup = function () {
+     RFB.messages.ardViewerInfo(this._sock);
+-    RFB.messages.ardSetMode(this._sock, this._ardControlMode || 1);
++    if (this._ardAuthKey && this._ardEncryptionMode === 2) {
++        RFB.messages.ardSetEncryption(this._sock, 1);
++        Log.Info("ARD: Sent SetEncryption request (cmd=1)");
++    }
++    RFB.messages.ardSetMode(this._sock, this._ardControlMode ?? 1);
+     this._ardHpRequestVirtualDisplay();
+     RFB.messages.ardSetDisplay(this._sock, this._ardSelectedDisplay);
+     RFB.messages.ardAutoPasteboard(this._sock, 1);
+@@ -407,11 +415,7 @@
+     RFB.messages.pixelFormat(this._sock, this._fbDepth, true);
+     this._sendEncodings();
+ 
+-    // Request session encryption before FBUpdateRequest
+-    if (this._ardAuthKey && this._ardEncryptionMode === 2) {
+-        RFB.messages.ardSetEncryption(this._sock, 1);
+-        Log.Info("ARD: Sent SetEncryption request (cmd=1)");
+-    } else if (this._ardAuthKey) {
++    if (this._ardAuthKey && this._ardEncryptionMode !== 2) {
+         Log.Info("ARD: Keystroke-only encryption mode — skipping tunnel encryption");
+     }
+ };
+@@ -1919,10 +1923,18 @@
+ // macOS/ARD: bit0=left, bit1=right, bit2=middle
+ RFB.prototype._sendMouse = function (x, y, mask) {
+     if (this._rfbAppleARD) {
+-        // Swap middle (VNC bit1) and right (VNC bit2) to macOS ordering
+-        const ardMask = (mask & ~0x06)
+-                      | (((mask >> 2) & 1) << 1)   // VNC right  → macOS bit 1
+-                      | (((mask >> 1) & 1) << 2);   // VNC middle → macOS bit 2
++        if (this._rfbConnectionState !== 'connected' || this._viewOnly) return;
++        if (this._ardAuthKey) {
++            const px = this._display.absX(x);
++            const py = this._display.absY(y);
++            const block = buildArdPointerBlock(mask,
++                px, py,
++                this._fbWidth, this._fbHeight);
++            const cipher = this._ardPointerCipher || this._getArdECBCipher();
++            RFB.messages.encryptedEvent(this._sock, 0, cipher.encrypt(block));
++            return;
++        }
++        const ardMask = (mask & ~0x06) | ((mask & 0x04) >> 1) | ((mask & 0x02) << 1);
+         return _origSendMouse.call(this, x, y, ardMask);
+     }
+     return _origSendMouse.call(this, x, y, mask);
+@@ -2290,6 +2302,7 @@
+     this._ardEncryptionEnabled = true;
+     this._ardSessionKey = sessionKey;
+     this._ardSessionIV = sessionIV;
++    this._ardPointerCipher = new AES128ECB(sessionKey);
+     Log.Info("ARD: Stream encryption enabled (AES-128-CBC)");
+     if (this._ardHp) this._ardHp.releaseOffer();
+ 
+--- a/ard/decoders/mvs.js
++++ b/ard/decoders/mvs.js
+@@ -4,7 +4,7 @@
+  * (ScreenSharing.framework, RFBViewerLib/DecodeMultiVariant.c).
+  */
+ 
+-import * as Log from "../../noVNC/core/util/logging.js";
++import * as Log from "../../novnc/core/util/logging.js";
+ import MvsBitstream from "./mvs-bitstream.js";
+ import { DEFAULT_LUMA_QUANT, DEFAULT_CHROMA_QUANT, MVS_ZIGZAG,
+          CR_R_TAB, CB_B_TAB, CR_G_TAB, CB_G_TAB } from "./mvs-tables.js";
+--- a/ard/decoders/zlib-16gray.js
++++ b/ard/decoders/zlib-16gray.js
+@@ -3,7 +3,7 @@
+  * 4-bit grayscale (16 levels), zlib compressed.
+  */
+ 
+-import Inflator from "../../noVNC/core/inflator.js";
++import Inflator from "../../novnc/core/inflator.js";
+ 
+ export default class ArdGray16Decoder {
+     constructor() {
+--- a/ard/decoders/zlib-halftone.js
++++ b/ard/decoders/zlib-halftone.js
+@@ -3,7 +3,7 @@
+  * 1-bit monochrome (halftone dithered), zlib compressed.
+  */
+ 
+-import Inflator from "../../noVNC/core/inflator.js";
++import Inflator from "../../novnc/core/inflator.js";
+ 
+ export default class ArdHalftoneDecoder {
+     constructor() {
+--- a/ard/decoders/zlib-thousands.js
++++ b/ard/decoders/zlib-thousands.js
+@@ -3,7 +3,7 @@
+  * 16-bit RGB555, zlib compressed.
+  */
+ 
+-import Inflator from "../../noVNC/core/inflator.js";
++import Inflator from "../../novnc/core/inflator.js";
+ 
+ export default class ArdThousandsDecoder {
+     constructor() {
+--- a/ard/keysyms.js
++++ b/ard/keysyms.js
+@@ -10,7 +10,7 @@
+  * modifiers, which are not characters.
+  */
+ 
+-import keysyms from '../noVNC/core/input/keysymdef.js';
++import keysyms from '../novnc/core/input/keysymdef.js';
+ 
+ const UNICODE_KEYSYM = 0x01000000;
+ 
+--- a/ard/msgport-transport.js
++++ b/ard/msgport-transport.js
+@@ -17,8 +17,8 @@
+ // The adapter satisfies Websock.attach()'s rawChannelProps contract:
+ // send, close, binaryType, onerror, onmessage, onopen, protocol, readyState.
+ 
+-import Websock from '../noVNC/core/websock.js';
+-import * as Log from '../noVNC/core/util/logging.js';
++import Websock from '../novnc/core/websock.js';
++import * as Log from '../novnc/core/util/logging.js';
+ 
+ let pendingPort = null;
+ let portWaiter = null;
+--- /dev/null
++++ b/ard/pointer-event.js
+@@ -0,0 +1,12 @@
++// Apple EncryptedInputEvent pointer body, before AES-128-ECB encryption.
++// The 0xff marker and Apple button ordering are required by screensharingd.
++export function buildArdPointerBlock(mask,x,y,width,height){
++    const clamp=(value,limit)=>Math.max(0,Math.min(0xffff,Math.min(limit-1,Math.trunc(value)||0)));
++    const block=new Uint8Array(16);
++    block[10]=0xff;
++    block[11]=(mask&~0x06)|((mask&0x04)>>1)|((mask&0x02)<<1);
++    const view=new DataView(block.buffer);
++    view.setUint16(12,clamp(x,width),false);
++    view.setUint16(14,clamp(y,height),false);
++    return block;
++}
+--- /dev/null
++++ b/ard/pointer-event.test.mjs
+@@ -0,0 +1,22 @@
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import {createCipheriv} from 'node:crypto';
++import {buildArdPointerBlock} from './pointer-event.js';
++import {AES128ECB} from './crypto/aes128.js';
++
++test('Apple pointer block uses encrypted-event marker, reordered buttons and bounded big-endian coordinates',()=>{
++    assert.deepEqual([...buildArdPointerBlock(0x05,0x1234,0x5678,3456,2234)],
++        [0,0,0,0,0,0,0,0,0,0,0xff,0x03,0x0d,0x7f,0x08,0xb9]);
++    assert.deepEqual([...buildArdPointerBlock(0x02,-5,3,100,100).slice(10)],
++        [0xff,0x04,0,0,0,3]);
++});
++
++test('Apple pointer ciphertext matches an independent AES-128-ECB encoder',()=>{
++    const key=Uint8Array.from({length:16},(_,i)=>i);
++    const body=buildArdPointerBlock(1,1420,784,3456,2234);
++    const actual=new AES128ECB(key).encrypt(body);
++    const cipher=createCipheriv('aes-128-ecb',key,null);cipher.setAutoPadding(false);
++    const expected=Buffer.concat([cipher.update(body),cipher.final()]);
++    assert.deepEqual(Buffer.from(actual),expected);
++    assert.equal(actual.length,16);
++});

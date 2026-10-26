@@ -186,6 +186,7 @@ func (s *Server) beginMeshClose() (*meshClose, error) {
 	if m.ssh != nil {
 		m.ssh.ClosePeer("")
 	}
+	m.closeScreenStreams("")
 	result := meshCloseResult{}
 	result.forwardSourcesJoined = true
 	httpErr := m.http.Close()

@@ -55,6 +55,8 @@ type meshService struct {
 	forwardSourcesClosed bool
 	workspace            *workspacetransport.Handler
 	routed               *workspaceroute.Handler
+	screens              map[*screenSession]struct{} // guarded by mu; includes pre-upgrade work
+	screenSlots          chan struct{}
 }
 
 func (s *Server) loadMesh() error {
@@ -125,7 +127,7 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 		listener.Close()
 		return e
 	}
-	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32), serveDone: make(chan error, 1), drainDone: make(chan struct{})}
+	service := &meshService{owner: s, store: store, listener: listener, connections: map[net.Conn]struct{}{}, slots: make(chan struct{}, 32), screenSlots: make(chan struct{}, 8), serveDone: make(chan error, 1), drainDone: make(chan struct{})}
 	service.ssh = service.newSSHHandler()
 	service.sshRouted = service.newSSHRouteHandler()
 	service.forwardRouted = service.newForwardRouteHandler()
@@ -162,6 +164,7 @@ func (m *meshService) revoke(host string) {
 	if m.routed != nil {
 		m.routed.ClosePeer(host)
 	}
+	m.closeScreenStreams(host)
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for connection := range m.connections {
@@ -205,6 +208,10 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Path == workspaceroute.Path {
 		m.routed.ServeHTTP(w, r)
+		return
+	}
+	if r.URL.Path == "/v1/screen" {
+		m.meshScreen(w, r)
 		return
 	}
 	if r.URL.Path == workspacetransport.Path {

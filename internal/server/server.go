@@ -88,6 +88,8 @@ type Server struct {
 	monitorSlots          chan struct{}
 	authority             string
 	browser               browserCredentials
+	screenSlots           chan struct{}
+	screenOnce            sync.Once
 	lifecycleContext      context.Context
 	shutdownWorker        sync.Once
 	shutdownWG            sync.WaitGroup
@@ -317,6 +319,7 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/ws", s.ws)
 	mux.HandleFunc("/v1/peers", s.peerWebSocket)
+	mux.HandleFunc("/v1/screen", s.browserScreen)
 	s.registerBrowser(mux)
 	h := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, MaxHeaderBytes: 8192, BaseContext: func(net.Listener) context.Context { return ctx }}
 	httpServer = h

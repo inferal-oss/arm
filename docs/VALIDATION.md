@@ -3827,3 +3827,36 @@ This is native macOS component/owned-helper evidence, not a new actual Pod,
 cluster, Linux runtime, enrollment, pinned SSH, dashboard apply/recovery or
 visual/PTY workflow. Runtime ceilings are configuration proof, not native CPU
 headroom; no observer/RBAC/host-mount exception or QUIC change is introduced.
+
+
+## Standard VNC final review and primary integration
+
+Final independent review 876d2a5 composes the Standard viewer and later Stop,
+redirect, original TLS-owner, cancellation and message-limit corrections; the
+stale first reviewer alone is not acceptance. Native server 16 roots/41 cases,
+complete mesh 47/99, all 214 web/ARD tests and affected vet pass without skips.
+Both patches apply with zero fuzz to pinned upstream d699293 and reproduce
+every ARD runtime file; its MPL license matches upstream. noVNC runtime bytes
+match cached 1.7.0, with only an AUTHORS trailing-space difference. The evidence
+index and source/provenance manifests remain at
+`/private/tmp/arm-vnc-final-runtime-review/.cache/vnc-final-review-summary.json`.
+
+Primary composes exact VNC sources onto ebbc6da. Shared browser asset conflicts
+retain peer polling, forwarding controls, Kubernetes inventory and all screen/
+noVNC/ARD modules; mesh fields retain both forwarding and original screen
+registries. Final native server races pass 21 roots/46 named cases in 14.603s,
+including screen Stop/redirect/bounds/join, preserved Kubernetes/peer boundaries
+and default-off forwarding. The existing forwarding browser-asset boundary
+passes separately (1/1, 1.568s). Complete mesh passes 47 roots/99 cases in
+14.075s. All 217 web/ARD tests, mesh/server vet and diff checks pass without
+failures/skips. Logs are `.cache/vnc-primary-{server,mesh,forward-assets}-race.jsonl`
+and `.cache/vnc-primary-{web,vet}.log`. Licensed patch context whitespace is
+explicitly marked by .gitattributes; vendor/runtime bytes are preserved.
+
+No new live VM, host screen configuration or clipboard operation is performed.
+Earlier authored guest/host rendering and click evidence remains scoped to its
+isolated final branch. This integrates direct-peer Standard support only;
+sustained independent input, live clipboard, separate-user desktop, actual
+screen-revocation acceptance, broader decoder/browser bounds, multi-hop and
+High Performance remain open. Slots/rates are transport bounds, not Manager
+resource admission or OS enforcement.

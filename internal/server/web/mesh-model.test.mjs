@@ -10,6 +10,11 @@ test('message access names exact scopes and cannot become an implicit broad broa
  assert.throws(()=>grantFromDraft({mode:'summary',messages:true}));const grant=grantFromDraft({mode:'summary',messages:true,contacts:'alpha, beta alpha'});assert.deepEqual(grant.contact_ids,['alpha','beta']);assert.equal(grant.operator_inbox,false);assert.deepEqual(grant.permissions,['observe-host','message','contact-read']);
  assert.equal(grantFromDraft({mode:'summary',messages:true,operatorInbox:true}).operator_inbox,true);
 });
+test('screen access is a separate directional grant in the reviewed draft',()=>{
+ assert.deepEqual(grantFromDraft({mode:'summary',screenView:true}).permissions,['observe-host','screen-view']);
+ assert.equal(grantFromDraft({mode:'summary'}).permissions.includes('screen-view'),false);
+ assert.equal(grantFromDraft({mode:'run',cpu:1,memory:1,disk:1,ttl:10}).permissions.includes('screen-view'),false);
+});
 test('concrete review uses prepared identities and approval requires live exact immutable review',()=>{
  const identities=reviewIdentities({local:{identity:{name:'before'}},local_prepared:{identity:{name:'actual'}}});assert.equal(identities[0].identity.name,'actual');
  const op={kind:'connect',phase:'awaiting_review',worker_live:true,review:{operation:'connect-direct-peers'},review_revision:2,review_sha256:'a'.repeat(64),review_expires_at:'2030-01-01T00:00:00Z'};assert.equal(canReview(op,0),true);

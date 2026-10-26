@@ -14,13 +14,13 @@ export function createRemoteNodeDashboard({root,feed,call,context,document=root.
  const metadataExpansion=new Map();
  function updateCPU(){for(const {resource,budget,received,amount,summary,note} of cpuCards){const cpu=cpuBudgetForView(budget,{connected:!stale,elapsedMS:performance.now()-received}),known=cpuBudgetKnown(cpu);amount.textContent=cpuCores(known?cpu.available_cores:null);summary.textContent=`Live headroom ${cpuCores(known?cpu.capacity_cores:null)} · promised ${cpuCores(cpu?.reserved_cores??resource.reserved)} · shortfall ${cpuCores(known?cpu.deficit_cores:null)}`;note.textContent=known?'Other apps share this CPU. Full promises remain charged.':'CPU headroom is stale or unavailable. New CPU grants wait; promises stay charged.';}}
  const banner=el('div','remote-authority'),content=el('div'),feedback=el('p','mesh-inline-notice');feedback.setAttribute('role','status');root.replaceChildren(banner,feedback,content);
- feed.replaceChildren(el('header','feed-heading','DESTINATION CONTEXT'),el('p','mesh-note','Live event and monitor streams are unavailable over this peer grant. No local activity is shown in this window.'),el('p','mesh-mono',context.host));
+ feed.replaceChildren();
  content.addEventListener('focusout',()=>queueMicrotask(()=>{if(held&&!content.contains(document.activeElement)){held=false;render();}}));
  function render(){
   if(content.contains(document.activeElement)){held=true;feedback.textContent='View held while reading a control. Newer destination observations are available after focus leaves this panel.';return;}
   if(currentView==='host'&&lastView==='host'&&lastMetadata===metadata)return;
   lastView=currentView;lastMetadata=metadata;
-  banner.replaceChildren(el('p','eyebrow','REMOTE NODE · READ-ONLY GATEWAY'),el('h2','',metadata?.hostname||context.host),el('p','mesh-mono',context.host),el('p','mesh-muted',`${metadata?.platform?.os??'Unknown OS'} / ${metadata?.platform?.process_architecture??'unknown architecture'} · through source ${context.source_host}`),el('p','mesh-note',`Current destination permissions: ${scope?grantDescription(scope.grant):'Not yet read'}. This window currently supports inspection only.`));
+  banner.replaceChildren(el('p','eyebrow','REMOTE NODE'),el('h2','',metadata?.hostname||context.host),el('p','mesh-mono',`Node ${context.host.slice(0,8)}…`),el('p','mesh-muted',`${metadata?.platform?.os??'Unknown OS'} / ${metadata?.platform?.process_architecture??'unknown architecture'}`),el('p','mesh-note',`Destination permissions: ${scope?grantDescription(scope.grant):'Not yet read'}. Screen Sharing opens separately and requires macOS sign-in.`));
   content.replaceChildren();
   if(currentView==='host') {if(metadata)content.append(jsonView(metadata,{label:'Reported node metadata',open:true,document,expansion:metadataExpansion}));else content.append(el('p','empty','Metadata unavailable.'));return;}
   if(currentView==='leases'){

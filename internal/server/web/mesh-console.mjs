@@ -92,6 +92,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
       card.append(facts);
       const controls=el('div','mesh-node-actions');controls.append(button('View node',()=>inspect(entry.host)));
       if(openNode)controls.append(button('Open dashboard ↗',()=>openNode(entry)));
+      if(openNode&&(platform?.os==='darwin'||(!metadata&&entry.trust?.state==='active')))controls.append(button('Screen ↗',()=>openNode(entry,'screen'),'primary'));
       if(!entry.local&&entry.trust?.state==='revoked')controls.append(button('Reconnect…',()=>editConnect(entry),'primary'));
       card.append(controls);nodes.append(card);
     }
@@ -128,9 +129,10 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
     const label=el('label','mesh-field');label.append(el('span','','Permission level'),mode);box.append(label);
     const limits=el('div','mesh-limit-fields'),cpu=field(limits,'CPU ceiling (cores)',{type:'number',value:'1'}),memory=field(limits,'Memory ceiling (GiB)',{type:'number',value:'1'}),disk=field(limits,'Disk ceiling (GiB)',{type:'number',value:'2'}),ttl=field(limits,'Maximum lease (minutes)',{type:'number',value:'10'});for(const input of[cpu,memory,disk,ttl]){input.min='0';input.step='any';}box.append(limits);
     const messaging=el('details','mesh-messaging-options');messaging.append(el('summary','','Message access (optional)'));const allow=field(messaging,'Allow messages',{type:'checkbox'}),inbox=field(messaging,'Allow operator inbox',{type:'checkbox'}),contacts=field(messaging,'Exact allowed contact IDs',{placeholder:'Contact IDs separated by commas'});box.append(messaging);
+    const screen=field(box,'Allow Standard Screen Sharing (requires Mac sign-in)',{type:'checkbox'});
     const warning=el('p','mesh-note warning','Run executes as the destination OS account, with its file and credential access. It is not a sandbox.');box.append(warning);
-    const update=()=>{limits.hidden=!['leases','run'].includes(mode.value);for(const input of[cpu,memory,disk,ttl])input.disabled=limits.hidden;warning.hidden=mode.value!=='run';messaging.hidden=mode.value==='none';};mode.addEventListener('change',update);update();parent.append(box);
-    return()=>grantFromDraft({mode:mode.value,cpu:cpu.value,memory:memory.value,disk:disk.value,ttl:ttl.value,messages:allow.checked,operatorInbox:inbox.checked,contacts:contacts.value});
+    const update=()=>{limits.hidden=!['leases','run'].includes(mode.value);for(const input of[cpu,memory,disk,ttl])input.disabled=limits.hidden;warning.hidden=mode.value!=='run';messaging.hidden=mode.value==='none';screen.disabled=mode.value==='none';};mode.addEventListener('change',update);update();parent.append(box);
+    return()=>grantFromDraft({mode:mode.value,cpu:cpu.value,memory:memory.value,disk:disk.value,ttl:ttl.value,messages:allow.checked,operatorInbox:inbox.checked,contacts:contacts.value,screenView:screen.checked});
   }
   async function editProvision(){
     if(provisionStoreInvalid){announce('Inspect unreadable installation recovery data before another install.');return;}

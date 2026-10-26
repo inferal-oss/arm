@@ -1398,3 +1398,25 @@ availability, enrollment or SSH authority. Hidden quota ancestry stays refused.
 Native component/helper and selection tests pass; no new actual Pod/cluster,
 Linux runtime, dashboard apply/recovery, mesh enrollment, pinned SSH or wider
 rendered/PTY acceptance is claimed.
+
+
+## Standard Mac screen viewer — direct-peer scope
+
+The browser can open the local macOS Standard Screen Sharing service or a
+directly enrolled Mac with an explicit destination `screen-view` grant. The
+endpoint is fixed at literal loopback 127.0.0.1:5900; browser/peer input cannot
+select another address, port, path or command. Browser session/Host/Origin and
+subprotocol checks remain required. The source uses the pinned original mesh
+TLS socket, refuses redirects and registers native dial/upgrade work through
+Stop/revocation. Bounded messages/chunks, eight slots and per-direction pacing
+apply; cancellation joins original copying, watching and pre-upgrade workers.
+These bounds are not OS resource enforcement or an admitted Manager lease.
+
+The Standard viewer uses pinned licensed noVNC/ARD sources. Separate reproducible
+viewer and clipboard API patches are retained in patches/. Prior authored
+rendering and guest/host click evidence is scoped in its isolated branch; final
+independent review verifies vendor provenance, exact patches and transport/
+asset regressions without touching a VM or host screen configuration. Sustained
+independent control, live clipboard transfer, separate-user desktop, actual
+screen revocation, broader decoder bounds, multi-hop and High Performance
+remain incomplete.

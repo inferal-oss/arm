@@ -28,6 +28,13 @@ test('foreign ready announcements cannot mint a ticket; duplicate ready cannot r
  const attacker=new Channel('arm-node-window:'+nonce);attacker.postMessage({kind:'ready',host:'e'.repeat(32),nonce});await new Promise(resolve=>setImmediate(resolve));assert.equal(calls,0);
  attacker.postMessage({kind:'ready',host,nonce});attacker.postMessage({kind:'ready',host,nonce});await new Promise(resolve=>setImmediate(resolve));assert.equal(calls,1);close();attacker.close();
 });
+test('Mesh Screen opens the exact node window on its viewer tab',()=>{
+ Channel.instances=[];let address;
+ const close=openNodeWindow({entry:{host},view:'screen',window:{location:{href:'http://localhost/?view=mesh'},open(url){address=url;}},Channel,random:()=>nonce,call:async()=>({ticket:'c'.repeat(64)})});
+ assert.equal(new URL(address).searchParams.get('view'),'screen');
+ assert.equal(new URL(address).searchParams.get('host'),host);
+ assert.equal(new URL(address).hash,'');close();
+});
 
 import {nodeContextClosed} from './node-window.mjs';
 test('explicit gateway context rejection stops reconnect while transient failures do not',()=>{const context={host:'a'.repeat(32)};assert.equal(nodeContextClosed(context,{code:1008,reason:'node_context_changed'}),true);for(const event of [{code:1006,reason:''},{code:1008,reason:'temporary failure'},{code:1000,reason:'node_context_changed'}])assert.equal(nodeContextClosed(context,event),false);assert.equal(nodeContextClosed(null,{code:1008,reason:'node_context_changed'}),false);});

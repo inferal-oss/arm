@@ -458,3 +458,12 @@ read-only/Stop-safe discovery, original-key reconciliation, catalog proof and
 exact authenticated runtime ceiling proof before forwarding; independent review
 fixes bearer-bearing probe redirects. Actual Pod/bootstrap/enrollment/pinned SSH,
 Linux runtime and dashboard apply/recovery remain separate gates.
+
+
+VNC final chain 03c7614/8ed3931/a5c0aa9/e704930/59bea56/876d2a5 is composed
+onto ebbc6da after independent review of Stop/redirect/message-bound fixes and
+exact licensed vendor patch reproduction. Primary resolves shared browser
+assets and mesh lifecycle fields while retaining peer/forwarding/Kubernetes.
+Direct-peer Standard scope remains separate from live clipboard/sustained
+control, separate-user/real revocation, broader decoder bounds, multi-hop and
+High Performance acceptance. No VM or host configuration is changed here.

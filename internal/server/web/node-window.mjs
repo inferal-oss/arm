@@ -7,9 +7,9 @@ export function nodeWindowRoute(address) {
  if(p.getAll('host').length!==1||!validHostID(host)||p.getAll('window').length>1||(nonce!==null&&!validHostID(nonce)))return {error:'Invalid node window. Open the exact node from an authenticated local Mesh page.'};
  return {host,nonce};
 }
-export function openNodeWindow({entry,call,window=globalThis.window,Channel=globalThis.BroadcastChannel,random=()=>crypto.randomUUID().replaceAll('-',''),onError=()=>{},timeout=60000}) {
+export function openNodeWindow({entry,call,view='resources',window=globalThis.window,Channel=globalThis.BroadcastChannel,random=()=>crypto.randomUUID().replaceAll('-',''),onError=()=>{},timeout=60000}) {
  const host=entry.host;if(!validHostID(host)||!Channel)throw Error('Secure node-window handoff is unavailable in this browser.');
- const nonce=random(),url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('host',host);url.searchParams.set('window',nonce);url.searchParams.set('view','resources');
+ const nonce=random(),url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('host',host);url.searchParams.set('window',nonce);url.searchParams.set('view',view==='screen'?'screen':'resources');
  const channel=new Channel('arm-node-window:'+nonce);let used=false,closed=false;
  const close=()=>{if(closed)return;closed=true;clearTimeout(timer);channel.close();};
  const timer=setTimeout(()=>{close();onError('Node window authentication timed out. Open it again from Mesh.');},timeout);
