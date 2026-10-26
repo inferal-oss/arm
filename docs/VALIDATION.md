@@ -2224,3 +2224,19 @@ Actual three-session 128MiB native→Linux measurements retain ordinary mounted 
 The separate consumer-ledger foundation passes native share regressions under the race detector (27 roots/67 named cases), affected vet, and19 named cases in a CGo-free actual Linux test image. Tests cover ordinary-budget/consumer/fence atomicity, SQL rollback cuts, conflicting retries, unknown COMMIT acknowledgement retaining durable obligations, concurrency and lifecycle history. Independent review accepts this private accounting boundary only; public sessions, runtime join/recovery, formal correspondence and composed memory remain unfinished.
 
 Lease-review SOURCE3 passes94 focused native race cases and four-package vet. Its real WebSocket fixture measures5,515,522 unpaged bytes across64 complete records; six whole-record pages have a maximum1,034,223 bytes under the unchanged4MiB client cap. The exact eight-row development trace and five exporter controls pass after replacing an unsupported UnixNano TLA integer with an exact UTC string token. No parser/TLC/replay/proof acceptance follows. Independent review subsequently finds a premature timed-out history classification and an unbounded malformed-policy scheduler diagnostic outside page accounting. A fresh source fixes the timeline and passes20 focused named race cases; diagnostic-size correction, independent follow-up, full UI/Linux and formal/composition gates remain open. Frozen SOURCE3 packet is `2d4b078ab00261624deb5c6394d5f8c98fa297f1d63402da85325650b32b7b99`.
+# October 25: reviewed synchronization planner integration
+
+The transport-independent `internal/syncreconcile` component passes the current
+native macOS `go test -p 1 -race ./internal/syncreconcile` (exit 0, 1.404s) and
+affected `go vet -p 1 ./internal/syncreconcile` (exit 0), with Go 1.27.3 and
+`GOMAXPROCS=1`. Independent review and regression cases cover retained additive
+subtrees, concurrent directory deletion/descendant changes, full deletion of
+unchanged retained children, exclusion ancestors/native aliases, unused
+keep-both names, changed baseline name scope, stale resolutions, digest/copy
+integrity, metadata ordering and repeated-round convergence. Earlier focused
+normal/race evidence remains recorded under ignored `.cache/sync-planner-review-*`.
+
+This accepts the pure planner, not public sync, native publication, durable
+joint receipts, resource admission, recovery, Linux execution or formal
+refinement. Those remain required integration work. QUIC remains isolated
+research and does not gate current sync/SSH/Kubernetes integration.
