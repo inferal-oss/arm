@@ -1547,3 +1547,23 @@ redirect rule were never created. A minimal separate Cloudflare Pages redirect
 source, kept under website/cloud-redirect, is being validated for the alternate's
 DNS-only hostname; its real HTTP path/query/TLS gates remain open. No final public
 DNS, HTTPS, redirect or deployed-site acceptance is claimed yet.
+
+## Tagged release automation candidate
+
+The isolated launch release candidate adds a `Tagged carrier releases` workflow
+and helpers under `scripts/release/` and `scripts/release-build/`. Four target
+archives each contain a native carrier embedding all four platform payloads, a
+catalog and full license notices. A source/version/hash manifest and closed
+checksum file accompany them. Builds use the module-declared Go toolchain,
+CGo disabled, one Go CPU and one payload build job.
+
+The publication helper is limited to version-tag pushes in `inferal-oss/arm`.
+It checks main ancestry and source/tag identity, verifies a complete fixed asset
+set, reconciles matching existing bytes and publishes only a complete draft.
+It never deletes or clobbers existing assets. Unknown create/upload/publication
+outcomes require read-only reconciliation. Manual and launch-topic validation
+runs cannot publish. See [release operation and recovery](../scripts/release/README.md).
+
+This remains an unaccepted candidate until independent final-source review and
+actual Go/carrier CI gates complete. No release exists as evidence yet, and the
+workflow does not change agent installation behavior or ordinary Go installation.

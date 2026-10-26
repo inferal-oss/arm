@@ -652,3 +652,20 @@ desktop/narrow/keyboard browser QA, central current-main integration, successful
 Actions artifact deployment, domain ownership/DNS/TLS and public HTTP checks.
 Registration costs, exact commits/runs and unresolved external gates must be
 recorded from actual returned evidence. Pending work is not delivery.
+
+## Tagged binary releases — launch follow-up, October 26, 2026
+
+Owner: isolated `codex/arm-tagged-releases` in
+`/private/tmp/arm-tagged-releases`, starting from reviewed main `67e9e3b`.
+Human requested a release job for version tags, with complete carriers.
+The focused prerequisite `97be9f5` makes build identity injectable and binds
+payload/carrier/catalog versions together. The release candidate builds four
+macOS/Linux amd64/arm64 carriers and publishes a complete verified draft on a
+full `vMAJOR.MINOR.PATCH` tag that belongs to reviewed main. Manual/topic runs
+produce validation artifacts only. No tag or release was created by this task.
+
+Dependencies/gates: central `inferal-oss/arm` module migration must update the
+existing identity-package string and new release helper imports when composed.
+Independent review, affected Go checks, actual four-carrier remote build and
+artifact inspection remain required. Python bounded failure-path checks pass;
+these do not establish actual GitHub publication or native macOS/ARM execution.

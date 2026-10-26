@@ -4111,3 +4111,25 @@ no alternate record or zone rule was created. Minimal redirect-only Cloudflare
 Pages upload source and a two-file ZIP are independently reviewed; actual
 deployment, DNS-only CNAME, root/nested/query preservation and HTTPS are still
 required. No public HTTP/TLS acceptance is claimed.
+
+## Tagged release candidate — source and failure-path evidence
+
+The isolated release task starts at `67e9e3b`. Its version-metadata prerequisite
+`97be9f5` passes formatting and diff checks; actual Go checks remain pending.
+A real native tiny-module regression is added to check that the production final
+carrier compile boundary injects executable version and bundle tag together,
+and unsafe script version overrides are refused before compiler/output effects.
+
+The release workflow parses with the system YAML parser. All Python helpers
+parse, and eleven bounded scalar Python fixture/fake-service cases pass in
+0.086 seconds: semantic tag rejection, source/byte/catalog binding, exact file
+set and symlink refusal, first/repeated completion, partial draft recovery,
+conflicting assets without writes, incomplete/extra publication refusal, lost
+create/publish response lookup and tag movement during upload. These tests
+perform no Go compilation, backend operation or external release mutation.
+
+Actual affected Go tests, four complete carrier builds, license inventory,
+artifact hashes and native carrier startup are encoded as remote CI gates but
+have not run for this candidate. No tagged publication, macOS execution or Linux
+ARM64 execution is claimed. The coordinator must review the final composed
+module/version identity boundaries before integration or release.
