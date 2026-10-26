@@ -1324,3 +1324,34 @@ cooperative and bounded by the existing warning/outbox policy. Native pause
 and resume remain disabled. Source CPU admission, counter derivation and its
 existing formal relation are unchanged; this warning-confidence classifier is
 not covered by that proof. See [CPU accounting](CPU-ACCOUNTING.md).
+
+## CPU warning confidence formal gate
+
+The scoped [warning confidence gate](../formal/cpu-warning/README.md) models
+original process/transit/inline ownership, frozen sample/frame facts, freshness,
+measured versus possible-compliant coverage, uncertainty and independent
+physical-idle recovery. Development-only hooks observe actual method entry and
+return with complete SQL/owner facts; normal builds use inlinable no-op hooks.
+The Go producer supplies controlled native inputs to real Manager methods, not
+model-generated expected rows. Finite TLC paths and a full strict TLAPM module
+remain scoped to confidence and the checked numeric abstraction. Native counter
+accuracy, arbitrary IEEE754 arithmetic, full warning/grace/delivery/provider
+control, safe pause/resume, admission and cleanup refinement are separate.
+
+The independently reviewed warning-formal reader validates the captured native
+term/owner/member Go field types without deriving new native credit from those
+terms. Timestamp parsing rejects nonexistent days and invalid clock/offset fields
+instead of accepting calendar normalization. The runner requires the exact
+mode-specific native command/receipt roster before checking each original Wait,
+join, output capture and terminal absence. Journal preservation here means its
+high-water sequence; arbitrary historical event payload integrity is outside this
+observer. The classifier, normal-build hooks, numeric partitions and complete
+TLA modules remain byte-identical through these reader corrections.
+
+
+The formal warning reader now checks the background CPU publication's exact
+boolean, integer, finite quantity, timestamp and text field types before its
+finite projection. Integer truth values and boolean quantities cannot enter
+that background evidence. This strengthens the trace reader only: classifier,
+model, proof and Go instrumentation are unchanged, and a background publication
+still cannot replace the original frozen observation.

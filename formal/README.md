@@ -54,3 +54,9 @@ Current component gates are scoped to the models and implementation paths each
 runner names. Broader graph routing/recovery and SSH archive commit/recovery
 remain separate protocol work. A complete bounded gate does not establish native
 agent delivery, arbitrary transport security or the entire project specification.
+
+The [CPU warning confidence gate](cpu-warning/README.md) is a separate scoped
+component in every normal formal aggregate. It checks actual classifier/owner
+cuts and the stated numeric abstraction; it does not substitute for native
+accuracy, CPU admission, full pressure warning/grace/provider faults, delivery,
+safe pause/resume or cleanup proofs.

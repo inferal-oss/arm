@@ -341,3 +341,23 @@ test-formal: test-history-cleanup-formal
 .PHONY: test-history-cleanup-formal-runner
 test-history-cleanup-formal-runner:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-history-cleanup-formal-runner.py
+
+# CPU warning confidence only; native accuracy, admission and full pressure
+# warning/grace/provider-control proofs retain their separate scopes.
+TLA_CPU_WARNING_WORK_DIR ?= $(CURDIR)/.tla/cpu-warning
+TLA_CPU_WARNING_GO_CACHE ?= $(CURDIR)/.tla/go-cache
+.PHONY: test-cpu-warning-formal-runner tla-cpu-warning-check tla-cpu-warning-traces tla-cpu-warning-prove test-cpu-warning-formal
+test-cpu-warning-formal-runner:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-cpu-warning-formal-runner.py
+tla-cpu-warning-check: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-cpu-warning-formal.py --mode check --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_CPU_WARNING_WORK_DIR)"
+tla-cpu-warning-traces: tla-tlc
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-cpu-warning-formal.py --mode traces --go "$(GO)" --go-cache "$(TLA_CPU_WARNING_GO_CACHE)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --work-dir "$(TLA_CPU_WARNING_WORK_DIR)"
+tla-cpu-warning-prove: tla-tlapm
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-cpu-warning-formal.py --mode prove --tlapm "$(TLAPM)" --work-dir "$(TLA_CPU_WARNING_WORK_DIR)"
+test-cpu-warning-formal: tla-tools
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-cpu-warning-formal.py --mode all --go "$(GO)" --go-cache "$(TLA_CPU_WARNING_GO_CACHE)" --java "$(JAVA)" --tlc-jar "$(TLC_JAR)" --tlapm "$(TLAPM)" --work-dir "$(TLA_CPU_WARNING_WORK_DIR)"
+tla-check: tla-cpu-warning-check
+tla-traces: tla-cpu-warning-traces
+tla-prove: tla-cpu-warning-prove
+test-formal: test-cpu-warning-formal

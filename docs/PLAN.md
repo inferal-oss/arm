@@ -383,8 +383,8 @@ pass. Actual browser rendering was checked; Charm, native macOS different-user
 and broader formal coverage remain.
 
 The next independent integration reviews use isolated branches/worktrees:
-CPU warning formal 106a989/f5f2d6a; source sync 5548af6/ab0dacc/73a30a2/86209b0
-with reviewer 1fc94b1; generic forwarding cfbf79b and its concrete operator
+CPU warning formal 106a989/f5f2d6a with final correction cf73d0c; source sync
+5548af6/ab0dacc/73a30a2/86209b0 with reviewer 1fc94b1 is integrated in c64a49c; generic forwarding cfbf79b and its concrete operator
 security-review gate. These reviewers return focused integration candidates,
 findings/fixes and exact validation evidence. Coordinator rechecks composed
 boundaries before committing. Kubernetes runtime 42d841a, corrected VNC
@@ -401,3 +401,36 @@ runtime equivalence to accepted Linux source. Primary renews affected Manager
 and protocol/transport checks after composing with 975d4b9. Kubernetes final
 review is active in codex/kubernetes-final-runtime-review; forwarding review
 adds a normal-build refusal fence pending the retained operator design review.
+**CPU warning confidence verification:** a scoped model/actual-Go/strict-proof
+gate passes against the reviewed classifier, including original owner lifetime,
+physical-idle recovery, rounding and frozen-input fences. It does not close the
+full pressure runtime's warning/grace/fault/generic-provider or safe-pause formal
+deliverables. Native positive managed-use correlation and complete physical
+attribution remain separate; warning evidence creates no admission, signal or
+cleanup authority. See [the exact scope](../formal/cpu-warning/README.md).
+
+**Independent warning-formal review:** corrected artifact checks now reject
+malformed native-term metadata, impossible calendar dates and omitted/unplanned
+native command receipts. A fresh complete isolated gate passes with unchanged
+classifier/model/proof scope. The journal observation is a high-water cursor,
+not full historical payload verification. This closes the focused reader review;
+full pressure enforcement and physical/native attribution remain planned above.
+
+
+**CPU warning final integration review:** isolated composition onto `f5abcf1`
+retains the full warning-confidence gate and independently corrects background
+CPU field typing. Fresh finite safety, 31 actual Go scenarios, all TLC path
+checks and 125 strict proof obligations pass, with all 54 original command
+owners retired. This is acceptance of the isolated formal candidate; primary
+composition remains the coordinator's gate. Full native attribution, warning/
+delivery fault protocols and safe pause/resume remain outside this model.
+
+
+Peer awareness is integrated in 975d4b9 and the private source sync/charged-frame
+feature in c64a49c. CPU warning formal review now passes independent complete
+checking and renewed actual primary traces. Kubernetes runtime final correction
+c118a01 refuses authenticated probe redirects; accepted focused sequence is
+2d3f069/b8d89d4/7d644e7/3f27e36/eafd55b/c118a01, awaiting primary composition.
+VNC final corrections are under a new independent review; dual-endpoint sync
+recovery f507478/8a8130d is independently reviewed separately. Forwarding keeps
+a normal-build production refusal pending its exact retained operator review.

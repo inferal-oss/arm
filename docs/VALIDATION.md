@@ -3559,3 +3559,174 @@ is run separately against the final composition.
 The focused original-transport native race passes one root/case in 1.441s
 without skips; receipt is
 `.cache/sync-source-primary-original-transport-race.jsonl`.
+## CPU warning confidence formal acceptance
+
+The isolated `codex/cpu-warning-confidence-formal` worktree builds on the
+integrated warning classifier `1876e8c`. Its new scoped
+[confidence model and mapping](../formal/cpu-warning/README.md) has a complete
+one-snapshot finite TLC instance: **383,488 distinct / 1,140,384 generated
+states**, empty queue and no invariant/property error. It includes one external
+owner/bare change, ageing and background publication. The full original TLAPM
+module parses as **31 theorems / 125 obligations**; strict `--nofp` checking in
+a fresh cache proves all 125. Its final goal includes the original complete
+state invariant and temporal protection property, for every positive finite
+epoch bound. Full module bytes, theorem roster, parser count and tool/backend
+bundle are checked before and after execution; an early module terminator,
+weakened goal, skipped proof or fingerprint-only pass is rejected.
+
+The `arm_devtrace` producer executes the actual `cpuWarningSampleFrom` method,
+recording entry and return, complete SQLite/listed lease rosters, binding rows,
+current/saved owner pointers, original context/join/native identity, frame facts,
+freshness and returned values. All **31 scenarios / 53 calls** pass under the
+race detector: 32 named tests including the producer root, zero failures/skips,
+package time 41.971s. TLC replays all **106 full states / 75 adjacent edges**,
+including the final return of every path. Cases include bare promises, unknown
+native input, capped process credit, incompatible frames/cookies/pointers,
+original process End/Wait, expiry, retained lost owners, transit context/join/
+same-revision row replacement, inline context/runtime/volume/cancellation/join/
+replacement/unstarted/new-snapshot ownership, actual Manager Close/Open,
+physical-idle recovery, stale samples, changed background publication,
+fractional thresholds and the 17-owner outward sum. Same-frame candidates for
+inline workers supply no measured native credit.
+
+Independent exact-rational checks validate representable input sum/product
+bounds before finite normalization. **33 altered raw histories, 12 altered model
+paths and five malformed TLC witnesses** are rejected; a separate runner suite
+rejects nine module/source, four closed-JSON and five typed-witness controls.
+All **54 original formal command owners** report exactly one native Wait,
+reaped/retired/no remaining authority, absent PID/group, no unknown outcome,
+no cleanup error and no signals issued by the formal command runner. Output
+captures retain exact original descriptor/inode/size bindings. This says nothing
+about signal use by ordinary Manager End of its own sleeping test jobs.
+
+The final ordinary-build focused race command selects
+`^(TestHostPressure|TestManagedCPUCredit|TestCPUWarningReview|TestNativeCPUWarningObservationBindingWithoutWork$)`
+with `ARM_TEST_NATIVE_MANAGER_CREDIT=1`, `-race -count=1 -p=1` and a 240-second
+package limit. All **40 roots / 85 named cases** pass in **104.029s**, with zero
+failures/skips, including the actual no-grant/no-load observation check. Both
+normal and `arm_devtrace` Manager vet pass; formatting, Python syntax, diff
+checks and all four Make aggregate target expansions pass. The hooks do not
+change ordinary classifier return values.
+
+The complete fresh gate is retained under the isolated worktree's ignored
+`.tla/cpu-warning/run-idqqobmh/`, indexed by `summary.json`, with source/tool hashes,
+raw histories, projections, counterexample witnesses, states, original logs and
+owner receipts. Tools are Go 1.27.3, Java 27, the checksum-pinned TLC jar and
+provisioned TLAPM `901ae51` with the verified bundled backends/libraries. The
+recorded formal execution is native Darwin ARM64; provisioned Linux AMD64 tool
+support is not a Linux execution claim.
+
+The preceding complete pass is also retained at
+`.tla/cpu-warning/run-fxc0277c/`; final source review added the pressure policy
+package to the exact Go source hash roster, then repeated the full gate.
+Earlier failed attempts remain under `.tla/cpu-warning-draft/`: sandboxed TLAPM
+startup lacked native process inspection; initial proof obligations exposed
+missing record-domain typing and required explicit preservation/congruence
+lemmas; a tagged fixture had a shared closure channel race, corrected by
+capturing its original channel. Parser/prover diagnostic failures are retained.
+The successful proof keeps every original invariant and uses equivalent complete
+record constructors rather than dropping the failed obligations.
+
+The checked model abstracts numerical/native inputs and three owner classes;
+it does not prove arbitrary IEEE754 arithmetic, native counters, complete
+physical process attribution, heterogeneous partial membership within the
+17-owner aggregate, or whole-program refinement. Controlled compatible native
+candidates are not physical usage measurements. Normal hooks provide no new
+admission, signal, cleanup or public sync authority. Full warning/grace/delivery/
+outbox fault paths, generic provider control and safe pause/resume retain their
+separate formal/native acceptance obligations; the prior positive one-core
+admission refusal remains a retained failure and was not repeated here.
+
+## Independent CPU warning formal reader review
+
+Review reproduced three gaps against the author's retained actual artifacts:
+changing both method boundaries to boolean native-term metadata was accepted;
+substituting February 30 across a valid history was calendar-normalized and
+accepted; hiding only the original proof-owner receipt left 53 accepted receipts.
+Original artifacts were unchanged. Focused corrections validate the native
+term/owner/member Go schema and actual calendar fields, and require the exact
+mode-specific command roster. No new numeric limits, attribution assumptions,
+model actions, proof obligations or production Go changes were introduced.
+
+The corrected complete low-priority Darwin ARM64 all-mode gate passes at
+`/private/tmp/arm-cpu-warning-formal-review/.tla/review-run/run-u315hzi_/summary.json`.
+It retains **383,488 distinct / 1,140,384 generated states**, empty queue;
+**31 actual scenarios / 53 calls / 106 states / 75 edges**;
+**35 altered raw histories / 12 altered model paths / five malformed witnesses**;
+**34 runner controls** (nine source/module, four closed-JSON, five witness,
+four receipt-roster, four native-term and eight calendar controls);
+and **31 full theorems / 125 strict no-fingerprint obligations**, all proved.
+All **54 original native command receipts** pass exact roster, original Wait,
+retirement, PID/group absence and bound output-capture checks. The actual Go
+producer race gate has zero failures/skips. Independent passive replay of all
+31 original projections and witnesses is unchanged after the corrections.
+
+The full module/config pins, source closure and proof roster are unchanged.
+The journal check is its high-water sequence, not historical payload inspection.
+Real sleeping processes, original ownership/joins and SQLite are exercised with
+controlled CPU inputs; this does not accept physical native counters, arbitrary
+IEEE arithmetic, full process inventory, within-call background concurrency,
+whole pressure-runtime refinement, safe pause/resume or resource settlement.
+The earlier author's 33 raw/18 runner controls remain historical checkpoints;
+this review adds the stated rejection checks and a fresh complete run.
+
+
+## CPU warning final integration composition review
+
+An isolated reviewer composes `106a989`/`f5f2d6a` onto main `f5abcf1`, as
+`318144e`/`dc0b33e`, retaining both independent appended validation sections.
+Review mutates copies of original raw histories and reproduces two accepted
+background-CPU forgeries: integer `known=1` and boolean `available_cores=false`.
+The reader now rejects both while all 31 original projections remain identical.
+Model/proof/config, classifier and Go instrumentation are byte-identical to
+the preceding reviewed candidate; only raw background validation is tightened.
+
+The corrected native Darwin ARM64 full gate passes with **383,488 distinct /
+1,140,384 generated states**, empty queue; **31 actual scenarios / 53 calls /
+106 states / 75 edges**; **37 altered raw histories / 12 altered model paths /
+five malformed witnesses** rejected; and **31 theorems / 125 strict nofp proof
+obligations** proved. All **54 original command owners** pass the exact roster,
+original native Wait, retirement, output binding and PID/group absence checks.
+The Go producer race run passes in 46.894s with no failures/skips. Ordinary-build
+focused regression races pass **9 roots / 14 named cases** in 16.109s without
+failures/skips; ordinary and tagged Manager vet pass. Python syntax, Go
+formatting and diff checks pass.
+
+Final evidence is retained in
+`/private/tmp/arm-cpu-warning-final-integration-review/.tla/final-run/run-egkat7nn/`,
+with `summary.json` indexing source/tool hashes, full logs, raw histories,
+projections, witnesses and original owner receipts. The preceding full composed
+pass remains under `.tla/review-run/run-cc5x0cyl/`; the exact before/after
+forgery reproducer/logs remain under `.tla/review-findings/`. This review does
+not include the separately staged peer feature. Primary composed source traces
+remain the coordinator's integration gate. Controlled CPU observations are not
+native counter accuracy, Linux formal execution, arbitrary IEEE arithmetic,
+complete process inventory, whole-runtime refinement, settlement or safe
+pause/resume acceptance. Journal preservation remains its high-water sequence.
+
+
+## CPU warning primary composition after peer/source integration
+
+Reviewed formal sequence 318144e/dc0b33e/cf73d0c is composed onto c64a49c.
+The final independent all-mode gate retains 383,488 distinct/1,140,384 generated
+states, 31 Go scenarios (53 calls, 106 states, 75 edges), 37 raw/12 model-path/5
+witness refusals, all 125 strict no-fingerprint proof obligations and 54 exact
+original command-owner receipts. Independent review found an additional
+background CPU type gap and rejects integer booleans and boolean quantities;
+original accepted projections are unchanged. Its exact complete summary is
+`/private/tmp/arm-cpu-warning-final-integration-review/.tla/final-run/run-egkat7nn/summary.json`
+(SHA256 `3a7db74a39a13006583489d84b93a2e66aa2a5fdf238907772928581d1df5fdd`).
+
+Fresh primary trace mode passes all the same actual scenarios and negative
+controls against peer/source-composed sources, with 48 exact native command
+receipts and checked source closure. Evidence:
+`.tla/cpu-warning-primary-traces/run-bqap8mzg/summary.json` and
+`.cache/cpu-warning-primary-traces.log`. The first attempt selected a nonexistent
+Java path and failed before native checking; its separate log is retained.
+The corrected command uses the verified installed `/usr/bin/java` and pinned
+TLC. Ordinary warning regressions also pass without skips in 21.887s; log is
+`.cache/cpu-warning-primary-ordinary-race.jsonl`. Model/proof sources and formal
+tool bundle match the independently accepted bytes, so their valid finite/proof
+evidence is reused. This remains controlled CPU input/owner confidence evidence,
+not native-counter correctness, Linux formal execution, complete pressure-runtime
+refinement, public sync or pause/resume authority.
