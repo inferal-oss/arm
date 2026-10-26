@@ -2966,3 +2966,35 @@ share-preparation model source is replaced by an explicit historical note.
 No broker, cross-user IPC/native account experiment, model/proof or production
 authority was implemented or accepted. Cooperative settlement versus retention
 until independently supported recovery remains a required operator decision.
+
+## Native macOS routed SSH public CLI acceptance
+
+The first native Darwin ARM64 attempt fails because the planned pre-admission
+reply drop is not observed; its marker remains absent. Cleanup reports no
+errors and retains the failed fixture. Subsequent read-only original-key
+inspection finds the pending intent and takes9.142s; the uninstrumented failure
+does not prove its exact cause. The fault callback previously invoked that
+CLI on the TLS reply path, an avoidable blocking dependency. It now performs
+a bounded direct observation of the exact producer's source/key/target tuple.
+Malformed, oversized, mismatched and symlink fixture evidence is ignored. All
+actual dispatch/recovery assertions and original deadlines remain unchanged.
+
+The successor completes B→A→C and B→D→C public CLI execution, exact stdout/
+stderr/exit, ciphertext reply loss after an effect, same-key replay refusal,
+lookup without redispatch, pre-admission unknown outcome and nonexecution seal,
+destination/transit revocation and alternate route, with no B–C enrollment.
+The final source-bound run additionally matches pre/post hashes of the actual
+CLI and all three loaded harness sources and reports observed Darwin/arm64
+environment. Six cleanup/observer/environment/hash controls pass. Success is
+printed only after every original daemon/relay closes and the exact owned
+fixture is removed. Failed evidence is retained separately. Ignored records:
+`.cache/routed-macos-public-cli{,-successor,-final,-bound}.log`,
+`.cache/routed-macos-public-cli-bound-receipt.json` and
+`.cache/routed-macos-harness-final-controls.log` in the primary checkout.
+
+One receipt-edit attempt matched no source anchor and changed no file; its
+shell nevertheless started an additional unchanged successful workflow. That
+run lacks the new input hashes and is not the final source-bound receipt.
+The final successful run is distinct. This verifies local native CLI routes
+through real peers; no physical network barrier, cross-host speed target, new
+Linux harness run, native agent delivery or public multi-hop sync is inferred.

@@ -4,7 +4,7 @@ Darwin process identities now use `darwin:bootsessionuuid:` plus the exact upper
 
 QUIC remains research, not supported product behavior or a prerequisite for current delivery. An isolated module exercises pinned TLS 1.3 QUIC streams and the existing rsync engine on native macOS; cross-compilation is not Linux execution evidence. Production execution still uses the SSH paths described below. Current integration focuses on sync, routed SSH and Kubernetes. A future transport transition must preserve resource, identity, process ownership and exact-key recovery contracts; SSH bootstrap and Kubernetes's TCP-only port-forward need deliberate treatment. See [the proposal and scoped evidence](QUIC-TRANSITION-PROPOSAL.md).
 
-The public routed `arm ssh` path now has a native Linux ARM64 CLI fixture in `scripts/test-routed-ssh.py`. It creates independently reviewed workspace membership, an original-source destination grant and per-transit grants; the source and destination never enroll each other directly. A fourth node supplies an alternate path after the first relay grant is revoked. The source retains the exact original key across uncertain transport outcomes, and `ssh lookup` or `ssh seal` reconciles it without redispatch. Strict pin reads accept either the original direct-peer fields or the complete routed workspace extension; partial, unknown or explicitly empty routed extensions are refused. This is scoped SSH execution and recovery evidence, not routed sync, a general file service, containment of malicious same-account code or macOS public CLI acceptance.
+The public routed `arm ssh` path now has native Linux ARM64 and macOS ARM64 CLI fixture evidence in `scripts/test-routed-ssh.py`. It creates independently reviewed workspace membership, an original-source destination grant and per-transit grants; the source and destination never enroll each other directly. A fourth node supplies an alternate path after the first relay grant is revoked. The source retains the exact original key across uncertain transport outcomes, and `ssh lookup` or `ssh seal` reconciles it without redispatch. Strict pin reads accept either the original direct-peer fields or the complete routed workspace extension; partial, unknown or explicitly empty routed extensions are refused. This is scoped SSH execution and recovery evidence, not routed sync, a general file service, containment of malicious same-account code or physical cross-host performance; the scoped macOS CLI acceptance is recorded below.
 
 The fixture's optional benchmark measures verified 32-MiB public SSH stdout
 through B→A→C, then establishes a separate direct B↔C enrollment for a
@@ -1181,3 +1181,13 @@ user's truthful consumption or cleanup. Evidence classes, durable activation,
 unknown outcomes, coordinator fencing, namespace mapping, privacy and fairness
 limits are explicit. The settlement trust choice and service provisioning need
 operator review before implementation or production activation.
+
+## Native macOS public routed SSH workflow
+
+The portable public CLI harness also runs on native macOS. Fault injection
+observes the exact published source-intent tuple directly from the private
+fixture instead of invoking another CLI while holding a TLS reply. Dispatch,
+lookup, seal, no-replay and route/grant operations remain actual public CLI
+commands. Its final receipt binds the executable and all three loaded harness
+files before/after the run, reports observed OS/architecture, and is printed
+only after owned listener/daemon closure and exact fixture removal succeed.

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Native public CLI acceptance for B→A→C SSH without B–C enrollment.
 
-Run in a Linux guest with a real CPU quota hierarchy. Fixtures use only private
-homes and public CLI commands. A failed fixture is retained for inspection.
+Run on native macOS or Linux with a complete CPU quota hierarchy. Fixtures
+use only private homes and public CLI commands. A failed fixture is retained
+for inspection.
 """
 import argparse
 import hashlib
@@ -57,6 +58,33 @@ def file_sha256(path):
     return digest.hexdigest()
 
 
+
+def source_intent_published(home, source, target, key):
+    """Observe the fixture producer without blocking its TLS reply on a CLI.
+
+    This is fault-injection evidence only; it grants no execution authority.
+    Dispatch, lookup, seal and no-replay assertions still use the public CLI.
+    """
+    for path in (Path(home) / 'mesh').glob('ssh-client-*.json'):
+        try:
+            if path.is_symlink():
+                continue
+            with path.open('rb') as stream:
+                raw = stream.read((64 << 10) + 1)
+            if len(raw) > 64 << 10:
+                continue
+            intent = json.loads(raw)
+            request = intent.get('request', {})
+            pin = request.get('pin', {})
+            if (intent.get('schema') == 1 and intent.get('source') == source
+                    and request.get('key') == key and pin.get('source') == source
+                    and pin.get('target') == target):
+                return True
+        except (OSError, ValueError, AttributeError):
+            continue
+    return False
+
+
 def finish_fixture(root, nodes, ciphertext, success, original_error):
     failures = []
     try:
@@ -91,8 +119,14 @@ def main():
                         help='measure three 32 MiB routed samples, then an explicitly enrolled direct baseline')
     args = parser.parse_args()
     binary = str(Path(args.arm).resolve())
+    input_paths = {'binary': Path(binary), 'harness': Path(__file__).resolve(),
+                   'workspace_harness': Path(__file__).with_name('test-workspaces.py').resolve(),
+                   'mesh_harness': Path(__file__).with_name('test-mesh.py').resolve()}
+    input_hashes = {name: file_sha256(path) for name, path in input_paths.items()}
+    receipt = {'environment': benchmark_environment(), 'sha256': input_hashes}
     root = Path(tempfile.mkdtemp(prefix='arm-routed-ssh-cli-')).resolve()
     root.chmod(0o700)
+    (root / 'acceptance-inputs.json').write_text(json.dumps(receipt, sort_keys=True) + '\n')
     a, b, c = [Node(binary, root, name) for name in ('relay-a', 'source-b', 'target-c')]
     nodes = [a, b, c]
     ciphertext = ws.ProofReplyRelay(('127.0.0.1', mesh.free_port()))
@@ -231,11 +265,8 @@ def main():
         def drop_after_source_intent():
             if not ciphertext.proof_armed:
                 return False
-            try:
-                pending = b.cli('ssh', 'pending')['pending']
-                if not any(item['request']['key'] == 'lost-before-admission' for item in pending):
-                    return False
-            except (AssertionError, KeyError):
+            if not source_intent_published(b.home, b.identity['host'],
+                                           c.identity['host'], 'lost-before-admission'):
                 return False
             ciphertext.proof_armed = False
             ciphertext.dropped.set()
@@ -248,7 +279,9 @@ def main():
                           '--cpu', '0.05', '--key', 'lost-before-admission', '--yes',
                           '--', f'printf forbidden > "{before_marker}"', timeout=35)
         assert error(absent) == 'ssh_outcome_unknown', absent
-        assert ciphertext.dropped.wait(2) and not before_marker.exists()
+        assert ciphertext.dropped.wait(2) and not before_marker.exists(), {
+            'fault_dropped': ciphertext.dropped.is_set(), 'marker_exists': before_marker.exists(),
+            'returncode': absent.returncode, 'stderr': absent.stderr[:2048]}
         assert error(b.result('ssh', c.identity['host'], '--workspace', wid,
                               '--reason', 'replacement refused', '--ttl', '15s',
                               '--cpu', '0.05', '--key', 'replacement-refused', '--yes',
@@ -318,13 +351,15 @@ def main():
         assert (result.returncode, result.stdout, result.stderr) == (0, 'alternate-stdout', ''), result
         assert b.cli('ssh', 'lookup', c.identity['host'], '--key', 'alternate-exec')['receipt']['found']
         assert all(peer['identity']['host'] != c.identity['host'] for peer in b.cli('mesh', 'peers'))
-        final_report = 'PASS native Linux public CLI B→A→C and B→D→C routed SSH, exact exit/stdout/stderr, ciphertext reply loss, original-key lookup, replay refusal, unknown admission/nonexecution seal, grant revocation and alternate route; no B–C enrollment'
+        final_report = 'PASS native ' + platform.system() + ' ' + platform.machine() + ' public CLI B→A→C and B→D→C routed SSH, exact exit/stdout/stderr, ciphertext reply loss, original-key lookup, replay refusal, unknown admission/nonexecution seal, grant revocation and alternate route; no B–C enrollment'
+        assert {name: file_sha256(path) for name, path in input_paths.items()} == input_hashes, 'acceptance inputs changed during run'
         success = True
     finally:
         original_error = sys.exc_info()[0] is not None
         finish_fixture(root, nodes, ciphertext, success, original_error)
         if success and not original_error and final_report is not None:
             print(final_report)
+            print('Acceptance inputs: ' + json.dumps(receipt, sort_keys=True))
 
 
 if __name__ == '__main__':

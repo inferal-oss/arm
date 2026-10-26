@@ -4,6 +4,7 @@ import contextlib
 import hashlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -90,6 +91,32 @@ class FixtureCleanupTest(unittest.TestCase):
             binary = Path(directory) / 'arm'
             binary.write_bytes(b'exact private test binary bytes')
             self.assertEqual(acceptance.file_sha256(binary), hashlib.sha256(binary.read_bytes()).hexdigest())
+
+
+class IntentObservationTest(unittest.TestCase):
+    def test_requires_exact_published_fixture_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            (home / 'mesh').mkdir()
+            path = home / 'mesh' / 'ssh-client-fixture.json'
+            self.assertFalse(acceptance.source_intent_published(home, 'source', 'target', 'key'))
+            intent = {'schema': 1, 'source': 'source', 'request': {
+                'key': 'key', 'pin': {'source': 'source', 'target': 'target'}}}
+            path.write_text(json.dumps(intent))
+            self.assertTrue(acceptance.source_intent_published(home, 'source', 'target', 'key'))
+            for source, target, key in [('other', 'target', 'key'),
+                                        ('source', 'other', 'key'),
+                                        ('source', 'target', 'other')]:
+                self.assertFalse(acceptance.source_intent_published(home, source, target, key))
+            path.write_text('{"schema":1,')
+            self.assertFalse(acceptance.source_intent_published(home, 'source', 'target', 'key'))
+            path.write_bytes(b' ' * ((64 << 10) + 1))
+            self.assertFalse(acceptance.source_intent_published(home, 'source', 'target', 'key'))
+            path.unlink()
+            outside = home / 'published.json'
+            outside.write_text(json.dumps(intent))
+            path.symlink_to(outside)
+            self.assertFalse(acceptance.source_intent_published(home, 'source', 'target', 'key'))
 
 
 if __name__ == '__main__':
