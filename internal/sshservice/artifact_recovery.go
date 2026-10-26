@@ -39,8 +39,11 @@ func RecoverArtifacts(ctx context.Context, home string, b Binding, intent Source
 			return fmt.Errorf("exact retained pending intention required")
 		}
 		current, e := usage.Capture(os.Getpid())
-		if e != nil || current.Namespace != intent.Worker.Namespace {
-			return fmt.Errorf("original worker namespace unavailable; preserve artifacts for manual review")
+		if e != nil {
+			return fmt.Errorf("current process identity unavailable; preserve artifacts for manual review: %w", e)
+		}
+		if current.Namespace != intent.Worker.Namespace {
+			return fmt.Errorf("original worker namespace differs from current process namespace; preserve artifacts for manual review")
 		}
 		// ESRCH is the only accepted failure; inaccessible/reused/live workers veto.
 		if e = unix.Kill(intent.Worker.PID, 0); e != unix.ESRCH {

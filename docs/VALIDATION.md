@@ -1,5 +1,13 @@
 # Validation record
 
+## October 26, 2026: Darwin boot-session process namespace
+
+Pinned XNU 12377.1.9 source shows that calendar changes adjust the boot time exported by `kern.boottime`, while `kern.bootsessionuuid` exposes a read-only UUID generated during boot initialization. Its exported timeval is zero-initialized, so the padding hypothesis is unsupported by that source. The earlier full SSH run's generic “original worker namespace unavailable” diagnostic combined a capture error and a namespace mismatch; its log cannot establish which branch occurred. That failed run remains failed. This change fixes the proven discriminator contract defect without claiming to reproduce that historical event. Recovery now distinguishes the two refusal paths.
+
+Native ARM64 Darwin 25 race validation passes the full usage package: 35 named runs, 33 passes and two fixture-only top-level skips. This includes the existing native layout/timebase and live memory/CPU observations, enabled real gated root/child/grandchild CPU ancestry, ten malformed/unavailable UUID controls, different/obsolete namespace ownership refusal, and three separately initialized execs observing the same exact parent identity. A strengthened native-format assertion also passes its focused independent-process rerun. All 46 selected SSH artifact/status named race cases pass, including real helper exit, exact published-artifact recovery, live-worker veto, hostile-envelope refusal and unchanged artifacts/receipt/pending intent for changed or old-format namespaces. All 32 selected Manager CPU named race cases pass, including the enabled bounded real native credit integration; affected usage/SSH/Manager vet passes. Commands use Go 1.27.3, one Go process worker and package parallelism one. Review evidence is retained under ignored `.cache/darwin-boot-identity/` in the isolated worktree.
+
+Initial sandboxed native attempts failed because the boot-session sysctl was unavailable; identity capture refused rather than falling back. The passing race gates ran with native host access. No clock or security-setting changes were made. The new fixed 37-byte read accepts only an exact uppercase nonnil UUID and never translates retained `darwin:boot:` records. Their cleanup/usage/CPU ownership remains uncertain. These are component/Manager results, not a full SSH package rerun, public CLI/daemon acceptance, Linux/Intel execution, reboot testing or broader model/proof composition. The abstract CPU model and counter derivation are unchanged, but shared `internal/usage` source affects CPU anchor capture, collection and Manager actual-trace/native acceptance dependencies; older source-bound results do not prove this successor. Full current-composition acceptance remains required.
+
 ## October 26, 2026: held resource-status freshness review fix
 
 The reviewer found that memory and disk cards only used backend stale flags and connection state, so a still-connected browser holding an old status could continue to show “to lease” after those budgets expired. The web view now applies the same local elapsed-age calculation to CPU, memory and disk, and the Resources freshness check redraws when any one of their known/unknown states changes. A regression holds a connected status across staggered memory, disk and CPU deadlines; each “to lease” field becomes unavailable at its own deadline while promises remain visible and the original status object is unchanged. The complete web suite passes 201 tests; JavaScript syntax and staged diff checks pass. This is a browser presentation freshness fix, not a new backend admission rule or terminal layout change. The native observe full-suite counter limitation recorded below remains unchanged.
@@ -2619,3 +2627,15 @@ lease across dashboard exit. Evidence is ignored
 `.cache/terminal-remaining-0736-root-{race,pty}.log`. No new native Linux PTY or
 Terminal.app GUI run is inferred. The large CPU display remains activity and
 I/O remains throughput.
+
+### Independent stable Darwin identity integration check
+
+The exact `da3ae61` source passes fresh native race checks for fixed UUID
+validation and three independently initialized process caches (usage4.307s),
+plus obsolete/different worker namespace refusal and the previously failing
+exact hostile-envelope recovery case (SSH2.041s). Affected usage/SSH vet
+also passes in the composed checkout. Evidence is ignored
+`.cache/darwin-uuid-root-independent.log`. The existing Darwin ABI/timebase
+test remains unchanged. These scoped passes complement the author's actual
+CPU integration; they do not retrospectively prove the old failure's branch,
+a reboot or the complete SSH package.

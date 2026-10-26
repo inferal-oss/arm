@@ -11,7 +11,6 @@ import (
 
 	"github.com/ebitengine/purego"
 	"github.com/yrashk/arm/internal/model"
-	"golang.org/x/sys/unix"
 )
 
 // Layouts correspond to public proc_bsdinfo and rusage_info_v0 on macOS
@@ -37,6 +36,7 @@ var native struct {
 	listpids     func(uint32, uint32, unsafe.Pointer, int32) int32
 	rusage       func(int32, int32, *rusageInfo) int32
 	timebase     func(*[2]uint32) int32
+	sysctlbyname func(string, *[darwinBootUUIDSize]byte, *uintptr, unsafe.Pointer, uintptr) int32
 	numer, denom uint32
 }
 
@@ -52,7 +52,7 @@ func nativeInit() error {
 		for _, symbol := range []struct {
 			name   string
 			target any
-		}{{"proc_pidinfo", &native.pidinfo}, {"proc_listpids", &native.listpids}, {"proc_pid_rusage", &native.rusage}, {"mach_timebase_info", &native.timebase}} {
+		}{{"proc_pidinfo", &native.pidinfo}, {"proc_listpids", &native.listpids}, {"proc_pid_rusage", &native.rusage}, {"mach_timebase_info", &native.timebase}, {"sysctlbyname", &native.sysctlbyname}} {
 			ptr, err := purego.Dlsym(handle, symbol.name)
 			if err != nil {
 				native.err = err
@@ -66,12 +66,13 @@ func nativeInit() error {
 			return
 		}
 		native.numer, native.denom = tb[0], tb[1]
-		boot, err := unix.SysctlRaw("kern.boottime")
-		if err != nil {
-			native.err = err
-			return
-		}
-		native.namespace = fmt.Sprintf("darwin:boot:%x", boot)
+		native.namespace, native.err = darwinBootNamespace(func(raw *[darwinBootUUIDSize]byte, size *uintptr) error {
+			if native.sysctlbyname("kern.bootsessionuuid", raw, size, nil, 0) != 0 {
+				return fmt.Errorf("kern.bootsessionuuid unavailable")
+			}
+			runtime.KeepAlive(raw)
+			return nil
+		})
 	})
 	return native.err
 }
@@ -159,4 +160,38 @@ func collect(ctx context.Context, s *Snapshot) {
 		s.Complete = false
 		s.Detail += "; no member counters were available"
 	}
+}
+
+// XNU initializes this read-only UUID once in IOPMrootDomain::start. In
+// contrast, clock_set_calendar_microtime adjusts kern.boottime with wall time.
+// Read only the fixed uuid_string_t representation; no wall-time fallback or
+// translation of retained identities can grant attribution or cleanup authority.
+const darwinBootUUIDSize = 37
+
+func darwinBootNamespace(read func(*[darwinBootUUIDSize]byte, *uintptr) error) (string, error) {
+	var raw [darwinBootUUIDSize]byte
+	size := uintptr(len(raw))
+	if err := read(&raw, &size); err != nil {
+		return "", fmt.Errorf("Darwin boot session identity: %w", err)
+	}
+	if size != darwinBootUUIDSize || raw[36] != 0 {
+		return "", fmt.Errorf("Darwin boot session UUID has invalid size or terminator")
+	}
+	nonzero := false
+	for i, c := range raw[:36] {
+		if i == 8 || i == 13 || i == 18 || i == 23 {
+			if c != '-' {
+				return "", fmt.Errorf("Darwin boot session UUID has invalid separator")
+			}
+			continue
+		}
+		if !(c >= '0' && c <= '9' || c >= 'A' && c <= 'F') {
+			return "", fmt.Errorf("Darwin boot session UUID has invalid hex digit")
+		}
+		nonzero = nonzero || c != '0'
+	}
+	if !nonzero {
+		return "", fmt.Errorf("Darwin boot session UUID is nil")
+	}
+	return "darwin:bootsessionuuid:" + string(raw[:36]), nil
 }

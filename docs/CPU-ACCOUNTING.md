@@ -38,6 +38,28 @@ invalidate its candidate. Original Wait return is tracked separately from later
 process-group/provider cleanup, so an unreaped cleanup obligation cannot retain
 usage credit after its original process has exited.
 
+## Darwin boot identity prerequisite
+
+Native process/owner identities require a canonical nonnil boot-session UUID.
+XNU 12377.1.9 [exports it read-only](https://github.com/apple-oss-distributions/xnu/blob/xnu-12377.1.9/bsd/kern/kern_sysctl.c#L2735),
+and [initializes it during root-domain startup](https://github.com/apple-oss-distributions/xnu/blob/xnu-12377.1.9/iokit/Kernel/IOPMrootDomain.cpp#L1656)
+using an uppercase UUID string at boot. The former `kern.boottime` value is
+unsuitable: [calendar changes adjust the stored boot time](https://github.com/apple-oss-distributions/xnu/blob/xnu-12377.1.9/osfmk/kern/clock.c#L675).
+The pinned sysctl implementation zero-initializes its exported timeval, so
+padding instability is not established by that source. The source establishes
+the discriminator choice; it does not identify the cause of an older generic
+SSH recovery failure.
+
+ARM accepts only the exact 37-byte NUL-terminated uppercase UUID representation
+and refuses native identity/credit if the sysctl is unavailable or malformed.
+No older-platform availability is promised by this source pin; native tests here
+cover ARM64 Darwin 25 only. Retained wall-time namespaces and different UUIDs
+never match current identities and receive no usage/CPU ownership or artifact
+cleanup authority. There is no state migration. This changes a native source
+dependency of prior CPU acceptance and actual-history composition; fresh scoped
+component tests do not re-establish broader public/native or formal acceptance.
+The abstract CPU model and its counter derivation are unchanged.
+
 ## Darwin: shared recount accounting
 
 The supported initial positive-credit scope is a complete, unchanged host CPU

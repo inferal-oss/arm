@@ -1,7 +1,9 @@
 package sshservice
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -118,5 +120,70 @@ func TestArtifactRecoveryRefusesCurrentWorkerAndAbsentStatus(t *testing.T) {
 	status.State = "absent"
 	if e = RecoverArtifacts(t.Context(), home, b, r, status); e == nil {
 		t.Fatal("absent snapshot cleanup permitted")
+	}
+}
+
+// A retained prior-boot or old-format identity stays uncertain even when its
+// real helper has exited. It must not gain cleanup authority by translation.
+func TestArtifactRecoveryRetainsDifferentAndObsoleteWorkerNamespaces(t *testing.T) {
+	home, b := stateFixture(t)
+	statePin(t, home, b)
+	cmd := exec.CommandContext(t.Context(), os.Args[0], "-test.run=^TestArtifactCrashHelper$", "--", home, b.Host, "published")
+	out, err := cmd.CombinedOutput()
+	if err == nil || cmd.ProcessState.ExitCode() != 21 {
+		t.Fatalf("crash helper: %v %s", err, out)
+	}
+	s, err := ReadState(t.Context(), home, b)
+	if err != nil || len(s.Intents) != 1 {
+		t.Fatal("missing retained worker", err)
+	}
+	original := s.Intents[0]
+	t.Cleanup(func() {
+		for _, name := range append(append([]string{}, artifactNames...), ArtifactReceiptName) {
+			os.Remove(filepath.Join(original.Directory.Path, name))
+		}
+		os.Remove(original.Directory.Path)
+	})
+	path := filepath.Join(home, "mesh", intentName(original))
+	manifest, err := os.ReadFile(filepath.Join(original.Directory.Path, ArtifactReceiptName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, namespace := range []string{original.Worker.Namespace + "-other", "darwin:boot:retained-wall-time"} {
+		changed := original
+		changed.Worker.Namespace = namespace
+		raw, err := json.Marshal(changed)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Controlled retained-record replacement simulates a prior namespace;
+		// production never rewrites or adopts such identities.
+		if err := os.WriteFile(path, raw, 0600); err != nil {
+			t.Fatal(err)
+		}
+		err = RecoverArtifacts(t.Context(), home, b, changed, statusFixture(changed))
+		if err == nil || !strings.Contains(err.Error(), "namespace differs") {
+			t.Fatal("different retained namespace did not veto cleanup", err)
+		}
+		for _, name := range artifactNames {
+			if _, err := os.Lstat(filepath.Join(original.Directory.Path, name)); err != nil {
+				t.Fatal("artifact lost", err)
+			}
+		}
+		after, err := os.ReadFile(filepath.Join(original.Directory.Path, ArtifactReceiptName))
+		if err != nil || !bytes.Equal(after, manifest) {
+			t.Fatal("receipt changed on refusal", err)
+		}
+		retained, err := ReadState(t.Context(), home, b)
+		if err != nil || len(retained.Intents) != 1 || !exactIntent(retained.Intents[0], changed) || len(retained.Completions) != 0 || len(retained.Seals) != 0 {
+			t.Fatal("namespace refusal settled or adopted retained state", err)
+		}
+	}
+	raw, _ := json.Marshal(original)
+	if err := os.WriteFile(path, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := RecoverArtifacts(t.Context(), home, b, original, statusFixture(original)); err != nil {
+		t.Fatal("independent original worker recovery failed", err)
 	}
 }

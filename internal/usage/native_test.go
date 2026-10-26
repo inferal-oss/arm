@@ -61,6 +61,16 @@ func TestNativeCapturedGroupCountersAndIdentityChanges(t *testing.T) {
 		b, _ := json.Marshal(v)
 		t.Fatalf("native counters/units: %s", b)
 	}
+	for _, namespace := range []string{identity.Namespace + "-other", "darwin:boot:retained-wall-time"} {
+		changed := identity
+		changed.Namespace = namespace
+		if invalid := Collect(ctx, changed); invalid.Verified || len(invalid.Members) != 0 {
+			t.Fatal("another or obsolete boot namespace provided usage", invalid)
+		}
+		if cookie, err := CaptureCPUAnchor(changed); err == nil || cookie != "" {
+			t.Fatal("another or obsolete boot namespace provided CPU ownership", cookie, err)
+		}
+	}
 	changed := identity
 	changed.Start += "other"
 	invalid := Collect(ctx, changed)
