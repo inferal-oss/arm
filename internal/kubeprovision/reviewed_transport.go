@@ -58,5 +58,9 @@ func (t reviewedOriginTransport) RoundTrip(request *http.Request) (*http.Respons
 		}
 		return nil, ErrIdentity
 	}
-	return t.next.RoundTrip(request)
+	response, err := t.next.RoundTrip(request)
+	if err != nil {
+		return response, err
+	}
+	return boundMetadataResponse(response)
 }

@@ -48,7 +48,7 @@ func (s *Server) beginStopWork(kind string) (func(), error) {
 
 func stopInspection(operation string) bool {
 	switch operation {
-	case "node_stop_observer_context", "startup_inspect", "lease_review_list", "lease_review_inspect", "lease_review_policy", "status", "resources", "inspect", "events", "output", "shutdown_status", "node_list", "node_inspect", "node_metadata", "agent_inbox", "message_lookup", "agent_message_lookup", "messages", "agents", "pool_list", "pool_inspect", "pool_history", "pool_children", "pool_consumers", "pool_lookup", "budget_list", "budget_inspect", "budget_consumers", "budget_history", "budget_lookup", "storage_list", "storage_inspect", "storage_exports", "storage_export_inspect", "monitor", "incidents", "usage", "access_scope":
+	case "node_stop_observer_context", "startup_inspect", "lease_review_list", "lease_review_inspect", "lease_review_policy", "status", "resources", "inspect", "events", "output", "shutdown_status", "kube_contexts", "kube_nodes", "node_list", "node_inspect", "node_metadata", "agent_inbox", "message_lookup", "agent_message_lookup", "messages", "agents", "pool_list", "pool_inspect", "pool_history", "pool_children", "pool_consumers", "pool_lookup", "budget_list", "budget_inspect", "budget_consumers", "budget_history", "budget_lookup", "storage_list", "storage_inspect", "storage_exports", "storage_export_inspect", "monitor", "incidents", "usage", "access_scope":
 		return true
 	case "lease_review_reply", "release", "cancel", "cancel_request", "bulk_end", "agent_receipt":
 		// Existing settlement can finish; Manager's own draining guard and

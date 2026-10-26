@@ -148,6 +148,13 @@ connections on cancellation and waits for accept/copy workers before `Done`.
 A timeout retains the session handle for later inspection. A disposable
 cluster has not yet verified the full carrier, so `Forward()` remains an
 isolated adapter rather than an enabled Mesh connection path.
+The public `arm mesh kubernetes` CLI now routes context/Node inventory,
+reviewed plan/apply, original-key lookup and exact binary shipment. Local
+authenticated web and terminal dashboards have bounded context/Node inventory,
+typeahead search, exact UID selection and architecture/CPU/RAM/disk facts.
+Selection is read-only; dashboard apply, lookup and recovery controls remain
+unimplemented. The displayed allocatable quantities do not authorize ARM CPU
+work.
 Owned exec and forwarding helpers compare the saved context, HTTPS endpoint
 and exact CA-bundle digest before constructing a client or making the first
 API request. They reject external credential plugins and unreviewed TLS
@@ -177,17 +184,16 @@ authenticated status, exited after owned SIGTERM and removed its endpoint.
 This does not exercise the Pod gate, catalog or cluster transport.
 The start-marker receipt does not prove that ARM is running or
 connectible. Catalog proof, runtime readiness, mesh enrollment and pinned SSH,
-CLI/web/Charm orchestration, exact-UID destructive lifecycle and CPU capacity
-authority are not yet implemented. No Pod is created by the current CLI.
-An isolated CLI entrypoint provides context and Node inventory, plan/apply,
-exact-key lookup and binary shipment for later integration, but the shared
-command switch does not route to it. It deliberately withholds `start` until
+dashboard apply/recovery, exact-UID destructive lifecycle and CPU capacity
+authority are not yet implemented. The public CLI can create an exactly
+reviewed Pod and ship its binary; that does not enable a mesh node or ARM CPU
+execution. It deliberately withholds `start` until
 destination catalog proof and runtime readiness checks exist.
-Shared integration needs `k8s.io/client-go`, `k8s.io/api` and
+The integrated module includes `k8s.io/client-go`, `k8s.io/api` and
 `k8s.io/apimachinery` at v0.37.1 (with `k8s.io/streaming` v0.37.1
 transitively). The adapter uses `clientcmd`, typed CoreV1, `remotecommand` and
-`portforward`; it was compiled and tested with a private ignored
-`.cache/kubeprovision.mod`. The coordinator owns shared module and UI edits.
+`portforward`. The current dashboard work is isolated pending coordinator
+review and integration.
 
 The narrow shared integration sequence is:
 

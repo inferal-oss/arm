@@ -14,6 +14,7 @@ import (
 )
 
 type meshDashboard struct {
+	kube                     *kubeInventoryUI
 	uninstallCheckedKey      string
 	uninstallCheckedRevision int64
 	uninstallCheckedHash     string

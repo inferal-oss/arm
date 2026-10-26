@@ -95,7 +95,7 @@ func redirectFixture(t *testing.T, sameOrigin bool) (Plan, Pod, *redirectObserva
 }
 
 func TestReviewedOriginRejectsCredentialRedirect(t *testing.T) {
-	for _, kind := range []string{"selected-context", "typed", "exec-helper", "forward-helper"} {
+	for _, kind := range []string{"selected-context", "inventory-context", "typed", "exec-helper", "forward-helper"} {
 		t.Run(kind, func(t *testing.T) {
 			plan, pod, observed := redirectFixture(t, false)
 			ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
@@ -104,6 +104,12 @@ func TestReviewedOriginRejectsCredentialRedirect(t *testing.T) {
 			switch kind {
 			case "selected-context":
 				api, e := OpenContext(plan.Review.Cluster.Context)
+				if e != nil {
+					t.Fatal(e)
+				}
+				_, err = api.Cluster(ctx)
+			case "inventory-context":
+				api, e := OpenInventoryContext(plan.Review.Cluster.Context)
 				if e != nil {
 					t.Fatal(e)
 				}
@@ -150,13 +156,15 @@ func TestReviewedOriginRejectsCredentialRedirect(t *testing.T) {
 }
 
 func TestReviewedOriginAllowsSameOriginRedirect(t *testing.T) {
-	for _, kind := range []string{"selected-context", "reviewed-context"} {
+	for _, kind := range []string{"selected-context", "inventory-context", "reviewed-context"} {
 		t.Run(kind, func(t *testing.T) {
 			plan, _, observed := redirectFixture(t, true)
 			var api *ClientGo
 			var err error
 			if kind == "selected-context" {
 				api, err = OpenContext(plan.Review.Cluster.Context)
+			} else if kind == "inventory-context" {
+				api, err = OpenInventoryContext(plan.Review.Cluster.Context)
 			} else {
 				api, err = OpenReviewedContext(plan)
 			}

@@ -1162,13 +1162,30 @@ HTTPS-origin fence guards initial discovery and owned typed/SPDY/WebSocket
 requests before any redirect dial. It uses IDNA/IP identity and effective ports;
 a trusted CA does not authorize another origin. Refused request bodies close.
 
-This foundation includes hidden inherited-pipe helper dispatch and currently
-unrouted CLI methods. Public `arm mesh kubernetes`, actual Pod bootstrap and
-readiness, carrier catalog/enrollment, leased SSH connection, web/Charm Node
-selection and real-cluster acceptance remain required. Pod requests are ceilings
+This foundation includes hidden inherited-pipe helper dispatch. Public
+`arm mesh kubernetes` now routes contexts, Node inventory, keygen, reviewed
+plan/apply, original-key lookup and exact binary shipment. Local authenticated
+web and Charm Mesh views support explicit context selection, Node typeahead
+and exact UID selection, showing reported architecture and allocatable CPU,
+memory and ephemeral storage. The inventory constructor rejects credential
+plugins and custom proxy/transport settings before making an authenticated
+request. Remote-scoped sessions do not gain local kubeconfig access.
+
+Ordinary Kubernetes metadata responses are limited to 8 MiB before client-go
+decodes JSON/protobuf, including unknown-length bodies and ignored metadata.
+Known oversized responses close immediately; streaming overflow is sticky.
+HTTP101 exec/forward upgrades retain their original duplex body and separate
+stream limits. The browser retires selections and old click handlers as soon
+as context/search/namespace changes and cancels hidden queued searches.
+
+Selection remains read-only. Dashboard apply/recovery, actual Pod bootstrap and
+readiness, carrier catalog/enrollment, leased SSH connection, real-cluster
+acceptance and wider rendered/PTY coverage remain required. Pod requests are ceilings
 and scheduler declarations, not proven live capacity; hidden Linux quota
 ancestry still refuses native CPU grants. No Kubernetes entitlement exception
 or QUIC transition is enabled. See [the provider contract](KUBERNETES-PROVISIONING.md).
+The separate [CPU authority proposal](KUBERNETES-CPU-AUTHORITY-PROPOSAL.md)
+does not authorize a host observer, new RBAC or a capacity exception.
 
 
 ## Multi-user cooperation research

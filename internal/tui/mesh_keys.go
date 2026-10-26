@@ -22,6 +22,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 	if ui == nil {
 		return m.openMesh()
 	}
+	if ui.mode == "kubernetes" {
+		return m.kubeKey(key)
+	}
 	if ui.busy {
 		if key == "i" && ui.unknown != nil {
 			m.record, _ = newRecord(ui.unknown, "Exact coordinator request")
@@ -229,6 +232,10 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		}
 	}
 	switch key {
+	case "K":
+		ui.mode = "kubernetes"
+		ui.kube = &kubeInventoryUI{}
+		return m.readKubeContexts(ui.kube)
 	case "esc":
 		if ui.mode == "node" {
 			ui.mode = "nodes"
@@ -614,6 +621,8 @@ func (m *dashboardModel) meshControls() []mouseControl {
 		return []mouseControl{{"l", "Lookup"}, {"t", "Retry exact"}, {"i", "Request"}, {"esc", "Back"}}
 	}
 	switch ui.mode {
+	case "kubernetes":
+		return []mouseControl{{"enter", "Select Node"}, {"[", "Previous context"}, {"]", "Next context"}, {"ctrl+r", "Refresh"}, {"esc", "Mesh"}}
 	case "node":
 		controls := []mouseControl{{"v", "Open node"}, {"d", "Disconnect"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Nodes"}}
 		if allowed, _ := meshStopAvailability(ui.node); allowed {
@@ -677,6 +686,6 @@ func (m *dashboardModel) meshControls() []mouseControl {
 	case "operations":
 		return []mouseControl{{"enter", "Inspect"}, {"o", "Nodes"}, {"r", "Refresh"}}
 	default:
-		return []mouseControl{{"enter", "Inspect"}, {"p", "Install ARM"}, {"n", "Connect"}, {"o", "Operations"}, {"r", "Refresh"}}
+		return []mouseControl{{"enter", "Inspect"}, {"K", "Kubernetes Nodes"}, {"p", "Install ARM"}, {"n", "Connect"}, {"o", "Operations"}, {"r", "Refresh"}}
 	}
 }

@@ -146,6 +146,46 @@ func OpenContext(name string) (*ClientGo, error) {
 	return &ClientGo{contextName: name, config: config, client: client, server: server, caHash: caHash}, nil
 }
 
+// OpenInventoryContext opens one explicitly selected context for local
+// dashboard inventory or an initial CLI plan. It uses the same direct
+// credential boundary as reviewed helpers, without claiming a saved operation
+// identity; any later effect still needs an exact reviewed plan.
+func OpenInventoryContext(name string) (*ClientGo, error) {
+	if name == "" {
+		return nil, errors.New("select an explicit Kubernetes context")
+	}
+	name, config, server, caHash, err := resolveContext(name)
+	if err != nil {
+		return nil, err
+	}
+	if err := prepareOwnedTransport(config); err != nil {
+		return nil, err
+	}
+	config.WrapTransport, err = reviewedOriginGuard(server)
+	if err != nil {
+		return nil, err
+	}
+	client, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	return &ClientGo{contextName: name, config: config, client: client, server: server, caHash: caHash}, nil
+}
+
+func prepareOwnedTransport(config *rest.Config) error {
+	if err := checkOwnedStreamCredentials(config); err != nil {
+		return err
+	}
+	if config.ServerName != "" || config.Proxy != nil || config.Transport != nil || config.WrapTransport != nil || config.Dial != nil || config.CertFile != "" || config.KeyFile != "" || len(config.NextProtos) != 0 {
+		return errors.New("unreviewed Kubernetes transport configuration")
+	}
+	config.BearerTokenFile = ""
+	config.CertData = append([]byte(nil), config.CertData...)
+	config.KeyData = append([]byte(nil), config.KeyData...)
+	config.Proxy = func(*http.Request) (*url.URL, error) { return nil, nil }
+	return nil
+}
+
 // OpenReviewedContext binds local transport trust before client construction
 // or any authenticated request. In particular, an unreviewed endpoint, CA,
 // TLS name, proxy or credential plugin never receives the saved credential.
@@ -160,21 +200,14 @@ func OpenReviewedContext(plan Plan) (*ClientGo, error) {
 	if name != plan.Review.Cluster.Context || server != plan.Review.Cluster.Server || caHash != plan.Review.Cluster.CAHash {
 		return nil, ErrIdentity
 	}
-	if err := checkOwnedStreamCredentials(config); err != nil {
+	if err := prepareOwnedTransport(config); err != nil {
 		return nil, err
-	}
-	if config.ServerName != "" || config.Proxy != nil || config.Transport != nil || config.WrapTransport != nil || config.Dial != nil || config.CertFile != "" || config.KeyFile != "" || len(config.NextProtos) != 0 {
-		return nil, errors.New("unreviewed Kubernetes transport configuration")
 	}
 	// clientcmd has already loaded a token file into BearerToken. Keep the
 	// exact token through SSR, exec and forwarding instead of refreshing it
 	// from a mutable path between identity check and effect.
-	config.BearerTokenFile = ""
-	config.CertData = append([]byte(nil), config.CertData...)
-	config.KeyData = append([]byte(nil), config.KeyData...)
-	// A nil Proxy would use ambient HTTP(S)_PROXY in client-go. Force direct
-	// transport because no proxy identity exists in the reviewed plan.
-	config.Proxy = func(*http.Request) (*url.URL, error) { return nil, nil }
+	// A nil Proxy would use ambient HTTP(S)_PROXY in client-go. The shared
+	// transport preparation forces direct traffic and frozen credentials.
 	// The typed client and every stream transport reuse this origin fence.
 	// HTTP redirect handling must not expand the reviewed endpoint authority.
 	config.WrapTransport, err = reviewedOriginGuard(server)

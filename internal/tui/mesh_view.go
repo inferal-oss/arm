@@ -20,6 +20,9 @@ func (m *dashboardModel) meshItemCount() int {
 	if ui.mode == "nodes" {
 		return len(ui.registry.Nodes)
 	}
+	if ui.mode == "kubernetes" && ui.kube != nil {
+		return len(ui.kube.nodes)
+	}
 	if ui.mode == "operations" {
 		return len(ui.operations)
 	}
@@ -120,6 +123,9 @@ func (m *dashboardModel) meshText() string {
 			out.WriteString("\n[Enter] edit · [Space] choose policy · [p] prepare review · Esc keep running\nTimeout is whole seconds, Wait only; positive timeout requests ARM-owned reclamation. Force never discards foreign or unknown work.")
 		}
 		return out.String()
+	}
+	if ui.mode == "kubernetes" && ui.kube != nil {
+		return out.String() + m.kubeText(ui.kube)
 	}
 	if ui.unknown != nil {
 		advice := "[l] Read durable keyed receipt · [t] Retry this exact request only"
@@ -316,7 +322,7 @@ func (m *dashboardModel) meshText() string {
 		if ui.registry.Error != nil {
 			out.WriteString(safe(ui.registry.Error.Error()) + "\n")
 		}
-		out.WriteString("\n[Enter] Node details · [n] Connect node · [o] Operations · [r] Refresh\nReading this registry never initializes Mesh or fans out to all peers.")
+		out.WriteString("\n[Enter] Node details · [K] Kubernetes Nodes · [n] Connect node · [o] Operations · [r] Refresh\nReading this registry never initializes Mesh or fans out to all peers.")
 	}
 	if ui.loading {
 		out.WriteString("\n\nReading exact authority…")

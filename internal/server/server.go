@@ -752,6 +752,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "kube_contexts", "kube_nodes":
+		return s.kubernetesInventory(ctx, r.Operation, r.Params)
 	case "lease_review_list", "lease_review_inspect", "lease_review_policy", "lease_review_configure", "lease_review_reply":
 		return s.leaseReviewOperation(r.Operation, r.Params)
 	case "ssh_account", "ssh_close", "ssh_key_status", "ssh_key_seal":

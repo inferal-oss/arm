@@ -1166,3 +1166,9 @@ dialog.pool-editor::backdrop { background:#05090edb; backdrop-filter:blur(4px); 
 .mesh-uninstall-preserved{margin:1.2rem 0;padding:1rem 1.2rem;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
 .mesh-uninstall-preserved h4{margin:0 0 .6rem}.mesh-uninstall-preserved ul{columns:2;column-gap:2rem;padding-left:1.2rem;line-height:1.8}.mesh-uninstall-selection dd{overflow-wrap:anywhere}
 @media(max-width:650px){.mesh-uninstall-preserved ul{columns:1}}
+.kube-inventory { padding: 1rem 0; }
+.kube-inventory .mesh-nodes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: .8rem; }
+.kube-inventory .mesh-node-card { padding: 1rem; border: 1px solid var(--line, #b9c6d2); border-radius: .8rem; }
+.kube-fact { display: flex; justify-content: space-between; gap: 1rem; padding: .2rem 0; }
+.kube-fact span { text-align: right; overflow-wrap: anywhere; }
+.kube-selected { margin-top: 1rem; }

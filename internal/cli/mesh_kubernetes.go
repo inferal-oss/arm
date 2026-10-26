@@ -16,6 +16,9 @@ import (
 // dispatch addition. It creates no trust or resource grant. The review/apply
 // split and exact-key journal remain inside kubeprovision.
 func (a *app) meshKubernetes(args []string) (int, error) {
+	if a.group("mesh kubernetes", args) {
+		return 0, nil
+	}
 	if len(args) == 0 {
 		return 2, fmt.Errorf("mesh kubernetes requires contexts, nodes, keygen, plan, apply, lookup or ship")
 	}
@@ -99,7 +102,7 @@ func (a *app) meshKubernetesNodes(args []string) (int, error) {
 	if *namespaceName == "" {
 		*namespaceName = choice.Namespace
 	}
-	api, err := kubeprovision.OpenContext(choice.Name)
+	api, err := kubeprovision.OpenInventoryContext(choice.Name)
 	if err != nil {
 		return 1, err
 	}
@@ -166,7 +169,7 @@ func (a *app) meshKubernetesPlan(action string, args []string) (int, error) {
 	if err != nil {
 		return 1, err
 	}
-	api, err := kubeprovision.OpenContext(choice.Name)
+	api, err := kubeprovision.OpenInventoryContext(choice.Name)
 	if err != nil {
 		return 1, err
 	}

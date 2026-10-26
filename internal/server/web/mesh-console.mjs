@@ -2,6 +2,7 @@ import {nodeStopAvailability,stopDraft,stopReviewView,stopResultLabel,stopResult
 import {nodeUninstallAvailability,uninstallDraft,assertUninstallOperation,uninstallOperationTarget,uninstallReviewView,uninstallConfirmed,uninstallFinishAllowed} from './mesh-uninstall.mjs';
 import {provisionDraft,validProvisionIntent,assertProvisionOperation,assertProvisionPreparation,provisionReviewView,provisionConfirmed} from './mesh-provision.mjs';
 import {jsonView} from './json-view.mjs';
+import {createKubeInventory} from './kube-inventory.mjs';
 import {bytes,stringifyJSON} from './core.mjs';
 import {validHostID,meshPreparationNotice,phaseLabel,operationAdvice,grantFromDraft,grantDescription,reviewIdentities,canReview,supportedReview,validateMeshReason} from './mesh-model.mjs';
 
@@ -17,6 +18,7 @@ export function createMeshConsole({root,call,connected,storage,openNode,document
   actions.append(refreshButton,connectButton,installButton);toolbar.append(intro,actions);
   const nodes=el('div','mesh-nodes'),operations=el('section','mesh-operations');
   root.replaceChildren(toolbar,message,nodes,operations);
+  createKubeInventory({root,call,connected,document});
   let rosterKey='',operationsKey='',roster=null,allOps=[],selectedHost='',detail=null,dialog=null,opKey='',opVersion=0,renderedRevision=null,renderedSemantic='',currentOperation=null,lookupVersion=0,refreshBusy=false,refreshQueued=false,disposed=false;
   const announce=text=>{message.textContent=text;};
   let pendingKeys=[],pendingStoreInvalid=false;

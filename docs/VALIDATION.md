@@ -3230,3 +3230,59 @@ does not establish warning refinement.
 The complete current module also passes `go test -mod=readonly -p=1 -run '^$' ./...`
 after composition. This compiles all test packages; it does not execute
 their test bodies. Its log is `.cache/cpu-warning-integrated-module-compile.log`.
+
+## Kubernetes inventory independent integration review
+
+Candidate `8962d6c` adds public CLI routing and local web/Charm context/Node
+inventory. Root reviews it in an isolated worktree and retains two original
+counterexamples: one projected Node hides over 8 MiB in an ignored annotation,
+fully decoded before the final dashboard limit; an old Node button can select
+its original UID under a newly chosen context. Correction `0be48a5` caps ordinary
+API response bytes before the typed decoder, preserves original HTTP101 duplex
+bodies, and binds choices to the current request/generation. Search edits
+immediately retire choices; hidden inventory cancels queued reads. Exact-limit,
+declared/streaming overflow, close/count, upgrade, stale-click and debounce/
+hidden-read controls pass. Original failures remain under the review worktree's
+ignored `.cache/inventory-original-{bounds,stale-ui}.log`.
+
+The first complete provider run skips 19 real-CLI cases because its executable
+environment is absent; it is not native helper acceptance. The final fresh
+CGo-free executable-backed macOS race run passes all 56 roots/75 named cases in
+16.902s without failures/skips, including original helper processes, cancellation,
+forwarding and redirect fences. Focused CLI/server races pass three roots/cases
+in 2.466s/1.705s. The complete terminal suite finishes in 23.255s with 304 named
+passes, no failures and six explicit opt-in visual/subprocess helper skips;
+those skips are not new terminal/PTY acceptance. Affected four-package vet and
+all 204 web tests pass. A prior broad server run independently reproduced an
+existing node-stop decoder failure on unchanged primary; that failure remains
+unresolved and is not relabeled as an inventory pass.
+
+Actual Linux ARM64 executes the complete provider and selected CLI/server/Charm
+inventory components: 62 roots/81 named cases, zero failures/skips. All five
+uploaded executable/test images match their SHA-256 digests. Original native
+command, SSH and owned cleanup exit 0, bounded scope inactive and exact disposable
+root absent. Evidence is in primary ignored
+`.cache/kube-inventory-reviewed-linux-{intent.json,native.log,run.log}`. Linux
+component checks do not establish real-cluster or terminal rendering acceptance.
+
+A real in-app browser renders the actual widget and stylesheet against clearly
+disposable mocked inventory. Desktop cards, readiness-disabled selection,
+context/namespace controls and exact UID details are visibly checked. The
+temporary tab closes; the original fixture exits on requested keyboard
+interruption, its finalizer closes the listener, and its exact PID is absent.
+Screenshots and native logs are retained in
+`/private/tmp/arm-kubernetes-inventory-integration-review/.cache/`.
+This is desktop widget evidence, not a full backend/browser/cluster workflow,
+narrow viewport or native terminal GUI acceptance. Kubernetes CPU authority,
+runtime/catalog proof, mesh enrollment and dashboard provisioning/recovery
+remain incomplete; no observer, RBAC change or static CPU exception is enabled.
+
+Public group help initially returns an unknown-action error. Correction
+`052bb52` adds offline group/no-argument help, every leaf's usage and explicit
+review/readiness limits. Three integrated CLI race tests and CLI vet pass;
+the final Linux CLI image executes the same group/leaf help controls. Earlier
+pre-help Linux receipts are retained separately. The complete module compiles
+all test packages with `-run '^$'`; CLI races/vet are renewed after the help-only
+change. Neither check is a complete server test-body run. Primary evidence is
+`.cache/kube-inventory-reviewed-module-compile.log` and
+`.cache/kube-inventory-integrated-cli-{help-race.jsonl,vet.log}`.

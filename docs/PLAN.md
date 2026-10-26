@@ -16,6 +16,16 @@ Updated October 26, 2026 against the current worktree. The complete scope remain
 
 **Carrier prerequisite delivered.** Explicit carrier targets are integrated: paired `CARRIER_OS`/`CARRIER_ARCH` build a self-contained Linux or macOS carrier from another supported host. Review also fixed the omitted local rsync fork in private source snapshots. A full four-payload Linux ARM64 carrier build and actual Linux offline CLI execution pass. Kubernetes Pod bootstrap, authenticated runtime/catalog readiness and mesh connection remain separate gates.
 
+**Kubernetes inventory integrated.** Public CLI routing and local web/Charm
+context/Node selection are implemented, with explicit UID, architecture and
+reported allocatable resources. Independent review corrected metadata decode
+bounds and stale cross-context selections. Fresh real-CLI provider races,
+native Linux component checks and a rendered desktop widget pass within their
+recorded scope. Selection grants no execution. Full reviewed dashboard apply/
+recovery, real Pod bootstrap, catalog/runtime proof, enrollment, SSH connection,
+cluster and wider visual/PTY acceptance remain. Hidden quota ancestry still
+denies CPU; the separate capacity-observer proposal is not approved or enabled.
+
 **Current validation gates.** Bounded, durable SSH history cleanup and complete expected-row binding are integrated after the full composed SSH race suite and native Linux suite pass; earlier deadline and stale-row failures remain recorded. Stable Darwin boot identity is integrated, and the scoped CPU TLC/actual-Go/TLAPM gate is renewed. Warning-runtime exact-recipient/lease/incident start checks are integrated with focused platform evidence; automatic pause stays disabled. Kubernetes endpoint/CA/origin fences and owned helpers are integrated. The private Manager/schema/worker components are integrated; production orchestration, allocation/cleanup, relayed public sync and full Kubernetes delivery remain required.
 
 **Pressure warnings integrated.** The reviewed decision/journal core now feeds durable Manager warnings, operator/agent inboxes and an exact-registration native-delivery outbox. Sampling, warning commits, shutdown fences and contact/lease/incident checks at command start pass scoped composed macOS race and native Linux tests. CPU warning confidence now separates verified current usage from possible compliant original-owner use. Bare promises cannot manufacture measured coverage; uncertain/missing attribution does not itself certify healthy recovery or blame supervised work. Structured status exposes these bounds. The inline sync-worker adapter checks the same observed original hold/runtime/context/join plus exact current lease and volume binding; it can contribute only possible compliant use, never native usage credit. Independent review also guards retired/missing sampled members, original transit context/join/row identity and outward arithmetic at fractional thresholds; sufficient physical idle still supports recovery. Small capacities may remain uncertain at millicore resolution. Complete attribution of short-lived work remains open. Automatic pause/resume remains disabled. Stronger pressure evidence, unknown-delivery reconciliation, configurable policy, UI controls and pressure-specific formal gates remain required.
@@ -275,6 +285,9 @@ installation and conservative reset/Stop evidence retention are integrated
 separately; complete cleanup/retirement remains required.
 SSH cleanup formal verification is integrated after independent review and a fresh complete primary gate. The Kubernetes helper/provider foundation is integrated after independent security review and composed native macOS/Linux tests. Public sync, complete Kubernetes node
 bootstrap/enrollment and dashboard controls remain required.
+
+The later inventory checkpoint now exposes existing reviewed CLI methods and
+read-only web/Charm Node selection; it does not complete those lifecycle gates.
 
 **Reset startup correction integrated:** only the exact installed, externally
 receipted pristine metadata-only reset seed may reach schema initialization.

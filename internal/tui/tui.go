@@ -299,6 +299,10 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.acceptPoolRead(msg)
 	case meshReadMsg:
 		return m, m.acceptMeshRead(msg)
+	case kubeInventoryMsg:
+		return m, m.acceptKubeInventory(msg)
+	case kubeSearchTick:
+		return m, m.acceptKubeSearch(msg)
 	case meshSendMsg:
 		return m, m.acceptMeshSend(msg)
 	case meshWatchMsg:
@@ -347,6 +351,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	k := key.String()
 	if k == "ctrl+c" {
 		return tea.Quit
+	}
+	if m.view == 6 && m.record == nil && m.meshUI != nil && m.meshUI.mode == "kubernetes" {
+		return m.meshKey(k)
 	}
 	if k == "q" && m.inputMode == "" {
 		return tea.Quit
