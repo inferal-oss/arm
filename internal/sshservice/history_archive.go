@@ -141,7 +141,7 @@ func archiveSourceHistory(ctx context.Context, home string, b Binding, q SourceH
 	if err != nil || !fresh {
 		return out, err
 	}
-	return continueSourceArchive(ctx, home, b, out, records, fault)
+	return continueSourceArchive(ctx, home, b, out, records, worker, fault)
 }
 func selectedHistoryPayloads(s *State, members []SourceHistoryMember, allowMissing bool) ([]historypack.Record, error) {
 	records := make([]historypack.Record, 0, len(members))
@@ -224,7 +224,7 @@ func updateSourceArchive(ctx context.Context, home string, b Binding, expected S
 	})
 	return
 }
-func continueSourceArchive(ctx context.Context, home string, b Binding, op SourceHistoryOperation, records []historypack.Record, fault historyFault) (SourceHistoryOperation, error) {
+func continueSourceArchive(ctx context.Context, home string, b Binding, op SourceHistoryOperation, records []historypack.Record, worker *historyWorker, fault historyFault) (SourceHistoryOperation, error) {
 	root := filepath.Join(home, SourceHistoryName, "packs")
 	if op.Phase == "prepared" {
 		p, e := historypack.Prepare(ctx, root, op.PackID, b.Host, records)
@@ -284,7 +284,7 @@ func continueSourceArchive(ctx context.Context, home string, b Binding, op Sourc
 		}
 	}
 	if op.Phase == "committed" {
-		cleaned, e := cleanSourceArchive(ctx, home, b, op, fault)
+		cleaned, e := cleanSourceArchive(ctx, home, b, op, worker, fault)
 		if e != nil && cleaned.Request.Key == "" {
 			return op, e
 		}
@@ -398,33 +398,101 @@ func commitSourceArchive(ctx context.Context, home string, b Binding, expected S
 	return
 }
 func mustHistoryJSON(v any) string { raw, _ := json.Marshal(v); return string(raw) }
-func cleanSourceArchive(ctx context.Context, home string, b Binding, expected SourceHistoryOperation, fault historyFault) (out SourceHistoryOperation, err error) {
+
+// Each unchanged five-second mutation window processes at most four reviewed
+// members (up to eight exact hot files, including pending duplicates). Keeping
+// this bound independent of the 64-member selection prevents one whole archive
+// from consuming a single short owner-lock deadline.
+const sourceHistoryCleanupBatchMembers = 4
+
+func cleanSourceArchive(ctx context.Context, home string, b Binding, expected SourceHistoryOperation, worker *historyWorker, fault historyFault) (SourceHistoryOperation, error) {
 	// Full frame/settlement verification is outside source locks. The exact
 	// namespace/file identities are rechecked under them before any unlink.
 	version, err := verifySourceArchivePackVersion(ctx, filepath.Join(home, SourceHistoryName, "packs"), expected)
 	if err != nil {
 		return expected, err
 	}
+	if worker == nil {
+		return expected, fmt.Errorf("original archive worker is required for cleanup")
+	}
+	for {
+		if err = ctx.Err(); err != nil {
+			return expected, err
+		}
+		out, err := cleanSourceArchiveBatch(ctx, home, b, expected, version, worker, fault)
+		if err != nil || out.Phase == "completed" {
+			return out, err
+		}
+		if len(out.Cleaned) <= len(expected.Cleaned) {
+			return out, fmt.Errorf("archive cleanup checkpoint made no progress")
+		}
+		// The next batch is allowed only after this exact checkpoint was
+		// durably acknowledged. Unknown effects/acks always return above;
+		// ordinary same-key Archive stays read-only, explicit Reconcile owns
+		// any later uncertain continuation.
+		if err = historyCheckpoint(fault, "after_cleanup_checkpoint"); err != nil {
+			return out, err
+		}
+		expected = out
+	}
+}
+
+func cleanSourceArchiveBatch(ctx context.Context, home string, b Binding, expected SourceHistoryOperation, version sourceArchivePackVersion, worker *historyWorker, fault historyFault) (out SourceHistoryOperation, err error) {
+	out = expected
 	err = withHistoryMutation(ctx, home, b, func(s *State, d *os.File, c *historyCatalog) error {
+		// Use this window's actual bounded context for SQLite and file I/O,
+		// in addition to the existing native owner guards before effects.
+		ctx := s.mutationContext
+		if e := worker.check(c); e != nil {
+			return e
+		}
 		op, e := c.lookupOp(ctx, expected.Request.Key)
 		if e != nil {
 			return e
+		}
+		// Bind the entire previously acknowledged row before either a fast
+		// path or an effect. A same-revision change to progress/timestamps, or
+		// an unexpected completed row, is not this worker's checkpoint.
+		if !reflect.DeepEqual(op, expected) {
+			return fmt.Errorf("archive cleanup expected row changed; outcome requires exact-key inspection")
 		}
 		if op.Phase == "completed" {
 			out = op
 			return nil
 		}
-		if op.Phase != "committed" || op.Revision != expected.Revision {
+		if op.Phase != "committed" {
 			return fmt.Errorf("archive cleanup has no exact committed operation")
 		}
+		if op.Revision == 1<<63-1 {
+			return fmt.Errorf("archive cleanup revision exhausted; preserve hot evidence")
+		}
 		out = op
+		out.Cleaned = append([]string{}, op.Cleaned...)
 		if op.Receipt == nil {
 			return fmt.Errorf("committed archive lacks receipt")
 		}
 		if e = c.checkPackIdentity(*op.Receipt); e != nil {
 			return e
 		}
+		cleaned := make(map[string]bool, len(op.Cleaned))
+		for _, name := range op.Cleaned {
+			cleaned[name] = true
+		}
 		for _, m := range op.Request.Plan.Members {
+			if cleaned[m.File] {
+				if e = sourceCleanupMemberAbsent(ctx, d, m); e != nil {
+					return e
+				}
+			}
+		}
+		processed := 0
+		for _, m := range op.Request.Plan.Members {
+			if cleaned[m.File] {
+				continue
+			}
+			if processed == sourceHistoryCleanupBatchMembers {
+				break
+			}
 			ref, e := c.ref(ctx, m.Target, m.Key)
 			if e != nil || ref.Pack != op.PackID || ref.Source != m.Source || ref.Kind != m.Kind || ref.SHA256 != m.SHA256 || ref.IntentSHA256 != m.IntentSHA256 || ref.Record != sourceHistoryKey(m) {
 				return fmt.Errorf("committed cold evidence cannot authorize exact hot unlink: %v", e)
@@ -486,28 +554,71 @@ func cleanSourceArchive(ctx context.Context, home string, b Binding, expected So
 			if e = historyCheckpoint(fault, "after_unlink_fsync"); e != nil {
 				return e
 			}
-			found := false
-			for _, name := range out.Cleaned {
-				if name == m.File {
-					found = true
-				}
-			}
-			if !found {
-				out.Cleaned = append(out.Cleaned, m.File)
-			}
+			out.Cleaned = append(out.Cleaned, m.File)
+			processed++
+		}
+		if e = historyCheckpoint(fault, "before_cleanup_checkpoint"); e != nil {
+			return e
 		}
 		if e = version.check(filepath.Join(c.path, "packs")); e != nil {
 			return e
 		}
-		out.Phase = "completed"
+		if len(out.Cleaned) == len(op.Request.Plan.Members) {
+			for _, m := range op.Request.Plan.Members {
+				if e = sourceCleanupMemberAbsent(ctx, d, m); e != nil {
+					return e
+				}
+			}
+			out.Phase = "completed"
+		}
 		out.Revision++
 		out.Updated = time.Now().UTC()
-		if e = c.saveOp(ctx, out, false); e != nil {
+		if e = c.guard(); e != nil {
+			return e
+		}
+		if e = worker.check(c); e != nil {
+			return e
+		}
+		// Compare the complete original row, not merely its request key: a
+		// changed revision/phase/receipt cannot be overwritten by a stale batch.
+		raw := mustHistoryJSON(out)
+		if out.validate(b) != nil || len(raw) > SourceHistoryMaxRecordBytes {
+			return fmt.Errorf("invalid bounded archive cleanup checkpoint")
+		}
+		result, e := c.db.ExecContext(ctx, `UPDATE source_history_operations SET phase=?,data=? WHERE key=? AND request=? AND phase='committed' AND data=?`, out.Phase, raw, op.Request.Key, mustHistoryJSON(op.Request), mustHistoryJSON(op))
+		if e != nil {
+			return fmt.Errorf("archive cleanup checkpoint outcome unknown; inspect exact key: %w", e)
+		}
+		if n, e := result.RowsAffected(); e != nil || n != 1 {
+			return fmt.Errorf("archive cleanup checkpoint changed; inspect exact key")
+		}
+		if e = c.guard(); e != nil {
 			return e
 		}
 		return nil
 	})
 	return
+}
+
+func sourceCleanupMemberAbsent(ctx context.Context, d *os.File, member SourceHistoryMember) error {
+	for _, name := range []string{member.File, member.PendingFile} {
+		if name == "" {
+			continue
+		}
+		if e := ctx.Err(); e != nil {
+			return e
+		}
+		var st unix.Stat_t
+		e := unix.Fstatat(int(d.Fd()), name, &st, unix.AT_SYMLINK_NOFOLLOW)
+		if errors.Is(e, unix.ENOENT) {
+			continue
+		}
+		if e != nil {
+			return e
+		}
+		return fmt.Errorf("checkpointed hot receipt reappeared; preserve it without replaying cleanup")
+	}
+	return nil
 }
 
 // ReconcileSourceHistory resumes only the recorded archival copy/publication/
@@ -559,5 +670,5 @@ func reconcileSourceHistory(ctx context.Context, home string, b Binding, key str
 	if err != nil || out.Phase == "completed" {
 		return out, err
 	}
-	return continueSourceArchive(ctx, home, b, out, records, fault)
+	return continueSourceArchive(ctx, home, b, out, records, worker, fault)
 }

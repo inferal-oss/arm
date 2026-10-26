@@ -9,13 +9,18 @@ import (
 	"testing"
 
 	"github.com/yrashk/arm/internal/database"
+	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/sshservice"
 	"golang.org/x/sys/unix"
 )
 
 func archivedSSHProof(t *testing.T) (string, sshservice.Binding, sshservice.SourceHistoryOperation) {
 	t.Helper()
-	home, b, pin := sshProofState(t)
+	// This is a metadata/retirement fixture with an already counted pool
+	// claim; it launches no local CPU workload. Ambient CPU pressure must not
+	// prevent reaching the history proof under test. Ordinary proof fixtures
+	// retain their original CPU claim; remote receipt CPU evidence is unchanged.
+	home, b, pin := sshProofStateInHome(t, proofFixtureResources(t, false, model.Resources{}))
 	intent := sshProofIntent(t, home, b, pin)
 	if e := os.Remove(intent.Directory.Path); e != nil {
 		t.Fatal(e)
@@ -79,7 +84,7 @@ func TestSSHSourceHistoryIndependentSettledResetRetainsWholeCatalog(t *testing.T
 	}
 }
 func TestSSHSourceHistoryIndependentProofRefusesMissingForgedOrBusy(t *testing.T) {
-	for _, change := range []string{"missing-catalog", "missing-pack", "missing-ref", "op-alias", "op-null", "op-missing-member", "op-unknown", "sidecar", "worker-busy"} {
+	for _, change := range []string{"missing-catalog", "missing-pack", "missing-ref", "op-alias", "op-null", "op-missing-member", "op-unknown", "op-committed-partial", "op-committed-all", "op-completed-partial", "sidecar", "worker-busy"} {
 		t.Run(change, func(t *testing.T) {
 			home, _, op := archivedSSHProof(t)
 			root := filepath.Join(home, "ssh-source-history")
@@ -114,11 +119,14 @@ func TestSSHSourceHistoryIndependentProofRefusesMissingForgedOrBusy(t *testing.T
 					t.Fatal(e)
 				}
 				query := map[string]string{
-					"missing-ref":       `DELETE FROM source_history_refs`,
-					"op-alias":          `UPDATE source_history_operations SET data=replace(data,'"hot_before":1','"Hot_before":1')`,
-					"op-null":           `UPDATE source_history_operations SET data=json_set(data,'$.request.plan.members[0].bytes',NULL)`,
-					"op-missing-member": `UPDATE source_history_operations SET data=json_remove(data,'$.request.plan.members[0].identity')`,
-					"op-unknown":        `UPDATE source_history_operations SET data=json_set(data,'$.request.plan.members[0].new_cleanup_authority',true)`,
+					"missing-ref":          `DELETE FROM source_history_refs`,
+					"op-alias":             `UPDATE source_history_operations SET data=replace(data,'"hot_before":1','"Hot_before":1')`,
+					"op-null":              `UPDATE source_history_operations SET data=json_set(data,'$.request.plan.members[0].bytes',NULL)`,
+					"op-missing-member":    `UPDATE source_history_operations SET data=json_remove(data,'$.request.plan.members[0].identity')`,
+					"op-unknown":           `UPDATE source_history_operations SET data=json_set(data,'$.request.plan.members[0].new_cleanup_authority',true)`,
+					"op-committed-partial": `UPDATE source_history_operations SET phase='committed',data=json_set(data,'$.phase','committed','$.cleaned',json('[]'))`,
+					"op-committed-all":     `UPDATE source_history_operations SET phase='committed',data=json_set(data,'$.phase','committed')`,
+					"op-completed-partial": `UPDATE source_history_operations SET data=json_set(data,'$.cleaned',json('[]'))`,
 				}[change]
 				if _, e = db.Exec(query); e != nil {
 					db.Close()

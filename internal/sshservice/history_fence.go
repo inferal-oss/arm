@@ -26,6 +26,17 @@ func historyVersionBound(path, name string, limit int64) (sourceHistoryVersion, 
 		return sourceHistoryVersion{}, e
 	}
 	defer d.Close()
+	v, e := historyVersionAt(d, name, limit)
+	if e != nil {
+		return sourceHistoryVersion{}, e
+	}
+	return v, validateDirectory(d, path)
+}
+
+// Caller retains and rechecks the directory's exact named binding. This reads
+// the same bounded single-link identity and native mtime/ctime evidence without
+// reopening its entire absolute ancestor chain for each sibling file.
+func historyVersionAt(d *os.File, name string, limit int64) (sourceHistoryVersion, error) {
 	id, size, e := sourceFileIdentity(d, name, limit)
 	if e != nil {
 		return sourceHistoryVersion{}, e
@@ -45,7 +56,7 @@ func historyVersionBound(path, name string, limit int64) (sourceHistoryVersion, 
 		return sourceHistoryVersion{}, fmt.Errorf("source pack version identity changed")
 	}
 	modified, changed := historyStatTimes(&st)
-	return sourceHistoryVersion{id, size, modified, changed}, validateDirectory(d, path)
+	return sourceHistoryVersion{id, size, modified, changed}, nil
 }
 
 type sourceHistoryFence struct {

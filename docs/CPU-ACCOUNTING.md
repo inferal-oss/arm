@@ -56,9 +56,9 @@ No older-platform availability is promised by this source pin; native tests here
 cover ARM64 Darwin 25 only. Retained wall-time namespaces and different UUIDs
 never match current identities and receive no usage/CPU ownership or artifact
 cleanup authority. There is no state migration. This changes a native source
-dependency of prior CPU acceptance and actual-history composition; fresh scoped
-component tests do not re-establish broader public/native or formal acceptance.
-The abstract CPU model and its counter derivation are unchanged.
+dependency of prior CPU acceptance and actual-history composition; a fresh CPU gate renews the same scoped model/actual-Go relation and proof,
+while native counter accuracy and broader public/platform acceptance remain
+separate. The abstract CPU model and its counter derivation are unchanged.
 
 ## Darwin: shared recount accounting
 

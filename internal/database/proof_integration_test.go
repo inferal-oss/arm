@@ -20,6 +20,11 @@ import (
 
 func proofFixture(t *testing.T, active bool) string {
 	t.Helper()
+	return proofFixtureResources(t, active, model.Resources{CPU: 1})
+}
+
+func proofFixtureResources(t *testing.T, active bool, resources model.Resources) string {
+	t.Helper()
 	home, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
@@ -37,7 +42,7 @@ func proofFixture(t *testing.T, active bool) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	l, err := m.Acquire(model.Request{Resources: model.Resources{CPU: 1}, Pools: []model.PoolClaim{{Pool: pool.Pool.ID, Quantity: 1}}, TTL: time.Minute, Reason: "fixture owned claim", Key: "fixture-claim"}, nil)
+	l, err := m.Acquire(model.Request{Resources: resources, Pools: []model.PoolClaim{{Pool: pool.Pool.ID, Quantity: 1}}, TTL: time.Minute, Reason: "fixture owned claim", Key: "fixture-claim"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

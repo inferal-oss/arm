@@ -31,28 +31,65 @@ func historyNames(dir *os.File, limit int) ([]string, error) {
 	return names, nil
 }
 func (c *historyCatalog) checkPackIdentity(r historypack.Receipt) error {
-	root, e := privateDirectory(filepath.Join(c.path, "packs"))
+	if r.Root != c.marker.Packs {
+		return fmt.Errorf("source pack canonical root changed")
+	}
+	root, dir, e := openSourcePackIdentity(filepath.Join(c.path, "packs"), r)
 	if e != nil {
 		return e
 	}
 	defer root.Close()
+	defer dir.Close()
+	return nil
+}
+
+// Hold the exact root and pack while checking their named bindings. Relative
+// opens avoid repeatedly walking the same absolute ancestor chain for every
+// file/version observation. No held descriptor alone authorizes a renamed
+// namespace: checkSourcePackIdentityAt rechecks the canonical root and named
+// child as well as the complete lock/roster/file evidence.
+func openSourcePackIdentity(path string, r historypack.Receipt) (*os.File, *os.File, error) {
+	if !validID(r.ID) {
+		return nil, nil, fmt.Errorf("invalid source pack ID")
+	}
+	root, e := privateDirectory(path)
+	if e != nil {
+		return nil, nil, e
+	}
+	fd, e := unix.Openat(int(root.Fd()), "pack-"+r.ID, unix.O_RDONLY|unix.O_DIRECTORY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
+	if e != nil {
+		root.Close()
+		return nil, nil, e
+	}
+	dir := os.NewFile(uintptr(fd), "pack-"+r.ID)
+	if e = checkSourcePackIdentityAt(root, dir, path, r); e != nil {
+		dir.Close()
+		root.Close()
+		return nil, nil, e
+	}
+	return root, dir, nil
+}
+
+func checkSourcePackIdentityAt(root, dir *os.File, path string, r historypack.Receipt) error {
+	if e := validateDirectory(root, path); e != nil {
+		return e
+	}
 	id, e := historyDirIdentity(root)
-	if e != nil || id != r.Root || id != c.marker.Packs {
+	if e != nil || id != r.Root {
 		return fmt.Errorf("source pack canonical root changed")
 	}
 	lockID, size, e := sourceFileIdentity(root, ".historypack.lock", 0)
 	if e != nil || size != 0 || lockID != r.Lock {
 		return fmt.Errorf("source pack publication lock changed")
 	}
-	path := filepath.Join(c.path, "packs", "pack-"+r.ID)
-	dir, e := privateDirectory(path)
-	if e != nil {
-		return e
-	}
-	defer dir.Close()
 	id, e = historyDirIdentity(dir)
 	if e != nil || id != r.Directory {
 		return fmt.Errorf("published source pack identity changed")
+	}
+	var named unix.Stat_t
+	if e = unix.Fstatat(int(root.Fd()), "pack-"+r.ID, &named, unix.AT_SYMLINK_NOFOLLOW); e != nil ||
+		(historypack.Identity{Device: uint64(named.Dev), Inode: named.Ino, Owner: named.Uid, Mode: uint32(named.Mode)}) != id {
+		return fmt.Errorf("published source pack named binding changed")
 	}
 	names, e := historyNames(dir, 2)
 	if e != nil || len(names) != 2 || names[0] != "manifest.json" || names[1] != "records.bin" {
@@ -68,7 +105,13 @@ func (c *historyCatalog) checkPackIdentity(r historypack.Receipt) error {
 			return fmt.Errorf("source pack file identity/size changed")
 		}
 	}
-	return validateDirectory(dir, path)
+	// Close the relative traversal with a fresh canonical root check and exact
+	// named pack identity; a moved/replaced parent must not lend its old files.
+	if e = unix.Fstatat(int(root.Fd()), "pack-"+r.ID, &named, unix.AT_SYMLINK_NOFOLLOW); e != nil ||
+		(historypack.Identity{Device: uint64(named.Dev), Inode: named.Ino, Owner: named.Uid, Mode: uint32(named.Mode)}) != id {
+		return fmt.Errorf("published source pack named binding changed")
+	}
+	return validateDirectory(root, path)
 }
 func (c *historyCatalog) checkInventory(ctx context.Context, summary SourceHistorySummary) error {
 	names, e := historyNames(c.directory, 4)

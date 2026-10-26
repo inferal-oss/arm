@@ -2639,3 +2639,47 @@ also passes in the composed checkout. Evidence is ignored
 test remains unchanged. These scoped passes complement the author's actual
 CPU integration; they do not retrospectively prove the old failure's branch,
 a reboot or the complete SSH package.
+
+## October 26: bounded SSH archive integration and renewed CPU gate
+
+The reviewed `c3d6162`/`59a4718`/`6a33898` composition with stable Darwin
+identity passes the COMPLETE SSH-service race suite:86 roots/208 named cases,
+zero failures/skips, original frozen-binary command exit0,178.52s wall time.
+This includes both previously failing tests. The unchanged64/65 fixture and
+all original per-mutation five-second deadlines remain. Fresh independent
+history reset-proof race tests pass27.111s; affected SSH/database vet passes.
+The full SSH component and selected independent history proof also pass on
+actual Linux ARM64:88 roots/222 named cases, zero skips, both uploaded binaries
+hash-verified, original native command/SSH/cleanup exit0, bounded scope
+inactive and disposable root absent. This is native Linux execution, not
+cross-compilation evidence. Ignored receipts/logs:
+`.cache/sshservice-batch-uuid-{integrated-receipt.json,full-race.log}`,
+`.cache/history-batch-uuid-root-db-race.log`, and
+`.cache/history-batch-uuid-linux-{intent.json,native.log,run.log}`.
+
+Independent review first rejected59a's partial predecessor comparison and
+completed fast path: a same-revision timestamp edit was adopted, or a forged
+completed row could report success with a hot member remaining. The final
+full-row guard runs before either effects or completion handling, retains the
+last acknowledged checkpoint on mismatch, and passes both strengthened
+counterexamples. Ordinary upfront completed reconciliation remains read-only.
+Batch tests cover lost checkpoint acknowledgements, explicit continuation,
+changed cold/native/worker evidence and reappearing checkpointed paths.
+History-only metadata fixtures use their already-counted pool claim instead
+of an irrelevant local CPU claim; generic CPU fixtures and production
+admission are unchanged. The earlier CPU-denial proof attempt, full SSH
+failures and slower benchmark pair remain historical evidence.
+
+A FRESH all-mode scoped CPU gate after the boot identity change completes
+TLC exploration of12,281 distinct states (queue0), checks five actual Go
+paths (69 states/64 edges from196 observed rows), refuses all24 altered
+histories, and proves all60 obligations across17 named theorems. Raw logs
+confirm complete exploration and “All60 obligations proved”; original tool
+owners each report exit0, one native Wait, reaped/retired authority, absent
+PID/group, no signals and no cleanup error. Evidence:
+ignored `.tla/cpu-admission-stable-boot/run-xjnlxd6d/` and
+`.cache/cpu-admission-stable-boot-formal.log`. This renews the existing
+controlled-input Manager admission relation; native counter accuracy,
+archive-specific models/traces/proof and whole-program refinement are
+separate requirements. No reboot, Intel runtime, physical cross-host
+throughput or public sync acceptance is inferred.

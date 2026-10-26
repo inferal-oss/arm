@@ -24,7 +24,11 @@ import (
 
 func sshProofState(t *testing.T) (string, sshservice.Binding, sshservice.Pin) {
 	t.Helper()
-	home := proofFixture(t, false)
+	return sshProofStateInHome(t, proofFixture(t, false))
+}
+
+func sshProofStateInHome(t *testing.T, home string) (string, sshservice.Binding, sshservice.Pin) {
+	t.Helper()
 	p, e := prove(t, home)
 	if e != nil {
 		t.Fatal(e)

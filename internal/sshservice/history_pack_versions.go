@@ -19,20 +19,21 @@ type sourceArchivePackVersion struct {
 }
 
 func captureSourceArchivePackVersion(root string, r historypack.Receipt) (sourceArchivePackVersion, error) {
-	c := &historyCatalog{path: filepath.Dir(root), marker: SourceHistoryMarker{Packs: r.Root}}
-	if e := c.checkPackIdentity(r); e != nil {
-		return sourceArchivePackVersion{}, e
-	}
-	path := filepath.Join(root, "pack-"+r.ID)
-	records, e := historyVersion(path, "records.bin")
+	packs, dir, e := openSourcePackIdentity(root, r)
 	if e != nil {
 		return sourceArchivePackVersion{}, e
 	}
-	manifest, e := historyVersion(path, "manifest.json")
+	defer packs.Close()
+	defer dir.Close()
+	records, e := historyVersionAt(dir, "records.bin", SourceHistoryMaxPackBytes)
 	if e != nil {
 		return sourceArchivePackVersion{}, e
 	}
-	if e = c.checkPackIdentity(r); e != nil {
+	manifest, e := historyVersionAt(dir, "manifest.json", SourceHistoryMaxPackBytes)
+	if e != nil {
+		return sourceArchivePackVersion{}, e
+	}
+	if e = checkSourcePackIdentityAt(packs, dir, root, r); e != nil {
 		return sourceArchivePackVersion{}, e
 	}
 	return sourceArchivePackVersion{r, records, manifest}, nil
