@@ -639,7 +639,7 @@ Owner: launch chat `01a17a6b-835f-7503-ab50-466751c51eec`, isolated
 `codex/arm-public-launch` at `21240eb`. Website implementation is separately
 owned in `codex/arm-public-site-build` (`/private/tmp/arm-public-site-build`);
 independent review uses another checkout before integration/publication.
-Scope: actual Semblance graph/components/events with stock Terminal default,
+Scope: actual Semblance graph/components/events with stock Semblance/System default (latest human override),
 public setup/capability/limits site in this same repository branch, reviewed
 GitHub Actions Pages deployment, public `inferal-oss/arm` repository, standard
 one-year registrations for exact `getarm.org` and `getarm.cloud`, canonical

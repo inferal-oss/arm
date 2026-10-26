@@ -1514,3 +1514,36 @@ including progress keys, newline and maximum timestamp widths, before intent is
 created. Oversized or unsafe inventories refuse without erasure. Logical file
 removal does not claim physical-media erasure. Actual user state and the installed
 binary were untouched during implementation, review and native acceptance.
+
+## Public website launch status — October 26, 2026
+
+Public `inferal-oss/arm` has been created and the audited accepted ARM history
+pushed. The `website/` source uses actual Semblance RDF components, navigation
+and events with the latest requested stock Semblance theme and System color
+scheme. It reuses the existing dashboard identity and includes an operational
+capability map. The public site and Pages workflow belong on ARM's same main
+branch. The product dashboard's separate migration retains its own scope.
+
+The site candidate has passed independent static reviews and actual provisional
+Chrome navigation, shape and layout checks. Remote run 40418656650 proves the
+locked install, typecheck, WAT compilation, license generation and Vite build of
+6e299ee. The current successor adds reviewed plain-language copy, the operational
+map and build-generated real web/PTY screenshots; its capture at fe8d803 succeeds, including real web and PTY images. Visual review
+then required a later native-reading/frame wait and terminal profile correction;
+that successor plus final artifact/browser and main-composition gates remain open. Version-tagged
+carrier release automation is a separate requested, isolated candidate. The
+canonical module and local-fork packaging migration is centrally owned; remote
+Go installation is advertised only after its public installation gate passes.
+
+Cloudflare successfully registered `getarm.org` and `getarm.cloud` for one year,
+with checkout amounts $8.50 and $20.20 ($28.70 total). The human explicitly
+approved keeping automatic renewal enabled. `getarm.org` has a DNS-only apex
+CNAME to `inferal-oss.github.io` and the exact GitHub Pages verification TXT.
+The repository reserves only custom hostname `getarm.org`; the organization's
+existing site configuration is unchanged. The authoritative Cloudflare server
+answers the TXT, but public delegation/GitHub verification is still pending.
+The operator requires DNS-only records. The proxied alternate DNS and zone
+redirect rule were never created. A minimal separate Cloudflare Pages redirect
+source, kept under website/cloud-redirect, is being validated for the alternate's
+DNS-only hostname; its real HTTP path/query/TLS gates remain open. No final public
+DNS, HTTPS, redirect or deployed-site acceptance is claimed yet.

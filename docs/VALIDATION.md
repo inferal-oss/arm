@@ -4051,3 +4051,63 @@ Integrated internal source/test bytes match this final tested composition exactl
 Only documentation is reconciled centrally. All deletion/startup fixtures are
 disposable; no user database wipe or installation was performed. No secure-media
 erasure, external cleanup or remote settlement is claimed.
+
+## Public launch evidence — current checkpoint, October 26, 2026
+
+The public repository is `https://github.com/inferal-oss/arm`, default `main`,
+with Actions enabled and SSH origin set only where previously absent. Initial
+accepted main a6e7f3b and the reviewed CI topic were pushed after a scoped audit
+of 321 reachable commits / 4,337 unique blobs / 200,326,161 bytes; bounded single
+nice-19 baseline and delta scans exited zero. Apparent IP/email hits were public
+upstream attribution, version strings or rejection fixtures. No material finding
+was identified within this scoped audit; it is not an absolute secret-absence
+proof. A subsequent bounded new-source delta scan covers 19 blobs / 145,291 bytes
+through dc2e65f with zero targeted sensitive-pattern findings.
+
+Independent review verified exact website/workflow source trees and corrected
+manual-branch deployment: the Pages deploy job and github-pages environment
+permit main only. The artifact path is exactly website/dist. Run 40417990156
+failed because the Oxigraph npm archive omits license text; the strict successor
+retains exact official release license bytes, binds package/archive versions
+and integrity, checks SHA256 and still fails unknown missing licenses. Run
+40418656650 at 6e299ee succeeds through actual npm ci --ignore-scripts, typecheck,
+WAT build, notices and Vite. Its inspected artifact has nine entries, 7,976,538
+bytes and tar SHA256 3174abb04dcd0f1628c4090d8ef4539b4e241ac888819f0373cb90f97917cb4f;
+only index, assets and notices appear. This earlier output is not final current
+copy/screenshot acceptance.
+
+Actual provisional Chrome checks cover stock Semblance/System, the original
+logo, Overview/Get started/Capabilities/Docs, fragment navigation, keyboard
+selection/disclosure, 390-pixel layouts and a visible operational schematic.
+All four pages have zero shape-invalid elements and no horizontal document
+overflow in their scoped checks. Internal links now carry required fallback
+addresses. The diagram image is verified loaded at natural 1440x780 and renders
+at 1120x607 on desktop, with a full-size link and text equivalent. Final tests
+must use the actual current CI artifact, including its generated dashboard PNGs.
+
+The screenshot helper's exited-parent/live-pipe-child cleanup defect was fixed
+in focused 6057498. Five bounded stdlib regressions independently pass in 1.236s.
+The helper uses a disposable current-source binary/backend, private bootstrap
+data and actual terminal PTY bytes rendered by xterm.js. It publishes only three
+PNGs plus safe source/binary/image hash metadata. CI run 40421483133 at fe8d803 succeeds. Its 18-entry artifact has 8,548,391
+bytes and tar SHA256 03f1ca85743a002739e0fc5af9618eb84f06b045776f0ee33eb23dd9632cb2a0.
+The source commit and all three image SHA256 values match metadata; the compiled
+binary SHA256 is 0f782429c11b2d2815e06ac7e185cc14035486eebe5c7ac4420b4f7aacef83d6.
+Real web Monitor/Resources images show fresh readings. Visual review found the
+terminal captured its startup unknown state too early; a6b3e83 adds real collector
+and PTY-frame waits plus a documented dark terminal profile, preserving genuine
+unknowns and actual ANSI. Its five ownership regressions independently pass in
+1.260s; fresh CI images and visual acceptance remain required.
+
+Cloudflare success pages confirm both exact registrations, with $8.50/$20.20
+checkout totals and one-year terms. Auto-renew remains enabled by explicit
+human approval. Public RDAP confirms getarm.org registration and brady/paris
+Cloudflare nameservers. Its exact TXT is returned by the authoritative server,
+while public delegation/GitHub verification still lag. Pages configuration
+reserves getarm.org and reports HTTPS not yet provisioned. The alternate's
+Cloudflare-documented redirect-only DNS address was rejected by automatic review
+even in its combined record-and-rule dialog. The human then required no proxying. Both pending form/dialogs were canceled;
+no alternate record or zone rule was created. Minimal redirect-only Cloudflare
+Pages upload source and a two-file ZIP are independently reviewed; actual
+deployment, DNS-only CNAME, root/nested/query preservation and HTTPS are still
+required. No public HTTP/TLS acceptance is claimed.
