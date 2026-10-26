@@ -2351,3 +2351,28 @@ Unicode identity preservation and bounded JSON state. These are controlled
 pure decisions and serialization, not actual host pressure, messages, signals,
 process suspension or crash-durable Manager/outbox behavior. Native runtime
 and formal refinement gates remain outstanding.
+
+## October 25: selected sync staging and persisted native root identity
+
+The reviewed `8f1226a`/`ceea5a7` source passes fresh native macOS race testing
+(exit 0, 3.159s) and affected vet. All 29 current syncfs roots pass on actual
+Linux ARM64 under a bounded CPU scope; original native command, SSH and cleanup
+exit 0, exact scope inactive, disposable root absent. Evidence: ignored
+`.cache/syncfs-staging-linux-native.log` and intent. Tests exercise the real Go
+rsync engine with reviewed selected trees, basis copies, keep-both remapping,
+directory sidecars and symlinks, plus the retained publication safeguards.
+
+Independent review fixed ancestor-stage aliasing and staged directory
+replacement/type/permission gaps. Root ID v2 includes native birth/generation
+or statx creation evidence; tests cover replaced/reopened roots, identical
+inode fields with changed creation evidence and absent platform evidence.
+Persisted identity depends on stable, sufficiently precise filesystem reports;
+missing evidence is refused, and unsupported precision requires fresh policy
+review/rebaseline. No malicious same-account filesystem isolation is claimed.
+Source/account permission, real budget charging, endpoint journal integration,
+public SSH sync, recovery and formal conformance remain required.
+
+The clean primary checkpoint `48f3864` also passes the all-package Go
+compile-only gate (original session 45192 exit 0; ignored
+`.cache/integrated-compile-48f3864.log`). This executes no test bodies and
+predates integration of the staging successor described here.
