@@ -13,26 +13,43 @@ import tempfile
 
 from common import PLATFORMS, digest, filenames, verify_directory, version
 
+PROCESS_STOP_TIMEOUT = 5
+
+
+def stop_command_group(process):
+    # Retain authority over this exact start_new_session group even when the
+    # direct parent has exited but one of its children still owns the pipes.
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(process.pid, sig)
+        except ProcessLookupError:
+            pass
+        try:
+            process.communicate(timeout=PROCESS_STOP_TIMEOUT)
+            return
+        except subprocess.TimeoutExpired:
+            pass
+    # Never signal a detached/unrelated group or wait indefinitely on its pipe.
+    for stream in (process.stdout, process.stderr):
+        if stream is not None:
+            stream.close()
+    process.wait(timeout=PROCESS_STOP_TIMEOUT)
+
+
+def interrupted(_signum, _frame):
+    raise RuntimeError("release_build_interrupted")
+
 
 def run(args, *, env=None, timeout=1800):
     process = subprocess.Popen(args, stdout=subprocess.PIPE, start_new_session=True, env=env)
     try:
         raw, _ = process.communicate(timeout=timeout)
-        if process.returncode:
-            raise RuntimeError("release command failed: " + args[0])
-        return raw
-    finally:
-        # Kill/join only the original process group, including compiler descendants.
-        if process.poll() is None:
-            try:
-                os.killpg(process.pid, signal.SIGTERM)
-            except ProcessLookupError:
-                pass
-            try:
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait()
+    except BaseException:
+        stop_command_group(process)
+        raise
+    if process.returncode:
+        raise RuntimeError("release command failed: " + args[0])
+    return raw
 
 
 def licenses(root, env):
@@ -136,4 +153,6 @@ def main():
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, interrupted)
+    signal.signal(signal.SIGINT, interrupted)
     main()

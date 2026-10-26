@@ -1,10 +1,16 @@
 """Failure-path tests operate on bounded fixtures and a fake release service."""
 import json
+import os
 from pathlib import Path
+import signal
+import subprocess
+import sys
 import tempfile
+import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
+import build as release_build
 from common import PLATFORMS, digest, filenames, verify_directory, version
 from publish import GitHub, reconcile
 
@@ -157,6 +163,90 @@ class ReleaseTests(unittest.TestCase):
         with patch.object(github, "api", side_effect=[RuntimeError("lost"), item]) as api:
             self.assertEqual(github.publish({**item, "draft": True}), item)
             self.assertEqual([call.args[0] for call in api.call_args_list], ["PATCH", "GET"])
+
+
+class ReleaseCommandOwnershipTests(unittest.TestCase):
+    def test_normal_exit_and_output(self):
+        self.assertEqual(release_build.run([sys.executable, "-c", 'print("owned success")']), b"owned success\n")
+
+    def test_exited_parent_with_pipe_holder_is_stopped(self):
+        with tempfile.TemporaryDirectory(prefix="arm-release-group-test-") as directory:
+            ready, finished = [Path(directory) / name for name in ("ready", "finished")]
+            child = (
+                "from pathlib import Path; import time; "
+                f"Path({str(ready)!r}).write_text('ready'); "
+                f"time.sleep(.6); Path({str(finished)!r}).write_text('continued')"
+            )
+            parent = (
+                "from pathlib import Path; import subprocess, sys, time; "
+                f"subprocess.Popen([sys.executable, '-c', {child!r}]); "
+                f"path=Path({str(ready)!r})\n"
+                "while not path.exists(): time.sleep(.005)\n"
+            )
+            with patch.object(release_build, "PROCESS_STOP_TIMEOUT", .1):
+                with self.assertRaises(subprocess.TimeoutExpired):
+                    release_build.run([sys.executable, "-c", parent], timeout=.2)
+            self.assertTrue(ready.exists())
+            time.sleep(.7)
+            self.assertFalse(finished.exists())
+
+    def test_live_timeout_escalates_and_joins(self):
+        with tempfile.TemporaryDirectory(prefix="arm-release-timeout-test-") as directory:
+            pidfile = Path(directory) / "pid"
+            command = (
+                "from pathlib import Path; import os, signal, time; "
+                "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+                f"Path({str(pidfile)!r}).write_text(str(os.getpid())); time.sleep(2)"
+            )
+            with patch.object(release_build, "PROCESS_STOP_TIMEOUT", .1):
+                with self.assertRaises(subprocess.TimeoutExpired):
+                    release_build.run([sys.executable, "-c", command], timeout=.2)
+            with self.assertRaises(ProcessLookupError):
+                os.kill(int(pidfile.read_text()), 0)
+
+    def test_missing_group_and_stubborn_pipe_have_bounded_joins(self):
+        process = Mock(pid=123, stdout=None, stderr=None)
+        with patch.object(release_build.os, "killpg", side_effect=ProcessLookupError):
+            release_build.stop_command_group(process)
+        process.communicate.assert_called_once_with(timeout=release_build.PROCESS_STOP_TIMEOUT)
+        process = Mock(pid=123)
+        process.communicate.side_effect = subprocess.TimeoutExpired("owned fixture", .1)
+        with patch.object(release_build.os, "killpg") as kill:
+            release_build.stop_command_group(process)
+        self.assertEqual([call.args[1] for call in kill.call_args_list], [signal.SIGTERM, signal.SIGKILL])
+        process.stdout.close.assert_called_once_with()
+        process.wait.assert_called_once_with(timeout=release_build.PROCESS_STOP_TIMEOUT)
+
+    def test_sigterm_runs_owned_child_cleanup(self):
+        with tempfile.TemporaryDirectory(prefix="arm-release-signal-test-") as directory:
+            ready, finished = [Path(directory) / name for name in ("ready", "finished")]
+            child = (
+                "from pathlib import Path; import time; "
+                f"Path({str(ready)!r}).write_text('ready'); "
+                f"time.sleep(.6); Path({str(finished)!r}).write_text('continued')"
+            )
+            wrapper = (
+                "import signal, sys; "
+                f"sys.path.insert(0, {str(Path(__file__).resolve().parent)!r}); "
+                "import build; signal.signal(signal.SIGTERM, build.interrupted); "
+                f"build.run([sys.executable, '-c', {child!r}], timeout=3)"
+            )
+            process = subprocess.Popen([sys.executable, "-c", wrapper], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                deadline = time.monotonic() + 2
+                while not ready.exists() and time.monotonic() < deadline:
+                    time.sleep(.005)
+                self.assertTrue(ready.exists())
+                process.send_signal(signal.SIGTERM)
+                _, error = process.communicate(timeout=2)
+                self.assertNotEqual(process.returncode, 0)
+                self.assertIn(b"release_build_interrupted", error)
+                time.sleep(.7)
+                self.assertFalse(finished.exists())
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.communicate(timeout=2)
 
 
 if __name__ == "__main__":
