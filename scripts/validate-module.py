@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Bounded source/public-install validation; receipts contain generated evidence only.
+
+Local heavy runs must enter the shared test queue before invoking this script.
+The public-install mode uses public HTTPS module sources and brand-new caches,
+never the checkout or caller's installed ARM, module cache or backend.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import subprocess
+import tempfile
+import time
+
+MODULE = "github.com/inferal-oss/arm"
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--go", default="go")
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--public-install", metavar="QUERY")
+    args = parser.parse_args()
+    go = shutil.which(args.go)
+    if not go:
+        parser.error("Go executable unavailable")
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    env = dict(os.environ, GOMAXPROCS="1", GOFLAGS="-p=1", GOTOOLCHAIN="local", GOWORK="off", GOENV="off")
+    commands = []
+    failures = []
+
+    def run(name, command, cwd=ROOT, extra=None, timeout=1200):
+        print("START", name, flush=True)
+        started = time.monotonic()
+        with (output / (name + ".stdout.txt")).open("wb") as stdout, (output / (name + ".stderr.txt")).open("wb") as stderr:
+            try:
+                process = subprocess.Popen(command, cwd=cwd, env=env | (extra or {}), stdout=stdout, stderr=stderr, start_new_session=True)
+                try:
+                    code = process.wait(timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGTERM)
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        pass
+                    # Reap the original child and terminate any remaining
+                    # compiler/helper processes in its owned process group.
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    process.wait()
+                    code = 124
+            except OSError as error:
+                stderr.write(str(error).encode())
+                code = 127
+        commands.append(dict(name=name, argv=command, exit=code, seconds=round(time.monotonic()-started, 3), environment=extra or {}))
+        (output / "commands.json").write_text(json.dumps(commands, indent=2) + "\n")
+        if code:
+            failures.append(name)
+        print("END", name, "exit", code, flush=True)
+        return code
+
+    def require(ok, message):
+        if not ok:
+            failures.append(message)
+            print("FAIL", message, flush=True)
+
+    run("source-commit", ["git", "rev-parse", "HEAD"])
+    run("source-tree", ["git", "rev-parse", "HEAD^{tree}"])
+    run("source-status", ["git", "status", "--porcelain"])
+    require(not (output / "source-status.stdout.txt").read_text().strip(), "source is dirty")
+    run("toolchain", [go, "version"])
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
+    manifest = [{"path": name, "sha256": digest(ROOT / name), "bytes": (ROOT / name).stat().st_size} for name in tracked if name]
+    (output / "source-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+    if args.public_install:
+        require(args.public_install == "latest" or (len(args.public_install) == 40 and all(c in "0123456789abcdef" for c in args.public_install)), "query must be latest or an immutable full commit")
+        if not failures:
+            with tempfile.TemporaryDirectory(prefix="arm-public-install-") as scratch:
+                temporary = Path(scratch)
+                work = temporary / "work"
+                work.mkdir()
+                private = dict(GOBIN=str(temporary / "bin"), GOMODCACHE=str(temporary / "modules"), GOCACHE=str(temporary / "build"),
+                               GOPROXY="https://proxy.golang.org,direct", GOSUMDB="sum.golang.org", GOPRIVATE="", GONOPROXY="", GONOSUMDB="",
+                               GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, CGO_ENABLED="0")
+                require(all(not Path(private[key]).exists() for key in ("GOBIN", "GOMODCACHE", "GOCACHE")), "public caches were not empty")
+                run("public-environment", [go, "env", "-json", "GOBIN", "GOMODCACHE", "GOCACHE", "GOPROXY", "GOSUMDB", "GOWORK", "GOENV", "GOTOOLCHAIN"], work, private)
+                code = run("public-query", [go, "mod", "download", "-json", MODULE + "@" + args.public_install], work, private)
+                if not code:
+                    resolved = json.loads((output / "public-query.stdout.txt").read_text())
+                    require(resolved.get("Path") == MODULE and bool(resolved.get("Sum")) and bool(resolved.get("GoModSum")), "public module identity/sums missing")
+                    if args.public_install != "latest":
+                        require(resolved.get("Origin", {}).get("Hash") == args.public_install, "public query resolved to a different source commit")
+                    downloaded = Path(resolved["Dir"])
+                    require((downloaded / "third_party/rsyncgo/rsyncstream/stream.go").is_file(), "public module zip omitted audited fork")
+                    require(not (downloaded / "third_party/rsyncgo/go.mod").exists(), "public fork still has active nested module")
+                # The original installation command executes even if the prior
+                # query failed, preserving its own real public error/exit.
+                code = run("public-install", [go, "install", MODULE + "/cmd/arm@" + args.public_install], work, private, timeout=1500)
+                if not code:
+                    binary = Path(private["GOBIN"]) / "arm"
+                    (output / "installed-binary.json").write_text(json.dumps({"sha256": digest(binary), "bytes": binary.stat().st_size}, indent=2) + "\n")
+                    run("installed-buildinfo", [go, "version", "-m", str(binary)], work, private)
+                    info = (output / "installed-buildinfo.stdout.txt").read_text()
+                    require("path\t" + MODULE + "/cmd/arm" in info and "mod\t" + MODULE + "\t" in info, "installed buildinfo has wrong module")
+                    require("github.com/gokrazy/rsync\t" not in info and "=>" not in info, "installed buildinfo has replacement/upstream fork dependency")
+                    home = temporary / "state"
+                    for name, command in [("installed-version", ["version"]), ("installed-help", ["help"]), ("installed-empty-catalog", ["mesh", "artifacts", "list", "--json"])]:
+                        run(name, [str(binary), "--home", str(home)] + command, work, private)
+                    require(json.loads((output / "installed-empty-catalog.stdout.txt").read_text()) == [], "thin install has unexpected local catalog")
+                    require(not home.exists(), "read-only thin probes created backend state")
+            (output / "cleanup.json").write_text(json.dumps({"disposable_root_removed": not Path(scratch).exists(), "user_install_or_backend_modified": False}, indent=2) + "\n")
+    else:
+        run("module-tidy", [go, "mod", "tidy", "-diff"])
+        run("module-verify", [go, "mod", "verify"])
+        run("full-compile", [go, "test", "-mod=readonly", "-p=1", "-json", "-timeout=15m", "-run=^$", "./..."])
+        scoped = ["./internal/buildinfo", "./internal/companions", "./internal/rsyncengine", "./internal/distribution", "./scripts/build-bundle", "./third_party/rsyncgo/rsyncstream", "./third_party/rsyncgo/internal/sender", "./third_party/rsyncgo/internal/receiver"]
+        run("scoped-race", [go, "test", "-mod=readonly", "-p=1", "-race", "-count=1", "-json", "-timeout=10m"] + scoped)
+        run("fork-tests", [go, "test", "-mod=readonly", "-p=1", "-count=1", "-json", "-timeout=10m", "./third_party/rsyncgo/..."])
+        run("scoped-vet", [go, "vet", "-mod=readonly", "-p=1", "./internal/buildinfo", "./internal/companions", "./internal/rsyncengine", "./internal/distribution", "./scripts/build-bundle", "./third_party/rsyncgo/..."])
+        run("trimpath-layout", [go, "test", "-mod=readonly", "-p=1", "-trimpath", "-count=1", "-json", "-run=^TestInstallableModuleIncludesAuditedFork$", "./internal/distribution"])
+        run("rsync-version", ["rsync", "--version"])
+        run("native-build", [go, "build", "-mod=readonly", "-p=1", "-o", str(output.parent / "module-native"), "./cmd/arm"], extra={"CGO_ENABLED": "0"})
+        run("linux-arm64-build", [go, "build", "-mod=readonly", "-p=1", "-o", str(output.parent / "module-linux-arm64"), "./cmd/arm"], extra={"CGO_ENABLED": "0", "GOOS": "linux", "GOARCH": "arm64"})
+        run("dependencies", [go, "list", "-mod=readonly", "-deps", "-json", "./cmd/arm"])
+        run("final-source-status", ["git", "status", "--porcelain"])
+        require(not (output / "final-source-status.stdout.txt").read_text().strip(), "validation changed source")
+        for name in ("module-native", "module-linux-arm64"):
+            binary = output.parent / name
+            if binary.exists():
+                run(name + "-buildinfo", [go, "version", "-m", str(binary)])
+                binary.unlink()
+
+    rosters = {}
+    for name in ("full-compile", "scoped-race", "fork-tests", "trimpath-layout"):
+        path = output / (name + ".stdout.txt")
+        if path.exists():
+            events = [json.loads(line) for line in path.read_text().splitlines() if line.startswith("{")]
+            rosters[name] = {action: [{"package": event.get("Package"), "test": event.get("Test")} for event in events if event.get("Action") == action] for action in ("pass", "fail", "skip", "build-fail")}
+    (output / "rosters.json").write_text(json.dumps(rosters, indent=2) + "\n")
+    (output / "result.json").write_text(json.dumps({"failures": failures, "command_count": len(commands), "public_query": args.public_install}, indent=2) + "\n")
+    print("Failures:", failures, flush=True)
+    return bool(failures)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

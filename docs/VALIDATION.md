@@ -4141,3 +4141,22 @@ single-module fixture/imports and update that expected token to
 its independent review and exact composed native/cross-target metadata tests
 remain gates. The original local validation session `52228` still waits and
 has not produced a test result.
+
+### Remote portable validation successor
+
+Original local FIFO session `52228` was interrupted through its original tool
+handle and returned exit 130. Its caller PID 52418 is absent, and its exact
+queue ticket/start marker are absent. The sole log entry is the original wait;
+no toolchain/header, compiled binaries or dependency inventory was produced.
+Thus its child did not start and there is no duplicate local pending run.
+
+A candidate-only contents-read GitHub Actions workflow and generated-evidence
+runner are prepared for independent review before publication. They collect
+original per-command exits, source commit/tree/full SHA256 manifest, complete
+Go pass/fail/skip rosters, module tidy/verify, full compile, scoped race/vet,
+full fork tests including installed-rsync interoperability, trimpath layout,
+native/Linux ARM64 binary buildinfo, and a separate immutable-public-commit
+installation with empty disposable binary/module/build directories. Only
+bounded generated receipts are uploaded; source caches, binaries, user files,
+backend state and credentials are excluded. Publication of candidate CI does
+not move main, deploy a website, create a release/tag or accept `@latest`.
