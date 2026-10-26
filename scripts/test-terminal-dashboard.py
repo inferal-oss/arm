@@ -40,8 +40,8 @@ def main():
 
     try:
         cli('start', '--cpu', '2', '--memory', '1GiB', '--disk', '1GiB')
-        lease = cli('acquire', '--cpu', '1', '--ttl', '1m', '--reason', 'PTY build fixture')
-        cli('pool', 'create', 'exact-tokens', '--scope', 'global', '--capacity', '9223372036854775807', '--reason', 'PTY exact count')
+        pool = cli('pool', 'create', 'exact-tokens', '--scope', 'global', '--capacity', '9223372036854775807', '--reason', 'PTY exact count')['after']['id']
+        lease = cli('acquire', '--pool', pool + '=1', '--ttl', '1m', '--reason', 'PTY build fixture')
         contact = cli('agent', 'register', '--id', 'pty-agent', '--adapter', 'generic', '--delivery', 'poll', '--session', str(uuid.uuid4()), '--cwd', str(root))
         for args, code in [(['terminal'], 'terminal_required'), (['terminal', '--json'], 'terminal_required'), (['terminal', '--no-open'], 'invalid_request')]:
             result = subprocess.run(prefix + ['dashboard'] + args, capture_output=True, text=True, timeout=5)
@@ -78,6 +78,15 @@ def main():
                 assert process.poll() is None, ('dashboard exited early', bytes(transcript).decode(errors='replace'))
             raise AssertionError(('missing terminal text', text, output[-6000:]))
 
+        def wait_seen(text, seconds=5):
+            end = time.monotonic() + seconds
+            while time.monotonic() < end:
+                drain(.1)
+                if text in re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', bytes(transcript).decode(errors='replace')):
+                    return
+                assert process.poll() is None, ('dashboard exited early', text)
+            raise AssertionError(('missing terminal text', text))
+
         def send(text):
             os.write(master, text.encode())
 
@@ -89,6 +98,11 @@ def main():
                 send(f'\x1b[<{button};{x + 1};{y + 1}m')
 
         wait_text('connected')
+        wait_seen('RAM remaining')
+        wait_seen('Swap remaining')
+        wait_seen('space remaining')
+        send('2')
+        wait_text('To lease')
         assert b'\x1b[?1002h' in transcript and b'\x1b[?1006h' in transcript, 'terminal mouse mode was not enabled'
         mouse(30, 1)  # Visible Leases navigation tab.
         wait_text('PTY build fixture')
@@ -171,7 +185,7 @@ def main():
         drain(.1)
         assert cli('inspect', lease['id'])['revision'] == selection_revision, 'chart selection changed a lease'
         assert len(cli('messages')) == 1, 'chart selection sent a message'
-        guard = cli('acquire', '--cpu', '1', '--ttl', '5m', '--reason', 'must survive dashboard exit')
+        guard = cli('acquire', '--pool', pool + '=1', '--ttl', '5m', '--reason', 'must survive dashboard exit')
         # Actual SIGWINCH handling and compact feed mode.
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 24, 70, 0, 0))
         os.kill(process.pid, signal.SIGWINCH)
@@ -209,7 +223,18 @@ def main():
         restored[3] &= ~getattr(termios, 'PENDIN', 0)
         assert restored == original, 'signal exit did not restore terminal mode'
         assert cli('inspect', guard['id'])['state'] == 'active'
-        print('Terminal dashboard PTY: six-view navigation, exact counts, declined/reviewed extension+release, polling message review/send, disk/network multi-select All/None/custom, resize/feed, q/SIGTERM raw mode and alternate-screen restoration, surviving active lease passed')
+        process = subprocess.Popen(prefix + ['dashboard', 'terminal'], stdin=slave, stdout=slave, stderr=slave, env=env, start_new_session=True)
+        wait_text('connected')
+        cli('stop', '--force')
+        wait_text('disconnected')
+        wait_seen('unavailable RAM remaining')
+        wait_seen('unavailable space remaining')
+        send('2')
+        wait_text('No fresh reading')
+        send('q')
+        process.wait(timeout=5)
+        assert process.returncode == 0, 'disconnected dashboard did not exit cleanly'
+        print('Terminal dashboard PTY: remaining-first Monitor and lease-available Resources, stale disconnected values, six-view navigation, exact counts, declined/reviewed extension+release, polling message review/send, disk/network multi-select All/None/custom, resize/feed, q/SIGTERM raw mode and alternate-screen restoration, surviving active lease passed')
     finally:
         if process is not None and process.poll() is None:
             process.kill()

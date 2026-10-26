@@ -9,6 +9,21 @@ import (
 	"github.com/yrashk/arm/internal/model"
 )
 
+func (m *dashboardModel) monitorStale() bool {
+	if !m.connected || m.page.Stale || m.timeMonitor.IsZero() || m.timeNow.Before(m.timeMonitor) || m.page.StaleAfter <= 0 {
+		return true
+	}
+	elapsed := m.timeNow.Sub(m.timeMonitor)
+	return m.page.Age < 0 || elapsed >= m.page.StaleAfter || m.page.Age >= m.page.StaleAfter-elapsed
+}
+
+func remainingMeasurement(value model.Measurement, stale bool) model.Measurement {
+	if stale {
+		value.Value = nil
+	}
+	return value
+}
+
 func (m *dashboardModel) monitorText() string {
 	width := m.mainWidth()
 	s := m.page.Latest
@@ -67,15 +82,32 @@ func (m *dashboardModel) cpuWindow(s *model.MonitorSnapshot, width int) string {
 func (m *dashboardModel) memoryWindow(s *model.MonitorSnapshot, width int) string {
 	inner := width - 4
 	r := s.Memory
-	lines := []string{align(strong.Foreground(colorBlue).Render(measurement(r.Used)), strong.Render(percentage(r.Used.Value, r.Total.Value)), inner), bar(r.Used.Value, r.Total.Value, inner, "blue"), align(muted.Render("Available"), measurement(r.Available), inner), align(muted.Render("Total"), measurement(r.Total), inner), lipgloss.NewStyle().Foreground(colorBlue).Render("History 60s " + historyLine(m.history, max(1, inner-12), m.page.Cadence, totalValue(r), func(p model.MonitorPoint) *float64 { return p.MemoryUsed })), align(muted.Render("Swap used"), measurement(s.Swap.Used)+" / "+measurement(s.Swap.Total), inner)}
-	return window("MEMORY", strings.Join(lines, "\n"), width, 8, false, "blue")
+	stale := m.monitorStale()
+	ram := remainingMeasurement(r.Available, stale)
+	swap := remainingMeasurement(s.Swap.Available, stale)
+	share := ""
+	if ram.Value != nil {
+		share = strong.Render(percentage(ram.Value, r.Total.Value)) + muted.Render(" remaining")
+	}
+	label := "MEMORY"
+	if stale {
+		label += " · STALE"
+	}
+	lines := []string{align(strong.Foreground(colorBlue).Render(measurement(ram))+muted.Render(" RAM remaining"), share, inner), bar(ram.Value, r.Total.Value, inner, "blue"), align(muted.Render("RAM used"), measurement(r.Used), inner), align(muted.Render("RAM total"), measurement(r.Total), inner), lipgloss.NewStyle().Foreground(colorBlue).Render("History 60s " + historyLine(m.history, max(1, inner-12), m.page.Cadence, totalValue(r), func(p model.MonitorPoint) *float64 { return p.MemoryAvailable })), align(muted.Render("Swap remaining"), measurement(swap)+" / "+measurement(s.Swap.Total), inner)}
+	return window(label, strings.Join(lines, "\n"), width, 8, false, "blue")
 }
 func (m *dashboardModel) storageWindow(s *model.MonitorSnapshot, width int) string {
 	inner := width - 4
 	r := s.Filesystem
 	label := "STORAGE"
-	if s.FilesystemStale {
+	stale := m.monitorStale() || s.FilesystemStale
+	if stale {
 		label += " · STALE"
+	}
+	remaining := remainingMeasurement(r.Available, stale)
+	share := ""
+	if remaining.Value != nil {
+		share = strong.Render(percentage(remaining.Value, r.Total.Value)) + muted.Render(" remaining")
 	}
 	detail := "Filesystem observation"
 	if r.Filesystem != nil {
@@ -84,7 +116,7 @@ func (m *dashboardModel) storageWindow(s *model.MonitorSnapshot, width int) stri
 			detail += " · shared pool"
 		}
 	}
-	lines := []string{align(strong.Render(measurement(r.Available))+muted.Render(" free"), strong.Render(percentage(r.Used.Value, r.Total.Value))+muted.Render(" used"), inner), bar(r.Used.Value, r.Total.Value, inner, ""), align(muted.Render("Used"), measurement(r.Used), inner), align(muted.Render("Total"), measurement(r.Total), inner), accent.Render("History 60s " + historyLine(m.history, max(1, inner-12), m.page.Cadence, totalValue(r), func(p model.MonitorPoint) *float64 { return p.FilesystemAvailable })), muted.Render(detail + " · free space")}
+	lines := []string{align(strong.Render(measurement(remaining))+muted.Render(" space remaining"), share, inner), bar(remaining.Value, r.Total.Value, inner, ""), align(muted.Render("Space used"), measurement(r.Used), inner), align(muted.Render("Space total"), measurement(r.Total), inner), accent.Render("History 60s " + historyLine(m.history, max(1, inner-12), m.page.Cadence, totalValue(r), func(p model.MonitorPoint) *float64 { return p.FilesystemAvailable })), muted.Render(detail + " · user-available space")}
 	return window(label, strings.Join(lines, "\n"), width, 8, false, "")
 }
 func totalValue(r model.ResourceMeasurement) float64 {

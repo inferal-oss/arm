@@ -43,13 +43,14 @@ func visualDashboard(t *testing.T) *dashboardModel {
 	for index := 0; index < 60; index++ {
 		cpu := 32 + 21*math.Sin(float64(index)/6) + 9*math.Cos(float64(index)/2)
 		memory := 12*gib + float64(index)*.015*gib
+		memoryAvailable := 32*gib - memory
 		free := 610*gib - float64(index)*.17*gib
 		zero := 0.0
 		diskR := (8 + 6*math.Sin(float64(index)/4)) * 1024 * 1024
 		diskW := (3 + 2*math.Cos(float64(index)/5)) * 1024 * 1024
 		netR := (1.4 + .8*math.Sin(float64(index)/7)) * 1024 * 1024
 		netW := (.4 + .2*math.Cos(float64(index)/6)) * 1024 * 1024
-		m.history = append(m.history, model.MonitorPoint{Sequence: int64(index + 1), At: now.Add(time.Duration(index-59) * time.Second), CPU: &cpu, MemoryUsed: &memory, FilesystemAvailable: &free, DiskIO: []model.MonitorHistoryIO{{ID: "disk-0", Read: &diskR, Write: &diskW}, {ID: "disk-1", Read: &zero, Write: &zero}}, Network: []model.MonitorHistoryIO{{ID: "net-0", Read: &netR, Write: &netW}, {ID: "net-1", Read: &zero, Write: &zero}}})
+		m.history = append(m.history, model.MonitorPoint{Sequence: int64(index + 1), At: now.Add(time.Duration(index-59) * time.Second), CPU: &cpu, MemoryUsed: &memory, MemoryAvailable: &memoryAvailable, FilesystemAvailable: &free, DiskIO: []model.MonitorHistoryIO{{ID: "disk-0", Read: &diskR, Write: &diskW}, {ID: "disk-1", Read: &zero, Write: &zero}}, Network: []model.MonitorHistoryIO{{ID: "net-0", Read: &netR, Write: &netW}, {ID: "net-1", Read: &zero, Write: &zero}}})
 	}
 	lease := activeLease("a1b2c3d4e5f60123456789abcdef01234")
 	lease.Owner = "1000"
@@ -64,6 +65,8 @@ func visualDashboard(t *testing.T) *dashboardModel {
 	lease.Request.Kind = "execution"
 	m.data.status.Leases = []model.Lease{lease}
 	m.data.status.Resources = []model.ResourceView{{ID: "cpu", Kind: "cpu", Unit: "logical-core-equivalents", BudgetTotal: "16", Reserved: "4", Available: "12", Users: []model.ResourceUse{{Lease: lease.ID, Owner: "1000", OwnerUsername: "developer", Agent: "build-worker", Reason: lease.Request.Reason, Quantity: "4"}}}, {ID: "memory", Kind: "memory", Unit: "bytes", BudgetTotal: "17179869184", Reserved: "4294967296", Available: "12884901888", Users: []model.ResourceUse{{Lease: lease.ID, Owner: "1000", OwnerUsername: "developer", Agent: "build-worker", Reason: "Rust compilation workspace", Quantity: "4294967296"}}}, {ID: "tokens", Kind: "custom", Unit: "tokens", BudgetTotal: "9223372036854775807", Reserved: "0", Available: "9223372036854775807", Custom: &model.PoolView{Pool: model.Pool{Name: "Coordination tokens", Scope: "global"}}}}
+	physicalTotal, physicalAvailable := int64(32*gib), int64(19*gib)
+	m.data.status.Memory = &model.MemoryBudget{Observation: model.MemoryAvailability{At: now, Total: &physicalTotal, Available: &physicalAvailable}, Capacity: 16 * gib, Reserved: 4 * gib, Available: 12 * gib, StaleAfter: 10 * time.Second}
 	m.data.messages = []manager.Message{{ID: "message-preview", Created: now.Add(-20 * time.Second), Sender: "build-worker", Audience: "operator", Body: "Release build finished. Export the binary before cleaning artifacts."}}
 	m.data.contacts = []agents.Contact{{ID: "build-worker", Adapter: "generic", Session: "11111111-1111-4111-8111-111111111111", Registration: "preview-registration", Delivery: "poll", CWD: "/workspace/api-server"}}
 	m.events = []model.Event{{Sequence: 3, At: now.Add(-8 * time.Second), Type: "lease.renewed", Entity: lease.ID}, {Sequence: 2, At: now.Add(-time.Minute), Type: "storage.created", Entity: "scratch artifacts · 10 GiB"}, {Sequence: 1, At: now.Add(-2 * time.Minute), Type: "lease.created", Entity: lease.ID}}
@@ -123,7 +126,7 @@ func TestWindowGeometryAndDynamicMemoryLabelsRemainExplicit(t *testing.T) {
 	}
 	m := visualDashboard(t)
 	m.view = 1
-	if text := ansi.Strip(m.resourcesText()); !strings.Contains(text, "Reservable now") || !strings.Contains(text, "16 GiB") || !strings.Contains(text, "not physical RAM") || !strings.Contains(text, "9223372036854775807 tokens") {
+	if text := ansi.Strip(m.resourcesText()); !strings.Contains(text, "To lease") || !strings.Contains(text, "16 GiB") || !strings.Contains(text, "not physical RAM") || !strings.Contains(text, "9223372036854775807 tokens") {
 		t.Fatal("budget labels or exact custom counts lost", text)
 	}
 	if text := ansi.Strip(m.monitorText()); !strings.Contains(text, "32 GiB") || !strings.Contains(text, "DISK I/O") || !strings.Contains(text, "NETWORK") {

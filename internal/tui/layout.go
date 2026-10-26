@@ -287,17 +287,21 @@ func (m *dashboardModel) resourcesText() string {
 	width := max(12, m.mainWidth()-4)
 	for i, r := range m.filteredResources() {
 		totalLabel := "Capacity"
+		availableLabel := "Available"
 		title := strings.ToUpper(safe(r.Kind))
 		if r.Kind == "cpu" {
 			totalLabel = "Live headroom"
+			availableLabel = "To lease"
 			title = "CPU · LIVE HEADROOM"
 		}
 		if r.Kind == "memory" {
-			totalLabel = "Reservable now"
+			totalLabel = "Live pool"
+			availableLabel = "To lease"
 			title = "MEMORY · LIVE BUDGET"
 		}
-		if r.Kind == "disk" && m.data.status.Disk != nil {
-			totalLabel = "Reservable now"
+		if r.Kind == "disk" {
+			totalLabel = "Live pool"
+			availableLabel = "To lease"
 			title = "DISK · LIVE HEADROOM"
 		}
 		if r.Custom != nil {
@@ -307,29 +311,18 @@ func (m *dashboardModel) resourcesText() string {
 			title = "> " + title
 		}
 		inner := width - 4
-		totalText, availableText := quantity(r.BudgetTotal, r.Unit), quantity(r.Available, r.Unit)
-		promisedText := quantity(r.Reserved, r.Unit)
-		cpuDeficit := ""
-		if r.Kind == "cpu" {
-			totalText, promisedText, availableText, cpuDeficit = cpuBudgetValues(&r, m.cpuBudgetForView())
-		}
-		if r.Kind == "disk" && m.data.status.Disk != nil && !m.data.status.Disk.Known {
-			totalText = "unavailable"
-			availableText = "unavailable"
-		}
-		availableLabel := "Available"
-		if r.Kind == "cpu" {
-			availableLabel = "To lease"
-		}
-		lines := []string{align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), promisedText, inner), align(muted.Render(availableLabel), strong.Foreground(colorAccent).Render(availableText), inner)}
-		if r.Kind == "cpu" {
-			lines = append(lines, align(muted.Render("Shortfall"), cpuDeficit, inner))
-		}
-		if r.Kind != "cpu" && r.Deficit != "" && r.Deficit != "0" {
-			lines = append(lines, align(strong.Foreground(colorWarning).Render("SHORTFALL"), strong.Foreground(colorWarning).Render(quantity(r.Deficit, r.Unit)), inner))
+		totalText, promisedText, availableText, deficitText := m.resourceCapacityTexts(&r)
+		lines := []string{align(muted.Render(availableLabel), strong.Foreground(colorAccent).Render(availableText), inner), align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), promisedText, inner)}
+		if r.Kind == "cpu" || r.Kind == "memory" || r.Kind == "disk" {
+			lines = append(lines, align(muted.Render("Shortfall"), deficitText, inner))
+		} else if r.Deficit != "" && r.Deficit != "0" {
+			lines = append(lines, align(strong.Foreground(colorWarning).Render("SHORTFALL"), strong.Foreground(colorWarning).Render(deficitText), inner))
 		}
 		if r.Kind == "memory" {
 			lines = append(lines, muted.Render("Changes with current host headroom · not physical RAM"))
+			if !memoryBudgetKnown(m.memoryBudgetForView()) {
+				lines = append(lines, muted.Render("No fresh reading · new memory grants wait"))
+			}
 		}
 		if r.Kind == "cpu" {
 			lines = append(lines, muted.Render(ansi.Wrap("Other apps share this CPU · full promises stay charged", inner, "")))
@@ -343,10 +336,14 @@ func (m *dashboardModel) resourcesText() string {
 				lines = append(lines, muted.Render("No fresh reading · new CPU grants wait"))
 			}
 		}
-		if r.Kind == "disk" && m.data.status.Disk != nil {
+		if r.Kind == "disk" {
 			lines = append(lines, muted.Render("State filesystem · full promises remain charged"))
-			if ceiling := m.data.status.Disk.Ceiling; ceiling != nil {
+			if b := m.data.status.Disk; b != nil && b.Ceiling != nil {
+				ceiling := b.Ceiling
 				lines = append(lines, align(muted.Render("Operator ceiling"), quantity(model.CountQuantity(*ceiling), "bytes"), inner))
+			}
+			if !diskBudgetKnown(m.diskBudgetForView()) {
+				lines = append(lines, muted.Render("No fresh reading · new disk grants wait"))
 			}
 		}
 		lines = append(lines, muted.Foreground(colorLine).Render(strings.Repeat("─", inner)))
@@ -632,15 +629,24 @@ func (m *dashboardModel) resourceDetailText() string {
 	if r == nil {
 		return "Resource no longer exists. Esc returns to budgets."
 	}
-	out := fmt.Sprintf("%s · %s\nHost: %s\n\nTotal: %s\nReserved: %s\nAvailable: %s\n\nCONSUMERS · Enter opens selected lease\n", safe(r.Kind), safe(r.Pool), safe(r.Host), quantity(r.BudgetTotal, r.Unit), quantity(r.Reserved, r.Unit), quantity(r.Available, r.Unit))
+	total, promised, available, deficit := m.resourceCapacityTexts(r)
+	out := fmt.Sprintf("%s · %s\nHost: %s\n\nAvailable: %s\nCapacity: %s\nPromised: %s\n\nCONSUMERS · Enter opens selected lease\n", safe(r.Kind), safe(r.Pool), safe(r.Host), available, total, promised)
 	if r.Kind == "cpu" {
 		out = cpuBudgetDetail(r, m.cpuBudgetForView())
 	}
-	if r.Kind == "disk" && m.data.status.Disk != nil {
-		disk := m.data.status.Disk
-		if !disk.Known {
-			out = fmt.Sprintf("Disk · live state-filesystem headroom\n\nReservable now: unavailable\nPromised: %s\nAvailable: unavailable\n\nNew disk grants wait for fresh availability.\n\nCONSUMERS · Enter opens selected lease\n", quantity(r.Reserved, r.Unit))
+	if r.Kind == "memory" {
+		out = fmt.Sprintf("Memory · live host budget\nHost: %s\n\nTo lease: %s\nLive pool: %s\nPromised: %s\nShortfall: %s\n", safe(r.Host), available, total, promised, deficit)
+		if !memoryBudgetKnown(m.memoryBudgetForView()) {
+			out += "\nNew memory grants wait for a fresh availability estimate.\n"
 		}
+		out += "\nPhysical RAM and actual usage remain separate from lease promises.\n\nCONSUMERS · Enter opens selected lease\n"
+	}
+	if r.Kind == "disk" {
+		out = fmt.Sprintf("Disk · live state-filesystem headroom\nHost: %s\n\nTo lease: %s\nLive pool: %s\nPromised: %s\nShortfall: %s\n", safe(r.Host), available, total, promised, deficit)
+		if !diskBudgetKnown(m.diskBudgetForView()) {
+			out += "\nNew disk grants wait for fresh availability.\n"
+		}
+		out += "\nCONSUMERS · Enter opens selected lease\n"
 		out += "\nFull outstanding promises stay charged. Shared files and snapshots do not prove exclusive reclamation. [?] help explains scope.\n"
 	}
 	if len(r.Users) == 0 {

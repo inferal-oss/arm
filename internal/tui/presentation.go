@@ -231,7 +231,7 @@ func (m *dashboardModel) freshness() string {
 	if m.view == 0 && !m.timeMonitor.IsZero() {
 		age := m.page.Age + m.timeNow.Sub(m.timeMonitor)
 		fresh = fmt.Sprintf("Sample %ds ago · %s", max(0, int(age.Seconds())), m.page.Cadence)
-		if m.page.Stale || !m.connected || age > m.page.StaleAfter {
+		if m.monitorStale() {
 			fresh = "STALE · " + fresh
 		}
 	}

@@ -4,9 +4,15 @@
 
 The reviewer found that memory and disk cards only used backend stale flags and connection state, so a still-connected browser holding an old status could continue to show “to lease” after those budgets expired. The web view now applies the same local elapsed-age calculation to CPU, memory and disk, and the Resources freshness check redraws when any one of their known/unknown states changes. A regression holds a connected status across staggered memory, disk and CPU deadlines; each “to lease” field becomes unavailable at its own deadline while promises remain visible and the original status object is unchanged. The complete web suite passes 201 tests; JavaScript syntax and staged diff checks pass. This is a browser presentation freshness fix, not a new backend admission rule or terminal layout change. The native observe full-suite counter limitation recorded below remains unchanged.
 
+## October 26, 2026: terminal remaining-capacity parity
+
+The complete `internal/tui` Go suite passes with one CPU and native loopback access. Focused tests verify remaining RAM/swap/state-filesystem headlines, available-RAM history rather than used-RAM history, known zero versus unknown, stale and disconnected monitor readings, authoritative CPU/memory/disk admission values, held-budget aging, promises and shortfalls. `go vet ./internal/tui` and a one-CPU CLI build pass. The first full-suite attempt in the restricted sandbox failed only at two private-backend tests because localhost bind returned `operation not permitted`; the same complete suite then passed with loopback permission. Deterministic 140×42 and 70×28 previews, plus the disconnected preview, were inspected for label order, fit and stale presentation.
+
+The built CLI passes the real PTY dashboard workflow with a disposable backend: live remaining labels, Resources “To lease,” six-view navigation, mouse selection, resize/compact feed, guarded lease/message controls, I/O selectors, disconnected remaining values and stale budget notices, and terminal restoration on normal and signal exit. A counted-pool lease fixture keeps this presentation test independent of current host CPU pressure; the first run's CPU=1 lease failed admission under real host pressure and a later CPU=0 attempt was invalid without another claim. The separate real PTY color-profile workflow passes TrueColor, 256-color, 16-color and NO_COLOR plus compact labels, resize and decline. These are presentation and workflow checks, not proof of physical capacity or complete product scope.
+
 ## October 25, 2026: web remaining-capacity overview
 
-The changed web suite passes all 200 JavaScript tests, including direct available-value/unknown/stale checks, backend CPU/disk/memory field order and custom-pool overlap cases. The focused Go monitor history tests and the observe package with only its native-counter test excluded pass with one CPU; `go vet ./internal/observe` passes. The dashboard bootstrap/shared-WebSocket integration test passes with native loopback permission and verifies the newly embedded browser module. A one-CPU CLI build succeeds. A disposable local backend and actual in-app browser show RAM remaining and swap remaining from physical observations, space remaining on ARM's state filesystem, CPU activity and unchanged I/O rates on Monitor; Resources leads with CPU/memory/disk/port availability from backend budgets. Wide rendered layout and accessible text were inspected. Stopping the disposable backend makes RAM, swap, filesystem and CPU/memory/disk admission headlines unavailable while preserving visible promises and a stale badge. The first browser load stayed at Connecting because the new module was omitted from embedded assets; that was corrected before the passing browser run. The full `internal/observe` package run remains failed in this sandbox because native `vm.swapusage` counters were unavailable; no native swap-provider validation is claimed. Terminal Monitor is a separate renderer and still leads with memory used; terminal layout parity is outside this web scope.
+The changed web suite passes all 200 JavaScript tests, including direct available-value/unknown/stale checks, backend CPU/disk/memory field order and custom-pool overlap cases. The focused Go monitor history tests and the observe package with only its native-counter test excluded pass with one CPU; `go vet ./internal/observe` passes. The dashboard bootstrap/shared-WebSocket integration test passes with native loopback permission and verifies the newly embedded browser module. A one-CPU CLI build succeeds. A disposable local backend and actual in-app browser show RAM remaining and swap remaining from physical observations, space remaining on ARM's state filesystem, CPU activity and unchanged I/O rates on Monitor; Resources leads with CPU/memory/disk/port availability from backend budgets. Wide rendered layout and accessible text were inspected. Stopping the disposable backend makes RAM, swap, filesystem and CPU/memory/disk admission headlines unavailable while preserving visible promises and a stale badge. The first browser load stayed at Connecting because the new module was omitted from embedded assets; that was corrected before the passing browser run. The full `internal/observe` package run remains failed in this sandbox because native `vm.swapusage` counters were unavailable; no native swap-provider validation is claimed. Terminal layout parity was outside this web checkpoint; the October 26 terminal section above records its later validation.
 
 ## October 25, 2026: routed SSH three-node integration
 
@@ -2600,3 +2606,16 @@ induced host pressure, real Codex/Claude warning acceptance or native pause.
 Final review is tightening recipient/lease/incident authority at actual
 command start; this successor is not yet integrated. Broad earlier Manager
 failures remain recorded; no full Manager-suite pass is inferred.
+
+### October 26: independent terminal remaining-capacity integration
+
+The exact `0736d8f` TUI source passes an independent complete package race run
+(20.018s) and affected vet. A fresh composed CGo-free CLI build passes the
+actual PTY acceptance script, including remaining RAM/swap/filesystem space,
+available-to-lease resources, stale/disconnected unavailable values, navigation,
+exact custom counts, declined and approved lease actions, polling messaging,
+I/O selection, resize/feed, terminal restoration and preservation of the active
+lease across dashboard exit. Evidence is ignored
+`.cache/terminal-remaining-0736-root-{race,pty}.log`. No new native Linux PTY or
+Terminal.app GUI run is inferred. The large CPU display remains activity and
+I/O remains throughput.

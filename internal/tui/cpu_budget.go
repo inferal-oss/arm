@@ -28,11 +28,7 @@ func (m *dashboardModel) cpuBudgetForView() *model.CPUBudget {
 		return nil
 	}
 	copy := *b
-	age := b.Age
-	if !m.lastRefresh.IsZero() && m.timeNow.After(m.lastRefresh) {
-		age += m.timeNow.Sub(m.lastRefresh)
-	}
-	copy.Stale = copy.Stale || !m.connected || m.lastRefresh.IsZero() || age < 0 || copy.StaleAfter <= 0 || age >= copy.StaleAfter
+	copy.Stale = m.heldBudgetStale(copy.Stale, copy.Age, copy.StaleAfter)
 	return &copy
 }
 func cpuBudgetValues(r *model.ResourceView, b *model.CPUBudget) (total, promised, available, deficit string) {
@@ -50,7 +46,7 @@ func cpuBudgetValues(r *model.ResourceView, b *model.CPUBudget) (total, promised
 }
 func cpuBudgetDetail(r *model.ResourceView, b *model.CPUBudget) string {
 	total, promised, available, deficit := cpuBudgetValues(r, b)
-	out := fmt.Sprintf("CPU · live host headroom\nHost: %s\n\nLive headroom: %s\nPromised: %s\nTo lease: %s\nShortfall: %s\n", safe(r.Host), total, promised, available, deficit)
+	out := fmt.Sprintf("CPU · live host headroom\nHost: %s\n\nTo lease: %s\nLive headroom: %s\nPromised: %s\nShortfall: %s\n", safe(r.Host), available, total, promised, deficit)
 	if cpuBudgetKnown(b) {
 		out += "Managed use credited: " + cpuQuantity(model.FloatQuantity(b.ManagedCredit)) + "\n"
 	}
