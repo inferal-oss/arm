@@ -4160,3 +4160,16 @@ installation with empty disposable binary/module/build directories. Only
 bounded generated receipts are uploaded; source caches, binaries, user files,
 backend state and credentials are excluded. Publication of candidate CI does
 not move main, deploy a website, create a release/tag or accept `@latest`.
+
+Independent CI-runner review found and corrected two receipt/lifecycle gaps:
+installed binary buildinfo now must match the exact version and checksum from
+the recorded public query (including a future `latest` query), and runner
+SIGTERM/SIGHUP/interrupts close and reap the original owned command process group
+before disposable-directory unwinding. Timeout cleanup also tolerates the
+original group already being gone. Lightweight Python syntax, exact/mismatched
+module-record matching and an actual disposable owned-child termination/reap
+probe pass; these are runner checks, not Go or public-install acceptance.
+The workflow remains candidate-branch push/manual only, pinned-action,
+contents-read, no persisted checkout credential, no shared cache, and uploads
+only the generated receipt directory. No main/tag/release/deployment action is
+added. Exact CI command results remain pending actual publication/run.

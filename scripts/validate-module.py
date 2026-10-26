@@ -39,6 +39,30 @@ def main():
     commands = []
     failures = []
 
+    # Hosted-job cancellation must unwind the same owned-process cleanup as a
+    # local Ctrl-C before disposable installation directories are removed.
+    def interrupted(signum, frame):
+        raise KeyboardInterrupt("validation interrupted by signal " + str(signum))
+
+    signal.signal(signal.SIGTERM, interrupted)
+    if hasattr(signal, "SIGHUP"):
+        signal.signal(signal.SIGHUP, interrupted)
+
+    def stop_group(process):
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            pass
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
+
     def run(name, command, cwd=ROOT, extra=None, timeout=1200):
         print("START", name, flush=True)
         started = time.monotonic()
@@ -48,19 +72,13 @@ def main():
                 try:
                     code = process.wait(timeout=timeout)
                 except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGTERM)
-                    try:
-                        process.wait(timeout=5)
-                    except subprocess.TimeoutExpired:
-                        pass
-                    # Reap the original child and terminate any remaining
-                    # compiler/helper processes in its owned process group.
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    process.wait()
+                    stop_group(process)
                     code = 124
+                except BaseException:
+                    # Reap the original child and stop its compiler/helpers
+                    # before unwinding temporary-directory cleanup.
+                    stop_group(process)
+                    raise
             except OSError as error:
                 stderr.write(str(error).encode())
                 code = 127
@@ -97,6 +115,7 @@ def main():
                                GIT_TERMINAL_PROMPT="0", GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, CGO_ENABLED="0")
                 require(all(not Path(private[key]).exists() for key in ("GOBIN", "GOMODCACHE", "GOCACHE")), "public caches were not empty")
                 run("public-environment", [go, "env", "-json", "GOBIN", "GOMODCACHE", "GOCACHE", "GOPROXY", "GOSUMDB", "GOWORK", "GOENV", "GOTOOLCHAIN"], work, private)
+                resolved = None
                 code = run("public-query", [go, "mod", "download", "-json", MODULE + "@" + args.public_install], work, private)
                 if not code:
                     resolved = json.loads((output / "public-query.stdout.txt").read_text())
@@ -115,6 +134,10 @@ def main():
                     run("installed-buildinfo", [go, "version", "-m", str(binary)], work, private)
                     info = (output / "installed-buildinfo.stdout.txt").read_text()
                     require("path\t" + MODULE + "/cmd/arm" in info and "mod\t" + MODULE + "\t" in info, "installed buildinfo has wrong module")
+                    if resolved is not None:
+                        module_records = [line.strip().split("\t") for line in info.splitlines() if line.strip().startswith("mod\t")]
+                        expected = ["mod", MODULE, resolved.get("Version", ""), resolved.get("Sum", "")]
+                        require(expected in module_records, "installed version/checksum differ from the recorded public query")
                     require("github.com/gokrazy/rsync\t" not in info and "=>" not in info, "installed buildinfo has replacement/upstream fork dependency")
                     home = temporary / "state"
                     for name, command in [("installed-version", ["version"]), ("installed-help", ["help"]), ("installed-empty-catalog", ["mesh", "artifacts", "list", "--json"])]:
