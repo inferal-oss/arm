@@ -288,6 +288,20 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 	if destinationPromises != 1 {
 		t.Fatalf("expected one exact destination promise, found %d", destinationPromises)
 	}
+	pairRecovery, err := syncservice.InspectPair(ctx, hold.Ledger(), originalDestination.Ledger())
+	if err != nil || !pairRecovery.JointlyConfirmed || pairRecovery.NeedsAttention {
+		t.Fatalf("completed authenticated pair recovery differs: %+v %v", pairRecovery, err)
+	}
+	for _, endpoint := range []struct {
+		manager *manager.Manager
+		side    syncreconcile.Side
+	}{{source, syncreconcile.Local}, {destination, syncreconcile.Remote}} {
+		view, err := endpoint.manager.InspectSyncKey(ctx, key, endpoint.side)
+		if err != nil || view.OperationState != "confirmed" || view.Lease.State != "needs_attention" ||
+			view.Lease.Ended != nil || view.Lease.Request.Resources != resources || view.LocalReceipt == nil || view.RemoteReceipt == nil {
+			t.Fatalf("confirmed receipt changed charged endpoint recovery: %+v %v", view, err)
+		}
+	}
 }
 
 func assertManagerPairFiles(t *testing.T, root string, want map[string]string) {

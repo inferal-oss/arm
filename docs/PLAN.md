@@ -467,3 +467,11 @@ assets and mesh lifecycle fields while retaining peer/forwarding/Kubernetes.
 Direct-peer Standard scope remains separate from live clipboard/sustained
 control, separate-user/real revocation, broader decoder bounds, multi-hop and
 High Performance acceptance. No VM or host configuration is changed here.
+
+
+Read-only recovery sequence 75bd08a/150bf60/4d19efe composes f507478/8a8130d
+with final independent fixes against corrected source sync; unreviewed source
+4cdee0f is not imported. Full charged-lease and each one-sided confirmed-endpoint
+evidence are now checked. Primary verifies both actual authenticated transfer
+receipts and retained/restarted lease views after 228ccff. These APIs remain
+internal; public authenticated recovery, allocation and settlement stay open.

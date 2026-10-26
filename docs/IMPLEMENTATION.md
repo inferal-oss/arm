@@ -1420,3 +1420,22 @@ asset regressions without touching a VM or host screen configuration. Sustained
 independent control, live clipboard transfer, separate-user desktop, actual
 screen revocation, broader decoder bounds, multi-hop and High Performance
 remain incomplete.
+
+
+## Read-only sync recovery evidence
+
+Internal pair inspection compares both original endpoint intents, selected
+manifests, receipt copies and independently confirmed baselines. Each confirmed
+endpoint must retain its own complete evidence even while the peer is pending;
+divergence or missing confirmation evidence is unknown. Independent reads can
+conservatively refuse concurrent advancement. The original-key Manager lookup
+requires one exact charged binding, canonical physical lease/request key,
+current owner/host and consuming state, full resources, reason and endpoint
+identity against the retained intent. Context bounds every SQL wait.
+
+Confirmed transfer receipts and baselines are distinct from resource state.
+Actual worker completion can show confirmed receipts alongside a retained
+needs-attention lease. These views neither replay transfers nor mutate/settle
+leases; no public or remote-authenticated recovery route is enabled by them.
+Native Linux renewal, formal recovery, public routing, physical allocation and
+cleanup settlement remain separate gates.

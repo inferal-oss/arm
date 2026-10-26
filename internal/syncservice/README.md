@@ -3,8 +3,8 @@
 `syncservice` is the exact-key control and receipt layer for `arm sync-worker`.
 It binds `syncreconcile` output to ARM's existing leased SSH admission and to
 `syncfs` native publication. It does not create another transport or grant file
-authority. This package is an integration slice; the CLI, Manager, database
-proof, and SSH worker are not wired to it yet.
+authority. This package is wired to private Manager-owned source/destination workers and
+the durable database namespace; public CLI/direct/routed dispatch remains closed.
 
 ## Direct leased SSH sequence
 
@@ -111,8 +111,7 @@ integrated; schema installation alone does not authorize public sync dispatch.
 The private Manager adapter now joins source reservations with local leases and
 destination reservations with the exact SSH fence, operation and lease before
 the process gate. It refuses a different filesystem and retains every admitted
-sync charge until a later exact recovery/cleanup join; no public caller or
-working fixed sync worker is enabled yet.
+sync charge until a later exact recovery/cleanup join; no public fixed-worker caller is enabled yet.
 
 The Manager adapter first admits a private preparation owner (one core, 768 MiB
 memory, 1 MiB scratch), before its expensive validation and native scan. Remote
@@ -127,3 +126,13 @@ Outgoing materialization, receiver copies/preimages and control journal space
 are included in admission floors; the native device/fsid and sampled fsid/pool
 are bound and rechecked. These are cooperative floors, not physical allocation
 or RSS enforcement, and the public runner/recovery gates above remain open.
+
+
+`InspectPair` reads both original ledgers without replaying effects. It compares
+intents, manifests and receipt copies; every endpoint claiming confirmation
+must retain both receipts and its exact proposed baseline, even when the peer
+is pending. Joint confirmation is a protocol result, not resource settlement.
+The separate local `Manager.InspectSyncKey` view preserves the charged lease
+state alongside operation and receipt state. These helpers authenticate neither
+supplied database handles nor a future remote requester; public authenticated
+lookup and exact native cleanup remain separate gates.

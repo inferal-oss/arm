@@ -3860,3 +3860,37 @@ sustained independent input, live clipboard, separate-user desktop, actual
 screen-revocation acceptance, broader decoder/browser bounds, multi-hop and
 High Performance remain open. Slots/rates are transport bounds, not Manager
 resource admission or OS enforcement.
+
+
+## Sync recovery final review and primary composition
+
+Focused recovery commits 75bd08a/150bf60/4d19efe compose the independent
+f507478/8a8130d views onto corrected source sync without importing unreviewed
+4cdee0f. Independent review retains ten counterexample leaves: changed charged
+lease fields/states and missing one-sided confirmation evidence. The correction
+checks canonical physical lease/request-key evidence, owner/consuming state,
+full resources/reason/endpoint identity and each confirmed endpoint's own
+baseline/receipt copies. Caller context bounds lease SQL waits. Independent
+Manager 7 roots/17 cases, complete service 21/33 and worker 12/26 races pass
+without failures/skips, with actual authenticated transfers and retained/restart
+views. Three-package vet passes. Exact 1,652-file source manifest SHA256
+`c8fe8657cfaccfaa315b69fa6c7ec59e66d46e4109f94bf3b6ea39adfcec6274`
+and original failures/final receipts remain in
+`/private/tmp/arm-sync-recovery-final-review/.cache/`.
+
+Primary composes exact recovery and pair-test sources onto 228ccff. Changed
+charge/lookup races pass 2 roots/9 cases in 3.961s; source restart/destination
+lifecycle checks pass 4 roots/7 cases in 8.060s. Complete service races pass
+21 roots/33 cases in 9.201s. Complete worker package finishes in 12.498s with
+25 passes and one explicit additive-pull skip: live admission reports insufficient
+headroom. Bidirectional, additive-push, full-removal, cancellation and recovery
+assertions execute; this run is not positive additive-pull acceptance. Earlier
+exact-source independent recovery and primary source-pull passes remain separate
+scoped evidence. No production guard is relaxed. Affected three-package vet
+passes. Logs are `.cache/recovery-primary-{manager,lifecycle,components}-race.jsonl`
+and `.cache/recovery-primary-vet.log`.
+
+These are internal read-only views and local authenticated fixture evidence.
+They never replay effects, write baselines or settle resource charges, and do
+not supply public/remote authentication, fresh Linux recovery or formal recovery
+acceptance. Concurrent advancement can conservatively refuse a comparison.

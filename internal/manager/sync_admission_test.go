@@ -134,6 +134,10 @@ func TestSyncSourceReservationRetainsChargeAndOriginalKey(t *testing.T) {
 	if err != nil || recovered.State != "needs_attention" || recovered.Request.Resources != i.LocalResources {
 		t.Fatalf("source charge lost on restart: %+v %v", recovered, err)
 	}
+	recovery, err := reopened.InspectSyncKey(t.Context(), i.Key, syncreconcile.Local)
+	if err != nil || recovery.Lease.ID != l.ID || recovery.Lease.State != "needs_attention" || recovery.OperationState != "reserved" {
+		t.Fatalf("restarted source recovery changed original charge or intent: %+v %v", recovery, err)
+	}
 }
 
 func TestSyncSourceFailedReservationRollsBackLease(t *testing.T) {
@@ -402,6 +406,10 @@ func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, st
 		if err := checkManager.verifySyncRecords(context.Background(), true); err != nil {
 			t.Fatal(err)
 		}
+		recovery, err := checkManager.InspectSyncKey(t.Context(), intent.Key, syncreconcile.Remote)
+		if err != nil || recovery.Lease.ID != admitted.ID || recovery.Lease.State != "needs_attention" || recovery.OperationState != "reserved" {
+			t.Fatalf("cancelled/restarted destination recovery changed charge or intent: %+v %v", recovery, err)
+		}
 		return
 	}
 	if inline && (runErr != nil || string(output) != "inline-worker") {
@@ -422,5 +430,9 @@ func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, st
 	eventually(t, func() bool { l, e := m.Inspect(admitted.ID); return e == nil && l.State == "needs_attention" })
 	if err := m.verifySyncRecords(context.Background(), true); err != nil {
 		t.Fatal(err)
+	}
+	recovery, err := m.InspectSyncKey(t.Context(), intent.Key, syncreconcile.Remote)
+	if err != nil || recovery.Lease.ID != admitted.ID || recovery.Lease.State != "needs_attention" || recovery.OperationState != "reserved" || recovery.Lease.Request.Resources != q.Resources {
+		t.Fatalf("retained destination recovery changed charge or operation state: %+v %v", recovery, err)
 	}
 }
