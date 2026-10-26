@@ -2376,3 +2376,26 @@ The clean primary checkpoint `48f3864` also passes the all-package Go
 compile-only gate (original session 45192 exit 0; ignored
 `.cache/integrated-compile-48f3864.log`). This executes no test bodies and
 predates integration of the staging successor described here.
+
+## October 25: fresh sync-service successor and retained SSH archive failure
+
+The isolated sync-service `7925b2f` passes a fresh complete macOS package race
+run (13.479s), including the unchanged 768-effect/20-second regression (10.8s),
+and affected vet. All 13 component roots also pass on actual Linux ARM64; the
+original native command, SSH and cleanup exit 0, exact scope inactive and owned
+temporary root absent. Evidence is ignored
+`.cache/syncservice-7925-root-race.jsonl` and
+`.cache/syncservice-7925-linux-{native,run}.log`. The preceding `d260921` root
+race run remains failed at the large-plan deadline. Profiling identified
+repeated large operation-row state updates; `7925b2f` removes those repeats
+without changing the fixture or deadline. These runs do not accept the later
+decode fixes: independent review found sparse typed-JSON and preflight/string
+allocation gaps, which remain under correction before integration.
+
+The full unchanged SSH-service race run failed
+`TestSourceHistory64ArchiveThen65EveryOldKeyFencedAfterReopen` at the hot-unlink
+proof context deadline (48.57s; package 258.540s). Original session22480 exited1;
+ignored `.cache/routed-pin-final-root-race.log` retains the result. The focused
+changed-pin/identity race check separately passes; that does not make the
+package green. Diagnosis uses its own worktree and retains the 64/65 fixture,
+deadline and unlink authority checks.
