@@ -20,7 +20,7 @@ import (
 	"github.com/yrashk/arm/internal/syncservice"
 )
 
-const FixedCommand = "arm sync-worker --protocol=1"
+const FixedCommand = syncservice.FixedWorkerCommand
 
 func FixedCommandSHA256() string {
 	sum := sha256.Sum256([]byte(FixedCommand))

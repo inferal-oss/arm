@@ -17,6 +17,7 @@ import (
 	"github.com/yrashk/arm/internal/mesh"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/yrashk/arm/internal/syncservice"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -182,7 +183,7 @@ func (m *Manager) LookupSSH(source, key string) (model.SSHLookup, error) {
 // and the current directional grant are destination-owned inputs. There is no
 // existing-key replay: callers receive inspection with a nil process handle.
 func (m *Manager) AcquireSSH(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time) (model.Lease, sshservice.Process, error) {
-	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, nil)
+	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, nil, nil)
 }
 
 // AcquireSSHCommitted is the public-service adapter: its exact pre-exec
@@ -192,10 +193,10 @@ func (m *Manager) AcquireSSHCommitted(ctx context.Context, q model.SSHExecutionR
 	if commitment.Validate() != nil || !commitment.Matches(q) {
 		return model.Lease{}, nil, model.Err("invalid_request", "exact SSH control differs from execution")
 	}
-	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, &commitment)
+	return m.acquireSSH(ctx, q, e, ch, limit, maxTTL, validUntil, &commitment, nil)
 }
 
-func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time, commitment *model.SSHControlCommitment) (model.Lease, sshservice.Process, error) {
+func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, limit model.Resources, maxTTL time.Duration, validUntil time.Time, commitment *model.SSHControlCommitment, sync *syncAdmission) (model.Lease, sshservice.Process, error) {
 	empty := model.Lease{}
 	if ctx == nil || ch == nil {
 		return empty, nil, model.Err("invalid_request", "live SSH context/channel required")
@@ -242,6 +243,9 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 		return empty, nil, err
 	}
 	if prior.Found {
+		if sync != nil {
+			return empty, nil, syncservice.ErrKeyExists
+		}
 		if !reflect.DeepEqual(prior.Operation.Request, q) {
 			return empty, nil, model.Err("idempotency_conflict", "SSH key belongs to a different execution")
 		}
@@ -270,6 +274,12 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	if err != nil {
 		return empty, nil, err
 	}
+	if sync != nil {
+		leases, err = sync.withoutPreparation(leases)
+		if err != nil {
+			return empty, nil, err
+		}
+	}
 	var used model.Resources
 	for _, l := range leases {
 		if l.Request.Peer == q.Source && consuming(l.State) {
@@ -289,7 +299,7 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	}
 	r := model.Request{Host: m.host, Reason: q.Reason, TTL: q.TTL, Resources: q.Resources, Key: sshLeaseKey(q), Kind: "", Peer: q.Source, OriginKey: q.Key, PeerCertificate: q.Certificate, PeerGrantRevision: q.Revision}
 	run := &RunRequest{Request: r, Command: []string{sshRedactedCommand}, CWD: q.CWD, SSH: sshDescriptor(q), sshRuntime: runtime}
-	l, err := m.acquire(r, run)
+	l, err := m.acquireWithAdmission(r, run, false, sync)
 	if err != nil || l.State != "active" {
 		if err == nil {
 			err = model.Err("ssh_launch_failed", fmt.Sprintf("execution did not become active (%s)", l.Outcome))

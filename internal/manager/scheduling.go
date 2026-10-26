@@ -88,6 +88,11 @@ func rejectedQueueInfo(at time.Time, reason *model.Error) *model.QueueInfo {
 	return &model.QueueInfo{Policy: "fifo-no-bypass", Blockers: []model.QueueBlocker{{Code: reason.Code, Detail: reason.Message}}, Estimate: model.QueueEstimate{Kind: "unknown", Detail: "This request was rejected; it has no future reservation."}, Updated: at, Rejection: reason}
 }
 func (m *Manager) rejectUnstarted(l model.Lease, reason *model.Error) (model.Lease, error) {
+	if bound, err := m.syncLeaseBound(l.ID); err != nil {
+		return l, err
+	} else if bound {
+		return l, m.retainSyncLease(&l, "sync_unstarted")
+	}
 	if l.Cargo != nil {
 		return m.cargoRejectUnstarted(l, reason)
 	}

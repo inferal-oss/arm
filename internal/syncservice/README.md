@@ -108,3 +108,22 @@ admitted original never permits a new-key escape.
 Manager installs and proves this namespace during startup. Used sync history
 currently blocks reset and Stop until exact native cleanup/recovery proof is
 integrated; schema installation alone does not authorize public sync dispatch.
+The private Manager adapter now joins source reservations with local leases and
+destination reservations with the exact SSH fence, operation and lease before
+the process gate. It refuses a different filesystem and retains every admitted
+sync charge until a later exact recovery/cleanup join; no public caller or
+working fixed sync worker is enabled yet.
+
+The Manager adapter first admits a private preparation owner (one core, 768 MiB
+memory, 1 MiB scratch), before its expensive validation and native scan. Remote
+preparation consumes the original peer's aggregate grant. After native
+preparation returns, exact-owner accounting is atomically exchanged for the
+final sync/SSH charge; retained control data must fit that final promise. Only the original synchronous worker's return and verified scratch
+cleanup settle that hold. Cancellation/expiry/Stop cannot substitute for join;
+unknown cleanup/persistence and recovered owners remain charged. Failed
+preparations retain their original key history and cannot be adopted as new
+owners. This does not yet authorize caller-side planning before Manager entry.
+Outgoing materialization, receiver copies/preimages and control journal space
+are included in admission floors; the native device/fsid and sampled fsid/pool
+are bound and rechecked. These are cooperative floors, not physical allocation
+or RSS enforcement, and the public runner/recovery gates above remain open.

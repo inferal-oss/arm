@@ -11,6 +11,7 @@ import (
 )
 
 const relayTransitKind = "relay-transit"
+const syncPreparationKind = "sync-preparation"
 
 // RelayTransit is an exact current Manager-owned allocation. A caller creates
 // joined before admission and closes it only after every original transport
@@ -25,8 +26,9 @@ type RelayTransit struct {
 	joined     <-chan struct{}
 	workerDone chan struct{}
 	// Manager.mu protects result and settled.
-	result  model.Lease
-	settled bool
+	result         model.Lease
+	settled        bool
+	recoveryReason string
 }
 
 func (h *RelayTransit) Context() context.Context { return h.ctx }
@@ -45,6 +47,14 @@ func (h *RelayTransit) Lease() (model.Lease, error) {
 // same live CPU/memory and policy checks as ordinary requests. Wire callers
 // cannot select its internal kind, attach an existing lease or replay a key.
 func (m *Manager) AcquireRelayTransit(ctx context.Context, request model.Request, joined <-chan struct{}) (*RelayTransit, error) {
+	return m.acquireOwnedTransit(ctx, request, joined, relayTransitKind, nil)
+}
+
+// Only package-owned preparation can select the disk-bearing kind.
+func (m *Manager) acquireOwnedTransit(ctx context.Context, request model.Request, joined <-chan struct{}, kind string, grant *syncPreparationGrant) (*RelayTransit, error) {
+	if kind != relayTransitKind && kind != syncPreparationKind || kind == relayTransitKind && request.Resources.Disk != 0 || kind == syncPreparationKind && request.Resources != syncPreparationResources {
+		return nil, model.Err("invalid_request", "invalid owned resource preparation policy")
+	}
 	if ctx == nil || joined == nil {
 		return nil, model.Err("invalid_request", "relay context and original join witness required")
 	}
@@ -56,7 +66,7 @@ func (m *Manager) AcquireRelayTransit(ctx context.Context, request model.Request
 		return nil, model.Err("invalid_request", "relay join witness is already closed")
 	default:
 	}
-	if request.Key == "" || request.Kind != "" || request.Resources.CPU <= 0 || request.Resources.Memory <= 0 || request.Resources.Disk != 0 || request.Queue || request.StartDeadline != nil || request.Profile != "" || request.Agent != "" || request.StorageLease != "" || request.ServiceLease != "" || request.PortLease != "" || len(request.Ports) != 0 || len(request.Pools) != 0 || request.UsagePolicy != nil || request.Peer != "" || request.PeerCertificate != "" || request.PeerGrantRevision != 0 || request.OriginKey != "" {
+	if request.Key == "" || request.Kind != "" || request.Resources.CPU <= 0 || request.Resources.Memory <= 0 || request.Queue || request.StartDeadline != nil || request.Profile != "" || request.Agent != "" || request.StorageLease != "" || request.ServiceLease != "" || request.PortLease != "" || len(request.Ports) != 0 || len(request.Pools) != 0 || request.UsagePolicy != nil || grant == nil && (request.Peer != "" || request.PeerCertificate != "" || request.PeerGrantRevision != 0) || request.OriginKey != "" {
 		return nil, model.Err("invalid_request", "relay requires a fresh keyed CPU/memory allocation without attachments")
 	}
 	m.mu.Lock()
@@ -77,7 +87,25 @@ func (m *Manager) AcquireRelayTransit(ctx context.Context, request model.Request
 	if !errors.Is(err, sql.ErrNoRows) {
 		return nil, err
 	}
-	request.Kind = relayTransitKind
+	if grant != nil {
+		if kind != syncPreparationKind || request.Peer != grant.source || request.PeerCertificate != grant.certificate || request.PeerGrantRevision != grant.revision || !time.Now().Before(grant.validUntil) {
+			return nil, model.Err("forbidden", "sync preparation grant changed")
+		}
+		leases, e := m.list()
+		if e != nil {
+			return nil, e
+		}
+		var used model.Resources
+		for _, l := range leases {
+			if l.Request.Peer == grant.source && consuming(l.State) {
+				used = used.Add(l.Request.Resources)
+			}
+		}
+		if !request.Resources.FitsRemaining(used, grant.limit) {
+			return nil, model.Err("forbidden", "aggregate peer ceiling cannot cover sync preparation")
+		}
+	}
+	request.Kind = kind
 	lease, err := m.acquireWithRelay(request, nil, true)
 	if err != nil {
 		return nil, err
@@ -130,6 +158,9 @@ func (h *RelayTransit) FinishAfterJoin() (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if h.settled {
+		if h.recoveryReason != "" {
+			return h.result, model.Err("needs_attention", h.recoveryReason)
+		}
 		return h.result, nil
 	}
 	if m.relayTransits[h.id] != h {
@@ -139,8 +170,20 @@ func (h *RelayTransit) FinishAfterJoin() (model.Lease, error) {
 	if err != nil {
 		return l, err
 	}
-	if l.Request.Kind != relayTransitKind || l.Request.Key != h.key || !consuming(l.State) || l.Host != h.result.Host || l.Owner != h.result.Owner || l.PID != 0 || l.Process != nil || !reflect.DeepEqual(l.Request, h.result.Request) {
+	if l.Request.Kind != h.result.Request.Kind || l.Request.Key != h.key || !consuming(l.State) || l.Host != h.result.Host || l.Owner != h.result.Owner || l.PID != 0 || l.Process != nil || !reflect.DeepEqual(l.Request, h.result.Request) {
 		return l, model.Err("relay_owner_changed", "durable relay allocation differs; no settlement performed")
+	}
+	if h.recoveryReason != "" {
+		l.State, l.Ended = "needs_attention", nil
+		l.Outcome, l.Failure = "interrupted", h.recoveryReason
+		l.Revision++
+		if err = m.put(l, "sync.preparation_recovery_required"); err != nil {
+			return l, err
+		}
+		h.cancel()
+		h.result, h.settled = l, true
+		delete(m.relayTransits, h.id)
+		return l, model.Err("needs_attention", h.recoveryReason)
 	}
 	now := time.Now().UTC()
 	l.State, l.Ended = "terminal", &now
@@ -148,9 +191,16 @@ func (h *RelayTransit) FinishAfterJoin() (model.Lease, error) {
 		// Joining the transport proves resource closure, not successful remote
 		// execution, file publication or delivery of the final receipt.
 		l.Outcome = "relay_closed"
+		if l.Request.Kind == syncPreparationKind {
+			l.Outcome = "completed"
+		}
 	}
 	l.Revision++
-	if err = m.put(l, "relay.joined"); err != nil {
+	joinedEvent := "relay.joined"
+	if l.Request.Kind == syncPreparationKind {
+		joinedEvent = "sync.preparation_joined"
+	}
+	if err = m.put(l, joinedEvent); err != nil {
 		return l, err
 	}
 	h.cancel()

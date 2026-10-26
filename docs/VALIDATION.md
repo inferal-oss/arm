@@ -2818,3 +2818,56 @@ actual states/473 edges, required negative/reset controls and all30 original
 native owners terminal/reaped once with absent PID/group and no cleanup errors.
 The actual Go race package passes63.574s and affected normal vet passes. The
 complete original all-mode command exits0; no earlier failed run is reused.
+
+
+## October 26: charged sync preparation and atomic admission handoff
+
+Independent review reproduced two private-adapter defects: full native hashing
+preceded resource admission, and a valid outgoing 4 MiB source could reserve
+only 2 MiB of local disk. The successor grants a private preparation hold before
+Manager probing/scanning/expensive validation, includes outgoing materialization
+and control journal overhead, and binds held native device/fsid to the sampled
+state-filesystem fsid and optional APFS pool. The original real-file counterexample
+is retained as a passing regression. CPU, memory, disk and draining refusal tests
+use a real special file that would fail if traversal were reached.
+
+The original native phase joins before an exact-owner accounting handoff in the
+same final sync/SSH/lease transaction. One-core host and one-core peer fixtures
+admit the requested quarter-core worker without double-demanding preparation. A
+real SQLite abort during handoff rolls back all final evidence while retaining
+the original active preparation. Other tests cover generic marker refusal,
+End/cancel before join, Close waiting for join, peer aggregate/expiry limits,
+unknown scratch retention including automatic-settlement races, restart without
+a PID-zero join inference, native/sample volume mismatch, read-only same-key
+retry despite an unscannable changed root, and independent settled/reset refusal
+for uncertain preparation. The Manager and private worker now share the exact
+`arm sync-worker --protocol=1` command; the unversioned command is refused before
+preparation. The schema-only reset fixture keeps its counted pool lease and
+omits irrelevant CPU work; generic CPU fixtures and native admission remain.
+
+The final focused native macOS race selection passes: Manager 54.968s, database
+5.417s and all seven private worker roots 3.195s. Affected Manager/database/worker
+vet also passes. Ignored review logs are retained at
+`.cache/review-sync-admission/final-race.log` and
+`.cache/review-sync-admission/final-vet.log`. An earlier broader selection
+failed a redundant constant assertion's vet check (corrected) and
+`TestSSHResetArchivesCompleteNamespaceAndStartsFreshAuthority` reopening a fresh
+reset seed because the retired-mount check queried an absent leases table. Its
+original log remains `.cache/review-sync-admission/broader-reset-failure.log`; regression
+attribution and the complete composed reset suite remain separate work. No full
+Manager/database-suite, Linux, formal, public dispatch, actual allocation/RSS
+enforcement, end-to-end transfer or throughput pass is inferred.
+
+The primary composition additionally passes selected Manager/database/worker
+race tests (131.990s/10.022s/3.402s) and affected vet. Actual Linux ARM64 runs
+the selected admission, preparation, pressure/relay and reset evidence cases
+plus the complete worker package with zero failures/skips. All three uploaded
+binaries are hash-verified; original native/SSH/cleanup exit0, scope inactive
+and exact owned root absent. Evidence is ignored
+`.cache/sync-admission-final-composed-root-{race,vet}.log` and
+`.cache/sync-admission-reviewed-linux-{intent.json,native.log,run.log}`.
+Native Manager observations are controlled for these transactional tests; this
+is not native positive CPU capacity validation or physical allocation proof.
+Root separately reproduces the reset/reopen regression on main without the
+admission patch (3.168s), and the retired-state startup guard is being corrected
+in an isolated branch. Full suites and public sync acceptance remain pending.

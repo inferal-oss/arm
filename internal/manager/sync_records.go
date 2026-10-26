@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/yrashk/arm/internal/model"
+	"github.com/yrashk/arm/internal/syncreconcile"
 	"github.com/yrashk/arm/internal/syncservice"
 )
 
@@ -108,13 +109,59 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 			return model.Err("sync_evidence_unavailable", "sync constraint index missing")
 		}
 	}
-	if usedErr == nil {
-		var count int
-		if e := m.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM sync_operations`).Scan(&count); e != nil {
-			return e
+	return m.verifySyncRecords(ctx, usedErr == nil)
+}
+
+// Every admitted operation must retain exactly one charged lease binding.
+// Historical effects remain lookup-only; startup never erases or repairs them.
+func (m *Manager) verifySyncRecords(ctx context.Context, used bool) error {
+	var operations, bindings, effects, baselines, orphans, looseEffects int
+	if err := m.db.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM sync_operations),(SELECT COUNT(*) FROM sync_lease_bindings),(SELECT COUNT(*) FROM sync_effects),(SELECT COUNT(*) FROM sync_baselines),(SELECT COUNT(*) FROM sync_lease_bindings b LEFT JOIN sync_operations o ON o.key=b.key AND o.side=b.side WHERE o.key IS NULL),(SELECT COUNT(*) FROM sync_effects e LEFT JOIN sync_operations o ON o.key=e.key AND o.side=e.owner_side WHERE o.key IS NULL)`).Scan(&operations, &bindings, &effects, &baselines, &orphans, &looseEffects); err != nil {
+		return err
+	}
+	if operations > 4096 || effects > syncreconcile.MaxActions*2 || baselines > 4096 || operations != bindings || orphans != 0 || looseEffects != 0 || (operations > 0) != used || (!used && (effects != 0 || baselines != 0)) {
+		return model.Err("sync_evidence_unavailable", "sync operation/lease binding or use marker differs")
+	}
+	rows, err := m.db.QueryContext(ctx, `SELECT b.lease,b.key,b.side,b.volume,b.disk_bytes FROM sync_lease_bindings b ORDER BY b.lease LIMIT 4097`)
+	if err != nil {
+		return err
+	}
+	type binding struct {
+		lease, key, side, volume string
+		disk                     int64
+	}
+	var records []binding
+	for rows.Next() {
+		var b binding
+		if err := rows.Scan(&b.lease, &b.key, &b.side, &b.volume, &b.disk); err != nil {
+			rows.Close()
+			return err
 		}
-		if count == 0 {
-			return model.Err("sync_evidence_unavailable", "used sync namespace lost its operation evidence")
+		records = append(records, b)
+	}
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return err
+	}
+	for _, b := range records {
+		if b.side != string(syncreconcile.Local) && b.side != string(syncreconcile.Remote) || b.volume == "" || b.disk <= 0 {
+			return model.Err("sync_evidence_unavailable", "sync lease binding has invalid shape")
+		}
+		l, err := m.get(b.lease)
+		if err != nil || l.State == "terminal" || l.State == "queued" || l.Request.Resources.Disk != b.disk || l.Request.OriginKey != b.key {
+			return model.Err("sync_evidence_unavailable", "sync lease binding lost its charged obligation")
+		}
+		lookup, err := (&syncservice.Ledger{DB: m.db, Key: b.key, Side: syncreconcile.Side(b.side)}).Lookup(ctx)
+		if err != nil {
+			return model.Err("sync_evidence_unavailable", "sync operation evidence cannot be verified: "+err.Error())
+		}
+		want := lookup.Intent.LocalResources
+		if b.side == string(syncreconcile.Remote) {
+			want = lookup.Intent.RemoteResources
+		}
+		if l.Request.Resources != want {
+			return model.Err("sync_evidence_unavailable", "sync lease resources differ from retained intent")
 		}
 	}
 	return nil

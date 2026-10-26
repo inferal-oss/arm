@@ -20,9 +20,12 @@ import (
 )
 
 const (
-	Schema           = 1
-	MaxRecordBytes   = 64 << 20
-	MaxManifestBytes = 64 << 20
+	// FixedWorkerCommand is the exact versioned SSH exec commitment shared by
+	// Manager admission and the private worker. It does not enable a CLI entry.
+	FixedWorkerCommand = "arm sync-worker --protocol=1"
+	Schema             = 1
+	MaxRecordBytes     = 64 << 20
+	MaxManifestBytes   = 64 << 20
 )
 
 var (
