@@ -160,9 +160,16 @@ def main():
                     public_environment = json.loads((output / "public-environment.stdout.txt").read_text())
                     require("build\tCGO_ENABLED=" + public_environment["CGO_ENABLED"] in info, "public installation changed the normal CGo environment")
                     home = temporary / "state"
-                    for name, command in [("installed-version", ["version"]), ("installed-help", ["help"]), ("installed-empty-catalog", ["mesh", "artifacts", "list", "--json"])]:
+                    for name, command in [("installed-version", ["version"]), ("installed-help", ["help"]), ("installed-empty-catalog", ["mesh", "artifacts", "list"])]:
                         run(name, [str(binary), "--home", str(home)] + command, work, private)
-                    require(json.loads((output / "installed-empty-catalog.stdout.txt").read_text()) == [], "thin install has unexpected local catalog")
+                    # Piped CLI output is JSON by default; this command has
+                    # no local --json flag. Preserve command failure receipts
+                    # rather than aborting while trying to decode empty output.
+                    try:
+                        catalog = json.loads((output / "installed-empty-catalog.stdout.txt").read_text())
+                    except json.JSONDecodeError:
+                        catalog = None
+                    require(catalog == [], "thin install has unexpected local catalog or invalid output")
                     require(not home.exists(), "read-only thin probes created backend state")
             (output / "cleanup.json").write_text(json.dumps({"disposable_root_removed": not Path(scratch).exists(), "user_install_or_backend_modified": False}, indent=2) + "\n")
     else:

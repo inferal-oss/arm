@@ -4212,3 +4212,24 @@ tag, release, website deployment, installed-user binary or backend/state change
 is performed by candidate validation; literal latest acceptance follows separate
 root-approved main publication. Separate release metadata `97be9f5` is not
 silently included in this candidate.
+First actual public immutable install: run `40422678669`, public-install job
+`121920676377`, source `4a313de141fe28aae3ac2084d841ca4ac8fc5b4b`.
+The public query and original `go install
+ github.com/inferal-oss/arm/cmd/arm@4a313de141fe28aae3ac2084d841ca4ac8fc5b4b`
+both exit 0 using Go 1.27.3, the ordinary public proxy/SumDB and fresh disposable
+GOBIN/GOMODCACHE/GOCACHE outside the checkout. The query resolves to
+`v0.0.0-20261026235205-4a313de141fe`, module sum
+`h1:DPR5m+ukZr//s35wozgUPFMpirEnxY8kFDGzvaZd5+k=`, GoModSum
+`h1:gwgTNBnaNcV+BYUtNhda33thACZtTaynoM6uFMa80PQ=`, and exact Origin.Hash.
+Installed buildinfo matches that version/sum and canonical executable path;
+version and help exit 0. Binary SHA256 is
+`f145bcc3328c9232a7ff955902815aa1ae0cd99e45e527c3cf264fbf0f41ceea`.
+
+The overall public-install job fails: the validation helper incorrectly passes
+unsupported `--json` to `mesh artifacts list` (exit 2), then aborts decoding its
+empty stdout. This does not invalidate the recorded successful original install,
+but it does not accept the complete smoke/cleanup gate. The corrected helper
+omits that flag (piped CLI output is already JSON) and records invalid output
+as a failure without losing the result/cleanup receipts. No product CLI change
+or unsupported public contract is introduced. A corrected reviewed successor
+must rerun from fresh caches; original failure receipts are retained.
