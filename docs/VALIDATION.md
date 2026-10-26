@@ -3894,3 +3894,22 @@ These are internal read-only views and local authenticated fixture evidence.
 They never replay effects, write baselines or settle resource charges, and do
 not supply public/remote authentication, fresh Linux recovery or formal recovery
 acceptance. Concurrent advancement can conservatively refuse a comparison.
+
+
+## Forwarding scheme approval and continued fence
+
+The operator explicitly approved docs/MESH-FORWARD-PROPOSAL.md on October 26.
+This closes the concrete design-review gate only. The default-off constant and
+all source/destination/transit refusal branches remain unchanged; refusal
+messages now accurately state remaining acceptance rather than requesting the
+same approval again. Focused normal server/relay/CLI races pass without failure
+in `.cache/forward-approved-still-disabled-race.jsonl`. The ordinary fence test
+is renamed to reflect disabled rather than unreviewed authority. No browser
+trust/profile installation, Basic fallback or admission/identity relaxation is
+authorized, and retained EOF/platform/formal/interface gates remain incomplete.
+
+After all seven feature integrations and approval-message alignment,
+`go test -mod=readonly -p=1 -run '^$' ./...` passes for the complete current
+module. This compiles all test packages and executes no test bodies. Exact log:
+`.cache/coordinator-final-approved-module-compile.log`. Earlier per-feature
+executed checks and retained failures/skips remain separate evidence.

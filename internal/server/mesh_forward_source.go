@@ -181,7 +181,7 @@ func validForwardHex(s string, bytes int) bool {
 
 func (m *meshService) startForwardSource(ctx context.Context, q forwardSourceRequest) (any, error) {
 	if !meshsshrelay.ForwardReviewEnabled {
-		return nil, model.Err("feature_unavailable", "TCP forwarding awaits concrete operator security review")
+		return nil, model.Err("feature_unavailable", "TCP forwarding is disabled while acceptance gates remain incomplete")
 	}
 	if !validForwardHex(q.Key, 16) || q.Workspace == "" || q.Target == "" || q.Service == "" || q.GrantRevision < 1 || !validForwardHex(q.TokenSHA256, 32) || q.Reason == "" || q.TTL <= 0 || q.TTL > meshsshrelay.MaxLifetime {
 		return nil, model.Err("invalid_request", "exact key, route, service revision, digest, reason and bounded TTL required")

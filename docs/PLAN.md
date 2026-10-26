@@ -14,6 +14,17 @@ Updated October 26, 2026 against the current worktree. The complete scope remain
 
 ## Active delivery priorities
 
+**Current coordinator checkpoint:** integrated peer awareness 975d4b9, private
+source sync c64a49c, warning formal 113f738, disabled forwarding foundation
+5ecd9f7, Kubernetes runtime/catalog ebbc6da, Standard direct-peer VNC 228ccff
+and read-only sync recovery f60c8c3. Independent review fixes and scoped primary
+checks are recorded below and in VALIDATION.md. The operator has now explicitly
+approved the concrete forwarding scheme. Its ordinary-build fence stays in
+place for remaining implementation/acceptance, not another approval request.
+Public sync allocation/settlement/routing, forwarding platform/formal/browser
+gates, real Kubernetes enrollment/cluster and CPU pause remain unfinished.
+
+
 **Private sync source and frame ownership integrated:** the source worker reserves
 its original intent/resources before opening SSH, validates the same full
 predecessor after opening, and owns original carrier close/join callbacks.
@@ -475,3 +486,15 @@ with final independent fixes against corrected source sync; unreviewed source
 evidence are now checked. Primary verifies both actual authenticated transfer
 receipts and retained/restarted lease views after 228ccff. These APIs remain
 internal; public authenticated recovery, allocation and settlement stay open.
+
+
+### New issue: database removal schema diagnostics
+
+Owner chat 01a179d8-a2e2-7ef1-865a-d48fa7b47683, isolated managed worktree
+/Users/yrashk/.codex/worktrees/c1b6/arm, investigates the reported missing
+host_pressure_state reset proof and internal separator rendering. It must
+reproduce on disposable roots, establish actual cause read-only where possible,
+fix actionable human/JSON diagnostics and any warranted workflow defect without
+weakening settled-obligation/schema/provenance checks. Actual user state removal
+or migration is not authorized by this issue report. Independent review and
+composed native CLI/schema/proof validation precede primary integration.

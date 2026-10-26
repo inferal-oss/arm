@@ -29,7 +29,7 @@ func (a *app) meshForward(args []string) (int, error) {
 	}
 	action, args := args[0], args[1:]
 	if !meshsshrelay.ForwardReviewEnabled && (action == "grant" || action == "start" || action == "stream") {
-		return 1, model.Err("feature_unavailable", "TCP forwarding awaits concrete operator security review")
+		return 1, model.Err("feature_unavailable", "TCP forwarding is disabled while acceptance gates remain incomplete")
 	}
 	if action == "start" {
 		return a.meshForwardStart(args)

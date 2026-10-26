@@ -52,7 +52,7 @@ func (g RelayGrant) legacyUnbudgeted() bool {
 
 func (g RelayGrant) Authorize(now time.Time, o Open) error {
 	if !ForwardReviewEnabled && (g.Transport || g.Forward || o.Class == ClassForward) {
-		return errors.New("generic transport and TCP forwarding await concrete operator security review")
+		return errors.New("generic transport and TCP forwarding are disabled while acceptance gates remain incomplete")
 	}
 	if err := g.Validate(); err != nil {
 		return err

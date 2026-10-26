@@ -96,3 +96,12 @@ review and the existing platform, browser, general-client and formal gates.
 Evidence is retained under the new isolated review worktree's ignored
 `.cache/forward-composed-audit/`, indexed by `summary.json`, including a copy
 of the original unexplained primary failure.
+
+
+## Subsequent operator decision — October 26
+
+The operator explicitly approved the exact concrete scheme after reviewing the
+primary proposal. Earlier references to pending design review above describe
+the review checkpoint. The remaining fence now tracks implementation/acceptance
+gates, including the unexplained original EOF. No browser trust installation,
+Basic fallback, replay or relaxed identity/accounting authority is approved.

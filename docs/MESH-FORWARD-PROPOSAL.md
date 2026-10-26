@@ -1,8 +1,8 @@
 # Reviewed TCP service forwarding through a workspace
 
-Status: **development candidate; ordinary builds deny new forwarding and generic transit authority pending concrete operator review** (October 26, 2026). The requested feature is general TCP forwarding, including HTTP and other duplex TCP protocols, from an exact mesh node and named service to an authenticated local listener. It must reach destinations through several peers without requiring source–destination direct enrollment. The operator clarified that relays carry transport and do not choose destination services. Destination TCP access still requires its own exact grant.
+Status: **operator-approved scheme; ordinary builds deny new forwarding and generic transit authority pending remaining acceptance gates** (October 26, 2026). The requested feature is general TCP forwarding, including HTTP and other duplex TCP protocols, from an exact mesh node and named service to an authenticated local listener. It must reach destinations through several peers without requiring source–destination direct enrollment. The operator clarified that relays carry transport and do not choose destination services. Destination TCP access still requires its own exact grant.
 
-## Concrete authority for review
+## Approved concrete authority
 
 1. The destination operator installs a **destination-local service grant** for one workspace generation, original source and final destination stable ID, membership generations, directory DER/SPKI, both complete endpoint certificate pins and SPKI, destination account, service name, **literal loopback IP and canonical TCP port**, grant revision, expiry, concurrent connections, per-direction bytes, shared byte rate, per-connection lifetime and local CPU/memory hold. Requests carry only the service name and exact grant revision. They cannot supply a host, port, DNS name, URL, Unix socket or redirect target. The destination dials the reviewed literal endpoint without HTTP redirect handling. Account, pins, membership, endpoint and grant are rechecked before dialing and during the stream. A missing/expired/revoked grant denies by default.
 
@@ -27,9 +27,9 @@ Neither candidate changes destination grants or relay behavior. Both must prove 
 
 ## Current code and acceptance boundary
 
-`internal/meshforward` validates exact grants and provides a bounded, paced, duplex destination proxy. The local policy ledger records destination TCP grants and a generic workspace transport resource envelope under compare-and-swap operator review. The server has a separate forward route handler and destination Manager hold; the CLI has `arm mesh forward grant|revoke|show|start|status|list|stop|recover|stream` and `arm mesh ssh-relay grant-relay` for generic transport. The browser dashboard has local source start/status/list/stop/recover controls; it displays a fresh token for private saving and sends only the digest. It does not offer destination grant edits or transparent service navigation. An actual three-daemon server test crosses B→A→C, posts HTTP on two separate connections, exchanges raw duplex TCP through another named service, denies an ungranted service, checks a four-byte ceiling, closes a live stream after generic relay transport withdrawal with joined charge settlement, restores transit and separately closes a live stream after destination-grant revocation. A compiled macOS public CLI fixture separately passes B→A→C HTTP and raw duplex TCP, token-file stdio access with admission acknowledgment, local token denial, per-service destination revocation, source lifecycle and exact resource-only recovery after TCP TIME_WAIT. It does not yet prove a physical cross-host firewall barrier, network partition/alternate-path breadth, public Linux end-to-end operation, rendered web/Charm parity, or formal refinement. Keep production rollout contingent on those gates and operator review of this exact scheme.
+`internal/meshforward` validates exact grants and provides a bounded, paced, duplex destination proxy. The local policy ledger records destination TCP grants and a generic workspace transport resource envelope under compare-and-swap operator review. The server has a separate forward route handler and destination Manager hold; the CLI has `arm mesh forward grant|revoke|show|start|status|list|stop|recover|stream` and `arm mesh ssh-relay grant-relay` for generic transport. The browser dashboard has local source start/status/list/stop/recover controls; it displays a fresh token for private saving and sends only the digest. It does not offer destination grant edits or transparent service navigation. An actual three-daemon server test crosses B→A→C, posts HTTP on two separate connections, exchanges raw duplex TCP through another named service, denies an ungranted service, checks a four-byte ceiling, closes a live stream after generic relay transport withdrawal with joined charge settlement, restores transit and separately closes a live stream after destination-grant revocation. A compiled macOS public CLI fixture separately passes B→A→C HTTP and raw duplex TCP, token-file stdio access with admission acknowledgment, local token denial, per-service destination revocation, source lifecycle and exact resource-only recovery after TCP TIME_WAIT. It does not yet prove a physical cross-host firewall barrier, network partition/alternate-path breadth, public Linux end-to-end operation, rendered web/Charm parity, or formal refinement. The operator approved this exact scheme on October 26, 2026. Production rollout remains contingent on the outstanding acceptance gates.
 
-## Release fence and remaining review
+## Release fence and remaining acceptance
 
 Ordinary builds refuse TCP source start, forwarding-route admission and generic relay transport authority. The existing class-specific SSH/sync relay grant path remains available. `arm_forward_review` is a development-only build tag for isolated candidate testing, not a production enabling command or operator approval. Grant inspection, revocation, historical reads and exact resource recovery remain available. Generic relay pacing is shared across all streams and both directions under an exact grant, including SSH and TCP handlers; at most 256 unexpired grant revisions retain pacing state, and a full table denies new revisions.
 
@@ -38,3 +38,13 @@ See [the independent integration review](MESH-FORWARD-REVIEW.md) for findings, e
 ## Operator decision
 
 The operator clarified: relays only carry transport; they do not decide which TCP service to accept. Destination grants make that decision. Generic relay transport holds remain bounded and reviewed for resource use. The destination endpoint remains a literal loopback TCP address, and the source listener requires local token authentication.
+
+
+## October 26 operator approval
+
+The operator explicitly approved the concrete security scheme in this document.
+That approval preserves the endpoint address/port identity limitation and does
+not approve either browser access candidate, trust/profile installation, Basic
+fallback or relaxation of accounting/identity checks. The ordinary-build fence
+remains until implementation and acceptance gates are closed; original EOF
+uncertainty and platform/formal/interface gaps remain recorded.

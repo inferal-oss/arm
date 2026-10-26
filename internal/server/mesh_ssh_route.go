@@ -38,7 +38,7 @@ func routedMembershipClass(o meshsshrelay.Open) string {
 // separate local relay/destination grant. A messaging route never calls this.
 func (m *meshService) routedSSHAdmission(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open) (meshsshrelay.Permit, error) {
 	if o.Class == meshsshrelay.ClassForward && !meshsshrelay.ForwardReviewEnabled {
-		return meshsshrelay.Permit{}, model.Err("feature_unavailable", "TCP forwarding awaits concrete operator security review")
+		return meshsshrelay.Permit{}, model.Err("feature_unavailable", "TCP forwarding is disabled while acceptance gates remain incomplete")
 	}
 	if err := m.recheckWorkspaceOuter(sshRouteOuter(outer)); err != nil {
 		return meshsshrelay.Permit{}, err

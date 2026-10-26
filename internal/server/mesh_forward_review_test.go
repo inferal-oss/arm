@@ -8,17 +8,17 @@ import (
 	"github.com/yrashk/arm/internal/workspace"
 )
 
-func TestUnreviewedForwardAuthorityUnavailable(t *testing.T) {
+func TestDisabledForwardAuthorityUnavailable(t *testing.T) {
 	if meshsshrelay.ForwardReviewEnabled {
 		t.Skip("review development build explicitly selects the candidate")
 	}
 	// An empty service would panic if either path proceeded to store/Manager.
 	m := &meshService{}
 	if _, err := m.startForwardSource(context.Background(), forwardSourceRequest{}); err == nil {
-		t.Fatal("source admission reached unapproved authority")
+		t.Fatal("source admission reached disabled authority")
 	}
 	if _, err := m.routedSSHAdmission(context.Background(), meshsshrelay.Outer{}, meshsshrelay.Open{Class: meshsshrelay.ClassForward}); err == nil {
-		t.Fatal("destination/relay admission reached unapproved TCP authority")
+		t.Fatal("destination/relay admission reached disabled TCP authority")
 	}
 }
 

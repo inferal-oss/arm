@@ -38,8 +38,8 @@ formal/runtime gates, UI and routed production orchestration remain required.
 ## Reviewed forwarding candidate — ordinary builds refuse authority
 
 Ordinary builds reject TCP source start, destination/forward route admission and
-generic relay transport grants pending the concrete operator review required
-by SPEC.md. Development candidate evidence is scoped separately below; the
+generic relay transport grants pending remaining acceptance gates. The
+operator approved the concrete scheme on October 26, as recorded in SPEC.md. Development candidate evidence is scoped separately below; the
 review tag is not a production enabling command. Existing class-specific
 SSH routing remains supported. See [the independent review](MESH-FORWARD-REVIEW.md).
 
@@ -1439,3 +1439,9 @@ needs-attention lease. These views neither replay transfers nor mutate/settle
 leases; no public or remote-authenticated recovery route is enabled by them.
 Native Linux renewal, formal recovery, public routing, physical allocation and
 cleanup settlement remain separate gates.
+
+
+The October 26 concrete forwarding design is operator-approved. Ordinary builds
+remain disabled for outstanding acceptance; approval does not close the retained
+EOF, Linux/formal/browser/client or interface gates. Current refusal messages
+refer to those unfinished gates rather than requesting the same review again.

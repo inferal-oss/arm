@@ -2,6 +2,6 @@
 
 package meshsshrelay
 
-// ForwardReviewEnabled fences unapproved TCP and generic transit authority.
+// ForwardReviewEnabled fences TCP and generic transit authority until acceptance gates pass.
 // Ordinary builds preserve only the existing class-specific SSH/sync grants.
 const ForwardReviewEnabled = false
