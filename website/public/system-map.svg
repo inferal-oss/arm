@@ -17,7 +17,7 @@
 <text x="530.0" y="290" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">Web + terminal</text>
 <rect x="740" y="85" width="310" height="270" rx="8" fill="#e9faf5" stroke="#177d69" stroke-width="2"/>
 <text x="895.0" y="120" font-size="22" font-weight="650" text-anchor="middle" fill="#17232f">ARM backend</text>
-<text x="895.0" y="155" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">One per host</text>
+<text x="895.0" y="155" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Local resource manager</text>
 <text x="895.0" y="183" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Admission and leases</text>
 <text x="895.0" y="211" font-size="18" font-weight="400" text-anchor="middle" fill="#17232f">Owner · reason · expiry</text>
 <rect x="1130" y="130" width="270" height="190" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
