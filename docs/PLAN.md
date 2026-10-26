@@ -632,3 +632,23 @@ portfolio/UI tasks active; launch progress and external outcomes are checked
 separately. No user ARM backend/state/binary changes are authorized here; exact
 domain purchases, new project repo push and website/DNS publication are explicitly
 authorized by the latest launch request.
+
+## ARM public launch — October 26, 2026
+
+Owner: launch chat `01a17a6b-835f-7503-ab50-466751c51eec`, isolated
+`codex/arm-public-launch` at `21240eb`. Website implementation is separately
+owned in `codex/arm-public-site-build` (`/private/tmp/arm-public-site-build`);
+independent review uses another checkout before integration/publication.
+Scope: actual Semblance graph/components/events with stock Terminal default,
+public setup/capability/limits site in this same repository branch, reviewed
+GitHub Actions Pages deployment, public `inferal-oss/arm` repository, standard
+one-year registrations for exact `getarm.org` and `getarm.cloud`, canonical
+`getarm.org` plus path/query-preserving alternate redirect. No runtime changes.
+Dependencies: accepted runtime `181a776`, routing `21240eb`; active product
+portfolios do not become public supported claims. Coordinate shared framework
+gaps with product-web migration owner. Gates: inspect tracked source/history,
+review focused final website diff/dependencies, queued build/typecheck, real
+desktop/narrow/keyboard browser QA, central current-main integration, successful
+Actions artifact deployment, domain ownership/DNS/TLS and public HTTP checks.
+Registration costs, exact commits/runs and unresolved external gates must be
+recorded from actual returned evidence. Pending work is not delivery.
