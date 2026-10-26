@@ -5,6 +5,13 @@ on:
     branches: [main, codex/arm-public-launch]
     paths:
       - 'website/**'
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'internal/server/web/**'
+      - 'knowledge/**'
+      - 'third_party/**'
+      - 'scripts/dashboard-screenshots/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -18,7 +25,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 25
+    env:
+      GOMAXPROCS: '1'
+      CGO_ENABLED: '0'
     defaults:
       run:
         working-directory: website
@@ -26,13 +36,27 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '26.10.0'
           cache: npm
-          cache-dependency-path: website/package-lock.json
+          cache-dependency-path: |
+            website/package-lock.json
+            scripts/dashboard-screenshots/package-lock.json
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
+      - name: Install dashboard capture tools
+        working-directory: scripts/dashboard-screenshots
+        run: npm ci --ignore-scripts
+      - name: Install headless Chromium
+        working-directory: scripts/dashboard-screenshots
+        run: npx playwright install --with-deps chromium
+      - name: Capture current-source web and terminal dashboards
+        working-directory: .
+        run: python3 scripts/dashboard-screenshots/capture.py
       - run: npm run build
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         if: github.ref == 'refs/heads/main'
