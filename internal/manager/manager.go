@@ -27,6 +27,7 @@ import (
 	"github.com/yrashk/arm/internal/ports"
 	"github.com/yrashk/arm/internal/pressure"
 	"github.com/yrashk/arm/internal/storage"
+	"github.com/yrashk/arm/internal/syncservice"
 	"github.com/yrashk/arm/internal/usage"
 	_ "modernc.org/sqlite"
 )
@@ -146,7 +147,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			return nil, e
 		}
 	}
-	for _, q := range []string{`PRAGMA journal_mode=WAL`, `PRAGMA busy_timeout=5000`,
+	for _, q := range []string{`PRAGMA journal_mode=WAL`, `PRAGMA synchronous=FULL`, `PRAGMA busy_timeout=5000`,
 		`CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)`,
 		`CREATE TABLE IF NOT EXISTS leases (id TEXT PRIMARY KEY, request_key TEXT UNIQUE, data TEXT NOT NULL, run TEXT)`,
 		`CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, entity TEXT NOT NULL, at TEXT NOT NULL, data TEXT)`,
@@ -177,6 +178,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			return nil, e
 		}
 	}
+	if e = syncservice.VerifyDurableSQLite(context.Background(), db); e != nil {
+		db.Close()
+		return nil, e
+	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
 	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
@@ -192,6 +197,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	identity := local.CurrentIdentity()
 	m.owner, m.ownerUsername = identity.UID, identity.Username
+	if e = m.initSyncRecords(context.Background()); e != nil {
+		db.Close()
+		return nil, e
+	}
 	if e = m.initSubpoolRecords(); e != nil && !m.degradePoolStartup(e) {
 		db.Close()
 		return nil, e

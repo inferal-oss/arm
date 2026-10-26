@@ -2725,3 +2725,20 @@ volume/allocation enforcement, public CLI/UI dispatch, physical cross-host speed
 or complete bidirectional recovery. Separate admission review reproduced
 unadmitted preparation and missing outgoing disk coverage; those commits stay
 unintegrated pending correction.
+
+### Durable sync schema integration
+
+The reviewed `6109ff8` schema/evidence portion is composed separately from the
+admission adapter. Selected sync initialization/reset and existing host-pressure
+race tests plus affected vet pass on the composed checkout. They cover empty
+startup, durable SQLite requirements, altered/partial namespace refusal and
+retained used evidence. Evidence is ignored
+`.cache/sync-schema-composed-root-{race,vet}.log` and the final database run
+`.cache/sync-schema-final-root-db-race.log`. Manager passes39.804s; the first
+database attempt fails because its metadata fixture requests an unrelated live
+CPU core under host pressure. The corrected sync-only fixture retains its real
+counted pool lease history with CPU0; all selected database cases pass5.040s.
+Generic CPU fixtures and production admission remain unchanged. This is not
+public sync or complete terminal cleanup proof; used namespaces still block reset and reviewed
+remote Stop. Admission work remains under correction after independent
+preparation-before-charge and outgoing-disk counterexamples.

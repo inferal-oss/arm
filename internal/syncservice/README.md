@@ -105,5 +105,6 @@ admitted original never permits a new-key escape.
   source and receiver filesystems; the state-directory disk pool alone cannot
   authorize a different volume.
 
-The package's SQLite tables are intentionally not auto-created during ordinary
-startup. They become authoritative only after Manager/schema proof integration.
+Manager installs and proves this namespace during startup. Used sync history
+currently blocks reset and Stop until exact native cleanup/recovery proof is
+integrated; schema installation alone does not authorize public sync dispatch.

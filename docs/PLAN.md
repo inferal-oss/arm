@@ -272,8 +272,9 @@ Localhost uses the same implemented reported metadata schema/provider/API as eve
 
 Pressure warnings and the private fixed sync worker are integrated. Independent
 review reproduced two admission-adapter defects: full scan/hash before admission
-and missing outgoing source-stage disk coverage. Those fixes remain in their
-isolated review branch; schema/admission commits are not yet integrated.
+and missing outgoing source-stage disk coverage. Those admission fixes remain in their isolated review branch. Durable schema
+installation and conservative reset/Stop evidence retention are integrated
+separately; complete cleanup/retirement remains required.
 Kubernetes helper/provider composition and SSH cleanup formal verification
 are in final integration review. Public sync, complete Kubernetes node
 bootstrap/enrollment and dashboard controls remain required.

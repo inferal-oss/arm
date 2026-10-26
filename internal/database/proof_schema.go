@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"unicode"
+
+	"github.com/yrashk/arm/internal/syncservice"
 )
 
 // Reset proof supports exactly this writer schema. An unfamiliar table, trigger,
@@ -47,6 +49,15 @@ var resetSchema = []string{
 }
 
 const meshResetSchema = `CREATE TABLE mesh_operations (principal TEXT,key TEXT,operation TEXT,request TEXT,result TEXT,admission TEXT NOT NULL,PRIMARY KEY(principal,key))`
+const syncLeaseBindingResetSchema = `CREATE TABLE sync_lease_bindings (lease TEXT PRIMARY KEY,key TEXT NOT NULL,side TEXT NOT NULL,volume TEXT NOT NULL,disk_bytes INTEGER NOT NULL)`
+
+var syncResetSchema = map[string]struct{ kind, table, ddl string }{
+	"sync_operations":      {"table", "sync_operations", syncservice.OperationsSchema},
+	"sync_open_generation": {"index", "sync_operations", syncservice.OpenGenerationSchema},
+	"sync_effects":         {"table", "sync_effects", syncservice.EffectsSchema},
+	"sync_baselines":       {"table", "sync_baselines", syncservice.BaselinesSchema},
+	"sync_lease_bindings":  {"table", "sync_lease_bindings", syncLeaseBindingResetSchema},
+}
 
 // Retain token boundaries: TEXT UNIQUE is two SQL tokens and must never
 // compare equal to the permissive SQLite type name TEXTUNIQUE. Quoted tokens
@@ -104,6 +115,7 @@ var resetAutoIndexes = map[string]int{
 	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "host_pressure_state": 1, "host_pressure_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
+	"sync_operations": 1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1,
 }
 
 func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, error) {
@@ -133,7 +145,12 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	mesh := normalizedSchema(meshResetSchema)
 	ssh := normalizedSchema(sshResetSchema)
 	sshFence := normalizedSchema(sshFenceResetSchema)
-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 129`)
+	syncObjects := map[string]struct{ name, kind, table string }{}
+	for name, object := range syncResetSchema {
+		syncObjects[normalizedSchema(object.ddl)] = struct{ name, kind, table string }{name, object.kind, object.table}
+	}
+	syncSeen := map[string]bool{}
+	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 145`)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +165,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if err := rows.Scan(&kind, &name, &table, &raw); err != nil {
 			return nil, err
 		}
-		if count > 128 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+		if count > 144 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
 			return nil, fmt.Errorf("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
@@ -170,6 +187,16 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
+		if object, ok := syncObjects[normal]; ok {
+			if kind != object.kind || name != object.name || table != object.table || syncSeen[name] {
+				return nil, fmt.Errorf("sync schema object identity differs")
+			}
+			syncSeen[name] = true
+			if kind == "table" {
+				catalog[table] = nil
+			}
+			continue
+		}
 		if identity, ok := reviewObjects[normal]; ok {
 			if kind != identity[0] || name != identity[1] || table != identity[2] {
 				return nil, fmt.Errorf("lease review schema object identity differs")
@@ -231,6 +258,9 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	if len(reviewSeen) != 0 && len(reviewSeen) != len(leaseReviewResetSchema) {
 		return nil, fmt.Errorf("partial lease review schema group")
+	}
+	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) {
+		return nil, fmt.Errorf("partial sync reset schema group")
 	}
 	workspaceCount := 0
 	for _, table := range workspaceResetTables {

@@ -41,6 +41,17 @@ func (m *Manager) nodeStopCensus(external nodestop.Impact, view nodestop.LeaseRe
 	}
 	impact.Blockers = append([]nodestop.Blocker{}, external.Blockers...)
 	impact.Peers = append([]string{}, external.Peers...)
+	var syncUsed string
+	syncErr := m.db.QueryRow(`SELECT value FROM metadata WHERE key='sync_used'`).Scan(&syncUsed)
+	if syncErr != nil && !errors.Is(syncErr, sql.ErrNoRows) {
+		return impact, nil, syncErr
+	}
+	if syncErr == nil {
+		if syncUsed != "1" {
+			return impact, nil, model.Err("sync_evidence_unavailable", "sync use marker changed")
+		}
+		impact.Blockers = append(impact.Blockers, nodestop.Blocker{Class: "unknown", ID: "sync:retained", Detail: "Sync operation/native cleanup evidence remains retained; Stop cannot settle it without an exact join and cleanup proof."})
+	}
 	// Native account lookup is process-global and cannot be cancelled by its
 	// caller. The original goroutine retains this bounded slot until it returns.
 	// Caller holds the existing final server registration/admission fence, so a
@@ -100,7 +111,8 @@ func (m *Manager) nodeStopCensus(external nodestop.Impact, view nodestop.LeaseRe
 		External                string        `json:"external"`
 		Leases                  []model.Lease `json:"leases"`
 		SSHAccountLookupPending bool          `json:"ssh_account_lookup_pending"`
-	}{external.SHA256, private, accountLookupPending})
+		SyncUsed                bool          `json:"sync_used,omitempty"`
+	}{external.SHA256, private, accountLookupPending, syncErr == nil})
 	if err != nil {
 		return impact, nil, err
 	}

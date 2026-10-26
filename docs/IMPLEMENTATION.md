@@ -1075,3 +1075,14 @@ The runner remains package-private: tests provide the hold. It is not a public
 `arm sync` command or production physical-allocation enforcement. Real Manager
 preparation admission, outgoing staging/volume charges, receipt exchange and
 exact cleanup/charge release remain integration requirements.
+
+## Durable sync namespace
+
+Manager startup now installs the sync operation/effect/baseline tables and
+lease-binding namespace with its schema marker in one FULL-synchronous SQLite
+transaction. Existing partial or altered namespaces are refused rather than
+repaired during lookup. Reset proves an unused namespace empty; any used sync
+namespace remains retained until complete native cleanup proof is implemented.
+Reviewed remote Stop likewise reports retained sync evidence as an unresolved
+blocker. This conservative milestone does not settle completed sync obligations
+or enable public transfer/admission entrypoints.
