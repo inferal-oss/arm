@@ -230,10 +230,21 @@ def main():
         assert cli('inspect', guard['id'])['state'] == 'active'
         process = subprocess.Popen(prefix + ['dashboard', 'terminal'], stdin=slave, stdout=slave, stderr=slave, env=env, start_new_session=True)
         wait_text('connected')
+        # The preceding resize deliberately used a compact viewport. Make
+        # both remaining gauges visible for the actual disconnected check.
+        fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 50, 160, 0, 0))
+        os.kill(process.pid, signal.SIGWINCH)
+        drain(.2)
         cli('stop', '--force')
         wait_text('disconnected')
-        wait_seen('unavailable RAM remaining')
-        wait_seen('unavailable space remaining')
+        # Repaint both panes after actual disconnect. Earlier transcript text
+        # must not satisfy this check, and cursor-diff output need not repeat
+        # the unchanged suffix of a gauge line on disconnect itself.
+        send('2')
+        wait_text('No fresh reading')
+        send('1')
+        stale = wait_text('unavailable RAM remaining') + drain(.1)
+        assert 'unavailable space remaining' in re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', stale), stale
         send('2')
         wait_text('No fresh reading')
         send('q')
