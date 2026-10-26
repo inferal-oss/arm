@@ -8,6 +8,25 @@ Updated October 26, 2026 against the current worktree. The complete scope remain
 
 ## Active delivery priorities
 
+**Private sync source and frame ownership integrated:** the source worker reserves
+its original intent/resources before opening SSH, validates the same full
+predecessor after opening, and owns original carrier close/join callbacks.
+Pre-exec destination frames use a separately charged preparation plus the
+exact single-session connection capability; the corrected original destination
+hold/run API is preserved. Full preparation lease identity and conservative
+byte/structure memory allowances fence both endpoint handoffs. This remains a
+private integration slice. A disposable full Linux ARM64 VM now passes actual
+Manager/SSH admissions for bidirectional, additive push/pull, full push/removal
+and original pre-exec cancellation. The initial native teardown failure is
+retained; the successor handles an already-closed original carrier while still
+requiring original joins and independent receipt/baseline proof. Public
+direct/multihop dispatch, cleanup
+settlement, formal/runtime conformance and web/Charm workflows remain required.
+The final composed macOS private-worker checks also pass with the earlier
+unexplained additive-push refusal retained separately. Source in-process CPU
+work earns no native usage credit; composing its exact
+possible-compliant warning owner is separate from this source review.
+
 **Remaining-capacity presentation checkpoint.** The web Monitor overview leads with observed remaining RAM, swap and state-filesystem space; its compact Resources cards lead with authoritative backend availability (CPU, memory and disk “to lease,” including zero/unknown/deficit states). The browser ages all three admission budgets while holding a status snapshot and refreshes their cards at independent freshness deadlines. The terminal Monitor now leads with the same remaining measurements and charts available RAM; its Resources cards and details lead with fresh backend availability and keep promises visible when headroom ages or becomes unknown. Both clients retain the large all-core CPU activity view and disk/network I/O throughput semantics. Physical availability and reservable capacity stay separately labelled; broader dashboard parity and the full specification remain open.
 
 **Delegation isolation:** every delegated implementation task and subagent works on its own branch/worktree. Sync staging, sync service, routed SSH, Kubernetes, pressure, carrier targeting and VNC work now use isolated checkouts with verified copies of owned changes. The original shared changes are archived with verified copies in their owning worktrees; review and integrate focused branch commits centrally. QUIC experiments remain in their separate worktree and do not gate non-research integration.
@@ -321,8 +340,8 @@ on final hashed Linux ARM64 images, with original scope and fixture cleanup.
 The actual desktop browser shows held/queued quantities and timing correctly.
 Charm peer-view parity, native macOS different-user acceptance, broader
 viewport coverage and formal coverage remain open.
-The original [broker research](MULTI-USER-COOPERATION-PROPOSAL.md) is historical
-design context until the reviewed narrowed proposal is integrated.
+The [reviewed proposal](MULTI-USER-COOPERATION-PROPOSAL.md) records the integrated
+advisory scheme; the earlier broker design remains historical.
 
 **Native macOS routed SSH checkpoint:** the public CLI fixture now passes on
 Darwin ARM64 with both selected peer paths, lost reply/exact-key recovery,
@@ -334,8 +353,8 @@ proof. Public routed sync remains a separate incomplete destination flow.
 
 **Destination sync bridge integrated:** a reviewed one-shot Manager owner binds
 the original context/channel, complete admission and joined cancellation, with
-checkpoint failures retained as uncertain. The source counterpart is being
-implemented in its isolated task. Public direct and multi-hop sync remain
+checkpoint failures retained as uncertain. The reviewed source counterpart and separately charged preparation frames are
+now integrated with original carrier-close/join ownership. Public direct and multi-hop sync remain
 closed until complete endpoint/worker/admission/recovery paths are reviewed.
 
 **Relay clarification:** the operator clarified that relays provide transport
@@ -349,7 +368,7 @@ the current production route controls are not silently broadened.
 and the operator's application-agnostic relay correction, alongside separately
 authorized typed multi-hop sync. Local instance awareness now follows the
 operator's authorized advisory discovery scope, rather than the earlier broker
-proposal; its isolated implementation remains under review. Forwarding
+proposal; its reviewed advisory implementation is integrated in 975d4b9. Forwarding
 implementation and operator review remain separate from recording requirements.
 
 
@@ -372,3 +391,13 @@ boundaries before committing. Kubernetes runtime 42d841a, corrected VNC
 0cfae71 and sync recovery f507478/8a8130d remain queued for final review.
 Public sync, automatic CPU pause/resume and full SPEC acceptance remain open;
 QUIC stays paused and does not block these deliveries.
+
+
+Source-sync integration review accepted the native chain 5548af6, ab0dacc,
+73a30a2 and 86209b0 plus diagnostic a25913d. Reviewer correction 1fc94b1 is
+already represented by 73a30a2 and is not duplicated. Independent reviewer
+branch codex/source-sync-final-composition records final macOS races and exact
+runtime equivalence to accepted Linux source. Primary renews affected Manager
+and protocol/transport checks after composing with 975d4b9. Kubernetes final
+review is active in codex/kubernetes-final-runtime-review; forwarding review
+adds a normal-build refusal fence pending the retained operator design review.

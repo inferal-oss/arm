@@ -1,5 +1,120 @@
 # Validation record
 
+## Native Linux private Manager sync acceptance
+
+A new disposable Debian 13 ARM64 QEMU/HVF guest uses its own verified copy of
+the official cloud base, private overlay/firmware/seed and fresh pinned SSH
+keys. The base SHA512 matches the freshly fetched [official Debian checksum
+list](https://cloud.debian.org/images/cloud/trixie/latest/SHA512SUMS). Two vCPUs
+and 3 GiB RAM cover the unchanged 1-CPU/768-MiB preparation promise, final
+0.1-CPU/32-MiB/16-MiB promises and guest/runtime overhead. QEMU runs at nice 19;
+SSH is forwarded only on host loopback. The test runs as an unprivileged guest
+user on Linux 6.12.113+deb13-cloud-arm64, with two CPUs, the initial cgroup
+namespace (inode 4026531835), complete ancestry and about 2.75 GiB available RAM.
+No production CPU/memory/disk guard or floor is weakened or replaced by fake
+availability. A PID-1 namespace-link permission error in the first facts probe
+is retained; the production collector verifies its own NSFS namespace handles
+and initial-namespace identity, without requiring that PID-1 permission.
+
+The first exact original Manager authenticated SSH pair obtains real grants
+and reaches protocol completion, then fails in 1.12s on an already-closed
+original TCP handle and normal internal server-context teardown. Its failed
+binary SHA256 is `701506202abf648235e67db331702a59b8cf86f99a5cbd88b22e273fc72fbfcc`.
+The successor treats only the exact original already-closed carrier as
+idempotent and still joins that original transport. The fixture normalizes
+expected teardown only after actual original client/server joins and independent
+confirmation of both ledgers, dual receipts and matching baselines under a
+live original parent. Genuine cancellation/expiry, lost completion proof,
+unknown client/server errors and pending joins remain failure/retention cases.
+
+The corrected native image SHA256 is
+`360f2cf8b239ca254503a023d589ae3d898a93c018d3c366c77120182f92d6b1`.
+Its real-admission gate passes 3 roots/6 named outcomes with no failures/skips:
+the original bidirectional pair (1.03s), additive push (2.09s), full push with
+removal (0.84s), additive pull (0.94s) and original pre-exec cancellation (1.07s).
+Assertions retain exact selected file sets/bytes, confirmed receipts/baselines,
+one original opener and joined transports. Cancellation leaves source promises
+charged and makes no destination file or final admission effects. This is a
+private fixed-worker loopback acceptance, not public CLI, peer-enrollment,
+physical cross-host or mesh/multihop acceptance.
+
+Separately, actual Linux executes 41 Manager component roots/70 named cases,
+9 protocol component roots/20 named cases and one Go rsync-engine exchange,
+all without failures/skips. Those component admission holds are controlled
+inputs and are not relabeled as native real-grant acceptance. No external
+system-rsync executable is installed or used, so this adds no fresh external
+rsync-interoperability or network-throughput claim. Final macOS controlled
+source races pass 12 roots/21 named cases in 60.901s; protocol/teardown negatives
+pass 3 roots/10 named cases in 2.620s. Affected Manager/syncworker vet passes.
+
+The uploaded images are hash-verified before execution and deletion. Original
+guest directory identity, regular-file ownership/hashes, empty scratch and
+absence of original executable/cwd handles are checked before removing only
+test-owned files. Only base guest DNS/SSH listeners remain. Private QMP verifies
+the original parent/arguments and attached overlay, requests graceful powerdown,
+and the original QEMU subprocess Wait returns zero. Its forwarding port closes;
+exact snapshotted private disks, firmware, seed and keys are removed. No other
+VM, daemon or process is reused or signalled. Ignored
+`.cache/native-sync-linux/acceptance.json` retains exact image/source hashes,
+original failure and all native/component/cleanup logs.
+
+macOS native private pair acceptance, public direct/multihop orchestration,
+cleanup settlement, performance and broader formal/runtime conformance remain
+required. Test/VM cleanup does not implement production sync lease settlement;
+completed or cancelled sync promises still require exact-key reconciliation.
+
+## Private source sync and pre-exec preparation ownership review
+
+The isolated review first composed only the owned source/test changes from
+`4cdee0f`, then separately snapshotted its complete `f79a2d6` preparation-frame
+prerequisite against the already corrected destination ownership contract.
+The obsolete caller-supplied destination context/channel API was not restored.
+The initial source-only syncworker build exposed that missing prerequisite;
+it did not execute a loopback test. Three original source counterexamples fail
+in 5.171s: blocked read after original cancellation, protocol launch after an
+opener-time lease replacement, and adoption of a changed reservation row.
+The original frame prerequisite also fails 2 roots/5 named outcomes in 8.225s
+for unowned-channel preparation and owner/host/expiry lease changes. Original
+failed logs and byte-verified restored successor sources remain in the ignored
+`.cache/source-sync-review/` directory.
+
+The corrected frozen Manager race selection passes 40 roots/69 named cases in
+101.453s, with no failures/skips. It covers source reservation-before-open,
+one-shot original witnesses, same-row/volume and delayed-opener fences,
+parent/real expiry/End/Close cancellation, stalled channels whose Close does not
+produce EOF, exact callback retirement and transport joins, failed open/close/
+join/checkpoint retention, charged pre-exec decode, preparation handoff, full
+preparation lease identity and retained structural-memory refusal. These use
+controlled admission/CPU observations with real original owner/lease/native
+root mechanics; they are not native CPU counter or process RSS acceptance.
+
+The complete syncservice package passes 18 roots/27 named cases in 9.115s.
+The complete syncworker package passes 12 of 13 named cases across 9 roots in
+5.829s; its real Manager authenticated SSH pair skips because actual live
+capacity is unavailable before source transport open. That skip is not complete
+private pair acceptance. Actual single-session SSH server/cancellation/join
+and exact transport-capability tests pass 7 roots/12 named cases in 1.973s,
+including rejection of another session and substitution of a channel wrapper.
+The original one-session server contract makes connection-level cancellation
+safe for that exact invocation; no global/shared service closer is lent.
+
+A prior overly broad whole-sshservice race attempt fails at its original
+120-second package deadline during historical source-history cleanup tests
+(120.687s); this is retained and is not relabeled as whole-package acceptance.
+The final affected Server/join/capability selection is scoped separately above.
+Affected Manager/syncworker/syncservice/sshservice vet passes. Complete CGo-free
+Manager and syncworker Linux ARM64 test images compile; this review has not
+executed them on Linux. The final source/image hashes and logs are recorded in
+ignored `source-candidate.json` and `frozen-*.jsonl` beside those images.
+
+No static/live-capacity bypass, synthetic native usage acceptance, public
+dispatch, complete direct/multihop native workflow, cleanup settlement,
+physical/RSS hard-limit guarantee, automatic CPU credit or new formal/runtime
+conformance is claimed. The structural allowance is conservative policy under
+the original preparation charge; both endpoint final promises must cover it
+before handoff. Complete specification/platform/security/performance and
+web/Charm delivery remain separate work.
+
 ## October 26, 2026: Darwin boot-session process namespace
 
 Pinned XNU 12377.1.9 source shows that calendar changes adjust the boot time exported by `kern.boottime`, while `kern.bootsessionuuid` exposes a read-only UUID generated during boot initialization. Its exported timeval is zero-initialized, so the padding hypothesis is unsupported by that source. The earlier full SSH run's generic “original worker namespace unavailable” diagnostic combined a capture error and a namespace mismatch; its log cannot establish which branch occurred. That failed run remains failed. This change fixes the proven discriminator contract defect without claiming to reproduce that historical event. Recovery now distinguishes the two refusal paths.
@@ -3400,3 +3515,47 @@ with failed prior receipts retained separately, plus
 These are advisory promise/protocol checks, not native CPU credit, physical
 isolation, shared admission, native macOS cross-user, Charm or full formal
 acceptance. The complete specification remains unfinished.
+
+
+## Source sync final integration review and composed acceptance
+
+The final independent review at
+`/private/tmp/arm-source-sync-final-composition` composes the single native
+source chain and already-included ownership correction. Original context,
+channel, carrier-close/join witnesses, delayed-opener revalidation, full raw
+lease and key/side/volume/disk bindings, and charged preparation footprint
+handoff are inspected. A diagnostic-only correction a25913d exposes destination
+admission errors without changing authority or acceptance assertions. Final
+macOS races pass Manager 17 roots/29 named cases, syncservice 18/27, original
+SSH transport 1/1 and complete syncworker 12/26, without skips or failures;
+four-package vet passes. The first native additive-push refusal is retained
+with no established root cause; its isolated diagnostic and complete successor
+both pass, and it is not relabeled as a pressure failure. Exact runtime sources
+match the accepted Linux 86209b0; original Linux teardown failure, successor
+real-admission both/additive-push/additive-pull/full-removal/cancellation passes
+and VM cleanup receipts remain separate in
+`/private/tmp/arm-native-sync-linux/.cache/native-sync-linux/acceptance.json`.
+
+After composing onto peer integration 975d4b9, fresh primary native Manager
+races pass 24 roots/38 named sync/peer cases in 54.697s; charged-frame races
+pass 3 roots/6 cases in 8.736s. Complete syncservice passes 18 roots/27 cases
+in 16.145s, complete syncworker passes 12 roots/26 cases in 17.900s, including
+actual authenticated Manager-owned endpoints and original cancellation. No
+failures or skips occur in these checks, and affected four-package vet passes.
+Primary evidence is `.cache/sync-source-primary-{manager,frame,components}-race.jsonl`
+and `.cache/sync-source-primary-vet.log`; independent summary is
+`/private/tmp/arm-source-sync-final-composition/.cache/source-final-review-summary.json`.
+Native VM evidence applies to unchanged reviewed runtime components; it is not
+a fresh complete primary-image Linux run. Public direct/multihop dispatch,
+allocation enforcement, cleanup settlement, wider formal coverage and UI remain
+unsupported/incomplete.
+
+The additionally attempted complete SSH-service race suite reaches its 180s
+package deadline during `TestSourceHistoryRealJournalRecoveryAndLostAcknowledgements`
+after earlier history cases pass. Its original timeout/stack remains in the
+components log; this is incomplete broad-suite evidence, not a complete pass
+or an established new product defect. The scoped original transport regression
+is run separately against the final composition.
+The focused original-transport native race passes one root/case in 1.441s
+without skips; receipt is
+`.cache/sync-source-primary-original-transport-race.jsonl`.

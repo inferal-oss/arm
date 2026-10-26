@@ -1,5 +1,42 @@
 # Backend and CLI implementation
 
+## Private sync source and preparation ownership
+
+The private source adapter commits its intent/resource reservation before its
+authenticated opener can run. It refuses adoption or cleanup of a changed
+predecessor, checks exact current ownership again after opening, and launches
+once. The opener supplies independent original carrier-close and transport-join
+witnesses. Parent cancellation, lease expiry, End and Close close that original
+carrier; callback retirement and actual join precede worker completion. Failed
+opens, closes, joins and durable checkpoints retain charges and do not report
+success. Stored source evidence is bounded before its first decode.
+
+Destination preparation frames are decoded before native scanning/final
+admission under a separate charged owner. A private SSH context capability
+binds cancellation to the original sole session connection and exact channel;
+the server rejects all additional session channels. The callback is joined and
+retired before successful preparation finish cancels its old context. Full
+original preparation lease identity, current volume bindings and existing
+atomic handoff remain checked. Conservative byte/structure memory allowance
+must fit the final source/destination promise; it is not a kernel/RSS guarantee.
+The original destination one-shot runtime/context/channel contract is retained.
+
+Actual Linux ARM64 Manager/SSH loopback now passes real admission for both,
+push/pull additive, full push/removal and original pre-exec cancellation. A
+completed original carrier may report an idempotent already-closed error; its
+actual original Join remains mandatory and charges remain retained. The test
+opener classifies normal server teardown only after both original transport
+joins, confirmed dual receipts and matching baselines with a live original
+parent. Cancelled/expired parents, incomplete proof and unknown errors fail.
+Fresh composed macOS private-worker races also pass, including all directions
+and cancellation; an earlier unexplained destination refusal is retained. This
+slice does not enable public sync dispatch or establish complete direct/multihop
+acceptance. Prior live-capacity skips remain archived. Workspace
+cleanup settlement, broader physical allocation enforcement, platform and
+formal/runtime gates, UI and routed production orchestration remain required.
+
+## Backend baseline
+
 Darwin process identities now use `darwin:bootsessionuuid:` plus the exact uppercase UUID from `kern.bootsessionuuid`, read into a fixed 37-byte buffer. Missing/error returns, wrong lengths, malformed separators/hex/termination and nil UUIDs make native identity initialization unavailable. There is no wall-time fallback or translation of retained identities. SSH artifact recovery reports current-capture failure separately from a different retained namespace; it still requires the exact terminal/seal evidence and a dead original PID, and never signals or adopts a recovered PID. Obsolete `darwin:boot:` records remain uncertain for cleanup and CPU attribution. The shared native identity dependency affects both live usage and managed CPU ownership; it does not change the CPU counter/rounding derivation. See [CPU identity source assumptions](CPU-ACCOUNTING.md).
 
 QUIC remains research, not supported product behavior or a prerequisite for current delivery. An isolated module exercises pinned TLS 1.3 QUIC streams and the existing rsync engine on native macOS; cross-compilation is not Linux execution evidence. Production execution still uses the SSH paths described below. Current integration focuses on sync, routed SSH and Kubernetes. A future transport transition must preserve resource, identity, process ownership and exact-key recovery contracts; SSH bootstrap and Kubernetes's TCP-only port-forward need deliberate treatment. See [the proposal and scoped evidence](QUIC-TRANSITION-PROPOSAL.md).
@@ -1259,8 +1296,9 @@ The original lifetime is fixed; generic renewal cannot extend it.
 
 Worker and transport completion retain the resource promise for exact native
 cleanup. In-process work earns no invented native CPU credit. This bridge has
-no production server/CLI caller. Source execution, pre-exec frame admission,
-actual workspace allocation enforcement, receipts/recovery/settlement, direct
+no production server/CLI caller. The reviewed private source bridge and
+charged pre-exec frame admission are now integrated above. Actual workspace
+allocation enforcement, recovery/settlement, direct
 and multi-hop public sync, and equivalent web/Charm controls remain required.
 
 ### CPU warning confidence

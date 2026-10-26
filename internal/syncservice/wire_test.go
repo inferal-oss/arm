@@ -172,7 +172,7 @@ func TestPreparationPreflightBoundsUnknownAncestorPaths(t *testing.T) {
 	runtime.GC()
 	var before, after runtime.MemStats
 	runtime.ReadMemStats(&before)
-	err := preflightPreparationJSON(context.Background(), raw, 12<<20, testAdmission{bytes: 32 << 20, active: true})
+	err := preflightPreparationJSON(context.Background(), raw, 12<<20, testAdmission{bytes: 32 << 20, active: true}, nil)
 	runtime.ReadMemStats(&after)
 	if err != nil {
 		t.Fatal(err)

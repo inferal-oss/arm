@@ -93,6 +93,11 @@ func TestFixedSyncWorkerOverARMSSHSession(t *testing.T) {
 		if q.Kind != "exec" || q.Command != FixedCommand || q.Terminal != nil {
 			return nil, errors.New("unexpected SSH execution")
 		}
+		prepared, e := syncservice.ReadPreparation(ctx, ch, rh)
+		if e != nil {
+			return nil, e
+		}
+		re.Prepared = &prepared
 		remoteSession, e := newSingleStreamSession(ch, func() error { return nil })
 		if e != nil {
 			return nil, e
@@ -124,9 +129,16 @@ func TestFixedSyncWorkerOverARMSSHSession(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	wrote := make(chan error, 1)
+	go func() {
+		wrote <- syncservice.WritePreparation(ch, syncservice.Preparation{Version: syncservice.Schema, Intent: local, Manifest: rows})
+	}()
 	accepted, err := ch.SendRequest("exec", true, ssh.Marshal(struct{ Command string }{FixedCommand}))
 	if err != nil || !accepted {
 		t.Fatalf("fixed SSH command rejected: %v", err)
+	}
+	if writeErr := <-wrote; writeErr != nil {
+		t.Fatal(writeErr)
 	}
 	waitExit := func() error {
 		for req := range reqs {
@@ -145,6 +157,7 @@ func TestFixedSyncWorkerOverARMSSHSession(t *testing.T) {
 		t.Fatal(err)
 	}
 	le.Session = ls
+	le.PreparedSent = true
 	if err = runEndpoint(ctx, le); err != nil {
 		t.Fatal(err)
 	}

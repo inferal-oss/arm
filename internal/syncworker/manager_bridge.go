@@ -22,6 +22,10 @@ func RunDestination(hold *manager.SyncWorkerHold) error {
 		if err := hold.CheckActive(ctx); err != nil {
 			return err
 		}
+		prepared := hold.Preparation()
+		if prepared == nil {
+			return errors.New("destination worker requires charged pre-exec preparation")
+		}
 		root, parent := hold.Root(), hold.WorkParent()
 		if root == nil || parent == nil {
 			return errors.New("destination roots unavailable")
@@ -34,7 +38,7 @@ func RunDestination(hold *manager.SyncWorkerHold) error {
 		if err != nil {
 			return err
 		}
-		e := &endpoint{Side: syncreconcile.Remote, Root: root, WorkParent: parent, Names: names, Metadata: syncfs.Metadata{}, Ledger: hold.Ledger(), Hold: hold, Session: session}
+		e := &endpoint{Side: syncreconcile.Remote, Root: root, WorkParent: parent, Names: names, Metadata: syncfs.Metadata{}, Ledger: hold.Ledger(), Hold: hold, Session: session, Prepared: prepared}
 		return runEndpoint(ctx, e)
 	})
 }

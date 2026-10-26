@@ -71,6 +71,7 @@ type Manager struct {
 	capacity           model.Resources
 	jobs               map[string]*job
 	syncWorkers        map[string]*SyncWorkerHold
+	syncSourceWorkers  map[string]*SyncSourceHold
 	relayTransits      map[string]*RelayTransit
 	stop               chan struct{}
 	wg                 sync.WaitGroup
@@ -186,7 +187,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		db.Close()
 		return nil, e
 	}
-	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, syncSourceWorkers: map[string]*SyncSourceHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
 	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
 	m.diskSampleSlots = make(chan struct{}, 1)
@@ -473,6 +474,10 @@ func (m *Manager) Close() error {
 	for id, hold := range m.syncWorkers {
 		syncOwners = append(syncOwners, hold)
 		hold.cancel()
+		_, e := m.end(id, "cancelled")
+		closeErr = errors.Join(closeErr, e)
+	}
+	for id := range m.syncSourceWorkers {
 		_, e := m.end(id, "cancelled")
 		closeErr = errors.Join(closeErr, e)
 	}
@@ -1156,6 +1161,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if hold := m.syncWorkers[id]; hold != nil {
 		hold.cancel()
 	}
+	if hold := m.syncSourceWorkers[id]; hold != nil {
+		hold.cancel()
+	}
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
@@ -1170,6 +1178,13 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 		return l, model.Err("needs_attention", "allocation remains charged pending reconciliation; storage leases support explicit cleanup retry or handoff")
 	}
 	if hold := m.syncWorkers[id]; hold != nil {
+		if err := hold.checkBindingLocked(context.Background()); err != nil {
+			return l, err
+		}
+		err := m.retainSyncLease(&l, outcome)
+		return l, err
+	}
+	if hold := m.syncSourceWorkers[id]; hold != nil {
 		if err := hold.checkBindingLocked(context.Background()); err != nil {
 			return l, err
 		}

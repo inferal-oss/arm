@@ -24,16 +24,23 @@ closes and joins its transport before local baseline confirmation. A failed
 cut, channel, join or receipt leaves the original key for lookup; no worker
 replay is attempted.
 
-The package remains an internal integration seam. Manager now mints a one-use
-in-process destination worker hold and `RunDestination` consumes its exact
-roots, ledger and original SSH channel through its one-shot launch. The caller
-cannot substitute a context/channel or run a second worker. Complete lease and
-volume-binding replacements refuse further authority, and a failed retention
-checkpoint cannot report success. Public server dispatch is still closed. An
-actual source-side worker, pre-exec preparation frame admission, physical
-allocation enforcement, cleanup settlement, multi-hop route integration and
-public sync controls are still required. Tests include independent durable
+The package remains an internal integration seam. Manager mints one-use source
+and destination holds; `RunSource` and `RunDestination` consume their exact
+roots, ledgers, contexts and original authenticated SSH channels. Source
+reservation precedes opening SSH. Its opener must provide the original
+`CloseTransport` and `Join`: channel close alone cannot establish inbound EOF.
+Cancellation closes that exact carrier, retires its original callback and
+joins transport workers before source completion. The destination decodes its
+pre-exec preparation under a separate charged owner and an exact one-session
+connection capability. No unrelated/shared connection closer can be supplied.
+The same conservative byte/structure allowance must fit final worker memory
+before preparation handoff; this is cooperative policy, not measured RSS or a
+kernel limit. Complete lease and volume-binding replacements refuse authority,
+and failures keep original charges for exact-key reconciliation. Public server
+dispatch, full physical allocation enforcement, cleanup settlement, multi-hop
+route integration and public sync controls remain required. Tests include independent durable
 ledgers, push/pull/both, additive/full, second-generation keep-both resolution,
 join failure, cancellation, and one authenticated `sshservice.Server` session.
-The SSH test uses a test admission hold; it does not prove production Manager
-charging or cross-host/relay operation.
+The original SSH protocol test uses a test admission hold. A separate real
+Manager pair test requires live host capacity and may skip; a skip does not
+prove complete private pair acceptance or cross-host/relay operation.

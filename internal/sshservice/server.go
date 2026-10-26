@@ -177,7 +177,7 @@ func (s Server) Serve(ctx context.Context, c net.Conn, p Permit) error {
 				defer workers.Done()
 				defer cancel()
 				defer conn.Close()
-				s.session(runCtx, channel, reqs, start, &workers, joiners)
+				s.session(executionContext(runCtx, channel, conn.Close), channel, reqs, start, &workers, joiners)
 				closeSession(runCtx, channel, reqs)
 			}()
 		}

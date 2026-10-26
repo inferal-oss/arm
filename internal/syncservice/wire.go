@@ -108,6 +108,50 @@ func writeAll(w io.Writer, b []byte) error {
 // decoded slice. The caller must call ReserveTx against its local baseline
 // before acknowledging preparation or accepting any transfer payload.
 func ReadPreparation(ctx context.Context, r io.Reader, admission DecodeAdmission) (Preparation, error) {
+	return readPreparation(ctx, r, admission, nil)
+}
+
+// ReadPreparationWithFootprint returns the same conservative byte/structure
+// budget checked during decoding. This is policy accounting, not measured RSS
+// or a new admission: the caller still needs the original charged decoder.
+func ReadPreparationWithFootprint(ctx context.Context, r io.Reader, admission DecodeAdmission) (Preparation, int64, error) {
+	var required int64
+	p, err := readPreparation(ctx, r, admission, &required)
+	if err != nil {
+		return Preparation{}, 0, err
+	}
+	return p, required, nil
+}
+
+// PreparationFootprint checks the canonical byte/structure allowance while
+// the original preparation is still charged. This is a conservative policy
+// check for handoff at either endpoint, not an allocation or RSS guarantee.
+func PreparationFootprint(ctx context.Context, p Preparation, admission DecodeAdmission) (int64, error) {
+	if ctx == nil || admission == nil {
+		return 0, errors.New("original preparation admission required")
+	}
+	if err := admission.CheckActive(ctx); err != nil {
+		return 0, err
+	}
+	available := admission.MemoryBytes()
+	if available <= decodeReserveBytes {
+		return 0, errors.New("admitted preparation memory below control overhead")
+	}
+	raw, err := json.Marshal(p)
+	if err != nil {
+		return 0, err
+	}
+	if len(raw) == 0 || len(raw) > MaxPreparationBytes || int64(len(raw)) > (available-decodeReserveBytes)/decodeFrameCopies {
+		return 0, errors.New("canonical preparation exceeds admitted memory")
+	}
+	var structural int64
+	if err := preflightPreparationJSON(ctx, raw, available-decodeReserveBytes-decodeFrameCopies*int64(len(raw)), admission, &structural); err != nil {
+		return 0, err
+	}
+	return decodeReserveBytes + decodeFrameCopies*int64(len(raw)) + structural, admission.CheckActive(ctx)
+}
+
+func readPreparation(ctx context.Context, r io.Reader, admission DecodeAdmission, required *int64) (Preparation, error) {
 	if ctx == nil || admission == nil {
 		return Preparation{}, errors.New("live decode admission required")
 	}
@@ -139,7 +183,8 @@ func ReadPreparation(ctx context.Context, r io.Reader, admission DecodeAdmission
 	if err := admission.CheckActive(ctx); err != nil {
 		return Preparation{}, err
 	}
-	if err := preflightPreparationJSON(ctx, raw, available-decodeReserveBytes-decodeFrameCopies*int64(n), admission); err != nil {
+	var structural int64
+	if err := preflightPreparationJSON(ctx, raw, available-decodeReserveBytes-decodeFrameCopies*int64(n), admission, &structural); err != nil {
 		return Preparation{}, err
 	}
 	var envelope struct {
@@ -204,6 +249,9 @@ func ReadPreparation(ctx context.Context, r io.Reader, admission DecodeAdmission
 	}
 	if err = admission.CheckActive(ctx); err != nil {
 		return Preparation{}, err
+	}
+	if required != nil {
+		*required = decodeReserveBytes + decodeFrameCopies*int64(n) + structural
 	}
 	return p, nil
 }
@@ -302,7 +350,13 @@ func canonicalStringBytes(s string) int64 {
 // its encoding. This pass retains no decoded collection and rejects before
 // unmarshalling Intent or Manifest. Charges cover map buckets, struct values,
 // slice growth, decoded strings, and concurrent decoder/marshal copies.
-func preflightPreparationJSON(ctx context.Context, raw []byte, remaining int64, admission DecodeAdmission) error {
+func preflightPreparationJSON(ctx context.Context, raw []byte, remaining int64, admission DecodeAdmission, used *int64) error {
+	budget := remaining
+	defer func() {
+		if used != nil {
+			*used = budget - remaining
+		}
+	}()
 	if remaining < 0 {
 		return errors.New("preparation exceeds admitted decode memory")
 	}

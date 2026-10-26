@@ -25,6 +25,7 @@ type SyncWorkerHold struct {
 	intentRecord []byte
 	runtime      *sshRuntime
 	intent       syncservice.Intent
+	prepared     *syncservice.Preparation
 	root         *syncfs.Root
 	parent       *syncfs.Root
 	volume       string
@@ -40,11 +41,12 @@ type SyncWorkerHold struct {
 func newSyncWorkerHold(m *Manager, l model.Lease, s *syncAdmission, runtime *sshRuntime) *SyncWorkerHold {
 	leaseRecord, _ := json.Marshal(l)
 	intentRecord, _ := json.Marshal(s.intent)
-	return &SyncWorkerHold{leaseRecord: leaseRecord, intentRecord: intentRecord, manager: m, lease: l.ID, runtime: runtime, intent: s.intent, root: s.root, parent: s.parent, volume: s.volume, memory: l.Request.Resources.Memory, disk: l.Request.Resources.Disk, done: make(chan struct{})}
+	return &SyncWorkerHold{leaseRecord: leaseRecord, intentRecord: intentRecord, manager: m, lease: l.ID, runtime: runtime, intent: s.intent, prepared: s.prepared, root: s.root, parent: s.parent, volume: s.volume, memory: l.Request.Resources.Memory, disk: l.Request.Resources.Disk, done: make(chan struct{})}
 }
 
-func (h *SyncWorkerHold) Root() *syncfs.Root       { return h.root }
-func (h *SyncWorkerHold) WorkParent() *syncfs.Root { return h.parent }
+func (h *SyncWorkerHold) Root() *syncfs.Root                    { return h.root }
+func (h *SyncWorkerHold) WorkParent() *syncfs.Root              { return h.parent }
+func (h *SyncWorkerHold) Preparation() *syncservice.Preparation { return h.prepared }
 func (h *SyncWorkerHold) Ledger() *syncservice.Ledger {
 	return &syncservice.Ledger{DB: h.manager.db, Key: h.intent.Key, Side: syncreconcile.Remote}
 }

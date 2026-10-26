@@ -333,13 +333,22 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 		return errors.New("missing admitted SSH control")
 	}
 	if e.Side == syncreconcile.Local {
-		if err = syncservice.WritePreparation(control, syncservice.Preparation{Version: syncservice.Schema, Intent: intent, Manifest: lookup.Manifest}); err != nil {
-			return err
+		if !e.PreparedSent {
+			if err = syncservice.WritePreparation(control, syncservice.Preparation{Version: syncservice.Schema, Intent: intent, Manifest: lookup.Manifest}); err != nil {
+				return err
+			}
 		}
 	} else {
-		prep, err = syncservice.ReadPreparation(ctx, control, e.Hold)
-		if err != nil {
-			return err
+		if e.Prepared != nil {
+			prep = *e.Prepared
+			if prep.Version != syncservice.Schema {
+				return errors.New("charged preparation version changed")
+			}
+		} else {
+			prep, err = syncservice.ReadPreparation(ctx, control, e.Hold)
+			if err != nil {
+				return err
+			}
 		}
 		prep.Intent.Side = syncreconcile.Remote
 		if !reflect.DeepEqual(prep.Intent, intent) || !reflect.DeepEqual(prep.Manifest, lookup.Manifest) {

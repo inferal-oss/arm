@@ -38,6 +38,33 @@ type syncPreparation struct {
 	nativeJoined chan struct{}
 }
 
+// CheckActive and MemoryBytes make only this current, charged preparation
+// owner available to the bounded first-frame decoder. The wire frame cannot
+// supply or enlarge the memory promise used to parse itself.
+func (p *syncPreparation) CheckActive(ctx context.Context) error {
+	if p == nil || p.owner == nil || ctx == nil || ctx.Err() != nil || p.owner.ctx.Err() != nil {
+		return model.Err("sync_preparation_unavailable", "live charged preparation required before frame decode")
+	}
+	m := p.owner.manager
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.closing || m.draining || m.relayTransits[p.owner.id] != p.owner || p.owner.settled || p.owner.recoveryReason != "" {
+		return model.Err("sync_preparation_unavailable", "original preparation owner changed")
+	}
+	l, err := m.get(p.owner.id)
+	if err != nil || l.State != "active" || l.Expires == nil || !time.Now().Before(*l.Expires) || !reflect.DeepEqual(l, p.owner.result) {
+		return model.Err("sync_preparation_unavailable", "charged preparation lease changed")
+	}
+	return nil
+}
+
+func (p *syncPreparation) MemoryBytes() int64 {
+	if p == nil || p.owner == nil {
+		return 0
+	}
+	return p.owner.result.Request.Resources.Memory
+}
+
 func (m *Manager) beginSyncPreparation(ctx context.Context, key string, side syncreconcile.Side, ttl time.Duration, grant *syncPreparationGrant) (*syncPreparation, error) {
 	if ctx == nil || ctx.Err() != nil || len(key) < 16 || len(key) > 128 || (side != syncreconcile.Local && side != syncreconcile.Remote) || ttl <= 0 || ttl > 7*24*time.Hour {
 		return nil, model.Err("invalid_request", "bounded live sync preparation identity and lifetime required")

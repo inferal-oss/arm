@@ -1,9 +1,10 @@
 package manager
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"golang.org/x/sys/unix"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"github.com/yrashk/arm/internal/syncreconcile"
 	"github.com/yrashk/arm/internal/syncservice"
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/sys/unix"
 )
 
 func syncManagerFixture(t *testing.T) (*Manager, *syncfs.Root, *syncfs.Root) {
@@ -148,32 +150,40 @@ func TestSyncSourceFailedReservationRollsBackLease(t *testing.T) {
 }
 
 func TestSyncDestinationSSHAdmissionJoinsFenceLeaseAndIntent(t *testing.T) {
-	runSyncDestinationAdmission(t, false, false)
+	runSyncDestinationAdmission(t, false, false, false)
 }
 
 func TestSyncDestinationRejectedIntentRollsBackEntireSSHAdmission(t *testing.T) {
-	runSyncDestinationAdmission(t, true, false)
+	runSyncDestinationAdmission(t, true, false, false)
 }
 
 func TestSyncDestinationInlineWorkerUsesCommittedHold(t *testing.T) {
-	runSyncDestinationAdmission(t, false, true)
+	runSyncDestinationAdmission(t, false, true, false)
 }
 
 func TestSyncDestinationInlineWorkerRejectsChangedIntentBeforeDispatch(t *testing.T) {
-	runSyncDestinationAdmission(t, true, true)
+	runSyncDestinationAdmission(t, true, true, false)
+}
+
+func TestSyncDestinationFrameDecodedUnderChargedPreparation(t *testing.T) {
+	runSyncDestinationAdmission(t, false, true, true)
+}
+
+func TestSyncDestinationChangedFrameRollsBackChargedPreparation(t *testing.T) {
+	runSyncDestinationAdmission(t, true, true, true)
 }
 
 func TestSyncDestinationInlineWorkerOriginalLifecycle(t *testing.T) {
 	for _, stop := range []string{"end", "expiry", "close"} {
-		t.Run(stop, func(t *testing.T) { runSyncDestinationAdmissionLifecycle(t, false, true, stop) })
+		t.Run(stop, func(t *testing.T) { runSyncDestinationAdmissionLifecycle(t, false, true, stop, false) })
 	}
 }
 
-func runSyncDestinationAdmission(t *testing.T, corrupt, inline bool) {
-	runSyncDestinationAdmissionLifecycle(t, corrupt, inline, "")
+func runSyncDestinationAdmission(t *testing.T, corrupt, inline, fromFrame bool) {
+	runSyncDestinationAdmissionLifecycle(t, corrupt, inline, "", fromFrame)
 }
 
-func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, stop string) {
+func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, stop string, fromFrame bool) {
 	m, root, parent := syncManagerFixture(t)
 	var intent syncservice.Intent
 	var rows []syncservice.ManifestRow
@@ -181,9 +191,19 @@ func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, st
 	stopped := make(chan error, 1)
 	f := newSSHManagerFixtureWithAdmission(t, m, time.Minute, func(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel) (model.Lease, sshservice.Process, error) {
 		if inline {
-			l, hold, err := m.AdmitSyncWorker(ctx, intent, rows, root, parent, q, e, ch, model.Resources{CPU: 1, Memory: 1 << 30, Disk: 4 << 20}, time.Minute, time.Now().Add(time.Minute), committedControl(m, q))
+			var l model.Lease
+			var hold *SyncWorkerHold
+			var err error
+			if fromFrame {
+				l, hold, err = m.AdmitSyncWorkerFromFrame(ctx, root, parent, q, e, ch, model.Resources{CPU: 1, Memory: 1 << 30, Disk: 4 << 20}, time.Minute, time.Now().Add(time.Minute), committedControl(m, q))
+			} else {
+				l, hold, err = m.AdmitSyncWorker(ctx, intent, rows, root, parent, q, e, ch, model.Resources{CPU: 1, Memory: 1 << 30, Disk: 4 << 20}, time.Minute, time.Now().Add(time.Minute), committedControl(m, q))
+			}
 			if err != nil {
 				return l, nil, err
+			}
+			if fromFrame && (hold.Preparation() == nil || hold.Preparation().Intent.Side != syncreconcile.Local) {
+				t.Error("charged preparation frame not retained for the worker")
 			}
 			if err := hold.CheckIntent(ctx, intent); err != nil {
 				hold.JoinTransport()
@@ -259,22 +279,86 @@ func runSyncDestinationAdmissionLifecycle(t *testing.T, corrupt, inline bool, st
 	if err != nil {
 		t.Fatal(err)
 	}
+	validIntent := intent
 	if corrupt {
 		intent.ManifestDigest = strings.Repeat("0", 64)
 	}
-	session, err := f.client.NewSession()
-	if err != nil {
-		t.Fatal(err)
+	var output []byte
+	var runErr error
+	if fromFrame {
+		ch, reqs, openErr := f.client.OpenChannel("session", nil)
+		if openErr != nil {
+			t.Fatal(openErr)
+		}
+		wire := validIntent
+		wire.Side = syncreconcile.Local
+		var encoded bytes.Buffer
+		if writeErr := syncservice.WritePreparation(&encoded, syncservice.Preparation{Version: syncservice.Schema, Intent: wire, Manifest: rows}); writeErr != nil {
+			t.Fatal(writeErr)
+		}
+		if corrupt {
+			raw := encoded.Bytes()
+			at := bytes.Index(raw, []byte(wire.ManifestDigest))
+			if at < 0 {
+				t.Fatal("manifest digest missing from encoded frame")
+			}
+			if raw[at] == '0' {
+				raw[at] = '1'
+			} else {
+				raw[at] = '0'
+			}
+		}
+		wrote := make(chan error, 1)
+		go func() {
+			_, writeErr := io.Copy(ch, &encoded)
+			wrote <- writeErr
+		}()
+		accepted, sendErr := ch.SendRequest("exec", true, ssh.Marshal(struct{ Command string }{syncWorkerCommand}))
+		if !corrupt && (sendErr != nil || !accepted) {
+			t.Fatalf("preparation-frame exec denied: %v", sendErr)
+		}
+		if corrupt && accepted {
+			t.Fatal("changed preparation frame accepted")
+		}
+		if writeErr := <-wrote; writeErr != nil && !corrupt {
+			t.Fatal(writeErr)
+		}
+		if !corrupt {
+			output, runErr = io.ReadAll(ch)
+		} else {
+			runErr = fmt.Errorf("changed preparation denied: %v", sendErr)
+		}
+		if !corrupt && runErr == nil {
+			for req := range reqs {
+				if req.Type == "exit-status" {
+					var status struct{ Status uint32 }
+					if ssh.Unmarshal(req.Payload, &status) != nil || status.Status != 0 {
+						runErr = fmt.Errorf("sync worker exit %d", status.Status)
+					}
+					break
+				}
+			}
+		}
+		_ = ch.Close()
+	} else {
+		session, openErr := f.client.NewSession()
+		if openErr != nil {
+			t.Fatal(openErr)
+		}
+		// The fixed worker is intentionally not installed yet; the command may
+		// fail, but its admission must already be durable and remain charged.
+		output, runErr = session.CombinedOutput(syncWorkerCommand)
 	}
-	// The fixed worker is intentionally not installed yet; the command may
-	// fail, but its admission must already be durable and remain charged.
-	output, runErr := session.CombinedOutput(syncWorkerCommand)
 	if corrupt {
 		if runErr == nil {
 			t.Fatal("changed manifest started the fixed worker")
 		}
 		var partial int
-		if err := m.db.QueryRow(`SELECT (SELECT COUNT(*) FROM leases WHERE coalesce(json_extract(data,'$.request.kind'),'')!='sync-preparation')+(SELECT COUNT(*) FROM ssh_operations)+(SELECT COUNT(*) FROM ssh_key_fences)+(SELECT COUNT(*) FROM sync_operations)+(SELECT COUNT(*) FROM sync_lease_bindings)`).Scan(&partial); err != nil || partial != 0 {
+		query := `SELECT (SELECT COUNT(*) FROM leases WHERE coalesce(json_extract(data,'$.request.kind'),'')!='sync-preparation')+(SELECT COUNT(*) FROM sync_operations)+(SELECT COUNT(*) FROM sync_lease_bindings)`
+		if !fromFrame {
+			query = `SELECT (SELECT COUNT(*) FROM leases WHERE coalesce(json_extract(data,'$.request.kind'),'')!='sync-preparation')+(SELECT COUNT(*) FROM ssh_operations)+(SELECT COUNT(*) FROM ssh_key_fences)+(SELECT COUNT(*) FROM sync_operations)+(SELECT COUNT(*) FROM sync_lease_bindings)`
+		}
+		if err := m.db.QueryRow(query).Scan(&partial); err != nil || partial != 0 {
 			t.Fatalf("failed destination reservation left partial admission: %d %v", partial, err)
 		}
 		return

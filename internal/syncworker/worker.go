@@ -53,17 +53,19 @@ type admittedSession interface {
 }
 
 type endpoint struct {
-	Side        syncreconcile.Side
-	Root        *syncfs.Root
-	WorkParent  *syncfs.Root
-	Names       syncfs.NamePolicy
-	Metadata    syncfs.Metadata
-	Ledger      *syncservice.Ledger
-	Hold        admittedHold
-	Session     admittedSession
-	Receipt     *syncservice.SideReceipt
-	Workspace   string
-	NativeCount int
+	Side         syncreconcile.Side
+	Root         *syncfs.Root
+	WorkParent   *syncfs.Root
+	Names        syncfs.NamePolicy
+	Metadata     syncfs.Metadata
+	Ledger       *syncservice.Ledger
+	Hold         admittedHold
+	Session      admittedSession
+	Prepared     *syncservice.Preparation
+	PreparedSent bool
+	Receipt      *syncservice.SideReceipt
+	Workspace    string
+	NativeCount  int
 }
 
 type batch struct {
