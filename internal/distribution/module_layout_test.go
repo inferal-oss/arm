@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -16,11 +15,12 @@ import (
 // its source zip. Keep the audited fork inside the installable ARM module and
 // the carrier snapshot, including its internal packages and license/provenance.
 func TestInstallableModuleIncludesAuditedFork(t *testing.T) {
-	_, file, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("source location unavailable")
+	// Go tests start in the package directory; unlike runtime.Caller paths this
+	// also works when the test executable was built with -trimpath.
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatal(err)
 	}
-	root := filepath.Clean(filepath.Join(filepath.Dir(file), "../.."))
 	mod, err := os.ReadFile(filepath.Join(root, "go.mod"))
 	if err != nil {
 		t.Fatal(err)
