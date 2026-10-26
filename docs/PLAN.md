@@ -585,3 +585,50 @@ scoped races/vet and repeated-refresh real terminal/PTY evidence; native Linux
 checks apply if backend/platform behavior changes. No real user backend/state
 or installed binary changes. Coordinator independent review, fixes and composed
 validation are required before integration; no candidate is accepted yet.
+
+
+### October 26 resumed portfolios and new UI/launch assignments
+
+The operator explicitly starts separate tasks for priorities 1–5, sleep/wake
+followed by operations, and providers/workloads, then requests a complete
+Semblance browser migration and a separate domain/repository/site launch.
+Existing dedicated feature chats are resumed to preserve context without
+duplicating their accepted earlier work. New tasks are created for operations,
+providers, Semblance UI and launch. Baseline is reviewed runtime181a776 plus
+coordination21240eb; every candidate remains unaccepted until independent review,
+fixes, exact-source validation and focused central integration. Primary remains
+coordination/integration only. Current isolated implementation ownership:
+
+| Portfolio | Owner chat | Branch / checkout | First milestone and dependencies |
+| --- | --- | --- | --- |
+| 1 Resource safety | 01a1764f-7a1a-71a0-896c-60d963b3327e | codex/resource-safety-cgroup-memory; /private/tmp/arm-resource-safety-21240eb | Sound Linux/cgroup memory headroom and native evidence, then broader attribution and safe owned pause/resume; clock transitions owned separately. |
+| 2 Public sync | 01a1762f-1cfa-7ed3-8404-4a794cbe93b3 | codex/public-sync-delivery; /private/tmp/arm-public-sync-delivery | Actual filesystem allocation/reservations and production orchestration, then typed authenticated public/relayed dispatch, policies, cleanup/recovery and formal/performance acceptance. |
+| 3 TCP forwarding | 01a178cc-c340-7241-98dd-22420550023f | codex/forward-usable-clients; /private/tmp/arm-forward-usable-clients | Diagnose retained HTTP EOF, usable authenticated clients and controls; ordinary build stays fenced until outstanding acceptance. Concrete security scheme already approved. |
+| 4 Kubernetes | 01a17669-4ad2-7e41-8616-905a94b58916 | codex/kubernetes-pod-workflow; /Users/yrashk/.codex/worktrees/kubernetes-pod-workflow/arm | Real disposable Pod bootstrap/readiness/enrollment/SSH and original-key recovery; retain credential, identity and fail-closed quota guards. |
+| 5 Mac screen | 01a1766f-588d-7f90-a789-3db9ffca71f7 | codex/mac-screen-standard-gates; /Users/yrashk/.codex/worktrees/mac-screen-standard-gates/arm | Close Manager-owned resource admission gap and remaining Standard live acceptance, then multi-hop/High Performance. |
+| Sleep/wake, then operations | 01a17a66-fb70-7730-8fdf-ac6d3e9346a4 | codex/lease-suspend-clock-runtime; /Users/yrashk/.codex/worktrees/c359/arm | Suspend-inclusive, rollback-safe active lease expiry/renewal/restart first; configuration/services/degraded persistence/retention/restore/overhead follow separately. Existing database forgetting is complete. |
+| Providers/workloads | 01a17a67-1bb9-7031-878b-87f5bb71861c | codex/managed-provider-protocol; /Users/yrashk/.codex/worktrees/managed-provider-protocol/arm | Reuse v1 codec/owned primitive; real durable external fixture and crash/unknown-outcome tests first, then registration/admission, workload breadth, capability-driven GPU/network/distributed pools. |
+| Complete Semblance browser UI | 01a17a68-5f5c-7411-b0da-bc6a45296adb | codex/semblance-web-migration; /Users/yrashk/.codex/worktrees/eea4/arm | Real graph/component/event migration of all existing web workflows, stock Terminal default, pinned embedded/offline build, searched component inventory/upstream gap PRs, regular actual-browser screenshots. |
+| Public site/repository/domains | 01a17a6b-835f-7503-ab50-466751c51eec | isolated /Users/yrashk/.codex/worktrees/84f5/arm; owner establishes codex/ branch | Use user's Chrome to purchase exact getarm.org/getarm.cloud, create/push inferal-oss/arm, build reviewed Semblance Pages source on main and configure scoped DNS/custom domain/HTTPS. Canonical getarm.org plus working cloud alternate/redirect; actual purchase/deployment results pending. |
+
+The native terminal-gauge issue01a17a63-41aa-7670-ba0d-446f6a48a0d3 remains
+separate. Semblance owner owns shared web architecture/theme/bootstrap/build;
+feature owners retain backend/protocol/native Charm semantics and expose precise
+UI contracts rather than competing legacy-shell rewrites. Launch owner owns a
+separate public-site directory/workflow, not the product dashboard. Shared
+Manager/schema/module/API boundaries are integrated centrally. All children and
+reviewers require separate worktrees; old completed/unrelated changes survive.
+
+Use /Users/yrashk/Projects/semblance/scripts/test-queue.sh in foreground for heavy
+compatible commands: shared FIFO default two slots, vitest at most two workers,
+existing stricter per-command/native scopes retained. Do not change queue/lock
+policy, reserve idle dev-server slots or bypass ARM admission. Semblance primary
+contains unrelated conflict/untracked work and must not be edited; upstream gaps
+use independent reviewed worktrees/PRs. Preparing framework PRs is authorized;
+merging/releasing/deploying Semblance is not. UI and site must share regular real
+rendered screenshots and honest feature support. No completed-code acceptance is
+claimed by these dispatches. Initial bounded progress snapshots confirm all eight
+portfolio/UI tasks active; launch progress and external outcomes are checked
+separately. No user ARM backend/state/binary changes are authorized here; exact
+domain purchases, new project repo push and website/DNS publication are explicitly
+authorized by the latest launch request.
