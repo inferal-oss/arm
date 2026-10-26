@@ -2399,3 +2399,107 @@ ignored `.cache/routed-pin-final-root-race.log` retains the result. The focused
 changed-pin/identity race check separately passes; that does not make the
 package green. Diagnosis uses its own worktree and retains the 64/65 fixture,
 deadline and unlink authority checks.
+
+## October 25: native routed SSH public CLI and closed pin read
+
+A private QEMU Debian ARM64 guest with one vCPU and a complete native Linux CPU
+hierarchy ran CGo-free binaries built from this worktree. The original guest
+disk and firmware were not modified; the run used an ignored private qcow2
+overlay and firmware copy. The focused three-node server test and all
+`internal/meshsshrelay` tests passed in the guest. The new routed pin
+round-trip/partial-extension regression passed on macOS and native Linux;
+affected `sshservice`/CLI vet passed. The public CLI fixture is
+`scripts/test-routed-ssh.py`.
+
+The final public fixture starts real daemons B, A and C, admits all three into
+one reviewed workspace, keeps B and C without a direct enrollment, grants A
+transit and C execution for original B, then executes B→A→C with exact stdout,
+stderr and exit 23. Original-key lookup finds its local receipt and a same-key
+retry refuses execution. An opaque ciphertext relay drops a response after a
+separate command writes its marker; the source returns a transport error,
+retains a local completion receipt, and lookup/retry leave the marker exactly
+once. A second drop after source intent but before admission returns
+`ssh_outcome_unknown`; a different key is refused until an exact-key
+nonexecution seal succeeds, with no destination marker. Revoking C's grant
+refuses a fresh command. After renewed grant and graph report convergence, a
+fourth member D receives an independent transit grant; A's grant is revoked,
+public dry-run selects B→D→C, and the actual command returns the expected
+output. B and C still have no direct enrollment. The final guest harness exits
+zero and removes its successful private fixture.
+
+An earlier four-node diagnostic exposed that a stored routed pin could not be
+read on a later command: the strict direct-pin decoder rejected its route
+fields. The fix accepts only the complete six-field route extension and keeps
+direct pins strict. A single earlier 0.1-CPU CLI attempt returned an uncertain
+OpenSSH exec refusal with no destination SSH operation; the final accepted
+fixture uses a 0.05-CPU command promise on the one-vCPU guest. Another early
+alternate-path attempt used a stale graph snapshot; ordered D/C/B/A/B refresh
+made the current alternate path visible. Broad macOS `sshservice` and CLI runs
+inside this restricted sandbox failed on denied local socket/process
+operations; they are not counted as product test failures or passing gates.
+Native macOS public CLI, wider graph/partition, throughput, formal and sync
+acceptance remain open. The guest received ACPI powerdown and the owned QEMU
+process exited zero. No private or original disk holder remained; only the
+private overlay, copied firmware, keys, socket and uploaded binaries were
+removed. Test logs and their SHA-256 manifest remain in ignored
+`.cache/routed-ssh-linux`; failed guest fixtures were discarded with the
+private overlay. The original VM fixture was not modified.
+
+## October 25: scoped native Linux routed SSH stdout throughput
+
+The recorded optional `--benchmark` run of `scripts/test-routed-ssh.py` used a
+private one-vCPU Debian ARM64 guest and real public CLI. It verified three
+32-MiB `/dev/zero` stdout samples byte-for-byte and by SHA-256 over B→A→C
+while B and C have no direct enrollment. Only afterward does it grant a
+separate direct B↔C enrollment and verify three equal-size direct CLI samples.
+The routed grant promises 0.05 CPU, 8 MiB transit memory and a shared
+64-MiB/s byte rate; each SSH execution requests 0.05 CPU. Wall-clock timing
+includes CLI startup, route selection, handshakes, execution and drain. All
+six transfers and the successful fixture cleanup passed.
+
+Routed samples were **16.104, 13.232 and 12.028 MiB/s** (median 13.232);
+direct samples were **31.863, 33.098 and 37.557 MiB/s** (median 33.098).
+The median routed/direct ratio is 39.98%. This is a warm same-guest loopback
+comparison under QEMU's user network and one shared vCPU, not a physical
+cross-host, macOS, cold-storage or sync measurement. It provides actual
+throughput evidence and exposes a material performance gap; no 85–90% target
+or broad performance acceptance is claimed. Guest logs record AArch64 Linux,
+one eligible CPU and visible cgroup ancestry (`user.slice` and
+`user-1000.slice` each reported `max 100000`). The original positive CPU
+admission guard was unchanged.
+
+The benchmark guest received ACPI powerdown; the owned QEMU process exited
+zero, and no original or private disk holder remained. Its private overlay,
+firmware copy, copied SSH material, QMP socket and uploaded binary were
+removed. Ignored `.cache/routed-ssh-linux/benchmark-vm` retains the exact
+measurement output, guest CPU-scope observations and SHA-256 log manifest.
+
+Independent review then found two acceptance-artifact issues. A successful
+fixture could return zero when `Node.stop()` failed, and benchmark output
+hardcoded the original guest label for every environment. The harness now
+requires every stop and fixture removal before exit zero or a PASS/benchmark
+report, retains failed fixtures, preserves an original test exception during cleanup, and reports
+observed OS/architecture/CPU scope plus the exact harness and CLI binary
+SHA-256 for future measurements. Five local fake-node/relay tests cover stop
+failure, original-error preservation, removal failure, environment probing
+and binary hashing; they do not rerun the VM. The original benchmark samples
+above are unchanged.
+
+The earlier strict pin decoder also accepted all six route keys explicitly
+present as empty values, silently treating them as a direct pin. It now
+rejects that noncanonical extension while continuing to accept legacy direct
+pins with the route keys absent. Focused direct/routed pin regressions pass;
+no prior native Linux run is relabeled as testing this later correction.
+The ignored validation manifest now hashes the exact final-source PASS log
+and both historical harness source versions. The exact uploaded CLI binary
+was deleted before hashing, so its SHA-256 remains explicitly unavailable in
+both manifests; source hashes are not presented as binary proof.
+
+### Independent integration of the routed-pin and harness corrections
+
+The exact `cf054c4` successor passes fresh focused macOS pin/identity race
+checks and all five harness checks. `make test-routed-ssh-harness` exposes
+the fast checks and both `make test` and `make check` depend on them. The
+earlier full SSH package race failure remains recorded above; it is not
+reclassified by these focused passes. No new VM or performance run is claimed
+for the later pin/cleanup correction.

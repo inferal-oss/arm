@@ -102,6 +102,74 @@ func pinFixture(t *testing.T, dir string) Pin {
 	}
 	return Pin{Schema: 1, Source: strings.Repeat("a", 32), Target: strings.Repeat("b", 32), Pair: strings.Repeat("c", 64), Revision: 1, TLSFingerprint: strings.Repeat("d", 64), TLSSPKI: strings.Repeat("e", 64), Account: "armuser", PublicKey: strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key.PublicKey()))), At: time.Now().UTC()}
 }
+
+func TestRoutedPinClosedReadAndCompleteExtension(t *testing.T) {
+	dir := privateFixture(t)
+	next := pinFixture(t, dir)
+	next.RouteWorkspace = strings.Repeat("1", 32)
+	next.RouteGeneration = strings.Repeat("2", 32)
+	next.RouteDirectoryPin = strings.Repeat("3", 64)
+	next.RouteDirectorySPKI = strings.Repeat("4", 64)
+	next.RouteSourceGeneration = 1
+	next.RouteTargetGeneration = 2
+	review, err := ReviewPin(dir, next)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = commitPin(context.Background(), review); err != nil {
+		t.Fatal(err)
+	}
+	read, err := ReadPin(dir, next.Target)
+	if err != nil || read == nil || *read != next {
+		t.Fatal("complete routed pin did not round-trip", read, err)
+	}
+	path := pinPath(dir, next.Target)
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fields map[string]json.RawMessage
+	if err = json.Unmarshal(raw, &fields); err != nil {
+		t.Fatal(err)
+	}
+	delete(fields, "route_target_generation")
+	partial, _ := json.Marshal(fields)
+	if err = os.WriteFile(path, partial, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = ReadPin(dir, next.Target); err == nil {
+		t.Fatal("partial routed pin extension accepted")
+	}
+	direct := next
+	direct.RouteWorkspace, direct.RouteGeneration = "", ""
+	direct.RouteDirectoryPin, direct.RouteDirectorySPKI = "", ""
+	direct.RouteSourceGeneration, direct.RouteTargetGeneration = 0, 0
+	raw, err = json.Marshal(direct)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fields = nil
+	if err = json.Unmarshal(raw, &fields); err != nil {
+		t.Fatal(err)
+	}
+	for name, value := range map[string]json.RawMessage{
+		"route_workspace":         json.RawMessage(`""`),
+		"route_generation":        json.RawMessage(`""`),
+		"route_directory_pin":     json.RawMessage(`""`),
+		"route_directory_spki":    json.RawMessage(`""`),
+		"route_source_generation": json.RawMessage(`0`),
+		"route_target_generation": json.RawMessage(`0`),
+	} {
+		fields[name] = value
+	}
+	emptyExtension, _ := json.Marshal(fields)
+	if err = os.WriteFile(path, emptyExtension, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = ReadPin(dir, next.Target); err == nil {
+		t.Fatal("complete but empty routed pin extension normalized to direct authority")
+	}
+}
 func TestPinExplicitReviewCASAndNoSilentRotation(t *testing.T) {
 	dir := privateFixture(t)
 	next := pinFixture(t, dir)

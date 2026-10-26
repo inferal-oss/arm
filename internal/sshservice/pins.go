@@ -127,8 +127,14 @@ func readPin(d *os.File, target string) (*Pin, pinSnapshot, error) {
 		return nil, pinSnapshot{}, fmt.Errorf("SSH pin changed while reading")
 	}
 	var p Pin
-	if err = closedRecord(raw, &p, []string{"schema", "source", "target", "pair", "revision", "tls_fingerprint", "tls_spki", "account", "public_key", "at"}); err != nil {
+	routedFields, err := closedRecordWithOptional(raw, &p,
+		[]string{"schema", "source", "target", "pair", "revision", "tls_fingerprint", "tls_spki", "account", "public_key", "at"},
+		[]string{"route_workspace", "route_generation", "route_directory_pin", "route_directory_spki", "route_source_generation", "route_target_generation"})
+	if err != nil {
 		return nil, pinSnapshot{}, err
+	}
+	if routedFields && p.RouteWorkspace == "" {
+		return nil, pinSnapshot{}, fmt.Errorf("explicit empty routed SSH pin extension")
 	}
 	if err = p.Validate(); err != nil || p.Target != target {
 		return nil, pinSnapshot{}, fmt.Errorf("SSH pin identity invalid")

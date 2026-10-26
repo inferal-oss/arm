@@ -161,38 +161,63 @@ func readPrivate(d *os.File, name string) ([]byte, error) {
 	return raw, nil
 }
 func closedRecord(raw []byte, value any, names []string) error {
+	_, err := closedRecordWithOptional(raw, value, names, nil)
+	return err
+}
+
+// Optional fields form one complete extension. Direct records omit all of them;
+// routed records must carry every field, including both membership generations.
+func closedRecordWithOptional(raw []byte, value any, names, optional []string) (bool, error) {
 	d := json.NewDecoder(bytes.NewReader(raw))
 	t, err := d.Token()
 	if err != nil || t != json.Delim('{') {
-		return fmt.Errorf("closed identity object required")
+		return false, fmt.Errorf("closed identity object required")
 	}
 	seen := map[string]bool{}
 	allowed := map[string]bool{}
 	for _, n := range names {
 		allowed[n] = true
 	}
+	for _, n := range optional {
+		allowed[n] = true
+	}
 	for d.More() {
 		t, err = d.Token()
 		if err != nil {
-			return err
+			return false, err
 		}
 		name, ok := t.(string)
 		if !ok || !allowed[name] || seen[name] {
-			return fmt.Errorf("unknown or duplicate identity field")
+			return false, fmt.Errorf("unknown or duplicate identity field")
 		}
 		seen[name] = true
 		var part json.RawMessage
 		if err = d.Decode(&part); err != nil || bytes.Equal(bytes.TrimSpace(part), []byte("null")) {
-			return fmt.Errorf("invalid identity field")
+			return false, fmt.Errorf("invalid identity field")
 		}
 	}
 	if _, err = d.Token(); err != nil {
-		return err
+		return false, err
 	}
-	if _, err = d.Token(); err != io.EOF || len(seen) != len(names) {
-		return fmt.Errorf("incomplete/trailing identity")
+	if _, err = d.Token(); err != io.EOF || len(seen) != len(names) && len(seen) != len(names)+len(optional) {
+		return false, fmt.Errorf("incomplete/trailing identity")
 	}
-	return json.Unmarshal(raw, value)
+	for _, name := range names {
+		if !seen[name] {
+			return false, fmt.Errorf("incomplete identity")
+		}
+	}
+	if len(seen) == len(names)+len(optional) {
+		for _, name := range optional {
+			if !seen[name] {
+				return false, fmt.Errorf("incomplete routed identity")
+			}
+		}
+	}
+	if err := json.Unmarshal(raw, value); err != nil {
+		return false, err
+	}
+	return len(optional) > 0 && len(seen) == len(names)+len(optional), nil
 }
 func publicDigest(key ssh.PublicKey) string {
 	sum := sha256.Sum256(key.Marshal())

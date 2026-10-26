@@ -24,15 +24,20 @@ install: validate-knowledge
 	install -d "$(DESTDIR)$(BINDIR)"; \
 	install -m 755 "$$arm_install_build/arm" "$(DESTDIR)$(BINDIR)/arm"
 
-test:
+test: test-routed-ssh-harness
 	$(GO) test ./...
 	CGO_ENABLED=0 $(GO) -C third_party/rsyncgo test ./...
 
-check:
+check: test-routed-ssh-harness
 	$(GO) vet ./...
 	$(GO) test -race ./...
 	$(GO) -C third_party/rsyncgo vet ./...
 	$(GO) -C third_party/rsyncgo test -race ./...
+
+# Fast deterministic checks for the native routed-SSH acceptance harness.
+.PHONY: test-routed-ssh-harness
+test-routed-ssh-harness:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-routed-ssh-cleanup.py
 
 # The source-preserving rsync fork is a nested Go module.
 .PHONY: test-rsync
