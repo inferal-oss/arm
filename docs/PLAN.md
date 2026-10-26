@@ -280,3 +280,25 @@ bootstrap/enrollment and dashboard controls remain required.
 receipted pristine metadata-only reset seed may reach schema initialization.
 Changed/partial established databases and retired obligations stay refused;
 destructive settled proof retains its strict schema requirements.
+
+**Multi-hop port forwarding and sync — operator request:** a separate isolated
+session implements leased local TCP listeners forwarding an explicitly granted
+service through multiple mesh peers, including otherwise unreachable nodes.
+Loopback defaults, exact endpoint/source identity, independently granted transit
+and destination access, bounded resources, Stop/revocation and joined cleanup
+are required. Its new production authority needs the concrete security review
+requested for mesh extensions. Public `arm sync` must also traverse multiple
+peers when wired: general port forwarding does not replace sync's own endpoint
+permissions, resource admission, fixed worker, receipts or recovery. The current
+sync route class remains refused until that complete destination path is ready.
+
+**Secure multi-user cooperation — research requested:** retain independent
+per-user daemons while designing authenticated, consent-based coordination
+across local instances sharing physical resources. Research OS-bound identity,
+private endpoint discovery, one-time reservation accounting, per-user policy,
+minimal disclosed summaries, freshness/revocation/recovery and resistance to
+false claims or many instances. Uncooperative users remain external pressure;
+no user's process, private state or mesh grants become another user's authority.
+Compare an optional broker with unprivileged peer coordination and state their
+limits. No cross-user production behavior or privileged installation is enabled
+by this research; a concrete security scheme remains for operator review.
