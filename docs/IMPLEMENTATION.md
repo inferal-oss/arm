@@ -1515,60 +1515,42 @@ created. Oversized or unsafe inventories refuse without erasure. Logical file
 removal does not claim physical-media erasure. Actual user state and the installed
 binary were untouched during implementation, review and native acceptance.
 
-## Public website launch status — October 26, 2026
+## Public website and carrier release automation
 
-Public `inferal-oss/arm` has been created and the audited accepted ARM history
-pushed. The `website/` source uses actual Semblance RDF components, navigation
-and events with the latest requested stock Semblance theme and System color
-scheme. It reuses the existing dashboard identity and includes an operational
-capability map. The public site and Pages workflow belong on ARM's same main
-branch. The product dashboard's separate migration retains its own scope.
+The `website/` source uses Semblance RDF components, navigation and events with
+the stock Semblance theme and System color scheme. It reuses the embedded
+dashboard logo and includes an operational capability map. The Pages workflow
+builds the site from the same ARM source and generates real web Monitor,
+web Resources and terminal Resources PNGs with source and image hashes.
+Capture uses disposable backend state and actual PTY output. The terminal grid
+is 140 columns by 80 rows; genuine unavailable readings remain visible.
 
-The site candidate has passed independent static reviews and actual provisional
-Chrome navigation, shape and layout checks. Remote run 40418656650 proves the
-locked install, typecheck, WAT compilation, license generation and Vite build of
-6e299ee. The current successor adds reviewed plain-language copy, the operational
-map and build-generated real web/PTY screenshots; its capture at fe8d803 succeeds, including real web and PTY images. Visual review
-then required a later native-reading/frame wait and terminal profile correction;
-that successor plus final artifact/browser and main-composition gates remain open. Version-tagged
-carrier release automation is a separate requested, isolated candidate. The
-canonical module and local-fork packaging migration is centrally owned; remote
-Go installation is advertised only after its public installation gate passes.
+Candidate 57f088b passes the Pages build and independent source review. The
+actual artifact passes desktop and narrow layout, shape and image checks;
+final integration, deployment and custom-domain HTTPS remain open. The product
+dashboard's Semblance migration is separate work. Source installation examples
+remain checkout-based until the public remote-install gate passes.
 
-Cloudflare successfully registered `getarm.org` and `getarm.cloud` for one year,
-with checkout amounts $8.50 and $20.20 ($28.70 total). The human explicitly
-approved keeping automatic renewal enabled. Both apexes now have four DNS-only
-A records pointing to GitHub Pages (185.199.108.153 through 185.199.111.153).
-The exact getarm.org verification TXT is preserved, and GitHub confirmed that
-hostname's ownership. Public resolver 1.1.1.1 returns all four addresses for both
-names. The repository reserves only custom hostname getarm.org; its certificate
-and actual deployed-site acceptance remain pending.
+Both getarm.org and getarm.cloud have four DNS-only apex A records pointing to
+GitHub Pages: 185.199.108.153, 185.199.109.153, 185.199.110.153 and 185.199.111.153.
+The getarm.org ownership TXT is verified. The repository's single custom hostname
+is getarm.org. DNS configuration alone does not establish alternate-domain
+routing or HTTPS. No separate Cloudflare host or proxy is required by this setup.
 
-The human explicitly prohibited new Cloudflare projects and requested direct
-GitHub Pages DNS only. An empty extra redirect project was mistakenly created;
-it was deleted and its absence verified. No files were uploaded or deployed.
-The abandoned redirect source was removed in fb164dd. No Cloudflare hosting,
-proxying, redirect rule or alternate HTTPS behavior is part of the current setup.
+The `Tagged carrier releases` workflow builds four macOS/Linux amd64/arm64
+archives. Each contains a native carrier embedding all four payloads, a catalog
+and full license notices. Release metadata binds the source, version and hashes.
+Builds use the module-declared Go toolchain, CGo disabled, one Go CPU and one
+payload build job. Candidate 299ba95 passes the affected Go checks, Python
+failure-path tests and actual four-carrier CI build.
 
-## Tagged release automation candidate
+Publication is limited to version-tag pushes in inferal-oss/arm. It checks main
+ancestry and source/tag identity, verifies the fixed asset set, reconciles matching
+existing bytes and publishes only a complete draft. Manual and topic runs produce
+validation artifacts. No version tag or public binary release was created by
+this validation. See [release operation and recovery](../scripts/release/README.md).
+Final artifact inspection and composed-source acceptance remain required.
 
-The isolated launch release candidate adds a `Tagged carrier releases` workflow
-and helpers under `scripts/release/` and `scripts/release-build/`. Four target
-archives each contain a native carrier embedding all four platform payloads, a
-catalog and full license notices. A source/version/hash manifest and closed
-checksum file accompany them. Builds use the module-declared Go toolchain,
-CGo disabled, one Go CPU and one payload build job.
-
-The publication helper is limited to version-tag pushes in `inferal-oss/arm`.
-It checks main ancestry and source/tag identity, verifies a complete fixed asset
-set, reconciles matching existing bytes and publishes only a complete draft.
-It never deletes or clobbers existing assets. Unknown create/upload/publication
-outcomes require read-only reconciliation. Manual and launch-topic validation
-runs cannot publish. See [release operation and recovery](../scripts/release/README.md).
-
-This remains an unaccepted candidate until independent final-source review and
-actual Go/carrier CI gates complete. No release exists as evidence yet, and the
-workflow does not change agent installation behavior or ordinary Go installation.
 ## Canonical source installation and rsync module layout
 
 ARM's module is `github.com/inferal-oss/arm`. The audited rsync fork stays under
