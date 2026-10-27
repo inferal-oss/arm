@@ -104,12 +104,23 @@ pass, and private canonical CLI probes create no ARM state. All 29 original
 children join and the recorded source, tool and dependency inventories match.
 
 This is local source acceptance. The guest projection changes only three self
-imports and does not repeat physical S3. A source-bound website/discovery build,
-publication of the three early HTTPS discovery pages, and a separately reviewed
-cold-cache public-install workflow on macOS and Linux remain required. Do not
+imports and does not repeat physical S3. Discovery source is integrated as
+`c97b410`. Hosted validation run `40582224150` accepts exact candidate `2325f51`:
+typecheck/tests/build pass, all eight captures are fresh, and its audited Pages
+artifact contains 22 files with all three early discovery tags. Deployment is
+skipped. Main's Go/module, website, embedded UI, capture and workflow inputs match
+that candidate exactly. Publication and live verification of the three early
+HTTPS discovery pages, then a separately reviewed cold-cache public-install
+workflow on macOS and Linux remain required. Do not
 query the public `getarm.org` module before its source and metadata are live.
 The earlier failed native preparation and public-install attempts retain their
 recorded source scopes and outcomes.
+
+The local static-build alternative preserves overall exit 1: all seven original
+commands pass, but its raw-output assertion expects 22 files and observes an
+additional `.gitignore`. The pinned Pages upload action filters dotfiles; the
+actual hosted artifact independently contains the expected 22 files. No rerun or
+retroactive local pass is claimed.
 
 ## Intermittent mesh-node follow-up
 

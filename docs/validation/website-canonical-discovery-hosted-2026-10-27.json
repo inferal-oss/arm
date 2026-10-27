@@ -1,0 +1,368 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_HOSTED_BUILD_ARTIFACT_ACCEPTED",
+  "source_commit": "2325f519fc899215b4711aa7d5ec4724ae639187",
+  "run": {
+    "id": 40582224150,
+    "head_sha": "2325f519fc899215b4711aa7d5ec4724ae639187",
+    "head_branch": "codex/getarm-publication-integration",
+    "event": "workflow_dispatch",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/inferal-oss/arm/actions/runs/40582224150"
+  },
+  "discovery_HTML": {
+    "index.html": {
+      "go-import": "getarm.org git https://github.com/inferal-oss/arm",
+      "early_static": true,
+      "bytes": 1351,
+      "sha256": "c19f80b2f3625edd95267d9d9b0e586b96c5f2554a49fa9edb90e9b74f5f3626"
+    },
+    "cmd/index.html": {
+      "go-import": "getarm.org git https://github.com/inferal-oss/arm",
+      "early_static": true,
+      "bytes": 308,
+      "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+    },
+    "cmd/arm/index.html": {
+      "go-import": "getarm.org git https://github.com/inferal-oss/arm",
+      "early_static": true,
+      "bytes": 308,
+      "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+    }
+  },
+  "canonical_install_and_eight_Gallery_roster": {
+    "canonical_install": "go install getarm.org/cmd/arm@latest",
+    "source_RDF_order": [
+      "screenshots/web-monitor.png",
+      "screenshots/web-resources.png",
+      "screenshots/web-leases.png",
+      "screenshots/web-activity.png",
+      "screenshots/web-host.png",
+      "screenshots/terminal-monitor.png",
+      "screenshots/terminal.png",
+      "screenshots/terminal-leases.png"
+    ],
+    "compiled_bundle_contains_all": true,
+    "repository_clone_and_carrier_preserved": true
+  },
+  "actual_tests": {
+    "python_ownership": {
+      "cases": 18,
+      "result": "OK"
+    },
+    "python_capture": {
+      "cases": 6,
+      "result": "OK"
+    },
+    "Node_cases": [
+      "shared PTY grid fits the terminal renderer viewport",
+      "invalid or unbounded terminal raster input is refused",
+      "a stale scrollend cannot replace a newly selected last image during rekey",
+      "a reader swipe on an unchanged track still reports its selected image",
+      "leaving zoom cannot select a neighbour before the current frame is positioned",
+      "disposing cancels original fallback timers and pending animation frames",
+      "all eight actual gallery paths are required by the capture roster",
+      "an earlier commit or stale embedded UI receipt fails",
+      "missing, additional or duplicate images fail",
+      "changed image bytes, dimensions or gallery paths fail"
+    ],
+    "Node_counts": {
+      "geometry": 2,
+      "Gallery": 4,
+      "screenshot_integrity": 4,
+      "skip": 0,
+      "fail": 0
+    },
+    "typecheck": "completed success"
+  },
+  "warning_classification": [
+    "Vite large-minified-chunk advisory.",
+    "Action runtime Node20 deprecation/forcedNode24 notices and punycode/url.parse deprecations. No failed build step inferred from these warnings."
+  ],
+  "visual_review": "All eight fresh images viewed: expected five web and three terminal dashboards, one staged cooperative example lease and ephemeral CI runner observations. No visible personal paths, chat identities, login tokens, personal hostnames or payment/account details identified. PNGs contain only IHDR/IDAT/IEND chunks.",
+  "local_gate_preserved": {
+    "status": "failed",
+    "exit": 1,
+    "all_seven_child_exits": 0,
+    "raw_dist_files": 23,
+    "only_extra": ".gitignore",
+    "result_sha256": "12eee9ef96fc953b991f9d24967505bb5319d89b9ce986f8ed67cb826f81b0a1",
+    "uploaded_artifact_files": 22,
+    "actual_filter": "Pinned upload-pages-artifact action excludes .[^/]* dotfiles."
+  },
+  "limitations": [
+    "This is validation-branch workflow_dispatch artifact acceptance; configure-pages and deploy were skipped. No main publication, public HTTPS or public Go resolution/install acceptance.",
+    "Earlier qualified native Gallery interaction evidence remains scoped to its recorded source/interactions; no new browser/fullscreen/swipe/zoom claim.",
+    "Temporary CI capture binary and rebuilt embedded asset bodies are not retained in Pages artifact. Hashes/provenance and successful source assertions are recorded; no independent binary reproducibility/hermeticity claim.",
+    "Pages artifact contains no per-child native-owner/daemon endpoint receipt corpus; step success is not an all-descendant cleanup proof.",
+    "Runner capacity/host observations are illustrative. No remote mesh/message/execute scenario is staged."
+  ],
+  "jobs": [
+    {
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifact": {
+    "id": 12770806119,
+    "zip": {
+      "bytes": 1981018,
+      "sha256": "9f60015e1ccd32f7b59b2f124466e39a3d2edf2cf42053847d7f8f56eb5df6d5"
+    },
+    "tar": {
+      "bytes": 5099520,
+      "sha256": "faf18197dd2c68aea4f87327fc0d515ae613994bee6d4005a298801646b6f02e"
+    },
+    "regular_files": 22,
+    "file_bytes": 5070397,
+    "files": {
+      "build-integrity.json": {
+        "bytes": 5013,
+        "sha256": "57d426cab51d0532b0d1557647f446eaecdd153e7d82be22261411c0f725fe44"
+      },
+      "favicon.svg": {
+        "bytes": 501,
+        "sha256": "fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373"
+      },
+      "brand-lockup.svg": {
+        "bytes": 788,
+        "sha256": "9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87"
+      },
+      "system-map.svg": {
+        "bytes": 7539,
+        "sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850"
+      },
+      "assets/wat-4kfTsMVw.js": {
+        "bytes": 77,
+        "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b"
+      },
+      "assets/wat-CR-H2qbq.wasm": {
+        "bytes": 102443,
+        "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+      },
+      "assets/index-B3Ud81Bn.js": {
+        "bytes": 3502823,
+        "sha256": "b25ed42d329541d16a1588f4d70031e66ea0b7db7c496b0dce552eb53d1a3977"
+      },
+      "assets/arm-wat-only-store-CpWQrDGP.js": {
+        "bytes": 152,
+        "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d"
+      },
+      "THIRD-PARTY-NOTICES.txt": {
+        "bytes": 140901,
+        "sha256": "0b59b07b2c5751f81768f500f867bf18d8774830ba8739bbaf19491d084ccd3c"
+      },
+      "index.html": {
+        "bytes": 1351,
+        "sha256": "c19f80b2f3625edd95267d9d9b0e586b96c5f2554a49fa9edb90e9b74f5f3626"
+      },
+      "brand-lockup-light.svg": {
+        "bytes": 789,
+        "sha256": "5832d31799f0a5d440124feda096d2105e413b2537f849a173b424361f6423a9"
+      },
+      "cmd/index.html": {
+        "bytes": 308,
+        "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+      },
+      "cmd/arm/index.html": {
+        "bytes": 308,
+        "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+      },
+      "screenshots/web-monitor.png": {
+        "bytes": 176593,
+        "sha256": "675d0c0d04e8dd1645060ab91f26b44c3afb43a2b4a93794167dca1a1d56af12"
+      },
+      "screenshots/web-leases.png": {
+        "bytes": 102137,
+        "sha256": "2e50fd116644cd19bce76dd7ec7932384e6e6f30d1f38d05494f483cc41bd1cd"
+      },
+      "screenshots/metadata.json": {
+        "bytes": 3125,
+        "sha256": "c66ddcbb39c4e697ab4abb9ec16b3efca8e34ff01b4b73124cf6371d68123263"
+      },
+      "screenshots/terminal-leases.png": {
+        "bytes": 112913,
+        "sha256": "2a6c50f9e9420b046b538c1fcafc7ae2e66a7d7dfcd1544ea32f49c1cebc9565"
+      },
+      "screenshots/terminal-monitor.png": {
+        "bytes": 157766,
+        "sha256": "86593d5073f662f31a1ab6e789351d279d7344e21f8d08a5192bedc6c0e0aeb8"
+      },
+      "screenshots/web-activity.png": {
+        "bytes": 128767,
+        "sha256": "86988db6a5d243cb8d4c229bd0212229aaa0e0adc9aabc49ec7b328b47bf3534"
+      },
+      "screenshots/terminal.png": {
+        "bytes": 217762,
+        "sha256": "c4fb62b30ee2b600646b73aadaf6c3870f13d0b4c7bdd4e089ed5df0420f7bfc"
+      },
+      "screenshots/web-host.png": {
+        "bytes": 159112,
+        "sha256": "d28aee809bdf2e0946cd276fecc292a5b00224d07b8d4b90a3ec4b0cbe01d1ca"
+      },
+      "screenshots/web-resources.png": {
+        "bytes": 249229,
+        "sha256": "56b7e34a93bdaff455091ae644f406cfe0bd4e5e65126e6088d2ffd190881298"
+      }
+    }
+  },
+  "capture": {
+    "metadata_sha256": "c66ddcbb39c4e697ab4abb9ec16b3efca8e34ff01b4b73124cf6371d68123263",
+    "build_integrity_sha256": "57d426cab51d0532b0d1557647f446eaecdd153e7d82be22261411c0f725fe44",
+    "source_commit": "2325f519fc899215b4711aa7d5ec4724ae639187",
+    "recorded_binary_sha256": "50e09d856191e305fe033e4270f42300c924f5da087756f51f150cc2f9ab2eba",
+    "UI_inputs": {
+      "inputs_sha256": "bbfacc9957642e3ee787a75d94668ee676627e9676aaf8027a223bb5f41564cc",
+      "input_count": 597,
+      "engine_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "assets": [
+        {
+          "file": "LICENSES.txt",
+          "bytes": 140022,
+          "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f"
+        },
+        {
+          "file": "arm-wat-only-store-DpLv8E9I.mjs",
+          "bytes": 154,
+          "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de"
+        },
+        {
+          "file": "arm.mjs",
+          "bytes": 4258623,
+          "sha256": "34eab0730d7b13941f000c0af4e3b368bb0abc7a675315338d13d8fb2ab94e56"
+        },
+        {
+          "file": "assets/wat-C2A9nalw.wasm",
+          "bytes": 102443,
+          "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea"
+        },
+        {
+          "file": "wat-2wrDwrzy.mjs",
+          "bytes": 62,
+          "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+        }
+      ]
+    },
+    "website_WAT": {
+      "file": "assets/wat-CR-H2qbq.wasm",
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    },
+    "images": [
+      {
+        "file": "web-monitor.png",
+        "sha256": "675d0c0d04e8dd1645060ab91f26b44c3afb43a2b4a93794167dca1a1d56af12",
+        "width": 1440,
+        "height": 1593,
+        "bytes": 176593,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-resources.png",
+        "sha256": "56b7e34a93bdaff455091ae644f406cfe0bd4e5e65126e6088d2ffd190881298",
+        "width": 1440,
+        "height": 2137,
+        "bytes": 249229,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-leases.png",
+        "sha256": "2e50fd116644cd19bce76dd7ec7932384e6e6f30d1f38d05494f483cc41bd1cd",
+        "width": 1440,
+        "height": 1000,
+        "bytes": 102137,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-activity.png",
+        "sha256": "86988db6a5d243cb8d4c229bd0212229aaa0e0adc9aabc49ec7b328b47bf3534",
+        "width": 1440,
+        "height": 1000,
+        "bytes": 128767,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-host.png",
+        "sha256": "d28aee809bdf2e0946cd276fecc292a5b00224d07b8d4b90a3ec4b0cbe01d1ca",
+        "width": 1440,
+        "height": 1334,
+        "bytes": 159112,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "terminal-monitor.png",
+        "sha256": "86593d5073f662f31a1ab6e789351d279d7344e21f8d08a5192bedc6c0e0aeb8",
+        "width": 1212,
+        "height": 1312,
+        "bytes": 157766,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "terminal.png",
+        "sha256": "c4fb62b30ee2b600646b73aadaf6c3870f13d0b4c7bdd4e089ed5df0420f7bfc",
+        "width": 1212,
+        "height": 1312,
+        "bytes": 217762,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "terminal-leases.png",
+        "sha256": "2a6c50f9e9420b046b538c1fcafc7ae2e66a7d7dfcd1544ea32f49c1cebc9565",
+        "width": 1212,
+        "height": 1312,
+        "bytes": 112913,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      }
+    ]
+  },
+  "unchanged_files_vs_previous_publication": {
+    "favicon.svg": {
+      "bytes": 501,
+      "sha256": "fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373"
+    },
+    "brand-lockup.svg": {
+      "bytes": 788,
+      "sha256": "9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87"
+    },
+    "system-map.svg": {
+      "bytes": 7539,
+      "sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850"
+    },
+    "assets/wat-4kfTsMVw.js": {
+      "bytes": 77,
+      "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b"
+    },
+    "assets/wat-CR-H2qbq.wasm": {
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    },
+    "assets/arm-wat-only-store-CpWQrDGP.js": {
+      "bytes": 152,
+      "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d"
+    },
+    "THIRD-PARTY-NOTICES.txt": {
+      "bytes": 140901,
+      "sha256": "0b59b07b2c5751f81768f500f867bf18d8774830ba8739bbaf19491d084ccd3c"
+    },
+    "brand-lockup-light.svg": {
+      "bytes": 789,
+      "sha256": "5832d31799f0a5d440124feda096d2105e413b2537f849a173b424361f6423a9"
+    }
+  }
+}

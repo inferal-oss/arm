@@ -5815,3 +5815,30 @@ guest projection. This does not rerun projected guest S3, the full test suite,
 Linux or hosted installation. Earlier failed preparation and V4 results stay
 failed. Public source/discovery publication and the exact-source cold-cache
 macOS/Linux install gate remain open.
+
+### Canonical discovery hosted artifact
+
+[Normalized hosted evidence](validation/website-canonical-discovery-hosted-2026-10-27.json)
+accepts workflow-dispatch run `40582224150`, attempt 1, at exact `2325f51`.
+The build succeeds; configure-pages and deploy are skipped. Typecheck, eighteen
+ownership and six capture Python cases, and ten Node cases pass without Node
+failures/skips. The original ZIP and safe TAR contain exactly 22 regular files,
+with three early static `go-import` tags naming the canonical module prefix and
+Git repository. Compiled install text, the ordered eight-image Gallery,
+clone/carrier instructions, WAT provenance and notices match their source.
+
+Eight fresh PNGs bind to `2325f51`, with bounded decoding, dimensions, CRCs and
+hashes independently checked and each image visually reviewed. The 597 embedded
+UI inputs are independently recomputed. Capture-binary hashes are recorded, but
+its binary and temporary built asset bodies are not retained in the Pages
+artifact; no independent binary reproducibility or all-descendant cleanup claim
+follows. These captures are illustrative, without staged remote execution.
+
+The earlier local static gate remains failed at its 22-file assertion: all seven
+original children pass and close, source/dependency/tool pins are restored, but
+raw Vite output also contains `.gitignore`. The pinned Pages upload action
+filters dotfiles, and the actual hosted TAR independently has 22 files. This
+accepts the hosted artifact without relabeling the local gate. Relevant main
+Go/module, website, embedded UI, capture and workflow inputs exactly match the
+tested candidate. Main publication, live HTTPS discovery and public Go-install
+acceptance remain unestablished by this validation-branch run.

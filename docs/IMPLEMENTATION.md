@@ -2215,3 +2215,10 @@ Trusted artifact-catalog policy is unchanged. A plain source installation still
 has an empty companion-artifact catalog and does not authorize remote seed or
 provisioning artifacts. Exact-source local native validation passes; discovery
 metadata publication and public installation of this source are not yet accepted.
+
+Discovery source `c97b410` adds static early `go-import` metadata at the root,
+`/cmd/` and `/cmd/arm/`, preserving the eight-item Gallery and clone/carrier
+instructions. Hosted validation accepts exact candidate `2325f51` and its
+22-file artifact, including fresh source-bound dashboard captures. All relevant
+main source/build inputs match that candidate. The validation run skips
+deployment; live discovery and public Go installation remain separate gates.
