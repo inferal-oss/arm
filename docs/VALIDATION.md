@@ -5877,3 +5877,30 @@ rehashes. No interrupted-descendant, hermetic or later-source acceptance follows
 Earlier failed/source-specific runs remain preserved. The main source hold is
 released after this audit; evidence-only successors do not retroactively change
 which commit was installed.
+
+### Focused native Linux race and recovery
+
+[Accepted evidence](validation/lease-clock-linux-race-recovery.json) records
+first attempt [run `40588888867`](https://github.com/inferal-oss/arm/actions/runs/40588888867)
+at tested source `e0d070d` and separate workflow `7f6f7be`. Independent review
+rehashes all 86 artifact members and parses exact raw Go events: 39 roots,
+125 run/pass nodes across two packages, zero skips/failures/duplicates. All four
+new roots and eight parameter cases execute. The race command completes in
+185.331 seconds; all 33 outer commands have one successful original Wait,
+retired/reaped/absent original leader and group, complete capture and no cleanup
+signals/errors. Inner crash ownership is supported by the actual passing source
+assertions, without a separately exported inner-process receipt corpus.
+
+Complete source/harness snapshots contain 2,551/2,552 files, matching Git bytes
+and modes before and after. All 23,434 selected tool entries, package records,
+25 module checksum files and selected GCC13.3.0 components/headers are stable.
+The actual provisioner image version differs from the inherited intent version;
+both are retained without an exact-image or universal compiler/OS trust claim.
+
+The tested production inputs match composed main at integration: 773 selected
+source paths compare, with only the two added Linux test files previously absent.
+All Go/module and focused runner/roster bytes match the accepted source after
+`0e5bc69`; evidence/docs are `7ac56c3`. Earlier failed VM runs and accepted S3
+observations retain their own source scope. This adds no VM/host power action,
+S3 repetition, managed-exec crash adoption, system OpenSSH, public-install or
+full-suite claim.

@@ -2232,3 +2232,21 @@ macOS arm64 and Linux amd64 using ordinary proxy/sumdb and disposable directorie
 Installed module identity, checksums, selected-version Origin and full source ZIP
 are independently verified. This establishes installation of S and leaves the
 thin companion-catalog limitation intact; later features retain separate gates.
+
+## Focused native Linux clock recovery
+
+Integration `0e5bc69` adds Linux-only tests and a bounded native race runner;
+`7ac56c3` records accepted first-run evidence. No production clock or admission
+implementation changes. Actual Linux coverage includes live/expired reopen,
+foreign boot/legacy/malformed/regressed checkpoint refusal, seeded generic/SSH
+matching-PID nonauthority, and a genuine disposable Manager-owner crash with a
+real unjoined relay allocation. Two subsequent ledger opens retain the original
+request/key/clock/charge and refuse replay or invented settlement; the separate
+owned workload finishes normally.
+
+The exact source passes 39 roots/125 named nodes and 33 original command
+closures under Linux race instrumentation. Existing selected source and module
+inputs match the composed main exactly; only the two new test files are added.
+This supplies focused native Linux recovery evidence, alongside separately
+scoped S3 evidence. It does not establish managed-exec crash recovery, another
+suspend cycle, system OpenSSH, a hermetic compiler or full-suite acceptance.
