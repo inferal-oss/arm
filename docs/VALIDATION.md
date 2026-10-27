@@ -1542,7 +1542,7 @@ The full macOS race suite, `go vet ./...`, the expanded Linux acceptance harness
 
 ## October 21, 2026: user installation target
 
-`make install` now builds with CGo disabled and installs the executable under `~/.local/bin` by default. Verification used an isolated prefix with spaces, checked the installed binary's mode (0755), compared its content with the build output, invoked its version command, repeated installation, and checked package staging with `DESTDIR` and `/usr/local` as the prefix. These checks did not install ARM into live agent configuration or start a persistent user service. `PREFIX` and `BINDIR` are configurable; agent instructions remain a separate `arm install` operation.
+`make install` now builds with CGo disabled and installs the executable in the per-user binary directory by default. Verification used an isolated prefix with spaces, checked the installed binary's mode (0755), compared its content with the build output, invoked its version command, repeated installation, and checked package staging with `DESTDIR` and `/usr/local` as the prefix. These checks did not install ARM into live agent configuration or start a persistent user service. `PREFIX` and `BINDIR` are configurable; agent instructions remain a separate `arm install` operation.
 
 ## October 21, 2026: managed storage lifecycle
 
@@ -1554,7 +1554,7 @@ Actual offline Cargo builds passed on macOS and Linux arm64, retaining the execu
 
 The expanded compiled CLI smoke test passed on both platforms, covering storage creation, retained output, read-only cleanup preview, uninstall refusal for retained storage, explicit handoff with preserved files, conservative cleanup accounting, and the earlier admission/cancellation checks. The full macOS race suite passed after correcting an overly short combined deadline for consecutive healthy native activity queries. Each activity query remains bounded independently; ambiguous or timed-out checks refuse deletion. Linux tests run as the unprivileged, isolated container described below, with creation-time and mount identity checks enabled.
 
-The development toolchain was also installed independently at `~/.local/share/go/1.27.3` and added to Fish's persistent user paths. A fresh Fish login shell resolved Go 1.27.3 and built the project using plain `make build`, with default user Go module/build caches and no project-specific environment overrides.
+A fresh shell resolved Go 1.27.3 and built the project using plain `make build`, with default module/build caches and no project-specific environment overrides.
 
 ## October 21, 2026: host observations and Linux runtime
 
@@ -4500,3 +4500,84 @@ counts, public CI/source references, compatibility and unsupported scope.
 Insert abort and pre-cancellation are exercised; actual power failure or lost
 durable-commit acknowledgement is not. No public/cross-host sync, physical
 allocation, native cleanup, lease settlement or formal acceptance is implied.
+
+
+### Terminal gauge refresh and interaction acceptance
+
+Reviewed source `70306d3` is integrated with technical evidence `7391995` onto
+the current sync-ledger base. [Full native run 40434230427](https://github.com/inferal-oss/arm/actions/runs/40434230427)
+passes on macOS 15.7.9 arm64 and Ubuntu 24.04.5 amd64 with Go 1.27.3: each has
+166 passing TUI roots/345 named outcomes, six explicitly listed existing optional
+skips, vet/build, 217 web tests and both actual PTYs. The final cleanup-only
+[successor 40435206806](https://github.com/inferal-oss/arm/actions/runs/40435206806)
+passes native build/buildinfo and both PTYs on both platforms without falsely
+claiming another TUI/web suite execution.
+
+RAM and filesystem-space measurements remain present for all 24 refresh checks
+on each platform. Actual disconnect produces unavailable values, reconnect
+restores measurements and terminal flags/alternate-screen state are restored.
+Original command/Wait, image, source and disposable cleanup closure are positive.
+Root independently verifies all four artifact ZIP digests, all 89 delivery
+gauge input and four unchanged accepted memory-producer hashes, plus original
+command/controller exits and gauge receipts.
+
+[Normalized evidence](validation/terminal-gauge-2026-10-26.json) preserves complete
+pass/skip rosters, source/image hashes, original failures and input-bound reuse.
+The full suite ran on the canonical reference with the accepted producer; the
+current delivery projection is verified by exact relevant-file equality.
+Unrelated primary integrations were not rerun by those hosted jobs. Generic UI
+fixtures use real counted pools for their policy/entitlement semantics, without
+CPU overrides or claims of native CPU-admission coverage. No native terminal-app
+GUI, all-container, whole-primary-suite or elapsed-lease authority acceptance is
+inferred. Raw private execution records remain outside version control.
+
+
+### Bounded private workspace block survey
+
+Reviewed sources `a4315fb`, `1aeb712` and `616211b` pass native race and vet
+gates. [Linux run 40436990044](https://github.com/inferal-oss/arm/actions/runs/40436990044)
+passes 46 roots/48 named outcomes, with the opt-in mount fixture skipped in the
+ordinary run and then passing separately: one root/four named outcomes cover
+actual same-device directory, file and symlink mounts with distinct mount IDs.
+The original missed-symlink failure, corrected cleanup and unchanged external
+namespace/catalog evidence are retained.
+
+[Darwin run 40437710663](https://github.com/inferal-oss/arm/actions/runs/40437710663)
+passes 48 roots/50 named outcomes without skips. Native descriptor checks prove
+that symlink inspection opens the original link inode and its containing mount.
+Equal-filesystem-ID/different-mountpoint cases use a value seam; no actual Darwin
+mount-negative or Linux arm64 execution is claimed. The Darwin-only successor
+retains Linux acceptance through 1,865 unchanged inputs.
+
+Root independently verifies the eight composed source hashes, both artifact ZIP
+digests, all seven original command exits/log hashes and source closure. The
+[normalized record](validation/sync-workspace-allocation-2026-10-26.json) preserves
+failures, rosters, reuse boundaries and limits. This is a diagnostic observation;
+physical enforcement, cleanup/settlement, public dispatch and formal acceptance
+remain open. Gauge changes affect a separate package and do not alter these
+filesystem inputs.
+
+
+### Pinned local forwarding TLS integration
+
+Reviewed source `6441136` composes exact source-listener authentication with the
+development HTTP/raw clients. [Native run 40438316777](https://github.com/inferal-oss/arm/actions/runs/40438316777)
+passes on macOS arm64 and Ubuntu amd64: 25 default race roots/41 named outcomes,
+four tagged route roots/six named outcomes, affected vet, default/review builds
+and exact buildinfo on each. Actual compiled B-through-A-to-C TLS-backed clients
+pass without direct B-C enrollment, including denial, live revocation, source
+Stop/retained-charge recovery and once-only truncated HTTP unknown outcomes.
+
+[Protocol successor 40439845400](https://github.com/inferal-oss/arm/actions/runs/40439845400)
+passes one root/five named outcomes on each platform for valid omitted ALPN and
+same-key certificate renewal in both pin directions. Only that test and two CI
+helpers changed; runtime, build and three-node acceptance is inherited through
+exact unchanged inputs, not claimed as rerun. All selected cases pass without
+skips. Root independently verifies ten composed input hashes, all four ZIP
+digests, every manifest digest, original command/Wait exits and source closure.
+
+[Normalized evidence](validation/forward-local-tls-review-2026-10-26.json) includes
+rosters, source/image hashes, original findings and limits. The allocation survey
+affects a separate package and does not change the TLS execution inputs. No
+production enablement, operating-system process identity, safe legacy plaintext
+port handoff, native elapsed-clock or full forwarding acceptance is inferred.

@@ -16,8 +16,9 @@ import (
 	"github.com/inferal-oss/arm/internal/model"
 )
 
-// A stream is a local client of one already-owned source listener. The raw
-// bearer never enters a URL, backend RPC, process argument or stdout.
+// A stream is a local client of one status-reported source listener. The raw
+// bearer enters only the pinned TLS connection, never a URL, backend RPC,
+// process argument or stdout.
 func (a *app) meshForwardStream(args []string) (int, error) {
 	f := a.flags("mesh forward stream")
 	key := f.String("key", "", "exact active source listener key")
@@ -68,8 +69,7 @@ func (a *app) dialForwardSource(key, tokenFile string) (net.Conn, forwardSourceC
 	if err != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() || status.Key != key || status.State != "active" || !status.OriginalOwner {
 		return nil, status, errors.New("exact active daemon-owned loopback source listener required")
 	}
-	dialer := net.Dialer{Timeout: 5 * time.Second}
-	conn, err := dialer.DialContext(a.ctx, "tcp", status.Bind)
+	conn, err := dialForwardSourceTLS(a.ctx, a.home, status.Bind)
 	if err != nil {
 		return nil, status, err
 	}
@@ -91,6 +91,7 @@ func (a *app) dialForwardSource(key, tokenFile string) (net.Conn, forwardSourceC
 // bytes already following READY on the same transport write.
 func confirmForwardSource(ctx context.Context, conn net.Conn, token string) (err error) {
 	if err = ctx.Err(); err != nil {
+		_ = conn.Close()
 		return err
 	}
 	finished := make(chan struct{})
@@ -107,6 +108,7 @@ func confirmForwardSource(ctx context.Context, conn net.Conn, token string) (err
 		close(finished)
 		<-watchDone
 		if ctx.Err() != nil {
+			_ = conn.Close()
 			err = ctx.Err()
 		}
 	}()

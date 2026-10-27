@@ -1591,10 +1591,10 @@ budget and bounded interim count, refuses protocol upgrades and follows no
 redirects. Stdout carries service data; terminal output requires explicit opt-in.
 Interrupted application exchanges retain typed unknown-outcome errors.
 
-Ordinary builds still refuse forwarding grant/start/stream/http. The current
-loopback token/READY exchange authenticates the client to the listener, but does
-not mutually authenticate the local server after a port handoff. Native source
-TLS binding and suspend-aware lease guards are separate required compositions.
+Ordinary builds still refuse forwarding grant/start/stream/http. Updated HTTP/raw clients authenticate the local source through the exact current
+mesh certificate before sending the bearer or application data. Legacy plaintext
+callers retain their existing port-handoff risk. Suspend-aware lease guards
+remain a separate required composition.
 Total grant byte-credit, arbitrary blocking application I/O, browser/unmodified
 clients, native macOS and broader formal/platform acceptance remain incomplete.
 No production enablement follows from this development milestone.
@@ -1619,3 +1619,58 @@ pairs. Missing indexes, mismatched markers and retained used sync history remain
 blocking evidence. Empty locator rows alone never prove physical reclamation.
 Public sync orchestration, allocation enforcement, cleanup/settlement and formal
 acceptance remain separate work.
+
+
+## Terminal gauge receipt freshness
+
+Each accepted dashboard update uses one current clock cut for receipt timestamps
+and its render. Asynchronous monitor, resource and selected-host readings cannot
+be newer than an older cached tick, and a queued tick cannot roll the render
+clock behind a receipt. Retired sessions and unrelated messages never refresh
+held observation deadlines. Genuine stale, future, missing or disconnected
+readings remain unavailable; only a fresh accepted reading restores them.
+
+Mouse actions validate against the displayed frame before the new clock cut.
+Ignored raw mouse events cannot invalidate their own wrapped action, while
+intervening content, modal or geometry changes still reject stale clicks.
+Combined-cgroup resident usage remains unknown while measured availability is
+displayed; To-lease values remain backend-derived. This display correction is
+not a native elapsed-lease authority or universal host-counter accuracy proof.
+
+
+## Read-only private workspace block survey
+
+`SurveyWorkspace` reopens an exact marked reservation through held descriptors
+and observes reported `st_blocks` without following symlink targets. It bounds
+the walk to 100,000 entries and depth 128, checks owner/device and object, link,
+block and mount identities before and after traversal, and returns no usable
+partial result on change, cancellation or overflow. Linux requires native
+`STATX_MNT_ID` for directories, files and symlinks. Darwin pairs descriptor
+filesystem ID with its nonempty reported mountpoint and opens the link inode
+itself; this is a weaker platform observation, not a Linux-equivalent mount ID.
+
+The result can double count hardlinks, clones and shared blocks. It supplies no
+reservation, write cap, kernel quota, exclusive-allocation or reclamation proof.
+It adds no cleanup, settlement or public sync dispatch. Concurrent same-account
+writers prevent an atomic snapshot, and a cancellation check cannot force stalled
+kernel I/O to return. Broader allocation enforcement remains required.
+
+
+## Pinned local source TLS for development forwarding
+
+The original source listener validates its private mesh Store identity before
+acquiring its port/resource lease and retains that certificate snapshot. Updated
+CLI HTTP/raw clients validate the current private registry identity, use ordinary
+x509 verification against that exact certificate/SAN and require TLS 1.3, the
+local-forward ALPN and no resumed session. They send no bearer or application
+data before authentication, with no plaintext retry or alternate trust root.
+A renewed certificate makes current clients refuse an older listener snapshot
+until it restarts. This proves possession of the mesh signing identity, not an
+operating-system process identity.
+
+The fenced compatible listener retains existing plaintext modes and their bearer
+risk. Original admission, active connection limits, Stop/revocation and retained
+charge recovery remain authoritative. Application truncation returns the partial
+result with an unknown-outcome error and performs no replay. Production forwarding
+remains disabled; native elapsed-time guards, aggregate credit, broader platform,
+browser/UI and formal acceptance remain separate.

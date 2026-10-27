@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/local"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/server"
 )
@@ -57,9 +58,23 @@ func TestDashboardUsesRealBackendForReviewedActionsAndReconnect(t *testing.T) {
 			t.Fatal("first shared host sample missing")
 		}
 	}
-	var l model.Lease
-	if err := client.Call(ctx, home, "acquire", model.Request{Reason: "terminal dashboard acceptance", Resources: model.Resources{CPU: 1}, TTL: time.Minute}, &l); err != nil {
+	// This exercises real reviewed actions/reconnect, not native CPU admission.
+	// Use an actual finite ledger pool so host pressure remains fully effective.
+	capacity := int64(2)
+	var created model.PoolChange
+	if err := client.Call(ctx, home, "pool_mutate", model.PoolMutation{Operation: "create", Name: "terminal action fixture", Scope: "global", Unit: "permits", Capacity: &capacity, Reason: "real terminal action fixture", Key: local.ID(), Reviewed: &model.PoolReview{Authority: m.data.status.Host, Consumers: []model.LeaseRevision{}}}, &created); err != nil {
 		t.Fatal(err)
+	}
+	var l model.Lease
+	if err := client.Call(ctx, home, "acquire", model.Request{Reason: "terminal dashboard acceptance", Pools: []model.PoolClaim{{Pool: created.Pool.ID, Quantity: 1}}, TTL: time.Minute}, &l); err != nil {
+		t.Fatal(err)
+	}
+	var charged model.PoolView
+	if l.State != "active" || l.Request.Resources.CPU != 0 || len(l.Request.Pools) != 1 || l.Request.Pools[0].Pool != created.Pool.ID || l.Request.Pools[0].Quantity != 1 {
+		t.Fatal("fixture did not acquire the exact real counted claim", l)
+	}
+	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &charged); err != nil || charged.Reserved != 1 || charged.Available != 1 {
+		t.Fatal("real fixture reservation missing", charged, err)
 	}
 	defer func() { _ = client.Call(context.Background(), home, "release", map[string]string{"id": l.ID}, nil) }()
 	m.Update(m.loadDetail(l.ID)())
@@ -103,6 +118,9 @@ func TestDashboardUsesRealBackendForReviewedActionsAndReconnect(t *testing.T) {
 	defer m.session.Close()
 	if !m.connected || m.data.status.Reserved.CPU != 0 {
 		t.Fatal("reconnect failed to load authoritative state")
+	}
+	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &charged); err != nil || charged.Reserved != 0 || charged.Available != capacity || len(charged.Users) != 0 {
+		t.Fatal("reconnect did not retain released counted-pool accounting", charged, err)
 	}
 	var events []model.Event
 	if err := client.Call(ctx, home, "events", map[string]int64{"after": 0}, &events); err != nil {

@@ -1,0 +1,633 @@
+{
+  "accepted_scoped_gates": true,
+  "artifact_verification": {
+    "ZIP_digest_safe_names_types_sizes_whitelist_and_all_receipt_digests_verified": true,
+    "archives": [
+      {
+        "artifact": 12705028352,
+        "platform": "macos",
+        "receipt_files": 37,
+        "run": 40438316777,
+        "sha256": "6f0cc5dd7e01f471d777b52f978a13d3dcc518ae74de5af11cdd0c4034c10c3b"
+      },
+      {
+        "artifact": 12705377439,
+        "platform": "ubuntu",
+        "receipt_files": 37,
+        "run": 40438316777,
+        "sha256": "4d8f1c17c9682e28c68c77e5e9779329383e2232b0386f23583b78de87017692"
+      },
+      {
+        "artifact": 12706186379,
+        "platform": "macos",
+        "receipt_files": 21,
+        "run": 40439845400,
+        "sha256": "a78d30213ccacd715956c6227f440132fb90b224db420aa0fe69a82bdc9a6b37"
+      },
+      {
+        "artifact": 12706221215,
+        "platform": "ubuntu",
+        "receipt_files": 21,
+        "run": 40439845400,
+        "sha256": "1555bf89c3ba56552e9933e5cac7e87cdaf27851458544b348fbf911e1d91171"
+      }
+    ]
+  },
+  "behavior": [
+    "CLI reads the existing private native mesh registry, validates current identity, pins exact certificate/SPKI/SAN with ordinary x509 verification, and requires TLS1.3 plus the local-forward ALPN without session resumption.",
+    "No bearer or application bytes are sent before source identity verification. There is no verification bypass, alternate root, hostname override, plaintext retry or redirect to another source.",
+    "Source validates its current private Store certificate before acquiring a port/resource lease, holds that TLS snapshot in its original listener owner, and serves compatible TLS while preserving existing legacy modes.",
+    "Original lease/admission, active-connection cap, Stop/revoke, join/settlement and retained-charge recovery remain authoritative. TLS does not settle uncertain work or prove application completion."
+  ],
+  "delivery": {
+    "base": "0ec2b5778862f95b02a154d2193b1e860e473a86",
+    "final_reference_source": "a7c52e8b6f3e29c96121f0fc4878fd5ee4fbcbf2",
+    "owned_input_sha256": {
+      "internal/cli/mesh_forward_client_tls.go": "742d2dda9f4c9765f32d968e0ee7429a65b20b2813daddeb13e5030b26a053bb",
+      "internal/cli/mesh_forward_client_tls_test.go": "0646cfd5835c236e4bb93b3478ff972d06f309afcc289ccb661a57c4781fa594",
+      "internal/cli/mesh_forward_stream.go": "144d254d754be842828dd2d64d6c737f57506674f2202305bd5c001a261fd430",
+      "internal/mesh/local_forward_tls.go": "358f0831a3418f06f280d96e5adc23be255d7b4acf01572922524d56815b6bdb",
+      "internal/mesh/local_forward_tls_review_test.go": "febf027bf1f7b9173bce31c2704d97226d681f9d22ca4777b6a678e654a19ec6",
+      "internal/meshforward/local_tls.go": "4f7a2f5e814ec41f462f98e4e7f4f59f11817c73acfb3ca1dc8d5a15470f16be",
+      "internal/meshforward/local_tls_test.go": "b579e5965ef84da44ef180a936d2f9f07057b33aa704ac09a00bd07c7e8a9358",
+      "internal/server/mesh_forward_source.go": "dd3af8299486e24d151038143cb425dcff20aaffcbe9610faf4804495ecead62",
+      "internal/server/mesh_forward_source_tls_review_test.go": "0b37770e553d0f4ed5f176fbb2bcba13a87b0b0223b07168a8224166cac10b62",
+      "scripts/test-routed-forward.py": "711f58226d43d412a52fee694bdf172805df2ee7caea4510982ef32c2dc94374"
+    },
+    "projection": {
+      "description": "All reference source, module, test and harness bytes match except two excluded CI-only helpers. Full gates use exact immutable 6d67b82; only a named mesh review test and CI helpers differ in the final protocol successor. No Manager, clock, authority or resource predicate changes.",
+      "excluded_CI_only_files": [
+        ".github/workflows/forward-tls-independent-validation.yml",
+        "scripts/validate-forward-tls.py"
+      ],
+      "matching_reference_files": 1872,
+      "reference_file_roster_sha256": "526396b7cd4a8103d76d203e0e3da3defeff1875b42dbb43a856824c7924370d"
+    },
+    "source": "644113678f2add6d92f5976839f67271892bbc6f"
+  },
+  "feature": "Pinned local TLS for development forwarding clients and owned source listener",
+  "final_protocol_oracle_native_gates": [
+    {
+      "cleanup": {
+        "private_root_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "all_commands_waited": true,
+        "image_unchanged": null,
+        "review_image_unchanged": null,
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.011031,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "go-environment",
+          "seconds": 0.012322,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "node-version",
+          "seconds": 0.143457,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "protocol-race",
+          "seconds": 40.91206,
+          "waited": true
+        }
+      ],
+      "complete": true,
+      "failures": [],
+      "images_not_rebuilt": true,
+      "inherited_full_scope": {
+        "changed": [
+          ".github/workflows/forward-tls-independent-validation.yml",
+          "internal/mesh/local_forward_tls_review_test.go",
+          "scripts/validate-forward-tls.py"
+        ],
+        "full_suite_run": 40438316777,
+        "full_suite_source": "6d67b82dde88bce5e64b9691e4ec628964ebb5c5",
+        "inherited_checks_not_executed": [
+          "default-race",
+          "review-route-race",
+          "affected-vet",
+          "native-build",
+          "review-build",
+          "public-three-node-cli"
+        ]
+      },
+      "native": {
+        "arch": "arm64",
+        "cgo": "1",
+        "child_umask": "0o22",
+        "distribution": null,
+        "go": "go1.27.3",
+        "macos_version": "15.7.9",
+        "os": "darwin",
+        "runner_label": "macos-15"
+      },
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40439845400",
+      "scope": "protocol-oracle-successor",
+      "source": "a7c52e8b6f3e29c96121f0fc4878fd5ee4fbcbf2",
+      "source_manifest_sha256": "2e5c65fe69686f94266df0b388cfb5ca1a757607e3d49b6d7bdb81d25eb03f81",
+      "test_phases": {
+        "protocol-race": {
+          "failed": [],
+          "passing_named": 5,
+          "passing_roots": 1,
+          "roster": "40439845400:protocol-race",
+          "skipped": []
+        }
+      },
+      "tracked_files": 1874,
+      "tree": "3c848e2e241b39a097c209b0321344016c544b99"
+    },
+    {
+      "cleanup": {
+        "private_root_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "all_commands_waited": true,
+        "image_unchanged": null,
+        "review_image_unchanged": null,
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.003657,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "go-environment",
+          "seconds": 0.003535,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "node-version",
+          "seconds": 0.003438,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "protocol-race",
+          "seconds": 45.017828,
+          "waited": true
+        }
+      ],
+      "complete": true,
+      "failures": [],
+      "images_not_rebuilt": true,
+      "inherited_full_scope": {
+        "changed": [
+          ".github/workflows/forward-tls-independent-validation.yml",
+          "internal/mesh/local_forward_tls_review_test.go",
+          "scripts/validate-forward-tls.py"
+        ],
+        "full_suite_run": 40438316777,
+        "full_suite_source": "6d67b82dde88bce5e64b9691e4ec628964ebb5c5",
+        "inherited_checks_not_executed": [
+          "default-race",
+          "review-route-race",
+          "affected-vet",
+          "native-build",
+          "review-build",
+          "public-three-node-cli"
+        ]
+      },
+      "native": {
+        "arch": "amd64",
+        "cgo": "1",
+        "child_umask": "0o22",
+        "distribution": {
+          "NAME": "Ubuntu",
+          "PRETTY_NAME": "Ubuntu 24.04.5 LTS",
+          "VERSION_ID": "24.04"
+        },
+        "go": "go1.27.3",
+        "macos_version": "",
+        "os": "linux",
+        "runner_label": "ubuntu-24.04"
+      },
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40439845400",
+      "scope": "protocol-oracle-successor",
+      "source": "a7c52e8b6f3e29c96121f0fc4878fd5ee4fbcbf2",
+      "source_manifest_sha256": "2e5c65fe69686f94266df0b388cfb5ca1a757607e3d49b6d7bdb81d25eb03f81",
+      "test_phases": {
+        "protocol-race": {
+          "failed": [],
+          "passing_named": 5,
+          "passing_roots": 1,
+          "roster": "40439845400:protocol-race",
+          "skipped": []
+        }
+      },
+      "tracked_files": 1874,
+      "tree": "3c848e2e241b39a097c209b0321344016c544b99"
+    }
+  ],
+  "full_composed_native_gates": [
+    {
+      "cleanup": {
+        "private_root_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "all_commands_waited": true,
+        "image_unchanged": true,
+        "review_image_unchanged": true,
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.014446,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "go-environment",
+          "seconds": 0.00969,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "node-version",
+          "seconds": 0.201905,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "default-race",
+          "seconds": 264.400011,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "review-route-race",
+          "seconds": 68.546395,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "affected-vet",
+          "seconds": 190.365611,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "native-build",
+          "seconds": 11.46928,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "buildinfo",
+          "seconds": 0.030595,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "review-build",
+          "seconds": 10.188183,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "review-buildinfo",
+          "seconds": 0.051234,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "public-three-node-cli",
+          "seconds": 75.762634,
+          "waited": true
+        }
+      ],
+      "complete": true,
+      "failures": [],
+      "image": {
+        "bytes": 65957842,
+        "sha256": "e306fa7138fdbf17a6c84400c35ad676d2cf82a0137a90956b5a48dcb49286ed"
+      },
+      "native": {
+        "arch": "arm64",
+        "cgo": "1",
+        "child_umask": "0o22",
+        "distribution": null,
+        "go": "go1.27.3",
+        "macos_version": "15.7.9",
+        "os": "darwin",
+        "runner_label": "macos-15"
+      },
+      "public_three_node_cli": {
+        "coverage": [
+          "public compiled TLS-backed HTTP and raw clients",
+          "B through A to C with no B-C enrollment",
+          "unauthenticated and wrong-token denial",
+          "destination current revocation",
+          "source list/status/Stop and exact retained-charge recovery",
+          "truncated HTTP response produces partial output and remote_outcome_unknown after exactly one application request"
+        ],
+        "passed": true,
+        "reported_result": "PASS public CLI B\u2192A\u2192C authenticated HTTP and raw duplex TCP, private-token HTTP and stdio clients, no B\u2013C enrollment, source lifecycle, once-only unknown service outcome and destination revocation"
+      },
+      "review-image": {
+        "bytes": 66067906,
+        "sha256": "a87b436129b60c3747124ab8bb1a4c9e41e76e2b0cb8a28e2425590dffc2df67"
+      },
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40438316777",
+      "scope": "composed-local-forward-tls",
+      "source": "6d67b82dde88bce5e64b9691e4ec628964ebb5c5",
+      "source_manifest_sha256": "1b30959536cf9b549b067a3562e322bebc8f94c3fab8866cedcd086ad0781bc7",
+      "test_phases": {
+        "default-race": {
+          "failed": [],
+          "passing_named": 41,
+          "passing_roots": 25,
+          "roster": "40438316777:default-race",
+          "skipped": []
+        },
+        "review-route-race": {
+          "failed": [],
+          "passing_named": 6,
+          "passing_roots": 4,
+          "roster": "40438316777:review-route-race",
+          "skipped": []
+        }
+      },
+      "tracked_files": 1874,
+      "tree": "ebf4599b17142f01185537afaf7c0ec226cdf390"
+    },
+    {
+      "cleanup": {
+        "private_root_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "all_commands_waited": true,
+        "image_unchanged": true,
+        "review_image_unchanged": true,
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.008208,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "go-environment",
+          "seconds": 0.007875,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "node-version",
+          "seconds": 0.007894,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "default-race",
+          "seconds": 271.028102,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "review-route-race",
+          "seconds": 45.876268,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "affected-vet",
+          "seconds": 219.171486,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "native-build",
+          "seconds": 4.877951,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "buildinfo",
+          "seconds": 0.003711,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "review-build",
+          "seconds": 7.383742,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "review-buildinfo",
+          "seconds": 0.003682,
+          "waited": true
+        },
+        {
+          "controller_exit": 0,
+          "exit": 0,
+          "name": "public-three-node-cli",
+          "seconds": 66.704512,
+          "waited": true
+        }
+      ],
+      "complete": true,
+      "failures": [],
+      "image": {
+        "bytes": 68597350,
+        "sha256": "b3cc28ed65e7af760e6847d8c7069f72773a5a6c0fdfd8d998a4cad2f352f72a"
+      },
+      "native": {
+        "arch": "amd64",
+        "cgo": "1",
+        "child_umask": "0o22",
+        "distribution": {
+          "NAME": "Ubuntu",
+          "PRETTY_NAME": "Ubuntu 24.04.5 LTS",
+          "VERSION_ID": "24.04"
+        },
+        "go": "go1.27.3",
+        "macos_version": "",
+        "os": "linux",
+        "runner_label": "ubuntu-24.04"
+      },
+      "public_three_node_cli": {
+        "coverage": [
+          "public compiled TLS-backed HTTP and raw clients",
+          "B through A to C with no B-C enrollment",
+          "unauthenticated and wrong-token denial",
+          "destination current revocation",
+          "source list/status/Stop and exact retained-charge recovery",
+          "truncated HTTP response produces partial output and remote_outcome_unknown after exactly one application request"
+        ],
+        "passed": true,
+        "reported_result": "PASS public CLI B\u2192A\u2192C authenticated HTTP and raw duplex TCP, private-token HTTP and stdio clients, no B\u2013C enrollment, source lifecycle, once-only unknown service outcome and destination revocation"
+      },
+      "review-image": {
+        "bytes": 68723181,
+        "sha256": "1512986ad5053602378d608439f8ad7b3a99bf9f8c824d371cf693d9a3873d03"
+      },
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40438316777",
+      "scope": "composed-local-forward-tls",
+      "source": "6d67b82dde88bce5e64b9691e4ec628964ebb5c5",
+      "source_manifest_sha256": "1b30959536cf9b549b067a3562e322bebc8f94c3fab8866cedcd086ad0781bc7",
+      "test_phases": {
+        "default-race": {
+          "failed": [],
+          "passing_named": 41,
+          "passing_roots": 25,
+          "roster": "40438316777:default-race",
+          "skipped": []
+        },
+        "review-route-race": {
+          "failed": [],
+          "passing_named": 6,
+          "passing_roots": 4,
+          "roster": "40438316777:review-route-race",
+          "skipped": []
+        }
+      },
+      "tracked_files": 1874,
+      "tree": "ebf4599b17142f01185537afaf7c0ec226cdf390"
+    }
+  ],
+  "limitations": [
+    "Production forwarding stays disabled; these tests use the explicit development tag where required. No browser trust installation, Basic fallback or new remote authority is introduced.",
+    "Source authentication proves possession of the pinned mesh signing identity, not the identity of an operating-system process or application. Existing legacy plaintext callers retain their prior port-handoff bearer risk and are not source-authenticated clients.",
+    "The original listener owns a certificate snapshot. A later certificate renewal makes current CLI pins refuse that older snapshot until the listener is restarted; no silent certificate adoption occurs.",
+    "Existing Manager join/recovery unit fixtures use controlled resource observations. Actual compiled three-daemon workflows use unmodified native availability collectors on hosted macOS arm64 and Ubuntu amd64; no CPU observation override is used for them.",
+    "Source Stop may retain a charge while exact port reclamation remains unresolved. The public fixture explicitly retains that state and requires original-process exit, exclusive ownership and exact-key recovery rather than reporting premature settlement.",
+    "This accepts scoped source-binding integration, not the complete forwarding specification. Native suspend-aware remaining-time guards, broader route-loss/resource-credit/platform/UI/formal gates remain separate work.",
+    "All selected cases passed without skips. The native fallback queue was cancelled before a validation child started and supplies no test result. Raw receipts remain outside version control or in expiring CI artifacts; normalized rosters, exits, source/image hashes and public references are retained here."
+  ],
+  "passing_test_rosters": {
+    "40438316777:default-race": [
+      "TestCompatibleLocalTLSKeepsLegacyControlPrefix",
+      "TestDisabledForwardAuthorityUnavailable",
+      "TestForwardHTTPClientAlreadyCanceledSendsNothing",
+      "TestForwardHTTPClientBoundsServiceResponseHeaders",
+      "TestForwardHTTPClientDoesNotFollowServiceRedirect",
+      "TestForwardHTTPClientInformationalResponses",
+      "TestForwardHTTPClientInformationalResponses/HEAD_excludes_service_body",
+      "TestForwardHTTPClientInformationalResponses/LF_response_streams_body_beyond_header_bound",
+      "TestForwardHTTPClientInformationalResponses/aggregate_informational_header_bound",
+      "TestForwardHTTPClientInformationalResponses/bounded_informational_count",
+      "TestForwardHTTPClientInformationalResponses/early_hints_then_success",
+      "TestForwardHTTPClientInformationalResponses/reject_upgrade",
+      "TestForwardHTTPClientProductionFence",
+      "TestForwardHTTPClientSendsOnlyOriginRequest",
+      "TestForwardHTTPClientTerminalGuardPrecedesSourceAccess",
+      "TestForwardListenerCrashRecoveryAfterExclusiveProcessFence",
+      "TestForwardListenerJoinedPortAllowsResetProof",
+      "TestForwardListenerPortAndResourcesJoinBeforeSettlement",
+      "TestForwardLocalAlreadyCanceledAdmissionClosesConnection",
+      "TestForwardLocalPortHandoffNeverExposesBearer",
+      "TestForwardLocalRejectsDifferentCertificateForSameHost",
+      "TestForwardLocalTLSHandshakeCancellation",
+      "TestForwardLocalTLSPreservesPrefetchedReadyBytes",
+      "TestForwardOriginalOpenerFailureRetainedWithoutReplayOrApplicationDisclosure",
+      "TestForwardSourceAdmissionACKPreservesApplicationBytes",
+      "TestForwardSourceAdmissionACKPreservesApplicationBytes/ARM-FORWARD/2_READY",
+      "TestForwardSourceAdmissionACKPreservesApplicationBytes/ARM-FORWARD/2_REFUSED",
+      "TestForwardSourceAdmissionACKPreservesApplicationBytes/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "TestForwardSourceAdmissionCancellation",
+      "TestForwardSourceAdmissionCancellation/ack",
+      "TestForwardSourceAdmissionCancellation/write",
+      "TestForwardSourceTLSKeepsOriginalFailureClassification",
+      "TestForwardSourceTLSKeepsOriginalFailureClassification/application-refusal",
+      "TestForwardSourceTLSKeepsOriginalFailureClassification/original-opener-refusal",
+      "TestForwardStreamAlreadyCanceledDoesNotReadInput",
+      "TestForwardStreamTokenFileSecurity",
+      "TestLocalForwardTLSRefusesMismatchedStoreAndClosedSigner",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/protocol=",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/protocol=arm.mesh.v1",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/protocol=http/1.1"
+    ],
+    "40438316777:review-route-race": [
+      "TestForwardOriginalOpenerFailureRetainedWithoutReplayOrApplicationDisclosure",
+      "TestForwardSourceAuthorityFreezesEndpointMembership",
+      "TestForwardSourceTLSKeepsOriginalFailureClassification",
+      "TestForwardSourceTLSKeepsOriginalFailureClassification/application-refusal",
+      "TestForwardSourceTLSKeepsOriginalFailureClassification/original-opener-refusal",
+      "TestForwardThreeNodesHTTPExactOriginalAndRevocation"
+    ],
+    "40439845400:protocol-race": [
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/protocol=",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/protocol=arm.mesh.v1",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/protocol=http/1.1",
+      "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol/same-key-renewed-leaf"
+    ]
+  },
+  "review_findings_and_fixes": [
+    {
+      "finding": "Helper-only TLS clients were incompatible with the raw source listener.",
+      "fix": "Added a minimal source TLS snapshot and compatible-serve hook before lease acquisition, preserving original lifetime and failure classification."
+    },
+    {
+      "finding": "Early-cancelled standalone admission must close its owned transport.",
+      "fix": "Retained explicit early/final cancellation closes from the candidate. The existing outer dial failure defer already protected the production caller before this helper-boundary change; no prior production leak is claimed."
+    },
+    {
+      "finding": "Invalid empty ALPN tokens do not prove rejection of a valid TLS server that omits ALPN.",
+      "fix": "Final protocol-only native successor uses a valid no-ALPN server and actual same-key certificate renewal in both old/current pin directions; current/current remains usable."
+    },
+    {
+      "finding": "TLS integration must retain original opener failure without replay or private application diagnostics.",
+      "fix": "Plain and TLS paths share the bounded original opener classifier; independent TLS tests verify once-only opening, bounded refusal and generic application failure."
+    }
+  ],
+  "schema": 1
+}

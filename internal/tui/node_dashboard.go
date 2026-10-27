@@ -180,7 +180,7 @@ func (m *dashboardModel) acceptNodeRead(msg nodeReadMsg) tea.Cmd {
 		ui.summary = msg.summary
 		ui.context = msg.context
 		ui.metadata = msg.metadata
-		ui.lastRead = time.Now()
+		ui.lastRead = m.timeNow
 	}
 	if msg.opening {
 		return func() tea.Msg {

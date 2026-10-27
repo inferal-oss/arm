@@ -1,0 +1,194 @@
+{
+  "scope": "Read-only bounded reported st_blocks survey of one exact marked private sync workspace",
+  "status": "independently reviewed; scoped native gates passed",
+  "baseline": "951051a",
+  "integration_commits": [
+    "a4315fb1c19691046e6c524931e76531b347f5a5",
+    "1aeb712b31dd9471feca7070767dd8af51c83a1c",
+    "616211b11cd0541f8dc2a00405abccccf7cc4bb8"
+  ],
+  "author_candidate": "efbfac5",
+  "final_source": {
+    "commit": "616211b11cd0541f8dc2a00405abccccf7cc4bb8",
+    "files": 1867,
+    "sha256": "27e4e20a234ba517386fa5c1732b304479da1bc677cbc684da830981a4ba01c2"
+  },
+  "findings_fixed": [
+    "Darwin filesystem ID alone conflated equal-Fsid/different-reported-mountpoint identities; require Fsid and nonempty descriptor Mntonname",
+    "Symlink inodes skipped mount checks despite Linux supporting a mounted symlink itself; check every permitted inode kind before and after traversal",
+    "The first Darwin O_SYMLINK plus O_NOFOLLOW combination refused ordinary symlink surveys; use native O_SYMLINK semantics and prove the descriptor is the original link inode"
+  ],
+  "reviewed_native_mechanics": [
+    "Original reservation and held selected/parent/base/stage/quarantine identity inspected before observation",
+    "Linux requires reported STATX_MNT_ID without a device-only fallback",
+    "Darwin uses descriptor Fsid plus nonempty reported mountpoint; no Linux-equivalence claim",
+    "Directories opened relative to held descriptors with no-follow and before/after object/block/link checks",
+    "Reported hardlinks count per directory entry, sparse files use reported blocks, symlink payload targets are excluded",
+    "Entry ceiling100000 and depth ceiling128; negative/overflow block reports and failures return no usable partial Survey result"
+  ],
+  "native_linux": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40436990044",
+    "ci_only_commit": "db53562ecdff22968ff9f459c8e372f1286ceede",
+    "toolchain": "Go1.27.3 linux/amd64 race",
+    "artifact_zip_sha256": "4a01736e5a72b561011f88a0c2a7412d5112f8e695bcfd08400390cbb0b4d0f0",
+    "rosters": {
+      "final-race": {
+        "exit": 0,
+        "roots": {
+          "skip": 1,
+          "pass": 46
+        },
+        "named": {
+          "skip": 1,
+          "pass": 48
+        },
+        "log_sha256": "22d04aef648b64754599daab3061ef7ae597ca4fa481bbcdb4727591f3ed2b35",
+        "fail_or_skip": [
+          "TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal"
+        ]
+      },
+      "final-vet": {
+        "exit": 0,
+        "roots": {},
+        "named": {},
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fail_or_skip": []
+      },
+      "native-mount": {
+        "exit": 0,
+        "roots": {
+          "pass": 1
+        },
+        "named": {
+          "pass": 4
+        },
+        "log_sha256": "ae35a3517995edcea572db1ae744b564ef591551a3753bdea5f98016829e80d2",
+        "fail_or_skip": []
+      },
+      "original-symlink": {
+        "exit": 1,
+        "roots": {
+          "fail": 1
+        },
+        "named": {
+          "fail": 2
+        },
+        "log_sha256": "665176140aea6e4bc6cbb928700f219729242f0c6a74c9ecc5addc8995d2df52",
+        "fail_or_skip": [
+          "TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal/nested-symlink",
+          "TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal"
+        ]
+      }
+    },
+    "default_skip": "The explicitly gated mount fixture skips in ordinary package execution, then executes successfully as a separate guarded native root with directory/file/symlink cases. No unchecked mount gate remains.",
+    "private_mount_proof": {
+      "same_device_distinct_mount_ids": true,
+      "mounts_exist_before_inspection": true,
+      "original_marked_root_inspection_still_passes": true,
+      "mount_kinds": [
+        "nested-directory",
+        "nested-file",
+        "nested-symlink"
+      ],
+      "native_original_symlink_failure": true,
+      "original_failure_cleanup_verified": true,
+      "corrected_mount_cleanup_cases_verified": 3,
+      "covered_visible_outside_snapshot_preservation": true,
+      "snapshot_access_time_exception": "Access time is excluded because native reads may update it; names, ownership, modes, device/inode, sizes, links, blocks, modification/change times and payload/link target evidence are compared",
+      "original_outer_namespace_and_catalog_unchanged": true,
+      "original_process_exits_after_mount_teardown": true
+    },
+    "image_sha256": {
+      "prior_symlink_policy": "3d1aaa99944442a8ca33bc2915870e1fd34e83392adc2065b407716143e3434c",
+      "corrected_survey": "0f1f34a2a3f17c983cb19782f3e7f1e0cedbf9dce17d550d46b998fee94e15e1"
+    },
+    "both_images_identical_before_after": true,
+    "source_reuse": {
+      "accepted_linux_source": "1aeb712b31dd9471feca7070767dd8af51c83a1c",
+      "successor_source": "616211b11cd0541f8dc2a00405abccccf7cc4bb8",
+      "changed_files": {
+        "internal/syncfs/allocation_darwin.go": {
+          "old_sha256": "61adeb417515918bce00b7cd351c985982a131e1616c173c619897adcb39e167",
+          "new_sha256": "f606947401e07f9b5c516cd3ac92b3dd8feb428fd0fb17ae5e8bb51bc442bb19"
+        },
+        "internal/syncfs/allocation_darwin_test.go": {
+          "old_sha256": "d8e4bb73ce7d868b6bad259baff85ed0e474acfffdc695bc30ee5c921e41ff0b",
+          "new_sha256": "90944287e4e3c930c2dadf35cd1194709a42a8cbc1dd253095916034823c0fa1"
+        }
+      },
+      "unchanged_other_inputs": 1865,
+      "same_source_file_set": true,
+      "goos_linux_implicit_filename_exclusion": [
+        "allocation_darwin.go",
+        "allocation_darwin_test.go"
+      ],
+      "syncfs_has_no_embed_directive": true,
+      "linux_runtime_tests_dependencies_module_and_fixtures_unchanged": true,
+      "source_run": "https://github.com/inferal-oss/arm/actions/runs/40436990044"
+    }
+  },
+  "native_darwin": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40437710663",
+    "ci_only_commit": "e83f9564aee10a548071591a6f02406861903ac9",
+    "toolchain": "Go1.27.3 darwin/arm64 race",
+    "artifact_zip_sha256": "e90a0ab324137b64614c11315d036d2964fa7cb9d52f9a94bed544f6523de7e2",
+    "rosters": {
+      "final-race": {
+        "exit": 0,
+        "roots": {
+          "pass": 48
+        },
+        "named": {
+          "pass": 50
+        },
+        "log_sha256": "0f643194e9f4bc344ad875f2cf7264fcc86769be59951addbf6b32cc32aa345a",
+        "fail_or_skip": []
+      },
+      "final-vet": {
+        "exit": 0,
+        "roots": {},
+        "named": {},
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fail_or_skip": []
+      },
+      "original-darwin": {
+        "exit": 1,
+        "roots": {
+          "fail": 1
+        },
+        "named": {
+          "fail": 1
+        },
+        "log_sha256": "de9627b2b327d15e52f54f87c6dd8c36464366ce1d33558ac20c499a2544e90b",
+        "fail_or_skip": [
+          "TestWorkspaceAllocationDarwinMountIdentitySeparatesReportedMountpoints"
+        ]
+      }
+    },
+    "actual_symlink_descriptor": "Fstat reports original S_IFLNK/same inode and Fstatfs reports its containing mount, without following target",
+    "mount_counterexample_limit": "Equal-Fsid/different-Mntonname and empty-Mntonname are pure Statfs value tests; no actual Darwin bind mount counterexample executed"
+  },
+  "earlier_evidence_preserved": [
+    {
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40436241827",
+      "scope": "Earlier source passed both OSes, including actual Linux file/directory bind negatives; not used as acceptance for later symlink changes"
+    },
+    {
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40436990044",
+      "scope": "Two actual ordinary-symlink survey refusals on earlier Darwin flag combination retained; Linux native successor passed"
+    }
+  ],
+  "limits": [
+    "No reservation, write cap, kernel quota, measured exclusive allocation or peak-space enforcement added",
+    "st_blocks may double count hardlinks, clones and shared blocks; it does not prove physical reclamation",
+    "No cleanup, promise release, lease settlement, worker dispatch, public sync or route authority added",
+    "No atomic snapshot against concurrent same-account writers; cancellation is checked between native cuts and cannot force stalled kernel I/O to return",
+    "Native scope is hosted Linux amd64 and macOS arm64; no new Linux ARM64 or real Darwin mount-negative evidence",
+    "Broader public sync allocation/dispatch and formal conformance remain required"
+  ],
+  "public_primary_references": [
+    "https://man7.org/linux/man-pages/man2/open_tree.2.html",
+    "https://man7.org/linux/man-pages/man2/move_mount.2.html",
+    "https://github.com/apple-oss-distributions/xnu/blob/main/bsd/man/man2/open.2"
+  ]
+}

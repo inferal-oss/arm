@@ -37,6 +37,11 @@ Production fences remain until their explicit acceptance gates pass.
 | Sync workspace evidence | `b50d15b` | Durable reservation/root markers and bounded read-only multiple-workspace lookup. |
 | Kubernetes admission | `1a75e10` | Exact standard tolerations, incomplete-affinity refusal and rejection of injected image credentials. |
 | Cgroup memory | `128d08e` | Complete visible Linux cgroup-v2 ancestry caps memory headroom; uncertain scopes provide no admission credit. |
+| Development forwarding clients | `4e8bdb4` | Bounded HTTP/raw clients with admission cancellation fixes; production remains disabled. |
+| Forwarding local TLS | Reviewed `6441136` | Exact local mesh certificate pin before bearer/application data; production remains disabled. |
+| Workspace ledger | `951051a` | Durable locators before staging, strict schema version 2 and read-only legacy/current reset proof. |
+| Terminal gauges | `0ec2b57` | Coherent receipt clocks, stale-click protection and native gauge/PTY evidence. |
+| Workspace block survey | `64ceec0` | Bounded read-only reported blocks; no reservation or reclamation authority. |
 | Public module validation | `ef6c637` | Source-bound public query/install checks and bounded original-child cleanup; descendant cleanup on interruption remains unproven. |
 
 Earlier reviewed backend, policy, agent messaging, storage, native lifecycle,
@@ -49,15 +54,15 @@ history merely because it contains an earlier ready report.
 | Owner role / branch | Current step | Remaining work and acceptance gates |
 | --- | --- | --- |
 | Resource safety — `codex/resource-safety-cgroup-memory` | Memory milestone integrated. | Broaden sound CPU/resident/shared attribution and Linux arm64 evidence; supervised pressure pause/resume must retain RAM/disk obligations and never signal unrelated processes. Complete elapsed-clock adapters and pressure-specific formal gates. |
-| Public sync — `codex/public-sync-delivery` | Planner, private worker, workspace markers and read-only recovery integrated. Workspace-ledger sources `f42c792` / `8a3302e` are reviewed and integrated with native Linux/macOS evidence. | Fresh schema version 2, exact legacy/current read-only reset proof, bounded locators and write-before-staging records are supported. Schema version 1 startup is incompatible and is never repaired or migrated. Physical reservations, public/relayed dispatch, conflict/deletion policy, cleanup/settlement, performance and formal acceptance remain. |
-| TCP forwarding — `codex/forward-usable-clients` | Reviewed development-client composition `2f07eb0` + `3086f33` is integrated with technical evidence from Linux CI; ordinary builds stay disabled. | Preserve default-off fence. Close local source-server provenance binding, suspend-aware lease checks, aggregate byte-credit support, route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
+| Public sync — `codex/public-sync-delivery` | Planner, private worker, workspace markers and read-only recovery integrated. Workspace ledger and bounded read-only block survey are reviewed and integrated with native Linux/macOS evidence. | Fresh schema version 2, exact legacy/current read-only reset proof, bounded locators and write-before-staging records are supported. Schema version 1 startup is incompatible and is never repaired or migrated. Physical reservations, public/relayed dispatch, conflict/deletion policy, cleanup/settlement, performance and formal acceptance remain. |
+| TCP forwarding — `codex/forward-usable-clients` | Development clients and source-listener TLS binding are integrated with actual Linux/macOS three-node evidence; ordinary builds stay disabled. | Preserve default-off fence. Complete suspend-aware lease checks, aggregate byte-credit support, route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
 | Kubernetes — `codex/kubernetes-pod-workflow` | Admission milestone integrated; separate live Pod Ready and exact-UID cleanup evidence. | Carrier export/execution remains blocked by an authorization gate. In-Pod catalog/identity proof, enrollment and pinned SSH remain unverified. Hidden native CPU/quota authority stays fail closed. |
 | Mac screen — `codex/mac-screen-standard-gates` | Manager resource-hold draft under broader native/transport validation. | Final original command exits and composed closure before integration; Standard live/control/clipboard/other-user/revocation/multihop and High Performance breadth remain. |
 | Sleep/wake and operations — `codex/lease-suspend-clock-runtime` | Native elapsed-clock and original-child ownership drafts under review. | Fix post-reap group signaling, require positive transport/I/O joins before settlement, validate exact reset shapes and all held-operation start/revalidation paths. Complete native/formal evidence, then configuration/services/degraded persistence/retention/restore/overhead. |
 | Providers/workloads — `codex/managed-provider-protocol` | Durable executable fixture/protocol/crash tests and identity/configuration fixes under validation. | Adapt trusted elapsed entitlement after the clock contract is frozen; revalidate before native start and grant publication. Broaden registration/admission, real workloads, GPU/network resources and distributed authority. |
-| Terminal gauges — `codex/terminal-gauge-availability` | Clock-cut availability fix with independent mouse-frame/event-order corrections; final Linux/macOS CI executing. | Full TUI race/vet/build and real PTY acceptance on final source. Preserve genuine unknown observations and backend-derived To-lease values. |
+| Terminal gauges — `codex/terminal-gauge-availability` | Reviewed clock-cut fix and mouse-frame/event-order corrections integrated from `70306d3`; native Linux/macOS gauges and both PTYs pass. | Preserve genuine unknown observations and backend-derived To-lease values. Native app GUI, all host environments and later elapsed-clock composition remain separate gates. |
 | Product browser UI — `codex/semblance-web-migration` | Complete Semblance migration in progress; initial shell is not acceptance. | All operational views, authorization, freshness and recovery behavior; stock Terminal default, offline embedded build, actual screenshots and final interaction acceptance. Search upstream thoroughly and prepare focused reusable-component PRs where needed. |
-| Public site and releases — `codex/arm-public-launch` | Semblance/System site and tagged-carrier workflow composed on accepted canonical source; native carrier CI executing; Pages screenshot rendering requires correction. | Exact-source artifact and screenshot acceptance, Pages publication and both HTTPS endpoints. Configure only DNS-only GitHub Pages apex records; no additional Cloudflare hosting or proxying. GitHub Pages custom-hostname limits must be reported truthfully. |
+| Public site and releases — `codex/arm-public-launch` | Semblance/System site and tagged-carrier workflow composed on accepted canonical source; four-carrier builds and final Pages screenshots passed their source-bound checks; cancellation-helper correction is in review. | Exact-source artifact and screenshot acceptance, Pages publication and both HTTPS endpoints. Configure only DNS-only GitHub Pages apex records; no additional Cloudflare hosting or proxying. GitHub Pages custom-hostname limits must be reported truthfully. |
 | Module distribution — `codex/canonical-module-distribution` | Production migration and corrected validation harness integrated. | First literal public latest query returned pre-migration source and failed installation. Preserve failure; verify ordinary-proxy propagation, exact source identity, actual install/buildinfo/ZIP closure and cleanup before advertising latest as accepted. |
 
 ## Shared dependency order
@@ -115,14 +120,20 @@ not reactivated by retaining their technical records.
 
 ## Validation records
 
+- [Terminal gauges](validation/terminal-gauge-2026-10-26.json): native refresh,
+  interaction, PTY and cleanup evidence with exact input projections.
 - [Canonical module](validation/module-migration-2026-10-26.json): Linux/macOS
   portable checks, exact immutable public install, source/ZIP closure and limits.
 - [Workspace evidence](validation/sync-workspace-2026-10-26.json): native race/vet
   rosters and the reviewed transitive diagnostic-only dependency exception.
+- [Workspace block survey](validation/sync-workspace-allocation-2026-10-26.json):
+  bounded observation, native mount-crossing refusals and platform limits.
 - [Workspace ledger](validation/sync-workspace-ledger-2026-10-26.json): native
   persistence/schema/reset evidence and explicit no-migration/cleanup limits.
 - [Kubernetes admission](validation/kubernetes-admission-2026-10-26.json): focused
   source/log hashes and provider/component rosters; no carrier-shipment claim.
+- [Forwarding local TLS](validation/forward-local-tls-review-2026-10-26.json):
+  exact source pinning and native three-node/renewal/ALPN evidence.
 - [Forwarding development clients](validation/forward-client-review-2026-10-26.json):
   exact Linux race/three-node evidence and explicit production/lifecycle limits.
 - [Cgroup memory](validation/cgroup-memory-2026-10-26.json): native finite/hidden

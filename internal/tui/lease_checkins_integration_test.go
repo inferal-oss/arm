@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/inferal-oss/arm/internal/agents"
 	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/local"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/server"
 	"os"
@@ -44,9 +45,27 @@ func TestLeaseCheckinRealBackendRejectsStalePolicyAndPreservesEntitlement(t *tes
 	if err := client.Call(ctx, home, "register", agents.Contact{ID: "tui-checkin", Session: uuid.NewString(), Adapter: "generic", Delivery: "poll", CWD: t.TempDir()}, &c); err != nil {
 		t.Fatal(err)
 	}
-	var l model.Lease
-	if err := client.Call(ctx, home, "acquire", model.Request{Agent: c.ID, Reason: "private terminal check-in test", Resources: model.Resources{CPU: .1}, TTL: time.Hour}, &l); err != nil {
+	// Policy configuration is independent of native CPU admission. Reserve an
+	// actual finite ledger pool and prove its entitlement survives every edit.
+	var status model.Status
+	if err := client.Call(ctx, home, "status", nil, &status); err != nil {
 		t.Fatal(err)
+	}
+	capacity := int64(2)
+	var created model.PoolChange
+	if err := client.Call(ctx, home, "pool_mutate", model.PoolMutation{Operation: "create", Name: "terminal check-in fixture", Scope: "global", Unit: "permits", Capacity: &capacity, Reason: "real terminal check-in fixture", Key: local.ID(), Reviewed: &model.PoolReview{Authority: status.Host, Consumers: []model.LeaseRevision{}}}, &created); err != nil {
+		t.Fatal(err)
+	}
+	var l model.Lease
+	if err := client.Call(ctx, home, "acquire", model.Request{Agent: c.ID, Reason: "private terminal check-in test", Pools: []model.PoolClaim{{Pool: created.Pool.ID, Quantity: 1}}, TTL: time.Hour}, &l); err != nil {
+		t.Fatal(err)
+	}
+	if l.State != "active" || l.Request.Agent != c.ID || l.Request.Resources.CPU != 0 || len(l.Request.Pools) != 1 || l.Request.Pools[0].Pool != created.Pool.ID || l.Request.Pools[0].Quantity != 1 || l.Expires == nil {
+		t.Fatal("fixture did not acquire the exact real counted entitlement", l)
+	}
+	var charged model.PoolView
+	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &charged); err != nil || charged.Reserved != 1 || charged.Available != 1 {
+		t.Fatal("real check-in reservation missing", charged, err)
 	}
 	defer func() { _ = client.Call(context.Background(), home, "release", map[string]string{"id": l.ID}, nil) }()
 	m := newDashboard(ctx, home)
@@ -105,7 +124,10 @@ func TestLeaseCheckinRealBackendRejectsStalePolicyAndPreservesEntitlement(t *tes
 		t.Fatal("default form changed exact policy values", p, err)
 	}
 	var after model.Lease
-	if err := client.Call(ctx, home, "inspect", map[string]string{"id": l.ID}, &after); err != nil || after.Revision != l.Revision || !after.Expires.Equal(*l.Expires) || after.State != "active" {
+	if err := client.Call(ctx, home, "inspect", map[string]string{"id": l.ID}, &after); err != nil || after.Revision != l.Revision || after.Expires == nil || !after.Expires.Equal(*l.Expires) || after.State != "active" || after.Request.Agent != c.ID || after.Request.Resources.CPU != 0 || len(after.Request.Pools) != 1 || after.Request.Pools[0] != l.Request.Pools[0] {
 		t.Fatal("check-in settings changed resource entitlement", after, err)
+	}
+	if err := client.Call(ctx, home, "pool_inspect", map[string]string{"id": created.Pool.ID}, &charged); err != nil || charged.Reserved != 1 || charged.Available != 1 {
+		t.Fatal("check-in settings changed counted-pool accounting", charged, err)
 	}
 }
