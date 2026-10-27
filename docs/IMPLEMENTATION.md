@@ -1,5 +1,20 @@
 # Backend and CLI implementation
 
+## Read-only native quota diagnostics
+
+`syncfs.ProbeNativeQuota` reads an existing hard-limit configuration without
+configuring a filesystem or granting an operation. It binds held selected and
+parent roots, native identities and the same mount before and after the read.
+XFS project queries require matching inherited project identity, exact quota
+type and accounting/enforcement flags; APFS reports require matching writable
+volume identity and a finite hard quota. Subprocess output and waits are bounded,
+and malformed or incomplete plist data cannot produce positive evidence.
+
+The private evidence fields are not wire claims. This diagnostic does not prove
+exclusive ownership, all-write coverage, reservation, native enforcement for a
+new operation, cleanup or settlement. No Manager/provider bridge or public sync
+dispatch is enabled. Dedicated native positive/refusal fixtures remain open.
+
 ## Frozen release payload integrity
 
 The isolated public-launch composition at `c24a4d6` has an accepted artifact

@@ -1,5 +1,27 @@
 # Validation record
 
+## Native quota diagnostic milestone
+
+Source review of the eight `syncfs` files resolved strict plist content and
+attribute parsing, exact XFS type flags and the owned stdout-descriptor fixture.
+The final macOS log contains six roots and 25 named passes, including 19 malformed
+plist subcases, with no failure or skip. The existing host returns
+`ErrQuotaUnsupported` with zero evidence; this is not a quota-positive result.
+The original queued Linux amd64 test-package cross-compilation exits zero. Its
+reported ELF image was removed; it was not retained for independent inspection
+and no Linux test executed.
+
+The [normalized record](validation/sync-quota-probe-2026-10-26.json) retains source,
+log and after-run tool hashes. The reviewed 103-file static internal input set
+matches the tested author's source and the composed baseline. There is no
+before/after full tool/source execution closure, retained native test image,
+race/vet cohort or separate machine-owner receipt. The focused macOS command
+used a cached build with one compiler worker; its receipt has no queue wrapper.
+Native APFS/XFS hard-limit positives and allocation refusals, complete write
+coverage, reservations, Manager authority, cleanup/settlement and public sync
+remain separate gates. This milestone accepts diagnostic source and the stated
+limited evidence only.
+
 ## Frozen carrier raw-payload inspection
 
 The original queued artifact-only inspection of workflow `40441273461`, source
