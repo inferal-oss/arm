@@ -155,10 +155,30 @@ def wait_for(predicate, message, seconds=15):
     raise AssertionError(message)
 
 
-def wait_for_original_effect(source, key, child, stderr_path):
+MAX_CLIENT_OUTPUT = 64 << 10
+DIAGNOSTIC_TAIL = 4096
+
+
+def check_client_output_bounds(stdout_path, stderr_path):
+    for path in (stdout_path, stderr_path):
+        assert path.stat().st_size <= MAX_CLIENT_OUTPUT, f'client output exceeded fixture bound: {path.name}'
+
+
+def bounded_client_tail(path):
+    with path.open('rb') as stream:
+        size = os.fstat(stream.fileno()).st_size
+        assert size <= MAX_CLIENT_OUTPUT, f'client output exceeded fixture bound: {path.name}'
+        length = min(size, DIAGNOSTIC_TAIL)
+        stream.seek(size - length)
+        return stream.read(length)
+
+
+def wait_for_original_effect(source, key, child, stdout_path, stderr_path):
     deadline = time.monotonic() + 45
     while time.monotonic() < deadline:
-        if Effect.seen.wait(.2):
+        observed = Effect.seen.wait(.2)
+        check_client_output_bounds(stdout_path, stderr_path)
+        if observed:
             return
         try:
             code = child.wait(timeout=.001)
@@ -167,11 +187,12 @@ def wait_for_original_effect(source, key, child, stderr_path):
         diagnostic = source.result('mesh', 'forward', 'status', '--key', key, timeout=5)
         status = json.loads(diagnostic.stdout) if diagnostic.returncode == 0 else diagnostic.stderr[-4096:]
         raise AssertionError(('HTTP client exited before destination effect', code,
-                              stderr_path.read_bytes()[-4096:], status))
+                              bounded_client_tail(stderr_path), status))
+    check_client_output_bounds(stdout_path, stderr_path)
     diagnostic = source.result('mesh', 'forward', 'status', '--key', key, timeout=5)
     status = json.loads(diagnostic.stdout) if diagnostic.returncode == 0 else diagnostic.stderr[-4096:]
     raise AssertionError(('destination effect not observed before deadline',
-                          stderr_path.read_bytes()[-4096:], status))
+                          bounded_client_tail(stderr_path), status))
 
 
 def main():
@@ -256,7 +277,7 @@ def main():
                                              '--token-file', str(token_file), '--path', '/effect'],
                                  stdin=subprocess.DEVNULL, stdout=child_output, stderr=child_error,
                                  close_fds=True)
-        wait_for_original_effect(b, key, child, root / 'client.stderr')
+        wait_for_original_effect(b, key, child, root / 'client.stdout', root / 'client.stderr')
         try:
             child.wait(timeout=.01)
             raise AssertionError('client finished before route loss')
@@ -271,7 +292,7 @@ def main():
         child_error.close()
         child_output = child_error = None
         stdout_path, stderr_path = root / 'client.stdout', root / 'client.stderr'
-        assert stdout_path.stat().st_size <= 64 << 10 and stderr_path.stat().st_size <= 64 << 10
+        check_client_output_bounds(stdout_path, stderr_path)
         stdout, stderr = stdout_path.read_bytes(), stderr_path.read_bytes()
         assert client_exit != 0 and stdout == b'' and b'remote_outcome_unknown' in stderr, (client_exit, stdout, stderr)
         assert Effect.calls == 1, 'source silently replayed an effect after relay death'

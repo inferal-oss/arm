@@ -27,8 +27,11 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - name: Review-only Unix socket data path
-        run: go test -tags arm_forward_review,arm_forward_unix_prototype ./internal/meshforward ./internal/cli -run TestUnixPrototype -count=1
+      # The unchanged Go prototype tests passed both native jobs at exact
+      # source cb6aff2 (run 40451815199); this successor changes only the
+      # Python fault controller and its bounded diagnostics.
+      - name: Bounded fault diagnostic control
+        run: python3 -B scripts/test-routed-forward-loss-bounds.py
       - name: Build exact review executable
         run: go build -tags arm_forward_review -o "$RUNNER_TEMP/arm" ./cmd/arm
       - name: Abrupt relay loss after destination effect
