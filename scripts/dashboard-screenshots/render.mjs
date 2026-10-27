@@ -5,6 +5,44 @@ import { chromium } from 'playwright'
 import { terminalGeometry } from './geometry.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
+
+async function fitResourcesViewport(page) {
+  const footer = page.getByRole('contentinfo', { name: 'ARM', exact: true })
+  await footer.waitFor({ timeout: 15000 })
+  // A full-page screenshot keeps a fixed footer at the original viewport's
+  // bottom, where it obscures content halfway through a taller image. Grow
+  // the real viewport instead; leave all application styles and data intact.
+  for (let attempt = 0; attempt <= 4; attempt++) {
+    const frame = await footer.evaluate(bar => {
+      const doc = bar.ownerDocument
+      const view = doc.defaultView
+      const bounds = bar.getBoundingClientRect()
+      let contentBottom = 0
+      for (const element of doc.body.querySelectorAll('*')) {
+        if (element === bar || bar.contains(element) || element.contains(bar) || !element.getClientRects().length) continue
+        contentBottom = Math.max(contentBottom, element.getBoundingClientRect().bottom)
+      }
+      return { width: view.innerWidth, height: view.innerHeight,
+        documentHeight: Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight),
+        documentWidth: Math.max(doc.documentElement.scrollWidth, doc.body.scrollWidth),
+        contentBottom, footerTop: bounds.top, footerBottom: bounds.bottom, footerHeight: bounds.height }
+    })
+    if (Object.values(frame).some(value => !Number.isFinite(value)) || frame.width !== 1440 ||
+        frame.height < 1000 || frame.height > 3600 || frame.documentWidth > frame.width + 1 || frame.footerHeight <= 0) throw Error()
+    if (frame.documentHeight <= frame.height + 1 && frame.footerTop >= frame.contentBottom - 1 &&
+        frame.footerBottom <= frame.height + 1) return
+    const height = Math.ceil(Math.max(frame.documentHeight + 16, frame.contentBottom + frame.footerHeight + 16, frame.height + 64))
+    if (attempt === 4 || height > 3600) throw Error()
+    await page.setViewportSize({ width: 1440, height })
+    // Two actual layout frames, with a bounded wait if the page stops rendering.
+    await page.evaluate(() => new Promise((resolve, reject) => {
+      const deadline = setTimeout(() => reject(Error()), 1000)
+      requestAnimationFrame(() => requestAnimationFrame(() => { clearTimeout(deadline); resolve() }))
+    }))
+  }
+  throw Error()
+}
+
 let browser
 let stage = 'configuration'
 try {
@@ -48,8 +86,14 @@ try {
     .getByRole('button', { name: 'Resources', exact: true }).click()
   await page.getByRole('heading', { name: 'Resource budgets', exact: true }).waitFor({ timeout: 15000 })
   await page.getByRole('button', { name: 'documentation-builds', exact: true }).waitFor({ timeout: 15000 })
+  stage = 'web Resources viewport'
+  await fitResourcesViewport(page)
+  await page.getByRole('toolbar', { name: 'Backend status', exact: true })
+    .getByText('Connected', { exact: true }).waitFor({ timeout: 15000 })
+  await page.getByRole('heading', { name: 'Resource budgets', exact: true }).waitFor({ timeout: 15000 })
+  await page.getByRole('button', { name: 'documentation-builds', exact: true }).waitFor({ timeout: 15000 })
   await ensureSafeScreen()
-  await page.screenshot({ path: join(config.output, 'web-resources.png'), fullPage: true, animations: 'disabled' })
+  await page.screenshot({ path: join(config.output, 'web-resources.png'), fullPage: false, animations: 'disabled' })
   await context.close()
 
   stage = 'terminal renderer'
