@@ -1,0 +1,234 @@
+{
+  "schema": 1,
+  "date": "2026-10-27",
+  "scope": "Exact integrated main Pages artifact, successful automatic deployment, fresh native dashboard image review and canonical HTTPS byte verification.",
+  "source_commit": "16818add708443beb293d603090d3a7efa7f66bc",
+  "ci": {
+    "run": 40485808949,
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40485808949",
+    "event": "push",
+    "artifact_id": 12725207389,
+    "artifact_url": "https://github.com/inferal-oss/arm/actions/runs/40485808949/artifacts/12725207389",
+    "build": "success",
+    "deploy": "success",
+    "additional_manual_or_duplicate_run": false
+  },
+  "artifact": {
+    "zip_bytes": 1288874,
+    "zip_sha256": "d3dffe8cbf6f4b20895ca2b5cba0a9f289fa35f7ae4880645db8d717fe368ce2",
+    "tar_sha256": "93e4c3003f6757c8bf7feaf296e39089ea8582e55e97f5ad31bc4d1b9dc34be4",
+    "regular_files": 15,
+    "uncompressed_bytes": 4317558
+  },
+  "artifact_files": {
+    "build-integrity.json": {
+      "bytes": 1437,
+      "sha256": "2e7d7435d20e090d9d768a17b32ae74d6c40480846b973c954edf152496b20e6"
+    },
+    "favicon.svg": {
+      "bytes": 501,
+      "sha256": "fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373"
+    },
+    "brand-lockup.svg": {
+      "bytes": 788,
+      "sha256": "9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87"
+    },
+    "system-map.svg": {
+      "bytes": 7539,
+      "sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850"
+    },
+    "assets/index-DeJ-K_oM.js": {
+      "bytes": 3487504,
+      "sha256": "325704871cd5e5238bab56308fac37bb57699117437d812b849bbd1de5a68e46"
+    },
+    "assets/wat-4kfTsMVw.js": {
+      "bytes": 77,
+      "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b"
+    },
+    "assets/wat-CR-H2qbq.wasm": {
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    },
+    "assets/arm-wat-only-store-CpWQrDGP.js": {
+      "bytes": 152,
+      "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d"
+    },
+    "THIRD-PARTY-NOTICES.txt": {
+      "bytes": 140901,
+      "sha256": "0b59b07b2c5751f81768f500f867bf18d8774830ba8739bbaf19491d084ccd3c"
+    },
+    "index.html": {
+      "bytes": 1261,
+      "sha256": "898109a144ae942f44893d0d761102d303653c4cc38917156e8e399379259391"
+    },
+    "brand-lockup-light.svg": {
+      "bytes": 789,
+      "sha256": "5832d31799f0a5d440124feda096d2105e413b2537f849a173b424361f6423a9"
+    },
+    "screenshots/web-monitor.png": {
+      "bytes": 107818,
+      "sha256": "1f9a075f88fd6be2eceae8249503463bb0f8bb7dbcf70686a0f926d241388684"
+    },
+    "screenshots/metadata.json": {
+      "bytes": 1178,
+      "sha256": "e843a2724cc480545c46b273d3b14c363ab141deeb14f1cef22e9e73a28f757a"
+    },
+    "screenshots/terminal.png": {
+      "bytes": 215604,
+      "sha256": "547661bf479430607664712975275eb49c7c7e52b4b7de17468ed2a2e17019d7"
+    },
+    "screenshots/web-resources.png": {
+      "bytes": 249566,
+      "sha256": "5148e50e9b8860c06e27dc47d0dcdecef4c70473ff28ed9df29effeb85565731"
+    }
+  },
+  "build_integrity": {
+    "schema": 1,
+    "source_commit": "16818add708443beb293d603090d3a7efa7f66bc",
+    "framework": {
+      "archive": "https://codeload.github.com/inferal-oss/semblance/tar.gz/88eb230991c4f63d54fe47bee5cf3fb9f121e528",
+      "integrity": "sha512-92IauJvJkyoHuvFvedbEkdOSm72Vt8MI5HN8jhaOtkX1dF726GhkkUhPjDC5TU816IsOqQrENfNKKnA8POJp1A==",
+      "commit": "88eb230991c4f63d54fe47bee5cf3fb9f121e528"
+    },
+    "renderer_overlay": {
+      "path": "src/render/dom.ts",
+      "base_sha256": "dce6c7997fe712a94caa3a5ee30aba3e8eaebc5d25e4367b2e164d4334ba8871",
+      "sha256": "2de10c3f48a289bbc84da35942ed123ed3e280a86e981d44cb301ab2a68ecca6",
+      "upstream_issue": "https://github.com/inferal-oss/semblance/issues/181",
+      "upstream_change_commit": "454e0186506f3fd2f4f0fcd76673c4e9d50667c8",
+      "status": "Reviewed generic source overlay; upstream acceptance is not claimed."
+    },
+    "wasm": {
+      "file": "assets/wat-CR-H2qbq.wasm",
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    },
+    "runtime_chunks": [
+      "assets/arm-wat-only-store-CpWQrDGP.js",
+      "assets/index-DeJ-K_oM.js",
+      "assets/wat-4kfTsMVw.js"
+    ],
+    "optional_rust_engine": false,
+    "vite_helper": {
+      "version": "8.3.5",
+      "integrity": "sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ==",
+      "license_sha256": "a22152baa1aef74402443008e767e7c689a524c0909d19b0431d97f5ab066a13"
+    }
+  },
+  "capture": {
+    "source_commit": "16818add708443beb293d603090d3a7efa7f66bc",
+    "binary_sha256": "5ce1cebb4a9ddc11b331cb4010b3df55ac45456964bfab9f11453a7cda63dc66",
+    "scope": "Disposable GitHub Actions backend, real host observations and example cooperative pool lease.",
+    "terminal": "Actual arm dashboard terminal PTY bytes rendered by xterm.js.",
+    "sampling": {
+      "backend_warmup_seconds": 6,
+      "terminal_frame_seconds": 6
+    },
+    "terminal_geometry": {
+      "cols": 140,
+      "rows": 80
+    },
+    "terminal_profile": {
+      "background": "#101519",
+      "foreground": "#e1e9ed",
+      "font_family": "DejaVu Sans Mono, monospace",
+      "font_size": 14
+    },
+    "images": [
+      {
+        "file": "web-monitor.png",
+        "sha256": "1f9a075f88fd6be2eceae8249503463bb0f8bb7dbcf70686a0f926d241388684",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "file": "web-resources.png",
+        "sha256": "5148e50e9b8860c06e27dc47d0dcdecef4c70473ff28ed9df29effeb85565731",
+        "width": 1440,
+        "height": 2137
+      },
+      {
+        "file": "terminal.png",
+        "sha256": "547661bf479430607664712975275eb49c7c7e52b4b7de17468ed2a2e17019d7",
+        "width": 1212,
+        "height": 1312
+      }
+    ]
+  },
+  "actual_image_review": {
+    "all_three_fresh_native_images_reviewed": true,
+    "monitor": "Connected Monitor header, host values and CPU chart are present. This fixed-height viewport ends during the next row.",
+    "resources": "Complete top header and first content, CPU/RAM/disk budgets, Ports and cooperative pool counts, nearby-instance section, and complete final pool card are visible. The status footer is below the content.",
+    "terminal": "Actual terminal PTY rendering has the connected state, complete CPU/RAM/disk/port/pool rows and footer.",
+    "sampling": "Web memory 14.2 GiB and terminal memory 14.6 GiB are sequential observations. Disk 83.2 GiB and cooperative pool capacity 2, committed 1 agree. No simultaneous-snapshot claim."
+  },
+  "relationship_to_frozen_ec2_validation": {
+    "source_commit": "ec2f9c9e5eb7d44e793e658074be5fa8b56da753",
+    "record": "docs/validation/website-artifact-ec2f9c9-2026-10-27.json",
+    "unchanged_artifact_files": 10,
+    "only_changed_files": [
+      "build-integrity.json",
+      "screenshots/web-monitor.png",
+      "screenshots/metadata.json",
+      "screenshots/terminal.png",
+      "screenshots/web-resources.png"
+    ],
+    "all_four_runtime_assets_identical": true,
+    "fresh_main_eight_view_or_native_picker_retest_claimed": false,
+    "explanation": "The earlier eight-view and six-phase native picker results remain scoped to ec2. Main has the identical static HTML, runtime JavaScript/WAT, diagram, brand assets and notices, with fresh source-bound capture images and metadata.",
+    "earlier_failures_preserved": "The separate historical record retains the earlier fixed-footer clipping, failed viewport locator, native selected-property mismatch and optional Rust engine/notices failures. They are not relabeled as passing."
+  },
+  "canonical_https": {
+    "url": "https://getarm.org/",
+    "normal_certificate_verification": true,
+    "certificate": {
+      "state": "approved",
+      "description": "The certificate has been approved.",
+      "domains": [
+        "getarm.org"
+      ],
+      "expires_at": "2027-01-25"
+    },
+    "https_enforced_readback": true,
+    "http_root_redirect": {
+      "status": 301,
+      "location": "https://getarm.org/"
+    },
+    "all_15_https_files_match_artifact": true,
+    "verification": "Each deployed file returned HTTPS 200 and matched the exact artifact byte count and SHA-256 recorded above. No certificate verification bypass was used.",
+    "custom_domain_restart": {
+      "count": 1,
+      "preconditions": "Exact repository and existing custom domain matched; domain protection was verified with no pending unverified domain; two public resolvers returned the expected four GitHub Pages apex A records.",
+      "clear_ack_status": 204,
+      "authoritative_clear_readback": "null",
+      "restore_ack_status": 204,
+      "authoritative_restore_readback": "getarm.org",
+      "restored_domain_protection": "verified",
+      "unrelated_pages_settings_preserved": true
+    },
+    "enforcement": {
+      "write_count": 1,
+      "ack_status": 204,
+      "preconditions": "GitHub reported an approved certificate for the exact canonical domain and normal HTTPS 200 metadata identified this source commit before enforcement.",
+      "authoritative_readback": true
+    },
+    "prior_results_preserved": [
+      "Before the single restart, normal HTTPS failed certificate hostname verification and no certificate field was returned. Build/deployment success alone was not accepted as HTTPS success.",
+      "Immediately after enforcement, a previously cached HTTP metadata-path request returned 200. The canonical root subsequently returned 301 to exact HTTPS; no repeated settings write was performed."
+    ],
+    "dns_or_cloudflare_writes": false,
+    "secondary_domain_changes": false
+  },
+  "validation_source": {
+    "main_artifact_inspection_sha256": "dbddd7904f1ae658a4a28c3ef696477c9ddb02d36f823cf84a0e77ca43815da0",
+    "canonical_https_acceptance_sha256": "86220f9b01b8f9eddc6ee76bede43632ec27a83fce160a6c6f187974207d7aa7"
+  },
+  "limitations": [
+    "This is source-bound to the exact main168 build and deployed artifact; later revisions are outside this result.",
+    "The main capture CLI binary hash differs from the historical ec2 capture binary. Go VCS stamping was enabled, and identical tracked source files alone do not prove identical compiler inputs or binaries.",
+    "The carrier artifact from source70c77cd remains separate and was not rebuilt, retagged, released or relabeled by this Pages deployment.",
+    "Dashboard images came from an actual disposable CI backend and PTY with cooperative example pool data, not a user or production ARM backend.",
+    "Canonical TLS and root redirect verification do not establish any secondary-domain HTTPS or redirect behavior.",
+    "No live settings, DNS, Cloudflare, CI or repository source change was performed to produce this normalized record."
+  ]
+}
