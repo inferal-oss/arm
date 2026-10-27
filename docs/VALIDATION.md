@@ -4602,3 +4602,24 @@ retains those source and log hashes. Later TLS and workspace-survey additions
 contain no Manager lifecycle changes; their new functions do not run in these
 selected roots. VNC caller integration, native close tracking in other callers
 and the elapsed-clock portfolio are not accepted by this API milestone.
+
+
+### Literal latest installation and pending harness correction
+
+Independent inspection of [run 40433206450](https://github.com/inferal-oss/arm/actions/runs/40433206450)
+verifies all three artifact ZIPs and 1,852 source-manifest files per artifact
+against published `4e8bdb4`. Its actual cold-cache literal `go install` of the
+canonical command at `latest` succeeds: all eleven original commands exit zero,
+the installed buildinfo identifies the exact selected pseudo-version and module
+checksum with ordinary CGo enabled, 26 module-ZIP inputs match, and disposable
+smoke checks/cleanup pass. Both native asset scopes pass 14 named outcomes.
+
+The overall run remains failed: Go omitted query-level Origin and the original
+harness required it there. A supplemental query of the version actually selected
+binds its full source hash, version and both module checksums; it does not change
+the literal installation query. Reviewed helper sources `96e6e18` and `9ccd7da`
+retain that binding and separate clean immutable harness/source checkouts, with
+13 cheap tests passing. Their hosted execution remains required. The original
+run did not measure a final complete source snapshot; the correction adds that
+check. No complete corrected-harness acceptance or claim that later local main
+commits were installed follows from the successful original install.
