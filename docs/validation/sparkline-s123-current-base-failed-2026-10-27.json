@@ -1,0 +1,115 @@
+{
+  "N1_dependency": {
+    "actual_typecheck_exit": 0,
+    "experimental_dependency_only": true,
+    "failed_outcome_retained_exactly": true,
+    "gate_passed": false,
+    "original_vitest_exit": 1,
+    "original_wrapper_exit": 1,
+    "same638_source": true,
+    "static_witness_sha256": "4c24d6ef4a720794df55a80da08cc5f0b8e1aa69a145a2e24642a28badf471f0"
+  },
+  "S1": {
+    "actual_failed_file_count": 1,
+    "actual_file_roster": {
+      "test/sparkline.test.ts": {
+        "cases": 32,
+        "status": "failed"
+      }
+    },
+    "all_exact_named_ancestry_identities_match": true,
+    "failed": 1,
+    "observer_exit": 1,
+    "observer_roster_complete": true,
+    "passed": 31,
+    "raw_numFailedTestSuites": 2,
+    "skipped_pending_todo": 0,
+    "sole_failed_assertion": {
+      "classification": "New component HTML twin assertion failure; no Calendar classification.",
+      "name": "observed foreign canonical graph (Oxigraph0.5.13) checks all35 stored-term relations before Runtime and renders the canonical graph with matching twins",
+      "path": "test/sparkline.test.ts"
+    },
+    "total": 32
+  },
+  "S2": {
+    "expected_cases": 16,
+    "started": false
+  },
+  "S3": {
+    "expected_cases": 3,
+    "started": false
+  },
+  "disposition": "S123 remains FAILED: S1 new canonical-graph twin parity assertion failed and S2/S3 correctly did not start. Numeric/Calendar remain unaccepted dependencies; no source acceptance, waiver, retry or promotion follows.",
+  "html_discriminator": {
+    "artifact_sha256": "01c6d85aa27fadfb49ec7677b97330e8d7567074851cdc6b8a19497b65a14d96",
+    "differing_readout_circle_ids": [
+      "valid-integer",
+      "valid-decimal",
+      "valid-unsignedLong",
+      "decimal-xml-whitespace"
+    ],
+    "expected_function_figures": 35,
+    "observation": "For these four figures function has one circle and exact source reading; SPARQL has zero circles and unavailable. Derived only from retained textual diff, not rerender or root-cause proof.",
+    "received_sparql_figures": 35
+  },
+  "independent_audit_sha256": "cacd3bc96094cdee06835d75cae7e3ac3f0e22a88830ed1423009c51ad882bb6",
+  "input_closure": {
+    "all_before_after_final_maps_equal": true,
+    "current_contents_identities_memberships_match": true,
+    "directory_bindings": 351,
+    "files": 17625,
+    "harness_files": 22,
+    "inventories": 169
+  },
+  "limitations": [
+    "S1 aborts at HTML comparison before later per-figure assertions in that failed case; those downstream assertions did not run. Other31 named cases passed.",
+    "Parsed log readout/count differences are a discriminator, not causal root diagnosis or native-browser proof; text log may normalize newline spellings.",
+    "Only original direct-child waits and known owned cache absence are evidenced; no all-descendant/OS-wide cleanup claim.",
+    "Reviewer read/hash/JSON only; no candidate/helper/native execution, builds, tests, queue, network or source edits."
+  ],
+  "loader_image_hashes": {
+    "rust": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6",
+    "wat": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031"
+  },
+  "loader_source_sha256": "850bdd20235dff17ecc368b8ce5cfac806b57c46a663f8e89e7f00a214f18aba",
+  "manifest_sha256": "aee91bf728d710c75597dadacf2c3f42fa70d2853006f8e7a039714a59925dc6",
+  "original_children": [
+    {
+      "original_exit": 0,
+      "stage": "n1-witness",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "images-before",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 1,
+      "stage": "S1",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 1,
+      "stage": "S1-observe",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "images-after",
+      "wait_calls": 1
+    }
+  ],
+  "outer_sha256": "c16f08a74df927d982bf0094c676386716effff6947da9609d85f795f5a87455",
+  "owned_cleanup_paths_absent": true,
+  "semantic_feature_acceptance": false,
+  "snapshot_index_tree": "4fa3adca82b2216410f7577fa9a28004d9560d28",
+  "source_base": "1d9ec6be12f883d4bb0f0e57f6c00053b43522c1",
+  "source_review_sha256": "6f6930ac4331e0b72c38b6f7b8d8b77ae1c80fac1446388aac57b0aeabbefdef",
+  "status": "FAILED",
+  "warnings": {
+    "case_insensitive_warn_unsupported_N3_stderr_matching_lines": 0,
+    "raw_S1_log_preserved": true,
+    "scope": "No matching diagnostics observed in merged S1 stdout/stderr log; no N3 SPARQL support claim."
+  }
+}
