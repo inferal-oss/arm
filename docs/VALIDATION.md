@@ -5575,3 +5575,21 @@ API success is unproven. Screenshot metadata's source commit identifies the
 backend capture, while the separate ten-input manifest binds this website
 candidate. Earlier native failures remain historical. This accepts the scoped
 local source and observations, not a later deployment or upstream merge.
+
+### Website Gallery deployment
+
+[Deployment evidence](validation/website-gallery-deployment-b4d49c9-2026-10-27.json)
+records automatic Pages run `40547964239`, successful build and deploy at exact
+source `b4d49c9`. Independent read-only workflow inspection confirms that head
+and result. The original ZIP contains the recorded TAR; its 15 regular files
+total 4,375,538 bytes, with no duplicate or traversal members. All 15 retained
+public HTTPS bodies return 200 and match those artifact bytes. The producer
+uses ordinary certificate verification; the independent audit checks retained
+responses without repeating the TLS handshake.
+
+All ten static website files are byte-identical to the previously accepted
+native Gallery build. Three fresh CI Monitor, Resources and terminal images
+match current-source metadata, hashes and dimensions, and are independently
+visually reviewed. HTTP root redirects to HTTPS. Earlier native interactions
+retain their recorded scope: this is no new interaction run, native fullscreen
+API acceptance, tagged release or public Go installation.

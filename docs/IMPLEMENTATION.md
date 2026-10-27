@@ -2095,6 +2095,11 @@ adds stock Grid/Carousel/Pile selection, Lightbox navigation and host effects.
 Its pinned website-only framework overlays correct stale snap feedback and
 mobile containment, while pre-patch focus ownership restores the screenshot
 opener after closing. The embedded ARM framework is unchanged by these overlays.
+Automatic Pages run `40547964239` publishes this Gallery at `b4d49c9` with three
+new actual dashboard captures. Independent review verifies all 15 retained
+public bodies against the original deployment artifact and all ten static files
+against the accepted native website build. This accepts that deployment without
+extending earlier interaction evidence to later source.
 The [vanity source-install plan](design/getarm-source-install-plan.md) is a
 reviewed design; the module namespace and public installation command have not
 yet changed.
