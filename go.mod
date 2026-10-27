@@ -21,6 +21,8 @@ require (
 	github.com/mattn/go-isatty v0.0.24
 	github.com/mmcloughlin/md4 v0.1.2
 	github.com/pelletier/go-toml/v2 v2.4.3
+	github.com/spf13/cobra v1.10.2
+	github.com/spf13/pflag v1.0.10
 	golang.org/x/crypto v0.58.0
 	golang.org/x/net v0.60.0
 	golang.org/x/sync v0.24.0
@@ -61,6 +63,7 @@ require (
 	github.com/go-openapi/swag/yamlutils v0.27.1 // indirect
 	github.com/google/gnostic-models v0.7.0 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
@@ -72,7 +75,6 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xo/terminfo v1.0.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
