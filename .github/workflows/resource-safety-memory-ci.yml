@@ -1,0 +1,83 @@
+name: Resource safety memory candidate validation
+
+on:
+  push:
+    branches: [codex/resource-safety-ci-validation]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: resource-safety-memory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Run scoped source and native gates with original exits
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/resource-safety-ci
+          git rev-parse HEAD > .cache/resource-safety-ci/source-commit.txt
+          git diff HEAD --check > .cache/resource-safety-ci/diff-check.log
+          shasum -a 256 internal/model/memory.go internal/observe/availability_linux.go internal/observe/availability_linux_test.go internal/observe/observe.go > .cache/resource-safety-ci/source-sha256.txt
+          failed=0
+          run_case() {
+            name="$1"
+            shift
+            set +e
+            "$@" > ".cache/resource-safety-ci/${name}.log" 2>&1
+            status=$?
+            set -e
+            cat ".cache/resource-safety-ci/${name}.log"
+            printf '%s\n' "$status" > ".cache/resource-safety-ci/${name}.exit"
+            if [ "$status" -ne 0 ]; then failed=1; fi
+          }
+          run_case observe-race go test -race -count=1 -p=1 -timeout=180s ./internal/observe
+          run_case affected-vet go vet -p=1 ./internal/observe ./internal/model ./internal/manager
+          if [ "$RUNNER_OS" = Linux ]; then
+            run_case observe-compile go test -c -p=1 -o "$RUNNER_TEMP/resource-safety-observe.test" ./internal/observe
+            if [ -f "$RUNNER_TEMP/resource-safety-observe.test" ]; then
+              sha256sum "$RUNNER_TEMP/resource-safety-observe.test" > .cache/resource-safety-ci/binary-sha256.txt
+              run_case native-host env ARM_TEST_NATIVE_MONITOR=1 "$RUNNER_TEMP/resource-safety-observe.test" -test.run='^TestNativeLinuxAvailability$' -test.v
+              run_case native-limited sudo systemd-run --scope --quiet -p MemoryMax=512M -- /usr/bin/env ARM_TEST_NATIVE_MEMORY_LIMITED_SCOPE=1 "$RUNNER_TEMP/resource-safety-observe.test" -test.run='^TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom$' -test.v
+              run_case native-hidden sudo unshare --cgroup --fork -- /usr/bin/env ARM_TEST_NATIVE_MEMORY_HIDDEN_SCOPE=1 "$RUNNER_TEMP/resource-safety-observe.test" -test.run='^TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit$' -test.v
+              for entry in 'native-host:TestNativeLinuxAvailability' 'native-limited:TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom' 'native-hidden:TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit'; do
+                name="${entry%%:*}"
+                test_name="${entry#*:}"
+                if ! grep -F -- "--- PASS: ${test_name}" ".cache/resource-safety-ci/${name}.log"; then failed=1; fi
+              done
+            else
+              failed=1
+            fi
+          else
+            run_case native-macos env ARM_TEST_NATIVE_MONITOR=1 go test -count=1 -p=1 -timeout=120s -run='^TestNativeDarwinAvailability$' -v ./internal/observe
+            if ! grep -F -- '--- PASS: TestNativeDarwinAvailability' .cache/resource-safety-ci/native-macos.log; then failed=1; fi
+          fi
+          exit "$failed"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: resource-safety-memory-${{ matrix.os }}
+          path: .cache/resource-safety-ci/
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
