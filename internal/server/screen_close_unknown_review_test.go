@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"io"
@@ -269,4 +270,23 @@ func screenCloseResourceFixture(t *testing.T, handler http.Handler) (*Server, no
 	destination.TLS = right.ServerTLS()
 	destination.StartTLS()
 	return s, nodeSession{Host: peer.Identity.Host, Source: status.Host, Pair: pair, Pin: peer.Identity.Fingerprint, LocalRevision: peer.Revision, RemoteRevision: 1}, closeManager
+}
+
+func TestScreenTLSAbortClosesOriginalNativeSocketOnlyOnce(t *testing.T) {
+	a, b := net.Pipe()
+	defer a.Close()
+	defer b.Close()
+	var calls atomic.Int32
+	failure := errors.New("original TLS socket close is unconfirmed")
+	native := screenCloseResultConn{Conn: a, closeFn: func() error { calls.Add(1); return failure }}
+	secured := tls.Client(native, &tls.Config{})
+	frame := &screenTransportFrame{}
+	ctx := context.WithValue(t.Context(), screenTransportFrameKey{}, frame)
+	owned := screenOwnTransportConn(ctx, secured)
+	if err := owned.Close(); !errors.Is(err, failure) {
+		t.Fatal("TLS abort hid original socket result", err)
+	}
+	if frame.closeOriginals() || calls.Load() != 1 {
+		t.Fatal("TLS abort retried or certified an unconfirmed native close", calls.Load())
+	}
 }

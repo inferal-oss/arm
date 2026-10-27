@@ -118,14 +118,10 @@ func screenOwnTransportConn(ctx context.Context, conn net.Conn) net.Conn {
 	}
 	closeNative := conn.Close
 	if secured, ok := conn.(*tls.Conn); ok {
-		// CloseNow is an abort, not a TLS delivery acknowledgement. Observe the
-		// original TCP close before TLS alert/adapter cleanup can obscure its result.
-		native := secured.NetConn()
-		closeNative = func() error {
-			err := native.Close()
-			_ = secured.Close()
-			return err
-		}
+		// CloseNow aborts the original TCP socket. Calling TLS.Close afterward
+		// would issue a second native Close and could obscure its first result.
+		// The caller joins TLS reads/writes; its remaining buffers are Go-owned.
+		closeNative = secured.NetConn().Close
 	}
 	original := &screenOriginalSocket{Conn: conn, closeNative: closeNative}
 	frame.mu.Lock()
