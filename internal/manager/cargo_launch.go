@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/yrashk/arm/internal/cargoprofile"
+	"github.com/yrashk/arm/internal/childowner"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
 	"github.com/yrashk/arm/internal/usage"
@@ -47,6 +48,9 @@ func (m *Manager) launchCargo(l model.Lease, run RunRequest) (model.Lease, error
 	}
 	if rec.Phase != "admitted" || m.cargoWorkers[l.ID] != nil {
 		return l, model.Err("cargo_state_corrupt", "Cargo cannot repeat a previously started spawn intent")
+	}
+	if err := childowner.Available(); err != nil {
+		return m.cargoNoSpawnFailure(l, rec, err)
 	}
 	if m.cargoHelper == nil {
 		return m.cargoNoSpawnFailure(l, rec, model.Err("cargo_helper_unavailable", "startup-verified Cargo helper is unavailable"))
@@ -101,9 +105,20 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 	// A separate watcher is joined BEFORE Wait reaps the current child; no
 	// signalling can subsequently race PID reuse. Pipes unblock on cancellation.
 	var cmd *exec.Cmd
+	var originalOwner *childowner.Owner
+	var ownerCleanupErr error
 	var j *job
 	var childStarted, preflight bool
-	var childWaited bool
+	var childWaited, childJoined bool
+	var signalMu sync.Mutex
+	var signalErr error
+	recordSignal := func(err error) {
+		if err != nil && !errors.Is(err, syscall.ESRCH) {
+			signalMu.Lock()
+			signalErr = errors.Join(signalErr, err)
+			signalMu.Unlock()
+		}
+	}
 	var finish *cargoprofile.HelperFinished
 	var resultError error
 	var parentWrite, childRead *os.File
@@ -122,14 +137,30 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 	defer func() {
 		stopWatch()
 		if cmd != nil && childStarted && !childWaited {
-			if native != nil {
-				_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-			} else {
-				_ = cmd.Process.Kill()
+			if parentWrite != nil {
+				parentWrite.Close()
 			}
-			_ = cmd.Wait()
+			if childRead != nil {
+				childRead.Close()
+			}
+			if originalOwner != nil {
+				recordSignal(originalOwner.Signal(syscall.SIGKILL))
+				if j != nil {
+					j.retireControls()
+				}
+				cleanupCtx, cancel := context.WithTimeout(context.Background(), time.Second)
+				joined := originalOwner.Wait(cleanupCtx)
+				cancel()
+				childJoined = joined.Reaped
+				ownerCleanupErr = joined.CleanupError
+				resultError = errors.Join(resultError, ownerCleanupErr)
+			} else {
+				// Observer capability was checked before spawn. Losing the original
+				// binding before init/preflight remains unknown and grants no group action.
+				resultError = errors.Join(resultError, fmt.Errorf("original Cargo helper binding unavailable; no native Wait authority"))
+			}
 			if j != nil {
-				j.cpuExited.Store(true)
+				j.cpuExited.Store(childJoined)
 			}
 			childWaited = true
 		}
@@ -139,7 +170,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 			}
 		}
 		absent := !childStarted
-		if childStarted {
+		if childStarted && childJoined {
 			deadline := time.Now().Add(2 * time.Second)
 			for {
 				absent = errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH)
@@ -148,6 +179,15 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 				}
 				time.Sleep(10 * time.Millisecond)
 			}
+		}
+		signalMu.Lock()
+		originalSignalErr := signalErr
+		signalMu.Unlock()
+		resultError = errors.Join(resultError, originalSignalErr)
+		var controlErr error
+		if j != nil {
+			controlErr = j.controlFailure()
+			resultError = errors.Join(resultError, controlErr)
 		}
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -159,7 +199,13 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		rec.Revision++
 		latest.Revision++
 		if j != nil {
-			delete(m.jobs, id)
+			if childJoined {
+				delete(m.jobs, id)
+			} else {
+				m.jobs[id] = j
+				latest.PID = cmd.Process.Pid
+				latest.Process = native
+			}
 			delete(m.usages, id)
 			close(j.done)
 		}
@@ -180,7 +226,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		}
 		// A lost post-grant receipt stays an explicit uncertain obligation, even
 		// if a currently owned child was killed. Never restart the requested work.
-		if !absent || (childStarted && native == nil) || (preflight && finish == nil && latest.Outcome == "") {
+		if !absent || ownerCleanupErr != nil || (childStarted && !childJoined) || originalSignalErr != nil || controlErr != nil || (childStarted && native == nil) || (preflight && finish == nil && latest.Outcome == "") {
 			rec.Phase = "needs_attention"
 			rec.Uncertain = true
 			latest.State = "needs_attention"
@@ -295,6 +341,12 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		return
 	}
 	childStarted = true
+	originalOwner, e = childowner.New(cmd)
+	if e != nil {
+		j = &job{cmd: cmd, done: make(chan struct{}), controlRetired: true}
+		fail(e)
+		return
+	}
 	inRead.Close()
 	outWrite.Close()
 	identity, e := usage.Capture(cmd.Process.Pid)
@@ -311,7 +363,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		case <-ctx.Done():
 			parentWrite.Close()
 			childRead.Close()
-			_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+			recordSignal(originalOwner.Signal(syscall.SIGKILL))
 		case <-stopper:
 		}
 	}()
@@ -324,7 +376,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		l.PID = identity.PID
 		l.Process = native
 		l.Revision++
-		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor}
+		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor, childOwner: originalOwner}
 		m.jobs[id] = j
 		e = m.putCargo(l, rec, "cargo.helper_bound")
 	}

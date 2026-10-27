@@ -291,7 +291,7 @@ func (p *sshProcess) Wait(ctx context.Context) (sshservice.Exit, error) {
 var sshSignals = map[string]syscall.Signal{"HUP": syscall.SIGHUP, "INT": syscall.SIGINT, "QUIT": syscall.SIGQUIT, "TERM": syscall.SIGTERM, "KILL": syscall.SIGKILL, "USR1": syscall.SIGUSR1, "USR2": syscall.SIGUSR2, "WINCH": syscall.SIGWINCH}
 
 func (p *sshProcess) owned() error {
-	if p.manager.jobs[p.lease] != p.job || p.job.identity == nil {
+	if p.manager.jobs[p.lease] != p.job || p.job.identity == nil || !p.job.controlActive() {
 		return model.Err("lease_inactive", "SSH process is no longer owned")
 	}
 	actual, err := usage.Capture(p.job.cmd.Process.Pid)
@@ -313,7 +313,7 @@ func (p *sshProcess) Signal(ctx context.Context, name string) error {
 	if err := p.owned(); err != nil {
 		return err
 	}
-	return syscall.Kill(-p.job.cmd.Process.Pid, sig)
+	return p.job.signalGroup(sig)
 }
 func (p *sshProcess) Resize(ctx context.Context, w sshservice.Window) error {
 	if w.Columns < 1 || w.Columns > 1000 || w.Rows < 1 || w.Rows > 1000 || w.WidthPixels > 16384 || w.HeightPixels > 16384 {
