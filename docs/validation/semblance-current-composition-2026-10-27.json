@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-27",
+  "scope": "Current native backend composition with the reviewed Semblance renderer and keyboard correction",
+  "source_commit": "36d80f920ea6973ce452efe3395edc8c8e3ea32e",
+  "runtime_source_changes_in_this_review": false,
+  "static_composition": {
+    "native_intersection_base": "f54e5283439e36d76adc62156d963ed93e6a2af6",
+    "go_module_delta_from_intersection_to_compiled_commit": [],
+    "ui_runtime_commit": "18852436f09fd8e9e6021adccf7ddb458ed24963",
+    "critical_interface_reference_base": "0ae14ef0f619c299873650421163c469865e651d",
+    "all_12_candidate_parent_paths_unchanged_in_intersection_base": true,
+    "critical_interfaces_unchanged": [
+      "go.mod",
+      "go.sum",
+      "internal/server/browser.go",
+      "internal/server/server.go",
+      "internal/server/node_sessions.go",
+      "internal/server/semblance_assets_test.go",
+      "internal/server/dashboard_login_link_test.go",
+      "internal/server/dashboard_session_precision_review_test.go"
+    ],
+    "changed_transitive_runtime": "Native elapsed lease clock/model fields, Manager admission/lifecycle, original-child ownership/settlement, Screen and forwarding native hold checks.",
+    "frontend_delta_from_validated_ui_runtime": [
+      "web/semblance-provenance.json"
+    ],
+    "frontend_delta_is_only_public_issue_tracking_metadata": true,
+    "intersection_audit_sha256": "39528fe17be23d0f26cfbdf5c86f76ef7036d384357d59933b825cfe387d3ae5"
+  },
+  "native_gate": {
+    "original_terminal_exit": 0,
+    "native_platform": "darwin/arm64",
+    "macos": "26.6",
+    "go_version": "go version go1.27.3 darwin/arm64",
+    "python_version": "3.9.6",
+    "normal_shared_fifo": true,
+    "source_inputs": 2410,
+    "all_source_bytes_equal_selected_git_tree": true,
+    "source_before_sha256": "ab0be40b342ac3824b53d92917d8c62550c77938462c530724e66d2ecbcfbbe9",
+    "source_after_sha256": "ab0be40b342ac3824b53d92917d8c62550c77938462c530724e66d2ecbcfbbe9",
+    "source_unchanged": true,
+    "selected_tool_hashes": {
+      "go": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+      "python": "dff595035109e19c43c4b3e73ee08b5f4651e719f25f8b4713f819d28964dc19",
+      "clang": "1590ac950a3d627817d09ade5cb60b2115f17a72182a3141e010b4bcc482a0c9",
+      "git": "44a68ddc1983d6cff3fd35ba3f9ba5f82004216f1dcde69892b3d1b06e408698",
+      "compile": "4d0bd4c1880e3d575827a72ac66b0f117b31da0aff1fe44f03a54c7ffb3c8ae3",
+      "link": "9674eaf9854e44afd7331046d14429f914bf9838f48e9ed77793e0686e45d4b2",
+      "asm": "4165876f4b0a389293cd05392c09ef197f36111edf5b6146e870a05dd3c26a90",
+      "cgo": "760acaf7db58f40a72482017209148a55636e62e95bc40f5df446382adf44513"
+    },
+    "eight_selected_tools_unchanged": true,
+    "four_frozen_harness_inputs_unchanged": true,
+    "harness_before_sha256": "f6c38ab145adfe30b847251211165fc53e0da5ac89bf9d0580d54736209151c7",
+    "harness_after_sha256": "f6c38ab145adfe30b847251211165fc53e0da5ac89bf9d0580d54736209151c7",
+    "steps": [
+      {
+        "name": "embedded-session-race",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "build-arm",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "compiled-dashboard",
+        "exit": 0,
+        "original_child_waited": true
+      }
+    ],
+    "native_root_tests": 6,
+    "native_named_tests": 17,
+    "native_roster": [
+      {
+        "name": "TestDashboardLoginLinkAuthenticatedRoundTrip",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkAuthenticationAndClosedParameters",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkPreservesCredentialCaps",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority/local=false",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority/local=true",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/exact_native_JSON_integers",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/one_use_preserved",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/wrong_nonce_refused_without_consuming_ticket",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/changed_authority_refused",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/LICENSES.txt",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/arm-wat-only-store-DpLv8E9I.mjs",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/arm.mjs",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/assets/wat-C2A9nalw.wasm",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/wat-2wrDwrzy.mjs",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets",
+        "outcome": "pass"
+      }
+    ],
+    "failed_tests": 0,
+    "skipped_tests": 0,
+    "binary_sha256": "5109d2e04fce8a7508026d4436d6a82d87e28010467202db6751e97ea482d094",
+    "compiled_bootstrap": "One-use link, embedded assets, CSP/no cookies, origin/authority/replay guards, literal executable URL argument, real PTY launcher and JSON/piped no-launch modes passed.",
+    "fixture_cleanup": {
+      "owned_short_temporary_namespace_was_empty_before_start": true,
+      "no_retained_native_fixture_message": true,
+      "owned_namespace_empty_after_native_children": true,
+      "owned_namespace_removed": true,
+      "native_endpoint_and_exclusive_lock_cleanup_assertions_completed": true
+    }
+  },
+  "ui_asset_source_hashes": {
+    "internal/server/web/assets/LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+    "internal/server/web/assets/arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+    "internal/server/web/assets/arm.mjs": "f89582fa3376c41fe460f200b1be9d8592447a4f5ee02342f04a96928c7c0bf6",
+    "internal/server/web/assets/assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+    "internal/server/web/assets/wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+  },
+  "limits": [
+    "This is the three-step native compilation/embed-session/bootstrap boundary check, not a repeat of frontend effect, RDF, asset-build or browser suites.",
+    "Actual rendered UI/native-picker evidence remains in the separate reviewed renderer record; frontend runtime and assets are byte-identical.",
+    "No actual operating-system clock suspend/fault matrix, remote workload/Screen/clipboard session, or public latest install was performed here.",
+    "The receipt adds normalized validation evidence only; it changes no runtime, module, API, allocation or authority behavior."
+  ]
+}
