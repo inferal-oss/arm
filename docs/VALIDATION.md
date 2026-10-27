@@ -1,5 +1,20 @@
 # Validation record
 
+## Inert provider contract compilation
+
+Reviewed `58ae02d`, integrated as `e7d1c28`, preserves the exact seven-file
+proposal after the numeric SQL projection correction. One normal-FIFO command
+compiles the four declaration files with `-run '^$'`, `-vet=off`, CGO disabled
+and offline module settings. Its actual output says no test files; no SQL runs.
+Root checks source/Git blobs, before/intent/after equality, module inputs,
+selected tools/harnesses, original log and sole wait with positive reaping and
+ESRCH absence, without signals. The package has no imports or runtime callers.
+
+The [normalized record](validation/provider-preparation-inert-compile-2026-10-27.json)
+does not accept SQL semantics, the unapplied central patch, minimum-writer
+policy, installation, admission, lifecycle or production authority. Earlier
+provider-consumer runtime evidence remains a distinct milestone.
+
 ## Complete-scope sync source milestone
 
 Source `f2c6347`, integrated as `d3cd71d`, passes three macOS refusal roots

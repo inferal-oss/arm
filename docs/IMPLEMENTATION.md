@@ -107,6 +107,22 @@ refusal tests pass; Linux test packages compile without native execution.
 Manager admission, charged coverage and a positive allocation-refusal fixture
 remain separate gates. See the [source validation](validation/sync-complete-scope-source-2026-10-27.json).
 
+## Inert paired-provider contract proposal
+
+Integrated `e7d1c28` adds an inert data/schema proposal, bounded SQL templates
+and declarations. No runtime package imports it; the eight-target central
+installation patch remains unapplied. Its declarations compile with no test
+cases selected. Numeric SQL projections return an integer or an unavailable
+sentinel before driver allocation. The 104 KiB record allowance is logical;
+future image work requires separate reservations before verification.
+
+Minimum-writer compatibility, atomic paired admission, raw row/clock binding,
+unavailable accounting and every retaining lifecycle boundary still block any
+factory or installer. This proposal supplies no new execution authority. See
+the [design](design/PROVIDER-PREPARATION-V1.md),
+[dependencies](design/PROVIDER-PREPARATION-DEPENDENCIES.md) and
+[compile-only evidence](validation/provider-preparation-inert-compile-2026-10-27.json).
+
 ## Fenced Unix forwarding prototype
 
 Integrated `0d31680` contains an isolated dual-tag source adapter. It binds
