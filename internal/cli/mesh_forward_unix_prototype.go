@@ -21,7 +21,7 @@ func (a *app) startForwardUnixPrototype(ctx context.Context, key, tokenFile stri
 	}
 	var status struct {
 		forwardSourceClientStatus
-		Expires time.Time `json:"expires"`
+		Expires time.Time `json:"expires_at"`
 	}
 	if err := a.call("mesh_forward_status", struct {
 		Key string `json:"key"`

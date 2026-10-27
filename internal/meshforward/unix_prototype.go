@@ -20,24 +20,72 @@ import (
 // public dispatch or durable Manager lease for it. A production adapter must
 // reserve that lease before binding and preserve uncertain cleanup on restart.
 type UnixPrototype struct {
-	key      string
-	name     string
-	homePath string
-	home     *os.File
-	parent   *os.File
-	dir      *os.File
-	homeID   unixPrototypeID
-	parentID unixPrototypeID
-	dirID    unixPrototypeID
-	socketID unixPrototypeID
-	listener *net.UnixListener
-	open     func(context.Context) (net.Conn, error)
-	cancel   context.CancelFunc
-	done     chan struct{}
-	mu       sync.Mutex
-	active   map[*net.UnixConn]net.Conn
-	joined   bool
-	err      error
+	key           string
+	name          string
+	homePath      string
+	home          *os.File
+	parent        *os.File
+	dir           *os.File
+	homeID        unixPrototypeID
+	parentID      unixPrototypeID
+	dirID         unixPrototypeID
+	socketID      unixPrototypeID
+	listener      *net.UnixListener
+	open          func(context.Context) (net.Conn, error)
+	cancel        context.CancelFunc
+	done          chan struct{}
+	mu            sync.Mutex
+	active        map[*net.UnixConn]*unixPrototypePair
+	joined        bool
+	watcherJoined bool
+	err           error
+	listenerOnce  sync.Once
+	finishOnce    sync.Once
+	finishErr     error
+}
+
+// One accepted pair owns each original native close exactly once. A watcher
+// may request abort before remote admission completes; setRemote then closes
+// the newly returned remote without exposing application bytes.
+type unixPrototypePair struct {
+	parent     *UnixPrototype
+	local      *net.UnixConn
+	mu         sync.Mutex
+	remote     net.Conn
+	aborted    bool
+	localOnce  sync.Once
+	remoteOnce sync.Once
+}
+
+func (q *unixPrototypePair) setRemote(remote net.Conn) {
+	q.mu.Lock()
+	q.remote = remote
+	aborted := q.aborted
+	q.mu.Unlock()
+	if aborted {
+		q.closeRemote()
+	}
+}
+
+func (q *unixPrototypePair) closeLocal() {
+	q.localOnce.Do(func() { q.parent.record(q.local.Close()) })
+}
+
+func (q *unixPrototypePair) closeRemote() {
+	q.mu.Lock()
+	remote := q.remote
+	q.mu.Unlock()
+	if remote != nil {
+		q.remoteOnce.Do(func() { q.parent.record(remote.Close()) })
+	}
+}
+
+func (q *unixPrototypePair) abortAndClose() {
+	q.mu.Lock()
+	q.aborted = true
+	q.mu.Unlock()
+	q.closeLocal()
+	q.closeRemote()
 }
 
 type unixPrototypeID struct {
@@ -60,6 +108,14 @@ func unixPrototypeStat(fd int, name string) (unixPrototypeID, error) {
 	return unixPrototypeID{uint64(st.Dev), st.Ino, st.Uid, uint32(st.Mode)}, nil
 }
 
+func unixPrototypeNamedStat(path string) (unixPrototypeID, error) {
+	var st unix.Stat_t
+	if err := unix.Lstat(path, &st); err != nil {
+		return unixPrototypeID{}, err
+	}
+	return unixPrototypeID{uint64(st.Dev), st.Ino, st.Uid, uint32(st.Mode)}, nil
+}
+
 func unixPrototypePrivate(id unixPrototypeID, kind uint32, mode uint32) bool {
 	return id.uid == uint32(os.Geteuid()) && id.mode&unix.S_IFMT == kind && id.mode&07777 == mode
 }
@@ -72,6 +128,9 @@ func StartUnixPrototype(ctx context.Context, home, key string, expires time.Time
 	if ctx == nil || !hexID(key, 16) || open == nil || !expires.After(time.Now()) || expires.After(time.Now().Add(15*time.Minute)) {
 		return nil, errors.New("exact bounded source Unix adapter authority required")
 	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	canonical, err := filepath.EvalSymlinks(home)
 	if err != nil || canonical != filepath.Clean(home) {
 		return nil, errors.New("canonical source home required")
@@ -80,26 +139,29 @@ func StartUnixPrototype(ctx context.Context, home, key string, expires time.Time
 	if err != nil {
 		return nil, err
 	}
-	p := &UnixPrototype{key: key, name: "forward-unix-" + key, homePath: home, home: os.NewFile(uintptr(homeFD), "source-home"), open: open, done: make(chan struct{}), active: map[*net.UnixConn]net.Conn{}}
+	p := &UnixPrototype{key: key, name: "forward-unix-" + key, homePath: home, home: os.NewFile(uintptr(homeFD), "source-home"), open: open, done: make(chan struct{}), active: map[*net.UnixConn]*unixPrototypePair{}}
 	fail := func(e error) (*UnixPrototype, error) {
 		// An uncertain setup never removes a path. It remains visible for exact
 		// operator inspection and a subsequent start refuses the same key.
 		if p.listener != nil {
 			p.listener.SetUnlinkOnClose(false)
-			_ = p.listener.Close()
+			e = errors.Join(e, p.listener.Close())
 		}
 		if p.dir != nil {
-			_ = p.dir.Close()
+			e = errors.Join(e, p.dir.Close())
 		}
 		if p.parent != nil {
-			_ = p.parent.Close()
+			e = errors.Join(e, p.parent.Close())
 		}
-		_ = p.home.Close()
+		e = errors.Join(e, p.home.Close())
 		return nil, e
 	}
 	p.homeID, err = unixPrototypeStat(int(p.home.Fd()), "")
 	if err != nil || !unixPrototypePrivate(p.homeID, unix.S_IFDIR, 0700) {
 		return fail(errors.New("private source home required"))
+	}
+	if actual, e := unixPrototypeNamedStat(home); e != nil || actual != p.homeID {
+		return fail(errors.New("named source home changed before binding"))
 	}
 	parentFD, err := unix.Openat(int(p.home.Fd()), "mesh", unix.O_RDONLY|unix.O_DIRECTORY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
 	if err != nil {
@@ -112,6 +174,9 @@ func StartUnixPrototype(ctx context.Context, home, key string, expires time.Time
 	}
 	if actual, e := unixPrototypeStat(int(p.home.Fd()), "mesh"); e != nil || actual != p.parentID {
 		return fail(errors.New("source mesh directory replaced"))
+	}
+	if err = ctx.Err(); err != nil {
+		return fail(err)
 	}
 	if err = unix.Mkdirat(int(p.parent.Fd()), p.name, 0700); err != nil {
 		return fail(fmt.Errorf("fresh Unix adapter directory required: %w", err))
@@ -130,6 +195,9 @@ func StartUnixPrototype(ctx context.Context, home, key string, expires time.Time
 	}
 	if _, e := unixPrototypeStat(int(p.dir.Fd()), "service.sock"); !errors.Is(e, unix.ENOENT) {
 		return fail(errors.New("Unix adapter socket name already exists or cannot be inspected"))
+	}
+	if err = ctx.Err(); err != nil {
+		return fail(err)
 	}
 	path := filepath.Join(home, "mesh", p.name, "service.sock")
 	p.listener, err = net.ListenUnix("unix", &net.UnixAddr{Name: path, Net: "unix"})
@@ -159,6 +227,13 @@ func (p *UnixPrototype) Path() string {
 }
 
 func (p *UnixPrototype) intact() error {
+	canonical, err := filepath.EvalSymlinks(p.homePath)
+	if err != nil || canonical != filepath.Clean(p.homePath) {
+		return errors.New("named source home changed")
+	}
+	if actual, err := unixPrototypeNamedStat(p.homePath); err != nil || actual != p.homeID {
+		return errors.New("named source home identity changed")
+	}
 	for _, check := range []struct {
 		fd       int
 		name     string
@@ -182,17 +257,20 @@ func (p *UnixPrototype) intact() error {
 func (p *UnixPrototype) run(ctx context.Context) {
 	defer close(p.done)
 	var workers sync.WaitGroup
+	watchDone := make(chan struct{})
 	go func() {
+		defer close(watchDone)
 		<-ctx.Done()
-		_ = p.listener.Close()
+		p.closeListener()
 		p.mu.Lock()
-		for local, remote := range p.active {
-			_ = local.Close()
-			if remote != nil {
-				_ = remote.Close()
-			}
+		pairs := make([]*unixPrototypePair, 0, len(p.active))
+		for _, pair := range p.active {
+			pairs = append(pairs, pair)
 		}
 		p.mu.Unlock()
+		for _, pair := range pairs {
+			pair.abortAndClose()
+		}
 	}()
 	for {
 		local, err := p.listener.AcceptUnix()
@@ -202,53 +280,86 @@ func (p *UnixPrototype) run(ctx context.Context) {
 			}
 			break
 		}
+		pair := &unixPrototypePair{parent: p, local: local}
 		workers.Add(1)
 		p.mu.Lock()
-		p.active[local] = nil
+		p.active[local] = pair
 		p.mu.Unlock()
-		go func() {
-			defer workers.Done()
-			defer local.Close()
-			defer func() { p.mu.Lock(); delete(p.active, local); p.mu.Unlock() }()
-			uid, err := unixPrototypePeerUID(local)
-			if err != nil || uid != uint32(os.Geteuid()) || p.intact() != nil || ctx.Err() != nil {
-				return
-			}
-			remote, err := p.open(ctx)
-			if err != nil || remote == nil {
-				return
-			}
-			defer remote.Close()
-			p.mu.Lock()
-			p.active[local] = remote
-			p.mu.Unlock()
-			if ctx.Err() != nil || p.intact() != nil {
-				return
-			}
-			finished := make(chan struct{}, 2)
-			go func() {
-				_, _ = io.Copy(remote, local)
-				if half, ok := remote.(interface{ CloseWrite() error }); ok {
-					_ = half.CloseWrite()
-				}
-				finished <- struct{}{}
-			}()
-			go func() {
-				_, _ = io.Copy(local, remote)
-				_ = local.CloseWrite()
-				finished <- struct{}{}
-			}()
-			<-finished
-			<-finished
-		}()
+		go p.servePair(ctx, pair, &workers)
 	}
+	// An unexpected accept error also terminates active streams. The watcher
+	// must finish its original closes before the workers can be called joined.
+	p.cancel()
+	<-watchDone
 	workers.Wait()
 	p.mu.Lock()
 	p.joined = true
+	p.watcherJoined = true
 	p.mu.Unlock()
 }
 
+func (p *UnixPrototype) servePair(ctx context.Context, pair *unixPrototypePair, workers *sync.WaitGroup) {
+	defer func() {
+		pair.abortAndClose()
+		p.mu.Lock()
+		delete(p.active, pair.local)
+		p.mu.Unlock()
+		workers.Done()
+	}()
+	uid, err := unixPrototypePeerUID(pair.local)
+	if err != nil || uid != uint32(os.Geteuid()) || ctx.Err() != nil {
+		return
+	}
+	if err = p.intact(); err != nil {
+		p.record(err)
+		return
+	}
+	remote, err := p.open(ctx)
+	if err != nil {
+		return // admission failed before any Unix client byte was read
+	}
+	if remote == nil {
+		p.record(errors.New("source admission returned no connection"))
+		return
+	}
+	pair.setRemote(remote)
+	if ctx.Err() != nil {
+		return
+	}
+	if err = p.intact(); err != nil {
+		p.record(err)
+		return
+	}
+	finished := make(chan error, 2)
+	copyDirection := func(dst io.Writer, src io.Reader, closeWrite func() error) {
+		_, copyErr := io.Copy(dst, src)
+		if copyErr == nil && closeWrite != nil {
+			copyErr = closeWrite()
+		}
+		if copyErr != nil && ctx.Err() == nil {
+			p.record(copyErr)
+			pair.abortAndClose() // wake the other direction without replay
+		}
+		finished <- copyErr
+	}
+	var remoteHalf func() error
+	if half, ok := remote.(interface{ CloseWrite() error }); ok {
+		remoteHalf = half.CloseWrite
+	}
+	go copyDirection(remote, pair.local, remoteHalf)
+	go copyDirection(pair.local, remote, pair.local.CloseWrite)
+	<-finished
+	<-finished
+}
+
+func (p *UnixPrototype) closeListener() {
+	p.listenerOnce.Do(func() { p.record(p.listener.Close()) })
+}
+
 func (p *UnixPrototype) record(err error) {
+	if err == nil {
+		return
+	}
 	p.mu.Lock()
 	p.err = errors.Join(p.err, err)
 	p.mu.Unlock()
@@ -258,15 +369,18 @@ func (p *UnixPrototype) record(err error) {
 // The prototype has no durable ledger, so callers must not present this as a
 // production recovery proof.
 func (p *UnixPrototype) Close() error {
+	p.finishOnce.Do(func() { p.finishErr = p.finish() })
+	return p.finishErr
+}
+
+func (p *UnixPrototype) finish() error {
 	p.cancel()
-	if err := p.listener.Close(); err != nil && !errors.Is(err, net.ErrClosed) {
-		p.record(err)
-	}
+	p.closeListener()
 	<-p.done
 	p.mu.Lock()
-	joined, prior := p.joined, p.err
+	joined, watcherJoined, prior := p.joined, p.watcherJoined, p.err
 	p.mu.Unlock()
-	if !joined || prior != nil {
+	if !joined || !watcherJoined || prior != nil {
 		return errors.Join(prior, errors.New("Unix adapter join or close uncertain; original path retained"))
 	}
 	if err := p.intact(); err != nil {

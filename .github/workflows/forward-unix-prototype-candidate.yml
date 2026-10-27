@@ -1,0 +1,31 @@
+name: Review-only Unix forwarding adapter candidate
+
+on:
+  push:
+    branches: [codex/forward-unix-prototype]
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Original Unix adapter close and path-identity controls
+        run: go test -tags arm_forward_review,arm_forward_unix_prototype ./internal/meshforward ./internal/cli -run TestUnixPrototype -count=1

@@ -57,8 +57,11 @@ path mutations are serialized under the original per-home authority.
 ## Prototype boundary and acceptance
 
 The isolated prototype exercises private path creation, kernel peer UID,
-identity checks, admission-before-copy, cancellation and joined cleanup. It
-is deliberately absent from central CLI/backend dispatch and has no durable
+named-home identity checks, admission-before-copy, cancellation, original
+close-once results, and positive watcher and bidirectional worker joins before
+unlink. An application copy error aborts both original connections without
+replay and leaves its outcome sticky. The prototype is deliberately absent
+from central CLI/backend dispatch and has no durable
 Manager lease. A crash in the prototype leaves its original private path
 present and a later start refuses it; that is a fail-closed model, not
 production recovery. The prototype checks path identity but does not yet
