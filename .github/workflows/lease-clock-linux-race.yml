@@ -1,0 +1,99 @@
+name: Linux lease clock race and recovery candidate
+
+on:
+  push:
+    branches: [codex/lease-clock-linux-race-ci]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lease-clock-linux-race-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REVIEWED_SOURCE_COMMIT: e0d070d17a28b3e94f4f05fc7ebca540e947a364
+  REVIEWED_RUNNER_SHA256: b18849205e9b0444d3f7abe6e6eea35a6941db2f53c26848cf213189549e1a72
+  REVIEWED_ROSTER_SHA256: 7a570352135cb20ffb85d9cb166f42a31a79b9b197298beb140a3a93cbfed134
+  REVIEWED_OWNER_SHA256: 221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76
+
+jobs:
+  native-linux-race-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GOMAXPROCS: '1'
+      CGO_ENABLED: '1'
+      CC: /usr/bin/gcc
+      GOTOOLCHAIN: local
+      GOFLAGS: '-p=1 -mod=readonly'
+    steps:
+      - name: Require reviewed immutable pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY_CHECK'
+          import os,re
+          if os.environ['GITHUB_REPOSITORY'] != 'inferal-oss/arm' or os.environ['GITHUB_REF'] != 'refs/heads/codex/lease-clock-linux-race-ci':
+              raise SystemExit('Unexpected repository or validation branch')
+          if not re.fullmatch('[0-9a-f]{40}', os.environ['REVIEWED_SOURCE_COMMIT']):
+              raise SystemExit('Reviewed source commit is not frozen')
+          for key in ('REVIEWED_RUNNER_SHA256','REVIEWED_ROSTER_SHA256','REVIEWED_OWNER_SHA256'):
+              if not re.fullmatch('[0-9a-f]{64}',os.environ[key]):
+                  raise SystemExit('Reviewed harness inputs are not frozen')
+          if os.environ['REVIEWED_SOURCE_COMMIT'] == os.environ['GITHUB_SHA']:
+              raise SystemExit('Source and workflow commits must differ')
+          PY_CHECK
+      - name: Check out immutable workflow harness
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Check out reviewed immutable source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ env.REVIEWED_SOURCE_COMMIT }}
+          path: source
+          persist-credentials: false
+      - name: Verify frozen runner and roster before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY_CHECK'
+          import hashlib,json,os
+          from pathlib import Path
+          workspace=Path(os.environ['GITHUB_WORKSPACE'])
+          expected={'scripts/test-lease-clock-linux-race.py':os.environ['REVIEWED_RUNNER_SHA256'],'scripts/formal_process.py':os.environ['REVIEWED_OWNER_SHA256'],'scripts/fixtures/lease-clock-linux/roster.json':os.environ['REVIEWED_ROSTER_SHA256']}
+          actual={}
+          for name,value in expected.items():
+              hashes={role:hashlib.sha256((workspace/role/name).read_bytes()).hexdigest() for role in ('harness','source')}
+              if set(hashes.values()) != {value}:
+                  raise SystemExit('Reviewed source/harness bytes differ: '+name)
+              actual[name]=hashes
+          control=workspace/'control'
+          control.mkdir(mode=0o700,exist_ok=False)
+          (control/'reviewed-inputs.json').write_text(json.dumps({'workflow_commit':os.environ['GITHUB_SHA'],'source_commit':os.environ['REVIEWED_SOURCE_COMMIT'],'files':actual},indent=2,sort_keys=True)+'\n')
+          PY_CHECK
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: source/go.mod
+          cache: false
+      - name: Run bounded native Linux race and recovery validation
+        run: >-
+          python3 -B harness/scripts/test-lease-clock-linux-race.py
+          --source-root "$GITHUB_WORKSPACE/source"
+          --expected-source "$REVIEWED_SOURCE_COMMIT"
+          --output "$GITHUB_WORKSPACE/receipts"
+          --roster "$GITHUB_WORKSPACE/harness/scripts/fixtures/lease-clock-linux/roster.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: lease-clock-linux-race-recovery
+          path: |
+            receipts/
+            control/
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
