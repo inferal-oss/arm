@@ -1,0 +1,244 @@
+{
+  "environment": {
+    "cgo": false,
+    "controller": "macOS arm64",
+    "external_nic": false,
+    "go": "go1.27.3",
+    "guest": "Linux amd64",
+    "guest_cpus": 1,
+    "guest_memory_mib": 1024,
+    "host_shares": false,
+    "image": "Debian 13 genericcloud amd64 20261001-2618",
+    "inherited_serial_stdin": "null device",
+    "kernel_releases": {
+      "monotonic-negative": "6.12.111+deb13-cloud-amd64",
+      "positive": "6.12.111+deb13-cloud-amd64"
+    },
+    "machine": "QEMU q35 TCG",
+    "maximum_concurrent_guests": 1,
+    "per_child_file_size_cap_bytes": 4294967296,
+    "qemu": "11.1.2",
+    "retained_vendor_image_sha512": "f46f0671a6e5bdec5291ab8972bae2f10e5408c2f64a74078f11efc2f06a436a9d0313ed50e0472542eeabf780e9f7c792ac0a314c6c20507fcd9fd81b468c3d"
+  },
+  "limitations": [
+    "Two disposable Linux guests under software CPU emulation; no physical host, physical hardware or Darwin suspend experiment.",
+    "SSH is an actual in-process Go SSH-library pair inside the guest, not the system OpenSSH daemon or an external SSH endpoint.",
+    "No full Linux race suite, recovery suite, hard preemption, provider or complete specification acceptance.",
+    "Evidence belongs to the recorded base and exact new test/harness sources; later whole-main changes require their own integration review."
+  ],
+  "negative": {
+    "expected_guest_exit": 1,
+    "failed_roots": 1,
+    "only_mutation": "Production Linux Read CLOCK_BOOTTIME changed to CLOCK_MONOTONIC; independent raw guest clock oracle unchanged.",
+    "scope": "The native sample and Deadline.Remaining oracle fails before downstream Manager expiry operations; this is not a downstream negative Manager pass.",
+    "sole_failure": "production lease clock excluded real guest suspend"
+  },
+  "ownership_and_closure": {
+    "all_original_owners_retired_reaped_and_absent": true,
+    "evidence_file_count": 127,
+    "evidence_hash_manifest_sha256": "58296f9c7483b7c08d3b39099c0898a34b9c0c4e62827e7264a91c0beb9a2e6e",
+    "host_commands": 40,
+    "original_wait_calls": 42,
+    "selected_tool_entries": 48936,
+    "selected_tools_before_after_equal": true,
+    "trust_boundary": "Selected Go/module/QEMU/firmware/non-system dynamic dependencies and named host tools; sealed operating-system services and generic system libraries remain trusted."
+  },
+  "positive": {
+    "assertions": [
+      "Expired native deadlines cannot renew or rebase.",
+      "Both original children remain live and unreaped through the pre-expiry cut.",
+      "Exact originals receive cancellation and positively join through their original native owners.",
+      "Actual held SSH input keeps its charge until transport and worker completion.",
+      "The unrelated original sentinel exits normally.",
+      "Actual execution markers show one launch each after wake and reconciliation."
+    ],
+    "entitlement_cases": [
+      "bare memory",
+      "original generic execution",
+      "original Go SSH-library execution"
+    ],
+    "failed_nodes": 0,
+    "guard_subcases": 10,
+    "named_test_and_subtest_nodes": 12,
+    "roots": 2,
+    "skipped_nodes": 0
+  },
+  "preserved_failures": [
+    {
+      "actual_s3_cycles": 0,
+      "child_launched": false,
+      "stage": "queue admission",
+      "wrapper_exit": 76
+    },
+    {
+      "actual_s3_cycles": 0,
+      "causes": [
+        "ISO Rock Ridge ownership differed from the strict guest-root requirement.",
+        "Cloud-init journal prefixes hid protocol and test lines."
+      ],
+      "cleanup_confirmed": false,
+      "cleanup_finding": "KILL returned EPERM; the denied-control obligation remains unconfirmed despite later original exit and absence.",
+      "fixes": [
+        "Keep the ISO read-only and mount with uid=0,gid=0,norock.",
+        "Write output through the guarded guest UART.",
+        "Try verified original QMP shutdown before generic original-owner cancellation."
+      ],
+      "qemu_native_wait_calls": 1,
+      "qemu_original_wait_exit": 0,
+      "qemu_pid_and_group_absent": true,
+      "qemu_retired_and_reaped": true,
+      "source_manifest_sha256": "394fe488e8b0c255a6b7033f0acf481fbdf6f5122a5ad85eec6fa8dda93a9c53",
+      "stage": "initial guest fixture",
+      "status": "failed"
+    },
+    {
+      "actual_s3_cycles": 2,
+      "clock_observations": [
+        {
+          "actual_s3_cycles": 1,
+          "external_suspended_seconds": 25.132272999999998,
+          "go_context_live": true,
+          "go_elapsed_ns": 503655522,
+          "mode": "monotonic-negative",
+          "native_boot_and_time_namespace_stable": true,
+          "production_delta_ns": 503480520,
+          "raw_boottime_delta_ns": 25819538471,
+          "raw_monotonic_delta_ns": 503468521,
+          "remaining_ns": [
+            19055510272,
+            19128773638,
+            19176261876
+          ],
+          "ssh_context_live": true,
+          "wall_delta_ns": 25819552471
+        },
+        {
+          "actual_s3_cycles": 1,
+          "external_suspended_seconds": 25.157426415999964,
+          "go_context_live": true,
+          "go_elapsed_ns": 453220837,
+          "mode": "positive",
+          "native_boot_and_time_namespace_stable": true,
+          "production_delta_ns": 25394701237,
+          "raw_boottime_delta_ns": 25394683237,
+          "raw_monotonic_delta_ns": 452792835,
+          "remaining_ns": [
+            0,
+            0,
+            0
+          ],
+          "ssh_context_live": true,
+          "wall_delta_ns": 25394706237
+        }
+      ],
+      "failure": "guest completion did not arrive",
+      "interpretation": "Diagnostic fixture changes do not establish a fixed product defect; the failed Gate2 remains failed.",
+      "negative_expected_clock_oracle_accepted": true,
+      "original_qemu_cleanup": [
+        {
+          "mode": "monotonic-negative",
+          "native_join_confirmed": true,
+          "native_wait_calls": 1,
+          "original_qmp_quit_confirmed": true,
+          "pid_and_group_absent": true,
+          "qemu_exit": 0,
+          "receipt_sha256": "1f84b2fb1b2ccce717192829a3cd7d1a8e19cbeda94ca19a166425574b00ef64",
+          "retired_and_reaped": true,
+          "signal_attempts": 0
+        },
+        {
+          "mode": "positive",
+          "native_join_confirmed": true,
+          "native_wait_calls": 1,
+          "original_qmp_quit_confirmed": true,
+          "pid_and_group_absent": true,
+          "qemu_exit": 0,
+          "receipt_sha256": "4da0adfda63d5f62152d6d60a12579b984cb8acc9972208b4e16ca203d91f58a",
+          "retired_and_reaped": true,
+          "signal_attempts": 0
+        }
+      ],
+      "positive_completion_accepted": false,
+      "positive_manager_settlement_accepted": false,
+      "raw_result_sha256": "db12f9a7870d2a2f1f6329a6e571a83aae5b2abd789196568743bee409f1f2b5",
+      "source_manifest_sha256": "2ac1ff22cce49e64a7211b763d024ab26003b1dffc7536b7d272667482acf48c",
+      "stage": "second actual guest gate",
+      "status": "failed",
+      "successor_fixture_changes": [
+        "Diagnostic output moved to a dedicated output-only virtio result stream; UART remains separate diagnostics.",
+        "Paired diagnostic stages surround unchanged post-wake operations."
+      ],
+      "unproven_hypothesis": "UART/getty interaction or other launcher/transport failure; no specific errno or product defect established."
+    }
+  ],
+  "real_sleep": {
+    "actual_deep_s3_cycles": 2,
+    "boot_and_initial_time_namespace_stable_within_each_cycle": true,
+    "fresh_guest_per_cycle": true,
+    "guests": [
+      {
+        "actual_s3_cycles": 1,
+        "binary_sha256": "ca633b35a37bf4f051ee07f459f0df9d454833e68e67711f4b0adb148e2d2696",
+        "canonical_protocol_sha256": "de0893e27a54af8fbdc90b1fc377807c481e0488fa176bbf02fcf80da14f7eab",
+        "causal_negative_failed_roots": 1,
+        "externally_suspended_seconds": 25.155585416000008,
+        "go_context_live": true,
+        "guest_exit": 1,
+        "mode": "monotonic-negative",
+        "native_outer_wait_calls": 1,
+        "paired_diagnostic_stages": 0,
+        "positive_nodes": 0,
+        "production_delta_ns": 554801777,
+        "qemu_exit": 0,
+        "raw_boottime_delta_ns": 25881858796,
+        "raw_monotonic_delta_ns": 554774778,
+        "remaining_ns": [
+          18968553836,
+          19072307356,
+          19128324636
+        ],
+        "ssh_context_live": true,
+        "uart_diagnostic_sha256": "aa3a2f85626adca2d2bf6355f3a9003f2dbcb0b7e68fabbef1a04a6a7afb817d"
+      },
+      {
+        "actual_s3_cycles": 1,
+        "binary_sha256": "075e5e6da0262d273c6bb2905ec901b0f00b9ca79b9e4c8e5be7b9680d4e01f9",
+        "canonical_protocol_sha256": "c803cacc50c9ff9a923e8de53c28d195fa887b2e0c4fdb87c1197a620d424f76",
+        "causal_negative_failed_roots": 0,
+        "externally_suspended_seconds": 25.157312333999982,
+        "go_context_live": true,
+        "guest_exit": 0,
+        "mode": "positive",
+        "native_outer_wait_calls": 1,
+        "paired_diagnostic_stages": 15,
+        "positive_nodes": 12,
+        "production_delta_ns": 25366349698,
+        "qemu_exit": 0,
+        "raw_boottime_delta_ns": 25366353698,
+        "raw_monotonic_delta_ns": 846922433,
+        "remaining_ns": [
+          0,
+          0,
+          0
+        ],
+        "ssh_context_live": true,
+        "uart_diagnostic_sha256": "4a8294bdea191c05795da41ecb0305bf8f5e57c8e371a66793f40d43f70879a4"
+      }
+    ],
+    "host_power_operations": [],
+    "mechanism": "Guarded guest sysfs mem write with selected deep sleep; original QMP SUSPEND and suspended state, at least 25 controller-monotonic seconds, system_wakeup, WAKEUP and running.",
+    "pause_or_sigstop_substitute": false
+  },
+  "schema": "arm.lease-clock-real-guest-s3-validation/v1",
+  "source": {
+    "base_commit": "6509f5f10fe8589face1d067057a9f6a476f3c8b",
+    "before_after_equal": true,
+    "complete_source_inputs": 2510,
+    "owned_files_sha256": {
+      "internal/manager/lease_clock_suspend_guest_linux_test.go": "7b38e22f8e21e5e16b09d51c63c2eec54d9fdc56a49c60ee4aae33885fc7881b",
+      "scripts/fixtures/lease-clock-suspend/guest_init.py": "a873c7f8fa008b29b6910fcdede815c73db0236e598e254ebae8542b4863a9ad",
+      "scripts/test-lease-clock-vm-suspend.py": "a58e1046524025af52cbac559396be0aea574fddfa394cf8e3684efc47d5d031"
+    },
+    "source_manifest_sha256": "4e8e3b64cf8ff75dfe78e308cf184f7b74cf3b7f02126205238298e123e827a3"
+  }
+}

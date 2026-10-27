@@ -65,8 +65,9 @@ state machine.
 Native tests cover the supported clock reads and process stop/resume with the
 original parent's observation, continuation and sole Wait. Controlled-clock tests
 cover frozen wall time, wall jumps, restart, malformed records and held-work
-fences. These are scoped tests; they do not constitute an actual hardware or VM
-suspend/resume experiment or hard kernel resource preemption.
+fences. Those checks alone do not constitute an actual hardware or VM
+suspend/resume experiment or hard kernel resource preemption. The separately
+recorded disposable-guest experiment below has its own acceptance scope.
 
 Strict proof evidence binds the declared prover pipeline, selected library tree
 and external native files. The fixed, sanitized system-command environment and
@@ -75,3 +76,57 @@ bytes, generic OS helpers/interpreters, kernel behavior and Rosetta service stat
 are outside the file closure. See `formal/lease-clock/README.md` and the normalized
 [validation record](validation/lease-clock.json) for the executed source states
 and exact accepted checks.
+
+## Disposable Linux guest suspend
+
+The opt-in fixture in `scripts/test-lease-clock-vm-suspend.py` completed two real
+Linux amd64 Q35/TCG deep S3 cycles, using separate fresh guests with one virtual
+CPU and 1 GiB RAM each. Each guest remained in QMP `suspended` state for more
+than 25 controller-monotonic seconds before `system_wakeup`, `WAKEUP` and
+`running`. The fixture uses a pinned read-only Debian image, new overlays and
+read-only test media, with no external NIC or host share. It performs no host
+power operation.
+
+The guest power writer requires matching fresh DMI UUID/serial, root-disk
+serial, immutable executable hash and boot marker, then one closed nonce arm
+from the original controller. It writes `mem` once with `deep` selected. Raw
+BOOTTIME/MONOTONIC readings, stable boot/time-namespace identity and live Go/SSH
+contexts distinguish actual guest suspend from process stop or clock rebasing.
+The controller accepts results only from a separately guarded output-only
+virtio port and retained private file descriptor. UART and best-effort journal
+messages remain diagnostics. Named stages surround post-wake operations without
+changing their checks or deadlines.
+
+The production guest passed both roots and all 12 named test/subtest nodes,
+including ten pure binding-refusal cases. Its bare-memory, original generic
+child and original Go SSH-library leases expired without renewal or rebasing.
+Both original children remained live and unreaped before the first expiry
+operation, then positively joined through their original native owners. Actual
+held SSH input retained its charge until transport and worker completion. The
+unrelated original sentinel exited normally, and execution markers confirmed
+one launch per requested payload. All 15 post-wake stage pairs completed.
+
+The negative guest changed only production `CLOCK_BOOTTIME` to
+`CLOCK_MONOTONIC`; the independent raw-clock oracle was unchanged. After an
+equally real S3 cycle, it failed only `production lease clock excluded real
+guest suspend`, before downstream Manager expiry operations. The negative is
+an observed sample/deadline oracle failure, not downstream Manager acceptance.
+
+The completed evidence audit checked 2,510 unchanged source inputs, 48,936
+selected tool entries and all 42 original host command/QEMU Wait receipts.
+Both QEMU processes exited normally, with no signal attempts or cleanup error,
+and their original process/group absence was established. Exact source hashes,
+clock observations and preserved failed attempts are in the normalized
+[guest validation record](validation/lease-clock-real-guest-s3.json).
+
+Earlier attempts remain failed: initial media ownership/output framing failures
+preceded S3, and a later run observed both S3 clock deltas but lost positive
+completion evidence. Its outer QEMU joins do not establish Manager settlement.
+The output-session cause remains unproven. The initial denied KILL receipt
+retains its unconfirmed cleanup obligation despite later original exit/absence.
+
+This acceptance is scoped to the recorded source state and two disposable Linux
+guests under software CPU emulation. It does not establish physical hardware or
+Darwin suspend, system OpenSSH integration, full Linux race/recovery acceptance,
+hard preemption or the complete specification. Later integration changes need
+their own source review and affected validation.
