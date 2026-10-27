@@ -28,7 +28,13 @@ func sourceAuthority(a workspace.RouteAccess) forwardSourceAuthority {
 	return forwardSourceAuthority{a.Workspace, a.Generation, a.Local, a.Origin, a.Destination, a.Directory, a.OriginGeneration, a.DestinationGeneration}
 }
 
-func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target, service string, original forwardSourceAuthority) (*tls.Conn, meshsshrelay.Open, error) {
+func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target, service string, original forwardSourceAuthority, holdCheck func(context.Context) error) (*tls.Conn, meshsshrelay.Open, error) {
+	if holdCheck == nil {
+		return nil, meshsshrelay.Open{}, model.Err("lease_inactive", "original listener check required")
+	}
+	if err := holdCheck(ctx); err != nil {
+		return nil, meshsshrelay.Open{}, err
+	}
 	localHost := m.store.Config().Identity.Host
 	if workspaceID == "" || target == localHost || len(target) != 32 || service == "" {
 		return nil, meshsshrelay.Open{}, model.Err("invalid_request", "exact workspace, distinct destination and service required")
@@ -47,6 +53,9 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 	for _, candidate := range m.owner.graphRouteCandidates(ctx, a, "forward") {
 		if candidate.saved || candidate.probe || len(candidate.path) < 2 || len(candidate.path) > meshsshrelay.MaxNodes {
 			continue
+		}
+		if err := holdCheck(ctx); err != nil {
+			return nil, meshsshrelay.Open{}, err
 		}
 		peer, e := m.owner.graphCandidatePeer(ctx, m, a, candidate, "forward")
 		if e != nil {
@@ -87,6 +96,9 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 			continue
 		}
 		check := func(c context.Context) error {
+			if err := holdCheck(c); err != nil {
+				return err
+			}
 			current, e := m.store.Resolve(peer.Identity.Host)
 			if e != nil {
 				return e
@@ -101,7 +113,10 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 			if fresh.Generation != a.Generation || fresh.Origin != a.Origin || fresh.Destination != a.Destination || fresh.Directory != a.Directory || fresh.OriginGeneration != a.OriginGeneration || fresh.DestinationGeneration != a.DestinationGeneration {
 				return model.Err("forbidden", "original TCP route membership changed")
 			}
-			return m.store.WorkspaceIdentityCurrent(a.Local)
+			if err := m.store.WorkspaceIdentityCurrent(a.Local); err != nil {
+				return err
+			}
+			return holdCheck(c)
 		}
 		conn, e := meshsshrelay.Dial(ctx, peer.Identity.Address, outer, inner, o, check)
 		if e == nil {

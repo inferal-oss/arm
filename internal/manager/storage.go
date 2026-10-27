@@ -104,7 +104,7 @@ func (m *Manager) storageForRun(r model.Request) (model.Lease, error) {
 		return l, err
 	}
 
-	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || time.Now().Add(r.TTL).After(*l.Expires) || l.Artifact == nil || l.Artifact.Phase != "owned" {
+	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseCovers(l, r.TTL) || l.Artifact == nil || l.Artifact.Phase != "owned" {
 		return l, model.Err("storage_unavailable", "storage must be active, owned by this host/user, and outlast the command's TTL")
 	}
 	if m.storage == nil {
@@ -149,6 +149,9 @@ func (m *Manager) endStorage(l model.Lease, outcome string) (model.Lease, error)
 	l.Revision++
 	if err := m.put(l, "storage.ending"); err != nil {
 		return l, err
+	}
+	if cancel := m.storageExportCancels[l.ID]; cancel != nil {
+		cancel()
 	}
 	ls, err := m.list()
 	if err != nil {

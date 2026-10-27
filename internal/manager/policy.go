@@ -149,7 +149,7 @@ func (m *Manager) evaluateUsage(id string, view model.WorkloadUsage, at time.Tim
 		return err
 	}
 	j := m.jobs[id]
-	if l.State != "active" || l.Request.UsagePolicy == nil || j == nil || j.identity == nil || (l.Expires != nil && !time.Now().Before(*l.Expires)) {
+	if l.State != "active" || l.Request.UsagePolicy == nil || j == nil || j.identity == nil || (l.Expires != nil && !m.leaseLive(l)) {
 		return nil
 	}
 	open, err := m.incidents(id, true)

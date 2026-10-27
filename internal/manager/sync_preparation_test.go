@@ -359,3 +359,37 @@ func TestSyncAdmissionSharesExactVersionedWorkerCommand(t *testing.T) {
 		t.Fatal("wrong command reached preparation", count, err)
 	}
 }
+
+func TestSyncPreparationElapsedExpiryRefusesCreditAndHandoff(t *testing.T) {
+	m, _, _ := syncManagerFixture(t)
+	c := &controlledLeaseClock{sample: m.leaseClockLast}
+	m.leaseClockRead = c.read
+	prep, err := m.beginSyncPreparation(t.Context(), "native-preparation-fence", syncreconcile.Local, time.Minute, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer prep.finish()
+	prep.nativeFinished()
+	admission := &syncAdmission{manager: m, preparation: prep, ctx: t.Context()}
+	original := prep.owner.result
+	c.sample.Tick = original.Clock.End
+	if prep.owner.Context().Err() != nil {
+		t.Fatal("fixture context should remain live")
+	}
+	if _, err = admission.withoutPreparation([]model.Lease{original}); err == nil {
+		t.Fatal("expired preparation lent admission credit")
+	}
+	tx, err := m.db.Begin()
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = admission.handoffTx(tx, original)
+	_ = tx.Rollback()
+	if err == nil {
+		t.Fatal("expired preparation transferred charge")
+	}
+	current, err := prep.owner.Lease()
+	if err != nil || current.State != "active" || current.Revision != original.Revision {
+		t.Fatal("refused handoff changed charge", current, err)
+	}
+}

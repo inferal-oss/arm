@@ -74,6 +74,7 @@ func TestLeaseReviewUnavailableStartupPreservesOrdinaryLifecycle(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			awaitNativeFixtureHeadroom(t, m, model.Resources{CPU: .02})
 			c := pollContact(t, m, "startup-review")
 			expires := reviewLease(t, m, c, "startup-expire")
 			release := reviewLease(t, m, c, "startup-release")
@@ -122,7 +123,7 @@ func TestLeaseReviewUnavailableStartupPreservesOrdinaryLifecycle(t *testing.T) {
 			// Make an existing ordinary lease overdue while stopped. Opening must
 			// still recover it and run ordinary expiry despite the unavailable feature.
 			past := time.Now().Add(-time.Minute).UTC()
-			expires.Expires = &past
+			expireLeaseClockForTest(t, &expires, past)
 			raw, err := json.Marshal(expires)
 			if err == nil {
 				_, err = db.Exec(`UPDATE leases SET data=? WHERE id=?`, string(raw), expires.ID)
@@ -183,7 +184,9 @@ func TestLeaseReviewUnavailableStartupPreservesOrdinaryLifecycle(t *testing.T) {
 			if l, e := m.End(release.ID, "released"); e != nil || l.State != "terminal" || l.Outcome != "released" || l.Revision != release.Revision+1 || l.Expires == nil || release.Expires == nil || !l.Expires.Equal(*release.Expires) {
 				t.Fatal("ordinary release failed", l, e)
 			}
-			fresh, e := m.Acquire(request("ordinary-after-review-failure"), nil)
+			freshRequest := request("ordinary-after-review-failure")
+			awaitNativeFixtureHeadroom(t, m, freshRequest.Resources)
+			fresh, e := m.Acquire(freshRequest, nil)
 			if e != nil || fresh.State != "active" {
 				t.Fatal("ordinary admission failed", fresh, e)
 			}

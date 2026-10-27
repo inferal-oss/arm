@@ -35,10 +35,12 @@ func TestReviewForwardFinalHoldRetainsOriginalAbortCallback(t *testing.T) {
 				return p, err
 			}
 			leased := make(chan string, 1)
+			admissionError := make(chan error, 1)
 			settled := make(chan model.Lease, 1)
-			f.destination.ReserveFinal = func(_, life context.Context, joined <-chan struct{}, _ Outer, o Open, _ Permit) (TransitReservation, error) {
-				hold, err := m.AcquireRelayTransit(life, model.Request{Key: "forward-join:" + o.Route, Reason: "forward callback original join review", Resources: model.Resources{CPU: .01, Memory: 1 << 20}, TTL: time.Until(o.Expires)}, joined)
+			f.destination.ReserveFinal = func(admission, life context.Context, joined <-chan struct{}, _ Outer, o Open, _ Permit) (TransitReservation, error) {
+				hold, err := acquireRelayChargeWithHeadroom(admission, life, m, model.Request{Key: "forward-join:" + o.Route, Reason: "forward callback original join review", Resources: model.Resources{CPU: .01, Memory: 1 << 20}}, o.Expires, joined)
 				if err != nil {
+					admissionError <- err
 					return TransitReservation{}, err
 				}
 				lease, err := hold.Lease()
@@ -46,7 +48,7 @@ func TestReviewForwardFinalHoldRetainsOriginalAbortCallback(t *testing.T) {
 					return TransitReservation{}, err
 				}
 				leased <- lease.ID
-				reservation := TransitReservation{Context: hold.Context(), End: func() { _, _ = m.End(lease.ID, "relay_closed") }, Finish: func() { l, _ := hold.FinishAfterJoin(); settled <- l }}
+				reservation := TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() { _, _ = m.End(lease.ID, "relay_closed") }, Finish: func() { l, _ := hold.FinishAfterJoin(); settled <- l }}
 				if failAdmission {
 					<-life.Done()
 					return reservation, errors.New("retained final admission failure")
@@ -72,6 +74,7 @@ func TestReviewForwardFinalHoldRetainsOriginalAbortCallback(t *testing.T) {
 			}
 			ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
 			defer cancel()
+			awaitRelayChargeHeadroom(t, m)
 			conn, err := Dial(ctx, f.relayServer.Listener.Addr().String(), outer, inner, f.open, func(context.Context) error { return nil })
 			if err != nil {
 				t.Fatal(err)
@@ -80,8 +83,10 @@ func TestReviewForwardFinalHoldRetainsOriginalAbortCallback(t *testing.T) {
 			var id string
 			select {
 			case id = <-leased:
-			case <-time.After(2 * time.Second):
-				t.Fatal("final hold not admitted")
+			case err := <-admissionError:
+				t.Fatal("final test transport admission failed", err)
+			case <-ctx.Done():
+				t.Fatal("final hold not admitted within its original context", ctx.Err())
 			}
 			f.destination.ClosePeer(f.a.Config().Identity.Host)
 			select {

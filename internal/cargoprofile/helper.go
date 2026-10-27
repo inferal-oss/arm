@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/usage"
 )
@@ -27,24 +28,26 @@ type HelperRuntime struct {
 	Protocol int    `json:"protocol"`
 }
 type HelperInit struct {
-	Command            Command            `json:"command"`
-	CWD                string             `json:"cwd"`
-	Allocation         string             `json:"allocation"`
-	AllocationIdentity model.FileIdentity `json:"allocation_identity"`
-	Runtime            HelperRuntime      `json:"runtime"`
-	Expires            time.Time          `json:"expires"`
-	StartDeadline      *time.Time         `json:"start_deadline,omitempty"`
+	Clock              *leaseclock.Deadline `json:"elapsed_deadline"`
+	Command            Command              `json:"command"`
+	CWD                string               `json:"cwd"`
+	Allocation         string               `json:"allocation"`
+	AllocationIdentity model.FileIdentity   `json:"allocation_identity"`
+	Runtime            HelperRuntime        `json:"runtime"`
+	Expires            time.Time            `json:"expires"`
+	StartDeadline      *time.Time           `json:"start_deadline,omitempty"`
 }
 type HelperHello struct {
 	Runtime HelperRuntime         `json:"runtime"`
 	Process model.ProcessIdentity `json:"process"`
 }
 type HelperGrant struct {
-	Approved       bool       `json:"approved"`
-	Revision       int        `json:"revision"`
-	Expires        time.Time  `json:"expires"`
-	StartDeadline  *time.Time `json:"start_deadline,omitempty"`
-	EvidenceSHA256 string     `json:"evidence_sha256,omitempty"`
+	Clock          *leaseclock.Deadline `json:"elapsed_deadline"`
+	Approved       bool                 `json:"approved"`
+	Revision       int                  `json:"revision"`
+	Expires        time.Time            `json:"expires"`
+	StartDeadline  *time.Time           `json:"start_deadline,omitempty"`
+	EvidenceSHA256 string               `json:"evidence_sha256,omitempty"`
 }
 type HelperAck struct {
 	Step     int `json:"step"`
@@ -73,7 +76,12 @@ func PreparedDigest(prepared Prepared) (string, error) {
 	return hex.EncodeToString(h[:]), nil
 }
 func grantValid(grant HelperGrant, init HelperInit) bool {
-	if !grant.Approved || grant.Revision < 1 || grant.Expires.IsZero() || !grant.Expires.Equal(init.Expires) || !time.Now().Before(grant.Expires) {
+	sample, clockErr := leaseclock.Read()
+	remaining, deadlineErr := init.Clock.Remaining(sample, &init.Expires)
+	if clockErr != nil || deadlineErr != nil || remaining <= 0 || !reflect.DeepEqual(grant.Clock, init.Clock) {
+		return false
+	}
+	if !grant.Approved || grant.Revision < 1 || grant.Expires.IsZero() || !grant.Expires.Equal(init.Expires) {
 		return false
 	}
 	if (grant.StartDeadline == nil) != (init.StartDeadline == nil) {
@@ -146,11 +154,18 @@ func RunHelper(parent context.Context, in io.Reader, out io.Writer, runtime Help
 		_ = pipeOut.Close()
 		parentLost()
 	}()
-	prepareDeadline := init.Expires
-	if init.StartDeadline != nil && init.StartDeadline.Before(prepareDeadline) {
-		prepareDeadline = *init.StartDeadline
+	sample, clockErr := leaseclock.Read()
+	remaining, deadlineErr := init.Clock.Remaining(sample, &init.Expires)
+	if clockErr != nil || deadlineErr != nil || remaining <= 0 {
+		return 125
 	}
-	prepareCtx, prepareCancel := context.WithDeadline(ctx, prepareDeadline)
+	prepareCtx, prepareCancel := context.WithTimeout(ctx, remaining)
+	if init.StartDeadline != nil {
+		// Caller start deadlines retain their separately reviewed authorization semantics.
+		startCtx, startCancel := context.WithDeadline(prepareCtx, *init.StartDeadline)
+		defer startCancel()
+		prepareCtx = startCtx
+	}
 	defer prepareCancel()
 	finish := func(code int, started bool, err error) int {
 		failure := ""

@@ -180,6 +180,9 @@ func (m *meshService) newBoundedRouteHandler(forward bool) *meshsshrelay.Handler
 		h.ReserveFinal = m.reserveForwardFinal
 	}
 	h.Revalidate = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) error {
+		if err := meshsshrelay.CheckReservation(ctx); err != nil {
+			return err
+		}
 		a, err := m.routedSSHAdmission(ctx, outer, o)
 		if err != nil {
 			return err
@@ -188,7 +191,7 @@ func (m *meshService) newBoundedRouteHandler(forward bool) *meshsshrelay.Handler
 			a.RelayGrant != p.RelayGrant || a.DestinationGrant != p.DestinationGrant || a.ForwardGrant != p.ForwardGrant || !time.Now().Before(p.Expires) {
 			return model.Err("forbidden", "routed SSH membership, grant or endpoint identity changed")
 		}
-		return nil
+		return meshsshrelay.CheckReservation(ctx)
 	}
 	h.Forward = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, previous net.Conn) {
 		nextHost := o.Path[o.Hop+1]
@@ -258,7 +261,7 @@ func (m *meshService) reserveForwardFinal(admission, lifetime context.Context, j
 			return e
 		}
 		lease, e := hold.Lease()
-		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), End: func() {
+		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() {
 			if lease.ID != "" {
 				if _, endErr := m.owner.Manager.End(lease.ID, "forward_closed"); endErr != nil {
 					log.Printf("TCP destination hold end remains unconfirmed: %v", endErr)
@@ -341,7 +344,7 @@ func (m *meshService) reserveSSHRelayTransit(admission, lifetime context.Context
 			return e
 		}
 		lease, e := hold.Lease()
-		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), End: func() {
+		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() {
 			if lease.ID != "" {
 				if _, endErr := m.owner.Manager.End(lease.ID, "relay_closed"); endErr != nil {
 					log.Printf("routed SSH transit hold end remains unconfirmed: %v", endErr)

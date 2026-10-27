@@ -94,7 +94,7 @@ func routeTransportFixture(t *testing.T) *routeFixture {
 			return p, nil
 		}
 		h.ReserveTransit = func(_ context.Context, life context.Context, _ <-chan struct{}, _ Outer, _ Open, _ Permit) (TransitReservation, error) {
-			return TransitReservation{Context: life, End: func() {}, Finish: func() {}}, nil
+			return TransitReservation{Context: life, CheckActive: func(ctx context.Context) error { return ctx.Err() }, End: func() {}, Finish: func() {}}, nil
 		}
 		h.Revalidate = func(ctx context.Context, o Outer, open Open, p Permit) error {
 			peer, e := store.Resolve(o.Source)
