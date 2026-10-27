@@ -46,7 +46,7 @@ tools={go:hashlib.sha256(pathlib.Path(go).read_bytes()).hexdigest(),env['CC']:ha
 before=sources();assert_committed(before);(run/'sources-before.json').write_text(json.dumps(before,sort_keys=True,indent=2)+'\n')
 expected={
  'github.com/yrashk/arm/internal/childowner':{'TestUnknownObservationRetiresWithoutSignalsOrWait','TestRetirementPrecedesSoleWaitAndDeniedSignalStaysFailure','TestNativeOriginalExitAndDescendantTeardown','TestNativeConcurrentCancellationCannotSignalAfterWait','TestRepeatedEINTRCannotBypassCancellationBound','TestNativeDeniedSignalCannotBecomeSuccessfulCleanupAfterReap'},
- 'github.com/yrashk/arm/internal/manager':{'TestOriginalWaiterNativeAdmissionAndExpiry','TestSupervisedExpiryAndDescendants','TestExpiryQueueAndRenewal','TestSchedulingDeadlineJournalFailureCannotGrant','TestCargoPreparationIsChargedAndNeverHoldsGlobalMutex','TestCargoEndingRefusesReplacedOriginalWorkerBinding','TestCargoEndingJournalFailureCancelsOriginalWorker','TestCargoRecoveryNeverFreesUnknownPIDZeroSpawnIntent'}}
+ 'github.com/yrashk/arm/internal/manager':{'TestOriginalWaiterNativeAdmissionAndExpiry','TestSupervisedExpiryAndDescendants','TestExpiryQueueAndRenewal','TestSchedulingDeadlineJournalFailureCannotGrant','TestCargoPreparationIsChargedAndNeverHoldsGlobalMutex','TestCargoEndingRefusesReplacedOriginalWorkerBinding','TestCargoEndingJournalFailureCancelsOriginalWorker','TestCargoRecoveryNeverFreesUnknownPIDZeroSpawnIntent','TestCargoOriginalCancellationPrecedesIPCClose'}}
 for file in (root/'internal/childowner').glob('*test.go'):
  if file.name.endswith('_darwin_test.go') and sys.platform!='darwin':continue
  if file.name.endswith('_linux_test.go') and not sys.platform.startswith('linux'):continue
