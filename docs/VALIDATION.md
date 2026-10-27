@@ -5479,3 +5479,24 @@ belongs to that combined candidate, which also contains unaccepted Gallery
 changes; it is not a standalone build of this two-line commit. Native Gallery
 selection rollback and a mobile Lightbox wider/taller than the viewport remain
 failed observations requiring focused correction and renewed browser evidence.
+
+### First Sparkline native browser run
+
+[Native failure evidence](validation/sparkline-native-scaffold-failure-2026-10-27.json)
+retains the first controlled geometry failure. Both actual example preferences
+show 7 points/4 edges, then 8/6 after receipt of the missing sample, then 7/4
+after withdrawal. The first paired controlled mount has matching HTML, counts
+and initial keyed nodes, but its document is 1740 pixels wide at a 1728-pixel
+viewport: the private fixture assigns a 1728-pixel stage inside a 12-pixel body
+margin. Measured stock SVG/controls remain within the viewport. This establishes
+a fixture cause for that measurement, not complete component geometry acceptance.
+
+Independent review checks all 19,041 before/final input entries, actual native
+observations and known-owner cleanup. The owned server exits zero after its
+declared stop, sole Wait, listener refusal and returned unmount/disposal calls;
+that protocol success does not pass the failed browser gate. The remaining
+80-configuration matrix, regional locales, keyboard and 512/513 controls are
+unstarted. The example entry discards its mount handle, so its teardown evidence
+does not establish explicit unmount/store disposal. Preserved screenshot files
+have `.png` names but contain valid JPEG images; their actual types and hashes
+are recorded. A natural-width fixture successor requires fresh native evidence.

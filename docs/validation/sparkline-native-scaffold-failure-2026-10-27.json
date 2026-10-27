@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "status": "failed-first-controlled-geometry-predicate",
+  "runtime_manifest_sha256": "c47ddd4e9e3c00b2db2376eebc6c4857b7c47876847013d0c66ae324a4f2da38",
+  "source_closure_sha256": "ac6eadd2ec6afb6de1caeecb1a81593d32570a0f77afe29e89991ba8a04793d9",
+  "source_regular_files": 638,
+  "source_index_tree": "354d77ac0fa0336061939815940c85dab3e65b0e",
+  "retained_images": {
+    "rust.wasm": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6",
+    "wat.wasm": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031"
+  },
+  "actual_example_observations": {
+    "preferences": {
+      "sparql": [
+        {
+          "state": "initial",
+          "counts": {
+            "dots": 7,
+            "lines": 4,
+            "readings": 8
+          },
+          "missing_sample_reading": "10:03: unavailable"
+        },
+        {
+          "state": "receive",
+          "counts": {
+            "dots": 8,
+            "lines": 6,
+            "readings": 8
+          },
+          "missing_sample_reading": "10:03: 3 units"
+        },
+        {
+          "state": "withdraw",
+          "counts": {
+            "dots": 7,
+            "lines": 4,
+            "readings": 8
+          },
+          "missing_sample_reading": "10:03: unavailable"
+        }
+      ],
+      "function": [
+        {
+          "state": "initial",
+          "counts": {
+            "dots": 7,
+            "lines": 4,
+            "readings": 8
+          },
+          "missing_sample_reading": "10:03: unavailable"
+        },
+        {
+          "state": "receive",
+          "counts": {
+            "dots": 8,
+            "lines": 6,
+            "readings": 8
+          },
+          "missing_sample_reading": "10:03: 3 units"
+        },
+        {
+          "state": "withdraw",
+          "counts": {
+            "dots": 7,
+            "lines": 4,
+            "readings": 8
+          },
+          "missing_sample_reading": "10:03: unavailable"
+        }
+      ]
+    },
+    "scope": "Actual unchanged example entry/browser observations and reported document teardown; no explicit MountedApp/Runtime/store cleanup proof."
+  },
+  "controlled": {
+    "configuration": {
+      "dataset": "small",
+      "layout": 1728,
+      "locale": "en",
+      "scheme": "light",
+      "theme": "Semblance"
+    },
+    "initial_paths": 2,
+    "counts_each": {
+      "dots": 7,
+      "lines": 4,
+      "readings": 8
+    },
+    "initial_namespace_normalized_HTML_parity": true,
+    "initial_keyed_circle_and_button_checks": true,
+    "controlled_receive_withdraw_started": false,
+    "document_scroll_width": 1740,
+    "viewport_width": 1728,
+    "first_assertion": "document scroll width exceeds viewport",
+    "fixture_stage": {
+      "x": 12,
+      "forced_width": 1728,
+      "right": 1740
+    },
+    "maximum_measured_stock_SVG_control_right": 1724,
+    "cause_scope": "Actual geometry identifies private fixture staging width plus body inset; no successor-run success or component-wide no-overflow claim."
+  },
+  "coverage": {
+    "completed_full_matrix_configurations": 0,
+    "planned_configurations": 80,
+    "initial_configurations_observed": 1,
+    "remaining_matrix_states": "unstarted",
+    "regional_locales": "unstarted",
+    "positive_512": "unstarted",
+    "refusal_513": "unstarted",
+    "native_keyboard": "unobserved"
+  },
+  "owned_protocol": {
+    "wrapper_exit": 0,
+    "original_server_exit": 0,
+    "original_child_wait_calls": 1,
+    "Vite_close_returned": true,
+    "listener_refused_after_wait": true,
+    "known_mounts_unmounted_and_Runtime_disposed": 2,
+    "private_paths_absent": true,
+    "pin_maps_equal_before_final": true,
+    "pin_count": 19041,
+    "receipt_errors": 0,
+    "cleanup_errors": 0
+  },
+  "screenshots": {
+    "example-function-receive.png": {
+      "sha256": "ba851dbe17eb2e3926e94f62813950c00192636c57d8870a4ef5f7be0f5ed85b",
+      "bytes": 38553,
+      "actual_media_type": "image/jpeg",
+      "filename_extension": ".png",
+      "width": 1728,
+      "height": 856
+    },
+    "example-sparql-initial.png": {
+      "sha256": "78f71b0f816f82537f47b509029da7c2d66e898a2b40eade637443a8d0418562",
+      "bytes": 37561,
+      "actual_media_type": "image/jpeg",
+      "filename_extension": ".png",
+      "width": 1728,
+      "height": 856
+    },
+    "fixture-first-desktop.png": {
+      "sha256": "0d907467f4e7d0eb010e66fd16a55023917878106e4c66db89db5015c1701db3",
+      "bytes": 58697,
+      "actual_media_type": "image/jpeg",
+      "filename_extension": ".png",
+      "width": 1728,
+      "height": 856
+    }
+  },
+  "limits": [
+    "Native UI batch remains failed despite owned protocol exit0.",
+    "Initial identity is not receive/withdraw or regional-locale identity evidence.",
+    "Browser tabs/viewport teardown is coordinator-reported; no new browser inspection.",
+    "Example entry discards mounted handle; no explicit example unmount/store disposal evidence.",
+    "Earlier N1 and original S failures remain failed; no numeric/Calendar/fullsuite/PR/publication acceptance."
+  ]
+}
