@@ -116,12 +116,16 @@ freshness boundary before activation.
 
 ## Website capture expansion follow-up
 
-The screenshot role has reviewed source `829eb10` and `3bb9965` for eight real
-web/terminal views and rebuilding embedded UI before capture. Run
-`40562486036` passes build, capture, integrity and artifact upload. Independent
-review accepts the exact 20-file artifact and all eight PNGs; deployment was
-skipped. Native eight-image Gallery interactions and composition with later
-main remain required before integration. Earlier failed gates remain failed.
+Reviewed source `829eb10` and `3bb9965` expands the Gallery to eight real web
+and terminal views and rebuilds embedded UI before capture. Run `40562486036`
+passes build, capture, integrity and upload; its deployment is skipped.
+Independent review accepts the exact 20-file artifact, all eight PNGs and
+qualified native desktop/phone interactions. All 13 integrated source paths
+match the reviewed candidate; later main changes do not intersect them. Preserve
+the failed geometry query, lazy-image and fade observations, and unrecorded
+intermediate AX counters. The last accepted public deployment still has three
+images; verify the new main deployment separately. Earlier failed gates remain
+failed.
 
 ## Shared dependency order
 

@@ -255,7 +255,7 @@ ui:screenshotLayout a c:Segmented ; c:label "Screenshot layout" ;
     c:controls ui:screenshotGallery ; c:property c:galleryLayout .
 ui:screenshotGallery a c:Gallery ; c:label "ARM dashboard screenshots" ; c:galleryLayout c:GridLayout ;
     c:lightbox ui:screenshotLightbox ;
-    c:images ( ui:monitorShot ui:resourcesShot ui:terminalShot ) .
+    c:images ( ui:monitorShot ui:resourcesShot ui:leasesShot ui:activityShot ui:hostShot ui:terminalMonitorShot ui:terminalShot ui:terminalLeasesShot ) .
 ui:screenshotLightbox a c:Lightbox ; c:label "ARM dashboard screenshots" ; c:of ui:screenshotGallery ;
     c:thumbnails true ; c:offersOriginal true .
 ui:monitorShot a c:Picture ; c:image "screenshots/web-monitor.png" ;
@@ -264,3 +264,13 @@ ui:resourcesShot a c:Picture ; c:image "screenshots/web-resources.png" ;
     c:alt "Web dashboard — Resources" ; c:caption "Web dashboard — Resources" .
 ui:terminalShot a c:Picture ; c:image "screenshots/terminal.png" ;
     c:alt "Terminal dashboard — Resources" ; c:caption "Terminal dashboard — Resources" .
+ui:leasesShot a c:Picture ; c:image "screenshots/web-leases.png" ;
+    c:alt "Web dashboard — Leases" ; c:caption "Web dashboard — Leases" .
+ui:activityShot a c:Picture ; c:image "screenshots/web-activity.png" ;
+    c:alt "Web dashboard — Activity" ; c:caption "Web dashboard — Activity" .
+ui:hostShot a c:Picture ; c:image "screenshots/web-host.png" ;
+    c:alt "Web dashboard — Host & capabilities" ; c:caption "Web dashboard — Host & capabilities" .
+ui:terminalMonitorShot a c:Picture ; c:image "screenshots/terminal-monitor.png" ;
+    c:alt "Terminal dashboard — Monitor" ; c:caption "Terminal dashboard — Monitor" .
+ui:terminalLeasesShot a c:Picture ; c:image "screenshots/terminal-leases.png" ;
+    c:alt "Terminal dashboard — Leases" ; c:caption "Terminal dashboard — Leases" .

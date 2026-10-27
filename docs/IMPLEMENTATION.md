@@ -2168,10 +2168,13 @@ Review requires suspend-inclusive cache aging, service-generation fencing,
 joined cancellation and preservation of unknown work. Temporary loss must not
 restore revoked access, rewrite trust or replay an uncertain operation.
 
-## Eight-view website capture candidate
+## Eight-view website capture
 
-The unpublished screenshot expansion rebuilds the embedded UI and captures five
-web and three terminal views from disposable native fixtures. Frozen source
-`3bb9965` has a successful CI artifact with independently verified provenance
-and image bytes. Native Gallery interaction and public deployment remain open;
-main still serves the earlier three-image Gallery.
+The reviewed screenshot expansion rebuilds the embedded UI and captures five
+web and three terminal views from disposable native fixtures during each Pages
+build. Source `829eb10` and its visible-label correction `3bb9965` are integrated
+as exact 13-path changes. The eight-item Gallery uses the existing stock layouts
+and Lightbox. Independently reviewed CI provenance and qualified native desktop
+and phone evidence support this source. The last accepted public deployment
+still has three images; verification of the new main deployment remains open.
+This change does not update the tracked product browser bundle.

@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_NATIVE_EVIDENCE_ACCEPTED",
+  "source_commit": "3bb9965c415dc951cf9240690b59a2cf45d72c98",
+  "source_commits": [
+    "829eb10a8a824641e5e20b1f42de9e6bb557f976",
+    "3bb9965c415dc951cf9240690b59a2cf45d72c98"
+  ],
+  "public_ci_run": "https://github.com/inferal-oss/arm/actions/runs/40562486036",
+  "artifact_zip_sha256": "f2341577ba7786ca7579258c9391d40883171bd363ec98ae922e73a3690482e7",
+  "method": "Independent retained source/artifact hashing, native DOM/action record inspection and four saved native screenshot visual reviews; no re-execution.",
+  "pins": {
+    "source_files": 13,
+    "site_files": 20,
+    "images": 8,
+    "native_manifest_sha256": "493478c8b3264476ad64fd09d509718cf485bfb51240649901eba11779b4a672",
+    "raw_observations_sha256": "8ddf0d21037d336b3eeea9c38021c9d9299ae80d017def71242387a9b79b0514",
+    "coordinator_action_readback_sha256": "24d36eb7dd5aa03e2fdaf4277c2d11b87aa6f63206b6d3a7246e46860b2f1a82",
+    "coordinator_original_preview_readback_sha256": "5d117507e70085b2f45ecdc119302b3558fa059fcd00d79189250abf46cca914"
+  },
+  "viewports": {
+    "desktop": [
+      1728,
+      856
+    ],
+    "phone": [
+      390,
+      844
+    ]
+  },
+  "supported_findings": [
+    "All eight desktop Grid images decoded and natural dimensions match artifact metadata.",
+    "Grid, Carousel and Pile controls were selected on both viewports; direct DOM image rosters retained.",
+    "Eight phone direct thumbnail selections match exact selected image/original URL/natural dimensions with nonzero contained bounds and observed opacity at least 0.995866.",
+    "Five lightbox header controls lie inside the phone panel; recorded document width375 fits viewport390.",
+    "Desktop Previous/Next/Left/Escape actions completed; saved DOM confirms Escape closed and focused original Terminal Leases button.",
+    "Phone Tab from final thumbnail focused Zoom, reverse Tab focused final thumbnail; Close closed and focused original Resources opener.",
+    "Saved Resources reopen screenshot visibly shows Resources; immediate earlier DOM opacity was zero.",
+    "Original preview exited0 after interrupt; subsequent original check reported connection refused. Own tab close and viewport reset completed."
+  ],
+  "limitations": [
+    "Failed role-group query after Carousel switching retained; no geometry accepted from that query.",
+    "Carousel transient snapshot has five lazy images incomplete; settled desktop Grid/Pile and all phone selections independently decoded.",
+    "Immediate Resources reopen recorded opacity zero; retained later screenshot visibly shows Resources, without settled DOM opacity or timing bound.",
+    "Screenshot bytes are JPEG despite original png names; byte-identical jpg copies, raster dimensions differ from DOM viewports.",
+    "No fullscreen, zoom, fill-window, swipe, cross-browser or deployment acceptance.",
+    "Exact desktop intermediate 7/8 counter AX outputs are producer-reported only.",
+    "AX focus after final phone Escape is producer-reported only.",
+    "Only current Chrome, two recorded viewport sizes and Match scheme.",
+    "No separate Carousel/Pile paging or swipe acceptance.",
+    "No public deployment acceptance; source acceptance, CI capture evidence and native artifact behavior are distinct."
+  ],
+  "initial_failures_retained": [
+    "Role-group query failed after Carousel switch; subsequent direct DOM reads used without accepting failed-query geometry.",
+    "Initial preview bind failed with permission error before the successful original preview."
+  ],
+  "public_deployment_claimed": false
+}

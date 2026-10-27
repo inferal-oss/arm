@@ -5692,3 +5692,26 @@ requires independent review, suspend-aware freshness controls, cancellation and
 lifecycle validation, composed API/proof checks and visible UI evidence. No
 physical laptop sleep, long-duration field trial or automatic scheduler is
 claimed.
+
+### Eight-image Gallery native acceptance
+
+[Qualified native evidence](validation/website-eight-gallery-native-2026-10-27.json)
+binds the exact eight-view artifact to source `3bb9965`. Independent review
+checks all 13 source files, 20 site files and 12 native evidence entries.
+All eight direct phone selections match the image, original link and dimensions;
+nonzero image bounds and five header controls fit the panel. Recorded desktop
+navigation and phone forward/reverse Tab, Close and focus return are supported
+by original action readback and saved DOM observations. Four actual JPEG
+screenshots are visually reviewed; initial PNG suffixes do not identify format.
+
+The failed Carousel role-group query remains failed. A transient Carousel read
+has five lazy images incomplete; later Grid/Pile reads and all phone selections
+decode. The immediate Resources reopen has opacity zero, followed by a visible
+saved screenshot without a settled-opacity DOM sample or timing bound. Exact
+intermediate desktop counters and final phone Escape AX focus remain producer
+reported. This adds no fullscreen, zoom, swipe or separate layout-paging claim.
+The original preview returns zero after interrupt, its listener refuses a later
+connection, and the owned tab and viewport are closed/reset. The initial bind
+permission failure remains separate. Integration checks all 13 candidate paths
+byte-for-byte against the reviewed source; later main changes do not intersect
+them. Public deployment is a separate gate.
