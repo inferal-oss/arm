@@ -5462,11 +5462,13 @@ full numeric/Calendar acceptance, upstream publication and merge remain separate
 
 ### Website alignment and secondary-domain source review
 
-Independent review of `3bdbf06` checks the fixed HTTPS origin, cleared URL
+Historical source review of the undeployed `3bdbf06` proposal checks the fixed HTTPS origin, cleared URL
 credentials/port/fragment, GET/HEAD-only forwarding, absent incoming headers and
 body, manual redirects and secondary-domain-only configuration. Five bounded
 mock test roots pass in the source owner's run; independent review inspects the
-tests without claiming a separate rerun. This is not live DNS/TLS acceptance.
+tests without claiming a separate rerun. The unused proposal was removed in
+`d264f61`; no Worker was created. This is not live DNS/TLS acceptance or an
+approved deployment path.
 
 The two `AlignedColumns` declarations in `2af7ffc` match the pinned framework's
 card row-parts contract. In the combined local website candidate, all five

@@ -2081,14 +2081,11 @@ preparation, lifecycle/reset retention and positive settlement bridge remain
 required. Registration, public dispatch and general provisioning stay disabled.
 The [contract](PROVIDER-ENTITLEMENT-CONTRACT.md) records these boundaries.
 
-## Secondary website domain and card alignment
+## Website card alignment and domain boundary
 
-Reviewed Worker source `3bdbf06` serves GET/HEAD requests for `getarm.cloud`
-from the fixed HTTPS `getarm.org` origin, preserving path and query. It clears
-URL credentials, port and fragment, forwards no incoming headers or body, and
-returns upstream redirects without following them. Its configuration names only
-the secondary custom domain and has no storage, secrets or service bindings.
-Live deployment, TLS and domain verification remain separate from source support.
+The unused secondary-domain Worker proposal `3bdbf06` was removed by `d264f61`.
+No Worker was created or deployed; the domain arrangement must use an authorized
+existing configuration. Secondary-domain publication remains unresolved.
 
 The two layout declarations in `2af7ffc` use stock `AlignedColumns` for the
 Documentation and Capabilities cards. Gallery/Lightbox navigation and mobile
