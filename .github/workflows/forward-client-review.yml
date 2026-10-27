@@ -1,0 +1,42 @@
+name: Default-off forwarding client review
+
+on:
+  push:
+    branches: [codex/forward-client-review-ci]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: forward-client-review-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  client:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+          fetch-depth: 8
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Retain predecessor counterexamples and validate exact client source
+        run: python3 -B scripts/validate-forward-client.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: forwarding-client-review
+          path: |
+            .cache/forward-client-ci/*.json
+            .cache/forward-client-ci/*.log
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
