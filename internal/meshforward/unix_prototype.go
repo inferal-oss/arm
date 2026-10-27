@@ -20,28 +20,29 @@ import (
 // public dispatch or durable Manager lease for it. A production adapter must
 // reserve that lease before binding and preserve uncertain cleanup on restart.
 type UnixPrototype struct {
-	key           string
-	name          string
-	homePath      string
-	home          *os.File
-	parent        *os.File
-	dir           *os.File
-	homeID        unixPrototypeID
-	parentID      unixPrototypeID
-	dirID         unixPrototypeID
-	socketID      unixPrototypeID
-	listener      *net.UnixListener
-	open          func(context.Context) (net.Conn, error)
-	cancel        context.CancelFunc
-	done          chan struct{}
-	mu            sync.Mutex
-	active        map[*net.UnixConn]*unixPrototypePair
-	joined        bool
-	watcherJoined bool
-	err           error
-	listenerOnce  sync.Once
-	finishOnce    sync.Once
-	finishErr     error
+	key            string
+	name           string
+	homePath       string
+	home           *os.File
+	parent         *os.File
+	dir            *os.File
+	homeID         unixPrototypeID
+	parentID       unixPrototypeID
+	dirID          unixPrototypeID
+	socketID       unixPrototypeID
+	listener       *net.UnixListener
+	open           func(context.Context) (net.Conn, error)
+	cancel         context.CancelFunc
+	done           chan struct{}
+	mu             sync.Mutex
+	active         map[*net.UnixConn]*unixPrototypePair
+	joined         bool
+	watcherJoined  bool
+	cleanupErr     error // original native close, accept, or path proof
+	applicationErr error // stream outcome; a joined adapter may still be cleaned up
+	listenerOnce   sync.Once
+	finishOnce     sync.Once
+	finishErr      error
 }
 
 // One accepted pair owns each original native close exactly once. A watcher
@@ -68,7 +69,7 @@ func (q *unixPrototypePair) setRemote(remote net.Conn) {
 }
 
 func (q *unixPrototypePair) closeLocal() {
-	q.localOnce.Do(func() { q.parent.record(q.local.Close()) })
+	q.localOnce.Do(func() { q.parent.recordCleanup(q.local.Close()) })
 }
 
 func (q *unixPrototypePair) closeRemote() {
@@ -76,7 +77,7 @@ func (q *unixPrototypePair) closeRemote() {
 	remote := q.remote
 	q.mu.Unlock()
 	if remote != nil {
-		q.remoteOnce.Do(func() { q.parent.record(remote.Close()) })
+		q.remoteOnce.Do(func() { q.parent.recordCleanup(remote.Close()) })
 	}
 }
 
@@ -276,7 +277,7 @@ func (p *UnixPrototype) run(ctx context.Context) {
 		local, err := p.listener.AcceptUnix()
 		if err != nil {
 			if ctx.Err() == nil {
-				p.record(err)
+				p.recordCleanup(err)
 			}
 			break
 		}
@@ -311,23 +312,27 @@ func (p *UnixPrototype) servePair(ctx context.Context, pair *unixPrototypePair, 
 		return
 	}
 	if err = p.intact(); err != nil {
-		p.record(err)
+		p.recordCleanup(err)
 		return
 	}
 	remote, err := p.open(ctx)
+	// Admission callbacks can return a partial connection alongside an error.
+	// Own and close that original even when no application copy may start.
+	if remote != nil {
+		pair.setRemote(remote)
+	}
 	if err != nil {
 		return // admission failed before any Unix client byte was read
 	}
 	if remote == nil {
-		p.record(errors.New("source admission returned no connection"))
+		p.recordCleanup(errors.New("source admission returned no connection"))
 		return
 	}
-	pair.setRemote(remote)
 	if ctx.Err() != nil {
 		return
 	}
 	if err = p.intact(); err != nil {
-		p.record(err)
+		p.recordCleanup(err)
 		return
 	}
 	finished := make(chan error, 2)
@@ -336,8 +341,12 @@ func (p *UnixPrototype) servePair(ctx context.Context, pair *unixPrototypePair, 
 		if copyErr == nil && closeWrite != nil {
 			copyErr = closeWrite()
 		}
-		if copyErr != nil && ctx.Err() == nil {
-			p.record(copyErr)
+		if copyErr != nil {
+			// A cancellation can cause an ordinary closed-connection error, but
+			// must not erase an independent application EIO returned afterward.
+			if ctx.Err() == nil || !unixPrototypeCanceledIO(copyErr) {
+				p.recordApplication(copyErr)
+			}
 			pair.abortAndClose() // wake the other direction without replay
 		}
 		finished <- copyErr
@@ -353,16 +362,30 @@ func (p *UnixPrototype) servePair(ctx context.Context, pair *unixPrototypePair, 
 }
 
 func (p *UnixPrototype) closeListener() {
-	p.listenerOnce.Do(func() { p.record(p.listener.Close()) })
+	p.listenerOnce.Do(func() { p.recordCleanup(p.listener.Close()) })
 }
 
-func (p *UnixPrototype) record(err error) {
+func (p *UnixPrototype) recordCleanup(err error) {
 	if err == nil {
 		return
 	}
 	p.mu.Lock()
-	p.err = errors.Join(p.err, err)
+	p.cleanupErr = errors.Join(p.cleanupErr, err)
 	p.mu.Unlock()
+}
+
+func (p *UnixPrototype) recordApplication(err error) {
+	if err == nil {
+		return
+	}
+	p.mu.Lock()
+	p.applicationErr = errors.Join(p.applicationErr, err)
+	p.mu.Unlock()
+}
+
+func unixPrototypeCanceledIO(err error) bool {
+	return errors.Is(err, context.Canceled) || errors.Is(err, net.ErrClosed) ||
+		errors.Is(err, os.ErrClosed) || errors.Is(err, io.ErrClosedPipe)
 }
 
 // Close reports uncertainty if positive join or exact original cleanup fails.
@@ -382,22 +405,22 @@ func (p *UnixPrototype) finish() error {
 	p.closeListener()
 	<-p.done
 	p.mu.Lock()
-	joined, watcherJoined, prior := p.joined, p.watcherJoined, p.err
+	joined, watcherJoined, prior, applicationErr := p.joined, p.watcherJoined, p.cleanupErr, p.applicationErr
 	p.mu.Unlock()
 	if !joined || !watcherJoined || prior != nil {
-		return errors.Join(prior, errors.New("Unix adapter join or close uncertain; original path retained"), p.closeDescriptors())
+		return errors.Join(applicationErr, prior, errors.New("Unix adapter join or close uncertain; original path retained"), p.closeDescriptors())
 	}
 	if err := p.intact(); err != nil {
-		return errors.Join(err, p.closeDescriptors())
+		return errors.Join(applicationErr, err, p.closeDescriptors())
 	}
 	if err := unix.Unlinkat(int(p.dir.Fd()), "service.sock", 0); err != nil {
-		return errors.Join(err, p.closeDescriptors())
+		return errors.Join(applicationErr, err, p.closeDescriptors())
 	}
 	if err := unix.Unlinkat(int(p.parent.Fd()), p.name, unix.AT_REMOVEDIR); err != nil {
-		return errors.Join(err, p.closeDescriptors())
+		return errors.Join(applicationErr, err, p.closeDescriptors())
 	}
 	// Unlink has already succeeded. A durability or descriptor-close failure
 	// remains an uncertain result, but must not strand the other original FDs.
 	syncErr := p.parent.Sync()
-	return errors.Join(syncErr, p.closeDescriptors())
+	return errors.Join(applicationErr, syncErr, p.closeDescriptors())
 }

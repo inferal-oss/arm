@@ -111,6 +111,7 @@ type unixPrototypeFaultConn struct {
 	writeErr   error
 	closeCalls atomic.Int32
 	writeSeen  chan struct{}
+	writeGate  <-chan struct{}
 }
 
 func (c *unixPrototypeFaultConn) Close() error {
@@ -124,6 +125,9 @@ func (c *unixPrototypeFaultConn) Write(p []byte) (int, error) {
 		if c.writeSeen != nil {
 			close(c.writeSeen)
 			c.writeSeen = nil
+		}
+		if c.writeGate != nil {
+			<-c.writeGate
 		}
 		return 0, c.writeErr
 	}
@@ -199,7 +203,7 @@ func TestUnixPrototypeCopyErrorAbortsBothOriginalDirections(t *testing.T) {
 	deadline := time.Now().Add(2 * time.Second)
 	for {
 		p.mu.Lock()
-		recorded := errors.Is(p.err, copyErr)
+		recorded := errors.Is(p.applicationErr, copyErr)
 		p.mu.Unlock()
 		if recorded {
 			break
@@ -215,8 +219,93 @@ func TestUnixPrototypeCopyErrorAbortsBothOriginalDirections(t *testing.T) {
 	if !p.joined || !p.watcherJoined {
 		t.Fatal("copy failure left a direction or watcher unjoined")
 	}
-	if _, err = os.Lstat(p.Path()); err != nil {
-		t.Fatal("unknown stream outcome unlinked original socket", err)
+	if _, err = os.Lstat(p.Path()); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("joined original socket was not cleaned after application error", err)
+	}
+}
+
+func TestUnixPrototypeCanceledCopyPreservesIndependentEIO(t *testing.T) {
+	home := unixPrototypeHome(t)
+	ctx, cancel := context.WithCancel(t.Context())
+	copyErr := errors.New("independent application EIO after cancellation")
+	entered := make(chan struct{})
+	release := make(chan struct{})
+	p, err := StartUnixPrototype(ctx, home, strings.Repeat("2", 32), time.Now().Add(time.Minute), func(context.Context) (net.Conn, error) {
+		client, server := net.Pipe()
+		t.Cleanup(func() { _ = server.Close() })
+		return &unixPrototypeFaultConn{Conn: client, writeErr: copyErr, writeSeen: entered, writeGate: release}, nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	local, err := net.DialTimeout("unix", p.Path(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer local.Close()
+	if _, err = local.Write([]byte("effect")); err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case <-entered:
+	case <-time.After(2 * time.Second):
+		t.Fatal("application write was not entered")
+	}
+	cancel()
+	close(release) // the original writer reports EIO only after cancellation
+	if err = p.Close(); !errors.Is(err, copyErr) {
+		t.Fatal("cancellation erased independent application error", err)
+	}
+	if !p.joined || !p.watcherJoined {
+		t.Fatal("independent EIO returned before original joins")
+	}
+	if _, err = os.Lstat(p.Path()); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("joined socket remained charged solely for application EIO", err)
+	}
+}
+
+func TestUnixPrototypePartialAdmissionConnectionClosedOnce(t *testing.T) {
+	home := unixPrototypeHome(t)
+	ctx, cancel := context.WithCancel(t.Context())
+	entered := make(chan *unixPrototypeFaultConn, 1)
+	serverSide := make(chan net.Conn, 1)
+	release := make(chan struct{})
+	p, err := StartUnixPrototype(ctx, home, strings.Repeat("3", 32), time.Now().Add(time.Minute), func(context.Context) (net.Conn, error) {
+		client, server := net.Pipe()
+		t.Cleanup(func() { _ = server.Close() })
+		partial := &unixPrototypeFaultConn{Conn: client}
+		entered <- partial
+		serverSide <- server
+		<-release
+		return partial, errors.New("admission failed with partial connection")
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	local, err := net.DialTimeout("unix", p.Path(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer local.Close()
+	partial := <-entered
+	server := <-serverSide
+	if _, err = local.Write([]byte("never delivered")); err != nil {
+		t.Fatal(err)
+	}
+	cancel() // watcher may close the local side before open returns
+	close(release)
+	if err = p.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if got := partial.closeCalls.Load(); got != 1 {
+		t.Fatalf("partial original connection closed %d times, want once", got)
+	}
+	var one [1]byte
+	if n, readErr := server.Read(one[:]); n != 0 || !errors.Is(readErr, io.EOF) {
+		t.Fatal("application byte reached partial admission connection", n, readErr)
+	}
+	if _, err = os.Lstat(p.Path()); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("joined partial-admission path remained", err)
 	}
 }
 
@@ -283,7 +372,7 @@ func TestUnixPrototypeChangedInodeAndCloseFailureRetainPath(t *testing.T) {
 					t.Fatal(err)
 				}
 			} else {
-				p.record(errors.New("injected original close failure"))
+				p.recordCleanup(errors.New("injected original close failure"))
 			}
 			if err = p.Close(); err == nil {
 				t.Fatal("uncertain original identity or close silently removed path")

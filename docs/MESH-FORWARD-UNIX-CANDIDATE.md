@@ -96,10 +96,14 @@ The isolated prototype exercises private path creation, kernel peer UID,
 named-home identity checks, admission-before-copy, cancellation, original
 close-once results, and positive watcher and bidirectional worker joins before
 unlink. An application copy error aborts both original connections without
-replay and leaves its outcome sticky. The prototype is deliberately absent
-from central CLI/backend dispatch and has no durable
-Manager lease. A crash in the prototype leaves its original private path
-present and a later start refuses it; that is a fail-closed model, not
+replay and leaves its outcome sticky. An admission callback that returns a
+partial connection with an error closes that original once without forwarding
+a client byte. A genuine copy error returned after cancellation remains an
+unknown application outcome; when native closes, joins and exact path cleanup
+all succeed, that application error alone does not retain the adapter path.
+The prototype is deliberately absent from central CLI/backend dispatch and
+has no durable Manager lease. A crash in the prototype leaves its original
+private path present and a later start refuses it; that is a fail-closed model, not
 production recovery. The prototype checks path identity but does not yet
 allowlist filesystem types or serialize mutations with the backend's durable
 per-home authority. Its CLI bridge also inherits the CLI's bounded source
