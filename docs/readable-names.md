@@ -5,7 +5,9 @@ lease and pool IDs remain the only persisted identities and travel in requests,
 ownership bindings, grants, review hashes, idempotency records and audit data.
 There is no name registry, startup migration, repair or render-time write.
 Existing objects receive exactly the same label as newly created objects with
-the same ID. No shell configuration or real backend state is installed by tests.
+the same ID. Optional [custom names](custom-names.md) take precedence in supported
+views and use a separate stored mapping; generated defaults create no entries.
+No shell configuration or real backend state is installed by tests.
 
 The v1 function hashes `arm-readable-name-v1` followed by a NUL byte, the domain
 length as an unsigned 64-bit big-endian integer, the domain bytes and the exact

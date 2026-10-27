@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED_SOURCE_EQUIVALENCE_INTEGRATION",
+  "integrated_commit": "0f3402392fff1c955a8f2835b6e43c3a809387f2",
+  "reviewed_feature_commit": "6ee4dc8c19c6a222311053d02daf276ef2af476c",
+  "owned_paths": 72,
+  "all_owned_git_objects_and_modes_equal": true,
+  "preintegration_owned_path_intersections": [],
+  "other_go_changes_since_reviewed_parent": [
+    "internal/manager/lease_clock_crash_recovery_native_linux_test.go",
+    "internal/manager/lease_clock_recovery_native_linux_test.go",
+    "internal/manager/lease_clock_suspend_guest_linux_test.go"
+  ],
+  "native_evidence_sha256": "c93c6d87de0a638d20aab0e9e1bf872f30699d7357eaf962b9569b04ba2810bf",
+  "qualified_frontend_evidence_sha256": "d3c41fa4ab2c5ebfe2211ebdff6082dcc85788fa41394f48dfb2c7522d6bcc70",
+  "limits": [
+    "No additional runtime was dispatched during integration.",
+    "Browser interaction, later mobile/Resources composition, Linux custom-name runtime, full suite and later-source public installation remain separate.",
+    "Prior failed frontend and native gates remain failed."
+  ]
+}

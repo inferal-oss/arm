@@ -1,0 +1,143 @@
+{
+  "status": "ACCEPTED_EXACT_FINAL_CUSTOM_NAMES_NATIVE_GATE_V3",
+  "findings": [],
+  "source_manifest_sha256": "6b171d22d6772cc925ed920b9f06a1a756f43e8a1ad5b15bcf8cfd3ef6081303",
+  "source_members": 2795,
+  "source_portable_tar_members": 2793,
+  "production_asset_sha256": "49b2063b8852baf862a2d37bd39a02c2701750e7c375f457834eec5814ff80ca",
+  "source_v7_to_v8_only_two_test_files": [
+    "internal/cli/names_test.go",
+    "internal/cli/render_names_test.go"
+  ],
+  "seal_sha256": "be28d2cc3a5ffe8f873f569d1744ec48a448cc7f5ebbc6a437fefd15eb5c8b07",
+  "request_sha256": "713de816818dc230f0564648fb73cc2782fd8c3e223ad235b44ece90d539c27b",
+  "root_review_sha256": "e9e6bae92fc1135c1a8238d2b91a330624c13f6037436766be83e7c94fec4d4a",
+  "wrapper_elapsed_seconds": 393.24907824999997,
+  "native_elapsed_seconds": 393.02530808299997,
+  "cohorts": {
+    "normal": {
+      "roots": 195,
+      "required_cases": 169,
+      "actual_passed_nodes": 650,
+      "package_passes": 8,
+      "failed": 0,
+      "skipped": 0,
+      "event_sha256": "3837ba015512e149d07f828dadc5f5384a22242a62335ec3ce2ef5b7bd0eaf0f",
+      "roster_sha256": "4b64600a7169b39cf21a577b70c82a303e85745d00a2bec3634dbf3359046b12"
+    },
+    "race": {
+      "roots": 195,
+      "required_cases": 169,
+      "actual_passed_nodes": 650,
+      "package_passes": 8,
+      "failed": 0,
+      "skipped": 0,
+      "event_sha256": "63a6374c131764eaf955b3fde41185ea70805118f25219bda5b419291676e8f6",
+      "roster_sha256": "4b64600a7169b39cf21a577b70c82a303e85745d00a2bec3634dbf3359046b12"
+    }
+  },
+  "phases": {
+    "build": "passed",
+    "buildinfo": "passed",
+    "flags": "passed",
+    "generate-bash": "passed",
+    "generate-fish": "passed",
+    "generate-zsh": "passed",
+    "nested": "passed",
+    "normal": "passed",
+    "offline": "passed",
+    "parse-bash": "passed",
+    "parse-fish": "passed",
+    "parse-zsh": "passed",
+    "race": "passed",
+    "signed-delta": "passed",
+    "vet": "passed"
+  },
+  "original_commands_and_worker_ACK_Wait0_ESRCH_no_signals": 15,
+  "native_metadata_original_Waits0": 40,
+  "outer_preflight_metadata_Waits0_hex_hash": 6,
+  "stable_closure_counts": {
+    "control_inputs": 5,
+    "immutable_cache_sdk": 92492,
+    "mutable_build_cache": 69011,
+    "source": 2795,
+    "tools": 11
+  },
+  "mutable_build_cache_after_entries": 69793,
+  "selected_regular_inputs": 23,
+  "binary": {
+    "sha256": "ff8715a985d0a755ad847eb1a21fb902240a5aa7e69bc069c6be7b8bed3d96d7",
+    "bytes": 71125202
+  },
+  "built_protocol": {
+    "flags": {
+      "directive": 4,
+      "tokens": [
+        "--pool",
+        "--port",
+        "--port-dual-stack",
+        "--port-lease",
+        "--port-mode",
+        "--profile",
+        "--project"
+      ]
+    },
+    "nested": {
+      "directive": 4,
+      "tokens": [
+        "apply",
+        "contexts",
+        "keygen",
+        "lookup",
+        "nodes",
+        "plan",
+        "reconcile",
+        "ship"
+      ]
+    },
+    "offline": {
+      "directive": 4,
+      "tokens": []
+    },
+    "signed-delta": {
+      "directive": 4,
+      "tokens": [
+        "--reason",
+        "--revision"
+      ]
+    }
+  },
+  "prior_controls_rerun": false,
+  "limits": [
+    "Current exact source8 manifest and asset49b only; later composed main still requires source-equivalence integration review.",
+    "Native Darwinarm64 Go1.27.3 CGO1 fixture, not public install/cross-platform/full suite/hermetic OS/SDK/dynamic loader or arbitrary escaped descendants.",
+    "Prior whole frontend failure and nativev1/v2 failures remain failed. Qualified frontend build and79JS evidence are independent, not rerun or reclassified by this gate.",
+    "No browser/custom-name visual acceptance or production deployment. No new runtime/query/test/helper import/source mutation by reviewer."
+  ],
+  "schema_version": 1,
+  "runtime": {
+    "OS": "darwin",
+    "arch": "arm64",
+    "Go": "go1.27.3",
+    "CGO_ENABLED": 1,
+    "GOMAXPROCS": 1,
+    "dependency_network": "off"
+  },
+  "shell_generation_and_parse": {
+    "bash": {
+      "generated_bytes": 16149,
+      "generated_sha256": "89e26b7193798efafaca5e37136bcca582421e82e00328fdb08faa5de751ef4e",
+      "parse_exit": 0
+    },
+    "zsh": {
+      "generated_bytes": 8144,
+      "generated_sha256": "3f1b055e58d0fdc80d24a9762676aaf99815bbbd038cbcc7c3ecf379b0882cba",
+      "parse_exit": 0
+    },
+    "fish": {
+      "generated_bytes": 9605,
+      "generated_sha256": "4d4bfeff58ca15f3139a3e86bd2c952925f44efc2248ab4373bfadd60ca9df31",
+      "parse_exit": 0
+    }
+  }
+}

@@ -6001,3 +6001,31 @@ this audit. The public PR readback independently confirms draft state, exact
 head, one commit/two files and the reviewed authored body; its managed repository
 header is separate. Current upstream-main changes do not touch those two paths,
 but changed mount/render/engine/package inputs retain a separate composition gate.
+
+
+### Custom names: accepted feature and integration
+
+[Independent native evidence](validation/custom-names-native-2026-10-27.json)
+accepts final source manifest
+`6b171d22d6772cc925ed920b9f06a1a756f43e8a1ad5b15bcf8cfd3ef6081303`.
+Normal and race cohorts each pass 195 package-qualified roots, all 169 required
+cases and 650 actual named nodes across eight packages, with zero failures or
+skips. All 15 phases pass, including vet, build, shell generation/parsing and
+bounded completion protocols. Fifteen original command/worker pairs join with
+zero exit; selected source, immutable SDK/dependencies and tools remain stable.
+The mutable Go build cache is identified separately.
+
+[Qualified frontend evidence](validation/custom-names-frontend-qualified-2026-10-27.json)
+records 79 passing JavaScript cases and a successful build, retaining the overall
+wrapper failure caused by its TAP aggregate parser. The separately accepted
+retained-byte export supplies bundle
+`49b2063b8852baf862a2d37bd39a02c2701750e7c375f457834eec5814ff80ca`.
+Earlier native failures remain failed.
+
+[Integration comparison](validation/custom-names-integration-2026-10-27.json)
+verifies every one of the 72 feature paths, Git objects and modes in `0f34023`
+against the accepted feature commit. The only additional Go changes since its
+parent are three Linux-only Manager test/guest sources. This comparison adds no
+new runtime claim. Browser interaction, Linux custom-name runtime, later compact
+Resources/mobile composition, full-suite, hermetic-host and later-source public
+installation acceptance remain open.

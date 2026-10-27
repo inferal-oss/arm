@@ -1,0 +1,120 @@
+{
+  "artifacts": {
+    "exported_or_staged": false,
+    "files": {
+      "internal/server/web/assets/LICENSES.txt": {
+        "mode": 420,
+        "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+        "size": 140022,
+        "type": "file"
+      },
+      "internal/server/web/assets/arm-wat-only-store-DpLv8E9I.mjs": {
+        "mode": 420,
+        "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+        "size": 154,
+        "type": "file"
+      },
+      "internal/server/web/assets/arm.mjs": {
+        "mode": 420,
+        "sha256": "49b2063b8852baf862a2d37bd39a02c2701750e7c375f457834eec5814ff80ca",
+        "size": 4271417,
+        "type": "file"
+      },
+      "internal/server/web/assets/assets/wat-C2A9nalw.wasm": {
+        "mode": 420,
+        "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "size": 102443,
+        "type": "file"
+      },
+      "internal/server/web/assets/wat-2wrDwrzy.mjs": {
+        "mode": 420,
+        "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884",
+        "size": 62,
+        "type": "file"
+      },
+      "web/third_party/semblance/rdf-engine/build/wat.wasm": {
+        "mode": 420,
+        "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "size": 102443,
+        "type": "file"
+      }
+    },
+    "only_changed_source_relative_path": "internal/server/web/assets/arm.mjs",
+    "original_generated_export_and_output_manifest": "absent",
+    "other_four_embedded_assets_unchanged": true,
+    "regular_files": 6,
+    "retained_records": 8,
+    "source_wat_unchanged": true,
+    "total_regular_bytes": 4616541
+  },
+  "disposition": "Qualified phases and retained bytes support a separately reviewed read-only artifact copy without rerunning the build solely to reclassify the parser error. This receipt does not perform or authorize an export.",
+  "evidence_sha256": {
+    "build_stdout": "6bade933030596ce6fd6165e1eb6eb4ccdfbe6a4e38b449aae9fcf62a9f8fa4f",
+    "input_seals_after": "e7a3009bbe6cd8ecd873e4c1672ce9c9c4a5c46875423a96d09acd2867156933",
+    "input_seals_before": "e7a3009bbe6cd8ecd873e4c1672ce9c9c4a5c46875423a96d09acd2867156933",
+    "raw_tap": "afb1a1c67dd217dd28f6f35559d6f96f42f078806fad02d74e407a63956179ad",
+    "retained_complete_scratch_manifest": "5d44216711dd42fe55e587c76e5eef25a60a83a95251803871c9ac763258e6b7",
+    "retained_generated_manifest": "6bfebbc2f3391908521baab661cbb59407952db5c2408dc738ca713c0d535294"
+  },
+  "limits": [
+    "Overall failed gate is not relabelled passed. No successful original output-export seal exists.",
+    "Post-test complete scratch state is qualified by independent passive rehash; original gate stopped before its normal export.",
+    "Shared dependency caches and offline build sandbox are not a hermetic host proof.",
+    "Recorded direct owners and group absence do not establish arbitrary descendant closure or hard kernel preemption.",
+    "No Go/backend/API, native browser rendering, interactive UI, current-main integration, installation or release acceptance.",
+    "Earlier native TERM/KILL fault control remains separate; no additional control branch was executed."
+  ],
+  "original_gate": {
+    "authoritative_original_command_metadata_verified": true,
+    "exit_code": 1,
+    "failure": "Strict TAP checker treated aggregate # todo 0 as a directive.",
+    "original_failed_result_preserved": true,
+    "status": "failed"
+  },
+  "ownership": {
+    "all_recorded_originals_closed": true,
+    "blanket_descendant_claim": false,
+    "metadata_original_wait_records": 10,
+    "original_command_wait_records": 2,
+    "original_worker_wait_records": 2,
+    "recorded_signals": [],
+    "worker_group_absence_recorded": true
+  },
+  "qualified_phases": {
+    "frontend_build": {
+      "command_exit_code": 0,
+      "vite_modules": 352,
+      "wat_build_and_vite_observed": true
+    },
+    "javascript_tests": {
+      "cancelled": 0,
+      "command_exit_code": 0,
+      "consecutive_case_numbers": true,
+      "exact_name_multiset": true,
+      "exact_unique_cases": 79,
+      "failed": 0,
+      "passed": 79,
+      "per_case_skip_todo_directives": 0,
+      "roster_order_claim": "Name multiset checked; Node file order differs from source roster order.",
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "schema": 1,
+  "scope": "Qualified frontend scratch-build, JavaScript test and retained-artifact observations; overall original gate remains failed.",
+  "source_bindings": {
+    "before_after_equal_and_passive_current_rehash_verified": true,
+    "contract_sha256": "24218bab31ac9ae08061df2c8ff23350f42c4c79c96f07a15492636e51a3b7dc",
+    "donor_members": 3213,
+    "frozen_composed_source_manifest_sha256": "118ea962502b51bb838284647895f252b0ffeac42d32f30e24cf3943bd7f2dcb",
+    "javascript_roster_sha256": "f5d574f547b436beca3e223427a380afb094ea83a1bb00a1188560a4437c0850",
+    "npm_members": 2414,
+    "owned_delta_sha256": "a576d182f0743bfcf2afd32a099b9324fc2b81b98cd1c4255b1917814ba2d495",
+    "owner_implementation_sha256": "49754d998c11ebef41c442cb09f50d7a088eaccfb227762bfd170e90e33a0db8",
+    "packet_pins": 19,
+    "runner_sha256": "a28104b2792f5bd21ba2c931458bd0427c42ea9a6668a08d34fe82d34a5ef7e5",
+    "selected_tools": 26,
+    "source_file_manifest_sha256": "7503d5c8f4e3be6a215b8392864d90dd72ab299c802ccf7627da24034ef66a3d",
+    "source_members": 2795
+  }
+}

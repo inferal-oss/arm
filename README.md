@@ -505,11 +505,13 @@ dynamic host, pool and lease suggestions use authorized read-only queries.
 
 ## Readable names
 
-Host and lease labels are derived directly from their stable IDs and stay the
-same across restarts. Existing host and custom-pool names remain preferred.
-Supported selectors accept the readable label or the original ID; an ambiguous
-name requires the full ID. See [readable names](docs/readable-names.md) for scope
-and the additive dashboard view fields.
+Default host and lease labels are derived directly from their stable IDs and
+stay the same across restarts. Supplied host and pool names remain alternatives.
+Optional [custom resource names](docs/custom-names.md) are stored locally and
+can be assigned through `arm name set`, the web dashboard or the terminal UI.
+Supported selectors accept these names or the original ID; an ambiguous name
+requires the full ID. See [readable names](docs/readable-names.md) for generated
+labels and the additive dashboard view fields.
 
 ## License
 

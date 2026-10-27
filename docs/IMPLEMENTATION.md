@@ -2266,10 +2266,9 @@ offline; authenticated dynamic inventory reads share a 250 ms deadline and never
 start a backend. Shell invocation uses argument arrays. Provisioning instructions
 are in [completion.md](completion.md); ARM does not edit shell profiles.
 
-Default labels are stateless. Custom-name persistence, rebuilt browser label
-presentation, later mobile-command composition and later public installation are
-separate gates. The final default payload is validated together; its intermediate
-commits are not claimed as separately tested.
+Default labels are stateless. The final default payload is validated together;
+its intermediate commits are not claimed as separately tested. Custom-name
+persistence is integrated separately below.
 
 
 ## Intermittent-node component milestone
@@ -2311,3 +2310,22 @@ swipe reporting remains covered, and disposal cancels pending timers/frames.
 Publication is verified at the exact head and two-file scope. It does not change
 ARM's vendored dependency, merge upstream main or accept later composed inputs.
 The separate Lightbox containment correction remains under validation.
+
+
+## Local custom resource names
+
+Integrated `0f34023` adds optional owner-local names for hosts, leases, pools and
+resources. Bounded revisioned metadata reserves names by scope and binds port
+labels to the owning reservation incarnation. Joint authorized lookup refuses
+ambiguity and invalid optional metadata; exact identities remain authoritative
+for requests, reviews, retries and cleanup. No startup migration or DDL is added.
+
+CLI commands, bounded shell completion and browser/terminal naming forms use
+explicit revisions without automatic write retries. Database check and backup
+preserve invalid naming bytes; strict reset grants names no settlement credit.
+See [custom names](custom-names.md) for limits and recovery behavior.
+
+The integrated 72-path payload matches the independently accepted final source.
+Browser interaction and composition with the compact Resources and mobile-node
+slices remain open; later public installation and cross-platform runtime are
+not established by the native feature gate.
