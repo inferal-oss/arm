@@ -1598,3 +1598,24 @@ TLS binding and suspend-aware lease guards are separate required compositions.
 Total grant byte-credit, arbitrary blocking application I/O, browser/unmodified
 clients, native macOS and broader formal/platform acceptance remain incomplete.
 No production enablement follows from this development milestone.
+
+
+## Durable private sync workspace locators
+
+A private sync worker durably records each receiver/source workspace before
+staging payload. The record binds the original operation, side and role to the
+selected root, parent and held base identity, checked against its canonical
+marker and original stage/quarantine handles. Failed or cancelled recording
+stops staging and retains the original marked workspace and charged obligation.
+Read-only lookup returns at most three shaped locators; SQLite cell types and
+returned byte lengths are checked before Go conversion, so malformed BLOB
+payloads do not enter conversion errors. Rows authorize no native deletion.
+
+Fresh authorities install complete sync schema version 2 transactionally. Version 1
+is incompatible with Manager startup and refuses without repair or migration;
+preserve it for read-only diagnosis/backup or review explicit intentional loss.
+Strict read-only reset proof recognizes exact version 1 and version 2 shape/version
+pairs. Missing indexes, mismatched markers and retained used sync history remain
+blocking evidence. Empty locator rows alone never prove physical reclamation.
+Public sync orchestration, allocation enforcement, cleanup/settlement and formal
+acceptance remain separate work.

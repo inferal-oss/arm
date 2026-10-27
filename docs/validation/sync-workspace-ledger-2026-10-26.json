@@ -1,0 +1,1249 @@
+{
+  "scope": "Private sync durable workspace locators and strict schema/reset compatibility",
+  "status": "independently reviewed; focused native component gates passed",
+  "integration_commits": [
+    "f42c792c059cc3607fce26d3b84db12e10514421",
+    "8a3302e2784268f839bd69416127c08f9dc2fb67"
+  ],
+  "baseline": "73fa6e2",
+  "authors": [
+    "55873b5",
+    "c56b00e"
+  ],
+  "ci_only_commit": "d529f12d8ca77291e80e387ab7f1ee188f5151d9",
+  "ci_run": "https://github.com/inferal-oss/arm/actions/runs/40431406187",
+  "frozen_source": {
+    "commit": "8a3302e2784268f839bd69416127c08f9dc2fb67",
+    "files": 1853,
+    "sha256": "aff91d4216869689a53aa34375a703a2a7b26b26b6569968f22b45fb8644768c"
+  },
+  "platforms": {
+    "ubuntu": {
+      "go": "go version go1.27.3 linux/amd64",
+      "architecture": "x86_64",
+      "source_digest": "aff91d4216869689a53aa34375a703a2a7b26b26b6569968f22b45fb8644768c",
+      "commands": {
+        "final-manager": {
+          "exit": 0,
+          "roots": {
+            "pass": 15
+          },
+          "named": {
+            "pass": 31
+          },
+          "log_sha256": "9d9d21a0c83d5bbe09ee7034c8461f18a2a73a1803d609a3dc24560de24ed0d9",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSourceReservationRetainsChargeAndOriginalKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSourceFailedReservationRollsBackLease"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationSSHAdmissionJoinsFenceLeaseAndIntent"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationRejectedIntentRollsBackEntireSSHAdmission"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerUsesCommittedHold"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerRejectsChangedIntentBeforeDispatch"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationFrameDecodedUnderChargedPreparation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationChangedFrameRollsBackChargedPreparation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle/end"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle/expiry"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle/close"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaInstalledDurablyAndReopenProvesIt"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DROP_TABLE_sync_effects"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DROP_TABLE_sync_workspaces"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DELETE_FROM_metadata_WHERE_key='sync_schema'"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DROP_INDEX_sync_open_generation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestRetainedSyncUseBlocksNodeStop"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/cpu"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/memory"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/owner"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/terminal"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/queued"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/request-key"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/reason"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestInspectSyncKeyBindsOriginalChargedLeaseAndOperation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair/empty"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair/used"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-reset": {
+          "exit": 0,
+          "roots": {
+            "pass": 4
+          },
+          "named": {
+            "pass": 17
+          },
+          "log_sha256": "f0103bae54ffccd046c6220bb63589adaa03a4e12e2a90cae482c15f7d7ff3ac",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace/used"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace/missing-use-marker"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace/missing-index"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/legacy1"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/legacy-used1"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/missing-table2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/missing-unique2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/marker1-with-table2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/orphan-locator2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/used2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestResetHooksPreserveOrdinaryFreshAndEstablishedStartup"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewSchemaTwoResetLifecycle/active-counted-pool-refuses-readonly"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewSchemaTwoResetLifecycle/settled-reset-seed-and-retained-artifact"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewSchemaTwoResetLifecycle"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-service": {
+          "exit": 0,
+          "roots": {
+            "pass": 24
+          },
+          "named": {
+            "pass": 42
+          },
+          "log_sha256": "52ed7ea43b0b3291ab48fdb184a7576e11ab5ceb862e2d06418f15770780fdfd",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationFootprintRetainsStructuralCharge"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestDurableDualReceiptBaselineGate"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/deleted"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/prepared_corrupt"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/outcome_corrupt"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/outcome_empty"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/outcome_missing"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestOperationRowIdentityMatchesIntent/pair"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestOperationRowIdentityMatchesIntent/generation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestOperationRowIdentityMatchesIntent"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUndurableSQLiteJournalModesAreRejected/OFF"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUndurableSQLiteJournalModesAreRejected/MEMORY"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUndurableSQLiteJournalModesAreRejected"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestLargePlanEffectJournal"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUnknownOutcomeRetainsOriginalKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReserveExactManifestAndKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparedEffectSurvivesReopenWithoutReplay"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestLaterGenerationRequiresExactPriorBaseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestNativePublisherUsesDurableLedger"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestExactNonexecutionSealAllowsReviewedNewKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence/missing-baseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence/changed-baseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence/missing-confirmed-peer-copy"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestInspectPairRequiresBothDurableConfirmations"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestInspectPairRejectsDifferentReviewedIntent"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationWireRoundTripAndBounds"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationRejectsUnknownFieldsAndInsufficientPromises"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationRejectsSparseProposalBeforeTypedDecode"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationCountsCaseVariantProposalBeforeTypedDecode"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationPreflightBoundsUnknownAncestorPaths"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationChargesCanonicalHTMLEscaping"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/oversize-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/invalid-utf8-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/nul-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/oversize-root"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/disk-payload"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/blob-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewCancelledRecordRetainsOriginalNativeEvidence"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceLedgerRecordsBeforeStageAndRefusesDuplicateRole"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-vet": {
+          "exit": 0,
+          "roots": {},
+          "named": {},
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-worker": {
+          "exit": 0,
+          "roots": {
+            "pass": 7
+          },
+          "named": {
+            "pass": 11
+          },
+          "log_sha256": "d22fa050aee8c478b342dc573cfd0b21e49ea4b08602e78c74930f0b1f32cc0e",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/push-additive"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/push-full"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/pull-additive"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/both-additive"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFailedTransportJoinDoesNotConfirmBaseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestConflictKeepBothOverSingleSSHStream"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestCancellationClosesBlockedSSHControl"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestUnreviewedWorkerCommandCannotDispatch"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedSyncWorkerOverARMSSHSession"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestWorkspaceReviewJournalFailurePrecedesStageBytes"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "original-locator": {
+          "exit": 1,
+          "roots": {
+            "fail": 1
+          },
+          "named": {
+            "fail": 3
+          },
+          "log_sha256": "e5a64ff4410355b80088e7754aed09bfc2812e69ace3c20a7884a67530ff85d8",
+          "failed_or_skipped_tests": [
+            "TestWorkspaceReviewLocatorByteBounds/oversize-path",
+            "TestWorkspaceReviewLocatorByteBounds/disk-payload",
+            "TestWorkspaceReviewLocatorByteBounds"
+          ],
+          "terminal_roster": {
+            "pass": [],
+            "fail": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/oversize-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/disk-payload"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": null
+              }
+            ],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "original-reset": {
+          "exit": 1,
+          "roots": {
+            "fail": 1
+          },
+          "named": {
+            "fail": 2
+          },
+          "log_sha256": "c4c0837ed41180dfbc22c8cafb5953cf6c13580ad9ed1e1c48c1104e06147f31",
+          "failed_or_skipped_tests": [
+            "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2",
+            "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention"
+          ],
+          "terminal_roster": {
+            "pass": [],
+            "fail": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": null
+              }
+            ],
+            "skip": [],
+            "build-fail": []
+          }
+        }
+      }
+    },
+    "macos": {
+      "go": "go version go1.27.3 darwin/arm64",
+      "architecture": "arm64",
+      "source_digest": "aff91d4216869689a53aa34375a703a2a7b26b26b6569968f22b45fb8644768c",
+      "commands": {
+        "final-manager": {
+          "exit": 0,
+          "roots": {
+            "pass": 15
+          },
+          "named": {
+            "pass": 31
+          },
+          "log_sha256": "d0e1525937f3875c62a710d40a82e88bddf8d82be048d5fd3c7928f0204edbaf",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSourceReservationRetainsChargeAndOriginalKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSourceFailedReservationRollsBackLease"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationSSHAdmissionJoinsFenceLeaseAndIntent"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationRejectedIntentRollsBackEntireSSHAdmission"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerUsesCommittedHold"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerRejectsChangedIntentBeforeDispatch"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationFrameDecodedUnderChargedPreparation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationChangedFrameRollsBackChargedPreparation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle/end"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle/expiry"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle/close"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncDestinationInlineWorkerOriginalLifecycle"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaInstalledDurablyAndReopenProvesIt"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DROP_TABLE_sync_effects"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DROP_TABLE_sync_workspaces"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DELETE_FROM_metadata_WHERE_key='sync_schema'"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair/DROP_INDEX_sync_open_generation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestSyncSchemaPartialStateRefusesStartupWithoutRepair"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestRetainedSyncUseBlocksNodeStop"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/cpu"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/memory"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/owner"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/terminal"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/queued"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/request-key"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence/reason"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestReviewSyncKeyRefusesChangedChargedEvidence"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestInspectSyncKeyBindsOriginalChargedLeaseAndOperation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair/empty"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair/used"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": "TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/manager",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-reset": {
+          "exit": 0,
+          "roots": {
+            "pass": 4
+          },
+          "named": {
+            "pass": 17
+          },
+          "log_sha256": "f28290caf4ce2bfd6728350ebd39448804935b1fbe4e73a388591c2b8ed43904",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace/used"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace/missing-use-marker"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace/missing-index"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestSyncResetProofRetainsUsedOrPartialNamespace"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/legacy1"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/legacy-used1"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/missing-table2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/missing-unique2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/marker1-with-table2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/orphan-locator2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/used2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestResetHooksPreserveOrdinaryFreshAndEstablishedStartup"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewSchemaTwoResetLifecycle/active-counted-pool-refuses-readonly"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewSchemaTwoResetLifecycle/settled-reset-seed-and-retained-artifact"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewSchemaTwoResetLifecycle"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-service": {
+          "exit": 0,
+          "roots": {
+            "pass": 24
+          },
+          "named": {
+            "pass": 42
+          },
+          "log_sha256": "5c8f9f941ffeda36f112fdf80e1b86b3b6565dfbabf32678a189b82b31b1b5c9",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationFootprintRetainsStructuralCharge"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestDurableDualReceiptBaselineGate"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/deleted"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/prepared_corrupt"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/outcome_corrupt"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/outcome_empty"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation/outcome_missing"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestCompletedEffectEvidenceIsRequiredForLookupAndConfirmation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestOperationRowIdentityMatchesIntent/pair"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestOperationRowIdentityMatchesIntent/generation"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestOperationRowIdentityMatchesIntent"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUndurableSQLiteJournalModesAreRejected/OFF"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUndurableSQLiteJournalModesAreRejected/MEMORY"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUndurableSQLiteJournalModesAreRejected"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestLargePlanEffectJournal"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestUnknownOutcomeRetainsOriginalKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReserveExactManifestAndKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparedEffectSurvivesReopenWithoutReplay"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestLaterGenerationRequiresExactPriorBaseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestNativePublisherUsesDurableLedger"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestExactNonexecutionSealAllowsReviewedNewKey"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence/missing-baseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence/changed-baseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence/missing-confirmed-peer-copy"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestReviewPairChecksOneSidedConfirmedEvidence"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestInspectPairRequiresBothDurableConfirmations"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestInspectPairRejectsDifferentReviewedIntent"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationWireRoundTripAndBounds"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationRejectsUnknownFieldsAndInsufficientPromises"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationRejectsSparseProposalBeforeTypedDecode"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationCountsCaseVariantProposalBeforeTypedDecode"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationPreflightBoundsUnknownAncestorPaths"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestPreparationChargesCanonicalHTMLEscaping"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/oversize-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/invalid-utf8-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/nul-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/oversize-root"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/disk-payload"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/blob-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewCancelledRecordRetainsOriginalNativeEvidence"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceLedgerRecordsBeforeStageAndRefusesDuplicateRole"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-vet": {
+          "exit": 0,
+          "roots": {},
+          "named": {},
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "final-worker": {
+          "exit": 0,
+          "roots": {
+            "pass": 7
+          },
+          "named": {
+            "pass": 11
+          },
+          "log_sha256": "b883c12706a7aceeb1dee3b16569e346f34a0fde3fd09271f70df0a0720b7390",
+          "failed_or_skipped_tests": [],
+          "terminal_roster": {
+            "pass": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/push-additive"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/push-full"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/pull-additive"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer/both-additive"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedWorkerThroughDuplexTransfer"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFailedTransportJoinDoesNotConfirmBaseline"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestConflictKeepBothOverSingleSSHStream"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestCancellationClosesBlockedSSHControl"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestUnreviewedWorkerCommandCannotDispatch"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestFixedSyncWorkerOverARMSSHSession"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": "TestWorkspaceReviewJournalFailurePrecedesStageBytes"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncworker",
+                "test": null
+              }
+            ],
+            "fail": [],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "original-locator": {
+          "exit": 1,
+          "roots": {
+            "fail": 1
+          },
+          "named": {
+            "fail": 3
+          },
+          "log_sha256": "1b0f468c419055c367c23a09ab6eaa32aa94f6113898f0c1626db9c7155fa0d8",
+          "failed_or_skipped_tests": [
+            "TestWorkspaceReviewLocatorByteBounds/oversize-path",
+            "TestWorkspaceReviewLocatorByteBounds/disk-payload",
+            "TestWorkspaceReviewLocatorByteBounds"
+          ],
+          "terminal_roster": {
+            "pass": [],
+            "fail": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/oversize-path"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds/disk-payload"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": "TestWorkspaceReviewLocatorByteBounds"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/syncservice",
+                "test": null
+              }
+            ],
+            "skip": [],
+            "build-fail": []
+          }
+        },
+        "original-reset": {
+          "exit": 1,
+          "roots": {
+            "fail": 1
+          },
+          "named": {
+            "fail": 2
+          },
+          "log_sha256": "0c0363502b9902fcdc5e77e46fb5a035bb720d2c43a498b5364a4aa9e1b55aeb",
+          "failed_or_skipped_tests": [
+            "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2",
+            "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention"
+          ],
+          "terminal_roster": {
+            "pass": [],
+            "fail": [
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": "TestWorkspaceReviewResetSchemaVersionAndLocatorRetention"
+              },
+              {
+                "package": "github.com/inferal-oss/arm/internal/database",
+                "test": null
+              }
+            ],
+            "skip": [],
+            "build-fail": []
+          }
+        }
+      }
+    }
+  },
+  "artifact_zip_sha256": {
+    "linux-amd64": "dec98a525c46257eb95a0c4e0833bcec64c696a2c45a431349e0257c92ee7cd6",
+    "macos-arm64": "321af2d66630716cb2d7c09b18996a127e4f4e0ca4d9c16d43bdba50eefe1650"
+  },
+  "per_platform_final": {
+    "race_roots_passed": 50,
+    "named_outcomes_passed": 101,
+    "failures": 0,
+    "skips": 0,
+    "affected_vet_exit": 0
+  },
+  "unchanged_filesystem_reuse": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40430474087",
+    "scope": "complete syncfs race package and all conservative in-repository source/dependency/fixture/module inputs",
+    "source_inputs": 160,
+    "sha256": "ec60489636af1a717ec758ce181dcfc93f995d0daf7dfbfbf519824addda347d",
+    "per_platform_roots_passed": 39,
+    "note": "Includes one environment-gated helper root. The parent FIFO fixture executes and joins its original child. No syncfs source/dependency input changed in the successor."
+  },
+  "findings_fixed": [
+    "Strict reset lacked the new table and its two implicit constraint indexes",
+    "Expanded schema reused version1; install fresh version2 and refuse incompatible legacy startup without repair",
+    "Bounded locator row count did not bound returned field bytes or require native path shape",
+    "SQLite affinity permits malformed BLOB/TEXT cells; type-check before scanning to avoid unbounded conversion and private payload diagnostics"
+  ],
+  "compatibility": {
+    "fresh_schema": "sync_schema=2 with complete exact workspace table/index group",
+    "legacy_startup": "schema1 refuses without migration or repair; state preserved",
+    "read_only_legacy_proof": "Exact schema1 and schema2 shape/version pairs are recognized; all used sync history remains blocked",
+    "forget": "Explicit forget deliberately abandons the ledger and does not prove native cleanup"
+  },
+  "behavior_verified": [
+    "Durable locator precedes any stage payload",
+    "Original held base/stage/quarantine identities match the inspected canonical marker and reservation",
+    "Duplicate roles and failed/cancelled records retain original marked workspaces and reserved intent",
+    "Malformed locator bytes/types fail unknown without private payload disclosure",
+    "Active counted pool claim blocks reset without state mutation",
+    "Settled schema2 reset installs fresh authority and never adopts retained storage artifacts"
+  ],
+  "preserved_earlier_results": [
+    {
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40429810156",
+      "outcome": "Original Go defects reproduced; wrapper diagnostic assertion expected table before observed implicit index; no final acceptance inferred"
+    },
+    {
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40430474087",
+      "outcome": "Earlier source Linux succeeded; macOS two unchanged CPU-dependent reset fixtures refused insufficient live capacity before setup. They remain unchanged; successor metadata/pool/storage fixture uses normal admission and does not claim CPU admission."
+    }
+  ],
+  "limits": [
+    "Native component coverage on hosted Linux amd64 and macOS arm64; no Linux ARM64 or local-host acceptance added",
+    "Controlled worker/admission fixtures are not public or cross-host sync acceptance",
+    "Insert-abort and pre-cancellation are exercised; actual power failure or durable-commit acknowledgement loss is not",
+    "Physical allocation enforcement, native cleanup, lease settlement and public orchestration/routing remain unsupported",
+    "Sync formal models, implementation traces and proofs remain open",
+    "Dedicated CI uses direct foreground commands under the standard hosted runner; no acceptance of the separate module cancellation harness is implied"
+  ],
+  "input_closure": {
+    "runtime_and_test_inputs_identical": true,
+    "note": "The native snapshot has five non-executable documentation differences from the current technical documentation. Source and tests are unchanged."
+  }
+}

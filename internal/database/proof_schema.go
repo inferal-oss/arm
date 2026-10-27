@@ -57,6 +57,7 @@ var syncResetSchema = map[string]struct{ kind, table, ddl string }{
 	"sync_open_generation": {"index", "sync_operations", syncservice.OpenGenerationSchema},
 	"sync_effects":         {"table", "sync_effects", syncservice.EffectsSchema},
 	"sync_baselines":       {"table", "sync_baselines", syncservice.BaselinesSchema},
+	"sync_workspaces":      {"table", "sync_workspaces", syncservice.WorkspacesSchema},
 	"sync_lease_bindings":  {"table", "sync_lease_bindings", syncLeaseBindingResetSchema},
 }
 
@@ -116,7 +117,7 @@ var resetAutoIndexes = map[string]int{
 	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "host_pressure_state": 1, "host_pressure_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
-	"sync_operations": 1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1,
+	"sync_operations": 1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1, "sync_workspaces": 2,
 }
 
 func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, error) {
@@ -151,7 +152,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		syncObjects[normalizedSchema(object.ddl)] = struct{ name, kind, table string }{name, object.kind, object.table}
 	}
 	syncSeen := map[string]bool{}
-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 145`)
+	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 148`)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +167,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if err := rows.Scan(&kind, &name, &table, &raw); err != nil {
 			return nil, err
 		}
-		if count > 144 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+		if count > 147 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
 			return nil, resetSchemaError("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
@@ -270,7 +271,10 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	if len(reviewSeen) != 0 && len(reviewSeen) != len(leaseReviewResetSchema) {
 		return nil, resetSchemaError("partial lease review schema group")
 	}
-	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) {
+	// Version 1 predates workspace locators. Exact shape/version pairing is
+	// checked by readSync after metadata; neither supported shape is migrated.
+	legacySync := len(syncSeen) == len(syncResetSchema)-1 && !syncSeen["sync_workspaces"]
+	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) && !legacySync {
 		return nil, resetSchemaError("partial sync reset schema group")
 	}
 	workspaceCount := 0

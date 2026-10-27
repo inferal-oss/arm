@@ -4475,3 +4475,28 @@ source-server provenance, native-clock composition, arbitrary application-I/O
 joins, aggregate grant byte-credit, native macOS/browser/formal/platform gates
 or explain the earlier source HTTP EOF. Existing source/server and Manager
 protocols are unchanged by this client-only integration.
+
+
+### Reviewed private sync workspace ledger
+
+[Run 40431406187](https://github.com/inferal-oss/arm/actions/runs/40431406187)
+passes final focused sources `f42c792` and `8a3302e` on Linux amd64 and macOS
+arm64 with Go 1.27.3. Each platform passes 50 race roots/101 named outcomes and
+affected vet, without final failures or skips: service 24/42, worker 7/11,
+Manager 15/31 and reset 4/17. Another 39 filesystem roots per platform are reused
+through a verified unchanged closure of 160 source, dependency and fixture inputs.
+
+Original regressions reproduce oversized locators, malformed private BLOB
+disclosure and strict reset's missing workspace catalog/index support. Earlier
+wrapper-diagnostic and macOS insufficient-capacity failures remain separate.
+The final schema 2 lifecycle fixture uses real counted-pool and disk-only storage
+admission to prove active read-only refusal, settled reset/seed/fresh authority
+and nonadoption of retained artifacts; it does not claim CPU admission.
+
+Root independently checks both artifact ZIP hashes, all 17 focused source hashes
+and original exits/log digests against the composed files. The normalized
+[ledger evidence](validation/sync-workspace-ledger-2026-10-26.json) retains test
+counts, public CI/source references, compatibility and unsupported scope.
+Insert abort and pre-cancellation are exercised; actual power failure or lost
+durable-commit acknowledgement is not. No public/cross-host sync, physical
+allocation, native cleanup, lease settlement or formal acceptance is implied.

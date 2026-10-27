@@ -157,12 +157,19 @@ func (e *endpoint) check(ctx context.Context, intent syncservice.Intent, plan sy
 	return nil
 }
 
-func (e *endpoint) workspace(plan syncreconcile.Plan, bytes int64) (*syncfs.Workspace, error) {
-	return syncfs.CreateWorkspace(e.Root, e.WorkParent, syncfs.Reservation{Key: e.Ledger.Key, PlanDigest: plan.Digest(), Generation: plan.Generation(), Side: e.Side, DiskBytes: bytes})
+func (e *endpoint) workspace(ctx context.Context, plan syncreconcile.Plan, bytes int64, role string) (*syncfs.Workspace, error) {
+	w, err := syncfs.CreateWorkspace(e.Root, e.WorkParent, syncfs.Reservation{Key: e.Ledger.Key, PlanDigest: plan.Digest(), Generation: plan.Generation(), Side: e.Side, DiskBytes: bytes})
+	if err != nil {
+		return w, err
+	}
+	if err := e.Ledger.RecordWorkspace(ctx, role, e.Root, e.WorkParent, w); err != nil {
+		return w, err
+	}
+	return w, nil
 }
 
 func (e *endpoint) materialize(ctx context.Context, plan syncreconcile.Plan, b batch, bytes int64) (*syncfs.Workspace, []syncfs.DirectoryMetadata, error) {
-	w, err := e.workspace(plan, bytes)
+	w, err := e.workspace(ctx, plan, bytes, "source-"+batchID(b))
 	if err != nil {
 		return w, nil, err
 	}

@@ -231,6 +231,17 @@ func runPair(t *testing.T, p testPair, req syncreconcile.Request, key string, jo
 	if lerr != nil || rerr != nil {
 		return nil, lerr, rerr, le, re
 	}
+	for _, endpoint := range []*endpoint{le, re} {
+		records, err := endpoint.Ledger.Workspaces(ctx)
+		if err != nil || len(records) == 0 {
+			t.Fatalf("successful worker omitted durable workspace locators: %+v %v", records, err)
+		}
+		for _, record := range records {
+			if !strings.HasPrefix(record.Path, endpoint.WorkParent.Path()+string(os.PathSeparator)) {
+				t.Fatalf("workspace locator escaped private parent: %+v", record)
+			}
+		}
+	}
 	lb, err := syncservice.LoadBaseline(t.Context(), p.localDB, req.Binding, syncreconcile.Local)
 	if err != nil {
 		t.Fatal(err)

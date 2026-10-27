@@ -13,14 +13,15 @@ import (
 
 const syncLeaseBindingSchema = `CREATE TABLE sync_lease_bindings (lease TEXT PRIMARY KEY,key TEXT NOT NULL,side TEXT NOT NULL,volume TEXT NOT NULL,disk_bytes INTEGER NOT NULL)`
 
-// initSyncRecords is a startup proof, never a lookup-time repair. The four
-// tables, generation index, and marker appear in one durable transaction.
+// initSyncRecords is a startup proof, never a migration or lookup-time repair.
+// The complete tables, indexes and version marker appear in one durable transaction.
 func (m *Manager) initSyncRecords(ctx context.Context) error {
 	want := map[string]struct{ kind, table, ddl string }{
 		"sync_operations":      {"table", "sync_operations", syncservice.OperationsSchema},
 		"sync_open_generation": {"index", "sync_operations", syncservice.OpenGenerationSchema},
 		"sync_effects":         {"table", "sync_effects", syncservice.EffectsSchema},
 		"sync_baselines":       {"table", "sync_baselines", syncservice.BaselinesSchema},
+		"sync_workspaces":      {"table", "sync_workspaces", syncservice.WorkspacesSchema},
 		"sync_lease_bindings":  {"table", "sync_lease_bindings", syncLeaseBindingSchema},
 	}
 	auto := map[string]string{
@@ -28,8 +29,10 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 		"sqlite_autoindex_sync_effects_1":        "sync_effects",
 		"sqlite_autoindex_sync_baselines_1":      "sync_baselines",
 		"sqlite_autoindex_sync_lease_bindings_1": "sync_lease_bindings",
+		"sqlite_autoindex_sync_workspaces_1":     "sync_workspaces",
+		"sqlite_autoindex_sync_workspaces_2":     "sync_workspaces",
 	}
-	rows, err := m.db.QueryContext(ctx, `SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'sync_*' OR name GLOB 'sqlite_autoindex_sync_*' ORDER BY name LIMIT 11`)
+	rows, err := m.db.QueryContext(ctx, `SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'sync_*' OR name GLOB 'sqlite_autoindex_sync_*' ORDER BY name LIMIT 13`)
 	if err != nil {
 		return err
 	}
@@ -91,12 +94,15 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 		if _, e = tx.ExecContext(ctx, syncLeaseBindingSchema); e != nil {
 			return e
 		}
-		if _, e = tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('sync_schema','1')`); e != nil {
+		if _, e = tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('sync_schema','2')`); e != nil {
 			return e
 		}
 		return tx.Commit()
 	}
-	if markerErr != nil || marker != "1" || len(seen) != len(want)+len(auto) {
+	if markerErr == nil && marker == "1" {
+		return model.Err("sync_evidence_unavailable", "sync schema version 1 is incompatible with workspace ledger version 2; no migration or repair was attempted; preserve the state directory for read-only diagnosis, backup, or explicit database remove --forget review")
+	}
+	if markerErr != nil || marker != "2" || len(seen) != len(want)+len(auto) {
 		return model.Err("sync_evidence_unavailable", "sync schema namespace or marker is partial")
 	}
 	for name := range want {
@@ -115,11 +121,11 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 // Every admitted operation must retain exactly one charged lease binding.
 // Historical effects remain lookup-only; startup never erases or repairs them.
 func (m *Manager) verifySyncRecords(ctx context.Context, used bool) error {
-	var operations, bindings, effects, baselines, orphans, looseEffects int
-	if err := m.db.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM sync_operations),(SELECT COUNT(*) FROM sync_lease_bindings),(SELECT COUNT(*) FROM sync_effects),(SELECT COUNT(*) FROM sync_baselines),(SELECT COUNT(*) FROM sync_lease_bindings b LEFT JOIN sync_operations o ON o.key=b.key AND o.side=b.side WHERE o.key IS NULL),(SELECT COUNT(*) FROM sync_effects e LEFT JOIN sync_operations o ON o.key=e.key AND o.side=e.owner_side WHERE o.key IS NULL)`).Scan(&operations, &bindings, &effects, &baselines, &orphans, &looseEffects); err != nil {
+	var operations, bindings, effects, baselines, workspaces, orphans, looseEffects, looseWorkspaces int
+	if err := m.db.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM sync_operations),(SELECT COUNT(*) FROM sync_lease_bindings),(SELECT COUNT(*) FROM sync_effects),(SELECT COUNT(*) FROM sync_baselines),(SELECT COUNT(*) FROM sync_workspaces),(SELECT COUNT(*) FROM sync_lease_bindings b LEFT JOIN sync_operations o ON o.key=b.key AND o.side=b.side WHERE o.key IS NULL),(SELECT COUNT(*) FROM sync_effects e LEFT JOIN sync_operations o ON o.key=e.key AND o.side=e.owner_side WHERE o.key IS NULL),(SELECT COUNT(*) FROM sync_workspaces w LEFT JOIN sync_operations o ON o.key=w.key AND o.side=w.side WHERE o.key IS NULL)`).Scan(&operations, &bindings, &effects, &baselines, &workspaces, &orphans, &looseEffects, &looseWorkspaces); err != nil {
 		return err
 	}
-	if operations > 4096 || effects > syncreconcile.MaxActions*2 || baselines > 4096 || operations != bindings || orphans != 0 || looseEffects != 0 || (operations > 0) != used || (!used && (effects != 0 || baselines != 0)) {
+	if operations > 4096 || effects > syncreconcile.MaxActions*2 || baselines > 4096 || workspaces > operations*3 || operations != bindings || orphans != 0 || looseEffects != 0 || looseWorkspaces != 0 || (operations > 0) != used || (!used && (effects != 0 || baselines != 0 || workspaces != 0)) {
 		return model.Err("sync_evidence_unavailable", "sync operation/lease binding or use marker differs")
 	}
 	rows, err := m.db.QueryContext(ctx, `SELECT b.lease,b.key,b.side,b.volume,b.disk_bytes FROM sync_lease_bindings b ORDER BY b.lease LIMIT 4097`)
@@ -162,6 +168,9 @@ func (m *Manager) verifySyncRecords(ctx context.Context, used bool) error {
 		}
 		if l.Request.Resources != want {
 			return model.Err("sync_evidence_unavailable", "sync lease resources differ from retained intent")
+		}
+		if _, err := (&syncservice.Ledger{DB: m.db, Key: b.key, Side: syncreconcile.Side(b.side)}).Workspaces(ctx); err != nil {
+			return model.Err("sync_evidence_unavailable", "sync workspace locators cannot be verified: "+err.Error())
 		}
 	}
 	return nil

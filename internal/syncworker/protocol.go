@@ -400,7 +400,7 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 	} else if _, err = readFrame(ctx, control, e.Hold, intent, "admitted", ""); err != nil {
 		return err
 	}
-	work, err := e.workspace(plan, need)
+	work, err := e.workspace(ctx, plan, need, "receiver")
 	if err != nil {
 		if work != nil {
 			_ = work.Close()

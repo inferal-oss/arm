@@ -106,6 +106,7 @@ type proofReader struct {
 	routingGraphSchema       bool
 	sshSchema                bool
 	syncSchema               bool
+	syncWorkspaceSchema      bool
 	syncUsed                 bool
 	cargoSchema              bool
 	cargoRuns                map[string]proofSSHRun
@@ -318,10 +319,11 @@ func (p *proofReader) metadata() error {
 			}
 			p.sshSchema = true
 		case "sync_schema":
-			if raw != "1" {
+			if raw != "1" && raw != "2" {
 				return fmt.Errorf("unknown sync schema")
 			}
 			p.syncSchema = true
+			p.syncWorkspaceSchema = raw == "2"
 		case "sync_used":
 			if raw != "1" {
 				return fmt.Errorf("unknown sync use marker")

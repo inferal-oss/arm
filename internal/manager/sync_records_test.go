@@ -28,7 +28,7 @@ func TestSyncSchemaInstalledDurablyAndReopenProvesIt(t *testing.T) {
 	if e := m.db.QueryRow(`PRAGMA journal_mode`).Scan(&mode); e != nil || mode != "wal" {
 		t.Fatalf("journal %q %v", mode, e)
 	}
-	if e := m.db.QueryRow(`SELECT value FROM metadata WHERE key='sync_schema'`).Scan(&marker); e != nil || marker != "1" {
+	if e := m.db.QueryRow(`SELECT value FROM metadata WHERE key='sync_schema'`).Scan(&marker); e != nil || marker != "2" {
 		t.Fatalf("schema marker %q %v", marker, e)
 	}
 	if e := syncservice.VerifyDurableSQLite(context.Background(), m.db); e != nil {
@@ -44,7 +44,7 @@ func TestSyncSchemaInstalledDurablyAndReopenProvesIt(t *testing.T) {
 }
 
 func TestSyncSchemaPartialStateRefusesStartupWithoutRepair(t *testing.T) {
-	for _, query := range []string{`DROP TABLE sync_effects`, `DELETE FROM metadata WHERE key='sync_schema'`, `DROP INDEX sync_open_generation`} {
+	for _, query := range []string{`DROP TABLE sync_effects`, `DROP TABLE sync_workspaces`, `DELETE FROM metadata WHERE key='sync_schema'`, `DROP INDEX sync_open_generation`} {
 		t.Run(query, func(t *testing.T) {
 			home := filepath.Join(t.TempDir(), "arm")
 			m, e := Open(home, model.Resources{CPU: 1, Memory: 1 << 20, Disk: 1 << 20})
