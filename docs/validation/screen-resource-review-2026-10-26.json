@@ -1,0 +1,782 @@
+{
+  "bounded_initial_native_successor": {
+    "command_build": "passed",
+    "manager_cases_passed": 14,
+    "manager_roots": 12,
+    "platform": "darwin/arm64",
+    "scope": "Only the three previously failed initial Mac roots and previously unlaunched Manager/vet/build gates; not final source acceptance.",
+    "screen_cases_passed": 3,
+    "screen_roots": [
+      "TestBrowserScreenEnforcesInputMessageLimit",
+      "TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin",
+      "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles"
+    ],
+    "source": "ce46d2c81fffd85f9081363f06f7bdab8ef8c8c9",
+    "vet": "passed"
+  },
+  "ci_only_commit": "3fd7dd72c7dff6422ec123937e90b2650a26b720",
+  "disposition": "Ready to integrate the scoped screen transport hold and native close-retention correction; complete Standard screen and clock acceptance remain open.",
+  "historical_verified_runs": {
+    "first-caller-fix-linux": {
+      "commit": "e6e6ed5bbeb8a2a76b2827339c724f2a21bb8d36",
+      "gates": {
+        "original-transit-races.log": {
+          "completed_test_and_subtest_count": 23,
+          "fail": 0,
+          "failed_cases": [],
+          "log_sha256": "97f1c3f8c6084d85e098a4bcce6dca5a67b9caf519d0d63967449c63aca1a738",
+          "pass": 23,
+          "root_count": 18,
+          "skip": 0
+        },
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 55,
+          "fail": 0,
+          "failed_cases": [],
+          "log_sha256": "e53ff3d64e3ec08a9f03cb1da87e11cae64c5dfa12201158d6d86c5b96ece4eb",
+          "pass": 54,
+          "root_count": 25,
+          "skip": 1
+        }
+      },
+      "platform": [
+        "linux",
+        "amd64",
+        "1"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40440076390",
+      "source_files_verified_against_git_archive": 1858,
+      "source_manifest_sha256": "a0cd724217f73e6cada63e715413b2fa69a35605215aa636ad82cc061d09886b"
+    },
+    "first-caller-fix-macos": {
+      "commit": "e6e6ed5bbeb8a2a76b2827339c724f2a21bb8d36",
+      "gates": {
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 55,
+          "fail": 9,
+          "failed_cases": [
+            "TestScreenNativeDialIntervalIsRegisteredUntilCanceledAndJoined",
+            "TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin",
+            "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles",
+            "TestScreenResourceJoinedOnReleaseRevocationAndStop",
+            "TestScreenResourceJoinedOnReleaseRevocationAndStop/release",
+            "TestScreenResourceJoinedOnReleaseRevocationAndStop/revoke",
+            "TestScreenResourceJoinedOnReleaseRevocationAndStop/stop",
+            "TestScreenResourceReleaseRetainsChargeUntilOriginalJoin",
+            "TestScreenResourceReservationCoversPendingUpgrade"
+          ],
+          "log_sha256": "c15ae30c2874a7b48d99cc8d0e8dd961e6e199331d975edf2bbd899a8221a57f",
+          "pass": 46,
+          "root_count": 25,
+          "skip": 0
+        }
+      },
+      "platform": [
+        "darwin",
+        "arm64",
+        "1"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40440076390",
+      "source_files_verified_against_git_archive": 1858,
+      "source_manifest_sha256": "a0cd724217f73e6cada63e715413b2fa69a35605215aa636ad82cc061d09886b"
+    },
+    "initial-linux": {
+      "commit": "ce46d2c81fffd85f9081363f06f7bdab8ef8c8c9",
+      "gates": {
+        "original-transit-races.log": {
+          "completed_test_and_subtest_count": 14,
+          "fail": 0,
+          "failed_cases": [],
+          "log_sha256": "5e59f478bd3c75b5955175707306c103b0e5e85900db1b1111ec472e0418015f",
+          "pass": 14,
+          "root_count": 12,
+          "skip": 0
+        },
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 52,
+          "fail": 0,
+          "failed_cases": [],
+          "log_sha256": "1a2634721c51a4d8538a1ceed437d6ca4006ab94761bbd583d45c329efaadf64",
+          "pass": 51,
+          "root_count": 22,
+          "skip": 1
+        }
+      },
+      "platform": [
+        "linux",
+        "amd64",
+        "1"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40432361296",
+      "source_files_verified_against_git_archive": 1856,
+      "source_manifest_sha256": "c74f61ebc8710b57d51b19c1573845a109a189a6dde2859e65fc848cac60881d"
+    },
+    "initial-macos": {
+      "commit": "ce46d2c81fffd85f9081363f06f7bdab8ef8c8c9",
+      "gates": {
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 52,
+          "fail": 3,
+          "failed_cases": [
+            "TestBrowserScreenEnforcesInputMessageLimit",
+            "TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin",
+            "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles"
+          ],
+          "log_sha256": "1190207286e2de5f5fba98ff5d2fefba36929f40db49c4f0a80f39a8706a5338",
+          "pass": 49,
+          "root_count": 22,
+          "skip": 0
+        }
+      },
+      "platform": [
+        "darwin",
+        "arm64",
+        "1"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40432361296",
+      "source_files_verified_against_git_archive": 1856,
+      "source_manifest_sha256": "c74f61ebc8710b57d51b19c1573845a109a189a6dde2859e65fc848cac60881d"
+    },
+    "pre-successor-linux": {
+      "commit": "3fd7dd72c7dff6422ec123937e90b2650a26b720",
+      "gates": {
+        "original-transit-races.log": {
+          "completed_test_and_subtest_count": 23,
+          "fail": 1,
+          "failed_cases": [
+            "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart"
+          ],
+          "log_sha256": "9942ed501cd44f58828a78e923ab210cad3d970c06ddde895e9b91ff8cb31760",
+          "pass": 22,
+          "root_count": 18,
+          "skip": 0
+        },
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 55,
+          "fail": 0,
+          "failed_cases": [],
+          "log_sha256": "afe601da2661fd90fa3e9861d4fd21e22460b2a395ffe73cdcd87dbee57f2f7c",
+          "pass": 54,
+          "root_count": 25,
+          "skip": 1
+        }
+      },
+      "platform": [
+        "linux",
+        "amd64",
+        "1"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40442799311",
+      "source_files_verified_against_git_archive": 1888,
+      "source_manifest_sha256": "36e64eb7d8891d0eca18b415f443738ed769c3101f2026d2d765ce5faa116b33"
+    },
+    "pre-successor-macos": {
+      "commit": "3fd7dd72c7dff6422ec123937e90b2650a26b720",
+      "gates": {
+        "original-transit-races.log": {
+          "completed_test_and_subtest_count": 23,
+          "fail": 1,
+          "failed_cases": [
+            "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart"
+          ],
+          "log_sha256": "ca48a3e55a4316e7914d87f3c4fa6291ddddabebc9f3ba0cbd58ce3d77ec3f44",
+          "pass": 22,
+          "root_count": 18,
+          "skip": 0
+        },
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 55,
+          "fail": 5,
+          "failed_cases": [
+            "TestBrowserScreenEnforcesInputMessageLimit",
+            "TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin",
+            "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles",
+            "TestScreenResourceJoinedOnReleaseRevocationAndStop",
+            "TestScreenResourceJoinedOnReleaseRevocationAndStop/stop"
+          ],
+          "log_sha256": "032cbe0a49b31a250e3d755d9ff3c934a6a725728609487af39dc214f586b4ae",
+          "pass": 50,
+          "root_count": 25,
+          "skip": 0
+        }
+      },
+      "platform": [
+        "darwin",
+        "arm64",
+        "1"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40442799311",
+      "source_files_verified_against_git_archive": 1888,
+      "source_manifest_sha256": "36e64eb7d8891d0eca18b415f443738ed769c3101f2026d2d765ce5faa116b33"
+    }
+  },
+  "integration": {
+    "api_test_only": "4441703",
+    "commits": [
+      "faa1111",
+      "9ab0cde",
+      "30ae7b2",
+      "d8841bc",
+      "d6a7d5d",
+      "dbdcd1d",
+      "0d341aa"
+    ],
+    "scope": "Owned screen source and relay API/test match native projection; subsequent sync source-carrier changes are separate, with no screen or relay runtime change."
+  },
+  "integration_sequence": [
+    "1780d6c",
+    "07251c0",
+    "574521b",
+    "e65fb14",
+    "edbba96",
+    "b040ac7",
+    "9d77cdb"
+  ],
+  "later_readiness_failure": {
+    "actual_refusals": {
+      "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles": {
+        "cpu_available_cores": 0,
+        "cpu_eligible_cpus": 3,
+        "cpu_known": true,
+        "cpu_observation_age_ns": 5377870000,
+        "cpu_observed_busy_cores": 3,
+        "cpu_stale": false,
+        "draining": false,
+        "memory_budget_available_bytes": 0,
+        "memory_observation_age_ns": 5377754000,
+        "memory_observation_available_bytes": 3618521088,
+        "memory_stale": true,
+        "policy_available": {},
+        "policy_limits": {},
+        "reserved": {
+          "cpu": 0,
+          "disk_bytes": 0,
+          "memory_bytes": 0
+        }
+      },
+      "TestScreenResourceJoinedOnReleaseRevocationAndStop/release": {
+        "cpu_available_cores": 0,
+        "cpu_eligible_cpus": 3,
+        "cpu_known": true,
+        "cpu_observation_age_ns": 5226892000,
+        "cpu_observed_busy_cores": 3,
+        "cpu_stale": false,
+        "draining": false,
+        "memory_budget_available_bytes": 0,
+        "memory_observation_age_ns": 5226843000,
+        "memory_observation_available_bytes": 3684024320,
+        "memory_stale": true,
+        "policy_available": {},
+        "policy_limits": {},
+        "reserved": {
+          "cpu": 0,
+          "disk_bytes": 0,
+          "memory_bytes": 0
+        }
+      },
+      "TestScreenResourceJoinedOnReleaseRevocationAndStop/revoke": {
+        "cpu_available_cores": 0,
+        "cpu_eligible_cpus": 3,
+        "cpu_known": true,
+        "cpu_observation_age_ns": 5197668000,
+        "cpu_observed_busy_cores": 3,
+        "cpu_stale": false,
+        "draining": false,
+        "memory_budget_available_bytes": 0,
+        "memory_observation_age_ns": 5197614000,
+        "memory_observation_available_bytes": 3697410048,
+        "memory_stale": true,
+        "policy_available": {},
+        "policy_limits": {},
+        "reserved": {
+          "cpu": 0,
+          "disk_bytes": 0,
+          "memory_bytes": 0
+        }
+      },
+      "TestScreenResourceReservationCoversPendingUpgrade": {
+        "cpu_available_cores": 0,
+        "cpu_eligible_cpus": 3,
+        "cpu_known": true,
+        "cpu_observation_age_ns": 5371908000,
+        "cpu_observed_busy_cores": 3,
+        "cpu_stale": false,
+        "draining": false,
+        "memory_budget_available_bytes": 0,
+        "memory_observation_age_ns": 5371797000,
+        "memory_observation_available_bytes": 3727097856,
+        "memory_stale": true,
+        "policy_available": {},
+        "policy_limits": {},
+        "reserved": {
+          "cpu": 0,
+          "disk_bytes": 0,
+          "memory_bytes": 0
+        }
+      }
+    },
+    "candidate": "b040ac7fce61acd8f29d80e665602102d342e8f0",
+    "cause": "These positive fixtures Opened a Manager without starting its ordinary periodic sampling lifecycle. Read-only Status polling reused an initial native CPU cut with zero headroom; memory became stale during the bounded wait. This explains this readiness failure, not the missing atomic snapshots of earlier admission refusals.",
+    "correction_commit": "9d77cdb932f9df366a815b1a21d6259225944ebd",
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40446017134"
+  },
+  "limits": [
+    "Loopback TCP/TLS fixture evidence does not establish native desktop capture, Screen Sharing configuration/control/clipboard/other-user behavior, complete multihop VNC or High Performance mode.",
+    "The allocation does not cover browser decoding or the operating system screen server and is not a strict CPU/RSS cap.",
+    "Native suspend-inclusive remaining-time integration is a separate clock gate; these callers still derive TTL from Go context deadlines.",
+    "Arbitrarily blocking native or ledger I/O can prevent original join. Bounded Manager.Close is observed only for returned close errors and responsive ledger after the original workers join.",
+    "Normal Manager.Close cancels/joins its currently registered owners; a nil result does not prove every retained ledger obligation was reclaimed.",
+    "An unconfirmed original close remains needs_attention/interrupted with no Ended timestamp and full charge after restart; no automatic PID0 adoption, reconciliation, replay or clearing is authorized.",
+    "Endpoint service permission is not proof of a specific native listener process.",
+    "Earlier admission failures without atomic refusal snapshots remain unexplained; later diagnostic passes do not reconstruct them or satisfy the failed pristine gate."
+  ],
+  "normal_lifecycle_native_validation": {
+    "linux": {
+      "ACCEPTED.json": {
+        "commands": [
+          {
+            "check": "go-version",
+            "exit": 0,
+            "seconds": 0.0032644040000064933
+          },
+          {
+            "check": "go-platform",
+            "exit": 0,
+            "seconds": 0.0026471740000033606
+          },
+          {
+            "check": "screen-races",
+            "exit": 0,
+            "seconds": 247.527659353
+          },
+          {
+            "check": "original-transit-races",
+            "exit": 0,
+            "seconds": 16.720373286999973
+          },
+          {
+            "check": "affected-vet",
+            "exit": 0,
+            "seconds": 195.02444877800002
+          },
+          {
+            "check": "composed-command-build",
+            "exit": 0,
+            "seconds": 15.026712503999988
+          },
+          {
+            "check": "source-unchanged",
+            "exit": 0,
+            "seconds": 0.004131372000074407
+          }
+        ],
+        "failed_checks": [],
+        "scope": "Root-accepted API baseline plus VNC caller: original close retention, real .05CPU/8MiB, bounded Manager close/restart and normal worker lifecycle. No desktop, native clock/suspend, High Performance or complete screen-feature acceptance.",
+        "source": "9d77cdb932f9df366a815b1a21d6259225944ebd"
+      },
+      "binary.json": {
+        "sha256": "01b988a1d7b4d275eaca4025a95cd6f7e1c9f1b96104bd0cf9cd430ecd7a0530",
+        "size": 68581565
+      },
+      "commands": [
+        {
+          "check": "go-version",
+          "exit": 0,
+          "seconds": 0.0032644040000064933
+        },
+        {
+          "check": "go-platform",
+          "exit": 0,
+          "seconds": 0.0026471740000033606
+        },
+        {
+          "check": "screen-races",
+          "exit": 0,
+          "seconds": 247.527659353
+        },
+        {
+          "check": "original-transit-races",
+          "exit": 0,
+          "seconds": 16.720373286999973
+        },
+        {
+          "check": "affected-vet",
+          "exit": 0,
+          "seconds": 195.02444877800002
+        },
+        {
+          "check": "composed-command-build",
+          "exit": 0,
+          "seconds": 15.026712503999988
+        },
+        {
+          "check": "source-unchanged",
+          "exit": 0,
+          "seconds": 0.004131372000074407
+        }
+      ],
+      "commit": "9d77cdb932f9df366a815b1a21d6259225944ebd",
+      "gates": {
+        "original-transit-races.log": {
+          "completed_test_and_subtest_count": 23,
+          "fail": 0,
+          "log_sha256": "b4dab6cb26acdc4830384256972b19aa8893038dadd59c020e11e273fd87a9a5",
+          "pass": 23,
+          "root_count": 18,
+          "skip": 0,
+          "skipped_cases": []
+        },
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 56,
+          "fail": 0,
+          "log_sha256": "686220215931d0a3edb122fcd6d68d43f3d5ed5259e6ef778dffed95c646e2f4",
+          "pass": 55,
+          "root_count": 26,
+          "skip": 1,
+          "skipped_cases": [
+            "TestScreenResourceDestinationCannotBypassOwnerPolicy"
+          ]
+        }
+      },
+      "go_version": "go version go1.27.3 linux/amd64",
+      "platform": [
+        "linux",
+        "amd64",
+        "1"
+      ],
+      "source_files_verified_against_git_archive": 1888,
+      "source_manifest_sha256": "e06740ff13f478bf3f778bd14083bd3cc24878fbe93d1116a807913bf7d0b626",
+      "source_tree": "70a92f565fa5327d1cf46d68f5559f887175214a"
+    },
+    "macos": {
+      "ACCEPTED.json": {
+        "commands": [
+          {
+            "check": "go-version",
+            "exit": 0,
+            "seconds": 0.009778834000030656
+          },
+          {
+            "check": "go-platform",
+            "exit": 0,
+            "seconds": 0.0090200000000209
+          },
+          {
+            "check": "screen-races",
+            "exit": 0,
+            "seconds": 280.846074916
+          },
+          {
+            "check": "original-transit-races",
+            "exit": 0,
+            "seconds": 29.875090333000003
+          },
+          {
+            "check": "affected-vet",
+            "exit": 0,
+            "seconds": 199.56247729100005
+          },
+          {
+            "check": "composed-command-build",
+            "exit": 0,
+            "seconds": 21.53120645799993
+          },
+          {
+            "check": "source-unchanged",
+            "exit": 0,
+            "seconds": 0.03156916700004331
+          }
+        ],
+        "failed_checks": [],
+        "scope": "Root-accepted API baseline plus VNC caller: original close retention, real .05CPU/8MiB, bounded Manager close/restart and normal worker lifecycle. No desktop, native clock/suspend, High Performance or complete screen-feature acceptance.",
+        "source": "9d77cdb932f9df366a815b1a21d6259225944ebd"
+      },
+      "binary.json": {
+        "sha256": "0f86332396311bc5d9198666364d11523886f30f427459e142b35d8c93bf6bad",
+        "size": 65928626
+      },
+      "commands": [
+        {
+          "check": "go-version",
+          "exit": 0,
+          "seconds": 0.009778834000030656
+        },
+        {
+          "check": "go-platform",
+          "exit": 0,
+          "seconds": 0.0090200000000209
+        },
+        {
+          "check": "screen-races",
+          "exit": 0,
+          "seconds": 280.846074916
+        },
+        {
+          "check": "original-transit-races",
+          "exit": 0,
+          "seconds": 29.875090333000003
+        },
+        {
+          "check": "affected-vet",
+          "exit": 0,
+          "seconds": 199.56247729100005
+        },
+        {
+          "check": "composed-command-build",
+          "exit": 0,
+          "seconds": 21.53120645799993
+        },
+        {
+          "check": "source-unchanged",
+          "exit": 0,
+          "seconds": 0.03156916700004331
+        }
+      ],
+      "commit": "9d77cdb932f9df366a815b1a21d6259225944ebd",
+      "gates": {
+        "original-transit-races.log": {
+          "completed_test_and_subtest_count": 23,
+          "fail": 0,
+          "log_sha256": "9d7184bcbd55e253b2f1b787fca4fa9bcbfd15218399c60e82d23f2f0fa20180",
+          "pass": 23,
+          "root_count": 18,
+          "skip": 0,
+          "skipped_cases": []
+        },
+        "screen-races.log": {
+          "completed_test_and_subtest_count": 56,
+          "fail": 0,
+          "log_sha256": "ba8f82761b723c2261821e315a631fd4f05b7a7f017580253e56514c48a74ed7",
+          "pass": 56,
+          "root_count": 26,
+          "skip": 0,
+          "skipped_cases": []
+        }
+      },
+      "go_version": "go version go1.27.3 darwin/arm64",
+      "platform": [
+        "darwin",
+        "arm64",
+        "1"
+      ],
+      "source_files_verified_against_git_archive": 1888,
+      "source_manifest_sha256": "e06740ff13f478bf3f778bd14083bd3cc24878fbe93d1116a807913bf7d0b626",
+      "source_tree": "70a92f565fa5327d1cf46d68f5559f887175214a"
+    }
+  },
+  "original_native_close_counterexample": {
+    "disposition": "Defect reproduced by an expected-failure diagnostic harness; not acceptance.",
+    "failed_root": "TestScreenResourceUnknownNativeCloseRetainsCharge",
+    "log_sha256": "c3be725c1d61eb370195bec0a4989a291eb2ca0166073463233fa8ef577c87c5",
+    "native_evidence": "The real source browser handler carried echoed application bytes through pinned TLS with an active .05CPU/8MiB allocation; returned Close error left its exact original accepted TCP descriptor open after workers joined, while original code settled its lease.",
+    "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40435632758",
+    "source": "0c6de5f2d40ebc37ab98fb092e495e414bba4faf",
+    "source_manifest_sha256": "7516650a3495925ca3c8a6b707032ae84ef0f94ef1000a224eb6b1ba333ef576",
+    "verified_source_files": 1859
+  },
+  "public_successor": "https://github.com/inferal-oss/arm/actions/runs/40447122428",
+  "resource_scope": "Cooperative .05 CPU / 8388608-byte memory allocation per ARM endpoint transport, backed by normal native admission and exact original join. These quantities are reservation policy, not measured usage or kernel enforcement. The separate relay protocol component tests use their existing controlled observer fixtures; actual screen transport tests use normal native observations.",
+  "review_findings_and_corrections": [
+    {
+      "correction": "Original native sockets are recorded before TLS/upgrade ownership, serialized through close-once recording, and any unconfirmed first close is marked through the accepted exact-owner cleanup API before publishing joined.",
+      "evidence": "An expected-failure real TCP/pinned TLS application-byte fixture reproduced the original premature settlement.",
+      "finding": "A returned native socket Close error could be discarded by protocol adapters, allowing settlement after worker join while the original TCP descriptor remained open."
+    },
+    {
+      "correction": "Abort the original NetConn exactly once; join TLS reads/writes without a second TLS Close.",
+      "finding": "TLS viewer abort could repeat underlying native Close after the original close returned."
+    },
+    {
+      "correction": "A fresh healthy sentinel and Manager mutex barrier witness the complete original owner snapshot; the original join stays open and exact single retained charge is asserted after joining the sentinel. Production Manager source is unchanged.",
+      "finding": "The cleanup API regression did not causally synchronize Close snapshot completion before publishing original join."
+    },
+    {
+      "correction": "Start normal Manager lifecycle once for each screen-owned fresh positive fixture; retain existing Close joins, bounded read-only readiness and the exact original native operation. No global mesh-fixture change, observation override, probe admission or operation retry.",
+      "finding": "Positive screen test fixtures Opened Managers without starting the normal sampling lifecycle; polling Status reused initial cuts and could not recover CPU headroom or refresh memory."
+    }
+  ],
+  "reviewed_source": {
+    "accepted_base": "7430c867face6371b38c853807bfc36519de80b8",
+    "author_binding": {
+      "internal/server/screen.go": {
+        "initial_canonical_composition_sha256": "7d981b1d6801a9156b0230dadd60e74357c459357cf8c921a0f153bcd1c75d8d",
+        "original_sha256": "0a605b807bbbbafc06e011655955b823692096c444d90025f1940a2a4a867256"
+      },
+      "internal/server/screen_resources.go": {
+        "initial_canonical_composition_sha256": "d62f8c77a25cacf238f25ab295d5cb667314f085b833cf83bb35985174cccb12",
+        "original_sha256": "de8ff073af287968de3713fae7f8f18096d603c4307af42b9e50cdcef867e1a8"
+      },
+      "internal/server/screen_resources_test.go": {
+        "initial_canonical_composition_sha256": "38faa3a39f5ece3ecaae586e0562dc1c32ea3e0e7de965f6fc98c347b7c37c0a",
+        "original_sha256": "cef8a8b3ea7b6bce1fa384b05318286dee1d51e85dd22ca547ed417255333f5c"
+      }
+    },
+    "author_commit": "7c1d8e1f859eaaba1c4c69658718ee31fd19d0d1",
+    "candidate_commit": "9d77cdb932f9df366a815b1a21d6259225944ebd",
+    "comparison_main_commit": "c3c05488931d6d15323754b0c2bf96e1a47cd98f",
+    "files": {
+      ".github/workflows/screen-resource-review.yml": "dbdcb8d9848c1aeaa0123859ba528e668c4f521f2a6a847e11035a124077ef64",
+      "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+      "go.sum": "25158413557a7e4a3054f760a199fe256c77b989583aee7f0f3c60624ae6f8ce",
+      "internal/manager/relay_cleanup_test.go": "badf770b47d664d3fff3160d1e8c487f48d267bd34ef1419c52be7bf6fdf54a8",
+      "internal/manager/relay_transit.go": "db87f05554b821def5d44e0e5e9f55f2fea40a1e5b12b9dece4221c5aa0c4c04",
+      "internal/server/screen.go": "3a9308de628b736839cefd4aa1c7e4c69c3cc3e718cce12bef3268bdcdac19b1",
+      "internal/server/screen_close_unknown_review_test.go": "3f51731f03b5220419583d54e0ba5617d0e4d83ff86b2427540da9e29e76eb05",
+      "internal/server/screen_regression_test.go": "5c1ea277c9c0f883e5deb55122c6ba560aef2f7ea14175430c11e4643db4f29b",
+      "internal/server/screen_resources.go": "75039f43b928a336631408cca0e0f9f6cb37a9e872b370f56b680976cbb4626a",
+      "internal/server/screen_resources_test.go": "7828edd1d08d774514b2f0e3fd3f946ef87e5cb2a2723c653e581f8d405e5d77",
+      "scripts/validate-screen-resource-review.py": "7ff71be29ba3c0f784f481d3e3b91773e8f30a62cb4883c6a144bc21f928a618"
+    },
+    "latest_main_affected_runtime_diff": [
+      "internal/server/web/lease-actions.mjs",
+      "internal/server/web/lease-actions.test.mjs"
+    ],
+    "production_manager_equal_accepted_base": true
+  },
+  "schema": "arm.validation.screen-resource-review/v1",
+  "scope_boundary": "The CI commit is the accepted Manager API baseline plus only the owned VNC changes, their focused regressions, the separately approved API regression synchronization fix, and the read-only review harness. It does not validate unrelated later web changes or later uncomposed runtime work.",
+  "security_scope": [
+    "Browser authority and selected node/grant remain the only screen permission.",
+    "Peer pins, SAN/ALPN validation, explicit pinned HTTP/1.1 socket, redirect refusal, fixed destination, Origin and query checks, slot/message/rate limits are preserved.",
+    "The reservation precedes native dial and successful upgrade; the destination grant is rechecked after admission.",
+    "The private cleanup marker has no RPC surface, original-owner adoption, stream replay or extra native-process authority."
+  ],
+  "separate_api_test_only_fix": "a8e5d7808633c076c0484a0733895cdb3e3891a2",
+  "shared_final_named_rosters": {
+    "original-transit-races.log": {
+      "completed_test_and_subtest_roster": [
+        "TestRelayCleanupCloseCancelsBeforeUnreadableLedger",
+        "TestRelayCleanupUncertainAfterCancellationStillRequiresOriginalJoin",
+        "TestRelayCleanupUncertainChangedBindingIsStickyWithoutOverwritingRow",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/forged",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/joined",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/settled",
+        "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart",
+        "TestRelayCleanupUncertainWriteFailureCannotBecomeTerminal",
+        "TestRelayTransitAdmissionFailureStartsNoOwner",
+        "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+        "TestRelayTransitChangedDurableBindingCannotSettle",
+        "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+        "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+        "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+        "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+        "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+        "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/expiry",
+        "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/force",
+        "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+        "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+        "TestRelayTransitReleaseRequiresOriginalJoin",
+        "TestRelayTransitSettledMarkerAllowsResetProof"
+      ],
+      "roots": [
+        "TestRelayCleanupCloseCancelsBeforeUnreadableLedger",
+        "TestRelayCleanupUncertainAfterCancellationStillRequiresOriginalJoin",
+        "TestRelayCleanupUncertainChangedBindingIsStickyWithoutOverwritingRow",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles",
+        "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart",
+        "TestRelayCleanupUncertainWriteFailureCannotBecomeTerminal",
+        "TestRelayTransitAdmissionFailureStartsNoOwner",
+        "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+        "TestRelayTransitChangedDurableBindingCannotSettle",
+        "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+        "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+        "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+        "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+        "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+        "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+        "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+        "TestRelayTransitReleaseRequiresOriginalJoin",
+        "TestRelayTransitSettledMarkerAllowsResetProof"
+      ]
+    },
+    "screen-races.log": {
+      "completed_test_and_subtest_roster": [
+        "TestBrowserScreenEnforcesInputMessageLimit",
+        "TestScreenAssetsPreserveComposedDashboardModules",
+        "TestScreenAssetsPreserveComposedDashboardModules//ard/LICENSE.txt",
+        "TestScreenAssetsPreserveComposedDashboardModules//ard/ard-patch.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//kube-inventory.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//monitor-capacity.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/core/rfb.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/LICENSE",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/deflate.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/inflate.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//peer-poll.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//screen-clipboard.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//screen-mode.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//screen-viewer.mjs",
+        "TestScreenCopyCancellationJoinsBlockedIO",
+        "TestScreenCopyCancellationJoinsBlockedIO/read",
+        "TestScreenCopyCancellationJoinsBlockedIO/write",
+        "TestScreenDestinationStopRejectsBeforeNativeAdmission",
+        "TestScreenDialPinnedUpgradeAndReceiveLimit",
+        "TestScreenDialPinnedUpgradeAndReceiveLimit/oversized",
+        "TestScreenDialPinnedUpgradeAndReceiveLimit/valid",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest/Found",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest/Moved_Permanently",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest/Permanent_Redirect",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest/See_Other",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest/Temporary_Redirect",
+        "TestScreenDialRejectsPlaintextRedirect",
+        "TestScreenEmbeddedAssetsSurviveModuleZipLayout",
+        "TestScreenNativeDialIntervalIsRegisteredUntilCanceledAndJoined",
+        "TestScreenNetConnPreservesMessageLimit",
+        "TestScreenNetConnSplitsWritesAndAcceptsExactLimit",
+        "TestScreenOriginalCloseKeepsFirstFailureAcrossConcurrentCalls",
+        "TestScreenOriginalCloseMissingReturnCannotBecomeSuccess",
+        "TestScreenRegistrySealAndRevocationCoverPreUpgradeSessions",
+        "TestScreenResourceAdmissionCannotBypassOwnerPolicy",
+        "TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin",
+        "TestScreenResourceDestinationCannotBypassOwnerPolicy",
+        "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles",
+        "TestScreenResourceJoinedOnReleaseRevocationAndStop",
+        "TestScreenResourceJoinedOnReleaseRevocationAndStop/release",
+        "TestScreenResourceJoinedOnReleaseRevocationAndStop/revoke",
+        "TestScreenResourceJoinedOnReleaseRevocationAndStop/stop",
+        "TestScreenResourceReleaseRetainsChargeUntilOriginalJoin",
+        "TestScreenResourceReservationCoversPendingUpgrade",
+        "TestScreenResourceUnknownNativeCloseRetainsCharge",
+        "TestScreenStopPreventsNewRemoteDial",
+        "TestScreenTLSAbortClosesOriginalNativeSocketOnlyOnce",
+        "TestScreenTLSCancellationClosesNativeHandshakeBeforeReturning",
+        "TestScreenUpgradeRequiresExactBrowserAuthority",
+        "TestScreenUpgradeRequiresExactBrowserAuthority/missing_protocol",
+        "TestScreenUpgradeRequiresExactBrowserAuthority/native_bearer",
+        "TestScreenUpgradeRequiresExactBrowserAuthority/query",
+        "TestScreenUpgradeRequiresExactBrowserAuthority/wrong_host",
+        "TestScreenUpgradeRequiresExactBrowserAuthority/wrong_method",
+        "TestScreenUpgradeRequiresExactBrowserAuthority/wrong_origin"
+      ],
+      "roots": [
+        "TestBrowserScreenEnforcesInputMessageLimit",
+        "TestScreenAssetsPreserveComposedDashboardModules",
+        "TestScreenCopyCancellationJoinsBlockedIO",
+        "TestScreenDestinationStopRejectsBeforeNativeAdmission",
+        "TestScreenDialPinnedUpgradeAndReceiveLimit",
+        "TestScreenDialRejectsEveryRedirectWithoutSecondRequest",
+        "TestScreenDialRejectsPlaintextRedirect",
+        "TestScreenEmbeddedAssetsSurviveModuleZipLayout",
+        "TestScreenNativeDialIntervalIsRegisteredUntilCanceledAndJoined",
+        "TestScreenNetConnPreservesMessageLimit",
+        "TestScreenNetConnSplitsWritesAndAcceptsExactLimit",
+        "TestScreenOriginalCloseKeepsFirstFailureAcrossConcurrentCalls",
+        "TestScreenOriginalCloseMissingReturnCannotBecomeSuccess",
+        "TestScreenRegistrySealAndRevocationCoverPreUpgradeSessions",
+        "TestScreenResourceAdmissionCannotBypassOwnerPolicy",
+        "TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin",
+        "TestScreenResourceDestinationCannotBypassOwnerPolicy",
+        "TestScreenResourceFailedBrowserUpgradeJoinsAndSettles",
+        "TestScreenResourceJoinedOnReleaseRevocationAndStop",
+        "TestScreenResourceReleaseRetainsChargeUntilOriginalJoin",
+        "TestScreenResourceReservationCoversPendingUpgrade",
+        "TestScreenResourceUnknownNativeCloseRetainsCharge",
+        "TestScreenStopPreventsNewRemoteDial",
+        "TestScreenTLSAbortClosesOriginalNativeSocketOnlyOnce",
+        "TestScreenTLSCancellationClosesNativeHandshakeBeforeReturning",
+        "TestScreenUpgradeRequiresExactBrowserAuthority"
+      ]
+    }
+  }
+}

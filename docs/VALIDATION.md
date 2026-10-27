@@ -4662,3 +4662,53 @@ disconnect and legacy marker-absent checks remain intact. This is controlled
 client-policy evidence; actual native server-clock and terminal parity gates
 remain in their owning portfolio. The Semblance adapter still needs its own
 composed rendering acceptance.
+
+### Receiver staging and original workspace checkpoints
+
+The [normalized review evidence](validation/sync-cap-checkpoint-review-2026-10-26.json)
+records the focused sequence integrated as `1245111`, `1df2f18`, `353f860` and
+`2efd1bb`. Root verified all 17 retained ZIP hashes and original command-log
+hashes, four exact source reuse boundaries, and all 31 integrated owned inputs.
+The final delivery tree equals frozen `4445749` (1,894 source files).
+
+[Final worker run](https://github.com/inferal-oss/arm/actions/runs/40447252214)
+passes 18 roots/39 named cases and vet on native Linux amd64 and macOS arm64.
+Its original-session replacement counterexample fails as required after original
+cleanup joins, while the valid successor remains usable. The separately bound
+[actual Manager pair run](https://github.com/inferal-oss/arm/actions/runs/40447119193)
+passes four roots/14 named cases on both platforms. Unchanged lower engine/fork
+and source-holder inputs retain 19/41 and 13/22 native race evidence respectively.
+Final accepted rosters contain no skips or failures. Real preparation and worker
+requests use normal Manager sampling and one admission per endpoint.
+
+Earlier deadlocks, replacement adoption, invalid policies, fixture defects and
+genuine unavailable-capacity failures remain recorded. No observation override
+or local duplicate heavy job supplied acceptance. Logical reconstruction caps
+and reported-block checkpoints establish neither physical quota nor public sync
+dispatch, cleanup, reclamation or formal completion. Unrelated later source is
+outside these source-bound native results.
+
+### Standard screen transport retention
+
+[Run 40447122428](https://github.com/inferal-oss/arm/actions/runs/40447122428)
+passes exact reviewed `9d77cdb` on native Linux amd64 and macOS arm64 with CGo.
+Screen checks execute 26 roots/56 named cases: macOS passes all; Linux passes 55
+and explicitly skips the Darwin-only destination policy case. Relay checks pass
+18 roots/23 named cases on both; vet, command build and source checks pass.
+Root independently matched all 1,888 source blobs and gate log hashes on both
+runners and all seven integrated screen/relay inputs to the tested projection.
+
+The real .05 CPU/8MiB socket-close-error case carries bytes, joins original
+workers, completes bounded Manager.Close and actually reopens the database while
+retaining the full charge, needs_attention and no end timestamp. The separate
+`4441703` change makes the existing Close regression observe the completed owner
+snapshot causally; it changes no runtime API. Final positive screen fixtures
+start normal native sampling and await fresh read-only capacity; no predicate
+override or operation retry is used.
+
+[Normalized evidence](validation/screen-resource-review-2026-10-26.json) preserves
+earlier counterexamples, capacity refusals and diagnostic-only attempts. The
+CI-only harness is excluded from integration. These checks do not establish live
+desktop behavior, full controls/platform breadth, suspend safety or bounded
+arbitrarily blocking native/ledger I/O. Subsequent sync source-carrier additions
+are separate; they do not change the reviewed screen or relay runtime.

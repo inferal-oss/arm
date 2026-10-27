@@ -1694,7 +1694,8 @@ Manager close cancels each exact registered relay owner even if its ledger canno
 be read, then waits for original workers without holding the manager mutex.
 Generic cleanup uses generic recovery events; sync preparation keeps its own
 event. This API alone does not prove a caller records every native close. The
-VNC/WebSocket caller composition and elapsed-clock contract remain separate gates.
+VNC/WebSocket caller composition is recorded below; the elapsed-clock contract
+remains a separate gate.
 
 
 ## Independent public source and validation harness
@@ -1723,3 +1724,37 @@ from serialized clock fields. Marker-absent leases retain the earlier policy.
 Backend refusal, changed revision and unknown outcomes still require inspection
 and never cause automatic replay. This compatibility step does not enable the
 pending native lease-clock authority or establish complete web/terminal parity.
+
+## Receiver staging bounds and original sync ownership
+
+The fixed private worker requires a nonnegative receiver limit derived from the
+reviewed plan. The rsync fork captures local policy before handshake and counts
+all reconstructed regular-file bytes, including bytes copied from a basis.
+Missing or invalid limits refuse before transfer. Error and cancellation abort
+the captured original SSH carrier before joining protocol workers; successful
+batches keep that carrier available for the next control frame. The source hold
+lends its closer only to the exact registered original context/channel tuple.
+
+Workspace checkpoints bind the original hold, session, database, intent, roots,
+reservation and complete durable workspace set. Fresh bounded SQL and native
+checks reject omitted, duplicate, changed or valid successor workspaces. Every
+teardown callback retains the original session even when replacement is detected.
+Reported blocks are checked around staging and publication cuts. These are
+bounded observations, not physical quota enforcement or atomic allocation
+snapshots. Public dispatch, reclamation and settlement remain unsupported at
+this boundary; the native enforcement contract specifies the next required step.
+
+## Standard screen transport resource retention
+
+Each endpoint reserves cooperative .05 CPU and 8MiB before native dial or browser
+upgrade. The original handler owns the target and hijacked viewer sockets, records
+each first native close result and joins workers/cancellation watchers before
+finishing its hold. TLS abort closes the original socket once. Failed or unknown
+close marks cleanup uncertain before publishing the join witness; the same charge
+remains through Manager close and database reopen. Admission never replaces the
+original browser context, pinned endpoint or destination grant checks.
+
+The reservation covers ARM endpoint transport accounting, not browser decoding,
+the native screen server or OS enforcement. Live desktop/control/platform breadth
+and suspend-inclusive authority remain separate gates. Normal Manager.Close joins
+its current owners; it does not certify reclamation of every retained obligation.
