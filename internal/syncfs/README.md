@@ -1,5 +1,17 @@
 # Native sync filesystem adapter
 
+`SurveyWorkspace` provides a bounded read-only `st_blocks` observation for one
+exact marked private workspace. It reopens the original reservation and roots,
+refuses child mounts and special files, never follows symlinks, and checks
+entry identities and block counts around traversal. It does not reserve space,
+cap writes, prove that cloned/shared blocks are exclusive, authorize cleanup,
+or release a disk lease. Concurrent same-account changes are not an atomic
+snapshot. Linux requires a reported `STATX_MNT_ID`. Darwin compares the
+descriptor-reported filesystem ID and nonempty mountpoint name, so equal
+filesystem IDs alone do not establish equal mounts. These are the strongest
+reported identities used here, not a cross-platform mount-ID equivalence;
+actual native mount-counterexample evidence is recorded per platform.
+
 `syncfs` scans rooted filesystems and publishes actions from a reviewed
 `syncreconcile.Plan`. It is transport independent. The SSH worker must provide
 the authenticated account, root authorization, staged bytes, durable operation
