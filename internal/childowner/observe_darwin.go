@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"sync"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -92,3 +93,5 @@ func terminalOnlyPIDList(pid int, ids [2]int32, n int32) (bool, error) {
 	}
 	return n == 4 && ids[0] == int32(pid), nil
 }
+
+const nativeTerminalGroupGrace = 250 * time.Millisecond

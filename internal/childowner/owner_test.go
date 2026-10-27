@@ -106,7 +106,7 @@ func startOwnedFixture(t *testing.T, args ...string) (*exec.Cmd, *Owner) {
 func TestNativeOriginalExitAndDescendantTeardown(t *testing.T) {
 	root := t.TempDir()
 	marker := filepath.Join(root, "descendant-ran")
-	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", `(sleep 0.3; printf unsafe > "$1") & exit 7`, "sh", marker)
+	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", `(sleep 1; printf unsafe > "$1") & exit 7`, "sh", marker)
 	var err error
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
@@ -117,7 +117,7 @@ func TestNativeOriginalExitAndDescendantTeardown(t *testing.T) {
 	if err = o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) {
 		t.Fatal(err)
 	}
-	time.Sleep(350 * time.Millisecond)
+	time.Sleep(1100 * time.Millisecond)
 	if _, err = os.Stat(marker); !os.IsNotExist(err) {
 		t.Fatal("original descendant outlived pre-Wait teardown", err)
 	}
@@ -255,5 +255,32 @@ func TestUnknownTerminalGroupWitnessRetainsFailureAndKills(t *testing.T) {
 	result := o.Wait(context.Background())
 	if calls != 1 || !errors.Is(result.CleanupError, syscall.EACCES) || result.Reaped {
 		t.Fatal(result, calls)
+	}
+}
+
+func TestTerminalGroupGraceWaitsForExactWitness(t *testing.T) {
+	observations, signals, waits := 0, 0, 0
+	o := &Owner{pid: 123, terminalGroupGrace: 50 * time.Millisecond, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { observations++; return observations == 2, nil }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+	result := o.Wait(context.Background())
+	if observations != 2 || signals != 0 || waits != 1 || errors.Is(result.CleanupError, syscall.EPERM) {
+		t.Fatal(result, observations, signals, waits)
+	}
+}
+func TestTerminalGroupGraceBoundStillIssuesRealKill(t *testing.T) {
+	observations, signals, waits := 0, 0, 0
+	o := &Owner{pid: 123, terminalGroupGrace: 20 * time.Millisecond, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { observations++; return false, nil }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+	started := time.Now()
+	result := o.Wait(context.Background())
+	elapsed := time.Since(started)
+	if observations < 2 || signals != 1 || waits != 1 || !errors.Is(result.CleanupError, syscall.EPERM) || elapsed < 20*time.Millisecond || elapsed > time.Second {
+		t.Fatal(result, observations, signals, waits, elapsed)
+	}
+}
+func TestTerminalGroupGraceErrorStopsPollingAndRemainsSticky(t *testing.T) {
+	observations, signals := 0, 0
+	o := &Owner{pid: 123, terminalGroupGrace: time.Second, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { observations++; return false, syscall.EACCES }, signal: func(int, syscall.Signal) error { signals++; return nil }, wait: func() error { return errors.New("controlled unknown join") }}
+	result := o.Wait(context.Background())
+	if observations != 1 || signals != 1 || !errors.Is(result.CleanupError, syscall.EACCES) {
+		t.Fatal(result, observations, signals)
 	}
 }

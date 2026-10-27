@@ -26,7 +26,7 @@ func (m *Manager) readLeaseClock() (leaseclock.Sample, error) {
 		err = fmt.Errorf("elapsed clock changed scope or regressed")
 	}
 	if err != nil {
-		m.leaseClockError = model.Err("lease_clock_unavailable", "Active lease clock is uncertain; new grants and renewals are refused. Existing obligations remain charged: "+err.Error())
+		m.leaseClockError = &model.Error{Code: "lease_clock_unavailable", Message: "Active lease clock is uncertain; new grants and renewals are refused. Existing obligations remain charged: " + err.Error()}
 		return leaseclock.Sample{}, m.leaseClockError
 	}
 	m.leaseClockLast = s
@@ -41,7 +41,7 @@ func (m *Manager) initLeaseClock() error {
 	}
 	var previous leaseclock.Sample
 	if err == nil && (json.Unmarshal([]byte(raw), &previous) != nil || !previous.Valid()) {
-		m.leaseClockError = model.Err("lease_clock_unavailable", "Persisted lease clock checkpoint is invalid; obligations remain charged")
+		m.leaseClockError = &model.Error{Code: "lease_clock_unavailable", Message: "Persisted lease clock checkpoint is invalid; obligations remain charged"}
 		return nil
 	}
 	read := m.leaseClockRead
@@ -50,11 +50,11 @@ func (m *Manager) initLeaseClock() error {
 	}
 	current, e := read()
 	if e != nil || !current.Valid() {
-		m.leaseClockError = model.Err("lease_clock_unavailable", "Native suspend-inclusive lease clock is unavailable")
+		m.leaseClockError = &model.Error{Code: "lease_clock_unavailable", Message: "Native suspend-inclusive lease clock is unavailable"}
 		return nil
 	}
 	if previous.Valid() && previous.Boot == current.Boot && previous.Tick > current.Tick {
-		m.leaseClockError = model.Err("lease_clock_unavailable", "Native lease clock regressed behind its durable checkpoint")
+		m.leaseClockError = &model.Error{Code: "lease_clock_unavailable", Message: "Native lease clock regressed behind its durable checkpoint"}
 		return nil
 	}
 	m.leaseClockLast = current

@@ -72,6 +72,7 @@ try:
  env['ARM_TEST_TOOLCHAIN_BIN']=str(pathlib.Path(cargo).parent)
  closure_paths.append(str(pathlib.Path(cargo).parents[1]))
  selected=closure(closure_paths);(run/'tool-dependency-closure-before.json').write_text(json.dumps(selected,sort_keys=True,indent=2)+'\n')
+ command.command([go,'test','-p=1','-race','-run','^$','./internal/manager','./internal/database','./internal/meshsshrelay'],'affected-compile',env=env,timeout=360)
  pattern='^('+ '|'.join(sorted(set.union(*expected.values()))) +')$'
  raw=command.command([go,'test','-p=1','-json','-race','-count=1','-timeout=600s','-run',pattern,*['./internal/'+k.rsplit('/',1)[1] for k in expected]],'native-race',env=env,timeout=900)
  ran={k:[] for k in expected};passed={k:[] for k in expected};packages=[];observed_run={};observed_pass={}

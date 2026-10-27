@@ -387,6 +387,7 @@ func TestSSHManagerSettledProofAndCorruptRelationships(t *testing.T) {
 					_ = m.Close()
 				}
 			})
+			cpuReading(m, 64, 64, 0, 64, 0)
 			f := newSSHManagerFixture(t, m, time.Minute)
 			s, err := f.client.NewSession()
 			if err != nil {
@@ -491,8 +492,19 @@ func TestSSHManagerSignalBackpressureAndPeerBudget(t *testing.T) {
 		}
 		time.Sleep(100 * time.Millisecond)
 		_, _, l := f.snapshot()
+		f.m.mu.Lock()
+		hold := f.m.sshTransports[l.ID]
+		f.m.mu.Unlock()
 		f.cancel()
-		eventually(t, func() bool { got, err := f.m.Inspect(l.ID); return err == nil && got.State == "terminal" })
+		awaitTransportSignal(t, f.serverDone, "canceled backpressured SSH transport did not join")
+		if hold == nil {
+			t.Fatal("backpressured invocation lost its original hold")
+		}
+		awaitTransportSignal(t, hold.done, "backpressured native/transport settlement did not complete")
+		got, err := f.m.Inspect(l.ID)
+		if err != nil || got.State != "terminal" {
+			t.Fatalf("backpressured settlement: %+v error=%v", got, err)
+		}
 	})
 	t.Run("aggregate-and-owner-budget", func(t *testing.T) {
 		m := newManager(t)
