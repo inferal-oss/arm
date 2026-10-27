@@ -296,7 +296,7 @@ func (m *dashboardModel) mouseHandler() func(tea.MouseMsg) tea.Cmd {
 		return nil
 	}
 }
-func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg) tea.Cmd {
+func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cmd {
 	if msg.wheel != 0 {
 		if msg.frame != m.mouseScrollFrame() {
 			return nil
@@ -311,7 +311,7 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg) tea.Cmd {
 		}
 		return nil
 	}
-	if msg.frame != m.mouseFrame() {
+	if msg.frame != frame {
 		return nil
 	}
 	r := msg.region

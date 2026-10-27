@@ -178,6 +178,18 @@ func (m *dashboardModel) addEvent(event model.Event) {
 	m.dirty = true
 }
 func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// The renderer dispatches frame-bound mouse commands separately. Ignored
+	// raw events must not age the model before their wrapped command arrives.
+	if _, rawMouse := msg.(tea.MouseMsg); rawMouse {
+		return m, nil
+	}
+	// Validate clicks against the current rendered cut before advancing time.
+	// Clock-only expiry during this update must not discard the clicked target;
+	// intervening content, geometry or modal changes still invalidate its frame.
+	mouseFrame := ""
+	if mouse, ok := msg.(dashboardMouseMsg); ok && mouse.wheel == 0 {
+		mouseFrame = m.mouseFrame()
+	}
 	// One clock cut for this update and its render. Async receipts can arrive
 	// between timer ticks; using the previous tick would make a fresh receipt
 	// appear to be from the future. A queued tick's creation time must not roll
@@ -349,9 +361,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case lookupResultMsg:
 		return m, m.acceptLookup(msg)
 	case dashboardMouseMsg:
-		return m, m.acceptMouse(msg)
-	case tea.MouseMsg:
-		return m, nil
+		return m, m.acceptMouse(msg, mouseFrame)
 	case tea.KeyPressMsg:
 		return m, m.key(msg)
 	}
