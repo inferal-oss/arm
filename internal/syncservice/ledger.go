@@ -31,7 +31,7 @@ func InstallSchemaTx(ctx context.Context, tx *sql.Tx) error {
 	if err := durableTx(ctx, tx); err != nil {
 		return err
 	}
-	for _, q := range []string{OperationsSchema, OpenGenerationSchema, EffectsSchema, BaselinesSchema} {
+	for _, q := range []string{OperationsSchema, OpenGenerationSchema, EffectsSchema, BaselinesSchema, WorkspacesSchema} {
 		if _, err := tx.ExecContext(ctx, q); err != nil {
 			return err
 		}

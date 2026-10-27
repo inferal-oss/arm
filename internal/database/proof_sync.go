@@ -16,9 +16,17 @@ func (p *proofReader) readSync() error {
 		}
 		return nil
 	}
+	_, locators := p.catalog["sync_workspaces"]
+	if p.syncWorkspaceSchema != locators {
+		return fmt.Errorf("sync workspace schema and version marker do not match")
+	}
 	var operations int64
 	anyRows := false
-	for _, table := range []string{"sync_operations", "sync_effects", "sync_baselines", "sync_lease_bindings"} {
+	tables := []string{"sync_operations", "sync_effects", "sync_baselines", "sync_lease_bindings"}
+	if locators {
+		tables = append(tables, "sync_workspaces")
+	}
+	for _, table := range tables {
 		var count int64
 		if err := p.tx.QueryRowContext(p.ctx, `SELECT COUNT(*) FROM "`+table+`"`).Scan(&count); err != nil {
 			return err

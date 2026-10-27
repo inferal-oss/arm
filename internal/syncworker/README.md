@@ -36,7 +36,14 @@ connection capability. No unrelated/shared connection closer can be supplied.
 The same conservative byte/structure allowance must fit final worker memory
 before preparation handoff; this is cooperative policy, not measured RSS or a
 kernel limit. Complete lease and volume-binding replacements refuse authority,
-and failures keep original charges for exact-key reconciliation. Public server
+and failures keep original charges for exact-key reconciliation.
+
+The worker now records each marked receiver and source-manifest workspace in
+the endpoint's durable sync ledger before writing stage contents. A failed or
+uncertain workspace record stops that worker and retains native evidence and
+the resource promise. The bounded locator rows are read-only recovery inputs;
+they do not establish transport join, cleanup authority, exclusive block
+reclamation, or lease settlement. Public server
 dispatch, full physical allocation enforcement, cleanup settlement, multi-hop
 route integration and public sync controls remain required. Tests include independent durable
 ledgers, push/pull/both, additive/full, second-generation keep-both resolution,
