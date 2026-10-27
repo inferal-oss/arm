@@ -47,7 +47,7 @@ func TestStagingCapReviewBudgetSurvivesProtocolPhaseBoundary(t *testing.T) {
 	wireInt(&wire, -1)
 	packet(1, "next")
 	limit := int64(4)
-	rt := &Transfer{Dest: path, DestRoot: root, Opts: &TransferOpts{ReceiverWriteLimit: &limit, DebugGTE: func(rsyncopts.DebugLevel, uint16) bool { return false }}, Conn: &rsyncwire.Conn{Reader: io.NopCloser(&wire)}, Progress: progress.NewPrinter(io.Discard, time.Now())}
+	rt := &Transfer{Dest: path, DestRoot: root, Opts: &TransferOpts{ReceiverWriteLimit: &limit, DebugGTE: func(rsyncopts.DebugLevel, uint16) bool { return false }}, Conn: &rsyncwire.Conn{Reader: io.NopCloser(&wire)}, Progress: progress.NewPrinter(io.Discard, time.Now)}
 	err = rt.RecvFiles([]*File{{Name: "a", Length: 4, Mode: rsync.S_IFREG | 0600}, {Name: "b", Length: 4, Mode: rsync.S_IFREG | 0600}})
 	if !errors.Is(err, errReceiverWriteLimit) {
 		t.Fatal("protocol phase reset the exchange allowance", err)
