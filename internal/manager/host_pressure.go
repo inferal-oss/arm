@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/inferal-oss/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"github.com/inferal-oss/arm/internal/local"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/pressure"
@@ -69,6 +70,41 @@ func hostSample(at time.Time, tick, nowTick time.Duration, now time.Time, epoch 
 		ObservedAt: at, ObservedTick: tick, Epoch: epoch, Available: available}
 }
 
+type pressureElapsedView struct {
+	Sample              leaseclock.Sample
+	ReadOK              bool
+	Live                map[string]time.Duration
+	CPUAttributionKnown bool
+}
+
+// Caller holds m.mu. One native sample decides which active or provisioning
+// leases have positive elapsed entitlement. Invalid retained CPU provenance
+// makes attribution unknown without releasing its underlying charge.
+func (m *Manager) pressureElapsedWindows(leases []model.Lease) pressureElapsedView {
+	view := pressureElapsedView{Live: make(map[string]time.Duration, len(leases))}
+	sample, err := m.readLeaseClock()
+	if err != nil {
+		return view
+	}
+	view.Sample, view.ReadOK, view.CPUAttributionKnown = sample, true, true
+	for _, l := range leases {
+		if !consuming(l.State) || l.ID == "" {
+			continue
+		}
+		remaining, err := l.Clock.Remaining(sample, l.Expires)
+		if err != nil {
+			if l.Request.Resources.CPU != 0 {
+				view.CPUAttributionKnown = false
+			}
+			continue
+		}
+		if remaining > 0 && (l.State == "active" || l.State == "provisioning") {
+			view.Live[l.ID] = remaining
+		}
+	}
+	return view
+}
+
 // Caller holds m.mu. No PID, capacity credit, or provider signal authority is
 // inferred from a native observation or from a persisted lease record.
 func (m *Manager) hostPressureInput(now time.Time, tick time.Duration) (pressure.Input, pressure.Policy, error) {
@@ -91,18 +127,22 @@ func (m *Manager) hostPressureInput(now time.Time, tick time.Duration) (pressure
 	if err != nil {
 		return in, p, err
 	}
+	elapsed := m.pressureElapsedWindows(ls)
 	for _, l := range ls {
-		if !consuming(l.State) || l.Expires == nil || !l.Expires.After(now) || l.ID == "" {
+		remaining := elapsed.Live[l.ID]
+		if remaining <= 0 {
 			continue
 		}
 		if len(in.Jobs) == p.MaxJobs {
 			return in, p, errors.New("host pressure roster exceeds bounded governor capacity")
 		}
+		// ExpiresAt is only a same-call projection for the pure warning core.
+		// It is never a persisted lease deadline or a final native effect fence.
 		in.Jobs = append(in.Jobs, pressure.Job{LeaseID: l.ID, ExecutionID: l.ID, Generation: "warning-only", OwnershipID: m.host,
-			AgentID: l.Request.Agent, StillOwned: l.Host == m.host && l.Owner == m.owner, ExpiresAt: *l.Expires,
-			Supervised: m.jobs[l.ID] != nil, PauseCapability: false, PauseAllowed: false, Stopping: l.State == "ending"})
+			AgentID: l.Request.Agent, StillOwned: l.Host == m.host && l.Owner == m.owner, ExpiresAt: now.Add(remaining),
+			Supervised: m.jobs[l.ID] != nil, PauseCapability: false, PauseAllowed: false, Stopping: false})
 	}
-	sample, _ := m.cpuWarningSampleFrom(cpuSnapshot, now, tick, ls)
+	sample, _ := m.cpuWarningSampleFromElapsed(cpuSnapshot, now, tick, ls, elapsed)
 	in.Samples[pressure.CPU] = sample
 	return in, p, nil
 }

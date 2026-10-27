@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/observe"
 	"golang.org/x/crypto/ssh"
@@ -19,7 +20,7 @@ import (
 // jobs, in-process owners, SQLite rows and their lifetime operations are real.
 // No model state, expected verdict or projected Go result is produced here.
 func TestCPUWarningActualTrace(t *testing.T) {
-	scenarios := []string{"bare", "unknown", "process-credit", "process-cap-bare", "process-fraction", "process-frame", "process-cookie", "process-pointer", "process-joined", "process-expired", "process-retained", "transit-live", "transit-context", "transit-join", "transit-row", "inline-live", "inline-full", "inline-context", "inline-volume", "inline-cancel", "inline-joined", "inline-pointer", "inline-unstarted", "inline-after-snapshot", "lost-inline-restart", "physical-idle", "stale", "snapshot", "fractional", "sum17", "unsupported-native"}
+	scenarios := []string{"bare", "unknown", "process-credit", "process-cap-bare", "process-fraction", "process-frame", "process-cookie", "process-pointer", "process-joined", "process-expired", "process-retained", "wall-forward", "wall-backward", "clock-unknown", "transit-live", "transit-context", "transit-join", "transit-row", "inline-live", "inline-full", "inline-context", "inline-volume", "inline-cancel", "inline-joined", "inline-pointer", "inline-unstarted", "inline-after-snapshot", "lost-inline-restart", "physical-idle", "stale", "snapshot", "fractional", "sum17", "unsupported-native"}
 	for _, scenario := range scenarios {
 		t.Run(scenario, func(t *testing.T) {
 			var m *Manager
@@ -29,7 +30,7 @@ func TestCPUWarningActualTrace(t *testing.T) {
 			var inline *SyncWorkerHold
 			var release chan struct{}
 			switch {
-			case scenario == "process-credit" || scenario == "process-cap-bare" || scenario == "process-fraction" || scenario == "process-frame" || scenario == "process-cookie" || scenario == "process-pointer" || scenario == "process-joined" || scenario == "process-expired" || scenario == "process-retained" || scenario == "physical-idle" || scenario == "unsupported-native":
+			case scenario == "process-credit" || scenario == "process-cap-bare" || scenario == "process-fraction" || scenario == "process-frame" || scenario == "process-cookie" || scenario == "process-pointer" || scenario == "process-joined" || scenario == "process-expired" || scenario == "process-retained" || scenario == "wall-forward" || scenario == "wall-backward" || scenario == "physical-idle" || scenario == "unsupported-native":
 				m, lease, process = cpuCreditFixture(t)
 			case scenario == "transit-live" || scenario == "transit-context" || scenario == "transit-join" || scenario == "transit-row" || scenario == "sum17":
 				m = newManager(t)
@@ -73,6 +74,24 @@ func TestCPUWarningActualTrace(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
+			if scenario == "clock-unknown" {
+				q := request("warning-unknown-elapsed-deadline")
+				q.Resources.CPU = 1
+				var err error
+				lease, err = m.Acquire(q, nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				m.mu.Lock()
+				changed := lease
+				changed.Clock = nil
+				err = m.put(changed, "trace.unknown-elapsed-deadline")
+				m.mu.Unlock()
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer func() { m.mu.Lock(); _ = m.put(lease, "trace.restore"); m.mu.Unlock() }()
+			}
 			o := &cpuWarningTraceObserver{scenario: scenario}
 			cpuWarningTraceObservers.Store(m, o)
 			defer cpuWarningTraceObservers.Delete(m)
@@ -84,6 +103,20 @@ func TestCPUWarningActualTrace(t *testing.T) {
 				}()
 			}
 			now, tick := time.Now().UTC(), 100*time.Second
+			if scenario == "wall-forward" || scenario == "wall-backward" {
+				if scenario == "wall-forward" {
+					now = lease.Expires.Add(24 * time.Hour)
+				} else {
+					now = lease.Expires.Add(-24 * time.Hour)
+				}
+				m.mu.Lock()
+				previousRead, previousLast := m.leaseClockRead, m.leaseClockLast
+				sample := m.leaseClockLast
+				sample.Wall = now
+				m.leaseClockRead = func() (leaseclock.Sample, error) { return sample, nil }
+				m.mu.Unlock()
+				defer func() { m.mu.Lock(); m.leaseClockRead, m.leaseClockLast = previousRead, previousLast; m.mu.Unlock() }()
+			}
 			capture := func(idle float64) cpuWarningSnapshot {
 				setHostPressureCPU(m, now, tick, idle)
 				if process != nil {
@@ -203,15 +236,12 @@ func TestCPUWarningActualTrace(t *testing.T) {
 				call(s)
 			case "process-expired":
 				m.mu.Lock()
-				changed := lease
-				expired := now.Add(-time.Second)
-				changed.Expires = &expired
-				err := m.put(changed, "trace.expired")
+				previousRead, previousLast := m.leaseClockRead, m.leaseClockLast
+				sample := m.leaseClockLast
+				sample.Tick = lease.Clock.End
+				m.leaseClockRead = func() (leaseclock.Sample, error) { return sample, nil }
 				m.mu.Unlock()
-				if err != nil {
-					t.Fatal(err)
-				}
-				defer func() { m.mu.Lock(); _ = m.put(lease, "trace.restore"); m.mu.Unlock() }()
+				defer func() { m.mu.Lock(); m.leaseClockRead, m.leaseClockLast = previousRead, previousLast; m.mu.Unlock() }()
 				call(s)
 			case "process-retained", "physical-idle":
 				m.mu.Lock()

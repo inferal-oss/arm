@@ -13,8 +13,8 @@ import math
 import re
 from fractions import Fraction
 
-SCENARIOS=('bare','unknown','process-credit','process-cap-bare','process-fraction','process-frame','process-cookie','process-pointer','process-joined','process-expired','process-retained','transit-live','transit-context','transit-join','transit-row','inline-live','inline-full','inline-context','inline-volume','inline-cancel','inline-joined','inline-pointer','inline-unstarted','inline-after-snapshot','lost-inline-restart','physical-idle','stale','snapshot','fractional','sum17','unsupported-native')
-FIELDS={'epoch','schema','scenario','ordinal','call','cut','manager','host','owner','now','tick','cpu','current_cpu','observed','observed_age','native_age','sample_tick','frame','saved','current','credits','listed','leases','bindings','events','failure','sample','evidence'}
+SCENARIOS=('bare','unknown','process-credit','process-cap-bare','process-fraction','process-frame','process-cookie','process-pointer','process-joined','process-expired','process-retained','wall-forward','wall-backward','clock-unknown','transit-live','transit-context','transit-join','transit-row','inline-live','inline-full','inline-context','inline-volume','inline-cancel','inline-joined','inline-pointer','inline-unstarted','inline-after-snapshot','lost-inline-restart','physical-idle','stale','snapshot','fractional','sum17','unsupported-native')
+FIELDS={'epoch','schema','scenario','ordinal','call','cut','manager','host','owner','now','tick','lease_clock','clock_read_ok','cpu','current_cpu','observed','observed_age','native_age','sample_tick','frame','saved','current','credits','listed','leases','bindings','events','failure','sample','evidence'}
 OWNER_FIELDS={'kind','pointer','manager','identity','cookie','exited','context','cancelled','runtime','done','joined','started','settled','id','key','record','volume','binding_key','binding_side','disk'}
 SAVED_FIELDS={'source_done','source_joined','source_exited','kind','pointer','identity','cookie','context','runtime','done','record','digest'}
 CPU_FIELDS={'known','at','interval_ns','eligible_cpus','capacity_cores','busy_cores','available_cores','scope','method','quality','detail'}
@@ -45,7 +45,7 @@ def stamp(x):
     return (calendar.timegm((y,mo,d,h,mi,s))-offset)*10**9+int((m[7] or '').ljust(9,'0') or '0')
 def consuming(l):return l['state'] in ('active','provisioning','ending','needs_attention')
 def identity(v):require(type(v) is dict and set(v)==IDENTITY and integer(v['pid']) and integer(v['pgid']) and all(type(v[k]) is str for k in ('uid','start','namespace')),'native identity shape')
-LEASE_FIELDS={'cargo','pool_binding','pool_error','budget_binding','budget_policy','budget_error','queue_info','id','host','owner','owner_username','request','state','outcome','failure','created_at','started_at','expires_at','ended_at','revision','pid','managed_dir','exit_code','capabilities','artifact','ports','process_identity','usage','workload'}
+LEASE_FIELDS={'elapsed_deadline','cargo','pool_binding','pool_error','budget_binding','budget_policy','budget_error','queue_info','id','host','owner','owner_username','request','state','outcome','recovery_reason','failure','created_at','started_at','expires_at','ended_at','revision','pid','managed_dir','exit_code','capabilities','artifact','ports','process_identity','usage','workload'}
 REQUEST_FIELDS={'budget','start_deadline_at','origin_certificate','origin_grant_revision','origin_key','origin_peer','host','reason','project','agent','resources','ttl_ns','idempotency_key','queue','profile','kind','storage_lease','service_lease','ports','port_lease','pools','usage_policy'}
 def raw_record(raw):require(type(raw) is str and len(raw)<=1<<20,'bounded exact row bytes');v=parse(raw);require(type(v) is dict,'row object');return v
 
@@ -92,7 +92,7 @@ def derive(row):
     cap,idle,busy=[scalar(cpu[k]) for k in ('capacity_cores','available_cores','busy_cores')]
     now=stamp(row['now']);at=stamp(cpu['at']);observed=stamp(row['observed'])
     require(row['observed_age']==now-observed and row['native_age']==now-at,'original freshness ages bind exact times')
-    good=cpu['known'] and cpu['eligible_cpus']>0 and .002<=cap<=65536 and cap<=cpu['eligible_cpus'] and 0<=idle<=cap and 0<=busy<=cpu['eligible_cpus'] and 100_000_000<=cpu['interval_ns']<=6_000_000_000 and 0<=row['observed_age']<=4_000_000_000 and 0<=row['native_age']<=4_000_000_000 and 0<=row['sample_tick']<=row['tick'] and row['tick']-row['sample_tick']<=4_000_000_000
+    native_good=cpu['known'] and cpu['eligible_cpus']>0 and .002<=cap<=65536 and cap<=cpu['eligible_cpus'] and 0<=idle<=cap and 0<=busy<=cpu['eligible_cpus'] and 100_000_000<=cpu['interval_ns']<=6_000_000_000 and 0<=row['observed_age']<=4_000_000_000 and 0<=row['native_age']<=4_000_000_000 and 0<=row['sample_tick']<=row['tick'] and row['tick']-row['sample_tick']<=4_000_000_000
     same_frame=frame_matches(row['frame'],cpu)
     require(type(row['leases']) is list and len(row['leases'])<=32 and type(row['listed']) is list,'closed physical/listed rosters')
     physical={};last=0
@@ -104,6 +104,26 @@ def derive(row):
     for id,l in listed.items():
         require(typed(l)==typed(physical[id][0]),'complete actual SQL/listed row equality')
         require(real(l['request']['resources']['cpu']) and integer(l['revision']) and type(l['owner']) is str and type(l['host']) is str,'lease resource/revision types')
+    clock=row['lease_clock'];read_ok=row['clock_read_ok']
+    require(type(read_ok) is bool and type(clock) is dict and set(clock)=={'boot','tick_ns','wall'},'captured native lease-clock fields')
+    require(type(clock['boot']) is str and integer(clock['tick_ns']) and 0<=clock['tick_ns']<=2**63-1,'captured native lease-clock types')
+    clock_wall=stamp(clock['wall'])
+    zero_wall=stamp('0001-01-01T00:00:00Z')
+    if read_ok:require(0<len(clock['boot'].encode('utf-8'))<=256 and clock_wall!=zero_wall,'valid captured native lease clock')
+    else:require(clock=={'boot':'','tick_ns':0,'wall':'0001-01-01T00:00:00Z'},'failed read carries no clock authority')
+    def remaining(l):
+        d=l.get('elapsed_deadline')
+        if d is None:return (0,False)
+        require(type(d) is dict and set(d)=={'version','boot','anchor_ns','end_ns','wall_expires'},'exact elapsed deadline fields')
+        require(integer(d['version']) and type(d['boot']) is str and integer(d['anchor_ns']) and integer(d['end_ns']),'elapsed deadline field types')
+        wall_end=stamp(d['wall_expires'])
+        if not read_ok:return (0,False)
+        valid=d['version']==1 and wall_end!=zero_wall and d['boot']==clock['boot'] and 0<=d['anchor_ns']<d['end_ns']<=2**63-1 and d['end_ns']-d['anchor_ns']<=7*24*3600*10**9 and clock['tick_ns']>=d['anchor_ns'] and l.get('expires_at') is not None and wall_end==stamp(l['expires_at'])
+        return (max(0,d['end_ns']-clock['tick_ns']),True) if valid else (0,False)
+    elapsed={id:remaining(l) for id,l in listed.items() if consuming(l)}
+    attribution_known=read_ok and all(valid for id,(_,valid) in elapsed.items() if scalar(listed[id]['request']['resources']['cpu'])!=0)
+    live={id for id,(ns,valid) in elapsed.items() if valid and ns>0 and listed[id]['state'] in ('active','provisioning')}
+    good=native_good and attribution_known
     require(type(row['bindings']) is dict and len(row['bindings'])<=32,'binding roster')
     for id,b in row['bindings'].items():require(id in physical and type(b) is dict and set(b)=={'key','side','volume','disk'} and integer(b['disk']) and b['disk']>0 and all(type(b[k]) is str and b[k] for k in ('key','side','volume')),'physical sync binding')
     saved,current=row['saved'],row['current'];require(type(saved) is dict and type(current) is dict and len(saved)<=32 and len(current)<=32,'owner roster bounds')
@@ -120,7 +140,7 @@ def derive(row):
             require(all(type(c[k]) is str for k in OWNER_FIELDS-{'identity','exited','cancelled','joined','started','settled','disk'}),'current token types')
             if c['identity'] is not None:identity(c['identity'])
         require(id in physical,'current owner retained physical lease');c=owners[0];kinds.setdefault(id,c['kind'])
-        l=listed[id];local=l['host']==row['host'] and l['owner']==row['owner'];active=consuming(l) and l.get('expires_at') is not None and stamp(l['expires_at'])>now and scalar(l['request']['resources']['cpu'])>0 and local
+        l=listed[id];local=l['host']==row['host'] and l['owner']==row['owner'];active=id in live and scalar(l['request']['resources']['cpu'])>0 and local
         own=False;match=False;s=saved.get(id)
         if len(owners)==1 and c['kind']=='process':
             own=active and c['identity'] is not None and typed(l.get('process_identity'))==typed(c['identity']) and not c['exited'] and not c['joined']
@@ -154,7 +174,7 @@ def derive(row):
         key=typed(c['identity'])
         if key in seen:continue
         seen.add(key);credit=math.nextafter(credit+min(scalar(c['cores']),scalar(l['request']['resources']['cpu'])),0)
-    reserved=sum(scalar(l['request']['resources']['cpu']) for l in listed.values() if consuming(l) and l.get('expires_at') and stamp(l['expires_at'])>now)
+    reserved=sum(scalar(listed[id]['request']['resources']['cpu']) for id in live)
     credit=min(credit,reserved,busy) if good and same_frame else 0.
     if row['cut']=='return':
         e,s=row['evidence'],row['sample'];require(type(e) is dict and set(e)==EVIDENCE and type(s) is dict and set(s)==SAMPLE,'actual result exact shape')
@@ -210,7 +230,7 @@ def derive(row):
     facts.update(obs=obs,bg=bg,good=good,frame=same_frame,tp=tp,candidate=candidate,bare=bare)
     return facts
 
-SINGLE={'unknown','process-credit','process-cap-bare','process-fraction','transit-live','inline-live','inline-full','inline-unstarted','fractional','sum17','unsupported-native'}
+SINGLE={'unknown','process-credit','process-cap-bare','process-fraction','wall-forward','wall-backward','clock-unknown','transit-live','inline-live','inline-full','inline-unstarted','fractional','sum17','unsupported-native'}
 def snapshot_identity(r):
     saved=copy.deepcopy(r['saved'])
     for s in saved.values():
@@ -225,7 +245,7 @@ def project(rows,scenario):
     for n in range(expected):
         before,after=rows[2*n:2*n+2]
         for j,r in enumerate((before,after),2*n+1):
-            require(r['schema']=='arm.cpu-warning-actual/v1' and r['scenario']==scenario and r['ordinal']==j and r['call']==n+1 and r['cut']==('enter' if j%2 else 'return'),'exact original boundary order/identity')
+            require(r['schema']=='arm.cpu-warning-actual/v2' and r['scenario']==scenario and r['ordinal']==j and r['call']==n+1 and r['cut']==('enter' if j%2 else 'return'),'exact original boundary order/identity')
             derive(r)
         a=copy.deepcopy(before);b=copy.deepcopy(after)
         for x in (a,b):
@@ -234,6 +254,8 @@ def project(rows,scenario):
         facts=derive(before)
         state=dict(facts,epoch=1,changes=0,bgUsed=False,phase='ready',result='none',known=False,native=False,credit=0,possible=0,minimum=0,maximum=0,admission=False,signal=False,cleanup=False)
         if last is not None:
+            if before['manager']==prior_raw['manager'] and before['clock_read_ok'] and prior_raw['clock_read_ok']:
+                require(before['lease_clock']['boot']==prior_raw['lease_clock']['boot'] and before['lease_clock']['tick_ns']>=prior_raw['lease_clock']['tick_ns'],'same-manager native lease clock scope and tick cannot regress')
             state.update(epoch=last['epoch'],changes=last['changes'],bgUsed=last['bgUsed'])
             if before['manager']!=prior_raw['manager']:
                 require(scenario=='lost-inline-restart' and set(before['saved'])==set(before['current'])==set(),'only original restart can lose the Manager owner')
@@ -299,6 +321,15 @@ def controls(histories):
     reject('original-inline-volume-binding','inline-live',lambda r:coupled(r,lambda x:next(iter(x['bindings'].values())).update(volume='another-volume')))
     reject('original-inline-runtime-binding','inline-live',lambda r:coupled(r,lambda x:next(iter(x['saved'].values())).update(runtime='0x1234')))
     reject('original-transit-row-binding','transit-live',lambda r:coupled(r,lambda x:next(iter(x['saved'].values())).update(record='{}')))
+    reject('expired-captured-clock','process-credit',lambda r:coupled(r,lambda x:x['lease_clock'].update(tick_ns=x['listed'][0]['elapsed_deadline']['end_ns'])))
+    reject('foreign-captured-boot','process-credit',lambda r:coupled(r,lambda x:x['lease_clock'].update(boot='foreign-boot')))
+    reject('boolean-captured-clock-tick','process-credit',lambda r:coupled(r,lambda x:x['lease_clock'].update(tick_ns=True)))
+    def alter_lease(rows,alter):
+        for row in rows[:2]:
+            lease=row['listed'][0];alter(lease);row['leases'][0]['data']=typed(lease)
+    reject('missing-elapsed-deadline','process-credit',lambda r:alter_lease(r,lambda l:l.pop('elapsed_deadline')))
+    reject('foreign-deadline-boot','process-credit',lambda r:alter_lease(r,lambda l:l['elapsed_deadline'].update(boot='foreign-boot')))
+    reject('mismatched-audit-deadline','process-credit',lambda r:alter_lease(r,lambda l:l.update(expires_at='2030-01-01T00:00:00Z')))
     reject('boolean-sample-available','bare',lambda r:r[-1]['sample'].update(Available=False))
     reject('method-mutates-ledger','bare',lambda r:r[1].update(events=r[1]['events']+1))
     reject('boolean-native-frame-terms','process-credit',lambda r:coupled(r,lambda x:x['frame']['Evidence'].update(Terms=True)))

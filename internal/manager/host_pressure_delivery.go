@@ -116,8 +116,11 @@ func (m *Manager) currentHostPressureDeliveryLocked(id string, item hostPressure
 		return false
 	}
 	l, err := m.get(item.Lease)
-	return err == nil && consuming(l.State) && l.Host == m.host && l.Owner == m.owner && l.Request.Agent == c.ID &&
-		l.Expires != nil && l.Expires.After(time.Now())
+	if err != nil || (l.State != "active" && l.State != "provisioning") || l.Host != m.host || l.Owner != m.owner || l.Request.Agent != c.ID {
+		return false
+	}
+	remaining, err := m.leaseRemaining(l)
+	return err == nil && remaining > 0
 }
 
 func (m *Manager) claimHostPressureDelivery() (string, hostPressureDelivery, string, bool) {

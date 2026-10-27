@@ -213,14 +213,25 @@ func (m *Manager) cpuWarningSample(now time.Time, tick time.Duration, leases []m
 }
 
 func (m *Manager) cpuWarningSampleFrom(snapshot cpuWarningSnapshot, now time.Time, tick time.Duration, leases []model.Lease) (pressure.Sample, model.CPUWarningEvidence) {
-	traceCPUWarningEnter(m, snapshot, now, tick, leases)
+	elapsed := m.pressureElapsedWindows(leases)
+	return m.cpuWarningSampleFromElapsed(snapshot, now, tick, leases, elapsed)
+}
+
+// Caller holds Manager.mu. The roster and CPU attribution use the same native
+// entitlement sample for one host-pressure decision.
+func (m *Manager) cpuWarningSampleFromElapsed(snapshot cpuWarningSnapshot, now time.Time, tick time.Duration, leases []model.Lease, elapsed pressureElapsedView) (pressure.Sample, model.CPUWarningEvidence) {
+	traceCPUWarningEnter(m, snapshot, now, tick, leases, elapsed)
 	cpu, observed, sampleTick := snapshot.cpu, snapshot.observed, snapshot.tick
 	credits, frame, owners := snapshot.credits, snapshot.frame, snapshot.owners
 	policy := hostPressurePolicy(cpu, model.MemoryAvailability{}, model.DiskAvailability{})
 	evidence := model.CPUWarningEvidence{State: "unavailable", At: cpu.At, Interval: cpu.Interval, Detail: "Fresh native CPU headroom is unavailable"}
 	sample := hostSample(cpu.At, sampleTick, tick, now, m.pressureEpoch, 0, false)
+	if !elapsed.CPUAttributionKnown {
+		evidence.Detail = "Elapsed lease provenance is unavailable; CPU warning attribution is unknown"
+		return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
+	}
 	if !cpu.Known || cpu.Available == nil || cpu.Capacity == nil || cpu.Busy == nil || cpu.EligibleCPUs == nil || *cpu.EligibleCPUs <= 0 || !finiteCPU(*cpu.Available) || !finiteCPU(*cpu.Capacity) || !finiteCPU(*cpu.Busy) || *cpu.Capacity < 0.002 || *cpu.Capacity > 65536 || *cpu.Capacity > float64(*cpu.EligibleCPUs) || *cpu.Available < 0 || *cpu.Available > *cpu.Capacity || *cpu.Busy < 0 || *cpu.Busy > float64(*cpu.EligibleCPUs) || cpu.Interval < 100*time.Millisecond || cpu.Interval > 6*time.Second || observed.IsZero() || observed.After(now) || now.Sub(observed) > policy.MaxAge || cpu.At.IsZero() || cpu.At.After(now) || now.Sub(cpu.At) > policy.MaxAge || sampleTick < 0 || sampleTick > tick || tick-sampleTick > policy.MaxAge {
-		return traceCPUWarningReturn(m, snapshot, now, tick, leases, sample, evidence)
+		return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
 	}
 	evidence.NativeKnown = true
 	evidence.Idle = *cpu.Available
@@ -231,26 +242,26 @@ func (m *Manager) cpuWarningSampleFrom(snapshot cpuWarningSnapshot, now time.Tim
 		// Retained execution/transport obligations are not bare reservations.
 		// A lost original owner cannot lend usage or a compliance bound, but
 		// its absence also cannot identify unexplained busy time. This runs
-		// before expiry filtering because uncertain work stays charged.
+		// before elapsed eligibility filtering because uncertain work stays charged.
 		if consuming(l.State) && l.ID != "" && l.Request.Resources.CPU > 0 && m.jobs[l.ID] == nil && m.relayTransits[l.ID] == nil && m.syncWorkers[l.ID] == nil {
 			missing, err := m.missingCPUWarningOwner(l)
 			if err != nil {
 				evidence.Detail = "CPU warning owner accounting is unavailable"
-				return traceCPUWarningReturn(m, snapshot, now, tick, leases, sample, evidence)
+				return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
 			}
 			ownerChanged = ownerChanged || missing
 		}
-		if !consuming(l.State) || l.ID == "" || l.Expires == nil || !l.Expires.After(now) {
+		if elapsed.Live[l.ID] <= 0 {
 			continue
 		}
 		n := l.Request.Resources.CPU
 		if !finiteCPU(n) || n < 0 || n > 65536 {
 			evidence.Detail = "CPU promise accounting is invalid; no warning decision is established"
-			return traceCPUWarningReturn(m, snapshot, now, tick, leases, sample, evidence)
+			return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
 		}
 		reserved += n
 		if !finiteCPU(reserved) {
-			return traceCPUWarningReturn(m, snapshot, now, tick, leases, sample, evidence)
+			return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
 		}
 		if n == 0 {
 			continue
@@ -291,7 +302,7 @@ func (m *Manager) cpuWarningSampleFrom(snapshot cpuWarningSnapshot, now time.Tim
 		}
 	}
 	if !finiteCPU(possible) {
-		return traceCPUWarningReturn(m, snapshot, now, tick, leases, sample, evidence)
+		return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
 	}
 	credited := 0.0
 	if cpuWarningFrameMatches(frame, cpu) {
@@ -333,7 +344,7 @@ func (m *Manager) cpuWarningSampleFrom(snapshot cpuWarningSnapshot, now time.Tim
 		evidence.State = "neutral"
 		evidence.Detail = "The complete compliant-use coverage range lies between pressure and recovery thresholds"
 	}
-	return traceCPUWarningReturn(m, snapshot, now, tick, leases, sample, evidence)
+	return traceCPUWarningReturn(m, snapshot, now, tick, leases, elapsed, sample, evidence)
 }
 
 // A persisted descriptor supplies only uncertainty, never executable ownership

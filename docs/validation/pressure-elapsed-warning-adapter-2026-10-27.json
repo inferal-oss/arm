@@ -1,0 +1,98 @@
+{
+  "acceptance": {
+    "actual_trace_race": {
+      "altered_histories_rejected": 43,
+      "failed": 0,
+      "log_sha256": "a789ddd4efcfb67120fcba9c5484a90a97d9942fceaf740ebd252eb3052325e5",
+      "named_pass": 35,
+      "native_wait_calls": 1,
+      "original_exit": 0,
+      "owner_receipt_sha256": "36b7829cafbb7b43a14baa509f085a6f5f10e7dbdfe2d2e92b35d59cbcf43fbe",
+      "raw_trace_rows": 112,
+      "scenario_subtests": 34,
+      "skipped": 0
+    },
+    "causal_old_wall_negative": {
+      "backward_wall": "passed",
+      "forward_wall": "failed_with_missing_elapsed_recipient",
+      "log_sha256": "ca50cc772f101591fdf22e571d51f0d2c8e3ab60df6b177af7124531f28fc6b8",
+      "native_wait_calls": 1,
+      "original_actual_exit": 1,
+      "original_expected_exit": 1,
+      "overlay_source_sha256": "17f211921ba11ec34951335bde7a9313ad1b55dcdf8ee69e04105adb8c18f991",
+      "owner_receipt_sha256": "8913dc26c73b5968d292a75898f3a94ce26a0736dee70adb51c409c666f002fc",
+      "skipped": 0,
+      "unrelated_failures": 0
+    },
+    "closure": {
+      "before_and_after_each_original_command_matched": true,
+      "external_go_files": 2904,
+      "final_matched": true,
+      "selected_go_and_c_tools_bound": true,
+      "selected_sdk_inputs": 41606,
+      "tracked_files": 2406
+    },
+    "composed_summary_sha256": "6d2afe5be00ce7172fbb6a9c44b2b50bfd5dfe15404ffbb74e548bd5f87a5bf3",
+    "method": "Two original native Go race commands from one run, followed by a separate source-identical bounded old-wall negative. The final runner revalidated their immutable logs, owner receipts and full source/tool closure before the negative.",
+    "normal_race": {
+      "failed": 0,
+      "log_sha256": "699b1366de32ce242830301377088209c7c40bc9eca41449ead9d4ef12555310",
+      "named_pass": 32,
+      "named_roots": 7,
+      "named_subtests": 25,
+      "native_wait_calls": 1,
+      "original_exit": 0,
+      "owner_receipt_sha256": "e81920ecf93c324415c3c9fdff5340e8d70c1e3f74d8971dd67a2b03b96c59d0",
+      "skipped": 0
+    },
+    "original_outer_exit": 0,
+    "single_run_three_command_pass": false,
+    "status": "passed_composed"
+  },
+  "limitations": [
+    "Evidence is assembled across two source-identical native runs; no single-run three-command pass is claimed.",
+    "Selected local macOS arm64 tests only; no Linux or hosted CI gate in this evidence.",
+    "No full lease-clock cohort, real host sleep/pause, live user-process control, TLC, or prover run.",
+    "A native Wait and process-group absence observation do not prove arbitrary descendant closure."
+  ],
+  "platform": {
+    "arch": "arm64",
+    "go": "go version go1.27.3 darwin/arm64",
+    "hosted_ci_run": false,
+    "os": "darwin",
+    "race_instrumented": true
+  },
+  "prior_failures_preserved": [
+    {
+      "counted_as_acceptance": false,
+      "reason": "Native suspend-inclusive clock unavailable when sandbox denied boot-session sysctl",
+      "scope": "Initial sandbox gate",
+      "status": "failed",
+      "summary_sha256": "027bedf44ef4b2963c70e576a3a30ddcf17918b93af3e38deecaf6f7827c596b"
+    },
+    {
+      "counted_as_acceptance": false,
+      "reason": "Runner parsed a 1024-byte Go JSON Output chunk as a complete trace line after both Go race commands passed",
+      "scope": "Native successor gate as a whole",
+      "status": "failed",
+      "summary_sha256": "ec34c306d400cc10bb23e40a070deaec5747c53699cd9d0fac71388c106f14e6"
+    }
+  ],
+  "schema": 1,
+  "scope": "Elapsed-clock host-pressure warning roster, CPU warning attribution, and final delivery Start authority on macOS arm64",
+  "source": {
+    "base_commit": "f54e5283439e36d76adc62156d963ed93e6a2af6",
+    "changed_files_sha256": {
+      "formal/cpu-warning/export_actual.py": "876f9e0f324f829dffd92058e55e447b8813d0f72d89e5de7766770b2e99e18b",
+      "internal/manager/cpu_warning.go": "f88d191908ff7b34ff2097f9365fbcfe402b1bc07d6c478ec6398083ec7aacf4",
+      "internal/manager/cpu_warning_trace_dev.go": "5c5151b596bf755cb30b7b6774c110f13db03c8c92a09f04d95413fa90f3929e",
+      "internal/manager/cpu_warning_trace_dev_test.go": "3c5188f26a351608e6a426c177e966edc6db9cf14e6cb9e46d15c12b1177ddd1",
+      "internal/manager/cpu_warning_trace_off.go": "c20be2e45483c7c689da97c75a5afbd7f2865860a21806336f7abe518f282086",
+      "internal/manager/host_pressure.go": "0b833f7a85495acc82762266ba55b04f1803b668a76f99126dd5caf72cff08f5",
+      "internal/manager/host_pressure_delivery.go": "29e66c55fa2dddcf6e6149c3da43b61ac8646224a6551fa5c4b49d2b93b77985",
+      "internal/manager/pressure_elapsed_adapter_test.go": "cdb0776dd5d0e1a79d67db78478d1a1bc26ec551547b9a72ce23b103f6f530f0",
+      "scripts/test-cpu-warning-formal-runner.py": "675db4bdec63ccdf849157488c33857f735a59b7419ea3b337127acb0d37418b"
+    },
+    "patch_sha256": "932be95e4c2544f2bdd8e5f78e089a5bb4cfa95e1d7183803bdacf7a74333033"
+  }
+}

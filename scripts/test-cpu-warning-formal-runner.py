@@ -63,7 +63,7 @@ for label,mutate in (
  except ValueError:pass
  else:raise AssertionError('accepted '+label)
 all_names=sorted(runner.command_roster('all'))
-assert len(all_names)==54
+assert len(all_names)==57
 runner.require_owner_roster(all_names,'all')
 for label,names,mode in (
  ('missing-proof-owner',[n for n in all_names if n!='proof'],'all'),

@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/observe"
 	"github.com/inferal-oss/arm/internal/pressure"
@@ -87,6 +88,8 @@ type cpuWarningTraceRow struct {
 	Owner       string                            `json:"owner"`
 	Now         time.Time                         `json:"now"`
 	Tick        time.Duration                     `json:"tick"`
+	LeaseClock  leaseclock.Sample                 `json:"lease_clock"`
+	ClockReadOK bool                              `json:"clock_read_ok"`
 	CPU         model.CPUAvailability             `json:"cpu"`
 	CurrentCPU  model.CPUAvailability             `json:"current_cpu"`
 	Observed    time.Time                         `json:"observed"`
@@ -143,7 +146,7 @@ func (o *cpuWarningTraceObserver) append(row cpuWarningTraceRow) {
 	if row.Cut == "enter" {
 		o.call++
 	}
-	row.Schema, row.Scenario, row.Ordinal, row.Call = "arm.cpu-warning-actual/v1", o.scenario, len(o.rows)+1, o.call
+	row.Schema, row.Scenario, row.Ordinal, row.Call = "arm.cpu-warning-actual/v2", o.scenario, len(o.rows)+1, o.call
 	raw, err := json.Marshal(row)
 	if err != nil || len(raw) > 256<<10 || o.bytes+len(raw) > 4<<20 || len(o.rows) >= 32 {
 		o.failure = fmt.Errorf("bounded warning trace unavailable: %v", err)
@@ -157,20 +160,20 @@ func (o *cpuWarningTraceObserver) append(row cpuWarningTraceRow) {
 	o.rows = append(o.rows, frozen)
 	o.bytes += len(raw)
 }
-func traceCPUWarningEnter(m *Manager, s cpuWarningSnapshot, now time.Time, tick time.Duration, ls []model.Lease) {
-	traceCPUWarningBoundary(m, s, now, tick, ls, "enter", nil, nil)
+func traceCPUWarningEnter(m *Manager, s cpuWarningSnapshot, now time.Time, tick time.Duration, ls []model.Lease, elapsed pressureElapsedView) {
+	traceCPUWarningBoundary(m, s, now, tick, ls, elapsed, "enter", nil, nil)
 }
-func traceCPUWarningReturn(m *Manager, s cpuWarningSnapshot, now time.Time, tick time.Duration, ls []model.Lease, sample pressure.Sample, e model.CPUWarningEvidence) (pressure.Sample, model.CPUWarningEvidence) {
-	traceCPUWarningBoundary(m, s, now, tick, ls, "return", &sample, &e)
+func traceCPUWarningReturn(m *Manager, s cpuWarningSnapshot, now time.Time, tick time.Duration, ls []model.Lease, elapsed pressureElapsedView, sample pressure.Sample, e model.CPUWarningEvidence) (pressure.Sample, model.CPUWarningEvidence) {
+	traceCPUWarningBoundary(m, s, now, tick, ls, elapsed, "return", &sample, &e)
 	return sample, e
 }
-func traceCPUWarningBoundary(m *Manager, s cpuWarningSnapshot, now time.Time, tick time.Duration, ls []model.Lease, cut string, sample *pressure.Sample, e *model.CPUWarningEvidence) {
+func traceCPUWarningBoundary(m *Manager, s cpuWarningSnapshot, now time.Time, tick time.Duration, ls []model.Lease, elapsed pressureElapsedView, cut string, sample *pressure.Sample, e *model.CPUWarningEvidence) {
 	value, ok := cpuWarningTraceObservers.Load(m)
 	if !ok {
 		return
 	}
 	o := value.(*cpuWarningTraceObserver)
-	row := cpuWarningTraceRow{Epoch: m.pressureEpoch, Cut: cut, Manager: cpuWarningTracePointer(m), Host: m.host, Owner: m.owner, Now: now, Tick: tick, CPU: s.cpu, Observed: s.observed, ObservedAge: now.Sub(s.observed), NativeAge: now.Sub(s.cpu.At), SampleTick: s.tick, Frame: s.frame, Saved: map[string]cpuWarningTraceSaved{}, Current: map[string][]cpuWarningTraceOwner{}, Credits: []cpuWarningTraceCredit{}, Listed: append([]model.Lease{}, ls...), Leases: []cpuWarningTraceLease{}, Bindings: map[string]cpuWarningTraceBinding{}, Sample: sample, Evidence: e}
+	row := cpuWarningTraceRow{Epoch: m.pressureEpoch, Cut: cut, Manager: cpuWarningTracePointer(m), Host: m.host, Owner: m.owner, Now: now, Tick: tick, LeaseClock: elapsed.Sample, ClockReadOK: elapsed.ReadOK, CPU: s.cpu, Observed: s.observed, ObservedAge: now.Sub(s.observed), NativeAge: now.Sub(s.cpu.At), SampleTick: s.tick, Frame: s.frame, Saved: map[string]cpuWarningTraceSaved{}, Current: map[string][]cpuWarningTraceOwner{}, Credits: []cpuWarningTraceCredit{}, Listed: append([]model.Lease{}, ls...), Leases: []cpuWarningTraceLease{}, Bindings: map[string]cpuWarningTraceBinding{}, Sample: sample, Evidence: e}
 	m.observationMu.RLock()
 	row.CurrentCPU = m.cpuAvailability
 	m.observationMu.RUnlock()
