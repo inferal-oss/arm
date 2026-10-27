@@ -1,0 +1,40 @@
+{
+  "scope": "Finite one-execution, one-resource pressure-control fence abstraction",
+  "model_sha256": "be167da260b8e2e905b8e8b90bdb3e6baf9601225f3b4d5c445185032d4f004f",
+  "tlc_jar_sha256": "5bd7b64db99ae4c6c35f290de5e809c0ee41af43f8699cf696099ffb6452b1e2",
+  "tlc_reported_version": "2026.10.20.183001",
+  "java_major": 27,
+  "safe": {
+    "exit": 0,
+    "generated_states": 28601,
+    "distinct_states": 6756,
+    "states_left_on_queue": 0,
+    "complete_graph_depth": 23,
+    "invariant_violations": 0,
+    "raw_log_sha256": "136490c6a73ca33ad71bae97ec7a1ee917fe27a012d0400b6d9133033e8c3cad"
+  },
+  "unsafe_control": {
+    "exit": 12,
+    "failure": "Safety invariant violation after a pause action is issued, pressure recovers, and the weakened final fence applies the old pause",
+    "generated_states": 1108,
+    "distinct_states": 332,
+    "raw_log_sha256": "2e3cd1a8e118ef854f76287eca4dedde420b4c7dbd977f6256d2ba9294e55c5c"
+  },
+  "limits": [
+    "The model is an abstraction and is not a refinement of production Go.",
+    "Fresh pressure and recovery evidence are inputs; native elapsed-clock sampling and hysteresis arithmetic are outside this model.",
+    "Native process identity, effect ownership, message delivery, multi-resource recovery, and actual pause/resume remain unaccepted.",
+    "Reconcile and FinishAndSettle assume positive external cleanup/settlement; native joins are not modeled."
+  ],
+  "configuration_sha256": {
+    "Safety.cfg": "04a6ce52e9b725d16f8bdf7b0fc43b50592fa3109680f9ed2e094e86e754e821",
+    "Unsafe.cfg": "769bd841fc443a80c86bd8efd1483490d2e90b1e3f6e407770d877a3af69c7e0"
+  },
+  "independent_review": {
+    "executed_model_and_configs_match_before_after": true,
+    "original_exit_files_and_logs_checked": true,
+    "unsafe_trace_checked": "Low, Warn, Warn, IssuePause, Recover, ApplyPause; Safety becomes false only at the unfenced effect.",
+    "tlc_jar_hash_observed": "Independent after-run check; a full before/after Java/toolchain closure was not retained.",
+    "source_only_followup": "README semantics and this normalized record were amended after the original run; model and configurations are unchanged."
+  }
+}
