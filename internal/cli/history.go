@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
 )
 
 func (a *app) historyCommand(args []string) (int, error) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/meshops"
 )
 
 func TestMeshReconnectDraftExactHostFreshDefaultsAndClosedWire(t *testing.T) {

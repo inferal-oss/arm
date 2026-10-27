@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 func (s *Store) recoveryParent(v *Records, root Instance, kind string, q RecoveryRequest, current bool) (Operation, Identity, error) {

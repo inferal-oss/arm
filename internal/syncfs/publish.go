@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/yrashk/arm/internal/syncreconcile"
+	"github.com/inferal-oss/arm/internal/syncreconcile"
 	"golang.org/x/sys/unix"
 )
 

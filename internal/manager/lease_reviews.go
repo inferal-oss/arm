@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/agents"
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 const reviewMaxPolicies = 1024

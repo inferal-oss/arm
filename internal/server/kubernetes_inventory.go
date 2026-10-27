@@ -7,8 +7,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/yrashk/arm/internal/kubeprovision"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/kubeprovision"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Kubernetes inventory is local to this backend. It does not route through

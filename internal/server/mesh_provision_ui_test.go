@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/meshops"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestProvisionDashboardRoutesExposeOnlyClosedInstallationInput(t *testing.T) {

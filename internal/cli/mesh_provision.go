@@ -3,17 +3,17 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yrashk/arm/internal/companions"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/companions"
+	"github.com/inferal-oss/arm/internal/local"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshops"
-	"github.com/yrashk/arm/internal/meshssh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/meshssh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // provisionMissingMesh is the native CLI's separate install/start review. The

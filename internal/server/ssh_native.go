@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
 )
 
 func (s *Server) sshNative(ctx context.Context, operation string, raw json.RawMessage) (any, error) {

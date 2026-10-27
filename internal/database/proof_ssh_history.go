@@ -15,8 +15,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yrashk/arm/internal/historypack"
-	"github.com/yrashk/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/historypack"
+	"github.com/inferal-oss/arm/internal/sshservice"
 	"golang.org/x/sys/unix"
 )
 

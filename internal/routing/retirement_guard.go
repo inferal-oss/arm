@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 // CheckWorkspaceRetirement is an internal native authority-reducing producer

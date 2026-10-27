@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 func TestRoutedSSHContextUsesExactCancellationForStalledBackend(t *testing.T) {

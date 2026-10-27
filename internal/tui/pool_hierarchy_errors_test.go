@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestHierarchyReviewRefusalAndPriorUnknownController(t *testing.T) {

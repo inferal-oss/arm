@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/yrashk/arm/internal/meshsshrelay"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/meshsshrelay"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 func TestDisabledForwardAuthorityUnavailable(t *testing.T) {

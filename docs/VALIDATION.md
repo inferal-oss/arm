@@ -4051,3 +4051,325 @@ Integrated internal source/test bytes match this final tested composition exactl
 Only documentation is reconciled centrally. All deletion/startup fixtures are
 disposable; no user database wipe or installation was performed. No secure-media
 erasure, external cleanup or remote settlement is claimed.
+
+## Canonical module migration — candidate evidence, public gate pending
+
+Candidate base: reviewed `67e9e3b`; branch `codex/canonical-module-distribution`.
+Static byte comparison covers all 133 tracked fork files: 57 Go files differ
+only by quoted import-prefix substitution, 75 other inputs match the expected
+namespace/layout transformation (including unchanged license and verbatim
+renamed module/sum metadata), and `ARM-CHANGES.md` records the packaging change.
+No fork algorithm/protocol/limit behavior change is part of this delta. License
+SHA256: `33bcc6a4bea2187b74a9ac5ed747a8f4631aec0d59eec3e6b32557fc9e408cb8`.
+Historical upstream references and old validation package records are retained.
+
+Added a regression for active nested module/workspace omissions, stale fork
+imports, root replacement incompatibility and actual production snapshot
+preservation of stream/internal engine/license/provenance inputs. The real
+cross-target carrier fixture now imports a main-module fork rather than a
+local-replace fixture. Linker and binary-inspection paths use the canonical
+namespace; formal trace validators require new-source package names.
+
+Heavy validation is queued via the required shared FIFO, `GOMAXPROCS=1` and
+`-p=1`, using the existing pinned project toolchain. No test success is claimed
+while queued. Independent source review, exact final-source validation and
+coordinator publication remain gates. Public `@commit` and `@latest` installs
+must use disposable GOBIN/GOMODCACHE/GOCACHE and an external public source query;
+local source, fixture proxies and prepopulated private caches do not count.
+The user's installed binary and backend/state are untouched.
+
+Static fork import inventory additionally promotes already pinned root entries
+for toml, systemd, renameio, shlex, landlock, md4 and x/sync to direct requirements;
+`google/go-cmp` (already checksummed) is now direct for fork tests. No dependency
+versions are upgraded. The pending `go mod tidy -diff` gate must confirm this
+classification and root sums against all platforms, including fork tests.
+
+Independent final-source review covers `4dde3d0` (tree
+`fb17d2e0568448baa20efd9ad382e3fc4e25b9b6`), reproduced in isolated reviewer
+commit `53bf0c0` with the identical tree. No blocking findings. The reviewer
+identified an optional trimpath fragility in the added test; `4dde3d0` fixes it
+using the package working directory. A second independent byte inventory
+confirms 850 existing Go/Python files are namespace-only, with two explicitly
+reviewed distribution-fixture exceptions and one new layout regression.
+Changed Python scripts compile; `git diff --check` passes. The only active
+module file is root `go.mod`; root `go.sum` remains unchanged. Existing root
+module requirements supply all fork dependency versions.
+
+The exact delta from public-review baseline `67e9e3b` was inspected: executable
+changes above, root module classification, two Makefiles, packaging notes and
+these scoped delivery records; original license/provenance and historical
+records remain. This is a scoped new-source delta review, not a claim that the
+parent's entire future composed publication/history has been audited. Re-audit
+any additional composition before pushing public refs.
+
+Pinned toolchain reports `go1.27.3 darwin/arm64`. Original queued validation
+session is `52228`, executing `.cache/validate-module.sh`; output is
+`.cache/module-validation.log` in this task checkout. It checks clean source
+and its actual HEAD before `go mod tidy -diff`, all-package compile, focused
+race tests (including installed-rsync client/server interoperability), fork
+vet/interoperability suites and native/Linux ARM64 builds. All Go jobs are
+bounded by `GOMAXPROCS=1` and `-p=1`. At this checkpoint it has not started its
+child and remains behind 23 live jobs. Both global locks are held; one is an
+external long-running throttle. No other ticket, lock or policy was changed.
+This is waiting evidence, not a passing test result. Public remote installs
+remain unperformed until the coordinator publishes reviewed source.
+
+Publication acceptance sequence: integrate the three focused candidate commits
+without divergent feature history, compose separately reviewed release metadata
+if needed, recheck current source/dependencies and run exact-source validation.
+Publish through the coordinator. From a fresh temporary working directory for
+each query, set private empty GOBIN/GOMODCACHE/GOCACHE, GOWORK=off, GOENV=off,
+GOTOOLCHAIN=local and the ordinary public Go proxy. Query the canonical module
+at the immutable published commit, record its resolved Version/Sum/GoModSum,
+then run `go install github.com/inferal-oss/arm/cmd/arm@COMMIT`. Capture the
+original command exit, `go version -m` buildinfo, binary digest, `arm version`,
+`arm help`, and read-only empty-catalog behavior under a fresh explicit home.
+Repeat with new empty directories for literal `@latest`; record which source it
+actually resolves. Proxy visibility and GOPROXY=direct are separate observations
+if propagation delays occur. No local fixture proxy, source checkout install,
+user-installed binary overwrite, backend startup or prepopulated source cache
+establishes this gate. Remove disposable caches/state after preserving bounded
+receipts. Website copy stays with the launch owner until these gates pass.
+
+Inspected the separately owned release metadata candidate `97be9f5` for shared
+migration boundaries only. It replaces `tagVariable` with an old-namespace
+`identityPackage`, adds Version linker injection, and extends the carrier
+fixture with a native executable assertion expecting `local-replace-input`.
+Central composition must canonicalize `identityPackage`, retain this migration's
+single-module fixture/imports and update that expected token to
+`main-module-fork-input`. The candidate is not imported or accepted here;
+its independent review and exact composed native/cross-target metadata tests
+remain gates. The original local validation session `52228` still waits and
+has not produced a test result.
+
+### Remote portable validation successor
+
+Original local FIFO session `52228` was interrupted through its original tool
+handle and returned exit 130. Its caller PID 52418 is absent, and its exact
+queue ticket/start marker are absent. The sole log entry is the original wait;
+no toolchain/header, compiled binaries or dependency inventory was produced.
+Thus its child did not start and there is no duplicate local pending run.
+
+A candidate-only contents-read GitHub Actions workflow and generated-evidence
+runner are prepared for independent review before publication. They collect
+original per-command exits, source commit/tree/full SHA256 manifest, complete
+Go pass/fail/skip rosters, module tidy/verify, full compile, scoped race/vet,
+full fork tests including installed-rsync interoperability, trimpath layout,
+native/Linux ARM64 binary buildinfo, and a separate immutable-public-commit
+installation with empty disposable binary/module/build directories. Only
+bounded generated receipts are uploaded; source caches, binaries, user files,
+backend state and credentials are excluded. Publication of candidate CI does
+not move main, deploy a website, create a release/tag or accept `@latest`.
+
+Independent CI-runner review found and corrected two receipt/lifecycle gaps:
+installed binary buildinfo now must match the exact version and checksum from
+the recorded public query (including a future `latest` query), and runner
+SIGTERM/SIGHUP/interrupts close and reap the original owned command process group
+before disposable-directory unwinding. Timeout cleanup also tolerates the
+original group already being gone. Lightweight Python syntax, exact/mismatched
+module-record matching and an actual disposable owned-child termination/reap
+probe pass; these are runner checks, not Go or public-install acceptance.
+The workflow remains candidate-branch push/manual only, pinned-action,
+contents-read, no persisted checkout credential, no shared cache, and uploads
+only the generated receipt directory. No main/tag/release/deployment action is
+added. Exact CI command results remain pending actual publication/run.
+
+### Central canonical-module source and hosted-runner review
+
+The central reviewer composes the focused module commits on `67e9e3b`, then
+reuses the author's portable runner `343c6f1`/`4a313de` instead of creating a
+second validation contract. Independent byte classification confirms exactly
+850 changed existing Go/Python inputs are quoted namespace substitutions; the
+only exceptions are two distribution fixtures and the new layout regression,
+all inspected directly. All133 fork files satisfy the expected packaging
+transformation, including unchanged algorithms, original license and verbatim
+archived module/sum metadata. Root go.sum is unchanged. The explicit root
+requirements add no new dependency versions; actual tidy/verify remains a gate.
+The material publication delta extends the already-public/audited `a6e7f3b`
+through two root-reviewed coordination-doc commits, the reviewed module delta,
+and the inspected CI runner; no unrelated private refs are included.
+
+Hosted-runner corrections pin verified official action commits, install modern
+real rsync on both target operating systems, explicitly include only the hidden
+generated-receipt directory in artifact upload, and bind checkout HEAD to the
+immutable hosted event commit. Public installation uses only the ordinary public
+proxy with a fresh private GOPATH/module/build/bin scope and no checksum bypass.
+Downloaded module declarations, fork engine inputs, license and provenance must
+match the reviewed source bytes; the checkout is an expected-hash oracle only,
+never the installation source or working directory. The installed version and
+module checksum remain bound to the public query. Normal hosted CGo defaults
+are retained and recorded, rather than limiting the plain installation claim
+to an overridden CGo-free environment. Source-build CGo-free platform checks
+remain separate. Python syntax, YAML parsing and diff checks pass; these are
+runner/source checks, not executed Go or public-install acceptance.
+
+Official [Go install documentation](https://pkg.go.dev/cmd/go#hdr-Compile_and_install_packages_and_dependencies)
+confirms that version-suffixed installation resolves independently of a caller's
+module and imposes replacement/exclusion constraints. The remaining gate is the
+actual source compile/tidy/fork/interoperability/distribution/race/vet and public
+immutable-commit installation run on the inspected candidate CI branch. No main,
+tag, release, website deployment, installed-user binary or backend/state change
+is performed by candidate validation; literal latest acceptance follows separate
+root-approved main publication. Separate release metadata `97be9f5` is not
+silently included in this candidate.
+
+First actual public immutable install: run `40422678669`, public-install job
+`121920676377`, source `4a313de141fe28aae3ac2084d841ca4ac8fc5b4b`.
+The public query and original `go install
+ github.com/inferal-oss/arm/cmd/arm@4a313de141fe28aae3ac2084d841ca4ac8fc5b4b`
+both exit 0 using Go 1.27.3, the ordinary public proxy/SumDB and fresh disposable
+GOBIN/GOMODCACHE/GOCACHE outside the checkout. The query resolves to
+`v0.0.0-20261026235205-4a313de141fe`, module sum
+`h1:DPR5m+ukZr//s35wozgUPFMpirEnxY8kFDGzvaZd5+k=`, GoModSum
+`h1:gwgTNBnaNcV+BYUtNhda33thACZtTaynoM6uFMa80PQ=`, and exact Origin.Hash.
+Installed buildinfo matches that version/sum and canonical executable path;
+version and help exit 0. Binary SHA256 is
+`f145bcc3328c9232a7ff955902815aa1ae0cd99e45e527c3cf264fbf0f41ceea`.
+
+The overall public-install job fails: the validation helper incorrectly passes
+unsupported `--json` to `mesh artifacts list` (exit 2), then aborts decoding its
+empty stdout. This does not invalidate the recorded successful original install,
+but it does not accept the complete smoke/cleanup gate. The corrected helper
+omits that flag (piped CLI output is already JSON) and records invalid output
+as a failure without losing the result/cleanup receipts. No product CLI change
+or unsupported public contract is introduced. A corrected reviewed successor
+must rerun from fresh caches; original failure receipts are retained.
+
+Downloaded source receipts from the first run expose actual remaining closure
+failures on both Linux/macOS: tidy wants the existing pinned `k8s.io/streaming`
+requirement promoted to direct (the root Kubernetes tests import it); and the
+newly included fork sender package fails default test vet plus scoped vet at
+`flist.go`'s three-verb/two-argument debug Printf. Runtime native/Linux ARM64
+builds succeed, but that does not accept the failed full compile/race/fork/vet
+commands. No test failure was hidden by disabling vet or changing policy.
+
+Focused correction promotes `k8s.io/streaming` without a version/sum change and
+supplies the existing local `strip` value to that debug call. This is an explicit
+fork diagnostic-output exception to the initial namespace-only comparison:
+`%!q(MISSING)` becomes the intended quoted strip. Walk inputs, file list,
+protocol, accounting, cancellation, bounds and filesystem behavior are unchanged.
+`ARM-CHANGES.md` records it. It requires separate source review and a new exact
+source portable run; no earlier candidate passes accept the corrected source.
+
+
+### Observed public module-ZIP browser dependency omission
+
+Central review inspects the actual public proxy ZIP for candidate `4a313de`:
+resolved version `v0.0.0-20261026235205-4a313de141fe`, ZIP5,195,133 bytes,
+SHA256 `27ab217bf046d55ef8f356f9cf84ab0bf73c227a47d5f4e71c62e37ae6edf711`.
+It contains noVNC `core/inflator.js` importing `../vendor/pako/...`, while the
+required inflate/deflate modules and license are absent. Go's documented ZIP
+rules omit every `vendor` directory, including non-Go embedded assets. A source
+checkout could compile and serve these inputs while a public install silently
+lost them; fork-only closure checks did not cover this dependency.
+
+The focused packaging correction relocates all14 pako files to `novnc/deps/pako`
+without changing their bytes or license. Only two upstream importer path strings
+change; algorithms and browser/native authority remain unchanged. The original
+upstream noVNC license text remains verbatim historical material. Static byte
+receipts preserve every relocated file and the exact import-only transformations.
+A focused embedded-FS regression rejects module-ZIP-omitted vendor paths and
+checks importer/license closure; existing local Host/method/header asset tests
+now cover the moved inflate/deflate/license paths. Hosted validation executes
+these focused asset races, and the actual public download must match both
+importers, upstream license and all14 relocated assets before install acceptance.
+No new local heavy job or queue ticket is started. Actual successor hosted Go
+and public-install results remain pending; public ZIP inspection is a concrete
+failure reproduction, not a passing installation or rendered VNC session.
+
+### Completed portable baseline and scoped final browser-asset successor
+
+Run `40424167014` on exact source `49e2c789874822eada23b5fc26f0607859aea865`
+(tree `905eee10115eb60ecb36e8c30799d934fe827826`) completes successfully on both
+Linux/macOS and public installation. Each source job's 18 original commands
+exits 0: tidy-diff, module verify, full package compile, scoped race, full fork
+tests, scoped vet, trimpath layout, native and Linux ARM64 builds, dependency
+inventory, final clean-source check and binary metadata. Full rosters retain
+all package/test outcomes. There are no named test skips/failures; package-only
+"skip" events identify packages with no test files. This result does not cover
+the subsequently discovered browser `vendor` omission.
+
+All 1,838 tracked-file source-manifest entries agree between those baseline
+jobs and public-install job. Manifest SHA256:
+`bb47ee60caaf81b4c011c0bd3ade3e10dd2b7cf90091497899926266e0bd6ac1`.
+The reviewed asset commit `af7c059` is appended directly; equivalent alternate
+asset commits are not included. All existing production Go files, root module
+and sums, fork source/fixtures, and inputs of the prior scoped race/fork/vet
+checks remain byte-identical. The only changed existing Go file is the server's
+asset test; a new server asset regression is added. Asset data/importers and
+validation tooling change as described above. The local input-hash comparison
+against the baseline manifest is retained in `.cache/module-assets-scope-reuse.json`.
+
+The successor workflow explicitly renews only browser embedding/HTTP race tests
+on both OSes and a new real public immutable install plus 26 expected public-ZIP
+closure inputs. It does not re-run unrelated fork, policy or global Go gates.
+Manual workflow runs default to full source scope; the candidate branch's final
+push scope is assets. A separate manual `public_query=latest` is guarded to the
+main ref, for use only after coordinator publication; this change does not run
+latest or move main. New scope/dispatch tooling requires independent review
+before the final candidate is published. Unchanged baseline results are reused
+only for their input-hashed scope, while final asset/public acceptance waits for
+its actual new run and receipts.
+
+### Final immutable module and browser ZIP closure — accepted candidate
+
+[Final run 40426543555](https://github.com/inferal-oss/arm/actions/runs/40426543555)
+passes all jobs at exact `3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0`, tree
+`63399b3494e1af83b9282e200cbae5173e3d8680`. Both native asset jobs record six
+original command exits of 0 and 14 named passes plus the package pass, with no
+skips/failures. This is the deliberately narrowed asset scope, not a rerun of
+all fork/policy/native checks. The complete unchanged-source portable evidence
+remains the separately identified `49e2c78` run: each OS has 67 compiled test
+packages plus 19 packages without tests, 96 named scoped race passes across 8
+packages, 167 named fork passes across 20 packages plus 13 without tests, and 1
+trimpath regression pass. No named test was skipped or failed. Full normalized
+rosters for both platforms are preserved in the JSON acceptance record below.
+
+All three final 1839-entry manifests match, SHA256
+`84d52b6c00696ace8e481862ddb5ccd3deb33bc8083e9191073203651be2f3e9`.
+Independent final receipt review confirms candidate bytes, scoped reuse,
+original exits, exact public module identity, all 26 public ZIP input hashes,
+14 byte-preserving pako/license relocations and cleanup, with no discrepancies.
+
+The actual original public query and
+`go install github.com/inferal-oss/arm/cmd/arm@3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0`
+exit 0 using Go 1.27.3 linux/amd64, normal CGo=1, ordinary
+`https://proxy.golang.org` only, SumDB enabled and new empty private
+GOBIN/GOPATH/GOMODCACHE/GOCACHE outside the checkout. No local source checkout,
+fixture proxy, local replace or prepopulated private source supplies the build.
+Resolved version: `v0.0.0-20261027002433-3306c6bbac5d`.
+Module sum: `h1:QQEEfamfrV3BQ/48E0n32+LF+p6QliXNfl2mI5nCzP0=`.
+GoModSum: `h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=`.
+Origin.Hash and installed binary buildinfo match the exact query/version/sum;
+all 11 public commands exit 0. Version reports 0.1.0-dev, help succeeds, the thin
+catalog is `[]`, no backend home is created, and the owned disposable root is
+confirmed removed. Binary SHA256:
+`38f6e6dc8356c3bffe1cd1f1f82df1e33d7a9465753eb3b763fce444c0da13f3`,
+68,552,075 bytes. No installed user binary/backend/state is touched.
+
+Final artifacts are generated receipts only. Their downloaded ZIP bytes were
+independently SHA256-checked against GitHub's exact artifact metadata:
+
+| Artifact | ID | ZIP SHA256 |
+| --- | --- | --- |
+| Linux assets |12699633869|2a890a206ffe6f89a011f53f50a21fa4e560d3d61555b59604a88c6b0648cf2d|
+| macOS assets |12700286670|062a7b5db8a1f3ebfa52f9483acf5c1fa7be87e849bfd74c8e5c4c1d437f94ba|
+| Public install |12699902745|be831e9aaf39015add6e6aacaa042ff117be70e6ca3a56f8ccf5a3f7ad7e345d|
+
+[The persistent normalized acceptance record](validation/module-migration-2026-10-26.json)
+retains complete rosters and command exits without raw backend state or fixture
+logs; downloaded full receipts remain in the task's ignored cache and GitHub
+artifacts have seven-day retention. Runtime inputs remain byte-identical after
+this accepted candidate. The later provenance-only correction `2084eaa` documents
+the noVNC transformation accurately, with no ARD/runtime patch semantics changed.
+
+Literal `@latest` remains **unperformed and unaccepted** until coordinator main
+integration/publication and correction of the separately reviewed validation
+harness cancellation path. The CI workflow and script are excluded from the
+production integration because their stop helper could signal a process group
+after reaping its leader. Successful normal-path receipts above remain valid,
+but establish no cancellation safety. After the corrected harness is accepted,
+inspect literal latest installation and its actual resolved source,
+original install exit, buildinfo/checksums, final closure and cleanup receipts.
+Do not substitute this successful immutable candidate query for literal latest
+or infer acceptance of later composed feature/release changes from these scopes.

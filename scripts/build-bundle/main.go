@@ -11,9 +11,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/yrashk/arm/internal/buildinfo"
-	"github.com/yrashk/arm/internal/distribution"
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/buildinfo"
+	"github.com/inferal-oss/arm/internal/distribution"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 func main() {

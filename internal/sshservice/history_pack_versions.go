@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/yrashk/arm/internal/historypack"
+	"github.com/inferal-oss/arm/internal/historypack"
 )
 
 // These native versions bridge full off-lock verification and the later short

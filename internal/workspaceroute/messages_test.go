@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/published"
-	"github.com/yrashk/arm/internal/routing"
-	"github.com/yrashk/arm/internal/workspace"
-	"github.com/yrashk/arm/internal/workspacegraph"
+	"github.com/inferal-oss/arm/internal/published"
+	"github.com/inferal-oss/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspacegraph"
 )
 
 func messageFixture() (Open, Request) {

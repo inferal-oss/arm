@@ -15,7 +15,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 // A failed comparison is diagnostic evidence, never an accepted trace row.

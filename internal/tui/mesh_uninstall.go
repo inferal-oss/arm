@@ -7,9 +7,9 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshops"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // The selected remote node owns u, including its draft/review, so the global

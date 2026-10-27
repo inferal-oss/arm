@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/cli"
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/server"
+	"github.com/inferal-oss/arm/internal/cli"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/server"
 )
 
 func TestCLIMessageKeysDeduplicateReviewedRecipients(t *testing.T) {

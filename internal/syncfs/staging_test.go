@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/rsyncengine"
-	"github.com/yrashk/arm/internal/syncreconcile"
+	"github.com/inferal-oss/arm/internal/rsyncengine"
+	"github.com/inferal-oss/arm/internal/syncreconcile"
 	"golang.org/x/sys/unix"
 )
 

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func saveMeshStartupPolicy(home, address string, capacity model.Resources) error {

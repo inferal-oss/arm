@@ -11,8 +11,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/model"
 	"golang.org/x/sys/unix"
 )
 

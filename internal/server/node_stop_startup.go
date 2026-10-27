@@ -6,15 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/yrashk/arm/internal/storage"
+	"github.com/inferal-oss/arm/internal/storage"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 // checkNodeStopStartup runs under Serve's retained daemon.lock BEFORE reset

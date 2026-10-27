@@ -9,8 +9,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yrashk/arm/internal/buildinfo"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/buildinfo"
+	"github.com/inferal-oss/arm/internal/model"
 	"golang.org/x/sys/unix"
 )
 

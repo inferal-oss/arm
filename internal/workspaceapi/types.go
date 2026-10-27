@@ -4,7 +4,7 @@ package workspaceapi
 
 import (
 	"encoding/json"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspace"
 	"time"
 )
 

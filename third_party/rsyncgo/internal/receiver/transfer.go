@@ -4,11 +4,11 @@ import (
 	"io/fs"
 	"os"
 
-	"github.com/gokrazy/rsync/internal/log"
-	"github.com/gokrazy/rsync/internal/progress"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncos"
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/log"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 // TransferOpts is a subset of Opts which is required for implementing a receiver.

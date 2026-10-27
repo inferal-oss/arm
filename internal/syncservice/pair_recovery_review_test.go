@@ -3,8 +3,8 @@ package syncservice
 import (
 	"testing"
 
-	"github.com/yrashk/arm/internal/syncfs"
-	"github.com/yrashk/arm/internal/syncreconcile"
+	"github.com/inferal-oss/arm/internal/syncfs"
+	"github.com/inferal-oss/arm/internal/syncreconcile"
 )
 
 func TestReviewPairChecksOneSidedConfirmedEvidence(t *testing.T) {

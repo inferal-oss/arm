@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gokrazy/rsync/internal/rsynctest"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
 	"github.com/google/go-cmp/cmp"
 )
 

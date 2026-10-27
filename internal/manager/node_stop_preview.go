@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"unicode/utf8"
 
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 func nodeStopReadScope(actor nodestop.Actor, views []nodestop.LeaseReadScope) nodestop.LeaseReadScope {

@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gokrazy/rsync/rsynccmd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsynccmd"
 )
 
 func main() {

@@ -20,12 +20,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshstream"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
-	"github.com/yrashk/arm/internal/usage"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshstream"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/usage"
 	"golang.org/x/crypto/ssh"
 )
 

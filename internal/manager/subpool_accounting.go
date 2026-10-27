@@ -3,7 +3,7 @@ package manager
 import (
 	"math"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func addPoolCount(a, b int64) (int64, error) {

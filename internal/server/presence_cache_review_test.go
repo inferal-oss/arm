@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 	"testing"
 	"time"
 )

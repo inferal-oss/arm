@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func exportRequestFixture(t *testing.T, m *Manager) (model.Lease, model.StorageExportRequest) {

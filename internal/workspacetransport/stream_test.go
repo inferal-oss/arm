@@ -16,8 +16,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 type wireFixture struct {

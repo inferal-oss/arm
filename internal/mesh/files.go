@@ -3,7 +3,7 @@ package mesh
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 	"golang.org/x/sys/unix"
 	"io"
 	"os"

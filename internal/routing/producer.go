@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/published"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/published"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 func authority(a workspace.RouteAccess) workspace.Authority {

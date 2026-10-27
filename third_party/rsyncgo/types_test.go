@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 func TestSumHeadPeerBounds(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestPoolReadRefusesOversizedSnapshotWithoutTruncatingReview(t *testing.T) {

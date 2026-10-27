@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 func TestResetFenceBlocksReadOnlyLifecycleAndMeshInitialization(t *testing.T) {

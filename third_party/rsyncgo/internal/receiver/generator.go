@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/rsyncchecksum"
-	"github.com/gokrazy/rsync/internal/rsynccommon"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynccommon"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
 )
 
 // rsync/generator.c:generate_files()

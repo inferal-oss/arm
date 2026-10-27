@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/meshops"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestMeshReviewRequiresLiveExactUnexpiredSnapshot(t *testing.T) {

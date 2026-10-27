@@ -16,8 +16,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 // Confirmation input is captured at the delegated callback, independently of

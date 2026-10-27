@@ -26,24 +26,20 @@ install: validate-knowledge
 
 test: test-routed-ssh-harness
 	$(GO) test ./...
-	CGO_ENABLED=0 $(GO) -C third_party/rsyncgo test ./...
 
 check: test-routed-ssh-harness
 	$(GO) vet ./...
 	$(GO) test -race ./...
-	$(GO) -C third_party/rsyncgo vet ./...
-	$(GO) -C third_party/rsyncgo test -race ./...
 
 # Fast deterministic checks for the native routed-SSH acceptance harness.
 .PHONY: test-routed-ssh-harness
 test-routed-ssh-harness:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/test-routed-ssh-cleanup.py
 
-# The source-preserving rsync fork is a nested Go module.
+# The audited fork is part of the main module and included in ./... checks.
 .PHONY: test-rsync
 test-rsync:
-	CGO_ENABLED=0 $(GO) test ./internal/rsyncengine
-	CGO_ENABLED=0 $(GO) -C third_party/rsyncgo test ./...
+	CGO_ENABLED=0 $(GO) test ./internal/rsyncengine ./third_party/rsyncgo/...
 
 # Development-only pure JavaScript checks. ARM build/runtime needs no Node.js.
 test-web:

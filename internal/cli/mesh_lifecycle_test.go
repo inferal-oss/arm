@@ -3,9 +3,9 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshops"
 	"os"
 	"path/filepath"
 	"strings"

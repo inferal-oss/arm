@@ -11,8 +11,8 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/observe"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/observe"
 )
 
 func TestMonitorSubscriptionBoundReplacementAndRelease(t *testing.T) {

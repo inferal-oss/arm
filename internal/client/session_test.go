@@ -14,7 +14,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func sessionFixture(t *testing.T, handle func(context.Context, *websocket.Conn)) *Session {

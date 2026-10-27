@@ -14,7 +14,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yrashk/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/manager"
 )
 
 //go:embed cards/*.md

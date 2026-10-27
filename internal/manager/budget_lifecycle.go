@@ -2,7 +2,7 @@ package manager
 
 import (
 	"errors"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func (m *Manager) canonicalBudgetSelector(id string) string {

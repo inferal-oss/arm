@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/cli"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/server"
+	"github.com/inferal-oss/arm/internal/cli"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/server"
 )
 
 func TestCLIStorageExportRetainAndOutputSurvivesCleanup(t *testing.T) {

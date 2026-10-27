@@ -3,7 +3,7 @@ package manager
 import (
 	"sort"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 const maxPoolDepth = 16

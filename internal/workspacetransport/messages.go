@@ -7,7 +7,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 const (

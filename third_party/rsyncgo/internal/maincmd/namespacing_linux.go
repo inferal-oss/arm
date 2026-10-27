@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/gokrazy/rsync/internal/rsyncos"
-	"github.com/gokrazy/rsync/rsyncd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 	"golang.org/x/sys/unix"
 )
 

@@ -4,8 +4,8 @@ package mesh
 
 import (
 	"errors"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 // Caller retains the actual Store.mu RLock used by WithPeerSnapshot. No second

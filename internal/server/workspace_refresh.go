@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
-	api "github.com/yrashk/arm/internal/workspaceapi"
-	wire "github.com/yrashk/arm/internal/workspacetransport"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
+	wire "github.com/inferal-oss/arm/internal/workspacetransport"
 )
 
 func (s *Server) workspaceRecoveryRun(ctx context.Context, q api.RecoveryRun) (any, error) {

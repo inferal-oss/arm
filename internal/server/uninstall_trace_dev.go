@@ -2,7 +2,7 @@
 
 package server
 
-import "github.com/yrashk/arm/internal/mesh"
+import "github.com/inferal-oss/arm/internal/mesh"
 
 func traceUninstallNativeBoundary(action, home string, observation NodeStopObservation, resultErr error) {
 	mesh.DevUninstallObservedBoundary(action, home, observation, resultErr)

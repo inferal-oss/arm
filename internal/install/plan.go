@@ -3,13 +3,13 @@ package install
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 	"io"
 	"os"
 	"path/filepath"
 	"syscall"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // A Plan binds a read-only preview to the actual files, directory identities

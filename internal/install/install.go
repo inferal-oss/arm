@@ -11,8 +11,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 const begin = "<!-- arm:begin v1 -->"

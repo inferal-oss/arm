@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/usage"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/usage"
 )
 
 // HelperRuntime is supplied from startup-verified image evidence by the native

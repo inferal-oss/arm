@@ -3,8 +3,8 @@ package routing
 import (
 	"time"
 
-	"github.com/yrashk/arm/internal/workspace"
-	"github.com/yrashk/arm/internal/workspacegraph"
+	"github.com/inferal-oss/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspacegraph"
 )
 
 const MaxGraphRecordBytes = 1 << 20

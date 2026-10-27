@@ -1,6 +1,6 @@
 package rsync
 
-import "github.com/gokrazy/rsync/internal/log"
+import "github.com/inferal-oss/arm/third_party/rsyncgo/internal/log"
 
 // Logger is an interface that allows specifying your own logger.
 // By default, the Go log package is used, which prints to stderr.

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 func TestPreparedMeshSocketCannotListenBeforeExactReview(t *testing.T) {

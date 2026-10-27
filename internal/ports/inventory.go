@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func Discover(ctx context.Context) model.PortInventory {

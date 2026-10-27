@@ -3,7 +3,7 @@ package manager
 import (
 	"context"
 
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 // Native operator and closed transport adapters only. The server must project

@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func statusFixture(r SourceIntent) model.SSHKeyStatus {

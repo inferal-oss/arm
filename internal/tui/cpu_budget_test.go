@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func cpuPresentationFixture(m *dashboardModel, capacity, reserved, available float64) {

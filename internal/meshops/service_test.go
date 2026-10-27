@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/buildinfo"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshssh"
+	"github.com/inferal-oss/arm/internal/buildinfo"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshssh"
 )
 
 func assign(dst, value any) error {

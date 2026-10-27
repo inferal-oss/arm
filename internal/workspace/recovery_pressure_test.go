@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 func TestRecoveryActualWriterUnrelatedPressurePreservesFirstRecovery(t *testing.T) {

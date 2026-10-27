@@ -733,3 +733,97 @@ site's initial Terminal choice; product dashboard migration owner retains its
 explicit Terminal default. Public site deployment, exact DNS records, ownership
 verification, both HTTPS endpoints/redirect and final screenshot build remain
 unaccepted until actually verified.
+
+
+## Canonical module and versioned installation migration — in progress
+
+Owner: canonical-module-distribution task, isolated branch
+`codex/canonical-module-distribution`, based on reviewed `67e9e3b`. This task
+owns the shared root module/import namespace and audited rsync fork packaging.
+Other active portfolios retain their isolated feature work; integrate this
+focused dependency and migrate any newly added imports before final validation.
+Canonical namespace: `github.com/inferal-oss/arm`; fork imports:
+`github.com/inferal-oss/arm/third_party/rsyncgo`. Fork code stays in place with
+no active nested module or replace; original metadata stays as provenance.
+
+Gates: independent final-source review, module-layout and source-snapshot
+regressions, rsync interoperability, full package compile, scoped race/vet and
+platform checks. Coordinator owns reviewed main integration/publication and
+public disposable-cache `go install ...@commit` then `...@latest` evidence.
+No local/proxy fixture or old-source validation establishes that public gate.
+No new `arm install` carrier-assembly contract is included.
+
+Coordination: the launch owner retains root README/site install-copy ownership.
+The tagged-release owner retains workflow/scripts and the separate Version
+variable/linker-injection change. Apply this namespace/fork-layout dependency
+first, then compose the release metadata commit using canonical package paths;
+re-run carrier/source-metadata checks against the composition. This migration's
+runtime distribution edits only change module/linker path literals, preserving
+Version behavior and the existing snapshot whitelist.
+
+Source candidate: `f897c47` (canonical imports/fork layout), `a30edd7` (direct
+fork dependencies and launch-copy ownership), `4dde3d0` (review regression
+trimpath fix). Independent reviewer checkout `codex/canonical-module-review`
+at `53bf0c0` has the same tree as `4dde3d0`:
+`fb17d2e0568448baa20efd9ad382e3fc4e25b9b6`; no source findings remain.
+Source review does not accept runtime/public installation gates. The original
+local FIFO session remains queued; do not launch a duplicate. Coordinator may
+publish reviewed/audited source to the authorized public repository for CI,
+then verify the immutable query and actual latest installation separately.
+
+### Tagged release metadata dependency (candidate `97be9f5`)
+
+Release owner candidate `97be9f5` remains separate and awaits central review;
+this module task does not import it. At composition, its new `identityPackage`
+in `internal/distribution/bundle.go` must be
+`github.com/inferal-oss/arm/internal/buildinfo`. Keep `identityFlags` injecting
+both Version and BundleTag through that canonical package for payload/carrier
+builds; do not restore this branch's superseded standalone `tagVariable`.
+Preserve the migrated carrier fixture's main-module go.mod (no replace or
+nested go.mod), canonical imports, and `main-module-fork-input` fixture value;
+carry forward the release candidate's Version variable/output and native
+execution assertion, with expected fixture output updated to that value.
+New build-bundle tests/files must use canonical imports if they introduce any.
+Re-run distribution/carrier native and cross-target metadata checks plus
+build-bundle tests against the actual composed source. Neither candidate's
+separate evidence accepts their untested composition or public installation.
+
+### Canonical module candidate accepted for central integration
+
+Source/module baseline `49e2c78` / run `40424167014` is green on Linux amd64
+and macOS arm64, including actual installed-rsync interoperability. Final asset
+successor `af7c059` at CI source `3306c6b` / run `40426543555`
+is green for both platforms' embedding/HTTP race checks and a fresh real public
+immutable install with all 26 ZIP closure inputs. Independent receipt review
+finds no discrepancies. Complete normalized rosters, original exits, source
+manifests, public version/sums, binary digest and verified artifact digests are
+in `docs/validation/module-migration-2026-10-26.json`.
+
+The publication owner remains this module task on
+`codex/canonical-module-validation-successor`; the dedicated public CI branch
+stays at tested `3306c6b`. Documentation-only provenance successor `2084eaa`
+(cherry-pick of requested `6ecfae5`) corrects noVNC's transformation record.
+Neither alternate asset implementation `d55d0ec` nor `f6b5368` is integrated.
+No runtime inputs change after the accepted final candidate; subsequent delivery
+records do not trigger another global/native run.
+
+Remaining gates belong to central composition: integrate focused reviewed
+changes while preserving other work, canonicalize any later feature imports,
+compose the separately reviewed release identity change using canonical
+`identityPackage`, audit the exact publication delta, and publish main. Root's
+`6bc990b` sync/workspace work follows this module dependency; its separately
+reported native evidence is not accepted or integrated by this module task.
+Recheck affected composed boundaries with their actual source identities.
+
+Coordinator accepts the production, test, provenance and evidence delta from
+`67e9e3b` through `10ef959`. The candidate CI workflow and validation script are
+excluded: final review found a process-group signal after child reaping in the
+cancellation helper. A separate focused correction and review must precede
+using that helper for literal latest. Normal successful command receipts remain
+valid; cancellation safety is not established by those passes.
+
+After main publication, verify literal public latest with fresh caches using
+the corrected, reviewed harness. This remains a concrete acceptance step. The launch owner retains README
+and site-copy ownership and advertises remote latest only after that proof.
+No main/tag/release/site publication or user backend/installation change is
+performed by this task's candidate CI.

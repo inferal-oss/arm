@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/observe"
-	"github.com/yrashk/arm/internal/pressure"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/observe"
+	"github.com/inferal-oss/arm/internal/pressure"
 )
 
 // This supplies an already normalized candidate and compatible interval as a

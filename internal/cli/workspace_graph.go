@@ -3,8 +3,8 @@ package cli
 import (
 	"encoding/json"
 
-	"github.com/yrashk/arm/internal/model"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/model"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 )
 
 func (a *app) workspaceGraphCommand(args []string) (int, error) {

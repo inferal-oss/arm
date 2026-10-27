@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/usage"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/usage"
 )
 
 const CPUObservationCadence = 2 * time.Second

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/kubeprovision"
+	"github.com/inferal-oss/arm/internal/kubeprovision"
 )
 
 func TestKubernetesTUITypeaheadSelectionAndStaleRead(t *testing.T) {

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestForwardListenerPortAndResourcesJoinBeforeSettlement(t *testing.T) {

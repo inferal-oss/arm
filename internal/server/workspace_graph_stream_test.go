@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/routing"
-	"github.com/yrashk/arm/internal/workspace"
-	route "github.com/yrashk/arm/internal/workspaceroute"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/workspace"
+	route "github.com/inferal-oss/arm/internal/workspaceroute"
 )
 
 func graphStreamFixture(t *testing.T) (*Server, *Server, *Server, string) {

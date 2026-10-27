@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshops"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshops"
 )
 
 func reconnectHistoryFixture(t *testing.T) (mesh.Coordination, map[string]mesh.LifecycleOperation) {

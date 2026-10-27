@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"github.com/yrashk/arm/internal/certverify"
+	"github.com/inferal-oss/arm/internal/certverify"
 	"math"
 	"strconv"
 	"strings"
@@ -16,7 +16,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func problem(code, text string) error { return model.Err(code, text) }

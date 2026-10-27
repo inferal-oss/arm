@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Adding local ledger evidence to Lease must not silently expand the closed
