@@ -43,10 +43,65 @@
       },
       "upstream_merge": false,
       "deployment": false
+    },
+    {
+      "url": "https://github.com/inferal-oss/semblance/pull/186",
+      "issue": 154,
+      "state": "draft",
+      "source_commit": "2f89f63c9118fa35c54a8ee75bd32c8accfc25df",
+      "base_commit": "eb80b431aef25ae29a999820bab6c187df6bd9d4",
+      "commits": 1,
+      "changed_paths": 9,
+      "source_review": "passed",
+      "final_typecheck": "passed",
+      "final_cases": 38,
+      "final_files": 2,
+      "final_skipped_cases": 0,
+      "native_browser": "Chrome",
+      "native_unique_configurations": 80,
+      "theme_count": 10,
+      "schemes": 2,
+      "directions": [
+        "en",
+        "ar"
+      ],
+      "viewport_widths": [
+        1728,
+        390
+      ],
+      "controls": [
+        "TextField",
+        "TextArea"
+      ],
+      "paths": [
+        "SPARQL",
+        "function"
+      ],
+      "native_scope": [
+        "locked and enabled values",
+        "native attributes and properties",
+        "model and original node identity",
+        "removed disabled fact restores editing"
+      ],
+      "retained_unsupported_view_warnings": 609,
+      "distinct_unsupported_n3_views": 74,
+      "n3_rendering_accepted": false,
+      "source_intersection": {
+        "owned_files": 9,
+        "unchanged_engine_and_package_inputs": 88,
+        "engine_binary_hashes_verified": 2
+      },
+      "original_fixture_cleanup": {
+        "server_close_awaited": true,
+        "listener_refused": true,
+        "tab_closed": true,
+        "viewport_restored": true
+      },
+      "upstream_merge": false,
+      "deployment": false
     }
   ],
   "remaining_component_issues": [
-    154,
     155,
     166,
     181

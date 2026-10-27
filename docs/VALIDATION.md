@@ -60,7 +60,23 @@ recorded native import/removal checks. The work does not establish other-browser
 CSP behavior, serialized initial styles or full-suite acceptance. Upstream's full
 suite belongs on main after a merged batch. This submission merges or deploys
 nothing. The [submission record](validation/semblance-upstream-prs-2026-10-27.json)
-preserves the scopes and remaining four component submissions.
+preserves the scopes and remaining component submissions.
+
+## Upstream disabled text submission
+
+Draft [Semblance PR #186](https://github.com/inferal-oss/semblance/pull/186)
+contains the reviewed nine-path `2f89f63` patch on `eb80b431`. Final typecheck
+and 38 cases in two files pass without skips. Native Chrome observes 80 distinct
+theme/scheme/direction/width combinations, both TextField/TextArea rendering
+paths, locked and enabled values, and restored editing after fact removal.
+All nine owned files, 88 engine/package inputs, two binaries, selected harness
+inputs and image bytes are checked. The original server closes, its listener
+refuses connections, and the tab/viewport are restored.
+
+The raw output retains 609 unsupported-view warnings with 74 distinct N3 views;
+these are not accepted N3 rendering evidence. Earlier 55-case evidence keeps
+its earlier-source scope. This is a draft submission, with no upstream merge,
+deployment, other-browser or universal disabled-control claim.
 
 ## Compiled UI and backend source intersection
 
@@ -78,7 +94,7 @@ metadata difference is public issue tracking. No browser suite is repeated here.
 Later provider-consumer integration and physical suspend are outside this source
 cut. Earlier failed renderer cuts remain failures below.
 
-## Website capture and pending acceptance
+## Website capture and deployment
 
 Pages run `40470874551` succeeds at `70c77cd` with deployment skipped, but its
 Resources screenshot obscures content. Capture successor `d825c26` fails its
@@ -89,13 +105,37 @@ overflow, SHACL failures, console/page errors or failed local requests; gallery
 image bytes and natural dimensions match the captured artifact. The Resources
 image now places the footer below all content.
 
-A deeper native picker check nevertheless reproduces a property/attribute
-mismatch on history and responsive transitions; heading-only history assertions
-do not establish native selection correctness. Final acceptance requires the
-existing generic #181 renderer correction and a reviewed WAT-only site package
-with complete notices. The newer screenshot binary has different VCS metadata
-from the carrier build; no bit-identical executable claim is made. Carrier
-inspection, publication and both public HTTPS endpoints remain separate gates.
+A deeper native picker check reproduces a property/attribute mismatch on history
+and responsive transitions at that source. The corrected frozen `ec2f9c9` cut
+uses the reviewed generic #181 reflection change and a WAT-only package with
+complete Vite notices. Its eight website views and six native picker phases
+pass; actual property, attribute, value, heading and history agree. The
+[frozen record](validation/website-artifact-ec2f9c9-2026-10-27.json) retains all
+earlier failures and scopes this acceptance to its exact source.
+
+Focused source commits `1330d87`, `9191469` and `16818ad` preserve the reviewed
+53-path composition. Automatic main run `40485808949` successfully builds and
+deploys `16818ad`. Root checks its actual 15 files, three fresh image hashes and
+pixels, source/capture identity, and all normal-HTTPS byte receipts. Ten static
+files, including all four runtime assets, equal the frozen site; only source
+integrity, capture metadata and three fresh PNGs differ. This comparison does
+not claim a new eight-view or six-phase native interaction rerun.
+
+One acknowledged custom-domain clear/restore restarts certificate provisioning;
+only after an approved exact-domain certificate and normal HTTPS source check
+does one enforcement write succeed. Readback is enabled, HTTP root returns 301
+to the canonical HTTPS URL, and all 15 HTTPS files match the artifact. The
+[main deployment record](validation/website-deployment-16818ad-2026-10-27.json)
+preserves the initial TLS mismatch and cached HTTP metadata response. Secondary
+domain HTTPS/redirect behavior remains unaccepted.
+
+Carrier run `40470874515` and its independently inspected artifact remain scoped
+to `70c77cd`: all 16 compressed occurrences, four unique raw images and actual
+Go metadata match; private matching-platform version execution exits zero with
+its original child positively waited and private namespace removed. This
+[carrier evidence](validation/release-payload-inspection-70c77cd-2026-10-27.json)
+is integrated as `50a000b`. No tag/release or later-main carrier validation is
+implied by the website deployment.
 
 ## Preserved Semblance follow-up failures
 

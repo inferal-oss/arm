@@ -67,8 +67,9 @@ in module ZIPs. The native option-property and platform shortcut fixes are
 integrated. A separate compiled backend composition at `36d80f9` passes affected session/embed races,
 build and real CLI/HTTP/PTY bootstrap against unchanged source inputs. The generic
 CSSOM correction is submitted as draft
-[Semblance PR #185](https://github.com/inferal-oss/semblance/pull/185); four other
-component PRs remain, with Sparkline depending on shared numeric conversion/parity
+[Semblance PR #185](https://github.com/inferal-oss/semblance/pull/185), and disabled
+text controls as draft [PR #186](https://github.com/inferal-oss/semblance/pull/186).
+Three component PRs remain, with Sparkline depending on shared numeric conversion/parity
 fixes. Submission does not establish upstream acceptance. This UI milestone does not
 enable fenced backend features or accept every remote/native operation.
 
@@ -87,15 +88,39 @@ exclusive ownership, all-write coverage, reservation, native enforcement for a
 new operation, cleanup or settlement. No Manager/provider bridge or public sync
 dispatch is enabled. Dedicated native positive/refusal fixtures remain open.
 
-## Frozen release payload integrity
+## Public website and release packaging
+
+Reviewed commits `1330d87`, `9191469` and `16818ad` integrate the shared
+original-child build helper, canonical tagged carrier identity/workflow, and
+Semblance website with actual dashboard/PTY captures. The exact 53-path
+composition preserves other integrated features. The website packages one WAT
+engine, the generic reviewed option-property correction and complete notices.
+
+Automatic main run `40485808949` builds and deploys source `16818ad` to
+[getarm.org](https://getarm.org/). Its 15 files match the deployed bytes over
+normal certificate-verifying HTTPS; HTTP root redirects to HTTPS and enforcement
+is enabled. The three fresh dashboard images come from a disposable CI backend;
+their sequential measurements are not simultaneous snapshots. The prior frozen
+site's eight-view and six-phase picker results retain their original source
+scope, with all ten static files unchanged in this main deployment.
+
+The second domain still requires a separately approved redirect arrangement.
+No additional Cloudflare proxying is enabled. Source-bound carrier inspection
+at `70c77cd` verifies all 16 compressed payload occurrences and four unique raw
+images, actual Go metadata and private matching-platform version execution.
+It does not publish a tag/release or accept a carrier built from later main.
+See the [deployment record](validation/website-deployment-16818ad-2026-10-27.json)
+and [carrier record](validation/release-payload-inspection-70c77cd-2026-10-27.json).
+
+## Earlier frozen release payload integrity
 
 The isolated public-launch composition at `c24a4d6` has an accepted artifact
 integrity milestone. Four carriers contain the same four compressed companion
 payloads; each unique stream was inflated once and checked against its catalog
 raw size/hash and actual Go build metadata. No carrier was rebuilt or thin
 payload executed during inspection. This historical composition does not accept
-later runtime/UI bytes or publish a release/site. Final UI composition, artifact
-refresh, Pages deployment and both public HTTPS endpoints remain open.
+later runtime/UI bytes or publish a release/site. The later source-specific
+website deployment and carrier evidence above retain their separate identities.
 
 ## Finite pressure control model
 
