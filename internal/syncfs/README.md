@@ -1,5 +1,25 @@
 # Native sync filesystem adapter
 
+`ProbeNativeQuota` reads existing native hard quota status for held selected
+and workspace-parent roots. On Linux it requires XFS project quota enforcement
+(accounting alone is refused), matching nonzero inherited project IDs, and a
+finite native hard limit. On macOS it matches the held APFS mount to the native
+volume record and requires a finite volume quota. Missing quotas return
+`ErrQuotaUnsupported`; incomplete native reports return `ErrQuotaUnknown`;
+changed held roots or mounts return `ErrChanged`. The probe never configures
+quotas or changes a host volume. Its typed evidence is a point-in-time native
+root-scope observation, not proof that every descendant or outside writer is
+covered, that a project/volume is exclusive to one operation, or that cleanup
+reclaimed storage. Public sync remains closed until Manager durably binds and
+revalidates an eligible complete scope on both endpoints and settlement is
+implemented.
+
+Linux's `Q_XGETQUOTA` permission check requires `CAP_SYS_ADMIN` for a project
+quota; the self-query exception applies only to user and group quotas. An
+ordinary process receiving `EPERM` gets `ErrQuotaUnknown` and cannot use this
+probe to establish public sync authority. No privilege helper or provider
+setup path is implemented. See the [kernel permission check](https://github.com/torvalds/linux/blob/master/fs/quota/quota.c).
+
 `SurveyWorkspace` provides a bounded read-only `st_blocks` observation for one
 exact marked private workspace. It reopens the original reservation and roots,
 refuses child mounts and special files, checks symlink inodes without following
