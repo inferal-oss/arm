@@ -191,6 +191,13 @@ func TestSSHManagerActualProcessRedactionAndNoReplay(t *testing.T) {
 	if l.ID == "" || l.PID == 0 || l.Process == nil || l.Request.Peer != q.Source {
 		t.Fatal("missing fresh supervised lease", l)
 	}
+	awaitTransportSignal(t, f.serverDone, "original SSH transport did not join")
+	f.m.mu.Lock()
+	hold := f.m.sshTransports[l.ID]
+	f.m.mu.Unlock()
+	if hold != nil {
+		awaitTransportSignal(t, hold.done, "original joined SSH settlement did not complete")
+	}
 	lookup, err := f.m.LookupSSH(q.Source, q.Key)
 	if err != nil || !lookup.Found || lookup.Lease.State != "terminal" || lookup.Lease.Outcome != "failed" {
 		t.Fatal(lookup, err)

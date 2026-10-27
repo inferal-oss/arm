@@ -183,3 +183,77 @@ func TestNativeDeniedSignalCannotBecomeSuccessfulCleanupAfterReap(t *testing.T) 
 	// The permission failure above is controlled; exit/reap is actual native.
 	// A positive later exit must not erase that earlier failed control outcome.
 }
+
+func TestNativeSuccessfulKillIsNotRepeatedDuringJoin(t *testing.T) {
+	_, o := startOwnedFixture(t, "/bin/sh", "-c", "exec sleep 30")
+	calls := 0
+	o.mu.Lock()
+	original := o.signal
+	o.signal = func(pid int, sig syscall.Signal) error {
+		if sig == syscall.SIGKILL {
+			calls++
+			if calls > 1 {
+				return syscall.EPERM
+			}
+		}
+		return original(pid, sig)
+	}
+	o.mu.Unlock()
+	var wg sync.WaitGroup
+	for i := 0; i < 6; i++ {
+		wg.Go(func() {
+			if err := o.Signal(syscall.SIGKILL); err != nil && !errors.Is(err, ErrRetired) {
+				t.Error(err)
+			}
+		})
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	result := o.Wait(ctx)
+	wg.Wait()
+	if !result.Reaped || result.CleanupError != nil || calls != 1 {
+		t.Fatal(result, calls)
+	}
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) || calls != 1 {
+		t.Fatal(err, calls)
+	}
+}
+func TestDeniedKillDoesNotLatchOrDisappear(t *testing.T) {
+	calls := 0
+	o := &Owner{pid: 123, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, signal: func(int, syscall.Signal) error {
+		calls++
+		if calls == 1 {
+			return syscall.EPERM
+		}
+		return nil
+	}, wait: func() error { return errors.New("controlled unknown join") }}
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, syscall.EPERM) {
+		t.Fatal(err)
+	}
+	if err := o.Signal(syscall.SIGKILL); err != nil {
+		t.Fatal(err)
+	}
+	result := o.Wait(context.Background())
+	if calls != 2 || !errors.Is(result.CleanupError, syscall.EPERM) || result.Reaped {
+		t.Fatal(result, calls)
+	}
+}
+func TestTerminalOnlyWitnessSkipsKillWithoutClearingPriorDenial(t *testing.T) {
+	calls, waits := 0, 0
+	o := &Owner{pid: 123, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { return true, nil }, signal: func(int, syscall.Signal) error { calls++; return syscall.EPERM }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, syscall.EPERM) {
+		t.Fatal(err)
+	}
+	result := o.Wait(context.Background())
+	if calls != 1 || waits != 1 || !errors.Is(result.CleanupError, syscall.EPERM) {
+		t.Fatal(result, calls, waits)
+	}
+}
+func TestUnknownTerminalGroupWitnessRetainsFailureAndKills(t *testing.T) {
+	calls := 0
+	o := &Owner{pid: 123, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { return true, syscall.EACCES }, signal: func(int, syscall.Signal) error { calls++; return nil }, wait: func() error { return errors.New("controlled unknown join") }}
+	result := o.Wait(context.Background())
+	if calls != 1 || !errors.Is(result.CleanupError, syscall.EACCES) || result.Reaped {
+		t.Fatal(result, calls)
+	}
+}

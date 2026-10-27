@@ -59,6 +59,11 @@ type job struct {
 	lastUsage             *model.WorkloadUsage
 }
 type Manager struct {
+	leaseClockCheckpoint    leaseclock.Sample
+	storageExportCancels    map[string]context.CancelFunc
+	leaseClockRead          func() (leaseclock.Sample, error)
+	leaseClockLast          leaseclock.Sample
+	leaseClockError         *model.Error
 	sshTransports           map[string]*sshLeaseHold
 	nodeStopBoundary        *nodestop.Boundary
 	nodeStopUnknown         bool
@@ -281,6 +286,7 @@ func openWithLeaseClock(home string, capacity model.Resources, clockRead func() 
 			db.Close()
 			return nil, e
 		}
+
 		if (l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind) && l.State != "terminal" {
 			// A recorded in-process allocation is not a positive join witness.
 			// In particular, PID0 must never settle a lost transport owner.
@@ -311,6 +317,23 @@ func openWithLeaseClock(home string, capacity model.Resources, clockRead func() 
 				return nil, e
 			}
 			continue
+		}
+		if run.Valid && consuming(l.State) {
+			sshSaved, err := recordedSSHRun(run.String)
+			if err != nil {
+				db.Close()
+				return nil, err
+			}
+			if sshSaved {
+				l.State, l.Outcome, l.Ended = "needs_attention", "ssh_supervision_lost", nil
+				l.Failure = "Original SSH transport join was not recorded; saved process descriptors cannot settle its obligations"
+				l.Revision++
+				if e = m.put(l, "lease.ssh_recovery_required"); e != nil {
+					db.Close()
+					return nil, e
+				}
+				continue
+			}
 		}
 		if l.Cargo != nil {
 			if e = m.recoverCargo(l); e != nil {
@@ -1843,7 +1866,18 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	l.PID = cmd.Process.Pid
 	l.State = "active"
 	l.Revision++
-	if e = m.put(l, "lease.started"); e != nil {
+	e = m.put(l, "lease.started")
+	if e == nil && r.sshRuntime != nil {
+		h := r.sshRuntime.leaseHold
+		h.expectedPID = l.PID
+		if l.Process != nil {
+			identity := *l.Process
+			h.expectedProcess = &identity
+		} else {
+			h.expectedProcess = nil
+		}
+	}
+	if e != nil {
 		_ = j.signalGroup(syscall.SIGKILL)
 	} else if reason := m.startDeadlineProblem(l); reason != nil {
 		current, joined, joinErr := m.joinUnstarted(l, j, reader, writer, f)
@@ -1974,7 +2008,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			h := r.sshRuntime.leaseHold
 			h.nativeReaped = waited.Reaped
 			h.nativeSafe = groupGone
-			_, _ = m.stageSSHResult(current)
+			_, _ = m.stageSSHResultFor(l.ID, current)
 		} else {
 			_ = m.put(current, "lease."+current.Outcome)
 		}
@@ -2025,8 +2059,25 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if m.sshTransports[id] != nil {
+		return l, model.Err("needs_attention", "current original SSH transport hold must join before any reconciliation")
+	}
+
 	if l.State == "terminal" {
 		return l, nil
+	}
+	var savedRun sql.NullString
+	if err := m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, id).Scan(&savedRun); err != nil {
+		return l, err
+	}
+	if savedRun.Valid {
+		sshSaved, err := recordedSSHRun(savedRun.String)
+		if err != nil {
+			return l, err
+		}
+		if sshSaved {
+			return l, model.Err("needs_attention", "recovered SSH requires original transport join evidence; a saved PID cannot settle it")
+		}
 	}
 	if bound, err := m.syncLeaseBound(l.ID); err != nil {
 		return l, err

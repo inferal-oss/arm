@@ -2,9 +2,13 @@ package manager
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sync"
 	"testing"
 	"time"
@@ -34,7 +38,10 @@ func (h *heldSSHInputCompletion) Read(p []byte) (int, error) {
 
 func sshSettlementFixture(t *testing.T, failedGate bool) (*sshManagerFixture, <-chan *sshRuntime, <-chan *heldSSHInputCompletion, func()) {
 	t.Helper()
-	m := newManager(t)
+	return sshSettlementFixtureWithManager(t, newManager(t), failedGate)
+}
+func sshSettlementFixtureWithManager(t *testing.T, m *Manager, failedGate bool) (*sshManagerFixture, <-chan *sshRuntime, <-chan *heldSSHInputCompletion, func()) {
+	t.Helper()
 	if failedGate {
 		m.mu.Lock()
 		err := m.ensureSSHRecords()
@@ -191,5 +198,201 @@ func TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("original failed request did not return")
+	}
+}
+
+func sshRetainedSettlementManager(t *testing.T) *Manager {
+	t.Helper()
+	m, err := Open(filepath.Join(t.TempDir(), "arm"), model.Resources{CPU: 1, Memory: 1024, Disk: 2048})
+	if err != nil {
+		t.Fatal(err)
+	}
+	cpuReading(m, 64, 64, 0, 64, 0)
+	t.Cleanup(func() {
+		if err := m.Close(); err == nil {
+			t.Error("uncertain original SSH settlement was silently cleared at Close")
+		}
+	})
+	return m
+}
+func assertSSHReconcileRefused(t *testing.T, m *Manager, id string) {
+	t.Helper()
+	l, err := m.Reconcile(id)
+	var cause *model.Error
+	if !errors.As(err, &cause) || cause.Code != "needs_attention" || !consuming(l.State) || l.Ended != nil {
+		t.Fatal("Reconcile released an original SSH obligation", l, err)
+	}
+}
+func TestSSHReconcileCannotBypassHeldOrFailedSettlement(t *testing.T) {
+	m := sshRetainedSettlementManager(t)
+	f, actual, inputs, release := sshSettlementFixtureWithManager(t, m, false)
+	defer release()
+	session, err := f.client.NewSession()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer session.Close()
+	if err = session.Start("true"); err != nil {
+		t.Fatal(err)
+	}
+	r := awaitSSHRuntime(t, actual)
+	held := awaitSSHInput(t, inputs)
+	awaitTransportSignal(t, held.entered, "original input never reached EOF")
+	assertSSHSettlementCharged(t, m, r)
+	// A consuming attention row with its actually absent native group must not
+	// bypass a live original IO hold, or the hold retained after persistence mismatch.
+	m.mu.Lock()
+	l, err := m.get(r.leaseHold.original.ID)
+	if err == nil {
+		l.State = "needs_attention"
+		l.Revision++
+		err = m.put(l, "test.ssh_attention")
+	}
+	m.mu.Unlock()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertSSHReconcileRefused(t, m, l.ID)
+	release()
+	awaitTransportSignal(t, r.leaseHold.done, "joined mismatched settlement did not return")
+	if r.leaseHold.err == nil {
+		t.Fatal("changed physical row was overwritten after join")
+	}
+	assertSSHReconcileRefused(t, m, l.ID)
+	s, err := m.Status()
+	if err != nil || s.Reserved.CPU != .5 || s.Reserved.Memory != 64 {
+		t.Fatal(s.Reserved, err)
+	}
+}
+func TestSSHStagingRejectsChangedNativeBinding(t *testing.T) {
+	for _, field := range []string{"pid", "identity", "id"} {
+		t.Run(field, func(t *testing.T) {
+			m := sshRetainedSettlementManager(t)
+			f, actual, inputs, release := sshSettlementFixtureWithManager(t, m, false)
+			defer release()
+			session, err := f.client.NewSession()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer session.Close()
+			input, writer := io.Pipe()
+			defer input.Close()
+			defer writer.Close()
+			session.Stdin = input
+			output, err := session.StdoutPipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = session.Start("printf ready; IFS= read -r value"); err != nil {
+				t.Fatal(err)
+			}
+			if _, err = io.ReadFull(output, make([]byte, 5)); err != nil {
+				t.Fatal(err)
+			}
+			r := awaitSSHRuntime(t, actual)
+			held := awaitSSHInput(t, inputs)
+			m.mu.Lock()
+			l, err := m.get(r.leaseHold.original.ID)
+			rowID := r.leaseHold.original.ID
+			if err == nil {
+				if field == "id" {
+					l.ID += "-replaced"
+				} else if field == "pid" {
+					l.PID++
+				} else if l.Process != nil {
+					identity := *l.Process
+					identity.Start += "-replaced"
+					l.Process = &identity
+				} else {
+					err = errors.New("native identity missing")
+				}
+				if err == nil {
+					l.Revision++
+					// Corrupt only the JSON row identity, preserving its original SQL key.
+					if field == "id" {
+						var raw []byte
+						raw, err = json.Marshal(l)
+						if err == nil {
+							_, err = m.db.Exec(`UPDATE leases SET data=? WHERE id=?`, string(raw), rowID)
+						}
+					} else {
+						err = m.put(l, "test.ssh_native_binding_changed")
+					}
+				}
+			}
+			m.mu.Unlock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err = io.WriteString(writer, "finish\n"); err != nil {
+				t.Fatal(err)
+			}
+			writer.Close()
+			awaitTransportSignal(t, r.leaseHold.job.nativeDone, "original child did not finish independently")
+			awaitTransportSignal(t, held.entered, "original input did not reach real EOF")
+			assertSSHSettlementCharged(t, m, r)
+			var cause *model.Error
+			if !errors.As(r.leaseHold.err, &cause) || cause.Code != "ssh_owner_changed" {
+				t.Fatal("changed native binding reached settlement", r.leaseHold.err)
+			}
+			release()
+			awaitTransportSignal(t, r.leaseHold.done, "changed binding cleanup did not return")
+			stored, err := m.Inspect(rowID)
+			if err != nil || stored.ID != l.ID || stored.PID != l.PID || !reflect.DeepEqual(stored.Process, l.Process) || stored.State == "terminal" || stored.Ended != nil {
+				t.Fatal("original waiter overwrote changed native binding", stored, err)
+			}
+			assertSSHReconcileRefused(t, m, rowID)
+		})
+	}
+}
+func TestSSHRecoveredDescriptorCannotSettleWithoutOriginalJoin(t *testing.T) {
+	for _, pid := range []int{0, 2147483647} {
+		t.Run(fmt.Sprint(pid), func(t *testing.T) {
+			home := filepath.Join(t.TempDir(), "arm")
+			m, err := Open(home, model.Resources{CPU: 1, Memory: 1024})
+			if err != nil {
+				t.Fatal(err)
+			}
+			cpuReading(m, 64, 64, 0, 64, 0)
+			q := request("")
+			q.Resources = model.Resources{CPU: .5, Memory: 64}
+			l, err := m.Acquire(q, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Persist an actual nonterminal SSH run, then lose its process-local owner.
+			raw, err := json.Marshal(RunRequest{Request: q, SSH: &model.SSHRunDescriptor{}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			m.mu.Lock()
+			l.PID = pid
+			l.State = "active"
+			err = m.put(l, "test.saved_ssh")
+			if err == nil {
+				_, err = m.db.Exec(`UPDATE leases SET run=? WHERE id=?`, string(raw), l.ID)
+			}
+			m.mu.Unlock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = m.Close(); err != nil {
+				t.Fatal(err)
+			}
+			m, err = Open(home, model.Resources{CPU: 1, Memory: 1024})
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer m.Close()
+			stored, err := m.Inspect(l.ID)
+			if err != nil || stored.State != "needs_attention" || stored.Ended != nil || stored.Outcome != "ssh_supervision_lost" {
+				t.Fatal(stored, err)
+			}
+			assertSSHReconcileRefused(t, m, l.ID)
+			s, err := m.Status()
+			if err != nil || s.Reserved.CPU != .5 || s.Reserved.Memory != 64 {
+				t.Fatal(s.Reserved, err)
+			}
+		})
 	}
 }

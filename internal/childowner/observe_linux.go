@@ -41,3 +41,7 @@ func observeTerminal(pid int) (terminal, error) {
 	}
 	return terminal{}, fmt.Errorf("unsupported Linux terminal observation code=%d status=%d", info.Code, info.Status)
 }
+
+// Linux retains the existing terminal group KILL; only Darwin needs the
+// positive sole-terminal-member witness to avoid zombie-only killpg EPERM.
+func terminalOnlyGroup(int) (bool, error) { return false, nil }

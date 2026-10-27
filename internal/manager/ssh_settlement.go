@@ -14,6 +14,8 @@ import (
 // descriptor. Native readiness lets Serve finish; settlement additionally needs
 // its positive connection/copy/callback JoinTransport witness.
 type sshLeaseHold struct {
+	expectedPID                             int
+	expectedProcess                         *model.ProcessIdentity
 	manager                                 *Manager
 	runtime                                 *sshRuntime
 	original                                model.Lease
@@ -43,7 +45,7 @@ func (m *Manager) bindSSHTransport(l model.Lease, r *sshRuntime) error {
 	if err = json.Unmarshal(raw, &original); err != nil {
 		return err
 	}
-	h := &sshLeaseHold{manager: m, runtime: r, original: original, ready: make(chan struct{}), done: make(chan struct{})}
+	h := &sshLeaseHold{manager: m, runtime: r, original: original, expectedPID: original.PID, expectedProcess: original.Process, ready: make(chan struct{}), done: make(chan struct{})}
 	r.leaseHold = h
 	m.sshTransports[l.ID] = h
 	m.wg.Go(func() {
@@ -100,7 +102,13 @@ func (m *Manager) bindSSHTransport(l model.Lease, r *sshRuntime) error {
 // stageSSHResult never stores terminal while the original transport is live.
 // The exact charged intermediate row fences later join settlement.
 func (m *Manager) stageSSHResult(l model.Lease) (model.Lease, error) {
-	h := m.sshTransports[l.ID]
+	return m.stageSSHResultFor(l.ID, l)
+}
+
+// The original map key is captured before native waiting. Never select the
+// obligation to release from a subsequently decoded candidate's JSON identity.
+func (m *Manager) stageSSHResultFor(originalID string, l model.Lease) (model.Lease, error) {
+	h := m.sshTransports[originalID]
 	if h == nil {
 		return l, model.Err("ssh_owner_changed", "original SSH transport hold is absent")
 	}
@@ -111,6 +119,20 @@ func (m *Manager) stageSSHResult(l model.Lease) (model.Lease, error) {
 	defer close(h.ready)
 	if l.ID != h.original.ID || l.Host != h.original.Host || l.Owner != h.original.Owner || !reflect.DeepEqual(l.Request, h.original.Request) {
 		h.err = model.Err("ssh_owner_changed", "SSH lease intent/owner changed before settlement")
+		return l, h.err
+	}
+	var rawCurrent string
+	if err := m.db.QueryRow(`SELECT data FROM leases WHERE id=?`, originalID).Scan(&rawCurrent); err != nil {
+		h.err = err
+		return l, err
+	}
+	var stored model.Lease
+	if err := json.Unmarshal([]byte(rawCurrent), &stored); err != nil {
+		h.err = err
+		return l, err
+	}
+	if stored.ID != h.original.ID || stored.PID != h.expectedPID || !reflect.DeepEqual(stored.Process, h.expectedProcess) || stored.Host != h.original.Host || stored.Owner != h.original.Owner || !reflect.DeepEqual(stored.Request, h.original.Request) {
+		h.err = model.Err("ssh_owner_changed", "SSH native row binding changed before staging")
 		return l, h.err
 	}
 	if h.nativeStarted && !h.nativeSafe {
@@ -162,4 +184,13 @@ func (m *Manager) sshSettlementErrors() error {
 		err = errors.Join(err, h.err, model.Err("needs_attention", "SSH settlement remains charged pending exact reconciliation"))
 	}
 	return err
+}
+
+// Saved descriptors classify lost obligations; they confer no runtime authority.
+func recordedSSHRun(raw string) (bool, error) {
+	var saved RunRequest
+	if err := json.Unmarshal([]byte(raw), &saved); err != nil {
+		return false, err
+	}
+	return saved.SSH != nil, nil
 }

@@ -59,16 +59,19 @@ try:
  if sdk:paths.extend([str(pathlib.Path(sdk)/'usr/include'),str(pathlib.Path(sdk)/'usr/lib')])
  selected=closure(paths);(run/'closure-before.json').write_text(json.dumps(selected,sort_keys=True,indent=2)+'\n')
  java=str(pathlib.Path(shutil.which('java')).resolve())
- command.command([sys.executable,str(root/'scripts/test-lease-clock-formal.py'),'--mode','all','--go',go,'--java',java,'--tlc-jar',str(root/'.tla/tools/tlc/tla2tools.jar'),'--tlapm',str(root/'.tla/tools/tlapm/tlapm/bin/tlapm'),'--work-dir',str(root/'.tla/lease-clock')],'formal-all',env=env,timeout=900)
+ for mode in ('check','traces'):
+  command.command([sys.executable,str(root/'scripts/test-lease-clock-formal.py'),'--mode',mode,'--go',go,'--java',java,'--tlc-jar',str(root/'.tla/tools/tlc/tla2tools.jar'),'--work-dir',str(root/'.tla/lease-clock')],'formal-'+mode,env=env,timeout=900)
  summaries=list((root/'.tla/lease-clock').glob('run-*/summary.json'))
- if len(summaries)!=1:raise ValueError('exact single formal run summary required')
- summary=json.loads(summaries[0].read_text())
- if summary.get('status')!='passed' or summary['go_compile_environment']['CC']!=inner_cc or summary['go_compile_environment']['CXX']!=inner_cxx:raise ValueError('inner formal gate/compiler selection differs')
+ if len(summaries)!=2:raise ValueError('exact check and trace summaries required')
+ summaries=[json.loads(p.read_text()) for p in summaries]
+ if {v['mode'] for v in summaries}!={'check','traces'} or any(v['status']!='passed' for v in summaries):raise ValueError('incomplete formal component modes')
+ summary=next(v for v in summaries if v['mode']=='traces')
+ if summary['go_compile_environment']['CC']!=inner_cc or summary['go_compile_environment']['CXX']!=inner_cxx:raise ValueError('inner formal compiler selection differs')
  after=sources();assert_committed(after)
  (run/'sources-after.json').write_text(json.dumps(after,sort_keys=True,indent=2)+'\n')
  final=closure(paths);(run/'closure-after.json').write_text(json.dumps(final,sort_keys=True,indent=2)+'\n')
  if before!=after or selected!=final:raise ValueError('source or selected dependency closure changed')
- (run/'result.json').write_text(json.dumps({'status':'passed_formal_component_wrapper','commit':os.environ['GITHUB_SHA']})+'\n')
+ (run/'result.json').write_text(json.dumps({'status':'passed_tlc_and_go_components_strict_proof_pending','commit':os.environ['GITHUB_SHA']})+'\n')
 except BaseException as e:
  (run/'result.json').write_text(json.dumps({'status':'failed','error':str(e),'type':type(e).__name__})+'\n')
  raise

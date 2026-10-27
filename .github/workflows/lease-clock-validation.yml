@@ -64,9 +64,14 @@ jobs:
         run: python3 -c "import platform; print(platform.uname()); assert platform.system() == 'Darwin' and platform.machine() == 'arm64'"
       - name: Materialize declared public dependencies
         run: go mod download
-      - name: Provision checksum-locked repository tools
-        run: python3 scripts/provision-tla.py --component all
-      - name: Run source-bound formal component gate
+      - name: Materialize exact locked public TLC input
+        run: |
+          umask 077
+          mkdir -p .tla/downloads
+          curl --fail --location --max-time 60 --retry 2 --output .tla/downloads/tla2tools.jar https://raw.githubusercontent.com/inferal-oss/arm/dd2423e012973c117fbe128e8dbd3b8e693a0540/ci/formal-pins/tla2tools.jar
+      - name: Provision checksum-locked TLC
+        run: python3 scripts/provision-tla.py --component tlc
+      - name: Run TLC safety and Go trace components (strict proof pending)
         run: python3 scripts/test-lease-clock-formal-ci.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

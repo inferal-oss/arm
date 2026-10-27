@@ -18,10 +18,11 @@ type darwinChildInfo struct {
 }
 
 var childNative struct {
-	once  sync.Once
-	err   error
-	wait  func(int32, uint32, *darwinChildInfo, int32) int32
-	errno func() *int32
+	once     sync.Once
+	err      error
+	wait     func(int32, uint32, *darwinChildInfo, int32) int32
+	errno    func() *int32
+	listpids func(uint32, uint32, unsafe.Pointer, int32) int32
 }
 
 func observeTerminal(pid int) (terminal, error) {
@@ -38,7 +39,7 @@ func observeTerminal(pid int) (terminal, error) {
 		for _, s := range []struct {
 			name   string
 			target any
-		}{{"waitid", &childNative.wait}, {"__error", &childNative.errno}} {
+		}{{"waitid", &childNative.wait}, {"__error", &childNative.errno}, {"proc_listpids", &childNative.listpids}} {
 			ptr, err := purego.Dlsym(h, s.name)
 			if err != nil {
 				childNative.err = err
@@ -71,4 +72,23 @@ func observeTerminal(pid int) (terminal, error) {
 		}
 	}
 	return terminal{}, fmt.Errorf("unsupported Darwin terminal observation code=%d status=%d", info.Code, info.Status)
+}
+
+// Called only after WNOWAIT proved the original unreaped leader terminal.
+// XNU proc_listpids holds proc_list_lock over allproc AND zombproc. A fixed
+// two-PID buffer returning only that anchor establishes no other group member
+// at that membership snapshot. A full buffer, empty result, malformed return,
+// or permission failure never establishes this witness. No EPERM is rewritten.
+// https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/proc_info.c
+func terminalOnlyGroup(pid int) (bool, error) {
+	var ids [2]int32
+	n := childNative.listpids(2, uint32(pid), unsafe.Pointer(&ids[0]), int32(unsafe.Sizeof(ids)))
+	runtime.KeepAlive(&ids)
+	return terminalOnlyPIDList(pid, ids, n)
+}
+func terminalOnlyPIDList(pid int, ids [2]int32, n int32) (bool, error) {
+	if n <= 0 || n > int32(unsafe.Sizeof(ids)) || n%4 != 0 {
+		return false, fmt.Errorf("invalid original group PID enumeration size %d", n)
+	}
+	return n == 4 && ids[0] == int32(pid), nil
 }
