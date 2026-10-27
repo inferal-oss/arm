@@ -1,0 +1,40 @@
+name: Native composed sync Manager bridge review
+on:
+  push:
+    branches: [codex/sync-cap-checkpoint-manager-mac-review-ci]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sync-cap-checkpoint-manager-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Exact source native counterexamples, races and vet
+        shell: bash
+        run: python3 scripts/inspect-sync-cap-checkpoint-review.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: sync-cap-checkpoint-${{ matrix.os }}
+          path: .cache/cap-checkpoint-review-ci/
+          include-hidden-files: true
+          retention-days: 7
