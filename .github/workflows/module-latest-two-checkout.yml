@@ -2,7 +2,7 @@ name: Native latest validation with independent source
 
 on:
   push:
-    branches: [codex/module-latest-final-ci]
+    branches: [codex/getarm-module-latest-canonical-ci]
   workflow_dispatch:
 
 permissions:
@@ -13,11 +13,12 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PUBLIC_SOURCE_COMMIT: 23e466ab9063a02effe311be0f331f9673704288 # Replace only after final source review; do not publish this draft.
-  REVIEWED_HELPER_COMMIT: 9ccd7daef5b4a7b9b220a942e95bb9724d123860
-  REVIEWED_HELPER_SHA256: a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b
-  REVIEWED_SUPPLEMENT_SHA256: 6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d
-  REVIEWED_TEST_SHA256: 355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc
+  PUBLIC_SOURCE_COMMIT: 5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48 # Root pins published S only after all three metadata endpoints are live.
+  REVIEWED_HELPER_COMMIT: 5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48 # Immutable source of these exact helper bytes; root rebinds to final S after equality review.
+  REVIEWED_HELPER_SHA256: dc2d30a670588451c221563169e8ed6f2f5f1ddab5a4fe73976ae841cfb967c7
+  REVIEWED_SUPPLEMENT_SHA256: 5bd7ae3aae531b09dafd74f883e30f7f195acbf18c2934c95756af119f218d92
+  REVIEWED_TEST_SHA256: 1c8b3f05669ba2ab6257ce61640274469a47c6fcab319874d3629238add2ce18
+  REVIEWED_SUPPLEMENT_TEST_SHA256: e632d8da1c951aeddf3c5d89eed4ae62520f2831b142f5dd47130b97a674d6fd
 
 jobs:
   native-public-latest:
@@ -75,7 +76,7 @@ jobs:
           require(helper_identity['commit'] == os.environ['GITHUB_SHA'], 'harness differs from immutable workflow commit')
           require(source_identity['commit'] == os.environ['PUBLIC_SOURCE_COMMIT'], 'public source differs from held commit')
           require(not helper_identity['status'] and not source_identity['status'], 'a checkout is dirty')
-          expected = {'scripts/validate-module.py':os.environ['REVIEWED_HELPER_SHA256'], 'scripts/test-validate-module.py':os.environ['REVIEWED_TEST_SHA256'], 'scripts/module-zip-supplement.py':os.environ['REVIEWED_SUPPLEMENT_SHA256']}
+          expected = {'scripts/validate-module.py':os.environ['REVIEWED_HELPER_SHA256'], 'scripts/test-validate-module.py':os.environ['REVIEWED_TEST_SHA256'], 'scripts/module-zip-supplement.py':os.environ['REVIEWED_SUPPLEMENT_SHA256'], 'scripts/test-module-zip-supplement.py':os.environ['REVIEWED_SUPPLEMENT_TEST_SHA256']}
           actual = {name:hashlib.sha256((harness/name).read_bytes()).hexdigest() for name in expected}
           require(actual == expected, 'helper bytes differ from frozen review')
           record = {'workflow_commit':os.environ['GITHUB_SHA'], 'reviewed_helper_commit':os.environ['REVIEWED_HELPER_COMMIT'], 'harness':helper_identity, 'source':source_identity, 'helper_files_sha256':actual, 'failures':failures}
@@ -85,10 +86,19 @@ jobs:
           python3 -B "$RUNNER_TEMP/check-module-identities.py" before
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
-          go-version-file: source/go.mod
+          go-version: '1.27.3'
           cache: false
+      - name: Require the exact local Go toolchain
+        run: |
+          python3 -B - <<'PY'
+          import os,subprocess
+          assert os.environ['GOTOOLCHAIN'] == 'local'
+          assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip() == 'go1.27.3'
+          PY
       - name: Run cheap helper ownership and identity regressions
         run: python3 -B harness/scripts/test-validate-module.py
+      - name: Run cheap offline ZIP and provenance boundary regressions
+        run: python3 -B harness/scripts/test-module-zip-supplement.py
       - name: Run corrected helper against held public source
         run: >-
           python3 -B harness/scripts/validate-module.py
