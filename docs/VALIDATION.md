@@ -4581,3 +4581,24 @@ rosters, source/image hashes, original findings and limits. The allocation surve
 affects a separate package and does not change the TLS execution inputs. No
 production enablement, operating-system process identity, safe legacy plaintext
 port handoff, native elapsed-clock or full forwarding acceptance is inferred.
+
+
+### Sticky original relay cleanup uncertainty
+
+Focused source `33d748d` passes [native run 40439101947](https://github.com/inferal-oss/arm/actions/runs/40439101947)
+on Linux arm64 and macOS arm64 with Go 1.27.3: 19 roots/24 named outcomes per
+platform, no failures or skips, manager race compile/test and vet. Six new roots
+exercise an actual retained pipe descriptor, positive worker join, close/reopen,
+forged and changed bindings, sticky failed writes, unreadable ledgers and prior
+cancellation. Thirteen existing transit roots preserve clean settlement/reset
+and conservative expiry/recovery behavior. Controlled resource observations in
+these Manager fixtures are not native CPU-admission evidence.
+
+Root independently checks API/test/module hashes against both actual captured
+sources, complete source/dependency before/after equality, all pass rosters and
+compile/race/vet receipts with exactly one original native wait and positive
+post-wait PID/group absence. The [normalized evidence](validation/relay-cleanup-2026-10-27.json)
+retains those source and log hashes. Later TLS and workspace-survey additions
+contain no Manager lifecycle changes; their new functions do not run in these
+selected roots. VNC caller integration, native close tracking in other callers
+and the elapsed-clock portfolio are not accepted by this API milestone.

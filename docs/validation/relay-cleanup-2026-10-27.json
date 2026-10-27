@@ -1,0 +1,155 @@
+{
+  "schema": "arm.validation.relay-cleanup/v1",
+  "candidate_commit": "f725fb8fb685f4e30916261db338fb141318c47f",
+  "base_commit": "0ec2b5778862f95b02a154d2193b1e860e473a86",
+  "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40439101947",
+  "scope": "exact-owner relay cleanup uncertainty, native descriptor retention, cancellation, join, close, restart and ledger faults; not VNC caller integration",
+  "source_inputs": {
+    "internal/manager/relay_transit.go": "db87f05554b821def5d44e0e5e9f55f2fea40a1e5b12b9dece4221c5aa0c4c04",
+    "internal/manager/relay_cleanup_test.go": "deb6d1d7602e7f1b3d8a12ddfdc6cd8347265498e33d7d075d400edc69b5e64a",
+    "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+    "go.sum": "25158413557a7e4a3054f760a199fe256c77b989583aee7f0f3c60624ae6f8ce",
+    "scripts/formal_process.py": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76"
+  },
+  "validation": [
+    {
+      "platform": "linux-arm64",
+      "go_version": "go1.27.3",
+      "race": true,
+      "vet": true,
+      "exact_root_count": 19,
+      "completed_observed_test_and_subtest_count": 24,
+      "root_roster": [
+        "TestForwardTransitSettledMarkerAllowsResetProof",
+        "TestRelayCleanupCloseCancelsBeforeUnreadableLedger",
+        "TestRelayCleanupUncertainAfterCancellationStillRequiresOriginalJoin",
+        "TestRelayCleanupUncertainChangedBindingIsStickyWithoutOverwritingRow",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles",
+        "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart",
+        "TestRelayCleanupUncertainWriteFailureCannotBecomeTerminal",
+        "TestRelayTransitAdmissionFailureStartsNoOwner",
+        "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+        "TestRelayTransitChangedDurableBindingCannotSettle",
+        "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+        "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+        "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+        "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+        "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+        "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+        "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+        "TestRelayTransitReleaseRequiresOriginalJoin",
+        "TestRelayTransitSettledMarkerAllowsResetProof"
+      ],
+      "captured_source_digest": "0eb2257b30652e403d9f3c2513f901c647646588705067580b1e44cab907d128",
+      "source_closure": "passed",
+      "selected_tool_and_dependency_closure": "passed",
+      "original_command_waits": "positive single native wait and post-wait absence"
+    },
+    {
+      "platform": "macos-arm64",
+      "go_version": "go1.27.3",
+      "race": true,
+      "vet": true,
+      "exact_root_count": 19,
+      "completed_observed_test_and_subtest_count": 24,
+      "root_roster": [
+        "TestForwardTransitSettledMarkerAllowsResetProof",
+        "TestRelayCleanupCloseCancelsBeforeUnreadableLedger",
+        "TestRelayCleanupUncertainAfterCancellationStillRequiresOriginalJoin",
+        "TestRelayCleanupUncertainChangedBindingIsStickyWithoutOverwritingRow",
+        "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles",
+        "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart",
+        "TestRelayCleanupUncertainWriteFailureCannotBecomeTerminal",
+        "TestRelayTransitAdmissionFailureStartsNoOwner",
+        "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+        "TestRelayTransitChangedDurableBindingCannotSettle",
+        "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+        "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+        "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+        "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+        "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+        "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+        "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+        "TestRelayTransitReleaseRequiresOriginalJoin",
+        "TestRelayTransitSettledMarkerAllowsResetProof"
+      ],
+      "captured_source_digest": "0eb2257b30652e403d9f3c2513f901c647646588705067580b1e44cab907d128",
+      "source_closure": "passed",
+      "selected_tool_and_dependency_closure": "passed",
+      "original_command_waits": "positive single native wait and post-wait absence"
+    }
+  ],
+  "limitations": [
+    "VNC/WebSocket native close caller must mark uncertainty before publishing its worker join.",
+    "These tests do not establish the VNC end-to-end integration gate.",
+    "No clock/runtime changes are included."
+  ],
+  "independent_integration_checks": [
+    {
+      "platform": "linux-arm64",
+      "passed_roots": 19,
+      "passed_named": 24,
+      "failures_or_skips": 0,
+      "original_commands": [
+        {
+          "phase": "affected-compile",
+          "exit": 0,
+          "native_wait_calls": 1,
+          "post_wait_absence": true,
+          "log_sha256": "66a117d6b1ffbcd8f52678d9568affee33f08d54e0fc75bd43f3e25b1381033b",
+          "owner_receipt_sha256": "fb772f00d93686ac023d3a5b50c1d9e57233e24e9569c299b947f0f5cf5d50f4"
+        },
+        {
+          "phase": "relay-cleanup-race",
+          "exit": 0,
+          "native_wait_calls": 1,
+          "post_wait_absence": true,
+          "log_sha256": "ca3e0287295d22886fdeb185fdb57c2f22ad0b9c6137583d700273da64659082",
+          "owner_receipt_sha256": "dc44b563d236c210d4694541bf2a799af121306c728322351a18fccd1a2a697d"
+        },
+        {
+          "phase": "vet",
+          "exit": 0,
+          "native_wait_calls": 1,
+          "post_wait_absence": true,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "owner_receipt_sha256": "b0061ecef25161e2a2c57aaa2c8c3b900cb77a39cd9836b7849d5a45a135b8a7"
+        }
+      ],
+      "source_and_dependency_before_after_equal": true
+    },
+    {
+      "platform": "macos-arm64",
+      "passed_roots": 19,
+      "passed_named": 24,
+      "failures_or_skips": 0,
+      "original_commands": [
+        {
+          "phase": "affected-compile",
+          "exit": 0,
+          "native_wait_calls": 1,
+          "post_wait_absence": true,
+          "log_sha256": "507dd67f764fbca0054975a1c2e2345f906415b150bc63ec82b2c7beb35748a3",
+          "owner_receipt_sha256": "aee253f9506c89a4be68c2f6b1aaf237ffae5afd6b06023913a90d665d8401e4"
+        },
+        {
+          "phase": "relay-cleanup-race",
+          "exit": 0,
+          "native_wait_calls": 1,
+          "post_wait_absence": true,
+          "log_sha256": "54072427c1924d88ed8be1537709e8dbd19d420bf6924fc6746a9a48b5d5de62",
+          "owner_receipt_sha256": "2188c4a47cd6f787bb3fc1e6a3a516b6660abd0b3e782830babe04840a29a6e1"
+        },
+        {
+          "phase": "vet",
+          "exit": 0,
+          "native_wait_calls": 1,
+          "post_wait_absence": true,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "owner_receipt_sha256": "2351477be97e9c3a19bcbda41b09888cf59185aef94c66e7f6e318bc52e9767b"
+        }
+      ],
+      "source_and_dependency_before_after_equal": true
+    }
+  ]
+}

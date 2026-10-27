@@ -1674,3 +1674,21 @@ charge recovery remain authoritative. Application truncation returns the partial
 result with an unknown-outcome error and performs no replay. Production forwarding
 remains disabled; native elapsed-time guards, aggregate credit, broader platform,
 browser/UI and formal acceptance remain separate.
+
+
+## Original relay cleanup uncertainty
+
+An exact current generic relay holder can mark native cleanup as uncertain before
+publishing its original worker-join witness. The process-local failure is sticky
+and cancels that holder before any ledger read/write; forged, joined or settled
+handles cannot poison another owner. A valid durable binding becomes charged
+`needs_attention` with interrupted outcome and no end timestamp. Positive worker
+join cannot erase a failed original descriptor close. Failed persistence retains
+the previous charge and the private failure; restart cannot reconstruct cleanup
+authority from a PID-zero record.
+
+Manager close cancels each exact registered relay owner even if its ledger cannot
+be read, then waits for original workers without holding the manager mutex.
+Generic cleanup uses generic recovery events; sync preparation keeps its own
+event. This API alone does not prove a caller records every native close. The
+VNC/WebSocket caller composition and elapsed-clock contract remain separate gates.
