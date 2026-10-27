@@ -12,6 +12,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"github.com/inferal-oss/arm/internal/local"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/storage"
@@ -181,7 +182,7 @@ func (m *Manager) exportSource(request model.StorageExportRequest) (model.Lease,
 	if unresolved >= 32 {
 		return l, model.Err("operation_busy", "resolve or explicitly hand off existing uncertain exports before creating more")
 	}
-	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !time.Now().Before(*l.Expires) || l.Artifact == nil || l.Artifact.Phase != "owned" || m.storage == nil {
+	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseLive(l) || l.Artifact == nil || l.Artifact.Phase != "owned" || m.storage == nil {
 		return l, model.Err("storage_unavailable", "export requires active verified managed storage owned by this host/user")
 	}
 	if request.Revision != 0 && request.Revision != l.Revision {
@@ -282,6 +283,10 @@ func (m *Manager) StorageExportCreate(ctx context.Context, request model.Storage
 	if current.Revision != plan.LeaseRevision {
 		return model.StorageExport{}, model.Err("revision_conflict", "storage changed during export preview; inspect and retry")
 	}
+	remaining, clockErr := m.leaseRemaining(current)
+	if clockErr != nil || remaining <= 0 {
+		return model.StorageExport{}, model.Err("storage_unavailable", "elapsed export entitlement unavailable")
+	}
 	select {
 	case m.storageExportSlots <- struct{}{}:
 	default:
@@ -301,14 +306,17 @@ func (m *Manager) StorageExportCreate(ctx context.Context, request model.Storage
 	// The response can be encoded while the worker records output digests.
 	// Keep the worker's mutable manifest separate from the returned snapshot.
 	worker.Plan.Files = append([]model.ExportFile(nil), operation.Plan.Files...)
-	m.wg.Go(func() { m.runStorageExport(worker, p) })
+	workerCtx, workerCancel := context.WithTimeout(context.Background(), min(2*time.Minute, remaining))
+	if m.storageExportCancels == nil {
+		m.storageExportCancels = map[string]context.CancelFunc{}
+	}
+	m.storageExportCancels[l.ID] = workerCancel
+	m.wg.Go(func() { m.runStorageExport(workerCtx, workerCancel, worker, p) })
 	return operation, nil
 }
 
-func (m *Manager) runStorageExport(operation model.StorageExport, provider *storage.Provider) {
+func (m *Manager) runStorageExport(ctx context.Context, cancel context.CancelFunc, operation model.StorageExport, provider *storage.Provider) {
 	defer func() { <-m.storageExportSlots }()
-	deadline := minTime(time.Now().Add(2*time.Minute), operation.Plan.SourceExpires)
-	ctx, cancel := context.WithDeadline(context.Background(), deadline)
 	defer cancel()
 	go func() {
 		select {
@@ -325,6 +333,7 @@ func (m *Manager) runStorageExport(operation model.StorageExport, provider *stor
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	delete(m.storageJobs, exportJobKey(operation.Request.Lease))
+	delete(m.storageExportCancels, operation.Request.Lease)
 	delete(m.storageJobs, exportOperationJobKey(operation.ID))
 	if err != nil {
 		final.State, final.Error = "needs_attention", err.Error()
@@ -335,13 +344,6 @@ func (m *Manager) runStorageExport(operation model.StorageExport, provider *stor
 	if lease, e := m.get(operation.Request.Lease); e == nil && lease.State == "ending" {
 		m.scheduleStorage(lease.ID)
 	}
-}
-
-func minTime(a, b time.Time) time.Time {
-	if b.Before(a) {
-		return b
-	}
-	return a
 }
 
 func (m *Manager) StorageExportInspect(id string) (model.StorageExport, error) {
@@ -490,7 +492,7 @@ func (m *Manager) StorageRetain(id string, revision int, ttl time.Duration, reas
 	if l.Revision != revision {
 		return l, model.Err("revision_conflict", "storage changed; inspect it before changing retention")
 	}
-	if l.Request.Kind != "storage" || l.State != "active" || l.Artifact == nil || l.Artifact.Phase != "owned" || l.Expires == nil || !time.Now().Before(*l.Expires) || l.Owner != m.owner || l.Host != m.host {
+	if l.Request.Kind != "storage" || l.State != "active" || l.Artifact == nil || l.Artifact.Phase != "owned" || l.Expires == nil || !m.leaseLive(l) || l.Owner != m.owner || l.Host != m.host {
 		return l, model.Err("storage_unavailable", "retention changes require active owned managed storage")
 	}
 	if m.storage == nil {
@@ -499,8 +501,20 @@ func (m *Manager) StorageRetain(id string, revision int, ttl time.Duration, reas
 	if err := m.storage.Check(*l.Artifact); err != nil {
 		return l, model.Err("storage_unavailable", err.Error())
 	}
-	expires := time.Now().UTC().Add(ttl)
-	if expires.After(*l.Expires) {
+	sample, clockErr := m.readLeaseClock()
+	if clockErr != nil {
+		return l, clockErr
+	}
+	remaining, clockErr := l.Clock.Remaining(sample, l.Expires)
+	if clockErr != nil || remaining <= 0 {
+		return l, model.Err("storage_unavailable", "elapsed entitlement unavailable")
+	}
+	deadline, clockErr := leaseclock.New(sample, ttl)
+	if clockErr != nil {
+		return l, clockErr
+	}
+	expires := deadline.Wall
+	if ttl > remaining {
 		return l, model.Err("renewal_required", "retain only shortens the current deadline; use ordinary renew when more time is needed")
 	}
 	busy, err := m.storageExportBusy(id)
@@ -518,11 +532,13 @@ func (m *Manager) StorageRetain(id string, revision int, ttl time.Duration, reas
 		if consumer.Request.StorageLease != id || !consuming(consumer.State) && consumer.State != "queued" {
 			continue
 		}
-		if consumer.Expires == nil || expires.Before(*consumer.Expires) {
+		_, childClockErr := consumer.Clock.Remaining(sample, consumer.Expires)
+		if childClockErr != nil || consumer.Clock.End > deadline.End {
 			return l, model.Err("storage_in_use", "retention cannot shorten past an attached consumer's deadline or queued lifetime")
 		}
 	}
 	l.Expires = &expires
+	l.Clock = deadline
 	l.Artifact.Retention = &model.StorageRetention{At: time.Now().UTC(), Expires: expires, Reason: reason}
 	l.Revision++
 	return l, m.put(l, "storage.retained")

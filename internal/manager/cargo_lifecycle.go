@@ -2,6 +2,7 @@ package manager
 
 import (
 	"errors"
+	"reflect"
 	"syscall"
 	"time"
 
@@ -63,6 +64,13 @@ func (m *Manager) endCargo(l model.Lease, outcome string) (model.Lease, error) {
 		return l, model.Err("needs_attention", "Cargo durability record unavailable; obligations remain charged")
 	}
 	if worker := m.cargoWorkers[l.ID]; worker != nil {
+		if rec.Worker != worker.id || l.Host != worker.leaseHost || l.Owner != worker.leaseOwner || !reflect.DeepEqual(l.Request, worker.leaseRequest) {
+			return l, model.Err("needs_attention", "original Cargo worker binding changed; charge retained")
+		}
+		// The original validated worker must be cancelled even when the
+		// ending transaction is refused. A failed journal write retains the
+		// prior charged row; it cannot leave Close waiting on live work.
+		defer worker.cancel()
 		if l.State != "ending" {
 			l.State = "ending"
 			l.Outcome = outcome
@@ -72,7 +80,6 @@ func (m *Manager) endCargo(l model.Lease, outcome string) (model.Lease, error) {
 				return l, e
 			}
 		}
-		worker.cancel()
 		return m.get(l.ID)
 	}
 	if rec.Phase != "admitted" || rec.Worker != "" {

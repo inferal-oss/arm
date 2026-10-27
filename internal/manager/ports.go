@@ -42,6 +42,7 @@ func (m *Manager) provisionPorts(l model.Lease, run *RunRequest, leases []model.
 			l.Outcome = ""
 			l.Started = nil
 			l.Expires = nil
+			l.Clock = nil
 			l.Ended = nil
 		}
 		if e := m.put(l, "ports.admission_failed"); e != nil {
@@ -58,7 +59,10 @@ func (m *Manager) provisionPorts(l model.Lease, run *RunRequest, leases []model.
 	}
 	// Binding can take time. The usable TTL begins when the whole bundle is
 	// selected, including the first immediate grant as well as queued grants.
-	m.activate(&l, run != nil)
+	if err := m.activate(&l, run != nil); err != nil {
+		ports.Close(sockets)
+		return l, err
+	}
 	l.Failure = ""
 	l.Ports = []model.PortBinding{}
 	for _, s := range sockets {
@@ -101,7 +105,7 @@ func (m *Manager) portParent(r model.Request, consumer string) (model.Lease, err
 	if err != nil {
 		return l, err
 	}
-	if l.Request.Kind != "ports" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || time.Now().Add(r.TTL).After(*l.Expires) || len(l.Ports) == 0 || len(m.portSockets[l.ID]) != len(l.Ports) {
+	if l.Request.Kind != "ports" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseCovers(l, r.TTL) || len(l.Ports) == 0 || len(m.portSockets[l.ID]) != len(l.Ports) {
 		return l, model.Err("ports_unavailable", "parent ports must be active on this host/user, still supervised, and outlast the command's TTL")
 	}
 	ls, err := m.list()

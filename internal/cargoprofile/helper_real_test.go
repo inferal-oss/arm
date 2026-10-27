@@ -3,6 +3,7 @@ package cargoprofile
 import (
 	"bytes"
 	"context"
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -96,7 +97,15 @@ func TestRealPrivateHelperDefersWorkUntilBothDurableGates(t *testing.T) {
 			if e != nil {
 				t.Fatal(e)
 			}
-			init := HelperInit{Command: command, CWD: source, Allocation: allocation, AllocationIdentity: id, Runtime: runtime, Expires: time.Now().Add(time.Minute).UTC()}
+			sample, e := leaseclock.Read()
+			if e != nil {
+				t.Fatal(e)
+			}
+			deadline, e := leaseclock.New(sample, time.Minute)
+			if e != nil {
+				t.Fatal(e)
+			}
+			init := HelperInit{Clock: deadline, Command: command, CWD: source, Allocation: allocation, AllocationIdentity: id, Runtime: runtime, Expires: deadline.Wall}
 			if e = ch.Send("init", init); e != nil {
 				t.Fatal(e)
 			}
@@ -111,7 +120,7 @@ func TestRealPrivateHelperDefersWorkUntilBothDurableGates(t *testing.T) {
 			if e != nil || len(items) != 0 {
 				t.Fatal("mutated before preflight gate", items, e)
 			}
-			if e = ch.Send("preflight", HelperGrant{Approved: true, Revision: 1, Expires: init.Expires}); e != nil {
+			if e = ch.Send("preflight", HelperGrant{Clock: init.Clock, Approved: true, Revision: 1, Expires: init.Expires}); e != nil {
 				t.Fatal(e)
 			}
 			revision := 1
@@ -185,7 +194,7 @@ func TestRealPrivateHelperDefersWorkUntilBothDurableGates(t *testing.T) {
 					if scenario == "changed-source-after-prepared" {
 						write(t, filepath.Join(source, "Cargo.toml"), "[package]\nname='arm_helper_gate'\nversion='0.1.1'\nedition='2021'\n")
 					}
-					if e = ch.Send("compile", HelperGrant{Approved: true, Revision: revision, Expires: expires, EvidenceSHA256: digest}); e != nil {
+					if e = ch.Send("compile", HelperGrant{Clock: init.Clock, Approved: true, Revision: revision, Expires: expires, EvidenceSHA256: digest}); e != nil {
 						t.Fatal(e)
 					}
 					if scenario == "parent-disappears-after-authorization" {

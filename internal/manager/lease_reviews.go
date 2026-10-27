@@ -85,8 +85,8 @@ func (m *Manager) initLeaseReviews() (err error) {
 	return tx.Commit()
 }
 
-func reviewEligible(l model.Lease, now time.Time) bool {
-	return l.State == "active" && l.Expires != nil && now.Before(*l.Expires) && l.Request.Agent != ""
+func (m *Manager) reviewEligible(l model.Lease) bool {
+	return l.State == "active" && m.leaseLive(l) && l.Request.Agent != ""
 }
 func (m *Manager) reviewPolicy(id string) (model.LeaseReviewPolicy, error) {
 	var p model.LeaseReviewPolicy
@@ -137,7 +137,7 @@ func (m *Manager) ConfigureLeaseReview(q model.LeaseReviewConfigure) (model.Leas
 	}
 	now := time.Now().UTC()
 	if q.Enabled {
-		if !reviewEligible(l, now) {
+		if !m.reviewEligible(l) {
 			return out, model.Err("lease_inactive", "reviews require an unexpired active lease attributed to an exact registered agent")
 		}
 		if _, err = m.contact(l.Request.Agent); err != nil {
@@ -152,7 +152,10 @@ func (m *Manager) ConfigureLeaseReview(q model.LeaseReviewConfigure) (model.Leas
 		if q.Interval < 15*time.Second || q.Interval > 7*24*time.Hour || q.ReplyTimeout < 5*time.Second || q.ReplyTimeout > time.Hour || q.ContentionInterval < 0 || (q.ContentionInterval != 0 && (q.ContentionInterval < 15*time.Second || q.ContentionInterval > q.Interval)) {
 			return out, model.Err("invalid_request", "interval must be 15s..7d, reply timeout 5s..1h, contention interval zero or 15s..interval")
 		}
-		ctx := reviewContext(l, now, 0)
+		ctx, ctxErr := m.reviewContext(l, now, 0)
+		if ctxErr != nil {
+			return out, ctxErr
+		}
 		raw, marshalErr := json.Marshal(ctx)
 		if marshalErr != nil {
 			return out, marshalErr
@@ -214,7 +217,11 @@ func (m *Manager) ConfigureLeaseReview(q model.LeaseReviewConfigure) (model.Leas
 	}
 	return out, tx.Commit()
 }
-func reviewContext(l model.Lease, now time.Time, demand int) model.LeaseReviewContext {
+func (m *Manager) reviewContext(l model.Lease, now time.Time, demand int) (model.LeaseReviewContext, error) {
+	remaining, err := m.leaseRemaining(l)
+	if err != nil || remaining <= 0 {
+		return model.LeaseReviewContext{}, model.Err("lease_inactive", "elapsed entitlement unavailable for checkpoint")
+	}
 	u := model.LeaseReviewUsage{CPUQuality: "unavailable", MemoryQuality: "unavailable", Stale: true, Detail: "No attributable usage measurement; reservation is not measured consumption."}
 	if l.Usage != nil {
 		s := l.Usage
@@ -224,7 +231,7 @@ func reviewContext(l model.Lease, now time.Time, demand int) model.LeaseReviewCo
 			u.Detail = u.Detail[:512]
 		}
 	}
-	return model.LeaseReviewContext{Lease: l.ID, Revision: l.Revision, Owner: l.Owner, Purpose: l.Request.Reason, Resources: l.Request.Resources, Pools: l.Request.Pools, Ports: l.Request.Ports, Expires: *l.Expires, Remaining: l.Expires.Sub(now), Usage: u, QueuedDemand: demand}
+	return model.LeaseReviewContext{Lease: l.ID, Revision: l.Revision, Owner: l.Owner, Purpose: l.Request.Reason, Resources: l.Request.Resources, Pools: l.Request.Pools, Ports: l.Request.Ports, Expires: *l.Expires, Remaining: remaining, Usage: u, QueuedDemand: demand}, nil
 }
 func (m *Manager) review(id string) (model.LeaseReview, error) {
 	var x model.LeaseReview
@@ -343,7 +350,7 @@ func (m *Manager) reviewCurrent(x model.LeaseReview, now time.Time) string {
 			return "lease review policy generation changed or was disabled"
 		}
 		l, err := m.get(ctx.Lease)
-		if err != nil || !reviewEligible(l, now) || l.Owner != ctx.Owner || l.Request.Agent != x.Agent || l.Revision != ctx.Revision || !l.Expires.Equal(ctx.Expires) {
+		if err != nil || !m.reviewEligible(l) || l.Owner != ctx.Owner || l.Request.Agent != x.Agent || l.Revision != ctx.Revision || !l.Expires.Equal(ctx.Expires) {
 			return "lease changed or entitlement ended; refresh before any action"
 		}
 	}
@@ -536,7 +543,7 @@ func (m *Manager) tickLeaseReviews(now time.Time, ls []model.Lease) error {
 	duePolicies := []due{}
 	for _, p := range policies {
 		l, ok := byID[p.Lease]
-		if !ok || !reviewEligible(l, now) {
+		if !ok || !m.reviewEligible(l) {
 			p.Enabled = false
 			p.Next = time.Time{}
 			p.Updated = now
@@ -610,7 +617,10 @@ func (m *Manager) tickLeaseReviews(now time.Time, ls []model.Lease) error {
 			}
 			l := d.lease
 			m.attachUsage(&l)
-			ctx := reviewContext(l, now, reviewDemand(l, ls))
+			ctx, ctxErr := m.reviewContext(l, now, reviewDemand(l, ls))
+			if ctxErr != nil {
+				continue
+			}
 			ctx.PolicyGeneration = d.policy.Generation
 			trial := append(append([]model.LeaseReviewContext{}, x.Context...), ctx)
 			raw, marshalErr := json.Marshal(trial)
@@ -626,8 +636,9 @@ func (m *Manager) tickLeaseReviews(now time.Time, ls []model.Lease) error {
 			if end.Before(x.Deadline) {
 				x.Deadline = end
 			}
-			if ctx.Expires.Before(x.Deadline) {
-				x.Deadline = ctx.Expires
+			entitlementEnd := now.Add(ctx.Remaining)
+			if entitlementEnd.Before(x.Deadline) {
+				x.Deadline = entitlementEnd
 			}
 		}
 		if len(selected) == 0 {

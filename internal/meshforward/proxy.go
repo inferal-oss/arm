@@ -136,9 +136,25 @@ func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Co
 		p.mu.Unlock()
 		p.wg.Done()
 	}()
+	recheck := func() error {
+		current, err := grantNow(life)
+		if err != nil {
+			return err
+		}
+		currentKey, err := current.Digest()
+		if err != nil || currentKey != grantKey {
+			return errors.New("TCP destination grant or endpoint changed")
+		}
+		return current.Authorize(time.Now(), who.SourcePin, who.SourceSPKI, who.TargetPin, who.TargetSPKI, who.Account, q)
+	}
 	// An absent or exhausted durable credit record cannot justify opening the
 	// destination service socket. Recheck after dial before sending READY too.
 	if err = p.CheckCredit(life, grant); err != nil {
+		return err
+	}
+	// Credit validation can block on durable storage. Its return does not
+	// establish fresh grant or original resource entitlement.
+	if err = recheck(); err != nil {
 		return err
 	}
 
@@ -151,21 +167,15 @@ func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Co
 		return err
 	}
 	defer service.Close()
-	recheck := func() error {
-		current, err := grantNow(life)
-		if err != nil {
-			return err
-		}
-		currentKey, err := current.Digest()
-		if err != nil || currentKey != grantKey {
-			return errors.New("TCP destination grant or endpoint changed")
-		}
-		return current.Authorize(time.Now(), who.SourcePin, who.SourceSPKI, who.TargetPin, who.TargetSPKI, who.Account, q)
-	}
 	if err = recheck(); err != nil {
 		return err
 	}
 	if err = p.CheckCredit(life, grant); err != nil {
+		return err
+	}
+	// Credit validation can block on durable storage. Its return does not
+	// establish fresh grant or original resource entitlement.
+	if err = recheck(); err != nil {
 		return err
 	}
 	if err = ready(); err != nil {

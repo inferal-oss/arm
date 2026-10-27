@@ -2,6 +2,7 @@ package meshsshrelay
 
 import (
 	"context"
+	"errors"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -63,13 +64,36 @@ func awaitRelayChargeHeadroom(t *testing.T, m *manager.Manager) {
 		if e != nil {
 			t.Fatal(e)
 		}
-		if status.CPU != nil && status.CPU.Known && status.Memory != nil && !status.Memory.Stale && status.Memory.Available >= 1<<20 {
+		if status.CPU != nil && status.CPU.Known && !status.CPU.Stale && status.CPU.Available >= .01 && status.Memory != nil && !status.Memory.Stale && status.Memory.Available >= 1<<20 {
 			break
 		}
 		if time.Now().After(deadline) {
-			t.Fatal("test Manager lacked fresh transit CPU/memory observations")
+			t.Fatalf("test Manager lacked fresh transit CPU/memory headroom: cpu=%+v memory=%+v", status.CPU, status.Memory)
 		}
 		time.Sleep(20 * time.Millisecond)
+	}
+}
+
+// Keep lifecycle fixtures on genuine native capacity. A failed nonqueued
+// admission owns no lease, so only transient capacity refusal can be retried.
+func acquireRelayChargeWithHeadroom(admission, lifetime context.Context, m *manager.Manager, request model.Request, expires time.Time, joined <-chan struct{}) (*manager.RelayTransit, error) {
+	for {
+		if err := admission.Err(); err != nil {
+			return nil, err
+		}
+		request.TTL = time.Until(expires)
+		hold, err := m.AcquireRelayTransit(lifetime, request, joined)
+		var cause *model.Error
+		if err == nil || !errors.As(err, &cause) || cause.Code != "insufficient_capacity" {
+			return hold, err
+		}
+		timer := time.NewTimer(20 * time.Millisecond)
+		select {
+		case <-admission.Done():
+			timer.Stop()
+			return nil, admission.Err()
+		case <-timer.C:
+		}
 	}
 }
 
@@ -89,7 +113,7 @@ func TestHeldRelayAbortKeepsTransitResourcesCharged(t *testing.T) {
 			return TransitReservation{}, e
 		}
 		leaseID <- lease.ID
-		return TransitReservation{Context: hold.Context(), End: func() { _, _ = m.End(lease.ID, "relay_closed") },
+		return TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() { _, _ = m.End(lease.ID, "relay_closed") },
 			Finish: func() { _, _ = hold.FinishAfterJoin() }}, nil
 	}
 	entered, release := make(chan struct{}), make(chan struct{})
@@ -145,11 +169,13 @@ func TestFailedTransitAdmissionJoinsHeldAbortBeforeChargeSettlement(t *testing.T
 	m := relayChargeManager(t)
 	f := routeTransportFixture(t)
 	leaseID := make(chan string, 1)
+	admissionError := make(chan error, 1)
 	f.relay.ReserveTransit = func(admission, life context.Context, joined <-chan struct{}, _ Outer, o Open, _ Permit) (TransitReservation, error) {
-		hold, err := m.AcquireRelayTransit(life, model.Request{Key: "failed-abort:" + o.Route,
+		hold, err := acquireRelayChargeWithHeadroom(admission, life, m, model.Request{Key: "failed-abort:" + o.Route,
 			Reason:    "failed admission retains original relay callback charge",
-			Resources: model.Resources{CPU: .01, Memory: 1 << 20}, TTL: time.Until(o.Expires)}, joined)
+			Resources: model.Resources{CPU: .01, Memory: 1 << 20}}, o.Expires, joined)
 		if err != nil {
+			admissionError <- err
 			return TransitReservation{}, err
 		}
 		lease, err := hold.Lease()
@@ -158,7 +184,7 @@ func TestFailedTransitAdmissionJoinsHeldAbortBeforeChargeSettlement(t *testing.T
 		}
 		leaseID <- lease.ID
 		<-admission.Done()
-		return TransitReservation{Context: hold.Context(), End: func() { _, _ = m.End(lease.ID, "relay_closed") },
+		return TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() { _, _ = m.End(lease.ID, "relay_closed") },
 			Finish: func() { _, _ = hold.FinishAfterJoin() }}, admission.Err()
 	}
 	entered, release := make(chan struct{}), make(chan struct{})
@@ -182,8 +208,10 @@ func TestFailedTransitAdmissionJoinsHeldAbortBeforeChargeSettlement(t *testing.T
 	var id string
 	select {
 	case id = <-leaseID:
-	case <-time.After(3 * time.Second):
-		t.Fatal("relay did not acquire the test transport hold")
+	case err := <-admissionError:
+		t.Fatal("relay test transport admission failed", err)
+	case <-ctx.Done():
+		t.Fatal("relay did not acquire the test transport hold within its original context", ctx.Err())
 	}
 	select {
 	case <-entered:

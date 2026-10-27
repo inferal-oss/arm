@@ -55,7 +55,7 @@ func (s *Server) reserveScreenTransport(ctx context.Context) (context.Context, f
 	if err != nil {
 		return nil, nil, err
 	}
-	frame := &screenTransportFrame{}
+	frame := &screenTransportFrame{checkActive: hold.CheckActive}
 	var once sync.Once
 	finish := func() {
 		once.Do(func() {
@@ -75,7 +75,7 @@ func (s *Server) reserveScreenTransport(ctx context.Context) (context.Context, f
 	}
 	lease, err := hold.Lease()
 	if err == nil {
-		err = hold.Context().Err()
+		err = hold.CheckActive(hold.Context())
 	}
 	if err != nil || lease.State != "active" {
 		finish() // No native work has started on this refused path.
@@ -91,8 +91,56 @@ func (s *Server) reserveScreenTransport(ctx context.Context) (context.Context, f
 // hand over no connection register no viewer socket.
 type screenTransportFrameKey struct{}
 type screenTransportFrame struct {
-	mu      sync.Mutex
-	sockets []*screenOriginalSocket
+	mu          sync.Mutex
+	sockets     []*screenOriginalSocket
+	checkActive func(context.Context) error // Bound once to this exact original relay hold.
+}
+
+func screenTransportActive(ctx context.Context) error {
+	if ctx == nil {
+		return model.Err("invalid_request", "screen transport context required")
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	frame, _ := ctx.Value(screenTransportFrameKey{}).(*screenTransportFrame)
+	if frame == nil || frame.checkActive == nil {
+		return model.Err("lease_inactive", "original screen transport entitlement required")
+	}
+	return frame.checkActive(ctx)
+}
+
+func screenDialTransport(ctx context.Context, address string, dial func(context.Context, string, string) (net.Conn, error)) (net.Conn, error) {
+	if err := screenTransportActive(ctx); err != nil {
+		return nil, err
+	}
+	conn, err := dial(ctx, "tcp", address)
+	if conn != nil {
+		conn = screenOwnTransportConn(ctx, conn)
+	}
+	if err == nil {
+		err = screenTransportActive(ctx)
+	}
+	if err != nil {
+		if conn != nil {
+			_ = conn.Close() // Cleanup must never depend on fresh entitlement.
+		}
+		return nil, err
+	}
+	if conn == nil {
+		return nil, model.Err("screen_dial_unconfirmed", "native screen dial returned no connection")
+	}
+	return conn, nil
+}
+
+func screenHandshakeTransport(ctx context.Context, conn *tls.Conn) error {
+	if err := screenTransportActive(ctx); err != nil {
+		return err
+	}
+	if err := conn.HandshakeContext(ctx); err != nil {
+		return err
+	}
+	return screenTransportActive(ctx)
 }
 
 type screenOriginalSocket struct {
@@ -152,15 +200,23 @@ type screenTransportWriter struct {
 
 func (w screenTransportWriter) Unwrap() http.ResponseWriter { return w.ResponseWriter }
 func (w screenTransportWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	if err := screenTransportActive(w.ctx); err != nil {
+		return nil, nil, err
+	}
 	conn, rw, err := http.NewResponseController(w.ResponseWriter).Hijack()
 	if conn != nil {
 		conn = screenOwnTransportConn(w.ctx, conn)
 	}
+	if err == nil {
+		if err = screenTransportActive(w.ctx); err != nil {
+			if conn != nil {
+				_ = conn.Close()
+			}
+			return nil, nil, err
+		}
+	}
 	return conn, rw, err
 }
 func screenOwnedUpgradeWriter(ctx context.Context, w http.ResponseWriter) http.ResponseWriter {
-	if frame, _ := ctx.Value(screenTransportFrameKey{}).(*screenTransportFrame); frame != nil {
-		return screenTransportWriter{ResponseWriter: w, ctx: ctx}
-	}
-	return w
+	return screenTransportWriter{ResponseWriter: w, ctx: ctx}
 }

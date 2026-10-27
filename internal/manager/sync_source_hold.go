@@ -111,7 +111,11 @@ func (m *Manager) AdmitSyncSource(ctx context.Context, i syncservice.Intent, row
 	if err != nil {
 		return fail(err)
 	}
-	workerCtx, cancel := context.WithDeadline(ctx, *l.Expires)
+	remaining, clockErr := m.leaseRemaining(l)
+	if clockErr != nil || remaining <= 0 {
+		return fail(model.Err("lease_inactive", "elapsed entitlement unavailable"))
+	}
+	workerCtx, cancel := context.WithTimeout(ctx, remaining)
 	h := &SyncSourceHold{manager: m, lease: l.ID, leaseRecord: []byte(raw), intentRecord: intentRecord, intent: i, root: root, parent: parent, volume: volume, memory: l.Request.Resources.Memory, disk: disk, ctx: workerCtx, cancelCtx: cancel, open: open, done: make(chan struct{})}
 	m.syncSourceWorkers[l.ID] = h
 	return l, h, nil
@@ -154,6 +158,10 @@ func (h *SyncSourceHold) CheckActive(ctx context.Context) error {
 
 // Manager.mu is held. A same-revision row replacement cannot lend authority.
 func (h *SyncSourceHold) checkActiveLocked(ctx context.Context) error {
+	lease, err := h.manager.get(h.lease)
+	if err != nil || !h.manager.leaseLive(lease) {
+		return model.Err("sync_worker_unavailable", "elapsed sync entitlement unavailable")
+	}
 	if h.ctx == nil || h.ctx.Err() != nil || h.manager.closing || h.manager.draining || h.manager.syncSourceWorkers[h.lease] != h {
 		return model.Err("sync_worker_unavailable", "original source worker owner changed")
 	}

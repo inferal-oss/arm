@@ -44,9 +44,10 @@ type Permit struct {
 	TransitRate      int64
 }
 type TransitReservation struct {
-	Context context.Context
-	End     func()
-	Finish  func()
+	CheckActive func(context.Context) error
+	Context     context.Context
+	End         func()
+	Finish      func()
 }
 type Handler struct {
 	RoutePath      string
@@ -209,7 +210,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		joined := make(chan struct{})
 		reservation, reserveErr := h.ReserveTransit(initial, ctx, joined, outer, o, permit)
-		if reserveErr != nil || reservation.Context == nil || reservation.End == nil || reservation.Finish == nil {
+		if reserveErr != nil || reservation.Context == nil || reservation.End == nil || reservation.Finish == nil || reservation.CheckActive == nil {
 			// A reservation may already own durable resources even when its
 			// final admission check fails. Join every pre-reservation abort
 			// callback and close the WebSocket before publishing its witness.
@@ -246,6 +247,17 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			close(joined)
 			reservation.Finish()
 		}()
+		lifetime, e = withReservation(lifetime, reservation.CheckActive)
+		if e != nil {
+			abortInitial.StopAndJoin()
+			stop()
+			return
+		}
+	}
+	if e = CheckReservation(lifetime); e != nil {
+		abortInitial.StopAndJoin()
+		stop()
+		return
 	}
 	ack, _ := json.Marshal(ready{Version, o.Route, o.WireDigest()})
 	if e = ws.Write(initial, websocket.MessageBinary, ack); e != nil {
@@ -262,9 +274,15 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer finish()
 	conn := newBounded(websocket.NetConn(life, ws, websocket.MessageBinary), finish, func() error { capture.socket.close(); return ws.CloseNow() })
 	ws.SetReadLimit(MaxPayloadBytes)
-	conn.startWatch(life, func() error { return h.Revalidate(life, outer, o, permit) })
+	revalidate := func() error {
+		if err := CheckReservation(life); err != nil {
+			return err
+		}
+		return h.Revalidate(life, outer, o, permit)
+	}
+	conn.startWatch(life, revalidate)
 	defer conn.Close()
-	if e = h.Revalidate(life, outer, o, permit); e != nil {
+	if e = revalidate(); e != nil {
 		return
 	}
 	if !o.Final() {
@@ -275,10 +293,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handshake, end := context.WithTimeout(life, 5*time.Second)
 	e = inner.HandshakeContext(handshake)
 	end()
-	if e != nil || h.Revalidate(life, outer, o, permit) != nil {
+	if e != nil || revalidate() != nil {
 		return
 	}
-	if AcceptBinding(inner, o) != nil || h.Revalidate(life, outer, o, permit) != nil {
+	if AcceptBinding(inner, o) != nil || revalidate() != nil {
 		return
 	}
 	// Count the ORIGINAL source only after its own end-to-end TLS proof. Hop
@@ -306,7 +324,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		joined := make(chan struct{})
 		reservation, reserveErr := h.ReserveFinal(life, life, joined, outer, o, permit)
-		if reserveErr != nil || reservation.Context == nil || reservation.End == nil || reservation.Finish == nil {
+		if reserveErr != nil || reservation.Context == nil || reservation.End == nil || reservation.Finish == nil || reservation.CheckActive == nil {
 			_ = conn.Close()
 			capture.socket.close()
 			_ = ws.CloseNow()
@@ -333,7 +351,11 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			close(joined)
 			reservation.Finish()
 		}()
-		h.Final(reservation.Context, outer, o, permit, inner)
+		guarded, err := withReservation(reservation.Context, reservation.CheckActive)
+		if err != nil {
+			return
+		}
+		h.Final(guarded, outer, o, permit, inner)
 		return
 	}
 	h.Final(life, outer, o, permit, inner)
@@ -389,15 +411,26 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 		if network != "tcp" || requested != address {
 			return nil, fmt.Errorf("SSH relay hop changed")
 		}
+		if err := revalidate(ctx); err != nil {
+			return nil, err
+		}
 		raw, e := (&net.Dialer{}).DialContext(ctx, "tcp", address)
 		if e != nil {
 			return nil, e
 		}
 		socket.set(raw)
+		if err := revalidate(ctx); err != nil {
+			_ = raw.Close()
+			return nil, err
+		}
 		conn := tls.Client(raw, config)
 		if e = conn.HandshakeContext(ctx); e != nil {
 			raw.Close()
 			return nil, e
+		}
+		if err := revalidate(ctx); err != nil {
+			_ = raw.Close()
+			return nil, err
 		}
 		return conn, nil
 	}}
@@ -417,6 +450,9 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	if ws.Subprotocol() != protocol {
 		return fail(fmt.Errorf("SSH relay protocol differs"))
 	}
+	if e = revalidate(ctx); e != nil {
+		return fail(e)
+	}
 	raw, _ := json.Marshal(o)
 	if e = ws.Write(initial, websocket.MessageBinary, raw); e != nil {
 		return fail(e)
@@ -429,6 +465,9 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	}
 	if !initialAbort.StopAndJoin() || initial.Err() != nil {
 		return fail(fmt.Errorf("SSH relay admission timed out"))
+	}
+	if e = revalidate(ctx); e != nil {
+		return fail(e)
 	}
 	life, cancel := context.WithTimeout(ctx, min(MaxLifetime, time.Until(o.Expires)))
 	conn := newBounded(websocket.NetConn(life, ws, websocket.MessageBinary), cancel, abort)

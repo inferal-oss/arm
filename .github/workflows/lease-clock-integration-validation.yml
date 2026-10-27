@@ -1,0 +1,50 @@
+name: Lease clock current integration
+on:
+  push:
+    branches: [codex/lease-clock-current-integration]
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-24.04-arm, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      GOMAXPROCS: '1'
+      GOTOOLCHAIN: local
+      GOENV: 'off'
+      GOWORK: 'off'
+      GOFLAGS: ''
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Fetch declared public dependencies
+        run: go mod download
+      - name: Run source-bound native gates
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            validation_uid="$(id -u)"
+            validation_gid="$(id -g)"
+            validation_parent_pidns="$(stat -Lc %i /proc/self/ns/pid)"
+            validation_parent_mountns="$(stat -Lc %i /proc/self/ns/mnt)"
+            sudo -n --preserve-env=PATH,HOME,GITHUB_SHA,GITHUB_WORKSPACE,RUNNER_OS,RUNNER_ARCH,ImageOS,ImageVersion unshare --mount --propagation private --pid --fork --kill-child=SIGKILL --mount-proc setpriv --reuid="$validation_uid" --regid="$validation_gid" --init-groups --inh-caps=-all --ambient-caps=-all --bounding-set=-all --no-new-privs --pdeathsig=keep env ARM_CI_EXPECT_UID="$validation_uid" ARM_CI_EXPECT_GID="$validation_gid" ARM_CI_PARENT_PIDNS="$validation_parent_pidns" ARM_CI_PARENT_MOUNTNS="$validation_parent_mountns" /bin/bash scripts/ci-pidns-entry.sh python3 scripts/test-lease-clock-ci.py
+          else
+            python3 scripts/test-lease-clock-ci.py
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lease-clock-integration-${{ matrix.os }}-${{ github.sha }}
+          path: .tla/clock-native
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

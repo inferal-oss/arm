@@ -131,6 +131,22 @@ type screenPrefixReader struct {
 	prefix []byte
 }
 
+type screenReader struct {
+	ctx context.Context
+	src io.Reader
+}
+
+func (r screenReader) Read(p []byte) (int, error) {
+	if err := screenTransportActive(r.ctx); err != nil {
+		return 0, err
+	}
+	n, err := r.src.Read(p)
+	if check := screenTransportActive(r.ctx); check != nil {
+		return 0, check // Do not relay bytes returned after a slow expired read.
+	}
+	return n, err
+}
+
 func (r *screenPrefixReader) Read(p []byte) (int, error) {
 	n, e := r.Reader.Read(p)
 	if len(r.prefix) < r.max {
@@ -166,15 +182,30 @@ func screenPrelude(result screenCopyResult) string {
 }
 
 func (w screenWriter) Write(p []byte) (int, error) {
+	if err := screenTransportActive(w.ctx); err != nil {
+		return 0, err
+	}
 	if err := w.rate.WaitN(w.ctx, len(p)); err != nil {
 		return 0, err
 	}
-	return w.dst.Write(p)
+	if err := screenTransportActive(w.ctx); err != nil {
+		return 0, err
+	}
+	n, err := w.dst.Write(p)
+	if err == nil {
+		err = screenTransportActive(w.ctx)
+	}
+	return n, err
 }
 
 func screenCopy(ctx context.Context, a, b net.Conn) screenCopyResult {
 	var wg sync.WaitGroup
 	var result screenCopyResult
+	if screenTransportActive(ctx) != nil {
+		_ = a.Close()
+		_ = b.Close()
+		return result
+	}
 	finished, canceled := make(chan struct{}), make(chan struct{})
 	go func() {
 		defer close(canceled)
@@ -185,7 +216,7 @@ func screenCopy(ctx context.Context, a, b net.Conn) screenCopyResult {
 		case <-finished:
 		}
 	}()
-	client, server := &screenPrefixReader{Reader: a, max: 13}, &screenPrefixReader{Reader: b, max: 17}
+	client, server := &screenPrefixReader{Reader: screenReader{ctx, a}, max: 13}, &screenPrefixReader{Reader: screenReader{ctx, b}, max: 17}
 	// A busy framebuffer must not consume the input channel's pacing budget.
 	// Independent limits keep clicks responsive even during a full-screen update.
 	inputLimiter := newScreenLimiter(screenInputBytesPerSecond)
@@ -272,17 +303,16 @@ func (s *Server) browserScreen(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		target, err = (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, "tcp", screenService)
+		target, err = screenDialTransport(ctx, screenService, (&net.Dialer{Timeout: 3 * time.Second}).DialContext)
 		if err != nil {
 			log.Printf("ARM screen: local service unavailable: %v", err)
 			http.Error(w, "macOS Screen Sharing is unavailable", http.StatusBadGateway)
 			return
 		}
-		target = screenOwnTransportConn(ctx, target)
 	}
 	defer target.Close()
 	defer screenCloseOnCancel(ctx, target)()
-	if ctx.Err() != nil {
+	if screenTransportActive(ctx) != nil {
 		http.Error(w, "screen transport no longer active", http.StatusServiceUnavailable)
 		return
 	}
@@ -291,6 +321,9 @@ func (s *Server) browserScreen(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.CloseNow()
+	if screenTransportActive(ctx) != nil {
+		return
+	}
 	viewer := screenNetConn(ctx, c)
 	defer viewer.Close()
 	var watchDone <-chan struct{}
@@ -328,6 +361,9 @@ func (s *Server) browserScreen(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *meshService) dialScreen(ctx context.Context, bound nodeSession) (net.Conn, error) {
+	if err := screenTransportActive(ctx); err != nil {
+		return nil, err
+	}
 	peer, err := m.store.Resolve(bound.Host)
 	if err != nil {
 		return nil, err
@@ -354,14 +390,13 @@ func (m *meshService) dialScreen(ctx context.Context, bound nodeSession) (net.Co
 	// Own the complete native dial/handshake here. http.Transport can detach
 	// its dial context from a canceled request; no native dial is delegated to
 	// that worker or allowed to outlive this admission interval.
-	native, err := (&net.Dialer{}).DialContext(handshake, "tcp", peer.Identity.Address)
+	native, err := screenDialTransport(handshake, peer.Identity.Address, (&net.Dialer{}).DialContext)
 	if err != nil {
 		return nil, err
 	}
 	// Retain the first result of the exact original TCP close, including
 	// cancellation during TLS or a refused HTTP upgrade. TLS stays pinned and
 	// the HTTP transport still receives the same concrete *tls.Conn.
-	native = screenOwnTransportConn(ctx, native)
 	pinned := tls.Client(native, tlsConfig)
 	transferred := false
 	defer func() {
@@ -370,7 +405,7 @@ func (m *meshService) dialScreen(ctx context.Context, bound nodeSession) (net.Co
 		}
 	}()
 	defer screenCloseOnCancel(handshake, pinned)()
-	if err = pinned.HandshakeContext(handshake); err != nil {
+	if err = screenHandshakeTransport(handshake, pinned); err != nil {
 		return nil, err
 	}
 	transport := &http.Transport{TLSClientConfig: tlsConfig, Proxy: nil, DisableKeepAlives: true, TLSHandshakeTimeout: screenHandshakeTimeout, ResponseHeaderTimeout: screenHandshakeTimeout, MaxResponseHeaderBytes: 8192}
@@ -381,22 +416,32 @@ func (m *meshService) dialScreen(ctx context.Context, bound nodeSession) (net.Co
 	// preserves the mesh's required http/1.1 ALPN on Upgrade requests.
 	var socketMu sync.Mutex
 	used := false
-	transport.DialTLSContext = func(ctx context.Context, network, address string) (net.Conn, error) {
+	transport.DialTLSContext = func(_ context.Context, network, address string) (net.Conn, error) {
 		socketMu.Lock()
 		defer socketMu.Unlock()
 		if network != "tcp" || address != peer.Identity.Address || used {
 			return nil, fmt.Errorf("screen dial target changed")
+		}
+		if err := screenTransportActive(handshake); err != nil {
+			return nil, err
 		}
 		used = true
 		return pinned, nil
 	}
 	defer transport.CloseIdleConnections()
 	client := &http.Client{Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	if err := screenTransportActive(handshake); err != nil {
+		return nil, err
+	}
 	c, response, err := websocket.Dial(handshake, "wss://"+peer.Identity.Address+"/v1/screen", &websocket.DialOptions{HTTPClient: client, HTTPHeader: header, CompressionMode: websocket.CompressionDisabled})
 	if err != nil {
 		if response != nil {
 			return nil, fmt.Errorf("destination returned HTTP %d: %w", response.StatusCode, err)
 		}
+		return nil, err
+	}
+	if err := screenTransportActive(ctx); err != nil {
+		_ = c.CloseNow()
 		return nil, err
 	}
 	// NetConn owns the upgraded socket. Its close releases the HTTP transport.
@@ -458,16 +503,15 @@ func (m *meshService) meshScreen(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "screen grant changed", http.StatusForbidden)
 		return
 	}
-	target, err := (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, "tcp", screenService)
+	target, err := screenDialTransport(ctx, screenService, (&net.Dialer{Timeout: 3 * time.Second}).DialContext)
 	if err != nil {
 		log.Printf("ARM screen: destination service unavailable: %v", err)
 		http.Error(w, "macOS Screen Sharing unavailable", http.StatusBadGateway)
 		return
 	}
-	target = screenOwnTransportConn(ctx, target)
 	defer target.Close()
 	defer screenCloseOnCancel(ctx, target)()
-	if ctx.Err() != nil {
+	if screenTransportActive(ctx) != nil {
 		http.Error(w, "screen transport no longer active", http.StatusServiceUnavailable)
 		return
 	}
@@ -476,6 +520,9 @@ func (m *meshService) meshScreen(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.CloseNow()
+	if screenTransportActive(ctx) != nil {
+		return
+	}
 	viewer := screenNetConn(ctx, c)
 	defer viewer.Close()
 	watchDone := make(chan struct{})

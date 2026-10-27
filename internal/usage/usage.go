@@ -66,7 +66,7 @@ func Collect(ctx context.Context, root model.ProcessIdentity) Snapshot {
 }
 
 func View(current Snapshot, previous *Snapshot) model.WorkloadUsage {
-	v := model.WorkloadUsage{Observed: current.Finished.UTC(), Live: true, Root: current.Root, IdentityVerified: current.Verified, Complete: current.Complete, Method: current.Method, MemoryMetric: current.MemoryMetric, Scope: "captured live process-group members; excludes escaped and already exited processes", Detail: current.Detail, Members: current.Members, MemberCount: len(current.Members), CPUQuality: "unavailable", MemoryQuality: "unavailable"}
+	v := model.WorkloadUsage{Observed: current.Finished.UTC(), Live: true, Root: current.Root, IdentityVerified: current.Verified, Complete: current.Complete, Method: current.Method, MemoryMetric: current.MemoryMetric, Scope: "captured live process-group members; excludes escaped and already exited processes", Detail: current.Detail, Members: current.Members, MemberCount: len(current.Members), CPUQuality: "unavailable", MemoryQuality: "unavailable", ProportionalResidentQuality: "unavailable"}
 	if !current.Verified {
 		return v
 	}
@@ -89,6 +89,27 @@ func View(current Snapshot, previous *Snapshot) model.WorkloadUsage {
 		v.MemoryQuality = "reported-sum"
 		if !current.Complete {
 			v.MemoryQuality = "partial-reported-sum"
+		}
+	}
+	var proportional uint64
+	proportionalKnown := len(current.Members) > 0
+	for _, p := range current.Members {
+		if p.ProportionalResidentBytes == nil {
+			proportionalKnown = false
+			continue
+		}
+		if *p.ProportionalResidentBytes > math.MaxUint64-proportional {
+			proportionalKnown = false
+			v.Detail += "; proportional resident sum overflow"
+			break
+		}
+		proportional += *p.ProportionalResidentBytes
+	}
+	if proportionalKnown {
+		v.ProportionalResidentBytes = &proportional
+		v.ProportionalResidentQuality = "reported-sum"
+		if !current.Complete {
+			v.ProportionalResidentQuality = "partial-reported-sum"
 		}
 	}
 	if !current.Complete {
