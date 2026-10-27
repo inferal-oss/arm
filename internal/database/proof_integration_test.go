@@ -21,7 +21,9 @@ import (
 
 func proofFixture(t *testing.T, active bool) string {
 	t.Helper()
-	return proofFixtureResources(t, active, model.Resources{CPU: 1})
+	// Schema/history fixtures exercise a real counted permit, not host CPU admission.
+	// Explicit resource variants and native CPU/process tests retain their claims.
+	return proofFixtureResources(t, active, model.Resources{})
 }
 
 func proofFixtureResources(t *testing.T, active bool, resources model.Resources) string {
@@ -46,6 +48,9 @@ func proofFixtureResources(t *testing.T, active bool, resources model.Resources)
 	l, err := m.Acquire(model.Request{Resources: resources, Pools: []model.PoolClaim{{Pool: pool.Pool.ID, Quantity: 1}}, TTL: time.Minute, Reason: "fixture owned claim", Key: "fixture-claim"}, nil)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if len(l.Request.Pools) != 1 || l.Request.Pools[0].Pool != pool.Pool.ID || l.Request.Pools[0].Quantity != 1 || l.State != "active" {
+		t.Fatal("proof fixture did not acquire its real counted permit", l)
 	}
 	if !active {
 		if _, err = m.End(l.ID, "released"); err != nil {
