@@ -50,10 +50,19 @@ type SyncSourceHold struct {
 	cancelCtx    context.CancelFunc
 	open         SyncSourceOpener
 
-	mu      sync.Mutex
-	started bool
-	done    chan struct{}
-	result  error
+	mu        sync.Mutex
+	started   bool
+	done      chan struct{}
+	result    error
+	transport *syncSourceTransport
+}
+
+// This capability is created only by Start from the original opener result.
+type syncSourceTransport struct {
+	owner   *SyncSourceHold
+	ctx     context.Context
+	channel ssh.Channel
+	close   func() error
 }
 
 // AdmitSyncSource reserves the original source key before its transport is
@@ -198,6 +207,26 @@ func (h *SyncSourceHold) ChargeVolume(ctx context.Context, rootID string, bytes 
 	return nil
 }
 
+// OriginalTransportCloser lends the original Start transport closure to its
+// exact runner. It remains usable after cancellation or admission expiry;
+// cleanup must not depend on current execution authority or database access.
+func (h *SyncSourceHold) OriginalTransportCloser(ctx context.Context, channel ssh.Channel) (func() error, error) {
+	if h == nil || h.manager == nil || ctx == nil || channel == nil {
+		return nil, model.Err("sync_worker_unavailable", "original source transport required")
+	}
+	h.manager.mu.Lock()
+	defer h.manager.mu.Unlock()
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	t := h.transport
+	if h.manager.syncSourceWorkers[h.lease] != h || t == nil || t.owner != h || t.ctx != ctx || t.channel != channel || t.close == nil {
+		return nil, model.Err("sync_worker_unavailable", "original source transport tuple differs")
+	}
+	// The closure runs outside both locks and serializes with cancellation and
+	// final teardown through Start's original sync.Once.
+	return t.close, nil
+}
+
 // Start owns both the original authenticated channel and the worker. The
 // callback receives only that channel; it cannot replace the admitted opener.
 func (h *SyncSourceHold) Start(run func(context.Context, ssh.Channel, <-chan *ssh.Request) error) error {
@@ -252,6 +281,14 @@ func (h *SyncSourceHold) Start(run func(context.Context, ssh.Channel, <-chan *ss
 				err = h.checkActiveLocked(originalCtx)
 				if h.ctx != originalCtx {
 					err = model.Err("sync_worker_unavailable", "original source context changed while opening")
+				}
+				if err == nil {
+					h.mu.Lock()
+					h.transport = &syncSourceTransport{owner: h, ctx: originalCtx, channel: owned.Channel, close: func() error {
+						closeOriginal()
+						return closeErr
+					}}
+					h.mu.Unlock()
 				}
 				m.mu.Unlock()
 				if err == nil {
