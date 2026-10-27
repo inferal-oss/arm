@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -87,6 +88,7 @@ func dialScreenBrowser(ctx context.Context, server *httptest.Server, token strin
 
 func TestScreenResourceReleaseRetainsChargeUntilOriginalJoin(t *testing.T) {
 	s := meshFixture(t)
+	awaitScreenTransportCapacity(t, s)
 	ctx, finish, err := s.reserveScreenTransport(t.Context())
 	if err != nil {
 		t.Fatal(err)
@@ -152,6 +154,7 @@ func TestScreenResourceReservationCoversPendingUpgrade(t *testing.T) {
 		case <-release:
 		}
 	}))
+	awaitScreenTransportCapacity(t, s)
 	server, token, joined := bindScreenBrowser(t, s, bound)
 	ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
 	defer cancel()
@@ -200,6 +203,7 @@ func TestScreenResourceJoinedOnReleaseRevocationAndStop(t *testing.T) {
 				defer stream.Close()
 				_, _ = io.Copy(stream, stream)
 			}))
+			awaitScreenTransportCapacity(t, s)
 			server, token, joined := bindScreenBrowser(t, s, bound)
 			ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
 			defer cancel()
@@ -253,6 +257,7 @@ func TestScreenResourceJoinedOnReleaseRevocationAndStop(t *testing.T) {
 
 func TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin(t *testing.T) {
 	s := meshFixture(t)
+	awaitScreenTransportCapacity(t, s)
 	parent, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 	ctx, finish, err := s.reserveScreenTransport(parent)
@@ -290,6 +295,7 @@ func TestScreenResourceFailedBrowserUpgradeJoinsAndSettles(t *testing.T) {
 		upgraded.Store(true)
 		_, _, _ = c.Read(r.Context())
 	}))
+	awaitScreenTransportCapacity(t, s)
 	s.authority = "127.0.0.1:1234"
 	token := strings.Repeat("d", 64)
 	s.browser.nodeSessions = map[[32]byte]nodeCredential{sha256.Sum256([]byte(token)): {Expires: time.Now().Add(time.Minute), Context: bound}}
@@ -349,5 +355,34 @@ func TestScreenResourceDestinationCannotBypassOwnerPolicy(t *testing.T) {
 	defer s.mesh.mu.Unlock()
 	if len(s.mesh.screens) != 0 {
 		t.Fatal("refused destination retained screen registry")
+	}
+}
+
+// Positive transport fixtures need real current native capacity. Waiting here
+// performs read-only observations before dispatch; it neither retries an
+// operation nor changes the native observation, policy or .05CPU/8MiB request.
+func awaitScreenTransportCapacity(t *testing.T, s *Server) {
+	t.Helper()
+	until := time.Now().Add(5 * time.Second)
+	for {
+		status, se := s.Manager.Status()
+		policy, pe := s.Manager.BudgetInspect("self")
+		cpu := status.CPU
+		memory := status.Memory
+		policyReady := (policy.Available.CPU == nil || *policy.Available.CPU >= screenTransportCPU) && (policy.Available.Memory == nil || *policy.Available.Memory >= screenTransportMemory)
+		if se == nil && pe == nil && !status.Draining && cpu != nil && cpu.Known && !cpu.Stale && cpu.Available >= screenTransportCPU && memory != nil && !memory.Stale && memory.Observation.Available != nil && memory.Available >= screenTransportMemory && policyReady {
+			return
+		}
+		if time.Now().After(until) {
+			data, _ := json.Marshal(map[string]any{"cpu_budget": cpu, "memory_budget": memory, "reserved": status.Reserved, "policy_limits": policy.Budget.Limits, "policy_available": policy.Available, "status_read_ok": se == nil, "policy_read_ok": pe == nil, "draining": status.Draining})
+			t.Fatalf("positive screen fixture lacks actual fresh .05CPU/8MiB headroom: %s", data)
+		}
+		timer := time.NewTimer(100 * time.Millisecond)
+		select {
+		case <-timer.C:
+		case <-t.Context().Done():
+			timer.Stop()
+			t.Fatal(t.Context().Err())
+		}
 	}
 }
