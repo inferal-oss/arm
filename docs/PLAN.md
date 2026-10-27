@@ -92,6 +92,25 @@ history merely because it contains an earlier ready report.
 | Compact Resources and web alignment | Resources UI role | Separate implementation uses stock Semblance containment and progressive details, preserving capacity warnings, pool operations and keyboard/mobile behavior. Source `d09da5a` hides routine reported I/O badges, but the deployed embedded bundle still shows them and must be rebuilt. The initial Resources source review found consumer-control replacement on renewal/list changes and stale lease dialog identity; a focused successor addresses both in source. Its frozen v2 run now has independently checked 48 Node passes, 18 aggregate RDF passes, four native normal roots/16 named cases, three exact assertion negatives, builds and compiled CLI/HTTP/PTY bootstrap. One requested Node path does not exist, RDF names are source-reconstructed, and bootstrap has no structured per-daemon closure receipt. The old relay has an operation-key case-alias read-only bypass and must not be used for browser validation. Correct the bounded browser fixture, complete readable-label rendering, and verify actual rebuilt-binary Monitor/Resources, focus, modal, read-only and desktop/phone behavior before integration. |
 | Shell completion and readable identities | `codex/cli-completion-readable-names` | Bash/Zsh/Fish command/flag and authorized host/resource completion, with Cobra dependency coordinated centrally. Readable names derive deterministically from stable IDs; preserve supplied names, exact IDs, permission boundaries and ambiguity refusal. ID-derived defaults remain stateless. The operator additionally requests explicit custom names usable in CLI and dashboards: a separate bounded optional metadata mapping, scoped uniqueness, strict read/reset proof and API compatibility need central review before writes. No DDL migration, signed identity rewrite or format-2 activation is authorized by naming. Terminal and remote display wiring, final parser/alias/shell/native gates and persistence evidence remain required. |
 
+## Canonical module source integration
+
+Reviewed namespace source is integrated as `3a1e09f`, the minimal Cobra
+dependency contract as `9cde0a4`, and the import-only guest fixture projection as
+`25dcc60`. All Go files and module manifests match the reviewed unpublished
+composition. [Local native evidence](validation/canonical-native-local-2026-10-27.json)
+accepts exact dependency source `5fbe548`: 92 packages compile, five race roots
+and 66 named nodes pass across four packages, targeted vet and offline tidy
+pass, and private canonical CLI probes create no ARM state. All 29 original
+children join and the recorded source, tool and dependency inventories match.
+
+This is local source acceptance. The guest projection changes only three self
+imports and does not repeat physical S3. A source-bound website/discovery build,
+publication of the three early HTTPS discovery pages, and a separately reviewed
+cold-cache public-install workflow on macOS and Linux remain required. Do not
+query the public `getarm.org` module before its source and metadata are live.
+The earlier failed native preparation and public-install attempts retain their
+recorded source scopes and outcomes.
+
 ## Intermittent mesh-node follow-up
 
 Mesh resilience work is owned by the mobile recovery role. Confirm transient

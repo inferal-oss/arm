@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "scope": "Canonical namespace and dependency D local native validation",
+  "result": "PASSED_WITH_SCOPED_LIMITS",
+  "source": {
+    "commit": "5fbe548c98f1b8ccf4f262cc384afd6b846ee002",
+    "tree": "bf40421471af1a4b0006add258e10131b97037af",
+    "clean_before_after": true,
+    "own_isolated_tree_matches_retained_source_files": 2524
+  },
+  "platform": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "go": "go1.27.3",
+    "cgo_enabled": true
+  },
+  "commands": {
+    "count": 29,
+    "reviewed_argv_match": true,
+    "all_exit_zero": true,
+    "all_original_children_joined": true,
+    "original_outer_exit": 0,
+    "scope": "original child handles, not all descendants"
+  },
+  "validation": {
+    "compile": {
+      "packages": 92,
+      "test_packages": 70,
+      "packages_without_test_files": 22,
+      "test_bodies_executed": false
+    },
+    "race": {
+      "roots": 5,
+      "packages": 4,
+      "named_pass_nodes_including_roots": 66,
+      "events": 280,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "roster": {
+        "getarm.org/internal/distribution": [
+          "TestInstallableModuleIncludesAuditedFork"
+        ],
+        "getarm.org/internal/buildinfo": [
+          "TestBundleTagChecksCompiledVersionAndProtocol"
+        ],
+        "getarm.org/internal/mesh": [
+          "TestVanityNamespacePreservesExistingTrustedCatalogPolicy"
+        ],
+        "getarm.org/internal/cli": [
+          "TestCobraFlagSetContractPreservesArmNameAndLiteralValues",
+          "TestAllCommandHelpIsAvailableWithoutBackendOrSideEffects"
+        ]
+      }
+    },
+    "targeted_vet": "passed",
+    "offline_tidy_diff": "passed; empty diff",
+    "private_probes": [
+      "canonical executable path",
+      "version",
+      "help",
+      "empty artifact catalog"
+    ],
+    "ARM_state_created": false
+  },
+  "closure": {
+    "source_files": 2524,
+    "go_sdk_entries": 15657,
+    "python_sdk_entries": 1820,
+    "selected_tool_files": 8,
+    "selected_dependency_source_entries": {
+      "cobra": 66,
+      "pflag": 88,
+      "mousetrap": 5
+    },
+    "dependency_metadata_files": 15,
+    "loaded_python_files_before": 69,
+    "loaded_python_files_after": 69,
+    "all_before_after_equal": true,
+    "independent_current_file_membership_mode_byte_hash_matches": true
+  },
+  "local_binary": {
+    "sha256": "05d9636bbf2b88e6f08a577cea4dc6b8ffbc418d6f92c325f5168301d89e2dab",
+    "path": "getarm.org/cmd/arm",
+    "main_module": "getarm.org",
+    "local_pseudo_version": "v0.0.0-20261027190608-5fbe548c98f1",
+    "main_module_sum": null,
+    "vcs_modified": false,
+    "public_install_evidence": false
+  },
+  "selected_modules": [
+    {
+      "path": "github.com/spf13/cobra",
+      "version": "v1.10.2",
+      "sum": "h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=",
+      "go_mod_sum": "h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiTUUS4=",
+      "cached_origin": {
+        "VCS": "git",
+        "URL": "https://github.com/spf13/cobra",
+        "Hash": "88b30ab89da2d0d0abb153818746c5a2d30eccec",
+        "Ref": "refs/tags/v1.10.2"
+      },
+      "query_origin_emitted": false
+    },
+    {
+      "path": "github.com/spf13/pflag",
+      "version": "v1.0.10",
+      "sum": "h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=",
+      "go_mod_sum": "h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=",
+      "cached_origin": {
+        "VCS": "git",
+        "URL": "https://github.com/spf13/pflag",
+        "Hash": "0491e5702ad2bb108bc519a5221bcc0f52aa9564",
+        "Ref": "refs/tags/v1.0.10"
+      },
+      "query_origin_emitted": false
+    },
+    {
+      "path": "github.com/inconshreveable/mousetrap",
+      "version": "v1.1.0",
+      "sum": "h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=",
+      "go_mod_sum": "h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=",
+      "cached_origin": {
+        "VCS": "git",
+        "URL": "https://github.com/inconshreveable/mousetrap",
+        "Hash": "4e8053ee7ef85a6bd26368364a6d27f1641c1d21",
+        "Ref": "refs/tags/v1.1.0"
+      },
+      "query_origin_emitted": false
+    }
+  ],
+  "input_hashes": {
+    "reviewed_manifest": "686dceeafb96958ec0df19e051ea71374f62b78390d2f3127e272fc471114ec2",
+    "command_packet": "13fa115509d109550d9b8d8dd0ff3b961c176ad8c4d73f8148bae95efd548809",
+    "source_sdk_tools_before_after": "7f37110e00beaa60506dfc30e794f8ce6b1b217458c55ee6e93eaf1f0bc9555a",
+    "binary_buildinfo": "e5edfa198f99cbbfa132fad8b7e2ba900aaf3ab791264c6909da67ce4b03fc92",
+    "race_json": "ca6620e42dd64641623fdc0346c903a0a2c0d20fb0c8b059be745eb37e93b7f7",
+    "original_child_joins": "c3785f718a6aed7258f803cc024e9764a2d937299833bb8812700d3ec52ce3ec",
+    "independent_audit": "5f254afe144008c3fb7b35ad3d5b76ac10ff6ba17093ff9352ea63d4469c2203"
+  },
+  "limits": [
+    "Exact dependency D only; later compositions require separate validation.",
+    "Local source pseudo-version is not public module selection, download or installation proof.",
+    "Cached dependency Origin is pinned corroboration; Go list output did not emit query-level Origin.",
+    "Apple SDK contents and system dynamic libraries remain ambient; no reproducible or fully hermetic build claim.",
+    "No full test-suite, all-descendant, hosted, other-platform, backend, VM or physical-suspend acceptance.",
+    "Earlier failed preparation and V4 attempts remain failed.",
+    "This audit performed no candidate execution or public query."
+  ]
+}

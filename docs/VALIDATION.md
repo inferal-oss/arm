@@ -5789,3 +5789,29 @@ compile/test/helper inputs. Integration `bc7e629` preserves all five feature
 files exactly, and its complete cmd/internal trees match the tested composition.
 This adds no new S3 cycle, VM/power operation, race cohort or all-descendant
 cleanup claim. Earlier actual S3 and failed-run evidence keep their own scopes.
+
+### Canonical namespace local native acceptance
+
+[Independent normalized evidence](validation/canonical-native-local-2026-10-27.json)
+accepts dependency source `5fbe548c98f1b8ccf4f262cc384afd6b846ee002`, tree
+`bf40421471af1a4b0006add258e10131b97037af`, on Darwin arm64 with Go1.27.3
+and normal CGo. All 29 reviewed commands exit zero and their original children
+join. All 92 packages compile without running their test bodies; the selected
+race cohort then passes five roots and 66 named nodes across four packages,
+with no fail or skip events. Targeted vet, offline tidy with empty diff and
+private version/help/empty-catalog probes pass without creating ARM state.
+
+Independent review verifies 2,524 source files, selected Go/Python SDK inventories,
+eight tools, fifteen dependency metadata files and all 69 loaded Python files
+against unchanged before/after snapshots. The local binary reports canonical
+path and clean source revision. Its locally derived pseudo-version has no main
+module checksum and supplies no public-install evidence. Cached dependency
+Origin records are corroborating inputs; the Go-list output does not emit query
+Origin. Apple SDK contents and system libraries remain ambient.
+
+Integrated module/Go bytes match the reviewed composition, whose only Go
+difference from the native dependency cut is the separately reviewed import-only
+guest projection. This does not rerun projected guest S3, the full test suite,
+Linux or hosted installation. Earlier failed preparation and V4 results stay
+failed. Public source/discovery publication and the exact-source cold-cache
+macOS/Linux install gate remain open.

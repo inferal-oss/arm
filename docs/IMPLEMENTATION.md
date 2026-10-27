@@ -2200,3 +2200,18 @@ automatic run `40568391669`: all 20 canonical bodies match the original artifact
 including eight fresh images with matching source provenance. Earlier native
 interaction evidence retains its recorded scope. This change does not update
 the tracked product browser bundle.
+
+## Canonical namespace source
+
+The module and executable imports now use `getarm.org` and
+`getarm.org/cmd/arm`. Integration `3a1e09f` preserves the reviewed implementation
+while changing namespace, associated guards and install text. `9cde0a4` adds
+the reviewed Cobra dependency and parser contract without activating completion
+or readable names. `25dcc60` projects three guest-test imports into the same
+namespace without changing its body or Python fixtures.
+
+The audited fork remains in the main module with its licenses and provenance.
+Trusted artifact-catalog policy is unchanged. A plain source installation still
+has an empty companion-artifact catalog and does not authorize remote seed or
+provisioning artifacts. Exact-source local native validation passes; discovery
+metadata publication and public installation of this source are not yet accepted.
