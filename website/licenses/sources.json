@@ -1,0 +1,21 @@
+{
+  "oxigraph": {
+    "version": "0.5.13",
+    "resolved": "https://registry.npmjs.org/oxigraph/-/oxigraph-0.5.13.tgz",
+    "integrity": "sha512-nD9pc9lhwzVUeEIeEc3ds4MyYphOW8fXsOf8Zeu8uKcGNn5KNIVQBHPNNp0jHMNKFVvmZH8BKDGcjVLmTus9DA==",
+    "upstreamTag": "v0.5.13",
+    "upstreamCommit": "2837810c8993da671d496eabf7677d7573c5c522",
+    "files": [
+      {
+        "path": "oxigraph-0.5.13/LICENSE-MIT",
+        "url": "https://raw.githubusercontent.com/oxigraph/oxigraph/2837810c8993da671d496eabf7677d7573c5c522/LICENSE-MIT",
+        "sha256": "1f4f6736adc52ebfda18bb84947e0ef492bd86a408c0e83872efb75ed5e02838"
+      },
+      {
+        "path": "oxigraph-0.5.13/LICENSE-APACHE",
+        "url": "https://raw.githubusercontent.com/oxigraph/oxigraph/2837810c8993da671d496eabf7677d7573c5c522/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      }
+    ]
+  }
+}

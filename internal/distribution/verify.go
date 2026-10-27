@@ -157,7 +157,7 @@ func VerifyArchive(ctx context.Context, archivePath string) error {
 			return fmt.Errorf("launcher differs from reviewed platform selector")
 		}
 	}
-	flags := "-X=" + tagVariable + "=arm-bundle-v1:" + manifest.Version + ":" + fmt.Sprint(manifest.Protocol)
+	flags := identityFlags(manifest.Version, manifest.Protocol)
 	for i, a := range manifest.Artifacts {
 		p := platforms[i]
 		expected := "arm-" + p[0] + "-" + p[1]

@@ -40,3 +40,15 @@ func TestCarrierTargetPairAndPlatformRejectedBeforeCompiler(t *testing.T) {
 		}
 	}
 }
+
+func TestVersionOverrideRefusesUnsafeIdentityBeforeCompiler(t *testing.T) {
+	root := filepath.Join(t.TempDir(), "untouched")
+	var stdout, stderr bytes.Buffer
+	code := run(context.Background(), []string{"--carrier", "--version=../tag", "--root=" + root, "--go=must-not-run"}, &stdout, &stderr)
+	if code != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "version/protocol") || strings.Contains(stderr.String(), "must-not-run") {
+		t.Fatal(code, stdout.String(), stderr.String())
+	}
+	if _, err := os.Stat(root); !os.IsNotExist(err) {
+		t.Fatal("invalid version created source/output", err)
+	}
+}

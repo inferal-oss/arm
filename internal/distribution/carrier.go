@@ -172,7 +172,7 @@ func carrierTarget(o Options) (string, string, error) {
 // This final compile is shared by native and explicitly targeted carriers. The
 // inspected Go build metadata must match the chosen target before publication.
 func buildCarrierExecutable(ctx context.Context, o Options, goPath, source, staged, goos, arch string) error {
-	flags := "-X=" + tagVariable + "=arm-bundle-v1:" + o.Version + ":" + fmt.Sprint(o.Protocol)
+	flags := identityFlags(o.Version, o.Protocol)
 	if o.Log != nil {
 		fmt.Fprintf(o.Log, "Building carrier %s/%s with four compressed thin payloads\n", goos, arch)
 	}
