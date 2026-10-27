@@ -1,0 +1,776 @@
+{
+  "audit": {
+    "independent_audit_sha256": "332895e91a1287d80c8fe135cd29b74d7faf1a1def3956b555ecefdb79517fe4",
+    "independent_review": "Completed independent raw artifact, immutable source, ownership, roster, selected input, privacy and scope review; no blocking finding.",
+    "method": "Read-only raw Go JSON recount, all original owner/capture receipt checks, complete source/harness Git blob and SHA-256/mode comparison, selected source/tool/module/compiler records; no test re-execution."
+  },
+  "ci": {
+    "artifact_bytes": 4109457,
+    "artifact_file_count": 86,
+    "artifact_sha256": "b7a4f8e2a4dccfb51602dd1fdc2a06174c6e8bbbb73b213398ff5b9c8dac471e",
+    "artifact_url": "https://github.com/inferal-oss/arm/actions/runs/40588888867/artifacts/12773076720",
+    "attempt": 1,
+    "conclusion": "success",
+    "event": "push",
+    "job_url": "https://github.com/inferal-oss/arm/actions/runs/40588888867/job/122487602913",
+    "run_url": "https://github.com/inferal-oss/arm/actions/runs/40588888867"
+  },
+  "command_evidence": {
+    "all_original_owners_retired_reaped_absent": true,
+    "commands": [
+      {
+        "actual_exit": 0,
+        "capture_sha256": "0070cdc4837d9f2d1730fc6d6c85b93954f7cb57cc1b766aa5d177dea67add7a",
+        "cleanup_error": null,
+        "command": "source-head",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "93372e6e032f1b10f3709e52b39cd115a18ba697e993a3e95b86a96df01ab540",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "d1623423e925d62004f3c1df0f1aa65f0ae128c5a39937a0b227b5f842c1160d",
+        "cleanup_error": null,
+        "command": "harness-head",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "8f6f1367c7866adaf7789cbaf52caa86bd0648015e4c3e23ae692bc7f6333854",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "1d48f32602577322e05aa3f26f2c1e31dc5b7debc0b692666e9aeab82d202d07",
+        "cleanup_error": null,
+        "command": "source-tree",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "c3429ba43b81c589480fe7df49ab81feb6ea4a2b2d7a283b1786a2d67a6617e7",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "f5256d3977754e6e0640dcb1072ea9d38821ac1eaf1f113ff1b0a0e818c036a8",
+        "cleanup_error": null,
+        "command": "harness-tree",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "9407a78946ead68c201a25f48dc43259eb934e394d9131b300ce2fab43a842da",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanup_error": null,
+        "command": "source-status",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "d275e72759b2acff55791e2b3f4e0bf21d701b311fdcea18371c645036b4dfa0",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanup_error": null,
+        "command": "harness-status",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "a789bbc2c8114960f07e16e466153b20334f6157163a93544e0d57f517769db2",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "fe766d3b5e04c53d1f5ab5cf31b6c2fab74432f852d6439f7ba5568370697249",
+        "cleanup_error": null,
+        "command": "go-environment",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "5eb657694ada85d92e931217d9824d66dce768ef86f1be048bc5d3c04e32e1ed",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "8497f84b2b8334c413d9c6166bd39d009ba55d2ff60a8f23e66dfa5819c2b048",
+        "cleanup_error": null,
+        "command": "cc-version",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "c27cca06a7bfeddee24f41ff26105cf37db36e57fcfc715dca0ec26347405844",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "08cababdf891ccbf96eb376f1e84f279f70302fb13d84e5f98637becdfc6d989",
+        "cleanup_error": null,
+        "command": "cc-target",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "e7a39c2e2066b813e8318781e8a8a3a6fe392be04fac1db21c18ef33ed8eb214",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "bb6aade8c4ca40cae9cb1be8abe12377f651fccd82954af74ec61703b6608fc5",
+        "cleanup_error": null,
+        "command": "cc-full-version",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "1085191120aa60e21b7059831cc92758944efc5342c78ecfd6287d9916779291",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "35d3d157615681245967db80fd6d13a54e57f21d4a19cf0c7d28ffd3bc0dc309",
+        "cleanup_error": null,
+        "command": "cc-search-dirs",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "c1001ec3121cd85d8d6779d0ce611abaa3a2d18c23f2a4e8fe49517ca51458b6",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "a8081bc5652e2ec80147e680dfc24dd61f11820e2109d1e3b759d77c378583a9",
+        "cleanup_error": null,
+        "command": "cc-prog-cc1",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "28b37344e373e50cd0f5308c39ed4e742c09f3ae266be669f051e97c42b76cfa",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "c0b7638fa61ef43107d74ccefe76e6f9cd3c061bfee7d6ffd58a7b783012afed",
+        "cleanup_error": null,
+        "command": "cc-prog-collect2",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "7b523b81bd3c62db5da6bcec8593398840bef28b1506eba367143c8e895deab0",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "8b97bca79750847558d488e2ea4de79903c9c71c9af27ecf1b3dff5dba2abdd9",
+        "cleanup_error": null,
+        "command": "cc-prog-as",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "7cdb082b09f4c5ab09cf328eb4a9b24ed79327bbf19eb16223a90bea81f744c9",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "3b6cb8ae51045d062a7c7de7cc488ad8785144cfbc0a7fc9546ed52429e0d97f",
+        "cleanup_error": null,
+        "command": "cc-prog-ld",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "ea1cf06a02bb5c61e8cae4e0cff2e235782609e73909259fe96a7d4cebddd9e5",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "49e0ee3c95e74be54cf8cb48a3e08423726429a8edc38cb0a38018efb7e7e5b1",
+        "cleanup_error": null,
+        "command": "cc-libgcc",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "76de409b2b8691b5d7279888e30330c010be60559c326cd724779b6183bd3445",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "553b98f96f0bafa4b72fdc9895604ba44ee221100484822d267f8ed98fa82bf9",
+        "cleanup_error": null,
+        "command": "cc-include",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "bde70cb5c63569a5800d4003df73086afe87d61f0eff719365c467ba5f00bc84",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "49e0ee3c95e74be54cf8cb48a3e08423726429a8edc38cb0a38018efb7e7e5b1",
+        "cleanup_error": null,
+        "command": "cc-file-libgcc.a",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "92776d37a24d7652e4da6eb1e9841b1e94990c7d21c46722429ddea5f1b4f7cb",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "59f9c6a5262b034fce94080033d0eecf475bf1643b3f9ffa7addac39801e6960",
+        "cleanup_error": null,
+        "command": "cc-file-libgcc_s.so.1",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "6a0c0ed921226510162172bc8fd0cff8512ec6e27159bbccf09ccdf8f74226d7",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "1ce3066ee345924cb9705864441745d3b1439ac6d3095212b470426536dfb803",
+        "cleanup_error": null,
+        "command": "cc-file-libc.so.6",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "f076704fc60ffe5dbab782e8e8888e7d2b0b0070f555e6f9b8e59bb63a27bb5f",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "67e5a75eadd498236ba41c8ce58cdaf5e5eb53ac5599080a5b0389c5f41d23e6",
+        "cleanup_error": null,
+        "command": "cc-file-libm.so.6",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "663a8c1b53453a5637b04662e7d888d210e8a3d179bfc03bdf742d7ea6e3d0a0",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "4558a3ed58cb97a1ca4502172ec6badb7c853aa454e6f697e7e7a8c4113b4fa3",
+        "cleanup_error": null,
+        "command": "cc-file-libpthread.so.0",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "5bdce97515f224377d49814b15ddbd14c35c67a6fcd753d4a0ee5207f1775546",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "0a06de066ec955db674441fcb1b186e30da8510ba6465e157f5ff96de47a2661",
+        "cleanup_error": null,
+        "command": "cc-file-libdl.so.2",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "39316b89ee144870ed123bbae03af65759d019f17c33736cebd072d3ee38d01b",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "ae0e89e76e51f55db72c7a81f22262823bac1bc0adfccfb7a9f9082b4e21cdc7",
+        "cleanup_error": null,
+        "command": "cc-file-libresolv.so.2",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "715c1a9d291e65b6f01b5bb59ca2655d927812252db44fdd5fa7a6ee57bff040",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "6c055808e8942d37c2fe4147922650cf64e3d3be7484ec7c36b92fef323828f7",
+        "cleanup_error": null,
+        "command": "cc-file-ld-linux-x86-64.so.2",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "5430a292d01a076f92177652891033679133435f9935d7e33c548269c2b9261f",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "b2cc7a106b8d6a69225fab7deea509e239919cf39d6d7d7b4131faffe2f3a03a",
+        "cleanup_error": null,
+        "command": "cc-native-headers",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "0654400cb8b1338071f9ea5d9c83db2f2798f9279bdc44c7d9ce1f1fbcc8c040",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "08d2a0b0c7a93cbefabd3bdd9896072ed5006da9cd12b88bb5d56e27a64d4a5c",
+        "cleanup_error": null,
+        "command": "manager-selected-inputs",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "040b18983eb04b8cd84a1ccf46b8d5b7d3329cdd9eb94ce4c086c0af861569e8",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "a74b05760f3bcfe151df9c3526a2c4fc10072544e1c9f7022ab26b74ce68e0cd",
+        "cleanup_error": null,
+        "command": "clock-selected-inputs",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "7cefedf682bae93301e500b432e5e5cb3d3eae1849f9a455d52cae9be10688a5",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "4cc57599a770a64a52650311ad30ac9ff7d682c790d4a9dad525b00d4a582125",
+        "cleanup_error": null,
+        "command": "linux-race-tests",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "6ac29ae10102b6d05fa29b3c8b49793446e49f0c28b101b87a44e362e6b520ca",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "0070cdc4837d9f2d1730fc6d6c85b93954f7cb57cc1b766aa5d177dea67add7a",
+        "cleanup_error": null,
+        "command": "source-head-final",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "ab7702f2a8ae362a78e399a3eafbd252d89c5f14e3a6e5ffcbc310f8fb5c0de4",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "b75b829fd1dae6fe55d808cca08f2114e0fbe376d26af4b10eb6cdb588a4faa6",
+        "cleanup_error": null,
+        "command": "harness-head-final",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "0570155b512edcf24393888fb23e1acee38e6317f31e3eddc5ca047bc7ba89f2",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanup_error": null,
+        "command": "source-status-final",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "2a90a126f77d19b359e15256bcb765e76d21db2c14efb4a1b4b04bef5abb7cc1",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      },
+      {
+        "actual_exit": 0,
+        "capture_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanup_error": null,
+        "command": "harness-status-final",
+        "original_native_wait_calls": 1,
+        "owner_receipt_sha256": "220b4ef14167c044675cf3f92692425e421870b5fb450e46391330eb40b4e2dc",
+        "retired_reaped_pid_and_group_absent": true,
+        "signals_attempted": 0
+      }
+    ],
+    "count": 33,
+    "original_native_wait_calls": 33,
+    "scope": "Driver direct original command ownership only; this count is not a census of every compiler or test descendant."
+  },
+  "date": "2026-10-27",
+  "execution": {
+    "CGO_ENABLED": 1,
+    "GOMAXPROCS": 1,
+    "VM_launches": 0,
+    "actual_S3_cycles": 0,
+    "command_timeout_seconds": 900,
+    "driver_timeout_seconds": 1200,
+    "flags": [
+      "-mod=readonly",
+      "-race",
+      "-json",
+      "-count=1",
+      "-p=1",
+      "-parallel=1",
+      "-timeout=300s"
+    ],
+    "go": "go1.27.3",
+    "host_power_operations": [],
+    "local_heavy_execution": false,
+    "maximum_command_output_bytes": 16777216,
+    "native_race_command_elapsed_seconds": 185.331039889,
+    "os": "Ubuntu 24.04",
+    "platform": "Linux amd64",
+    "process_stop_scope": "Fresh original test child only.",
+    "race": true,
+    "system_service_operations": []
+  },
+  "limitations": [
+    "Exact selected 39-root, 125-node Linux amd64 CGO1 race/recovery cohort; no full-suite or complete specification acceptance.",
+    "This run performs no S3 cycle or VM launch. Prior real disposable-guest S3 acceptance remains scoped to its original recorded source and failures remain failed.",
+    "Seeded generic/SSH descriptor controls do not claim genuine managed generic/SSH child crash or adoption. The genuine crash case concerns the disposable Manager owner and lost inline relay-transit pipe join.",
+    "Existing SSH cases use the Go SSH library; no external system OpenSSH acceptance.",
+    "Native process stop targets only the test-owned child. No host suspend or power operation, physical hardware or Darwin suspend experiment.",
+    "Selected Go, GCC/query/header and module files are content-bound; hosted OS/kernel/dynamic loading and unlisted native inputs remain trusted. Image version observations differ and are not conflated.",
+    "Later integration changes require source equivalence review and affected validation; evidence remains bound to the exact tested source.",
+    "Raw execution receipts stay outside version control; this record retains normalized technical results, hashes and public CI references."
+  ],
+  "new_recovery_cases": {
+    "genuine_crash": "A fresh disposable Manager owner opens its own fresh backend, holds an actual anonymous-pipe relay join, and is SIGKILLed through its retained original child owner after native expiry. Its sole Wait proves signal 9 and PID/group absence. Two new recovery Opens preserve relay_supervision_lost, original request/deadline/key and charges; renewal, End, Reconcile, fake join and same-key replay refuse. The separately owned sentinel exits normally through its original owner.",
+    "native_deadline": [
+      "live bare deadline preserved across two clean reopen cycles",
+      "expired bare deadline settles from native elapsed time without rebasing"
+    ],
+    "saved_pid_nonauthority": [
+      "seeded generic descriptor matching a live independently owned sentinel",
+      "seeded SSH descriptor matching a live independently owned sentinel"
+    ],
+    "uncertainty": [
+      "other-boot row",
+      "legacy row",
+      "regressed persisted checkpoint",
+      "malformed persisted checkpoint"
+    ]
+  },
+  "retained_artifact_files_sha256": {
+    "compiler-selection.json": "cd16ff83166ef902dc9c79a5fdb0df6b4da2d58c75b7eb26a2ea9486fac12f31",
+    "harness-after.json": "72eed25c7418ae5ff71a028bba7473ff4e1babf8ebfff18785b12369163d0bab",
+    "harness-before.json": "72eed25c7418ae5ff71a028bba7473ff4e1babf8ebfff18785b12369163d0bab",
+    "harness-git-tree.json": "0161ddd65cf766a6437d5f11c8c077855bda132bff45339150f5ab2b0a878698",
+    "intent.json": "80608bab5d4ca17bdb10ec39564ff6ee22cc5a853dcb05c703136404eacb5368",
+    "linux-race-tests-owner.json": "6ac29ae10102b6d05fa29b3c8b49793446e49f0c28b101b87a44e362e6b520ca",
+    "linux-race-tests.log": "4cc57599a770a64a52650311ad30ac9ff7d682c790d4a9dad525b00d4a582125",
+    "module-selection.json": "4afc645104ad57adc2a96112d5d8df8e01e3f2b4896d8d416d0a9abd85f1dfe5",
+    "result.json": "b5c03df3b4d17dd613bc076818ff5274b12f5ea782dfbdfb0e7dc8e0b8e38e65",
+    "source-git-tree.json": "7794e37b04e567d275ad8c6d64e2468999de7dc48363011e5cd7f692e635c60a",
+    "sources-after.json": "49a0d61217dcdadf54616e717dc83ed397bfd4c65dc822d37cc53cf5a5140c26",
+    "sources-before.json": "49a0d61217dcdadf54616e717dc83ed397bfd4c65dc822d37cc53cf5a5140c26",
+    "test-roster.json": "fa4b519bfdc467d7740abd2b5f2c8a3b4d8f8d0b426b26abf1bf066713c686ec",
+    "tools-after.json": "b4876fe4ba7ce3e15a144ae9616362b3c581392609ddabf88156ce39f4b5617f",
+    "tools-before.json": "b4876fe4ba7ce3e15a144ae9616362b3c581392609ddabf88156ce39f4b5617f"
+  },
+  "review_fixes": [
+    "Reject any preexisting crash-helper home, including symlinks, before Manager.Open; bind and recheck owned real 0700 parent device/inode before the exclusive launch marker and Open.",
+    "Place private HOME, temporary files and Go caches in a fresh sibling directory outside both source checkouts and uploaded evidence."
+  ],
+  "schema": "arm.lease-clock-linux-race-recovery-validation/v1",
+  "selected_inputs": {
+    "before_after_equal": true,
+    "checksum_metadata_files": 25,
+    "clock_package_records": 155,
+    "compiler_component_records": 15,
+    "compiler_trust_boundary": "The selected GCC driver, resolved compiler/assembler/linker programs, queried runtime files, intrinsic include directory and the fixed native header probe closure are content-bound. This is not a universal compiler closure: the hosted Ubuntu image, kernel, sealed/system services, dynamic system-library loading and unlisted native headers/libraries remain trusted.",
+    "gcc_target": "x86_64-linux-gnu",
+    "gcc_version": "13.3.0",
+    "go_installation_and_selected_tools_entries": 23434,
+    "graph_all_requested": false,
+    "hosted_image_provenance": {
+      "cause": "Unestablished; retained as distinct observations. Exact hosted image identity is not claimed.",
+      "equal": false,
+      "inherited_context_ImageVersion": "20261026.354.1",
+      "provisioner_log_version": "20261025.353.1"
+    },
+    "manager_package_records": 299,
+    "modules": {
+      "clock": [
+        {
+          "go_mod_sum": "h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=",
+          "path": "github.com/google/uuid",
+          "replacement": null,
+          "sum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=",
+          "version": "v1.6.0"
+        },
+        {
+          "go_mod_sum": "h1:hNLxWAXmnKAxqDtdwIYC4bM9oQPEecfsnNMuSxOs3og=",
+          "path": "golang.org/x/sys",
+          "replacement": null,
+          "sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=",
+          "version": "v0.49.0"
+        },
+        {
+          "path": "getarm.org",
+          "replacement": null,
+          "version": null
+        }
+      ],
+      "manager": [
+        {
+          "go_mod_sum": "h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=",
+          "path": "github.com/google/uuid",
+          "replacement": null,
+          "sum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=",
+          "version": "v1.6.0"
+        },
+        {
+          "go_mod_sum": "h1:hNLxWAXmnKAxqDtdwIYC4bM9oQPEecfsnNMuSxOs3og=",
+          "path": "golang.org/x/sys",
+          "replacement": null,
+          "sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=",
+          "version": "v0.49.0"
+        },
+        {
+          "path": "getarm.org",
+          "replacement": null,
+          "version": null
+        },
+        {
+          "go_mod_sum": "h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=",
+          "path": "github.com/pelletier/go-toml/v2",
+          "replacement": null,
+          "sum": "h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=",
+          "version": "v2.4.3"
+        },
+        {
+          "go_mod_sum": "h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=",
+          "path": "github.com/coder/websocket",
+          "replacement": null,
+          "sum": "h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNUA=",
+          "version": "v1.8.15"
+        },
+        {
+          "go_mod_sum": "h1:Xh+kl5A+M0gMiWDytH2Hhr5Z7WbNCpv/eB/EFgfSk+w=",
+          "path": "golang.org/x/crypto",
+          "replacement": null,
+          "sum": "h1:COkYLr4k7nDI4r6QtMML2AfzeIswWHAJthLS6K/M/54=",
+          "version": "v0.58.0"
+        },
+        {
+          "go_mod_sum": "h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=",
+          "path": "github.com/dustin/go-humanize",
+          "replacement": null,
+          "sum": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=",
+          "version": "v1.0.1"
+        },
+        {
+          "go_mod_sum": "h1:87/pZ4L6nD1zqW4nItuS12YO7hN1igAah34xjnQo/W0=",
+          "path": "modernc.org/libc",
+          "replacement": null,
+          "sum": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs=",
+          "version": "v1.77.1"
+        },
+        {
+          "go_mod_sum": "h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=",
+          "path": "github.com/remyoudompheng/bigfft",
+          "replacement": null,
+          "sum": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=",
+          "version": "v0.0.0-20230129092748-24d4a6f8daec"
+        },
+        {
+          "go_mod_sum": "h1:4p5IwJITfppl0G4sUEDtCr4DthTaT47/N3aT6MhfgJg=",
+          "path": "modernc.org/mathutil",
+          "replacement": null,
+          "sum": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=",
+          "version": "v1.7.1"
+        },
+        {
+          "go_mod_sum": "h1:/JP4VbVC+K5sU2wZi9bHoq2MAkCnrt2r98UGeSK7Mjw=",
+          "path": "modernc.org/memory",
+          "replacement": null,
+          "sum": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=",
+          "version": "v1.12.1"
+        },
+        {
+          "go_mod_sum": "h1:1dIoEagfDE72QytD5scH1lxARtaUgKgHC/NuApA27r0=",
+          "path": "modernc.org/sqlite",
+          "replacement": null,
+          "sum": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw=",
+          "version": "v1.60.1"
+        },
+        {
+          "go_mod_sum": "h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=",
+          "path": "github.com/creack/pty",
+          "replacement": null,
+          "sum": "h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=",
+          "version": "v1.1.24"
+        }
+      ]
+    },
+    "native_header_dependency_records": 166,
+    "package_specific_bootstrap": true,
+    "subsequent_module_network": "off",
+    "tool_manifest_digest": "33889b14b642f0147a97dc94d826b94b7275e355f7b97d5b91131087cabb0943",
+    "unique_selected_module_directories": 13,
+    "unrelated_module_cache_hashed": false
+  },
+  "source": {
+    "base": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48",
+    "before_after_bytes_modes_git_blobs_equal": true,
+    "complete_harness_files": 2552,
+    "complete_source_files": 2551,
+    "files_sha256": {
+      "internal/manager/lease_clock_crash_recovery_native_linux_test.go": "b62a607cb1a7d12d2124b1921477df6b0c440f0a35fdc0e6f4b50e0d678ad1d3",
+      "internal/manager/lease_clock_recovery_native_linux_test.go": "63bd37f28217a69f5ca364a545d77198c7c12b6dbabc7186240a617197fc9312",
+      "scripts/fixtures/lease-clock-linux/roster.json": "7a570352135cb20ffb85d9cb166f42a31a79b9b197298beb140a3a93cbfed134",
+      "scripts/formal_process.py": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76",
+      "scripts/test-lease-clock-linux-race.py": "b18849205e9b0444d3f7abe6e6eea35a6941db2f53c26848cf213189549e1a72"
+    },
+    "harness_manifest_digest": "976ae27c4f8391f89f21c65371297d892e20eab954f13e3e918bdec097a37bb6",
+    "roster_design_lineage": "56cb9d0a030877346a5dcd371866fb1c729e2881",
+    "roster_design_lineage_is_not_tested_source": true,
+    "source_manifest_digest": "df75adf4427a49e19b1c6d890589b15b03c35ff66b054f532aba1f04e30b1c6b",
+    "tested_commit": "e0d070d17a28b3e94f4f05fc7ebca540e947a364",
+    "workflow_commit": "7f6f7be83b965f9f8b81801c2725e95f02631ccb",
+    "workflow_only_direct_child": true,
+    "workflow_sha256": "4dc50a9cea34c0d73755d8c9632e57471ae251c492e77c8f012dc89d6fa1367e"
+  },
+  "status": "passed_scoped_native_linux_race_recovery",
+  "tests": {
+    "failed_nodes": 0,
+    "observed_nodes": {
+      "getarm.org/internal/leaseclock": [
+        "TestClockArithmeticBounds",
+        "TestDeadlineDiscontinuitiesAndSerialization",
+        "TestDeadlineDiscontinuitiesAndSerialization/changed-wall",
+        "TestDeadlineDiscontinuitiesAndSerialization/missing",
+        "TestDeadlineDiscontinuitiesAndSerialization/missing-wall",
+        "TestDeadlineDiscontinuitiesAndSerialization/other-boot",
+        "TestDeadlineDiscontinuitiesAndSerialization/regressed",
+        "TestDeadlineDiscontinuitiesAndSerialization/version",
+        "TestDeadlineDiscontinuitiesAndSerialization/zero-wall",
+        "TestInitialTimeNamespaceRejectsReusedOrUnverifiedScopes",
+        "TestNativeClockSuspendedProcess"
+      ],
+      "getarm.org/internal/manager": [
+        "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs",
+        "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-and-settlement",
+        "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-only",
+        "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-and-settlement",
+        "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-only",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/id",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/owner",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/pid",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/process",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/request",
+        "TestLeaseClockCheckpointFailureFreshRosterDecodeRefusesAllNativeSignals",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/below-deadline",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/list-decode-error",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/missing-deadline",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/other-boot",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-other-boot",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-read-error",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-regressed",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/read-error",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/regressed",
+        "TestLeaseClockCheckpointFailureRefusesNewAuthority",
+        "TestLeaseClockCheckpointFailureRejectsPhysicalIDAlias",
+        "TestLeaseClockCorruptDurableMarkerDoesNotRebaseline",
+        "TestLeaseClockDatabaseProofPreservesActiveAndSettledBoundaries",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/mismatch",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/missing-anchor",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/null-end",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/null-object",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/span",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/unknown",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/version",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit/zero-wall",
+        "TestLeaseClockDisposableGuestBindingGuards",
+        "TestLeaseClockDisposableGuestBindingGuards/ARM_DISPOSABLE_SUSPEND_GUEST",
+        "TestLeaseClockDisposableGuestBindingGuards/ARM_SUSPEND_BINARY_SHA256",
+        "TestLeaseClockDisposableGuestBindingGuards/ARM_SUSPEND_DISK_SERIAL",
+        "TestLeaseClockDisposableGuestBindingGuards/ARM_SUSPEND_NONCE",
+        "TestLeaseClockDisposableGuestBindingGuards/ARM_SUSPEND_UUID",
+        "TestLeaseClockDisposableGuestBindingGuards/marker-field-0",
+        "TestLeaseClockDisposableGuestBindingGuards/marker-field-1",
+        "TestLeaseClockDisposableGuestBindingGuards/marker-field-2",
+        "TestLeaseClockDisposableGuestBindingGuards/marker-field-3",
+        "TestLeaseClockDisposableGuestBindingGuards/marker-field-4",
+        "TestLeaseClockHeldStartFencesWithoutPeriodicTick",
+        "TestLeaseClockNativeDeadlineRecoveryPreservesElapsedAuthority",
+        "TestLeaseClockNativeDeadlineRecoveryPreservesElapsedAuthority/expired",
+        "TestLeaseClockNativeDeadlineRecoveryPreservesElapsedAuthority/live",
+        "TestLeaseClockNativeManagerOwnerCrashRetainsRelayJoin",
+        "TestLeaseClockNativeRecoveredPIDIsNotCancellationAuthority",
+        "TestLeaseClockNativeRecoveredPIDIsNotCancellationAuthority/generic",
+        "TestLeaseClockNativeRecoveredPIDIsNotCancellationAuthority/ssh",
+        "TestLeaseClockNativeRecoveryUncertainPersistedClockRetainsCharges",
+        "TestLeaseClockNativeRecoveryUncertainPersistedClockRetainsCharges/legacy-row",
+        "TestLeaseClockNativeRecoveryUncertainPersistedClockRetainsCharges/malformed-checkpoint",
+        "TestLeaseClockNativeRecoveryUncertainPersistedClockRetainsCharges/other-boot-row",
+        "TestLeaseClockNativeRecoveryUncertainPersistedClockRetainsCharges/regressed-checkpoint",
+        "TestLeaseClockRenewalRaceCannotReviveExpiry",
+        "TestLeaseClockRestartSameScopeAndOtherBoot",
+        "TestLeaseClockRestartSameScopeAndOtherBoot/legacy",
+        "TestLeaseClockRestartSameScopeAndOtherBoot/live-wall-rollback",
+        "TestLeaseClockRestartSameScopeAndOtherBoot/other-boot",
+        "TestLeaseClockRestartSameScopeAndOtherBoot/overdue-frozen-wall",
+        "TestLeaseClockRestartSameScopeAndOtherBoot/regressed",
+        "TestLeaseClockReviewContextUsesElapsedRemaining",
+        "TestLeaseClockReviewContextUsesElapsedRemaining/-24h0m0s",
+        "TestLeaseClockReviewContextUsesElapsedRemaining/24h0m0s",
+        "TestLeaseClockSpecializedListenerRecoverySurvivesUncertainDeadline",
+        "TestLeaseClockSpecializedListenerRecoverySurvivesUncertainDeadline/missing",
+        "TestLeaseClockSpecializedListenerRecoverySurvivesUncertainDeadline/other-boot",
+        "TestLeaseClockSuspendAndReconcileBeforeAdmission",
+        "TestLeaseClockUncertainRelayKeepsChargeUntilOriginalJoin",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals/changed-wall",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals/missing-deadline",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals/read-error",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals/regressed",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals/scope-changed",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals/unknown-version",
+        "TestLeaseClockWallDiscontinuitiesDoNotAlterEntitlement",
+        "TestLeaseClockWallDiscontinuitiesDoNotAlterEntitlement/-24h0m0s",
+        "TestLeaseClockWallDiscontinuitiesDoNotAlterEntitlement/24h0m0s",
+        "TestSSHEndingJournalFailureCancelsOriginalGroup",
+        "TestSSHEndingJournalFailureCancelsOriginalGroup/close",
+        "TestSSHEndingJournalFailureCancelsOriginalGroup/end",
+        "TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin",
+        "TestSSHManagerCancellationAndExpiryEndOwnedProcess",
+        "TestSSHManagerCancellationAndExpiryEndOwnedProcess/cancel",
+        "TestSSHManagerCancellationAndExpiryEndOwnedProcess/expiry",
+        "TestSSHManagerCancellationAndExpiryEndOwnedProcess/pty-cancel",
+        "TestSSHNativeExitKeepsChargeUntilOriginalInputJoin",
+        "TestSSHRealCanceledSessionRetainsRunningNativeRuntimeCleanup",
+        "TestSSHRealFailedLaunchJoinsUnpublishedRuntime",
+        "TestSSHRealSessionNormalExitJoinsInputCopyWithoutClientEOF",
+        "TestSSHReconcileCannotBypassHeldOrFailedSettlement",
+        "TestSSHRecoveredDescriptorCannotSettleWithoutOriginalJoin",
+        "TestSSHRecoveredDescriptorCannotSettleWithoutOriginalJoin/0",
+        "TestSSHRecoveredDescriptorCannotSettleWithoutOriginalJoin/2147483647",
+        "TestSSHStagingRejectsChangedNativeBinding",
+        "TestSSHStagingRejectsChangedNativeBinding/id",
+        "TestSSHStagingRejectsChangedNativeBinding/identity",
+        "TestSSHStagingRejectsChangedNativeBinding/pid",
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat",
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat/1",
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat/absent",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/blob-ordinary",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/blob-ref",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/blob-worker",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/format-2",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/orphan-ref",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/partial-pair"
+      ]
+    },
+    "package_passes": 2,
+    "root_count": 39,
+    "roots": {
+      "getarm.org/internal/leaseclock": [
+        "TestClockArithmeticBounds",
+        "TestDeadlineDiscontinuitiesAndSerialization",
+        "TestInitialTimeNamespaceRejectsReusedOrUnverifiedScopes",
+        "TestNativeClockSuspendedProcess"
+      ],
+      "getarm.org/internal/manager": [
+        "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs",
+        "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling",
+        "TestLeaseClockCheckpointFailureFreshRosterDecodeRefusesAllNativeSignals",
+        "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive",
+        "TestLeaseClockCheckpointFailureRefusesNewAuthority",
+        "TestLeaseClockCheckpointFailureRejectsPhysicalIDAlias",
+        "TestLeaseClockCorruptDurableMarkerDoesNotRebaseline",
+        "TestLeaseClockDatabaseProofPreservesActiveAndSettledBoundaries",
+        "TestLeaseClockDatabaseProofRejectsMalformedDeadlineAudit",
+        "TestLeaseClockDisposableGuestBindingGuards",
+        "TestLeaseClockHeldStartFencesWithoutPeriodicTick",
+        "TestLeaseClockNativeDeadlineRecoveryPreservesElapsedAuthority",
+        "TestLeaseClockNativeManagerOwnerCrashRetainsRelayJoin",
+        "TestLeaseClockNativeRecoveredPIDIsNotCancellationAuthority",
+        "TestLeaseClockNativeRecoveryUncertainPersistedClockRetainsCharges",
+        "TestLeaseClockRenewalRaceCannotReviveExpiry",
+        "TestLeaseClockRestartSameScopeAndOtherBoot",
+        "TestLeaseClockReviewContextUsesElapsedRemaining",
+        "TestLeaseClockSpecializedListenerRecoverySurvivesUncertainDeadline",
+        "TestLeaseClockSuspendAndReconcileBeforeAdmission",
+        "TestLeaseClockUncertainRelayKeepsChargeUntilOriginalJoin",
+        "TestLeaseClockUncertaintyRetainsWithoutSignals",
+        "TestLeaseClockWallDiscontinuitiesDoNotAlterEntitlement",
+        "TestSSHEndingJournalFailureCancelsOriginalGroup",
+        "TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin",
+        "TestSSHManagerCancellationAndExpiryEndOwnedProcess",
+        "TestSSHNativeExitKeepsChargeUntilOriginalInputJoin",
+        "TestSSHRealCanceledSessionRetainsRunningNativeRuntimeCleanup",
+        "TestSSHRealFailedLaunchJoinsUnpublishedRuntime",
+        "TestSSHRealSessionNormalExitJoinsInputCopyWithoutClientEOF",
+        "TestSSHReconcileCannotBypassHeldOrFailedSettlement",
+        "TestSSHRecoveredDescriptorCannotSettleWithoutOriginalJoin",
+        "TestSSHStagingRejectsChangedNativeBinding",
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery"
+      ]
+    },
+    "skipped_nodes": 0,
+    "test_and_subtest_nodes": 125
+  }
+}

@@ -130,3 +130,44 @@ guests under software CPU emulation. It does not establish physical hardware or
 Darwin suspend, system OpenSSH integration, full Linux race/recovery acceptance,
 hard preemption or the complete specification. Later integration changes need
 their own source review and affected validation.
+
+## Native Linux race and recovery
+
+The focused [Linux validation run](https://github.com/inferal-oss/arm/actions/runs/40588888867)
+passed 39 roots and all 125 named test/subtest nodes across Manager and leaseclock
+with Go 1.27.3, CGO enabled and race instrumentation on Ubuntu 24.04 amd64.
+There were no skipped or failed nodes. The immutable source and its direct
+workflow-only child were checked separately; complete source bytes, modes and
+Git blobs stayed fixed, as did 23,434 selected tool entries. All 33 driver
+commands exited successfully and were reaped once through their original
+owners, with process/group absence and no signal or cleanup error.
+
+New native-clock cases preserve live bare deadlines across two clean reopens,
+settle expired bare deadlines without rebasing, and retain charges for persisted
+other-boot, legacy, regressed and malformed clock records. Seeded generic and
+SSH descriptors matching a real independently owned sentinel cannot recover
+cancellation authority or release charges. Existing renewal races, checkpoint
+failures, held joins, SSH ending-journal failures, startup and namespace guards
+also passed in the same race-instrumented cohort.
+
+A separate test crashes a fresh disposable Manager owner that holds an actual
+anonymous-pipe relay join. Its retained original owner applies SIGKILL after
+native expiry and positively joins that process once. Two subsequent recovery
+opens preserve the lost join, original deadline/key and charge; renewal,
+settlement, fabricated joins and same-key replay refuse. The unrelated sentinel
+then exits normally. This is a genuine Manager-owner crash with a lost inline
+relay join; the saved generic/SSH descriptor controls remain seeded records.
+
+Review fixes reject every preexisting crash-helper home, bind and recheck its
+owned private parent directory, and keep scratch/cache trees outside uploaded
+evidence. The [normalized validation record](validation/lease-clock-linux-race-recovery.json)
+binds the exact source, roster, command receipts and selected Go/GCC/header/module
+manifests. The hosted OS, kernel, dynamic loading and unlisted native files
+remain trusted. Provisioner and inherited environment image versions differ;
+the evidence preserves both observations without claiming exact image identity.
+
+This run performed no VM launch, S3 cycle or host power operation. The earlier
+real S3 evidence retains its own source scope. The native process-stop case
+targets only its fresh original child. These checks do not establish a complete
+Linux suite, system OpenSSH, genuine managed generic/SSH child crash/adoption,
+physical hardware or Darwin suspend, hard preemption or the full specification.
