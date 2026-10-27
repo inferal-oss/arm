@@ -1,0 +1,237 @@
+{
+  "scope": "Captured semantic graph/query/API protocol only; retained earlier host/images reproduce same compiled Calendar failure",
+  "replay_manifest_sha256": "a20dc5cb90297602881cac17dbda579f684ddf149373990cea0e411c13bf9529",
+  "captured_archive_sha256": "13d888e8ab9a8f1ba577ca33dc8d2b9e94a773a9974f0dcd3a95451de56b80b2",
+  "projected_input": {
+    "bytes": 15024631,
+    "cells": 3568,
+    "quads": 132822,
+    "sha256": "6dbe219357b6e255c433ded3f7afcbc334e82483ae805749b316065d3a17f233",
+    "steps": 892,
+    "terms": 57753
+  },
+  "target_query_sha256": {
+    "raw": "dd72aa9ef410ec31d5a6d39a1a50fedaf41a6e9052166a6e6a56d4b1d37c2981",
+    "prefixed": "4648b9b9af94a6dfeb78e57661649f0bd04ac87509ecdee8c866d9e63c462ee6"
+  },
+  "profiles": {
+    "control": {
+      "host_sha256": "3f8ba71f4b845262c711b737ba2de069cced29d24a5dbcda6747e512c6a171bf",
+      "intl_sha256": "39362aaa076fc21eacc924e4c32f7ba57a5eb84efcb8736fe77f9769e5d5d40e",
+      "rust_image_sha256": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6",
+      "wat_image_sha256": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031",
+      "complete": true,
+      "same_discriminator": true,
+      "cells": 3568,
+      "query_releases": 3568,
+      "fuel_resets": 3568,
+      "engine_disposals": [
+        {
+          "backend": "rust",
+          "disposed": true
+        },
+        {
+          "backend": "wat",
+          "disposed": true
+        }
+      ],
+      "original_direct_wait_calls": 1,
+      "original_direct_exit": 0,
+      "final_live_counts": {
+        "rust": {
+          "termCount": 579371,
+          "quadCount": 132822
+        },
+        "wat": {
+          "termCount": 69101,
+          "quadCount": 132822
+        }
+      },
+      "mismatches": [
+        {
+          "step": 891,
+          "compiled": true,
+          "phase": "corpus-prefix"
+        }
+      ],
+      "compiled_rust_wasm_frames": [
+        "wasm-function[770]:0x4a073",
+        "wasm-function[29]:0x1951"
+      ]
+    },
+    "baseline": {
+      "host_sha256": "f63466c643b4f5dd92db611c8df1c773c90eaa981497ce95162434bca20831e5",
+      "intl_sha256": "39362aaa076fc21eacc924e4c32f7ba57a5eb84efcb8736fe77f9769e5d5d40e",
+      "rust_image_sha256": "51c0dd84ae36a285cc96bb6ab7ba05eb42cb14a995a2c3e540fe8cac732f736f",
+      "wat_image_sha256": "a8adcb5a34337fbb81456529167af44fbe875fa7ff2259d737aa5064c46c861b",
+      "complete": true,
+      "same_discriminator": true,
+      "cells": 3568,
+      "query_releases": 3568,
+      "fuel_resets": 3568,
+      "engine_disposals": [
+        {
+          "backend": "rust",
+          "disposed": true
+        },
+        {
+          "backend": "wat",
+          "disposed": true
+        }
+      ],
+      "original_direct_wait_calls": 1,
+      "original_direct_exit": 0,
+      "final_live_counts": {
+        "rust": {
+          "termCount": 579371,
+          "quadCount": 132822
+        },
+        "wat": {
+          "termCount": 69101,
+          "quadCount": 132822
+        }
+      },
+      "mismatches": [
+        {
+          "step": 891,
+          "compiled": true,
+          "phase": "corpus-prefix"
+        }
+      ],
+      "compiled_rust_wasm_frames": [
+        "wasm-function[747]:0x47486",
+        "wasm-function[29]:0x1951"
+      ]
+    }
+  },
+  "shared_actual_four_cell_vectors": [
+    {
+      "backend": "rust",
+      "mode": "interpreted",
+      "result": "",
+      "compile_requested": false,
+      "compile_returned": false,
+      "compile_decision": "not-requested",
+      "host_selected_compiled": false,
+      "run_attempted": true,
+      "run_returned": true,
+      "outcome": "returned",
+      "interrupted": false,
+      "delta": {
+        "compiledRuns": 0,
+        "interpretedRuns": 1,
+        "fallbacks": 0
+      },
+      "after_counts": {
+        "compiled": 891,
+        "compiled_runs": 891,
+        "interpreted_runs": 892
+      },
+      "error": []
+    },
+    {
+      "backend": "wat",
+      "mode": "interpreted",
+      "result": "",
+      "compile_requested": false,
+      "compile_returned": false,
+      "compile_decision": "not-requested",
+      "host_selected_compiled": false,
+      "run_attempted": true,
+      "run_returned": true,
+      "outcome": "returned",
+      "interrupted": false,
+      "delta": {
+        "compiledRuns": 0,
+        "interpretedRuns": 1,
+        "fallbacks": 0
+      },
+      "after_counts": {
+        "compiled": 891,
+        "compiled_runs": 890,
+        "interpreted_runs": 892
+      },
+      "error": []
+    },
+    {
+      "backend": "rust",
+      "mode": "compiled",
+      "result": "error",
+      "compile_requested": true,
+      "compile_returned": true,
+      "compile_decision": null,
+      "host_selected_compiled": true,
+      "run_attempted": true,
+      "run_returned": false,
+      "outcome": "error",
+      "interrupted": false,
+      "delta": {
+        "compiledRuns": 0,
+        "interpretedRuns": 0,
+        "fallbacks": 0
+      },
+      "after_counts": {
+        "compiled": 892,
+        "compiled_runs": 891,
+        "interpreted_runs": 892
+      },
+      "error": [
+        {
+          "stage": "run",
+          "name": "RuntimeError",
+          "message": "unreachable",
+          "interrupted": false
+        }
+      ]
+    },
+    {
+      "backend": "wat",
+      "mode": "compiled",
+      "result": "",
+      "compile_requested": true,
+      "compile_returned": true,
+      "compile_decision": null,
+      "host_selected_compiled": true,
+      "run_attempted": true,
+      "run_returned": true,
+      "outcome": "returned",
+      "interrupted": false,
+      "delta": {
+        "compiledRuns": 1,
+        "interpretedRuns": 0,
+        "fallbacks": 0
+      },
+      "after_counts": {
+        "compiled": 892,
+        "compiled_runs": 891,
+        "interpreted_runs": 892
+      },
+      "error": []
+    }
+  ],
+  "selected_input_witnesses": {
+    "count": 74,
+    "stages": [
+      "pins.before",
+      "control.pins.before",
+      "control.pins.after",
+      "baseline.pins.before",
+      "baseline.pins.after",
+      "pins.final"
+    ],
+    "all_identical": true,
+    "sha256": "25579d5f1d1159a0a78c76f9188a101f89d634f5d0818bd3e7561bd5b2dd2505"
+  },
+  "owned_tmp_absent": true,
+  "independent_scoped_audit_sha256": "70092f56b6ecfe09686d9440e0e79dc335ed80acc4e3e8a62ef35a834bfe1f36",
+  "limitations": {
+    "earlier_outputs": "SHA256 plus UTF8 length only; unrecoverable strings; not proof of exact UTF16 equality",
+    "native_memory_or_cache_identity": "not claimed",
+    "individual_loader_descendant_joins": "not claimed",
+    "numeric_or_Calendar_acceptance": false,
+    "public_or_upstream_acceptance": false,
+    "original_failed_gates": "Remain failed; composed numeric509/510, initial history retention failure, original compact Calendar assertion exit1",
+    "prior_replay_results": "Per-cell replay outputs were not separately persisted. Equality guards are established by reviewed frozen code and positive original exits; the archived projection was independently data-compared."
+  },
+  "original_outer_transcription_sha256": "e52b8ceec625c126f9aff59d84bdcaae246e899ce8424b7d2157e57e670d4b3d"
+}
