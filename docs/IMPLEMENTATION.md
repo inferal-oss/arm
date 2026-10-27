@@ -2300,3 +2300,14 @@ The first native interaction attempt stops at an opening-dialog readiness guard.
 Manager keyboard/actions, real consumer focus, controlled data modes and final
 main-source composition remain open. No new product bundle is integrated by
 this evidence record; the exact failed attempt and cleanup remain preserved.
+
+
+## Upstream Gallery image-selection submission
+
+Focused [Semblance draft PR #215](https://github.com/inferal-oss/semblance/pull/215)
+contains only the Snap host effect and four regressions at `66a3db2`. A stale
+scrollend after child re-keying now preserves the graph-selected image; ordinary
+swipe reporting remains covered, and disposal cancels pending timers/frames.
+Publication is verified at the exact head and two-file scope. It does not change
+ARM's vendored dependency, merge upstream main or accept later composed inputs.
+The separate Lightbox containment correction remains under validation.

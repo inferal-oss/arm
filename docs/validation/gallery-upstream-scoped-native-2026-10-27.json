@@ -1,0 +1,162 @@
+{
+  "Snap_commit": "66a3db2d1ea5decfb2ce8e2199c00ef724205ba7",
+  "Snap_native_Next": {
+    "baseline": "Web Resources2/3 remained current and centered",
+    "candidate": "Terminal Resources3/3 current/centered at observed samples and native paint",
+    "candidate_BODY_post_Next_retained": true,
+    "maximum_settling_time_claim": false,
+    "scope": "One baseline versus Snap-only LTR desktop Next transition at1440x900"
+  },
+  "Snap_source_hashes": {
+    "src/web/snap.ts": "18cb4976be67538979236bde65a2196e1ad1a16ed2b51ba6c1c0e78ea660d10f",
+    "test/snap.test.ts": "d9213788c18b7657819025129be5140ad266897756883227e6c4b370f66aa6ab"
+  },
+  "closure": {
+    "elapsed_seconds": 318.859909583,
+    "new_wait_or_probe": false,
+    "operator_SIGINT": true,
+    "original_authoritative_tool_metadata_checked": true,
+    "original_server_normal_exit": 0,
+    "owned_tab_viewport_reset_and_close_acknowledged": true,
+    "single_loopback_listener_check": "ECONNREFUSED61"
+  },
+  "containment_geometry": {
+    "baseline_observations": 7,
+    "candidate_numerically_good": 25,
+    "failure_preserved": true,
+    "first_failed": "containment-phone-doodle-light-containment",
+    "first_failed_panel": {
+      "bottom": 846.0188603401184,
+      "height": 848.0377197265625,
+      "left": -4.408401012420654,
+      "right": 394.4083714485169,
+      "top": -2.018859386444092,
+      "width": 398.8167724609375,
+      "x": -4.408401012420654,
+      "y": -2.018859386444092
+    },
+    "first_failed_viewport": [
+      390,
+      844
+    ],
+    "recorded": 33,
+    "requested": 41,
+    "source_explanation": {
+      "classification": "source/math inference consistent with actual bounds; no fix or native causal-proof acceptance",
+      "computed_rotate_observed": false,
+      "computed_transform": "none",
+      "consistent_bbox": [
+        398.8168018466612,
+        848.0377187498281
+      ],
+      "path": "ontology/theme/themes-structural.ttl:2719",
+      "separate_rotate_property_degrees": -0.6
+    },
+    "stage_and_image_contained": true,
+    "tolerance_css_px": 1,
+    "unrun": [
+      "containment-phone-doodle-dark-containment",
+      "containment-desktop-doodle-light-containment",
+      "containment-phone-cupertino-light-containment",
+      "containment-phone-cupertino-dark-containment",
+      "containment-desktop-cupertino-light-containment",
+      "containment-phone-fluent-light-containment",
+      "containment-phone-fluent-dark-containment",
+      "containment-desktop-fluent-light-containment"
+    ]
+  },
+  "date": "2026-10-27",
+  "default_phone": {
+    "all_candidate_root_panel_stage_image_bounds_good": true,
+    "baseline_panel": [
+      887.953125,
+      1465.6015625
+    ],
+    "candidate_panel": [
+      390,
+      844
+    ],
+    "header_limit": "Title/counter squeezing remains visible; no full compact usability or header-wrap acceptance.",
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  "evidence_hashes": {
+    "Snap_native_Next_comparison": "627deb99c48d1c535cb5b8fb63ff92cade8e4804a204fa59029a67e484fc8c8c",
+    "original398file_manifest": "43ad16edde3f427c822dedf1448caa4d691bab06e6a9700d8e64aa220bf0478f",
+    "original_remaining_outcome": "1d56267da8db36f7e87676927cfb67bbb0f0f02fae238e01e8b9f334b64101f8",
+    "original_scoped_observations": "62fdb58047bd10d44a23bc794d2431ce7f8d606499b0211c591a081cc5cefb90"
+  },
+  "keyboard": {
+    "all_enabled_controls_visited_each_forward_cycle": false,
+    "binding": "75retained focus URLs and actual snapHTML865902d0/bundle b7a03269 hashes map to frozen Snap source18cb and commit66a3db2",
+    "continuous_focus": false,
+    "original_full4selection_sequences_complete": false,
+    "scope": "Two LTR/RTL native disabled-Next\u2192BODY\u2192Tab recovery, ShiftTab wrap,10forward/10reverse post-key observations and Escape/uniqueGridopener scopes only.",
+    "sequences": [
+      {
+        "BODY_pre_Tab_retained": true,
+        "Escape_dismissals": 2,
+        "continuous_focus_claim": false,
+        "direction": "ltr",
+        "enabled_controls": 9,
+        "every_enabled_control_forward_cycle_claim": false,
+        "forward_distinct_observed_destinations": 6,
+        "post_ShiftTab_focus_inside": 11,
+        "post_Tab_focus_inside": 11,
+        "reverse_distinct_observed_destinations": 8,
+        "unique_Grid_Resources_opener_restored": true,
+        "variant": "snap"
+      },
+      {
+        "BODY_pre_Tab_retained": true,
+        "Escape_dismissals": 2,
+        "continuous_focus_claim": false,
+        "direction": "rtl",
+        "enabled_controls": 9,
+        "every_enabled_control_forward_cycle_claim": false,
+        "forward_distinct_observed_destinations": 6,
+        "post_ShiftTab_focus_inside": 11,
+        "post_Tab_focus_inside": 11,
+        "reverse_distinct_observed_destinations": 8,
+        "unique_Grid_Resources_opener_restored": true,
+        "variant": "snap"
+      }
+    ],
+    "source_variant": "snap"
+  },
+  "limits": [
+    "No full native zoom/swipe/original4selection/continuousfocus or all-theme usability acceptance.",
+    "Phone title/counter squeezing is visible; compact header/usability remains separate.",
+    "Optional font/decode/animation APIs were unsupported; no completion/all-animation-settled/exactpaint-event-time claim.",
+    "N3/function fixture and shared dependencies/cache; no optional Rust-runtime, clean-install/hermetic, publication or deployment acceptance.",
+    "No new source edit, Doodle fix or rerun was performed by this review."
+  ],
+  "paint_review": {
+    "additional_Snap_Next_paints_viewed": 2,
+    "all33paint_or_all41acceptance": false,
+    "geometry_representatives_independently_viewed": 5,
+    "other_captured_geometry_paint_cases_pending": 28,
+    "raw_native_rasters_edited": false
+  },
+  "prior_scope": "Earlier incomplete native attempts and original58587 combined wrapperFAILED remain unchanged; scoped zero-exit Snap commands do not rewrite its exit.",
+  "provenance": {
+    "actual_file_hashes_checked": 398,
+    "all_server_200_size_body_hashes_match_frozen_routes": true,
+    "frozen_variant_files_checked": 27,
+    "independent_browser_body_export": false,
+    "server_responses_checked": 184
+  },
+  "readiness": {
+    "approved_min_opacity": 0.99,
+    "blocks": 39,
+    "font_decode_animation_completion": "not established; optional APIs unsupported in these records",
+    "max_elapsed_ms": 1035.903167001903,
+    "min_pair_gap_ms": 151.76999999955297,
+    "min_selected_opacity_in_qualifying_pairs": 0.998943
+  },
+  "schema": 1,
+  "source_base": "db8933d045ef1bfa8942508ae9764ad56ab0fc39",
+  "status": "Scoped Snap native observations accepted; full containment INCOMPLETE at first Doodle phone boundary failure"
+}

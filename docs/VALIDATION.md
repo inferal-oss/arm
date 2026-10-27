@@ -5976,3 +5976,28 @@ backends return 130 and fail the old all-zero rule; the original failure is not
 reclassified. A separately reviewed remaining-only successor must preserve real
 admission policy, native success, exact shutdown classification and bounded
 readiness. No production bundle or later-main runtime acceptance is claimed.
+
+
+### Upstream Snap draft and remaining containment scope
+
+[Independent observations](validation/gallery-upstream-scoped-native-2026-10-27.json)
+bind Snap source `18cb4976be67538979236bde65a2196e1ad1a16ed2b51ba6c1c0e78ea660d10f`
+to draft head `66a3db2`. Actual Snap-only Next navigation retains the last image
+where baseline remains at the previous image. Two patched-Snap LTR/RTL sequences
+show post-key dialog containment, wrap, Escape and exact Grid opener restoration.
+They do not demonstrate visiting all nine controls or continuous focus during
+disabling the last arrow; no maximum settling time is measured.
+
+The separate containment matrix records seven baseline observations, 25 good
+candidate bounds and one Doodle phone panel overflow; eight cases remain unrun.
+Representative paints are reviewed, with 28 other captured geometry paints still
+awaiting visual review. The source's separate rotation property explains the
+bounds mathematically; the earlier sampler's computed transform does not itself
+measure that rotation. No corrective native acceptance is claimed.
+
+Original server exit, awaited owned-tab reset/close and listener refusal are
+verified from retained original tool records. No new runtime is dispatched by
+this audit. The public PR readback independently confirms draft state, exact
+head, one commit/two files and the reviewed authored body; its managed repository
+header is separate. Current upstream-main changes do not touch those two paths,
+but changed mount/render/engine/package inputs retain a separate composition gate.
