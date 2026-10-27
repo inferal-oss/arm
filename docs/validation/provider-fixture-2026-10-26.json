@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "feature": "opt-in durable external provider fixture",
+  "base_commit": "200d0bedc70bbcff472b52fe75a378da8a7ef8c3",
+  "module": "github.com/inferal-oss/arm",
+  "scope": "internal disposable SQLite external-state fixture; not production registration or Manager admission",
+  "go_version": "go version go1.27.3 darwin/arm64",
+  "source_hashes": {
+    "docs/MANAGED-PROVIDER-NEXT.md": "ffbb2aac43d685978458c5456f466b025a6ca60a472c7b9996108731ed6e150e",
+    "internal/providerfixture/README.md": "988f232e200cfac046ec2cf986d07b3d0cc84f1693d1309a7caf556fe1b93902",
+    "internal/providerfixture/cmd/providerfixture/main.go": "d4fa6e014401ac908c45bc8969a59a7ee7de9d213bbc86c62c5047165896efff",
+    "internal/providerfixture/fixture.go": "1fdba84e98fb0cbbc76149daa535906da7378d8a6d96c34ce71132f2f75ff881",
+    "internal/providerfixture/fixture_test.go": "e1036278f11574ca34bbf77581f1c668809556dac818fdcff975b9abd2199aed",
+    "internal/providerfixture/main.go": "1ae9c792d37e0fd594111b6a89a859d04a08e2f3995feb23d2339fec88482f5f"
+  },
+  "complete_source_manifest_sha256": "ba8bf03caa138cae0da4f7a812f4020498a32d3a2f7cd45f12913f24d9123622",
+  "validation": {
+    "macos_standalone": {
+      "result": "pass",
+      "root_count": 12,
+      "named_entries": 14,
+      "behavior_roots": 11,
+      "nonexecuting_parent_helper_root": "TestFixtureChild",
+      "original_killed_children_joined": 4,
+      "failures": 0,
+      "skips": 0,
+      "roster": [
+        "TestFixtureChild",
+        "TestConcurrentDurableCreateAndChangedIntent",
+        "TestDelayedReadinessExpiryRenewalAndHistoricalLookup",
+        "TestBudgetDenialDependenciesAndReusedNames",
+        "TestDeniedCleanupRetainsExternalCapacity",
+        "TestActualProcessLossAroundCreationAndDeletion",
+        "TestActualProcessLossAroundCreationAndDeletion/before-commit",
+        "TestActualProcessLossAroundCreationAndDeletion/after-commit",
+        "TestExplicitEnableAndMalformedRequestHaveNoState",
+        "TestPersistentOperationBudget",
+        "TestCapabilitiesAndExactProtocolMatching",
+        "TestFixtureConfigurationRejectsAliasesAndMissingFields",
+        "TestMutationsCannotCrossOriginalOwnerOrHostScope",
+        "TestMissingExternalStateIsUnknownAndNeverReleased"
+      ],
+      "log_sha256": "d5df6ffe5afe2c9cd2a09c4949bc3ca0db2f42e474d95e6e02a56dec852e6e67"
+    },
+    "macos_race": {
+      "result": "pass",
+      "root_count": 12,
+      "named_entries": 14,
+      "behavior_roots": 11,
+      "nonexecuting_parent_helper_root": "TestFixtureChild",
+      "original_killed_children_joined": 4,
+      "failures": 0,
+      "skips": 0,
+      "roster": [
+        "TestFixtureChild",
+        "TestConcurrentDurableCreateAndChangedIntent",
+        "TestDelayedReadinessExpiryRenewalAndHistoricalLookup",
+        "TestBudgetDenialDependenciesAndReusedNames",
+        "TestDeniedCleanupRetainsExternalCapacity",
+        "TestActualProcessLossAroundCreationAndDeletion",
+        "TestActualProcessLossAroundCreationAndDeletion/before-commit",
+        "TestActualProcessLossAroundCreationAndDeletion/after-commit",
+        "TestExplicitEnableAndMalformedRequestHaveNoState",
+        "TestPersistentOperationBudget",
+        "TestCapabilitiesAndExactProtocolMatching",
+        "TestFixtureConfigurationRejectsAliasesAndMissingFields",
+        "TestMutationsCannotCrossOriginalOwnerOrHostScope",
+        "TestMissingExternalStateIsUnknownAndNeverReleased"
+      ],
+      "log_sha256": "d53bbfaa3e41b629d915d84bd13ad404983cd8f43295a179e35278956b48767a"
+    },
+    "linux_arm64_standalone": {
+      "result": "pass",
+      "root_count": 12,
+      "named_entries": 14,
+      "behavior_roots": 11,
+      "nonexecuting_parent_helper_root": "TestFixtureChild",
+      "original_killed_children_joined": 4,
+      "failures": 0,
+      "skips": 0,
+      "roster": [
+        "TestFixtureChild",
+        "TestConcurrentDurableCreateAndChangedIntent",
+        "TestDelayedReadinessExpiryRenewalAndHistoricalLookup",
+        "TestBudgetDenialDependenciesAndReusedNames",
+        "TestDeniedCleanupRetainsExternalCapacity",
+        "TestActualProcessLossAroundCreationAndDeletion",
+        "TestActualProcessLossAroundCreationAndDeletion/before-commit",
+        "TestActualProcessLossAroundCreationAndDeletion/after-commit",
+        "TestExplicitEnableAndMalformedRequestHaveNoState",
+        "TestPersistentOperationBudget",
+        "TestCapabilitiesAndExactProtocolMatching",
+        "TestFixtureConfigurationRejectsAliasesAndMissingFields",
+        "TestMutationsCannotCrossOriginalOwnerOrHostScope",
+        "TestMissingExternalStateIsUnknownAndNeverReleased"
+      ],
+      "log_sha256": "1f528017fb19eee80f2247f675517814b007b0033743f6adf2b92f8585f5b016"
+    }
+  },
+  "image_sha256": {
+    "providerfixture-macos": "9d75ff3c0a5bb4ae338ad8783a1f25e7c52aca4544191580eb7e950a9bce0e3d",
+    "fixture-macos.test": "a658ca3670a1a8dca46dd7f485a0dca568ef552ad0e8cb00936b3b0b25bd8608",
+    "fixture-macos-race.test": "db3f263fbfe550512af10548be1659b620013dccea0921ff08eff41ee35b7742",
+    "providerfixture-linux": "790f1c7a1dac77342e98e16db1fa3bbfb01be8590d4a452f4f46d0c75314a193",
+    "fixture-linux.test": "fd75c841f3635fc07ee2f996e2a56728cd929a1f96f953954e40f9b62e09f1eb"
+  },
+  "image_hashes_unchanged": true,
+  "source_and_controller_hashes_unchanged": true,
+  "vet": {
+    "result": "pass",
+    "packages": [
+      "./internal/providerfixture/..."
+    ]
+  },
+  "linux_scope": {
+    "platform": "linux/arm64",
+    "cached_image_digest": "sha256:5dcf67db0ee378caa87f3395cb9484ebe3e97bb0334d119f2ac33116e00c5773",
+    "cpu_limit": 0.5,
+    "memory_limit_mib": 256,
+    "pid_limit": 64,
+    "network": "none",
+    "root_filesystem": "read-only",
+    "test_state": "private tmpfs",
+    "original_command_exit": 0,
+    "original_container_exit": 0,
+    "scratch_empty": true,
+    "original_container_removed": true,
+    "exact_container_absence_confirmed": true
+  },
+  "review_corrections": [
+    {
+      "problem": "missing external object row returned historical readiness during lookup",
+      "result": "unknown preserves original identity/revision; missing identity release remains not_found",
+      "prior_image_counterexample": {
+        "expected_test_failure_confirmed": true,
+        "provider_image_sha256": "d2017fd82ecf4bf0ef5b336fe5ff60c3554fe8d3ee71aad6b8c229b342dc0a9e",
+        "test": "TestMissingExternalStateIsUnknownAndNeverReleased"
+      }
+    },
+    {
+      "problem": "cleanup verifier rejected lowercase no-such-object diagnostic",
+      "result": "strict identity-bound case-insensitive diagnostic plus empty exact-container membership; four pure controls pass",
+      "prior_wrapper_exit": 1,
+      "prior_failure_preserved": true
+    }
+  ],
+  "remaining_gates": [
+    "independent review and composed-current-main validation",
+    "typed current worker/scratch retention",
+    "elapsed-clock adapter after finalized clock contract",
+    "explicit authorized registration and strict reset proof",
+    "transactional parent/concurrency/cost reservations and unknown-outcome settlement",
+    "actual generic lifecycle traces/TLC/TLAPM",
+    "real resource/workload and distributed authority milestones"
+  ],
+  "unsupported": [
+    "native hardware capacity or kernel containment",
+    "authentication of claimed user attribution",
+    "executable pinning and missing/replaced executable recovery",
+    "suspend/rollback-safe fixture wall-clock schedule",
+    "production mutation replay, compensation or distributed fencing"
+  ]
+}
