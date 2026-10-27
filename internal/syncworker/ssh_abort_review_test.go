@@ -143,8 +143,8 @@ func TestStagingCapReviewActualSSHAbortUnblocksStalledWriterAndJoins(t *testing.
 	}
 	if abortBlocked {
 		t.Fatal("abort blocked on raw SSH channel close; original carrier cleanup and joins completed")
-	}	if closes.Load() != 1 || joins.Load() != 1 {
+	}
+	if closes.Load() != 1 || joins.Load() != 1 {
 		t.Fatalf("carrier close=%d original wait=%d", closes.Load(), joins.Load())
 	}
 }
-
