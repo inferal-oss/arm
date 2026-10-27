@@ -1,0 +1,49 @@
+name: Reviewed gauge native validation
+
+on:
+  push:
+    branches: [codex/terminal-gauge-ci]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gauge-validation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    if: github.repository == 'inferal-oss/arm' && github.ref == 'refs/heads/codex/terminal-gauge-ci'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+      GOWORK: 'off'
+      GOENV: 'off'
+      GAUGE_RUNNER_LABEL: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Verify exact source and run complete native gauge gates
+        run: python3 -B scripts/validate-gauge.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: gauge-native-${{ matrix.os }}-attempt-${{ github.run_attempt }}
+          path: .cache/gauge-ci/receipts/
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
