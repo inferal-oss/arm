@@ -4276,3 +4276,37 @@ importers, upstream license and all14 relocated assets before install acceptance
 No new local heavy job or queue ticket is started. Actual successor hosted Go
 and public-install results remain pending; public ZIP inspection is a concrete
 failure reproduction, not a passing installation or rendered VNC session.
+
+### Completed portable baseline and scoped final browser-asset successor
+
+Run `40424167014` on exact source `49e2c789874822eada23b5fc26f0607859aea865`
+(tree `905eee10115eb60ecb36e8c30799d934fe827826`) completes successfully on both
+Linux/macOS and public installation. Each source job's 18 original commands
+exits 0: tidy-diff, module verify, full package compile, scoped race, full fork
+tests, scoped vet, trimpath layout, native and Linux ARM64 builds, dependency
+inventory, final clean-source check and binary metadata. Full rosters retain
+all package/test outcomes. There are no named test skips/failures; package-only
+"skip" events identify packages with no test files. This result does not cover
+the subsequently discovered browser `vendor` omission.
+
+All 1,838 tracked-file source-manifest entries agree between those baseline
+jobs and public-install job. Manifest SHA256:
+`bb47ee60caaf81b4c011c0bd3ade3e10dd2b7cf90091497899926266e0bd6ac1`.
+The reviewed asset commit `af7c059` is appended directly; equivalent alternate
+asset commits are not included. All existing production Go files, root module
+and sums, fork source/fixtures, and inputs of the prior scoped race/fork/vet
+checks remain byte-identical. The only changed existing Go file is the server's
+asset test; a new server asset regression is added. Asset data/importers and
+validation tooling change as described above. The local input-hash comparison
+against the baseline manifest is retained in `.cache/module-assets-scope-reuse.json`.
+
+The successor workflow explicitly renews only browser embedding/HTTP race tests
+on both OSes and a new real public immutable install plus 26 expected public-ZIP
+closure inputs. It does not re-run unrelated fork, policy or global Go gates.
+Manual workflow runs default to full source scope; the candidate branch's final
+push scope is assets. A separate manual `public_query=latest` is guarded to the
+main ref, for use only after coordinator publication; this change does not run
+latest or move main. New scope/dispatch tooling requires independent review
+before the final candidate is published. Unchanged baseline results are reused
+only for their input-hashed scope, while final asset/public acceptance waits for
+its actual new run and receipts.

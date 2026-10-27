@@ -4,6 +4,17 @@ on:
   push:
     branches: [codex/canonical-module-ci]
   workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Source validation scope; full repeats all portable gates'
+        type: choice
+        options: [full, assets]
+        default: full
+      public_query:
+        description: 'Public installation query; latest requires a manual main run'
+        type: choice
+        options: [commit, latest]
+        default: commit
 
 permissions:
   contents: read
@@ -33,6 +44,7 @@ jobs:
           go-version-file: go.mod
           cache: false
       - name: Install modern rsync for actual interoperability
+        if: github.event_name == 'workflow_dispatch' && inputs.scope == 'full'
         shell: bash
         env:
           HOMEBREW_NO_AUTO_UPDATE: '1'
@@ -45,8 +57,13 @@ jobs:
             brew install rsync
             echo "$(brew --prefix rsync)/bin" >> "$GITHUB_PATH"
           fi
-      - name: Validate exact source and collect original command receipts
-        run: python3 -B scripts/validate-module.py --output .cache/module-ci
+      # This final candidate changes browser assets only; unchanged portable
+      # source gates are input-hash bound to successful run 40424167014.
+      # Manual runs default to the complete validation scope.
+      - name: Validate selected source scope and collect original command receipts
+        env:
+          MODULE_SOURCE_SCOPE: ${{ inputs.scope || 'assets' }}
+        run: python3 -B scripts/validate-module.py --scope "$MODULE_SOURCE_SCOPE" --output .cache/module-ci
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -71,9 +88,13 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - name: Install immutable public commit with empty disposable caches
+      - name: Guard latest verification until manual main publication
         env:
-          MODULE_QUERY: ${{ github.sha }}
+          REQUESTED_QUERY: ${{ inputs.public_query || 'commit' }}
+        run: test "$REQUESTED_QUERY" != latest || test "$GITHUB_REF" = refs/heads/main
+      - name: Install selected public query with empty disposable caches
+        env:
+          MODULE_QUERY: ${{ inputs.public_query == 'latest' && 'latest' || github.sha }}
         run: python3 -B scripts/validate-module.py --public-install "$MODULE_QUERY" --output .cache/module-public-install
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()

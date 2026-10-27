@@ -29,6 +29,7 @@ def main():
     parser.add_argument("--go", default="go")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--public-install", metavar="QUERY")
+    parser.add_argument("--scope", choices=("full", "assets"), default="full", help="assets renews only changed browser embedding/HTTP tests; prior unchanged-source evidence is separate")
     args = parser.parse_args()
     go = shutil.which(args.go)
     if not go:
@@ -174,6 +175,10 @@ def main():
                     require(catalog == [], "thin install has unexpected local catalog or invalid output")
                     require(not home.exists(), "read-only thin probes created backend state")
             (output / "cleanup.json").write_text(json.dumps({"disposable_root_removed": not Path(scratch).exists(), "user_install_or_backend_modified": False}, indent=2) + "\n")
+    elif args.scope == "assets":
+        run("browser-asset-closure", [go, "test", "-mod=readonly", "-p=1", "-race", "-count=1", "-json", "-timeout=2m", "-run=^(TestScreenAssetsPreserveComposedDashboardModules|TestScreenEmbeddedAssetsSurviveModuleZipLayout)$", "./internal/server"])
+        run("final-source-status", ["git", "status", "--porcelain"])
+        require(not (output / "final-source-status.stdout.txt").read_text().strip(), "validation changed source")
     else:
         run("module-tidy", [go, "mod", "tidy", "-diff"])
         run("module-verify", [go, "mod", "verify"])
@@ -203,7 +208,7 @@ def main():
             events = [json.loads(line) for line in path.read_text().splitlines() if line.startswith("{")]
             rosters[name] = {action: [{"package": event.get("Package"), "test": event.get("Test")} for event in events if event.get("Action") == action] for action in ("pass", "fail", "skip", "build-fail")}
     (output / "rosters.json").write_text(json.dumps(rosters, indent=2) + "\n")
-    (output / "result.json").write_text(json.dumps({"failures": failures, "command_count": len(commands), "public_query": args.public_install}, indent=2) + "\n")
+    (output / "result.json").write_text(json.dumps({"failures": failures, "command_count": len(commands), "public_query": args.public_install, "scope": "public-install" if args.public_install else args.scope}, indent=2) + "\n")
     print("Failures:", failures, flush=True)
     return bool(failures)
 
