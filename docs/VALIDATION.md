@@ -1,5 +1,26 @@
 # Validation record
 
+## Upstream CSSOM submission
+
+[Semblance PR #185](https://github.com/inferal-oss/semblance/pull/185) is a draft
+at `bdac29a` on public base `eb80b431`, with three focused commits/eight paths.
+The final composition passes typecheck and six style regressions without skips.
+Native Chrome checks declaration priorities, quoted values, custom properties,
+SVG and complete style removal, including Fluent dark RTL at 390 pixels.
+Removing fixed-only styles introduces no CSP violation beyond the seven expected
+baseline violations. The original fixture server closes and its listener refuses
+connections. Root verifies the eight owned files, 88 unchanged engine/package
+inputs, both engine binaries, raw output and the actual screenshot bytes.
+
+The earlier unchanged renderer cut supplies 16 DOM/style/move cases and 80
+computed states across ten themes, two schemes, two directions and desktop/phone
+widths. Those are earlier-source results; final composition has its separately
+recorded native import/removal checks. The work does not establish other-browser
+CSP behavior, serialized initial styles or full-suite acceptance. Upstream's full
+suite belongs on main after a merged batch. This submission merges or deploys
+nothing. The [submission record](validation/semblance-upstream-prs-2026-10-27.json)
+preserves the scopes and remaining four component submissions.
+
 ## Compiled UI and backend source intersection
 
 The [native composition record](validation/semblance-current-composition-2026-10-27.json)

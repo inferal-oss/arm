@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-27",
+  "submissions": [
+    {
+      "url": "https://github.com/inferal-oss/semblance/pull/185",
+      "issue": 157,
+      "state": "draft",
+      "source_commit": "bdac29a54319cac55da11b747e1134a7cf54d040",
+      "base_commit": "eb80b431aef25ae29a999820bab6c187df6bd9d4",
+      "commits": 3,
+      "changed_paths": 8,
+      "source_review": "passed",
+      "final_typecheck": "passed",
+      "final_style_cases": 6,
+      "final_skipped_cases": 0,
+      "native_browser": "Chrome",
+      "current_native_scope": [
+        "CSS declaration update and removal",
+        "quoted values and priorities",
+        "four SVG mark style removals",
+        "settled progress fill zero",
+        "Fluent dark RTL at 390 by 844 pixels"
+      ],
+      "expected_baseline_csp_violations": 7,
+      "new_fixed_action_csp_violations": 0,
+      "source_intersection": {
+        "owned_files": 8,
+        "unchanged_engine_and_package_inputs": 88,
+        "engine_binary_hashes_verified": 2
+      },
+      "original_fixture_cleanup": {
+        "server_close_awaited": true,
+        "listener_refused": true,
+        "tab_closed": true,
+        "viewport_restored": true
+      },
+      "earlier_source_evidence": {
+        "dom_style_move_cases": 16,
+        "computed_theme_states": 80,
+        "theme_count": 10,
+        "current_source_rerun_claim": false
+      },
+      "upstream_merge": false,
+      "deployment": false
+    }
+  ],
+  "remaining_component_issues": [
+    154,
+    155,
+    166,
+    181
+  ],
+  "sparkline_dependencies": [
+    159,
+    182
+  ],
+  "limits": [
+    "Targeted per-PR review only; full-suite validation belongs to upstream main after a merged batch.",
+    "No universal CSP, other-browser or serialized-initial-style acceptance.",
+    "A draft submission is not upstream acceptance."
+  ]
+}

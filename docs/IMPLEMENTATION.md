@@ -45,11 +45,13 @@ the existing viewer boundary. The old custom page entrypoint is no longer served
 
 Go embeds a reproducible local bundle, one pinned WAT engine and license notices;
 there is no framework CDN/runtime dependency fetch. Rebuild inputs remain visible
-in module ZIPs. The native option-property and platform shortcut fixes are integrated. A separate
-compiled backend composition at `36d80f9` passes affected session/embed races,
-build and real CLI/HTTP/PTY bootstrap against unchanged source inputs. Five
-generic upstream component patches still require actual reviewed PRs; Sparkline
-also depends on shared numeric conversion/parity fixes. This UI milestone does not
+in module ZIPs. The native option-property and platform shortcut fixes are
+integrated. A separate compiled backend composition at `36d80f9` passes affected session/embed races,
+build and real CLI/HTTP/PTY bootstrap against unchanged source inputs. The generic
+CSSOM correction is submitted as draft
+[Semblance PR #185](https://github.com/inferal-oss/semblance/pull/185); four other
+component PRs remain, with Sparkline depending on shared numeric conversion/parity
+fixes. Submission does not establish upstream acceptance. This UI milestone does not
 enable fenced backend features or accept every remote/native operation.
 
 ## Read-only native quota diagnostics
