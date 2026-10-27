@@ -49,9 +49,12 @@ try {
   const terminalContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
   const terminalPage = await terminalContext.newPage()
   await terminalPage.setContent('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>ARM terminal dashboard</title></head><body style="margin:0;background:#101519"><div id="terminal" style="display:inline-block;padding:16px" aria-label="Actual ARM terminal dashboard"></div></body></html>')
+  stage = 'terminal styles'
   await terminalPage.addStyleTag({ path: join(here, 'node_modules/@xterm/xterm/css/xterm.css') })
+  stage = 'terminal library'
   await terminalPage.addScriptTag({ path: join(here, 'node_modules/@xterm/xterm/lib/xterm.js') })
-  await terminalPage.evaluate(async encoded => {
+  stage = 'terminal initialization'
+  await terminalPage.evaluate(() => {
     const terminal = new Terminal({ cols: 140, rows: 60, fontFamily: '"DejaVu Sans Mono", monospace', fontSize: 14,
                                     // Standard dark terminal defaults match ARM's
                                     // canvas/text in internal/tui/theme.go. ANSI
@@ -59,13 +62,30 @@ try {
                                     theme: { background: '#101519', foreground: '#e1e9ed' },
                                     scrollback: 0, cursorBlink: false, allowTransparency: false })
     terminal.open(document.getElementById('terminal'))
+    window.captureTerminal = terminal
+  })
+  stage = 'terminal byte replay'
+  await terminalPage.evaluate(async encoded => {
+    const terminal = window.captureTerminal
     const bytes = Uint8Array.from(atob(encoded), value => value.charCodeAt(0))
     await new Promise(resolve => terminal.write(bytes, resolve))
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
     const lines = Array.from({ length: terminal.rows }, (_, i) => terminal.buffer.active.getLine(i)?.translateToString(true) ?? '').join('\n')
-    if (!lines.includes('To lease') || !lines.includes('documentation-builds')) throw Error()
     window.terminalScreenText = lines
   }, transcript.toString('base64'))
+  stage = 'terminal label verification'
+  // Only fixed label-presence bits leave the page during diagnostic checks;
+  // the failure stage never includes transcript text, identifiers or values.
+  const visible = await terminalPage.evaluate(() => ({
+    budget: window.terminalScreenText.includes('To lease'),
+    fixture: window.terminalScreenText.includes('documentation-builds'),
+    alternate: window.captureTerminal.buffer.active.type === 'alternate',
+  }))
+  if (!visible.alternate) { stage = 'terminal verification alternate missing'; throw Error() }
+  if (!visible.budget && !visible.fixture) { stage = 'terminal verification both missing'; throw Error() }
+  if (!visible.budget) { stage = 'terminal verification budget missing'; throw Error() }
+  if (!visible.fixture) { stage = 'terminal verification fixture missing'; throw Error() }
+  stage = 'terminal credential exclusion'
   const screen = await terminalPage.evaluate(() => window.terminalScreenText)
   if (secrets.some(secret => secret && screen.includes(secret))) throw Error()
   stage = 'terminal PNG'
