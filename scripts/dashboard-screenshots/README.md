@@ -8,7 +8,7 @@ state directory, creates a genuine example counted-pool lease, and captures:
 - `web-resources.png`: the Resources page, including the example pool/lease.
 - `terminal.png`: the real `arm dashboard terminal` Resources screen.
 
-The terminal image is produced by replaying the command's actual 140×60 PTY
+The terminal image is produced by replaying the command's actual 140×80 PTY
 byte stream in pinned xterm.js and capturing that terminal renderer in Chromium.
 It is not a separate implementation of the terminal dashboard. Native host
 measurements, timing and runner capacity are real and can vary between builds;
@@ -25,7 +25,12 @@ The xterm.js dark terminal profile uses background `#101519`, foreground
 `#e1e9ed`, and 14 px DejaVu Sans Mono, matching the dashboard's canvas/text colors
 in `internal/tui/theme.go`. This sets the terminal emulator's normal/reset colors;
 it does not alter application data, ANSI output, or the dashboard's panel colors.
-Sampling durations and this profile are recorded in the public metadata.
+The PTY and xterm.js share their bounded grid from `geometry.json` through the
+private capture configuration. The 80-row height includes complete Resources
+cards after live status and scope explanations arrive. Chromium's terminal
+viewport grows to fit that grid with padding, and the PNG captures the whole
+terminal element. Grid equality is checked before capture. Sampling durations,
+terminal geometry and this profile are recorded in the public metadata.
 
 Use a fresh GitHub Actions runner with Go selected by the repository's `go.mod`,
 Node.js 26, Python 3 and Chromium system libraries:

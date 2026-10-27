@@ -1,12 +1,17 @@
 """Low-cost ownership regressions; no ARM build, backend, or browser is started."""
+import fcntl
 import importlib.util
+import json
 import os
 from pathlib import Path
+import pty
 import signal
+import struct
 import subprocess
 import sys
 import tempfile
 import time
+import termios
 import unittest
 from unittest.mock import Mock, patch
 
@@ -14,6 +19,19 @@ from unittest.mock import Mock, patch
 spec = importlib.util.spec_from_file_location('dashboard_capture', Path(__file__).with_name('capture.py'))
 capture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(capture)
+
+
+class TerminalGeometryTests(unittest.TestCase):
+    def test_actual_pty_size_matches_private_renderer_grid(self):
+        master, slave = pty.openpty()
+        try:
+            grid = capture.terminal_geometry(slave)
+            rows, cols, _, _ = struct.unpack('HHHH', fcntl.ioctl(slave, termios.TIOCGWINSZ, b'\0' * 8))
+            renderer_grid = json.loads(json.dumps({'terminalGeometry': grid}))['terminalGeometry']
+            self.assertEqual((rows, cols), (renderer_grid['rows'], renderer_grid['cols']))
+        finally:
+            os.close(master)
+            os.close(slave)
 
 
 class CommandOwnershipTests(unittest.TestCase):

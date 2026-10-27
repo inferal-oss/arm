@@ -2,12 +2,14 @@ import { readFile, access } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
+import { terminalGeometry } from './geometry.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 let browser
 let stage = 'configuration'
 try {
   const config = JSON.parse(await readFile(process.argv[2], 'utf8'))
+  const grid = terminalGeometry(config.terminalGeometry)
   const address = new URL(config.url)
   if (address.protocol !== 'http:' || address.hostname !== '127.0.0.1' || address.search || address.username || address.password) throw Error()
   const ticket = new URLSearchParams(address.hash.slice(1)).get('connect')
@@ -46,7 +48,7 @@ try {
   await context.close()
 
   stage = 'terminal renderer'
-  const terminalContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
+  const terminalContext = await browser.newContext({ viewport: grid.viewport, deviceScaleFactor: 1 })
   const terminalPage = await terminalContext.newPage()
   await terminalPage.setContent('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>ARM terminal dashboard</title></head><body style="margin:0;background:#101519"><div id="terminal" style="display:inline-block;padding:16px" aria-label="Actual ARM terminal dashboard"></div></body></html>')
   stage = 'terminal styles'
@@ -54,8 +56,8 @@ try {
   stage = 'terminal library'
   await terminalPage.addScriptTag({ path: join(here, 'node_modules/@xterm/xterm/lib/xterm.js') })
   stage = 'terminal initialization'
-  await terminalPage.evaluate(() => {
-    const terminal = new Terminal({ cols: 140, rows: 60, fontFamily: '"DejaVu Sans Mono", monospace', fontSize: 14,
+  await terminalPage.evaluate(grid => {
+    const terminal = new Terminal({ cols: grid.cols, rows: grid.rows, fontFamily: '"DejaVu Sans Mono", monospace', fontSize: 14,
                                     // Standard dark terminal defaults match ARM's
                                     // canvas/text in internal/tui/theme.go. ANSI
                                     // reset cells must not inherit browser black.
@@ -63,7 +65,7 @@ try {
                                     scrollback: 0, cursorBlink: false, allowTransparency: false })
     terminal.open(document.getElementById('terminal'))
     window.captureTerminal = terminal
-  })
+  }, { cols: grid.cols, rows: grid.rows })
   stage = 'terminal byte replay'
   await terminalPage.evaluate(async encoded => {
     const terminal = window.captureTerminal
@@ -80,7 +82,9 @@ try {
     budget: window.terminalScreenText.includes('To lease'),
     fixture: window.terminalScreenText.includes('documentation-builds'),
     alternate: window.captureTerminal.buffer.active.type === 'alternate',
+    cols: window.captureTerminal.cols, rows: window.captureTerminal.rows,
   }))
+  if (visible.cols !== grid.cols || visible.rows !== grid.rows) { stage = 'terminal verification geometry mismatch'; throw Error() }
   if (!visible.alternate) { stage = 'terminal verification alternate missing'; throw Error() }
   if (!visible.budget && !visible.fixture) { stage = 'terminal verification both missing'; throw Error() }
   if (!visible.budget) { stage = 'terminal verification budget missing'; throw Error() }

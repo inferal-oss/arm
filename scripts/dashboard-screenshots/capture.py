@@ -82,6 +82,15 @@ def run(arguments, *, env, timeout=20, check=True):
     return result
 
 
+def terminal_geometry(slave):
+    grid = json.loads((HELPER / 'geometry.json').read_text())
+    cols, rows = grid.get('cols'), grid.get('rows')
+    if type(cols) is not int or type(rows) is not int or not 80 <= cols <= 200 or not 24 <= rows <= 120:
+        raise CaptureError('invalid_terminal_geometry')
+    fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', rows, cols, 0, 0))
+    return grid
+
+
 def terminate(process):
     if process is None or process.poll() is not None:
         return
@@ -160,7 +169,7 @@ def main():
             time.sleep(BACKEND_SAMPLE_SECONDS)
             stage = 'capture terminal dashboard'
             master, slave = pty.openpty()
-            fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 60, 140, 0, 0))
+            grid = terminal_geometry(slave)
             original_mode = termios.tcgetattr(slave)
             terminal = subprocess.Popen(prefix + ['dashboard', 'terminal'], cwd=REPO,
                                         stdin=slave, stdout=slave, stderr=slave, env=env, start_new_session=True)
@@ -219,7 +228,8 @@ def main():
             endpoint = json.loads((home / 'endpoint.json').read_text())
             config = private / 'capture.json'
             config.write_text(json.dumps({'url': link, 'endpointToken': endpoint['token'],
-                                          'transcript': str(transcript_path), 'output': str(output)}))
+                                          'transcript': str(transcript_path), 'output': str(output),
+                                          'terminalGeometry': grid}))
             os.chmod(config, 0o600)
             # Node prints safe stage identifiers only; it never emits URLs,
             # screenshots' private bootstrap data, page console or traces.
@@ -241,6 +251,7 @@ def main():
                         'terminal': 'Actual arm dashboard terminal PTY bytes rendered by xterm.js.',
                         'sampling': {'backend_warmup_seconds': BACKEND_SAMPLE_SECONDS,
                                      'terminal_frame_seconds': TERMINAL_FRAME_SECONDS},
+                        'terminal_geometry': grid,
                         'terminal_profile': {'background': '#101519', 'foreground': '#e1e9ed',
                                              'font_family': 'DejaVu Sans Mono, monospace', 'font_size': 14},
                         'images': entries}
