@@ -50,3 +50,21 @@ The initial Linux scope is ext-family/XFS/Btrfs/tmpfs/overlay with positively ab
 bounded extended access/default POSIX ACLs. Nonempty ACLs, retrieval errors and
 other filesystem authorization models refuse. NFSv4/rich ACLs and broader safe ACL
 support remain unfinished; POSIX modes alone are not a universal ACL policy.
+
+## Current-entitlement consumer candidate
+
+The provider-owned consumer requires an original-owner context, a trusted native
+boot binding and a current-pair checker. `HeldFromTrusted` binds original lease
+IDs/revisions, resources and temp identity. Preparation, retained start, delayed
+native entry and one-shot grant publication recheck current remaining lifetime;
+raw Expires no longer supplies authority. Existing-key inspection and consumed
+grant history remain read-only. Cancellation and uncertain outcomes retain their
+original handles and compensation obligations.
+
+The consumer checker interface is proposed in
+[the entitlement contract](../../docs/PROVIDER-ENTITLEMENT-CONTRACT.md). Its tests
+use controlled remaining values and current ordinary fixture records. They do
+not prove the production Manager bridge, native boot/deadline validation or the
+clock candidate. Shared Manager/model/clock integration, full retained worker/
+scratch authority and updated formal/source correspondence remain required.
+Public registration and provisioning are still unavailable.

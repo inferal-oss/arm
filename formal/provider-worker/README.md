@@ -10,6 +10,12 @@ is the committed nullable-owner codec. Full P1b manager obligation adapter/catal
 reset, remaining P1c durable external fixture, provisioning P2 and matching P3 UI
 remain queued.
 
+The [current-entitlement consumer](../../docs/PROVIDER-ENTITLEMENT-CONTRACT.md)
+adds fresh checks and refusal paths before native entry and grant publication.
+The formal results below retain their original recorded source scope. Updated
+source/model and actual-trace correspondence for those paths, and the production
+Manager/clock bridge, remain unverified by these earlier results.
+
 ## Actual implemented boundary
 
 `internal/providerexec` pins the selected native provider/runtime with bounded

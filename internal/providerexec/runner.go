@@ -54,6 +54,8 @@ func (o *Owner) OwnerToken() string { return o.ownerToken }
 type Handle struct {
 	mu                        sync.Mutex
 	owner                     *Owner
+	context                   context.Context
+	cancelContext             context.CancelFunc
 	prepared                  Prepared
 	marker                    StartMarker
 	observation               Observation
@@ -78,6 +80,9 @@ type Handle struct {
 	stdoutDone, stderrDone    chan struct{}
 	startGate, waitGate       <-chan struct{}
 	groupGate                 <-chan struct{}
+	// Private test barrier after a retry's cancellation decision, before its
+	// effects. Nil in production; called outside bookkeeping locks.
+	afterRetryCancelDecision func()
 }
 type capture struct {
 	body, tail []byte
@@ -95,6 +100,19 @@ func (o *Owner) BeginStart(ctx context.Context, p Prepared, marker StartMarker) 
 	}
 	marker = StartMarker{p.attempt, p.requestDigest, p.held.authority, p.held.worker, p.held.temp, o.ownerToken}
 	o.mu.Lock()
+	if old := o.handles[p.attempt]; old != nil {
+		o.mu.Unlock()
+		if old.prepared.requestDigest != p.requestDigest {
+			return old, fmt.Errorf("attempt key conflict")
+		}
+		return old, nil
+	}
+	o.mu.Unlock()
+	if _, err := p.held.remaining(ctx); err != nil {
+		return nil, err
+	}
+	o.mu.Lock()
+	// Another caller may have installed this original handle during the check.
 	if old := o.handles[p.attempt]; old != nil {
 		o.mu.Unlock()
 		if old.prepared.requestDigest != p.requestDigest {
@@ -126,16 +144,20 @@ func (o *Owner) BeginStart(ctx context.Context, p Prepared, marker StartMarker) 
 		return nil, err
 	}
 	h := &Handle{owner: o, prepared: p, marker: marker, nonce: hex.EncodeToString(nonce[:]), observation: Observation{Attempt: p.attempt, StartPending: true}, cancelCh: make(chan struct{}), helloDone: make(chan struct{}), done: make(chan struct{}), stdoutDone: make(chan struct{}), stderrDone: make(chan struct{}), startGate: o.beforeStart, waitGate: o.beforeWait, groupGate: o.beforeGroupAbsence}
+	h.context, h.cancelContext = context.WithCancel(ctx)
 	o.handles[p.attempt] = h
 	o.trace.emit("handle_retained", p.attempt, 0)
 	o.mu.Unlock()
 	go func() {
+		defer h.cancelContext()
 		timer := time.NewTimer(p.timeout)
 		nativeFinished, watcherDone := make(chan struct{}), make(chan struct{})
 		go func() {
 			defer close(watcherDone)
 			select {
 			case <-ctx.Done():
+				h.Cancel()
+			case <-p.held.entitlement.lifetime.Done():
 				h.Cancel()
 			case <-timer.C:
 				h.Cancel()
@@ -162,14 +184,32 @@ func (h *Handle) Snapshot() Observation {
 }
 func (h *Handle) update(f func(*Observation)) { h.mu.Lock(); f(&h.observation); h.mu.Unlock() }
 func (h *Handle) Cancel() {
-	h.cancelOnce.Do(func() {
-		h.mu.Lock()
+	h.cancel(false)
+}
+
+func (h *Handle) cancel(unpublishedOnly bool) {
+	h.mu.Lock()
+	if unpublishedOnly && h.grantPublished {
+		h.mu.Unlock()
+		return
+	}
+	if !h.observation.CancelAccepted {
 		h.observation.CancelAccepted = true
 		// The private bounded recorder has no callback or I/O. Capture this cut
 		// before releasing the same lock that linearizes grant/cancellation.
 		h.owner.trace.emit("cancel_accepted", h.prepared.attempt, 0)
-		h.mu.Unlock()
+	}
+	h.mu.Unlock()
+	// The decision and publication share h.mu. Notification and context
+	// cancellation happen afterwards, without callbacks under that lock.
+	if unpublishedOnly && h.afterRetryCancelDecision != nil {
+		h.afterRetryCancelDecision()
+	}
+	h.cancelOnce.Do(func() {
 		close(h.cancelCh)
+		if h.cancelContext != nil {
+			h.cancelContext()
+		}
 	})
 }
 func (h *Handle) Hello(ctx context.Context) error {
@@ -184,7 +224,7 @@ func (h *Handle) Hello(ctx context.Context) error {
 }
 func (h *Handle) Execute(ctx context.Context, marker DispatchMarker) error {
 	if err := ctx.Err(); err != nil {
-		h.Cancel()
+		h.cancel(true)
 		return err
 	}
 	if err := h.Hello(ctx); err != nil {
@@ -199,8 +239,27 @@ func (h *Handle) Execute(ctx context.Context, marker DispatchMarker) error {
 	}
 	h.grantMu.Lock()
 	defer h.grantMu.Unlock()
+	// An already consumed grant is read-only history. In particular, the
+	// native context is normally cancelled after completion; do not turn an
+	// attempted duplicate publication into retroactive cancellation.
 	h.mu.Lock()
-	if h.observation.CancelAccepted || h.controlClosing {
+	published := h.grantPublished
+	h.mu.Unlock()
+	if published {
+		return fmt.Errorf("one grant already published; inspect original attempt")
+	}
+	// This serializes publication, not observation bookkeeping. A check before
+	// this fence could age while waiting for another Execute/close operation.
+	if _, err := h.currentRemaining(ctx); err != nil {
+		h.Cancel()
+		return err
+	}
+	if err := ctx.Err(); err != nil {
+		h.Cancel()
+		return err
+	}
+	h.mu.Lock()
+	if h.observation.CancelAccepted || h.controlClosing || ctx.Err() != nil || h.context.Err() != nil || h.prepared.held.entitlement.lifetime.Err() != nil {
 		h.mu.Unlock()
 		return fmt.Errorf("cancelled worker cannot receive a grant")
 	}
@@ -289,6 +348,24 @@ func (h *Handle) run() {
 	h.owner.trace.emit("native_start_begun", p.attempt, 0)
 	if h.startGate != nil {
 		<-h.startGate
+	}
+	if _, err = p.held.remaining(h.context); err != nil {
+		h.noStart(err)
+		return
+	}
+	if err := h.context.Err(); err != nil {
+		h.noStart(err)
+		return
+	}
+	if err := p.held.entitlement.lifetime.Err(); err != nil {
+		h.noStart(err)
+		return
+	}
+	select {
+	case <-h.cancelCh:
+		h.noStart(fmt.Errorf("cancelled before native entry"))
+		return
+	default:
 	}
 	err = cmd.Start()
 	returned := uint64(0)

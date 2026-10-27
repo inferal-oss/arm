@@ -226,7 +226,29 @@ func (f *fixture) prepared(t *testing.T, attempt, reg string, method providerpro
 	rawTemp, _ := json.Marshal(temp)
 	f.journal.trace.raw("ordinary_worker_granted", attempt, rawWorker)
 	f.journal.trace.raw("managed_temp_granted", attempt, rawTemp)
-	held, err := HeldFromTrusted(worker, temp)
+	// Controlled remaining lifetime is component input, not native-clock
+	// acceptance. The production Manager bridge remains separately required.
+	eligibility, err := EntitlementFromTrusted(context.Background(), "controlled-provider-clock", func(ctx context.Context, expected HeldBinding) (time.Duration, error) {
+		if err := ctx.Err(); err != nil {
+			return 0, err
+		}
+		w, err := f.m.Inspect(expected.Worker)
+		if err != nil {
+			return 0, err
+		}
+		scratch, err := f.m.Inspect(expected.Temp)
+		if err != nil {
+			return 0, err
+		}
+		if w.State != "active" || scratch.State != "active" || w.ID != expected.Worker || scratch.ID != expected.Temp || w.Revision != expected.WorkerRevision || scratch.Revision != expected.TempRevision || w.Host != expected.Authority || scratch.Host != expected.Authority || w.Owner != expected.Owner || scratch.Owner != expected.Owner || w.Request.Resources.CPU != expected.CPU || w.Request.Resources.Memory != expected.Memory || scratch.Request.Resources.Disk != expected.Disk || scratch.Artifact == nil || scratch.Artifact.Identity == nil || scratch.Artifact.Path != expected.TempPath || *scratch.Artifact.Identity != expected.TempIdentity || scratch.Artifact.Phase != "owned" || expected.Boot != "controlled-provider-clock" {
+			return 0, fmt.Errorf("original controlled admission changed")
+		}
+		return time.Hour, nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	held, err := HeldFromTrusted(worker, temp, eligibility)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -566,7 +588,7 @@ func (f *fixture) compensate(t *testing.T, h *Handle, requireComplete bool) bool
 	return true
 }
 
-func (f *fixture) grant(t *testing.T, h *Handle) {
+func (f *fixture) grantMarker(t *testing.T, h *Handle) DispatchMarker {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -598,7 +620,15 @@ func (f *fixture) grant(t *testing.T, h *Handle) {
 		t.Fatal(err)
 	}
 	receipt, _ := json.Marshal([]string{id, digest, phase, owner})
-	if err = h.Execute(ctx, DispatchMarker{h.marker, hash(raw), hash(receipt)}); err != nil {
+	return DispatchMarker{h.marker, hash(raw), hash(receipt)}
+}
+
+func (f *fixture) grant(t *testing.T, h *Handle) {
+	t.Helper()
+	marker := f.grantMarker(t, h)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := h.Execute(ctx, marker); err != nil {
 		t.Fatal(err)
 	}
 }

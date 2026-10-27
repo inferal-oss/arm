@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "2b49dd1efc994e9938e085ebe34062723af27bbd",
+  "scope": "Atomic conditional cancellation at the provider diagnostic grant-publication cut",
+  "behaviour": [
+    "Cancelled retry checks publication and records accepted cancellation under the same Handle mutex as grant publication",
+    "Channel notification and context cancellation occur after unlocking; their effects remain once-only",
+    "Original unconditional cancellation remains available after publication"
+  ],
+  "causal_regression": {
+    "barriers": "Cancellation-first pauses the retry after its decision and before effects; publication-first pauses the cancelled caller before its decision until the actual native duty completes",
+    "negative": {
+      "exit": 1,
+      "causal_failure_verified": true,
+      "failed": [
+        "TestEntitlementConcurrentCancelledRetryPublicationCut",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut/cancellation_first"
+      ],
+      "passed": [
+        "TestEntitlementConcurrentCancelledRetryPublicationCut/publication_first"
+      ]
+    },
+    "negative_image_sha256": "631f4d3a9a5799e15cc191f2e37dc51a38a47f52a7175d3c7c260d35c2a46bb5",
+    "negative_source": "Baseline runner with only a private barrier field and an out-of-lock barrier call added at the check/cancel gap",
+    "baseline_runner_sha256": "a894a7f44a0861a6780e31c68594b2617bfc0387185e2f3a8cd3d9eac9788081",
+    "instrumented_runner_sha256": "e724e4877e413cf313a4103cedae6d708fac99a4743ee5b518e61a60e36f7f3f",
+    "negative_log_sha256": "0155476d1614347ea1446f786f28d7d770eb933f2e9d967d2fcc3f50708c9bef"
+  },
+  "validation": {
+    "normal": {
+      "exit": 0,
+      "passed": [
+        "TestCurrentEntitlementOwnerCancellationRetainsOriginalDuty",
+        "TestCurrentEntitlementRefusesGrantAfterHello",
+        "TestEntitlementCallRespectsEveryOriginalContext",
+        "TestEntitlementCallRespectsEveryOriginalContext/admissions",
+        "TestEntitlementCallRespectsEveryOriginalContext/call",
+        "TestEntitlementCallRespectsEveryOriginalContext/native",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut/cancellation_first",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut/publication_first",
+        "TestEntitlementConsumedGrantDoesNotRecheckOrCancelCompletedDuty",
+        "TestEntitlementConsumedGrantDoesNotRecheckOrCancelCompletedDuty/active_caller",
+        "TestEntitlementConsumedGrantDoesNotRecheckOrCancelCompletedDuty/cancelled_caller",
+        "TestRetainedLateStartCancellationNeverGrants"
+      ],
+      "roots": 6,
+      "named": 13,
+      "image_sha256": "8d206fb9d47e14f3fffcdf8db5d1c84fb093bc4b329f8ea4915822b668f20f99"
+    },
+    "race": {
+      "exit": 0,
+      "passed": [
+        "TestCurrentEntitlementOwnerCancellationRetainsOriginalDuty",
+        "TestCurrentEntitlementRefusesGrantAfterHello",
+        "TestEntitlementCallRespectsEveryOriginalContext",
+        "TestEntitlementCallRespectsEveryOriginalContext/admissions",
+        "TestEntitlementCallRespectsEveryOriginalContext/call",
+        "TestEntitlementCallRespectsEveryOriginalContext/native",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut/cancellation_first",
+        "TestEntitlementConcurrentCancelledRetryPublicationCut/publication_first",
+        "TestEntitlementConsumedGrantDoesNotRecheckOrCancelCompletedDuty",
+        "TestEntitlementConsumedGrantDoesNotRecheckOrCancelCompletedDuty/active_caller",
+        "TestEntitlementConsumedGrantDoesNotRecheckOrCancelCompletedDuty/cancelled_caller",
+        "TestRetainedLateStartCancellationNeverGrants"
+      ],
+      "roots": 6,
+      "named": 13,
+      "image_sha256": "7ec30e4bbf13a5834c74e847bcca8393f2d42e1df4a65e67355b7e3c344009ae"
+    },
+    "vet": {
+      "exit": 0,
+      "diagnostic_bytes": 0
+    },
+    "normal_log_sha256": "e91d32338762b99e43512a4a4cc2ed1f7df4d34322f244ef2aff8186a1c49f8d",
+    "race_log_sha256": "6f72026c1427c9aaaa7d50dc45ca3dc72cc597773d10c44f79c1f5310f42aa17",
+    "source_binding": "All listed inputs matched the frozen intent immediately before any Go compiler/test command and remained equal after the focused negative, normal, race and vet commands",
+    "source_files": 1888,
+    "harness_files": 5,
+    "selected_tool_files": 15665,
+    "input_manifest_sha256": "2c5527d4f0a897f6fc7feaf460da9f9d43c27865d0fe3eae84871e36aee002cd",
+    "harness_sha256": {
+      "capture.py": "54740dffcbecea355cfe079aebb0ae4faab57caed2cbe7b69443813461f6bb33",
+      "overlay.json": "332f2b56d31f1b604303b312104f00dcac640f2e3402f7fa50ef6d5166dd920e",
+      "run.sh": "da3b7f53af9a5fef75b2e24dbc4ba56b65b929fb40a03bd52e3185ead3b6410a",
+      "runner-before-atomic.go": "a894a7f44a0861a6780e31c68594b2617bfc0387185e2f3a8cd3d9eac9788081",
+      "runner-negative.go": "e724e4877e413cf313a4103cedae6d708fac99a4743ee5b518e61a60e36f7f3f"
+    },
+    "go_version": "go1.27.3",
+    "platform": "darwin/arm64",
+    "environment": {
+      "GOMAXPROCS": "1",
+      "GOPROXY": "off"
+    },
+    "build_flags": [
+      "-mod=readonly",
+      "-p=1",
+      "-c"
+    ],
+    "execution": "Retained test images invoked through go tool test2json, count 1, timeout 120s, exact six-root selection",
+    "queue": "Shared FIFO queue with unchanged default slots, workers and run limit",
+    "original_queue_exit": 0
+  },
+  "source_sha256": {
+    "internal/providerexec/runner.go": "b0a50db615b80f1b43e944a67254e9a67088b25725f89e03e743c87aa9983c55",
+    "internal/providerexec/entitlement_test.go": "72fb88bea36c5bdad35d6486b7c7c34d938099f41827ce9fe9016502de6a72e2",
+    "docs/PROVIDER-ENTITLEMENT-CONTRACT.md": "e0420b92ff45b9d802ef20c4e25f14cc787544abe7816709daaebf0146b0009e"
+  },
+  "limitations": [
+    "The earlier full passing race roster is retained as a historical observation; its final-source launch binding was inferred from output absence and is not accepted",
+    "This correction ran six selected roots and thirteen named cases per normal/race cohort, not the complete corrected package suite",
+    "Selected tool closure covers the pinned Go root and the listed harness/native executables; it is not an entire host or module-cache attestation",
+    "Eligibility remains controlled fixture input; no production Manager/elapsed-clock or durable retention bridge is established",
+    "Linux composition and updated lifecycle formal/source correspondence remain pending"
+  ],
+  "as_run_prior_receipt_sha256": "a9e61dbf081ac14c5523618a53fbb1dafc4729fd4a5c528ac3a6dbd637927ef4",
+  "documentation_sha256": {
+    "docs/validation/provider-entitlement-consumer-2026-10-26.json": "157230a65d310f5f0e283da9e891a77d465d4a2ed2a5904a52c84ba3cefb65bf"
+  },
+  "post_validation_documentation_change": "The earlier receipt was subsequently narrowed to its demonstrated sequential retry scope and annotated with the concurrent finding; the tested Go source is unchanged."
+}

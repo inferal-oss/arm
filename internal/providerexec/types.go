@@ -31,22 +31,17 @@ type Held struct {
 	identity                             model.FileIdentity
 	cpu                                  float64
 	memory, disk                         int64
-	expires                              time.Time
+	workerRevision, tempRevision         int
+	entitlement                          Entitlement
 }
 
-func HeldFromTrusted(worker, temp model.Lease) (Held, error) {
+func HeldFromTrusted(worker, temp model.Lease, entitlement Entitlement) (Held, error) {
 	var h Held
-	if worker.ID == "" || temp.ID == "" || worker.ID == temp.ID || worker.Host == "" || worker.Host != temp.Host || worker.Owner == "" || worker.Owner != temp.Owner || worker.State != "active" || temp.State != "active" || worker.Request.Resources.CPU <= 0 || math.IsNaN(worker.Request.Resources.CPU) || math.IsInf(worker.Request.Resources.CPU, 0) || worker.Request.Resources.Memory <= 0 || temp.Request.Kind != "storage" || temp.Request.Resources.Disk <= 0 || worker.Expires == nil || temp.Expires == nil || temp.Artifact == nil || temp.Artifact.Identity == nil || temp.Artifact.Phase != "owned" {
+	if worker.ID == "" || temp.ID == "" || worker.ID == temp.ID || worker.Host == "" || worker.Host != temp.Host || worker.Owner == "" || worker.Owner != temp.Owner || worker.State != "active" || temp.State != "active" || worker.Request.Resources.CPU <= 0 || math.IsNaN(worker.Request.Resources.CPU) || math.IsInf(worker.Request.Resources.CPU, 0) || worker.Request.Resources.Memory <= 0 || temp.Request.Kind != "storage" || temp.Request.Resources.Disk <= 0 || worker.Revision <= 0 || temp.Revision <= 0 || entitlement.lifetime == nil || entitlement.current == nil || entitlement.boot == "" || temp.Artifact == nil || temp.Artifact.Identity == nil || temp.Artifact.Phase != "owned" {
 		return h, fmt.Errorf("trusted active CPU/memory and managed-temp admissions required")
 	}
-	h = Held{strings.Clone(worker.Host), strings.Clone(worker.Owner), strings.Clone(worker.ID), strings.Clone(temp.ID), strings.Clone(temp.Artifact.Path), *temp.Artifact.Identity, worker.Request.Resources.CPU, worker.Request.Resources.Memory, temp.Request.Resources.Disk, minTime(*worker.Expires, *temp.Expires)}
+	h = Held{authority: strings.Clone(worker.Host), owner: strings.Clone(worker.Owner), worker: strings.Clone(worker.ID), temp: strings.Clone(temp.ID), path: strings.Clone(temp.Artifact.Path), identity: *temp.Artifact.Identity, cpu: worker.Request.Resources.CPU, memory: worker.Request.Resources.Memory, disk: temp.Request.Resources.Disk, workerRevision: worker.Revision, tempRevision: temp.Revision, entitlement: entitlement}
 	return h, nil
-}
-func minTime(a, b time.Time) time.Time {
-	if a.Before(b) {
-		return a
-	}
-	return b
 }
 func (h Held) WorkerID() string  { return h.worker }
 func (h Held) TempID() string    { return h.temp }
@@ -79,8 +74,12 @@ func Prepare(attempt, registration string, s Selection, h Held, q providerproto.
 	if attempt == "" || len(attempt) > 128 || registration == "" || len(registration) > 128 || !s.runtime.valid || !s.provider.valid || !imageSizeWithin(s.runtime.size, MaxRuntimeBytes) || !imageSizeWithin(s.provider.size, MaxImageBytes) || h.worker == "" || h.temp == "" || q.Context.Authority != providerproto.ID(h.authority) || q.Context.OwnerUID != providerproto.Uint(h.owner) || string(q.Registration.ID) != registration || string(q.Registration.CodeSHA256) != s.provider.sha {
 		return Prepared{}, fmt.Errorf("exact trusted attempt, images and held admissions required")
 	}
-	if timeout < time.Second || timeout > 300*time.Second || !time.Now().Add(timeout).Before(h.expires) {
-		return Prepared{}, fmt.Errorf("diagnostic deadline must be 1–300 seconds within held admission")
+	if timeout < time.Second || timeout > 300*time.Second {
+		return Prepared{}, fmt.Errorf("diagnostic deadline must be 1–300 seconds")
+	}
+	remaining, err := h.remaining(h.entitlement.lifetime)
+	if err != nil || remaining <= timeout {
+		return Prepared{}, fmt.Errorf("diagnostic deadline must fit current validated elapsed entitlement")
 	}
 	switch q.Method {
 	case providerproto.Describe, providerproto.Validate, providerproto.Plan:
