@@ -1,0 +1,96 @@
+{
+  "kind": "sync-complete-scope-source-validation",
+  "date_utc": "2026-10-27",
+  "candidate_commit": "f2c6347e764e36f38ef2e767746546329c22f3a9",
+  "scope": "Opaque syncfs claim, cached binding, and read-only complete XFS tree verifier with no original-owner constructor or Manager authority wiring",
+  "source": {
+    "all_tracked_files": 2372,
+    "git_blob_bytes_verified_before_and_after": true,
+    "whole_tracked_manifest_sha256": "6e5266bbfce76bca17430a6fd65fa33855316552b516bb4ce56ef5e58f6ea63c",
+    "clean_before_and_after": true,
+    "selected_sha256": {
+      "internal/syncfs/enforced_scope.go": "dadf2218bf1a57c9571a9039e62525af4eb00afc2ef9b504c1e8d1db6dae58c7",
+      "internal/syncfs/enforced_scope_linux.go": "ecd2d183b3eb5476eed5a3471e05ed01360a7733b38ea1e59ce0d6d219152524",
+      "internal/syncfs/enforced_scope_other.go": "c0ce51efec9d238e936f22eb8772d558e45228acfd5287f6e91001b15f3708e1",
+      "internal/syncfs/enforced_scope_test.go": "ff540e8ead23a4a95f1dfc9c92892059e4216fb81d1a3a1948aa2c5c9fa422f5",
+      "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+      "go.sum": "25158413557a7e4a3054f760a199fe256c77b989583aee7f0f3c60624ae6f8ce"
+    }
+  },
+  "queue": {
+    "normal_default_slots": 2,
+    "normal_default_run_limit_seconds": 1800,
+    "all_five_queue_overrides_unset": true,
+    "queue_script_sha256_before_and_after": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "reviewed_harness_sha256_before_and_after": "46d3c7c6fc6f56d8c5b4a52b11eee0cfc780e56dc21fa2c4c458605551439331",
+    "previous_attempt": {
+      "entered_utc": "2026-10-27T09:41:27Z",
+      "returned_utc": "2026-10-27T10:13:57Z",
+      "exit": 76,
+      "child_launched": false,
+      "observation": "The FIFO reported that its live ticket disappeared before child launch; cause unknown and no automatic retry was made.",
+      "packet_log_sha256": "249e84e4eb9fcea3e4d91dd805f42e6b8f62d51f358d083d15e4a67c738baef9"
+    },
+    "completed_attempt": {
+      "entered_utc": "2026-10-27T10:26:41Z",
+      "child_started_utc": "2026-10-27T10:26:41Z",
+      "returned_utc": "2026-10-27T10:27:12Z",
+      "original_wait_returned": true,
+      "exit": 0,
+      "packet_log_sha256": "8e6a75e6eed1de20f34ff4a3ac9cf0016df3267ac2e5a4ce01bb8d1a1f380d9b",
+      "outer_terminal_log_sha256": "00bdbd9757e53c2d00ffad6a8ffa284c039342416aa32d54826f167bf727635e"
+    }
+  },
+  "toolchain": {
+    "go_version": "go1.27.3 darwin/arm64",
+    "go_launcher_sha256_before_and_after": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+    "selected_go_tool_sha256_before_and_after": {
+      "compile": "4d0bd4c1880e3d575827a72ac66b0f117b31da0aff1fe44f03a54c7ffb3c8ae3",
+      "link": "9674eaf9854e44afd7331046d14429f914bf9838f48e9ed77793e0686e45d4b2",
+      "asm": "4165876f4b0a389293cd05392c09ef197f36111edf5b6146e870a05dd3c26a90"
+    },
+    "execution_controls": ["GOMAXPROCS=1", "-p=1", "CGO_ENABLED=0", "GOPROXY=off", "GOSUMDB=off", "GOTOOLCHAIN=local", "GOWORK=off", "GOENV=off", "-mod=readonly"]
+  },
+  "commands": [
+    {
+      "name": "darwin-arm64-common-refusal",
+      "command": "GOOS=darwin GOARCH=arm64 go test -mod=readonly -p 1 ./internal/syncfs -run '^TestCompleteScope' -count=1 -timeout=30s -json -v",
+      "started_utc": "2026-10-27T10:26:42Z",
+      "returned_utc": "2026-10-27T10:26:44Z",
+      "original_wait_returned": true,
+      "exit": 0,
+      "exact_top_level_tests": 3,
+      "exact_malformed_claim_subtests": 15,
+      "failed_or_skipped": 0,
+      "log_sha256": "4756f4f2ae5bf7b751d4f8cd952a3d241b1858770498b3fc457d5a10a8138613"
+    },
+    {
+      "name": "linux-amd64-test-package-compile-only",
+      "command": "GOOS=linux GOARCH=amd64 go test -mod=readonly -p 1 -c -o <private-output> ./internal/syncfs",
+      "started_utc": "2026-10-27T10:26:44Z",
+      "returned_utc": "2026-10-27T10:26:47Z",
+      "original_wait_returned": true,
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary_sha256": "b832ef406508bc7747efa0f1f0e8fff5f05d92112e92119e26b74161d29d44f7",
+      "build_info": {"go": "go1.27.3", "goos": "linux", "goarch": "amd64", "cgo_enabled": "0"}
+    },
+    {
+      "name": "linux-arm64-test-package-compile-only",
+      "command": "GOOS=linux GOARCH=arm64 go test -mod=readonly -p 1 -c -o <private-output> ./internal/syncfs",
+      "started_utc": "2026-10-27T10:26:47Z",
+      "returned_utc": "2026-10-27T10:27:11Z",
+      "original_wait_returned": true,
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary_sha256": "972d18e8b0ef61aa9307fab568371a55ebc689f251ac65e7d08453283baa18b2",
+      "build_info": {"go": "go1.27.3", "goos": "linux", "goarch": "arm64", "cgo_enabled": "0"}
+    }
+  ],
+  "limits": [
+    "The positive original-owner fence constructor is absent, so this source cannot mint a complete-scope proof.",
+    "The Linux outputs were compiled but not executed; no XFS kernel enforcement, allocation refusal, or recovery fixture ran.",
+    "The hash record covers tracked source bytes and selected Go compiler tools, not the host OS or the complete module cache.",
+    "No Manager admission, schema, public route, privileged setup, or bidirectional endpoint behavior was validated by this packet."
+  ]
+}
