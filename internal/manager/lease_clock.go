@@ -131,7 +131,21 @@ func (m *Manager) reconcileLeaseExpiries() error {
 		return err
 	}
 	if err = m.checkpointLeaseClock(s); err != nil {
-		return err
+		// Re-read the complete roster after the refused write. Changed row
+		// bindings or newly unavailable reads cannot inherit the earlier list's
+		// authority. Cancellation alone cannot settle a row on this path.
+		current, readErr := m.checkpointExpiryLeases()
+		if readErr != nil {
+			return errors.Join(err, readErr)
+		}
+		// Refused persistence and the full read may have blocked. Require a
+		// fresh same-boot, nonregressed sample before any native cancellation;
+		// a later sample never retries the checkpoint or restores admission.
+		fresh, clockErr := m.readLeaseClock()
+		if clockErr != nil {
+			return errors.Join(err, clockErr)
+		}
+		return errors.Join(err, m.cancelCheckpointExpiredJobs(fresh, current))
 	}
 	for _, l := range ls {
 		if l.State != "active" && l.State != "provisioning" {
@@ -149,6 +163,83 @@ func (m *Manager) reconcileLeaseExpiries() error {
 		}
 	}
 	return nil
+}
+
+type checkpointExpiryLease struct {
+	id    string
+	lease model.Lease
+}
+
+// checkpointExpiryLeases binds each decoded body to its physical SQL key. A
+// partial read or JSON failure grants no action authority to any earlier row.
+// This reader is used only after a refused clock checkpoint; normal list
+// behavior and the persistent schema remain unchanged.
+func (m *Manager) checkpointExpiryLeases() ([]checkpointExpiryLease, error) {
+	rows, err := m.db.Query(`SELECT id,data FROM leases ORDER BY rowid`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var leases []checkpointExpiryLease
+	for rows.Next() {
+		var row checkpointExpiryLease
+		var raw []byte
+		if err = rows.Scan(&row.id, &raw); err != nil {
+			return nil, err
+		}
+		if err = json.Unmarshal(raw, &row.lease); err != nil {
+			return nil, err
+		}
+		leases = append(leases, row)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	if err = rows.Close(); err != nil {
+		return nil, err
+	}
+	return leases, nil
+}
+
+// cancelCheckpointExpiredJobs is the write-refusal path only. The complete
+// physical-keyed roster and fresh successful clock read precede all actions,
+// under Manager.mu. It never calls end/put or releases bare-memory promises.
+// The original waiter may still settle after positively joining native work/IO.
+func (m *Manager) cancelCheckpointExpiredJobs(s leaseclock.Sample, leases []checkpointExpiryLease) error {
+	if !s.Valid() {
+		return model.Err("lease_clock_unavailable", "Valid elapsed sample required for original job cancellation")
+	}
+	var failures error
+	for _, row := range leases {
+		id, l := row.id, row.lease
+		if id == "" || l.ID != id {
+			failures = errors.Join(failures, model.Err("needs_attention", "Physical expired lease key differs from its body; obligations remain charged"))
+			continue
+		}
+		if l.State != "active" && l.State != "provisioning" {
+			continue
+		}
+		// Profile-specific workers keep their separate lifecycle contracts.
+		if l.Request.Profile != "" || l.Request.ServiceLease != "" || l.Cargo != nil || l.Workload != nil ||
+			m.cargoWorkers[id] != nil || m.syncWorkers[id] != nil || m.syncSourceWorkers[id] != nil ||
+			(l.Request.Kind != "" && l.Request.Kind != "execution") {
+			continue
+		}
+		remaining, err := l.Clock.Remaining(s, l.Expires)
+		if err != nil || remaining != 0 {
+			continue // Unknown provenance is never signal authority.
+		}
+		j := m.jobs[id]
+		if j == nil {
+			continue // Reservations and recovered PIDs carry no original owner.
+		}
+		if err = m.checkpointExpiryJobBinding(id, l, j); err != nil {
+			failures = errors.Join(failures, err)
+			continue
+		}
+		failures = errors.Join(failures, m.requestOriginalJobCancellation(id, j))
+	}
+	return failures
 }
 
 // Original provider/process recovery runs first. Clock uncertainty is additive:

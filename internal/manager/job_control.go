@@ -6,6 +6,7 @@ import (
 	"github.com/inferal-oss/arm/internal/model"
 	"io"
 	"os"
+	"reflect"
 	"syscall"
 	"time"
 
@@ -37,6 +38,67 @@ func (j *job) controlActive() bool {
 	j.controlMu.Lock()
 	defer j.controlMu.Unlock()
 	return !j.controlRetired
+}
+
+// requestOriginalJobCancellation requires Manager.mu and the caller's exact
+// current job binding. End and degraded clock reconciliation share one volatile
+// request: repeating either operation cannot register another escalation worker.
+// This requests cleanup; it does not settle a lease or replace the sole Wait.
+func (m *Manager) requestOriginalJobCancellation(id string, j *job) error {
+	if j == nil || m.jobs[id] != j {
+		return model.Err("needs_attention", "Original job registration differs; obligations remain charged")
+	}
+	if j.originalCancellationRequested {
+		return j.originalCancellationError
+	}
+	j.originalCancellationRequested = true
+	// Signal the original group before closing SSH IO: EOF/SIGPIPE must not
+	// win the original parent's signal race, even when persistence failed.
+	j.originalCancellationError = j.signalGroup(syscall.SIGTERM)
+	if j.sshRuntime != nil {
+		j.sshRuntime.cancel()
+	}
+	m.wg.Go(func() {
+		select {
+		case <-j.done:
+			return
+		case <-time.After(2 * time.Second):
+		}
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		if m.jobs[id] == j {
+			_ = j.signalGroup(syscall.SIGKILL)
+		}
+	})
+	return j.originalCancellationError
+}
+
+// checkpointExpiryJobBinding never reconstructs signal authority from a row or
+// a fresh PID observation. The original process-local owner must still control
+// its unreaped child, with all captured lease and SSH transport bindings intact.
+// Caller holds Manager.mu; failures confer no cancellation authority.
+func (m *Manager) checkpointExpiryJobBinding(id string, l model.Lease, j *job) error {
+	if j == nil || m.jobs[id] != j || j.cmd == nil || j.cmd.Process == nil || j.childOwner == nil || j.done == nil ||
+		id == "" || l.ID != id || l.Host != m.host || l.Owner != m.owner || l.Host != j.leaseHost || l.Owner != j.leaseOwner ||
+		!reflect.DeepEqual(l.Request, j.leaseRequest) || j.identity == nil || l.Process == nil ||
+		l.PID <= 0 || l.PID != j.cmd.Process.Pid || j.identity.PID != l.PID || j.identity.PGID != l.PID ||
+		j.identity.UID != l.Owner || j.identity.Start == "" || j.identity.Namespace == "" ||
+		!reflect.DeepEqual(l.Process, j.identity) || !j.childOwner.Active() {
+		return model.Err("needs_attention", "Original expired job binding is unavailable; obligations remain charged")
+	}
+	if r := j.sshRuntime; r != nil {
+		h := r.leaseHold
+		if h == nil || m.sshTransports[id] != h || h.manager != m || h.runtime != r || h.job != j || r.cancel == nil ||
+			!h.nativeStarted || h.nativeReaped || h.staged || h.err != nil ||
+			h.original.ID != id || h.original.Host != l.Host || h.original.Owner != l.Owner ||
+			!reflect.DeepEqual(h.original.Request, l.Request) || h.expectedPID != l.PID ||
+			!reflect.DeepEqual(h.expectedProcess, l.Process) {
+			return model.Err("needs_attention", "Original expired SSH transport binding differs; obligations remain charged")
+		}
+	} else if m.sshTransports[id] != nil {
+		return model.Err("needs_attention", "Original expired job SSH runtime is unavailable; obligations remain charged")
+	}
+	return nil
 }
 
 // joinUnstarted closes the private gate before the sole original waiter. A

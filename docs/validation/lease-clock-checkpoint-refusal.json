@@ -1,0 +1,184 @@
+{
+  "causal_negative": {
+    "expected_go_exit": 1,
+    "failed_nodes": 2,
+    "generated_source_sha256": "c89b8799c44f2d0b387aaf0b4996806a76045facdd1a2b81d4efc761281efc5c",
+    "only_change": "Replace the new failed-checkpoint branch with its previous immediate error return using a Go source overlay.",
+    "original_sources_unchanged": true,
+    "sole_failure": "checkpoint refusal did not cancel original SSH IO"
+  },
+  "closure": {
+    "go_installation_verified_before_bootstrap": true,
+    "scope": "Selected Go installation, module cache, compiler, resource directory, linker, SDK includes and libraries. Kernel, sealed system libraries and generic OS helpers remain trusted.",
+    "selected_tool_dependency_entries": 53809,
+    "source_snapshot_sha256": "2457f72d98f3c639f596421f7341085a8402644ecb87c7c3e92b8489b77de8d9",
+    "tool_dependency_before_after_equal": true,
+    "tool_snapshot_sha256": "b50f8c12d6f2f96f8858c0f5a9052a7a30f011538240ca7a308a8f2d29d535c5"
+  },
+  "commands": {
+    "cc-linker": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "cc-path": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "cc-resource": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "checkpoint-negative": {
+      "capture_identity_verified": true,
+      "exit": 1,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "cxx-path": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "full-compile": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "git-head": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "git-tree": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "manager-vet": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "native-race": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "resolved-go-env": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    },
+    "sdk-path": {
+      "capture_identity_verified": true,
+      "exit": 0,
+      "native_wait_calls": 1,
+      "original_pid_and_group_absent": true,
+      "retired_reaped": true
+    }
+  },
+  "compile_and_vet": {
+    "full_compile_exit": 0,
+    "full_compile_scope": "All packages at the recorded base plus the four owned source files; this is not a later whole-main runtime test.",
+    "manager_vet_exit": 0
+  },
+  "execution": {
+    "architecture": "arm64",
+    "elapsed_deadline_control": "Controlled same-boot elapsed samples with live wall deadlines and Go contexts; real original native children and SSH transport joins.",
+    "github_actions_execution": false,
+    "go_version": "go1.27.3",
+    "native_admission_thresholds_unchanged": true,
+    "origin": "local_native_macos",
+    "os": "darwin",
+    "race_instrumented": true
+  },
+  "limitations": [
+    "Native execution is local macOS arm64; no new Linux execution is claimed.",
+    "This gate covers generic execution and SSH jobs with exact current original unreaped ownership. Other holder types retain separate lifecycle gates.",
+    "Checkpoint write refusal is separated from lease settlement write refusal. Read failures, changed provenance and ownership do not authorize signals.",
+    "The existing waiter may settle only after positive native and IO joins and a successful ordinary settlement write.",
+    "No general database-unavailable, full-storage, restart or restore acceptance; no physical host or VM sleep experiment.",
+    "No new formal proof or whole-workspace runtime acceptance is claimed."
+  ],
+  "positive": {
+    "failures": 0,
+    "named_test_and_subtest_nodes": 35,
+    "new_scenarios": 20,
+    "root_tests": 9,
+    "roster": [
+      "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs",
+      "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-and-settlement",
+      "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-only",
+      "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-and-settlement",
+      "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-only",
+      "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling",
+      "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/id",
+      "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/owner",
+      "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/pid",
+      "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/process",
+      "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/request",
+      "TestLeaseClockCheckpointFailureFreshRosterDecodeRefusesAllNativeSignals",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/below-deadline",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/list-decode-error",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/missing-deadline",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/other-boot",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-other-boot",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-read-error",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-regressed",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/read-error",
+      "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/regressed",
+      "TestLeaseClockCheckpointFailureRefusesNewAuthority",
+      "TestLeaseClockCheckpointFailureRejectsPhysicalIDAlias",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals/changed-wall",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals/missing-deadline",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals/read-error",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals/regressed",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals/scope-changed",
+      "TestLeaseClockUncertaintyRetainsWithoutSignals/unknown-version",
+      "TestOriginalWaiterNativeAdmissionAndExpiry",
+      "TestSSHEndingJournalFailureCancelsOriginalGroup",
+      "TestSSHEndingJournalFailureCancelsOriginalGroup/close",
+      "TestSSHEndingJournalFailureCancelsOriginalGroup/end"
+    ],
+    "skips": 0
+  },
+  "schema": "arm.lease-clock-checkpoint-refusal-validation/v1",
+  "source": {
+    "base_commit": "f54e5283439e36d76adc62156d963ed93e6a2af6",
+    "binding": "Base Git tree with exactly three edited production files and one new test file; all other tracked bytes and modes equal the base.",
+    "four_complete_source_snapshots_equal": true,
+    "owned_files_sha256": {
+      "internal/manager/job_control.go": "cad17c1816a90b526779d60972abda57fda00290e81d7e762b916b2b4200807e",
+      "internal/manager/lease_clock.go": "92771d317cae672010f0fad39495e1a816ef53b010baf1f4a32b54a2f68ae727",
+      "internal/manager/lease_clock_persistence_native_test.go": "7698b6319a83e42f0dbdd387feef016b02f0ac158a27c9342d86a9afb7d644aa",
+      "internal/manager/manager.go": "78647d82d072a2d02dadecc03940f4a1267b9d3d69cfedf85b8d8539554cf5b3"
+    },
+    "source_file_count": 2407
+  }
+}

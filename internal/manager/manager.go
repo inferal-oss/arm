@@ -57,7 +57,11 @@ type job struct {
 	cpuExited             atomic.Bool
 	observationError      string
 	lastUsage             *model.WorkloadUsage
+	// Manager.mu protects the one original cancellation/escalation sequence.
+	originalCancellationRequested bool
+	originalCancellationError     error
 }
+
 type Manager struct {
 	leaseClockCheckpoint    leaseclock.Sample
 	storageExportCancels    map[string]context.CancelFunc
@@ -1325,28 +1329,8 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	l.Revision++
 	l.Outcome = outcome
 	if j := m.jobs[id]; j != nil {
-		// This exact process-local owner must receive cancellation even when
-		// recording ending fails. Request original group control before closing
-		// SSH IO: EOF/SIGPIPE must not win the original parent's signal race.
-		// A refused transaction leaves the prior durable charge untouched.
-		defer func() {
-			_ = j.signalGroup(syscall.SIGTERM)
-			if j.sshRuntime != nil {
-				j.sshRuntime.cancel()
-			}
-			m.wg.Go(func() {
-				select {
-				case <-j.done:
-					return
-				case <-time.After(2 * time.Second):
-				}
-				m.mu.Lock()
-				defer m.mu.Unlock()
-				if m.jobs[id] == j {
-					_ = j.signalGroup(syscall.SIGKILL)
-				}
-			})
-		}()
+		// Failed persistence still requests the exact original cancellation.
+		defer func() { _ = m.requestOriginalJobCancellation(id, j) }()
 		l.State = "ending"
 		if e = m.put(l, "lease.ending"); e != nil {
 			return l, e
