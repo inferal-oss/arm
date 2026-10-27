@@ -37,6 +37,8 @@ Production fences remain until their explicit acceptance gates pass.
 | Sync workspace evidence | `b50d15b` | Durable reservation/root markers and bounded read-only multiple-workspace lookup. |
 | Kubernetes admission | `1a75e10` | Exact standard tolerations, incomplete-affinity refusal and rejection of injected image credentials. |
 | Cgroup memory | `128d08e` | Complete visible Linux cgroup-v2 ancestry caps memory headroom; uncertain scopes provide no admission credit. |
+| Development forwarding clients | `4e8bdb4` | Bounded HTTP/raw clients with admission cancellation fixes; production remains disabled. |
+| Workspace ledger | `951051a` | Durable locators before staging, strict schema version 2 and read-only legacy/current reset proof. |
 | Public module validation | `ef6c637` | Source-bound public query/install checks and bounded original-child cleanup; descendant cleanup on interruption remains unproven. |
 
 Earlier reviewed backend, policy, agent messaging, storage, native lifecycle,
@@ -55,9 +57,9 @@ history merely because it contains an earlier ready report.
 | Mac screen — `codex/mac-screen-standard-gates` | Manager resource-hold draft under broader native/transport validation. | Final original command exits and composed closure before integration; Standard live/control/clipboard/other-user/revocation/multihop and High Performance breadth remain. |
 | Sleep/wake and operations — `codex/lease-suspend-clock-runtime` | Native elapsed-clock and original-child ownership drafts under review. | Fix post-reap group signaling, require positive transport/I/O joins before settlement, validate exact reset shapes and all held-operation start/revalidation paths. Complete native/formal evidence, then configuration/services/degraded persistence/retention/restore/overhead. |
 | Providers/workloads — `codex/managed-provider-protocol` | Durable executable fixture/protocol/crash tests and identity/configuration fixes under validation. | Adapt trusted elapsed entitlement after the clock contract is frozen; revalidate before native start and grant publication. Broaden registration/admission, real workloads, GPU/network resources and distributed authority. |
-| Terminal gauges — `codex/terminal-gauge-availability` | Clock-cut availability fix with independent mouse-frame/event-order corrections; final Linux/macOS CI executing. | Full TUI race/vet/build and real PTY acceptance on final source. Preserve genuine unknown observations and backend-derived To-lease values. |
+| Terminal gauges — `codex/terminal-gauge-availability` | Reviewed clock-cut fix and mouse-frame/event-order corrections integrated from `70306d3`; native Linux/macOS gauges and both PTYs pass. | Preserve genuine unknown observations and backend-derived To-lease values. Native app GUI, all host environments and later elapsed-clock composition remain separate gates. |
 | Product browser UI — `codex/semblance-web-migration` | Complete Semblance migration in progress; initial shell is not acceptance. | All operational views, authorization, freshness and recovery behavior; stock Terminal default, offline embedded build, actual screenshots and final interaction acceptance. Search upstream thoroughly and prepare focused reusable-component PRs where needed. |
-| Public site and releases — `codex/arm-public-launch` | Semblance/System site and tagged-carrier workflow composed on accepted canonical source; native carrier CI executing; Pages screenshot rendering requires correction. | Exact-source artifact and screenshot acceptance, Pages publication and both HTTPS endpoints. Configure only DNS-only GitHub Pages apex records; no additional Cloudflare hosting or proxying. GitHub Pages custom-hostname limits must be reported truthfully. |
+| Public site and releases — `codex/arm-public-launch` | Semblance/System site and tagged-carrier workflow composed on accepted canonical source; four-carrier builds and final Pages screenshots passed their source-bound checks; cancellation-helper correction is in review. | Exact-source artifact and screenshot acceptance, Pages publication and both HTTPS endpoints. Configure only DNS-only GitHub Pages apex records; no additional Cloudflare hosting or proxying. GitHub Pages custom-hostname limits must be reported truthfully. |
 | Module distribution — `codex/canonical-module-distribution` | Production migration and corrected validation harness integrated. | First literal public latest query returned pre-migration source and failed installation. Preserve failure; verify ordinary-proxy propagation, exact source identity, actual install/buildinfo/ZIP closure and cleanup before advertising latest as accepted. |
 
 ## Shared dependency order
@@ -115,6 +117,8 @@ not reactivated by retaining their technical records.
 
 ## Validation records
 
+- [Terminal gauges](validation/terminal-gauge-2026-10-26.json): native refresh,
+  interaction, PTY and cleanup evidence with exact input projections.
 - [Canonical module](validation/module-migration-2026-10-26.json): Linux/macOS
   portable checks, exact immutable public install, source/ZIP closure and limits.
 - [Workspace evidence](validation/sync-workspace-2026-10-26.json): native race/vet

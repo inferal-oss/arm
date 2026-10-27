@@ -1619,3 +1619,20 @@ pairs. Missing indexes, mismatched markers and retained used sync history remain
 blocking evidence. Empty locator rows alone never prove physical reclamation.
 Public sync orchestration, allocation enforcement, cleanup/settlement and formal
 acceptance remain separate work.
+
+
+## Terminal gauge receipt freshness
+
+Each accepted dashboard update uses one current clock cut for receipt timestamps
+and its render. Asynchronous monitor, resource and selected-host readings cannot
+be newer than an older cached tick, and a queued tick cannot roll the render
+clock behind a receipt. Retired sessions and unrelated messages never refresh
+held observation deadlines. Genuine stale, future, missing or disconnected
+readings remain unavailable; only a fresh accepted reading restores them.
+
+Mouse actions validate against the displayed frame before the new clock cut.
+Ignored raw mouse events cannot invalidate their own wrapped action, while
+intervening content, modal or geometry changes still reject stale clicks.
+Combined-cgroup resident usage remains unknown while measured availability is
+displayed; To-lease values remain backend-derived. This display correction is
+not a native elapsed-lease authority or universal host-counter accuracy proof.

@@ -155,7 +155,7 @@ func (m *dashboardModel) Init() tea.Cmd { return tea.Batch(connect(m.ctx, m.home
 func (m *dashboardModel) acceptMonitor(page model.MonitorPage) {
 	m.history = mergeMonitor(m.history, page, m.page.Epoch)
 	m.page = page
-	m.timeMonitor = time.Now()
+	m.timeMonitor = m.timeNow
 	m.dirty = true
 }
 func (m *dashboardModel) addEvent(event model.Event) {
@@ -178,6 +178,24 @@ func (m *dashboardModel) addEvent(event model.Event) {
 	m.dirty = true
 }
 func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// The renderer dispatches frame-bound mouse commands separately. Ignored
+	// raw events must not age the model before their wrapped command arrives.
+	if _, rawMouse := msg.(tea.MouseMsg); rawMouse {
+		return m, nil
+	}
+	// Validate clicks against the current rendered cut before advancing time.
+	// Clock-only expiry during this update must not discard the clicked target;
+	// intervening content, geometry or modal changes still invalidate its frame.
+	mouseFrame := ""
+	if mouse, ok := msg.(dashboardMouseMsg); ok && mouse.wheel == 0 {
+		mouseFrame = m.mouseFrame()
+	}
+	// One clock cut for this update and its render. Async receipts can arrive
+	// between timer ticks; using the previous tick would make a fresh receipt
+	// appear to be from the future. A queued tick's creation time must not roll
+	// this clock behind a receipt either. Freshness guards still reject genuinely
+	// negative ages and expire held observations at their original deadlines.
+	m.timeNow = time.Now()
 	defer m.syncViewport()
 	defer m.retirePeerIfHidden()
 	var cmd tea.Cmd
@@ -208,7 +226,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.applySnapshot(msg.data)
 		m.connected = true
 		m.retry = 0
-		m.lastRefresh = time.Now()
+		m.lastRefresh = m.timeNow
 		m.notice = ""
 		m.acceptMonitor(msg.page)
 		for _, event := range msg.events {
@@ -230,7 +248,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.refreshing = false
 		if msg.err == nil {
 			m.applySnapshot(msg.data)
-			m.lastRefresh = time.Now()
+			m.lastRefresh = m.timeNow
 		} else {
 			m.notice = msg.err.Error()
 		}
@@ -284,7 +302,6 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, waitStream(m.ctx, m.session)
 	case tickMsg:
-		m.timeNow = time.Time(msg)
 		peerRead := m.readPeers(false)
 		if ui := m.meshUI; m.nodeUI == nil && m.view == 6 && m.connected && ui != nil && ui.dirty && !ui.loading && !ui.busy && !m.meshModal() {
 			mode, id := "list", ""
@@ -344,9 +361,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case lookupResultMsg:
 		return m, m.acceptLookup(msg)
 	case dashboardMouseMsg:
-		return m, m.acceptMouse(msg)
-	case tea.MouseMsg:
-		return m, nil
+		return m, m.acceptMouse(msg, mouseFrame)
 	case tea.KeyPressMsg:
 		return m, m.key(msg)
 	}

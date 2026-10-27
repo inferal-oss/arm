@@ -4500,3 +4500,33 @@ counts, public CI/source references, compatibility and unsupported scope.
 Insert abort and pre-cancellation are exercised; actual power failure or lost
 durable-commit acknowledgement is not. No public/cross-host sync, physical
 allocation, native cleanup, lease settlement or formal acceptance is implied.
+
+
+### Terminal gauge refresh and interaction acceptance
+
+Reviewed source `70306d3` is integrated with technical evidence `7391995` onto
+the current sync-ledger base. [Full native run 40434230427](https://github.com/inferal-oss/arm/actions/runs/40434230427)
+passes on macOS 15.7.9 arm64 and Ubuntu 24.04.5 amd64 with Go 1.27.3: each has
+166 passing TUI roots/345 named outcomes, six explicitly listed existing optional
+skips, vet/build, 217 web tests and both actual PTYs. The final cleanup-only
+[successor 40435206806](https://github.com/inferal-oss/arm/actions/runs/40435206806)
+passes native build/buildinfo and both PTYs on both platforms without falsely
+claiming another TUI/web suite execution.
+
+RAM and filesystem-space measurements remain present for all 24 refresh checks
+on each platform. Actual disconnect produces unavailable values, reconnect
+restores measurements and terminal flags/alternate-screen state are restored.
+Original command/Wait, image, source and disposable cleanup closure are positive.
+Root independently verifies all four artifact ZIP digests, all 89 delivery
+gauge input and four unchanged accepted memory-producer hashes, plus original
+command/controller exits and gauge receipts.
+
+[Normalized evidence](validation/terminal-gauge-2026-10-26.json) preserves complete
+pass/skip rosters, source/image hashes, original failures and input-bound reuse.
+The full suite ran on the canonical reference with the accepted producer; the
+current delivery projection is verified by exact relevant-file equality.
+Unrelated primary integrations were not rerun by those hosted jobs. Generic UI
+fixtures use real counted pools for their policy/entitlement semantics, without
+CPU overrides or claims of native CPU-admission coverage. No native terminal-app
+GUI, all-container, whole-primary-suite or elapsed-lease authority acceptance is
+inferred. Raw private execution records remain outside version control.
