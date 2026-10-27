@@ -18,6 +18,24 @@ implemented checks and limits; provider/pressure adapters and physical suspend
 experiments remain separate work. Calendar authorization/start deadlines keep
 their distinct meanings.
 
+## Cancellation after a refused clock checkpoint
+
+After a lease-clock checkpoint write fails, reconciliation rereads and decodes
+all current lease rows with their physical SQL keys, then samples the native
+clock again. Only a known-expired generic execution or SSH job with its exact
+current unreaped original child, immutable bindings and original transport can
+receive cancellation. Changed provenance, incomplete reads or unknown time grant
+no signal authority. An invalid binding does not starve another independently
+proven original job.
+
+Cancellation requests TERM before SSH I/O closure and permits one bounded
+original-owner KILL escalation. Repeated ticks cannot start more escalation
+workers. New grants remain blocked; the refusal path preserves its error and
+writes no ending/terminal rows. Charges remain until the ordinary waiter has
+positive native/I/O joins and a successful settlement write. Other holder types,
+recovered PIDs, general database loss and physical suspend retain separate gates.
+See the [scoped native evidence](validation/lease-clock-checkpoint-refusal.json).
+
 ## Original-child control and SSH settlement
 
 Supervised commands and Cargo helpers retain their original process identity,

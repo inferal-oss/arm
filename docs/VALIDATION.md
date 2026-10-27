@@ -1,5 +1,28 @@
 # Validation record
 
+## Native checkpoint-refusal cancellation
+
+Integrated `3c7e60e` preserves the exact four runtime/test files from the accepted
+`f54e528`-based native candidate. Nine roots/35 named race cases pass without
+skips, including 20 new scenarios. The source-only negative restores just the
+previous immediate-return branch: only its root and SSH reconcile/checkpoint-only
+case fail, with the required cancellation diagnostic. Full-package compilation
+and Manager vet pass on that recorded composition.
+
+Root verifies all 2,407 source inputs against Git plus the four owned exceptions,
+four equal snapshots, equal selected tool manifests and 12 original command
+receipts: exact expected exits, sole wait, retired/reaped authority, unchanged
+capture identities and absent original PID/group, without signal or cleanup
+errors. The primary's only other Go/module differences are the separately tested
+provider-consumer files, which Manager does not import; the four integrated blobs
+match exactly. This static intersection is not a later whole-main runtime test.
+
+The [normalized record](validation/lease-clock-checkpoint-refusal.json) preserves
+clock/row/owner refusal controls, retained charges, bounded cancellation and
+positive native/SSH joins. The gate is local macOS; it establishes neither new
+Linux execution, physical suspend, a new formal proof, general database failure
+operation nor other holder lifecycle acceptance.
+
 ## Upstream CSSOM submission
 
 [Semblance PR #185](https://github.com/inferal-oss/semblance/pull/185) is a draft
