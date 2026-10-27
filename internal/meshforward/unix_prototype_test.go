@@ -5,15 +5,55 @@ package meshforward
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync/atomic"
+	"syscall"
 	"testing"
 	"time"
 )
+
+type unixPrototypeListError []error
+
+func (e unixPrototypeListError) Error() string   { return "test error list" }
+func (e unixPrototypeListError) Unwrap() []error { return []error(e) }
+
+type unixPrototypeCycleError struct{}
+
+func (e *unixPrototypeCycleError) Error() string { return "test error cycle" }
+func (e *unixPrototypeCycleError) Unwrap() error { return e }
+
+func TestUnixPrototypeCancellationErrorTreeBound(t *testing.T) {
+	dag := error(net.ErrClosed)
+	for i := 0; i < 20; i++ {
+		dag = errors.Join(dag, dag)
+	}
+	for _, tc := range []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{"plain_cancel", context.Canceled, true},
+		{"wrapped_close", fmt.Errorf("socket: %w", net.ErrClosed), true},
+		{"benign_join", errors.Join(net.ErrClosed, io.ErrClosedPipe), true},
+		{"wrapped_benign_join", fmt.Errorf("socket: %w", errors.Join(os.ErrClosed, net.ErrClosed)), true},
+		{"mixed_join", errors.Join(syscall.EIO, net.ErrClosed), false},
+		{"malformed_empty", unixPrototypeListError{}, false},
+		{"malformed_nil_child", unixPrototypeListError{nil, net.ErrClosed}, false},
+		{"cycle", &unixPrototypeCycleError{}, false},
+		{"repeated_dag", dag, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := unixPrototypeCanceledIO(tc.err); got != tc.want {
+				t.Fatalf("cancellation classification = %t, want %t", got, tc.want)
+			}
+		})
+	}
+}
 
 func unixPrototypeHome(t *testing.T) string {
 	t.Helper()

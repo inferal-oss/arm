@@ -384,30 +384,32 @@ func (p *UnixPrototype) recordApplication(err error) {
 }
 
 func unixPrototypeCanceledIO(err error) bool {
-	return unixPrototypeOnlyCanceledIO(err, 0)
+	remaining := 256
+	return unixPrototypeOnlyCanceledIO(err, 0, &remaining)
 }
 
 // errors.Is reports true when any joined leaf matches. For a mixed
 // application/closed error that would erase the independent application
 // failure after cancellation, so every leaf must be an explicit close error.
-func unixPrototypeOnlyCanceledIO(err error, depth int) bool {
-	if err == nil || depth > 32 { // a cyclic or unbounded wrapper is uncertain
+func unixPrototypeOnlyCanceledIO(err error, depth int, remaining *int) bool {
+	if err == nil || depth > 32 || *remaining == 0 { // cycles or oversized trees are uncertain
 		return false
 	}
+	*remaining = *remaining - 1
 	if joined, ok := err.(interface{ Unwrap() []error }); ok {
 		children := joined.Unwrap()
 		if len(children) == 0 {
 			return false
 		}
 		for _, child := range children {
-			if !unixPrototypeOnlyCanceledIO(child, depth+1) {
+			if !unixPrototypeOnlyCanceledIO(child, depth+1, remaining) {
 				return false
 			}
 		}
 		return true
 	}
 	if wrapped, ok := err.(interface{ Unwrap() error }); ok {
-		return unixPrototypeOnlyCanceledIO(wrapped.Unwrap(), depth+1)
+		return unixPrototypeOnlyCanceledIO(wrapped.Unwrap(), depth+1, remaining)
 	}
 	return err == context.Canceled || err == net.ErrClosed ||
 		err == os.ErrClosed || err == io.ErrClosedPipe

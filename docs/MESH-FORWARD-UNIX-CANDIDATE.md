@@ -101,7 +101,8 @@ partial connection with an error closes that original once without forwarding
 a client byte. A genuine copy error returned after cancellation remains an
 unknown application outcome, including when it is joined with an ordinary
 closed-connection error. Only an error tree made entirely of explicit
-cancellation/closed-connection errors is treated as expected cancellation.
+cancellation/closed-connection errors within a bounded traversal is treated
+as expected cancellation; malformed or oversized trees preserve uncertainty.
 When native closes, joins and exact path cleanup
 all succeed, that application error alone does not retain the adapter path.
 The prototype is deliberately absent from central CLI/backend dispatch and
