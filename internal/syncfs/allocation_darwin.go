@@ -26,10 +26,17 @@ func surveyDarwinMountIdentity(s unix.Statfs_t) (string, error) {
 }
 
 func surveyMountAt(fd int, name string) (string, error) {
-	child, err := unix.Openat(fd, name, unix.O_EVTONLY|unix.O_SYMLINK|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
+	child, err := surveyDarwinOpenMountEntry(fd, name)
 	if err != nil {
 		return "", err
 	}
 	defer unix.Close(child)
 	return surveyMountFD(child)
+}
+
+// O_SYMLINK opens the final link inode itself. O_NOFOLLOW must not be
+// combined with it on Darwin kernels that reject that otherwise valid link.
+// O_EVTONLY also avoids waiting for data if an entry changes to a FIFO.
+func surveyDarwinOpenMountEntry(fd int, name string) (int, error) {
+	return unix.Openat(fd, name, unix.O_EVTONLY|unix.O_SYMLINK|unix.O_CLOEXEC, 0)
 }
