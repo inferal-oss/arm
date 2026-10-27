@@ -5370,3 +5370,73 @@ integrated as `b742f36`; actual current-source installation and complete ZIP
 acceptance await a separately reviewed successor after the ordinary public
 proxy selects the frozen revision. No assertion relaxation or substituted
 expected version is accepted.
+
+
+### Exact-input Calendar baseline and current upstream cohort
+
+[Comparison evidence](validation/numeric-calendar-causal-comparison-2026-10-27.json)
+`4d1c0dd` preserves one original queued diagnostic with sequential current and
+retained-baseline processes. Each completes 3,568 cells, releases and fuel resets,
+with the same sole compiled Calendar mismatch and positive Engine/temporary-state
+cleanup. All 74 selected pins agree before, between and after the profiles.
+Current and baseline compiled Rust both trap with unreachable; the other three
+target cells return empty. The actual first native function offsets differ,
+while the generated function frame agrees. The frozen equality guards and
+positive original exits establish earlier replay-result checks; separate actual
+per-cell output records were not persisted. This establishes a preexisting
+failure for the captured protocol, not a Calendar fix or full numeric acceptance.
+
+[Current-base evidence](validation/numeric-n1-current-base-failed-2026-10-27.json)
+`0113d40` records the separate exact `1d9ec6b` plus numeric30/Sparkline19 composition.
+Typecheck and actual 35-tuple foreign-store controls pass. All 16 files/510 named
+cases execute: 509 pass, one Calendar corpus assertion fails, zero skip. The
+required 72 reader, 50 native conversion, six layer and four comparison cases
+all pass, including both native backends/modes. The raw failed-suite count is
+two; actual file/assertion records contain one failed file and one assertion.
+Seven original phase children are positively waited; the report observer runs
+and passes after Vitest exits one. No strict acceptance record is generated.
+All 16,920 selected inputs, actual image paths and owned cleanup pass independent
+review. Historical baseline proof does not silently waive this new-base failure;
+continued private component evaluation is separately scoped and confers no
+upstream, full-engine or production acceptance.
+
+
+### Source-bound public install cache successor
+
+The separately authorized automatic [run 40514214275](https://github.com/inferal-oss/arm/actions/runs/40514214275)
+uses exact immutable harness `f1e5195` after normal public latest metadata selects
+`23e466a`. Both native Linux amd64 and macOS arm64 pass all 12 original commands
+and 13 cheap helper controls. Literal latest query/install, fresh provenance for
+the actual selected version, installed buildinfo and module checksums agree.
+The retained raw module ZIPs are byte-identical; independent review recomputes
+the complete Go checksum with the actual module/version prefix and compares
+every one of 2,498 ZIP files with immutable source objects. All 611 required web
+and canonical module/fork inputs match, with no vendor filter. Clean immutable
+source/helper identities and disposable cleanup remain positive.
+
+[Normalized evidence](validation/module-latest-23e466a-successor-2026-10-27.json),
+integrated as `266cade`, retains original artifacts and the earlier failed
+`40509956588` result without relabeling. Installed binaries were removed with
+disposable state; independent review binds their recorded hashes/sizes to actual
+buildinfo, logs and frozen helper behavior, without claiming a new binary rehash.
+Acceptance is thin installation and ZIP closure at `23e466a` only. No Go test
+suite, later-source installation, whole-project/native browser acceptance, tag,
+release, user installation or backend modification is implied.
+
+### Sparkline foreign-store parity finding
+
+The first [S123 private evaluation](validation/sparkline-s123-current-base-failed-2026-10-27.json),
+recorded as `42f72d3`, runs all 32 exact S1 identities: 31 pass, one fails, none
+skip. The foreign canonical graph differs in four figures: the function view
+plots wide integer/decimal, unsignedLong maximum and XML-whitespace decimal
+values while SPARQL shows unavailable. This is a new component finding, separate
+from Calendar. The failed HTML assertion precedes later per-figure assertions;
+those downstream assertions did not run. S2/S3 correctly do not start.
+
+All five original children are positively waited, including the nonzero Vitest
+and report observer. All 17,625 selected inputs, image/loader hashes and owned
+cleanup pass independent review. The static N1 witness preserves its failed
+status and reuses only the actual same-source typecheck pass. Raw merged logs
+contain no observed warning/unsupported/N3 diagnostic lines. Parsed HTML is a
+failure discriminator, not root-cause proof or native browser acceptance. The
+component remains unaccepted while its focused correction is reviewed.

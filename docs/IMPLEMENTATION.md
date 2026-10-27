@@ -1766,8 +1766,10 @@ tracked web source/assets and the nine canonical module/fork inputs. It binds
 literal latest selection, full origin, installed buildinfo and complete ZIP Go
 checksum before accepting the 611 required files. The first final-source run
 correctly fails when the mirror selects the previous published commit; its
-supplement does not run. Current-source public installation remains unaccepted
-until an actual source-bound successor passes.
+supplement does not run. The separately reviewed cache successor then accepts
+thin installation and complete ZIP closure at `23e466a` on Linux amd64 and
+macOS arm64. This does not claim later-source installation, whole-project
+behavior, native browser interactions or a published version tag.
 
 
 ## Private sync workspace evidence
