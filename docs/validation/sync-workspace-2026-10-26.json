@@ -30,7 +30,6 @@
       "No complete absence proof for workspaces renamed entirely outside reserved namespace",
       "No hard cancellation bound for arbitrary stalled native filesystem calls"
     ],
-    "local_queue": "Owned helper normally cancelled before start, original exit130 observed",
     "final_source_unchanged": true,
     "tracked_clean": true
   },
@@ -39,14 +38,6 @@
       "commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
       "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
       "machine": "x86_64",
-      "uname": [
-        "Linux",
-        "runnervmtai0g",
-        "6.17.0-1022-azure",
-        "#22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
-        "x86_64",
-        "x86_64"
-      ],
       "go": "go version go1.27.3 linux/amd64",
       "source_digest": "733309cc3743cc132dd54038c06b9a516513c27c7dfcb0fbe71dcaa939140739",
       "source_count": 1841,
@@ -112,14 +103,6 @@
       "commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
       "platform": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
       "machine": "arm64",
-      "uname": [
-        "Darwin",
-        "iad20-gt1022-ed84ff60-3386-474a-a364-fa7b3ab51dfa-7A7D43DC5504.local",
-        "24.6.0",
-        "Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE",
-        "arm64",
-        "arm"
-      ],
       "go": "go version go1.27.3 darwin/arm64",
       "source_digest": "733309cc3743cc132dd54038c06b9a516513c27c7dfcb0fbe71dcaa939140739",
       "source_count": 1841,
