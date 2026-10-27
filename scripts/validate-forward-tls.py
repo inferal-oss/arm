@@ -65,7 +65,16 @@ def main():
     write(work / "source-before.json", before)
     if before["commit"] != os.environ["GITHUB_SHA"] or before["status"]:
         raise RuntimeError("dirty source or checkout differs from immutable hosted SHA")
-    expected_steps = set(STEPS)
+    baseline = os.environ.get("FORWARD_TLS_FULL_BASELINE", "")
+    scope = "protocol-oracle-successor" if baseline else "composed-local-forward-tls"
+    if baseline:
+        if baseline != "6d67b82dde88bce5e64b9691e4ec628964ebb5c5":
+            raise RuntimeError("unreviewed composed full-suite baseline")
+        changed = set(subprocess.check_output(["git", "diff", "--name-only", baseline, "HEAD"], cwd=ROOT).decode().splitlines())
+        if changed != {"internal/mesh/local_forward_tls_review_test.go", "scripts/validate-forward-tls.py", ".github/workflows/forward-tls-independent-validation.yml"}:
+            raise RuntimeError("protocol successor changed inherited runtime/test inputs")
+        write(work / "source-reuse.json", dict(full_suite_source=baseline, full_suite_run=40438316777, changed=sorted(changed), inherited_checks_not_executed=["default-race", "review-route-race", "affected-vet", "native-build", "review-build", "public-three-node-cli"]))
+    expected_steps = {"toolchain", "go-environment", "node-version", "protocol-race"} if baseline else set(STEPS)
     metadata = {name: os.environ.get(name) for name in ("GITHUB_SHA", "GITHUB_REF", "GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "RUNNER_OS", "RUNNER_ARCH", "FORWARD_TLS_RUNNER_LABEL", "ImageOS", "ImageVersion")}
     metadata["child_umask"] = oct(child_umask)
     metadata.update(platform=platform.platform(), machine=platform.machine(), python=sys.version, cpu_count=os.cpu_count(), macos_version=platform.mac_ver()[0])
@@ -161,50 +170,59 @@ def main():
                     raise RuntimeError("toolchain is cross-targeted or uses another module")
                 write(work / "native-target.json", dict(os=native_os, arch=native_arch, **goenv))
             run("node-version", [node, "--version"], env)
-            run("default-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-count=1", "-json", "-timeout=5m", "./internal/cli", "./internal/mesh", "./internal/meshforward", "./internal/server", "./internal/manager", "-run", "^(TestForward(Local|Listener|SourceAdmission|HTTPClient|Stream|OriginalOpener|SourceTLS)|TestLocalForwardTLS|TestCompatibleLocalTLS|TestDisabledForwardAuthorityUnavailable)"], env, 900)
-            run("review-route-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-tags=arm_forward_review", "-count=1", "-json", "-timeout=5m", "./internal/server", "-run", "^(TestForwardThreeNodesHTTPExactOriginalAndRevocation|TestForwardSourceAuthorityFreezesEndpointMembership|TestForwardOriginalOpenerFailureRetainedWithoutReplayOrApplicationDisclosure|TestForwardSourceTLSKeepsOriginalFailureClassification)$"], env, 900)
-            run("affected-vet", [go, "vet", "-mod=readonly", "-p=1", "./internal/mesh", "./internal/meshforward", "./internal/cli", "./internal/server"], env)
-            binary = work / "arm"
-            if not run("native-build", [go, "build", "-mod=readonly", "-p=1", "-o", str(binary), "./cmd/arm"], env):
-                image = sha(binary)
-                write(work / "image.json", dict(sha256=image, bytes=binary.stat().st_size))
-                if not run("buildinfo", [go, "version", "-m", str(binary)], env):
-                    info = (work / "buildinfo.stdout.txt").read_text()
-                    if "vcs.revision=" + before["commit"] not in info or "vcs.modified=false" not in info or "github.com/inferal-oss/arm/cmd/arm" not in info:
-                        failures.append("native image buildinfo differs from exact clean source")
-            review_binary = work / "arm-forward-review"
-            if not run("review-build", [go, "build", "-mod=readonly", "-p=1", "-tags=arm_forward_review", "-o", str(review_binary), "./cmd/arm"], env):
-                review_image = sha(review_binary)
-                write(work / "review-image.json", dict(sha256=review_image, bytes=review_binary.stat().st_size))
-                if not run("review-buildinfo", [go, "version", "-m", str(review_binary)], env):
-                    info = (work / "review-buildinfo.stdout.txt").read_text()
-                    if "vcs.revision=" + before["commit"] not in info or "vcs.modified=false" not in info or "-tags=arm_forward_review" not in info:
-                        failures.append("development image buildinfo differs from exact clean source/tag")
-                run("public-three-node-cli", [sys.executable, "-B", "scripts/test-routed-forward.py", "--arm", str(review_binary)], env, 480)
-            passed = set()
-            for phase in ("default-race", "review-route-race"):
-                events = [json.loads(line) for line in (work / (phase + ".stdout.txt")).read_text().splitlines() if line.startswith("{")]
+            if baseline:
+                run("protocol-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-count=1", "-json", "-timeout=3m", "./internal/mesh", "-run", "^TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol$"], env, 600)
+                events = [json.loads(line) for line in (work / "protocol-race.stdout.txt").read_text().splitlines() if line.startswith("{")]
                 roster = {action: [e for e in events if e.get("Action") == action] for action in ("run", "pass", "fail", "skip", "build-fail")}
-                write(work / (phase + "-roster.json"), roster)
-                passed |= {e.get("Test") for e in roster["pass"]}
-                if roster["fail"] or roster["build-fail"] or roster["skip"]:
-                    failures.append("failed/skipped race event in " + phase)
-            if not (REQUIRED_ROOTS | {"TestForwardThreeNodesHTTPExactOriginalAndRevocation"}) <= passed:
-                failures.append("missing mandatory protocol/identity/admission/default-fence/three-node test")
-            if image and sha(binary) != image:
-                failures.append("native image changed during execution")
-            if review_image and sha(review_binary) != review_image:
-                failures.append("development image changed during execution")
-            retained = list(Path(scratch).glob("**/arm-routed-forward-cli-*"))
-            if retained:
-                failures.append("public workflow retained an unclosed disposable fixture")
+                write(work / "protocol-race-roster.json", roster)
+                if roster["fail"] or roster["build-fail"] or roster["skip"] or "TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol" not in {e.get("Test") for e in roster["pass"]}:
+                    failures.append("protocol oracle successor did not complete required tests")
+            else:
+                run("default-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-count=1", "-json", "-timeout=5m", "./internal/cli", "./internal/mesh", "./internal/meshforward", "./internal/server", "./internal/manager", "-run", "^(TestForward(Local|Listener|SourceAdmission|HTTPClient|Stream|OriginalOpener|SourceTLS)|TestLocalForwardTLS|TestCompatibleLocalTLS|TestDisabledForwardAuthorityUnavailable)"], env, 900)
+                run("review-route-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-tags=arm_forward_review", "-count=1", "-json", "-timeout=5m", "./internal/server", "-run", "^(TestForwardThreeNodesHTTPExactOriginalAndRevocation|TestForwardSourceAuthorityFreezesEndpointMembership|TestForwardOriginalOpenerFailureRetainedWithoutReplayOrApplicationDisclosure|TestForwardSourceTLSKeepsOriginalFailureClassification)$"], env, 900)
+                run("affected-vet", [go, "vet", "-mod=readonly", "-p=1", "./internal/mesh", "./internal/meshforward", "./internal/cli", "./internal/server"], env)
+                binary = work / "arm"
+                if not run("native-build", [go, "build", "-mod=readonly", "-p=1", "-o", str(binary), "./cmd/arm"], env):
+                    image = sha(binary)
+                    write(work / "image.json", dict(sha256=image, bytes=binary.stat().st_size))
+                    if not run("buildinfo", [go, "version", "-m", str(binary)], env):
+                        info = (work / "buildinfo.stdout.txt").read_text()
+                        if "vcs.revision=" + before["commit"] not in info or "vcs.modified=false" not in info or "github.com/inferal-oss/arm/cmd/arm" not in info:
+                            failures.append("native image buildinfo differs from exact clean source")
+                review_binary = work / "arm-forward-review"
+                if not run("review-build", [go, "build", "-mod=readonly", "-p=1", "-tags=arm_forward_review", "-o", str(review_binary), "./cmd/arm"], env):
+                    review_image = sha(review_binary)
+                    write(work / "review-image.json", dict(sha256=review_image, bytes=review_binary.stat().st_size))
+                    if not run("review-buildinfo", [go, "version", "-m", str(review_binary)], env):
+                        info = (work / "review-buildinfo.stdout.txt").read_text()
+                        if "vcs.revision=" + before["commit"] not in info or "vcs.modified=false" not in info or "-tags=arm_forward_review" not in info:
+                            failures.append("development image buildinfo differs from exact clean source/tag")
+                    run("public-three-node-cli", [sys.executable, "-B", "scripts/test-routed-forward.py", "--arm", str(review_binary)], env, 480)
+                passed = set()
+                for phase in ("default-race", "review-route-race"):
+                    events = [json.loads(line) for line in (work / (phase + ".stdout.txt")).read_text().splitlines() if line.startswith("{")]
+                    roster = {action: [e for e in events if e.get("Action") == action] for action in ("run", "pass", "fail", "skip", "build-fail")}
+                    write(work / (phase + "-roster.json"), roster)
+                    passed |= {e.get("Test") for e in roster["pass"]}
+                    if roster["fail"] or roster["build-fail"] or roster["skip"]:
+                        failures.append("failed/skipped race event in " + phase)
+                if not (REQUIRED_ROOTS | {"TestForwardThreeNodesHTTPExactOriginalAndRevocation"}) <= passed:
+                    failures.append("missing mandatory protocol/identity/admission/default-fence/three-node test")
+                if image and sha(binary) != image:
+                    failures.append("native image changed during execution")
+                if review_image and sha(review_binary) != review_image:
+                    failures.append("development image changed during execution")
+                retained = list(Path(scratch).glob("**/arm-routed-forward-cli-*"))
+                if retained:
+                    failures.append("public workflow retained an unclosed disposable fixture")
             after = source()
             write(work / "source-after.json", after)
             if before != after:
                 failures.append("source changed during validation")
-            write(work / "closure.json", dict(source_unchanged=before == after, image_unchanged=bool(image) and sha(binary) == image, review_image_unchanged=bool(review_image) and sha(review_binary) == review_image, all_commands_waited=bool(commands) and all(c["waited"] for c in commands)))
-            binary.unlink(missing_ok=True)
-            review_binary.unlink(missing_ok=True)
+            write(work / "closure.json", dict(source_unchanged=before == after, image_unchanged=None if baseline else bool(image) and sha(binary) == image, review_image_unchanged=None if baseline else bool(review_image) and sha(review_binary) == review_image, all_commands_waited=bool(commands) and all(c["waited"] for c in commands)))
+            if not baseline:
+                binary.unlink(missing_ok=True)
+                review_binary.unlink(missing_ok=True)
         write(work / "cleanup.json", dict(private_root_removed=not Path(scratch).exists(), user_install_or_backend_accessed=False))
     except BaseException as error:
         failures.append(type(error).__name__ + ": " + str(error))
@@ -213,11 +231,11 @@ def main():
     finally:
         if {c["name"] for c in commands} != expected_steps:
             failures.append("incomplete command roster")
-        write(work / "result.json", dict(failures=failures, source=before["commit"], scope="composed-local-forward-tls", complete=not failures))
+        write(work / "result.json", dict(failures=failures, source=before["commit"], scope=scope, inherited_full_suite_source=baseline or None, inherited_full_suite_run=40438316777 if baseline else None, complete=not failures))
         # Exact generated-file whitelist. Never upload the binary, caches,
         # backend SQLite state, copied source, ambient files or arbitrary trees.
-        allowed = {"source-before.json", "source-after.json", "metadata.json", "commands.json", "environment.json", "native-target.json", "tools.json", "image.json", "review-image.json", "closure.json", "cleanup.json", "default-race-roster.json", "review-route-race-roster.json", "result.json"}
-        allowed |= {name + suffix for name in STEPS for suffix in (".stdout.txt", ".stderr.txt")}
+        allowed = {"source-before.json", "source-after.json", "metadata.json", "commands.json", "environment.json", "native-target.json", "tools.json", "image.json", "review-image.json", "closure.json", "cleanup.json", "default-race-roster.json", "review-route-race-roster.json", "result.json", "source-reuse.json", "protocol-race-roster.json"}
+        allowed |= {name + suffix for name in (*STEPS, "protocol-race") for suffix in (".stdout.txt", ".stderr.txt")}
         manifest = {}
         for name in sorted(allowed):
             path = work / name
