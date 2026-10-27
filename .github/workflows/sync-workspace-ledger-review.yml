@@ -1,0 +1,99 @@
+name: Focused sync workspace ledger review
+on:
+  push:
+    branches: [codex/sync-workspace-ledger-review-ci]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sync-workspace-ledger-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-ledger:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Bind exact source and host
+        shell: bash
+        run: |
+          python3 scripts/inspect-sync-workspace-ledger-review.py prepare
+          go version > .cache/ledger-review-ci/go-version.txt
+      - name: Reproduce original locator bound defect
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -overlay .cache/ledger-review-ci/original-overlay.json -json ./internal/syncservice -run '^TestWorkspaceReviewLocatorByteBounds$/^oversize-path$' -count=1 -timeout=2m > .cache/ledger-review-ci/original-locator.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess original-locator "$code"
+      - name: Reproduce original strict reset schema defect
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -overlay .cache/ledger-review-ci/original-overlay.json -json ./internal/database -run '^TestWorkspaceReviewResetSchemaVersionAndLocatorRetention$/^fresh2$' -count=1 -timeout=2m > .cache/ledger-review-ci/original-reset.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess original-reset "$code"
+      - name: Final filesystem and service races
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -json ./internal/syncfs ./internal/syncservice -count=1 -timeout=3m > .cache/ledger-review-ci/final-filesystem-service.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess final-filesystem-service "$code"
+      - name: Final worker boundaries and write ordering races
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -json ./internal/syncworker -run '^(TestFixedSyncWorkerOverARMSSHSession|TestFixedWorkerThroughDuplexTransfer|TestFailedTransportJoinDoesNotConfirmBaseline|TestConflictKeepBothOverSingleSSHStream|TestCancellationClosesBlockedSSHControl|TestUnreviewedWorkerCommandCannotDispatch|TestWorkspaceReviewJournalFailurePrecedesStageBytes)$' -count=1 -timeout=3m > .cache/ledger-review-ci/final-worker.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess final-worker "$code"
+      - name: Final Manager schema admission and original key races
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -json ./internal/manager -run '^(TestSyncSchema|TestRetainedSyncUseBlocksNodeStop|TestWorkspaceReviewLegacySyncSchemaRefusesWithoutRepair|TestInspectSyncKey|TestReviewSyncKey|TestSyncSourceReservation|TestSyncSourceFailedReservation|TestSyncDestination)' -count=1 -timeout=3m > .cache/ledger-review-ci/final-manager.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess final-manager "$code"
+      - name: Final strict reset and compatibility races
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -json ./internal/database -run '^(TestSyncResetProofRetainsUsedOrPartialNamespace|TestWorkspaceReviewResetSchemaVersionAndLocatorRetention|TestResetActualLedgerFreshAuthorityPreservesStorageChildren|TestResetReviewIsReadOnlyAndRefusesActiveWork|TestResetHooksPreserveOrdinaryFreshAndEstablishedStartup)$' -count=1 -timeout=3m > .cache/ledger-review-ci/final-reset.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess final-reset "$code"
+      - name: Final affected vet and source closure
+        shell: bash
+        run: |
+          set +e
+          go vet -mod=readonly -p=1 ./internal/syncfs ./internal/syncservice ./internal/syncworker ./internal/manager ./internal/database > .cache/ledger-review-ci/final-vet.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-workspace-ledger-review.py assess final-vet "$code"
+          python3 scripts/inspect-sync-workspace-ledger-review.py closure
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: sync-workspace-ledger-${{ matrix.os }}
+          path: .cache/ledger-review-ci/
+          include-hidden-files: true
+          retention-days: 7
