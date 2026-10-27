@@ -1567,3 +1567,14 @@ order, and reject additions or changed values. Incomplete node affinity returns
 identity failure instead of panicking; injected image-pull credentials are
 refused. This narrow compatibility fix does not establish full carrier shipment
 or authenticated in-Pod readiness and enrollment.
+
+
+## Linux memory headroom across cgroups
+
+Linux admission uses the minimum of host MemAvailable and conservative remaining
+memory.max minus memory.current across complete visible cgroup v2 ancestry. It
+verifies the initial namespace, complete thread membership and stable mounts and
+membership during observation. Hidden, v1, ambiguous, changing or missing scope
+returns unknown admission credit. Finite ancestor limits cap total capacity;
+full existing promises remain charged. Combined host/cgroup headroom reports
+resident usage as unknown because those observations cannot establish it.

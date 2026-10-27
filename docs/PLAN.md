@@ -866,3 +866,22 @@ in that Pod because trusted export authorization was not established. The
 owner must not retry or bypass that rejection. Shipment, in-Pod catalog proof,
 enrollment and SSH remain unverified; the focused admission fix does not
 establish those gates.
+
+
+### Linux cgroup memory milestone integrated
+
+Owner: chat `01a1764f-7a1a-71a0-896c-60d963b3327e`; focused reviewed source
+`1f0dfd4` after canonical module packaging. Root inspects the full final four-file
+diff and verifies the source hashes against final CI run `40427712145`. Linux
+memory headroom includes all visible finite cgroup v2 ancestors and becomes
+unknown if ancestry, membership, namespace or counters are uncertain. Full
+promises remain charged; combined headroom does not invent resident usage.
+
+Linux amd64 and Darwin arm64 observe races, five Manager memory races, vet and
+native availability gates pass. Linux uses an actual 512 MiB ancestor and a
+separate hidden namespace refusal. Root verifies both artifact SHA-256 values,
+all original exit files and the exact production/test source hashes. Evidence:
+`docs/validation/cgroup-memory-2026-10-26.json`. Linux arm64 execution, broader
+CPU attribution, supervised pause/resume, elapsed-clock consumer adaptation and
+pressure-specific formal gates remain open. This milestone does not close the
+full resource-safety portfolio.

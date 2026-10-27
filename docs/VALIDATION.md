@@ -4414,3 +4414,21 @@ The separate `4d8362d` live observation covers Pod Ready and exact-UID cleanup
 only. Carrier export/execution was rejected by automatic approval review;
 shipment, in-Pod catalog proof, enrollment and SSH remain unverified. Neither
 that observation nor passing provider tests establishes those missing gates.
+
+
+### Final cgroup memory observation and admission evidence
+
+[Run 40427712145](https://github.com/inferal-oss/arm/actions/runs/40427712145)
+passes on Linux amd64 and Darwin arm64. Observe race tests, all five named
+Manager memory-admission race roots, affected vet and native observations have
+original exit 0. Linux observes a real 536,870,912-byte ancestor capacity and
+refuses admission credit in a hidden cgroup namespace. No CPU/memory policy
+overrides substitute for native observations.
+
+Root independently verifies downloaded ZIP SHA-256 values against the reported
+GitHub digests, every original exit receipt and all four focused source hashes.
+[The persistent record](validation/cgroup-memory-2026-10-26.json) retains exact
+source identities, named pass rosters, log/artifact hashes and native results.
+Current Manager, model and observation inputs match the tested composition.
+No Linux arm64 execution, full pressure policy, pause/resume, elapsed lease-clock
+adaptation or broader formal acceptance is inferred.
