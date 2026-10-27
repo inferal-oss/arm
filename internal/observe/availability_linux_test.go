@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -127,5 +128,16 @@ func TestNativeLinuxAvailability(t *testing.T) {
 	r := MemoryAvailability(t.Context())
 	if r.Total == nil || *r.Total <= 0 || r.Available == nil || *r.Available < 0 || *r.Available > *r.Total {
 		t.Fatalf("native availability unavailable: %+v", r)
+	}
+}
+
+func TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit(t *testing.T) {
+	if os.Getenv("ARM_TEST_NATIVE_MEMORY_HIDDEN_SCOPE") != "1" {
+		t.Skip("requires an actual non-initial cgroup namespace")
+	}
+	r := MemoryAvailability(t.Context())
+	if r.Available != nil || r.Total != nil || r.Quality != "unavailable" || r.Scope != "memory-cgroup-unknown" ||
+		!strings.Contains(r.Detail, "initial cgroup namespace") {
+		t.Fatalf("hidden cgroup ancestry supplied memory credit or hid the reason: %+v", r)
 	}
 }
