@@ -885,3 +885,60 @@ all original exit files and the exact production/test source hashes. Evidence:
 CPU attribution, supervised pause/resume, elapsed-clock consumer adaptation and
 pressure-specific formal gates remain open. This milestone does not close the
 full resource-safety portfolio.
+
+
+### Coordinator audit of all returned and active handoffs
+
+The operator explicitly includes both `Implement multi-hop mesh port forwarding`
+(`01a178cc-c340-7241-98dd-22420550023f`) and
+`Implement bidirectional sync reconciliation`
+(`01a1762f-1cfa-7ed3-8404-4a794cbe93b3`), plus other unintegrated tasks. Review
+focused steps when ready; an idle chat or completion report is not acceptance.
+The coordinator has inspected primary status, all worktrees, current project
+chats, actual candidate diffs and the delivery plan. Primary work was preserved.
+
+| Portfolio / owner chat | Current integration or candidate | Remaining gate / dependency |
+| --- | --- | --- |
+| Canonical module, `01a17a8e-5258-7e01-a7df-733214f4ff82` | Production/tests/provenance and scoped evidence integrated as `77b962f`. | Unsafe cancellation helper/workflow excluded; separate correction, publication and literal public latest remain. |
+| Bidirectional sync, `01a1762f-1cfa-7ed3-8404-4a794cbe93b3` | Reviewed private workspace evidence integrated as `b50d15b`; earlier planner/worker/recovery already integrated. | New workspace ledger candidate, production allocation/public dispatch, cleanup/settlement, performance and formal gates remain. |
+| Forwarding, `01a178cc-c340-7241-98dd-22420550023f` | Foundation remains integrated but disabled. New client candidates `1659ecc` / `2b155a6` are in independent review. | Review found held-ACK cancellation and HTTP interim-response bugs. Fixes and exact compiled fixture/native gates precede integration; browser/unmodified clients, cross-host/platform/formal and sleep-clock composition stay open. Scheme approval is already recorded and is not requested again. |
+| Resource safety, `01a1764f-7a1a-71a0-896c-60d963b3327e` | Cgroup memory milestone integrated as `128d08e`. | Broader pressure attribution, supervised control, native arm64 and elapsed-clock/formal gates remain. |
+| Kubernetes, `01a17669-4ad2-7e41-8616-905a94b58916` | Admission correction integrated as `1a75e10`. | Separate live cleanup `4d8362d`; carrier export/execution rejected by automatic approval review. In-Pod identity/catalog/enrollment/SSH unverified. |
+| Gauge availability, `01a17a63-41aa-7670-ba0d-446f6a48a0d3` | Review fixes `98587ff` + `b4490b3` + `95aa584`; canonical CI composition `d0da579` is unaccepted. | Initial full race found a real click-frame regression despite successful PTY gauges. Review fixes pre-clock mouse validation and raw-event ordering; final Linux/macOS race/PTY gates remain. |
+| VNC, `01a1766f-588d-7f90-a789-3db9ffca71f7` | Manager resource-hold draft remains isolated and uncommitted. | Prior resource cases pass but wrapper exit is unknown; original final session `5471` must return durable exits and broader native/transport gates. Standard/HighPerf breadth remains. |
+| Sleep/operations, `01a17a66-fb70-7730-8fdf-ac6d3e9346a4` | Clock and original-child ownership drafts remain isolated. | Generic waiter post-reap signal correction, original transport/IO joins, exact reset proofs and native/formal gates; then elapsed-clock consumers and later operations. Forward source must validate native lease remaining before/after dialing. |
+| Providers/workloads, `01a17a67-1bb9-7031-878b-87f5bb71861c` | Focused fixture/protocol candidate remains isolated. | Original queued validation; frozen clock contract before providerexec adapter. Broader registration/resources/real workloads remain. |
+| Product Semblance UI, `01a17a68-5f5c-7411-b0da-bc6a45296adb` | Operational migration in progress; early shell is not complete. | All views/authorization/recovery, stock Terminal default, regular actual screenshots and final composed acceptance; reusable gaps require focused upstream PRs. |
+| Launch, `01a17a6b-835f-7503-ab50-466751c51eec` | Both domains purchased with approved renewal; public repo exists; site/release source remains separate. | Compose accepted module with version metadata and four-carrier release CI, final Semblance/System site screenshots/Pages deployment, public latest and actual DNS/HTTPS. Latest human requires only DNS-only GitHub Pages apex A records for both domains and no new Cloudflare projects. |
+
+Older ready reports were also reconciled: database forgetting `181a776`, Charm
+peer views `d7fab97`, original rsync worker receipts, routed SSH corrections and
+remaining-capacity dashboard views are already integrated, including equivalent
+reviewed compositions. Do not reimport their old divergent branches. QUIC
+`d115a84` stays parked by operator instruction. Obsolete mount work is not revived.
+
+The launch owner removed its exact empty `arm-cloud-redirect` project after the
+latest human clarification; no files were uploaded or deployed. Do not retry the
+declined upload or create hosting through another channel. Both DNS-only apex
+records are requested; actual GitHub Pages single-custom-hostname/HTTPS behavior
+remains a verification gate, not something inferred from DNS records alone.
+
+### Shared CPU queue operational correction
+
+Reviewed Semblance helper commit `dad66b279e54d430a539b454e82a52cc3a7124b4`
+retains tickets on EPERM/unknown liveness and exits before child launch if its
+own ticket disappears. Four isolated fixture methods, shell syntax and diff
+checks pass; root independently reruns all four tests. The root atomically
+deploys the exact helper locally with before/after SHA-256 and owner/mode checks:
+old `fa637461da9004ea7792f2729fc9c86779f53f88e5e562dd1402baa64586a00f`,
+new `769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922`.
+Evidence: `/private/tmp/arm-queue-repair-evidence/root-deployment.json`.
+
+No queue/ticket/lock/process mutation, reordering or CPU limit increase occurs.
+Existing unrelated one-slot throttle remains untouched; it accounts for genuine
+remaining backlog. Existing valid callers retain their original handles and
+exit evidence. The Semblance primary checkout's unrelated conflict/untracked
+files are preserved. Its helper is a local working-copy modification, with the
+focused commit in an isolated branch; upstream issue/plan link/PR tracking is
+assigned to the Semblance migration owner. No upstream merge/deployment is
+authorized by preparing that PR.

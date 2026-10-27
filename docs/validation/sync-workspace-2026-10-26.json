@@ -181,5 +181,216 @@
         "completed": true
       }
     }
+  },
+  "final_module_closure": {
+    "evidence_reuse": "Hosted run40424736706 workspace source/test files and syncfs production closure are identical on both OSes. Its full syncfs test closure and worker runtime/test closures each have only the reviewed fork diagnostic exception; reuse scoped interaction gates plus separately accepted final-module dependency gates. No duplicate tests launched.",
+    "final_revision": "aa9b4c77f0a8dffadc262c82bcb29e0b0a0dd39d",
+    "go_mod_diff": "Existing pinned k8s.io/streaming v0.37.1 indirect requirement promoted to direct; no version changes. go.sum unchanged.",
+    "metadata_only": true,
+    "old_revision": "6bc990bb82ee1ba8dc6086e8a26ef47fe467e35c",
+    "scopes": {
+      "darwin-arm64": {
+        "syncfs-runtime": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 849,
+            "packages": 114,
+            "repo_files": 11
+          },
+          "final_files_digest": "bd574070ebdd73385263914283b9a3801b37ebcd3c4770b1dfd979e5ee6cc11e",
+          "module_digest": "1dd56ba87dd05b4b1bcbb88fcafe0de56a883fad43899c597118164843a8f79e",
+          "package_graph_digest": "55ada398dbcd848b3ba4989fda67190dfce1851a61357e77baa165d42d7e70d6",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 849,
+            "packages": 114,
+            "repo_files": 11
+          },
+          "validated_files_digest": "bd574070ebdd73385263914283b9a3801b37ebcd3c4770b1dfd979e5ee6cc11e"
+        },
+        "syncfs-tests": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [
+            {
+              "final_sha256": "a869d64747ef20176f746d41b64d26582fdb010fcfb602095ec25678d7cf4ee4",
+              "old_sha256": "88abf3a24b086f1d09c571e7b1c3b01ce87a03baea63a3080671c4b531b55241",
+              "path": "repo:third_party/rsyncgo/internal/sender/flist.go"
+            }
+          ],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 1478,
+            "packages": 258,
+            "repo_files": 73
+          },
+          "final_files_digest": "cf48b7d1394cd367a48b522a28d8feb761f91c4589e388589d7292bca836efed",
+          "module_digest": "fe8815ad278d968808e5c101ec6fcc8fa38d3a55f9fd1f9737bb93c63330dcb5",
+          "package_graph_digest": "af9491c19e8be766bfdcf8b24d81c0498a76e4b5a9274ea4af4aca44782363a5",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 1478,
+            "packages": 258,
+            "repo_files": 73
+          },
+          "validated_files_digest": "f9ec7fe7690315d970d405ee19b067c540b48b8c2e4f61861553f9540397fb51"
+        },
+        "syncworker-runtime": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [
+            {
+              "final_sha256": "a869d64747ef20176f746d41b64d26582fdb010fcfb602095ec25678d7cf4ee4",
+              "old_sha256": "88abf3a24b086f1d09c571e7b1c3b01ce87a03baea63a3080671c4b531b55241",
+              "path": "repo:third_party/rsyncgo/internal/sender/flist.go"
+            }
+          ],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 2265,
+            "packages": 341,
+            "repo_files": 478
+          },
+          "final_files_digest": "fbc69118d5fe3478c032ad105837951b54c02eec9efb01946b37d2845c350e3a",
+          "module_digest": "ddb644943dd69b7cdf7d01f4b7e28368ee312dc276063086ea0a9eb9d5975165",
+          "package_graph_digest": "1b60d3bf9bf87fc3082119394ff5dd109494dfb586e04dab25c192e4ac8b16af",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 2265,
+            "packages": 341,
+            "repo_files": 478
+          },
+          "validated_files_digest": "92222629c4f75f7719ed3d4294fc4c6d03df514000147e5e38dae35abbb3da14"
+        },
+        "syncworker-tests": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [
+            {
+              "final_sha256": "a869d64747ef20176f746d41b64d26582fdb010fcfb602095ec25678d7cf4ee4",
+              "old_sha256": "88abf3a24b086f1d09c571e7b1c3b01ce87a03baea63a3080671c4b531b55241",
+              "path": "repo:third_party/rsyncgo/internal/sender/flist.go"
+            }
+          ],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 2318,
+            "packages": 352,
+            "repo_files": 483
+          },
+          "final_files_digest": "18703784b3b7ac6fe49ab31d9eba2d62eacb9f95a96aaa071894b88a715a86d0",
+          "module_digest": "ddb644943dd69b7cdf7d01f4b7e28368ee312dc276063086ea0a9eb9d5975165",
+          "package_graph_digest": "51ff615a94c2192c809940b4dbe323cc3698c912129b9a35166c2e9080a9fb6c",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 2318,
+            "packages": 352,
+            "repo_files": 483
+          },
+          "validated_files_digest": "45fab12aa7a564d6c5251da9d4e7f74ee10ad20764a8a3b9ac63ba3ce1b9ebcd"
+        }
+      },
+      "linux-amd64": {
+        "syncfs-runtime": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 884,
+            "packages": 116,
+            "repo_files": 11
+          },
+          "final_files_digest": "712768522da1ccf40580f75cea4a42483922fd909233980c9a8c5801d2498031",
+          "module_digest": "1dd56ba87dd05b4b1bcbb88fcafe0de56a883fad43899c597118164843a8f79e",
+          "package_graph_digest": "379807fe3ff81667ace4bfebe971cb20746af4fc547191209c2b86578f68617b",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 884,
+            "packages": 116,
+            "repo_files": 11
+          },
+          "validated_files_digest": "712768522da1ccf40580f75cea4a42483922fd909233980c9a8c5801d2498031"
+        },
+        "syncfs-tests": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [
+            {
+              "final_sha256": "a869d64747ef20176f746d41b64d26582fdb010fcfb602095ec25678d7cf4ee4",
+              "old_sha256": "88abf3a24b086f1d09c571e7b1c3b01ce87a03baea63a3080671c4b531b55241",
+              "path": "repo:third_party/rsyncgo/internal/sender/flist.go"
+            }
+          ],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 1551,
+            "packages": 262,
+            "repo_files": 73
+          },
+          "final_files_digest": "6525dc94536626aec6872464ed6a5e3dc0cb207afdd9a2a3f93430e7d53cc771",
+          "module_digest": "418a11a91468cc24cc71fa81c64372c5ab4574c5e9a2160eaf85daee3492d8dd",
+          "package_graph_digest": "5c0200fe984bbda8b3adc4c0ba71819e63a37a12893dd846407e42dcdbe9b61c",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 1551,
+            "packages": 262,
+            "repo_files": 73
+          },
+          "validated_files_digest": "1c28fd43e0df8bd9761c287444d97db27ab1f6e9a869ea49f8e9bebdff6b8015"
+        },
+        "syncworker-runtime": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [
+            {
+              "final_sha256": "a869d64747ef20176f746d41b64d26582fdb010fcfb602095ec25678d7cf4ee4",
+              "old_sha256": "88abf3a24b086f1d09c571e7b1c3b01ce87a03baea63a3080671c4b531b55241",
+              "path": "repo:third_party/rsyncgo/internal/sender/flist.go"
+            }
+          ],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 2254,
+            "packages": 315,
+            "repo_files": 478
+          },
+          "final_files_digest": "b02790fb047c9338b4a8dc25b4fa67353961a87fa641517f15bb5f53c08a0ec7",
+          "module_digest": "e521dc76a71f39f2f0341175fc2fb4bd7ec852e19bc0e58f1ae8c453eec1cd88",
+          "package_graph_digest": "9cd84bbae1f5ebf23a10b2c5122be457e2dcb1e6c7441645b31fbf4fde64c033",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 2254,
+            "packages": 315,
+            "repo_files": 478
+          },
+          "validated_files_digest": "3d136d26c32b20e9c1a81550c0147583fae190f21f793f713a3de92f64650e1c"
+        },
+        "syncworker-tests": {
+          "all_other_file_inputs_identical": true,
+          "changed_files": [
+            {
+              "final_sha256": "a869d64747ef20176f746d41b64d26582fdb010fcfb602095ec25678d7cf4ee4",
+              "old_sha256": "88abf3a24b086f1d09c571e7b1c3b01ce87a03baea63a3080671c4b531b55241",
+              "path": "repo:third_party/rsyncgo/internal/sender/flist.go"
+            }
+          ],
+          "external_module_identities_identical": true,
+          "final_counts": {
+            "files": 2307,
+            "packages": 326,
+            "repo_files": 483
+          },
+          "final_files_digest": "df504eabfa8e87734daf1017a4d0015422a9ef945e206b59d10a4b93c52d65bf",
+          "module_digest": "e521dc76a71f39f2f0341175fc2fb4bd7ec852e19bc0e58f1ae8c453eec1cd88",
+          "package_graph_digest": "85a3b87c6e3a4214bd67c0202a27b7a59cd1074727103bd5c5730102bcc74949",
+          "package_graph_identical": true,
+          "validated_counts": {
+            "files": 2307,
+            "packages": 326,
+            "repo_files": 483
+          },
+          "validated_files_digest": "e8e8b3a002c6dfdc04e2efdbd5fab9e65710a2896ae0e0d6dcaf69901db62a43"
+        }
+      }
+    },
+    "tracked_clean": true,
+    "worker_exception": "Only existing sender debug Printf gains already-computed strip as its missing third argument; exact patch reviewed. Walk, file lists, protocol, resource/cancellation and filesystem inputs unchanged. Final module portable fork/race/vet gates supplied by coordinator cover corrected dependency; prior worker integration races are scoped unchanged-control-flow evidence, not an identical-full-source assertion."
   }
 }
