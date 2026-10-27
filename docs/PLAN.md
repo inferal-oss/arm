@@ -89,7 +89,21 @@ history merely because it contains an earlier ready report.
 | Area | Technical owner | Current gate |
 | --- | --- | --- |
 | Compact Resources and web alignment | Resources UI role | Separate implementation uses stock Semblance containment and progressive details, preserving capacity warnings, pool operations and keyboard/mobile behavior. Source `d09da5a` hides routine reported I/O badges, but the deployed embedded bundle still shows them and must be rebuilt. The initial Resources source review found consumer-control replacement on renewal/list changes and stale lease dialog identity; a focused successor addresses both in source. Its frozen v2 run now has independently checked 48 Node passes, 18 aggregate RDF passes, four native normal roots/16 named cases, three exact assertion negatives, builds and compiled CLI/HTTP/PTY bootstrap. One requested Node path does not exist, RDF names are source-reconstructed, and bootstrap has no structured per-daemon closure receipt. The old relay has an operation-key case-alias read-only bypass and must not be used for browser validation. Correct the bounded browser fixture, complete readable-label rendering, and verify actual rebuilt-binary Monitor/Resources, focus, modal, read-only and desktop/phone behavior before integration. |
-| Shell completion and readable identities | `codex/cli-completion-readable-names` | Bash/Zsh/Fish command/flag and authorized host/resource completion, with Cobra dependency coordinated centrally. Readable names derive deterministically from stable IDs; preserve supplied names, exact IDs, permission boundaries and ambiguity refusal. No alias registry or storage migration is planned. Final parser/alias/shell/native gates remain required. |
+| Shell completion and readable identities | `codex/cli-completion-readable-names` | Bash/Zsh/Fish command/flag and authorized host/resource completion, with Cobra dependency coordinated centrally. Readable names derive deterministically from stable IDs; preserve supplied names, exact IDs, permission boundaries and ambiguity refusal. ID-derived defaults remain stateless. The operator additionally requests explicit custom names usable in CLI and dashboards: a separate bounded optional metadata mapping, scoped uniqueness, strict read/reset proof and API compatibility need central review before writes. No DDL migration, signed identity rewrite or format-2 activation is authorized by naming. Terminal and remote display wiring, final parser/alias/shell/native gates and persistence evidence remain required. |
+
+## Intermittent mesh-node follow-up
+
+Mesh resilience work is owned by the mobile recovery role. Confirm transient
+loss and long absence recovery without undoing explicit disconnect or revocation.
+The current per-request pinned TLS path can retry when a trusted peer returns;
+listener startup failures and freshness observation need bounded owned recovery.
+Prepare a declared mobile/intermittent profile and advisory work-suitability
+ranking, separately from measured reachability and fresh spendable-resource
+reports. Destination admission remains authoritative, and unknown work keeps its
+original obligations and operation key. Profile persistence/report compatibility,
+generation fencing, stop/join behavior, native outage/restart fixtures and UI
+projection require review. No automatic scheduler, service installation, new
+grants, stale-capacity spending or replay is accepted by this investigation.
 
 ## Shared dependency order
 
