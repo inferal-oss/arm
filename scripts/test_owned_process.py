@@ -27,21 +27,38 @@ def load_wrapper(path, name):
 
 class OwnershipTests(unittest.TestCase):
     def test_native_wnowait_retains_exact_child_until_retirement(self):
-        owner = owned.OwnedCommand([sys.executable, '-c', 'import time;time.sleep(.1)'])
-        try:
-            owner.start()
-            self.assertFalse(owner._exited())
-            time.sleep(.15)
-            self.assertTrue(owner._exited())
-            self.assertTrue(owner._exited())  # The first native observation did not reap.
-            owner._drain(1)
-            owner._reap()
-            self.assertFalse(owner.authority)
-            self.assertEqual(owner.returncode, 0)
-            with patch.object(owned.os, 'killpg', side_effect=AssertionError('retired signal')):
-                owner.cancel()
-        finally:
-            owner.close_pipes()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            child = ('from pathlib import Path;import sys,time\n'
+                     'root=Path(sys.argv[1]);(root/"ready").touch();end=time.monotonic()+5\n'
+                     'while not (root/"release").exists():\n'
+                     ' if time.monotonic()>end:raise SystemExit(3)\n'
+                     ' time.sleep(.005)\n')
+            owner = owned.OwnedCommand([sys.executable, '-c', child, directory])
+            try:
+                owner.start()
+                deadline = time.monotonic() + 2
+                while not (root / 'ready').exists() and time.monotonic() < deadline:
+                    time.sleep(.005)
+                self.assertTrue((root / 'ready').exists(), 'original child did not reach its live barrier')
+                self.assertFalse(owner._exited())
+                (root / 'release').touch()
+                deadline = time.monotonic() + 2
+                while not owner._exited() and time.monotonic() < deadline:
+                    time.sleep(.005)
+                self.assertTrue(owner._exited(), 'released original child did not exit')
+                self.assertTrue(owner._exited())  # The first native observation did not reap.
+                owner._drain(1)
+                owner._reap()
+                self.assertFalse(owner.authority)
+                self.assertEqual(owner.returncode, 0)
+                with patch.object(owned.os, 'killpg', side_effect=AssertionError('retired signal')):
+                    owner.cancel()
+            finally:
+                try:
+                    owner.cancel()
+                finally:
+                    owner.close_pipes()
 
     def test_callback_reaper_cannot_run_between_exit_observation_and_group_signal(self):
         owner = owned.OwnedCommand([sys.executable, '-c', 'pass'])

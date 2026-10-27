@@ -17,6 +17,7 @@ jobs:
     timeout-minutes: 40
     env:
       CREDIT_REVIEW_RUNNER: ${{ matrix.os }}
+      CREDIT_REVIEW_CONTROL_BASELINE: 3b1351a97af3af753e0f8ba6b4ba51419bc40761
       GOMAXPROCS: '1'
       GOFLAGS: '-p=1'
       GOTOOLCHAIN: local
@@ -24,6 +25,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
+          fetch-depth: 2
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod

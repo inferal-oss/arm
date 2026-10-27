@@ -52,6 +52,16 @@ def main():
     record(receipts / 'source-before.json', before)
     if before['status'] or before['commit'] != os.environ['GITHUB_SHA']:
         raise RuntimeError('immutable clean checkout required')
+    baseline = os.environ.get('CREDIT_REVIEW_CONTROL_BASELINE', '')
+    if baseline:
+        if baseline != '3b1351a97af3af753e0f8ba6b4ba51419bc40761':
+            raise RuntimeError('unreviewed full runtime baseline')
+        changed = set(subprocess.check_output(['git', 'diff', '--name-only', baseline, 'HEAD'], cwd=ROOT).decode().splitlines())
+        if changed != {'scripts/test_owned_process.py', 'scripts/validate-forward-credit-review.py', '.github/workflows/forward-credit-independent-validation.yml'}:
+            raise RuntimeError('control successor changed inherited runtime inputs')
+        record(receipts / 'source-reuse.json', {'runtime_source': baseline, 'runtime_run': 40445910262,
+            'changed_paths': sorted(changed), 'runtime_gates_inherited_not_rerun': True,
+            'original_mac_control_failure_retained': True})
     env = dict(os.environ, GOMAXPROCS='1', GOFLAGS='-p=1', GOTOOLCHAIN='local', PYTHONDONTWRITEBYTECODE='1')
     go = shutil.which('go')
     if not go:
@@ -121,33 +131,37 @@ def main():
     public, review = work / 'arm-public', work / 'arm-review'
     try:
         run('ownership-controls', [sys.executable, '-B', 'scripts/test_owned_process.py'])
+        control_log = (receipts / 'ownership-controls.stderr.txt').read_text()
+        if not re.search(r'Ran 18 tests in ', control_log) or '\nOK\n' not in control_log or 'skipped=' in control_log:
+            failures.append('ownership-controls-complete-roster')
         run('toolchain', [go, 'version'])
         environment = json.loads(run('go-environment', [go, 'env', '-json', 'GOOS', 'GOARCH', 'CGO_ENABLED', 'GOVERSION', 'GOROOT', 'CC']).stdout)
         expected_arch = 'arm64' if expected_os == 'darwin' else 'amd64'
         if (environment['GOOS'] != expected_os or environment['GOARCH'] != expected_arch or
                 environment['CGO_ENABLED'] != '1' or environment['GOVERSION'] != 'go1.27.3'):
             raise RuntimeError('actual selected native Go/CGo differs from reviewed matrix')
-        run('credit-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
-            './internal/meshforward', './internal/meshsshrelay', '-run', '^(TestForwardCredit|TestProxy|TestPacedWriter|TestGrant)'], tests=True)
-        run('policy-fence-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
-            './internal/meshsshrelay', './internal/server', './internal/cli', '-run',
-            '^(TestReviewedPolicyCommitCASAndNoFollow|TestDestinationPolicyRoundTripAndRevocation|TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward|TestForwardRouteBindsServiceAndRefusesSSHClassConfusion|TestForwardSourceTLSKeepsOriginalFailureClassification|TestDisabledForwardAuthorityUnavailable|TestForwardHTTPClientProductionFence)$'], tests=True)
-        run('relay-cleanup-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
-            './internal/manager', '-run', '^(TestRelayTransit|TestRelayCleanup|TestForwardTransitSettledMarkerAllowsResetProof)'], tests=True)
-        run('review-route-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
-            '-tags', 'arm_forward_review', './internal/server', '-run', '^TestForwardThreeNodesHTTPExactOriginalAndRevocation$'], tests=True)
-        run('affected-vet', [go, 'vet', '-mod=readonly', './internal/meshforward', './internal/meshsshrelay', './internal/server', './internal/cli', './internal/manager'])
-        for name, path, extra in [('public', public, []), ('review', review, ['-tags', 'arm_forward_review'])]:
-            run(name + '-build', [go, 'build', '-mod=readonly', *extra, '-o', str(path), './cmd/arm'])
-            if path.is_file():
-                images[name] = {'sha256': digest(path), 'bytes': path.stat().st_size}
-                run(name + '-buildinfo', [go, 'version', '-m', str(path)])
-        if review.is_file():
-            result = run('public-three-node-cli', [sys.executable, '-B', 'scripts/test-routed-forward.py', '--arm', str(review)], timeout=300)
-            if b'PASS public CLI B' not in result.stdout:
-                failures.append('public-three-node-cli-result')
-        else:
-            failures.append('public-three-node-cli-unlaunched')
+        if not baseline:
+            run('credit-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
+                './internal/meshforward', './internal/meshsshrelay', '-run', '^(TestForwardCredit|TestProxy|TestPacedWriter|TestGrant)'], tests=True)
+            run('policy-fence-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
+                './internal/meshsshrelay', './internal/server', './internal/cli', '-run',
+                '^(TestReviewedPolicyCommitCASAndNoFollow|TestDestinationPolicyRoundTripAndRevocation|TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward|TestForwardRouteBindsServiceAndRefusesSSHClassConfusion|TestForwardSourceTLSKeepsOriginalFailureClassification|TestDisabledForwardAuthorityUnavailable|TestForwardHTTPClientProductionFence)$'], tests=True)
+            run('relay-cleanup-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
+                './internal/manager', '-run', '^(TestRelayTransit|TestRelayCleanup|TestForwardTransitSettledMarkerAllowsResetProof)'], tests=True)
+            run('review-route-race', [go, 'test', '-mod=readonly', '-race', '-p=1', '-count=1', '-json', '-timeout=5m',
+                '-tags', 'arm_forward_review', './internal/server', '-run', '^TestForwardThreeNodesHTTPExactOriginalAndRevocation$'], tests=True)
+            run('affected-vet', [go, 'vet', '-mod=readonly', './internal/meshforward', './internal/meshsshrelay', './internal/server', './internal/cli', './internal/manager'])
+            for name, path, extra in [('public', public, []), ('review', review, ['-tags', 'arm_forward_review'])]:
+                run(name + '-build', [go, 'build', '-mod=readonly', *extra, '-o', str(path), './cmd/arm'])
+                if path.is_file():
+                    images[name] = {'sha256': digest(path), 'bytes': path.stat().st_size}
+                    run(name + '-buildinfo', [go, 'version', '-m', str(path)])
+            if review.is_file():
+                result = run('public-three-node-cli', [sys.executable, '-B', 'scripts/test-routed-forward.py', '--arm', str(review)], timeout=300)
+                if b'PASS public CLI B' not in result.stdout:
+                    failures.append('public-three-node-cli-result')
+            else:
+                failures.append('public-three-node-cli-unlaunched')
     finally:
         closure = {'source_unchanged': before == source(), 'images': {}}
         for name, path in [('public', public), ('review', review)]:
@@ -164,11 +178,12 @@ def main():
             'user_install_or_backend_accessed': False, 'hosted_tool_caches_not_claimed_removed': True})
         if not closure['source_unchanged'] or not all(v['unchanged'] for v in closure['images'].values()):
             failures.append('source-image-closure')
-        complete = len(commands) == 13
+        complete = len(commands) == (3 if baseline else 13)
         if not complete:
             failures.append('incomplete-original-command-roster')
         record(receipts / 'result.json', {'complete': complete, 'failures': failures,
-            'source': before['commit'], 'scope': 'current-main-credit-and-cleanup-composition'})
+            'source': before['commit'], 'scope': 'ownership-control-successor' if baseline else 'current-main-credit-and-cleanup-composition',
+            'runtime_gates_inherited_not_rerun': bool(baseline)})
         record(receipts / 'manifest.json', {p.name: {'sha256': digest(p), 'bytes': p.stat().st_size}
             for p in sorted(receipts.iterdir()) if p.name != 'manifest.json'})
     return bool(failures)
