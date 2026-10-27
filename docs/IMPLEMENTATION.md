@@ -2093,3 +2093,14 @@ containment findings remain open; this layout change does not close them.
 The [vanity source-install plan](design/getarm-source-install-plan.md) is a
 reviewed design; the module namespace and public installation command have not
 yet changed.
+
+## Kubernetes acceptance status polling
+
+The sourceable helper in `scripts/kubernetes-pod-status.sh` (`713e83a`) reads
+through caller-supplied callbacks and checks exact Pod identity, container and
+pinned image. Readiness can also be satisfied by the same Pod completing with
+exit zero, so a short-lived build need not remain Ready long enough to observe.
+Read or terminal failures retain the last observed status and a separate failure
+receipt. The helper creates or deletes no Kubernetes resources. Its polling
+budget relies on the reader honoring its request timeout; it is not a hard
+callback/process deadline. Private acceptance bindings stay outside the repository.

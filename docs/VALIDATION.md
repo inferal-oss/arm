@@ -5500,3 +5500,18 @@ unstarted. The example entry discards its mount handle, so its teardown evidence
 does not establish explicit unmount/store disposal. Preserved screenshot files
 have `.png` names but contain valid JPEG images; their actual types and hashes
 are recorded. A natural-width fixture successor requires fresh native evidence.
+
+### Kubernetes status helper integration
+
+[Scoped helper evidence](validation/kubernetes-pod-status-helper-2026-10-27.json)
+records an independent run of all eight existing offline cases against the exact
+source helper: Running to Succeeded, completion before Ready, failed Pod, UID
+replacement, read failure with a retained observation, timeout, wrong image and
+first-read failure with no observation. All pass once, exit zero in 3.36 seconds.
+No cluster/API/network operation occurs in these fixtures.
+
+The private acceptance wrapper's source now uses the integrated helper with its
+exact content hash and has no environment approval-token gates. This checks
+wiring only: the wrapper was not replayed against Kubernetes, and the earlier
+public-source build attempt remains failed. Direct Ready-true, validator refusal
+and receipt-I/O cases are not separately tested in this eight-case cohort.

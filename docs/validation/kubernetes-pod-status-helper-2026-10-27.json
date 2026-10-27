@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "status": "passed-offline-helper-only",
+  "source_commit": "3036bc2e9025ba33805ae90b31506c5cfc8174d1",
+  "helper_sha256": "a97961f13a2ece7ad5d492220d755269efeef3060bf60abf9d72b26b40c383ab",
+  "independent_review_sha256": "8485882f60e61079f291116833c471276db00293aace30eb99ad7ac8f1dcf2f0",
+  "offline_cases": [
+    "running_to_succeeded",
+    "completed_before_ready",
+    "failed_pod",
+    "replacement",
+    "read_failure",
+    "timeout",
+    "wrong_image",
+    "first_read_failure"
+  ],
+  "actual_exit": 0,
+  "independent_elapsed_seconds": 3.3588,
+  "cluster_api_calls": 0,
+  "cluster_resources_created": 0,
+  "scope": "Exact parameterized helper and eight injected-reader fixture cases; no fresh live Kubernetes or prior-failed-run acceptance.",
+  "limits": [
+    "Polling budget depends on the read callback honoring its request timeout; it is not a hard process or callback deadline.",
+    "Direct Ready-true, validator refusal and receipt-I/O failures are not separately exercised by these eight cases.",
+    "Private acceptance wrapper wiring is source-checked and pinned; it was not executed against a cluster."
+  ]
+}
