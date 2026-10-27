@@ -10,7 +10,13 @@ const root=resolve(import.meta.dirname,'..'), hash=b=>createHash('sha256').updat
 test('all shipped Semblance source paths have exact frozen combined provenance; excluded agent data stays absent',()=>{
  const p=JSON.parse(readFileSync(join(root,'semblance-provenance.json'))), source=join(root,p.source_directory);
  assert.equal(Object.keys(p.base_files).length,369);assert.equal(Object.keys(p.files).length,373);assert.equal(Object.keys(p.shipped_files).length,368);assert.equal(Object.keys(p.excluded_upstream_paths).length,5);
- for(const [path,sha] of Object.entries(p.shipped_files)){assert.equal(sha,p.files[path]);assert.equal(hash(readFileSync(join(source,path))),sha,path);}
+ assert.equal(p.review_overlays.length,1);
+ const overlays=new Map(p.review_overlays.map(entry=>[entry.path,entry]));
+ assert.deepEqual([...overlays.keys()],['src/render/dom.ts']);
+ for(const [path,entry] of overlays){assert.equal(entry.base_sha256,p.files[path]);assert.notEqual(entry.sha256,entry.base_sha256);if(entry.upstream_tracking===null)assert.equal(entry.upstream_submitted,false);else assert.match(entry.upstream_tracking,/^https:\/\/github\.com\/inferal-oss\/semblance\/(issues|pull)\/[0-9]+$/);}
+ for(const [path,sha] of Object.entries(p.shipped_files)){assert.equal(sha,overlays.get(path)?.sha256??p.files[path]);assert.equal(hash(readFileSync(join(source,path))),sha,path);}
+ const pkg=JSON.parse(readFileSync(join(root,'package.json')));
+ assert.equal(p.generated_engine.command,pkg.scripts.build.split(' && ')[0]);
  const walk=(dir,prefix='')=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(join(dir,e.name),prefix+e.name+'/'):[prefix+e.name]);
  const generated=p.generated_engine.file.replace(p.source_directory+'/','');
  assert.deepEqual(walk(source).sort(),[...Object.keys(p.shipped_files),generated].sort());

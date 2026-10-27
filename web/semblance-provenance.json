@@ -380,7 +380,7 @@
   "generated_engine": {
     "file": "third_party/semblance/rdf-engine/build/wat.wasm",
     "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
-    "command": "node --import tsx vendor/semblance/rdf-engine/wat/build.ts vendor/semblance/rdf-engine/build/wat.wasm"
+    "command": "node --import tsx third_party/semblance/rdf-engine/wat/build.ts third_party/semblance/rdf-engine/build/wat.wasm"
   },
   "base_files": {
     ".agents/skills/component-overlap/SKILL.md": "4c84783ce2649450d46f0d5131e6d80282864eba65e03d0140b42777c67dab7e",
@@ -1136,7 +1136,7 @@
     "src/prefixes.ts": "5b4513c189a230efee4035a5c9b9e55331c8913798c104e97e5e41a8214c590d",
     "src/rdf.ts": "73c6c8951b42adac581df1d9d9dd62a48855eed84df480566adeecdb8abafb79",
     "src/recalculation.ts": "ed1d96aaf901ba23cdbed54b446b59ec48836f7907f774ad76817e35ce174c56",
-    "src/render/dom.ts": "31ba2891f94d0e5be1407b09ec6bb62260609a6a43d7a681a2017567f104de31",
+    "src/render/dom.ts": "f02fc19905dd3757f4cd275c01370cfc3987ed28882e10e6c2abb5146ff19f80",
     "src/render/html-index.ts": "5d33363a8d75d99daaa971d195dd75351fc0fbed266235d3b1dde6a988c64720",
     "src/render/order-key.ts": "683498bea2289c5bf4171db71da849dff5180635e08d93f686d1c6176b8155f3",
     "src/render/ordering.ts": "e785c06845f3c74a2bd81af27e7d74c5dcd2f147a5fd7f9eed4b9b62b402e19c",
@@ -1175,7 +1175,7 @@
     "src/web/snap.ts": "fc69934ea26a00a1af7d1a3c2f6cfdc5b8b975a8270e432658892d85767a1130",
     "src/web/walkthrough.ts": "9a4120af196eb2ee82a9297c6a5ffcf887ff762c1269c4c13f43a5c2d6a9a525"
   },
-  "inventory_note": "files retains the complete frozen combined reference hash map; shipped_files excludes only the five explicitly listed unused agent workflow/tool files. All paths inside these maps remain relative to the upstream source root.",
+  "inventory_note": "files retains the complete frozen combined reference hash map; shipped_files excludes only the five explicitly listed unused agent workflow/tool files and applies exactly the hashed review_overlays. All paths inside these maps remain relative to the upstream source root.",
   "build_overlays": [
     {
       "import": "oxigraph/web.js",
@@ -1188,7 +1188,18 @@
         "oxigraph",
         "hybrid"
       ],
-      "reason": "ARM bootstraps WAT explicitly. The exact optional import fails clearly instead of shipping an unused Rust binary. Frozen upstream source remains unchanged."
+      "reason": "ARM bootstraps WAT explicitly. The exact optional import fails clearly instead of shipping an unused Rust binary. The store loader source is unchanged; the renderer correction is recorded separately in review_overlays."
+    }
+  ],
+  "review_overlays": [
+    {
+      "path": "src/render/dom.ts",
+      "base_sha256": "31ba2891f94d0e5be1407b09ec6bb62260609a6a43d7a681a2017567f104de31",
+      "sha256": "f02fc19905dd3757f4cd275c01370cfc3987ed28882e10e6c2abb5146ff19f80",
+      "behavior": "Reflect native option.selected from selected attributes, including removal, only when live state differs after browser input dirties selection state.",
+      "upstream_tracking": null,
+      "status": "Provisional generic renderer correction; upstream submission pending. Original base_files and frozen combined files maps remain unchanged.",
+      "upstream_submitted": false
     }
   ]
 }

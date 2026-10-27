@@ -6,6 +6,9 @@ Semblance source, ontology, generated WAT engine and stock themes:
 https://github.com/inferal-oss/semblance at
 0db58805c6f70e4ef281c17ecf2b53ad947dd984. Dual MIT OR Apache-2.0;
 complete texts are in `third_party/semblance/LICENSE-MIT` and `LICENSE-APACHE`.
+Provisional generic changes are recorded in `semblance-provenance.json`. Its
+`review_overlays` identifies the native option selection reflection correction
+after the frozen combined source snapshot; the original reference hashes remain.
 
 N3 RDF parser: https://github.com/rdfjs/N3.js, MIT.
 Oxigraph (development dependency; optional engine excluded from ARM assets): https://github.com/oxigraph/oxigraph,

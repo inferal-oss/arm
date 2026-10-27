@@ -23,6 +23,9 @@ import {allDevices,noDevices,toggleDevice,selectedDeviceIDs,aggregateIO,aggregat
 import {activityItems} from '../activity-feed.mjs';
 import {createEphemeralInputs} from './ephemeral-inputs.mjs';
 import {createCommandPalette} from './command-palette.mjs';
+import {markKeyboardPlatform} from './platform.mjs';
+
+markKeyboardPlatform(document,navigator.platform);
 
 function decodeSessionJSON(raw){
  try{const value=parseJSON(raw);if(!value||Array.isArray(value)||typeof value.token!=='string'||typeof value.expires_at!=='string')throw Error();return value;}

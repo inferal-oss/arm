@@ -26,7 +26,9 @@ supports controlled IO callbacks after a graph event.
 `web/third_party/semblance` starts from a clean source archive from
 `inferal-oss/semblance` commit
 `0db58805c6f70e4ef281c17ecf2b53ad947dd984`, under MIT OR Apache-2.0.
-The provenance manifest records the original base-file hashes and actual combined file hashes. Provisional overlays #154/#155/#157/#166 are present and remain unaccepted upstream. The WAT engine is rebuilt from that same source. Node/Vite are development-only;
+The provenance manifest records the original base-file hashes and actual combined file hashes. Provisional overlays #154/#155/#157/#166 are present and remain unaccepted upstream.
+The subsequent native option selection correction is separately hashed in
+`review_overlays`; the original 369 base and 373 combined reference hashes remain. The WAT engine is rebuilt from that same source. Node/Vite are development-only;
 Go embeds `web/assets` and serves the local bundle and WASM. No framework CDN or
 runtime package fetch is used. Existing noVNC/ARD assets retain their separately
 embedded licensed delivery and feature semantics.

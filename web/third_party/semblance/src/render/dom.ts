@@ -227,6 +227,13 @@ export class DomRenderer {
 
   /** Keep live form state in line with the graph (attributes only set defaults). */
   private reflect(el: Element, name: string, value: string | undefined) {
+    // A native selection dirties option state; attributes then change only defaults.
+    if (el.localName === 'option' && name === 'selected') {
+      const option = el as HTMLOptionElement
+      const selected = value !== undefined
+      if (option.selected !== selected) option.selected = selected
+      return
+    }
     if (el.localName !== 'input' && el.localName !== 'textarea') return
     const input = el as HTMLInputElement
     if (name === 'checked') input.checked = value !== undefined

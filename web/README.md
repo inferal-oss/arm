@@ -3,7 +3,7 @@
 Production entrypoint: `internal/server/web/semblance/main.mjs`.
 The application is a Semblance graph using stock Semblance theme by default.
 `third_party/semblance` is licensed source pinned to the commit and per-file hashes in
-`semblance-provenance.json`. The base is a clean archive; the manifest explicitly records provisional overlays for disabled inputs, Sparkline, strict-CSP style application, and palette search metadata. The author snapshot has scoped component and ARM checks; current independent composition, rebuild and browser gates are recorded separately. This is not an accepted upstream release.
+`semblance-provenance.json`. The base is a clean archive; the manifest explicitly records provisional overlays for disabled inputs, Sparkline, strict-CSP style application, palette search metadata, and native option selection reflection. The author snapshot has scoped component and ARM checks; current independent composition, rebuild and browser gates are recorded separately. This is not an accepted upstream release.
 
 Development build:
 
@@ -44,6 +44,7 @@ all 12 runtime package texts plus Semblance and the generated Vite helper notice
 ARM explicitly selects the pinned WAT store. An exact build alias for
 `oxigraph/web.js` preserves the generic loader's async initialization boundary
 but fails clearly if an unsupported Oxigraph/Hybrid path is selected. The
-optional Rust engine binary is not shipped. Upstream source is unchanged;
-`build_overlays` records this owned packaging decision and hashes. Retained
+optional Rust engine binary is not shipped. The optional store loader source is unchanged;
+`build_overlays` records this owned packaging decision and hashes, while
+`review_overlays` pins the subsequent native option selection correction. Retained
 Oxigraph npm notice texts do not establish Rust transitive binary attribution.
