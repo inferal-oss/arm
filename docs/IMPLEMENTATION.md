@@ -1760,6 +1760,16 @@ installed compatible Go toolchain, bounded CPU/memory/disk and output ownership;
 this migration adds no such command or automatic download/build authority.
 
 
+The public-install validation harness now has an immutable source checkout
+separate from its frozen CI helpers, plus an offline ZIP supplement covering all
+tracked web source/assets and the nine canonical module/fork inputs. It binds
+literal latest selection, full origin, installed buildinfo and complete ZIP Go
+checksum before accepting the 611 required files. The first final-source run
+correctly fails when the mirror selects the previous published commit; its
+supplement does not run. Current-source public installation remains unaccepted
+until an actual source-bound successor passes.
+
+
 ## Private sync workspace evidence
 
 Private workspace creation writes a bounded durable marker containing the

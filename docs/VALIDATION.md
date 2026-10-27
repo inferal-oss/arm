@@ -5320,5 +5320,53 @@ query and remains failed. A separately reviewed offline compact codec preserves
 all 5,046 retained events semantically in order, passes 17 synthetic witnesses
 and seven refusal controls, and reduces that measured partial history to
 7,852,522 bytes. Earlier rendered outputs remain UTF-8 digest-only; this does
-not establish full native history fit, exact UTF-16 equality or Calendar
-causality. The newly prepared bounded native capture is not yet run.
+not establish exact UTF-16 equality or Calendar causality. The subsequent
+[bounded native capture](validation/numeric-calendar-diagnostic-2026-10-27.json),
+recorded as `5488468`, completes at 32,966,908 bytes and preserves the original
+exit one: two roots pass and the Calendar corpus root fails. All 3,568 starts,
+results, execution observations and releases agree; all four target cells and
+three complete 132,822-quad graphs are retained. Rust compiled execution traps
+with unreachable and no success counter, fallback, decline or interruption;
+interpreted Rust/WAT and compiled WAT return empty. All 18,209 selected inputs
+remain identical and known-owner/private-path cleanup is positive. This is a
+complete diagnostic capture, not semantic acceptance or a stock baseline replay.
+
+
+### Compact Monitor public website deployment
+
+The single automatic [Pages run 40509263907](https://github.com/inferal-oss/arm/actions/runs/40509263907)
+passes build and deployment for exact published source `23e466a`. Root reviews
+all three fresh artifact images: compact Monitor at its fixed viewport,
+complete Resources through its footer, and actual terminal PTY resource rows.
+All 15 actual artifact files match their recorded hashes; normal canonical
+HTTPS returns the same bytes, with approved certificate, HTTPS enforcement and
+HTTP-root redirect. The four static website runtime assets remain unchanged.
+[Normalized evidence](validation/website-deployment-23e466a-2026-10-27.json),
+integrated as `ce9e1fb`, preserves historical source-specific records and all
+viewport, sequential-sampling and broader workflow limitations. No new DNS,
+proxy, secondary-domain, tag, release or hosting-setting change is implied.
+
+
+### Final-source public install gate: cached revision refused
+
+The single push-triggered [run 40509956588](https://github.com/inferal-oss/arm/actions/runs/40509956588)
+uses clean immutable harness `5539007` and source `23e466a` on native Linux
+amd64 and macOS arm64, with ordinary CGo and fresh disposable caches. Both jobs
+fail the full-Origin assertion: their actual literal latest query and install
+select `4f359b6`. All 12 recorded commands exit zero and actual installed
+buildinfo matches that older selection; this does not accept the requested
+source. The 13 cheap helper controls pass on each platform. All three new
+611-file manifest/fetch/ZIP-supplement steps are skipped, and no raw public
+module ZIP is retained by this failed run.
+
+Independent review checks all original archives/log/push hashes, 38 receipt
+members per platform, and both complete 2,498-file source manifests against
+immutable Git objects. Source/harness identities and all three helper hashes
+remain clean and unchanged, and disposable state is removed. No user install,
+backend, tag or release changes. [Normalized failed evidence](validation/module-latest-23e466a-failed-2026-10-27.json),
+integrated as `b579a5e`, preserves the exact selections and failed status.
+The reviewed two-checkout workflow and offline-validated ZIP checker are
+integrated as `b742f36`; actual current-source installation and complete ZIP
+acceptance await a separately reviewed successor after the ordinary public
+proxy selects the frozen revision. No assertion relaxation or substituted
+expected version is accepted.
