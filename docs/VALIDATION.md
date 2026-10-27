@@ -5665,3 +5665,30 @@ proves only the outer owners' closure. The first gate's denied-signal cleanup
 uncertainty remains separately unconfirmed. No guest-job settlement is inferred
 from VM exit, and no host suspend, broad platform support or feature acceptance
 is claimed. Any corrected successor needs reviewed source and fresh evidence.
+
+### Eight-view website CI artifact
+
+[Scoped artifact evidence](validation/website-eight-view-ci-artifact-2026-10-27.json)
+binds successful run `40562486036` to source `3bb9965`. Build, eight-view capture,
+integrity checks and upload pass; configure/deploy are skipped. Independent
+read-only review checks the original ZIP/TAR, all 20 unique regular files,
+eight PNGs, dimensions, hashes, decoded image data, source roster and notices.
+All eight images are visually inspected. The temporary capture executable is
+not retained; its hash is receipt-bound rather than independently rehashed.
+
+The initial local roster failure, later provenance failure and earlier failed
+CI capture remain failures. This accepts the frozen CI artifact only. Native
+eight-image Gallery interaction, later source composition and public deployment
+are separate gates.
+
+### Mobile mesh investigation diagnostics
+
+Initial diagnostic race runs pass four server roots/six named cases and three
+Manager roots/five named cases. They exercise a real pinned-TLS outage and
+same-listener rejoin, trust preservation, aged-cache exclusion, explicit
+revocation and retained completed/uncertain intent across Manager restart.
+They do not accept the later observer/profile source. That candidate still
+requires independent review, suspend-aware freshness controls, cancellation and
+lifecycle validation, composed API/proof checks and visible UI evidence. No
+physical laptop sleep, long-duration field trial or automatic scheduler is
+claimed.

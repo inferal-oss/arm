@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "feature": "Source-bound eight-view website screenshot artifact",
+  "source": {
+    "commits": [
+      "829eb10a8a824641e5e20b1f42de9e6bb557f976",
+      "3bb9965c415dc951cf9240690b59a2cf45d72c98"
+    ],
+    "reviewed_files": 13
+  },
+  "validation": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40562486036",
+    "head": "3bb9965c415dc951cf9240690b59a2cf45d72c98",
+    "event": "workflow_dispatch",
+    "build": "success",
+    "capture": "success",
+    "website_integrity": "success",
+    "artifact_upload": "success",
+    "deployment": "skipped",
+    "tests": {
+      "ownership_python": 18,
+      "capture_python": 6,
+      "terminal_geometry_node": 2,
+      "gallery_node": 4,
+      "screenshot_integrity_node": 4,
+      "typecheck": "success",
+      "capture": "success",
+      "website_build_integrity": "success",
+      "artifact_upload": "success",
+      "configure_pages": "skipped",
+      "deployment": "skipped",
+      "node_skips": 0,
+      "python_results": "24 dots/OK, no skips reported"
+    }
+  },
+  "artifact": {
+    "id": 12760988241,
+    "zip_sha256": "f2341577ba7786ca7579258c9391d40883171bd363ec98ae922e73a3690482e7",
+    "tar_sha256": "cceb561b06338d8408bf8203f156414384bcbc3cb6944565dc7d60afb325fec7",
+    "file_count": 20,
+    "total_file_bytes": 5058527,
+    "safe_unique_regular_files": true,
+    "metadata_sha256": "308a998caf5e18434a8000cf8db8a3bd4cf85de7f7b091c11eeeb0b7124480bc",
+    "build_integrity_sha256": "155ae5b9cfc76ce136739033a7a45f841bcf23c3452764323bc6e2121e6b54fc"
+  },
+  "bindings": {
+    "source": "3bb9965c415dc951cf9240690b59a2cf45d72c98",
+    "ui_input_count": 597,
+    "ui_input_sha256": "bbfacc9957642e3ee787a75d94668ee676627e9676aaf8027a223bb5f41564cc",
+    "embedded_engine_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+    "website_engine_sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01",
+    "binary_sha256_recorded": "d7af88b3a3dc6aa71c1d14c0ad9bfc93d6ed31e8b7eda97b90f2a631c427d6d6",
+    "metadata_build_roster_graph_hashes_equal": true,
+    "all5_embedded_assets_equal_retained_author_generated_assets": true,
+    "binary_payload_retained": false,
+    "embedded_asset_payload_in_pages_artifact": false
+  },
+  "images": [
+    {
+      "file": "web-monitor.png",
+      "sha256": "8323ad92ffa543a7aae2a8fdbab1eef3910c2730dcd1f2804e9917e1260fa99e",
+      "width": 1440,
+      "height": 1613
+    },
+    {
+      "file": "web-resources.png",
+      "sha256": "946d7ba6dbe2dab026eafa037162d7a06e7b646582a278fbaa74db636d0b6c47",
+      "width": 1440,
+      "height": 2137
+    },
+    {
+      "file": "web-leases.png",
+      "sha256": "e7b39245294ef93f5d9edf65c4da781fc477729d8db6c5bf21f2bc16ce5dcd4a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "web-activity.png",
+      "sha256": "ad5866a1395ad1d4b3f7262471bee0356de353958656f885c106578878a6cc05",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "web-host.png",
+      "sha256": "7d6f485337cedf0362663d77c1a49734a767bf2f4fdaaddcb6aa86fc892b59d4",
+      "width": 1440,
+      "height": 1334
+    },
+    {
+      "file": "terminal-monitor.png",
+      "sha256": "2b663aa1b8a5017e40699e38a2b1b2a038e004e33601d2b346de00d06d003a8d",
+      "width": 1212,
+      "height": 1312
+    },
+    {
+      "file": "terminal.png",
+      "sha256": "9111ae419d08c67c40e5b3a9c1bf62c9593901f5dd4555d93c0e86c8813e4ef0",
+      "width": 1212,
+      "height": 1312
+    },
+    {
+      "file": "terminal-leases.png",
+      "sha256": "b3aef8a61992065c6dc227065b22f8ee1601173b3e9bf96fe1812e10c1778ff2",
+      "width": 1212,
+      "height": 1312
+    }
+  ],
+  "independent_static_review": {
+    "all8_viewed": true,
+    "all8_png_crc_and_idat_valid": true,
+    "exact_roster_graph_and_runtime_paths": true,
+    "website_notices_preserved": true,
+    "visual_result": "intended connected real fixture views; no visible credentials or capture blocker"
+  },
+  "historical_failures": {
+    "initial_local_source_gate": "failed at nested WAT roster",
+    "focused_local_build_gate": "failed at old provenance hash after scoped checks/Vite passed",
+    "prior_capture_run": "https://github.com/inferal-oss/arm/actions/runs/40561678940",
+    "prior_capture_result": "failed renderer_web_leases; no artifact/deployment"
+  },
+  "limits": [
+    "Artifact-only CI validation at frozen source; public deployment and later source composition are not accepted.",
+    "Native eight-image Gallery keyboard, lightbox, focus return and interactive decoding remain separate gates.",
+    "Temporary capture executable was not retained: its SHA256 is recorded consistently, not independently rehashed.",
+    "UI source597 digest is not a full Go/tool manifest; no blanket reproducibility or native descendant-cleanup claim.",
+    "CI observations are illustrative; unavailable/partial values remain real and no benchmark or host-capacity claim is made."
+  ]
+}

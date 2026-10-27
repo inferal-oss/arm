@@ -2153,3 +2153,25 @@ but its post-wake operations never finish within the controller's bound.
 This is failed validation, not accepted suspend-followed-by-operations behavior.
 Both original VM processes join cleanly through their original QMP owners;
 that closure does not prove guest job cancellation, joins or settlement.
+
+## Intermittent mesh recovery candidate
+
+Ordinary direct RPC already makes a new pinned connection for each request and
+retains enrollment across outages. The mobile-node candidate adds bounded,
+owned observation and retry of an approved listener after startup bind failure,
+plus an optional owner-declared availability profile. These changes are not
+activated or integrated. Declared mobility remains separate from observed
+reachability and fresh resource reports. The current system selects an explicit
+destination; automatic cross-host placement is not implemented.
+
+Review requires suspend-inclusive cache aging, service-generation fencing,
+joined cancellation and preservation of unknown work. Temporary loss must not
+restore revoked access, rewrite trust or replay an uncertain operation.
+
+## Eight-view website capture candidate
+
+The unpublished screenshot expansion rebuilds the embedded UI and captures five
+web and three terminal views from disposable native fixtures. Frozen source
+`3bb9965` has a successful CI artifact with independently verified provenance
+and image bytes. Native Gallery interaction and public deployment remain open;
+main still serves the earlier three-image Gallery.
