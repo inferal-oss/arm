@@ -1,5 +1,23 @@
 # Validation record
 
+## Preserved Kubernetes public-source attempt
+
+The [attempt record](validation/kubernetes-public-source-build-2026-10-27.json)
+retains an actual failed wrapper result. Its captured native Linux arm64 log
+verifies public source `7db0e105`, builds the carrier and catalog, and contains
+all four required build markers. Exact-UID Pod/Namespace cleanup is reported,
+and a later read-only check observes namespace absence. The wrapper still exits
+one before its success marker; the final Pod identity, phase and container exit
+were not retained. The failing command is undetermined. Raw log SHA256 is
+`6c1be74ecbdf2372f571a532704fc5a0f3200c54d00d5a931ddf8d8a5648ee21`.
+
+A later bounded same-UID status-reader proposal passes source review and fake
+read fixtures for completion, failure, replacement, read error and timeout.
+It performs no second cluster attempt. Neither those fixtures nor build-log
+markers convert the original failure into end-to-end Kubernetes acceptance.
+Enrollment, pinned SSH, private payload export and latest-main execution remain
+outside this evidence.
+
 ## Native checkpoint-refusal cancellation
 
 Integrated `3c7e60e` preserves the exact four runtime/test files from the accepted
