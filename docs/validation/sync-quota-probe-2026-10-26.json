@@ -1,0 +1,120 @@
+{
+  "after_run_tool_sha256": {
+    "diskutil": "0702de8abe77f7282015f081855ca50cb747aca6cf74c331d52a56422b43cacc",
+    "go_executable": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+    "shared_test_queue": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922"
+  },
+  "evidence_limits": [
+    "Tool hashes are after-run observations; no before/after complete tool, SDK or module closure is retained.",
+    "No separate original-machine-owner/join receipts or retained macOS test image accompany these artifacts. The reviewer inspected existing logs and did not execute the commands.",
+    "The macOS cohort is focused and has no race or vet flags; it is not a full syncfs package or full-platform gate.",
+    "Linux ABI/type tests compiled but did not execute in this cohort. No Linux runtime, project-quota-positive or native allocation-refusal evidence.",
+    "No dedicated quota-limited APFS positive/allocation-refusal test; existing-host unsupported status is narrower evidence.",
+    "Unknown-read skip behavior exists in the host-status fixture; this retained cohort contains no skip and follows the unsupported branch."
+  ],
+  "linux": {
+    "command": "go test -c ./internal/syncfs with a disposable output file",
+    "environment": {
+      "GOARCH": "amd64",
+      "GOMAXPROCS": "1",
+      "GOOS": "linux",
+      "GOPROXY": "off"
+    },
+    "image_absent_at_review": true,
+    "image_observation_reported": "ELF64 x86-64 statically linked; then removed. The image was not retained for independent reinspection.",
+    "original_queue_terminal_exit_reported": 0,
+    "private_receipt_sha256": "9863a2fc6fefea464e78d1d0f0fc2280a50cac62dce6b59fb74a9975841a87ae",
+    "queue_scope": "Original normal FIFO job; no reviewer job or duplicate waiter.",
+    "runtime_executed": false,
+    "scope": "Linux amd64 test-package cross-compilation only"
+  },
+  "macos": {
+    "argv": [
+      "go",
+      "test",
+      "-p",
+      "1",
+      "./internal/syncfs",
+      "-run",
+      "TestAPFSQuotaPlist|TestDiskutilPlistCommandBoundsInheritedPipeWait|TestNativeQuotaProbeUsesExistingHostStatus",
+      "-count=1",
+      "-v",
+      "-timeout=15s"
+    ],
+    "duration_seconds_reported": 1.238,
+    "environment": {
+      "GOMAXPROCS": "1",
+      "GOPROXY": "off"
+    },
+    "failures": 0,
+    "go_version_reported": "go1.27.3",
+    "log_sha256": "be61be94287af8c54a1002b71750028b5476db26c66011f340ed67298f58e362",
+    "malformed_plist_subcases": 19,
+    "named_passes": 25,
+    "native_host_outcome": "ErrQuotaUnsupported with zero evidence, as asserted by the passing test; ErrQuotaUnknown would have skipped. No positive hard-quota result.",
+    "original_exit_reported": 0,
+    "platform": "darwin/arm64",
+    "private_receipt_sha256": "fde83327f73f7ddfeef9c838b9ae81433738470b46f6466def38a638bffaf2bb",
+    "queue_scope": "Direct cached focused command; the command receipt has no shared-queue wrapper.",
+    "raw_log_package_pass": true,
+    "root_tests": 6,
+    "roster": [
+      "TestAPFSQuotaPlistRejectsTooManyDictionaryEntries",
+      "TestAPFSQuotaPlistRejectsTruncation",
+      "TestAPFSQuotaPlistRequiresFiniteMatchingVolume",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/array_attribute",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/before_root",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/boolean_attribute",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/boolean_child",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/boolean_text",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/container_comment",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/dict_attribute",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/duplicate_version",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/extra_plist_attribute",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/inside_array",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/inside_dict",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/inside_root",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/integer_unit",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/key_attribute",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/missing_plist_version",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/nested_integer",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/nested_string",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/new_plist_version",
+      "TestAPFSQuotaPlistRequiresOnlyStructuredContent/string_attribute",
+      "TestDiskutilPlistCommandBoundsInheritedPipeWait",
+      "TestNativeQuotaProbeUsesExistingHostStatus"
+    ],
+    "skips": 0
+  },
+  "remaining_gates": [
+    "Native positive/refusal quota fixtures if broader platform support is claimed.",
+    "Manager durable complete-scope binding, provider ownership/exclusion and preparation/worker native write enforcement.",
+    "Provider-specific cleanup, settlement and public sync routing; the future Manager API proposal is not implemented or included."
+  ],
+  "reviewed_upstream_source": "eaac5f0413531041128eb281deec5a5a62eaf139",
+  "reviewer_jobs_executed": [],
+  "schema_version": 1,
+  "scope": "Read-only native sync quota diagnostic; no complete-scope or enforcement authority",
+  "source_baseline": "e54e102a46e278e751f66aef2113b8d59c2c62ec",
+  "source_commit": "92f434fb932f437a2cb84c61fabbf56df19f73a0",
+  "source_observation": "After-run author source hashes match the reviewed committed eight files. The retained receipts do not establish before/after source immutability during execution.",
+  "source_sha256": {
+    "internal/syncfs/README.md": "8a5ae03b6932ca28eb69c97f46a3c4c256df21b7f037cf0d9bc6a80dabb31589",
+    "internal/syncfs/quota_probe.go": "b358a3d077977ad6bb6bf0032c6b94b51072231e3caa25d583ff48c3bab10d0d",
+    "internal/syncfs/quota_probe_darwin.go": "08d21eae470a46b401bcb7b7c80389c8daa55c543d565e1e9f3e137a4395f9b1",
+    "internal/syncfs/quota_probe_darwin_test.go": "9194798390e3a62040ee330ae56449a1e85910c46ad0278bdc63690f251709c6",
+    "internal/syncfs/quota_probe_linux.go": "d6726bd35b718b652b98b9e9a5762c0805e5e276f29f1c85a8eb7ac390bf326f",
+    "internal/syncfs/quota_probe_linux_other.go": "d812b3183c054e70a66f51fc021231a2de0bd97d6bac6651b35843cee5d18c73",
+    "internal/syncfs/quota_probe_linux_test.go": "94210c32df79503b610ed8583aa36e7eaa07a732aab3b23ad5fdf72a1ece4af9",
+    "internal/syncfs/quota_probe_test.go": "551dffc826ff7ee97b8482c5c06e7ddd95e0d02ee9df7eb625ca18a26012fd66"
+  },
+  "static_internal_input_comparison": {
+    "candidate_files": 103,
+    "candidate_sha256": "075ce62aa113365ce13cf8f43367f1acf136d04779470dc93348dec76fb3461f",
+    "changed_files": [],
+    "composed_files": 103,
+    "composed_sha256": "075ce62aa113365ce13cf8f43367f1acf136d04779470dc93348dec76fb3461f",
+    "scope": "all platform/build-tag Go files, syncfs root tests included; no compilation"
+  }
+}
