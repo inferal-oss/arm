@@ -114,13 +114,16 @@ func TestStagingCapReviewActualSSHAbortUnblocksStalledWriterAndJoins(t *testing.
 	}
 	abortDone := make(chan error, 1)
 	go func() { abortDone <- handle.Abort() }()
+	abortBlocked := false
 	select {
 	case err := <-abortDone:
 		if err != nil {
 			t.Fatal(err)
 		}
 	case <-time.After(2 * time.Second):
-		t.Fatal("abort blocked on raw SSH channel close")
+		abortBlocked = true
+		_ = wire.Close()
+		<-abortDone // join the original stalled abort before reporting its failure
 	}
 	select {
 	case err := <-writeDone:
@@ -140,5 +143,8 @@ func TestStagingCapReviewActualSSHAbortUnblocksStalledWriterAndJoins(t *testing.
 	case <-serverDone:
 	case <-time.After(2 * time.Second):
 		t.Fatal("original authenticated SSH server did not join")
+	}
+	if abortBlocked {
+		t.Fatal("abort blocked on raw SSH channel close; original carrier cleanup and joins completed")
 	}
 }
