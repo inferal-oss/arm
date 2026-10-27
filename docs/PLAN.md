@@ -50,7 +50,7 @@ history merely because it contains an earlier ready report.
 | --- | --- | --- |
 | Resource safety — `codex/resource-safety-cgroup-memory` | Memory milestone integrated. | Broaden sound CPU/resident/shared attribution and Linux arm64 evidence; supervised pressure pause/resume must retain RAM/disk obligations and never signal unrelated processes. Complete elapsed-clock adapters and pressure-specific formal gates. |
 | Public sync — `codex/public-sync-delivery` | Planner, private worker, workspace markers and read-only recovery integrated. Workspace-ledger candidates `55873b5` / `c56b00e` have independent corrections under native review. | Complete schema/reset-proof pairing, bounded native locators and write-before-staging durability; no legacy migration. Then physical reservations, public/relayed dispatch, conflict/deletion policy, cleanup/settlement, performance and formal acceptance. |
-| TCP forwarding — `codex/forward-usable-clients` | Development-client composition `2f07eb0` + `3086f33` passes scoped Linux CI; final integration pending. | Preserve default-off fence. Close local source-server provenance binding, suspend-aware lease checks, aggregate byte-credit support, route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
+| TCP forwarding — `codex/forward-usable-clients` | Reviewed development-client composition `2f07eb0` + `3086f33` is integrated with technical evidence from Linux CI; ordinary builds stay disabled. | Preserve default-off fence. Close local source-server provenance binding, suspend-aware lease checks, aggregate byte-credit support, route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
 | Kubernetes — `codex/kubernetes-pod-workflow` | Admission milestone integrated; separate live Pod Ready and exact-UID cleanup evidence. | Carrier export/execution remains blocked by an authorization gate. In-Pod catalog/identity proof, enrollment and pinned SSH remain unverified. Hidden native CPU/quota authority stays fail closed. |
 | Mac screen — `codex/mac-screen-standard-gates` | Manager resource-hold draft under broader native/transport validation. | Final original command exits and composed closure before integration; Standard live/control/clipboard/other-user/revocation/multihop and High Performance breadth remain. |
 | Sleep/wake and operations — `codex/lease-suspend-clock-runtime` | Native elapsed-clock and original-child ownership drafts under review. | Fix post-reap group signaling, require positive transport/I/O joins before settlement, validate exact reset shapes and all held-operation start/revalidation paths. Complete native/formal evidence, then configuration/services/degraded persistence/retention/restore/overhead. |
@@ -121,6 +121,8 @@ not reactivated by retaining their technical records.
   rosters and the reviewed transitive diagnostic-only dependency exception.
 - [Kubernetes admission](validation/kubernetes-admission-2026-10-26.json): focused
   source/log hashes and provider/component rosters; no carrier-shipment claim.
+- [Forwarding development clients](validation/forward-client-review-2026-10-26.json):
+  exact Linux race/three-node evidence and explicit production/lifecycle limits.
 - [Cgroup memory](validation/cgroup-memory-2026-10-26.json): native finite/hidden
   scope checks and memory-observation/admission evidence.
 

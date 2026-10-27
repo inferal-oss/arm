@@ -1,0 +1,791 @@
+{
+  "reviewed_source": "8926df68cc2798194dbe41e6bd8246e27798dcf1",
+  "tree": "91d5776e50d343282c59ec03658c4077aca485f0",
+  "run": "https://github.com/inferal-oss/arm/actions/runs/40429073323",
+  "actual_conclusion": "success",
+  "source_manifest_count": 1843,
+  "source_manifest_sha256": "5f803dfba2fbb55f681d39ee65eb80105763bcbabaa23e2d494c721291f6f67d",
+  "every_manifest_blob_independently_matches_git_archive": true,
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "go_version": "go version go1.27.3 linux/amd64",
+  "binary": {
+    "sha256": "4aecfd332acf9fba5684191dd84f8255f33f9eb977f7d69387f531cc566a1a26",
+    "size": 68587764
+  },
+  "rosters": {
+    "predecessor-counterexamples": {
+      "pass": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/HEAD_excludes_service_body",
+          "seconds": 0
+        }
+      ],
+      "fail": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/early_hints_then_success",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/LF_response_streams_body_beyond_header_bound",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/aggregate_informational_header_bound",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/bounded_informational_count",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/reject_upgrade",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientAlreadyCanceledSendsNothing",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation/write",
+          "seconds": 1
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation/ack",
+          "seconds": 1
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation",
+          "seconds": 2
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardStreamAlreadyCanceledDoesNotReadInput",
+          "seconds": 0
+        }
+      ],
+      "skip": [],
+      "package_results": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "action": "fail",
+          "seconds": 2.009
+        }
+      ],
+      "root_count": 4,
+      "case_count": 12
+    },
+    "final-default-races": {
+      "pass": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientProductionFence",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientSendsOnlyOriginRequest",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientDoesNotFollowServiceRedirect",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientBoundsServiceResponseHeaders",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/early_hints_then_success",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/LF_response_streams_body_beyond_header_bound",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/aggregate_informational_header_bound",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/bounded_informational_count",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/reject_upgrade",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/HEAD_excludes_service_body",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientAlreadyCanceledSendsNothing",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientTerminalGuardPrecedesSourceAccess",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardStreamTokenFileSecurity",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation/write",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation/ack",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes/ARM-FORWARD/2_READY",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes/ARM-FORWARD/2_REFUSED",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardStreamAlreadyCanceledDoesNotReadInput",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/raw",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/http",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/missing",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/wrong",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/duplicate",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/declared_trailer",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/chunked_undeclared_trailer",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader",
+          "seconds": 0
+        }
+      ],
+      "fail": [],
+      "skip": [],
+      "package_results": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "action": "pass",
+          "seconds": 1.035
+        }
+      ],
+      "root_count": 12,
+      "case_count": 30
+    },
+    "final-development-races": {
+      "pass": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientSendsOnlyOriginRequest",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientDoesNotFollowServiceRedirect",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientBoundsServiceResponseHeaders",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/early_hints_then_success",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/LF_response_streams_body_beyond_header_bound",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/aggregate_informational_header_bound",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/bounded_informational_count",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/reject_upgrade",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses/HEAD_excludes_service_body",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientInformationalResponses",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientAlreadyCanceledSendsNothing",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientTerminalGuardPrecedesSourceAccess",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardStreamTokenFileSecurity",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation/write",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation/ack",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionCancellation",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes/ARM-FORWARD/2_READY",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes/ARM-FORWARD/2_REFUSED",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardSourceAdmissionACKPreservesApplicationBytes",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardStreamAlreadyCanceledDoesNotReadInput",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/raw",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/http",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/missing",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/wrong",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/duplicate",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/declared_trailer",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader/chunked_undeclared_trailer",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestLocalForwardRequiresTokenAndStripsProxyHeader",
+          "seconds": 0
+        }
+      ],
+      "fail": [],
+      "skip": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "name": "TestForwardHTTPClientProductionFence",
+          "seconds": 0
+        }
+      ],
+      "package_results": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "action": "pass",
+          "seconds": 1.035
+        }
+      ],
+      "root_count": 12,
+      "case_count": 30
+    },
+    "carrier-proxy-races": {
+      "pass": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestGrantRequiresExactOriginalAndLiteralService",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestConfirmedRawLocalAdmission",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestBoundedHTTPResponseHeaderLeavesBodyStreaming/ordinary",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestBoundedHTTPResponseHeaderLeavesBodyStreaming/oversize",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestBoundedHTTPResponseHeaderLeavesBodyStreaming",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestProxyCountsIndependentGrants",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "name": "TestProxySharesRateAcrossConcurrentStreams",
+          "seconds": 1
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestAbortWorkerStopJoinsAlreadyRunningCallback",
+          "seconds": 0.02
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestHeldRelayAbortKeepsTransitResourcesCharged",
+          "seconds": 0.35
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestFailedTransitAdmissionJoinsHeldAbortBeforeChargeSettlement",
+          "seconds": 5.37
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestBindingRecordClosedAndRouteSpecific",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestThreeHopOpaqueNestedTLSOriginPreservedWithoutDirectPeer",
+          "seconds": 0.06
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestRoutedCarrierRejectsLoopsForeignClassesAndRouteReplay",
+          "seconds": 0.07
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestRoutedCarrierImmediateRevocationAbortsRelayAndFinal",
+          "seconds": 0.06
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestReviewForwardFinalHoldRetainsOriginalAbortCallback/active",
+          "seconds": 0.42
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestReviewForwardFinalHoldRetainsOriginalAbortCallback/failed-admission",
+          "seconds": 0.42
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestReviewForwardFinalHoldRetainsOriginalAbortCallback",
+          "seconds": 0.83
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestForwardRouteBindsServiceAndRefusesSSHClassConfusion",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestTransitRateSharedAcrossConnectionsAndDirections",
+          "seconds": 0.02
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestTransitPacerSharesBothDirectionsAndCancelsWait",
+          "seconds": 0.02
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestPacedWriterCannotBypassSharedBidirectionalBudget",
+          "seconds": 0.02
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestOutgoingCarrierCloseWaitsForCurrentRevalidation",
+          "seconds": 1.02
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestReviewedPolicyCommitCASAndNoFollow",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestDestinationPolicyRoundTripAndRevocation",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestDestinationGrantOriginalSourceNotRelayAndStableKeyNamespace",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestTransitGrantSeparateFromMessageRelay",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestClosedRoutedSSHIdentityAndLookupRecords",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestThreeNodeNoDirectRoutePreservesOriginalSource",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestSSHRelayOutgoingNeighborAndBindingChange",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestSSHRelayHopDeniesMessageOnlyAndForgedFields",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestSSHRelayEndRequiresOriginalPinnedIdentityAndOwnGrant",
+          "seconds": 0
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "name": "TestSSHRelayReplayGuardDeniesReopenAndFullCapacity",
+          "seconds": 0
+        }
+      ],
+      "fail": [],
+      "skip": [],
+      "package_results": [
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshforward",
+          "action": "pass",
+          "seconds": 2.012
+        },
+        {
+          "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+          "action": "pass",
+          "seconds": 8.879
+        }
+      ],
+      "root_count": 29,
+      "case_count": 33
+    }
+  },
+  "environment": {
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "CGO_ENABLED": "1",
+    "GOMAXPROCS": "1",
+    "GOFLAGS": "-p=1",
+    "toolchain": "local"
+  },
+  "commands": [
+    {
+      "check": "go-version",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.0021596559999998988
+    },
+    {
+      "check": "go-environment",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.002062307999999291
+    },
+    {
+      "check": "predecessor-counterexamples",
+      "exit": 1,
+      "expected_exit": 1,
+      "seconds": 146.198461796
+    },
+    {
+      "check": "final-default-races",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 162.83966358000004
+    },
+    {
+      "check": "final-development-races",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 7.852516269000034
+    },
+    {
+      "check": "carrier-proxy-races",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 12.745076949999998
+    },
+    {
+      "check": "focused-vet",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 20.059760815999994
+    },
+    {
+      "check": "development-build",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 5.112008533999983
+    },
+    {
+      "check": "compiled-three-node-cli",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 67.14343539500004
+    },
+    {
+      "check": "restored-source",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.003523902999972961
+    }
+  ],
+  "compiled_fixture": {
+    "result": "PASS public CLI B\u2192A\u2192C authenticated HTTP and raw duplex TCP, private-token HTTP and stdio clients, no B\u2013C enrollment, source lifecycle and destination revocation",
+    "seconds": 67.14343539500004,
+    "cpu_admission_override": false,
+    "cleanup_scope": "Normal successful-path evidence: PASS follows service shutdown and thread joins, owned daemon shutdown, and private fixture-root removal. It does not establish arbitrary process-tree cancellation cleanup."
+  },
+  "source_commits": {
+    "canonical_base": "af7c059",
+    "client": "2f07eb0",
+    "client_correction": "3086f33",
+    "ci_harness": "8926df6"
+  },
+  "scope": "Default-off HTTP/stdio client on the canonical af7c059 foundation. This is not production enablement, final composed-main/release acceptance, suspend acceptance, or ordinary browser/unmodified arbitrary TCP completion.",
+  "findings_fixed": [
+    "Admission watcher now closes the owned TCP connection on cancellation and joins before handing it to the application; 15s deadline covers both auth write and ACK.",
+    "Already-canceled HTTP/raw entry refuses before application dispatch/read.",
+    "Informational responses are consumed until final, with at most7 accepted interim responses and one aggregate16KiB informational/final header budget; upgrades refused. LF terminators cannot make large bodies count as initial headers.",
+    "Typed remote_outcome_unknown errors preserve uncertainty through top-level interrupted reporting."
+  ],
+  "limitations": [
+    "Arbitrary blocking input/output readers or writers can prevent completion. The correction joins its own cancellation watcher; it cannot join arbitrary application code.",
+    "The loopback source is selected from private-backend exact-owner status but is not mutually authenticated on TCP. Local source-port handoff after status can impersonate READY/response and receive application data. A reviewed local server binding is required for hostile-local-user provenance. A new source uses a new token; an old token cannot adopt another listener.",
+    "Native-clock lease guards and local source-server authentication require independent final composed checks. These results do not establish suspend acceptance.",
+    "The earlier Manager-owned source unexpected EOF remains unexplained. Later successful workflows do not reconstruct its cause.",
+    "Ordinary browser navigation, transparent arbitrary TCP workflows, and broader platform/formal/interface acceptance remain incomplete. Production forwarding remains disabled.",
+    "Per-grant connection and shared-rate limits exist. Byte and lifetime limits remain per connection; an aggregate total-byte grant credit is unsupported.",
+    "The corrected source executed on Linux CI. It has no new native macOS execution result.",
+    "Literal public latest installation and separately composed release metadata are outside this client validation scope."
+  ],
+  "artifact_sha256": {
+    "restored-source.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ACCEPTED.json": "8e4aefa6325debfc1ba166e4f10e217048076703143168c357a221968d5d12ff",
+    "carrier-proxy-races.log": "58ced091958ca2896f1a422d68d431cb1633ae6f674673edaa924f5983340edd",
+    "source.json": "5f803dfba2fbb55f681d39ee65eb80105763bcbabaa23e2d494c721291f6f67d",
+    "compiled-three-node-cli.log": "19af0b176db5e0dc522badc502291fc9540ece55edaf9cd5c2e4bf699c657db1",
+    "final-default-races.log": "39bb55650dac7c68f3ae0c48043fbf78476aae4ffaa2062c0a0289b21d22d186",
+    "go-environment.log": "875181c7c14833fe24894ef7ee1c0fcc1d7d8f2e603a79ea746a0dd25e1f555d",
+    "commands.json": "9965ce8bcfa44b7785e5a70302a88676abbefac87ed18494257311a1f4cfc173",
+    "predecessor-counterexamples.log": "34b630394b491c5a9ecbbbad02eb9b508757cc1c826ffdd4c4534a271d1b52c9",
+    "final-development-races.log": "6092d965db2f56fb974eecf87379156740e0c6e0cbbf41a8c67806d8b3dd4597",
+    "binary.json": "6df84c6f402e39e00d776aa37e5c0af145040f2336a96a538671eebb6e735cc0",
+    "focused-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "development-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "go-version.log": "5707bf75dd54b4fdd5ac209444d48c9c4179ebf8510f80e2f7293dfbedc1012b"
+  },
+  "canonical_import_composition": {
+    "original_source": "2b155a6",
+    "composed_source": "2f07eb0",
+    "transformation": "Only quoted Go import prefixes change from github.com/yrashk/arm/ to github.com/inferal-oss/arm/. All six composed files equal that exact normalization.",
+    "files": [
+      {
+        "path": "internal/cli/help.go",
+        "author_sha256": "78de08cb1b9769c7c660eadd917ebb26cc2792cad7bdb026d872fddccea011f3",
+        "normalized_sha256": "78de08cb1b9769c7c660eadd917ebb26cc2792cad7bdb026d872fddccea011f3",
+        "equal": true
+      },
+      {
+        "path": "internal/cli/mesh_forward.go",
+        "author_sha256": "702a86a3bb57e092356226c14a65ec285a8fbad5ce631a3bfac1fdb7829ed52c",
+        "normalized_sha256": "64c89428a3bba76db5613e5e4d79e66cf38bcfa25308e0ba2c44614127d8c7db",
+        "equal": true
+      },
+      {
+        "path": "internal/cli/mesh_forward_http.go",
+        "author_sha256": "b08aa063c12d8b97dcda743e3bc0122cedb59a0484a6b1a2db0ab464e9733375",
+        "normalized_sha256": "aea5991b5d34f510252bd0f99fd2b22b06d8620086cd6a889478e2f7b228626f",
+        "equal": true
+      },
+      {
+        "path": "internal/cli/mesh_forward_http_test.go",
+        "author_sha256": "140770b8a8de10a71a6dcf2a1b8869961efe1b64c121a33361ca3ce6531767aa",
+        "normalized_sha256": "2f68d567921508f70e938a6dca4d2530a09a1d0db407b6659428ed1ea5e9565a",
+        "equal": true
+      },
+      {
+        "path": "internal/cli/mesh_forward_stream.go",
+        "author_sha256": "7a2725af883a449497c6af34834bd66f7554bbb8b53d7b5eee017a9b21602094",
+        "normalized_sha256": "b9af4591535d875de84b13c7f486f05ddad22404ded7c70ba94ce316d54b13c8",
+        "equal": true
+      },
+      {
+        "path": "scripts/test-routed-forward.py",
+        "author_sha256": "9c8c687a739528bc048b16ee95c48d2fca5dd77cebe49b129dca263e513cceac",
+        "normalized_sha256": "9c8c687a739528bc048b16ee95c48d2fca5dd77cebe49b129dca263e513cceac",
+        "equal": true
+      }
+    ]
+  },
+  "test_configuration": {
+    "corrected_tests": {
+      "race": true,
+      "count": 1,
+      "package_timeout": "120s",
+      "client_selector": "^Test(Forward|LocalForward)",
+      "development_tag": "arm_forward_review",
+      "carrier_packages": [
+        "github.com/inferal-oss/arm/internal/meshforward",
+        "github.com/inferal-oss/arm/internal/meshsshrelay"
+      ]
+    },
+    "predecessor_probe": {
+      "source": "2f07eb0",
+      "instrumentation": "Original HTTP implementation restored unchanged; original admission block extracted unchanged into a test helper seam without changing the predecessor dial path. Corrected stream/HTTP regression tests then exercise that predecessor code.",
+      "expected_exit": 1,
+      "expected_failing_roots": [
+        "TestForwardHTTPClientInformationalResponses",
+        "TestForwardHTTPClientAlreadyCanceledSendsNothing",
+        "TestForwardSourceAdmissionCancellation",
+        "TestForwardStreamAlreadyCanceledDoesNotReadInput"
+      ]
+    }
+  }
+}

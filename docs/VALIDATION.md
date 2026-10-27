@@ -4448,3 +4448,30 @@ normal public proxy/SumDB settings, empty disposable caches and a main-only
 literal-latest guard. Positive public acceptance additionally requires exact
 Origin.Hash equality with the checked-out source, original install exit 0,
 buildinfo/sums, source closure, smoke probes and disposable cleanup.
+
+
+### Reviewed development forwarding client composition
+
+[Run 40429073323](https://github.com/inferal-oss/arm/actions/runs/40429073323)
+passes exact source `8926df6` on Linux amd64 with Go 1.27.3. Source composition
+`2f07eb0` preserves the six original owned paths with only canonical import
+prefix changes; `3086f33` corrects cancellation and interim-response handling.
+Four predecessor roots retain 11 failing cases and one passing case, with the
+expected original exit 1. Corrected default races pass 30 cases; development
+races pass 29 with one expected production-fence skip. Carrier/proxy races pass
+33 cases without skips, and vet/build pass.
+
+The actual compiled three-node HTTP/raw/private-token workflow, live revocation,
+recovery and normal fixture cleanup pass in 67.143 seconds with real admission
+and no CPU override. All 1,843 source blobs were independently verified. Root
+additionally checks all 14 retained artifact hashes, original command exits and
+exact client-owned/module input hashes against the current composition. The
+[technical evidence record](validation/forward-client-review-2026-10-26.json)
+contains normalized rosters, source/image hashes, configuration and limitations;
+private raw execution records remain outside version control.
+
+This accepts a default-off development client. It does not accept hostile-local
+source-server provenance, native-clock composition, arbitrary application-I/O
+joins, aggregate grant byte-credit, native macOS/browser/formal/platform gates
+or explain the earlier source HTTP EOF. Existing source/server and Manager
+protocols are unchanged by this client-only integration.

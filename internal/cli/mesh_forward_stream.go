@@ -13,6 +13,7 @@ import (
 
 	"github.com/inferal-oss/arm/internal/meshforward"
 	"github.com/inferal-oss/arm/internal/meshsshrelay"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // A stream is a local client of one already-owned source listener. The raw
@@ -31,62 +32,109 @@ func (a *app) meshForwardStream(args []string) (int, error) {
 	if a.outputTTY && !*allowTTY {
 		return 2, errors.New("raw TCP bytes may control a terminal; pipe output or explicitly use --allow-tty")
 	}
-	token, err := readForwardToken(*tokenFile)
-	if err != nil {
-		return 1, err
-	}
-	var status struct {
-		Key           string `json:"key"`
-		State         string `json:"state"`
-		Bind          string `json:"bind"`
-		OriginalOwner bool   `json:"original_owner"`
-	}
-	if err = a.call("mesh_forward_status", struct {
-		Key string `json:"key"`
-	}{*key}, &status); err != nil {
-		return 1, err
-	}
-	host, _, err := net.SplitHostPort(status.Bind)
-	if err != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() || status.Key != *key || status.State != "active" || !status.OriginalOwner {
-		return 1, errors.New("exact active daemon-owned loopback source listener required")
-	}
-	dialer := net.Dialer{Timeout: 5 * time.Second}
-	conn, err := dialer.DialContext(a.ctx, "tcp", status.Bind)
+	conn, _, err := a.dialForwardSource(*key, *tokenFile)
 	if err != nil {
 		return 1, err
 	}
 	defer conn.Close()
-	if err = conn.SetDeadline(time.Now().Add(meshsshrelay.MaxLifetime)); err != nil {
-		return 1, err
+	if err = bridgeForwardStream(a.ctx, a.in, a.out, conn); err != nil {
+		return 1, model.Err("remote_outcome_unknown", fmt.Sprintf("raw TCP stream result unknown; inspect the application before retrying: %v", err))
+	}
+	return 0, nil
+}
+
+type forwardSourceClientStatus struct {
+	Key           string `json:"key"`
+	State         string `json:"state"`
+	Bind          string `json:"bind"`
+	Service       string `json:"service"`
+	OriginalOwner bool   `json:"original_owner"`
+}
+
+// dialForwardSource confirms destination admission before application bytes
+// enter a local source listener. The bearer stays in the private token file.
+func (a *app) dialForwardSource(key, tokenFile string) (net.Conn, forwardSourceClientStatus, error) {
+	token, err := readForwardToken(tokenFile)
+	if err != nil {
+		return nil, forwardSourceClientStatus{}, err
+	}
+	var status forwardSourceClientStatus
+	if err = a.call("mesh_forward_status", struct {
+		Key string `json:"key"`
+	}{key}, &status); err != nil {
+		return nil, status, err
+	}
+	host, _, err := net.SplitHostPort(status.Bind)
+	if err != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() || status.Key != key || status.State != "active" || !status.OriginalOwner {
+		return nil, status, errors.New("exact active daemon-owned loopback source listener required")
+	}
+	dialer := net.Dialer{Timeout: 5 * time.Second}
+	conn, err := dialer.DialContext(a.ctx, "tcp", status.Bind)
+	if err != nil {
+		return nil, status, err
+	}
+	accepted := false
+	defer func() {
+		if !accepted {
+			_ = conn.Close()
+		}
+	}()
+	if err = confirmForwardSource(a.ctx, conn, token); err != nil {
+		return nil, status, err
+	}
+	accepted = true
+	return conn, status, nil
+}
+
+// Admission owns its cancellation watcher until the connection is handed to
+// the application phase. Reading one byte at a time preserves any service
+// bytes already following READY on the same transport write.
+func confirmForwardSource(ctx context.Context, conn net.Conn, token string) (err error) {
+	if err = ctx.Err(); err != nil {
+		return err
+	}
+	finished := make(chan struct{})
+	watchDone := make(chan struct{})
+	go func() {
+		defer close(watchDone)
+		select {
+		case <-ctx.Done():
+			_ = conn.Close()
+		case <-finished:
+		}
+	}()
+	defer func() {
+		close(finished)
+		<-watchDone
+		if ctx.Err() != nil {
+			err = ctx.Err()
+		}
+	}()
+	if err = conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
+		return err
 	}
 	if _, err = io.WriteString(conn, "ARM-FORWARD/2 "+token+"\n"); err != nil {
-		return 1, errors.New("raw TCP stream admission uncertain; inspect the application before retrying")
-	}
-	if err = conn.SetReadDeadline(time.Now().Add(15 * time.Second)); err != nil {
-		return 1, err
+		return errors.New("TCP source admission uncertain; no application bytes sent")
 	}
 	var ack [32]byte
 	for i := range ack {
 		if _, err = io.ReadFull(conn, ack[i:i+1]); err != nil {
-			return 1, errors.New("raw TCP destination admission not confirmed; no application bytes sent")
+			return errors.New("TCP destination admission not confirmed; no application bytes sent")
 		}
 		if ack[i] == '\n' {
 			if string(ack[:i+1]) != "ARM-FORWARD/2 READY\n" {
-				return 1, errors.New("raw TCP destination admission refused; no application bytes sent")
+				return errors.New("TCP destination admission refused; no application bytes sent")
 			}
 			break
 		}
 		if i == len(ack)-1 {
-			return 1, errors.New("invalid raw TCP source acknowledgment; no application bytes sent")
+			return errors.New("invalid TCP source acknowledgment; no application bytes sent")
 		}
 	}
-	if err = conn.SetReadDeadline(time.Now().Add(meshsshrelay.MaxLifetime)); err != nil {
-		return 1, err
+	if err = conn.SetDeadline(time.Now().Add(meshsshrelay.MaxLifetime)); err != nil {
+		return err
 	}
-	if err = bridgeForwardStream(a.ctx, a.in, a.out, conn); err != nil {
-		return 1, fmt.Errorf("raw TCP stream result unknown; inspect the application before retrying: %w", err)
-	}
-	return 0, nil
+	return ctx.Err()
 }
 
 func readForwardToken(path string) (string, error) {
@@ -118,6 +166,9 @@ func readForwardToken(path string) (string, error) {
 }
 
 func bridgeForwardStream(ctx context.Context, input io.Reader, output io.Writer, conn net.Conn) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	stopWatch := make(chan struct{})
 	watchDone := make(chan struct{})
 	go func() {

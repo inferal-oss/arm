@@ -1578,3 +1578,23 @@ membership during observation. Hidden, v1, ambiguous, changing or missing scope
 returns unknown admission credit. Finite ancestor limits cap total capacity;
 full existing promises remain charged. Combined host/cgroup headroom reports
 resident usage as unknown because those observations cannot establish it.
+
+
+## Development-only forwarding clients
+
+The fenced development interface includes token-file-backed GET/HEAD HTTP and
+stdin/stdout raw TCP clients for an exact active original-owner source listener.
+Admission cancellation closes and joins its own watcher; the whole admission
+handshake has a 15-second bound. Application bytes follow the exact READY record.
+The HTTP reader supports informational responses with a shared 16 KiB header
+budget and bounded interim count, refuses protocol upgrades and follows no
+redirects. Stdout carries service data; terminal output requires explicit opt-in.
+Interrupted application exchanges retain typed unknown-outcome errors.
+
+Ordinary builds still refuse forwarding grant/start/stream/http. The current
+loopback token/READY exchange authenticates the client to the listener, but does
+not mutually authenticate the local server after a port handoff. Native source
+TLS binding and suspend-aware lease guards are separate required compositions.
+Total grant byte-credit, arbitrary blocking application I/O, browser/unmodified
+clients, native macOS and broader formal/platform acceptance remain incomplete.
+No production enablement follows from this development milestone.
