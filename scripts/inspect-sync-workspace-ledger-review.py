@@ -34,7 +34,7 @@ elif mode=='assess':
   expected={'original-locator':'TestWorkspaceReviewLocatorByteBounds/oversize-path','original-reset':'TestWorkspaceReviewResetSchemaVersionAndLocatorRetention/fresh2'}[name]
   assert code==1 and any(e['Action']=='fail' and e['Test']==expected for e in failures),'original counterexample did not execute/fail as expected'
   output=''.join(e.get('Output','') for e in events)
-  assert ('invalid native locator was accepted' if name=='original-locator' else 'unsupported reset schema object "sync_workspaces"') in output,'unrelated original failure'
+  assert ('invalid native locator was accepted' if name=='original-locator' else 'unknown/duplicate internal reset index "sqlite_autoindex_sync_workspaces_1"') in output,'unrelated original failure'
  else:
   assert code==0 and not any(e.get('Action') in ('fail','build-fail') for e in events), 'final command failed'
   assert not failures, 'final named skip/failure leaves gate incomplete'
