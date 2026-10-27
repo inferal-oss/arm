@@ -43,6 +43,7 @@ Production fences remain until their explicit acceptance gates pass.
 | Workspace ledger | `951051a` | Durable locators before staging, strict schema version 2 and read-only legacy/current reset proof. |
 | Terminal gauges | `0ec2b57` | Coherent receipt clocks, stale-click protection and native gauge/PTY evidence. |
 | Workspace block survey | `64ceec0` | Bounded read-only reported blocks; no reservation or reclamation authority. |
+| Literal public latest | Reviewed `96e6e18` / `9ccd7da` | Actual macOS/Linux cold-cache latest install of published `4e8bdb4`, exact provenance/checksums and source/helper closure. |
 | Public module validation | `ef6c637` | Source-bound public query/install checks and bounded original-child cleanup; descendant cleanup on interruption remains unproven. |
 
 Earlier reviewed backend, policy, agent messaging, storage, native lifecycle,
@@ -64,7 +65,7 @@ history merely because it contains an earlier ready report.
 | Terminal gauges — `codex/terminal-gauge-availability` | Reviewed clock-cut fix and mouse-frame/event-order corrections integrated from `70306d3`; native Linux/macOS gauges and both PTYs pass. | Preserve genuine unknown observations and backend-derived To-lease values. Native app GUI, all host environments and later elapsed-clock composition remain separate gates. |
 | Product browser UI — `codex/semblance-web-migration` | Author reports final view/component checks; independent current-source composition remains required. | All operational views, authorization, freshness and recovery behavior; stock Terminal default, offline embedded build, actual screenshots and final interaction acceptance. Search upstream thoroughly and prepare focused reusable-component PRs where needed. |
 | Public site and releases — `codex/arm-public-launch` | Semblance/System site and tagged-carrier workflow composed on accepted canonical source; four-carrier builds and final Pages screenshots passed their source-bound checks; original-child and callback-reaper corrections are reviewed; refreshed current-source build/capture gates are running. | Exact-source artifact and screenshot acceptance, Pages publication and both HTTPS endpoints. Configure only DNS-only GitHub Pages apex records; no additional Cloudflare hosting or proxying. GitHub Pages custom-hostname limits must be reported truthfully. |
-| Module distribution — `codex/canonical-module-distribution` | Production migration and corrected validation harness integrated. | Initial literal latest query selected pre-migration source and failed. A later cold-cache literal install selected exact published `4e8bdb4` and passed all original commands, installed buildinfo, ZIP closure and cleanup; that run still failed its omitted query-level Origin assertion. Reviewed selected-version/checksum provenance and separate immutable source/harness correction await actual hosted execution before complete acceptance. |
+| Module distribution — `codex/canonical-module-distribution` | Production migration and corrected validation harness integrated. | Corrected native run `40442560813` accepts literal latest at published `4e8bdb4` on macOS arm64 and Linux amd64, with exact selected-version/full-origin/checksum binding, actual install/buildinfo/ZIP closure and separate immutable source/helper snapshots before and after. Preserve the original failed Origin assertion. Later publication or module/layout changes need source-bound validation; this evidence does not claim installation of later commits. |
 
 ## Shared dependency order
 
@@ -125,6 +126,8 @@ not reactivated by retaining their technical records.
   cleanup retention, ledger faults, cancellation, join and restart evidence.
 - [Terminal gauges](validation/terminal-gauge-2026-10-26.json): native refresh,
   interaction, PTY and cleanup evidence with exact input projections.
+- [Literal latest provenance](validation/module-latest-provenance-review-2026-10-26.json):
+  actual native install, full source/checksum and independent harness closure.
 - [Canonical module](validation/module-migration-2026-10-26.json): Linux/macOS
   portable checks, exact immutable public install, source/ZIP closure and limits.
 - [Workspace evidence](validation/sync-workspace-2026-10-26.json): native race/vet

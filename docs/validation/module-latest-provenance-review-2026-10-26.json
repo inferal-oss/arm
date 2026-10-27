@@ -1,0 +1,586 @@
+{
+  "accepted": true,
+  "accepted_scope": "Literal public latest at held source4e8bdb4654580737e7edc2529036ada8c6d95dc9 on native macOS arm64 and Linux amd64",
+  "artifact_verification": {
+    "all_five_API_ZIP_digests_and_safe_paths_types_sizes_receipt_whitelist_verified": true,
+    "archives": [
+      {
+        "artifact": 12703281540,
+        "receipt_bytes": 325003,
+        "receipt_files": 30,
+        "run": 40433206450,
+        "scope": "public",
+        "sha256": "413f0758b308e07272cc6e00b3807d8ee4d0b344600a303014484bed6aaaea33"
+      },
+      {
+        "artifact": 12702987887,
+        "receipt_bytes": 321067,
+        "receipt_files": 16,
+        "run": 40433206450,
+        "scope": "macos-assets",
+        "sha256": "c63246643e327a23d9e297e051b2c974c5b443686833a798daaf49823ec4c718"
+      },
+      {
+        "artifact": 12702893049,
+        "receipt_bytes": 321216,
+        "receipt_files": 16,
+        "run": 40433206450,
+        "scope": "ubuntu-assets",
+        "sha256": "f8a236bebab739f2003444479be0c27cdf4f9b33b5e481c7b55ce7340148a2df"
+      },
+      {
+        "artifact": 12706264739,
+        "receipt_bytes": 630446,
+        "receipt_files": 38,
+        "run": 40442560813,
+        "scope": "macos",
+        "sha256": "ced0598171532f5cd21a32634102224348214933c7674959ac0b42231b768636"
+      },
+      {
+        "artifact": 12706931598,
+        "receipt_bytes": 627800,
+        "receipt_files": 38,
+        "run": 40442560813,
+        "scope": "ubuntu",
+        "sha256": "0e7c1d2db3ce93e4dacd821a884f55bd16eed5c2a75d933f126d7c3fb5279580"
+      }
+    ]
+  },
+  "behavior": [
+    "Literal latest query and installation remain unchanged. A second fresh-cache lookup of the version actually selected supplies full revision provenance only when module path, exact version, module sum and go.mod sum all match. Conflicting query-level origin or a different/missing full hash remains refused.",
+    "The optional source-root identifies an actual clean checkout. Expected public source still comes from that checkout Git HEAD, source manifest and public ZIP closure; no arbitrary expected-commit override is accepted. Default source selection remains the helper checkout.",
+    "The independent helper commit/tree, clean status and helper/test hashes are recorded and rechecked. Hosted job SHA binds the helper, while the selected source commit and complete source-file manifest are checked before and after the actual public install."
+  ],
+  "cheap_control_roster": [
+    "OwnedChildCleanup.test_failed_wait_retains_uncertainty_without_signal_escalation",
+    "OwnedChildCleanup.test_live_original_child_gets_one_signal_and_is_reaped",
+    "OwnedChildCleanup.test_reaped_child_never_signals_a_reused_group_or_pid",
+    "PublicSourceBinding.test_current_main_origin_matches",
+    "PublicSourceBinding.test_missing_origin_cannot_pass",
+    "PublicSourceBinding.test_missing_source_identity_cannot_pass_by_empty_equality",
+    "PublicSourceBinding.test_stale_latest_fails_even_with_identical_closure_files",
+    "SelectedVersionOrigin.test_conflicting_latest_origin_is_not_overridden",
+    "SelectedVersionOrigin.test_omitted_latest_origin_requires_matching_selected_version_provenance",
+    "SelectedVersionOrigin.test_other_version_or_checksum_cannot_supply_origin",
+    "SelectedVersionOrigin.test_wrong_or_missing_origin_cannot_pass",
+    "SeparateSourceAndHarness.test_clean_source_head_and_helper_identity_are_independent",
+    "SeparateSourceAndHarness.test_source_change_does_not_hide_behind_unchanged_harness"
+  ],
+  "corrected_native_runs": [
+    {
+      "all_original_children_returned_successfully": true,
+      "all_source_bytes_before_after_match_immutable_4e_commit": true,
+      "cheap_controls": {
+        "failed": 0,
+        "passed": 13,
+        "skipped": 0
+      },
+      "checksum_database": "sum.golang.org",
+      "ci_identities_before_after_equal": true,
+      "cleanup": {
+        "disposable_root_removed": true,
+        "user_install_or_backend_modified": false
+      },
+      "commands": [
+        {
+          "exit": 0,
+          "name": "source-commit",
+          "seconds": 0.009
+        },
+        {
+          "exit": 0,
+          "name": "source-tree",
+          "seconds": 0.01
+        },
+        {
+          "exit": 0,
+          "name": "source-status",
+          "seconds": 0.018
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.019
+        },
+        {
+          "exit": 0,
+          "name": "public-environment",
+          "seconds": 0.017
+        },
+        {
+          "exit": 0,
+          "name": "public-query",
+          "seconds": 1.673
+        },
+        {
+          "exit": 0,
+          "name": "public-selected-version-origin",
+          "seconds": 1.535
+        },
+        {
+          "exit": 0,
+          "name": "public-install",
+          "seconds": 175.677
+        },
+        {
+          "exit": 0,
+          "name": "installed-buildinfo",
+          "seconds": 0.036
+        },
+        {
+          "exit": 0,
+          "name": "installed-version",
+          "seconds": 0.061
+        },
+        {
+          "exit": 0,
+          "name": "installed-help",
+          "seconds": 0.039
+        },
+        {
+          "exit": 0,
+          "name": "installed-empty-catalog",
+          "seconds": 0.029
+        }
+      ],
+      "empty_catalog": [],
+      "fresh_disposable_install_and_origin_caches": true,
+      "full_selected_origin": {
+        "Hash": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "URL": "https://github.com/inferal-oss/arm",
+        "VCS": "git"
+      },
+      "gomod_sum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+      "harness_identity": {
+        "commit": "c6a77dc551da5ae28cd91c8e011dc25ed2f28305",
+        "files": {
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "status": "",
+        "tree": "d8b237549ad89c0d7653fc8032e1ea9feac7ab7b"
+      },
+      "installed_binary": {
+        "bytes": 66039666,
+        "sha256": "020633d3d03bd308f9e603b8b62b312e991fabc0fe128bad4a78ad26dd0f8943"
+      },
+      "installed_buildinfo": {
+        "cgo": "1",
+        "goarch": "arm64",
+        "goos": "darwin",
+        "has_replacement": false,
+        "has_upstream_rsync_module": false,
+        "module_record": [
+          "github.com/inferal-oss/arm",
+          "v0.0.0-20261027011238-4e8bdb465458",
+          "h1:f3uahY76AYzHE9H13QvZFA/4WU4jpOOC5GSJgZEEocc="
+        ]
+      },
+      "interruption_or_descendant_cleanup_claim": false,
+      "literal_install_argument": "github.com/inferal-oss/arm/cmd/arm@latest",
+      "literal_query": "latest",
+      "module_sum": "h1:f3uahY76AYzHE9H13QvZFA/4WU4jpOOC5GSJgZEEocc=",
+      "no_private_or_insecure_proxy_bypass": true,
+      "original_11_command_names_and_relative_order_preserved": true,
+      "platform": "macos",
+      "public_identity": {
+        "expected_source_commit": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "matches": true,
+        "origin_version": "v0.0.0-20261027011238-4e8bdb465458",
+        "query": "latest",
+        "query_origin_consistent": true,
+        "resolved_source_commit": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "selected_version": "v0.0.0-20261027011238-4e8bdb465458",
+        "selection_checksums_match": true
+      },
+      "public_proxy": "https://proxy.golang.org",
+      "public_zip_critical_closure_files": 26,
+      "query_level_origin_present": false,
+      "result": {
+        "command_count": 12,
+        "failures": [],
+        "public_query": "latest",
+        "scope": "public-install"
+      },
+      "reviewed_helper_commit": "9ccd7daef5b4a7b9b220a942e95bb9724d123860",
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40442560813",
+      "selected_origin_lookup_argument": "github.com/inferal-oss/arm@v0.0.0-20261027011238-4e8bdb465458",
+      "selected_version": "v0.0.0-20261027011238-4e8bdb465458",
+      "source_harness_closure": {
+        "harness_unchanged": true,
+        "source_unchanged": true
+      },
+      "source_identity": {
+        "commit": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "status": "",
+        "tree": "246fd48e08dbe07f3eceea4e0898cfc4f6c6b3d0"
+      },
+      "source_manifest_after_sha256": "5bb02b957fec2ca822e5a3d0bd95c0241f182c83b7b5154f75af12eee20e38d7",
+      "source_manifest_entries": 1852,
+      "source_manifest_sha256": "5bb02b957fec2ca822e5a3d0bd95c0241f182c83b7b5154f75af12eee20e38d7",
+      "toolchain": "go version go1.27.3 darwin/arm64"
+    },
+    {
+      "all_original_children_returned_successfully": true,
+      "all_source_bytes_before_after_match_immutable_4e_commit": true,
+      "cheap_controls": {
+        "failed": 0,
+        "passed": 13,
+        "skipped": 0
+      },
+      "checksum_database": "sum.golang.org",
+      "ci_identities_before_after_equal": true,
+      "cleanup": {
+        "disposable_root_removed": true,
+        "user_install_or_backend_modified": false
+      },
+      "commands": [
+        {
+          "exit": 0,
+          "name": "source-commit",
+          "seconds": 0.002
+        },
+        {
+          "exit": 0,
+          "name": "source-tree",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "source-status",
+          "seconds": 0.064
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "public-environment",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "public-query",
+          "seconds": 1.267
+        },
+        {
+          "exit": 0,
+          "name": "public-selected-version-origin",
+          "seconds": 1.116
+        },
+        {
+          "exit": 0,
+          "name": "public-install",
+          "seconds": 189.399
+        },
+        {
+          "exit": 0,
+          "name": "installed-buildinfo",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "installed-version",
+          "seconds": 0.016
+        },
+        {
+          "exit": 0,
+          "name": "installed-help",
+          "seconds": 0.016
+        },
+        {
+          "exit": 0,
+          "name": "installed-empty-catalog",
+          "seconds": 0.016
+        }
+      ],
+      "empty_catalog": [],
+      "fresh_disposable_install_and_origin_caches": true,
+      "full_selected_origin": {
+        "Hash": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "URL": "https://github.com/inferal-oss/arm",
+        "VCS": "git"
+      },
+      "gomod_sum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+      "harness_identity": {
+        "commit": "c6a77dc551da5ae28cd91c8e011dc25ed2f28305",
+        "files": {
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "status": "",
+        "tree": "d8b237549ad89c0d7653fc8032e1ea9feac7ab7b"
+      },
+      "installed_binary": {
+        "bytes": 68591639,
+        "sha256": "ff3119dc85f809d5ac0f1297862ae543fbf48718de564f830d7561fbe8fe8949"
+      },
+      "installed_buildinfo": {
+        "cgo": "1",
+        "goarch": "amd64",
+        "goos": "linux",
+        "has_replacement": false,
+        "has_upstream_rsync_module": false,
+        "module_record": [
+          "github.com/inferal-oss/arm",
+          "v0.0.0-20261027011238-4e8bdb465458",
+          "h1:f3uahY76AYzHE9H13QvZFA/4WU4jpOOC5GSJgZEEocc="
+        ]
+      },
+      "interruption_or_descendant_cleanup_claim": false,
+      "literal_install_argument": "github.com/inferal-oss/arm/cmd/arm@latest",
+      "literal_query": "latest",
+      "module_sum": "h1:f3uahY76AYzHE9H13QvZFA/4WU4jpOOC5GSJgZEEocc=",
+      "no_private_or_insecure_proxy_bypass": true,
+      "original_11_command_names_and_relative_order_preserved": true,
+      "platform": "ubuntu",
+      "public_identity": {
+        "expected_source_commit": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "matches": true,
+        "origin_version": "v0.0.0-20261027011238-4e8bdb465458",
+        "query": "latest",
+        "query_origin_consistent": true,
+        "resolved_source_commit": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "selected_version": "v0.0.0-20261027011238-4e8bdb465458",
+        "selection_checksums_match": true
+      },
+      "public_proxy": "https://proxy.golang.org",
+      "public_zip_critical_closure_files": 26,
+      "query_level_origin_present": false,
+      "result": {
+        "command_count": 12,
+        "failures": [],
+        "public_query": "latest",
+        "scope": "public-install"
+      },
+      "reviewed_helper_commit": "9ccd7daef5b4a7b9b220a942e95bb9724d123860",
+      "run": "https://github.com/inferal-oss/arm/actions/runs/40442560813",
+      "selected_origin_lookup_argument": "github.com/inferal-oss/arm@v0.0.0-20261027011238-4e8bdb465458",
+      "selected_version": "v0.0.0-20261027011238-4e8bdb465458",
+      "source_harness_closure": {
+        "harness_unchanged": true,
+        "source_unchanged": true
+      },
+      "source_identity": {
+        "commit": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+        "status": "",
+        "tree": "246fd48e08dbe07f3eceea4e0898cfc4f6c6b3d0"
+      },
+      "source_manifest_after_sha256": "5bb02b957fec2ca822e5a3d0bd95c0241f182c83b7b5154f75af12eee20e38d7",
+      "source_manifest_entries": 1852,
+      "source_manifest_sha256": "5bb02b957fec2ca822e5a3d0bd95c0241f182c83b7b5154f75af12eee20e38d7",
+      "toolchain": "go version go1.27.3 linux/amd64"
+    }
+  ],
+  "critical_public_zip_closure_sha256": {
+    "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+    "go.sum": "25158413557a7e4a3054f760a199fe256c77b989583aee7f0f3c60624ae6f8ce",
+    "internal/server/web/novnc/LICENSE.txt": "3ccd2242d7f5b6c5ae831a486f63cce1f18d8cd11c511f6a7a7251673763b2d1",
+    "internal/server/web/novnc/core/deflator.js": "a9cc9abbab20333b9fc7ee6f7fd268a5ce7d96a2a24d5e6786a0462ed0164538",
+    "internal/server/web/novnc/core/inflator.js": "bd19f16673464db04b0b2d8a47a5c4b744f1256fbff4b7c74afa8f4aeb5a8ae6",
+    "internal/server/web/novnc/deps/pako/LICENSE": "3bc404ffa7888053253eedcc5a667619aa08dc1be0bea400e5ff28c51602180f",
+    "internal/server/web/novnc/deps/pako/README.md": "f78ded7db9ffa4be474ce75020659f165d97adc4276ef5c7fcd698a3aa03e6ce",
+    "internal/server/web/novnc/deps/pako/lib/utils/common.js": "0749bc4661ed186714b90e7f2321c9625a8ce7c680563bfe3ac6df7aa332bf28",
+    "internal/server/web/novnc/deps/pako/lib/zlib/adler32.js": "7412dd3ecc015888b99292f45e4d4ba69abc77f208508c9a1c93e8dfe54ba6cd",
+    "internal/server/web/novnc/deps/pako/lib/zlib/constants.js": "9d2c0dd36349e6eec9d41a37f965b2ff7e7374fbf00fb139e3116d428b551898",
+    "internal/server/web/novnc/deps/pako/lib/zlib/crc32.js": "897fa9eabd2bb239ec632326dbff85bc72cc81d4da80265cde59520db339f405",
+    "internal/server/web/novnc/deps/pako/lib/zlib/deflate.js": "d2a498ad04bb5d1f67ba01696c31a2e88e8b88e4fc6c36c635294d1c445b22c1",
+    "internal/server/web/novnc/deps/pako/lib/zlib/gzheader.js": "9f9b2da72593769fcc97d397ceb771bb11d5b96f202759e2ed014c2be24d40d7",
+    "internal/server/web/novnc/deps/pako/lib/zlib/inffast.js": "ec1e0f7abeec681a0d5e3da46d06f499969cbf265eaaa5e21a135d2a9b878c16",
+    "internal/server/web/novnc/deps/pako/lib/zlib/inflate.js": "321582ddc4023e47aa981a71caed0e1dad8b58f0d9e93a0b0a34fe7e3c45e05f",
+    "internal/server/web/novnc/deps/pako/lib/zlib/inftrees.js": "94780cbdef562bcd0434c7e6f4faca1ff6be6980bf7305a200809d98d419d9c7",
+    "internal/server/web/novnc/deps/pako/lib/zlib/messages.js": "7860a8d3c873c28e4f5f92db9ca3e45006e21b084210d87b8b7775cddccf05ed",
+    "internal/server/web/novnc/deps/pako/lib/zlib/trees.js": "ad9cb5245b9e39edd164234d6ca19febb9dba683f1f99a67af48d62931d91426",
+    "internal/server/web/novnc/deps/pako/lib/zlib/zstream.js": "240917347c379b1ad33b8bf07cc6981557173bc3408f35e9875866a14b9967b2",
+    "third_party/rsyncgo/ARM-CHANGES.md": "b8ae1e9ae1c0e5331b1bc67fb2c9c9efb7585bf75d15e493d2542a7bfa35a32c",
+    "third_party/rsyncgo/LICENSE": "33bcc6a4bea2187b74a9ac5ed747a8f4631aec0d59eec3e6b32557fc9e408cb8",
+    "third_party/rsyncgo/UPSTREAM-go.mod.txt": "fbc8d732380a4a1a3c7d7851e470c791926fb106747cef51be47ba11873cce78",
+    "third_party/rsyncgo/UPSTREAM-go.sum.txt": "ee6d25c07305ab1ee0ee2e39fbc6a7ce7ac70b6af46582151d10218c8ddf13f6",
+    "third_party/rsyncgo/internal/receiver/receiver.go": "b792e85fcf3d56a5d10fb32e355019ea2bb34ef7ab16f9e3b7cba1fae05c7daa",
+    "third_party/rsyncgo/internal/sender/sender.go": "a6168e4b7b503ce0f3564401594744465f8432e5fcd87b39f9d18017b99bb03e",
+    "third_party/rsyncgo/rsyncstream/stream.go": "49339496861c01509e74632f0c82f18befde4a2ab8f5e4857ee25fffb723c790"
+  },
+  "feature": "Checksum-bound public latest source provenance with independent immutable harness",
+  "integration": {
+    "CI_only_workflow_not_integrated": true,
+    "base": "64ceec0eff92d3069f5ff267ce612989dfd00104",
+    "focused_commits": [
+      "96e6e18",
+      "9ccd7daef5b4a7b9b220a942e95bb9724d123860"
+    ],
+    "helper_files_sha256": {
+      "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+      "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+    },
+    "original_candidate": "52bcd3eae191436e3fbe124961616b68e5a63504"
+  },
+  "limitations": [
+    "Acceptance covers the held public4e source selected by actual latest at these recorded runs. It does not claim that unpublished coordinator changes or a later publication were installed.",
+    "The original failed assertion remains failed; successful installation alone did not retroactively satisfy its missing provenance gate. Its source-after snapshot was not measured. The corrected runs provide separate actual source/harness before-after closure.",
+    "Normal original-child waits completed in all successful commands. Descendant cleanup after interruption remains unproven, as retained by the existing ownership helper; no aborted run is accepted as cleanup success.",
+    "Source asset checks retain their scoped fourteen named cases per platform; this correction does not repeat all earlier module/fork/project test suites.",
+    "No user installation, module/build cache or backend state was modified. Installs, supplemental origin lookups and thin probes used fresh disposable locations and the ordinary public HTTPS proxy/checksum database.",
+    "Raw receipts and command environments remain outside version control or in expiring CI artifacts. This record contains normalized technical results, source/image hashes and public references only."
+  ],
+  "original_run_retained": {
+    "actual_original_commands": [
+      {
+        "exit": 0,
+        "name": "source-commit",
+        "seconds": 0.004
+      },
+      {
+        "exit": 0,
+        "name": "source-tree",
+        "seconds": 0.004
+      },
+      {
+        "exit": 0,
+        "name": "source-status",
+        "seconds": 0.064
+      },
+      {
+        "exit": 0,
+        "name": "toolchain",
+        "seconds": 0.004
+      },
+      {
+        "exit": 0,
+        "name": "public-environment",
+        "seconds": 0.004
+      },
+      {
+        "exit": 0,
+        "name": "public-query",
+        "seconds": 0.916
+      },
+      {
+        "exit": 0,
+        "name": "public-install",
+        "seconds": 200.914
+      },
+      {
+        "exit": 0,
+        "name": "installed-buildinfo",
+        "seconds": 0.004
+      },
+      {
+        "exit": 0,
+        "name": "installed-version",
+        "seconds": 0.016
+      },
+      {
+        "exit": 0,
+        "name": "installed-help",
+        "seconds": 0.016
+      },
+      {
+        "exit": 0,
+        "name": "installed-empty-catalog",
+        "seconds": 0.016
+      }
+    ],
+    "all_source_manifest_bytes_match_immutable_Git_source": true,
+    "asset_scopes": {
+      "macos-assets": {
+        "failed": [],
+        "passing_named": 14,
+        "passing_roots": 2,
+        "passing_roster": [
+          "TestScreenAssetsPreserveComposedDashboardModules",
+          "TestScreenAssetsPreserveComposedDashboardModules//ard/LICENSE.txt",
+          "TestScreenAssetsPreserveComposedDashboardModules//ard/ard-patch.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//kube-inventory.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//monitor-capacity.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/core/rfb.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/LICENSE",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/deflate.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/inflate.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//peer-poll.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//screen-clipboard.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//screen-mode.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//screen-viewer.mjs",
+          "TestScreenEmbeddedAssetsSurviveModuleZipLayout"
+        ],
+        "skipped": [],
+        "toolchain": "go version go1.27.3 darwin/arm64"
+      },
+      "ubuntu-assets": {
+        "failed": [],
+        "passing_named": 14,
+        "passing_roots": 2,
+        "passing_roster": [
+          "TestScreenAssetsPreserveComposedDashboardModules",
+          "TestScreenAssetsPreserveComposedDashboardModules//ard/LICENSE.txt",
+          "TestScreenAssetsPreserveComposedDashboardModules//ard/ard-patch.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//kube-inventory.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//monitor-capacity.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/core/rfb.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/LICENSE",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/deflate.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/inflate.js",
+          "TestScreenAssetsPreserveComposedDashboardModules//peer-poll.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//screen-clipboard.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//screen-mode.mjs",
+          "TestScreenAssetsPreserveComposedDashboardModules//screen-viewer.mjs",
+          "TestScreenEmbeddedAssetsSurviveModuleZipLayout"
+        ],
+        "skipped": [],
+        "toolchain": "go version go1.27.3 linux/amd64"
+      }
+    },
+    "cleanup": {
+      "disposable_root_removed": true,
+      "user_install_or_backend_modified": false
+    },
+    "gomod_sum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+    "installed_binary": {
+      "bytes": 68591543,
+      "sha256": "9c79fbe0b990dab06f687d03b8b7e8e7c884bdee31a77ccf0e5c3b39bdfb6934"
+    },
+    "installed_buildinfo": {
+      "cgo": "1",
+      "goarch": "amd64",
+      "goos": "linux",
+      "has_replacement": false,
+      "has_upstream_rsync_module": false,
+      "module_record": [
+        "github.com/inferal-oss/arm",
+        "v0.0.0-20261027011238-4e8bdb465458",
+        "h1:f3uahY76AYzHE9H13QvZFA/4WU4jpOOC5GSJgZEEocc="
+      ]
+    },
+    "literal_install_argument": "github.com/inferal-oss/arm/cmd/arm@latest",
+    "module_sum": "h1:f3uahY76AYzHE9H13QvZFA/4WU4jpOOC5GSJgZEEocc=",
+    "original_failed_gate": {
+      "command_count": 11,
+      "failures": [
+        "public query origin differs from the checked-out source commit"
+      ],
+      "public_query": "latest",
+      "scope": "public-install"
+    },
+    "overall_conclusion": "failure",
+    "public_zip_critical_closure_files": 26,
+    "query_level_origin_present": false,
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40433206450",
+    "selected_version": "v0.0.0-20261027011238-4e8bdb465458",
+    "source": "4e8bdb4654580737e7edc2529036ada8c6d95dc9",
+    "source_after_snapshot": "not measured in original run",
+    "source_manifest_entries": 1852,
+    "source_manifest_sha256": "5bb02b957fec2ca822e5a3d0bd95c0241f182c83b7b5154f75af12eee20e38d7"
+  },
+  "review_findings_and_fixes": [
+    {
+      "finding": "Go omitted query-level Origin even though the literal latest install completed. The old assertion therefore failed after all eleven original commands returned zero.",
+      "fix": "Bind fresh selected-version full origin to the original latest query version and both exact checksums without replacing the install query."
+    },
+    {
+      "finding": "A corrected helper checkout and the held public-source checkout have different commits; overlaying new helper files would dirty the source or conflate identities.",
+      "fix": "Add explicit source-root separation, immutable helper identity and source/helper closure. Actual two-checkout native validation executes that path on both platforms."
+    }
+  ],
+  "schema": 1
+}

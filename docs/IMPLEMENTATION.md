@@ -1535,8 +1535,11 @@ and HTTP race checks pass on Linux and macOS. The source/module/fork gates on
 `49e2c78` remain valid for their unchanged input-hashed scope; complete rosters
 and exact evidence are in `docs/validation/module-migration-2026-10-26.json`.
 
-Literal `go install github.com/inferal-oss/arm/cmd/arm@latest` acceptance still
-requires coordinator main integration/publication and a new public query/install.
+Literal `go install github.com/inferal-oss/arm/cmd/arm@latest` is accepted for
+published `4e8bdb4` on native macOS arm64 and Linux amd64 through the corrected
+provenance run. It verifies the exact version selected, full origin, both module
+checksums, installed buildinfo, module ZIP and source/helper snapshots. Later
+commits are not claimed installed by this evidence.
 Carrier packaging remains an explicit source build using `make carrier` /
 `make install`. Existing `arm install` agent-integration behavior is unchanged. A possible future explicit opt-in carrier assembler could reuse
 `internal/distribution.BuildCarrier`, but needs a reviewed source identity,
@@ -1692,3 +1695,18 @@ be read, then waits for original workers without holding the manager mutex.
 Generic cleanup uses generic recovery events; sync preparation keeps its own
 event. This API alone does not prove a caller records every native close. The
 VNC/WebSocket caller composition and elapsed-clock contract remain separate gates.
+
+
+## Independent public source and validation harness
+
+The public module helper can validate a separately selected clean checkout while
+recording its own immutable commit/tree and two script hashes. Expected public
+source comes from that checkout's actual Git HEAD; no expected-commit override
+is accepted. Both complete source manifests and helper identities are rechecked
+after installation. The default remains the helper's own checkout.
+
+For literal latest, Go may omit query-level Origin. A second fresh-cache lookup
+of the version actually selected supplies full revision provenance only when
+module path, exact version and both checksums match. Conflicting origin or sums
+refuse acceptance. The actual install query remains literal latest, using the
+ordinary public HTTPS proxy/checksum database and fresh disposable caches.

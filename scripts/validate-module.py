@@ -24,12 +24,45 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def harness_identity():
+    """Record the immutable helper independently of the checkout being checked."""
+    git = lambda *args: subprocess.check_output(["git", *args], cwd=ROOT).decode().strip()
+    files = ("scripts/validate-module.py", "scripts/test-validate-module.py")
+    return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"),
+            "status": git("status", "--porcelain"),
+            "files": {name: digest(ROOT / name) for name in files}}
+
+
+def source_manifest(source_root):
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=source_root).decode().split("\0")
+    return [{"path": name, "sha256": digest(source_root / name), "bytes": (source_root / name).stat().st_size} for name in tracked if name]
+
+
 def bind_public_source(resolved, expected_commit):
     """Require the full public origin to match the checked-out source identity."""
     actual = (resolved.get("Origin") or {}).get("Hash")
     valid_expected = len(expected_commit) == 40 and all(c in "0123456789abcdef" for c in expected_commit)
     return {"expected_source_commit": expected_commit, "resolved_source_commit": actual,
             "matches": valid_expected and actual == expected_commit}
+
+
+def bind_selected_public_source(resolved, selected_origin, expected_commit):
+    """Bind latest's actual version/checksums to that version's full origin.
+
+    Go may omit query-level Origin for latest. A separate lookup of the
+    version actually selected supplies revision provenance; it never changes
+    the literal install query or chooses the expected version for the caller.
+    """
+    receipt = bind_public_source(selected_origin, expected_commit)
+    fields = ("Path", "Version", "Sum", "GoModSum")
+    same_module = resolved.get("Path") == MODULE
+    same_selection = all(bool(resolved.get(key)) and resolved.get(key) == selected_origin.get(key) for key in fields)
+    query_origin = (resolved.get("Origin") or {}).get("Hash")
+    receipt.update(selected_version=resolved.get("Version"), origin_version=selected_origin.get("Version"),
+                   selection_checksums_match=same_module and same_selection,
+                   query_origin_consistent=query_origin is None or query_origin == expected_commit)
+    receipt["matches"] = receipt["matches"] and receipt["selection_checksums_match"] and receipt["query_origin_consistent"]
+    return receipt
 
 
 def stop_owned_child(process):
@@ -54,9 +87,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--go", default="go")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-root", type=Path, default=ROOT,
+                        help="clean checkout whose actual commit and bytes must match the public result; helper identity remains independent")
     parser.add_argument("--public-install", metavar="QUERY")
     parser.add_argument("--scope", choices=("full", "assets"), default="full", help="assets renews only changed browser embedding/HTTP tests; prior unchanged-source evidence is separate")
     args = parser.parse_args()
+    source_root = args.source_root.resolve()
     go = shutil.which(args.go)
     if not go:
         parser.error("Go executable unavailable")
@@ -75,7 +111,7 @@ def main():
     if hasattr(signal, "SIGHUP"):
         signal.signal(signal.SIGHUP, interrupted)
 
-    def run(name, command, cwd=ROOT, extra=None, timeout=1200):
+    def run(name, command, cwd=source_root, extra=None, timeout=1200):
         print("START", name, flush=True)
         started = time.monotonic()
         interruption = None
@@ -114,16 +150,18 @@ def main():
             failures.append(message)
             print("FAIL", message, flush=True)
 
+    helper_before = harness_identity()
+    (output / "harness-identity.json").write_text(json.dumps(helper_before, indent=2) + "\n")
+    require(not helper_before["status"], "harness source is dirty")
+    if os.environ.get("GITHUB_SHA"):
+        require(helper_before["commit"] == os.environ["GITHUB_SHA"], "harness checkout differs from the immutable hosted workflow commit")
     run("source-commit", ["git", "rev-parse", "HEAD"])
     source_commit = (output / "source-commit.stdout.txt").read_text().strip()
-    if os.environ.get("GITHUB_SHA"):
-        require(source_commit == os.environ["GITHUB_SHA"], "checkout differs from the immutable hosted workflow commit")
     run("source-tree", ["git", "rev-parse", "HEAD^{tree}"])
     run("source-status", ["git", "status", "--porcelain"])
     require(not (output / "source-status.stdout.txt").read_text().strip(), "source is dirty")
     run("toolchain", [go, "version"])
-    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
-    manifest = [{"path": name, "sha256": digest(ROOT / name), "bytes": (ROOT / name).stat().st_size} for name in tracked if name]
+    manifest = source_manifest(source_root)
     (output / "source-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
     if args.public_install:
@@ -145,7 +183,19 @@ def main():
                 if not code:
                     resolved = json.loads((output / "public-query.stdout.txt").read_text())
                     require(resolved.get("Path") == MODULE and bool(resolved.get("Sum")) and bool(resolved.get("GoModSum")), "public module identity/sums missing")
-                    identity = dict(bind_public_source(resolved, source_commit), query=args.public_install)
+                    if args.public_install == "latest":
+                        # Origin for a selection query can be absent even when
+                        # the selected version's immutable provenance is known.
+                        # Look up that actual version in a fresh public cache,
+                        # then bind its full hash AND version/checksums. This
+                        # is provenance only; go install still uses @latest.
+                        origin_private = private | {"GOMODCACHE": str(temporary / "origin-modules")}
+                        require(not Path(origin_private["GOMODCACHE"]).exists(), "origin lookup cache was not empty")
+                        origin_code = run("public-selected-version-origin", [go, "mod", "download", "-json", MODULE + "@" + resolved["Version"]], work, origin_private)
+                        selected_origin = json.loads((output / "public-selected-version-origin.stdout.txt").read_text()) if not origin_code else {}
+                        identity = dict(bind_selected_public_source(resolved, selected_origin, source_commit), query=args.public_install)
+                    else:
+                        identity = dict(bind_public_source(resolved, source_commit), query=args.public_install)
                     (output / "public-source-identity.json").write_text(json.dumps(identity, indent=2) + "\n")
                     require(identity["matches"], "public query origin differs from the checked-out source commit")
                     if args.public_install != "latest":
@@ -162,11 +212,11 @@ def main():
                                "third_party/rsyncgo/internal/sender/sender.go",
                                "third_party/rsyncgo/internal/receiver/receiver.go"]
                     closure += ["internal/server/web/novnc/core/inflator.js", "internal/server/web/novnc/core/deflator.js", "internal/server/web/novnc/LICENSE.txt"]
-                    closure += [str(path.relative_to(ROOT)) for path in sorted((ROOT / "internal/server/web/novnc/deps/pako").rglob("*")) if path.is_file()]
+                    closure += [str(path.relative_to(source_root)) for path in sorted((source_root / "internal/server/web/novnc/deps/pako").rglob("*")) if path.is_file()]
                     hashes = {}
                     for name in closure:
                         actual = downloaded / name
-                        require(actual.is_file() and actual.read_bytes() == (ROOT / name).read_bytes(), "public module ZIP differs at " + name)
+                        require(actual.is_file() and actual.read_bytes() == (source_root / name).read_bytes(), "public module ZIP differs at " + name)
                         if actual.is_file():
                             hashes[name] = digest(actual)
                     (output / "public-source-closure.json").write_text(json.dumps(hashes, indent=2, sort_keys=True) + "\n")
@@ -225,6 +275,18 @@ def main():
             if binary.exists():
                 run(name + "-buildinfo", [go, "version", "-m", str(binary)])
                 binary.unlink()
+
+    # Source and harness have separate immutable identities. Rechecking both
+    # closes a long public install without accepting changed helper/source bytes.
+    helper_after = harness_identity()
+    (output / "harness-identity-after.json").write_text(json.dumps(helper_after, indent=2) + "\n")
+    final_manifest = source_manifest(source_root)
+    (output / "source-manifest-after.json").write_text(json.dumps(final_manifest, indent=2) + "\n")
+    source_head_after = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=source_root).decode().strip()
+    source_status_after = subprocess.check_output(["git", "status", "--porcelain"], cwd=source_root).decode().strip()
+    closure = {"harness_unchanged": helper_before == helper_after, "source_unchanged": manifest == final_manifest and source_commit == source_head_after and not source_status_after}
+    (output / "source-harness-closure.json").write_text(json.dumps(closure, indent=2) + "\n")
+    require(all(closure.values()), "source or harness changed during validation")
 
     rosters = {}
     for name in ("full-compile", "scoped-race", "fork-tests", "trimpath-layout", "browser-asset-closure"):

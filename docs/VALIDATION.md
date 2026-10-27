@@ -4604,7 +4604,7 @@ selected roots. VNC caller integration, native close tracking in other callers
 and the elapsed-clock portfolio are not accepted by this API milestone.
 
 
-### Literal latest installation and pending harness correction
+### Original literal latest installation and failed provenance assertion
 
 Independent inspection of [run 40433206450](https://github.com/inferal-oss/arm/actions/runs/40433206450)
 verifies all three artifact ZIPs and 1,852 source-manifest files per artifact
@@ -4619,7 +4619,33 @@ harness required it there. A supplemental query of the version actually selected
 binds its full source hash, version and both module checksums; it does not change
 the literal installation query. Reviewed helper sources `96e6e18` and `9ccd7da`
 retain that binding and separate clean immutable harness/source checkouts, with
-13 cheap tests passing. Their hosted execution remains required. The original
+13 cheap tests passing. Their subsequent hosted execution is recorded below. The original
 run did not measure a final complete source snapshot; the correction adds that
 check. No complete corrected-harness acceptance or claim that later local main
 commits were installed follows from the successful original install.
+
+
+### Corrected literal latest provenance acceptance
+
+[Run 40442560813](https://github.com/inferal-oss/arm/actions/runs/40442560813)
+passes the reviewed helper on native macOS arm64 and Linux amd64, Go 1.27.3,
+ordinary CGo enabled. Each executes 13 cheap controls and 12 actual commands: the
+original eleven retain their names/order, with a fresh selected-version origin
+lookup added. Literal latest resolves to `v0.0.0-20261027011238-4e8bdb465458`.
+Its full origin is exactly published `4e8bdb4`; version, module checksum and
+go.mod checksum agree across both queries and installed buildinfo. Thin version,
+help and empty-catalog probes pass, and disposable cleanup is confirmed.
+
+Root independently verifies both final ZIP digests and three retained original
+ZIPs, every composed helper hash, all 1,852 selected source-file hashes against
+an immutable Git archive before and after on both platforms, actual command
+exits/literal install arguments, matching checksums/origin and clean independent
+source/helper identities. The 26 critical public ZIP inputs match. The composed
+helper's 13 cheap tests pass again. The CI-only workflow is not integrated.
+
+The [normalized evidence](validation/module-latest-provenance-review-2026-10-26.json)
+retains original failure, rosters, source/binary hashes, public references and
+limits. The original failed assertion stays failed; it is not relabelled by the
+successor. This accepts published `4e8bdb4` at those runs, not an installation of
+later main commits or interruption/descendant cleanup. No user installation,
+cache or backend state was changed.

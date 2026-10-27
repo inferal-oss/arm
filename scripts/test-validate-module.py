@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Cheap ownership/identity regressions; no Go build, network or ARM state."""
 import importlib.util
+import hashlib
 import os
 from pathlib import Path
 import signal
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -73,6 +75,84 @@ class PublicSourceBinding(unittest.TestCase):
 
     def test_missing_source_identity_cannot_pass_by_empty_equality(self):
         self.assertFalse(module.bind_public_source({}, "")["matches"])
+
+
+class SelectedVersionOrigin(unittest.TestCase):
+    def setUp(self):
+        self.expected = "a" * 40
+        self.latest = {"Path": module.MODULE, "Version": "v0.0.0-20261027000000-aaaaaaaaaaaa", "Sum": "h1:module", "GoModSum": "h1:gomod"}
+        self.origin = dict(self.latest, Origin={"Hash": self.expected})
+
+    def test_omitted_latest_origin_requires_matching_selected_version_provenance(self):
+        receipt = module.bind_selected_public_source(self.latest, self.origin, self.expected)
+        self.assertTrue(receipt["matches"])
+        self.assertEqual(receipt["resolved_source_commit"], self.expected)
+        self.assertTrue(receipt["selection_checksums_match"])
+
+    def test_other_version_or_checksum_cannot_supply_origin(self):
+        for field in ("Path", "Version", "Sum", "GoModSum"):
+            with self.subTest(field=field):
+                other = dict(self.origin); other[field] = "different"
+                self.assertFalse(module.bind_selected_public_source(self.latest, other, self.expected)["matches"])
+
+    def test_wrong_or_missing_origin_cannot_pass(self):
+        for origin in ({}, {"Origin": {"Hash": "b" * 40}}, dict(self.latest)):
+            with self.subTest(origin=origin):
+                self.assertFalse(module.bind_selected_public_source(self.latest, origin, self.expected)["matches"])
+
+    def test_conflicting_latest_origin_is_not_overridden(self):
+        latest = dict(self.latest, Origin={"Hash": "b" * 40})
+        self.assertFalse(module.bind_selected_public_source(latest, self.origin, self.expected)["matches"])
+
+
+class SeparateSourceAndHarness(unittest.TestCase):
+    def repository(self, root, files):
+        root.mkdir()
+        for name, contents in files.items():
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(contents)
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull)
+        for args in (("-c", "init.templateDir=", "init", "-q"), ("add", "."),
+                     ("-c", "core.hooksPath=" + os.devnull, "-c", "commit.gpgSign=false",
+                      "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "fixture")):
+            subprocess.run(["git", "-C", str(root), *args], env=env, check=True, capture_output=True)
+        return subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], env=env).decode().strip()
+
+    def test_clean_source_head_and_helper_identity_are_independent(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            helper = root / "helper"
+            selected = root / "selected"
+            helper_commit = self.repository(helper, {"scripts/validate-module.py": "helper", "scripts/test-validate-module.py": "controls"})
+            source_commit = self.repository(selected, {"source.txt": "selected public source"})
+            with mock.patch.object(module, "ROOT", helper):
+                identity = module.harness_identity()
+                manifest = module.source_manifest(selected)
+            self.assertNotEqual(helper_commit, source_commit)
+            self.assertEqual(identity["commit"], helper_commit)
+            self.assertEqual(identity["status"], "")
+            self.assertEqual(identity["files"]["scripts/validate-module.py"], hashlib.sha256(b"helper").hexdigest())
+            self.assertEqual(manifest, [{"path": "source.txt", "sha256": hashlib.sha256(b"selected public source").hexdigest(), "bytes": len(b"selected public source")}])
+            public = {"Origin": {"Hash": source_commit}}
+            self.assertTrue(module.bind_public_source(public, source_commit)["matches"])
+            self.assertFalse(module.bind_public_source(public, helper_commit)["matches"])
+
+    def test_source_change_does_not_hide_behind_unchanged_harness(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            helper = root / "helper"
+            selected = root / "selected"
+            self.repository(helper, {"scripts/validate-module.py": "helper", "scripts/test-validate-module.py": "controls"})
+            self.repository(selected, {"source.txt": "before"})
+            with mock.patch.object(module, "ROOT", helper):
+                helper_before = module.harness_identity()
+                before = module.source_manifest(selected)
+                (selected / "source.txt").write_text("changed after download")
+                after = module.source_manifest(selected)
+                self.assertEqual(module.harness_identity(), helper_before)
+            self.assertNotEqual(after, before)
 
 
 if __name__ == "__main__":
