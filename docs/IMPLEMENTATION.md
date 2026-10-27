@@ -1,5 +1,16 @@
 # Backend and CLI implementation
 
+## Finite pressure control model
+
+`formal/pressure-control` models one captured execution and one pressure resource.
+Its final pause/resume fence binds epoch, revision, policy, ownership, current
+entitlement and fresh pressure evidence. Paused or unresolved control retains
+the resource charge. Late results record possible prior effects; reconciliation
+and settlement assume positive external evidence. This is a finite abstraction,
+not a refinement of production Go or native process cleanup. Native pausing is
+not enabled by this milestone; elapsed-clock and runtime-control acceptance
+remain open.
+
 ## Private sync source and preparation ownership
 
 The private source adapter commits its intent/resource reservation before its

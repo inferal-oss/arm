@@ -1,5 +1,23 @@
 # Validation record
 
+## Finite pressure control fence
+
+Independent review accepted the unchanged model and two configurations in
+`formal/pressure-control`. The original safe TLC run exits zero after 28,601
+generated and 6,756 distinct states, with an empty queue and depth 23. The
+deliberately weakened fence exits 12 with a `Safety` counterexample: issue a
+pause, recover pressure, then apply the stale pause. Review checked both original
+logs and exit files against the normalized hashes and identical before/after
+executed inputs; it did not rerun TLC. README and evidence clarifications were
+added afterward without changing the executed model/configurations.
+
+The [normalized record](../formal/pressure-control/validation.json) records exact
+input and log hashes. The JAR hash was independently checked after the run;
+complete before/after JVM or operating-system closure was not retained. Fresh
+observations and positive external cleanup/settlement are assumptions. Native
+ownership, real pause/resume, elapsed-clock sampling, multi-resource recovery,
+hysteresis arithmetic and production Go refinement remain separate gates.
+
 ## Native Linux private Manager sync acceptance
 
 A new disposable Debian 13 ARM64 QEMU/HVF guest uses its own verified copy of
