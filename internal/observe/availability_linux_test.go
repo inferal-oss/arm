@@ -140,6 +140,7 @@ func TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit(t *testing.T) {
 		!strings.Contains(r.Detail, "initial cgroup namespace") {
 		t.Fatalf("hidden cgroup ancestry supplied memory credit or hid the reason: %+v", r)
 	}
+	t.Logf("native hidden scope refused: scope=%q detail=%q", r.Scope, r.Detail)
 }
 
 func TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom(t *testing.T) {
@@ -159,4 +160,5 @@ func TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom(t *testing.T) {
 	if values.Used.Value != nil || values.Available.Value == nil {
 		t.Fatalf("native cgroup headroom invented resident usage: %+v", values)
 	}
+	t.Logf("native finite scope: ancestor_capacity=%d total=%d available=%d scope=%q", capacity, *r.Total, *r.Available, r.Scope)
 }
