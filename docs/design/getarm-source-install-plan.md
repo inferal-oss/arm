@@ -1,6 +1,7 @@
 # Proposed getarm.org source installation
 
-Status: planning only, awaiting coordinator review before source implementation.
+Status: reviewed design; isolated source preparation is authorized. Final source
+validation requires composition of the reviewed guest-clock outcome.
 Inventory base: `6509f5f10fe8589face1d067057a9f6a476f3c8b`, tree
 `f92c94a5545db7e43ead0795a2d6e52cc0c98649`. Later coordinator documentation
 commits are not a reason to change this inventory cut. A reviewed VM clock fix
@@ -168,7 +169,7 @@ Root receives an illustrative private hunk; this plan applies no website edits.
   Recommended namespace-only policy: keep that existing trusted-catalog behavior,
   require the vanity path for new imports, document the distinction, and never
   silently delete/rewrite catalogs or add an unreviewed dual-identity allowlist.
-  Root must review this policy before implementation. Existing authenticated node
+  The reviewed plan retains this policy during implementation. Existing authenticated node
   version/protocol reuse remains separate from artifact import and does not imply
   automatic upgrades.
 
@@ -177,7 +178,7 @@ Root receives an illustrative private hunk; this plan applies no website edits.
 | Owner | Bounded responsibility |
 | --- | --- |
 | Root coordinator | Approve plan/compatibility policy, integrate reviewed VM fix, own final composition and central documentation, authorize publication and one final public gate. |
-| Module actor, this existing chat | Canonical module/import/fork namespace, four production identity literals, fixtures/trace matchers, validator MODULE/REPOSITORY split and focused native/source-install evidence. |
+| Module implementation owner | Canonical module/import/fork namespace, four production identity literals, fixtures/trace matchers, validator MODULE/REPOSITORY split and focused native/source-install evidence. |
 | VM/sleep-wake actor | Existing authorized guest S3 experiment and any focused reviewed clock fix from its 6509 base. No race with a mass namespace edit. |
 | Website actor | Gallery/alignment, metadata head/static pages, installation copy and actual Pages HTTP checks. No source actor hosting or Cloudflare edits. |
 | Root/release owner | Keep GitHub repository/release identity and explicit release authorization boundaries; no tag/release creation in this migration. |
@@ -241,7 +242,7 @@ Root receives an illustrative private hunk; this plan applies no website edits.
     exact actual selections and native handles. No tags/releases, user installs,
     new pipelines, hosting changes or publication until separately coordinated.
 
-## Decisions requested for root review
+## Accepted coordination decisions
 
 - Accept the namespace-only artifact policy: new imports require the vanity path,
   existing already-trusted catalog behavior stays unchanged, with no silent

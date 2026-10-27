@@ -2080,3 +2080,19 @@ The sealed Manager/clock bridge, atomically admitted worker/temp pair, durable
 preparation, lifecycle/reset retention and positive settlement bridge remain
 required. Registration, public dispatch and general provisioning stay disabled.
 The [contract](PROVIDER-ENTITLEMENT-CONTRACT.md) records these boundaries.
+
+## Secondary website domain and card alignment
+
+Reviewed Worker source `3bdbf06` serves GET/HEAD requests for `getarm.cloud`
+from the fixed HTTPS `getarm.org` origin, preserving path and query. It clears
+URL credentials, port and fragment, forwards no incoming headers or body, and
+returns upstream redirects without following them. Its configuration names only
+the secondary custom domain and has no storage, secrets or service bindings.
+Live deployment, TLS and domain verification remain separate from source support.
+
+The two layout declarations in `2af7ffc` use stock `AlignedColumns` for the
+Documentation and Capabilities cards. Gallery/Lightbox navigation and mobile
+containment findings remain open; this layout change does not close them.
+The [vanity source-install plan](design/getarm-source-install-plan.md) is a
+reviewed design; the module namespace and public installation command have not
+yet changed.

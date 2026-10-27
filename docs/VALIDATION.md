@@ -5459,3 +5459,21 @@ these three raw logs. This closes the foreign-store finding within current
 source-bound component cohorts only. The earlier failed S123 and N1 results
 remain failed. Native browser/configuration/keyboard/identity/example gates,
 full numeric/Calendar acceptance, upstream publication and merge remain separate.
+
+### Website alignment and secondary-domain source review
+
+Independent review of `3bdbf06` checks the fixed HTTPS origin, cleared URL
+credentials/port/fragment, GET/HEAD-only forwarding, absent incoming headers and
+body, manual redirects and secondary-domain-only configuration. Five bounded
+mock test roots pass in the source owner's run; independent review inspects the
+tests without claiming a separate rerun. This is not live DNS/TLS acceptance.
+
+The two `AlignedColumns` declarations in `2af7ffc` match the pinned framework's
+card row-parts contract. In the combined local website candidate, all five
+first-row card tops, header bottoms and card bottoms align at 1728 pixels.
+Both pages use one 326-pixel card column at a 390-pixel viewport with zero
+invalid shapes and document scroll width 390. Original typecheck/build pass
+belongs to that combined candidate, which also contains unaccepted Gallery
+changes; it is not a standalone build of this two-line commit. Native Gallery
+selection rollback and a mobile Lightbox wider/taller than the viewport remain
+failed observations requiring focused correction and renewed browser evidence.
