@@ -108,6 +108,8 @@ type PodSpec struct {
 	AllowPrivilegeEscalation     bool      `json:"allow_privilege_escalation"`
 	DropAllCapabilities          bool      `json:"drop_all_capabilities"`
 	RuntimeDefaultSeccomp        bool      `json:"runtime_default_seccomp"`
+	NotReadyTolerationSeconds    int64     `json:"not_ready_toleration_seconds"`
+	UnreachableTolerationSeconds int64     `json:"unreachable_toleration_seconds"`
 	AutomountServiceAccountToken bool      `json:"automount_service_account_token"`
 	HostNetwork                  bool      `json:"host_network"`
 	HostPID                      bool      `json:"host_pid"`
@@ -190,7 +192,7 @@ func NewPlan(r Review) (Plan, error) {
 	p := PodSpec{GenerateName: "arm-node-", Namespace: r.Namespace.Name, NodeName: r.Node.Name, Image: r.Image,
 		OwnerLabel: OwnerValue, KeyLabel: r.Key[:32], KeyAnnotation: r.Key, Resources: r.Resources, VolumeSizeLimit: r.Resources.EphemeralLimit,
 		RunAsUser: 65532, RunAsGroup: 65532, FSGroup: 65532, RunAsNonRoot: true, ReadOnlyRootFilesystem: true, DropAllCapabilities: true,
-		RuntimeDefaultSeccomp: true, RestartPolicy: "Never"}
+		RuntimeDefaultSeccomp: true, NotReadyTolerationSeconds: 300, UnreachableTolerationSeconds: 300, RestartPolicy: "Never"}
 	plan := Plan{Review: r, Pod: p}
 	raw, err := json.Marshal(plan)
 	if err != nil {

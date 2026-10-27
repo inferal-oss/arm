@@ -4397,3 +4397,20 @@ claimed byte-identical to the earlier worker dependency.
 No public-sync, cleanup, release or settlement acceptance follows from these
 checks. Lookup cannot prove absence outside the reserved namespace; arbitrary
 stalled kernel filesystem calls have no hard cancellation bound here.
+
+
+### Canonical Kubernetes admission correction
+
+Coordinator reviews the actual three-file `92c4550` diff, equivalent to the
+owned provider changes in `7250a04`. Native Darwin arm64 Go 1.27.3 gates on
+canonical dependency `af7c059` pass: 82 provider race cases with no skips or
+failures, 10 affected CLI/server/TUI race cases, and four-package vet. Root
+independently parses the original JSON logs, confirms the terminal rosters and
+records full source/log hashes in
+[the admission evidence](validation/kubernetes-admission-2026-10-26.json).
+Original command exits are retained from the owner's execution evidence.
+
+The separate `4d8362d` live observation covers Pod Ready and exact-UID cleanup
+only. Carrier export/execution was rejected by automatic approval review;
+shipment, in-Pod catalog proof, enrollment and SSH remain unverified. Neither
+that observation nor passing provider tests establishes those missing gates.

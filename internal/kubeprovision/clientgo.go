@@ -334,9 +334,35 @@ func selectedNode(s corev1.PodSpec) string {
 	return f.Values[0]
 }
 
+// Kubernetes normally injects these two five-minute NoExecute tolerations.
+// Include them in the reviewed Pod instead, then reject every additional or
+// altered toleration returned by admission or a later Pod read.
+func reviewedTolerations() []corev1.Toleration {
+	seconds := int64(300)
+	return []corev1.Toleration{
+		{Key: corev1.TaintNodeNotReady, Operator: corev1.TolerationOpExists, Effect: corev1.TaintEffectNoExecute, TolerationSeconds: &seconds},
+		{Key: corev1.TaintNodeUnreachable, Operator: corev1.TolerationOpExists, Effect: corev1.TaintEffectNoExecute, TolerationSeconds: &seconds},
+	}
+}
+
+func safeReviewedTolerations(actual []corev1.Toleration) bool {
+	if len(actual) != 2 {
+		return false
+	}
+	want := reviewedTolerations()
+	return (reflect.DeepEqual(actual[0], want[0]) && reflect.DeepEqual(actual[1], want[1])) ||
+		(reflect.DeepEqual(actual[0], want[1]) && reflect.DeepEqual(actual[1], want[0]))
+}
+
 func safePod(p *corev1.Pod) bool {
 	s := p.Spec
-	if len(s.Containers) != 1 || len(s.InitContainers) != 0 || len(s.EphemeralContainers) != 0 || len(s.Volumes) != 1 || s.Volumes[0].Name != "arm-private" || s.Volumes[0].EmptyDir == nil || s.Volumes[0].EmptyDir.SizeLimit == nil || s.Volumes[0].EmptyDir.SizeLimit.Sign() <= 0 || selectedNode(s) == "" || len(s.Tolerations) != 0 || len(s.NodeSelector) != 0 || (s.SchedulerName != "" && s.SchedulerName != "default-scheduler") || s.Affinity.PodAffinity != nil || s.Affinity.PodAntiAffinity != nil || len(s.Affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution) != 0 ||
+	// The Pod returned by the API can be incomplete or admission-mutated. In
+	// particular, an original-key lookup must never dereference an absent
+	// affinity while examining a matching but foreign Pod.
+	if s.Affinity == nil || s.Affinity.NodeAffinity == nil {
+		return false
+	}
+	if len(s.Containers) != 1 || len(s.InitContainers) != 0 || len(s.EphemeralContainers) != 0 || len(s.Volumes) != 1 || s.Volumes[0].Name != "arm-private" || s.Volumes[0].EmptyDir == nil || s.Volumes[0].EmptyDir.SizeLimit == nil || s.Volumes[0].EmptyDir.SizeLimit.Sign() <= 0 || selectedNode(s) == "" || !safeReviewedTolerations(s.Tolerations) || len(s.NodeSelector) != 0 || len(s.ImagePullSecrets) != 0 || (s.SchedulerName != "" && s.SchedulerName != "default-scheduler") || s.Affinity.PodAffinity != nil || s.Affinity.PodAntiAffinity != nil || len(s.Affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution) != 0 ||
 		s.HostNetwork || s.HostPID || s.HostIPC || s.RestartPolicy != corev1.RestartPolicyNever || s.AutomountServiceAccountToken == nil || *s.AutomountServiceAccountToken || s.EnableServiceLinks == nil || *s.EnableServiceLinks || s.SecurityContext == nil || s.SecurityContext.RunAsNonRoot == nil || !*s.SecurityContext.RunAsNonRoot || s.SecurityContext.RunAsUser == nil || *s.SecurityContext.RunAsUser != 65532 || s.SecurityContext.RunAsGroup == nil || *s.SecurityContext.RunAsGroup != 65532 || s.SecurityContext.FSGroup == nil || *s.SecurityContext.FSGroup != 65532 || s.SecurityContext.SeccompProfile == nil || s.SecurityContext.SeccompProfile.Type != corev1.SeccompProfileTypeRuntimeDefault {
 		return false
 	}
@@ -403,7 +429,7 @@ func quantities(r Resources) (corev1.ResourceRequirements, error) {
 }
 
 func (c *ClientGo) CreatePod(ctx context.Context, p PodSpec) (Pod, error) {
-	if p.GenerateName != "arm-node-" || !validNodeName(p.NodeName) || p.OwnerLabel != OwnerValue || !digestPattern.MatchString(p.KeyAnnotation) || p.KeyLabel != p.KeyAnnotation[:32] || !digestPattern.MatchString(p.PlanAnnotation) || p.RunAsUser != 65532 || p.RunAsGroup != 65532 || p.FSGroup != 65532 || !p.RunAsNonRoot || !p.ReadOnlyRootFilesystem || !p.DropAllCapabilities || !p.RuntimeDefaultSeccomp || p.AllowPrivilegeEscalation || p.AutomountServiceAccountToken || p.HostNetwork || p.HostPID || p.HostIPC || p.EnableServiceLinks || p.RestartPolicy != "Never" {
+	if p.GenerateName != "arm-node-" || !validNodeName(p.NodeName) || p.OwnerLabel != OwnerValue || !digestPattern.MatchString(p.KeyAnnotation) || p.KeyLabel != p.KeyAnnotation[:32] || !digestPattern.MatchString(p.PlanAnnotation) || p.RunAsUser != 65532 || p.RunAsGroup != 65532 || p.FSGroup != 65532 || !p.RunAsNonRoot || !p.ReadOnlyRootFilesystem || !p.DropAllCapabilities || !p.RuntimeDefaultSeccomp || p.NotReadyTolerationSeconds != 300 || p.UnreachableTolerationSeconds != 300 || p.AllowPrivilegeEscalation || p.AutomountServiceAccountToken || p.HostNetwork || p.HostPID || p.HostIPC || p.EnableServiceLinks || p.RestartPolicy != "Never" {
 		return Pod{}, errors.New("unsafe Pod spec")
 	}
 	requests, err := quantities(p.Resources)
@@ -424,7 +450,7 @@ func (c *ClientGo) CreatePod(ctx context.Context, p PodSpec) (Pod, error) {
 	gid := p.RunAsGroup
 	fsGroup := p.FSGroup
 	object := &corev1.Pod{ObjectMeta: metav1.ObjectMeta{GenerateName: p.GenerateName, Namespace: p.Namespace, Labels: map[string]string{OwnerLabel: p.OwnerLabel, KeyLabel: p.KeyLabel}, Annotations: map[string]string{PlanAnnotation: p.PlanAnnotation, KeyAnnotation: p.KeyAnnotation}},
-		Spec: corev1.PodSpec{Affinity: &corev1.Affinity{NodeAffinity: &corev1.NodeAffinity{RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{NodeSelectorTerms: []corev1.NodeSelectorTerm{{MatchFields: []corev1.NodeSelectorRequirement{{Key: "metadata.name", Operator: corev1.NodeSelectorOpIn, Values: []string{p.NodeName}}}}}}}}, RestartPolicy: corev1.RestartPolicyNever, AutomountServiceAccountToken: &falseValue,
+		Spec: corev1.PodSpec{Affinity: &corev1.Affinity{NodeAffinity: &corev1.NodeAffinity{RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{NodeSelectorTerms: []corev1.NodeSelectorTerm{{MatchFields: []corev1.NodeSelectorRequirement{{Key: "metadata.name", Operator: corev1.NodeSelectorOpIn, Values: []string{p.NodeName}}}}}}}}, RestartPolicy: corev1.RestartPolicyNever, AutomountServiceAccountToken: &falseValue, Tolerations: reviewedTolerations(),
 			EnableServiceLinks: &falseValue, HostNetwork: false, HostPID: false, HostIPC: false,
 			SecurityContext: &corev1.PodSecurityContext{RunAsUser: &uid, RunAsGroup: &gid, FSGroup: &fsGroup, RunAsNonRoot: &trueValue, SeccompProfile: &corev1.SeccompProfile{Type: corev1.SeccompProfileTypeRuntimeDefault}},
 			Volumes:         []corev1.Volume{{Name: "arm-private", VolumeSource: corev1.VolumeSource{EmptyDir: &corev1.EmptyDirVolumeSource{SizeLimit: &volumeSize}}}},

@@ -1557,3 +1557,13 @@ These records provide bounded evidence inside the reserved private namespace.
 They authorize no deletion or release and prove no physical reclamation or
 absence outside that namespace. Public sync allocation, dispatch, cleanup and
 settlement remain separate work.
+
+
+## Kubernetes admission defaults
+
+Reviewed Pod plans explicitly include the two standard not-ready/unreachable
+NoExecute tolerations for 300 seconds. Reads require that exact pair, in either
+order, and reject additions or changed values. Incomplete node affinity returns
+identity failure instead of panicking; injected image-pull credentials are
+refused. This narrow compatibility fix does not establish full carrier shipment
+or authenticated in-Pod readiness and enrollment.

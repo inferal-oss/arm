@@ -847,3 +847,22 @@ no filesystem or reconciliation algorithm changes follow from that correction.
 Public sync orchestration, physical reservations, cleanup/settlement and formal
 acceptance remain open. The owner's newer durable workspace-ledger work is a
 separate candidate and is not integrated by this step.
+
+
+### Kubernetes admission fix integrated; shipment remains blocked
+
+Owner: chat `01a17669-4ad2-7e41-8616-905a94b58916`. Reviewed source `7250a04`
+is validated on the canonical dependency as focused `92c4550` and integrated
+separately from live acceptance `4d8362d`. Exact standard five-minute
+NoExecute tolerations are reviewed before creation; incomplete affinity and
+unreviewed image credentials are refused on lookup. Native provider races
+pass 82 named cases; affected CLI/server/TUI races pass 10, and vet passes.
+Source hashes and complete terminal event rosters are retained in
+`docs/validation/kubernetes-admission-2026-10-26.json`.
+
+A disposable OrbStack Pod reached Ready and exact-UID cleanup completed.
+Automatic approval review rejected transferring/executing the private carrier
+in that Pod because trusted export authorization was not established. The
+owner must not retry or bypass that rejection. Shipment, in-Pod catalog proof,
+enrollment and SSH remain unverified; the focused admission fix does not
+establish those gates.
