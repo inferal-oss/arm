@@ -26,6 +26,11 @@ func TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol(t *testing.T) {
 		t.Run("protocol="+protocol, func(t *testing.T) {
 			wrong := server.Clone()
 			wrong.NextProtos = []string{protocol}
+			if protocol == "" {
+				// A valid TLS server may omit ALPN entirely. The client pin must
+				// reject it even when certificate verification succeeds.
+				wrong.NextProtos = nil
+			}
 			if c, s := innerHandshake(client, wrong); c == nil && s == nil {
 				t.Fatal("wrong source ALPN accepted")
 			}
@@ -50,6 +55,33 @@ func TestLocalForwardTLSUsesExactCurrentIdentityAndProtocol(t *testing.T) {
 	if _, err = LocalForwardClientTLS(expiredNodeIdentity(t, store)); err == nil {
 		t.Fatal("expired source identity accepted")
 	}
+	t.Run("same-key-renewed-leaf", func(t *testing.T) {
+		before := store.Config().Identity
+		after, err := store.Renew("verify exact local forwarding certificate pin")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if before.SPKI != after.SPKI || before.Fingerprint == after.Fingerprint {
+			t.Fatal("fixture must preserve the key while changing the certificate")
+		}
+		freshServer, err := store.LocalForwardServerTLS()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if c, s := innerHandshake(client, freshServer); c == nil && s == nil {
+			t.Fatal("old pin accepted a different leaf signed by the same key")
+		}
+		freshClient, err := LocalForwardClientTLS(after)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if c, s := innerHandshake(freshClient, server); c == nil && s == nil {
+			t.Fatal("current pin accepted an older listener certificate snapshot")
+		}
+		if c, s := innerHandshake(freshClient, freshServer); c != nil || s != nil {
+			t.Fatal("current exact pin could not authenticate the renewed source", c, s)
+		}
+	})
 }
 
 func TestLocalForwardTLSRefusesMismatchedStoreAndClosedSigner(t *testing.T) {
