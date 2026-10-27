@@ -459,8 +459,9 @@ The web dashboard supports the same numbered view shortcuts as the terminal dash
 ## Installation and safe uninstallation
 
 The October 26 operator instruction requires every tagged version to publish
-macOS/Linux amd64/arm64 binary releases with all supported companion carriers
-built in. Native and companion payloads must report the exact tag, preserve
+macOS/Linux amd64/arm64 carrier binaries, each containing all four supported
+thin companion payloads without recursive catalogs. Native and companion
+payloads must report the exact tag, preserve
 source and checksum provenance, and pass distribution checks before publication.
 Release workflows must not invent a version or create tags without authorization.
 
