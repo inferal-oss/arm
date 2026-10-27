@@ -90,8 +90,20 @@ func TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart(t *tes
 		t.Fatal("cleanup error bypassed worker join", err)
 	}
 	assertRelayCharge(t, m, true)
+	// This healthy original owner is a causal Close-start witness. The marked
+	// owner's context is already cancelled, so observing it cannot establish
+	// that Close snapshotted the still-unjoined uncertain owner.
+	sentinel, joinSentinel := relayCleanupOwner(t, m, "relay-cleanup-close-start-sentinel")
 	closed := make(chan error, 1)
 	go func() { closed <- closeManager() }()
+	relayCleanupAwait(t, sentinel.Context().Done(), "Close did not cancel its healthy original owner")
+	// Close cancels that owner under the same mutex as its complete owner
+	// snapshot. Acquiring this mutex afterward proves the loop has completed.
+	m.mu.Lock()
+	m.mu.Unlock()
+	joinSentinel()
+	relayCleanupAwait(t, sentinel.workerDone, "healthy Close witness did not join")
+	assertRelayCharge(t, m, true)
 	select {
 	case err = <-closed:
 		t.Fatal("Close returned before positive original worker join", err)
