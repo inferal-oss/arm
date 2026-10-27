@@ -148,16 +148,14 @@ arm dashboard
 arm dashboard terminal""" .
 ui:homeNext a c:Link ; c:label "Resource and operation details →" ; c:to ui:capabilities ; c:href "#capabilities" .
 
-# Getting started: every snippet follows the checked-in ARM README; no install script or imaginary releases.
+# Getting started: Go resolves the vanity module to the public source repository.
 ui:start a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-6 ;
     c:children ( ui:startTitle ui:startIntro ui:buildCard ui:runCard ui:inspectCard ui:leaseCard ui:installCard ui:startReadme ) .
 ui:startTitle a c:Heading ; c:level 1 ; c:label "Install ARM" .
-ui:startIntro a c:Text ; c:label "Use a Go source checkout to install ARM. go.mod declares the required Go version." .
+ui:startIntro a c:Text ; c:label "Install ARM from source with Go. go.mod declares the required Go version." .
 ui:buildCard a c:Card ; c:label "01 / Install" ; c:content ui:buildBody .
 ui:buildBody a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ; c:children ( ui:buildCode ui:buildNote ) .
-ui:buildCode a c:Code ; c:block true ; c:language "sh" ; c:label """git clone https://github.com/inferal-oss/arm.git
-cd arm
-go install ./cmd/arm
+ui:buildCode a c:Code ; c:block true ; c:language "sh" ; c:label """go install getarm.org/cmd/arm@latest
 arm version""" .
 ui:buildNote a c:Text ; c:label "go install places arm in GOBIN, or GOPATH/bin when GOBIN is unset. Add that directory to PATH." .
 ui:runCard a c:Card ; c:label "02 / Start a backend and run a job" ; c:content ui:runBody .
@@ -186,7 +184,9 @@ arm release LEASE_ID""" .
 ui:leaseNote a c:Text ; c:label "Run these commands against your usual backend, or add the same --home directory to each. Use arm help COMMAND for the complete command contract." .
 ui:installCard a c:Card ; c:label "Optional / Build a multi-platform carrier" ; c:content ui:installBody .
 ui:installBody a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ; c:children ( ui:installCode ui:installNote ) .
-ui:installCode a c:Code ; c:block true ; c:language "sh" ; c:label """make install BUNDLE_JOBS=1
+ui:installCode a c:Code ; c:block true ; c:language "sh" ; c:label """git clone https://github.com/inferal-oss/arm.git
+cd arm
+make install BUNDLE_JOBS=1
 # Ensure the installation binary directory is on PATH, then:
 arm version
 arm install --dry-run""" .

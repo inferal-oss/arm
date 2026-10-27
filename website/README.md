@@ -109,10 +109,18 @@ small RDF/HTML image binding and the stock measure layer. It maps workloads and 
 resource capabilities and explicitly authorized peers; its SVG description and
 graph alt text provide equivalent relationship labels.
 
-The install examples use a source checkout and `go install ./cmd/arm`, then
+The primary source-install example is `go install getarm.org/cmd/arm@latest`, then
 `arm` on PATH. `go.mod` is the minimum Go-version authority. The audited rsync
-fork is included in ARM's canonical module. Remote versioned `go install` remains
-gated on an actual public installation check.
+fork is included in ARM's canonical module. This installs a host-platform source
+build; `make install` in a checkout builds the optional multi-platform carrier.
+
+The apex HTML and the static `public/cmd/index.html` and
+`public/cmd/arm/index.html` pages carry the same early `go-import` metadata:
+`getarm.org git https://github.com/inferal-oss/arm`. This is source discovery;
+the Git repository stays on GitHub. Publish the metadata and this command only
+with the matching canonical module declaration. Verify the actual HTTPS pages,
+including `?go-get=1`, before running the coordinated public Go installation
+check; do not substitute a redirect to a binary release.
 
 Asset SHA-256 values:
 
