@@ -6,6 +6,10 @@ EXTENDS Naturals
    joins, provider effects and unrelated workspace clocks are separate gates. *)
 VARIABLE state
 vars == <<state>>
+(* Exact safety-search quotient: neither field enables any Next action. Raw
+   successors still undergo Protection and RawInvariant action checks. Replay
+   witnesses and all proof obligations retain the complete original state. *)
+StateView == [state EXCEPT !.wall = 0, !.action = "initial"]
 Ticks == 0..5
 Walls == 0..2
 Boots == {"a","b"}
@@ -110,4 +114,7 @@ DeadlineFence == state'.action \notin {"grant","renew"} =>
 PromiseFence == state.charged /\ state'.phase#"terminal" => state'.charged
 ProtectionStep == state'=state \/ (NoRevival /\ RenewalFence /\ ExpiryFence /\ RetentionFence /\ DeadlineFence /\ PromiseFence)
 Protection == [][ProtectionStep]_vars
+(* Unlike TLC's state invariant check, this also checks raw successors whose
+   VIEW fingerprint has already been visited. *)
+RawInvariant == [][Invariant']_vars
 =============================================================================

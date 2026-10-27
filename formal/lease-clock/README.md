@@ -17,6 +17,48 @@ workspace/provider producer proofs are separate acceptance gates. The row bounds
 and finite tick range are explicit component bounds, not universal lifetime or
 resource limits. No source here makes those broader claims.
 
+The finite safety search uses `StateView`, which replaces only `wall` and
+`action` with constants when TLC fingerprints a state. All tick domains,
+transitions, enabling predicates, accounting fields and five strict proof
+obligations remain unchanged. Actual Go replay configurations never use VIEW;
+their complete raw states and witnesses still include both fields. This is a
+search optimization, not a new clock abstraction or a larger timeout.
+
+For this exact `Next`, equality of views is a bisimulation on the retained
+fields. No guard reads the source wall or action. Grant and Corrupt copy the
+source wall; every other action chooses a wall independently from the full
+Walls domain. Every action writes a fixed target action string. Therefore each
+raw edge from either representative has a matching edge from the other with
+the same retained target and target action; only copied wall can differ.
+Stuttering also preserves this relation. Any quotient path can consequently
+be lifted to a raw path from Init, and every raw path projects to one in the
+quotient. No fairness or non-safety liveness claim is made here.
+
+Accounting and all non-decorative Shape clauses depend only on the retained
+fields. The wall/action Shape clauses follow directly from each unchanged
+Row constructor and its bounded parameters. The added `RawInvariant` action
+property checks the entire successor Invariant even when its fingerprint was
+visited previously; the original Invariant is still configured too. Protection
+uses the target action but never the source wall/action except its full-state
+stuttering shortcut. For each Next alternative, the fence conjunction itself
+also holds on a full-state self-loop: Grant, Renew, Corrupt and expiry cannot
+be self-loops, and the remaining possible self-loops preserve all fence fields.
+Thus neither that shortcut nor the choice of representative hides a failing
+raw edge. The five original TLAPM proofs still concern full unquotiented Spec.
+
+This relies on the pinned TLC worker checking implied action properties on
+every generated raw edge, including edges with visited fingerprints. In source
+commit d2e1472884d292df7b0ed788712b1af262edc16e, Worker.java lines 457-469
+check state invariants only for unseen fingerprints but check implied actions
+unconditionally; SpecProcessor.java lines 1534-1549 classify boxed square-action
+properties accordingly. The runner now first checks a one-state quotient and
+requires two deliberately bad edges into that same visited view to fail with
+the exact Protection and RawInvariant diagnostics. The malformed-wall control
+guards the difference between TLC's state invariant and raw-edge checks. These
+controls, the optimized finite search, unchanged full Go traces and strict
+proofs all require actual execution before acceptance. Changes that make wall
+or source action enable Next require a new quotient review.
+
 Run the heavy gate only through the shared Semblance queue with the approved
 same-user liveness context, current queue defaults, GOMAXPROCS=1, Go -p=1 and
 GOPROXY=off. Supply the pinned cached tools explicitly when their cache is in the

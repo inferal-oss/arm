@@ -277,11 +277,42 @@ def altered(histories):
  return variants
 
 
+TLC_SERIAL_WARNING = ('Warning: Please run the Java VM, which executes TLC with a throughput optimized garbage collector, by passing the "-XX:+UseParallelGC" property.\n'
+ '(Use the -nowarning option to disable this warning.)\n')
+
+
+def validate_tlc_diagnostics(log):
+ count=log.count(TLC_SERIAL_WARNING)
+ require(count<=1,'duplicate TLC startup warning refuses acceptance')
+ if count:
+  require(log.startswith('TLC2 Version ') and log.partition('\n')[2].startswith(TLC_SERIAL_WARNING),'known TLC warning must occur immediately after the version banner')
+  log=log.replace(TLC_SERIAL_WARNING,'',1)
+ require(not re.search(r'(?mi)(warning:|OutOfMemoryError|Exception in thread)',log),'unexpected TLC warning/exception refuses acceptance')
+
+
+def tlc_diagnostic_controls():
+ banner='TLC2 Version 2026.10.20.183001 (rev: d2e1472)\n'
+ validate_tlc_diagnostics(banner+TLC_SERIAL_WARNING+'Running breadth-first search\n')
+ validate_tlc_diagnostics(banner+'Running breadth-first search\n')
+ rejected=[]
+ for name,log in (
+  ('unknown-warning',banner+TLC_SERIAL_WARNING+'Warning: unrecognized diagnostic\n'),
+  ('duplicate-startup-warning',banner+TLC_SERIAL_WARNING*2),
+  ('partial-startup-warning',banner+TLC_SERIAL_WARNING.splitlines()[0]+'\n'),
+  ('late-startup-warning',banner+'Running breadth-first search\n'+TLC_SERIAL_WARNING),
+  ('out-of-memory',banner+TLC_SERIAL_WARNING+'OutOfMemoryError\n'),
+  ('thread-exception',banner+TLC_SERIAL_WARNING+'Exception in thread main\n')):
+  try:validate_tlc_diagnostics(log)
+  except ValueError:rejected.append(name)
+  else:raise ValueError('TLC diagnostic control accepted: '+name)
+ return {'known_serial_gc_startup':'passed','warning_free':'passed','rejected':rejected}
+
+
 def terminal_count(log,witness=False,expected=None):
  errors=re.findall(r'^Error: (.*)$',log,re.M)
  permitted=['Invariant NotFinal is violated.','The behavior up to this point is:'] if witness else []
  require(errors==permitted,'unexpected TLC diagnostic')
- require(not re.search(r'(?m)(Warning:|OutOfMemoryError|Exception in thread)',log),'TLC warning/exception refuses acceptance')
+ validate_tlc_diagnostics(log)
  if not witness:require('Model checking completed. No error has been found.' in log,'complete TLC success required')
  counts=re.findall(r'(\d+) distinct states found, (\d+) states left on queue',log)
  require(len(counts)==1 and int(counts[0][0])>0,'one positive terminal TLC statistic required')
@@ -503,6 +534,7 @@ class ClockGate(base.Gate):
   if self.args.mode in ('prove','all'):
    self.tool('tlapm-TLAPS-source',Path(self.summary['tools']['tlapm']['path']).parent.parent/'lib/tlapm/stdlib/TLAPS.tla')
   self.summary['gates'].append({'strict_closure_controls':closure_controls(self.run/'closure-controls')})
+  self.summary['gates'].append({'tlc_diagnostic_controls':tlc_diagnostic_controls()})
  def capture_generated(self,name,path):
   require(path.parent==self.run and not path.is_symlink() and path.stat().st_nlink==1,'owned regular generated source/artifact required')
   receipt=self.generated_closure.capture(name,path)
@@ -515,8 +547,30 @@ class ClockGate(base.Gate):
   return self.command([self.args.java,'-Djava.io.tmpdir='+str(self.java_tmp),'-XX:+UseSerialGC','-Xmx256m','-cp',self.args.tlc_jar,'tlc2.TLC','-workers','1','-fp','0','-metadir',self.run/(name+'-states'),'-noGenerateSpecTE','-config',config,*extra,self.run/module],name,expected=expected,timeout=120)
  def check(self):
   self.verify_sources()
+  self.view_controls()
   log=self.tlc_run('LeaseClock.tla',self.run/'LeaseClock.cfg','lease-clock-safety')
-  self.summary['gates'].append({'finite_safety':'passed','distinct_states':terminal_count(log)})
+  self.summary['gates'].append({'finite_safety':'passed','distinct_states':terminal_count(log),'view':'only wall/action; raw invariant and action edges checked'})
+ def view_controls(self):
+  source=(self.run/'LeaseClock.tla').read_text();expected='StateView == [state EXCEPT !.wall = 0, !.action = "initial"]'
+  require(expected in source.splitlines() and re.findall(r'^StateView ==[^\n]*$',base.module_code(source),re.M)==[base.module_code(expected)],'exact decorative-field VIEW required')
+  require((self.run/'LeaseClock.cfg').read_text().splitlines()==['SPECIFICATION Spec','INVARIANT Invariant','PROPERTY Protection','PROPERTY RawInvariant','VIEW StateView','CHECK_DEADLOCK FALSE'],'exact full safety configuration required')
+  results=[]
+  # All targets share the initial state's VIEW. The two negative controls must
+  # fail on the raw edge even though TLC has already seen that fingerprint.
+  for name,wall,action,property_name in (('decorative-edge',2,'poll',None),('action-edge',2,'renew','Protection'),('raw-shape-edge',3,'poll','RawInvariant')):
+   module='ViewControl'+re.sub('[^A-Za-z0-9]','',name)
+   source=self.run/(module+'.tla');cfg=self.run/(module+'.cfg')
+   source.write_text('---- MODULE '+module+' ----\nEXTENDS LeaseClock\nControlNext == state\'= [state EXCEPT !.wall = '+str(wall)+', !.action = "'+action+'"]\nControlSpec == Init /\\ [][ControlNext]_vars\n====\n')
+   cfg.write_text('SPECIFICATION ControlSpec\nINVARIANT Invariant\nPROPERTY Protection\nPROPERTY RawInvariant\nVIEW StateView\nCHECK_DEADLOCK FALSE\n')
+   self.capture_generated(name+'-view-module',source);self.capture_generated(name+'-view-config',cfg)
+   log=self.tlc_run(module+'.tla',cfg,'view-control-'+name,12 if property_name else 0)
+   if property_name:
+    require(re.findall(r'^Error: (.*)$',log,re.M)==['Action property '+property_name+' is violated.','The behavior up to this point is:'],'exact raw-edge property violation required')
+    validate_tlc_diagnostics(log)
+    require(re.findall(r'(\d+) distinct states found, (\d+) states left on queue',log)==[('1','0')],'negative control must hit an already visited VIEW fingerprint')
+   else:require(terminal_count(log)==1,'decorative changes must collapse to one exact VIEW state')
+   results.append({'control':name,'status':'rejected' if property_name else 'passed','distinct_states':1,'property':property_name})
+  self.summary['gates'].append({'view_controls':results})
  def replay(self,states,name,positive):
   module='Replay'+re.sub('[^A-Za-z0-9]','',name)
   literals=',\n'.join(base.tla_value(s) for s in states)
