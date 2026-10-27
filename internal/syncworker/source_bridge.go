@@ -21,6 +21,10 @@ func RunSource(hold *manager.SyncSourceHold) error {
 		return errors.New("original source sync hold required")
 	}
 	return hold.Start(func(ctx context.Context, ch ssh.Channel, requests <-chan *ssh.Request) error {
+		closeOriginal, err := hold.OriginalTransportCloser(ctx, ch)
+		if err != nil {
+			return err
+		}
 		if err := hold.CheckActive(ctx); err != nil {
 			return err
 		}
@@ -48,7 +52,7 @@ func RunSource(hold *manager.SyncSourceHold) error {
 		}()
 		accepted, requestErr := ch.SendRequest("exec", true, ssh.Marshal(struct{ Command string }{FixedCommand}))
 		if requestErr != nil || !accepted {
-			_ = ch.Close()
+			_ = closeOriginal()
 		}
 		writeErr := <-writeDone
 		if err := errors.Join(requestErr, writeErr); err != nil {
@@ -77,7 +81,7 @@ func RunSource(hold *manager.SyncSourceHold) error {
 				}
 			}
 		}
-		session, err := newSingleStreamSession(ch, waitExit)
+		session, err := newOwnedSingleStreamSession(ch, waitExit, closeOriginal)
 		if err != nil {
 			return err
 		}
