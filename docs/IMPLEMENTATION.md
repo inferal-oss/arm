@@ -2138,6 +2138,12 @@ This source correction is not yet reflected in the embedded browser bundle:
 the deployed `b4d49c9` Monitor capture still shows the badges. Rebuilding and
 verifying the composed UI remains required.
 
+The compact Resources candidate is not yet integrated or served by main. Its
+source preserves keyed consumer controls and clears a previous lease title
+before asynchronous lookup. Completed source-bound frontend, native normal and
+bootstrap checks support those changes, with browser focus, layout, readable
+labels and safe fixture authority still required before product acceptance.
+
 ## Disposable guest suspend validation status
 
 The second reviewed fixture gate observes real S3 and wake in two fresh guests.

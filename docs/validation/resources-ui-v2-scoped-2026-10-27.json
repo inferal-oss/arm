@@ -1,0 +1,238 @@
+{
+  "schema": 1,
+  "status": "scoped-completed-evidence-with-harness-limitations",
+  "date": "2026-10-27",
+  "source": {
+    "base": "d09da5a65fde231b70c800f589767577370a0fe9",
+    "reviewed_source_patch_sha256": "4e9e19e139269fee62f25e31276c55596eb7a1c10c741fee3389f93b3116d8bc",
+    "owned_file_sha256": {
+      "internal/server/web/semblance/graph-ui.mjs": "8a43fc666a97de5d0bec047e659dfb076a98425506e8127ea6e97787116d5606",
+      "internal/server/web/semblance/main-lifecycle.test.mjs": "cd29be659fe06849517528847bb6db76d0a233bb1eaffe9d772dd6958c6b3c86",
+      "internal/server/web/semblance/main.mjs": "6e644cf399bb31d767af803f1374c556d23bbab2c113dac4ba979bdc48ade0e5",
+      "internal/server/web/semblance/monitor-summary.test.mjs": "50bc35a9d65cabaf9bc57b3518e3fc26a74e4c476e123f3aeefedf4a7417d2f4",
+      "internal/server/web/semblance/pools.mjs": "3ce9728b4c439cb61304e550e12b5b14ed371aa6fef111e16f178baaaa4d7328",
+      "internal/server/web/semblance/pools.test.mjs": "2bec094da8eb40f9118d1b80d4cc7626c3d509d480ad2465956822edf581c9b5",
+      "web/test/graph-ui.test.mjs": "4c8a8b6ac11953ea6724f8afa8f4cd65e7834877b356073cfb1e784f06f0ed45",
+      "internal/server/web/semblance/resources.mjs": "170b5336d3c8423df44a3bf9dd6319af8a0b19a1227f03dc8f8c8b1758d059d6",
+      "internal/server/web/semblance/resources.test.mjs": "ce5ff6c7708280cc23223f199e4e1f2af960f80c29116202cbd8b32fcfb9c72e"
+    },
+    "generated_after_arm_mjs_sha256": "5ace728ee32048d289e0c5d01bfb1c2daee8ddd0fdfa607a962a902446f07c1f",
+    "prechecked_source_files": 2522,
+    "observed_source_changes": [
+      "internal/server/web/assets/arm.mjs"
+    ]
+  },
+  "platform": {
+    "os": "darwin",
+    "arch": "arm64",
+    "Go": "go1.27.3",
+    "CGO_ENABLED": "1",
+    "native_cohort": "normal; not race"
+  },
+  "completed_phases": {
+    "count": 12,
+    "direct_original_children_joined": 12,
+    "expected_failures": 3,
+    "unexpected_exits": 0
+  },
+  "cohorts": {
+    "node": {
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0,
+      "runtime_pass_names": [
+        "filesystem explanation separates human policy from collector paths and notes",
+        "I/O, unavailable GPU and reservations have plain independent explanations",
+        "live disk help explains shared conservative headroom without collector paths",
+        "memory resource card leads with backend headroom and preserves stale/deficit states",
+        "connected held status ages CPU, memory and disk independently and changes the card freshness key",
+        "CPU live headroom is separate from promises, physical core count and unknown",
+        "CPU freshness ages held snapshots and remote summaries never use local inventory",
+        "pool reviews preserve full int64 counts, explicit deficit and immutable complete scope",
+        "create normalizes exact canonical wire fields and rejects incomplete/foreign/oversize reviews",
+        "unknown pool operation survives reload; lookup no-result and same-key retry never change request",
+        "pending send/lookup bounded, prior uncertainty survives preflight error, foreign authority cannot replay",
+        "lookup requires exact stored request and matching result, never accepts a mismatched key or capacity",
+        "pause review distinguishes new requests from already queued work",
+        "subpool creation inherits identity and binds parent/tree review; reduction charges child backing once",
+        "resource cards use backend child commitments without adding overlapping tree totals",
+        "malformed hierarchy scalar coercions cannot enter an exact child review",
+        "child carve respects exact uncarved availability through MaxInt64",
+        "complete reviews respect the actual wire budget before sending or retaining a new operation",
+        "a new connection reloads an open lease and replaces callbacks bound to the old connection",
+        "authentication reset preserves a direct lease route and reconnect reopens it",
+        "an explicit detail close clears the lease route",
+        "view-heading focus precedes opening a directly linked lease dialog",
+        "a superseded connection cannot rebind the current lease detail",
+        "a failed connection read retains the existing detail and route without a mutation",
+        "a delayed or rejected next lease read clears the previous display name immediately",
+        "filesystem usage shows reported used/total, without deriving it from availability",
+        "a live host with a stale filesystem refuses a current usage summary",
+        "page staleness, elapsed expiry and disconnect qualify the usage summary",
+        "unknown used or total remains unavailable without hiding independent known availability",
+        "reported zero usage, total and availability remain valid zeroes",
+        "stale and recovered summaries update the existing handles without changing measurements",
+        "routine reported I/O badges hide, while partial/unavailable status remains visible and recovers",
+        "cancelling a create review preserves empty inventory as row content",
+        "pool graph review preserves exact int64 counts and default-cancel focus; only confirmation dispatches",
+        "changed revisions and disconnect disable review; close, reconnect and cancellation never dispatch",
+        "unknown dispatch retains exact request/key; lookup and same-key retry require explicit actions",
+        "cancelled/closed editor ignores late inspection and preserves original pool route",
+        "subtree pages bind exact selected pool; obsolete response after disconnect cannot refresh data",
+        "pool route retains exact sparse int64 journal boundaries, including empty backward page",
+        "read-only oversized hierarchy refuses edits and disposal ignores all pending responses",
+        "child review inherits units and scope, binds complete hierarchy and stales on sibling-only change",
+        "subtree cursor history commits after successful current read and keeps direct child claims visible",
+        "closing after live refresh restores equivalent action or unavailable title",
+        "journal refresh reuses expanded entry and preserves semantic page-control focus",
+        "overview retains material pool warnings while management is closed; route opens the selected pool",
+        "compact CPU keeps live zero, full promises and a visible shortfall",
+        "stale capacity remains unavailable with existing promises visible",
+        "counted partitions preserve exact commitments, held backing and pending return"
+      ],
+      "actual_source_files": 7,
+      "missing_requested_path": "internal/server/web/pool-operations.test.mjs"
+    },
+    "RDF": {
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "source_declared_names": [
+        "resource refresh retains disclosure, focused consumer handles and exact visible commitments",
+        "a focused consumer keeps its RDF handle and DOM node through renewal and other consumer membership changes",
+        "pool management uses a stock contained dialog; an empty inventory leaves actions behind its entry",
+        "opening an older hosted dialog raises its existing projection above newer management overlays",
+        "renders the stock Semblance default and runs button effects only after a graph event",
+        "field, choice and checkbox changes live in the graph before their host callback",
+        "uses stock Dialog graph open/close and notifies the effect on stock close",
+        "preserves exact review strings, BigInt JSON and reused disclosure identity",
+        "MessageList renders rich component bodies with stock conversation semantics",
+        "stock palette filters graph options and delivers a raised Button effect exactly once",
+        "optional variants are absent and stock grid parameters remain valid graph data",
+        "effect markers are consumed before native focus reentry and close is delivered once",
+        "messages preserve exact instants in the viewer clock and evict retired author data",
+        "palette keywords find full identifiers while labels remain concise",
+        "programmatic reading focus does not remove native controls from the Tab order",
+        "a pointer-opened overlay remembers its invoking control even when the browser did not focus it",
+        "real RDF/event bus excludes private native values from every graph and LDES through submit and destroy",
+        "missing private island ontology refuses clearly instead of inserting an unrenderable late class"
+      ],
+      "name_provenance": "Frozen18unconditional test declarations; actual terse single-file Vitest report gives18passed/18, no individual pass events."
+    },
+    "native": {
+      "roots": [
+        "TestDashboardBootstrapAndSharedWebSocket",
+        "TestPoolReadRefusesOversizedSnapshotWithoutTruncatingReview",
+        "TestScreenAssetsPreserveComposedDashboardModules",
+        "TestSemblanceEmbeddedAssets"
+      ],
+      "runtime_pass_names": [
+        "TestPoolReadRefusesOversizedSnapshotWithoutTruncatingReview",
+        "TestScreenAssetsPreserveComposedDashboardModules//assets/arm.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/core/rfb.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/LICENSE",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/inflate.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/deflate.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//ard/ard-patch.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//ard/LICENSE.txt",
+        "TestScreenAssetsPreserveComposedDashboardModules",
+        "TestSemblanceEmbeddedAssets/LICENSES.txt",
+        "TestSemblanceEmbeddedAssets/arm-wat-only-store-DpLv8E9I.mjs",
+        "TestSemblanceEmbeddedAssets/arm.mjs",
+        "TestSemblanceEmbeddedAssets/assets/wat-C2A9nalw.wasm",
+        "TestSemblanceEmbeddedAssets/wat-2wrDwrzy.mjs",
+        "TestSemblanceEmbeddedAssets",
+        "TestDashboardBootstrapAndSharedWebSocket"
+      ],
+      "named_passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    "negative_controls": [
+      {
+        "phase": "negative-modal-v2",
+        "test": "opening an older hosted dialog raises its existing projection above newer management overlays",
+        "expected_assertion": "AssertionError: expected 'Pool manager\u2715Pool action' to contain 'Lease detail'",
+        "intentionally_filtered": 17
+      },
+      {
+        "phase": "negative-consumer-v2",
+        "test": "a focused consumer keeps its RDF handle and DOM node through renewal and other consumer membership changes",
+        "expected_assertion": "AssertionError: expected true not to be true // Object.is equality",
+        "intentionally_filtered": 17
+      },
+      {
+        "phase": "negative-title-v2",
+        "test": "a delayed or rejected next lease read clears the previous display name immediately",
+        "error": "ERR_ASSERTION",
+        "actual": "prior-readable-name",
+        "expected": "Lease detail"
+      }
+    ]
+  },
+  "artifacts": {
+    "binaries": {
+      "before": {
+        "sha256": "a20b9d7b22725ebfb6766c3c67c52a916992e363b8071fe4201bbf1237dbeeba",
+        "bytes": 70266034
+      },
+      "after": {
+        "sha256": "5e610564bfb924c40699ffff738264447a856cf33461f50eb7bdc7f68dbe2bba",
+        "bytes": 70266034
+      },
+      "fixture-relay": {
+        "sha256": "2529bed4304dfad42956380ea1b836db34093ee4ca21b40a9af05d8720d7c9ce",
+        "bytes": 10626354
+      }
+    },
+    "assets": {
+      "before": {
+        "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+        "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+        "arm.mjs": "34eab0730d7b13941f000c0af4e3b368bb0abc7a675315338d13d8fb2ab94e56",
+        "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+      },
+      "after": {
+        "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+        "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+        "arm.mjs": "5ace728ee32048d289e0c5d01bfb1c2daee8ddd0fdfa607a962a902446f07c1f",
+        "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+      }
+    },
+    "all_five_asset_bytes_present_in_respective_binaries": true,
+    "baseline": "Freshly rebuilt d09da5a badge-fix source; not older public embedded binary.",
+    "Vite_warnings": "Both builds report the existing large-chunk warning; no build failure."
+  },
+  "compiled_bootstrap": {
+    "passed_assertions": [
+      "one-use dashboard link",
+      "embedded assets",
+      "CSP and no cookies",
+      "origin and authority refusal",
+      "ticket replay refusal",
+      "literal executable URL argument",
+      "real PTY launcher",
+      "JSON/piped/no-open refusal of graphical opener"
+    ],
+    "not_browser_rendering_acceptance": true,
+    "shutdown_scope": "Normal originalPythoncompletion and source-guarded daemon.lock/endpoint cleanup path; no per-daemon originalWait/all-descendant attestation."
+  },
+  "limitations": [
+    "Completed normal paths only: old driver remains unready as a general validation or browser harness.",
+    "The driver checks phase exit status, not exact positive rosters or negative AssertionError identities; this independent audit reconstructs those actual completed results.",
+    "Source2522files and7selectedtools were checked externally before/after; no inner-harness continuous immutability or full node_modules/toolchain/OS closure is established.",
+    "Driver has no robust signal supervisor/private-cache/inner-Go deadline proof; direct original Popen Wait does not prove every descendant stopped.",
+    "Node argv includes a nonexistent pool-operations.test.mjs; all48actualpasses match the7existing requested files exactly. No nonexistent file or unselected pool-console test is claimed run.",
+    "RDF18names are reconstructed from18unconditional frozen source declarations; actual terse Vitest log reports18passed/18 but no per-case pass events.",
+    "Native Go4root/16namedcohort is normal, not race; Linux and later composed sources are not validated by this run.",
+    "Beforebinary is freshly rebuilt d09 badge-fix baseline, not the earlier public embedded artifact.",
+    "Compiled bootstrap is CLI/HTTP/PTY evidence only, with a fake executable opener; no browser rendering or native activeElement proof.",
+    "Bootstrap normal completion and no retained-fixture message imply its guarded lock/endpoint-removal branch completed, but no structured per-daemon originalPID/Wait/lock/listener receipt is available.",
+    "Old compiled relay is not read-only safe: operation/status plus capitalized Operation/lease_action can disagree between map validation and Go case-insensitive typed decode. It must not be used for browser validation.",
+    "Old browser fixture uses fixed reusable homes; neither it nor the corrected pending relay/browser packet is accepted or launched by this audit."
+  ],
+  "remaining_gate": "Corrected frozen relay/browser authority and ownership review plus separately authorized actual browser evidence; current record does not authorize that launch or product-browser acceptance.",
+  "independent_private_review_sha256": "4bcf1c1ff2a6085667275bbd827a72a90d534a892d6979db01b9dc06e12d8f4b"
+}

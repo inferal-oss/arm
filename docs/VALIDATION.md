@@ -5528,6 +5528,32 @@ visual review does not accept every decorative envelope, text or browser.
 These qualified experimental observations neither promote the numeric dependency
 nor publish or merge Sparkline.
 
+### Resources v2 completed source cohorts
+
+[Scoped evidence](validation/resources-ui-v2-scoped-2026-10-27.json) records
+48 named Node passes from seven existing requested files, 18 aggregate RDF
+passes, four native normal roots/16 named Go passes without skips, three exact
+assertion negatives, frontend/binary builds and compiled CLI/HTTP/PTY bootstrap.
+All 12 direct original phase children join with expected exits. Independent
+review reconstructs actual positive rosters and precise negative assertions;
+the original driver checks only exits. One requested Node path does not exist
+and supplies no coverage. RDF names come from frozen unconditional source
+declarations rather than individual runtime events.
+
+All 2,522 before/after source pins match except the expected generated browser
+bundle, and seven selected tool pins match. Both actual binary images contain
+all five recorded asset byte sequences. The baseline is newly rebuilt from
+`d09da5a`, including its badge correction, rather than the earlier public bundle.
+Bootstrap has normal completion and guarded lock/endpoint removal, without a
+structured per-daemon original-Wait or all-descendant receipt.
+
+This accepts completed observations, not the old harness as a general runner.
+Its relay can disagree with Go's case-insensitive operation decoding and is
+unsafe for read-only browser validation. The old fixed-home browser fixture
+remains unlaunched. Corrected fixture authority, bounded ownership and actual
+desktop/phone focus/layout/readable-label checks remain before integration;
+neither later source nor Linux/race behavior is accepted by this cohort.
+
 ### Kubernetes status helper integration
 
 [Scoped helper evidence](validation/kubernetes-pod-status-helper-2026-10-27.json)
