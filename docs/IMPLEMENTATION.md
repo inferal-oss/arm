@@ -95,6 +95,12 @@ dependent on shared numeric conversion/parity
 fixes. Submission does not establish upstream acceptance. This UI milestone does not
 enable fenced backend features or accept every remote/native operation.
 
+The separate experimental Sparkline candidate has qualified native evidence for
+80 configurations, regional keyboard/locale behavior and 512-point identity.
+Its 513 selector helper remains failed, with separate unchanged HTML and visual
+evidence supporting visible refusal. The numeric Calendar failure remains open;
+these observations do not promote the numeric dependency or change ARM's bundle.
+
 The component evidence targets `eb80b431`. Later upstream reaction changes need
 separate composition; the disabled-text draft has textual conflicts to resolve.
 The palette's stock Doodle paint-envelope failures remain disclosed, with equal

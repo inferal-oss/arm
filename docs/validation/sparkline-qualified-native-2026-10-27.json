@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "kind": "sparkline-qualified-private-native-independent-audit",
+  "disposition": "qualified_observations_supported; original_selector_failure_preserved",
+  "sealed_manifest_sha256": "822196961b538d6e202477f3691445ef1c19d3dbca030f80976d6529d7fd08ca",
+  "summary_sha256": "561483c3f2da65b7b6c34a3483895c61a06485fc9b89dfd16d7c5dd4214a13c8",
+  "ax_transcription_supplement_sha256": "3e3582ded3bbf01b57b28d082acf0ae02d95d06e3861f7580f1c86a11cb84bb0",
+  "source": {
+    "base": "1d9ec6be12f883d4bb0f0e57f6c00053b43522c1",
+    "index_tree": "354d77ac0fa0336061939815940c85dab3e65b0e",
+    "source_count": 638,
+    "closure_sha256": "ac6eadd2ec6afb6de1caeecb1a81593d32570a0f77afe29e89991ba8a04793d9",
+    "current_source_matches": true,
+    "runner_manifest_sha256": "dc42ad146070ff1dfd48df056b2dba2c364a7598711b141f7de24ee75f199f98",
+    "images": {
+      "rust.wasm": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6",
+      "wat.wasm": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031"
+    },
+    "before_final_pin_maps_identical": 19098
+  },
+  "sealed_counts": {
+    "evidence_files": 215,
+    "screenshots": 90,
+    "actual_JPEG_format": 90,
+    "png_filename_suffix": 90,
+    "matrix_files": 80,
+    "harness": 28,
+    "protocol_outputs": 12
+  },
+  "matrix": {
+    "themes": 10,
+    "schemes": 2,
+    "widths": [
+      1728,
+      390
+    ],
+    "locales": [
+      "en",
+      "ar"
+    ],
+    "configurations": 80,
+    "paired_paths": 160,
+    "matched_path_states": 480,
+    "intermediate_phase_records": 160,
+    "intermediate_path_observations": 320,
+    "namespace_scoped_recorded_clicks": 320,
+    "counts": [
+      [
+        7,
+        4,
+        8
+      ],
+      [
+        8,
+        6,
+        8
+      ],
+      [
+        7,
+        4,
+        8
+      ]
+    ],
+    "tracked_identity_observations": 800,
+    "single_reaction_exact_deltas_and_point_insert_remove": true,
+    "raw_html_namespace_only_parity_rechecked": true,
+    "visible_control_horizontal_geometry_observations": 2400
+  },
+  "regional": {
+    "locales": [
+      "en-US",
+      "uk-UA",
+      "de-AT",
+      "ar-EG"
+    ],
+    "same_generation": true,
+    "paths": 2,
+    "focused_expanded_open_closed": true,
+    "settled_readings_visible": true
+  },
+  "boundary_witnesses": {
+    "512": {
+      "paths": 2,
+      "receive_same_nodes": 512,
+      "withdraw_same_surviving_nodes": 511,
+      "only_middle_point_removed": true
+    },
+    "513": {
+      "original_helper": "FAILED_preserved",
+      "counts_both_paths": [
+        0,
+        0,
+        0
+      ],
+      "actual_html_refusal": true,
+      "unchanged_paragraph_visible_both_paths": true,
+      "ax_transcription_corroboration_only": true
+    }
+  },
+  "actual_example_paths": 2,
+  "cleanup": {
+    "generations": 83,
+    "known_returned_mounts": 166,
+    "known_unmount_dispose_returned": true,
+    "original_server_wait_calls": 1,
+    "original_server_exit": 0,
+    "wrapper_exit": 0,
+    "closed_listener_refused": true,
+    "private_paths_absent": true,
+    "receipt_cleanup_errors": 0,
+    "owned_tabs_closed_viewport_reset_returned": true
+  },
+  "visually_reviewed_images": {
+    "matrix-00-Semblance-light-en-1728.png": {
+      "sha256": "8747c4f2b1c14b9da22fd95d1e611f51632af4b97cdd1159eb3c32ec34c5205b",
+      "width": 1713,
+      "height": 1747,
+      "format": "JPEG",
+      "filename_suffix": ".png"
+    },
+    "matrix-63-Doodle-dark-ar-390.png": {
+      "sha256": "e1d3125c4b12c1dcbecc7412d8c73d1ab9be6abd3598b520dbaf032ba4ec0cb3",
+      "width": 375,
+      "height": 1555,
+      "format": "JPEG",
+      "filename_suffix": ".png"
+    },
+    "locale-de-AT-both-expanded-settled.png": {
+      "sha256": "43a2c092701c6036c85764d49bf1a65a3afaaa40cd859d56675909323de09983",
+      "width": 375,
+      "height": 1949,
+      "format": "JPEG",
+      "filename_suffix": ".png"
+    },
+    "512-middle-updated.png": {
+      "sha256": "4cbd5cb05ac8493239494342d2b9fd7eb5ff2717ea3ff8236a9fe893d6ac8bb5",
+      "width": 1713,
+      "height": 1747,
+      "format": "JPEG",
+      "filename_suffix": ".png"
+    },
+    "513-visible-refusal.png": {
+      "sha256": "96106d6d59aa1d13ade2de551a8160af2370e4df5cfd468e0bb315b2905bd649",
+      "width": 375,
+      "height": 1415,
+      "format": "JPEG",
+      "filename_suffix": ".png"
+    }
+  },
+  "preserved_failures": {
+    "private_513_selector_sha256": "7d07692f6c3208a3b9ce205ffab7d53a2d0510a0e6e490c3a9258652df2899f8",
+    "old_c47_files_unchanged": 19,
+    "numeric_N1": "FAILED509/510"
+  },
+  "findings": [],
+  "limitations": [
+    "All 90 screenshot files have .png suffixes but actual JPEG payloads; dimensions and hashes refer to actual bytes.",
+    "Qualified private component observations under experimental numeric dependency; N1 remains FAILED509/510 sole Calendar corpus assertion. No numeric, PR or merge promotion.",
+    "Original 513 leaf-selector assertion remains failed. Unchanged actual HTML, paragraph metrics and screenshot show visible refusal on both paths; AX supplement is a transcription, not raw MCP transport.",
+    "Original c47 forced-fixture-width geometry failure remains failed and unchanged.",
+    "Strict same-node witnesses cover tracked circle/button keys only, not line/text/container identity.",
+    "Recorded geometry covers document/body scroll widths, control/SVG horizontal bounds and SVG coordinates. No blanket decorative paint-envelope, fixture-prose legibility, crossbrowser or all-theme screenshot visual approval.",
+    "Immediate zero-height CSS-transition snapshots remain preserved; separate settled expanded readings inspected.",
+    "Cleanup covers known returned controlled mounts/Runtime disposal only. Actual example entry discards mount handle, so only document/tab teardown is established there; no all-descendant/callback/OS/full-browser cleanup claim.",
+    "Wrapper/server exit0 covers the owned protocol; it does not erase the private selector failure.",
+    "No candidate source edit/build/test/browser/queue/network/retry/publication/app messaging performed by this audit."
+  ],
+  "independent_private_audit_sha256": "51d947e3142180c404c7ac5bdc299791875d47c290cb937a75b447095b293e14"
+}

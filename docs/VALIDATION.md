@@ -5501,6 +5501,33 @@ does not establish explicit unmount/store disposal. Preserved screenshot files
 have `.png` names but contain valid JPEG images; their actual types and hashes
 are recorded. A natural-width fixture successor requires fresh native evidence.
 
+### Qualified Sparkline native successor
+
+[Qualified observations](validation/sparkline-qualified-native-2026-10-27.json)
+bind 215 retained files, 28 harness inputs, 12 protocol outputs, 638 framework
+source hashes and unchanged engine images. All 19,098 before/final input entries
+match. The actual 80 configurations cover ten themes, light/dark, 1728/390 widths
+and English/Arabic. Both paths match through 480 initial/receive/withdraw states,
+with 320 namespace-scoped recorded clicks and retained keyed circle/button
+identity. Four live regional locales exercise keyboard disclosure and settled
+readings; the 512-point witness retains all updated nodes and 511 survivors after
+middle-point withdrawal.
+
+The extra 513 leaf-selector assertion remains failed. Its predicate relies on
+a field omitted from the returned DOM view. Separate unchanged actual HTML,
+paragraph style/geometry and the inspected screenshot support visible refusal
+on both paths; the AX transcript is corroboration, not raw transport evidence.
+The first geometry failure and numeric N1 509/510 failure remain failed.
+
+All 166 known controlled mounts return unmount/disposal; the original server
+has one Wait, exit zero, refused listener, removed private paths and closed tabs.
+This does not establish explicit disposal of the actual example's discarded
+mount or every browser descendant. All 90 screenshot payloads are JPEG despite
+PNG suffixes. Geometry covers the recorded document/control/SVG bounds; selected
+visual review does not accept every decorative envelope, text or browser.
+These qualified experimental observations neither promote the numeric dependency
+nor publish or merge Sparkline.
+
 ### Kubernetes status helper integration
 
 [Scoped helper evidence](validation/kubernetes-pod-status-helper-2026-10-27.json)
