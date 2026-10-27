@@ -5593,3 +5593,22 @@ match current-source metadata, hashes and dimensions, and are independently
 visually reviewed. HTTP root redirects to HTTPS. Earlier native interactions
 retain their recorded scope: this is no new interaction run, native fullscreen
 API acceptance, tagged release or public Go installation.
+
+### Failed disposable-guest S3 operation gate
+
+[Failed-run evidence](validation/disposable-guest-s3-gate2-failed-2026-10-27.json)
+retains the second gate's completion timeout. Independent review verifies all
+2,510 source/mode entries and five frozen source copies. Two fresh sequential
+guests each show actual deep-S3/wake events and a stable native boot scope.
+The single-clock MONOTONIC control completes with normal Go exit one and the
+sole intended clock-oracle failure. The production guest observes BOOTTIME
+including suspend, live monotonic/Go/SSH contexts and all three original
+remaining values zero, then produces no final test or bootstrap completion.
+Expiry refusal, cancellation and settlement assertions therefore remain unproven.
+
+Both original QEMU owners acknowledge quit, call the sole original Wait once,
+exit zero and report positive native joins without attempted signals. This
+proves only the outer owners' closure. The first gate's denied-signal cleanup
+uncertainty remains separately unconfirmed. No guest-job settlement is inferred
+from VM exit, and no host suspend, broad platform support or feature acceptance
+is claimed. Any corrected successor needs reviewed source and fresh evidence.

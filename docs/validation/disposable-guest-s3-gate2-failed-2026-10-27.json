@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "kind": "disposable-guest-s3-second-gate-failed-evidence",
+  "disposition": "failed_run_evidence_accepted; feature_acceptance_not_established",
+  "overall": {
+    "status": "failed",
+    "reported_original_controller_exit": 1,
+    "retained_controller_failure": "guest completion did not arrive"
+  },
+  "source": {
+    "manifest_sha256": "2ac1ff22cce49e64a7211b763d024ab26003b1dffc7536b7d272667482acf48c",
+    "source_entries": 2510,
+    "expected_before_failure_maps_identical": true,
+    "retained_five_source_hashes": {
+      "guest_test": "442f892e9d11de67c8758f1534c1873439d0c5f618407320814de0e2307262d3",
+      "controller": "f065dfa376d5300c57ff6a0563add09c8ebac647460e4a84bd000ede3ebb1358",
+      "bootstrap": "f1aa3460a0b60146d48a747bc6ab1aabf8cc82189d3c311776df8cd8599ccecf",
+      "native_clock": "73c012040cb4ebb0a4eecec23330baead5f0156a8415467bef9b75bdf3615b9d",
+      "process_owner_helper": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76"
+    },
+    "source_mode_maps_identical": true
+  },
+  "negative_control": {
+    "binary_sha256": "90235d5affd512c4abcc7f16e54c45f4928c9db1719fa2171886fa0108651927",
+    "elf": "64-bit little-endian x86-64 Linux",
+    "only_production_clock_read_changed_to_monotonic": true,
+    "raw_guest_oracle_unchanged": true,
+    "guest_s3_observed": true,
+    "sole_test_failed_at_expected_suspend_clock_oracle": true,
+    "guest_test_exit": 1,
+    "bootstrap_completion_received": true,
+    "binary_before_after_hash_matches": true,
+    "observed_clock_behavior": {
+      "raw_boottime_includes_suspend": true,
+      "monotonic_excludes_suspend": true,
+      "overlaid_production_clock_tracks_monotonic": true,
+      "three_original_remaining_values_still_positive": true
+    }
+  },
+  "positive": {
+    "binary_sha256": "6cdf17f1c5ab653fa7188f2cd6b430ee2f674fca76fd3d182dc468cfdb2c5104",
+    "elf": "64-bit little-endian x86-64 Linux",
+    "guest_s3_observed": true,
+    "after_wake_observation_received": true,
+    "observed_clock_behavior": {
+      "production_clock_tracks_suspend_inclusive_boottime": true,
+      "monotonic_go_probe_and_ssh_context_still_live": true,
+      "three_original_remaining_values_zero": true,
+      "native_boot_scope_unchanged": true
+    },
+    "started_test_roots": 1,
+    "completed_test_roots": 0,
+    "binding_guard_test_roster_completed": false,
+    "final_test_completion_received": false,
+    "bootstrap_completion_received": false,
+    "final_expiry_refusal_cancellation_settlement_assertions_established": false
+  },
+  "guest_controller_cleanup": {
+    "roles": [
+      "negative_control",
+      "positive"
+    ],
+    "fresh_guests_sequential": true,
+    "both_qmp_deep_suspend_and_wakeup_events_observed": true,
+    "both_exact_owned_qmp_quit_acknowledged": true,
+    "both_original_qemu_wait_calls": 1,
+    "both_original_qemu_exit": 0,
+    "both_native_join_confirmed": true,
+    "both_recorded_process_and_group_absent": true,
+    "signals_attempted": 0,
+    "guest_workload_completion_inferred_from_qemu_exit": false
+  },
+  "historical_first_gate": {
+    "status": "failed",
+    "cleanup": "unconfirmed",
+    "later_qemu_exit_does_not_erase_denied_signal_uncertainty": true,
+    "separate_historical_receipt_sha256": "e0d8486a0cd253e08313c71f9682ddba54e2be86f28cb1d4cd351dc1b98c9abe"
+  },
+  "limitations": [
+    "Positive clock observations precede uncompleted expiry and settlement checks and are not a passing guest test.",
+    "QEMU owner cleanup is distinct from joins or settlement of jobs inside the guest.",
+    "No physical host suspend or broad platform support is established.",
+    "Controller terminal exit is reported by the coordinator; retained failed result and original QEMU owner receipts were independently inspected.",
+    "No tests, VMs, processes, retries, builds, network, native UI or source edits were executed by this review."
+  ],
+  "findings": [],
+  "independent_private_audit_sha256": "afbadddbe17f3e13865ed0821435546ea10aff6915c4377101fff87bf4d33171"
+}

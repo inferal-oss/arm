@@ -2128,3 +2128,16 @@ an arbitrary older binary is not mechanically excluded by the marker.
 
 Monitor I/O cards hide the routine `reported` quality badge (`d09da5a`). Other
 quality/freshness messages and measurement values retain their existing behavior.
+This source correction is not yet reflected in the embedded browser bundle:
+the deployed `b4d49c9` Monitor capture still shows the badges. Rebuilding and
+verifying the composed UI remains required.
+
+## Disposable guest suspend validation status
+
+The second reviewed fixture gate observes real S3 and wake in two fresh guests.
+Its negative clock variant fails at the expected oracle. The production-clock
+guest observes suspend-inclusive elapsed time and zero remaining entitlement,
+but its post-wake operations never finish within the controller's bound.
+This is failed validation, not accepted suspend-followed-by-operations behavior.
+Both original VM processes join cleanly through their original QMP owners;
+that closure does not prove guest job cancellation, joins or settlement.
