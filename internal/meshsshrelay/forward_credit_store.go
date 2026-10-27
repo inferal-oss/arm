@@ -24,6 +24,49 @@ const (
 	maxForwardCreditSpend   = 64 << 10
 )
 
+func lockForwardPolicy(ctx context.Context, d *os.File, mode int) (int, error) {
+	if ctx == nil || mode != unix.LOCK_SH && mode != unix.LOCK_EX {
+		return -1, errors.New("invalid TCP credit policy lock request")
+	}
+	fd, err := unix.Openat(int(d.Fd()), policyLockName, unix.O_RDWR|unix.O_CREAT|unix.O_CLOEXEC|unix.O_NOFOLLOW, 0600)
+	if err != nil {
+		return -1, err
+	}
+	for {
+		if err = ctx.Err(); err != nil {
+			unix.Close(fd)
+			return -1, err
+		}
+		err = unix.Flock(fd, mode|unix.LOCK_NB)
+		if !errors.Is(err, unix.EWOULDBLOCK) {
+			break
+		}
+		timer := time.NewTimer(10 * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			unix.Close(fd)
+			return -1, ctx.Err()
+		case <-timer.C:
+		}
+	}
+	if err != nil {
+		unix.Close(fd)
+		return -1, err
+	}
+	var st unix.Stat_t
+	if err = unix.Fstat(fd, &st); err != nil || st.Mode&unix.S_IFMT != unix.S_IFREG || st.Mode&077 != 0 ||
+		st.Nlink != 1 || st.Uid != uint32(os.Geteuid()) {
+		unix.Close(fd)
+		return -1, errors.New("TCP credit policy lock authority differs")
+	}
+	if err = ctx.Err(); err != nil {
+		unix.Close(fd)
+		return -1, err
+	}
+	return fd, nil
+}
+
 // This owner-private journal retains every credit epoch, including revoked
 // grants. Its bounded capacity fails closed rather than resetting old credit.
 type forwardCreditLedger struct {
@@ -35,10 +78,11 @@ type forwardCreditLedger struct {
 }
 
 type forwardCreditEntry struct {
-	Nonce  string `json:"nonce"`
-	Digest string `json:"grant_sha256"`
-	Total  int64  `json:"total_bytes"`
-	Spent  int64  `json:"spent_bytes"`
+	Nonce        string `json:"nonce"`
+	Digest       string `json:"grant_sha256"`
+	ReviewSHA256 string `json:"review_sha256"`
+	Total        int64  `json:"total_bytes"`
+	Spent        int64  `json:"spent_bytes"`
 }
 
 func (l forwardCreditLedger) validate(local, pin, id string) error {
@@ -49,7 +93,7 @@ func (l forwardCreditLedger) validate(local, pin, id string) error {
 	}
 	seen := make(map[string]bool, len(l.Entries))
 	for _, e := range l.Entries {
-		if !hexBytes(e.Nonce, 16) || !hexBytes(e.Digest, 32) ||
+		if !hexBytes(e.Nonce, 16) || !hexBytes(e.Digest, 32) || !hexBytes(e.ReviewSHA256, 32) ||
 			e.Total < 1 || e.Total > meshforward.MaxGrantBytes || e.Spent < 0 || e.Spent > e.Total || seen[e.Nonce] {
 			return errors.New("TCP credit ledger record invalid or duplicated")
 		}
@@ -98,6 +142,11 @@ func readForwardCreditAt(d *os.File) (forwardCreditLedger, bool, error) {
 // writeForwardCreditAt replaces the journal only after its new image is synced.
 // An error after rename is deliberately ambiguous and never permits a write.
 func writeForwardCreditAt(d *os.File, ledger forwardCreditLedger) error {
+	return writeForwardCreditAtWithFault(d, ledger, nil)
+}
+
+// afterRename is test-only fault injection for an ambiguous directory sync.
+func writeForwardCreditAtWithFault(d *os.File, ledger forwardCreditLedger, afterRename func() error) error {
 	if err := ledger.validate(ledger.Local, ledger.LocalPin, ledger.ID); err != nil {
 		return err
 	}
@@ -125,6 +174,11 @@ func writeForwardCreditAt(d *os.File, ledger forwardCreditLedger) error {
 	}
 	if err = unix.Renameat(int(d.Fd()), name, int(d.Fd()), forwardCreditName); err != nil {
 		return err
+	}
+	if afterRename != nil {
+		if err = afterRename(); err != nil {
+			return fmt.Errorf("TCP credit ledger rename occurred but directory sync is unconfirmed: %w", err)
+		}
 	}
 	if err = unix.Fsync(int(d.Fd())); err != nil {
 		return fmt.Errorf("TCP credit ledger rename occurred but directory sync is unconfirmed: %w", err)
@@ -173,23 +227,38 @@ func prepareForwardCreditsAt(d *os.File, before, after Policy) error {
 	} else if err = ledger.validate(after.Local, after.LocalPin, after.CreditLedgerID); err != nil {
 		return err
 	}
-	if len(ledger.Entries)+len(fresh) > maxForwardCreditEntries {
-		return errors.New("TCP credit ledger capacity reached")
-	}
-	used := make(map[string]bool, len(ledger.Entries))
+	used := make(map[string]forwardCreditEntry, len(ledger.Entries))
 	for _, e := range ledger.Entries {
-		used[e.Nonce] = true
+		used[e.Nonce] = e
 	}
+	reviewDigest := PolicyDigest(after)
+	changed := false
 	for _, grant := range fresh {
-		if err = grant.ValidateCredit(); err != nil || used[grant.CreditNonce] {
-			return errors.New("TCP grant credit invalid or nonce already in durable history")
+		if err = grant.ValidateCredit(); err != nil {
+			return err
 		}
 		digest, e := grant.Digest()
 		if e != nil {
 			return e
 		}
-		ledger.Entries = append(ledger.Entries, forwardCreditEntry{Nonce: grant.CreditNonce, Digest: digest, Total: grant.TotalBytes})
-		used[grant.CreditNonce] = true
+		if prior, exists := used[grant.CreditNonce]; exists {
+			// A retry of the exact original CAS review may finish publishing an
+			// already prepared record. Keep its existing spent balance.
+			if prior.Digest != digest || prior.Total != grant.TotalBytes || prior.ReviewSHA256 != reviewDigest {
+				return errors.New("TCP credit nonce already belongs to another reviewed history")
+			}
+			continue
+		}
+		if len(ledger.Entries) >= maxForwardCreditEntries {
+			return errors.New("TCP credit ledger capacity reached")
+		}
+		entry := forwardCreditEntry{Nonce: grant.CreditNonce, Digest: digest, ReviewSHA256: reviewDigest, Total: grant.TotalBytes}
+		ledger.Entries = append(ledger.Entries, entry)
+		used[grant.CreditNonce] = entry
+		changed = true
+	}
+	if !changed {
+		return nil
 	}
 	return writeForwardCreditAt(d, ledger)
 }
@@ -197,97 +266,90 @@ func prepareForwardCreditsAt(d *os.File, before, after Policy) error {
 // CheckForwardCredit denies READY when the durable credit record is absent,
 // corrupt, mismatched or already exhausted. Each write has its own reservation.
 func CheckForwardCredit(ctx context.Context, home, local, localPin string, grant meshforward.Grant) error {
-	if ctx == nil || ctx.Err() != nil || grant.ValidateCredit() != nil {
+	if ctx == nil || grant.ValidateCredit() != nil {
 		return errors.New("invalid TCP credit check")
 	}
-	return WithPolicyRead(home, local, localPin, func(policy Policy) error {
-		if ctx.Err() != nil || policy.CreditLedgerID == "" || !time.Now().Before(grant.Expires) {
-			return errors.New("TCP grant expired or credit ledger unavailable")
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	d, err := policyDirectory(home)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	fd, err := lockForwardPolicy(ctx, d, unix.LOCK_SH)
+	if err != nil {
+		return err
+	}
+	defer unix.Close(fd)
+	policy, err := readPolicyAt(d, local, localPin)
+	if err != nil {
+		return err
+	}
+	if ctx.Err() != nil || policy.CreditLedgerID == "" || !time.Now().Before(grant.Expires) {
+		return errors.New("TCP grant expired or credit ledger unavailable")
+	}
+	digest, err := grant.Digest()
+	if err != nil {
+		return err
+	}
+	current := false
+	for _, g := range policy.Forwards {
+		storedDigest, e := g.Digest()
+		if e == nil && storedDigest == digest {
+			current = true
+			break
 		}
-		digest, err := grant.Digest()
-		if err != nil {
-			return err
-		}
-		current := false
-		for _, g := range policy.Forwards {
-			storedDigest, e := g.Digest()
-			if e == nil && storedDigest == digest {
-				current = true
-				break
+	}
+	if !current {
+		return errors.New("TCP grant changed before credit check")
+	}
+	ledger, exists, err := readForwardCreditAt(d)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("TCP credit ledger missing; no balance may be inferred")
+	}
+	if err = ledger.validate(local, localPin, policy.CreditLedgerID); err != nil {
+		return err
+	}
+	for _, e := range ledger.Entries {
+		if e.Nonce == grant.CreditNonce {
+			if e.Digest != digest || e.Total != grant.TotalBytes || e.Spent >= e.Total {
+				return errors.New("TCP grant credit exhausted or history differs")
 			}
+			return nil
 		}
-		if !current {
-			return errors.New("TCP grant changed before credit check")
-		}
-		d, err := policyDirectory(home)
-		if err != nil {
-			return err
-		}
-		defer d.Close()
-		ledger, exists, err := readForwardCreditAt(d)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			return errors.New("TCP credit ledger missing; no balance may be inferred")
-		}
-		if err = ledger.validate(local, localPin, policy.CreditLedgerID); err != nil {
-			return err
-		}
-		for _, e := range ledger.Entries {
-			if e.Nonce == grant.CreditNonce {
-				if e.Digest != digest || e.Total != grant.TotalBytes || e.Spent >= e.Total {
-					return errors.New("TCP grant credit exhausted or history differs")
-				}
-				return nil
-			}
-		}
-		return errors.New("TCP grant credit epoch missing from durable ledger")
-	})
+	}
+	return errors.New("TCP grant credit epoch missing from durable ledger")
 }
 
 // ReserveForwardBytes durably prepays application bytes before one write. It
 // serializes with grant changes and other writers across daemon processes.
 // There is no refund for short writes, cancellation, or process death.
 func ReserveForwardBytes(ctx context.Context, home, local, localPin string, grant meshforward.Grant, n int) (int, error) {
-	if ctx == nil || ctx.Err() != nil || n < 1 || n > maxForwardCreditSpend || grant.ValidateCredit() != nil {
+	return reserveForwardBytesWithWrite(ctx, home, local, localPin, grant, n, writeForwardCreditAt)
+}
+
+func reserveForwardBytesWithWrite(ctx context.Context, home, local, localPin string, grant meshforward.Grant, n int,
+	write func(*os.File, forwardCreditLedger) error) (int, error) {
+	if ctx == nil || write == nil || n < 1 || n > maxForwardCreditSpend || grant.ValidateCredit() != nil {
 		return 0, errors.New("invalid TCP credit reservation")
+	}
+	if err := ctx.Err(); err != nil {
+		return 0, err
 	}
 	d, err := policyDirectory(home)
 	if err != nil {
 		return 0, err
 	}
 	defer d.Close()
-	fd, err := unix.Openat(int(d.Fd()), policyLockName, unix.O_RDWR|unix.O_CREAT|unix.O_CLOEXEC|unix.O_NOFOLLOW, 0600)
+	fd, err := lockForwardPolicy(ctx, d, unix.LOCK_EX)
 	if err != nil {
 		return 0, err
 	}
 	defer unix.Close(fd)
-	for {
-		if err = ctx.Err(); err != nil {
-			return 0, err
-		}
-		err = unix.Flock(fd, unix.LOCK_EX|unix.LOCK_NB)
-		if !errors.Is(err, unix.EWOULDBLOCK) {
-			break
-		}
-		timer := time.NewTimer(10 * time.Millisecond)
-		select {
-		case <-ctx.Done():
-			timer.Stop()
-			return 0, ctx.Err()
-		case <-timer.C:
-		}
-	}
-	if err != nil {
-		return 0, err
-	}
-	defer unix.Flock(fd, unix.LOCK_UN)
-	var lockStat unix.Stat_t
-	if err = unix.Fstat(fd, &lockStat); err != nil || lockStat.Mode&unix.S_IFMT != unix.S_IFREG || lockStat.Mode&077 != 0 ||
-		lockStat.Nlink != 1 || lockStat.Uid != uint32(os.Geteuid()) {
-		return 0, errors.New("TCP credit policy lock authority differs")
-	}
 	policy, err := readPolicyAt(d, local, localPin)
 	if err != nil {
 		return 0, err
@@ -333,7 +395,7 @@ func ReserveForwardBytes(ctx context.Context, home, local, localPin string, gran
 		if err = ctx.Err(); err != nil {
 			return 0, err
 		}
-		if err = writeForwardCreditAt(d, ledger); err != nil {
+		if err = write(d, ledger); err != nil {
 			return 0, err
 		}
 		return granted, nil

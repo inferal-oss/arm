@@ -35,7 +35,12 @@ jobs:
         run: go test -race ./internal/meshforward ./internal/meshsshrelay -run '^(TestForwardCredit|TestProxy|TestPacedWriter|TestGrant)' -count=1 -timeout=5m
       - name: Three-node forwarding under the review build
         run: go test -tags arm_forward_review ./internal/server -run '^TestForwardThreeNodesHTTPExactOriginalAndRevocation$' -count=1 -timeout=5m
+      - name: Policy, route, and ordinary-build fence regressions
+        run: go test ./internal/meshsshrelay ./internal/server ./internal/cli -run '^(TestReviewedPolicyCommitCASAndNoFollow|TestDestinationPolicyRoundTripAndRevocation|TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward|TestForwardRouteBindsServiceAndRefusesSSHClassConfusion|TestForwardSourceTLSKeepsOriginalFailureClassification|TestDisabledForwardAuthorityUnavailable|TestForwardHTTPClientProductionFence)$' -count=1 -timeout=5m
       - name: Vet affected packages and compile public client
         run: |
           go vet ./internal/meshforward ./internal/meshsshrelay ./internal/server ./internal/cli
-          go build -o "$RUNNER_TEMP/arm-forward-credit-candidate" ./cmd/arm
+          go build -o "$RUNNER_TEMP/arm-forward-public" ./cmd/arm
+          go build -tags arm_forward_review -o "$RUNNER_TEMP/arm-forward-credit-candidate" ./cmd/arm
+      - name: Compiled three-node CLI HTTP and duplex TCP
+        run: python3 scripts/test-routed-forward.py --arm "$RUNNER_TEMP/arm-forward-credit-candidate"

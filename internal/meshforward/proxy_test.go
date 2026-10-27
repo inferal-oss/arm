@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -287,5 +288,75 @@ func TestPacedWriterUsesExactFinalCredit(t *testing.T) {
 		}
 	case <-time.After(3 * time.Second):
 		t.Fatal("writer stalled at credit exhaustion")
+	}
+}
+
+func TestProxySharesAggregateCreditAcrossDuplexDirections(t *testing.T) {
+	g := testGrant()
+	g.TotalBytes = 4
+	stream, client := net.Pipe()
+	service, application := net.Pipe()
+	defer client.Close()
+	defer application.Close()
+	var mu sync.Mutex
+	remaining := 4
+	p := &Proxy{
+		Dial:        func(context.Context, string, string) (net.Conn, error) { return service, nil },
+		CheckCredit: func(context.Context, Grant) error { return nil },
+		Credit: func(_ context.Context, _ Grant, requested int) (int, error) {
+			mu.Lock()
+			defer mu.Unlock()
+			if remaining == 0 {
+				return 0, errors.New("duplex credit exhausted")
+			}
+			granted := min(requested, remaining)
+			remaining -= granted
+			return granted, nil
+		},
+	}
+	ready := make(chan struct{})
+	done := make(chan error, 1)
+	go func() {
+		done <- p.Open(t.Context(), proxyRequest(g, strings.Repeat("b", 32)), proxyIdentity(g), stream,
+			func(context.Context) (Grant, error) { return g, nil }, func() error { close(ready); return nil })
+	}()
+	select {
+	case <-ready:
+	case <-time.After(3 * time.Second):
+		t.Fatal("proxy admission timed out")
+	}
+	_ = client.SetDeadline(time.Now().Add(3 * time.Second))
+	_ = application.SetDeadline(time.Now().Add(3 * time.Second))
+	sourceWrite := make(chan error, 1)
+	go func() { _, err := client.Write([]byte("abc")); sourceWrite <- err }()
+	first := make([]byte, 3)
+	if _, err := io.ReadFull(application, first); err != nil || string(first) != "abc" {
+		t.Fatalf("first direction differs: %q %v", first, err)
+	}
+	if err := <-sourceWrite; err != nil {
+		t.Fatal(err)
+	}
+	serviceWrite := make(chan error, 1)
+	go func() { _, err := application.Write([]byte("XYZ")); serviceWrite <- err }()
+	second := make([]byte, 1)
+	if _, err := io.ReadFull(client, second); err != nil || string(second) != "X" {
+		t.Fatalf("final shared credit differs: %q %v", second, err)
+	}
+	if err := <-serviceWrite; err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case err := <-done:
+		if err == nil || !strings.Contains(err.Error(), "outcome unknown") {
+			t.Fatalf("aggregate exhaustion lost unknown outcome: %v", err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("duplex credit exhaustion did not join")
+	}
+	mu.Lock()
+	left := remaining
+	mu.Unlock()
+	if left != 0 || p.Active() != 0 {
+		t.Fatalf("duplex accounting or join differs: remaining=%d active=%d", left, p.Active())
 	}
 }

@@ -104,6 +104,15 @@ def raw_request(bind, token, payload):
         return bytes(result)
 
 
+def credit_state(node, service_name):
+    grants = node.cli('mesh', 'forward', 'show')
+    grant = next(g for g in grants if g['endpoint']['name'] == service_name)
+    ledger = json.loads((node.home / 'mesh' / 'forward-credit.json').read_text())
+    entry = next(e for e in ledger['entries'] if e['nonce'] == grant['credit_nonce'])
+    assert entry['total_bytes'] == grant['total_bytes'], (grant, entry)
+    return grant, entry
+
+
 def reconcile_retained_sources(node, binary, keys):
     # The strict local rebind probe can retain a charge after an HTTP socket
     # enters TIME_WAIT. Only the exact owned fixture process is terminated;
@@ -219,10 +228,17 @@ def main():
               '--reason', 'generic bounded workspace transport', '--yes')
         c.cli('mesh', 'forward', 'grant', '--workspace', wid, '--source', b.identity['host'],
               '--service', 'web', '--target-address', f'127.0.0.1:{service.server_port}',
-              '--connections', '2', '--reason', 'exact original HTTP service', '--yes')
+              '--connections', '2', '--total-bytes', '64KiB',
+              '--reason', 'exact original HTTP service', '--yes')
         c.cli('mesh', 'forward', 'grant', '--workspace', wid, '--source', b.identity['host'],
               '--service', 'echo', '--target-address', f'127.0.0.1:{echo.server_address[1]}',
-              '--connections', '2', '--reason', 'exact original raw TCP service', '--yes')
+              '--connections', '2', '--total-bytes', '16KiB',
+              '--reason', 'exact original raw TCP service', '--yes')
+
+        web_grant, web_credit = credit_state(c, 'web')
+        echo_grant, echo_credit = credit_state(c, 'echo')
+        assert web_grant['total_bytes'] == 64 * 1024 and web_credit['spent_bytes'] == 0
+        assert echo_grant['total_bytes'] == 16 * 1024 and echo_credit['spent_bytes'] == 0
         token_file = root / 'source-token'
         key = uuid.uuid4().hex
         try:
@@ -241,11 +257,15 @@ def main():
         assert b'forwarded-b-to-c' not in request(started['bind']), 'unauthenticated local access succeeded'
         response = request(started['bind'], token)
         assert b'HTTP/1.1 200 OK' in response and response.endswith(b'forwarded-b-to-c'), response
+        _, first_web_credit = credit_state(c, 'web')
+        assert 0 < first_web_credit['spent_bytes'] < web_grant['total_bytes'], first_web_credit
         http_client = subprocess.run(b.prefix + ['mesh', 'forward', 'http', '--key', key,
                                                  '--token-file', str(token_file),
                                                  '--path', '/exact-service'],
                                      capture_output=True, timeout=20)
         assert (http_client.returncode, http_client.stdout, http_client.stderr) == (0, b'forwarded-b-to-c', b''), http_client
+        _, second_web_credit = credit_state(c, 'web')
+        assert first_web_credit['spent_bytes'] < second_web_credit['spent_bytes'] < web_grant['total_bytes'], second_web_credit
         # A service that performs work and then truncates its response has an
         # unknown application result. The TLS client must not replay it.
         time.sleep(1.1)
@@ -255,6 +275,8 @@ def main():
                                  capture_output=True, timeout=20)
         assert partial.returncode != 0 and partial.stdout == b'partial-service-result', partial
         assert b'remote_outcome_unknown' in partial.stderr and Service.partial_calls == 1, partial
+        _, partial_web_credit = credit_state(c, 'web')
+        assert second_web_credit['spent_bytes'] < partial_web_credit['spent_bytes'] < web_grant['total_bytes'], partial_web_credit
         # The carrier admits at most two new neighbor streams per second.
         time.sleep(1.1)
         raw_key = uuid.uuid4().hex
@@ -265,10 +287,14 @@ def main():
         raw_token = raw_file.read_text().strip()
         payload = b'\x00raw-duplex\xff' * 128
         assert raw_request(raw['bind'], raw_token, payload) == payload
+        _, first_echo_credit = credit_state(c, 'echo')
+        assert first_echo_credit['spent_bytes'] - echo_credit['spent_bytes'] == 2 * len(payload), first_echo_credit
         adapter = subprocess.run(b.prefix + ['mesh', 'forward', 'stream', '--key', raw_key,
                                             '--token-file', str(raw_file)], input=payload,
                                  capture_output=True, timeout=20)
         assert (adapter.returncode, adapter.stdout, adapter.stderr) == (0, payload, b''), adapter
+        _, second_echo_credit = credit_state(c, 'echo')
+        assert second_echo_credit['spent_bytes'] - first_echo_credit['spent_bytes'] == 2 * len(payload), second_echo_credit
         assert raw_request(raw['bind'], '0' * 64, payload) != payload, 'invalid raw bearer succeeded'
         c.cli('mesh', 'forward', 'revoke', '--workspace', wid, '--generation', generation,
               '--source', b.identity['host'], '--service', 'echo',
@@ -278,6 +304,19 @@ def main():
                                            '--token-file', str(raw_file)], input=payload,
                                 capture_output=True, timeout=20)
         assert denied.returncode != 0 and denied.stdout == b'', denied
+        c.cli('mesh', 'forward', 'grant', '--workspace', wid, '--source', b.identity['host'],
+              '--service', 'echo', '--target-address', f'127.0.0.1:{echo.server_address[1]}',
+              '--connections', '2', '--total-bytes', '8KiB',
+              '--reason', 'new exact echo credit after revocation', '--yes')
+        renewed_echo_grant, renewed_echo_credit = credit_state(c, 'echo')
+        assert renewed_echo_grant['credit_nonce'] != echo_grant['credit_nonce'], renewed_echo_grant
+        assert renewed_echo_credit['spent_bytes'] == 0 and renewed_echo_credit['total_bytes'] == 8 * 1024
+        retained_ledger = json.loads((c.home / 'mesh' / 'forward-credit.json').read_text())
+        old_echo_credit = next(e for e in retained_ledger['entries'] if e['nonce'] == echo_grant['credit_nonce'])
+        assert old_echo_credit['spent_bytes'] == second_echo_credit['spent_bytes'], old_echo_credit
+        c.cli('mesh', 'forward', 'revoke', '--workspace', wid, '--generation', generation,
+              '--source', b.identity['host'], '--service', 'echo',
+              '--reason', 'withdraw replacement echo credit', '--yes')
         c.cli('mesh', 'forward', 'revoke', '--workspace', wid, '--generation', generation,
               '--source', b.identity['host'], '--service', 'web',
               '--reason', 'prove live destination-only service denial', '--yes')

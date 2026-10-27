@@ -247,9 +247,28 @@ func ReviewPolicy(home, local, localPin, action, reason string, change func(*Pol
 	if after.CreditLedgerID == "" {
 		for _, g := range after.Forwards {
 			if g.CreditNonce != "" {
-				after.CreditLedgerID, err = meshforward.NewCreditNonce()
-				if err != nil {
-					return Review{}, err
+				// A prior crash may have durably prepared credit before policy
+				// publication. Retain that history; never infer a fresh balance
+				// from an absent policy marker alone.
+				d, e := policyDirectory(home)
+				if e != nil {
+					return Review{}, e
+				}
+				ledger, exists, e := readForwardCreditAt(d)
+				d.Close()
+				if e != nil {
+					return Review{}, e
+				}
+				if exists {
+					if e = ledger.validate(local, localPin, ledger.ID); e != nil {
+						return Review{}, e
+					}
+					after.CreditLedgerID = ledger.ID
+				} else {
+					after.CreditLedgerID, err = meshforward.NewCreditNonce()
+					if err != nil {
+						return Review{}, err
+					}
 				}
 				break
 			}

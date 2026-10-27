@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"reflect"
 	"sync"
 	"time"
 )
@@ -137,6 +136,11 @@ func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Co
 		p.mu.Unlock()
 		p.wg.Done()
 	}()
+	// An absent or exhausted durable credit record cannot justify opening the
+	// destination service socket. Recheck after dial before sending READY too.
+	if err = p.CheckCredit(life, grant); err != nil {
+		return err
+	}
 
 	dial := p.Dial
 	if dial == nil {
@@ -152,7 +156,8 @@ func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Co
 		if err != nil {
 			return err
 		}
-		if !reflect.DeepEqual(current, grant) {
+		currentKey, err := current.Digest()
+		if err != nil || currentKey != grantKey {
 			return errors.New("TCP destination grant or endpoint changed")
 		}
 		return current.Authorize(time.Now(), who.SourcePin, who.SourceSPKI, who.TargetPin, who.TargetSPKI, who.Account, q)
