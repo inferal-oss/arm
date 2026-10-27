@@ -15,6 +15,7 @@ import os
 import platform
 import shutil
 import stat
+import struct
 import tempfile
 from pathlib import Path
 import re
@@ -71,11 +72,13 @@ def load(name,path):
  require(path.is_file() and not path.is_symlink(),'regular captured Python source required')
  module = importlib.util.module_from_spec(importlib.util.spec_from_loader(name,loader=None))
  module.__file__ = str(path)
- exec(compile(path.read_bytes(),str(path),'exec'),module.__dict__)
+ raw=path.read_bytes();module.__loaded_source_sha256__=hashlib.sha256(raw).hexdigest()
+ exec(compile(raw,str(path),'exec'),module.__dict__)
  return module
 
 
 base = load('lease_clock_formal_base',ROOT/'scripts/test-formal.py')
+native = load('lease_clock_formal_native',ROOT/'scripts/test-lease-clock-formal-native.py')
 base.MODEL = MODEL
 
 
@@ -323,7 +326,7 @@ def terminal_count(log,witness=False,expected=None):
 
 
 class ToolClosure:
- def __init__(self):self.receipts={};self.optional_receipts={}
+ def __init__(self):self.receipts={};self.optional_receipts={};self.rosters={}
  @staticmethod
  def resolve(requested):
   value=str(requested)
@@ -333,7 +336,12 @@ class ToolClosure:
  def identity(path):
   info=path.stat()
   require(stat.S_ISREG(info.st_mode),'regular tool file required')
-  return {'device':info.st_dev,'inode':info.st_ino,'uid':info.st_uid,'mode':stat.S_IMODE(info.st_mode),'bytes':info.st_size,'links':info.st_nlink,'mtime_ns':info.st_mtime_ns,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+  digest=hashlib.sha256()
+  with path.open('rb') as stream:
+   for chunk in iter(lambda:stream.read(1<<20),b''):digest.update(chunk)
+  after=path.stat()
+  require((info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns),'tool changed during streamed hash')
+  return {'device':info.st_dev,'inode':info.st_ino,'uid':info.st_uid,'mode':stat.S_IMODE(info.st_mode),'bytes':info.st_size,'links':info.st_nlink,'mtime_ns':info.st_mtime_ns,'sha256':digest.hexdigest()}
  def capture(self,name,requested):
   path=self.resolve(requested)
   receipt={'requested':str(requested),'path':str(path),**self.identity(path)}
@@ -347,6 +355,21 @@ class ToolClosure:
   receipt={'requested':str(requested),'path':str(path),'present':path.exists(),'identity':self.identity(path) if path.exists() else None}
   require(name not in self.receipts and name not in self.optional_receipts,'tool/config name cannot be rebound')
   self.optional_receipts[name]=receipt
+  return copy.deepcopy(receipt)
+ @staticmethod
+ def roster(requested,pattern):
+  root=Path(requested);require(root.is_absolute(),'absolute dependency directory required')
+  require(not root.exists() or root.is_dir(),'dependency directory changed type')
+  members=[]
+  if root.is_dir():
+   for path in sorted(root.glob(pattern)):
+    members.append((str(path.relative_to(root)),'link' if path.is_symlink() else 'directory' if path.is_dir() else 'file',os.readlink(path) if path.is_symlink() else None))
+  require(len(members)<=10000,'bounded selected dependency roster required')
+  return {'requested':str(root),'path':str(root.resolve(strict=False)),'present':root.is_dir(),'pattern':pattern,'members':members}
+ def capture_roster(self,name,requested,pattern):
+  receipt=self.roster(requested,pattern)
+  if name in self.rosters:require(receipt==self.rosters[name],'dependency roster cannot be rebound')
+  else:self.rosters[name]=receipt
   return copy.deepcopy(receipt)
  def canonical_argv(self,argv):
   result=[str(a) for a in argv]
@@ -368,6 +391,7 @@ class ToolClosure:
    path=Path(receipt['requested']).resolve(strict=False)
    require(str(path)==receipt['path'] and path.exists()==receipt['present'],'tool/config source presence or target changed: '+name)
    require((self.identity(path) if path.exists() else None)==receipt['identity'],'tool/config source bytes/identity changed: '+name)
+  for name,receipt in self.rosters.items():require(self.roster(receipt['requested'],receipt['pattern'])==receipt,'native dependency roster changed: '+name)
 
 
 def sanitized_go_env():
@@ -404,17 +428,19 @@ def validate_goenv_report(env,reported):
  require(reported.get('GOEXPERIMENT','')=='','unreviewed Go root experiment selector refused')
 
 
-FORMAL_SELECTORS = ('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH','TLA_LIBRARY','TLA_LIBRARY_PATH','TLAPM_LIBRARY_PATH','TLA_PATH','TLC_CLASSPATH')
+FORMAL_SELECTORS = ('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH','TLA_LIBRARY','TLA_LIBRARY_PATH','TLAPM_LIBRARY_PATH','TLA_PATH','TLC_CLASSPATH','TLAPM_SMT_SOLVER','CAML_LD_LIBRARY_PATH','OCAMLPATH','BASH_ENV','ENV','SHELLOPTS','BASHOPTS','CDPATH','GLOBIGNORE')
+FORMAL_PREFIXES = ('DYLD_','LD_','DUNE_','OPAM_','BASH_FUNC_')
 
 def formal_env(env):
  result=dict(os.environ if env is None else env)
- for key in FORMAL_SELECTORS:result.pop(key,None)
+ for key in tuple(result):
+  if key in FORMAL_SELECTORS or key.startswith(FORMAL_PREFIXES):result.pop(key,None)
  validate_formal_env(result)
  return result
 
 
 def validate_formal_env(env):
- require(not any(key in env for key in FORMAL_SELECTORS),'Java/TLA launcher or library substitution selector refused')
+ require(not any(key in FORMAL_SELECTORS or key.startswith(FORMAL_PREFIXES) for key in env),'Java/TLA/native launcher or library substitution selector refused')
 
 
 def closure_controls(directory):
@@ -471,7 +497,7 @@ def closure_controls(directory):
  except ValueError:rejected.append('resolved-go-root-experiment-substitution')
  else:raise ValueError('unreviewed Go experiment accepted')
  clean_formal=formal_env({})
- for key in FORMAL_SELECTORS:
+ for key in (*FORMAL_SELECTORS,'DYLD_LIBRARY_PATH','DYLD_INSERT_LIBRARIES','LD_PRELOAD','DUNE_DIR_LOCATIONS','OPAM_SWITCH_PREFIX','BASH_FUNC_z3%%'):
   changed=dict(clean_formal);changed[key]='unreviewed-selector'
   try:validate_formal_env(changed)
   except ValueError:rejected.append('formal-'+key+'-substitution')
@@ -481,6 +507,12 @@ def closure_controls(directory):
   try:validate_go_env(changed)
   except ValueError:rejected.append('go-'+name+'-substitution')
   else:raise ValueError('Go source substitution control accepted: '+name)
+ loader=b'DYLD_INSERT_LIBRARIES=/tmp/foreign\0';width=(12+len(loader)+7)//8*8
+ command=struct.pack('<III',0x27,width,12)+loader+b'\0'*(width-12-len(loader))
+ image=directory/'embedded-loader-selector';image.write_bytes(struct.pack('<IiiIIIII',0xfeedfacf,0x100000c,0,2,1,len(command),0,0)+command)
+ try:native.macho_images(image)
+ except ValueError:rejected.append('embedded-dyld-environment-command')
+ else:raise ValueError('embedded Mach-O loader selector accepted')
  return rejected
 
 
@@ -494,8 +526,11 @@ class ClockGate(base.Gate):
   self.tool_closure=ToolClosure()
   self.generated_closure=ToolClosure()
   self.java_home=None
+  self.proof_path=None
   super().__init__(args)
   self.runner_sources[str(Path(__file__).resolve())]=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+  require(self.project_sources['scripts/test-lease-clock-formal-native.py']==native.__loaded_source_sha256__,'loaded native closure helper differs from captured source')
+  self.runner_sources[str(ROOT/'scripts/test-lease-clock-formal-native.py')]=native.__loaded_source_sha256__
   self.summary['runner_sources']=dict(self.runner_sources)
   self.summary.update(project_sources=self.project_sources,scope='one bare-memory lease API-boundary elapsed entitlement; controlled inputs; not native clock/SQL atomicity/process/provider/full workspace verification')
  def tool(self,name,path,version_args=None):
@@ -507,6 +542,7 @@ class ClockGate(base.Gate):
   self.tool_closure.verify()
   self.verify_sources()
   actual_env=formal_env(env)
+  if self.proof_path is not None and str(argv[0]) in (str(self.args.tlapm),self.summary['tools'].get('tlapm',{}).get('path')):actual_env['PATH']=self.proof_path
   if self.java_home is not None:actual_env['JAVA_HOME']=self.java_home
   validate_formal_env(actual_env)
   failure=None;result=None
@@ -521,6 +557,7 @@ class ClockGate(base.Gate):
   if failure is not None:raise failure.with_traceback(failure.__traceback__)
   return result
  def tools(self):
+  if self.args.mode in ('prove','all'):self.prepare_native_proof()
   super().tools()
   if self.args.mode in ('check','traces','all'):
    settings=self.command([self.args.java,'-XshowSettings:properties','-version'],'java-selected-runtime',timeout=30)
@@ -532,9 +569,43 @@ class ClockGate(base.Gate):
    library=Path(self.java_home)/'lib/server'/('libjvm.dylib' if sys.platform=='darwin' else 'libjvm.so')
    self.tool('java-vm',library)
   if self.args.mode in ('prove','all'):
-   self.tool('tlapm-TLAPS-source',Path(self.summary['tools']['tlapm']['path']).parent.parent/'lib/tlapm/stdlib/TLAPS.tla')
+   config=self.summary['tools']['tlapm']['config']
+   backend=self.proof_prefix/'lib/tlapm/backends/bin'
+   paths=re.findall(r"PATH='([^']+)'",config)
+   require(paths and set(paths)=={str(backend)+':'+self.proof_path},'actual TLAPM backend search path differs from captured selection')
+   libraries=re.findall(r'^library_path == "([^"\n]+)"$',config,re.M)
+   require(libraries==[str(self.proof_prefix/'lib/tlapm/stdlib')],'actual TLAPM standard-library source differs')
+   commands=re.findall(r'^LS4 == "PATH=\'[^\']+\'; ([^\n]+)"$',config,re.M)
+   require(commands==['ptl_to_trp -i $file | ls4'],'exact captured PTL executable pipeline required')
+   for name in ('ls4','ptl_to_trp'):
+    selected=shutil.which(name,path=paths[0]);require(selected==str(backend/name),'PTL executable selected outside captured bundle')
+    self.tool('tlapm-'+name,selected)
+   self.tool('tlapm-TLAPS-source',self.proof_prefix/'lib/tlapm/stdlib/TLAPS.tla')
+   self.summary['native_dependency_rosters']=copy.deepcopy(self.tool_closure.rosters)
+   self.summary['native_image_dependencies']=self.native_proof.records
+   self.summary['native_os_boundary']=self.native_proof.os_boundary
   self.summary['gates'].append({'strict_closure_controls':closure_controls(self.run/'closure-controls')})
   self.summary['gates'].append({'tlc_diagnostic_controls':tlc_diagnostic_controls()})
+ def prepare_native_proof(self):
+  entry=self.tool_closure.capture('proof-tlapm-entry',self.args.tlapm)
+  self.summary['native_dependency_files']={'proof-tlapm-entry':entry}
+  self.proof_prefix=Path(entry['path']).parent.parent
+  backend=self.proof_prefix/'lib/tlapm/backends/bin'
+  require(backend.is_dir(),'explicit pinned proof bin/lib layout required')
+  self.proof_path=str(backend)+':/usr/bin:/bin'
+  def capture(name,path):
+   receipt=self.tool_closure.capture(name,path);self.summary.setdefault('native_dependency_files',{})[name]=receipt
+  self.native_proof=native.NativeProofClosure(self.tool_closure,capture)
+  self.native_proof.tree(self.proof_prefix/'lib/tlapm','proof-installed-library')
+  auxiliary_cat=shutil.which('cat',path=self.proof_path);require(auxiliary_cat is not None,'configuration metadata reader required')
+  for path in (Path(entry['path']),backend/'z3',backend/'ls4',backend/'ptl_to_trp',Path('/bin/sh'),Path(auxiliary_cat)):
+   self.native_proof.image(path)
+  # Exact pinned --config probes Zenon, and default methods can use the direct
+  # Poly/ML image and its SHA1 helper. Other installed files stay byte-bound;
+  # unused executables such as polyimport are not selected for this pipeline.
+  for relative in ('lib/tlapm/backends/bin/zenon','lib/tlapm/backends/Isabelle-install/poly/poly','lib/tlapm/backends/Isabelle-install/poly/libsha1.so'):
+   path=self.proof_prefix/relative
+   if path.is_file():self.native_proof.image(path)
  def capture_generated(self,name,path):
   require(path.parent==self.run and not path.is_symlink() and path.stat().st_nlink==1,'owned regular generated source/artifact required')
   receipt=self.generated_closure.capture(name,path)
@@ -659,7 +730,7 @@ def main():
   for label,verify in (('source_closure',gate.verify_sources),('tool_closure',gate.tool_closure.verify)):
    try:
     verify();gate.summary[label]={'status':'passed'}
-    if label=='tool_closure':gate.summary[label]['tools']=list(gate.tool_closure.receipts)+list(gate.tool_closure.optional_receipts)
+    if label=='tool_closure':gate.summary[label]['tools']=list(gate.tool_closure.receipts)+list(gate.tool_closure.optional_receipts)+list(gate.tool_closure.rosters)
    except BaseException as closure:
     gate.summary[label]={'status':'failed','error':str(closure)}
     if failure is None:failure=closure

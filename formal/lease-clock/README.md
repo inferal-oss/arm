@@ -80,3 +80,22 @@ settings are fixed. Overlay, modfile, toolexec, workspace and environment
 substitution controls must refuse before compilation. Captured tool closure is
 boundary evidence, not a claim against an adversary modifying and restoring
 operating-system libraries during one running instruction.
+
+The strict proof runner now binds the actual LS4/ptl_to_trp pipeline, Z3,
+selected TLAPS source, installed proof files, external Mach-O dependencies
+(including zstd), the dyld loader and available Rosetta runtime files before
+proof tools run, after every command and at finalization. It checks the reported
+backend and standard-library paths against the captured installation and uses
+a restricted proof PATH. DYLD/LD, Dune, OPAM, shell startup/function and
+SMT-solver substitutions are removed and have refusal controls. File hashes
+stream through bounded buffers.
+This native dependency reader currently supports macOS Mach-O; another proof
+platform requires its own supported reader. Check and Go trace modes retain
+their existing platform scope. Sealed system dyld-cache image bytes, the kernel
+and Rosetta service state are outside this file closure. Bundled configuration
+or version scripts can also invoke OS utilities or interpreters outside the
+declared proof pipeline; those generic system-command dependencies are outside
+the byte closure. Known shell and selected metadata-reader files are captured,
+but this is not a complete descendant-executable inventory. Recorded macOS
+build metadata identifies the OS boundary; it does not prove complete OS or
+library execution provenance.
