@@ -5440,3 +5440,22 @@ status and reuses only the actual same-source typecheck pass. Raw merged logs
 contain no observed warning/unsupported/N3 diagnostic lines. Parsed HTML is a
 failure discriminator, not root-cause proof or native browser acceptance. The
 component remains unaccepted while its focused correction is reviewed.
+
+
+### Corrected Sparkline affected cohorts
+
+[Corrected evidence](validation/sparkline-corrected-cohorts-2026-10-27.json)
+records a focused two-file source correction: all 14 SPARQL numeric casts use
+checked XML-trimmed lexical strings, with float32 rounding before double widening.
+Existing datatype/range/uniqueness/512 guards and the original 35-tuple oracle
+remain unchanged. One new foreign bounds/x/next regression checks actual stored
+terms before Runtime, exact readings and hardcoded line geometry.
+
+One original queued gate passes a fresh typecheck and all 33/16/3 named cases,
+zero skips. Independent review verifies all nine original child waits, exact
+reports/rosters, 18,316 unchanged selected inputs, retained image/loader hashes
+and owned cleanup. No warning/unsupported/N3 diagnostic lines are observed in
+these three raw logs. This closes the foreign-store finding within current
+source-bound component cohorts only. The earlier failed S123 and N1 results
+remain failed. Native browser/configuration/keyboard/identity/example gates,
+full numeric/Calendar acceptance, upstream publication and merge remain separate.
