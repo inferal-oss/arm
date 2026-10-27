@@ -129,7 +129,7 @@ ui:diagram a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-3 ;
     c:children ( ui:diagramTitle ui:systemMap ui:diagramDescription ui:diagramLink ) .
 ui:diagramTitle a c:Heading ; c:level 2 ; c:label "System map" .
 ui:systemMap a ui:AssetImage ; pos:measure pos:PageMeasure ; c:image "system-map.svg" ;
-    c:alt "Agents running builds, tests and analysis use the CLI or local API. Operators use the web and terminal dashboards. Both connect to a per-host ARM backend, which coordinates CPU and memory budgets, custom pools, managed storage, held ports, supervised commands and a SQLite lease/event ledger. Explicit grants connect an optional peer host for scoped remote leases, execution and messages." .
+    c:alt "Agents running builds, tests and analysis use the CLI or local API. Operators use the web and terminal dashboards. Both connect to a per-host ARM backend, which coordinates CPU and memory budgets, custom pools, managed storage, held ports, supervised commands and lease history. Explicit grants connect an optional peer host for scoped remote leases, execution and messages." .
 ui:diagramDescription a c:Text ; sty:textStyle sty:Caption ; c:label "ARM runs locally on each participating host. Agents request leases through the CLI or local API; operators inspect and manage the same leases through web and terminal dashboards. Explicit grants authorize scoped operations on peer hosts." .
 ui:diagramLink a c:Link ; c:label "Open system map at full size" ; c:href "./system-map.svg" .
 

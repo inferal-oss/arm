@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="780" viewBox="0 0 1440 780" role="img" aria-labelledby="system-title system-desc">
 <title id="system-title">ARM operational system map</title>
-<desc id="system-desc">AI agent builds, tests and analysis use the CLI or local API. Human operators use web and terminal dashboards. These interfaces connect to an ARM backend on a participating host. ARM coordinates cooperative CPU and memory budgets, managed storage, held TCP and UDP ports, custom pools, supervised commands, and a SQLite ownership and event ledger. Explicit grants authorize scoped remote leases, execution and messages with peer hosts.</desc>
+<desc id="system-desc">AI agent builds, tests and analysis use the CLI or local API. Human operators use web and terminal dashboards. These interfaces connect to an ARM backend on a participating host. ARM coordinates cooperative CPU and memory budgets, managed storage, held TCP and UDP ports, custom pools, supervised commands, and lease history. Explicit grants authorize scoped remote leases, execution and messages with peer hosts.</desc>
 <defs>
   <linearGradient id="arm-surface" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#faf8ff"/><stop offset="1" stop-color="#f0eafa"/></linearGradient>
   <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M1 1L9 5L1 9Z" fill="#a699bb"/></marker>
@@ -58,7 +58,7 @@
 <text x="1050" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Commands</text>
 <text x="1050" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Supervised execution</text>
 <rect x="1170" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
-<text x="1270" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Ledger</text>
-<text x="1270" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">SQLite ownership</text>
-<text x="1270" y="678" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">and events</text>
+<text x="1270" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Lease history</text>
+<text x="1270" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Who reserved what,</text>
+<text x="1270" y="678" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">why, and for how long</text>
 </g></svg>
