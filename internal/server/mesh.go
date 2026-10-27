@@ -131,7 +131,15 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	service.ssh = service.newSSHHandler()
 	service.sshRouted = service.newSSHRouteHandler()
 	service.forwardRouted = service.newForwardRouteHandler()
-	service.forwardProxy = &meshforward.Proxy{}
+	identity := store.Config().Identity
+	service.forwardProxy = &meshforward.Proxy{
+		CheckCredit: func(ctx context.Context, grant meshforward.Grant) error {
+			return meshsshrelay.CheckForwardCredit(ctx, s.home, identity.Host, identity.Fingerprint, grant)
+		},
+		Credit: func(ctx context.Context, grant meshforward.Grant, n int) error {
+			return meshsshrelay.ReserveForwardBytes(ctx, s.home, identity.Host, identity.Fingerprint, grant, n)
+		},
+	}
 	service.workspace = service.newWorkspaceHandler()
 	service.routed = service.newRoutedHandler()
 	service.http = &http.Server{Handler: http.HandlerFunc(service.serve), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 35 * time.Second, IdleTimeout: 5 * time.Second, MaxHeaderBytes: 8192, ConnState: service.connectionState}

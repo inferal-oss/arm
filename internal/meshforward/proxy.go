@@ -21,7 +21,9 @@ type Identity struct {
 // grant on every call; a missing grant denies by default. The caller owns the
 // authenticated carrier and must join this Open before settling its lease.
 type Proxy struct {
-	Dial func(context.Context, string, string) (net.Conn, error) // nil uses net.Dialer
+	Dial        func(context.Context, string, string) (net.Conn, error) // nil uses net.Dialer
+	CheckCredit func(context.Context, Grant) error
+	Credit      func(context.Context, Grant, int) error // required durable destination-local prepayment
 
 	mu     sync.Mutex
 	closed bool
@@ -63,7 +65,7 @@ func (p *Proxy) Active() int {
 // final socket have joined. The caller's route and Manager holds remain live
 // until it returns. Any transfer failure is an unknown application outcome.
 func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Conn, grantNow func(context.Context) (Grant, error), ready func() error) error {
-	if p == nil || grantNow == nil || ready == nil || stream == nil || ctx == nil {
+	if p == nil || p.Credit == nil || p.CheckCredit == nil || grantNow == nil || ready == nil || stream == nil || ctx == nil {
 		return errors.New("authenticated TCP carrier and current grant required")
 	}
 	grant, err := grantNow(ctx)
@@ -158,6 +160,9 @@ func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Co
 	if err = recheck(); err != nil {
 		return err
 	}
+	if err = p.CheckCredit(life, grant); err != nil {
+		return err
+	}
 	if err = ready(); err != nil {
 		return err
 	}
@@ -189,7 +194,9 @@ func (p *Proxy) Open(ctx context.Context, q Request, who Identity, stream net.Co
 	type result struct{ err error }
 	finished := make(chan result, 2)
 	copyOne := func(dst, src net.Conn) {
-		_, copyErr := copyPaced(life, dst, src, usage.pacer)
+		_, copyErr := copyPaced(life, dst, src, usage.pacer, recheck, func(ctx context.Context, n int) error {
+			return p.Credit(ctx, grant, n)
+		})
 		if copyErr == nil || errors.Is(copyErr, io.EOF) {
 			if half, ok := dst.(interface{ CloseWrite() error }); ok {
 				_ = half.CloseWrite()
