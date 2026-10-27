@@ -1542,3 +1542,18 @@ Carrier packaging remains an explicit source build using `make carrier` /
 `internal/distribution.BuildCarrier`, but needs a reviewed source identity,
 installed compatible Go toolchain, bounded CPU/memory/disk and output ownership;
 this migration adds no such command or automatic download/build authority.
+
+
+## Private sync workspace evidence
+
+Private workspace creation writes a bounded durable marker containing the
+original reservation and selected, parent, base, stage and quarantine native
+identities. Inspection reopens held roots and checks those bindings. Read-only
+lookup supports multiple workspaces per reservation, with an 8,192-entry and
+32-match bound. Missing, malformed, replaced or over-limit evidence remains
+unknown. A FIFO marker is refused before a blocking open.
+
+These records provide bounded evidence inside the reserved private namespace.
+They authorize no deletion or release and prove no physical reclamation or
+absence outside that namespace. Public sync allocation, dispatch, cleanup and
+settlement remain separate work.

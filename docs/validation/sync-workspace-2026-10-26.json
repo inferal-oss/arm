@@ -1,0 +1,185 @@
+{
+  "handoff": {
+    "integration_commit": "6bc990bb82ee1ba8dc6086e8a26ef47fe467e35c",
+    "dependency": "57464d657f301e746f6d54835651bc892a88c9d2",
+    "validated_feature_commit": "ca9cfcb8e68e8bf240f4930b9c3d8d589522f180",
+    "same_feature_tree": "64a2239694e5498aaeefdeb377bb59d4cba36e8d",
+    "ci_only_commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
+    "actions_run": "https://github.com/inferal-oss/arm/actions/runs/40424736706",
+    "source_digest": "733309cc3743cc132dd54038c06b9a516513c27c7dfcb0fbe71dcaa939140739",
+    "source_files": 1841,
+    "artifacts": {
+      "ubuntu": {
+        "artifact_id": 12699740091,
+        "zip_sha256": "5aff655212f9c3781ca7032981b2a86becfcaedff0199035f568347cd1534481"
+      },
+      "macos": {
+        "artifact_id": 12699630686,
+        "zip_sha256": "a72682bd5ad93b549498cbaa974b884a07c71d7f71d47b528e7b04efd47fe315"
+      }
+    },
+    "summary_file": "workspace-ci-verified-summary.json",
+    "findings_fixed": [
+      "FIFO marker opened nonblocking before descriptor type check; original child killed and joined on original failure",
+      "Malformed reserved sibling makes bounded search unknown instead of returning complete-looking partial result"
+    ],
+    "limits": [
+      "Canonical module CI/install acceptance is separately owned",
+      "Native hosted Linux amd64 and macOS15 arm64; no local/ARM Linux run claimed",
+      "Read-only marked workspace lookup, not cleanup/release/settlement/public sync authority",
+      "No complete absence proof for workspaces renamed entirely outside reserved namespace",
+      "No hard cancellation bound for arbitrary stalled native filesystem calls"
+    ],
+    "local_queue": "Owned helper normally cancelled before start, original exit130 observed",
+    "final_source_unchanged": true,
+    "tracked_clean": true
+  },
+  "native_receipts": {
+    "ubuntu": {
+      "commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "uname": [
+        "Linux",
+        "runnervmtai0g",
+        "6.17.0-1022-azure",
+        "#22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+        "x86_64",
+        "x86_64"
+      ],
+      "go": "go version go1.27.3 linux/amd64",
+      "source_digest": "733309cc3743cc132dd54038c06b9a516513c27c7dfcb0fbe71dcaa939140739",
+      "source_count": 1841,
+      "cases": {
+        "original-counterexamples": {
+          "exit": 1,
+          "elapsed": 50.63307435099999,
+          "terminal": {
+            "fail": 2
+          },
+          "roots": {
+            "fail": 2
+          },
+          "fail_or_skip": [
+            [
+              "TestWorkspaceReviewMarkerFIFORefusesAndJoins",
+              "fail"
+            ],
+            [
+              "TestWorkspaceReviewMalformedSiblingKeepsResultUnknown",
+              "fail"
+            ]
+          ]
+        },
+        "final-syncfs-race": {
+          "exit": 0,
+          "elapsed": 4.424404750000008,
+          "terminal": {
+            "pass": 39
+          },
+          "roots": {
+            "pass": 39
+          },
+          "fail_or_skip": []
+        },
+        "final-worker-boundary-race": {
+          "exit": 0,
+          "elapsed": 59.26339810100001,
+          "terminal": {
+            "pass": 10
+          },
+          "roots": {
+            "pass": 6
+          },
+          "fail_or_skip": []
+        },
+        "final-vet": {
+          "exit": 0,
+          "elapsed": 83.41932733200002,
+          "terminal": {},
+          "roots": {},
+          "fail_or_skip": []
+        }
+      },
+      "original_output": "=== RUN   TestWorkspaceReviewMarkerFIFORefusesAndJoins\n    workspace_review_test.go:92: FIFO blocked marker inspection before type check and ignored bounded recovery\n--- FAIL: TestWorkspaceReviewMarkerFIFORefusesAndJoins (2.02s)\n=== RUN   TestWorkspaceReviewMalformedSiblingKeepsResultUnknown\n    workspace_review_test.go:168: malformed reserved sibling produced a complete-looking partial set 1 <nil>\n--- FAIL: TestWorkspaceReviewMalformedSiblingKeepsResultUnknown (0.01s)\nFAIL\nFAIL\tgithub.com/inferal-oss/arm/internal/syncfs\t2.041s\n",
+      "closure": {
+        "source_unchanged": true,
+        "commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
+        "completed": true
+      }
+    },
+    "macos": {
+      "commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
+      "platform": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "uname": [
+        "Darwin",
+        "iad20-gt1022-ed84ff60-3386-474a-a364-fa7b3ab51dfa-7A7D43DC5504.local",
+        "24.6.0",
+        "Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE",
+        "arm64",
+        "arm"
+      ],
+      "go": "go version go1.27.3 darwin/arm64",
+      "source_digest": "733309cc3743cc132dd54038c06b9a516513c27c7dfcb0fbe71dcaa939140739",
+      "source_count": 1841,
+      "cases": {
+        "original-counterexamples": {
+          "exit": 1,
+          "elapsed": 52.182540915999994,
+          "terminal": {
+            "fail": 2
+          },
+          "roots": {
+            "fail": 2
+          },
+          "fail_or_skip": [
+            [
+              "TestWorkspaceReviewMarkerFIFORefusesAndJoins",
+              "fail"
+            ],
+            [
+              "TestWorkspaceReviewMalformedSiblingKeepsResultUnknown",
+              "fail"
+            ]
+          ]
+        },
+        "final-syncfs-race": {
+          "exit": 0,
+          "elapsed": 6.5508849160000295,
+          "terminal": {
+            "pass": 39
+          },
+          "roots": {
+            "pass": 39
+          },
+          "fail_or_skip": []
+        },
+        "final-worker-boundary-race": {
+          "exit": 0,
+          "elapsed": 69.62091399999997,
+          "terminal": {
+            "pass": 10
+          },
+          "roots": {
+            "pass": 6
+          },
+          "fail_or_skip": []
+        },
+        "final-vet": {
+          "exit": 0,
+          "elapsed": 65.56350095799996,
+          "terminal": {},
+          "roots": {},
+          "fail_or_skip": []
+        }
+      },
+      "original_output": "=== RUN   TestWorkspaceReviewMarkerFIFORefusesAndJoins\n    workspace_review_test.go:92: FIFO blocked marker inspection before type check and ignored bounded recovery\n--- FAIL: TestWorkspaceReviewMarkerFIFORefusesAndJoins (2.05s)\n=== RUN   TestWorkspaceReviewMalformedSiblingKeepsResultUnknown\n    workspace_review_test.go:168: malformed reserved sibling produced a complete-looking partial set 1 <nil>\n--- FAIL: TestWorkspaceReviewMalformedSiblingKeepsResultUnknown (0.02s)\nFAIL\nFAIL\tgithub.com/inferal-oss/arm/internal/syncfs\t2.086s\n",
+      "closure": {
+        "source_unchanged": true,
+        "commit": "927a73bdee313d62aef08e85e19401dd1d0b1e44",
+        "completed": true
+      }
+    }
+  }
+}

@@ -827,3 +827,23 @@ the corrected, reviewed harness. This remains a concrete acceptance step. The la
 and site-copy ownership and advertises remote latest only after that proof.
 No main/tag/release/site publication or user backend/installation change is
 performed by this task's candidate CI.
+
+
+### Sync workspace evidence integrated after canonical module packaging
+
+Coordinator integrates reviewed `6bc990b` after module feature `77b962f` from
+`67e9e3b`. Owner: `Implement bidirectional sync reconciliation`, chat
+`01a1762f-1cfa-7ed3-8404-4a794cbe93b3`; independent reviewer checkout
+`/private/tmp/arm-public-sync-workspace-canonical-review`. The focused seven-file
+change binds durable private markers to original reservations and native roots
+and supports bounded read-only lookup of all matching workspaces. Review fixes
+FIFO blocking before type validation and malformed reserved siblings returning
+a complete-looking partial set. Both original failures were reproduced.
+
+Linux amd64 and macOS arm64 race/vet acceptance is recorded in
+`docs/validation/sync-workspace-2026-10-26.json`. The worker dependency includes
+the separately reviewed fork debug-format correction from module acceptance;
+no filesystem or reconciliation algorithm changes follow from that correction.
+Public sync orchestration, physical reservations, cleanup/settlement and formal
+acceptance remain open. The owner's newer durable workspace-ledger work is a
+separate candidate and is not integrated by this step.

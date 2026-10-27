@@ -51,6 +51,15 @@ return a partially created workspace alongside an error. Inspect its held
 parent and native identities before interpreting the recorded path; a path
 replacement can make that name point elsewhere. Close returned handles after
 recording evidence, and never clean up by an unverified path string.
+For recovery inspection, `InspectWorkspace` reopens an exact recorded path
+against the original reservation and held roots. `FindWorkspaces` makes a
+bounded read-only search of the private parent when paths were not recorded;
+one operation can own several workspaces. `FindWorkspace` accepts only a
+single match. Malformed names in the reserved `.arm-sync-` namespace,
+absence, incomplete evidence, cancellation and search bounds
+remain unknown outcomes. Neither API authorizes deletion or release of the
+charged reservation. The search is not an atomic snapshot against concurrent
+same-account changes.
 
 ## Supported subset and limits
 

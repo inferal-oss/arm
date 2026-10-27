@@ -4373,3 +4373,27 @@ inspect literal latest installation and its actual resolved source,
 original install exit, buildinfo/checksums, final closure and cleanup receipts.
 Do not substitute this successful immutable candidate query for literal latest
 or infer acceptance of later composed feature/release changes from these scopes.
+
+
+### Reviewed private sync workspace composition
+
+Focused source `6bc990b` is integrated after canonical module feature `77b962f`.
+[Run 40424736706](https://github.com/inferal-oss/arm/actions/runs/40424736706)
+passes on Linux amd64 and macOS arm64 with Go 1.27.3. Each platform runs all
+39 syncfs race roots, six selected worker race roots (10 named cases), and vet.
+Both original FIFO-blocking and malformed-sibling counterexamples fail as
+expected before the fixes. Final scopes contain no failed or skipped tests;
+a helper root with no activated environment is not claimed as a native case.
+
+All 1,841 tracked source hashes were verified before/after; downloaded artifact
+ZIP hashes match GitHub metadata. Complete bounded receipts, exact source
+identity and cleanup are retained in
+[the workspace evidence record](validation/sync-workspace-2026-10-26.json).
+Source comparison confirms the syncfs/worker source is unchanged by later
+module packaging. The transitive fork debug-log argument correction is
+separately reviewed and tested in the canonical module scope; it is not
+claimed byte-identical to the earlier worker dependency.
+
+No public-sync, cleanup, release or settlement acceptance follows from these
+checks. Lookup cannot prove absence outside the reserved namespace; arbitrary
+stalled kernel filesystem calls have no hard cancellation bound here.
