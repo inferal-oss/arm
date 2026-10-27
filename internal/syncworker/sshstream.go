@@ -95,6 +95,9 @@ func (h *singleStreamHandle) Close() error {
 	}
 	return nil
 }
+
+// Abort is the exact session capability minted with this original handle.
+func (h *singleStreamHandle) Abort() error { return h.session.Abort() }
 func (h *singleStreamHandle) Join() error {
 	h.once.Do(func() { h.session.mu.Lock(); h.session.busy = false; h.session.mu.Unlock() })
 	return nil

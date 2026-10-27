@@ -26,7 +26,8 @@ type Metadata struct {
 	Permissions bool
 	ModTimes    bool
 	// ReceiverWriteLimit bounds cumulative regular-file bytes written during
-	// this exchange. Nil leaves standalone engine callers unbounded.
+	// this exchange. Policy is captured before the handshake; nil leaves
+	// standalone engine callers unbounded.
 	ReceiverWriteLimit *int64
 }
 

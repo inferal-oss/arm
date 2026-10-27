@@ -13,6 +13,7 @@ import (
 	"net"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/inferal-oss/arm/internal/rsyncengine"
 	"github.com/inferal-oss/arm/internal/syncfs"
@@ -38,6 +39,8 @@ type admittedHold interface {
 
 type transferHandle interface {
 	io.ReadWriteCloser
+	// Abort closes only the original session carrier bound to this handle.
+	Abort() error
 	Join() error
 }
 
@@ -243,6 +246,9 @@ func (e *endpoint) publish(ctx context.Context, plan syncreconcile.Plan, work *s
 // runLocalBatch uses the same protocol-27 engine for same-endpoint sources,
 // without treating an unreviewed local file as a receiver stage authority.
 func runLocalBatch(ctx context.Context, source, target string, metadata syncfs.Metadata, writeLimit int64) error {
+	if writeLimit < 0 {
+		return errors.New("negative local receiver write limit")
+	}
 	a, b := net.Pipe()
 	defer a.Close()
 	defer b.Close()
@@ -260,11 +266,34 @@ func runLocalBatch(ctx context.Context, source, target string, metadata syncfs.M
 	return errors.Join(senderErr, receiverErr)
 }
 
+// The engine closes its stream only for error/cancellation. A successful
+// batch retains the control carrier, while an error must abort that original
+// carrier immediately so both protocol workers can finish before their join.
+type abortingTransferStream struct {
+	transferHandle
+	once sync.Once
+	err  error
+}
+
+func (s *abortingTransferStream) Close() error {
+	s.once.Do(func() { s.err = s.transferHandle.Abort() })
+	return s.err
+}
+
 func runTransfer(ctx context.Context, handle transferHandle, role rsyncengine.Role, root string, metadata syncfs.Metadata, writeLimit *int64) error {
 	if handle == nil {
 		return errors.New("missing admitted transfer")
 	}
-	_, err := rsyncengine.Run(ctx, handle, role, root, rsyncengine.Metadata{Symlinks: true, Permissions: metadata.Permissions, ModTimes: metadata.ModTimes, ReceiverWriteLimit: writeLimit})
+	stream := &abortingTransferStream{transferHandle: handle}
+	var err error
+	if (role == rsyncengine.ServerReceiver || role == rsyncengine.ClientReceiver) && (writeLimit == nil || *writeLimit < 0) {
+		err = errors.New("fixed worker receiver requires an explicit nonnegative write limit")
+	} else {
+		_, err = rsyncengine.Run(ctx, stream, role, root, rsyncengine.Metadata{Symlinks: true, Permissions: metadata.Permissions, ModTimes: metadata.ModTimes, ReceiverWriteLimit: writeLimit})
+	}
+	if err != nil {
+		err = errors.Join(err, stream.Close())
+	}
 	closeErr := handle.Close()
 	joinErr := handle.Join()
 	return errors.Join(err, closeErr, joinErr)

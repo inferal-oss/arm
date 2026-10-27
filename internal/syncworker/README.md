@@ -26,9 +26,11 @@ replay is attempted.
 
 Each receiver batch caps cumulative reconstructed regular-file writes at the
 sum of reviewed `After` file sizes for that source and receiver. The cap is
-local to the receiver and includes bytes copied from basis files and bytes
-written to rsync temporary files. An overrun aborts the transfer before
-native publication. This is a logical write guard; directories, symlinks,
+snapshotted locally before the handshake. It includes basis bytes reconstructed
+into rsync temporary files. Receiver-basis preseed and source-manifest copies
+are separate operations covered by their existing forecasts and preflight
+limits, rather than this exchange counter. An overrun aborts the original transfer carrier and joins its protocol workers
+before native publication; ordinary successful batches keep the control carrier. This is a logical write guard; directories, symlinks,
 filesystem metadata, allocation granularity, snapshots, and other holders of
 the volume still require physical allocation enforcement and settlement.
 
