@@ -393,6 +393,9 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 	if err = e.verifyManifest(ctx, intent, lookup.Manifest); err != nil {
 		return err
 	}
+	if err = e.bindAllocation(ctx, intent, need); err != nil {
+		return err
+	}
 	if e.Side == syncreconcile.Remote {
 		if err = writeFrame(control, frame(intent, "admitted", ""), e.Hold); err != nil {
 			return err

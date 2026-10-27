@@ -70,3 +70,11 @@ checkpoints and retains the charged workspaces for inspection. It does not
 prevent an in-flight write from exceeding the promise, prove that shared
 blocks are unique, or authorize cleanup. Public dispatch still requires an
 enforced allocation mechanism and exact settlement.
+
+Allocation cuts retain the original endpoint, control session, plan and charged
+reservation identity. Each cut checks fresh execution authority, exact bounded
+operation and workspace rows, the complete original workspace set, and original
+held base/stage/quarantine roots before and after a fresh named survey. A valid
+replacement marker cannot replace an original held workspace. Unknown or
+cancelled observations retain physical obligations and already applied native
+effects; they do not create cleanup, release or public dispatch authority.
