@@ -88,7 +88,7 @@ func dialScreenBrowser(ctx context.Context, server *httptest.Server, token strin
 
 func TestScreenResourceReleaseRetainsChargeUntilOriginalJoin(t *testing.T) {
 	s := meshFixture(t)
-	awaitScreenTransportCapacity(t, s)
+	startAndAwaitScreenTransportCapacity(t, s)
 	ctx, finish, err := s.reserveScreenTransport(t.Context())
 	if err != nil {
 		t.Fatal(err)
@@ -154,7 +154,7 @@ func TestScreenResourceReservationCoversPendingUpgrade(t *testing.T) {
 		case <-release:
 		}
 	}))
-	awaitScreenTransportCapacity(t, s)
+	startAndAwaitScreenTransportCapacity(t, s)
 	server, token, joined := bindScreenBrowser(t, s, bound)
 	ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
 	defer cancel()
@@ -203,7 +203,7 @@ func TestScreenResourceJoinedOnReleaseRevocationAndStop(t *testing.T) {
 				defer stream.Close()
 				_, _ = io.Copy(stream, stream)
 			}))
-			awaitScreenTransportCapacity(t, s)
+			startAndAwaitScreenTransportCapacity(t, s)
 			server, token, joined := bindScreenBrowser(t, s, bound)
 			ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
 			defer cancel()
@@ -257,7 +257,7 @@ func TestScreenResourceJoinedOnReleaseRevocationAndStop(t *testing.T) {
 
 func TestScreenResourceDeadlineRetainsChargeUntilOriginalJoin(t *testing.T) {
 	s := meshFixture(t)
-	awaitScreenTransportCapacity(t, s)
+	startAndAwaitScreenTransportCapacity(t, s)
 	parent, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 	ctx, finish, err := s.reserveScreenTransport(parent)
@@ -295,7 +295,7 @@ func TestScreenResourceFailedBrowserUpgradeJoinsAndSettles(t *testing.T) {
 		upgraded.Store(true)
 		_, _, _ = c.Read(r.Context())
 	}))
-	awaitScreenTransportCapacity(t, s)
+	startAndAwaitScreenTransportCapacity(t, s)
 	s.authority = "127.0.0.1:1234"
 	token := strings.Repeat("d", 64)
 	s.browser.nodeSessions = map[[32]byte]nodeCredential{sha256.Sum256([]byte(token)): {Expires: time.Now().Add(time.Minute), Context: bound}}
@@ -358,11 +358,15 @@ func TestScreenResourceDestinationCannotBypassOwnerPolicy(t *testing.T) {
 	}
 }
 
-// Positive transport fixtures need real current native capacity. Waiting here
-// performs read-only observations before dispatch; it neither retries an
-// operation nor changes the native observation, policy or .05CPU/8MiB request.
-func awaitScreenTransportCapacity(t *testing.T, s *Server) {
+// Each positive screen fixture calls this once on its freshly opened Manager.
+// Start the same normal sampler/tick lifecycle as a real server; the fixture's
+// existing Close cleanup joins it. Open alone captures only initial native
+// observations, so waiting on Status alone cannot recover a busy initial cut.
+// Readiness is read-only: it neither retries the intended operation nor changes
+// native observations, policy or the .05CPU/8MiB request.
+func startAndAwaitScreenTransportCapacity(t *testing.T, s *Server) {
 	t.Helper()
+	s.Manager.Start()
 	until := time.Now().Add(5 * time.Second)
 	for {
 		status, se := s.Manager.Status()
