@@ -42,7 +42,7 @@ def main():
     run('screen-races', ['go', 'test', '-race', '-json', '-count=1', '-timeout=120s',
                         './internal/server', '-run', '^Test(Screen|BrowserScreen)'])
     run('original-transit-races', ['go', 'test', '-race', '-json', '-count=1', '-timeout=120s',
-                                  './internal/manager', '-run', '^TestRelayTransit'])
+                                  './internal/manager', '-run', '^TestRelay(Transit|Cleanup)'])
     run('affected-vet', ['go', 'vet', './internal/server', './internal/manager'])
     binary = OUT / 'arm-review'
     run('composed-command-build', ['go', 'build', '-o', str(binary), './cmd/arm'])
@@ -51,7 +51,7 @@ def main():
     binary.unlink()
     run('source-unchanged', ['git', 'diff', '--exit-code'])
     (OUT / 'ACCEPTED.json').write_text(json.dumps({'source': commit, 'commands': commands,
-        'scope': 'Cooperative endpoint transport accounting and original worker lifecycle; no native desktop, suspend, High Performance, or complete screen-feature acceptance.'}, indent=2) + '\n')
+        'scope': 'Cooperative endpoint accounting, exact original close retention and normal worker lifecycle; Manager API runtime acceptance remains separately scoped. No native desktop, suspend, High Performance, or complete screen-feature acceptance.'}, indent=2) + '\n')
 
 
 if __name__ == '__main__':

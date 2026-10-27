@@ -1,8 +1,8 @@
-name: Screen endpoint resource-hold review
+name: Screen original-close retention review
 
 on:
   push:
-    branches: [codex/vnc-resource-hold-review-ci]
+    branches: [codex/vnc-resource-hold-fixed-ci]
 
 permissions:
   contents: read
