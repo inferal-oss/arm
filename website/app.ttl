@@ -196,7 +196,7 @@ ui:startReadme a c:Link ; c:label "Continue with the full README →" ; c:href "
 ui:capabilities a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos:gap tok:space-6 ;
     c:children ( ui:capabilitiesTitle ui:capabilityCards ui:boundariesTitle ui:boundaries ui:limitsLink ) .
 ui:capabilitiesTitle a c:Heading ; c:level 1 ; c:label "Resources and operations" .
-ui:capabilityCards a c:Stack ; pos:layout pos:Grid ; pos:gap tok:space-4 ;
+ui:capabilityCards a c:Stack ; pos:layout pos:AlignedColumns ; pos:gap tok:space-4 ;
     c:children ( ui:leasesFeature ui:portsFeature ui:storageFeature ui:poolsFeature ui:visibilityFeature ui:meshFeature ) .
 ui:leasesFeature a c:Card ; c:label "Leases & admission" ; c:content ui:leasesFeatureText .
 ui:leasesFeatureText a c:Text ; c:label "Durable requests, queued admission, TTLs, renewals, release, supervised commands and owner attribution. Unknown or stale resource estimates can block new grants." .
@@ -223,7 +223,7 @@ ui:docs a c:Stack ; pos:measure pos:PageMeasure ; pos:direction pos:Column ; pos
     c:children ( ui:docsTitle ui:docsIntro ui:docsLinks ui:contributeTitle ui:contributeText ui:contributeLinks ) .
 ui:docsTitle a c:Heading ; c:level 1 ; c:label "Documentation" .
 ui:docsIntro a c:Text ; c:label "Setup instructions, operation contracts, validation evidence and delivery work are maintained in the repository." .
-ui:docsLinks a c:Stack ; pos:layout pos:Grid ; pos:gap tok:space-4 ; c:children ( ui:readmeCard ui:implementationCard ui:specCard ui:validationCard ui:planCard ui:securityCard ) .
+ui:docsLinks a c:Stack ; pos:layout pos:AlignedColumns ; pos:gap tok:space-4 ; c:children ( ui:readmeCard ui:implementationCard ui:specCard ui:validationCard ui:planCard ui:securityCard ) .
 ui:readmeCard a c:Card ; c:label "Setup & usage" ; c:note "Build, run, leases, storage, ports and integrations" ; c:content ui:readmeLink .
 ui:readmeLink a c:Link ; c:label "README" ; c:href "https://github.com/inferal-oss/arm#readme" .
 ui:implementationCard a c:Card ; c:label "Implemented behavior" ; c:note "Current support and material limitations" ; c:content ui:implementationLink .
