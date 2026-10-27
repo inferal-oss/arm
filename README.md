@@ -26,7 +26,7 @@ go install ./cmd/arm
 arm version
 ```
 
-Ensure the Go install directory (`GOBIN`, or `GOPATH/bin` by default) is on your PATH. The local install uses this checkout, including its checked-in dependency replacements.
+Ensure the Go install directory (`GOBIN`, or `GOPATH/bin` by default) is on your PATH. The local install uses this checkout and the audited rsync fork included in ARM's module.
 
 For a build artifact in this checkout:
 

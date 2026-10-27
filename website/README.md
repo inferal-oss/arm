@@ -79,9 +79,9 @@ resource capabilities and explicitly authorized peers; its SVG description and
 graph alt text provide equivalent relationship labels.
 
 The install examples use a source checkout and `go install ./cmd/arm`, then
-`arm` on PATH. `go.mod` is the minimum Go-version authority. A local checkout
-also retains ARM's reviewed local rsync replacement; remote versioned
-`go install` is not advertised by this site.
+`arm` on PATH. `go.mod` is the minimum Go-version authority. The audited rsync
+fork is included in ARM's canonical module. Remote versioned `go install` remains
+gated on an actual public installation check.
 
 Asset SHA-256 values:
 
@@ -92,4 +92,5 @@ The screenshot gallery references build-generated `screenshots/web-monitor.png`,
 `screenshots/web-resources.png` and `screenshots/terminal.png`. No substitute or
 placeholder images are checked in. The Gallery and Picture data use
 stock framework vocabulary; final build acceptance must confirm all three
-actual generated images and their responsive layout.
+actual generated images and their responsive layout. Full-size image links
+below the gallery expose all three originals to keyboard and pointer users.
