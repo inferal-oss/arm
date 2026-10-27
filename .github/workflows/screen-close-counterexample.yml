@@ -1,0 +1,37 @@
+name: Screen unknown native close counterexample
+
+on:
+  push:
+    branches: [codex/vnc-close-error-counterexample-ci]
+
+permissions:
+  contents: read
+
+jobs:
+  counterexample:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Reproduce only the original native close uncertainty edge
+        run: python3 -B scripts/validate-screen-close-counterexample.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: screen-close-counterexample
+          path: |
+            .cache/screen-close-counterexample/*.json
+            .cache/screen-close-counterexample/*.log
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
