@@ -25,8 +25,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
 	"golang.org/x/crypto/ssh"
 )
 

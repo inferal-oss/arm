@@ -3,8 +3,8 @@ package database
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/published"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/published"
 	"reflect"
 	"sort"
 )

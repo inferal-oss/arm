@@ -15,9 +15,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/providerproto"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/providerproto"
+	"getarm.org/internal/usage"
 )
 
 // Owner retains bounded in-process native duties. Cross-process slot/replay

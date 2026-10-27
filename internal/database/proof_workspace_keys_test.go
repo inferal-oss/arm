@@ -3,9 +3,9 @@ package database_test
 import (
 	"database/sql"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 	"path/filepath"
 	"strings"
 	"testing"

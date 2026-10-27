@@ -8,7 +8,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 const MaxMembers = 256

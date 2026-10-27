@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 func (a *app) inspectMeshLifecycle() (mesh.LifecycleInspection, error) {

@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 	_ "modernc.org/sqlite"
 )
 

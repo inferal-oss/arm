@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
 )
 
 func reviewWorkspaceLedger(t *testing.T) (*Ledger, *syncfs.Root, *syncfs.Root, *syncfs.Workspace) {

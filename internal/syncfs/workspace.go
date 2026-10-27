@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncreconcile"
 	"golang.org/x/sys/unix"
 )
 

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 )
 
 type capMutatingSession struct {

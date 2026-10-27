@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func exportFixture(t *testing.T) (*Provider, model.Artifact, string) {

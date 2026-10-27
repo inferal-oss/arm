@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
 	"golang.org/x/crypto/ssh"
 )
 

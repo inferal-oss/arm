@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 	"golang.org/x/sys/unix"
 )
 

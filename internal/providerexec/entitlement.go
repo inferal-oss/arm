@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // HeldBinding identifies the original ordinary admissions. It is not a wire

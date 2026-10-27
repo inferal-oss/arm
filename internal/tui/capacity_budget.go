@@ -3,7 +3,7 @@ package tui
 import (
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // A held status ages locally even when the transport remains connected.

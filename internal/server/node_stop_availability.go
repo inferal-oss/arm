@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // This is an observation, not mutation permission. Admission rechecks current

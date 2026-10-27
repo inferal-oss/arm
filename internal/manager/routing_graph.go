@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 // These typed internal adapters have no public dispatcher in this checkpoint.

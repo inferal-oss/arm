@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
 )
 
 func TestWorkspaceLedgerRecordsBeforeStageAndRefusesDuplicateRole(t *testing.T) {

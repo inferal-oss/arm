@@ -11,8 +11,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/model"
 )
 
 // meshForwardHTTP is a token-file-backed HTTP client for one reviewed service.

@@ -7,8 +7,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/server"
+	"getarm.org/internal/model"
+	"getarm.org/internal/server"
 )
 
 // reviewStoppedRestart runs before ordinary backend launch. The exact existing

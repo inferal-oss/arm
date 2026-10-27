@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 type statusTicket struct {

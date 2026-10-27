@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Native workspace workflows own their complete transport interval, including

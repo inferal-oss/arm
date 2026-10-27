@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/manager"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/manager"
 )
 
 func TestOperatorReplyToAgentMessagePinsRecordedSender(t *testing.T) {

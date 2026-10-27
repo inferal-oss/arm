@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
+	"getarm.org/internal/storage"
 )
 
 func restartCLIHome(t *testing.T) string {

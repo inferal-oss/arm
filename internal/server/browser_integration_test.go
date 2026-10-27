@@ -11,14 +11,14 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/agents"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestDashboardBootstrapAndSharedWebSocket(t *testing.T) {

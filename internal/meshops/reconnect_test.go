@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
 )
 
 type reconnectFixture struct {

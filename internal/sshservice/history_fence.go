@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/historypack"
+	"getarm.org/internal/historypack"
 	"golang.org/x/sys/unix"
 	"os"
 	"path/filepath"

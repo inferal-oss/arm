@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncreconcile"
 )
 
 func TestInspectSyncKeyBindsOriginalChargedLeaseAndOperation(t *testing.T) {

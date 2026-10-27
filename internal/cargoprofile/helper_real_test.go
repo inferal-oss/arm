@@ -3,7 +3,7 @@ package cargoprofile
 import (
 	"bytes"
 	"context"
-	"github.com/inferal-oss/arm/internal/leaseclock"
+	"getarm.org/internal/leaseclock"
 	"os"
 	"os/exec"
 	"path/filepath"

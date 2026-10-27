@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/sshservice"
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/sshservice"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
 	"golang.org/x/crypto/ssh"
 )
 

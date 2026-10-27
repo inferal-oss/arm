@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/database"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 	"golang.org/x/sys/unix"
 )
 

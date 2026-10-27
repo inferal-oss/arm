@@ -8,9 +8,9 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 )
 
 func unknownMessageFixture(t *testing.T) (*dashboardModel, *testTransport, manager.MessageRequest) {

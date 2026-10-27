@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
-	"github.com/inferal-oss/arm/internal/pressure"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
+	"getarm.org/internal/pressure"
 )
 
 // This supplies an already normalized candidate and compatible interval as a

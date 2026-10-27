@@ -14,8 +14,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 //go:embed web/assets web/index.html web/novnc web/ard

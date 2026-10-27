@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 	"golang.org/x/sys/unix"
 )
 

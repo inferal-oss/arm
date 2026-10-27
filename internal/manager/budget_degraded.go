@@ -2,7 +2,7 @@ package manager
 
 import (
 	"errors"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Only identifiable policy-accounting failures enter this narrow startup mode.

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // All callers hold m.mu or are in Open before admission is available.

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 )
 
 func (s *Server) startupInspection() (model.BackendAuthority, error) {

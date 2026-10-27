@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/knowledge"
+	"getarm.org/knowledge"
 )
 
 func TestAgentCardCatalogOfflineAliasesAndRetrieval(t *testing.T) {

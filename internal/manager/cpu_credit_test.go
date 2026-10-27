@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
 )
 
 // Native interval/ancestry accuracy has separate collector tests. These tests

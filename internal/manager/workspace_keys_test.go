@@ -2,7 +2,7 @@ package manager
 
 import (
 	"database/sql"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"path/filepath"
 	"testing"
 	"time"

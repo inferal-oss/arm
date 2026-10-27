@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/historypack"
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/historypack"
+	"getarm.org/internal/local"
 	"golang.org/x/sys/unix"
 	_ "modernc.org/sqlite"
 )

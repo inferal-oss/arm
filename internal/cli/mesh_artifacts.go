@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/mesh"
 )
 
 func (a *app) meshArtifacts(args []string) (int, error) {

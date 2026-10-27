@@ -16,9 +16,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
+	"getarm.org/internal/storage"
 	"golang.org/x/sys/unix"
 )
 

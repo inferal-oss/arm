@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Policy accounting is an overlay on actual leases. An ancestor's rollup is not

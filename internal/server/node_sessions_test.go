@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestNodeWindowTicketExactTargetNonceSingleUse(t *testing.T) {

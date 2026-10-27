@@ -15,10 +15,10 @@ import (
 	"path/filepath"
 	"time"
 
+	"getarm.org/internal/model"
+	"getarm.org/internal/presence"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/presence"
 )
 
 const peerPollLimit = 32

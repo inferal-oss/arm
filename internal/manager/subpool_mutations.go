@@ -3,7 +3,7 @@ package manager
 import (
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Canonicalize immutable child identity before keyed lookup. State/revision and

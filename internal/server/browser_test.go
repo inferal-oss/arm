@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/local"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/local"
 )
 
 func TestBrowserTicketConcurrentExchangeHasOneWinner(t *testing.T) {

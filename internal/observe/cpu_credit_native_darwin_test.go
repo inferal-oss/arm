@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/usage"
 )
 
 func TestNativeDarwinContainedCPUDescendantCredit(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	api "github.com/inferal-oss/arm/internal/workspaceapi"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	api "getarm.org/internal/workspaceapi"
 )
 
 const maxWorkspaceNativeReply = 48 << 10

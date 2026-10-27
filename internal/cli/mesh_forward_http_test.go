@@ -15,7 +15,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
+	"getarm.org/internal/meshsshrelay"
 )
 
 func TestForwardHTTPClientProductionFence(t *testing.T) {

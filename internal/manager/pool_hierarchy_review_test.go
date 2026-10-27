@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func TestHierarchyReviewBindsCompleteTreeClaimsAndExactRetry(t *testing.T) {

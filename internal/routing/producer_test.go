@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/local"
+	"getarm.org/internal/workspace"
 	_ "modernc.org/sqlite"
 )
 

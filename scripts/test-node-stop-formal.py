@@ -27,7 +27,7 @@ PROOF_SHA = {'NodeStopInduction.tla': 'b2e75e5623baff4bac2898e1ecf5b955cb7e4a604
              'Induction.cfg': '7412587f4138b64bce1ce09a54efac5756b0f67c278ea1d302a4f245d7b47f60'}
 MODEL_STATES = 406992
 PROOF_OBLIGATIONS = 102
-PACKAGE = 'github.com/inferal-oss/arm/internal/server'
+PACKAGE = 'getarm.org/internal/server'
 ACTUAL_TEST = 'TestNodeStopActualDevTrace'
 OBSERVER_TEST = 'TestNodeStopTraceUnrelatedHomeInert'
 

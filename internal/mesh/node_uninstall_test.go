@@ -13,11 +13,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/local"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // Filesystem ownership controls deliberately do not claim real Serve closure.

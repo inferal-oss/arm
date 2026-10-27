@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/client"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestMonitorStreamMultiplexesAndResumesWithoutAuditTraffic(t *testing.T) {

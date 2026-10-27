@@ -15,9 +15,16 @@ See [SPEC.md](SPEC.md) for the complete design and [the implementation notes](do
 
 ## Build
 
-Use Go and make. The minimum Go version is declared in [go.mod](go.mod). SQLite uses `modernc.org/sqlite`; the release build disables CGo.
+Use Go to install the native CLI; make provides additional build and carrier targets. The minimum Go version is declared in [go.mod](go.mod). SQLite uses `modernc.org/sqlite`; the release build disables CGo.
 
-Clone and install the CLI, then use `arm` from your shell:
+Install the CLI from source, then use `arm` from your shell:
+
+```sh
+go install getarm.org/cmd/arm@latest
+arm version
+```
+
+This builds the native thin CLI, with an empty companion catalog. The command remains `arm`; the source repository remains on GitHub. For a local checkout build:
 
 ```sh
 git clone https://github.com/inferal-oss/arm.git
@@ -26,7 +33,7 @@ go install ./cmd/arm
 arm version
 ```
 
-Ensure the Go install directory (`GOBIN`, or `GOPATH/bin` by default) is on your PATH. The local install uses this checkout and the audited rsync fork included in ARM's module.
+Ensure the Go install directory (`GOBIN`, or `GOPATH/bin` by default) is on your PATH. Both source installation methods include the audited rsync fork in ARM's module.
 
 For a build artifact in this checkout:
 

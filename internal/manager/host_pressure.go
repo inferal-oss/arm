@@ -9,11 +9,11 @@ import (
 	"math"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/pressure"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/pressure"
 )
 
 // The warning-only runtime uses measured coverage to recover and possible

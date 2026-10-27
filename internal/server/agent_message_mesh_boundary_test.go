@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
+	"getarm.org/internal/agents"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestAgentMessageMeshCannotForwardNativeSenderOperations(t *testing.T) {

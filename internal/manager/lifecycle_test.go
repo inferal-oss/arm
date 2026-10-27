@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestBulkEndDurableSnapshotAndPartialFailure(t *testing.T) {

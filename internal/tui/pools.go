@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 )
 
 type poolDashboard struct {

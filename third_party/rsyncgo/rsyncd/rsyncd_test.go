@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing/fstest"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
+	"getarm.org/third_party/rsyncgo/rsyncd"
 )
 
 func ExampleNewServer() {

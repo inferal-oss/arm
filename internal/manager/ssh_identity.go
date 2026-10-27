@@ -3,8 +3,8 @@ package manager
 import (
 	"context"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 )
 
 // SSHAccount is read-only native account inventory. It creates no key, policy,

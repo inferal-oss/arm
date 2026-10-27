@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 )
 
 func workspaceManagerFixture(t *testing.T, home string) (*Manager, workspace.Operation) {

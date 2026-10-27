@@ -15,9 +15,9 @@ import (
 	"time"
 	"unicode"
 
+	"getarm.org/internal/install"
+	"getarm.org/internal/model"
 	"github.com/mattn/go-isatty"
-	"github.com/inferal-oss/arm/internal/install"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func terminal(v any) bool {

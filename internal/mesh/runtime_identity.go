@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
+	"getarm.org/internal/buildinfo"
 )
 
 // RuntimeProof is native-account-only evidence for installation/startup. It is

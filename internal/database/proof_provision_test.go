@@ -13,10 +13,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/meshssh"
 )
 
 // Actual public journal producers with fixed external-I/O callbacks. Real SSH,

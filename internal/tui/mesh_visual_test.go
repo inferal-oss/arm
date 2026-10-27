@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func meshVisualDashboard(t *testing.T, variant string) *dashboardModel {

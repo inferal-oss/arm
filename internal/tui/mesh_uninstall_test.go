@@ -7,12 +7,12 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 // Synthetic display/consent controls, not native Stop or ownership evidence.

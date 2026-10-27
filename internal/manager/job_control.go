@@ -3,14 +3,14 @@ package manager
 import (
 	"context"
 	"errors"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"io"
 	"os"
 	"reflect"
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/childowner"
+	"getarm.org/internal/childowner"
 )
 
 func (j *job) signalGroup(sig syscall.Signal) error {

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
+	"getarm.org/internal/buildinfo"
 )
 
 func TestNodeMetadataCLIHelpAndVersionSourceBeforeState(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/workspace"
 )
 
 var Tables = []string{"published_agents", "published_agent_changes", "routed_agent_links"}

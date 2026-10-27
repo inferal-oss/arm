@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 func directoryGraphFixture(t *testing.T, count int) (Open, Request, routing.GraphBundle) {

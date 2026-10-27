@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/agents"
+	"getarm.org/internal/client"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket/wsjson"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestInboxLongPollMultiplexesAndBoundsOutstandingRequests(t *testing.T) {

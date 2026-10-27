@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 func readGraph(ctx context.Context, tx *sql.Tx, out *Records) error {

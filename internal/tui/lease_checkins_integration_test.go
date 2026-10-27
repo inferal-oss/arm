@@ -2,12 +2,12 @@ package tui
 
 import (
 	"context"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/server"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/server"
 	"os"
 	"path/filepath"
 	"strings"

@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 )
 
 func (a *app) meshForward(args []string) (int, error) {

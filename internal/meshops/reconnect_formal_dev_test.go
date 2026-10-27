@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 	"io"
 	"os"
 	"path/filepath"
@@ -19,8 +19,8 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
 )
 
 type reconnectWitness struct {

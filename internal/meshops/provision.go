@@ -10,11 +10,11 @@ import (
 	"io"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
 )
 
 // ProvisionTransport replaces only fixed external I/O for deterministic producer

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/kubeprovision"
+	"getarm.org/internal/kubeprovision"
 )
 
 func TestKubernetesTUITypeaheadSelectionAndStaleRead(t *testing.T) {

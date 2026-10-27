@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/companions"
+	"getarm.org/internal/companions"
 )
 
 type CatalogSeed struct {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestLeaseReviewCLIRejectsMissingIdentityBeforeBackend(t *testing.T) {

@@ -2,7 +2,7 @@ package cli_test
 
 import (
 	"bytes"
-	"github.com/inferal-oss/arm/internal/cli"
+	"getarm.org/internal/cli"
 	"path/filepath"
 	"strings"
 	"testing"

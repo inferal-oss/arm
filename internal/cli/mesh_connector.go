@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/mesh"
 )
 
 // Connector configuration is native-only and immutable by ID. The dashboard

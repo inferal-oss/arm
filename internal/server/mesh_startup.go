@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 func saveMeshStartupPolicy(home, address string, capacity model.Resources) error {

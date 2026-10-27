@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/model"
 )
 
 func TestNodeMetadataAllowlistExactInventoryAndIndependentFreshness(t *testing.T) {

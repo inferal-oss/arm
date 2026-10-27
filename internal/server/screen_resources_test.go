@@ -16,8 +16,8 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func screenTransportLeases(t *testing.T, s *Server) (model.Status, []model.Lease) {

@@ -3,8 +3,8 @@ package cli
 import (
 	"io"
 
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/mesh"
 )
 
 // Embedded first, then an exact private seeded catalog. Ordinary thin nodes

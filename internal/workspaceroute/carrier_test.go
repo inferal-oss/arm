@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/workspace"
 )
 
 func identity(i mesh.Identity) workspace.Identity {

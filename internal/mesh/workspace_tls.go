@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 const WorkspaceInnerProtocol = "arm.workspace.directory.v1"

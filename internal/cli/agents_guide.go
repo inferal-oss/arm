@@ -5,8 +5,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/knowledge"
+	"getarm.org/internal/model"
+	"getarm.org/knowledge"
 )
 
 type agentGuideSection struct {

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func rateItem(id string, read, write *float64) model.MonitorIO {

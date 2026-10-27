@@ -20,8 +20,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/published"
+	"getarm.org/internal/model"
+	"getarm.org/internal/published"
 )
 
 const MaxProofBytes int64 = 64 << 20

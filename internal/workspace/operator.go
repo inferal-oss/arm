@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 // Operator exposes only authenticated local inspection and authority-reducing

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 func (s *Store) PrepareAdmission(ctx context.Context, p Principal, q AdmissionRequest) (Operation, error) {

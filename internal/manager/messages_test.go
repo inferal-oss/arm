@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/model"
 )
 
 func TestOperatorInboxAndInterruptedDeliveryRecovery(t *testing.T) {

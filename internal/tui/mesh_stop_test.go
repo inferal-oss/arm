@@ -9,10 +9,10 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 // Typed contract values below are synthetic display controls, never runtime closure evidence.

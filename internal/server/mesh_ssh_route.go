@@ -12,14 +12,14 @@ import (
 	"os/user"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/meshstream"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
-	"github.com/inferal-oss/arm/internal/workspace"
-	direct "github.com/inferal-oss/arm/internal/workspacetransport"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/meshstream"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
+	"getarm.org/internal/workspace"
+	direct "getarm.org/internal/workspacetransport"
 	"golang.org/x/crypto/ssh"
 )
 

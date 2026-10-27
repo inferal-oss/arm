@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"io"
 	"net/http"
 	"time"

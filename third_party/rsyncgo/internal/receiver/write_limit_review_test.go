@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
+	"getarm.org/third_party/rsyncgo"
+	"getarm.org/third_party/rsyncgo/internal/progress"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncwire"
 	"github.com/mmcloughlin/md4"
 )
 

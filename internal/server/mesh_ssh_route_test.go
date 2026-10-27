@@ -16,13 +16,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/meshstream"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/meshstream"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
+	"getarm.org/internal/workspace"
 	"golang.org/x/crypto/ssh"
 )
 

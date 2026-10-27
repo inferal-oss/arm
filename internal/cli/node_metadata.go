@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/inferal-oss/arm/internal/model"
+import "getarm.org/internal/model"
 
 func (a *app) nodeMetadata(args []string) (int, error) {
 	f := a.flags("node")

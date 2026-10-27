@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	p "github.com/inferal-oss/arm/internal/providerproto"
+	p "getarm.org/internal/providerproto"
 )
 
 // Run is exported for the real executable and subprocess tests only. Home and

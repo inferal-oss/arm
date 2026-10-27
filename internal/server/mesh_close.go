@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // A bounded set of original service owners, not a lifetime history cap. Only

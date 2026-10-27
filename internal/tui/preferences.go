@@ -7,8 +7,8 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 type preferences struct {

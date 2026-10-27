@@ -8,11 +8,11 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/database"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
+	"getarm.org/internal/storage"
 )
 
 type stopPlanRequest struct {

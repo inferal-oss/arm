@@ -3,8 +3,8 @@ package manager
 import (
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func TestIndependentPoolReviewKeepsEndingAndUncertainObligations(t *testing.T) {

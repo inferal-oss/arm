@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // InvalidStateError identifies malformed optional workspace evidence. SQL/driver

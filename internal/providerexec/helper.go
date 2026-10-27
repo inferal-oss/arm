@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/providerproto"
-	"github.com/inferal-oss/arm/internal/storage"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/providerproto"
+	"getarm.org/internal/storage"
+	"getarm.org/internal/usage"
 )
 
 // HelperMain accepts only inherited anonymous private control pipes. It never

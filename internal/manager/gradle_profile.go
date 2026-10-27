@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // The initial adapter uses an installed Gradle executable, not a project

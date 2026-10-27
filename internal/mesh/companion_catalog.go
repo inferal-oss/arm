@@ -11,9 +11,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/local"
+	"getarm.org/internal/meshssh"
 	"golang.org/x/sys/unix"
 )
 

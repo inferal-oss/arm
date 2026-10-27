@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func (s *Server) requestShutdown(request model.ShutdownRequest) (model.ShutdownReport, error) {

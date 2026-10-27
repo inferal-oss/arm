@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/cli"
+	"getarm.org/internal/cli"
 )
 
 func TestSubpoolCLIHelpAndInvalidSelectorsAreOffline(t *testing.T) {

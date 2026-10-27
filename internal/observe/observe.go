@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func known(value float64, unit, scope, method, quality string) model.Measurement {

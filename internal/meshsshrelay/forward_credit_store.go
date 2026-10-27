@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/workspace"
 	"golang.org/x/sys/unix"
 )
 

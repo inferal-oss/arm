@@ -7,9 +7,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
 )
 
 func TestNodeMetadataLocalBrowserMeshSchemaAndGrantBoundary(t *testing.T) {

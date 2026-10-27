@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/manager"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/manager"
 )
 
 func pendingFixture(t *testing.T, kind string) pendingRecord {

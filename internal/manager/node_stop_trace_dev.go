@@ -3,8 +3,8 @@
 package manager
 
 import (
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // traceNodeStop is always called under the actual Manager.mu, after the real

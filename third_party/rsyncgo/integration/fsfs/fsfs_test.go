@@ -8,9 +8,9 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
+	"getarm.org/third_party/rsyncgo/internal/rsynctest"
+	"getarm.org/third_party/rsyncgo/internal/testlogger"
+	"getarm.org/third_party/rsyncgo/rsyncd"
 	"github.com/google/go-cmp/cmp"
 )
 

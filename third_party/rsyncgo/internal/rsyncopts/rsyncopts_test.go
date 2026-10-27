@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncostest"
+	"getarm.org/third_party/rsyncgo/internal/rsyncostest"
 	"github.com/google/go-cmp/cmp"
 )
 

@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/agents"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestLeaseReviewAPIExactRevisionAndClosedFields(t *testing.T) {

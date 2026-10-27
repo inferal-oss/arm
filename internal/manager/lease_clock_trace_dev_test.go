@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
 )
 
 // Clock input is controlled. Every emitted lease, journal event and checkpoint

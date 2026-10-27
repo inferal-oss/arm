@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/agents"
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func policyFixture(t *testing.T, mode, delivery string) (*Manager, model.Lease, agents.Contact) {

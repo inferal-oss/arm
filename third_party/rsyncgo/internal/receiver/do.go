@@ -5,9 +5,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncstats"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncstats"
+	"getarm.org/third_party/rsyncgo/internal/rsyncwire"
 	"golang.org/x/sync/errgroup"
 )
 

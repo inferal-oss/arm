@@ -3,7 +3,7 @@ package manager
 import (
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func poolPageLimit(q model.PoolTreeQuery) (int, error) {

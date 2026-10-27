@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Independently reviewed recursive declaration snapshot. Do not generate/update

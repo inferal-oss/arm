@@ -1,7 +1,7 @@
 package manager
 
 import (
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"net"
 )
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 func TestRoutingActualProducerExpiresBeforeFinalCommitAndRollsBackAllEvidence(t *testing.T) {

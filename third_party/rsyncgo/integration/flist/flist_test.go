@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
+	"getarm.org/third_party/rsyncgo/internal/rsynctest"
+	"getarm.org/third_party/rsyncgo/rsyncd"
 )
 
 // rsynctest.go:282: length 280063 exceeds max message size (262144)

@@ -1,4 +1,4 @@
-module github.com/inferal-oss/arm
+module getarm.org
 
 go 1.27.3
 

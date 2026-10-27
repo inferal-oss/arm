@@ -1,8 +1,8 @@
 package tui
 
 import (
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/model"
 	"os"
 	"path/filepath"
 	"testing"

@@ -14,11 +14,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // Synthetic contract/source-row controls; these do not assert native Stop or

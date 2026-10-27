@@ -25,7 +25,7 @@ func TestInstallableModuleIncludesAuditedFork(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	const module = "github.com/inferal-oss/arm"
+	const module = "getarm.org"
 	if !strings.HasPrefix(string(mod), "module "+module+"\n") {
 		t.Fatal("unexpected canonical module")
 	}
@@ -57,7 +57,7 @@ func TestInstallableModuleIncludesAuditedFork(t *testing.T) {
 			if err != nil {
 				return err
 			}
-			if strings.HasPrefix(name, "github.com/gokrazy/rsync") || strings.HasPrefix(name, "github.com/yrashk/arm") {
+			if strings.HasPrefix(name, "github.com/gokrazy/rsync") || strings.HasPrefix(name, "github.com/yrashk/arm") || name == "github.com/inferal-oss/arm" || strings.HasPrefix(name, "github.com/inferal-oss/arm/") {
 				t.Errorf("fork escapes canonical module: %s imports %s", path, name)
 			}
 		}

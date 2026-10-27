@@ -7,7 +7,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 const maxPeerItems = 128

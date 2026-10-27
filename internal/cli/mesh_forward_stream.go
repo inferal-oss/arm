@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/model"
 )
 
 // A stream is a local client of one status-reported source listener. The raw

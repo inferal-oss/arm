@@ -8,10 +8,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
 	"io"
 	"net/url"
 	"os"
@@ -21,11 +21,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/published"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/published"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
 )
 
 type publishedFormalState struct {

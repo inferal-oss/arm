@@ -17,14 +17,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/log"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender"
+	"getarm.org/third_party/rsyncgo"
+	"getarm.org/third_party/rsyncgo/internal/log"
+	"getarm.org/third_party/rsyncgo/internal/progress"
+	"getarm.org/third_party/rsyncgo/internal/receiver"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/rsyncwire"
+	"getarm.org/third_party/rsyncgo/internal/sender"
 )
 
 type Module struct {

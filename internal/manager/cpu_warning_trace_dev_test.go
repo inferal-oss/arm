@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func cpuBudgetKnown(b *model.CPUBudget) bool {

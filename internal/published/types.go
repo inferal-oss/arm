@@ -12,10 +12,10 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"getarm.org/internal/agents"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 const (

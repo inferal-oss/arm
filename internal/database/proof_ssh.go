@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 )
 
 const sshResetSchema = `CREATE TABLE ssh_operations (principal TEXT NOT NULL,key TEXT NOT NULL,lease TEXT NOT NULL UNIQUE,data TEXT NOT NULL,PRIMARY KEY(principal,key))`

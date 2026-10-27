@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 // GraphHints is reachability information, never hop or endpoint authorization.

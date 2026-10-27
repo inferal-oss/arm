@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum"
+	"getarm.org/third_party/rsyncgo/internal/rsyncchecksum"
 )
 
 func constructLargeDataFile(headPattern, bodyPattern, endPattern []byte) []byte {

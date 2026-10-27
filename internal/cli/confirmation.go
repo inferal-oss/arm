@@ -6,8 +6,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/install"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/install"
+	"getarm.org/internal/model"
 )
 
 func (a *app) approve(plan *install.Plan, yes bool) error {

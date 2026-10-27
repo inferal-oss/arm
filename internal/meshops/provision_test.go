@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
 )
 
 func TestProvisionNoConsentAndDryRunNeverImportOrCreateState(t *testing.T) {

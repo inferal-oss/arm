@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 const (

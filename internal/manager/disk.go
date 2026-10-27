@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
 )
 
 const diskStaleAfter = 3 * time.Second

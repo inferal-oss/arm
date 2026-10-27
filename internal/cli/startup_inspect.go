@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/client"
+	"getarm.org/internal/database"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 )
 
 // existingStartup verifies the selected home and actual nonsecret generation;

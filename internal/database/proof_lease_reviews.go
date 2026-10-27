@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 // This independent catalog classifies conversation/history only. It never

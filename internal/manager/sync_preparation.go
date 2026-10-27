@@ -12,11 +12,11 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 )
 
 // A private fixed preparation policy covers bounded intent/manifest decoding,

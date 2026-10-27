@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/ports"
+	"getarm.org/internal/model"
+	"getarm.org/internal/ports"
 )
 
 func portRequest(key string) model.Request {

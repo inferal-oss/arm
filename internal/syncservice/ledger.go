@@ -13,9 +13,9 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
 )
 
 // These tables belong to the Manager's proven state schema. The Manager must

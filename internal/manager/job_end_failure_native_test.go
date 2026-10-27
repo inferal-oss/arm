@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/childowner"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/childowner"
+	"getarm.org/internal/model"
 )
 
 var endingFailureUnknownFixtures struct {

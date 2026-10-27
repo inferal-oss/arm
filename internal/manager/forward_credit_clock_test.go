@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/model"
 )
 
 // A controlled suspend-inclusive jump leaves wall time and both Go contexts

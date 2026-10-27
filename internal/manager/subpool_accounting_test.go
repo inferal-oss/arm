@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func partitionNode(id, parent string, n int64) model.Pool {

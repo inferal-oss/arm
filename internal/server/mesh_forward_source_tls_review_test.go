@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshforward"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshforward"
 )
 
 func TestForwardSourceTLSKeepsOriginalFailureClassification(t *testing.T) {

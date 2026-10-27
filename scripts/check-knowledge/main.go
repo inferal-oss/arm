@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/inferal-oss/arm/knowledge"
+	"getarm.org/knowledge"
 )
 
 func main() {

@@ -14,9 +14,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 	"golang.org/x/sys/unix"
 )
 

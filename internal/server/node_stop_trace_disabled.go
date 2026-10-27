@@ -5,9 +5,9 @@ package server
 import (
 	"context"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 func traceStopPublished(*Server)                                                        {}

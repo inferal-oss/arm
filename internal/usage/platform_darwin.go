@@ -9,8 +9,8 @@ import (
 	"sync"
 	"unsafe"
 
+	"getarm.org/internal/model"
 	"github.com/ebitengine/purego"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Layouts correspond to public proc_bsdinfo and rusage_info_v0 on macOS

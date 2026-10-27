@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"getarm.org/internal/meshops"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/meshops"
 )
 
 func (m *dashboardModel) meshItemCount() int {

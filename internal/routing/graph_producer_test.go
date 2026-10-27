@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 func ownGraphReport(t *testing.T, id string, n, d *msgNode, neighbors []workspacegraph.Neighbor) (workspace.RefreshRequest, workspacegraph.Report) {

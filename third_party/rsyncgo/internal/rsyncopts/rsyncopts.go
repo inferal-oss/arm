@@ -18,8 +18,8 @@ import (
 	"syscall"
 	"unicode"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/version"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/version"
 )
 
 const (

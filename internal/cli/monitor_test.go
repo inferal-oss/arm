@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestMonitorRenderingHistoryGapsUnitsAndSafeLabels(t *testing.T) {

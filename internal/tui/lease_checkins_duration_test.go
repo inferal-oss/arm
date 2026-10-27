@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestLeaseCheckinHumanDurationLabels(t *testing.T) {

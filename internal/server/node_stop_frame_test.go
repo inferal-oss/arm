@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/client"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // Real native Serve lifetimes, 64 actual leases, authenticated mesh prepare/apply,

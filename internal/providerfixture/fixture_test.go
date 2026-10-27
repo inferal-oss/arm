@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	p "github.com/inferal-oss/arm/internal/providerproto"
+	p "getarm.org/internal/providerproto"
 )
 
 func TestFixtureChild(t *testing.T) {

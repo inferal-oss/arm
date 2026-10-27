@@ -8,7 +8,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/mesh"
 )
 
 // dialForwardSourceTLS verifies the current local mesh signing identity on a

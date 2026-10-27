@@ -9,11 +9,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	route "github.com/inferal-oss/arm/internal/workspaceroute"
-	direct "github.com/inferal-oss/arm/internal/workspacetransport"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	route "getarm.org/internal/workspaceroute"
+	direct "getarm.org/internal/workspacetransport"
 )
 
 func directRouteOuter(o route.Outer) direct.Outer {

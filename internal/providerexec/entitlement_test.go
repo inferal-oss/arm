@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/providerproto"
+	"getarm.org/internal/model"
+	"getarm.org/internal/providerproto"
 )
 
 func controlledHeld(t *testing.T, lifetime context.Context, check EntitlementCheck) Held {

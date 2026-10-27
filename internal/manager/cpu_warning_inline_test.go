@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/observe"
+	"getarm.org/internal/observe"
 	"golang.org/x/crypto/ssh"
 )
 

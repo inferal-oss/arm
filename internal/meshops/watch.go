@@ -2,8 +2,8 @@ package meshops
 
 import (
 	"context"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 	"time"
 )
 

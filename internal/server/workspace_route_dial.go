@@ -5,10 +5,10 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	route "github.com/inferal-oss/arm/internal/workspaceroute"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	route "getarm.org/internal/workspaceroute"
 )
 
 // workspaceRouteDial selects only stable IDs from current local authority and

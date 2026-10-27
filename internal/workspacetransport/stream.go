@@ -18,9 +18,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/workspace"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 // Outer is a destination-owned snapshot of one authenticated direct pair. It

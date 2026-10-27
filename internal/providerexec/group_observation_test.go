@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/providerproto"
+	"getarm.org/internal/providerproto"
 )
 
 func TestReadOnlyGroupObservationBoundAndErrors(t *testing.T) {

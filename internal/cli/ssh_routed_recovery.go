@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 )
 
 // recoverRoutedSSH sends only an exact lookup or nonexecution seal. Every

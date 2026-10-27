@@ -2,7 +2,7 @@ package manager
 
 import (
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/published"
+	"getarm.org/internal/published"
 	"path/filepath"
 	"strings"
 	"testing"

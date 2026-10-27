@@ -6,10 +6,10 @@ import (
 	"errors"
 	"time"
 
+	"getarm.org/internal/client"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func (a *app) agentInbox(action string, args []string) error {

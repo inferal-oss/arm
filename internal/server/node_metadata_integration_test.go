@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestNodeMetadataActualNativeAndBrowserReadIdenticalSchema(t *testing.T) {

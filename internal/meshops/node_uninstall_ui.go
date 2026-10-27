@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 type UninstallCandidate struct {

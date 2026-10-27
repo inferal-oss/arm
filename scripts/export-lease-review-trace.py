@@ -11,7 +11,7 @@ import datetime
 from pathlib import Path
 
 TEST = 'TestLeaseReviewDevTraceConversationIsInert'
-PACKAGE = 'github.com/inferal-oss/arm/internal/manager'
+PACKAGE = 'getarm.org/internal/manager'
 ACTIONS = ('initial', 'configure', 'checkpoint', 'acknowledge', 'reply',
            'duplicate_reply', 'ordinary_end', 'duplicate_reply')
 PREFIX = 'arm-lease-review-trace '

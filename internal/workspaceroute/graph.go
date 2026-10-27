@@ -5,9 +5,9 @@ import (
 	"errors"
 	"io"
 
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 // This fixed conservative reserve covers bounded outer control, both pinned

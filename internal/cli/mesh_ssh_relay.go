@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/model"
 )
 
 // mesh SSH routing policy is native-only and independently reviewed. It never

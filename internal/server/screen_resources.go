@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 // A cooperative endpoint transport reservation, in addition to screen's wire

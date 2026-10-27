@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncreconcile"
 )
 
 func TestReviewSyncKeyRefusesChangedChargedEvidence(t *testing.T) {

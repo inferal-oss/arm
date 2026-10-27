@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
 )
 
 const (

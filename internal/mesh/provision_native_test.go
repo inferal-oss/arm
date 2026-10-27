@@ -16,8 +16,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/meshssh"
 )
 
 func TestProvisionNativeChild(t *testing.T) {

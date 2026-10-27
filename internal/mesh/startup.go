@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // StartupPolicy records configured ceilings, never observed free memory. A

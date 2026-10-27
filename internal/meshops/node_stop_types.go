@@ -1,8 +1,8 @@
 package meshops
 
 import (
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 type StopDraft struct {

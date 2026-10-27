@@ -3,8 +3,8 @@ package routing
 import (
 	"context"
 	"database/sql"
-	"github.com/inferal-oss/arm/internal/published"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/published"
+	"getarm.org/internal/workspace"
 	"time"
 )
 

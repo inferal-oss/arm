@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
 )
 
 // Reconstruct the closed wire shape, without invoking producer resolution,

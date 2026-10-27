@@ -12,10 +12,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncstats"
+	"getarm.org/third_party/rsyncgo/internal/maincmd"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/rsyncstats"
 )
 
 type Direction uint8

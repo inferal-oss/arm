@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 type recoveryBrowser struct {

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/nodestop"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/database"
+	"getarm.org/internal/nodestop"
+	"getarm.org/internal/storage"
 	"golang.org/x/sys/unix"
 )
 

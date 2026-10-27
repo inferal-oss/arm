@@ -3,7 +3,7 @@ package manager
 import (
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func (m *Manager) subpoolQueueBlockers(l model.Lease, s queueSnapshot) ([]model.QueueBlocker, error) {

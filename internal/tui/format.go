@@ -10,8 +10,8 @@ import (
 	"time"
 	"unicode"
 
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func safe(text string) string {

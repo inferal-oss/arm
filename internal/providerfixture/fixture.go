@@ -14,8 +14,8 @@ import (
 	"strconv"
 	"time"
 
+	p "getarm.org/internal/providerproto"
 	"github.com/google/uuid"
-	p "github.com/inferal-oss/arm/internal/providerproto"
 	_ "modernc.org/sqlite"
 )
 

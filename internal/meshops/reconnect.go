@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 // ReconnectDraft is caller intent. Browser adapters expose no Binary/Home fields;

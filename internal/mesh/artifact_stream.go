@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 	"golang.org/x/sys/unix"
 )
 
@@ -74,7 +74,7 @@ func ImportCompanion(home string, a Artifact, input io.Reader) (Artifact, error)
 		return a, fmt.Errorf("companion stream differs from reviewed executable")
 	}
 	info, e := buildinfo.Read(file)
-	if e != nil || info.Path != "github.com/inferal-oss/arm/cmd/arm" {
+	if e != nil || info.Path != "getarm.org/cmd/arm" {
 		return a, fmt.Errorf("companion is not an ARM Go executable")
 	}
 	settings := map[string]string{}

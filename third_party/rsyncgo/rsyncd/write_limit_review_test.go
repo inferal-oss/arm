@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream"
+	"getarm.org/third_party/rsyncgo/rsyncd"
+	"getarm.org/third_party/rsyncgo/rsyncstream"
 )
 
 type capReviewDiscard struct{ io.Writer }

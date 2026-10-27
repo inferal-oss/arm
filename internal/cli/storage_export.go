@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 )
 
 type exportFiles []model.ExportSelection

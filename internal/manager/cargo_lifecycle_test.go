@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/cargoprofile"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/cargoprofile"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 // Only this test binary uses an init trampoline; production's fixed hidden

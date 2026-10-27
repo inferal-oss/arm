@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestSupervisedNaturalCompletionRecordsExitOutcome(t *testing.T) {

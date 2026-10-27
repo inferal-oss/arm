@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
 )
 
 func TestMonitorSubscriptionBoundReplacementAndRelease(t *testing.T) {

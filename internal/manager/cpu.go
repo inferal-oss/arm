@@ -5,9 +5,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
+	"getarm.org/internal/usage"
 )
 
 const cpuStaleAfter = 3 * observe.CPUObservationCadence

@@ -15,7 +15,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/companions"
+	"getarm.org/internal/companions"
 )
 
 // BuildCarrier stages a private source snapshot, builds four thin payloads with

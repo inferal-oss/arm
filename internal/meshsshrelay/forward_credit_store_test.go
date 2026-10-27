@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/model"
 	"golang.org/x/sys/unix"
 )
 

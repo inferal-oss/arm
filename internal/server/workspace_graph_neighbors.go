@@ -3,9 +3,9 @@ package server
 import (
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 // Capture current registry OUTSIDE SQL and trust callbacks. A reported edge is

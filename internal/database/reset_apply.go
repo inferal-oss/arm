@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 	"golang.org/x/sys/unix"
 	"os"
 )

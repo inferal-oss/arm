@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Sample real headroom without starting scheduling: these fixtures explicitly

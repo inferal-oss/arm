@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 type Clock interface {

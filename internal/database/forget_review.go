@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 var forgetDatabaseNames = []string{"state.db", "state.db-wal", "state.db-shm", "state.db-journal"}

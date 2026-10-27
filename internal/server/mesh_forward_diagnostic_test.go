@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/meshforward"
+	"getarm.org/internal/meshforward"
 )
 
 func TestForwardOriginalOpenerFailureRetainedWithoutReplayOrApplicationDisclosure(t *testing.T) {

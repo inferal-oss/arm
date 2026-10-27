@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func MemoryAvailability(ctx context.Context) model.MemoryAvailability {

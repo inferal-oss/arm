@@ -2,7 +2,7 @@ package cli
 
 import (
 	"context"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/meshssh"
 )
 
 type meshSSHIdentity = meshssh.Identity

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
 )
 
 // All methods below require m.mu (or unpublished Open). Failure is sticky for

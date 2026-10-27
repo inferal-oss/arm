@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"reflect"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
-	api "github.com/inferal-oss/arm/internal/workspaceapi"
-	route "github.com/inferal-oss/arm/internal/workspaceroute"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
+	api "getarm.org/internal/workspaceapi"
+	route "getarm.org/internal/workspaceroute"
 )
 
 func TestGraphWholeResponsePreflightRollsBackActualDirectoryWriter(t *testing.T) {

@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/inferal-oss/arm/internal/cargoprofile"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/cargoprofile"
+	"getarm.org/internal/model"
 	"reflect"
 )
 

@@ -11,14 +11,14 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncostest"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
+	"getarm.org/third_party/rsyncgo"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/rsyncostest"
+	"getarm.org/third_party/rsyncgo/internal/rsynctest"
+	"getarm.org/third_party/rsyncgo/internal/testlogger"
+	"getarm.org/third_party/rsyncgo/rsyncclient"
+	"getarm.org/third_party/rsyncgo/rsyncd"
 	"github.com/google/go-cmp/cmp"
 )
 

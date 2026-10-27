@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/model"
 )
 
 // Mirrors are deliberately local because importing manager would create a

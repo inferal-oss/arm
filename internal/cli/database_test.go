@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/database"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 )
 
 func databaseCLIState(t *testing.T) string {
