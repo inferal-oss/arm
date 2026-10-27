@@ -141,28 +141,28 @@ window.addEventListener('popstate',connectionLinks.change);window.addEventListen
 
 // All monitor/history data is bounded; missing samples break chart series.
 let paused=false,lastMonitorStale=null;
-const pause=ui.check('Pause monitor display',{checked:false},()=>{paused=pause.checked;if(!paused)renderMonitor();}),monitorFresh=ui.text(''),monitorCards=ui.stack();roots.monitor.replace(pause,monitorFresh,monitorCards);
+const pause=ui.check('Pause monitor display',{checked:false},()=>{paused=pause.checked;if(!paused)renderMonitor();}),monitorFresh=ui.text(''),monitorCards=ui.stack();roots.monitor.replace(ui.toolbar('Monitor display',[pause,monitorFresh]),monitorCards);
 const ioSelections={disk_io:allDevices(),network:allDevices()};
 function help(kind,options={}){const get=()=>typeof options==='function'?options():options,title=metricHelp(kind,get()).title;return ui.iconButton('About '+title,'?',()=>{const info=metricHelp(kind,get()),body=info.paragraphs.map(x=>ui.text(x));if(info.technical.length)body.push(ui.disclosure('Technical details',[ui.descriptions(info.technical)]));const d=ui.dialog(info.title,body);d.on('close',()=>d.dispose());d.showModal();});}
 const GiB=1024**3;
 function series(get,{scale=1}={}){const cadence=Number(state.monitor?.cadence_ns??2e9)/1e6,rows=state.history.map(p=>{const v=numeric(get(p));return{id:String(p.sequence),x:Date.parse(p.at)/1000,value:v===null||!Number.isFinite(v)?null:v/scale,label:new Date(p.at).toLocaleTimeString()};});for(let i=0;i<rows.length-1;i++)rows[i].connectNext=Number.isFinite(rows[i].x)&&Number.isFinite(rows[i+1].x)&&rows[i+1].x>rows[i].x&&(rows[i+1].x-rows[i].x)*1000<=cadence*1.6;return rows;}
 let monitorModel=null;
 function initMonitor(){
- const cpuValue=ui.stat('All-core activity','unavailable'),cores=ui.grid([],{columns:6,minWidth:'160px'}),cpuChart=ui.line('CPU activity over time',[],{min:0,max:100,unit:'%'}),cpuNote=ui.text('');
- const ramValue=ui.stat('RAM remaining','unavailable'),ramChart=ui.line('Available RAM over time',[],{min:0,max:1,unit:'GiB'}),ramFacts=ui.descriptions([]);
- const diskValue=ui.stat('Space remaining','unavailable'),diskChart=ui.line('Available filesystem space over time',[],{min:0,max:1,unit:'GiB'}),diskFacts=ui.descriptions([]);
- const cpuCard=ui.card('CPU activity',[cpuNote,cpuChart,cores],{actions:[help('cpu',()=>({measurements:[['CPU',state.monitor?.latest?.cpu_busy_percent]]}))]}),
- ramCard=ui.card('Memory & swap',[ramChart,ramFacts],{actions:[help('memory',()=>({measurements:[['Available RAM',state.monitor?.latest?.memory.available],['RAM used',state.monitor?.latest?.memory.used],['Available swap',state.monitor?.latest?.swap.available]]}))]}),
- diskCard=ui.card('Storage space',[diskChart,diskFacts],{actions:[help('filesystem',()=>({filesystem:state.monitor?.latest?.filesystem.filesystem,measurements:[['Available space',state.monitor?.latest?.filesystem.available]]}))]});
+ const cpuValue=ui.stat('All-core activity','unavailable'),cores=ui.grid([],{columns:6,minWidth:'120px',gap:2}),cpuChart=ui.line('CPU activity over time',[],{min:0,max:100,unit:'%'}),cpuNote=ui.text('');
+ const ramValue=ui.stat('RAM remaining','unavailable'),ramChart=ui.line('Available RAM over time',[],{min:0,max:1,unit:'GiB'}),ramFacts=ui.descriptions([]),ramNote=ui.text('');
+ const diskValue=ui.stat('Space remaining','unavailable'),diskChart=ui.line('Available filesystem space over time',[],{min:0,max:1,unit:'GiB'}),diskFacts=ui.descriptions([]),diskNote=ui.text('');
+ const cpuCard=ui.card('CPU activity',[cpuNote,cpuChart,ui.disclosure('Per-core activity',[cores])],{actions:[help('cpu',()=>({measurements:[['CPU',state.monitor?.latest?.cpu_busy_percent]]}))]}),
+ ramCard=ui.card('Memory & swap',[ramNote,ramChart,ui.disclosure('Memory & swap details',[ramFacts])],{actions:[help('memory',()=>({measurements:[['Available RAM',state.monitor?.latest?.memory.available],['RAM used',state.monitor?.latest?.memory.used],['Available swap',state.monitor?.latest?.swap.available]]}))]}),
+ diskCard=ui.card('Storage space',[diskNote,diskChart,ui.disclosure('Space details',[diskFacts])],{actions:[help('filesystem',()=>({filesystem:state.monitor?.latest?.filesystem.filesystem,measurements:[['Available space',state.monitor?.latest?.filesystem.available]]}))]});
  const io={};for(const[key,title]of [['disk_io','Disk I/O'],['network','Network']]){
-  const summary=ui.text(''),rates=ui.descriptions([]),readChart=ui.line(title+' '+(key==='network'?'receive':'read'),[],{min:0,max:1,unit:'MiB/s'}),writeChart=ui.line(title+' '+(key==='network'?'send':'write'),[],{min:0,max:1,unit:'MiB/s'}),selectors=ui.stack(),quality=ui.badge(''),deviceMap=new Map();
+  const summary=ui.text(''),rates=ui.descriptions([]),readChart=ui.line(title+' '+(key==='network'?'receive':'read'),[],{min:0,max:1,unit:'MiB/s'}),writeChart=ui.line(title+' '+(key==='network'?'send':'write'),[],{min:0,max:1,unit:'MiB/s'}),selectors=ui.grid([],{columns:4,minWidth:'128px',gap:2}),quality=ui.badge(''),deviceMap=new Map();
   const all=ui.button('All',()=>{ioSelections[key]=allDevices();renderMonitor();}),none=ui.button('None',()=>{ioSelections[key]=noDevices();renderMonitor();});
   const selector=ui.disclosure('Choose devices',[ui.toolbar('Device selection',[all,none]),selectors]);
-  const card=ui.card(title,[quality,summary,rates,readChart,writeChart,selector,ui.text('Reported counters may overlap. Unknown or reset counters leave gaps.')],{actions:[help(key)]});io[key]={summary,rates,readChart,writeChart,selectors,quality,deviceMap,card};
+  const card=ui.card(title,[quality,summary,rates,ui.grid([readChart,writeChart],{columns:2,minWidth:'140px',gap:2}),selector,ui.text('Reported counters may overlap. Unknown or reset counters leave gaps.')],{actions:[help(key)]});io[key]={summary,rates,readChart,writeChart,selectors,quality,deviceMap,card};
  }
  const gpu=ui.card('GPU monitoring',[ui.text('Unavailable in this build')],{actions:[help('gpu')]});
- owned(monitorCards,[ui.grid([cpuValue,ramValue,diskValue]),cpuCard,ui.grid([ramCard,diskCard]),ui.grid([io.disk_io.card,io.network.card]),gpu]);
- monitorModel={cpuValue,cpuChart,cpuNote,cores,coreMap:new Map(),ramValue,ramChart,ramFacts,diskValue,diskChart,diskFacts,io};
+ owned(monitorCards,[ui.grid([cpuValue,ramValue,diskValue],{columns:3,minWidth:'180px',gap:2}),ui.grid([cpuCard,ramCard,diskCard],{columns:3,minWidth:'220px',gap:2}),ui.grid([io.disk_io.card,io.network.card],{columns:2,minWidth:'320px',gap:2}),gpu]);
+ monitorModel={cpuValue,cpuChart,cpuNote,cores,coreMap:new Map(),ramValue,ramChart,ramFacts,ramNote,diskValue,diskChart,diskFacts,diskNote,io};
 }
 function updateDescriptions(handle,pairs){const stamp=JSON.stringify(pairs);if(handle.stamp===stamp)return;handle.stamp=stamp;handle.setPairs(pairs);}
 function renderMonitor(){if(paused)return;const sample=state.monitor?.latest;if(!sample)return;
@@ -173,7 +173,9 @@ function renderMonitor(){if(paused)return;const sample=state.monitor?.latest;if(
   const ids=new Set();for(const core of sample.cores??[]){ids.add(core.id);let bar=m.coreMap.get(core.id);if(!bar){bar=ui.progress(core.id+' unavailable',null);m.coreMap.set(core.id,bar);}bar.set({label:core.id+' '+percent(core.busy_percent.value),value:core.busy_percent.value??0,active:core.busy_percent.value!==null});}
   for(const[id,bar]of m.coreMap)if(!ids.has(id)){m.coreMap.delete(id);bar.dispose();}m.cores.replace(...[...ids].map(id=>m.coreMap.get(id)));
   m.ramValue.set({value:bytes(remainingValue(sample.memory.available,stale))});m.ramChart.setSeries(series(p=>p.memory_available_bytes,{scale:GiB}),{min:0,max:Math.max(1,numeric(sample.memory.total.value)/GiB),unit:'GiB'});
+  m.ramNote.set({label:'Swap remaining '+bytes(remainingValue(sample.swap.available,stale))});
   updateDescriptions(m.ramFacts,[['RAM total',bytes(sample.memory.total.value)],['RAM used',bytes(sample.memory.used.value)],['Swap remaining',bytes(remainingValue(sample.swap.available,stale))],['Swap total',bytes(sample.swap.total.value)],['Swap used',bytes(sample.swap.used.value)]]);
+  m.diskNote.set({label:stale||sample.filesystem_stale?'Space usage unavailable (stale observation)':sample.filesystem.used.value==null||sample.filesystem.total.value==null?'Space usage unavailable':bytes(sample.filesystem.used.value)+' of '+bytes(sample.filesystem.total.value)+' used'});
   m.diskValue.set({value:bytes(remainingValue(sample.filesystem.available,stale||sample.filesystem_stale))});m.diskChart.setSeries(series(p=>p.filesystem_available_bytes,{scale:GiB}),{min:0,max:Math.max(1,numeric(sample.filesystem.total.value)/GiB),unit:'GiB'});updateDescriptions(m.diskFacts,[['Space total',bytes(sample.filesystem.total.value)],['Space used',bytes(sample.filesystem.used.value)]]);
   for(const[key,title]of [['disk_io','Disk I/O'],['network','Network']]){
    const model=m.io[key],devices=sample[key]??[],selection=ioSelections[key],selected=selectedDeviceIDs(selection,devices),totals=aggregateIO(devices,selected),points=aggregateIOWindow(state.history,key,selection,devices),bySequence=new Map(points.map(p=>[String(p.sequence),p]));

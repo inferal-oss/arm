@@ -51,7 +51,7 @@ arm:desktop a c:Stack ; pos:direction pos:Column .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 arm:monitor rdfs:label "Monitor" .
 arm:monitorCase c:when arm:monitor ; c:content arm:monitorContent .
-arm:monitorContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:monitorContent a c:Stack ; sty:density sty:Compact ; pos:direction pos:Column ; pos:gap tok:space-2 .
 arm:resources rdfs:label "Resources" .
 arm:resourcesCase c:when arm:resources ; c:content arm:resourcesContent .
 arm:resourcesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
