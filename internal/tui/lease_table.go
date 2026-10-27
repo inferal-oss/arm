@@ -6,7 +6,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Each lease owns two aligned lines: identity and account remain adjacent. The

@@ -2,9 +2,9 @@ package cli
 
 import (
 	"fmt"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
 	"path/filepath"
 )
 

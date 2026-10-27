@@ -6,11 +6,11 @@ import (
 	"math"
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 func (m *Manager) WorkspaceGraphHints(ctx context.Context, id, target string, directoryProbe bool) (routing.GraphHints, error) {

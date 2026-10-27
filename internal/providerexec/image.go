@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 )
 
 type Image struct {

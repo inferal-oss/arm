@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 // A native collection/refresh may arrive between render ticks. In particular,

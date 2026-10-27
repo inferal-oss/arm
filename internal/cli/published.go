@@ -3,10 +3,10 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/published"
-	api "github.com/inferal-oss/arm/internal/workspaceapi"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/published"
+	api "getarm.org/internal/workspaceapi"
 	"io"
 	"time"
 )

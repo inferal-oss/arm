@@ -54,7 +54,7 @@ def traces(gate):
     projection.require(sources()==before,'actual Go source closure changed during command');gate.summary['actual_sources']=before
     expected={name}|{name+'/'+s for s in projection.SCENARIOS};ran=[];passed=[];outputs={};packages=0
     for line in text.splitlines():
-        e=projection.parse(line);projection.require(e.get('Package')=='github.com/inferal-oss/arm/internal/manager' and e.get('Action') not in ('fail','skip','build-fail'),'actual package/failure/skip')
+        e=projection.parse(line);projection.require(e.get('Package')=='getarm.org/internal/manager' and e.get('Action') not in ('fail','skip','build-fail'),'actual package/failure/skip')
         if 'Test'in e:projection.require(e['Test'] in expected,'foreign actual test')
         if e['Action']=='run':ran.append(e['Test'])
         if e['Action']=='pass':

@@ -9,7 +9,7 @@ import (
 	"hash"
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 const maxPoolHierarchyReviewBytes = 4 << 20

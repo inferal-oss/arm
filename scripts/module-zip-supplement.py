@@ -11,7 +11,8 @@ import subprocess
 import urllib.parse
 import zipfile
 
-MODULE = 'github.com/inferal-oss/arm'
+MODULE = 'getarm.org'
+REPOSITORY_URL = 'https://github.com/inferal-oss/arm'
 MAX_COMPRESSED_ZIP_BYTES = 64*1024*1024
 ROOTS = ('internal/server/web/', 'web/')
 LEGACY = ('go.mod', 'go.sum', 'third_party/rsyncgo/LICENSE',
@@ -19,8 +20,8 @@ LEGACY = ('go.mod', 'go.sum', 'third_party/rsyncgo/LICENSE',
           'third_party/rsyncgo/UPSTREAM-go.sum.txt', 'third_party/rsyncgo/rsyncstream/stream.go',
           'third_party/rsyncgo/internal/sender/sender.go',
           'third_party/rsyncgo/internal/receiver/receiver.go')
-FROZEN = {'scripts/validate-module.py': 'a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b',
-          'scripts/test-validate-module.py': '355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc'}
+FROZEN = {'scripts/validate-module.py': 'dc2d30a670588451c221563169e8ed6f2f5f1ddab5a4fe73976ae841cfb967c7',
+          'scripts/test-validate-module.py': '1c8b3f05669ba2ab6257ce61640274469a47c6fcab319874d3629238add2ce18'}
 
 def git(repo, *args):
     return subprocess.check_output(['git', *args], cwd=repo)
@@ -116,7 +117,11 @@ def verify(args):
         report['full_origin'] = origin.get('Origin')
         if (origin.get('Origin') or {}).get('Hash') != before['commit']:
             raise ValueError('actual selected source differs from immutable expected source')
-        if (query.get('Origin') or {}).get('Hash') not in (None, before['commit']):
+        selected_origin = origin.get('Origin') or {}
+        if selected_origin.get('URL') != REPOSITORY_URL or selected_origin.get('VCS') != 'git':
+            raise ValueError('actual selected origin differs from the expected Git repository')
+        expected_origin = {'Hash': before['commit'], 'URL': REPOSITORY_URL, 'VCS': 'git'}
+        if any((query.get('Origin') or {}).get(key) not in (None, value) for key, value in expected_origin.items()):
             raise ValueError('query-level Origin conflicts')
         commands = read(args.receipts/'commands.json')
         by_name = {c['name']: c for c in commands}

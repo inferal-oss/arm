@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/server"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/server"
 )
 
 func TestEnsureMeshBackendPreservesHealthyConfiguredBudgets(t *testing.T) {

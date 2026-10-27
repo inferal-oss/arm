@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestPoolReviewRefusesOversizedCompleteWireScope(t *testing.T) {

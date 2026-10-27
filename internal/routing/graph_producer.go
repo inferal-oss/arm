@@ -7,9 +7,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 func graphMutation(ctx context.Context, tx *sql.Tx, a workspace.RouteAccess, role string) (Records, GraphIssuance, error) {

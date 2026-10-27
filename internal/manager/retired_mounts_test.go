@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestRetiredMountRemovalPreservesOrdinaryLeaseHistoryOnReopen(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/usage"
 )
 
 type workloadSample struct {

@@ -8,12 +8,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/published"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/published"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
 )
 
 type InboxRequest struct {

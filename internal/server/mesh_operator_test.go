@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"testing"
 )
 

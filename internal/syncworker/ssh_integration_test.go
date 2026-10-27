@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 	"golang.org/x/crypto/ssh"
 )
 

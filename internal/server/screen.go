@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
+	"getarm.org/internal/mesh"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 // Standard screen access is an exact service route. Neither endpoint accepts a

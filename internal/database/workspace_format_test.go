@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func workspaceFormatFixture(t *testing.T, statements ...string) *sql.DB {

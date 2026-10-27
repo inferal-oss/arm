@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
 )
 
 func (a *app) meshReconnect(args []string) (int, error) {

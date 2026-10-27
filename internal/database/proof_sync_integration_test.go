@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestSyncResetProofRetainsUsedOrPartialNamespace(t *testing.T) {

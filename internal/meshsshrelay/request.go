@@ -12,10 +12,10 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/meshstream"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/meshstream"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
+	"getarm.org/internal/workspace"
 )
 
 const MaxRequestBytes = 16 << 10

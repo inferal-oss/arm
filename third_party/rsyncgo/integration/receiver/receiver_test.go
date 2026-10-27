@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
+	"getarm.org/third_party/rsyncgo/internal/rsyncdconfig"
+	"getarm.org/third_party/rsyncgo/internal/rsynctest"
+	"getarm.org/third_party/rsyncgo/rsyncd"
 	"github.com/google/go-cmp/cmp"
 )
 

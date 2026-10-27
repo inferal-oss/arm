@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
 	"time"
 )
 

@@ -7,12 +7,12 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Typed synthetic display/decision controls, not native installation evidence.

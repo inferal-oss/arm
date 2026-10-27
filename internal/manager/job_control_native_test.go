@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // This opt-in gate uses the actual production sampler/admission. It must fail

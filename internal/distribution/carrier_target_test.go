@@ -55,12 +55,12 @@ func TestCarrierSelectedTargetMatchesActualGoExecutableMetadata(t *testing.T) {
 		}
 	}
 	files := map[string]string{
-		"go.mod":                        "module github.com/inferal-oss/arm\n\ngo 1.27.3\n",
+		"go.mod":                        "module getarm.org\n\ngo 1.27.3\n",
 		"go.sum":                        "",
 		"internal/buildinfo/tag.go":     "package buildinfo\nvar Version = \"dev\"\nvar BundleTag string\n",
 		"third_party/rsyncgo/engine.go": "package rsync\nconst Fixture = \"main-module-fork-input\"\n",
 		"third_party/rsyncgo/LICENSE":   "fixture license copied with source",
-		"cmd/arm/main.go":               "package main\nimport b \"github.com/inferal-oss/arm/internal/buildinfo\"\nimport r \"github.com/inferal-oss/arm/third_party/rsyncgo\"\nfunc main(){println(b.Version,b.BundleTag,r.Fixture)}\n",
+		"cmd/arm/main.go":               "package main\nimport b \"getarm.org/internal/buildinfo\"\nimport r \"getarm.org/third_party/rsyncgo\"\nfunc main(){println(b.Version,b.BundleTag,r.Fixture)}\n",
 	}
 	for name, data := range files {
 		if err := os.WriteFile(filepath.Join(root, name), []byte(data), 0600); err != nil {

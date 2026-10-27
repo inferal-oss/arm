@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/client"
+	"getarm.org/internal/meshssh"
 )
 
 type CatalogSeedReceipt struct {

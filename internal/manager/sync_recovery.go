@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 )
 
 // SyncKeyStatus is a read-only original-key recovery view. A completed

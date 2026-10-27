@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/restrict"
+	"getarm.org/third_party/rsyncgo/internal/restrict"
 )
 
 func restrictToModules(modules []Module) error {

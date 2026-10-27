@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
+	"getarm.org/third_party/rsyncgo/internal/rsynctest"
+	"getarm.org/third_party/rsyncgo/internal/testlogger"
 )
 
 func TestMain(m *testing.M) {

@@ -6,7 +6,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func (m *Manager) cargoNoSpawnFailure(l model.Lease, rec cargoRecord, reason error) (model.Lease, error) {

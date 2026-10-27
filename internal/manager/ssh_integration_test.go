@@ -19,11 +19,11 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/database"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 	"github.com/creack/pty"
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
 	"golang.org/x/crypto/ssh"
 )
 

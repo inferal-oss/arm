@@ -14,11 +14,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/meshforward"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/meshforward"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 )
 
 // The reader seam surrounds a real owned regular-file ReadPolicy, including its

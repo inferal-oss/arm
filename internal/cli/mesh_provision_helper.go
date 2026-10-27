@@ -3,13 +3,13 @@ package cli
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
 	"os"
 	"path/filepath"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
 )
 
 // Native-only commands: no browser/peer RPC route exposes installation/start.

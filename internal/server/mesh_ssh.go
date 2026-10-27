@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshstream"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshstream"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 	"golang.org/x/crypto/ssh"
 )
 

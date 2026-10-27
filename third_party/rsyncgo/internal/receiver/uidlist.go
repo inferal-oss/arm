@@ -5,7 +5,7 @@ import (
 	"os/user"
 	"strconv"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
 )
 
 type mapping struct {

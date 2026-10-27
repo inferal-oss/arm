@@ -18,13 +18,13 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/presence"
+	"getarm.org/internal/server"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/presence"
-	"github.com/inferal-oss/arm/internal/server"
 )
 
 type uidPeerReply struct {

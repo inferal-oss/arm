@@ -15,9 +15,9 @@ import (
 	"sync"
 	"time"
 
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/workspace"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 func digest(raw []byte) string { h := sha256.Sum256(raw); return hex.EncodeToString(h[:]) }

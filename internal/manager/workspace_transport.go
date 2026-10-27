@@ -2,7 +2,7 @@ package manager
 
 import (
 	"context"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 // WorkspaceTransport is a private closed-listener adapter, never an RPC grant.

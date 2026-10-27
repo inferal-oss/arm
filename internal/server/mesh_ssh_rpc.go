@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 )
 
 func decodeSSHFields(raw []byte, out any, keys ...string) error {

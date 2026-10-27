@@ -3,8 +3,8 @@ package rsyncostest
 import (
 	"testing"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/testlogger"
 )
 
 func New(t *testing.T) *rsyncos.Env {

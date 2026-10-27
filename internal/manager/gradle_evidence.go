@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func (m *Manager) openGradleChild(r gradleRecord, name string) (*os.File, error) {

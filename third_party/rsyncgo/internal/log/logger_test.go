@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/log"
+	"getarm.org/third_party/rsyncgo/internal/log"
 )
 
 type fakeLogger struct {

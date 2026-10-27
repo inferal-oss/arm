@@ -20,8 +20,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sys/unix"
 )

@@ -17,10 +17,10 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/manager"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 type screenUnknownCloseConn struct {

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/providerproto"
+	"getarm.org/internal/providerproto"
 )
 
 func TestImageAbsoluteAndRoleByteBoundsBeforeNativeIO(t *testing.T) {

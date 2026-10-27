@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/database"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 )
 
 func workspaceProofFixture(t *testing.T, state string) (string, string) {

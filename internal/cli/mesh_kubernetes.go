@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/kubeprovision"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/kubeprovision"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 // meshKubernetes is intentionally reached only by a small mesh command

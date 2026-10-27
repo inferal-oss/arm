@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
 )
 
 func clockReviewLease(expires *time.Time) model.Lease {

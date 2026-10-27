@@ -7,8 +7,8 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
 )
 
 func TestIncompleteConnectedRecoveryRequiresReviewAndCurrentMTLS(t *testing.T) {

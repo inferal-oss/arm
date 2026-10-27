@@ -6,7 +6,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestReviewGaugeRetiredReceiptsCannotRenewHeldBudgets(t *testing.T) {

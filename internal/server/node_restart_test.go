@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 func TestStartupAndRestartRefuseImpossibleDurablePhaseWithoutMutation(t *testing.T) {

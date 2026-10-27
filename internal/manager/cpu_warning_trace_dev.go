@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
-	"github.com/inferal-oss/arm/internal/pressure"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
+	"getarm.org/internal/pressure"
 )
 
 // Installed only by tagged tests for one original Manager. No request, wire

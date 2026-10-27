@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshsshrelay"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	api "github.com/inferal-oss/arm/internal/workspaceapi"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshsshrelay"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	api "getarm.org/internal/workspaceapi"
 )
 
 type sshRouteSelection struct {

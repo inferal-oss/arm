@@ -69,7 +69,7 @@ def traces(gate):
     ran=[];passed=[];outputs={};packages=0
     for line in log.splitlines():
         e=projection.parse(line)
-        projection.require(e.get('Package')=='github.com/inferal-oss/arm/internal/server' and e.get('Action')not in ('fail','skip','build-fail'),'actual Go package/failure')
+        projection.require(e.get('Package')=='getarm.org/internal/server' and e.get('Action')not in ('fail','skip','build-fail'),'actual Go package/failure')
         if 'Test'in e:projection.require(e['Test']in expected,'foreign Go test')
         if e['Action']=='run':ran.append(e['Test'])
         if e['Action']=='pass':

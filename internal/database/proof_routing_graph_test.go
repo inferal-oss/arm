@@ -6,11 +6,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 // Uses the real native lifecycle and graph writers. Test corruption happens

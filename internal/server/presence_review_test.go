@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
+	"getarm.org/internal/presence"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/presence"
 )
 
 func peerReviewFixture(t *testing.T) (*Server, *presence.Publication, presence.Candidate) {

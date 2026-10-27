@@ -1,7 +1,7 @@
 package workspaceapi
 
 import (
-	"github.com/inferal-oss/arm/internal/routing"
+	"getarm.org/internal/routing"
 	"time"
 )
 

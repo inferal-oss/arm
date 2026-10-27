@@ -16,8 +16,8 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/mesh"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 // These fixtures own only ephemeral loopback HTTP servers. They never contact

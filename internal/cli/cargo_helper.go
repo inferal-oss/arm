@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/inferal-oss/arm/internal/cargoprofile"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/cargoprofile"
+	"getarm.org/internal/mesh"
 )
 
 // Hidden fixed native entrypoint before global flags/home preparation. Only

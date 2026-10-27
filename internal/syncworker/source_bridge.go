@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 	"golang.org/x/crypto/ssh"
 )
 

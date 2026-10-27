@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 var statements = []string{

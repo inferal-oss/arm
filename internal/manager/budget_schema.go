@@ -8,7 +8,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Caller owns Open initialization or holds m.mu. Schema/root initialization

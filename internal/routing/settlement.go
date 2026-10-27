@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
 )
 
 // settlement is identity-independent native OWNER settlement only. It neither

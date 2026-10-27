@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	armBuild "github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/local"
+	armBuild "getarm.org/internal/buildinfo"
+	"getarm.org/internal/local"
 	"golang.org/x/sys/unix"
 )
 
@@ -75,7 +75,7 @@ func InspectArtifact(path, reason string) (Artifact, error) {
 	}
 	defer f.Close()
 	info, e := buildinfo.Read(f)
-	if e != nil || info.Path != "github.com/inferal-oss/arm/cmd/arm" {
+	if e != nil || info.Path != "getarm.org/cmd/arm" {
 		return a, fmt.Errorf("artifact is not an ARM Go executable")
 	}
 	a = Artifact{Schema: 1, Version: armBuild.Version, Protocol: LifecycleProtocol, Size: before.Size(), Imported: time.Now().UTC(), Actor: local.CurrentIdentity(), Reason: reason}

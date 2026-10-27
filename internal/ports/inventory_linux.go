@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func procAddress(s string) (string, int, error) {

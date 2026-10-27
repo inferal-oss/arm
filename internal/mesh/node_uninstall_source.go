@@ -3,7 +3,7 @@ package mesh
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"time"
 )
 

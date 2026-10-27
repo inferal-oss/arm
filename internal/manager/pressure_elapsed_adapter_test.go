@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
 )
 
 func preservePressureClockFixture(t *testing.T, m *Manager, l model.Lease) {

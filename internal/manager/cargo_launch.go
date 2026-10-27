@@ -15,11 +15,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/cargoprofile"
-	"github.com/inferal-oss/arm/internal/childowner"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/cargoprofile"
+	"getarm.org/internal/childowner"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/usage"
 )
 
 type CargoHelperSource func() (string, cargoprofile.HelperRuntime, error)

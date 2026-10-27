@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/mesh"
 )
 
 // provision_runtime is deliberately native-only. Browser and direct-peer

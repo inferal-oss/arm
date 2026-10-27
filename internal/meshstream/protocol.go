@@ -16,7 +16,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"golang.org/x/crypto/ssh"
 )
 

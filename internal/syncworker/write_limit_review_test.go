@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/rsyncengine"
-	"github.com/inferal-oss/arm/internal/syncfs"
+	"getarm.org/internal/rsyncengine"
+	"getarm.org/internal/syncfs"
 )
 
 type capReviewTransfer struct {

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
 )
 
 type meshConnectDraft struct {

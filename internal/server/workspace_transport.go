@@ -7,11 +7,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/workspace"
-	wire "github.com/inferal-oss/arm/internal/workspacetransport"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/workspace"
+	wire "getarm.org/internal/workspacetransport"
 )
 
 func (m *meshService) workspaceOuter(ctx context.Context, raw []byte) (wire.Outer, error) {

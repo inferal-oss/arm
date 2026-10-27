@@ -4,11 +4,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/client"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // SSH-only fixed readonly probe. No Ensure, startup, trust/grant mutation,

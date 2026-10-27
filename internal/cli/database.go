@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/client"
+	"getarm.org/internal/database"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func (a *app) database(args []string) (int, error) {

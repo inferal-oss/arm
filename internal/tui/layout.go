@@ -9,9 +9,9 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 var accent = lipgloss.NewStyle().Foreground(colorAccent)

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/workspace"
-	"github.com/inferal-oss/arm/internal/workspacegraph"
+	"getarm.org/internal/workspace"
+	"getarm.org/internal/workspacegraph"
 )
 
 func TestActualSourceGraphReportFinalCommitUsesOriginalPendingRefresh(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 // This fixture exercises filesystem protocol mechanics independently of the

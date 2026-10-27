@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func loginLinkServer(t *testing.T, s *Server) (*httptest.Server, context.Context) {

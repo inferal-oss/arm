@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/workspace"
 )
 
 func Read(ctx context.Context, tx *sql.Tx) (Records, error) {

@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/published"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/model"
+	"getarm.org/internal/published"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
 )
 
 // routeCall is an INTERNAL adapter. Original source/final target are derived

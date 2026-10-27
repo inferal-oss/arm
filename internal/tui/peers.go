@@ -7,7 +7,7 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 const peerReadInterval = 10 * time.Second

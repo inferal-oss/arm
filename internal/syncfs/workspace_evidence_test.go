@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncreconcile"
 )
 
 func testWorkspaceEvidence(t *testing.T) (*Root, *Root, *Root, *Workspace, Reservation) {

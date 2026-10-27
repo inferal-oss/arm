@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/childowner"
+	"getarm.org/internal/childowner"
 )
 
 // Unexpected native binding failures retain the original handle without

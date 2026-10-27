@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 )
 
 func allocationFixture(t *testing.T) (string, model.FileIdentity) {

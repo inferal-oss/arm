@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestMeshLateReadCannotPopulateReopenedSurface(t *testing.T) {

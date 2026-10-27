@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func (s *Server) leaseReviewOperation(op string, raw json.RawMessage) (any, error) {

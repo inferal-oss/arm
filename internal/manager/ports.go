@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/ports"
+	"getarm.org/internal/model"
+	"getarm.org/internal/ports"
 )
 
 func (m *Manager) provisionPorts(l model.Lease, run *RunRequest, leases []model.Lease) (model.Lease, error) {

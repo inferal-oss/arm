@@ -1,6 +1,6 @@
 package manager
 
-import "github.com/inferal-oss/arm/internal/model"
+import "getarm.org/internal/model"
 
 func expandPoolAmounts(amount model.BudgetAmounts, paths map[string][]string) (model.BudgetAmounts, error) {
 	out := amount

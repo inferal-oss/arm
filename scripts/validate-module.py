@@ -16,7 +16,8 @@ import subprocess
 import tempfile
 import time
 
-MODULE = "github.com/inferal-oss/arm"
+MODULE = "getarm.org"
+REPOSITORY_URL = "https://github.com/inferal-oss/arm"
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -39,11 +40,16 @@ def source_manifest(source_root):
 
 
 def bind_public_source(resolved, expected_commit):
-    """Require the full public origin to match the checked-out source identity."""
-    actual = (resolved.get("Origin") or {}).get("Hash")
-    valid_expected = len(expected_commit) == 40 and all(c in "0123456789abcdef" for c in expected_commit)
+    """Bind the full Git source identity independently of the vanity module path."""
+    origin = resolved.get("Origin") or {}
+    actual = origin.get("Hash")
+    repository = origin.get("URL")
+    vcs = origin.get("VCS")
+    valid_expected = isinstance(expected_commit, str) and len(expected_commit) == 40 and all(c in "0123456789abcdef" for c in expected_commit)
     return {"expected_source_commit": expected_commit, "resolved_source_commit": actual,
-            "matches": valid_expected and actual == expected_commit}
+            "expected_repository_url": REPOSITORY_URL, "resolved_repository_url": repository,
+            "expected_vcs": "git", "resolved_vcs": vcs,
+            "matches": valid_expected and actual == expected_commit and repository == REPOSITORY_URL and vcs == "git"}
 
 
 def bind_selected_public_source(resolved, selected_origin, expected_commit):
@@ -57,10 +63,11 @@ def bind_selected_public_source(resolved, selected_origin, expected_commit):
     fields = ("Path", "Version", "Sum", "GoModSum")
     same_module = resolved.get("Path") == MODULE
     same_selection = all(bool(resolved.get(key)) and resolved.get(key) == selected_origin.get(key) for key in fields)
-    query_origin = (resolved.get("Origin") or {}).get("Hash")
+    query_origin = resolved.get("Origin") or {}
+    expected_origin = {"Hash": expected_commit, "URL": REPOSITORY_URL, "VCS": "git"}
     receipt.update(selected_version=resolved.get("Version"), origin_version=selected_origin.get("Version"),
                    selection_checksums_match=same_module and same_selection,
-                   query_origin_consistent=query_origin is None or query_origin == expected_commit)
+                   query_origin_consistent=all(query_origin.get(key) in (None, value) for key, value in expected_origin.items()))
     receipt["matches"] = receipt["matches"] and receipt["selection_checksums_match"] and receipt["query_origin_consistent"]
     return receipt
 

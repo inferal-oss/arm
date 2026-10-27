@@ -12,7 +12,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsynccmd"
+	"getarm.org/third_party/rsyncgo/rsynccmd"
 )
 
 func main() {

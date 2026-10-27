@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/meshops"
+	"getarm.org/internal/meshops"
 )
 
 // Handoff's recovery fingerprint differs from the original trust review hash.

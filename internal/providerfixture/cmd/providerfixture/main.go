@@ -5,7 +5,7 @@ package main
 import (
 	"os"
 
-	"github.com/inferal-oss/arm/internal/providerfixture"
+	"getarm.org/internal/providerfixture"
 )
 
 func main() { os.Exit(providerfixture.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr)) }

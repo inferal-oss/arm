@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/server"
+	"getarm.org/internal/model"
+	"getarm.org/internal/server"
 )
 
 func TestDashboardLauncherUsesStructuredApplicationOrExecutableArguments(t *testing.T) {

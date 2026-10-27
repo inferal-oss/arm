@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func relayCleanupOwner(t *testing.T, m *Manager, key string) (*RelayTransit, func()) {

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestLeaseOutcomeLabelsPreserveUnresolvedLifecycle(t *testing.T) {

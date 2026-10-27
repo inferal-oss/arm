@@ -3,11 +3,11 @@ package sender
 import (
 	"io"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/log"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
+	"getarm.org/third_party/rsyncgo/internal/log"
+	"getarm.org/third_party/rsyncgo/internal/progress"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/rsyncwire"
 )
 
 type Osenv struct {

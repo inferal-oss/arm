@@ -13,9 +13,9 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/distribution"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/distribution"
+	"getarm.org/internal/mesh"
 )
 
 type carrier struct {

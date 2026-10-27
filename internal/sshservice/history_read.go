@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/historypack"
+	"getarm.org/internal/historypack"
 )
 
 func sourceHistoryLookupPayload(ctx context.Context, c *historyCatalog, target, key string) (SourceHistoryLookup, []byte, error) {

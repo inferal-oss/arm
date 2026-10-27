@@ -8,8 +8,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 func TestNodeStopLeasePreviewsFollowOriginReadGrant(t *testing.T) {

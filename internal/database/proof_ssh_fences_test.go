@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 )
 
 func TestSSHSealedKeyProofAndClosedControl(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"getarm.org/third_party/rsyncgo/rsyncd"
 	"github.com/BurntSushi/toml"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 )
 
 type SSHListener struct {

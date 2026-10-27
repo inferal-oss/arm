@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func sessionFixture(t *testing.T, handle func(context.Context, *websocket.Conn)) *Session {

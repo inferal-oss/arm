@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/client"
+	"getarm.org/internal/model"
 )
 
 func TestShutdownTimeoutContinuesAfterRequestDisconnect(t *testing.T) {

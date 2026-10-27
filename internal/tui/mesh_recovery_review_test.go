@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/meshops"
+	"getarm.org/internal/local"
+	"getarm.org/internal/meshops"
 )
 
 func recoveryReviewFixture(kind string) map[string]any {

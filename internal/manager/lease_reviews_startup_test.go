@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/database"
+	"getarm.org/internal/model"
 )
 
 // Capture actual optional schema and values after deliberate corruption. Core

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func sourceSeal(t *testing.T, r SourceIntent) model.SSHKeyFence {

@@ -12,10 +12,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 )
 
 func exportJobKey(lease string) string       { return "export:" + lease }

@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"sync"
 	"sync/atomic"
 )

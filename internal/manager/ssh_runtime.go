@@ -13,10 +13,10 @@ import (
 	"syscall"
 	"time"
 
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
+	"getarm.org/internal/usage"
 	"github.com/creack/pty"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
-	"github.com/inferal-oss/arm/internal/usage"
 	"golang.org/x/crypto/ssh"
 )
 

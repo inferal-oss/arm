@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 // MessageRequest records the exact recipient configuration reviewed by an

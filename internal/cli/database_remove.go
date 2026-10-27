@@ -7,8 +7,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/database"
+	"getarm.org/internal/model"
 )
 
 type databaseRemovePreview struct {

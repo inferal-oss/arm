@@ -14,9 +14,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
+	"getarm.org/internal/usage"
 )
 
 // HelperRuntime is supplied from startup-verified image evidence by the native

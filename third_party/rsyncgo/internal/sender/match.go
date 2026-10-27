@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"getarm.org/third_party/rsyncgo"
+	"getarm.org/third_party/rsyncgo/internal/rsyncchecksum"
+	"getarm.org/third_party/rsyncgo/internal/rsyncopts"
 	"github.com/mmcloughlin/md4"
 )
 

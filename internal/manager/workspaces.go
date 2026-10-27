@@ -3,9 +3,9 @@ package manager
 import (
 	"context"
 	"database/sql"
-	"github.com/inferal-oss/arm/internal/published"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/published"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
 	"time"
 )
 

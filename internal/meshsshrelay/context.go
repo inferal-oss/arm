@@ -1,6 +1,6 @@
 package meshsshrelay
 
-import "github.com/inferal-oss/arm/internal/workspace"
+import "getarm.org/internal/workspace"
 
 // Context is a local native read of fresh membership and, only when this node
 // is the final destination, its currently enabled SSH service identity.

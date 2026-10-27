@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 func snapshotHash(v Snapshot) string { v.Hash = ""; return hash(v) }

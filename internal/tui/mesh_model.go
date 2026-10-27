@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
 )
 
 // These are presentation descriptions, never permission checks. The destination

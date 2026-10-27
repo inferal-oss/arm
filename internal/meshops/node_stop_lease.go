@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // StopLeaseRequest refers to a single item of an already stored exact review.

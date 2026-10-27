@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncreconcile"
 )
 
 // PairRecovery is a read-only comparison of the two original endpoint keys.

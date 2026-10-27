@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/mesh"
 )
 
 type LifecycleStopScope struct {

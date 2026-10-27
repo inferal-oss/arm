@@ -3,8 +3,8 @@ package database
 import (
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 const ResetDirectoryName = local.ResetHistoryName

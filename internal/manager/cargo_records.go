@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/cargoprofile"
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/cargoprofile"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 const cargoRecordLimit = 256 << 10

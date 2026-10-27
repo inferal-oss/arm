@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
 	"golang.org/x/sys/unix"
 )
 

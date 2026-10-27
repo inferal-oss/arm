@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 const sshFenceSchema = `CREATE TABLE ssh_key_fences (principal TEXT NOT NULL,key TEXT NOT NULL,control_sha256 TEXT NOT NULL,state TEXT NOT NULL,lease TEXT UNIQUE,data TEXT NOT NULL,PRIMARY KEY(principal,key))`

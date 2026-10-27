@@ -2,10 +2,10 @@ package meshops
 
 import (
 	"context"
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshssh"
 	"os"
 	"path/filepath"
 	"strconv"

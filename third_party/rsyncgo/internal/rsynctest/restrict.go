@@ -3,7 +3,7 @@ package rsynctest
 import (
 	"os"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/restrict"
+	"getarm.org/third_party/rsyncgo/internal/restrict"
 	"github.com/landlock-lsm/go-landlock/landlock"
 )
 

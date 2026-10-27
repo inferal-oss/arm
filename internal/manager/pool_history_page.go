@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 const poolJournalPageBytes = 1 << 20

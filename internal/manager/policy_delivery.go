@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/local"
 )
 
 type policyDelivery struct {

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
 )
 
 const WorkspacesSchema = `CREATE TABLE sync_workspaces (key TEXT NOT NULL,side TEXT NOT NULL,role TEXT NOT NULL,path TEXT NOT NULL,root_id TEXT NOT NULL,parent_id TEXT NOT NULL,base_id TEXT NOT NULL,disk_bytes INTEGER NOT NULL,PRIMARY KEY(key,side,role),UNIQUE(path))`

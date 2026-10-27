@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestWorkspaceReviewResetSchemaVersionAndLocatorRetention(t *testing.T) {

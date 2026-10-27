@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/cli"
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/cli"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/mesh"
 )
 
 func main() {

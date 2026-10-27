@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncservice"
 )
 
 // Reset proof supports exactly this writer schema. An unfamiliar table, trigger,

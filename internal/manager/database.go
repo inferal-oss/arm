@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/database"
+	"getarm.org/internal/model"
 )
 
 // DatabaseMaintenance reserves a separate read-only SQLite connection. It does

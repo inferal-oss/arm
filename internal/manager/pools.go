@@ -11,8 +11,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func poolText(s string, max int, required bool) bool {

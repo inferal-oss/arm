@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/database"
+	"getarm.org/internal/local"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 )
 
 func TestResetReviewIsReadOnlyAndRefusesActiveWork(t *testing.T) {

@@ -1,6 +1,6 @@
 package manager
 
-import "github.com/inferal-oss/arm/internal/model"
+import "getarm.org/internal/model"
 
 func (m *Manager) LeaseAction(request model.LeaseAction) (model.Lease, error) {
 	if request.ID == "" || request.Revision <= 0 {

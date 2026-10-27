@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 func openStoppedWorkspace(t *testing.T, home string) (*sql.DB, *workspace.Store, workspace.Instance) {

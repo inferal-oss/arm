@@ -9,7 +9,7 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/workspace"
 )
 
 // Optional group copied independently, never trusted dynamically from a writer.

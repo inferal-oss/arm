@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"unicode"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/tui"
+	"getarm.org/internal/model"
+	"getarm.org/internal/tui"
 )
 
 func (a *app) dashboard(args []string) error {

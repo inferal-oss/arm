@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 func newOperation(s *Store, root Instance, kind, key, principal string, request any, now time.Time) Operation {

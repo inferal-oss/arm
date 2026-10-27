@@ -11,9 +11,9 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 )
 
 // Cached identity never caches execution authority. Each checkpoint checks the

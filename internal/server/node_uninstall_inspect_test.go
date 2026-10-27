@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/client"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/nodestop"
 	"golang.org/x/sys/unix"
 )
 

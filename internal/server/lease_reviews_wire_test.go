@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 )
 
 // Construct maximal typed historical records in the private fixture, then use

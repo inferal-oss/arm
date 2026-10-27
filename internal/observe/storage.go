@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Scan walks a bounded tree using rooted operations. Symlinks and child mounts

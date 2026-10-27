@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func diskCounters(path, volume, filesystem string, blocks, free, available, size uint64, at time.Time) model.DiskAvailability {

@@ -6,8 +6,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/syncfs"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncfs"
+	"getarm.org/internal/syncreconcile"
 )
 
 func TestInspectPairRequiresBothDurableConfirmations(t *testing.T) {

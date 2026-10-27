@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 type gradleEvidence struct {

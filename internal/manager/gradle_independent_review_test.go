@@ -6,8 +6,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/usage"
 )
 
 func TestIndependentGradleRecoveredIdentityNeverAuthorizesSignal(t *testing.T) {

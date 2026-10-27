@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func TestRoutedMessagesRemainNativeOnlyAndReadDoesNotInitialize(t *testing.T) {

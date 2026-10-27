@@ -5,9 +5,9 @@ import (
 	"math"
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/observe"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
+	"getarm.org/internal/usage"
 )
 
 type cpuManagedObserver interface {

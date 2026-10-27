@@ -5,8 +5,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func budgetFixture(t *testing.T) *Manager {

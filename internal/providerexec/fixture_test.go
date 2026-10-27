@@ -14,10 +14,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/providerproto"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
+	"getarm.org/internal/providerproto"
+	"getarm.org/internal/usage"
 	_ "modernc.org/sqlite"
 )
 

@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"text/tabwriter"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 const (

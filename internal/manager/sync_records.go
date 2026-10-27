@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/syncreconcile"
-	"github.com/inferal-oss/arm/internal/syncservice"
+	"getarm.org/internal/model"
+	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncservice"
 )
 
 const syncLeaseBindingSchema = `CREATE TABLE sync_lease_bindings (lease TEXT PRIMARY KEY,key TEXT NOT NULL,side TEXT NOT NULL,volume TEXT NOT NULL,disk_bytes INTEGER NOT NULL)`

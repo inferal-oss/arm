@@ -7,11 +7,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
-	api "github.com/inferal-oss/arm/internal/workspaceapi"
-	route "github.com/inferal-oss/arm/internal/workspaceroute"
+	"getarm.org/internal/model"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
+	api "getarm.org/internal/workspaceapi"
+	route "getarm.org/internal/workspaceroute"
 )
 
 const maxRoutingNativeReply = 96 << 10

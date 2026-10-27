@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/nodestop"
 )
 
 // Coordination is durable operator workflow evidence, separate from peer trust.

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/database"
+	"getarm.org/internal/model"
 )
 
 func reviewLease(t *testing.T, m *Manager, c agents.Contact, key string) model.Lease {

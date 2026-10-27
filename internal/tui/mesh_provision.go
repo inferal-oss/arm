@@ -7,9 +7,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
 )
 
 type meshProvisionPrepareRequest struct {

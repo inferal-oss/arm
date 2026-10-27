@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/inferal-oss/arm/internal/companions"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/companions"
+	"getarm.org/internal/mesh"
 )
 
 func verifiedEmbeddedCatalogDigest(catalog *companions.Catalog) (string, error) {

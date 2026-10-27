@@ -13,7 +13,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"golang.org/x/sys/unix"
 )
 

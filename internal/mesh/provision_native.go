@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/local"
+	"getarm.org/internal/meshssh"
 	"golang.org/x/sys/unix"
 )
 

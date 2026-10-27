@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/model"
 )
 
 func TestSSHNativeControlsNeverBrowserAllowed(t *testing.T) {

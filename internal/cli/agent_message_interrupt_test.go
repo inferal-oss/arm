@@ -15,11 +15,11 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/cli"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/cli"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestAgentMessageInterruptedCLIHelper(t *testing.T) {

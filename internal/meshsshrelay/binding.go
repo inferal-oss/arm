@@ -9,8 +9,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/workspace"
 )
 
 const maxBindingBytes = 512

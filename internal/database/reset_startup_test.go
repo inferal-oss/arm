@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/server"
+	"getarm.org/internal/client"
+	"getarm.org/internal/local"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
+	"getarm.org/internal/server"
 )
 
 func TestResetHooksPreserveOrdinaryFreshAndEstablishedStartup(t *testing.T) {

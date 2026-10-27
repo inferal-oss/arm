@@ -15,9 +15,9 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
+	"getarm.org/internal/manager"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/inferal-oss/arm/internal/manager"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh"}

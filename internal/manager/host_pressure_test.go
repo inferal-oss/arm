@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/pressure"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
+	"getarm.org/internal/pressure"
 )
 
 func setHostPressureCPU(m *Manager, now time.Time, tick time.Duration, idle float64) {

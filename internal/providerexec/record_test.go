@@ -3,7 +3,7 @@ package providerexec
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/providerproto"
+	"getarm.org/internal/providerproto"
 	"reflect"
 	"strings"
 	"testing"

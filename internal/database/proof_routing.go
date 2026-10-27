@@ -11,7 +11,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/routing"
+	"getarm.org/internal/routing"
 )
 
 // Independently fixed optional catalog. No dynamically copied producer DDL or

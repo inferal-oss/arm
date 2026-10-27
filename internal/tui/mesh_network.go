@@ -7,10 +7,10 @@ import (
 	"fmt"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/inferal-oss/arm/internal/client"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/meshops"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/client"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/meshops"
+	"getarm.org/internal/model"
 )
 
 type meshDashboard struct {

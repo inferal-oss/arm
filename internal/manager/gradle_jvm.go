@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func gradleJavaHome() (string, error) {

@@ -8,8 +8,8 @@ import (
 	"sync"
 	"unsafe"
 
+	"getarm.org/internal/model"
 	"github.com/ebitengine/purego"
-	"github.com/inferal-oss/arm/internal/model"
 	"golang.org/x/sys/unix"
 )
 

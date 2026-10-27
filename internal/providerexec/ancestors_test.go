@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func copyNativeForSelection(t *testing.T, path string) {

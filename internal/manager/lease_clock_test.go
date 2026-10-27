@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/database"
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/database"
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
 )
 
 type controlledLeaseClock struct {

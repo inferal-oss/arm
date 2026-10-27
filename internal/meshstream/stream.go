@@ -18,8 +18,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"getarm.org/internal/mesh"
 	"github.com/coder/websocket"
-	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 type Limits struct {

@@ -1,10 +1,10 @@
 package manager
 
 import (
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/published"
-	"github.com/inferal-oss/arm/internal/routing"
-	"github.com/inferal-oss/arm/internal/workspace"
+	"getarm.org/internal/local"
+	"getarm.org/internal/published"
+	"getarm.org/internal/routing"
+	"getarm.org/internal/workspace"
 	"path/filepath"
 	"strings"
 	"testing"

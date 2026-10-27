@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"getarm.org/internal/syncreconcile"
 )
 
 const MaxPreparationBytes = MaxRecordBytes + MaxManifestBytes + 1<<20

@@ -16,6 +16,10 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
+def git_origin(commit):
+    return {"VCS": "git", "URL": module.REPOSITORY_URL, "Hash": commit}
+
+
 class OwnedChildCleanup(unittest.TestCase):
     def test_reaped_child_never_signals_a_reused_group_or_pid(self):
         process = subprocess.Popen([sys.executable, "-c", "pass"], start_new_session=True)
@@ -55,14 +59,14 @@ class OwnedChildCleanup(unittest.TestCase):
 class PublicSourceBinding(unittest.TestCase):
     def test_current_main_origin_matches(self):
         expected = "a" * 40
-        receipt = module.bind_public_source({"Origin": {"Hash": expected}}, expected)
-        self.assertEqual(receipt, {"expected_source_commit": expected, "resolved_source_commit": expected, "matches": True})
+        receipt = module.bind_public_source({"Origin": git_origin(expected)}, expected)
+        self.assertEqual(receipt, {"expected_source_commit": expected, "resolved_source_commit": expected, "expected_repository_url": module.REPOSITORY_URL, "resolved_repository_url": module.REPOSITORY_URL, "expected_vcs": "git", "resolved_vcs": "git", "matches": True})
 
     def test_stale_latest_fails_even_with_identical_closure_files(self):
         expected = "a" * 40
         closure = {"asset-" + str(i): "unchanged-bytes" for i in range(26)}
-        current = {"Origin": {"Hash": expected}, "closure": closure}
-        stale = {"Origin": {"Hash": "b" * 40}, "closure": dict(closure)}
+        current = {"Origin": git_origin(expected), "closure": closure}
+        stale = {"Origin": git_origin("b" * 40), "closure": dict(closure)}
         self.assertEqual(current["closure"], stale["closure"])
         self.assertTrue(module.bind_public_source(current, expected)["matches"])
         receipt = module.bind_public_source(stale, expected)
@@ -81,7 +85,7 @@ class SelectedVersionOrigin(unittest.TestCase):
     def setUp(self):
         self.expected = "a" * 40
         self.latest = {"Path": module.MODULE, "Version": "v0.0.0-20261027000000-aaaaaaaaaaaa", "Sum": "h1:module", "GoModSum": "h1:gomod"}
-        self.origin = dict(self.latest, Origin={"Hash": self.expected})
+        self.origin = dict(self.latest, Origin=git_origin(self.expected))
 
     def test_omitted_latest_origin_requires_matching_selected_version_provenance(self):
         receipt = module.bind_selected_public_source(self.latest, self.origin, self.expected)
@@ -103,6 +107,56 @@ class SelectedVersionOrigin(unittest.TestCase):
     def test_conflicting_latest_origin_is_not_overridden(self):
         latest = dict(self.latest, Origin={"Hash": "b" * 40})
         self.assertFalse(module.bind_selected_public_source(latest, self.origin, self.expected)["matches"])
+
+
+class VanityRepositoryIdentity(unittest.TestCase):
+    def setUp(self):
+        self.commit = "a" * 40
+        self.latest = {"Path": module.MODULE, "Version": "v0.0.0-20261027000000-aaaaaaaaaaaa", "Sum": "h1:module", "GoModSum": "h1:gomod"}
+        self.selected = dict(self.latest, Origin=git_origin(self.commit))
+
+    def test_vanity_module_keeps_the_github_source_repository(self):
+        self.assertEqual(module.MODULE, "getarm.org")
+        self.assertEqual(module.REPOSITORY_URL, "https://github.com/inferal-oss/arm")
+        self.assertTrue(module.bind_selected_public_source(self.latest, self.selected, self.commit)["matches"])
+
+    def test_wrong_repository_is_refused_even_with_the_same_full_hash(self):
+        for url in ("https://getarm.org", "https://github.com/other/arm", "http://github.com/inferal-oss/arm", None):
+            with self.subTest(url=url):
+                origin = git_origin(self.commit)
+                if url is None:
+                    del origin["URL"]
+                else:
+                    origin["URL"] = url
+                self.assertFalse(module.bind_selected_public_source(self.latest, dict(self.selected, Origin=origin), self.commit)["matches"])
+
+    def test_wrong_or_missing_vcs_is_refused(self):
+        for vcs in ("hg", None):
+            with self.subTest(vcs=vcs):
+                origin = git_origin(self.commit)
+                if vcs is None:
+                    del origin["VCS"]
+                else:
+                    origin["VCS"] = vcs
+                self.assertFalse(module.bind_selected_public_source(self.latest, dict(self.selected, Origin=origin), self.commit)["matches"])
+
+    def test_old_module_path_cannot_borrow_the_new_module_provenance(self):
+        old = dict(self.latest, Path="github.com/inferal-oss/arm")
+        selected = dict(old, Origin=git_origin(self.commit))
+        self.assertFalse(module.bind_selected_public_source(old, selected, self.commit)["matches"])
+
+    def test_partial_query_origin_must_agree_with_selected_git_identity(self):
+        for partial in ({}, {"Hash": self.commit}, {"URL": module.REPOSITORY_URL}, {"VCS": "git"}):
+            with self.subTest(partial=partial):
+                self.assertTrue(module.bind_selected_public_source(dict(self.latest, Origin=partial), self.selected, self.commit)["matches"])
+        for conflict in ({"Hash": "b" * 40}, {"URL": "https://getarm.org"}, {"VCS": "hg"}):
+            with self.subTest(conflict=conflict):
+                self.assertFalse(module.bind_selected_public_source(dict(self.latest, Origin=conflict), self.selected, self.commit)["matches"])
+
+    def test_expected_source_must_be_a_full_lowercase_git_commit(self):
+        for expected in ("", "main", "a" * 39, "A" * 40, None):
+            with self.subTest(expected=expected):
+                self.assertFalse(module.bind_public_source(self.selected, expected)["matches"])
 
 
 class SeparateSourceAndHarness(unittest.TestCase):
@@ -135,7 +189,7 @@ class SeparateSourceAndHarness(unittest.TestCase):
             self.assertEqual(identity["status"], "")
             self.assertEqual(identity["files"]["scripts/validate-module.py"], hashlib.sha256(b"helper").hexdigest())
             self.assertEqual(manifest, [{"path": "source.txt", "sha256": hashlib.sha256(b"selected public source").hexdigest(), "bytes": len(b"selected public source")}])
-            public = {"Origin": {"Hash": source_commit}}
+            public = {"Origin": git_origin(source_commit)}
             self.assertTrue(module.bind_public_source(public, source_commit)["matches"])
             self.assertFalse(module.bind_public_source(public, helper_commit)["matches"])
 

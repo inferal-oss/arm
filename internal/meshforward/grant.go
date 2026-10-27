@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func NewCreditNonce() (string, error) {

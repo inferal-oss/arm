@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"math"
 	"net/http"
 	"net/http/httptest"

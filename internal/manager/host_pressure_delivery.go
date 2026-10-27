@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/agents"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/pressure"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/local"
+	"getarm.org/internal/pressure"
 )
 
 type hostPressureDelivery struct {

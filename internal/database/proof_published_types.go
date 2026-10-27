@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/inferal-oss/arm/internal/agents"
+	"getarm.org/internal/agents"
 	"time"
 )
 

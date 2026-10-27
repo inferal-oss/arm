@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/model"
+	"getarm.org/internal/storage"
 	"golang.org/x/sys/unix"
 )
 

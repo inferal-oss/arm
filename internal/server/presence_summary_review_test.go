@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 	"math"
 	"net/http"
 	"net/http/httptest"

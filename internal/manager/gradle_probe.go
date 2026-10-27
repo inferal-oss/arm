@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/usage"
+	"getarm.org/internal/model"
+	"getarm.org/internal/usage"
 )
 
 func (m *Manager) captureGradleLaunch(l *model.Lease, identity *model.ProcessIdentity) error {

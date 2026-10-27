@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func Connect(ctx context.Context, home string) (*websocket.Conn, error) {

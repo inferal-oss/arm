@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/buildinfo"
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/meshssh"
-	"github.com/inferal-oss/arm/internal/nodestop"
+	"getarm.org/internal/buildinfo"
+	"getarm.org/internal/local"
+	"getarm.org/internal/meshssh"
+	"getarm.org/internal/nodestop"
 )
 
 // DevUninstallPublicationInput creates only a fresh selected test-root fixture.

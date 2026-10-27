@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/providerproto"
+	"getarm.org/internal/providerproto"
 )
 
 type capacityRow struct {

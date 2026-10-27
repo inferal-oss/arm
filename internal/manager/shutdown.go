@@ -6,8 +6,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func (m *Manager) Done() <-chan struct{} { return m.stop }

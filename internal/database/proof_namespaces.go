@@ -13,9 +13,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/mesh"
-	"github.com/inferal-oss/arm/internal/storage"
+	"getarm.org/internal/local"
+	"getarm.org/internal/mesh"
+	"getarm.org/internal/storage"
 	"golang.org/x/sys/unix"
 )
 

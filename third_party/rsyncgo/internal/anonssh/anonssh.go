@@ -17,8 +17,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig"
-	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"getarm.org/third_party/rsyncgo/internal/rsyncdconfig"
+	"getarm.org/third_party/rsyncgo/internal/rsyncos"
 	"github.com/google/shlex"
 	"golang.org/x/crypto/ssh"
 )

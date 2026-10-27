@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 	"golang.org/x/crypto/ssh"
 )
 

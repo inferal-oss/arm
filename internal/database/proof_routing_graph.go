@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/routing"
+	"getarm.org/internal/routing"
 )
 
 var routingGraphResetTables = []string{"routing_graph_issuance", "routing_graph_reports", "routing_graph_observations"}

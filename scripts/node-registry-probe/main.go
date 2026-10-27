@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/client"
+	"getarm.org/internal/client"
 )
 
 func main() {

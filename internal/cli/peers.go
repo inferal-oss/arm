@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 // peers off/on is a private local preference. The daemon observes it on its

@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Policy administration is deliberately native-only. The existing browser and

@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/leaseclock"
+	"getarm.org/internal/leaseclock"
 	"strconv"
 	"time"
 )

@@ -3,8 +3,8 @@
 package manager
 
 import (
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/pressure"
+	"getarm.org/internal/model"
+	"getarm.org/internal/pressure"
 	"time"
 )
 

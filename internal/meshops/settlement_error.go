@@ -1,6 +1,6 @@
 package meshops
 
-import "github.com/inferal-oss/arm/internal/model"
+import "getarm.org/internal/model"
 
 // settlementFailure retains the native cause for local diagnostics while keeping
 // arbitrary filesystem, decoder and marshaler error text out of public output.

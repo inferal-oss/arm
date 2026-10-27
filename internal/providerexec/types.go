@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/providerproto"
+	"getarm.org/internal/model"
+	"getarm.org/internal/providerproto"
 )
 
 const HelperArgument = "_provider-worker-helper"

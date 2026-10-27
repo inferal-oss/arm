@@ -13,8 +13,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/historypack"
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/historypack"
+	"getarm.org/internal/local"
 	"golang.org/x/sys/unix"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 func poolTreeOrder(views []model.PoolView) ([]model.PoolView, error) {

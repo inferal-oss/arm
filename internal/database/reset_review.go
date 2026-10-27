@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/local"
+	"getarm.org/internal/local"
 )
 
 // ResetReview retains stopped authority while a concrete default-no preview is

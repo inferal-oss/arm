@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/knowledge"
+	"getarm.org/knowledge"
 )
 
 func TestAgentsGuideWorksOfflineWithoutStateOrAgentCLIs(t *testing.T) {

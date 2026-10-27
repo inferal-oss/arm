@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"charm.land/bubbles/v2/viewport"
+	"getarm.org/internal/model"
 	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/inferal-oss/arm/internal/model"
 )
 
 func profileView(t *testing.T, content string, profile colorprofile.Profile) string {

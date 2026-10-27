@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // An sshLeaseHold is a current in-process obligation, never recovered from a

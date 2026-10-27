@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/inferal-oss/arm/internal/mesh"
+	"getarm.org/internal/mesh"
 	"testing"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inferal-oss/arm/internal/model"
+	"getarm.org/internal/model"
 )
 
 // Legacy sync authority cannot be silently upgraded: there is no durable

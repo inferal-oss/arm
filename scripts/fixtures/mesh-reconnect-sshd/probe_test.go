@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inferal-oss/arm/internal/meshssh"
+	"getarm.org/internal/meshssh"
 	"golang.org/x/crypto/ssh"
 )
 
