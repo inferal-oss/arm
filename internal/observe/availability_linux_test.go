@@ -141,3 +141,22 @@ func TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit(t *testing.T) {
 		t.Fatalf("hidden cgroup ancestry supplied memory credit or hid the reason: %+v", r)
 	}
 }
+
+func TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom(t *testing.T) {
+	if os.Getenv("ARM_TEST_NATIVE_MEMORY_LIMITED_SCOPE") != "1" {
+		t.Skip("requires an actual finite memory cgroup in the initial namespace")
+	}
+	capacity, _, limited, err := linuxMemoryCgroupHeadroom(t.Context())
+	if err != nil || !limited || capacity <= 0 {
+		t.Fatalf("finite complete native cgroup scope unavailable: capacity=%d limited=%t err=%v", capacity, limited, err)
+	}
+	r := MemoryAvailability(t.Context())
+	if r.Total == nil || r.Available == nil || r.Quality != "estimated" || r.Scope != "host+complete-memory-cgroup-ancestry" ||
+		*r.Total <= 0 || *r.Total > capacity || *r.Available < 0 || *r.Available > *r.Total {
+		t.Fatalf("finite native cgroup allowance was not applied: capacity=%d reading=%+v", capacity, r)
+	}
+	values := memoryAvailabilityValues(r)
+	if values.Used.Value != nil || values.Available.Value == nil {
+		t.Fatalf("native cgroup headroom invented resident usage: %+v", values)
+	}
+}
