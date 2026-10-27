@@ -2,7 +2,7 @@
   "reviewed_commit": "95aa5841705edd7798a38d36ab75587c8b0abdc7",
   "canonical_base": "af7c05985aa343f2b9535a295456e456b5ced542",
   "scope": "all internal/tui Go files plus both native PTY harnesses; one separate canonical memory-consumer regression",
-  "allowed_normalization": "All production TUI bytes remain import-only equivalent to95aa584. Named test/oracle adjustments use a real counted-pool action fixture and exact non-pressure message identity; no CPU override.",
+  "allowed_normalization": "All production TUI bytes remain import-only equivalent to 95aa584. Named test/oracle adjustments use real counted-pool action/check-in fixtures and exact non-pressure message identity; no CPU override.",
   "files": [
     {
       "path": "internal/tui/actions.go",
@@ -146,8 +146,10 @@
     {
       "path": "internal/tui/lease_checkins_integration_test.go",
       "reviewed_sha256": "b0bd5524153fd3f1446ea49ad5d7a802079bb8da58ffb2fd4c8e4cd3680ca610",
-      "canonical_sha256": "2d458b6f6a5a243d734adac737bb7ece9da58972ba2d34affb50c0a8c9de5ea8",
-      "normalized_equal": true
+      "canonical_sha256": "ba44e5b42232c6a79c9b296b5fb8a60cf66ea79589b8f1f6a4b3502a900020c9",
+      "normalized_equal": false,
+      "fixture_oracle_adjustment": true,
+      "adjustment": "Real counted-pool entitlement preserves stale policy, exact default parsing and unchanged lease/accounting checks without native CPU assumptions."
     },
     {
       "path": "internal/tui/lease_checkins_test.go",

@@ -70,7 +70,7 @@ def main():
         raise RuntimeError("gauge equivalence roster omitted source")
     for item in inputs["files"]:
         new_consumer = item.get("new_owned_regression") and item["path"] == "internal/tui/memory_projection_review_test.go"
-        fixture_oracle = item.get("fixture_oracle_adjustment") and item["path"] in {"internal/tui/integration_test.go", "scripts/test-terminal-dashboard.py"}
+        fixture_oracle = item.get("fixture_oracle_adjustment") and item["path"] in {"internal/tui/integration_test.go", "internal/tui/lease_checkins_integration_test.go", "scripts/test-terminal-dashboard.py"}
         if not (item["normalized_equal"] or new_consumer or fixture_oracle) or before["files"][item["path"]] != item["canonical_sha256"]:
             raise RuntimeError("canonical gauge bytes differ from reviewed equivalence roster")
     dependencies = inputs["accepted_dependencies"]
