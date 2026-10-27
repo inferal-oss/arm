@@ -52,7 +52,7 @@ def main():
     record(receipts / 'source-before.json', before)
     if before['status'] or before['commit'] != os.environ['GITHUB_SHA']:
         raise RuntimeError('immutable clean checkout required')
-    env = dict(os.environ, GOMAXPROCS='1', GOFLAGS='-p=1', GOTOOLCHAIN='local')
+    env = dict(os.environ, GOMAXPROCS='1', GOFLAGS='-p=1', GOTOOLCHAIN='local', PYTHONDONTWRITEBYTECODE='1')
     go = shutil.which('go')
     if not go:
         raise RuntimeError('selected Go unavailable')
