@@ -26,14 +26,15 @@ const maxPolicyBytes = 256 << 10
 // Policy is the local operator's durable, separately reviewed SSH routing
 // authority. An absent file means no relay or routed execution grants.
 type Policy struct {
-	Schema       int                 `json:"schema"`
-	Local        string              `json:"local"`
-	LocalPin     string              `json:"local_pin"`
-	Revision     int64               `json:"revision"`
-	Relays       []RelayGrant        `json:"relays"`
-	Destinations []DestinationGrant  `json:"destinations"`
-	Forwards     []meshforward.Grant `json:"forwards,omitempty"`
-	Events       []PolicyEvent       `json:"events"`
+	Schema         int                 `json:"schema"`
+	Local          string              `json:"local"`
+	LocalPin       string              `json:"local_pin"`
+	Revision       int64               `json:"revision"`
+	Relays         []RelayGrant        `json:"relays"`
+	Destinations   []DestinationGrant  `json:"destinations"`
+	Forwards       []meshforward.Grant `json:"forwards,omitempty"`
+	CreditLedgerID string              `json:"forward_credit_ledger_id,omitempty"`
+	Events         []PolicyEvent       `json:"events"`
 }
 
 type PolicyEvent struct {
@@ -47,7 +48,8 @@ type PolicyEvent struct {
 
 func (p Policy) Validate(local, localPin string) error {
 	if p.Schema != 1 || !hexBytes(local, 16) || !hexBytes(localPin, 32) || p.Local != local || p.LocalPin != localPin ||
-		p.Revision < 1 || len(p.Relays) > 64 || len(p.Destinations) > 128 || len(p.Forwards) > 128 || len(p.Events) > 256 {
+		p.Revision < 1 || len(p.Relays) > 64 || len(p.Destinations) > 128 || len(p.Forwards) > 128 || len(p.Events) > 256 ||
+		p.CreditLedgerID != "" && !hexBytes(p.CreditLedgerID, 16) {
 		return errors.New("invalid local routed SSH policy binding or capacity")
 	}
 	seen := map[string]bool{}
@@ -62,9 +64,16 @@ func (p Policy) Validate(local, localPin string) error {
 		seen[key] = true
 	}
 	clear(seen)
+	creditNonces := map[string]bool{}
 	for _, g := range p.Forwards {
-		if g.Validate() != nil || g.Target != local || g.TargetPin != localPin {
+		if g.Validate() != nil || g.Target != local || g.TargetPin != localPin || g.CreditNonce != "" && p.CreditLedgerID == "" {
 			return errors.New("invalid local TCP service grant")
+		}
+		if g.CreditNonce != "" {
+			if creditNonces[g.CreditNonce] {
+				return errors.New("duplicate TCP credit nonce")
+			}
+			creditNonces[g.CreditNonce] = true
 		}
 		key := g.Workspace + ":" + g.Generation + ":" + g.Source + ":" + g.Endpoint.Name
 		if seen[key] {
@@ -129,7 +138,7 @@ func (p Policy) Forward(o Open) (meshforward.Grant, error) {
 	}
 	for _, g := range p.Forwards {
 		if g.Workspace == o.Workspace && g.Generation == o.Generation && g.Source == o.Source && g.Target == o.Target && g.Endpoint.Name == o.Service {
-			if g.Validate() != nil || !time.Now().Before(g.Expires) || g.SourceGeneration != o.SourceGeneration || g.TargetGeneration != o.TargetGeneration ||
+			if g.ValidateCredit() != nil || p.CreditLedgerID == "" || !time.Now().Before(g.Expires) || g.SourceGeneration != o.SourceGeneration || g.TargetGeneration != o.TargetGeneration ||
 				g.DirectoryPin != o.DirectoryPin || g.DirectorySPKI != o.DirectorySPKI || g.SourcePin != o.SourcePin || g.TargetPin != o.TargetPin {
 				return meshforward.Grant{}, errors.New("exact TCP service grant changed")
 			}
@@ -231,8 +240,39 @@ func ReviewPolicy(home, local, localPin, action, reason string, change func(*Pol
 	if err = change(&after); err != nil {
 		return Review{}, err
 	}
-	if after.Revision != before.Revision || after.Local != before.Local || after.LocalPin != before.LocalPin || !reflect.DeepEqual(after.Events, before.Events) {
+	if after.Revision != before.Revision || after.Local != before.Local || after.LocalPin != before.LocalPin ||
+		after.CreditLedgerID != before.CreditLedgerID || !reflect.DeepEqual(after.Events, before.Events) {
 		return Review{}, errors.New("policy edit may change only reviewed grants")
+	}
+	if after.CreditLedgerID == "" {
+		for _, g := range after.Forwards {
+			if g.CreditNonce != "" {
+				// A prior crash may have durably prepared credit before policy
+				// publication. Retain that history; never infer a fresh balance
+				// from an absent policy marker alone.
+				d, e := policyDirectory(home)
+				if e != nil {
+					return Review{}, e
+				}
+				ledger, exists, e := readForwardCreditAt(d)
+				d.Close()
+				if e != nil {
+					return Review{}, e
+				}
+				if exists {
+					if e = ledger.validate(local, localPin, ledger.ID); e != nil {
+						return Review{}, e
+					}
+					after.CreditLedgerID = ledger.ID
+				} else {
+					after.CreditLedgerID, err = meshforward.NewCreditNonce()
+					if err != nil {
+						return Review{}, err
+					}
+				}
+				break
+			}
+		}
 	}
 	if PolicyDigest(after) == PolicyDigest(before) {
 		return Review{}, errors.New("routed SSH policy unchanged")
@@ -283,6 +323,9 @@ func CommitPolicy(r Review) error {
 	}
 	if PolicyDigest(current) != r.BeforeSHA256 {
 		return errors.New("routed SSH policy changed since review")
+	}
+	if err = prepareForwardCreditsAt(d, current, r.After); err != nil {
+		return err
 	}
 	raw, err := json.Marshal(r.After)
 	if err != nil {

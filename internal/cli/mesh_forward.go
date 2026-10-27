@@ -70,6 +70,7 @@ func (a *app) meshForward(args []string) (int, error) {
 	transitCPU := f.Float64("transit-cpu", .05, "destination CPU reservation per active connection")
 	transitMemoryText := f.String("transit-memory", "8MiB", "destination memory reservation per active connection")
 	bytesText := f.String("bytes", "1GiB", "maximum bytes per direction and connection")
+	totalBytesText := f.String("total-bytes", "", "required aggregate bytes across both directions and all streams for this grant")
 	rateText := f.String("rate", "8MiB", "shared bytes per second")
 	ttl := f.Duration("ttl", 10*time.Minute, "maximum connection lifetime")
 	expires := f.Duration("expires", 24*time.Hour, "grant expiry from review")
@@ -85,6 +86,21 @@ func (a *app) meshForward(args []string) (int, error) {
 	bytes, err := sshBytes(*bytesText)
 	if err != nil {
 		return 2, err
+	}
+	var totalBytes int64
+	var creditNonce string
+	if action == "grant" {
+		if *totalBytesText == "" {
+			return 2, fmt.Errorf("explicit --total-bytes is required for a new TCP grant")
+		}
+		totalBytes, err = sshBytes(*totalBytesText)
+		if err != nil {
+			return 2, err
+		}
+		creditNonce, err = meshforward.NewCreditNonce()
+		if err != nil {
+			return 1, err
+		}
 	}
 	rate, err := sshBytes(*rateText)
 	if err != nil {
@@ -117,7 +133,8 @@ func (a *app) meshForward(args []string) (int, error) {
 				SourceGeneration: access.OriginGeneration, TargetGeneration: access.DestinationGeneration, DirectoryPin: access.Directory.Fingerprint, DirectorySPKI: access.Directory.SPKI,
 				SourcePin: access.Origin.Fingerprint, SourceSPKI: access.Origin.SPKI, TargetPin: access.Destination.Fingerprint, TargetSPKI: access.Destination.SPKI,
 				Account: account.Username, Endpoint: meshforward.Endpoint{Name: *service, Network: "tcp", Address: *address}, Revision: 1,
-				MaxConnections: *connections, BytesPerConnection: bytes, BytesPerSecond: rate, Transit: model.Resources{CPU: *transitCPU, Memory: transitMemory}, MaxTTL: *ttl, Expires: time.Now().UTC().Add(*expires)}
+				MaxConnections: *connections, BytesPerConnection: bytes, BytesPerSecond: rate, TotalBytes: totalBytes, CreditNonce: creditNonce,
+				Transit: model.Resources{CPU: *transitCPU, Memory: transitMemory}, MaxTTL: *ttl, Expires: time.Now().UTC().Add(*expires)}
 			if err := g.Validate(); err != nil {
 				return err
 			}

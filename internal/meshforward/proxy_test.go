@@ -6,9 +6,28 @@ import (
 	"io"
 	"net"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
+
+var errForwardRouteLost = errors.New("forward route lost after application bytes")
+
+type failAfterFirstRead struct {
+	net.Conn
+	read bool
+}
+
+func (c *failAfterFirstRead) Read(p []byte) (int, error) {
+	if c.read {
+		return 0, errForwardRouteLost
+	}
+	n, err := c.Conn.Read(p)
+	if n > 0 {
+		c.read = true
+	}
+	return n, err
+}
 
 func proxyRequest(g Grant, id string) Request {
 	return Request{Version: 1, Workspace: g.Workspace, Generation: g.Generation, Source: g.Source, Target: g.Target, SourcePin: g.SourcePin, TargetPin: g.TargetPin, Service: g.Endpoint.Name, GrantRevision: g.Revision, ConnectionID: id, TTL: 5 * time.Second, RouteBindingHash: strings.Repeat("8", 64)}
@@ -23,7 +42,7 @@ func TestProxyCountsIndependentGrants(t *testing.T) {
 	g2 := g1
 	g2.Endpoint = Endpoint{Name: "other", Network: "tcp", Address: "127.0.0.1:8081"}
 	services := map[string]chan net.Conn{g1.Endpoint.Address: make(chan net.Conn, 1), g2.Endpoint.Address: make(chan net.Conn, 1)}
-	p := &Proxy{Dial: func(_ context.Context, _, address string) (net.Conn, error) { return <-services[address], nil }}
+	p := &Proxy{Dial: func(_ context.Context, _, address string) (net.Conn, error) { return <-services[address], nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(_ context.Context, _ Grant, n int) (int, error) { return n, nil }}
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	var peers []net.Conn
@@ -75,7 +94,7 @@ func TestProxySharesRateAcrossConcurrentStreams(t *testing.T) {
 	g.MaxConnections = 2
 	g.BytesPerSecond = 64 << 10
 	services := make(chan net.Conn, 2)
-	p := &Proxy{Dial: func(_ context.Context, _, _ string) (net.Conn, error) { return <-services, nil }}
+	p := &Proxy{Dial: func(_ context.Context, _, _ string) (net.Conn, error) { return <-services, nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(_ context.Context, _ Grant, n int) (int, error) { return n, nil }}
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	var clients, applications []net.Conn
@@ -132,5 +151,212 @@ func TestProxySharesRateAcrossConcurrentStreams(t *testing.T) {
 		case <-time.After(3 * time.Second):
 			t.Fatal("paced proxy workers failed to join")
 		}
+	}
+}
+
+func TestProxyRouteLossAfterApplicationBytesIsUnknownAndJoined(t *testing.T) {
+	g := testGrant()
+	stream, client := net.Pipe()
+	service, application := net.Pipe()
+	defer client.Close()
+	defer application.Close()
+	p := &Proxy{Dial: func(context.Context, string, string) (net.Conn, error) { return service, nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(_ context.Context, _ Grant, n int) (int, error) { return n, nil }}
+	ready := make(chan struct{})
+	done := make(chan error, 1)
+	go func() {
+		done <- p.Open(t.Context(), proxyRequest(g, strings.Repeat("9", 32)), proxyIdentity(g),
+			&failAfterFirstRead{Conn: stream}, func(context.Context) (Grant, error) { return g, nil },
+			func() error { close(ready); return nil })
+	}()
+	select {
+	case <-ready:
+	case <-time.After(3 * time.Second):
+		t.Fatal("proxy admission timed out")
+	}
+	wrote := make(chan error, 1)
+	go func() {
+		_, err := client.Write([]byte("effect"))
+		wrote <- err
+	}()
+	got := make([]byte, len("effect"))
+	if _, err := io.ReadFull(application, got); err != nil || string(got) != "effect" {
+		t.Fatalf("application did not receive bytes before route loss: %q %v", got, err)
+	}
+	select {
+	case err := <-wrote:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("source write did not settle")
+	}
+	select {
+	case err := <-done:
+		if !errors.Is(err, errForwardRouteLost) || !strings.Contains(err.Error(), "outcome unknown") {
+			t.Fatalf("route loss after application bytes lost unknown outcome: %v", err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("proxy did not join after route loss")
+	}
+	if active := p.Active(); active != 0 {
+		t.Fatalf("route loss retained %d active streams", active)
+	}
+}
+
+func TestProxyCreditFailureNeverWritesApplicationBytes(t *testing.T) {
+	g := testGrant()
+	stream, client := net.Pipe()
+	service, application := net.Pipe()
+	defer client.Close()
+	defer application.Close()
+	denied := errors.New("durable credit unavailable")
+	p := &Proxy{
+		Dial:        func(context.Context, string, string) (net.Conn, error) { return service, nil },
+		CheckCredit: func(context.Context, Grant) error { return nil },
+		Credit:      func(context.Context, Grant, int) (int, error) { return 0, denied },
+	}
+	ready := make(chan struct{})
+	done := make(chan error, 1)
+	go func() {
+		done <- p.Open(t.Context(), proxyRequest(g, strings.Repeat("a", 32)), proxyIdentity(g), stream,
+			func(context.Context) (Grant, error) { return g, nil }, func() error { close(ready); return nil })
+	}()
+	select {
+	case <-ready:
+	case <-time.After(3 * time.Second):
+		t.Fatal("proxy admission timed out")
+	}
+	_ = client.SetWriteDeadline(time.Now().Add(3 * time.Second))
+	if _, err := client.Write([]byte("effect")); err != nil {
+		t.Fatal(err)
+	}
+	_ = application.SetReadDeadline(time.Now().Add(3 * time.Second))
+	var one [1]byte
+	if n, err := application.Read(one[:]); n != 0 || err == nil {
+		t.Fatalf("application received uncredited bytes: %d %v", n, err)
+	}
+	select {
+	case err := <-done:
+		if !errors.Is(err, denied) || !strings.Contains(err.Error(), "outcome unknown") {
+			t.Fatalf("credit denial lost unknown outcome: %v", err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("credit-denied proxy did not join")
+	}
+	if p.Active() != 0 {
+		t.Fatal("credit-denied proxy retained active stream")
+	}
+}
+
+func TestPacedWriterUsesExactFinalCredit(t *testing.T) {
+	writer, reader := net.Pipe()
+	defer writer.Close()
+	defer reader.Close()
+	pacer, err := newPacer(1 << 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remaining := 4
+	w := pacedWriter{ctx: t.Context(), dst: writer, pacer: pacer, check: func() error { return nil },
+		credit: func(_ context.Context, n int) (int, error) {
+			if remaining == 0 {
+				return 0, errors.New("aggregate credit exhausted")
+			}
+			granted := min(n, remaining)
+			remaining -= granted
+			return granted, nil
+		}}
+	done := make(chan struct {
+		n   int
+		err error
+	}, 1)
+	go func() {
+		n, err := w.Write([]byte("abcde"))
+		done <- struct {
+			n   int
+			err error
+		}{n, err}
+	}()
+	got := make([]byte, 4)
+	if _, err := io.ReadFull(reader, got); err != nil || string(got) != "abcd" {
+		t.Fatalf("final prepaid bytes differ: %q %v", got, err)
+	}
+	select {
+	case result := <-done:
+		if result.n != 4 || result.err == nil || remaining != 0 {
+			t.Fatalf("writer exceeded final credit: %+v remaining=%d", result, remaining)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("writer stalled at credit exhaustion")
+	}
+}
+
+func TestProxySharesAggregateCreditAcrossDuplexDirections(t *testing.T) {
+	g := testGrant()
+	g.TotalBytes = 4
+	stream, client := net.Pipe()
+	service, application := net.Pipe()
+	defer client.Close()
+	defer application.Close()
+	var mu sync.Mutex
+	remaining := 4
+	p := &Proxy{
+		Dial:        func(context.Context, string, string) (net.Conn, error) { return service, nil },
+		CheckCredit: func(context.Context, Grant) error { return nil },
+		Credit: func(_ context.Context, _ Grant, requested int) (int, error) {
+			mu.Lock()
+			defer mu.Unlock()
+			if remaining == 0 {
+				return 0, errors.New("duplex credit exhausted")
+			}
+			granted := min(requested, remaining)
+			remaining -= granted
+			return granted, nil
+		},
+	}
+	ready := make(chan struct{})
+	done := make(chan error, 1)
+	go func() {
+		done <- p.Open(t.Context(), proxyRequest(g, strings.Repeat("b", 32)), proxyIdentity(g), stream,
+			func(context.Context) (Grant, error) { return g, nil }, func() error { close(ready); return nil })
+	}()
+	select {
+	case <-ready:
+	case <-time.After(3 * time.Second):
+		t.Fatal("proxy admission timed out")
+	}
+	_ = client.SetDeadline(time.Now().Add(3 * time.Second))
+	_ = application.SetDeadline(time.Now().Add(3 * time.Second))
+	sourceWrite := make(chan error, 1)
+	go func() { _, err := client.Write([]byte("abc")); sourceWrite <- err }()
+	first := make([]byte, 3)
+	if _, err := io.ReadFull(application, first); err != nil || string(first) != "abc" {
+		t.Fatalf("first direction differs: %q %v", first, err)
+	}
+	if err := <-sourceWrite; err != nil {
+		t.Fatal(err)
+	}
+	serviceWrite := make(chan error, 1)
+	go func() { _, err := application.Write([]byte("XYZ")); serviceWrite <- err }()
+	second := make([]byte, 1)
+	if _, err := io.ReadFull(client, second); err != nil || string(second) != "X" {
+		t.Fatalf("final shared credit differs: %q %v", second, err)
+	}
+	if err := <-serviceWrite; err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case err := <-done:
+		if err == nil || !strings.Contains(err.Error(), "outcome unknown") {
+			t.Fatalf("aggregate exhaustion lost unknown outcome: %v", err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("duplex credit exhaustion did not join")
+	}
+	mu.Lock()
+	left := remaining
+	mu.Unlock()
+	if left != 0 || p.Active() != 0 {
+		t.Fatalf("duplex accounting or join differs: remaining=%d active=%d", left, p.Active())
 	}
 }

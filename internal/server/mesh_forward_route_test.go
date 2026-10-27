@@ -115,12 +115,16 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	}
 	grant := meshforward.Grant{Workspace: id, Generation: access.Generation, Source: srcID.Host, Target: dstID.Host, SourceGeneration: access.OriginGeneration, TargetGeneration: access.DestinationGeneration,
 		DirectoryPin: access.Directory.Fingerprint, DirectorySPKI: access.Directory.SPKI, SourcePin: srcID.Fingerprint, SourceSPKI: srcID.SPKI, TargetPin: dstID.Fingerprint, TargetSPKI: dstID.SPKI,
-		Account: account.Username, Endpoint: meshforward.Endpoint{Name: "web", Network: "tcp", Address: serviceListener.Addr().String()}, Revision: 1, MaxConnections: 2, BytesPerConnection: 1 << 20, BytesPerSecond: 64 << 20, Transit: model.Resources{CPU: .0001, Memory: 4 << 20}, MaxTTL: time.Minute, Expires: time.Now().Add(time.Hour)}
+		Account: account.Username, Endpoint: meshforward.Endpoint{Name: "web", Network: "tcp", Address: serviceListener.Addr().String()}, Revision: 1, MaxConnections: 2, BytesPerConnection: 1 << 20, BytesPerSecond: 64 << 20,
+		TotalBytes: 4 << 20, CreditNonce: strings.Repeat("9", 32),
+		Transit: model.Resources{CPU: .0001, Memory: 4 << 20}, MaxTTL: time.Minute, Expires: time.Now().Add(time.Hour)}
 	echoGrant := grant
 	echoGrant.Endpoint = meshforward.Endpoint{Name: "echo", Network: "tcp", Address: echoListener.Addr().String()}
+	echoGrant.CreditNonce = strings.Repeat("a", 32)
 	smallGrant := echoGrant
 	smallGrant.Endpoint.Name = "small"
 	smallGrant.BytesPerConnection = 4
+	smallGrant.CreditNonce = strings.Repeat("b", 32)
 	review, err := meshsshrelay.ReviewPolicy(destination.home, dstID.Host, dstID.Fingerprint, "grant", "exact TCP original source test", func(p *meshsshrelay.Policy) error {
 		p.Forwards = append(p.Forwards, grant, echoGrant, smallGrant)
 		return nil
