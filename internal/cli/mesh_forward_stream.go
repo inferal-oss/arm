@@ -91,6 +91,7 @@ func (a *app) dialForwardSource(key, tokenFile string) (net.Conn, forwardSourceC
 // bytes already following READY on the same transport write.
 func confirmForwardSource(ctx context.Context, conn net.Conn, token string) (err error) {
 	if err = ctx.Err(); err != nil {
+		_ = conn.Close()
 		return err
 	}
 	finished := make(chan struct{})
@@ -107,6 +108,7 @@ func confirmForwardSource(ctx context.Context, conn net.Conn, token string) (err
 		close(finished)
 		<-watchDone
 		if ctx.Err() != nil {
+			_ = conn.Close()
 			err = ctx.Err()
 		}
 	}()

@@ -22,6 +22,21 @@ func forwardTLSHome(t *testing.T) string {
 	return filepath.Join(t.TempDir(), "state")
 }
 
+func TestForwardLocalAlreadyCanceledAdmissionClosesConnection(t *testing.T) {
+	client, peer := net.Pipe()
+	defer peer.Close()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if err := confirmForwardSource(ctx, client, strings.Repeat("a", 64)); !errors.Is(err, context.Canceled) {
+		t.Fatalf("canceled admission result: %v", err)
+	}
+	_ = peer.SetReadDeadline(time.Now().Add(time.Second))
+	var first [1]byte
+	if _, err := peer.Read(first[:]); !errors.Is(err, io.EOF) {
+		t.Fatalf("canceled admission left a peer or bearer readable: %v", err)
+	}
+}
+
 func TestForwardLocalTLSPreservesPrefetchedReadyBytes(t *testing.T) {
 	home := forwardTLSHome(t)
 	store, err := mesh.Init(home, strings.Repeat("d", 32), "source", "127.0.0.1:1", "127.0.0.1:1")
