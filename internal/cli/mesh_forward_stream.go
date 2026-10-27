@@ -13,6 +13,7 @@ import (
 
 	"github.com/inferal-oss/arm/internal/meshforward"
 	"github.com/inferal-oss/arm/internal/meshsshrelay"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // A stream is a local client of one already-owned source listener. The raw
@@ -37,7 +38,7 @@ func (a *app) meshForwardStream(args []string) (int, error) {
 	}
 	defer conn.Close()
 	if err = bridgeForwardStream(a.ctx, a.in, a.out, conn); err != nil {
-		return 1, fmt.Errorf("raw TCP stream result unknown; inspect the application before retrying: %w", err)
+		return 1, model.Err("remote_outcome_unknown", fmt.Sprintf("raw TCP stream result unknown; inspect the application before retrying: %v", err))
 	}
 	return 0, nil
 }
@@ -78,35 +79,62 @@ func (a *app) dialForwardSource(key, tokenFile string) (net.Conn, forwardSourceC
 			_ = conn.Close()
 		}
 	}()
-	if err = conn.SetDeadline(time.Now().Add(meshsshrelay.MaxLifetime)); err != nil {
-		return nil, status, err
-	}
-	if _, err = io.WriteString(conn, "ARM-FORWARD/2 "+token+"\n"); err != nil {
-		return nil, status, errors.New("TCP source admission uncertain; no application bytes sent")
-	}
-	if err = conn.SetReadDeadline(time.Now().Add(15 * time.Second)); err != nil {
-		return nil, status, err
-	}
-	var ack [32]byte
-	for i := range ack {
-		if _, err = io.ReadFull(conn, ack[i:i+1]); err != nil {
-			return nil, status, errors.New("TCP destination admission not confirmed; no application bytes sent")
-		}
-		if ack[i] == '\n' {
-			if string(ack[:i+1]) != "ARM-FORWARD/2 READY\n" {
-				return nil, status, errors.New("TCP destination admission refused; no application bytes sent")
-			}
-			break
-		}
-		if i == len(ack)-1 {
-			return nil, status, errors.New("invalid TCP source acknowledgment; no application bytes sent")
-		}
-	}
-	if err = conn.SetReadDeadline(time.Now().Add(meshsshrelay.MaxLifetime)); err != nil {
+	if err = confirmForwardSource(a.ctx, conn, token); err != nil {
 		return nil, status, err
 	}
 	accepted = true
 	return conn, status, nil
+}
+
+// Admission owns its cancellation watcher until the connection is handed to
+// the application phase. Reading one byte at a time preserves any service
+// bytes already following READY on the same transport write.
+func confirmForwardSource(ctx context.Context, conn net.Conn, token string) (err error) {
+	if err = ctx.Err(); err != nil {
+		return err
+	}
+	finished := make(chan struct{})
+	watchDone := make(chan struct{})
+	go func() {
+		defer close(watchDone)
+		select {
+		case <-ctx.Done():
+			_ = conn.Close()
+		case <-finished:
+		}
+	}()
+	defer func() {
+		close(finished)
+		<-watchDone
+		if ctx.Err() != nil {
+			err = ctx.Err()
+		}
+	}()
+	if err = conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
+		return err
+	}
+	if _, err = io.WriteString(conn, "ARM-FORWARD/2 "+token+"\n"); err != nil {
+		return errors.New("TCP source admission uncertain; no application bytes sent")
+	}
+	var ack [32]byte
+	for i := range ack {
+		if _, err = io.ReadFull(conn, ack[i:i+1]); err != nil {
+			return errors.New("TCP destination admission not confirmed; no application bytes sent")
+		}
+		if ack[i] == '\n' {
+			if string(ack[:i+1]) != "ARM-FORWARD/2 READY\n" {
+				return errors.New("TCP destination admission refused; no application bytes sent")
+			}
+			break
+		}
+		if i == len(ack)-1 {
+			return errors.New("invalid TCP source acknowledgment; no application bytes sent")
+		}
+	}
+	if err = conn.SetDeadline(time.Now().Add(meshsshrelay.MaxLifetime)); err != nil {
+		return err
+	}
+	return ctx.Err()
 }
 
 func readForwardToken(path string) (string, error) {
@@ -138,6 +166,9 @@ func readForwardToken(path string) (string, error) {
 }
 
 func bridgeForwardStream(ctx context.Context, input io.Reader, output io.Writer, conn net.Conn) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	stopWatch := make(chan struct{})
 	watchDone := make(chan struct{})
 	go func() {

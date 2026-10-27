@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/inferal-oss/arm/internal/meshforward"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // meshForwardHTTP is a token-file-backed HTTP client for one reviewed service.
@@ -49,7 +50,7 @@ func (a *app) meshForwardHTTP(args []string) (int, error) {
 	}
 	code, err := forwardHTTPRequest(a.ctx, conn, *method, *path, status.Service, a.out)
 	if err != nil {
-		return 1, fmt.Errorf("HTTP service result unknown; inspect the application before retrying: %w", err)
+		return 1, model.Err("remote_outcome_unknown", fmt.Sprintf("HTTP service result unknown; inspect the application before retrying: %v", err))
 	}
 	if code >= 300 && code < 400 {
 		return 1, fmt.Errorf("HTTP service returned redirect status %d; redirect not followed", code)
@@ -77,6 +78,9 @@ func forwardOriginPath(path string) (*url.URL, error) {
 }
 
 func forwardHTTPRequest(ctx context.Context, conn net.Conn, method, path, host string, output io.Writer) (int, error) {
+	if err := ctx.Err(); err != nil {
+		return 0, err
+	}
 	u, err := forwardOriginPath(path)
 	if err != nil {
 		return 0, err
@@ -99,9 +103,29 @@ func forwardHTTPRequest(ctx context.Context, conn net.Conn, method, path, host s
 	if err = req.Write(conn); err != nil {
 		return 0, err
 	}
-	response, err := http.ReadResponse(bufio.NewReaderSize(&forwardHTTPHeaderLimit{reader: conn, remaining: 16 << 10}, 4096), req)
-	if err != nil {
-		return 0, err
+	// One shared reader preserves prefetched interim/final bytes. All header
+	// blocks share one budget; informational responses cannot reset it.
+	reader := bufio.NewReaderSize(conn, (16<<10)+1)
+	remaining := 16 << 10
+	var response *http.Response
+	for informational := 0; ; informational++ {
+		if err = peekForwardHTTPHeader(reader, &remaining); err != nil {
+			return 0, err
+		}
+		response, err = http.ReadResponse(reader, req)
+		if err != nil {
+			return 0, err
+		}
+		if response.StatusCode >= 200 {
+			break
+		}
+		_ = response.Body.Close()
+		if response.StatusCode == http.StatusSwitchingProtocols {
+			return 0, errors.New("HTTP service protocol upgrade is unsupported")
+		}
+		if informational >= 7 {
+			return 0, errors.New("HTTP service informational responses exceed bound")
+		}
 	}
 	defer response.Body.Close()
 	if _, err = io.Copy(output, response.Body); err != nil {
@@ -110,31 +134,20 @@ func forwardHTTPRequest(ctx context.Context, conn net.Conn, method, path, host s
 	return response.StatusCode, nil
 }
 
-// The raw local stream bypasses the source listener's HTTP parser. Bound the
-// service response header here while leaving its body streaming under the
-// destination grant's byte and lifetime limits.
-type forwardHTTPHeaderLimit struct {
-	reader    io.Reader
-	remaining int
-	last      [4]byte
-	done      bool
-}
-
-func (b *forwardHTTPHeaderLimit) Read(p []byte) (int, error) {
-	n, err := b.reader.Read(p)
-	if b.done {
-		return n, err
-	}
-	for _, c := range p[:n] {
-		b.remaining--
-		if b.remaining < 0 {
-			return 0, errors.New("HTTP service response headers exceed bound")
+// Peek only through one header terminator before parsing. The buffered reader
+// keeps any prefetched body or subsequent response bytes, so a large body does
+// not count against the aggregate header budget. Accept the LF form supported
+// by net/http as well as CRLF, without allowing it to bypass the byte bound.
+func peekForwardHTTPHeader(reader *bufio.Reader, remaining *int) error {
+	for n := 1; n <= *remaining; n++ {
+		data, err := reader.Peek(n)
+		if err != nil {
+			return err
 		}
-		b.last = [4]byte{b.last[1], b.last[2], b.last[3], c}
-		if b.last == [4]byte{'\r', '\n', '\r', '\n'} {
-			b.done = true
-			break
+		if data[n-1] == '\n' && (n == 1 || data[n-2] == '\n' || (n >= 3 && data[n-2] == '\r' && data[n-3] == '\n')) {
+			*remaining -= n
+			return nil
 		}
 	}
-	return n, err
+	return errors.New("HTTP service response headers exceed bound")
 }
