@@ -2286,3 +2286,17 @@ The exact frozen slice passes its native race, frontend-policy and causal-contro
 gates. Standalone product binary, two-node native interaction, browser/PTY and
 current-main composition remain open. No scheduler, roaming endpoint discovery,
 automatic certificate renewal or OS service installation is implemented here.
+
+
+## Compact Resources candidate
+
+The reviewed browser candidate uses stock Semblance cards and disclosure for
+accounting, with a contained pool manager and compact stat rows. Retained binary
+and bundle identities are independently qualified despite the failed overall
+build wrapper's generated-cache assertion. Actual matched desktop/phone captures
+show the shorter Resources page and rebuilt Monitor badge presentation.
+
+The first native interaction attempt stops at an opening-dialog readiness guard.
+Manager keyboard/actions, real consumer focus, controlled data modes and final
+main-source composition remain open. No new product bundle is integrated by
+this evidence record; the exact failed attempt and cleanup remain preserved.

@@ -1,0 +1,255 @@
+{
+  "overall_status": "FAILED",
+  "original_outer_exit": 1,
+  "native_acceptance": "Incomplete; stopped at first candidate capture readiness failure.",
+  "original_build_overall": "FAILED_UNCHANGED; qualified retained binary identity only.",
+  "source_manifest_sha256": "1a6df2b118d29570855d6147f342297a56a8432e9877e8f7e90ebea4bf10ea45",
+  "binary_sha256": "7815c1dbba6a54852bcff3c63708f09aefd5d6780e9145beb139d871ca31ee93",
+  "bundle_sha256": "01015d14587a39afb62b769df1c85c6ef7e5b101b6decba1b527c7239823f6ad",
+  "captures": {
+    "resources-before-desktop": {
+      "viewport": {
+        "devicePixelRatio": 1,
+        "height": 900,
+        "width": 1280
+      },
+      "document": {
+        "clientWidth": 1280,
+        "scrollHeight": 1821,
+        "scrollWidth": 1280
+      },
+      "raster": {
+        "format": "jpeg",
+        "width": 1280,
+        "height": 1821,
+        "sha256": "e581c5e4cb688daa88582a970c2fd50b9216a329c09792826c94b8f34bd0a831",
+        "bytes": 135773
+      },
+      "metadata_sha256": "c410aa54ff5971741b9f88790f2d2c52e3eb1b0b01f06155640105b939353beb"
+    },
+    "resources-before-phone": {
+      "viewport": {
+        "devicePixelRatio": 1,
+        "height": 844,
+        "width": 390
+      },
+      "document": {
+        "clientWidth": 390,
+        "scrollHeight": 2719,
+        "scrollWidth": 390
+      },
+      "raster": {
+        "format": "jpeg",
+        "width": 390,
+        "height": 2719,
+        "sha256": "25ab4b42362c7a0986f95c306cc7b545306c4f42ca9e64a54fe4f8c6f8c757bb",
+        "bytes": 110000
+      },
+      "metadata_sha256": "0cd1e2c394dd55a19befdab7c175ae122f1945e01c19954f5ca72d5c3f6aa107"
+    },
+    "resources-after-desktop": {
+      "viewport": {
+        "devicePixelRatio": 1,
+        "height": 900,
+        "width": 1280
+      },
+      "document": {
+        "clientWidth": 1280,
+        "scrollHeight": 1471,
+        "scrollWidth": 1280
+      },
+      "raster": {
+        "format": "jpeg",
+        "width": 1280,
+        "height": 1471,
+        "sha256": "9a23c9b915a5cc7d79586972c6810eb19fabc6634b07fbaaa85cd2088c2d3af4",
+        "bytes": 106786
+      },
+      "metadata_sha256": "5537b33f75089eddaf68688a03853d17fdbaf749cd720ee1f863615e89da6c76"
+    },
+    "resources-after-phone": {
+      "viewport": {
+        "devicePixelRatio": 1,
+        "height": 844,
+        "width": 390
+      },
+      "document": {
+        "clientWidth": 390,
+        "scrollHeight": 2090,
+        "scrollWidth": 390
+      },
+      "raster": {
+        "format": "jpeg",
+        "width": 390,
+        "height": 2090,
+        "sha256": "f928d22a597d2ad3c128b0464bd1c3428ae7eee0222b3a4e3c61cb767c5973b5",
+        "bytes": 80167
+      },
+      "metadata_sha256": "f498ff62f45fb5ba43d651ac0073e26631535cf37e717144a2ed9daf30e6ddff"
+    },
+    "monitor-after-desktop": {
+      "viewport": {
+        "devicePixelRatio": 1,
+        "height": 900,
+        "width": 1280
+      },
+      "document": {
+        "clientWidth": 1280,
+        "scrollHeight": 1220,
+        "scrollWidth": 1280
+      },
+      "raster": {
+        "format": "jpeg",
+        "width": 1280,
+        "height": 1220,
+        "sha256": "c1dc5b54f002e58bef2aa175e3cf5b06e10fa89fdd2b6df65c55b79f8c5faa52",
+        "bytes": 111317
+      },
+      "metadata_sha256": "95673004d2fe50ba3d6eefca896f8839caa0bcbf5b2843fc7184c157e7894d7e"
+    },
+    "monitor-after-phone": {
+      "viewport": {
+        "devicePixelRatio": 1,
+        "height": 844,
+        "width": 390
+      },
+      "document": {
+        "clientWidth": 390,
+        "scrollHeight": 2314,
+        "scrollWidth": 390
+      },
+      "raster": {
+        "format": "jpeg",
+        "width": 390,
+        "height": 2314,
+        "sha256": "f30837f4b668d280fefca6cc47ce4c173265ff982635ff104c4ebef315f9cf8a",
+        "bytes": 94799
+      },
+      "metadata_sha256": "18bb6a672fa1de021af3237e4f04806c1fb3f40b8273e087c505dc765063ed1d"
+    }
+  },
+  "first_failure": {
+    "phase": "Empty pool manager capture readiness",
+    "message": "two actual DOM/layout observations are not settled",
+    "actual_viewports": [
+      {
+        "devicePixelRatio": 1,
+        "height": 900,
+        "width": 1280
+      },
+      {
+        "devicePixelRatio": 1,
+        "height": 900,
+        "width": 1280
+      }
+    ],
+    "controller_gap_ms": 0.0024159997701644897,
+    "dialog_delta": [
+      {
+        "before": {
+          "bottom": 612.2154541015625,
+          "height": 324.43084716796875,
+          "right": 879.9488525390625,
+          "width": 479.897705078125,
+          "x": 400.0511474609375,
+          "y": 287.78460693359375
+        },
+        "after": {
+          "bottom": 612.2481079101562,
+          "height": 324.4962158203125,
+          "right": 879.9971923828125,
+          "width": 479.994384765625,
+          "x": 400.0028076171875,
+          "y": 287.75189208984375
+        },
+        "opacity_before": 0.994669,
+        "opacity_after": 0.99971
+      }
+    ],
+    "classification": "A transient dialog transform/opacity was sampled before layout settled; this is not evidence of a product regression.",
+    "diagnostic_only": true
+  },
+  "preflight_observations": {
+    "tracked_cleanup_release_witness": 1,
+    "canonical_relay_tests": [
+      "TestCanonicalReadForwardsOnlyValidatedTypedEncoding",
+      "TestCanonicalReadRefusesDuplicatesAliasesAndTrailingFrames",
+      "TestCanonicalReadRejectsBackendCaseAliasCounterexample"
+    ],
+    "listener_checks": 12,
+    "served_bundle_hashes_verified": true
+  },
+  "closure": {
+    "original_children": 15,
+    "zero_exits": 13,
+    "backend_cancel_exits": [
+      130,
+      130
+    ],
+    "all_originals_joined": true,
+    "all_signal_authority_retired": true,
+    "all_pipes_closed": true,
+    "ownership_errors": 0,
+    "all_three_post_wait_listener_refusals": true,
+    "state_clear": true,
+    "pins_unchanged": true,
+    "normal_stop_requested": true,
+    "owned_leases_created": 0,
+    "remaining_owned_leases": 0,
+    "own_tab_closed": true,
+    "viewport_reset": true,
+    "Chrome_window_returned": true,
+    "scope": "15 registered original child owners and their pipes/authority only; no escaped descendant or ambient process absence claim. Three listener refusals are the retained post-Wait fixture observations."
+  },
+  "untested": [
+    "manager keyboard/Close/Escape",
+    "signed review/cancel/confirm",
+    "real consumer renew/add/remove focus",
+    "disappearing opener diagnostic",
+    "controlled material/unknown modes"
+  ],
+  "limitations": [
+    "No candidate pool-manager settled capture, keyboard/action or live consumer-focus acceptance.",
+    "No disappearing-opener observation or fix.",
+    "No controlled stale/unknown/zero/read-only modes exercised; zero traced controlled frames.",
+    "Native raw screenshots and internal receipts stay private; this normalized receipt contains no private paths, handles or conversation identifiers.",
+    "Normal explicit owner cancellation returned130 from the two foreground ARM servers; overall fixture did not pass its all-zero child rule.",
+    "Before capture reference addendum preserves exact baseline d09/binary/bundle provenance; initial before.source field denoted paired candidate manifest.",
+    "Controller timestamps describe call timing only; no page paint/event timing claim.",
+    "Observed dialog changes are consistent with the unchanged stock sem-scale-in opening effect; optional animation enumeration was not available to identify a particular active animation. No proven product regression.",
+    "Original CUA cleanup call completion is verified from authoritative retained tool record; no independent post-close tab enumeration was performed.",
+    "Correct capture timing/exit classification has not been implemented, reviewed or run by this audit."
+  ],
+  "independent_disposition": "QUALIFIED_PARTIAL_NATIVE_EVIDENCE; ORIGINAL_OVERALL_FAILURE_UNCHANGED",
+  "independent_verification": {
+    "bound_files_rehashed": 14691,
+    "capture_metadata_and_raster_pairs": 6,
+    "all_six_rasters_viewed": true,
+    "diagnostic_raster_viewed": true,
+    "original_outer_exit": 1,
+    "original_failed_capture_call_status": "failed",
+    "original_awaited_viewport_reset_and_own_tab_close_call_status": "completed",
+    "no_new_native_execution": true
+  },
+  "layout_observation": {
+    "desktop_full_document_height_before_after": [
+      1821,
+      1471
+    ],
+    "phone_full_document_height_before_after": [
+      2719,
+      2090
+    ],
+    "desktop_CPU_memory_disk_card_heights_before_after": [
+      452.25,
+      279.75
+    ],
+    "scope": "Matched empty viewports and captured states only. Collapsed accounting/consumer disclosures and operations were not exercised; not all information reachability acceptance.",
+    "baseline": "Rebuilt d09 source with earlier reviewed badge fix; not the old publicly embedded binary. Exact before binary/bundle provenance is retained separately from candidate source-manifest reference addendum."
+  },
+  "successor_recommendation": {
+    "capture_only": "One explicitly reviewed bounded readiness block of at most5000ms from first controller observation, with at least150ms second-call-start minus previous-call-finish. Persist every sample and actual intervals; compare the same target identity, geometry and observed effective opacity. Do not reset deadline, suppress first real tool/semantic error, relax overflow/viewport/image requirements, mutate product styles or infer continuous/max settling. Timeout remains failed.",
+    "scope": "No product rebuild/source modification or repeat of completed matched Resources/Monitor captures solely for this timing change. Remaining manager/keyboard/action/consumer/mode gates require separately cleared frozen successor and Chrome window.",
+    "expected_cancellation": "For successor infrastructure classification only, bind exact originally registered before/after foreground server owners, record own cancellation intent before cancel and any earlier exit observation, then allow their source-defined130 outcome only after requested normal shutdown and positive original join/authority retirement/pipe closure/state/3listener checks. All other children keep exact expected exits; spontaneous/early exits and ownership errors remain failures. Preserve v6 all-zero-rule failure and native FAIL."
+  }
+}

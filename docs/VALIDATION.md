@@ -5954,3 +5954,25 @@ guards and assets are unchanged. Earlier original cancellation and invalid-clock
 fixture failures remain failures; the frontend build has its own scope.
 Actual standalone backend/CLI/browser/PTY, physical suspend, Linux runtime and
 composed-main integration are not established by this component gate.
+
+
+### Compact Resources qualified native observations
+
+[Independent partial evidence](validation/resources-native-qualified-partial-2026-10-27.json)
+retains overall exit 1. All 14,691 bound inputs and six actual numeric/raster
+pairs match. At matched 1280×900 and 390×844 viewports, empty Resources document
+heights change from 1821 to 1471 and 2719 to 2090 respectively; horizontal
+document/control overflow is zero. All six rasters receive visual review.
+These are sampled layouts, not acceptance of disclosure or operation behavior.
+
+The pool-manager capture fails: two observations are only 0.002416 ms apart,
+with changing fractional geometry and opacity consistent with the stock opening
+effect. This does not establish a product regression. No manager keyboard,
+signed action, real consumer focus or controlled-mode acceptance follows.
+Fifteen originals join, authority retires and pipes close; three retained
+post-Wait connection refusals and positive original tool cleanup-call completion
+support listener/tab cleanup within scope. Two explicitly cancelled foreground
+backends return 130 and fail the old all-zero rule; the original failure is not
+reclassified. A separately reviewed remaining-only successor must preserve real
+admission policy, native success, exact shutdown classification and bounded
+readiness. No production bundle or later-main runtime acceptance is claimed.
