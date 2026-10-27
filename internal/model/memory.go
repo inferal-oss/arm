@@ -2,8 +2,8 @@ package model
 
 import "time"
 
-// MemoryAvailability is an estimate of host allocation headroom, not a quota
-// or a guarantee that the next allocation will succeed. Nil is unknown.
+// MemoryAvailability is an estimate of allocation headroom in the reported
+// scope, not a guarantee that the next allocation will succeed. Nil is unknown.
 type MemoryAvailability struct {
 	At        time.Time `json:"at"`
 	Total     *int64    `json:"total_bytes"`
