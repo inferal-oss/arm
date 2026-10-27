@@ -2084,8 +2084,10 @@ The [contract](PROVIDER-ENTITLEMENT-CONTRACT.md) records these boundaries.
 ## Website card alignment and domain boundary
 
 The unused secondary-domain Worker proposal `3bdbf06` was removed by `d264f61`.
-No Worker was created or deployed; the domain arrangement must use an authorized
-existing configuration. Secondary-domain publication remains unresolved.
+The existing Free getarm.cloud zone now proxies its four original Pages A
+records and applies one exact-host 301 redirect to HTTPS getarm.org, preserving
+path and query. Canonical GitHub Pages settings and DNS remain unchanged. No
+Worker, new project or paid plan is used.
 
 The two layout declarations in `2af7ffc` use stock `AlignedColumns` for the
 Documentation and Capabilities cards. Gallery/Lightbox navigation and mobile

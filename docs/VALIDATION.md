@@ -5532,3 +5532,22 @@ fleet rollout, format-2 activation or paired-provider acceptance. At integration
 the complete cmd/internal/web trees match the reviewed feature; the later
 one-line Monitor badge change is separately syntax-checked and awaits the
 composed UI browser gate.
+
+### Secondary-domain routing acceptance
+
+[Domain evidence](validation/public-site-secondary-domain-2026-10-27.json)
+records the approved existing-zone configuration: four original GitHub Pages A
+values and Auto TTL retained, proxying enabled only for getarm.cloud, and one
+enabled exact-host Free Single Redirect to the HTTPS canonical path with query
+preservation. Before/after records and rule configuration are independently
+checked; canonical DNS still resolves directly to the four Pages addresses.
+
+All eight listed HTTP/HTTPS root, asset and query requests return the expected
+301 Location. Three followed HTTPS responses return 200 after exactly one
+redirect, with actual body hashes matching direct canonical bytes. Certificate
+verification remains enabled and passes. Independent fresh public root reads
+reproduce valid HTTPS, zero versus one redirect and identical canonical content.
+The native browser retains the overview fragment at the canonical destination.
+No Worker, new Cloudflare project or paid-plan change occurs. These are GET
+routing checks for the listed paths, separate from unpublished UI, vanity-module
+installation and release acceptance.

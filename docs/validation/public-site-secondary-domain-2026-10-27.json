@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "date": "2026-10-27",
+  "canonical_domain": "getarm.org",
+  "alias_domain": "getarm.cloud",
+  "hosting": "Canonical GitHub Pages site; secondary Cloudflare zone redirects at the edge",
+  "dns": {
+    "zone": "getarm.cloud",
+    "records": [
+      {
+        "type": "A",
+        "name": "getarm.cloud",
+        "content": "185.199.108.153",
+        "proxied": true,
+        "ttl": "Auto"
+      },
+      {
+        "type": "A",
+        "name": "getarm.cloud",
+        "content": "185.199.109.153",
+        "proxied": true,
+        "ttl": "Auto"
+      },
+      {
+        "type": "A",
+        "name": "getarm.cloud",
+        "content": "185.199.110.153",
+        "proxied": true,
+        "ttl": "Auto"
+      },
+      {
+        "type": "A",
+        "name": "getarm.cloud",
+        "content": "185.199.111.153",
+        "proxied": true,
+        "ttl": "Auto"
+      }
+    ],
+    "canonical_records": "Unchanged; getarm.org resolves directly to the four GitHub Pages IPv4 addresses"
+  },
+  "redirect": {
+    "enabled": true,
+    "match": "(http.host eq \"getarm.cloud\")",
+    "target_expression": "concat(\"https://getarm.org\", http.request.uri.path)",
+    "status_code": 301,
+    "preserve_query_string": true
+  },
+  "normal_http_and_https_checks": [
+    {
+      "source": "http://getarm.cloud/",
+      "status": 301,
+      "location": "https://getarm.org/",
+      "certificate_validation": "not applicable",
+      "result": "pass"
+    },
+    {
+      "source": "http://getarm.cloud/screenshots/web-monitor.png",
+      "status": 301,
+      "location": "https://getarm.org/screenshots/web-monitor.png",
+      "certificate_validation": "not applicable",
+      "result": "pass"
+    },
+    {
+      "source": "http://getarm.cloud/system-map.svg?download=1",
+      "status": 301,
+      "location": "https://getarm.org/system-map.svg?download=1",
+      "certificate_validation": "not applicable",
+      "result": "pass"
+    },
+    {
+      "source": "http://getarm.cloud/arm-reference-probe?query=a%20b&x=1",
+      "status": 301,
+      "location": "https://getarm.org/arm-reference-probe?query=a%20b&x=1",
+      "certificate_validation": "not applicable",
+      "result": "pass"
+    },
+    {
+      "source": "https://getarm.cloud/",
+      "status": 301,
+      "location": "https://getarm.org/",
+      "certificate_validation": "passed",
+      "result": "pass"
+    },
+    {
+      "source": "https://getarm.cloud/screenshots/web-monitor.png",
+      "status": 301,
+      "location": "https://getarm.org/screenshots/web-monitor.png",
+      "certificate_validation": "passed",
+      "result": "pass"
+    },
+    {
+      "source": "https://getarm.cloud/system-map.svg?download=1",
+      "status": 301,
+      "location": "https://getarm.org/system-map.svg?download=1",
+      "certificate_validation": "passed",
+      "result": "pass"
+    },
+    {
+      "source": "https://getarm.cloud/arm-reference-probe?query=a%20b&x=1",
+      "status": 301,
+      "location": "https://getarm.org/arm-reference-probe?query=a%20b&x=1",
+      "certificate_validation": "passed",
+      "result": "pass"
+    }
+  ],
+  "followed_https_checks": [
+    {
+      "path": "/",
+      "final_url": "https://getarm.org/",
+      "redirect_count": 1,
+      "final_status": 200,
+      "certificate_validation": "passed",
+      "matches_direct_canonical_bytes": true,
+      "body_sha256": "b8a07d5223445e8260a5b753e2a74234396cdc7e4427f3638da030c3d24c230a"
+    },
+    {
+      "path": "/screenshots/web-monitor.png",
+      "final_url": "https://getarm.org/screenshots/web-monitor.png",
+      "redirect_count": 1,
+      "final_status": 200,
+      "certificate_validation": "passed",
+      "matches_direct_canonical_bytes": true,
+      "body_sha256": "a59d03a49446c31bedb0b6068b9db7e29c43ccc854f9d5d60a39e8d2531028e8"
+    },
+    {
+      "path": "/system-map.svg?download=1",
+      "final_url": "https://getarm.org/system-map.svg?download=1",
+      "redirect_count": 1,
+      "final_status": 200,
+      "certificate_validation": "passed",
+      "matches_direct_canonical_bytes": true,
+      "body_sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850"
+    }
+  ],
+  "native_browser": {
+    "source": "https://getarm.cloud/#overview",
+    "final_url": "https://getarm.org/#overview",
+    "result": "pass"
+  },
+  "scope": {
+    "worker_created": false,
+    "cloudflare_project_created": false,
+    "paid_plan_change": false,
+    "canonical_domain_settings_changed": false,
+    "certificate_validation_bypassed": false,
+    "new_go_install_or_proxy_lookup": false
+  },
+  "limits": [
+    "Verification covers GET requests for the listed paths; a preserved nonexistent path can return the canonical site's 404.",
+    "This validates domain routing and existing public assets; it does not accept unpublished website changes or release installation."
+  ],
+  "sources": [
+    "https://developers.cloudflare.com/rules/url-forwarding/",
+    "https://developers.cloudflare.com/rules/url-forwarding/single-redirects/settings/"
+  ]
+}
