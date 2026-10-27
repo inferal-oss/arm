@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "scope": "Preserved failed UI follow-up cuts; neither result accepts the final renderer.",
+  "native_picker_failure": {
+    "original_terminal_exit": 1,
+    "browser_child_exit": 1,
+    "source_harness_closure": true,
+    "positive_fixture_cleanup": true,
+    "original_result_sha256": "421c10efb836ffb172bea9621ccf41983341d51f3cc5ce905fc35624b420cdc6",
+    "native_witness_sha256": "b04936e550cd15776dfb043a9b7d564347ab74748f9fa5057e280792b015bd86",
+    "heading": "Host monitor",
+    "url_path": "/",
+    "native_selected_view": "screen",
+    "graph_attribute_selected_view": "monitor",
+    "witness": [
+      {
+        "view": "Monitor",
+        "selected_attribute": true,
+        "selected_property": false
+      },
+      {
+        "view": "Screen",
+        "selected_attribute": false,
+        "selected_property": true
+      }
+    ],
+    "finding": "After mobile Screen selection, desktop Monitor selection and narrowing, native option selectedness remains stale although graph attributes and heading show Monitor.",
+    "upstream_issue": "https://github.com/inferal-oss/semblance/issues/181"
+  },
+  "real_rdf_followup_failure": {
+    "original_terminal_exit_reported": 1,
+    "source_harness_closure": true,
+    "source_inputs": 2349,
+    "reproducible_assets": true,
+    "steps": [
+      {
+        "name": "build-first",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.675323583
+      },
+      {
+        "name": "build-second",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.626022708
+      },
+      {
+        "name": "stage-built-assets",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.058734875000000075
+      },
+      {
+        "name": "provenance",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.21267345800000004
+      },
+      {
+        "name": "platform-session-privacy",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.15385537500000002
+      },
+      {
+        "name": "effect-policy",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.7031412499999998
+      },
+      {
+        "name": "real-rdf",
+        "exit": 1,
+        "original_child_waited": true,
+        "seconds": 1.571086625
+      },
+      {
+        "name": "embedded-session-race",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 13.65097875
+      },
+      {
+        "name": "build-arm",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 5.938837832999997
+      },
+      {
+        "name": "compiled-dashboard",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 2.089717540999999
+      },
+      {
+        "name": "go-module-zip",
+        "exit": 0,
+        "original_child_waited": true,
+        "seconds": 0.4335265419999992
+      }
+    ],
+    "rdf_total": 21,
+    "rdf_pass": 19,
+    "rdf_fail": 2,
+    "rdf_result_sha256": "7c68ecece8dfcfd4af5bd56cf137b336d4368e7a2130ffe24bdcb0c6f7598753",
+    "summary_sha256": "626d3e413e5e476af2f74b19a133aa589cb4c530c039c7588f6596846547a5cc",
+    "browser_launched": false,
+    "finding": "The selection fixture loop wrote false to a later option after selecting the target; pinned linkedom clears selected siblings on that write. The successor selects the target once and avoids redundant live-property writes."
+  },
+  "next_cut": "Minimal selected-property reflection, idempotent native writes, strict stable-node assertions and actual responsive/history native-browser proof; still pending.",
+  "metadata_policy": "The later issue link is metadata only; no failed source/result is relabelled as passing."
+}

@@ -1,5 +1,23 @@
 # Validation record
 
+## Preserved Semblance follow-up failures
+
+The post-major platform-hint browser cut exits one on a real responsive-picker
+defect: after mobile Screen, desktop Monitor and narrowing, the heading/URL and
+graph's selected attribute indicate Monitor while native option selectedness
+still indicates Screen. Source/harness hashes remain unchanged and the exact
+disposable fixture closes positively. The generic renderer issue is tracked in
+[Semblance #181](https://github.com/inferal-oss/semblance/issues/181).
+
+The following cut does not launch a browser: 19 of 21 RDF cases pass; two new
+selection cases fail. Its fixture selects a target and then clears a later
+option using pinned linkedom's sibling-clearing setter. Builds and affected
+native/embedding checks pass, but the original overall result remains failure.
+The successor selects the target once and only writes live selectedness when
+it differs, with native responsive/history acceptance still required. The
+[normalized failure record](validation/semblance-review-followups-2026-10-27.json)
+preserves both scopes; neither becomes a final pass through later fixes.
+
 ## Final elapsed-clock composition
 
 Root accepted final runtime source `3c76a89`, integrated as `f890971`, after
