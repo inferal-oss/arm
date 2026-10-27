@@ -556,7 +556,7 @@
       166,
       181
     ],
-    "actual_draft_pr_and_upstream_full_suite_gates": "Owned separately; not established by this ARM review."
+    "actual_draft_pr_and_upstream_full_suite_gates": "Focused PR checks, browser review and draft PR submission remain separate from this ARM evidence. Current upstream policy reserves the full suite for main after a batch of merges, not each PR branch."
   },
   "limits": [
     "The original accepted major UI receipt and failed successor cuts remain distinct; passing narrower tests does not rewrite historical failures.",
