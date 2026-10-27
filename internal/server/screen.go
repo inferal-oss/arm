@@ -244,28 +244,37 @@ func (s *Server) browserScreen(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithDeadline(r.Context(), deadline)
 	defer cancel()
-	var target net.Conn
-	var host string
+	var service *meshService
+	host := "local"
 	if admission.Node != nil && !admission.Node.Local {
 		bound := *admission.Node
 		host = bound.Host
-		service, e := s.validateNodeSession(bound)
+		var e error
+		service, e = s.validateNodeSession(bound)
 		if e != nil {
 			http.Error(w, "node context changed", http.StatusForbidden)
 			return
 		}
-		target, e = service.dialScreen(ctx, bound)
-		if e != nil {
-			log.Printf("ARM screen: mesh dial rejected host=%s: %v", host, e)
+	}
+	ctx, finish, err := s.reserveScreenTransport(ctx)
+	if err != nil {
+		log.Printf("ARM screen: transport admission refused: %v", err)
+		http.Error(w, "screen transport resources unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	defer finish() // Runs after every original native close and worker join below.
+	var target net.Conn
+	if service != nil {
+		target, err = service.dialScreen(ctx, *admission.Node)
+		if err != nil {
+			log.Printf("ARM screen: mesh dial rejected host=%s: %v", host, err)
 			http.Error(w, "screen route unavailable", http.StatusBadGateway)
 			return
 		}
 	} else {
-		host = "local"
-		var e error
-		target, e = (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, "tcp", screenService)
-		if e != nil {
-			log.Printf("ARM screen: local service unavailable: %v", e)
+		target, err = (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, "tcp", screenService)
+		if err != nil {
+			log.Printf("ARM screen: local service unavailable: %v", err)
 			http.Error(w, "macOS Screen Sharing is unavailable", http.StatusBadGateway)
 			return
 		}
@@ -421,6 +430,19 @@ func (m *meshService) meshScreen(w http.ResponseWriter, r *http.Request) {
 	}
 	if err = check(); err != nil {
 		http.Error(w, "screen grant denied", http.StatusForbidden)
+		return
+	}
+	ctx, finish, err := m.owner.reserveScreenTransport(ctx)
+	if err != nil {
+		log.Printf("ARM screen: destination transport admission refused: %v", err)
+		http.Error(w, "screen transport resources unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	defer finish() // Grant/lifetime cancellation alone cannot certify reclamation.
+	// Resource admission may wait on native observation or the ledger. It is
+	// not screen authority, so recheck the original grant after that interval.
+	if err = check(); err != nil {
+		http.Error(w, "screen grant changed", http.StatusForbidden)
 		return
 	}
 	target, err := (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, "tcp", screenService)

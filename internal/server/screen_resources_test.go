@@ -1,0 +1,248 @@
+package server
+
+import (
+	"context"
+	"crypto/sha256"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"sync/atomic"
+	"testing"
+	"time"
+
+	"github.com/coder/websocket"
+	"github.com/inferal-oss/arm/internal/model"
+)
+
+func screenTransportLeases(t *testing.T, s *Server) (model.Status, []model.Lease) {
+	t.Helper()
+	status, err := s.Manager.Status()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var leases []model.Lease
+	for _, lease := range status.Leases {
+		if strings.HasPrefix(lease.Request.Key, "screen-transport:") {
+			leases = append(leases, lease)
+		}
+	}
+	return status, leases
+}
+
+func requireScreenCharge(t *testing.T, s *Server, state string, charged bool) model.Lease {
+	t.Helper()
+	status, leases := screenTransportLeases(t, s)
+	if len(leases) != 1 || leases[0].State != state {
+		t.Fatalf("screen lease state=%s: %+v", state, leases)
+	}
+	lease := leases[0]
+	if lease.Request.Kind != "relay-transit" || lease.Request.Queue || lease.Request.Resources.CPU != screenTransportCPU || lease.Request.Resources.Memory != screenTransportMemory || lease.Request.Resources.Disk != 0 {
+		t.Fatalf("unexpected screen resource allocation: %+v", lease)
+	}
+	if charged && (status.Reserved.CPU != screenTransportCPU || status.Reserved.Memory != screenTransportMemory) || !charged && (status.Reserved.CPU != 0 || status.Reserved.Memory != 0) {
+		t.Fatalf("screen charged=%v, reserved=%+v", charged, status.Reserved)
+	}
+	return lease
+}
+
+func denyScreenCPU(t *testing.T, s *Server) {
+	t.Helper()
+	budget, err := s.Manager.BudgetInspect("self")
+	if err != nil {
+		t.Fatal(err)
+	}
+	zero := float64(0)
+	_, err = s.Manager.MutateBudget(model.BudgetMutation{Operation: "set", ID: "self", Revision: &budget.Budget.Revision, Limits: &model.BudgetLimits{CPU: &zero}, Reason: "deny transport in disposable admission fixture", Key: "screen-deny-cpu"})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func bindScreenBrowser(t *testing.T, s *Server, bound nodeSession) (*httptest.Server, string, <-chan struct{}) {
+	t.Helper()
+	joined := make(chan struct{})
+	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer close(joined)
+		s.browserScreen(w, r)
+	}))
+	s.authority = server.Listener.Addr().String()
+	token := strings.Repeat("c", 64)
+	s.browser.nodeSessions = map[[32]byte]nodeCredential{sha256.Sum256([]byte(token)): {Expires: time.Now().Add(time.Minute), Context: bound}}
+	server.Start()
+	t.Cleanup(server.Close)
+	return server, token, joined
+}
+
+func dialScreenBrowser(ctx context.Context, server *httptest.Server, token string) (*websocket.Conn, error) {
+	c, _, err := websocket.Dial(ctx, "ws://"+server.Listener.Addr().String()+"/v1/screen", &websocket.DialOptions{
+		Subprotocols: []string{"arm.v1", "arm.auth." + token}, HTTPHeader: http.Header{"Origin": {server.URL}},
+	})
+	return c, err
+}
+
+func TestScreenResourceReleaseRetainsChargeUntilOriginalJoin(t *testing.T) {
+	s := meshFixture(t)
+	ctx, finish, err := s.reserveScreenTransport(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(finish)
+	lease := requireScreenCharge(t, s, "active", true)
+	if _, err = s.Manager.End(lease.ID, "released"); err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case <-ctx.Done():
+	default:
+		t.Fatal("release did not cancel original screen context")
+	}
+	requireScreenCharge(t, s, "ending", true)
+	finish()
+	settled := requireScreenCharge(t, s, "terminal", false)
+	if settled.Outcome != "released" || settled.Ended == nil {
+		t.Fatal("lost exact end outcome", settled)
+	}
+	finish()
+	if next := requireScreenCharge(t, s, "terminal", false); next.Revision != settled.Revision {
+		t.Fatal("repeated original join changed settlement")
+	}
+}
+
+func TestScreenResourceAdmissionCannotBypassOwnerPolicy(t *testing.T) {
+	var dials atomic.Int32
+	s, bound := screenPairFixture(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		dials.Add(1)
+		http.Error(w, "must never dial without resources", http.StatusForbidden)
+	}))
+	denyScreenCPU(t, s)
+	server, token, joined := bindScreenBrowser(t, s, bound)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	c, err := dialScreenBrowser(ctx, server, token)
+	if c != nil {
+		c.CloseNow()
+	}
+	if err == nil {
+		t.Fatal("screen admitted despite a zero owner CPU ceiling")
+	}
+	select {
+	case <-joined:
+	case <-ctx.Done():
+		t.Fatal("refused handler retained work")
+	}
+	status, leases := screenTransportLeases(t, s)
+	if dials.Load() != 0 || len(leases) != 0 || status.Reserved.CPU != 0 || status.Reserved.Memory != 0 {
+		t.Fatal("resource refusal started a peer dial or retained a lease", dials.Load(), leases, status.Reserved)
+	}
+}
+
+func TestScreenResourceReservationCoversPendingUpgrade(t *testing.T) {
+	entered, release, destinationJoined := make(chan struct{}), make(chan struct{}), make(chan struct{})
+	defer close(release)
+	s, bound := screenPairFixture(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer close(destinationJoined)
+		close(entered)
+		select {
+		case <-r.Context().Done():
+		case <-release:
+		}
+	}))
+	server, token, joined := bindScreenBrowser(t, s, bound)
+	ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
+	defer cancel()
+	done := make(chan error, 1)
+	go func() {
+		c, err := dialScreenBrowser(ctx, server, token)
+		if c != nil {
+			c.CloseNow()
+		}
+		done <- err
+	}()
+	select {
+	case <-entered:
+	case <-ctx.Done():
+		t.Fatal("reviewed native upgrade did not start")
+	}
+	lease := requireScreenCharge(t, s, "active", true)
+	if _, err := s.Manager.End(lease.ID, "cancelled"); err != nil {
+		t.Fatal(err)
+	}
+	for _, ch := range []<-chan struct{}{joined, destinationJoined} {
+		select {
+		case <-ch:
+		case <-ctx.Done():
+			t.Fatal("canceled upgrade retained original native work")
+		}
+	}
+	if err := <-done; err == nil {
+		t.Fatal("canceled pending upgrade succeeded")
+	}
+	requireScreenCharge(t, s, "terminal", false)
+}
+
+func TestScreenResourceJoinedOnReleaseRevocationAndStop(t *testing.T) {
+	for _, mode := range []string{"release", "revoke", "stop"} {
+		t.Run(mode, func(t *testing.T) {
+			destinationJoined := make(chan struct{})
+			s, bound := screenPairFixture(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				defer close(destinationJoined)
+				c, err := websocket.Accept(w, r, nil)
+				if err != nil {
+					return
+				}
+				defer c.CloseNow()
+				stream := screenNetConn(r.Context(), c)
+				defer stream.Close()
+				_, _ = io.Copy(stream, stream)
+			}))
+			server, token, joined := bindScreenBrowser(t, s, bound)
+			ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
+			defer cancel()
+			c, err := dialScreenBrowser(ctx, server, token)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer c.CloseNow()
+			message := []byte("opaque-screen-transport-fixture")
+			if err = c.Write(ctx, websocket.MessageBinary, message); err != nil {
+				t.Fatal(err)
+			}
+			_, echoed, err := c.Read(ctx)
+			if err != nil || string(echoed) != string(message) {
+				t.Fatal("real upgraded screen route did not carry bytes", string(echoed), err)
+			}
+			lease := requireScreenCharge(t, s, "active", true)
+			switch mode {
+			case "release":
+				_, err = s.Manager.End(lease.ID, "released")
+			case "revoke":
+				err = s.mesh.store.Revoke(bound.Host, "revoke disposable original screen context")
+			case "stop":
+				_, err = s.Manager.BeginShutdown(model.ShutdownRequest{Force: true})
+				if err == nil {
+					_, err = s.Manager.AdvanceShutdown()
+				}
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err = c.Read(ctx); err == nil {
+				t.Fatal("retired screen transport remained open")
+			}
+			for _, ch := range []<-chan struct{}{joined, destinationJoined} {
+				select {
+				case <-ch:
+				case <-ctx.Done():
+					t.Fatal("retired screen workers did not join")
+				}
+			}
+			requireScreenCharge(t, s, "terminal", false)
+			s.nodeStopMu.Lock()
+			defer s.nodeStopMu.Unlock()
+			if s.nodeStopCalls["screen"] != 0 {
+				t.Fatal("joined screen retained native Stop census")
+			}
+		})
+	}
+}
