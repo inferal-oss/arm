@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "inputs": [
+    {
+      "file": "tla2tools.jar",
+      "url": "https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar",
+      "sha256": "5bd7b64db99ae4c6c35f290de5e809c0ee41af43f8699cf696099ffb6452b1e2",
+      "bytes": 4502227
+    }
+  ],
+  "tlc_source_commit": "d2e1472884d292df7b0ed788712b1af262edc16e"
+}
