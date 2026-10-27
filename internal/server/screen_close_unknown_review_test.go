@@ -9,12 +9,17 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/coder/websocket"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 type screenUnknownCloseConn struct {
@@ -46,7 +51,7 @@ func (l *screenUnknownCloseListener) Accept() (net.Conn, error) {
 
 func TestScreenResourceUnknownNativeCloseRetainsCharge(t *testing.T) {
 	destinationJoined := make(chan struct{})
-	s, bound := screenPairFixture(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	s, bound, closeManager := screenCloseResourceFixture(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer close(destinationJoined)
 		c, err := websocket.Accept(w, r, nil)
 		if err != nil {
@@ -115,6 +120,34 @@ func TestScreenResourceUnknownNativeCloseRetainsCharge(t *testing.T) {
 	if leases[0].State != "needs_attention" || leases[0].Ended != nil || leases[0].Outcome != "interrupted" || status.Reserved.CPU != screenTransportCPU || status.Reserved.Memory != screenTransportMemory {
 		t.Fatalf("COUNTEREXAMPLE: original native TCP close remains unconfirmed and descriptor open, but actual handler settled screen charge: state=%s CPU=%g memory=%d", leases[0].State, status.Reserved.CPU, status.Reserved.Memory)
 	}
+
+	closed := make(chan error, 1)
+	go func() { closed <- closeManager() }()
+	select {
+	case err = <-closed:
+		var detail *model.Error
+		if err != nil && (!errors.As(err, &detail) || detail.Code != "needs_attention") {
+			t.Fatal("Manager.Close failed outside retained cleanup", err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("Manager.Close did not return after actual screen workers joined")
+	}
+	if err = original.Conn.SetReadDeadline(time.Now()); err != nil {
+		t.Fatal("Manager.Close replaced the original close witness", err)
+	}
+	reopened, err := manager.Open(s.home, model.Resources{CPU: 2, Disk: 1 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reopened.Close()
+	retained, err := reopened.Inspect(leases[0].ID)
+	if err != nil || retained.State != "needs_attention" || retained.Ended != nil {
+		t.Fatal("restart erased native cleanup uncertainty", retained, err)
+	}
+	requireScreenCharge(t, &Server{Manager: reopened}, "needs_attention", true)
+	if _, err = reopened.Reconcile(retained.ID); err == nil {
+		t.Fatal("restart adopted an original screen with no close witness")
+	}
 }
 
 type screenCloseResultConn struct {
@@ -182,4 +215,58 @@ func TestScreenOriginalCloseMissingReturnCannotBecomeSuccess(t *testing.T) {
 	if frame.closeOriginals() {
 		t.Fatal("missing original close result became successful reclamation")
 	}
+}
+
+func screenCloseResourceFixture(t *testing.T, handler http.Handler) (*Server, nodeSession, func() error) {
+	t.Helper()
+	destination := httptest.NewUnstartedServer(handler)
+	t.Cleanup(destination.Close)
+	home := filepath.Join(t.TempDir(), "state")
+	m, err := manager.Open(home, model.Resources{CPU: 2, Disk: 1 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var once sync.Once
+	var closeErr error
+	closeManager := func() error { once.Do(func() { closeErr = m.Close() }); return closeErr }
+	t.Cleanup(func() { _ = closeManager() })
+	s := &Server{Manager: m, home: home, lifecycleContext: context.Background()}
+	status, err := m.Status()
+	if err != nil {
+		t.Fatal(err)
+	}
+	left, err := mesh.Init(home, status.Host, "close-source", meshAddress(t), meshAddress(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = left.Close() })
+	right, err := mesh.Init(filepath.Join(t.TempDir(), "peer"), strings.Repeat("b", 32), "close-destination", destination.Listener.Addr().String(), destination.Listener.Addr().String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = right.Close() })
+	pair := strings.Repeat("a", 64)
+	grant := mesh.Grant{Permissions: []string{"observe-host", "screen-view"}}
+	for _, entry := range []struct {
+		store *mesh.Store
+		peer  mesh.Identity
+	}{{left, right.Config().Identity}, {right, left.Config().Identity}} {
+		if _, err := entry.store.PairReviewed(entry.peer, grant, pair, "isolated screen close fixture", false); err != nil {
+			t.Fatal(err)
+		}
+		if err := entry.store.Prove(entry.peer.Host, pair); err != nil {
+			t.Fatal(err)
+		}
+		if err := entry.store.Activate(entry.peer.Host, pair); err != nil {
+			t.Fatal(err)
+		}
+	}
+	s.mesh = &meshService{owner: s, store: left}
+	peer, err := left.Resolve(right.Config().Identity.Host)
+	if err != nil {
+		t.Fatal(err)
+	}
+	destination.TLS = right.ServerTLS()
+	destination.StartTLS()
+	return s, nodeSession{Host: peer.Identity.Host, Source: status.Host, Pair: pair, Pin: peer.Identity.Fingerprint, LocalRevision: peer.Revision, RemoteRevision: 1}, closeManager
 }
