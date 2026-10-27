@@ -1,5 +1,31 @@
 # Validation record
 
+## Final elapsed-clock composition
+
+Root accepted final runtime source `3c76a89`, integrated as `f890971`, after
+independent actual-artifact audits. The local macOS gate passes 205 roots/379
+named cases across eight packages, full compilation and selected vet. Linux's
+affected policy-loader gate passes 13 roots/19 cases. Each gate has the exact
+two-cut missing-postcheck negative: forbidden Dial or READY is observed only
+when the final original-reservation check is removed. Both retain 1,939 Git blob
+hashes, four equal positive/negative source manifests, equal before/after selected
+tool closures and nine original command receipts with sole wait, retired
+authority and absent original PID/group. Local macOS is not hosted CI success.
+
+The [normalized record](validation/lease-clock.json) separately retains the
+earlier Linux 201-root composition, broad `ef26ba4` cohorts and actual Go/SQL
+replay, and the strict `3578c2d` proof of 19 obligations under five roots. Those
+different runtime sources are not relabelled as final-source proof. All 62
+integrated code/model/test/script files match the final tested runtime; newer
+UI, quota diagnostics, PSS and supervision remain preserved.
+
+Native process stop/resume and controlled elapsed/frozen-wall transitions were
+exercised; hardware/VM suspend was not. The model covers one bare-memory
+allocation at completed API/SQL boundaries, not SQL atomicity, provider effects,
+process joins or the whole workspace. Trusted OS, dyld/kernel/Rosetta and
+unsealed helper boundaries remain explicit. Failed hosted macOS runs remain
+failures, and native cleanup refusal retains its independent charge.
+
 ## Current original-child compatibility
 
 The reviewed prerequisite composition passes 35 selected roots and 109 named

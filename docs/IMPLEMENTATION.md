@@ -1,5 +1,23 @@
 # Backend and CLI implementation
 
+## Native elapsed lease entitlement
+
+Resource TTLs now use versioned boot-scoped native deadlines. Linux requires a
+positively identified initial time namespace and `CLOCK_BOOTTIME`; macOS uses
+`CLOCK_MONOTONIC_RAW` with the boot-session UUID. Wall expiry remains audit/display
+data and cannot extend entitlement. Admission, renewal, expiry and recovery
+validate native remaining time; missing/regressed authority retains obligations
+without rebasing a deadline onto a new boot.
+
+Original held capabilities revalidate before operation boundaries, including
+screen dial/TLS/upgrade and forwarding after blocked credit and policy reads.
+Cargo, Gradle, ports, storage, sync and export paths preserve native parent
+coverage. Explicit cleanup still needs its independent original joins and
+resource-specific evidence. The [clock contract](lease-clock.md) records the
+implemented checks and limits; provider/pressure adapters and physical suspend
+experiments remain separate work. Calendar authorization/start deadlines keep
+their distinct meanings.
+
 ## Original-child control and SSH settlement
 
 Supervised commands and Cargo helpers retain their original process identity,
