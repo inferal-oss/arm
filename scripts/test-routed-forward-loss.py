@@ -63,13 +63,19 @@ def signal_exact_fixture_daemon(node, binary, signum):
     os.kill(pid, signum)
     deadline = time.monotonic() + 10
     while time.monotonic() < deadline:
-        try:
-            with (node.home / 'daemon.lock').open('r+') as lock:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                return
-        except BlockingIOError:
-            time.sleep(.05)
+        if fixture_daemon_lock_free(node):
+            return
+        time.sleep(.05)
     raise AssertionError('signaled fixture daemon retained its daemon lock')
+
+
+def fixture_daemon_lock_free(node):
+    try:
+        with (node.home / 'daemon.lock').open('r+') as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return True
+    except (FileNotFoundError, BlockingIOError):
+        return False
 
 
 def wait_for(predicate, message, seconds=15):
@@ -162,7 +168,7 @@ def main():
         assert stdout == b'' and b'remote_outcome_unknown' in stderr, (stdout, stderr)
         assert Effect.calls == 1, 'source silently replayed an effect after relay death'
         Effect.release.set()
-        wait_for(lambda: b.cli('mesh', 'forward', 'status', '--key', key)['active'] == 0,
+        wait_for(lambda: b.cli('mesh', 'forward', 'status', '--key', key)['active_connections'] == 0,
                  'original source connection did not join after relay death')
         wait_for(lambda: any(l['request'].get('key', '').startswith('tcp-final:') and
                              l['state'] in ('terminal', 'needs_attention')
@@ -197,7 +203,8 @@ def main():
                         # The replacement relay intentionally retains an
                         # unresolved in-process charge; terminate only the
                         # exact private fixture process after its inspection.
-                        signal_exact_fixture_daemon(a, binary, signal.SIGTERM)
+                        if not fixture_daemon_lock_free(a):
+                            signal_exact_fixture_daemon(a, binary, signal.SIGTERM)
                         a.stopped = True
                     else:
                         failures.append(f'{node.name} stop/ownership closure unconfirmed')
