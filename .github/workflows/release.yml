@@ -3,7 +3,7 @@ name: Tagged carrier releases
 on:
   push:
     tags: ['v*']
-    branches: [codex/arm-public-launch, codex/arm-launch-composed-ci]
+    branches: [codex/arm-launch-final-validation]
     paths:
       - '.github/workflows/release.yml'
       - 'scripts/release/**'
@@ -78,6 +78,7 @@ jobs:
           retention-days: 7
 
   publish:
+    # A validation branch or manual dispatch can never publish a release.
     if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'inferal-oss/arm'
     needs: build
     runs-on: ubuntu-24.04

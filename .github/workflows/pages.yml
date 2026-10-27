@@ -2,7 +2,7 @@ name: Public website
 
 on:
   push:
-    branches: [main, codex/arm-public-launch, codex/arm-launch-composed-ci]
+    branches: [main, codex/arm-launch-final-validation]
     paths:
       - 'website/**'
       - 'web/**'
@@ -68,13 +68,14 @@ jobs:
         run: python3 scripts/dashboard-screenshots/capture.py
       - run: npm run build
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-        if: github.ref == 'refs/heads/main' && github.repository == 'inferal-oss/arm'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'inferal-oss/arm'
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: website/dist
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.repository == 'inferal-oss/arm'
+    # Validation branches and manual dispatches only build/upload artifacts.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'inferal-oss/arm'
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 10
