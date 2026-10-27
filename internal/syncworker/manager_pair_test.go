@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -117,6 +119,12 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Native observers may start with unknown interval headroom. Observe only;
+	// the single original admission below remains the authority decision.
+	if err := waitManagerPairReadiness(t.Context(), source, resources); err != nil {
+		t.Fatalf("source native readiness unavailable: %v", err)
+	}
+	t.Logf("source native readiness: %s", managerPairBudget(source))
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
@@ -136,9 +144,13 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 				<-ctx.Done()
 				return nil, ctx.Err()
 			}
+			if err := waitManagerPairReadiness(ctx, destination, resources); err != nil {
+				return nil, fmt.Errorf("destination native readiness unavailable: %w", err)
+			}
+			t.Logf("destination native readiness: %s", managerPairBudget(destination))
 			_, hold, err := destination.AdmitSyncWorkerFromFrame(ctx, p.remote, destinationWork, q, execution, ch, capacity, time.Minute, time.Now().Add(time.Minute), control)
 			if err != nil {
-				t.Logf("original destination admission refused: %v", err)
+				t.Logf("original destination admission refused: %v; native budgets=%s", err, managerPairBudget(destination))
 				return nil, err
 			}
 			originalDestination = hold
@@ -194,12 +206,8 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 			return managerPairTeardown(ctx, clientErr, e, complete)
 		}}, nil
 	})
-	var capacityErr *model.Error
-	if errors.As(err, &capacityErr) && capacityErr.Code == "insufficient_capacity" {
-		t.Skipf("live host headroom unavailable for charged SSH pair: %v", err)
-	}
 	if err != nil || lease.State != "active" || opened != 0 {
-		t.Fatalf("source admission before dial: %+v %v opened=%d", lease, err, opened)
+		t.Fatalf("source admission before dial: state=%s error=%v opened=%d native budgets=%s", lease.State, err, opened, managerPairBudget(source))
 	}
 	originalSource = hold
 	if err := RunSource(hold); err != nil {
@@ -367,4 +375,49 @@ func TestManagerPairTeardownRequiresCompleteJoinedProtocol(t *testing.T) {
 			}
 		})
 	}
+}
+
+// This is a fixture readiness observation, never a probe Acquire, operation
+// retry, observer override, or promise that the subsequent admission must fit.
+func waitManagerPairReadiness(parent context.Context, m *manager.Manager, need model.Resources) error {
+	ctx, cancel := context.WithTimeout(parent, 4*time.Second)
+	defer cancel()
+	ticker := time.NewTicker(50 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		s, err := m.Status()
+		if err != nil {
+			return err
+		}
+		if s.CPU != nil && s.CPU.Known && !s.CPU.Stale && s.CPU.Available >= need.CPU &&
+			s.Memory != nil && !s.Memory.Stale && s.Memory.Observation.Total != nil && s.Memory.Observation.Available != nil && s.Memory.Available >= need.Memory &&
+			s.Disk != nil && s.Disk.Known && !s.Disk.Stale && s.Disk.Available >= need.Disk {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("fresh native headroom did not become ready: %w; budgets=%s", ctx.Err(), managerPairBudget(m))
+		case <-ticker.C:
+		}
+	}
+}
+
+// Omit host, owner, paths and native scope handles from technical receipts.
+func managerPairBudget(m *manager.Manager) string {
+	s, err := m.Status()
+	if err != nil {
+		return "status unavailable"
+	}
+	budget := map[string]any{}
+	if c := s.CPU; c != nil {
+		budget["cpu"] = map[string]any{"known": c.Known, "stale": c.Stale, "available": c.Available, "reserved": c.Reserved, "capacity": c.Capacity, "interval_ns": c.Observation.Interval, "age_ns": c.Age}
+	}
+	if b := s.Memory; b != nil {
+		budget["memory"] = map[string]any{"known": b.Observation.Total != nil && b.Observation.Available != nil, "stale": b.Stale, "available": b.Available, "reserved": b.Reserved, "capacity": b.Capacity, "age_ns": b.Age}
+	}
+	if b := s.Disk; b != nil {
+		budget["disk"] = map[string]any{"known": b.Known, "stale": b.Stale, "available": b.Available, "reserved": b.Reserved, "capacity": b.Capacity, "age_ns": b.Age}
+	}
+	raw, _ := json.Marshal(budget)
+	return string(raw)
 }
