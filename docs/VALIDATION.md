@@ -4212,6 +4212,7 @@ tag, release, website deployment, installed-user binary or backend/state change
 is performed by candidate validation; literal latest acceptance follows separate
 root-approved main publication. Separate release metadata `97be9f5` is not
 silently included in this candidate.
+
 First actual public immutable install: run `40422678669`, public-install job
 `121920676377`, source `4a313de141fe28aae3ac2084d841ca4ac8fc5b4b`.
 The public query and original `go install
@@ -4249,3 +4250,29 @@ fork diagnostic-output exception to the initial namespace-only comparison:
 protocol, accounting, cancellation, bounds and filesystem behavior are unchanged.
 `ARM-CHANGES.md` records it. It requires separate source review and a new exact
 source portable run; no earlier candidate passes accept the corrected source.
+
+
+### Observed public module-ZIP browser dependency omission
+
+Central review inspects the actual public proxy ZIP for candidate `4a313de`:
+resolved version `v0.0.0-20261026235205-4a313de141fe`, ZIP5,195,133 bytes,
+SHA256 `27ab217bf046d55ef8f356f9cf84ab0bf73c227a47d5f4e71c62e37ae6edf711`.
+It contains noVNC `core/inflator.js` importing `../vendor/pako/...`, while the
+required inflate/deflate modules and license are absent. Go's documented ZIP
+rules omit every `vendor` directory, including non-Go embedded assets. A source
+checkout could compile and serve these inputs while a public install silently
+lost them; fork-only closure checks did not cover this dependency.
+
+The focused packaging correction relocates all14 pako files to `novnc/deps/pako`
+without changing their bytes or license. Only two upstream importer path strings
+change; algorithms and browser/native authority remain unchanged. The original
+upstream noVNC license text remains verbatim historical material. Static byte
+receipts preserve every relocated file and the exact import-only transformations.
+A focused embedded-FS regression rejects module-ZIP-omitted vendor paths and
+checks importer/license closure; existing local Host/method/header asset tests
+now cover the moved inflate/deflate/license paths. Hosted validation executes
+these focused asset races, and the actual public download must match both
+importers, upstream license and all14 relocated assets before install acceptance.
+No new local heavy job or queue ticket is started. Actual successor hosted Go
+and public-install results remain pending; public ZIP inspection is a concrete
+failure reproduction, not a passing installation or rendered VNC session.

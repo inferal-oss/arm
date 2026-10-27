@@ -135,6 +135,8 @@ def main():
                                "third_party/rsyncgo/rsyncstream/stream.go",
                                "third_party/rsyncgo/internal/sender/sender.go",
                                "third_party/rsyncgo/internal/receiver/receiver.go"]
+                    closure += ["internal/server/web/novnc/core/inflator.js", "internal/server/web/novnc/core/deflator.js", "internal/server/web/novnc/LICENSE.txt"]
+                    closure += [str(path.relative_to(ROOT)) for path in sorted((ROOT / "internal/server/web/novnc/deps/pako").rglob("*")) if path.is_file()]
                     hashes = {}
                     for name in closure:
                         actual = downloaded / name
@@ -179,6 +181,7 @@ def main():
         scoped = ["./internal/buildinfo", "./internal/companions", "./internal/rsyncengine", "./internal/distribution", "./scripts/build-bundle", "./third_party/rsyncgo/rsyncstream", "./third_party/rsyncgo/internal/sender", "./third_party/rsyncgo/internal/receiver"]
         run("scoped-race", [go, "test", "-mod=readonly", "-p=1", "-race", "-count=1", "-json", "-timeout=10m"] + scoped)
         run("fork-tests", [go, "test", "-mod=readonly", "-p=1", "-count=1", "-json", "-timeout=10m", "./third_party/rsyncgo/..."])
+        run("browser-asset-closure", [go, "test", "-mod=readonly", "-p=1", "-race", "-count=1", "-json", "-timeout=2m", "-run=^(TestScreenAssetsPreserveComposedDashboardModules|TestScreenEmbeddedAssetsSurviveModuleZipLayout)$", "./internal/server"])
         run("scoped-vet", [go, "vet", "-mod=readonly", "-p=1", "./internal/buildinfo", "./internal/companions", "./internal/rsyncengine", "./internal/distribution", "./scripts/build-bundle", "./third_party/rsyncgo/..."])
         run("trimpath-layout", [go, "test", "-mod=readonly", "-p=1", "-trimpath", "-count=1", "-json", "-run=^TestInstallableModuleIncludesAuditedFork$", "./internal/distribution"])
         run("rsync-version", ["rsync", "--version"])
@@ -194,7 +197,7 @@ def main():
                 binary.unlink()
 
     rosters = {}
-    for name in ("full-compile", "scoped-race", "fork-tests", "trimpath-layout"):
+    for name in ("full-compile", "scoped-race", "fork-tests", "trimpath-layout", "browser-asset-closure"):
         path = output / (name + ".stdout.txt")
         if path.exists():
             events = [json.loads(line) for line in path.read_text().splitlines() if line.startswith("{")]
