@@ -1,0 +1,40 @@
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+const sha = bytes => createHash('sha256').update(bytes).digest('hex')
+const dist = process.argv[2] ?? 'dist'
+const provenance = JSON.parse(readFileSync('provenance.json', 'utf8'))
+const files = readdirSync(join(dist, 'assets'), { withFileTypes: true })
+if (files.some(file => !file.isFile())) throw Error('Unexpected nested runtime asset')
+const wasm = files.filter(file => file.name.endsWith('.wasm'))
+if (wasm.length !== 1 || !/^wat-[\w-]+\.wasm$/.test(wasm[0].name)) throw Error('Expected exactly one WAT engine; optional engine assets are forbidden')
+const wasmBytes = readFileSync(join(dist, 'assets', wasm[0].name))
+if (sha(wasmBytes) !== provenance.wat_sha256) throw Error('Unreviewed WAT engine bytes')
+const chunks = files.filter(file => file.name.endsWith('.js'))
+if (files.length !== chunks.length + 1 || chunks.some(file => !/^(index|wat|arm-wat-only-store)-[\w-]+\.js$/.test(file.name))) throw Error('Unexpected optional engine/runtime chunk')
+if (chunks.filter(file => file.name.startsWith('index-')).length !== 1 ||
+    chunks.filter(file => file.name.startsWith('wat-')).length !== 1 ||
+    chunks.filter(file => file.name.startsWith('arm-wat-only-store-')).length > 1) throw Error('Runtime chunk roster differs')
+for (const file of chunks) {
+  if (/__wbg_|web_bg/.test(readFileSync(join(dist, 'assets', file.name), 'utf8'))) throw Error('Optional Rust loader remains in runtime output')
+}
+for (const [file, expected] of Object.entries(provenance.build_files)) {
+  if (sha(readFileSync(file)) !== expected) throw Error('Unreviewed WAT-only build configuration')
+}
+const renderer = readFileSync(join('node_modules/@inferal-oss/semblance', provenance.renderer_overlay.path))
+if (sha(renderer) !== provenance.renderer_overlay.sha256) throw Error('Renderer overlay is absent')
+if (sha(readFileSync('node_modules/@inferal-oss/semblance/rdf-engine/build/wat.wasm')) !== provenance.wat_sha256) throw Error('Generated WAT source build differs')
+const lock = JSON.parse(readFileSync('package-lock.json', 'utf8'))
+const vite = lock.packages['node_modules/vite']
+if (vite.version !== provenance.vite_helper.version || vite.integrity !== provenance.vite_helper.integrity) throw Error('Unreviewed Vite helper')
+const license = readFileSync('node_modules/vite/LICENSE.md')
+if (sha(license) !== provenance.vite_helper.license_sha256 || !readFileSync(join(dist, 'THIRD-PARTY-NOTICES.txt'), 'utf8').includes(license.toString('utf8'))) throw Error('Full Vite helper notices are missing')
+const metadataPath = join(dist, 'screenshots/metadata.json')
+const metadata = existsSync(metadataPath) ? JSON.parse(readFileSync(metadataPath, 'utf8')) : null
+if (process.env.GITHUB_ACTIONS === 'true' && (!metadata || metadata.source_commit !== process.env.GITHUB_SHA)) throw Error('Screenshot source does not match the build')
+const receipt = { schema: 1, source_commit: metadata?.source_commit ?? null, framework: provenance.framework,
+  renderer_overlay: provenance.renderer_overlay, wasm: { file: 'assets/' + wasm[0].name, bytes: wasmBytes.length, sha256: sha(wasmBytes) },
+  runtime_chunks: chunks.map(file => 'assets/' + file.name).sort(), optional_rust_engine: false, vite_helper: provenance.vite_helper }
+writeFileSync(join(dist, 'build-integrity.json'), JSON.stringify(receipt, null, 2) + '\n')
+console.log('Verified pinned WAT-only runtime, native option overlay and full Vite helper notice.')

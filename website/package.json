@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "engine:build": "node scripts/build-engine.mjs",
+    "engine:build": "node scripts/patch-framework.mjs && node scripts/build-engine.mjs",
     "predev": "npm run engine:build",
     "dev": "vite --host 127.0.0.1",
-    "build": "npm run engine:build && node scripts/notices.mjs && vite build",
-    "typecheck": "tsc --noEmit",
+    "build": "npm run engine:build && node scripts/notices.mjs && vite build && node scripts/assert-build.mjs",
+    "typecheck": "node scripts/patch-framework.mjs && tsc --noEmit",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {

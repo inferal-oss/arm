@@ -26,8 +26,10 @@ npm run preview -- --port 5198
 ```
 
 The build compiles the pinned framework's WAT source into WebAssembly, emits
-production dependency license notices and bundles the stock framework using
-Vite. A Rust toolchain is unnecessary. `npm run dev -- --port 5198` starts the
+production/source dependency notices and Vite's complete bundled-helper notice,
+then bundles the stock framework. The exact optional `oxigraph/web.js` import
+resolves to a throwing WAT-only stub, so unused Rust engine bytes are excluded.
+`npm run dev -- --port 5198` starts the
 local development preview (also builds WAT first).
 
 When working on the shared development machine, run dependency installation,
@@ -50,6 +52,21 @@ source URLs and content hashes. Unknown or changed fallback identities fail the
 build. Semblance itself is MIT OR Apache-2.0. Generated engine/build files and
 `node_modules` are ignored and must not be committed or used as Pages artifacts.
 Only `dist/` is the publishable output.
+
+`provenance.json` binds the archive, WAT bytes, build alias and Vite helper
+notice. The final build asserts exactly one reviewed WAT binary and an allowed
+JavaScript chunk roster; optional Rust engine/glue output fails the build.
+`dist/build-integrity.json` records the actual runtime assets and screenshot
+source. These packaging checks supplement browser and image review.
+
+The pinned archive predates the generic native option-selectedness correction
+tracked in [Semblance #181](https://github.com/inferal-oss/semblance/issues/181).
+Before typecheck/build, a hash-bound source overlay applies that existing guarded
+renderer change to `src/render/dom.ts`. Both original and patched full-file
+hashes are recorded; unknown or linked source is refused. This keeps native
+picker properties aligned with graph selection after history and responsive
+navigation. No application DOM workaround, component, theme or style change is
+introduced. Upstream acceptance is not claimed.
 
 ## Content and validation boundaries
 

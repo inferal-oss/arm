@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "framework": {
+    "archive": "https://codeload.github.com/inferal-oss/semblance/tar.gz/88eb230991c4f63d54fe47bee5cf3fb9f121e528",
+    "integrity": "sha512-92IauJvJkyoHuvFvedbEkdOSm72Vt8MI5HN8jhaOtkX1dF726GhkkUhPjDC5TU816IsOqQrENfNKKnA8POJp1A==",
+    "commit": "88eb230991c4f63d54fe47bee5cf3fb9f121e528"
+  },
+  "renderer_overlay": {
+    "path": "src/render/dom.ts",
+    "base_sha256": "dce6c7997fe712a94caa3a5ee30aba3e8eaebc5d25e4367b2e164d4334ba8871",
+    "sha256": "2de10c3f48a289bbc84da35942ed123ed3e280a86e981d44cb301ab2a68ecca6",
+    "upstream_issue": "https://github.com/inferal-oss/semblance/issues/181",
+    "upstream_change_commit": "454e0186506f3fd2f4f0fcd76673c4e9d50667c8",
+    "status": "Reviewed generic source overlay; upstream acceptance is not claimed."
+  },
+  "wat_sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01",
+  "build_files": {
+    "vite.config.ts": "e2d86a264b5fbfece34069d3cacffc7f0cb3aeb9a0e3e0f8be3354fed4c24921",
+    "arm-wat-only-store.mjs": "4a833e733aeea9e4c62e1b45a322043cd3c597a7b5100aec6e662ac29781a7c3"
+  },
+  "vite_helper": {
+    "version": "8.3.5",
+    "integrity": "sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ==",
+    "license_sha256": "a22152baa1aef74402443008e767e7c689a524c0909d19b0431d97f5ab066a13"
+  }
+}

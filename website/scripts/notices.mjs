@@ -2,12 +2,12 @@ import { createHash } from 'node:crypto'
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-// Ship the full notices of every production dependency, including transitive ones.
+// Retain all production/source notices and Vite's bundled preload-helper notice.
 const lock = JSON.parse(readFileSync('package-lock.json', 'utf8'))
 const retained = JSON.parse(readFileSync('licenses/sources.json', 'utf8'))
 const sections = ['ARM public website — third-party software notices\n\nARM: MIT OR Apache-2.0. See https://github.com/inferal-oss/arm.']
 for (const [directory, entry] of Object.entries(lock.packages)) {
-  if (!directory || entry.dev) continue
+  if (!directory || (entry.dev && directory !== 'node_modules/vite')) continue
   const pkg = JSON.parse(readFileSync(join(directory, 'package.json'), 'utf8'))
   const files = readdirSync(directory).filter((name) => /^(licen[sc]e|copying|notice)([.-]|$)/i.test(name))
   sections.push(`\n${'='.repeat(72)}\n${pkg.name} ${pkg.version}\nLicense: ${pkg.license ?? entry.license ?? 'see below'}\nSource: ${entry.resolved ?? ''}\n`)
