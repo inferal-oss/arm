@@ -1710,3 +1710,16 @@ of the version actually selected supplies full revision provenance only when
 module path, exact version and both checksums match. Conflicting origin or sums
 refuse acceptance. The actual install query remains literal latest, using the
 ordinary public HTTPS proxy/checksum database and fresh disposable caches.
+
+
+## Browser renewal with a native deadline marker
+
+For an active lease carrying `elapsed_deadline`, browser renewal controls retain
+state, duration, revision and consumer checks while deferring expiry and whether
+the duration is an extension to the backend. Browser wall time cannot hide the
+action or reject an otherwise valid native extension. Calendar estimates are
+explicitly audit-only. The browser never computes native remaining entitlement
+from serialized clock fields. Marker-absent leases retain the earlier policy.
+Backend refusal, changed revision and unknown outcomes still require inspection
+and never cause automatic replay. This compatibility step does not enable the
+pending native lease-clock authority or establish complete web/terminal parity.

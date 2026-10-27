@@ -24,7 +24,9 @@ export function parseLeaseTTL(text) {
 export function leaseActions(lease, now = Date.now()) {
   if (lease.state === 'queued') return ['cancel'];
   if (lease.state !== 'active') return [];
-  return Number.isFinite(Date.parse(lease.expires_at)) && Date.parse(lease.expires_at) > now ? ['renew', 'release', 'cancel'] : ['release', 'cancel'];
+  // A serialized native deadline is a marker, not browser-computable time.
+  // Only the backend can decide whether it remains live or an extension fits.
+  return lease.elapsed_deadline != null || Number.isFinite(Date.parse(lease.expires_at)) && Date.parse(lease.expires_at) > now ? ['renew', 'release', 'cancel'] : ['release', 'cancel'];
 }
 
 export function attachedConsumers(lease, leases = []) {
@@ -41,7 +43,11 @@ export function leaseActionReview(lease, action, {ttl = '15m', now = Date.now(),
   if (action === 'renew') {
     params.ttl_ns = parseLeaseTTL(ttl);
     expires = new Date(now + params.ttl_ns / 1e6);
-    if (expires.getTime() <= Date.parse(lease.expires_at)) throw Error('Choose a duration from now that extends the current expiry.');
+    if (lease.elapsed_deadline == null && expires.getTime() <= Date.parse(lease.expires_at)) throw Error('Choose a duration from now that extends the current expiry.');
+    if (lease.elapsed_deadline != null) {
+      if (!Number.isFinite(expires.getTime())) expires = null;
+      paragraphs.push('ARM checks the native elapsed deadline and whether this duration extends it. A browser calendar estimate is audit-only, not remaining entitlement.');
+    }
     paragraphs.push('The duration starts when ARM accepts this request. It is not added to the existing expiry.');
     paragraphs.push('ARM can deny an extension because of waiting work, memory pressure, pool limits or attached lease deadlines.');
   } else {
@@ -60,7 +66,7 @@ export function leaseActionReview(lease, action, {ttl = '15m', now = Date.now(),
     if (params.consumers.length) paragraphs.push(`Affected attached leases: ${params.consumers.map(item => item.id).join(', ')}.`);
     paragraphs.push(`Recorded outcome: ${action === 'cancel' ? 'cancelled' : 'released'}.`);
   }
-  return {params, expires, paragraphs, title: {renew: 'Extend lease', release: 'Release lease', cancel: 'Cancel lease'}[action]};
+  return {params, expires, ...(lease.elapsed_deadline != null && action === 'renew' ? {expiresAuditOnly: true} : {}), paragraphs, title: {renew: 'Extend lease', release: 'Release lease', cancel: 'Cancel lease'}[action]};
 }
 
 export function leaseActionResult(lease) {
@@ -100,7 +106,7 @@ export function leaseActionPanel({lease, leases = [], call, connected, onResult,
     if (chosen === 'renew') {
       try {
         const plan = leaseActionReview(lease, chosen, {ttl: ttl.value, now: now(), leases});
-        preview.textContent = `Estimated new expiry: ${plan.expires.toLocaleString()}. The accepted expiry will be shown after confirmation.`;
+        preview.textContent = plan.expires ? (plan.expiresAuditOnly ? `Browser calendar estimate (audit only): ${plan.expires.toLocaleString()}. The backend decides the native deadline.` : `Estimated new expiry: ${plan.expires.toLocaleString()}. The accepted expiry will be shown after confirmation.`) : 'Browser calendar estimate unavailable. The backend decides the native deadline.';
       } catch (error) { validation = error.message; preview.textContent = validation; }
     }
     updateConnection();
@@ -114,7 +120,7 @@ export function leaseActionPanel({lease, leases = [], call, connected, onResult,
     ttl = null; preview = null;
     if (action === 'renew') {
       const label = el('label', '', 'New duration from now'); ttl = el('input'); ttl.type = 'text'; ttl.value = '15m'; ttl.setAttribute('aria-label', 'New duration from now'); ttl.autocomplete = 'off'; ttl.spellcheck = false; label.append(ttl);
-      preview = el('p', 'action-expiry'); review.append(label, el('p', 'muted', 'Examples: 15m, 2h, 1d or 1h30m. Maximum: 7 days.'), el('p', '', `Current expiry: ${new Date(lease.expires_at).toLocaleString()}`), preview);
+      preview = el('p', 'action-expiry'); review.append(label, el('p', 'muted', 'Examples: 15m, 2h, 1d or 1h30m. Maximum: 7 days.'), el('p', '', `${lease.elapsed_deadline != null ? 'Recorded calendar expiry (audit only)' : 'Current expiry'}: ${new Date(lease.expires_at).toLocaleString()}`), preview);
       ttl.addEventListener('input', updatePreview);
     }
     // The static consequences do not depend on the duration selected below.

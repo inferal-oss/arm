@@ -4649,3 +4649,16 @@ limits. The original failed assertion stays failed; it is not relabelled by the
 successor. This accepts published `4e8bdb4` at those runs, not an installation of
 later main commits or interruption/descendant cleanup. No user installation,
 cache or backend state was changed.
+
+
+### Browser renewal native-marker compatibility
+
+Reviewed source `6eb0f65` passes all 12 `lease-actions.test.mjs` cases again on
+the integration checkout with `node --test`, with zero skips/failures. New cases
+exercise forward/back browser wall jumps while a native deadline marker is
+present, audit-only calendar review, backend expiry/revision refusal and unknown
+outcomes without replay. Existing duration, attached-consumer, confirmation,
+disconnect and legacy marker-absent checks remain intact. This is controlled
+client-policy evidence; actual native server-clock and terminal parity gates
+remain in their owning portfolio. The Semblance adapter still needs its own
+composed rendering acceptance.

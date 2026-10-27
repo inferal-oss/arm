@@ -143,3 +143,35 @@ test('terminal explanation survives an outstanding request settling after the de
   pending = false; panel.updateConnection();
   assert.match(panel.element.textContent, /This lease has ended/);
 });
+
+test('native deadline marker defers forward and backward wall renewal decisions to the backend',()=>{
+  const elapsed_deadline=new Proxy({}, {get(){throw Error('Browser must not read or derive native remaining time');}});
+  const lease={...active,elapsed_deadline};
+  for(const shifted of [now+2*86400000,now-2*86400000]){
+    assert.deepEqual(leaseActions(lease,shifted),['renew','release','cancel']);
+    const plan=leaseActionReview(lease,'renew',{now:shifted,ttl:'15m'});
+    assert.deepEqual(plan.params,{id:'parent',revision:3,action:'renew',ttl_ns:900000000000});
+    assert.equal(plan.expiresAuditOnly,true);assert.match(plan.paragraphs.join(' '),/native elapsed deadline.*audit-only/);
+    assert.equal(plan.expires.getTime(),shifted+900000);
+    for(const ttl of ['0m','8d'])assert.throws(()=>leaseActionReview(lease,'renew',{now:shifted,ttl}));
+    for(const state of ['ending','needs_attention','terminal','provisioning'])assert.deepEqual(leaseActions({...lease,state},shifted),[]);
+  }
+  assert.deepEqual(leaseActions(active,now+2*86400000),['release','cancel']);
+  assert.throws(()=>leaseActionReview(active,'renew',{now:now-2*86400000,ttl:'15m'}),/extends/);
+  assert.equal(leaseActionReview(lease,'renew',{now:NaN,ttl:'15m'}).expires,null);
+});
+
+test('native renewal calendar review cannot bypass backend refusal, changed revision or unknown outcome',async t=>{
+  for(const failure of [{code:'expired',definitive:true},{code:'revision_conflict',definitive:true},{code:'lost-response',definitive:false}]){
+    let calls=0;const lease={...active,elapsed_deadline:{authority:'native fixture'}};
+    const {panel}=setup(t,{lease,now:()=>now+2*86400000,call:async(operation,params)=>{
+      calls++;assert.equal(operation,'lease_action');assert.equal(params.revision,3);assert.equal(params.ttl_ns,900000000000);
+      assert.equal(Object.hasOwn(params,'elapsed_deadline'),false);throw Object.assign(Error(failure.code),failure);
+    }});
+    await button(panel,'Extend').fire('click');assert.match(panel.element.textContent,/audit only/);
+    await button(panel,'Confirm extension').fire('click');assert.equal(calls,1);
+    assert.match(panel.element.textContent,failure.definitive?/Refresh the lease/:/outcome is unknown/);
+    await button(panel,'Confirm extension')?.fire('click');assert.equal(calls,1);
+    assert.equal(button(panel,'Extend').disabled,true);
+  }
+});
