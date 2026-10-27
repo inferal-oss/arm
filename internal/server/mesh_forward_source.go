@@ -59,6 +59,7 @@ type forwardSource struct {
 	key                   string
 	binding               model.ForwardSourceBinding
 	authority             forwardSourceAuthority
+	localTLS              *tls.Config
 	lastOpenFailure       string
 	lastConnectionFailure string
 	joined                chan struct{}
@@ -197,8 +198,14 @@ func (m *meshService) startForwardSource(ctx context.Context, q forwardSourceReq
 	if a.Local.Host != localHost || a.Origin.Host != localHost || a.Destination.Host != q.Target {
 		return nil, model.Err("forbidden", "original TCP source membership changed")
 	}
+	// Authenticate the current private Store identity before acquiring any
+	// source port/resource lease. The original listener owns this TLS snapshot.
+	localTLS, err := m.store.LocalForwardServerTLS()
+	if err != nil {
+		return nil, err
+	}
 	binding := model.ForwardSourceBinding{Workspace: q.Workspace, Target: q.Target, Service: q.Service, GrantRevision: q.GrantRevision, Bind: q.Bind, TokenSHA256: q.TokenSHA256}
-	r := &forwardSource{owner: m, key: q.Key, binding: binding, authority: sourceAuthority(a), joined: make(chan struct{}), done: make(chan struct{}), active: map[net.Conn]struct{}{}}
+	r := &forwardSource{owner: m, key: q.Key, binding: binding, authority: sourceAuthority(a), localTLS: localTLS, joined: make(chan struct{}), done: make(chan struct{}), active: map[net.Conn]struct{}{}}
 	m.forwardSourcesMu.Lock()
 	defer m.forwardSourcesMu.Unlock()
 	if m.forwardSourcesClosed {
@@ -258,7 +265,7 @@ func (r *forwardSource) run() {
 		go func(conn net.Conn) {
 			defer r.wg.Done()
 			defer func() { r.mu.Lock(); delete(r.active, conn); r.mu.Unlock() }()
-			openFailure, connectionFailure := serveForwardLocal(h.Context(), conn, r.binding.TokenSHA256, func(ctx context.Context) (net.Conn, error) { return r.open(ctx) })
+			openFailure, connectionFailure := serveForwardLocalTLS(h.Context(), conn, r.localTLS, r.binding.TokenSHA256, func(ctx context.Context) (net.Conn, error) { return r.open(ctx) })
 			r.mu.Lock()
 			r.lastOpenFailure = openFailure
 			r.lastConnectionFailure = connectionFailure
@@ -406,8 +413,18 @@ func forwardFailureText(err error) string {
 }
 
 func serveForwardLocal(ctx context.Context, conn net.Conn, digest string, open func(context.Context) (net.Conn, error)) (openFailure, connectionFailure string) {
+	return serveForwardLocalUsing(ctx, conn, digest, open, meshforward.ServeLocal)
+}
+
+func serveForwardLocalTLS(ctx context.Context, conn net.Conn, serverTLS *tls.Config, digest string, open func(context.Context) (net.Conn, error)) (openFailure, connectionFailure string) {
+	return serveForwardLocalUsing(ctx, conn, digest, open, func(ctx context.Context, conn net.Conn, digest string, opener func(context.Context) (net.Conn, error)) error {
+		return meshforward.ServeLocalCompatibleTLS(ctx, conn, serverTLS, digest, opener)
+	})
+}
+
+func serveForwardLocalUsing(ctx context.Context, conn net.Conn, digest string, open func(context.Context) (net.Conn, error), serve func(context.Context, net.Conn, string, func(context.Context) (net.Conn, error)) error) (openFailure, connectionFailure string) {
 	var openError error
-	err := meshforward.ServeLocal(ctx, conn, digest, func(ctx context.Context) (net.Conn, error) {
+	err := serve(ctx, conn, digest, func(ctx context.Context) (net.Conn, error) {
 		remote, err := open(ctx)
 		openError = err
 		return remote, err
