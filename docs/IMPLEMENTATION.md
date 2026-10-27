@@ -1758,3 +1758,25 @@ The reservation covers ARM endpoint transport accounting, not browser decoding,
 the native screen server or OS enforcement. Live desktop/control/platform breadth
 and suspend-inclusive authority remain separate gates. Normal Manager.Close joins
 its current owners; it does not certify reclamation of every retained obligation.
+
+## Aggregate TCP forwarding credit
+
+New destination-local TCP grants require explicit `--total-bytes` and a fresh
+credit nonce. A bounded private journal binds the full grant digest, exact review,
+destination identity and original ledger identity. It retains spent history for
+revoked/replaced grants and across restart. Legacy unbudgeted records remain
+readable and revocable but cannot authorize new forwarding streams.
+
+Both plaintext directions and all concurrent/sequential streams share durable
+credit. Every write prepays at most 32KiB before pacing and renewed grant/context
+checks; the final remainder is exact. Short writes, cancellation, ambiguity and
+crash never refund prepaid bytes. Missing, corrupt, mismatched or exhausted
+credit denies before native destination dial and READY. A context-aware policy
+lock serializes writers with grant publication. New journal data is synced before
+positive policy publication; ambiguous post-rename errors grant no write authority.
+An exact original review may finish already-prepared publication while preserving
+spent history. Bounded history exhaustion refuses new grants rather than resetting.
+
+Ordinary builds remain disabled. The milestone does not supply native elapsed
+authority, complete cross-host failure handling, browser/unmodified-client breadth,
+formal completion or performance acceptance.

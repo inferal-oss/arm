@@ -1,0 +1,742 @@
+{
+  "artifacts": [
+    {
+      "cleanup": {
+        "fixture_cleanup_requires_public_three_node_success": true,
+        "hosted_tool_caches_not_claimed_removed": true,
+        "own_binary_work_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "images": {
+          "public": {
+            "after_sha256": "fbde1f7bc1f4068579ac656fa63edb2bce724b6a25e78995b29b126abafcb2e6",
+            "before": {
+              "bytes": 68599964,
+              "sha256": "fbde1f7bc1f4068579ac656fa63edb2bce724b6a25e78995b29b126abafcb2e6"
+            },
+            "unchanged": true
+          },
+          "review": {
+            "after_sha256": "902ef09776cdf0820fd4bced958f4ffe2da94b790c327cc6355f3b3c719c27f5",
+            "before": {
+              "bytes": 68718227,
+              "sha256": "902ef09776cdf0820fd4bced958f4ffe2da94b790c327cc6355f3b3c719c27f5"
+            },
+            "unchanged": true
+          }
+        },
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "exit": 0,
+          "name": "ownership-controls",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "2cb2f6fc89fc3f763bb623d3ade035c1a0c0f851fe8fd3cfbeab59b894bdee09",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "5707bf75dd54b4fdd5ac209444d48c9c4179ebf8510f80e2f7293dfbedc1012b"
+        },
+        {
+          "exit": 0,
+          "name": "go-environment",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1171b27bc281678e7fc4677c3aef19fe58d32a411b1863ae5cf7c29fc7ceb365"
+        },
+        {
+          "exit": 0,
+          "name": "credit-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "cda3cc69f38fedcc42fce64196ae95c71288600f92cadeb4060da453a60eb62a",
+          "stdout_sha256": "9cb396b573a50f17995328cb90f98969f39780b478e2d7ce1a2fae81efa95abe"
+        },
+        {
+          "exit": 0,
+          "name": "policy-fence-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "b1f94c5b63924ce507f38bf8e7b158c70d1b85dac7f9b1a1106cc12b094fd34d",
+          "stdout_sha256": "a112f80ef09393b6138c44f4a308eb7ea67ab491b789d7d3d11908ba4f2ca2a1"
+        },
+        {
+          "exit": 0,
+          "name": "relay-cleanup-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "2f4a0bc6209e37ced8cdcfbc79c4914ecbad8bc8065a953819bdc46314a10350"
+        },
+        {
+          "exit": 0,
+          "name": "review-route-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "54439cf9cb2ebb307389429ecbe0083678bb0183ec213a3af9a24716dee99c2d"
+        },
+        {
+          "exit": 0,
+          "name": "affected-vet",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "public-build",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "public-buildinfo",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "80ed43131b133c3746a280bf2e6dada48ad9d31875e3421dcf6c81866f60feec"
+        },
+        {
+          "exit": 0,
+          "name": "review-build",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "review-buildinfo",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e1179d441b99f13378f84b04da10156304cf1e6a99b55857856578984934ae41"
+        },
+        {
+          "exit": 0,
+          "name": "public-three-node-cli",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "6714340f31ac23efeeaad3fe47279503ce0797adf2fa72d02ec15da1faa84555"
+        }
+      ],
+      "native": {
+        "go_binary_sha256": "5f5eb6d0b2fb6aa0bb5d5f8c5f1c944e0de955c925f0111af92a9d8f79680b5b",
+        "machine": "x86_64",
+        "macos": "",
+        "os": "linux",
+        "ownership_helper_sha256": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "runner_label": "ubuntu-24.04",
+        "workflow_sha": "3b1351a97af3af753e0f8ba6b4ba51419bc40761"
+      },
+      "platform": "linux_amd64",
+      "result": {
+        "complete": true,
+        "failures": [],
+        "scope": "current-main-credit-and-cleanup-composition",
+        "source": "3b1351a97af3af753e0f8ba6b4ba51419bc40761"
+      },
+      "rosters": {
+        "credit-race": {
+          "fail": [],
+          "pass": [
+            "TestForwardCreditAmbiguousDirectorySyncBurnsWithoutDelivery",
+            "TestForwardCreditCatalogFullDeniesNewGrant",
+            "TestForwardCreditConcurrentSequentialAndRestart",
+            "TestForwardCreditHeldPolicyLockCancellation",
+            "TestForwardCreditMissingCorruptAndLegacyDeny",
+            "TestForwardCreditOrphanedPreparationRetainsHistory",
+            "TestForwardCreditPreparationBeforePolicyCommitCannotGrantOrReset",
+            "TestForwardCreditProcessRestart",
+            "TestForwardCreditReplacementKeepsOldHistory",
+            "TestForwardCreditSmallRemainderIsExact",
+            "TestForwardCreditUnavailableNeverDialsServiceOrSendsReady",
+            "TestForwardCreditUnavailableNeverDialsServiceOrSendsReady/exhausted",
+            "TestForwardCreditUnavailableNeverDialsServiceOrSendsReady/missing",
+            "TestGrantRequiresExactOriginalAndLiteralService",
+            "TestPacedWriterCannotBypassSharedBidirectionalBudget",
+            "TestPacedWriterUsesExactFinalCredit",
+            "TestProxyCountsIndependentGrants",
+            "TestProxyCreditFailureNeverWritesApplicationBytes",
+            "TestProxyRouteLossAfterApplicationBytesIsUnknownAndJoined",
+            "TestProxySharesAggregateCreditAcrossDuplexDirections",
+            "TestProxySharesRateAcrossConcurrentStreams"
+          ],
+          "skip": []
+        },
+        "policy-fence-race": {
+          "fail": [],
+          "pass": [
+            "TestDestinationPolicyRoundTripAndRevocation",
+            "TestDisabledForwardAuthorityUnavailable",
+            "TestForwardHTTPClientProductionFence",
+            "TestForwardRouteBindsServiceAndRefusesSSHClassConfusion",
+            "TestForwardSourceTLSKeepsOriginalFailureClassification",
+            "TestForwardSourceTLSKeepsOriginalFailureClassification/application-refusal",
+            "TestForwardSourceTLSKeepsOriginalFailureClassification/original-opener-refusal",
+            "TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward",
+            "TestReviewedPolicyCommitCASAndNoFollow"
+          ],
+          "skip": []
+        },
+        "relay-cleanup-race": {
+          "fail": [],
+          "pass": [
+            "TestForwardTransitSettledMarkerAllowsResetProof",
+            "TestRelayCleanupCloseCancelsBeforeUnreadableLedger",
+            "TestRelayCleanupUncertainAfterCancellationStillRequiresOriginalJoin",
+            "TestRelayCleanupUncertainChangedBindingIsStickyWithoutOverwritingRow",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/forged",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/joined",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/settled",
+            "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart",
+            "TestRelayCleanupUncertainWriteFailureCannotBecomeTerminal",
+            "TestRelayTransitAdmissionFailureStartsNoOwner",
+            "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+            "TestRelayTransitChangedDurableBindingCannotSettle",
+            "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+            "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+            "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+            "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+            "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+            "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/expiry",
+            "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/force",
+            "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+            "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+            "TestRelayTransitReleaseRequiresOriginalJoin",
+            "TestRelayTransitSettledMarkerAllowsResetProof"
+          ],
+          "skip": []
+        },
+        "review-route-race": {
+          "fail": [],
+          "pass": [
+            "TestForwardThreeNodesHTTPExactOriginalAndRevocation"
+          ],
+          "skip": []
+        }
+      },
+      "scope": "runtime",
+      "source_files": 1893,
+      "source_manifest_sha256": "36fdb6e3e29f14f12f42e809543521349e1181119562034d722a9ce46c877a61",
+      "zip_sha256": "87864914a8e605a9f33c1c5885c671abc702cba61396ee3d9effb1d946315331"
+    },
+    {
+      "cleanup": {
+        "fixture_cleanup_requires_public_three_node_success": true,
+        "hosted_tool_caches_not_claimed_removed": true,
+        "own_binary_work_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "images": {
+          "public": {
+            "after_sha256": "8fbd1d5aca1ec1a8ac6342786f9d1819643ea27919b2e263ff4e38696acf1ba8",
+            "before": {
+              "bytes": 65943858,
+              "sha256": "8fbd1d5aca1ec1a8ac6342786f9d1819643ea27919b2e263ff4e38696acf1ba8"
+            },
+            "unchanged": true
+          },
+          "review": {
+            "after_sha256": "3a620852dcea3d506b5148404555fce52aac36dc3dc14db2918e9fbff9d8eb23",
+            "before": {
+              "bytes": 66053938,
+              "sha256": "3a620852dcea3d506b5148404555fce52aac36dc3dc14db2918e9fbff9d8eb23"
+            },
+            "unchanged": true
+          }
+        },
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "exit": 1,
+          "name": "ownership-controls",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "6e62cd741b899d4202ab6d5f158c9c673d990e08ba5bbd84d16aa83ac87f77d0",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "70f94d37a097ca424ec1a1c0d5a81288ec60b4ceeae67edc3a75aeb6ce378600"
+        },
+        {
+          "exit": 0,
+          "name": "go-environment",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1868dfe157c9ead226841155d13aaac8725a1075605f5a4c54e718b79c1203dc"
+        },
+        {
+          "exit": 0,
+          "name": "credit-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "bcefeed905c96f41f03260a96210b764bd249d9cc20d87e5dbe5b0fc6209e959",
+          "stdout_sha256": "abf60b02830a1ded13a30431e7f0e521a99bf0c777add4ebb48d8ec0b63e965a"
+        },
+        {
+          "exit": 0,
+          "name": "policy-fence-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "846575a263ff2dab3ebbd2329eb2b9b390926d2e3f60325a9956497b0266c734",
+          "stdout_sha256": "3000030ec5c394d977ce5228f96165c7eae1994c80f23cb12b8f3625f474dcca"
+        },
+        {
+          "exit": 0,
+          "name": "relay-cleanup-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "4e15d8f01d806125d33e66aa89c981bfee6569630f07afef38177cda892023ab"
+        },
+        {
+          "exit": 0,
+          "name": "review-route-race",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e7a6e15726cf784303d3d43c0a62053f6c403bfd52c03c8acd2d947de07f7f71"
+        },
+        {
+          "exit": 0,
+          "name": "affected-vet",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "public-build",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "public-buildinfo",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "a40fb6fc7f4b22d76379b5aaebca0137f8289354d6c81c35cd35ae9fdc6000a8"
+        },
+        {
+          "exit": 0,
+          "name": "review-build",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "review-buildinfo",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "b1664bbc5e7607b384dbb8753dbfbfa9d8318ef277cf754601b4465f14d775fd"
+        },
+        {
+          "exit": 0,
+          "name": "public-three-node-cli",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "6714340f31ac23efeeaad3fe47279503ce0797adf2fa72d02ec15da1faa84555"
+        }
+      ],
+      "native": {
+        "go_binary_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+        "machine": "arm64",
+        "macos": "15.7.9",
+        "os": "darwin",
+        "ownership_helper_sha256": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+        "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "runner_label": "macos-15",
+        "workflow_sha": "3b1351a97af3af753e0f8ba6b4ba51419bc40761"
+      },
+      "platform": "macos_arm64",
+      "result": {
+        "complete": true,
+        "failures": [
+          "ownership-controls"
+        ],
+        "scope": "current-main-credit-and-cleanup-composition",
+        "source": "3b1351a97af3af753e0f8ba6b4ba51419bc40761"
+      },
+      "rosters": {
+        "credit-race": {
+          "fail": [],
+          "pass": [
+            "TestForwardCreditAmbiguousDirectorySyncBurnsWithoutDelivery",
+            "TestForwardCreditCatalogFullDeniesNewGrant",
+            "TestForwardCreditConcurrentSequentialAndRestart",
+            "TestForwardCreditHeldPolicyLockCancellation",
+            "TestForwardCreditMissingCorruptAndLegacyDeny",
+            "TestForwardCreditOrphanedPreparationRetainsHistory",
+            "TestForwardCreditPreparationBeforePolicyCommitCannotGrantOrReset",
+            "TestForwardCreditProcessRestart",
+            "TestForwardCreditReplacementKeepsOldHistory",
+            "TestForwardCreditSmallRemainderIsExact",
+            "TestForwardCreditUnavailableNeverDialsServiceOrSendsReady",
+            "TestForwardCreditUnavailableNeverDialsServiceOrSendsReady/exhausted",
+            "TestForwardCreditUnavailableNeverDialsServiceOrSendsReady/missing",
+            "TestGrantRequiresExactOriginalAndLiteralService",
+            "TestPacedWriterCannotBypassSharedBidirectionalBudget",
+            "TestPacedWriterUsesExactFinalCredit",
+            "TestProxyCountsIndependentGrants",
+            "TestProxyCreditFailureNeverWritesApplicationBytes",
+            "TestProxyRouteLossAfterApplicationBytesIsUnknownAndJoined",
+            "TestProxySharesAggregateCreditAcrossDuplexDirections",
+            "TestProxySharesRateAcrossConcurrentStreams"
+          ],
+          "skip": []
+        },
+        "policy-fence-race": {
+          "fail": [],
+          "pass": [
+            "TestDestinationPolicyRoundTripAndRevocation",
+            "TestDisabledForwardAuthorityUnavailable",
+            "TestForwardHTTPClientProductionFence",
+            "TestForwardRouteBindsServiceAndRefusesSSHClassConfusion",
+            "TestForwardSourceTLSKeepsOriginalFailureClassification",
+            "TestForwardSourceTLSKeepsOriginalFailureClassification/application-refusal",
+            "TestForwardSourceTLSKeepsOriginalFailureClassification/original-opener-refusal",
+            "TestLegacyUnbudgetedRelayCanBeReviewedButCannotForward",
+            "TestReviewedPolicyCommitCASAndNoFollow"
+          ],
+          "skip": []
+        },
+        "relay-cleanup-race": {
+          "fail": [],
+          "pass": [
+            "TestForwardTransitSettledMarkerAllowsResetProof",
+            "TestRelayCleanupCloseCancelsBeforeUnreadableLedger",
+            "TestRelayCleanupUncertainAfterCancellationStillRequiresOriginalJoin",
+            "TestRelayCleanupUncertainChangedBindingIsStickyWithoutOverwritingRow",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/forged",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/joined",
+            "TestRelayCleanupUncertainRejectsForgedJoinedAndSettledHandles/settled",
+            "TestRelayCleanupUncertainRetainsOpenDescriptorThroughCloseAndRestart",
+            "TestRelayCleanupUncertainWriteFailureCannotBecomeTerminal",
+            "TestRelayTransitAdmissionFailureStartsNoOwner",
+            "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+            "TestRelayTransitChangedDurableBindingCannotSettle",
+            "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+            "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+            "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+            "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+            "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+            "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/expiry",
+            "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/force",
+            "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+            "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+            "TestRelayTransitReleaseRequiresOriginalJoin",
+            "TestRelayTransitSettledMarkerAllowsResetProof"
+          ],
+          "skip": []
+        },
+        "review-route-race": {
+          "fail": [],
+          "pass": [
+            "TestForwardThreeNodesHTTPExactOriginalAndRevocation"
+          ],
+          "skip": []
+        }
+      },
+      "scope": "runtime",
+      "source_files": 1893,
+      "source_manifest_sha256": "36fdb6e3e29f14f12f42e809543521349e1181119562034d722a9ce46c877a61",
+      "zip_sha256": "353d712d44a5357cc48c4d1fa0bc47aa06856025c69b8728960aaec6214cd1e6"
+    },
+    {
+      "cleanup": {
+        "fixture_cleanup_requires_public_three_node_success": true,
+        "hosted_tool_caches_not_claimed_removed": true,
+        "own_binary_work_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "images": {},
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "exit": 0,
+          "name": "ownership-controls",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "73f9a5089abfd2f255a8fbfe9426fa7c44e9eb905bcb87516cc0f911ea2e762a",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "5707bf75dd54b4fdd5ac209444d48c9c4179ebf8510f80e2f7293dfbedc1012b"
+        },
+        {
+          "exit": 0,
+          "name": "go-environment",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1171b27bc281678e7fc4677c3aef19fe58d32a411b1863ae5cf7c29fc7ceb365"
+        }
+      ],
+      "native": {
+        "go_binary_sha256": "5f5eb6d0b2fb6aa0bb5d5f8c5f1c944e0de955c925f0111af92a9d8f79680b5b",
+        "machine": "x86_64",
+        "macos": "",
+        "os": "linux",
+        "ownership_helper_sha256": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "runner_label": "ubuntu-24.04",
+        "workflow_sha": "b2da8083708fb70e2b0293721a53b7658ec818b1"
+      },
+      "platform": "linux_amd64",
+      "result": {
+        "complete": true,
+        "failures": [],
+        "runtime_gates_inherited_not_rerun": true,
+        "scope": "ownership-control-successor",
+        "source": "b2da8083708fb70e2b0293721a53b7658ec818b1"
+      },
+      "rosters": {},
+      "scope": "controls",
+      "source_files": 1893,
+      "source_manifest_sha256": "4bd6360b5543526871ab240f49912b9e521e6f13cce3694e7d480a19d8cecb26",
+      "zip_sha256": "759c7241886ed115960e0e607dc49e0e8a2245a892c06e443d29186b43835db9"
+    },
+    {
+      "cleanup": {
+        "fixture_cleanup_requires_public_three_node_success": true,
+        "hosted_tool_caches_not_claimed_removed": true,
+        "own_binary_work_removed": true,
+        "user_install_or_backend_accessed": false
+      },
+      "closure": {
+        "images": {},
+        "source_unchanged": true
+      },
+      "commands": [
+        {
+          "exit": 0,
+          "name": "ownership-controls",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "ea7884c3313399e7d05d66e463527a2df37c8bd5edc7f7ee93f914759b53458d",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "70f94d37a097ca424ec1a1c0d5a81288ec60b4ceeae67edc3a75aeb6ce378600"
+        },
+        {
+          "exit": 0,
+          "name": "go-environment",
+          "original_wait_returned": true,
+          "ownership_lost": false,
+          "pipes_closed": true,
+          "signal_authority_retired": true,
+          "source_unchanged": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1868dfe157c9ead226841155d13aaac8725a1075605f5a4c54e718b79c1203dc"
+        }
+      ],
+      "native": {
+        "go_binary_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+        "machine": "arm64",
+        "macos": "15.7.9",
+        "os": "darwin",
+        "ownership_helper_sha256": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+        "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "runner_label": "macos-15",
+        "workflow_sha": "b2da8083708fb70e2b0293721a53b7658ec818b1"
+      },
+      "platform": "macos_arm64",
+      "result": {
+        "complete": true,
+        "failures": [],
+        "runtime_gates_inherited_not_rerun": true,
+        "scope": "ownership-control-successor",
+        "source": "b2da8083708fb70e2b0293721a53b7658ec818b1"
+      },
+      "rosters": {},
+      "scope": "controls",
+      "source_files": 1893,
+      "source_manifest_sha256": "4bd6360b5543526871ab240f49912b9e521e6f13cce3694e7d480a19d8cecb26",
+      "zip_sha256": "83c3169c7d7dd651182a7feec545411001136e29cf29371656d8697f13dd7198"
+    }
+  ],
+  "author_source": "378174c8ade1a301008c87f7bf390848881509ef",
+  "control_only_changes": [
+    ".github/workflows/forward-credit-independent-validation.yml",
+    "scripts/test_owned_process.py",
+    "scripts/validate-forward-credit-review.py"
+  ],
+  "control_run": "https://github.com/inferal-oss/arm/actions/runs/40448583422",
+  "control_source": "b2da8083708fb70e2b0293721a53b7658ec818b1",
+  "findings_fixed": [
+    "Durable aggregate credit must cover both directions across concurrent/sequential streams.",
+    "Missing/exhausted credit must deny before native destination dial and READY.",
+    "Credit checks use context-aware policy locking.",
+    "Ambiguous durable preparation retains exact review/nonce/history and never resets spent credit.",
+    "Canonical full-grant digest avoids time monotonic metadata mismatches.",
+    "Ownership-control test uses live ready/release barrier instead of fixed sleep."
+  ],
+  "integrated_owned_source_sha256": {
+    "internal/cli/mesh_forward.go": "c2922463d2a6cd6f591303cd0a882421ec6f894b533694d95c597be4bfe750f7",
+    "internal/manager/relay_cleanup_test.go": "badf770b47d664d3fff3160d1e8c487f48d267bd34ef1419c52be7bf6fdf54a8",
+    "internal/meshforward/grant.go": "1313886d30812fcbf4f2eafa7a228ab209be0c52c2af0d4fefff3446b87fd0e4",
+    "internal/meshforward/grant_test.go": "70b116f04cf2e7d3ffe9c151688364a0ed4d9ce97fee813ccadd7012f676ff27",
+    "internal/meshforward/pace.go": "7745527c30b276faabd1b7cd6b6834ff73452287dbb6daabec27d513ea4ba280",
+    "internal/meshforward/proxy.go": "10c81e2d8670d1a405184f4c6ef239a20fe65fa6588718f46b4bf7f4a5f03572",
+    "internal/meshforward/proxy_test.go": "cdfa2ed108ab4ace348a75f931e69ae507cd770bffe06b409e9b4525d3c88766",
+    "internal/meshsshrelay/forward_credit_store.go": "4d0b87a809349ea15e2119c9affb9be2a9904cab9c26a5abe668c791363ababf",
+    "internal/meshsshrelay/forward_credit_store_test.go": "39951cd6db43956dbd297e56092ad175733636fe69944806c30f8301740ecef7",
+    "internal/meshsshrelay/policy_store.go": "a35f3b7321c8a5f70ba198dbdd2499c8d2bf761d1d411684c2aaf7a34535f41f",
+    "internal/server/mesh.go": "b736ea5f6b8e46b23742dee6d009c70f5cc27df086b801e461ba4aa73accd974",
+    "internal/server/mesh_forward_route_test.go": "f0492f4d2230087a7834802530b70dd889762661406d3c6c153f4904567efd03",
+    "scripts/test-routed-forward.py": "35fe214e00f167100e3fd1334e3784d543f73a400613259dd453afdaaaec7796"
+  },
+  "integration_commit": "c3e1b77",
+  "limits": [
+    "Ordinary production forwarding remains disabled.",
+    "Native elapsed-clock integration, cross-host failure barriers, browser/unmodified clients, full route-loss/platform/formal/performance acceptance remain open.",
+    "Prepaid bytes have no refund after short writes, cancellation or crash; bounded history exhaustion denies new grants.",
+    "Original Mac runtime run failed only its timing-based ownership control; corrected native successor runs no Go/runtime rebuild and does not relabel that failure.",
+    "Initial independent CI failed before Go because capture/release control fixtures were missing and Python bytecode changed source; those original failures are retained.",
+    "This source-bound composition does not validate unrelated later sync or screen feature paths."
+  ],
+  "runtime_projection": "b00ec8d",
+  "runtime_run": "https://github.com/inferal-oss/arm/actions/runs/40445910262",
+  "runtime_source": "3b1351a97af3af753e0f8ba6b4ba51419bc40761",
+  "schema": 1
+}

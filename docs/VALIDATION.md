@@ -4712,3 +4712,31 @@ CI-only harness is excluded from integration. These checks do not establish live
 desktop behavior, full controls/platform breadth, suspend safety or bounded
 arbitrarily blocking native/ledger I/O. Subsequent sync source-carrier additions
 are separate; they do not change the reviewed screen or relay runtime.
+
+### Aggregate forwarding credit
+
+Reviewed `c3e1b77` integrates the owned projection of author `378174c`.
+[Native runtime run](https://github.com/inferal-oss/arm/actions/runs/40445910262)
+executes all 13 original commands on Linux amd64 and macOS arm64: credit race
+checks pass 21 named cases, policy/fence checks nine, relay cleanup 24 and the
+three-node route one, with no skips or test failures. Vet, ordinary/review builds,
+buildinfo and actual compiled public CLI three-node transfer/revocation checks pass.
+The original macOS job remains failed because its ownership helper control assumed
+that a child had exited after a fixed sleep; every runtime gate there passed.
+
+[Control-only successor](https://github.com/inferal-oss/arm/actions/runs/40448583422)
+passes all 18 ownership controls on both native platforms using an actual child
+ready/release barrier. Exactly three control/harness files differ from the runtime
+source; no Go or forwarding runtime is rebuilt or relabelled. Root corrected an
+early-return path so source/cleanup failures affect the successor's actual exit.
+
+Root verified all four ZIP digests, every receipt-manifest/log hash, all 1,893
+tracked source blobs per artifact against immutable Git archives, source identity
+after every command, original-child waits and retired signal authority, closed
+pipes, unchanged binary hashes and owned-work cleanup. All 13 composed credit/relay
+inputs match the tested projection; CI-only files are excluded. The
+[normalized record](validation/forward-total-credit-review-2026-10-26.json) retains
+complete rosters, source/binary hashes and original failures, including the initial
+pre-Go missing-fixture/bytecode harness failure. Local heavyweight jobs were not
+duplicated. This evidence accepts a bounded development milestone; production and
+broader clock, platform, browser, formal and performance gates remain open.
