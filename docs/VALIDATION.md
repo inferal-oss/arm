@@ -5515,3 +5515,20 @@ exact content hash and has no environment approval-token gates. This checks
 wiring only: the wrapper was not replayed against Kubernetes, and the earlier
 public-source build attempt remains failed. Direct Ready-true, validator refusal
 and receipt-I/O cases are not separately tested in this eight-case cohort.
+
+### V0 workspace baseline integration
+
+[Final baseline evidence](validation/provider-v0-baseline-blob-2026-10-27.json)
+is independently audited against the exact feature source: all 31 roots/132
+named nodes pass in each normal and race cohort, with identical rosters and
+zero skips, plus vet. The old-guard counterfactual fails exactly five targeted
+roots and exposes three restart transactions writing before refusal. The new
+early non-TEXT/invalid-JSON check closes that BLOB projection gap without repair.
+
+All 19 original command receipts, retained test images, source and selected-tool
+maps are checked. The earlier prelaunch exit 76 and earlier narrower cohort
+remain separate. This is scoped native Darwin baseline evidence, not Linux,
+fleet rollout, format-2 activation or paired-provider acceptance. At integration,
+the complete cmd/internal/web trees match the reviewed feature; the later
+one-line Monitor badge change is separately syntax-checked and awaits the
+composed UI browser gate.

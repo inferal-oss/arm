@@ -2104,3 +2104,17 @@ Read or terminal failures retain the last observed status and a separate failure
 receipt. The helper creates or deletes no Kubernetes resources. Its polling
 budget relies on the reader honoring its request timeout; it is not a hard
 callback/process deadline. Private acceptance bindings stay outside the repository.
+
+## Ordinary workspace writer baseline
+
+The V0 baseline `e189169` accepts ordinary legacy ledgers and canonical format
+`1`, but refuses future formats, paired-preparation evidence and noncanonical
+lease-body storage before startup writes. It checks direct Manager startup,
+retained backend startup reads, restart transactions and settled proof. It does
+not write a format marker, install paired schema or activate a factory.
+The [two-stage compatibility policy](design/PROVIDER-V0-BASELINE.md) requires
+distribution of the baseline before any separately reviewed format-2 activation;
+an arbitrary older binary is not mechanically excluded by the marker.
+
+Monitor I/O cards hide the routine `reported` quality badge (`d09da5a`). Other
+quality/freshness messages and measurement values retain their existing behavior.
