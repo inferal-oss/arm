@@ -563,7 +563,7 @@ class ClockGate(base.Gate):
    source.write_text('---- MODULE '+module+' ----\nEXTENDS LeaseClock\nControlNext == state\'= [state EXCEPT !.wall = '+str(wall)+', !.action = "'+action+'"]\nControlSpec == Init /\\ [][ControlNext]_vars\n====\n')
    cfg.write_text('SPECIFICATION ControlSpec\nINVARIANT Invariant\nPROPERTY Protection\nPROPERTY RawInvariant\nVIEW StateView\nCHECK_DEADLOCK FALSE\n')
    self.capture_generated(name+'-view-module',source);self.capture_generated(name+'-view-config',cfg)
-   log=self.tlc_run(module+'.tla',cfg,'view-control-'+name,12 if property_name else 0)
+   log=self.tlc_run(module+'.tla',cfg,'view-control-'+name,13 if property_name else 0)
    if property_name:
     require(re.findall(r'^Error: (.*)$',log,re.M)==['Action property '+property_name+' is violated.','The behavior up to this point is:'],'exact raw-edge property violation required')
     validate_tlc_diagnostics(log)
