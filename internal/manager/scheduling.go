@@ -89,9 +89,18 @@ func rejectedQueueInfo(at time.Time, reason *model.Error) *model.QueueInfo {
 }
 func (m *Manager) rejectUnstarted(l model.Lease, reason *model.Error) (model.Lease, error) {
 	if bound, err := m.syncLeaseBound(l.ID); err != nil {
+		m.failSSHSettlement(l.ID, err)
 		return l, err
 	} else if bound {
-		return l, m.retainSyncLease(&l, "sync_unstarted")
+		err := m.retainSyncLease(&l, "sync_unstarted")
+		if m.sshTransports[l.ID] != nil {
+			if err != nil {
+				m.failSSHSettlement(l.ID, err)
+				return l, err
+			}
+			return m.stageSSHResult(l)
+		}
+		return l, err
 	}
 	if l.Cargo != nil {
 		return m.cargoRejectUnstarted(l, reason)
@@ -114,6 +123,9 @@ func (m *Manager) rejectUnstarted(l model.Lease, reason *model.Error) (model.Lea
 	}
 	if len(l.Ports) > 0 {
 		m.finishPorts(&l)
+	}
+	if m.sshTransports[l.ID] != nil {
+		return m.stageSSHResult(l)
 	}
 	err := m.put(l, "lease.rejected")
 	if err == nil {

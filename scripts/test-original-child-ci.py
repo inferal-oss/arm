@@ -11,15 +11,23 @@ env=dict(os.environ)
 for k in ('GOFLAGS','GOWORK','GOENV','GOTOOLCHAIN','GOEXPERIMENT','GOOS','GOARCH','GODEBUG','CGO_CFLAGS','CGO_CPPFLAGS','CGO_CXXFLAGS','CGO_LDFLAGS','GOTMPDIR','GOVCS','GO111MODULE','GOROOT','GOTOOLDIR','AR','CC','CXX'):
  env.pop(k,None)
 cc=shutil.which('clang') or shutil.which('cc')
-if sys.platform=='darwin':cc=subprocess.check_output(['xcrun','--find','clang'],text=True).strip()
-env.update(GOMAXPROCS='1',GOCACHE=str(root/'.cache/original-child-go-build'),GOPROXY='off',GOSUMDB='off',GOTOOLCHAIN='local',GOENV='off',GOWORK='off',GOFLAGS='',CC=cc,CGO_ENABLED='1',ARM_WAITER_NATIVE='1')
+sdk=None
+if sys.platform=='darwin':
+ cc=subprocess.check_output(['xcrun','--find','clang'],text=True).strip()
+ sdk=subprocess.check_output(['xcrun','--show-sdk-path'],text=True).strip()
+env.update(GOMAXPROCS='1',GOCACHE=str(root/'.cache/original-child-go-build'),GOPROXY='off',GOSUMDB='off',GOTOOLCHAIN='local',GOENV='off',GOWORK='off',GOFLAGS='',CC=cc,CGO_ENABLED='1',ARM_WAITER_NATIVE='1',RUSTUP_AUTO_INSTALL='0')
+if sdk:env.update(SDKROOT=sdk,CGO_CFLAGS='-isysroot '+sdk,CGO_LDFLAGS='-isysroot '+sdk)
 def sources():
  result={}
  for p in root.rglob('*'):
-  if any(v in ('.git','.cache','.tools','.tla','.ci-evidence','bin','dist') for v in p.relative_to(root).parts):continue
-  if p.is_file() and (p.suffix=='.go' or p.name in ('go.mod','go.sum','test-original-child-ci.py','original-child-validation.yml','formal_process.py')):result[str(p.relative_to(root))]=hashlib.sha256(p.read_bytes()).hexdigest()
+  if p.relative_to(root).parts[0] in ('.git','.cache','.tools','.tla','.ci-evidence','bin','dist'):continue
+  if p.is_symlink():data=os.readlink(p).encode()
+  elif p.is_file():data=p.read_bytes()
+  else:continue
+  result[str(p.relative_to(root))]=hashlib.sha256(data).hexdigest()
  return result
 def assert_committed(source):
+ subprocess.run(['git','diff','--quiet','HEAD','--'],check=True)
  head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
  if head!=os.environ['GITHUB_SHA']:raise ValueError('checkout differs from dispatched commit')
  for name,digest in source.items():
@@ -39,6 +47,9 @@ before=sources();assert_committed(before);(run/'sources-before.json').write_text
 expected={
  'github.com/yrashk/arm/internal/childowner':{'TestUnknownObservationRetiresWithoutSignalsOrWait','TestRetirementPrecedesSoleWaitAndDeniedSignalStaysFailure','TestNativeOriginalExitAndDescendantTeardown','TestNativeConcurrentCancellationCannotSignalAfterWait','TestRepeatedEINTRCannotBypassCancellationBound','TestNativeDeniedSignalCannotBecomeSuccessfulCleanupAfterReap'},
  'github.com/yrashk/arm/internal/manager':{'TestOriginalWaiterNativeAdmissionAndExpiry','TestSupervisedExpiryAndDescendants','TestExpiryQueueAndRenewal','TestSchedulingDeadlineJournalFailureCannotGrant'}}
+for file in (root/'internal/manager').glob('ssh*test.go'):
+ expected['github.com/yrashk/arm/internal/manager'].update(re.findall(r'^func (Test[A-Za-z0-9_]+)\(t \*testing.T\)',file.read_text(),re.M))
+
 try:
  resolved=json.loads(command.command([go,'env','-json','GOVERSION','GOROOT','GOOS','GOARCH','GOFLAGS','GOWORK','GOENV','GOMOD','CC','GOMODCACHE'],'resolved-go-env',env=env,timeout=30))
  if resolved['GOVERSION']!='go'+re.search(r'^go (\S+)$',(root/'go.mod').read_text(),re.M)[1] or resolved['GOARCH']!='arm64' or resolved['GOFLAGS']!='' or resolved['GOWORK']!='off' or resolved['GOENV']!='' or resolved['GOMOD']!=str(root/'go.mod'):raise ValueError('unexpected Go source selection')
@@ -46,17 +57,19 @@ try:
  linker=command.command([env['CC'],'-print-prog-name=ld'],'cc-linker',env=env,timeout=30).strip()
  if not os.path.isabs(linker):linker=shutil.which(linker)
  closure_paths=[resolved['GOROOT'],resolved['GOMODCACHE'],env['CC'],resource,linker]
+ if sdk:closure_paths.extend([str(pathlib.Path(sdk)/'usr/include'),str(pathlib.Path(sdk)/'usr/lib')])
+ (run/'selected-cgo.json').write_text(json.dumps({k:env.get(k) for k in ('CC','SDKROOT','CGO_CFLAGS','CGO_LDFLAGS')},indent=2)+'\n')
  selected=closure(closure_paths);(run/'tool-dependency-closure-before.json').write_text(json.dumps(selected,sort_keys=True,indent=2)+'\n')
  pattern='^('+ '|'.join(sorted(set.union(*expected.values()))) +')$'
- raw=command.command([go,'test','-p=1','-json','-race','-count=1','-timeout=120s','-run',pattern,'./internal/childowner','./internal/manager'],'native-race',env=env,timeout=240)
+ raw=command.command([go,'test','-p=1','-json','-race','-count=1','-timeout=180s','-run',pattern,'./internal/childowner','./internal/manager'],'native-race',env=env,timeout=360)
  ran={k:[] for k in expected};passed={k:[] for k in expected};packages=[]
  for line in raw.splitlines():
   e=json.loads(line);pkg=e['Package'];action=e['Action']
   if pkg not in expected or action in ('fail','skip','build-fail'):raise ValueError('failed/skipped/foreign native test')
   if 'Test' in e:
-   if e['Test'] not in expected[pkg]:raise ValueError('unexpected native test')
-   if action=='run':ran[pkg].append(e['Test'])
-   if action=='pass':passed[pkg].append(e['Test'])
+   if e['Test'].split('/')[0] not in expected[pkg]:raise ValueError('unexpected native test')
+   if action=='run' and '/' not in e['Test']:ran[pkg].append(e['Test'])
+   if action=='pass' and '/' not in e['Test']:passed[pkg].append(e['Test'])
   elif action=='pass':packages.append(pkg)
  for pkg,names in expected.items():
   if set(ran[pkg])!=names or set(passed[pkg])!=names or len(ran[pkg])!=len(names) or len(passed[pkg])!=len(names) or packages.count(pkg)!=1:raise ValueError('incomplete exact native roster')
