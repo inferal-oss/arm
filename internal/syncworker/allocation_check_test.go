@@ -114,8 +114,7 @@ func TestWorkerAllocationCheckpointRejectsChangedOriginalBindings(t *testing.T) 
 			case "reservation":
 				w.Reservation.Generation++
 			case "ledger":
-				copy := *e.Ledger
-				e.Ledger = &copy
+				e.Ledger = &syncservice.Ledger{DB: e.Ledger.DB, Key: e.Ledger.Key, Side: e.Ledger.Side}
 			case "session":
 				a, b := net.Pipe()
 				defer a.Close()

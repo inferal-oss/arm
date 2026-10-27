@@ -149,9 +149,12 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 			}
 			for _, ledger := range []*syncservice.Ledger{ll, rl} {
 				locators, err := ledger.Workspaces(t.Context())
-				if err != nil || len(locators) == 0 {
+				if err != nil || (ledger.Side == syncreconcile.Remote || cut != "before-cancel") && len(locators) == 0 {
 					t.Fatal("cut lost durable workspace obligations", err)
 				}
+				// Before-cancel can interrupt the source before it creates its
+				// first workspace. Every committed locator, including any source
+				// locator that did commit, must still retain its native evidence.
 				for _, row := range locators {
 					if _, err := os.Stat(row.Path); err != nil {
 						t.Fatal("cut cleaned retained workspace", err)
