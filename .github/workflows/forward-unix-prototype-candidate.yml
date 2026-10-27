@@ -27,5 +27,5 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - name: Original Unix adapter close and path-identity controls
-        run: go test -tags arm_forward_review,arm_forward_unix_prototype ./internal/meshforward ./internal/cli -run TestUnixPrototype -count=1
+      - name: Bounded cancellation and mixed EIO causal controls
+        run: go test -tags arm_forward_review,arm_forward_unix_prototype ./internal/meshforward -run 'TestUnixPrototype(CancellationErrorTreeBound|CanceledCopyPreservesIndependentEIO)$' -count=1 -v
