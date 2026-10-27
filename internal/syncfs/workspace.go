@@ -184,5 +184,8 @@ func CreateWorkspace(receiver, parent *Root, v Reservation) (*Workspace, error) 
 			return w, e
 		}
 	}
+	if e = writeWorkspaceMarker(receiver, w); e != nil {
+		return w, e
+	}
 	return w, nil
 }
