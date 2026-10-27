@@ -2304,7 +2304,9 @@ this evidence record; the exact failed attempt and cleanup remain preserved.
 ## Upstream Gallery image-selection submission
 
 Focused [Semblance draft PR #215](https://github.com/inferal-oss/semblance/pull/215)
-contains only the Snap host effect and four regressions at `66a3db2`. A stale
+contains only the Snap host effect and four regressions. Refreshed head
+`3032f88` is based on `517df976`, with both files byte-identical to the original
+validated source and passing parity CI. A stale
 scrollend after child re-keying now preserves the graph-selected image; ordinary
 swipe reporting remains covered, and disposal cancels pending timers/frames.
 Publication is verified at the exact head and two-file scope. It does not change
@@ -2329,3 +2331,17 @@ The integrated 72-path payload matches the independently accepted final source.
 Browser interaction and composition with the compact Resources and mobile-node
 slices remain open; later public installation and cross-platform runtime are
 not established by the native feature gate.
+
+
+## Pending UI runtime corrections
+
+The compact Resources candidate now omits the parent-held warning for actual
+root pools while retaining child commitment and deficit information. A stock
+four-column resource grid adapts to a 240px minimum card width. Its corrected
+frontend bundle is built and independently checked; binary embedding and actual
+remaining interaction checks are still pending.
+
+The mobile-node candidate retains whole native obligations across the recorded
+outage/restart. The failed native comparison mixed gateway and authority
+projections; a fixture-only correction uses the original native baselines.
+Terminal restoration and successful rejoin/revocation remain acceptance gates.

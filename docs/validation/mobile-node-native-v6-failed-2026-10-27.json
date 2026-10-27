@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "status": "FAILED",
+  "scope": "Independent read-only audit of retained mobile native fixture v6; no execution or retry.",
+  "source_manifest_sha256": "6fed1b93ae2f5b2d8ee9c879918de79ccb7fd48530d0d9dc29de7e4a2dbe3557",
+  "asset_sha256": "9e866e97917cbf79e504d4e37ee4dc0e27b93413c3b29b31d3966a34867f446a",
+  "accepted_binary_sha256": "5f31a706bab7556f65dad68490a3df2d0b91ca4a1f776153c4b8b9043b2e915f",
+  "fixture_sha256": "ffe6d2cb0fa59629d63d58e3be48d0d4b89b131a77c7a913c9ea477c9fdaa284",
+  "protocol_map_sha256": "644a7aad0daf5eccd2adbde2d976c5c647d9cb41c1ea087aeb90b52343b8a87e",
+  "native_receipt_sha256": "6a60d872608506078daad2a8589570f464cde6a152e26adca5316163d04c44b4",
+  "actual_failure": {
+    "stage": "offline",
+    "kind": "AssertionError",
+    "line": 188,
+    "cause": "Fixture compares a gateway projection with a native authority lease. The gateway intentionally omits local budget fields.",
+    "local_entire_native_baseline_equal_after_restart": true,
+    "peer_entire_native_baseline_equal_after_restart": true,
+    "configuration_hash_assertion_passed_before_failure": true,
+    "lease_mutation_demonstrated": false
+  },
+  "actual_cli": {
+    "original_groups_joined": 40,
+    "exit_codes": {
+      "0": 37,
+      "1": 2,
+      "2": 1
+    },
+    "expected_nonzero_codes": [
+      "idempotency_conflict",
+      "revision_conflict",
+      "invalid_request"
+    ],
+    "both_obligations_active_before_cleanup": true,
+    "both_exact_obligations_released_to_terminal": true
+  },
+  "actual_original_owners": {
+    "count": 4,
+    "all_joined": true,
+    "all_authorities_retired": true,
+    "all_owned_pipe_descriptors_closed": true,
+    "lost_native_wait": false,
+    "exit_codes": [
+      0,
+      130,
+      0,
+      0
+    ],
+    "exit_130_context": "Target backend intentionally terminated to create transport outage."
+  },
+  "backend_cleanup": {
+    "both_stop_results_stopped": true,
+    "both_stop_force_applied": true,
+    "both_remaining_empty": true,
+    "qualification": "Stop commands explicitly used --force; these were not non-forcing stops. Lease releases were explicit ordinary releases."
+  },
+  "terminal": {
+    "raw_bytes": 168726,
+    "raw_sha256": "3c7d7e5b1948b354fa6a0b5fcfb09091242db6466a1578b853a273d989568b7c",
+    "alternate_screen_enter_count": 1,
+    "alternate_screen_exit_count": 1,
+    "original_tui_exit_code": 0,
+    "recorded_resize_geometries": [
+      [
+        140,
+        40
+      ],
+      [
+        80,
+        24
+      ]
+    ],
+    "restoration": "UNVERIFIED",
+    "restoration_error": "ENOTTY on retained slave after original TUI exit",
+    "geometry_and_navigation_limit": "Recorded resize/key actions and terminal output do not establish post-exit terminal restoration."
+  },
+  "browser": {
+    "evidence": "Two retained offline screenshots viewed independently; action sequencing and tab closure also reported by coordinator.",
+    "observed_offline_labels": [
+      "Last reported Mobile/intermittent with stale declaration",
+      "Offline connection",
+      "Unknown resource availability; unavailable for placement"
+    ],
+    "horizontal_dialog_clipping_visible": true,
+    "pixel_clean_claim": false,
+    "stable_and_mobile_ack": "Supported by retained CLI results and coordinator browser observations; screenshots capture offline state only."
+  },
+  "deadlines": {
+    "violations": 0,
+    "elapsed_seconds": 275.610181792
+  },
+  "remaining_gates": [
+    "Successful fixture rejoin with native baseline comparison",
+    "Actual rejoin and revocation browser observations",
+    "Post-TUI retained-slave termios and geometry checks after non-controlling PTY correction",
+    "Remaining authorized browser and terminal interaction acceptance"
+  ],
+  "minimal_fixture_corrections": [
+    "Retain the existing initial native inspection baselines and compare rejoin native inspections against those entire native objects; keep gateway projection evidence separate.",
+    "Remove child TIOCSCTTY and tcsetpgrp; retain O_RDWR|O_NOCTTY|O_NOFOLLOW plus exact slave identity and explicit stdio. Keep parent master/slave until restoration and geometry observations; use existing original-owner SIGWINCH authority."
+  ],
+  "limitations": [
+    "Failed run remains failed; no retrospective pass.",
+    "PTY kernel cause not established; alternate-screen exit is not termios restoration proof.",
+    "No successful rejoin or revocation acceptance.",
+    "No physical suspend, roaming, scheduler, Linux, current-main, public-install, hermetic or arbitrary-descendant claim.",
+    "Earlier fixture failures remain separate historical failures."
+  ]
+}

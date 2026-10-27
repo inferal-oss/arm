@@ -1,0 +1,104 @@
+{
+  "actual_fresh_phases": {
+    "frontend_build": {
+      "observed_original_exit": 0,
+      "vite_modules": 351,
+      "wat_rebuilt": false
+    },
+    "old_guard_negative": {
+      "assertion": "Root pool text must not contain Held in parent; original guard omission produces that exact assertion failure.",
+      "expected_exit": 1,
+      "explicit_unselected_skipped": 18,
+      "full_inventory": 19,
+      "observed_original_exit": 1,
+      "passed": 0,
+      "selected_failures": 1,
+      "todo": 0
+    }
+  },
+  "bindings": {
+    "assets": {
+      "internal/server/web/assets/LICENSES.txt": {
+        "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+        "size_bytes": 140022
+      },
+      "internal/server/web/assets/arm-wat-only-store-DpLv8E9I.mjs": {
+        "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+        "size_bytes": 154
+      },
+      "internal/server/web/assets/arm.mjs": {
+        "sha256": "b75c8e5d043139826e6f443870969c492ec8bf8705c9a1fd4860706ee1f67511",
+        "size_bytes": 4264744
+      },
+      "internal/server/web/assets/assets/wat-C2A9nalw.wasm": {
+        "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "size_bytes": 102443
+      },
+      "internal/server/web/assets/wat-2wrDwrzy.mjs": {
+        "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884",
+        "size_bytes": 62
+      }
+    },
+    "copied_trees": {
+      "Node": {
+        "exact_hashes_and_membership": true,
+        "files": 3041
+      },
+      "negative": {
+        "exact_hashes_and_membership": true,
+        "files": 2522
+      },
+      "source": {
+        "exact_hashes_and_membership": true,
+        "files": 2522
+      }
+    },
+    "external_before_after_bytes_equal": true,
+    "four_other_embedded_asset_hashes_unchanged": true,
+    "original_pins_passive_current_rehash": 5594
+  },
+  "disposition": "Accepted scoped actual frontend resume evidence; frontend built and not embedded.",
+  "evidence_sha256": {
+    "build_stderr": "351b524197fb492920789369e7f1a271420c757633fbb553b280a181ac4c31a4",
+    "build_stdout": "b4d8b499eabbd441dbdb4746345fe36c0470e56567a65ce97aa56f72c1c87a2e",
+    "negative_report": "1aad9c98216492d966a2408352b67e53bc4f61be174c27ab61a0318b3bd2fba1",
+    "original_owners": "c5b154ad469d58fb599516a12b7113b4ac8f46ac0fac49286f402f7a5f3fb0a3",
+    "producer_audit": "43f32e1a9c82e9af160073a7abacd1e6045b34d7c76f358ca5f1886e9a36592d",
+    "result": "7efb404e61189c182433c2216653d102580cceb928b57e535ee855284e270e46"
+  },
+  "input_binding_sha256": "2ecc54fa7dae7feb004c63db0f2403728f5215022a9bde59bb6158eb1d282ff8",
+  "limits": [
+    "No ARM binary built or embedded; prior binary does not serve the correction.",
+    "No native browser, viewport, focus, interactive Resources, backend accounting or current-main composition acceptance.",
+    "Unselected RDF cases remain unselected, not passed or full-cohort coverage.",
+    "Prior failed run remains failed; only its completed selected phases are reused.",
+    "No arbitrary descendant or hard-kernel-preemption claim."
+  ],
+  "outer_terminal": {
+    "exit_code": 0,
+    "provenance": "Coordinator reports original outer command terminal; this receipt independently verifies retained inner original-owner and phase evidence."
+  },
+  "output_binding_sha256": "e48645e20b58a60d3120592410ce4ea5b1717eda61af0c24f6340b72781a03f6",
+  "ownership": {
+    "all_expected_exit_codes_matched": true,
+    "all_originals_joined": true,
+    "authority_closed": true,
+    "blanket_descendant_claim": false,
+    "errors": 0,
+    "ownership_lost": false,
+    "pipes_closed": true,
+    "registered_original_children": 2,
+    "signal_incomplete": false
+  },
+  "reused_prior_scope": {
+    "Node_pass": 3,
+    "RDF_explicit_unselected_skipped": 16,
+    "RDF_selected_pass": 3,
+    "original_failure": "Filtered RDF report status was skipped while original parser expected pending.",
+    "original_overall": "FAILED_EXIT1_UNCHANGED",
+    "reuse_source_and_dependency_maps_identical": true
+  },
+  "schema": 1,
+  "source_manifest_sha256": "0c3c78cec6e1420c68cd3b20e71460309b6af9472f17de30a7caf3179c0ebf38",
+  "source_patch_sha256": "5d98e6e67b273d80a0de7fcd73e022c6e32a1fb82262e712e7e28cf946537363"
+}

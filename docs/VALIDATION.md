@@ -6029,3 +6029,26 @@ parent are three Linux-only Manager test/guest sources. This comparison adds no
 new runtime claim. Browser interaction, Linux custom-name runtime, later compact
 Resources/mobile composition, full-suite, hermetic-host and later-source public
 installation acceptance remain open.
+
+
+### Pending UI gates: reviewed progress
+
+[Resources frontend evidence](validation/resources-root-backing-frontend-2026-10-27.json)
+accepts one exact old-guard negative and the successful Vite build of bundle
+`b75c8e5d043139826e6f443870969c492ec8bf8705c9a1fd4860706ee1f67511`.
+All 5,594 bound inputs remain unchanged and both originals join. Prior selected
+Node/RDF passes are reused with identical inputs; unselected cases stay skipped
+and the earlier overall parser failure stays failed. No binary embedding or
+native interaction is accepted by this record.
+
+[The failed mobile native audit](validation/mobile-node-native-v6-failed-2026-10-27.json)
+verifies both complete native lease baselines unchanged after restart, forty
+CLI groups and four long owners joined, two ordinary lease releases and two
+explicitly forced backend stops. The gateway/native comparison failure and
+ENOTTY terminal-restoration result remain failures. Recorded offline labels do
+not establish successful rejoin, revocation or pixel-clean dialogs.
+
+[Snap draft refresh](validation/gallery-snap-draft-refresh-2026-10-27.json)
+independently verifies head `3032f88`, one commit/two unchanged source files,
+reviewed body and successful parity CI. Original native observations remain
+bound to their earlier base; no upstream merge or new ARM dependency is claimed.

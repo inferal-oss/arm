@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "status": "VERIFIED_DRAFT_REFRESH_AND_CI",
+  "pull_request": "https://github.com/inferal-oss/semblance/pull/215",
+  "head": "3032f88b3d1ffebeb3b8415504b968f118bf1499",
+  "base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "draft": true,
+  "commits": 1,
+  "changed_files": 2,
+  "additions": 145,
+  "deletions": 10,
+  "source_files_sha256": {
+    "src/web/snap.ts": "18cb4976be67538979236bde65a2196e1ad1a16ed2b51ba6c1c0e78ea660d10f",
+    "test/snap.test.ts": "d9213788c18b7657819025129be5140ad266897756883227e6c4b370f66aa6ab"
+  },
+  "managed_body_sha256": "91bc1af81851c38b323ce70fd0ea5261d2b2ffbe4e94a7200a69d2ae3145db57",
+  "parity": {
+    "status": "completed",
+    "conclusion": "success",
+    "job_url": "https://github.com/inferal-oss/semblance/actions/runs/40602292867/job/122533160274"
+  },
+  "limits": [
+    "Both changed files remain byte-identical to the independently reviewed source.",
+    "Original local and native evidence remains scoped to db8933d045ef1bfa8942508ae9764ad56ab0fc39.",
+    "PR CI is separate from local/native evidence; no upstream merge or ARM dependency replacement.",
+    "Draft remains unapproved; no review request or approval was published by this readback."
+  ]
+}
