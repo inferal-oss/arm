@@ -44,6 +44,32 @@ func TestBudgetNativeOnlyClosedBrowserAndMeshBoundary(t *testing.T) {
 
 func TestBudgetMeshLeaseProjectionAppliesToFreshStatusAndDurableReplay(t *testing.T) {
 	s := meshFixture(t)
+	// This fixture performs real native CPU admission. Keep its observations
+	// refreshed; meshFixture's cleanup closes and joins the Manager lifecycle.
+	s.Manager.Start()
+	awaitCPU := func(requested float64) *model.CPUBudget {
+		t.Helper()
+		deadline := time.Now().Add(5 * time.Second)
+		for {
+			status, err := s.Manager.Status()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if cpu := status.CPU; cpu != nil && cpu.Known && !cpu.Stale && cpu.Deficit == 0 && cpu.Available >= requested {
+				return cpu
+			}
+			if !time.Now().Before(deadline) {
+				t.Fatalf("native fixture CPU headroom unavailable for %g: CPU=%+v", requested, status.CPU)
+			}
+			timer := time.NewTimer(150 * time.Millisecond)
+			select {
+			case <-t.Context().Done():
+				timer.Stop()
+				t.Fatal(t.Context().Err())
+			case <-timer.C:
+			}
+		}
+	}
 	service := &meshService{owner: s}
 	peer := mesh.Peer{Identity: mesh.Identity{Host: strings.Repeat("d", 32)}, Grant: mesh.Grant{Permissions: []string{"observe-host", "observe-own", "observe-all", "lease-own"}, Limits: model.Resources{CPU: 4}, MaxTTL: time.Hour}}
 	node, err := s.Manager.MutateBudget(model.BudgetMutation{Operation: "create", Name: "private-policy", Reason: "private local metadata", Key: "private-policy"})
@@ -57,9 +83,10 @@ func TestBudgetMeshLeaseProjectionAppliesToFreshStatusAndDurableReplay(t *testin
 	}
 	// An explicitly authorized observe-all peer can see ordinary local lease
 	// attribution, but not gain the new native-only policy definition surface.
+	lastCPU := awaitCPU(.1)
 	localLease, err := s.Manager.Acquire(model.Request{Budget: node.Budget.ID, Resources: model.Resources{CPU: .1}, Reason: "local private policy", TTL: time.Minute, Key: "local-private"}, nil)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("local admission: %v; last ready CPU=%+v", err, lastCPU)
 	}
 	check := func(value any) {
 		t.Helper()
@@ -79,9 +106,10 @@ func TestBudgetMeshLeaseProjectionAppliesToFreshStatusAndDurableReplay(t *testin
 	}
 	check(status)
 	req, _ := json.Marshal(model.Request{Resources: model.Resources{CPU: .1}, TTL: time.Minute, Reason: "peer holder"})
+	lastCPU = awaitCPU(.1)
 	acquired, err := service.dispatch(t.Context(), peer, mesh.Request{Operation: "acquire", Host: localLease.Host, Key: "peer-budget-holder", Params: req})
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("peer admission: %v; last ready CPU=%+v", err, lastCPU)
 	}
 	check(acquired)
 	lease := acquired.(model.Lease)
@@ -103,6 +131,7 @@ func TestBudgetMeshLeaseProjectionAppliesToFreshStatusAndDurableReplay(t *testin
 		fields := map[string]any{"id": lease.ID}
 		if op == "renew" {
 			fields["ttl_ns"] = int64(2 * time.Minute)
+			awaitCPU(0) // Renewal rechecks coverage of all outstanding CPU promises.
 		}
 		params, err := json.Marshal(fields)
 		if err != nil {
