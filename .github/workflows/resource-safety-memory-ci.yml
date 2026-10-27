@@ -56,6 +56,7 @@ jobs:
             if [ "$status" -ne 0 ]; then failed=1; fi
           }
           run_case observe-race go test -race -count=1 -p=1 -timeout=180s ./internal/observe
+          run_case manager-memory-race go test -race -count=1 -p=1 -timeout=180s -run='^TestLiveMemory' -v ./internal/manager
           run_case affected-vet go vet -p=1 ./internal/observe ./internal/model ./internal/manager
           if [ "$RUNNER_OS" = Linux ]; then
             run_case observe-compile go test -c -p=1 -o "$RUNNER_TEMP/resource-safety-observe.test" ./internal/observe
