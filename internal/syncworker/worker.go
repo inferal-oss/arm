@@ -69,6 +69,7 @@ type endpoint struct {
 	Receipt      *syncservice.SideReceipt
 	Workspace    string
 	NativeCount  int
+	allocation   *allocationBinding
 }
 
 type batch struct {
@@ -183,6 +184,11 @@ func (e *endpoint) workspace(ctx context.Context, plan syncreconcile.Plan, bytes
 	if err := e.Ledger.RecordWorkspace(ctx, role, e.Root, e.WorkParent, w); err != nil {
 		return w, err
 	}
+	if e.allocation != nil {
+		if err := e.allocation.remember(w, role); err != nil {
+			return w, err
+		}
+	}
 	return w, nil
 }
 
@@ -193,6 +199,59 @@ func (e *endpoint) materialize(ctx context.Context, plan syncreconcile.Plan, b b
 	}
 	dirs, _, err := syncfs.BuildSourceManifest(ctx, e.Root, w.Stage, plan, b.Source, b.Receiver, e.Names, e.Metadata, bytes)
 	return w, dirs, err
+}
+
+// checkWorkspaceAllocation fails closed when the reported allocation of all
+// operation-owned workspaces exceeds the charged disk promise. The survey is
+// bounded and mount-aware, but it is a checkpoint, not an atomic snapshot or
+// a filesystem-enforced write quota. Unknown observations also stop the cut.
+func (e *endpoint) checkWorkspaceAllocation(ctx context.Context, workspaces []*syncfs.Workspace) error {
+	if e == nil || e.allocation == nil || len(workspaces) < 1 || len(workspaces) > 3 {
+		return syncservice.ErrUnknown
+	}
+	b := e.allocation
+	if err := b.check(ctx, e); err != nil {
+		return err
+	}
+	if len(workspaces) != len(b.work) {
+		return syncservice.ErrUnknown
+	}
+	if err := b.durableSet(ctx); err != nil {
+		return err
+	}
+	seen := make(map[*syncfs.Workspace]bool)
+	var used int64
+	for _, work := range workspaces {
+		if work == nil || seen[work] {
+			return syncservice.ErrUnknown
+		}
+		seen[work] = true
+		var original allocationWorkspace
+		for _, candidate := range b.work {
+			if candidate.work == work {
+				original = candidate
+				break
+			}
+		}
+		if err := original.check(); err != nil {
+			return err
+		}
+		observed, err := syncfs.SurveyWorkspace(ctx, b.root, b.parent, original.record.Path, original.reservation)
+		if err != nil {
+			return err
+		}
+		if err := original.check(); err != nil {
+			return err
+		}
+		if observed.AllocatedBytes < 0 || observed.AllocatedBytes > b.disk-used {
+			return errors.New("sync workspace reported allocation exceeds admitted disk promise")
+		}
+		used += observed.AllocatedBytes
+	}
+	if err := b.durableSet(ctx); err != nil {
+		return err
+	}
+	return b.check(ctx, e)
 }
 
 func ownActions(plan syncreconcile.Plan, side syncreconcile.Side) int {

@@ -288,13 +288,16 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 	if ctx == nil || e == nil || e.Session == nil || e.Hold == nil || e.Ledger == nil {
 		return errors.New("admitted endpoint required")
 	}
+	// Every callback, batch and teardown retains this original transport even
+	// if a later identity check detects a changed endpoint field.
+	session := e.Session
 	var closeOnce sync.Once
 	var closeErr error
-	closeSession := func() error { closeOnce.Do(func() { closeErr = e.Session.Close() }); return closeErr }
+	closeSession := func() error { closeOnce.Do(func() { closeErr = session.Close() }); return closeErr }
 	cancelDone := make(chan struct{})
 	stopCancel := context.AfterFunc(ctx, func() {
 		defer close(cancelDone)
-		_ = e.Session.Abort()
+		_ = session.Abort()
 	})
 	defer func() {
 		if !stopCancel() {
@@ -306,8 +309,8 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 		if joined {
 			return
 		}
-		closeErr := e.Session.Abort()
-		joinErr := e.Session.Join()
+		closeErr := session.Abort()
+		joinErr := session.Join()
 		retErr = errors.Join(retErr, closeErr, joinErr)
 	}()
 	lookup, err := e.boundedLookup(ctx)
@@ -328,7 +331,7 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 		return err
 	}
 	var prep syncservice.Preparation
-	control := e.Session.Control()
+	control := session.Control()
 	if control == nil {
 		return errors.New("missing admitted SSH control")
 	}
@@ -393,6 +396,9 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 	if err = e.verifyManifest(ctx, intent, lookup.Manifest); err != nil {
 		return err
 	}
+	if err = e.bindAllocation(ctx, intent, need); err != nil {
+		return err
+	}
 	if e.Side == syncreconcile.Remote {
 		if err = writeFrame(control, frame(intent, "admitted", ""), e.Hold); err != nil {
 			return err
@@ -408,7 +414,14 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 		return err
 	}
 	defer work.Close()
+	workspaces := []*syncfs.Workspace{work}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+		return err
+	}
 	if _, err = syncfs.SeedReceiverBasis(ctx, e.Root, work.Stage, plan, e.Side, e.Names, e.Metadata, need); err != nil {
+		return err
+	}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 		return err
 	}
 	var dirs []syncfs.DirectoryMetadata
@@ -426,6 +439,10 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 			if matErr != nil {
 				return matErr
 			}
+			workspaces = append(workspaces, sourceWork)
+			if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+				return err
+			}
 			ready := frame(intent, "ready", id)
 			ready.Dirs = ownDirs
 			if err = writeFrame(control, ready, e.Hold); err != nil {
@@ -436,12 +453,15 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 				err = runLocalBatch(ctx, sourceWork.StagePath(), work.StagePath(), e.Metadata, writeLimit)
 			} else {
 				var handle transferHandle
-				handle, err = e.Session.OpenTransfer(ctx, b)
+				handle, err = session.OpenTransfer(ctx, b)
 				if err == nil {
 					err = runTransfer(ctx, handle, rsyncengine.ClientSender, sourceWork.StagePath(), e.Metadata, nil)
 				}
 			}
 			if err != nil {
+				return err
+			}
+			if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 				return err
 			}
 			if err = writeFrame(control, frame(intent, "done", id), e.Hold); err != nil {
@@ -458,11 +478,14 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 			if e.Side == b.Receiver {
 				dirs = append(dirs, ready.Dirs...)
 				var handle transferHandle
-				handle, err = e.Session.OpenTransfer(ctx, b)
+				handle, err = session.OpenTransfer(ctx, b)
 				if err == nil {
 					err = runTransfer(ctx, handle, rsyncengine.ServerReceiver, work.StagePath(), e.Metadata, &writeLimit)
 				}
 				if err != nil {
+					return err
+				}
+				if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 					return err
 				}
 			}
@@ -474,7 +497,13 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 			}
 		}
 	}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+		return err
+	}
 	if err = e.publish(ctx, plan, work, sortedDirs(dirs)); err != nil {
+		return err
+	}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 		return err
 	}
 	if err = e.Hold.CheckActive(ctx); err != nil {
@@ -529,7 +558,7 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 	// Baseline confirmation is outside the defer: actual channel workers must
 	// have joined successfully before a receipt becomes jointly confirmed.
 	closeErr = closeSession()
-	joinErr := e.Session.Join()
+	joinErr := session.Join()
 	joined = true
 	if err = errors.Join(closeErr, joinErr); err != nil {
 		return err
