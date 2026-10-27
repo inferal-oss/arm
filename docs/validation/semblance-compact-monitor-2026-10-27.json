@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "scope": "Compact Monitor layout and device selection on the current Semblance dashboard",
+  "status": "Both verification stages accepted within the compact Monitor scope; focused feature integrated as dd46716.",
+  "source": {
+    "base_revision": "de5851c00724715b9f6758461e1f47b029c38036",
+    "feature_revision": "4f17d7e5b7aeaa195b33cb6c461b394cc932e362",
+    "reviewed_three_path_patch_sha256": "791c4bb9863fcaa7145a2c3408e4b8efa90616dd65e53b97cf7e1ac929dcf94e",
+    "files_sha256": {
+      "internal/server/web/semblance/app.ttl": "7802454e167dc78ca501634af71f53d7779596469e5225f2c733f37d44536b6a",
+      "internal/server/web/semblance/main.mjs": "711ba9b7b6eb9ff661573a56b05503957d69a30e2ce033729eca617c7138c15a",
+      "internal/server/web/semblance/monitor-summary.test.mjs": "670dbddeaa41beda8b032c3130a582e229982579e7a3d99dfac2ddfc7bf745a8",
+      "internal/server/web/assets/arm.mjs": "47293bcd617f6d14ca739d023a695771b599be6bd4b4d3df307162a90f169624"
+    },
+    "preserved_boundaries": [
+      "Current keyboard-platform helper and native picker guard",
+      "Session codec and lifecycle",
+      "Canonical module and locked dependencies",
+      "All unrelated source, assets and central delivery documents"
+    ],
+    "integration_revision": "dd46716"
+  },
+  "build": {
+    "two_independent_locked_installations": true,
+    "generated_file_count": 5,
+    "complete_generated_file_sets_and_bytes_equal": true,
+    "generated_files_sha256": {
+      "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+      "arm.mjs": "47293bcd617f6d14ca739d023a695771b599be6bd4b4d3df307162a90f169624",
+      "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+    },
+    "only_changed_generated_file": "internal/server/web/assets/arm.mjs",
+    "tested_cli_sha256": "9282c6627f6e638be3ca5defdf55352d274f5c2fd3d1c41266b034d7ef05d54d",
+    "go_parallelism": 1,
+    "gomaxprocs": 1,
+    "maximum_vitest_workers": 2,
+    "queue_default_run_limit_seconds": 1800,
+    "queue_defaults_preserved": true
+  },
+  "checks": {
+    "node": {
+      "selected_files": [
+        "internal/server/web/core.test.mjs",
+        "internal/server/web/monitor-capacity.test.mjs",
+        "internal/server/web/io-devices.test.mjs",
+        "internal/server/web/io-selector.test.mjs",
+        "internal/server/web/semblance/platform.test.mjs",
+        "internal/server/web/semblance/main-lifecycle.test.mjs",
+        "internal/server/web/semblance/monitor-summary.test.mjs",
+        "web/test/provenance.node.mjs"
+      ],
+      "executed_cases": 34,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Selected affected Node tests only; not the complete web suite."
+    },
+    "rdf_dom": {
+      "selected_entry": "test/graph-ui.test.mjs",
+      "executed_cases": 14,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Actual ARM RDF/DOM entry and imported ownership cases; not the upstream full suite."
+    },
+    "go": {
+      "package": "github.com/inferal-oss/arm/internal/server",
+      "roots": [
+        "TestDashboardBootstrapAndSharedWebSocket",
+        "TestScreenAssetsPreserveComposedDashboardModules",
+        "TestSemblanceEmbeddedAssets"
+      ],
+      "named_cases": [
+        "TestDashboardBootstrapAndSharedWebSocket",
+        "TestScreenAssetsPreserveComposedDashboardModules",
+        "TestScreenAssetsPreserveComposedDashboardModules//ard/LICENSE.txt",
+        "TestScreenAssetsPreserveComposedDashboardModules//ard/ard-patch.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//assets/arm.mjs",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/core/rfb.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/LICENSE",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/deflate.js",
+        "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/inflate.js",
+        "TestSemblanceEmbeddedAssets",
+        "TestSemblanceEmbeddedAssets/LICENSES.txt",
+        "TestSemblanceEmbeddedAssets/arm-wat-only-store-DpLv8E9I.mjs",
+        "TestSemblanceEmbeddedAssets/arm.mjs",
+        "TestSemblanceEmbeddedAssets/assets/wat-C2A9nalw.wasm",
+        "TestSemblanceEmbeddedAssets/wat-2wrDwrzy.mjs"
+      ],
+      "executed_named_cases": 15,
+      "failed": 0,
+      "skipped": 0,
+      "package_pass": true
+    },
+    "compiled_bootstrap": {
+      "passed": true,
+      "scope": "Exact compiled CLI, one-use session exchange, embedded delivery, authority/origin/replay guards and PTY/no-launch behavior; not rendered layout evidence. The detached bootstrap daemon has no original Wait claim; endpoint absence and an unheld lock were checked before owned temporary-state removal."
+    },
+    "phase_ownership": {
+      "phase_children": 11,
+      "all_original_children_joined_zero": true,
+      "original_queue_joined_zero": true,
+      "errors": 0,
+      "bootstrap_cleanup_clear": true
+    }
+  },
+  "browser": {
+    "surface": "Supported Chrome CUA on macOS",
+    "viewports": [
+      [
+        1280,
+        1000
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        768,
+        900
+      ],
+      [
+        640,
+        900
+      ]
+    ],
+    "observed_shape_violations": 0,
+    "device_grid_columns": {
+      "desktop": 4,
+      "phone": 2
+    },
+    "observations": [
+      "Enter opens each new disclosure; open state and focus survive live updates.",
+      "Full memory facts and per-core readings remain reachable.",
+      "None, one interface selected with Space, and All update displayed selection; selected identity/focus survives live updates.",
+      "Pause holds the displayed sample; resume advances it.",
+      "Supported selectOption selects narrow Screen; desktop click selects Monitor; narrow return and Back/Forward retain URL, heading and selected attribute/property/value.",
+      "Actual supported CUA Meta-K opens the palette; Escape restores heading focus."
+    ],
+    "application_console_errors_or_warnings": 0,
+    "external_extension_warnings": 6,
+    "evidence_limits": [
+      "Read-only DOM metrics and screenshots are actual rendered observations.",
+      "Descriptions of CUA input/tool outcomes are contemporaneous reviewer transcriptions, not independently emitted operation receipts.",
+      "Picker selection used supported selectOption; no physical picker-keyboard selection claim.",
+      "A mismatched progress-element DOM query does not establish a core count.",
+      "The pause artifact directly shows the held timestamp; resumed advancement is a contemporaneous reviewer observation.",
+      "One link-renewal filesystem-control executor terminal result is unavailable; matching supervisor acknowledgement and original owned CLI joins remain recorded."
+    ],
+    "document_overflow_at_all_four_viewports": false,
+    "visible_control_overflow_at_desktop_and_phone": false,
+    "intermediate_viewport_scope": "768 and 640 widths have document/card bounds checks; visible-control metrics are scoped to 1280 and 390 widths."
+  },
+  "controlled_cases": {
+    "classification": "Distinct labelled controlled origin; modifies outgoing monitor snapshots only, while the direct real-observation origin remains independently live.",
+    "observed_modes": [
+      "filesystem-stale",
+      "page-stale",
+      "expired",
+      "unknown-used",
+      "unknown-total",
+      "zero",
+      "disconnect",
+      "baseline-recovery"
+    ],
+    "backend_and_history_mutated_by_transformer": false,
+    "frame_hash_receipt_cap": 64,
+    "frame_hash_receipts": 64,
+    "modes_with_frame_hash_receipts": {
+      "filesystem-stale": 17,
+      "page-stale": 25,
+      "expired": 13,
+      "unknown-used": 6,
+      "unknown-total": 3
+    },
+    "later_modes_evidence": "Zero, disconnect and baseline recovery have CUA observations plus supervisor acknowledgements; no extra frame-hash records after the cap."
+  },
+  "fixture_cleanup": {
+    "owned_tabs_closed": true,
+    "viewport_override_reset": true,
+    "original_foreground_server_and_relay_joined_zero": true,
+    "original_fixture_children_joined_zero": 7,
+    "original_supervisor_exit_zero_reported": true,
+    "ordinary_stop_remaining": [],
+    "force_applied": false,
+    "endpoint_absent": true,
+    "daemon_lock_unheld": true
+  },
+  "limitations": [
+    "No actual interface removal/reappearance.",
+    "No forced native counter reset.",
+    "No physical suspend.",
+    "No other-browser or other-OS GUI acceptance.",
+    "No broader remote-node or Screen connection workflow acceptance.",
+    "No full upstream Semblance suite or full ARM specification acceptance.",
+    "Final main integration and broader acceptance remain coordinator-owned."
+  ],
+  "privacy": "Raw execution receipts, authenticated links, machine/account identifiers and private screenshots are retained outside repository documentation.",
+  "final_review": {
+    "independent_findings": [],
+    "stage1_accepted": true,
+    "stage2_accepted": true,
+    "native_artifacts_hash_checked": 16,
+    "actual_images_reviewed": 3,
+    "observed_integration_base": "4f359b62765c160a25ef20b928770c011c1fffeb",
+    "runtime_source_intersection_since_built_base": [],
+    "intervening_changes": "Four documentation paths only; no affected runtime composition change.",
+    "stage1_audit_sha256": "f06d7b37ef0d8562b3c9299ac8e324be29ad2e24d6e6aece44eb4d158e537506",
+    "stage2_audit_sha256": "9fdbc01fa5321d83734c4acd577856226a53f16c934c2698551e2fd270583c5b",
+    "frozen_source_files": 2496,
+    "selected_tool_inputs": 17610,
+    "tool_audit_scope": "The guarded runner checked the complete selected tool closure; independent review checked selected tools rather than rehashing every tool input."
+  }
+}
