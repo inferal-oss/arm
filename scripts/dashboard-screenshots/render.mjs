@@ -82,19 +82,25 @@ try {
   for (const view of config.views.filter(view => view.surface === 'web')) {
     stage = 'web ' + view.view
     await page.setViewportSize({ width: 1440, height: 1000 })
+    stage = 'web ' + view.view + ' navigation'
     await page.getByRole('group', { name: 'Views', exact: true })
       .getByRole('button', { name: view.view, exact: true }).click()
+    stage = 'web ' + view.view + ' heading'
     await page.getByRole('heading', { name: view.heading, exact: true }).waitFor({ timeout: 15000 })
-    for (const label of view.labels) await page.getByText(label, { exact: true }).first().waitFor({ timeout: 15000 })
+    stage = 'web ' + view.view + ' content'
+    for (const label of view.labels) await page.getByText(label, { exact: true }).filter({ visible: true }).first().waitFor({ timeout: 15000 })
     if (view.view === 'Activity') {
       const events = page.getByRole('combobox', { name: 'Inspect an event', exact: true })
       await events.waitFor({ timeout: 15000 })
       await events.locator('option').nth(1).waitFor({ state: 'attached', timeout: 15000 })
     }
+    stage = 'web ' + view.view + ' viewport'
     await fitContentViewport(page)
+    stage = 'web ' + view.view + ' connection'
     await page.getByRole('toolbar', { name: 'Backend status', exact: true })
       .getByText('Connected', { exact: true }).waitFor({ timeout: 15000 })
     await ensureSafeScreen()
+    stage = 'web ' + view.view + ' PNG'
     await page.screenshot({ path: join(config.output, view.file), fullPage: false, animations: 'disabled' })
   }
   await context.close()
