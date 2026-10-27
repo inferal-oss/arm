@@ -1,0 +1,145 @@
+{
+  "status": "ACCEPTED_EXACT_V5_SCOPED_NATIVE_DEFAULT_GATE",
+  "findings": [],
+  "source_manifest_sha256": "6c99a306ee02b6f2ed20a0eca171bcfb5ce742ecce0580fbc86c986fdba6cb43",
+  "source_base": "5fbe548c98f1b8ccf4f262cc384afd6b846ee002",
+  "fixture_sha256": "345ebe94279b1dc592e3223385c296bf87079380a3c0b10675433cd6125f0dea",
+  "seal_sha256": "b8a17adbe054c99f00f65045d2e329179e7d26cf90f6e7dde9f69e0ec0c49431",
+  "closure_counts": {
+    "control_inputs": 5,
+    "immutable_cache_sdk": 92492,
+    "mutable_build_cache": 66349,
+    "source": 2761,
+    "tools": 11
+  },
+  "mutable_build_cache": {
+    "before": 66349,
+    "after": 67696
+  },
+  "controls": {
+    "passed": 10,
+    "unstarted": 0,
+    "proven_epipe_cases": 5,
+    "no_rescue": true,
+    "expected_main_failures_preserved": true
+  },
+  "rosters": {
+    "normal": {
+      "roots": 139,
+      "required_cases": 76,
+      "passed_named_nodes": 452,
+      "package_passes": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "race": {
+      "roots": 139,
+      "required_cases": 76,
+      "passed_named_nodes": 452,
+      "package_passes": 5,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "direct_command_count": 15,
+  "metadata_original_waits": 40,
+  "all_workers_ack_wait_zero_ESRCH": true,
+  "binary_sha256": "2be9ef771a1f083da58ee4c0cc7d7cb22c10772f99b8118114492233588a9ab9",
+  "binary_bytes": 70733074,
+  "actual_protocol": {
+    "flags": {
+      "directive": 4,
+      "tokens": [
+        "--pool",
+        "--port",
+        "--port-dual-stack",
+        "--port-lease",
+        "--port-mode",
+        "--profile",
+        "--project"
+      ]
+    },
+    "nested": {
+      "directive": 4,
+      "tokens": [
+        "apply",
+        "contexts",
+        "keygen",
+        "lookup",
+        "nodes",
+        "plan",
+        "reconcile",
+        "ship"
+      ]
+    },
+    "offline": {
+      "directive": 4,
+      "tokens": []
+    },
+    "signed-delta": {
+      "directive": 4,
+      "tokens": [
+        "--reason",
+        "--revision"
+      ]
+    }
+  },
+  "limits": [
+    "Original metadata readback, not a new poll. No commands executed by this audit.",
+    "Mutable shared Go build cache changed; immutable selected SDK/dependency maps stayed equal. Not hermetic/cold-cache evidence.",
+    "Owned groups and adopted direct processes only; no arbitrary escaped descendants/full ambient loader closure.",
+    "Exact source tree is dirty default-feature projection on base D; not public installed module or later main.",
+    "Browser, persistent custom names and full suite are outside this scope. Earlier failed runs remain failed."
+  ],
+  "schema_version": 1,
+  "runtime": {
+    "os": "darwin",
+    "arch": "arm64",
+    "Go": "go1.27.3",
+    "CGO_ENABLED": "1",
+    "GOMAXPROCS": "1",
+    "dependency_network": "off"
+  },
+  "shell_generation_and_parse": [
+    "bash",
+    "zsh",
+    "fish"
+  ],
+  "wrapper_elapsed_seconds": 439.90299062500003,
+  "native_elapsed_seconds": 438.544455333,
+  "causal_control_elapsed_seconds": 1.358535292000056,
+  "source_fix": "Test-only real Manager lifecycle and bounded native CPU readiness before unchanged budget-projection admission and renewal; no admission retry or fake capacity.",
+  "no_state": "Built offline completion used missing private authority path; no backend state created.",
+  "outer_preflight_metadata_waits": 6,
+  "outer_preflight_actual_hex_length_hash_verified": true,
+  "original_default_delta": "Only approved budget test fixture differs in portable source from the prior reviewed default packet; per-worktree .git pointer intentionally differs.",
+  "Cobra": {
+    "path": "github.com/spf13/cobra",
+    "version": "v1.10.2",
+    "sum": "h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU="
+  },
+  "buildinfo_source": {
+    "canonical_executable_path": "getarm.org/cmd/arm",
+    "module_version": "v0.0.0-20261027190608-5fbe548c98f1+dirty",
+    "vcs_modified": true,
+    "source_bound_by_frozen_manifest": true,
+    "public_install_claim": false
+  },
+  "shell_bytes_verified": {
+    "bash": {
+      "generated_bytes": 16149,
+      "generated_sha256": "89e26b7193798efafaca5e37136bcca582421e82e00328fdb08faa5de751ef4e",
+      "parser_passed": true
+    },
+    "zsh": {
+      "generated_bytes": 8144,
+      "generated_sha256": "3f1b055e58d0fdc80d24a9762676aaf99815bbbd038cbcc7c3ecf379b0882cba",
+      "parser_passed": true
+    },
+    "fish": {
+      "generated_bytes": 9605,
+      "generated_sha256": "4d4bfeff58ca15f3139a3e86bd2c952925f44efc2248ab4373bfadd60ca9df31",
+      "parser_passed": true
+    }
+  }
+}

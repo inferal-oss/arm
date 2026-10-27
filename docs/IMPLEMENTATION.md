@@ -2250,3 +2250,23 @@ inputs match the composed main exactly; only the two new test files are added.
 This supplies focused native Linux recovery evidence, alongside separately
 scoped S3 evidence. It does not establish managed-exec crash recovery, another
 suspend cycle, system OpenSSH, a hermetic compiler or full-suite acceptance.
+
+
+## Default readable names and shell completion
+
+Integrated `4d13dd9` derives four-word display labels from original IDs using a
+frozen, attributed EFF vocabulary. CLI selectors, server view metadata and terminal
+views preserve supplied names and exact IDs; ambiguous or incomplete authorized
+inventories refuse name resolution. Persisted identities, grants, signed reviews,
+request keys and mutation receipts retain their original representation.
+
+Integrated `ac861e3` uses Cobra's command tree and shell-completion protocol with
+the existing handlers' flag registrations. Bash, Zsh and Fish scripts generate
+offline; authenticated dynamic inventory reads share a 250 ms deadline and never
+start a backend. Shell invocation uses argument arrays. Provisioning instructions
+are in [completion.md](completion.md); ARM does not edit shell profiles.
+
+Default labels are stateless. Custom-name persistence, rebuilt browser label
+presentation, later mobile-command composition and later public installation are
+separate gates. The final default payload is validated together; its intermediate
+commits are not claimed as separately tested.

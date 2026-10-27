@@ -5904,3 +5904,31 @@ All Go/module and focused runner/roster bytes match the accepted source after
 observations retain their own source scope. This adds no VM/host power action,
 S3 repetition, managed-exec crash adoption, system OpenSSH, public-install or
 full-suite claim.
+
+
+### Default readable names and shell completion
+
+[Independent native evidence](validation/default-readable-completion-native-2026-10-27.json)
+binds the final default source manifest `6c99a306ee02b6f2ed20a0eca171bcfb5ce742ecce0580fbc86c986fdba6cb43`
+to 139 roots, 76 required cases and 452 named passes in each normal and race
+cohort across five packages, with zero failures or skips. All 15 original command
+groups close, ten causal protocol controls pass, and generated Bash/Zsh/Fish
+scripts pass their actual parsers. Actual offline completion creates no authority
+state; authenticated inventory, scope, ambiguity and literal shell-argument tests
+retain the fixed protocol. The actual native binary and generated script bytes
+are independently rehashed.
+
+The test-only readiness correction `1aec267` starts a real disposable Manager and
+waits for bounded fresh CPU evidence before the unchanged admission/renewal
+assertions; it does not retry admission or fabricate capacity. Earlier failed
+protocol and native runs stay failed. The immutable selected source, SDK and
+dependencies remain stable; the mutable Go build cache changes explicitly.
+
+Focused commits `4d13dd9` and `ac861e3` contain exactly the reviewed default
+payload. Post-integration comparison verifies all 73 owned paths, modes and Git
+objects against that final source. The only other Go differences are three
+Linux-constrained Manager test/guest sources; no production or module input
+drift is introduced. This is source-composition evidence, not a new runtime run.
+Browser/custom-name persistence, Linux default-feature runtime, full-suite,
+public installation of this later source and arbitrary escaped-descendant
+cleanup remain outside this acceptance.
