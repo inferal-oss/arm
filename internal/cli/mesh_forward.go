@@ -28,7 +28,7 @@ func (a *app) meshForward(args []string) (int, error) {
 		return 2, fmt.Errorf("usage: arm mesh forward grant|revoke|show|start|status|list|stop|recover|stream|http")
 	}
 	action, args := args[0], args[1:]
-	if !meshsshrelay.ForwardReviewEnabled && (action == "grant" || action == "start" || action == "stream" || action == "http") {
+	if a.catalogFlags == nil && !meshsshrelay.ForwardReviewEnabled && (action == "grant" || action == "start" || action == "stream" || action == "http") {
 		return 1, model.Err("feature_unavailable", "TCP forwarding is disabled while acceptance gates remain incomplete")
 	}
 	if action == "start" {
@@ -44,8 +44,10 @@ func (a *app) meshForward(args []string) (int, error) {
 		return a.meshForwardSourceAction(action, args)
 	}
 	var identity mesh.Identity
-	if err := a.call("mesh_identity", struct{}{}, &identity); err != nil {
-		return 1, err
+	if a.catalogFlags == nil {
+		if err := a.call("mesh_identity", struct{}{}, &identity); err != nil {
+			return 1, err
+		}
 	}
 	if action == "show" {
 		if len(args) != 0 {

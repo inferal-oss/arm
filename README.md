@@ -496,6 +496,13 @@ arm message broadcast --text "Host maintenance soon." --key BROADCAST_ID
 
 Reuse a key only for the same send. ARM pins current recipient registrations/settings and rejects changed broadcast membership during submission. A retry reads the existing delivery state rather than invoking agents again; a changed request conflicts. After an uncertain result, inspect `arm messages` before creating a new send. `message send --reply-to MESSAGE_ID` links a reply to that contact's message in the operator inbox.
 
+## Shell completion
+
+Generate a completion script with `arm completion bash`, `arm completion zsh`
+or `arm completion fish`. See [shell completion](docs/completion.md) for current
+session setup and persistent user installation. Generation works offline;
+dynamic host, pool and lease suggestions use authorized read-only queries.
+
 ## Readable names
 
 Host and lease labels are derived directly from their stable IDs and stay the

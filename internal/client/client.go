@@ -18,6 +18,12 @@ func Connect(ctx context.Context, home string) (*websocket.Conn, error) {
 	if e != nil {
 		return nil, fmt.Errorf("backend unavailable; run arm daemon start: %w", e)
 	}
+	return ConnectEndpoint(ctx, ep)
+}
+
+// ConnectEndpoint connects to an already read endpoint without another filesystem
+// read. Callers that need bounded metadata reads can validate the file first.
+func ConnectEndpoint(ctx context.Context, ep local.Endpoint) (*websocket.Conn, error) {
 	c, _, e := websocket.Dial(ctx, ep.URL, &websocket.DialOptions{HTTPHeader: http.Header{"Authorization": []string{"Bearer " + ep.Token}}})
 	if e != nil {
 		return nil, fmt.Errorf("backend unavailable; run arm daemon start: %w", e)
@@ -30,6 +36,20 @@ func Call(ctx context.Context, home, operation string, params, result any) error
 	if e != nil {
 		return e
 	}
+	return call(ctx, c, operation, params, result)
+}
+
+// CallEndpoint uses the normal authenticated request protocol with an existing
+// endpoint snapshot. It neither reads nor creates ARM state.
+func CallEndpoint(ctx context.Context, endpoint local.Endpoint, operation string, params, result any) error {
+	c, e := ConnectEndpoint(ctx, endpoint)
+	if e != nil {
+		return e
+	}
+	return call(ctx, c, operation, params, result)
+}
+
+func call(ctx context.Context, c *websocket.Conn, operation string, params, result any) error {
 	defer c.CloseNow()
 	raw, e := json.Marshal(params)
 	if e != nil {

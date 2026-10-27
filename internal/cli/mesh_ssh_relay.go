@@ -18,8 +18,10 @@ func (a *app) meshSSHRelay(args []string) (int, error) {
 	}
 	action, args := args[0], args[1:]
 	var local mesh.Identity
-	if e := a.call("mesh_identity", struct{}{}, &local); e != nil {
-		return 1, e
+	if a.catalogFlags == nil {
+		if e := a.call("mesh_identity", struct{}{}, &local); e != nil {
+			return 1, e
+		}
 	}
 	if action == "show" {
 		if len(args) != 0 {

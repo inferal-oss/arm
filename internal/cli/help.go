@@ -12,12 +12,30 @@ import (
 type commandHelp struct {
 	usage, summary, example string
 	min, max                int
+	hidden                  bool
 }
 
 var commandHelps = map[string]commandHelp{
-	"peers":               {usage: "[status|off|on]", summary: "Show nearby ARM instances' public held and queued quantities, per-request timing and discovery gaps. Default publication can be disabled for this ARM_HOME with peers off.", max: -1},
-	"mesh forward stream": {summary: "Bridge one raw TCP stream over stdin/stdout using a private token file and exact active source key. Stdout contains only application bytes; effects after route loss are unknown and never retried."},
-	"mesh forward http":   {summary: "Fetch one plaintext HTTP/1.1 GET or HEAD from an exact named TCP service through an authenticated source listener. Stdout contains only response body; redirects are not followed."},
+	"completion":                        {usage: "bash|zsh|fish", summary: "Generate shell completion on stdout. Installation: see docs/completion.md. Completion never starts a backend.", min: 1, max: 1},
+	"completion bash":                   {summary: "Generate Bash completion."},
+	"completion zsh":                    {summary: "Generate Zsh completion."},
+	"completion fish":                   {summary: "Generate Fish completion."},
+	"mesh forward grant":                {summary: "Review an explicit destination-local named TCP service grant."},
+	"mesh forward revoke":               {summary: "Review an exact destination-local TCP service revocation."},
+	"mesh forward show":                 {summary: "Read existing local TCP service grants."},
+	"mesh forward start":                {summary: "Start an explicitly reviewed local forwarding listener."},
+	"mesh forward status":               {summary: "Inspect an exact local forwarding listener."},
+	"mesh forward list":                 {summary: "List existing local forwarding listeners."},
+	"mesh forward stop":                 {summary: "Stop an exact local forwarding listener."},
+	"mesh forward recover":              {summary: "Reconcile an original listener's retained local charge."},
+	"mesh ssh-relay show":               {summary: "Read the existing local SSH relay policy."},
+	"mesh ssh-relay grant-relay":        {summary: "Review an exact workspace relay grant."},
+	"mesh ssh-relay revoke-relay":       {summary: "Review an exact workspace relay revocation."},
+	"mesh ssh-relay grant-destination":  {summary: "Review an exact SSH destination grant."},
+	"mesh ssh-relay revoke-destination": {summary: "Review an exact SSH destination revocation."},
+	"peers":                             {usage: "[status|off|on]", summary: "Show nearby ARM instances' public held and queued quantities, per-request timing and discovery gaps. Default publication can be disabled for this ARM_HOME with peers off.", max: -1},
+	"mesh forward stream":               {summary: "Bridge one raw TCP stream over stdin/stdout using a private token file and exact active source key. Stdout contains only application bytes; effects after route loss are unknown and never retried."},
+	"mesh forward http":                 {summary: "Fetch one plaintext HTTP/1.1 GET or HEAD from an exact named TCP service through an authenticated source listener. Stdout contains only response body; redirects are not followed."},
 
 	"reviews list":      {usage: "[--agent ID] [--lease ID] [--pending] [--after CURSOR]", summary: "Page bounded retained lease review checkpoints and agent explanations. Reading never acknowledges a checkpoint.", max: 0},
 	"reviews inspect":   {usage: "ID", summary: "Read a checkpoint's captured claims, reason, usage quality, queued demand and exact recipient. Replies and silence never renew or authorize actions.", min: 1, max: 1},
@@ -124,7 +142,7 @@ var commandHelps = map[string]commandHelp{
 	"mesh call":                 {usage: "HOST OPERATION [--params JSON] [--key KEY]", summary: "Call the closed direct-peer operation allowlist. Mutations require a stable exact-retry key; no transitive dispatch or local administrative RPC.", min: 2, max: 2},
 	"mesh contacts":             {usage: "HOST", summary: "Read only explicitly allowed target-local contacts with a contact-read grant.", min: 1, max: 1},
 	"mesh send":                 {usage: "HOST --body TEXT --key KEY [--to CONTACT --registration REVIEWED]", summary: "Send to the granted peer operator inbox or exact allowed contact. Target host ID is authoritative; ambiguous names fail. Requires explicit message/contact permissions.", min: 1, max: 1},
-	"mesh bootstrap":            {summary: "Bounded stdin helper used only through verified operator SSH; not a mesh RPC."},
+	"mesh bootstrap":            {summary: "Bounded stdin helper used only through verified operator SSH; not a mesh RPC.", hidden: true},
 
 	"dashboard": {usage: "[BROWSER] [OPTIONS]", summary: "Open the local web console for monitoring and reviewed lease controls. BROWSER selects a macOS application (Safari or an .app path) or an executable on PATH; Linux accepts executables. Use terminal for the interactive terminal dashboard with the same six views, live feed and reviewed lease/message controls. It requires terminal input/output, rejects --json and --no-open, and leaves leases running when closed. A one-use link creates an eight-hour session. Requires a running backend. Piped/JSON output and --no-open never launch a browser, even with BROWSER.", example: "arm dashboard\n  arm dashboard Safari\n  arm dashboard firefox\n  arm dashboard terminal\n  arm dashboard --no-open\n  arm dashboard Safari --json", max: 1},
 	"monitor": {summary: "Show physical host CPU, memory/swap, filesystem space, per-device disk I/O and network rates with bounded history. --follow streams through the shared backend. Unknown counters and history gaps remain explicit; these are separate from lease budgets.", example: `arm monitor
@@ -320,6 +338,10 @@ func parseQuiet(f *flag.FlagSet, args []string) error {
 	return err
 }
 func (a *app) parse(f *flag.FlagSet, args []string, stopAtCommand bool) (err error) {
+	if a.catalogFlags != nil {
+		a.catalogFlags(f, stopAtCommand)
+		return flag.ErrHelp
+	}
 	a.commandName = f.Name()
 	defer func() {
 		f.Visit(func(v *flag.Flag) {
