@@ -5932,3 +5932,25 @@ drift is introduced. This is source-composition evidence, not a new runtime run.
 Browser/custom-name persistence, Linux default-feature runtime, full-suite,
 public installation of this later source and arbitrary escaped-descendant
 cleanup remain outside this acceptance.
+
+
+### Intermittent-node component gate
+
+[Independent evidence](validation/mobile-node-availability-component-2026-10-27.json)
+accepts frozen manifest `6fed1b93ae2f5b2d8ee9c879918de79ccb7fd48530d0d9dc29de7e4a2dbe3557`:
+47 package-qualified Go roots/91 named cases across seven packages under race
+instrumentation, 28 exact Node TAP cases and ten causal controls. Positive
+failures/skips are zero. Each negative has exactly its expected assertion and
+failed ancestry; all other actual cases complete. Fifteen original helper groups
+join before results return, with selected source, runtime, dependency and control
+copies rehashed. Per-child native PID/wait telemetry is not retained; no blanket
+escaped-descendant or hermetic OS closure is claimed.
+
+The accepted frontend bundle hash remains
+`9e866e97917cbf79e504d4e37ee4dc0e27b93413c3b29b31d3966a34867f446a`.
+The final successor changes only the node-cache test identity fixture, adding a
+valid disposable identity and a separate invalid-identity refusal. Production
+guards and assets are unchanged. Earlier original cancellation and invalid-clock
+fixture failures remain failures; the frontend build has its own scope.
+Actual standalone backend/CLI/browser/PTY, physical suspend, Linux runtime and
+composed-main integration are not established by this component gate.

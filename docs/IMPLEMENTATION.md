@@ -2270,3 +2270,19 @@ Default labels are stateless. Custom-name persistence, rebuilt browser label
 presentation, later mobile-command composition and later public installation are
 separate gates. The final default payload is validated together; its intermediate
 commits are not claimed as separately tested.
+
+
+## Intermittent-node component milestone
+
+The reviewed, not-yet-integrated mobile-node slice keeps declaration separate
+from reachability and current capacity. Optional owner-local profile metadata
+uses bounded CAS writes; remote observations expose a limited public projection.
+A bounded read-only observer retries approved endpoints with backoff and uses
+suspend-inclusive native freshness. Startup retries preserve the original
+approval; revocation, stop and changed generations prevent late publication.
+Unknown operations retain their original keys and obligations.
+
+The exact frozen slice passes its native race, frontend-policy and causal-control
+gates. Standalone product binary, two-node native interaction, browser/PTY and
+current-main composition remain open. No scheduler, roaming endpoint discovery,
+automatic certificate renewal or OS service installation is implemented here.

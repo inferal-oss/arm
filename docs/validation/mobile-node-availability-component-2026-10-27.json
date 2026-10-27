@@ -1,0 +1,303 @@
+{
+  "assets": {
+    "arm_mjs_sha256": "9e866e97917cbf79e504d4e37ee4dc0e27b93413c3b29b31d3966a34867f446a",
+    "embedded_count": 5,
+    "generated_wat_count": 1,
+    "unchanged_from_accepted_frontend": true
+  },
+  "base_commit": "2325f519fc899215b4711aa7d5ec4724ae639187",
+  "causal_controls": [
+    {
+      "actual_assertion_sha256": "050f11effa61f24df5092f998aed6131798f52e0bb365eae3db61331078f228e",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe/close"
+        ]
+      ],
+      "intended_assertion": "original remote read did not observe cancellation",
+      "name": "no-body-eof",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe/close"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "a6ebcc8ef3261d26762634496421bf00dd5e519df4f9a1b88419e70eb41de6fa",
+      "actual_cases": [
+        [
+          "getarm.org/internal/manager",
+          "TestNodeAvailabilityOptionalCosmeticCAS"
+        ]
+      ],
+      "intended_assertion": "old revision reapplied or claimed not applied",
+      "name": "cas-no-revision-fence",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/manager",
+          "TestNodeAvailabilityOptionalCosmeticCAS"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "5a830c379a26ecad03484f0dcbf8cb4f9904f1bf6a38cf6dc1450bff9f8f9d1b",
+      "actual_cases": [
+        [
+          "getarm.org/internal/manager",
+          "TestNodeAvailabilityOptionalCosmeticCAS"
+        ],
+        [
+          "getarm.org/internal/manager",
+          "TestNodeAvailabilityOptionalCosmeticCAS/oversized-read"
+        ]
+      ],
+      "intended_assertion": "unbounded metadata value scanned before type/size refusal",
+      "name": "unbounded-sql-projection",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/manager",
+          "TestNodeAvailabilityOptionalCosmeticCAS"
+        ],
+        [
+          "getarm.org/internal/manager",
+          "TestNodeAvailabilityOptionalCosmeticCAS/oversized-read"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "98fd13fb747fe751c77ad813e8370f78a730294aba53ded150eb7e9a28a0dad8",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityRevokedGenerationCannotPublish"
+        ]
+      ],
+      "intended_assertion": "revoked generation published an observation",
+      "name": "revoked-publication-bypass",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityRevokedGenerationCannotPublish"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "5714438e229c9194b7c95ab6c04335d02f0d04f4f579c031a6a67dff9cb78d32",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestNodeCacheNativeClockSuspendAndFailures"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestNodeCacheNativeClockSuspendAndFailures/long-suspend-wall-rollback"
+        ]
+      ],
+      "intended_assertion": "wrong native freshness",
+      "name": "wall-clock-cache",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestNodeCacheNativeClockSuspendAndFailures"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestNodeCacheNativeClockSuspendAndFailures/long-suspend-wall-rollback"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "4de4b7f6673a107cd463b99f438ec5ac1d795615f2bbde4fd3f12513e1732e5b",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityInvalidationJoinsBlockedListenerAttempt"
+        ]
+      ],
+      "intended_assertion": "invalidation did not cancel and join blocked original listener",
+      "name": "listener-cancel-omitted",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityInvalidationJoinsBlockedListenerAttempt"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "494e188330c3ceec2e8c8a8ccb40b21f7216b93bb4f480d369ca045fe05eda77",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityStartupFailureDoesNotAdoptNewApproval"
+        ]
+      ],
+      "intended_assertion": "old failure adopted a newer approval",
+      "name": "newer-startup-approval-adopted",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityStartupFailureDoesNotAdoptNewApproval"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "45aab07f8c73d035bf9e0e217d5c995f2716f97e013b247b409d73f93de82eeb",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityInvalidPeerAndBoundedErrorProjection"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityInvalidPeerAndBoundedErrorProjection/oversized-error-code"
+        ]
+      ],
+      "intended_assertion": "unbounded peer error retained",
+      "name": "unbounded-error-code",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityInvalidPeerAndBoundedErrorProjection"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityInvalidPeerAndBoundedErrorProjection/oversized-error-code"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "8d99b9242dcde8afb866efd873413e1b45b38cd1f1dbe742828751625fcdbe22",
+      "actual_cases": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe/revocation-callback"
+        ]
+      ],
+      "intended_assertion": "callback join returned before its original publication owner completed",
+      "name": "callback-join-omitted",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe"
+        ],
+        [
+          "getarm.org/internal/server",
+          "TestMeshAvailabilityCancellationJoinsOriginalProbe/revocation-callback"
+        ]
+      ]
+    },
+    {
+      "actual_assertion_sha256": "cd346c1520fa9c5f07ea482073b56032b71453a4bf3bc2cd30698eaa890f989c",
+      "actual_cases": [
+        [
+          "getarm.org/internal/manager",
+          "TestMobilePeerRestartRetainsOriginalIntentAndObligation"
+        ],
+        [
+          "getarm.org/internal/manager",
+          "TestMobilePeerRestartRetainsOriginalIntentAndObligation/uncertain-result"
+        ]
+      ],
+      "intended_assertion": "restart replayed or discarded original outcome",
+      "name": "unknown-intent-replay",
+      "rejected": true,
+      "sole_failures": [
+        [
+          "getarm.org/internal/manager",
+          "TestMobilePeerRestartRetainsOriginalIntentAndObligation"
+        ],
+        [
+          "getarm.org/internal/manager",
+          "TestMobilePeerRestartRetainsOriginalIntentAndObligation/uncertain-result"
+        ]
+      ]
+    }
+  ],
+  "complete_diff_sha256": "fc74b247270370ca7ec5414350abf5fe0e23b0d3775471585e9a00b148774238",
+  "date": "2026-10-27",
+  "final_input_proof": {
+    "Go_Python_memberships_and_Python_symlinks": "matched",
+    "cached_module_source_files": 20484,
+    "controlled_rosters_bytes_and_modes": "matched exact single mutations and one declared extra fixture only",
+    "independent_controlled_trees": 10,
+    "independent_current_source_files": 2567,
+    "module_directories": 91,
+    "original_controller_final_pins": "verified",
+    "platform_limit": "Selected inputs and SDK metadata, not hermetic OS/SDK/dynamic-library closure.",
+    "sealed_packet_files": 49,
+    "selected_tool_runtime_files": 17477
+  },
+  "fixture_only_diff_sha256": "676fff427473187721f60f954ae8c6d97b7d03e060507c18a4091b65c376c1ea",
+  "fixture_successor": {
+    "only_source_change_from_v6": "internal/server/node_observation_clock_test.go",
+    "production_Go_JS_assets_unchanged": true,
+    "rationale": "Use a genuinely valid disposable identity for fresh clock controls, retain invalid-identity negative and original store closure; no production freshness/admission guard changed."
+  },
+  "original_ownership": {
+    "all_record_original_group_joined": true,
+    "completed_helper_results": 15,
+    "expected_negative_exit_one": 10,
+    "helper": "Reviewed nonreaping original-owner helper a107; original authority retirement/wait and pipe closure precede returned result.",
+    "limit": "Per-child native PID/wait-call telemetry not persisted. No new wait, process census or blanket descendant closure claimed.",
+    "original_outer_terminal_exit": 0,
+    "version_and_positive_exit_zero": 5
+  },
+  "positive_go": {
+    "exact_run_and_terminal_rosters": "matched",
+    "failures": 0,
+    "named_cases_including_roots": 91,
+    "package_qualified_roots": 47,
+    "packages": 7,
+    "race": true,
+    "skips": 0
+  },
+  "positive_node": {
+    "cancelled": 0,
+    "cases": 28,
+    "exact_TAP_roster_and_summary": "matched",
+    "failures": 0,
+    "skips": 0,
+    "todo": 0
+  },
+  "prior_scopes": {
+    "original_diagnostic": "failed at original source; not repaired retroactively",
+    "v5_frontend": "accepted frontend build only; asset identity unchanged",
+    "v6_composition": "failed:46 Go roots passed/1 failed; Node and controls were not dispatched"
+  },
+  "receipt_sha256": "1cee068ebad1e768668c3b88da66c1847da357b85020f31f21d35d8f96a78738",
+  "remaining_gates": [
+    "Actual separately owned product binary/backend/browser/PTY interactions and native viewport/focus/reconnect behavior.",
+    "Linux and physical suspend/reboot at explicitly scoped current source; controlled samples are not physical suspension.",
+    "Current-main composition, focused commits/integration and final delivery review.",
+    "Endpoint roaming and automatic scheduling/work relocation remain unsupported; declaration is advisory and admission/settlement remains destination-owned."
+  ],
+  "runner_sha256": "0d1d2e04b5981203c31e69852e3cfb97d517a85ee7fc6f4023a6f085c007ee11",
+  "schema": 1,
+  "scope": "Exact frozen v7 source on darwin/arm64; Go race components, Node models and causal fault controls. Separate native browser/PTY/backend-binary acceptance remains pending.",
+  "seal_sha256": "9fbff44ba9d5bccd28fc1108b8e1ceb5db8e9f83608e980a3ad2800c7162a458",
+  "source_manifest_sha256": "6fed1b93ae2f5b2d8ee9c879918de79ccb7fd48530d0d9dc29de7e4a2dbe3557",
+  "status": "accepted within scoped native component-composition gate"
+}

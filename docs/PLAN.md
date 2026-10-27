@@ -141,24 +141,25 @@ generation fencing, stop/join behavior, native outage/restart fixtures and UI
 projection require review. No automatic scheduler, service installation, new
 grants, stale-capacity spending or replay is accepted by this investigation.
 
-Initial native race diagnostics pass real pinned-TLS outage/rejoin and Manager
-restart controls while retaining trust, original operation keys and uncertain
-obligations. These are diagnostic source states, not acceptance of the new
-observer. The first observer race run fails its original remote-request
-cancellation assertion; ten other roots and fourteen named entries pass without
-skips. The proposed fixture correction consumes the bounded request body before
-arming its cancellation oracle and keeps cleanup separate from that oracle.
-The failure remains recorded. A frozen successor is under independent source
-review, including suspend-inclusive freshness in both observer and registry
-cache, service-generation fencing, exact startup-approval capture and original
-worker joins outside administration locks. Optional metadata/CAS, independent
-reset proof, CLI dispatch/help and stock web/terminal mounting must compose and
-pass validation before activation. Review has also found stray CLI operands
-reaching operations, an older read clearing the unknown-update fence, and
-validation-driver paths that can bypass original-child joins; these must be
-fixed in a preserved successor before execution. Automatic recovery assumes a running backend
-and the same approved reachable endpoint; roaming-address migration, certificate
-renewal and automatic cross-host scheduling remain separate work.
+The frozen successor has passed independent source and actual-result review.
+Its accepted frontend rebuild changes only the application bundle. The final
+component gate passes 47 Go roots/91 race cases across seven packages, all 28
+Node policy cases and ten exact causal fault controls, with 15 original helper
+groups joined and final source/tool/dependency/control pins verified. The clock
+fixture uses a genuine valid disposable identity; invalid identity remains a
+separate refusal case. Earlier cancellation and invalid-identity fixture runs
+remain failed.
+
+The product slice adds optional local profile/CAS metadata, bounded pinned-TLS
+observation, native-clock freshness and generation-fenced startup retry, with
+stop/cancellation joins outside administration locks. CLI validation, web
+unknown-write fences across remounts and terminal selection cancellation are
+corrected. This is component acceptance on its frozen source, with no production
+activation or composed-main acceptance. A minimal disposable two-node native
+build/CLI/browser/PTY protocol is being prepared for the remaining interaction
+gate. Automatic recovery assumes a running backend and the same approved
+reachable endpoint; roaming-address migration, certificate renewal and
+automatic scheduling remain separate work.
 
 ## Website capture expansion follow-up
 
