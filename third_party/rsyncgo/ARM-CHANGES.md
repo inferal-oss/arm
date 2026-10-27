@@ -8,10 +8,16 @@ Makefile command paths use that namespace. The original nested module metadata
 is retained verbatim as `UPSTREAM-go.mod.txt` and `UPSTREAM-go.sum.txt`; these
 are provenance records, not active modules. Dependencies (including fork tests)
 are resolved by ARM's root `go.mod`/`go.sum`. No fork algorithms, protocol,
-limits or reviewed fixes changed during this packaging migration. The upstream
+limits or reviewed fixes changed during the initial packaging migration.
+The subsequent validation correction below changes only debug-log formatting. The upstream
 README, license and author identifiers remain historical upstream material.
 
 ARM changes:
+
+* Packaging validation exposed an existing sender debug-log format error:
+  supply its already-computed `strip` value for the third `%q` verb. This
+  removes `%!q(MISSING)` from debug output and permits `go vet`/default tests.
+  It changes no walk inputs, file lists, protocol, limits or filesystem effects.
 
 * Bound peer checksum counts (65,536), block lengths (1 MiB), literal tokens
   (256 KiB), file lengths (64 GiB), file list entries (262,144), path lengths

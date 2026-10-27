@@ -4233,3 +4233,19 @@ omits that flag (piped CLI output is already JSON) and records invalid output
 as a failure without losing the result/cleanup receipts. No product CLI change
 or unsupported public contract is introduced. A corrected reviewed successor
 must rerun from fresh caches; original failure receipts are retained.
+
+Downloaded source receipts from the first run expose actual remaining closure
+failures on both Linux/macOS: tidy wants the existing pinned `k8s.io/streaming`
+requirement promoted to direct (the root Kubernetes tests import it); and the
+newly included fork sender package fails default test vet plus scoped vet at
+`flist.go`'s three-verb/two-argument debug Printf. Runtime native/Linux ARM64
+builds succeed, but that does not accept the failed full compile/race/fork/vet
+commands. No test failure was hidden by disabling vet or changing policy.
+
+Focused correction promotes `k8s.io/streaming` without a version/sum change and
+supplies the existing local `strip` value to that debug call. This is an explicit
+fork diagnostic-output exception to the initial namespace-only comparison:
+`%!q(MISSING)` becomes the intended quoted strip. Walk inputs, file list,
+protocol, accounting, cancellation, bounds and filesystem behavior are unchanged.
+`ARM-CHANGES.md` records it. It requires separate source review and a new exact
+source portable run; no earlier candidate passes accept the corrected source.
