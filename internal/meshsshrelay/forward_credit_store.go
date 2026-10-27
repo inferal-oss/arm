@@ -204,9 +204,14 @@ func CheckForwardCredit(ctx context.Context, home, local, localPin string, grant
 		if ctx.Err() != nil || policy.CreditLedgerID == "" || !time.Now().Before(grant.Expires) {
 			return errors.New("TCP grant expired or credit ledger unavailable")
 		}
+		digest, err := grant.Digest()
+		if err != nil {
+			return err
+		}
 		current := false
 		for _, g := range policy.Forwards {
-			if reflect.DeepEqual(g, grant) {
+			storedDigest, e := g.Digest()
+			if e == nil && storedDigest == digest {
 				current = true
 				break
 			}
@@ -229,10 +234,6 @@ func CheckForwardCredit(ctx context.Context, home, local, localPin string, grant
 		if err = ledger.validate(local, localPin, policy.CreditLedgerID); err != nil {
 			return err
 		}
-		digest, err := grant.Digest()
-		if err != nil {
-			return err
-		}
 		for _, e := range ledger.Entries {
 			if e.Nonce == grant.CreditNonce {
 				if e.Digest != digest || e.Total != grant.TotalBytes || e.Spent >= e.Total {
@@ -248,23 +249,23 @@ func CheckForwardCredit(ctx context.Context, home, local, localPin string, grant
 // ReserveForwardBytes durably prepays application bytes before one write. It
 // serializes with grant changes and other writers across daemon processes.
 // There is no refund for short writes, cancellation, or process death.
-func ReserveForwardBytes(ctx context.Context, home, local, localPin string, grant meshforward.Grant, n int) error {
+func ReserveForwardBytes(ctx context.Context, home, local, localPin string, grant meshforward.Grant, n int) (int, error) {
 	if ctx == nil || ctx.Err() != nil || n < 1 || n > maxForwardCreditSpend || grant.ValidateCredit() != nil {
-		return errors.New("invalid TCP credit reservation")
+		return 0, errors.New("invalid TCP credit reservation")
 	}
 	d, err := policyDirectory(home)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer d.Close()
 	fd, err := unix.Openat(int(d.Fd()), policyLockName, unix.O_RDWR|unix.O_CREAT|unix.O_CLOEXEC|unix.O_NOFOLLOW, 0600)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer unix.Close(fd)
 	for {
 		if err = ctx.Err(); err != nil {
-			return err
+			return 0, err
 		}
 		err = unix.Flock(fd, unix.LOCK_EX|unix.LOCK_NB)
 		if !errors.Is(err, unix.EWOULDBLOCK) {
@@ -274,63 +275,68 @@ func ReserveForwardBytes(ctx context.Context, home, local, localPin string, gran
 		select {
 		case <-ctx.Done():
 			timer.Stop()
-			return ctx.Err()
+			return 0, ctx.Err()
 		case <-timer.C:
 		}
 	}
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer unix.Flock(fd, unix.LOCK_UN)
 	var lockStat unix.Stat_t
 	if err = unix.Fstat(fd, &lockStat); err != nil || lockStat.Mode&unix.S_IFMT != unix.S_IFREG || lockStat.Mode&077 != 0 ||
 		lockStat.Nlink != 1 || lockStat.Uid != uint32(os.Geteuid()) {
-		return errors.New("TCP credit policy lock authority differs")
+		return 0, errors.New("TCP credit policy lock authority differs")
 	}
 	policy, err := readPolicyAt(d, local, localPin)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if policy.CreditLedgerID == "" || !time.Now().Before(grant.Expires) || ctx.Err() != nil {
-		return errors.New("TCP grant expired or credit ledger unavailable")
+		return 0, errors.New("TCP grant expired or credit ledger unavailable")
+	}
+	digest, err := grant.Digest()
+	if err != nil {
+		return 0, err
 	}
 	current := false
 	for _, g := range policy.Forwards {
-		if reflect.DeepEqual(g, grant) {
+		storedDigest, e := g.Digest()
+		if e == nil && storedDigest == digest {
 			current = true
 			break
 		}
 	}
 	if !current {
-		return errors.New("TCP grant changed before byte reservation")
+		return 0, errors.New("TCP grant changed before byte reservation")
 	}
 	ledger, exists, err := readForwardCreditAt(d)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if !exists {
-		return errors.New("TCP credit ledger missing; no balance may be inferred")
+		return 0, errors.New("TCP credit ledger missing; no balance may be inferred")
 	}
 	if err = ledger.validate(local, localPin, policy.CreditLedgerID); err != nil {
-		return err
-	}
-	digest, err := grant.Digest()
-	if err != nil {
-		return err
+		return 0, err
 	}
 	for i := range ledger.Entries {
 		e := &ledger.Entries[i]
 		if e.Nonce != grant.CreditNonce {
 			continue
 		}
-		if e.Digest != digest || e.Total != grant.TotalBytes || int64(n) > e.Total-e.Spent {
-			return errors.New("TCP grant byte credit exhausted or history differs")
+		if e.Digest != digest || e.Total != grant.TotalBytes || e.Spent >= e.Total {
+			return 0, errors.New("TCP grant byte credit exhausted or history differs")
 		}
-		e.Spent += int64(n)
+		granted := int(min(int64(n), e.Total-e.Spent))
+		e.Spent += int64(granted)
 		if err = ctx.Err(); err != nil {
-			return err
+			return 0, err
 		}
-		return writeForwardCreditAt(d, ledger)
+		if err = writeForwardCreditAt(d, ledger); err != nil {
+			return 0, err
+		}
+		return granted, nil
 	}
-	return errors.New("TCP grant credit epoch missing from durable ledger")
+	return 0, errors.New("TCP grant credit epoch missing from durable ledger")
 }

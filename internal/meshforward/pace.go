@@ -56,20 +56,24 @@ type pacedWriter struct {
 	dst    net.Conn
 	pacer  *pacer
 	check  func() error
-	credit func(context.Context, int) error
+	credit func(context.Context, int) (int, error)
 }
 
 func (w pacedWriter) Write(data []byte) (int, error) {
 	total := 0
 	for len(data) > 0 {
 		n := min(len(data), 32<<10)
-		if err := w.pacer.spend(w.ctx, n); err != nil {
-			return total, err
-		}
 		if err := w.check(); err != nil {
 			return total, err
 		}
-		if err := w.credit(w.ctx, n); err != nil {
+		granted, err := w.credit(w.ctx, n)
+		if err != nil {
+			return total, err
+		}
+		if granted < 1 || granted > n {
+			return total, errors.New("invalid TCP forward credit reservation result")
+		}
+		if err := w.pacer.spend(w.ctx, granted); err != nil {
 			return total, err
 		}
 		// Revocation after prepayment burns credit. It never authorizes a write.
@@ -79,19 +83,19 @@ func (w pacedWriter) Write(data []byte) (int, error) {
 		if err := w.ctx.Err(); err != nil {
 			return total, err
 		}
-		written, err := w.dst.Write(data[:n])
+		written, err := w.dst.Write(data[:granted])
 		total += written
 		if err != nil {
 			return total, err
 		}
-		if written != n {
+		if written != granted {
 			return total, io.ErrShortWrite
 		}
-		data = data[n:]
+		data = data[granted:]
 	}
 	return total, nil
 }
 
-func copyPaced(ctx context.Context, dst, src net.Conn, p *pacer, check func() error, credit func(context.Context, int) error) (int64, error) {
+func copyPaced(ctx context.Context, dst, src net.Conn, p *pacer, check func() error, credit func(context.Context, int) (int, error)) (int64, error) {
 	return io.CopyBuffer(pacedWriter{ctx: ctx, dst: dst, pacer: p, check: check, credit: credit}, struct{ io.Reader }{src}, make([]byte, 32<<10))
 }

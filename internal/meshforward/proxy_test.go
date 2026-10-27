@@ -41,7 +41,7 @@ func TestProxyCountsIndependentGrants(t *testing.T) {
 	g2 := g1
 	g2.Endpoint = Endpoint{Name: "other", Network: "tcp", Address: "127.0.0.1:8081"}
 	services := map[string]chan net.Conn{g1.Endpoint.Address: make(chan net.Conn, 1), g2.Endpoint.Address: make(chan net.Conn, 1)}
-	p := &Proxy{Dial: func(_ context.Context, _, address string) (net.Conn, error) { return <-services[address], nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(context.Context, Grant, int) error { return nil }}
+	p := &Proxy{Dial: func(_ context.Context, _, address string) (net.Conn, error) { return <-services[address], nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(_ context.Context, _ Grant, n int) (int, error) { return n, nil }}
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	var peers []net.Conn
@@ -93,7 +93,7 @@ func TestProxySharesRateAcrossConcurrentStreams(t *testing.T) {
 	g.MaxConnections = 2
 	g.BytesPerSecond = 64 << 10
 	services := make(chan net.Conn, 2)
-	p := &Proxy{Dial: func(_ context.Context, _, _ string) (net.Conn, error) { return <-services, nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(context.Context, Grant, int) error { return nil }}
+	p := &Proxy{Dial: func(_ context.Context, _, _ string) (net.Conn, error) { return <-services, nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(_ context.Context, _ Grant, n int) (int, error) { return n, nil }}
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	var clients, applications []net.Conn
@@ -159,7 +159,7 @@ func TestProxyRouteLossAfterApplicationBytesIsUnknownAndJoined(t *testing.T) {
 	service, application := net.Pipe()
 	defer client.Close()
 	defer application.Close()
-	p := &Proxy{Dial: func(context.Context, string, string) (net.Conn, error) { return service, nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(context.Context, Grant, int) error { return nil }}
+	p := &Proxy{Dial: func(context.Context, string, string) (net.Conn, error) { return service, nil }, CheckCredit: func(context.Context, Grant) error { return nil }, Credit: func(_ context.Context, _ Grant, n int) (int, error) { return n, nil }}
 	ready := make(chan struct{})
 	done := make(chan error, 1)
 	go func() {
@@ -212,7 +212,7 @@ func TestProxyCreditFailureNeverWritesApplicationBytes(t *testing.T) {
 	p := &Proxy{
 		Dial:        func(context.Context, string, string) (net.Conn, error) { return service, nil },
 		CheckCredit: func(context.Context, Grant) error { return nil },
-		Credit:      func(context.Context, Grant, int) error { return denied },
+		Credit:      func(context.Context, Grant, int) (int, error) { return 0, denied },
 	}
 	ready := make(chan struct{})
 	done := make(chan error, 1)
@@ -244,5 +244,48 @@ func TestProxyCreditFailureNeverWritesApplicationBytes(t *testing.T) {
 	}
 	if p.Active() != 0 {
 		t.Fatal("credit-denied proxy retained active stream")
+	}
+}
+
+func TestPacedWriterUsesExactFinalCredit(t *testing.T) {
+	writer, reader := net.Pipe()
+	defer writer.Close()
+	defer reader.Close()
+	pacer, err := newPacer(1 << 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remaining := 4
+	w := pacedWriter{ctx: t.Context(), dst: writer, pacer: pacer, check: func() error { return nil },
+		credit: func(_ context.Context, n int) (int, error) {
+			if remaining == 0 {
+				return 0, errors.New("aggregate credit exhausted")
+			}
+			granted := min(n, remaining)
+			remaining -= granted
+			return granted, nil
+		}}
+	done := make(chan struct {
+		n   int
+		err error
+	}, 1)
+	go func() {
+		n, err := w.Write([]byte("abcde"))
+		done <- struct {
+			n   int
+			err error
+		}{n, err}
+	}()
+	got := make([]byte, 4)
+	if _, err := io.ReadFull(reader, got); err != nil || string(got) != "abcd" {
+		t.Fatalf("final prepaid bytes differ: %q %v", got, err)
+	}
+	select {
+	case result := <-done:
+		if result.n != 4 || result.err == nil || remaining != 0 {
+			t.Fatalf("writer exceeded final credit: %+v remaining=%d", result, remaining)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("writer stalled at credit exhaustion")
 	}
 }

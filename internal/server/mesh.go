@@ -136,7 +136,7 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 		CheckCredit: func(ctx context.Context, grant meshforward.Grant) error {
 			return meshsshrelay.CheckForwardCredit(ctx, s.home, identity.Host, identity.Fingerprint, grant)
 		},
-		Credit: func(ctx context.Context, grant meshforward.Grant, n int) error {
+		Credit: func(ctx context.Context, grant meshforward.Grant, n int) (int, error) {
 			return meshsshrelay.ReserveForwardBytes(ctx, s.home, identity.Host, identity.Fingerprint, grant, n)
 		},
 	}

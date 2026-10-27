@@ -1,6 +1,7 @@
 package meshsshrelay
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,7 +26,7 @@ func creditFixture(t *testing.T, total int64) (string, meshforward.Grant) {
 		Account: "owner", Endpoint: meshforward.Endpoint{Name: "service", Network: "tcp", Address: "127.0.0.1:8080"},
 		Revision: 1, MaxConnections: 2, BytesPerConnection: 1 << 20, BytesPerSecond: 1 << 20,
 		TotalBytes: total, CreditNonce: h("b", 16),
-		Transit: model.Resources{CPU: .01, Memory: 4 << 20}, MaxTTL: time.Minute, Expires: time.Now().Add(time.Hour),
+		Transit: model.Resources{CPU: .01, Memory: 4 << 20}, MaxTTL: time.Minute, Expires: time.Now().UTC().Add(time.Hour),
 	}
 	return home, g
 }
@@ -54,7 +55,11 @@ func TestForwardCreditConcurrentSequentialAndRestart(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			errors <- ReserveForwardBytes(ctx, home, grant.Target, grant.TargetPin, grant, 4<<10)
+			granted, err := ReserveForwardBytes(ctx, home, grant.Target, grant.TargetPin, grant, 4<<10)
+			if err == nil && granted != 4<<10 {
+				err = fmt.Errorf("short concurrent reservation: %d", granted)
+			}
+			errors <- err
 		}()
 	}
 	wg.Wait()
@@ -66,7 +71,7 @@ func TestForwardCreditConcurrentSequentialAndRestart(t *testing.T) {
 	}
 	// A fresh call has no in-memory proxy state, but still observes the spent
 	// durable record. Neither another connection nor a daemon restart refills it.
-	if err := ReserveForwardBytes(ctx, home, grant.Target, grant.TargetPin, grant, 1); err == nil {
+	if _, err := ReserveForwardBytes(ctx, home, grant.Target, grant.TargetPin, grant, 1); err == nil {
 		t.Fatal("aggregate credit reset after sequential reservations")
 	}
 	if err := CheckForwardCredit(ctx, home, grant.Target, grant.TargetPin, grant); err == nil {
@@ -110,13 +115,13 @@ func TestForwardCreditMissingCorruptAndLegacyDeny(t *testing.T) {
 	if err := os.Remove(path); err != nil {
 		t.Fatal(err)
 	}
-	if err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
+	if _, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
 		t.Fatal("missing preexisting ledger reset credit")
 	}
 	if err := os.WriteFile(path, []byte(`{"schema":1}`), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
+	if _, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
 		t.Fatal("corrupt ledger admitted a write")
 	}
 }
@@ -138,7 +143,7 @@ func TestForwardCreditPreparationBeforePolicyCommitCannotGrantOrReset(t *testing
 		t.Fatal(err)
 	}
 	d.Close() // Simulate process loss before the policy rename.
-	if err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
+	if _, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
 		t.Fatal("prepared ledger without policy publication granted credit")
 	}
 	if err := CommitPolicy(review); err == nil {
@@ -153,8 +158,8 @@ func TestForwardCreditPreparationBeforePolicyCommitCannotGrantOrReset(t *testing
 func TestForwardCreditReplacementKeepsOldHistory(t *testing.T) {
 	home, grant := creditFixture(t, 1024)
 	commitCreditGrant(t, home, grant)
-	if err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 768); err != nil {
-		t.Fatal(err)
+	if n, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 768); err != nil || n != 768 {
+		t.Fatalf("initial credit reservation: %d %v", n, err)
 	}
 	next := grant
 	next.Revision++
@@ -170,11 +175,11 @@ func TestForwardCreditReplacementKeepsOldHistory(t *testing.T) {
 	if err := CommitPolicy(review); err != nil {
 		t.Fatal(err)
 	}
-	if err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
+	if _, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
 		t.Fatal("replaced grant spent old credit")
 	}
-	if err := ReserveForwardBytes(t.Context(), home, next.Target, next.TargetPin, next, 2048); err != nil {
-		t.Fatal(err)
+	if n, err := ReserveForwardBytes(t.Context(), home, next.Target, next.TargetPin, next, 2048); err != nil || n != 2048 {
+		t.Fatalf("replacement credit reservation: %d %v", n, err)
 	}
 	d, err := policyDirectory(home)
 	if err != nil {
@@ -184,5 +189,19 @@ func TestForwardCreditReplacementKeepsOldHistory(t *testing.T) {
 	ledger, exists, err := readForwardCreditAt(d)
 	if err != nil || !exists || len(ledger.Entries) != 2 || ledger.Entries[0].Spent != 768 || ledger.Entries[1].Spent != 2048 {
 		t.Fatalf("replacement reset old ledger history: %+v %v", ledger, err)
+	}
+}
+
+func TestForwardCreditSmallRemainderIsExact(t *testing.T) {
+	home, grant := creditFixture(t, 1000)
+	commitCreditGrant(t, home, grant)
+	if n, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 900); err != nil || n != 900 {
+		t.Fatalf("first reservation: %d %v", n, err)
+	}
+	if n, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 200); err != nil || n != 100 {
+		t.Fatalf("remaining credit not prepaid exactly: %d %v", n, err)
+	}
+	if _, err := ReserveForwardBytes(t.Context(), home, grant.Target, grant.TargetPin, grant, 1); err == nil {
+		t.Fatal("aggregate credit exceeded after final partial reservation")
 	}
 }
