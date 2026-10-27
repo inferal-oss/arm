@@ -1636,3 +1636,21 @@ intervening content, modal or geometry changes still reject stale clicks.
 Combined-cgroup resident usage remains unknown while measured availability is
 displayed; To-lease values remain backend-derived. This display correction is
 not a native elapsed-lease authority or universal host-counter accuracy proof.
+
+
+## Read-only private workspace block survey
+
+`SurveyWorkspace` reopens an exact marked reservation through held descriptors
+and observes reported `st_blocks` without following symlink targets. It bounds
+the walk to 100,000 entries and depth 128, checks owner/device and object, link,
+block and mount identities before and after traversal, and returns no usable
+partial result on change, cancellation or overflow. Linux requires native
+`STATX_MNT_ID` for directories, files and symlinks. Darwin pairs descriptor
+filesystem ID with its nonempty reported mountpoint and opens the link inode
+itself; this is a weaker platform observation, not a Linux-equivalent mount ID.
+
+The result can double count hardlinks, clones and shared blocks. It supplies no
+reservation, write cap, kernel quota, exclusive-allocation or reclamation proof.
+It adds no cleanup, settlement or public sync dispatch. Concurrent same-account
+writers prevent an atomic snapshot, and a cancellation check cannot force stalled
+kernel I/O to return. Broader allocation enforcement remains required.

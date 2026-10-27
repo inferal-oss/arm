@@ -4530,3 +4530,29 @@ fixtures use real counted pools for their policy/entitlement semantics, without
 CPU overrides or claims of native CPU-admission coverage. No native terminal-app
 GUI, all-container, whole-primary-suite or elapsed-lease authority acceptance is
 inferred. Raw private execution records remain outside version control.
+
+
+### Bounded private workspace block survey
+
+Reviewed sources `a4315fb`, `1aeb712` and `616211b` pass native race and vet
+gates. [Linux run 40436990044](https://github.com/inferal-oss/arm/actions/runs/40436990044)
+passes 46 roots/48 named outcomes, with the opt-in mount fixture skipped in the
+ordinary run and then passing separately: one root/four named outcomes cover
+actual same-device directory, file and symlink mounts with distinct mount IDs.
+The original missed-symlink failure, corrected cleanup and unchanged external
+namespace/catalog evidence are retained.
+
+[Darwin run 40437710663](https://github.com/inferal-oss/arm/actions/runs/40437710663)
+passes 48 roots/50 named outcomes without skips. Native descriptor checks prove
+that symlink inspection opens the original link inode and its containing mount.
+Equal-filesystem-ID/different-mountpoint cases use a value seam; no actual Darwin
+mount-negative or Linux arm64 execution is claimed. The Darwin-only successor
+retains Linux acceptance through 1,865 unchanged inputs.
+
+Root independently verifies the eight composed source hashes, both artifact ZIP
+digests, all seven original command exits/log hashes and source closure. The
+[normalized record](validation/sync-workspace-allocation-2026-10-26.json) preserves
+failures, rosters, reuse boundaries and limits. This is a diagnostic observation;
+physical enforcement, cleanup/settlement, public dispatch and formal acceptance
+remain open. Gauge changes affect a separate package and do not alter these
+filesystem inputs.
