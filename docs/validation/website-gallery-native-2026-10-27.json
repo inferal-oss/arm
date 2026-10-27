@@ -1,0 +1,245 @@
+{
+  "schema": 1,
+  "kind": "website-gallery-focus-successor-final-independent-review",
+  "disposition": "accepted_within_retained_source_controlled_regression_and_native_observation_scope",
+  "candidate": {
+    "base_commit": "f7163ec0c120d58ea111662ece68c0324075bfcd",
+    "source_manifest_sha256": "5dbe3717a122a9e4e597be99b22e535dceadd90743204a54c975505e5da05827",
+    "input_count": 10,
+    "all_source_hashes_match": true,
+    "prior_nine_inputs_unchanged": true,
+    "main_ts_sha256": "c5cad640da3037a2721e682287b02608f5308293f9b9742469d5b9c6b7bd6ceb",
+    "build_integrity_sha256": "82d6d20374ca0041357e33f4dd74fe05f67b734e8b489fb11f6123870f032d8d",
+    "framework_commit": "88eb230991c4f63d54fe47bee5cf3fb9f121e528",
+    "runtime_artifacts": {
+      "assets/arm-wat-only-store-CpWQrDGP.js": {
+        "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d",
+        "bytes": 152
+      },
+      "assets/index-V1smRh84.js": {
+        "sha256": "3820631a37f87d5b4de8df7b402fb3644e0f34e64080f7dbeb1caf87ccc9de81",
+        "bytes": 3501950
+      },
+      "assets/wat-4kfTsMVw.js": {
+        "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b",
+        "bytes": 77
+      },
+      "assets/wat-CR-H2qbq.wasm": {
+        "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01",
+        "bytes": 102443
+      }
+    },
+    "compiled_focus_fix_present": true
+  },
+  "source_review": {
+    "preflush_active_element_and_return_focus_snapshot": true,
+    "connected_visible_opener_guard": true,
+    "remaining_nine_inputs_match_prior_review": true,
+    "prior_review_sha256": "15badaed09d8976c3e87d9aadd5ae4a6af5f4ef863e6c93d0f1818081e98ffe3",
+    "new_source_blocker": false
+  },
+  "native_evidence": {
+    "observations_sha256": "ed061875ce58a5ebaa0de967f494412a3aa0b848a5b5e68939c671e595a03906",
+    "case_count": 16,
+    "case_names": [
+      "desktop-open",
+      "desktop-close-focus",
+      "desktop-next",
+      "desktop-zoom-off",
+      "desktop-reverse-tab-wrap",
+      "desktop-forward-tab-wrap",
+      "desktop-viewport-fullscreen",
+      "desktop-screen-fullscreen-fallback",
+      "desktop-escape-after-navigation-focus",
+      "mobile-bounds",
+      "mobile-next-zoom-off",
+      "mobile-keyboard-next",
+      "mobile-escape-focus",
+      "mobile-reopen-close-focus",
+      "mobile-carousel",
+      "mobile-pile"
+    ],
+    "mobile_recorded_viewport": {
+      "height": 844,
+      "width": 390
+    },
+    "all_five_controls_within_recorded_viewport": true,
+    "invalid_shape_count": 0,
+    "focus_return_cases": [
+      "desktop-close-focus",
+      "desktop-escape-after-navigation-focus",
+      "mobile-escape-focus",
+      "mobile-reopen-close-focus"
+    ],
+    "screenshots": {
+      "final-desktop-grid.png": {
+        "format": "JPEG",
+        "width": 1713,
+        "height": 849,
+        "sha256": "acdb31ea886b94bed32565fa8bbd142ae94624fc0a82857bfae430d815e79476",
+        "bytes": 92729
+      },
+      "final-mobile-grid.png": {
+        "format": "JPEG",
+        "width": 375,
+        "height": 812,
+        "sha256": "f7a027a3a1d142ea10f41d1872fd11a8737ab7713ce405765cb0429af54c14b7",
+        "bytes": 39442
+      },
+      "final-mobile-lightbox.png": {
+        "format": "JPEG",
+        "width": 375,
+        "height": 812,
+        "sha256": "8d27b55697dc0d7d66bbb7b72ed03e4d3954e554ff2704f3f3c0e31c57527351",
+        "bytes": 14408
+      }
+    },
+    "settled_main_image_visibility_established": true,
+    "settled_visibility": {
+      "observations_sha256": "1dfdf1096fef4cc53ddeba24c60c47f7ab676feddf8289acf983f5adfd220138",
+      "case_count": 8,
+      "selected_cases": [
+        "resources-settled-after-same-sequence",
+        "terminal-settled",
+        "terminal-zoom-off-settled",
+        "monitor-settled",
+        "resources-reopen-settled"
+      ],
+      "screenshots": {
+        "visibility-monitor-settled.png": {
+          "format": "JPEG",
+          "width": 375,
+          "height": 812,
+          "sha256": "0118a1051e51634afc6a2a58d8bcd7af853fee66790d3f28a857c0a9c2b493ae",
+          "bytes": 23602
+        },
+        "visibility-resources-settled.png": {
+          "format": "JPEG",
+          "width": 375,
+          "height": 812,
+          "sha256": "013bc85f62b5d6fe1f0d740a4a5965ea13afa9ce119e2286bb1fc0efa867947e",
+          "bytes": 29889
+        },
+        "visibility-terminal-settled.png": {
+          "format": "JPEG",
+          "width": 375,
+          "height": 812,
+          "sha256": "c38660de09ac7a8f2588533eae76d2d5d4b7338626311e52c2e8955b0e3fdc63",
+          "bytes": 31282
+        },
+        "visibility-terminal-zoom-off-settled.png": {
+          "format": "JPEG",
+          "width": 375,
+          "height": 812,
+          "sha256": "920ed5f571b122b7ca396585f85c82153d979fdae11af77c43f5088999766b45",
+          "bytes": 31480
+        },
+        "visibility-resources-reopen-settled.png": {
+          "format": "JPEG",
+          "width": 375,
+          "height": 812,
+          "sha256": "902eb28f059f7ce103a87272fda774b7954c321580ae7c5f6fbe706fb2b60421",
+          "bytes": 29771
+        }
+      },
+      "all_three_images_decoded_visible_opacity_one": true,
+      "zoom_off_and_reopen_visible": true,
+      "immediate_resources_opacity": "0.280236",
+      "later_resources_opacity": "1",
+      "stock_tokens": {
+        "slide": "320ms",
+        "move": "700ms"
+      },
+      "maximum_settling_duration_measured": false,
+      "getAnimations_available_in_readonly_bridge": false,
+      "original_blank_screenshot_retained_unchanged": true
+    }
+  },
+  "controlled_regressions": {
+    "retained_test_log": {
+      "sha256": "47253b7c13c43f996b5247a246ee59dd23601a1480e693d5abf2282f9898ceb7",
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "todo": 0
+    },
+    "stock_baseline_failures_retained": true,
+    "overlay_controls": {
+      "controls": [
+        {
+          "case": "apply-and-idempotence",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "case": "unknown-source",
+          "passed": true,
+          "exit_code": 1
+        },
+        {
+          "case": "linked-source",
+          "passed": true,
+          "exit_code": 1
+        },
+        {
+          "case": "changed-patch",
+          "passed": true,
+          "exit_code": 1
+        }
+      ],
+      "temporary_fixture_removed": true
+    }
+  },
+  "historical_failures": {
+    "first_native_focus_failure_sha256": "5be9a6ee9716f116937e9c10eec8165f801fe56398290492bca592ab8cabead8",
+    "old_build_integrity_sha256": "c5f70529a3276ce548a3507adff5914d407f4f33d9cb4cee2871210d74340ae7",
+    "relabelled_as_pass": false
+  },
+  "findings": [
+    {
+      "id": "GALLERY-NATIVE-SETTLED-IMAGE",
+      "status": "closed_by_new_readonly_observations_and_five_actual_settled_images"
+    },
+    {
+      "id": "GALLERY-ORIGINAL-GATE-TRANSCRIPT",
+      "status": "closed_by_retained_original_tool_response_transcription"
+    }
+  ],
+  "limitations": [
+    "Screenshot filenames end in .png but all three payloads are JPEG. Mobile screenshot pixels are 375x812; separately recorded viewport is 390x844.",
+    "Fullscreen viewport and stock maximized fallback are observed; native fullscreen API success is not claimed.",
+    "Focus records identify the opening Resources button by alt and, for desktop Close, BUTTON tag; they do not retain strict DOM node identity.",
+    "build-integrity.source_commit is the screenshot backend capture source, not the candidate website identity.",
+    "No new execution, browser control, build, network, original-session polling, or author/primary edit was performed.",
+    "Computed visibility, opacity, decoded dimensions and screenshots establish the observed settled states; no getAnimations inspection or maximum animation-duration measurement is claimed.",
+    "The original blank image screenshot remains historical evidence; the new sequence observes an in-progress opacity transition followed by a settled visible image and does not retroactively relabel the original artifact.",
+    "The gate evidence is a retained transcription of the original tool responses, not a new command execution or independent repeat."
+  ],
+  "review_method": "read-only static source, retained artifact hashing and image inspection; isolated reviewer source projection; no rerun",
+  "prior_review": {
+    "sha256": "13a3021511354550afd42d54e41f0fd2c5f2aa61d099610202a183d3a3224aa1",
+    "normalized_sha256": "ec773ad9de04e1ed549103899327b07402b076da2db9dbe8921f104a611a6563",
+    "prior_gaps_preserved": true
+  },
+  "original_gate_transcript": {
+    "sha256": "f9c53fb21dfefa94dc989bcbcc50fd3ad68474290122ac060b58a7396e9354b4",
+    "kind": "retained transcription of original tool responses; no rerun",
+    "typecheck_exit_success": true,
+    "test_pass": 4,
+    "test_fail": 0,
+    "test_skip": 0,
+    "test_todo": 0,
+    "build_exit_success": true,
+    "combined_original_exit": 0,
+    "source_and_resulting_build_hashes_match": true,
+    "known_large_chunk_warning_retained": true,
+    "output_attribution": "combined execution-tool output; separate stdout/stderr attribution is not claimed"
+  },
+  "transcript_metadata_addendum": {
+    "previous_transcript_sha256": "088415b93c64e854b125c978719c7edc9e30c3310812ed36f70dfc69dbe9bd2e",
+    "current_transcript_sha256": "f9c53fb21dfefa94dc989bcbcc50fd3ad68474290122ac060b58a7396e9354b4",
+    "only_changes": "initial_stdout/completion_stdout labels replaced by initial_output/completion_output; combined-output note added; original command, source/build bindings, execution identifiers, exit and output bytes unchanged",
+    "exact_old_serialization_reconstructed_sha256": "088415b93c64e854b125c978719c7edc9e30c3310812ed36f70dfc69dbe9bd2e",
+    "runtime_or_gate_disposition_changed": false
+  }
+}

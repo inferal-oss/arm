@@ -2090,8 +2090,11 @@ path and query. Canonical GitHub Pages settings and DNS remain unchanged. No
 Worker, new project or paid plan is used.
 
 The two layout declarations in `2af7ffc` use stock `AlignedColumns` for the
-Documentation and Capabilities cards. Gallery/Lightbox navigation and mobile
-containment findings remain open; this layout change does not close them.
+Documentation and Capabilities cards. The separate Gallery feature `c1a2e9d`
+adds stock Grid/Carousel/Pile selection, Lightbox navigation and host effects.
+Its pinned website-only framework overlays correct stale snap feedback and
+mobile containment, while pre-patch focus ownership restores the screenshot
+opener after closing. The embedded ARM framework is unchanged by these overlays.
 The [vanity source-install plan](design/getarm-source-install-plan.md) is a
 reviewed design; the module namespace and public installation command have not
 yet changed.

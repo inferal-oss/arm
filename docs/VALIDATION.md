@@ -5551,3 +5551,27 @@ The native browser retains the overview fragment at the canonical destination.
 No Worker, new Cloudflare project or paid-plan change occurs. These are GET
 routing checks for the listed paths, separate from unpublished UI, vanity-module
 installation and release acceptance.
+
+### Website Gallery native acceptance
+
+[Final Gallery evidence](validation/website-gallery-native-2026-10-27.json)
+binds all ten reviewed inputs and compiled artifacts to `c1a2e9d`. One retained
+original gate passes typecheck, all four controlled snap regressions and the
+production build. Patch controls cover apply/idempotence and refusal of unknown,
+linked or altered sources. Independent review checks the actual artifacts and
+retained original tool-output transcription; it does not claim a fresh repeat.
+
+Actual desktop and recorded 390-by-844 phone observations cover the three
+layouts, navigation, direct thumbnails, zoom-off, keyboard arrows/Tab wrapping,
+Close/Escape focus return and five contained header controls. Supplementary
+decoded-image, opacity and geometry records plus five settled screenshots show
+all three main images, zoom-off and reopening. The earlier blank capture stays
+preserved: a new sequence observes an opacity transition and later visible
+settled image, without measuring a maximum settling time. Screenshot pixel sizes
+and actual JPEG payload types are recorded separately from the viewport.
+
+Fullscreen viewport and stock maximized fallback are observed; native screen
+API success is unproven. Screenshot metadata's source commit identifies the
+backend capture, while the separate ten-input manifest binds this website
+candidate. Earlier native failures remain historical. This accepts the scoped
+local source and observations, not a later deployment or upstream merge.
