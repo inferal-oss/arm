@@ -21,10 +21,10 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/leaseclock"
+	"getarm.org/internal/model"
+	"getarm.org/internal/sshservice"
 	"github.com/google/uuid"
-	"github.com/inferal-oss/arm/internal/leaseclock"
-	"github.com/inferal-oss/arm/internal/model"
-	"github.com/inferal-oss/arm/internal/sshservice"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sys/unix"
 )
