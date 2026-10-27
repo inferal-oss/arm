@@ -2180,6 +2180,13 @@ destination; automatic cross-host placement is not implemented.
 Review requires suspend-inclusive cache aging, service-generation fencing,
 joined cancellation and preservation of unknown work. Temporary loss must not
 restore revoked access, rewrite trust or replay an uncertain operation.
+The prepared owner profile is optional bounded metadata with revision-guarded
+updates; its public report omits the private reason and update key. Shared
+lifecycle, independent reset-proof and interface hooks remain under review.
+The first observer race run fails a cancellation assertion, so it does not
+establish acceptance of the revised observer. Existing per-request recovery
+assumes the backend returns at the same approved reachable endpoint; automatic
+roaming, certificate renewal and OS-service installation are not implemented.
 
 ## Eight-view website capture
 

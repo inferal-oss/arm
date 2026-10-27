@@ -5528,6 +5528,22 @@ visual review does not accept every decorative envelope, text or browser.
 These qualified experimental observations neither promote the numeric dependency
 nor publish or merge Sparkline.
 
+### Intermittent mesh observer diagnostic
+
+The first frozen observer/profile race run fails
+`TestMeshAvailabilityCancellationJoinsOriginalProbe`: the original remote read
+does not observe cancellation. Ten other roots and fourteen named entries pass,
+with no skips. The retained JSON output has SHA256
+`837995de1c6256ca915702a2f85152f862632596755f3774e6c913760d6eb926`.
+This failed source state does not accept the later observer or production hooks.
+
+The fixture waits for cancellation before consuming its POST body. A proposed
+successor drains a bounded body first and separates cleanup release from the
+cancellation oracle. A causal negative, original request/listener joins,
+revocation races, suspend-inclusive freshness and final composed lifecycle/API
+and rendered-interface tests remain required. No physical host sleep, roaming
+address migration or automatic placement is established by these diagnostics.
+
 ### Resources v2 completed source cohorts
 
 [Scoped evidence](validation/resources-ui-v2-scoped-2026-10-27.json) records

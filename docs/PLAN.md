@@ -109,11 +109,21 @@ grants, stale-capacity spending or replay is accepted by this investigation.
 Initial native race diagnostics pass real pinned-TLS outage/rejoin and Manager
 restart controls while retaining trust, original operation keys and uncertain
 obligations. These are diagnostic source states, not acceptance of the new
-observer. Independent review of the frozen observer/profile candidate is in
-progress. Known successor corrections include suspend-inclusive freshness,
-invalidation on mesh-service replacement, accurate listener state and stale
-profile reporting. Existing registry-cache aging must share the same safe
-freshness boundary before activation.
+observer. The first observer race run fails its original remote-request
+cancellation assertion; ten other roots and fourteen named entries pass without
+skips. The proposed fixture correction consumes the bounded request body before
+arming its cancellation oracle and keeps cleanup separate from that oracle.
+The failure remains recorded. A frozen successor is under independent source
+review, including suspend-inclusive freshness in both observer and registry
+cache, service-generation fencing, exact startup-approval capture and original
+worker joins outside administration locks. Optional metadata/CAS, independent
+reset proof, CLI dispatch/help and stock web/terminal mounting must compose and
+pass validation before activation. Review has also found stray CLI operands
+reaching operations, an older read clearing the unknown-update fence, and
+validation-driver paths that can bypass original-child joins; these must be
+fixed in a preserved successor before execution. Automatic recovery assumes a running backend
+and the same approved reachable endpoint; roaming-address migration, certificate
+renewal and automatic cross-host scheduling remain separate work.
 
 ## Website capture expansion follow-up
 
