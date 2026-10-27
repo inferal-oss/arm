@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/inferal-oss/arm/internal/model"
@@ -41,6 +42,52 @@ func (h *RelayTransit) Lease() (model.Lease, error) {
 	h.manager.mu.Lock()
 	defer h.manager.mu.Unlock()
 	return h.manager.get(h.id)
+}
+
+// MarkCleanupUncertain records a failed native cleanup for this exact current
+// relay owner. Call it before closing the original joined witness. Worker join
+// is still required, but it cannot erase a failed native close or free resources.
+// This private handle operation has no wire/RPC equivalent or recovery adoption.
+func (h *RelayTransit) MarkCleanupUncertain(reason string) error {
+	if h == nil || h.manager == nil {
+		return model.Err("invalid_request", "exact relay owner required")
+	}
+	reason = strings.TrimSpace(reason)
+	if reason == "" || len(reason) > 4096 {
+		return model.Err("invalid_request", "bounded cleanup failure reason required")
+	}
+	m := h.manager
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if h.settled || m.relayTransits[h.id] != h || h.result.ID != h.id || h.result.Request.Kind != relayTransitKind || h.result.Request.Key != h.key {
+		return model.Err("relay_owner_changed", "exact current relay cleanup owner required")
+	}
+	select {
+	case <-h.joined:
+		return model.Err("relay_owner_changed", "cleanup failure must be marked before original worker join")
+	default:
+	}
+	// These process-local obligations are irreversible even when the ledger
+	// cannot be read or written. Cancel only this original capability.
+	if h.recoveryReason == "" {
+		h.recoveryReason = reason
+	}
+	h.cancel()
+	l, err := m.get(h.id)
+	if err != nil {
+		return err
+	}
+	if l.ID != h.id || l.Request.Kind != h.result.Request.Kind || l.Request.Key != h.key || !consuming(l.State) || l.Host != h.result.Host || l.Owner != h.result.Owner || l.PID != 0 || l.Process != nil || !reflect.DeepEqual(l.Request, h.result.Request) {
+		return model.Err("relay_owner_changed", "durable relay allocation differs; cleanup remains uncertain")
+	}
+	l.State, l.Ended = "needs_attention", nil
+	l.Outcome, l.Failure = "interrupted", h.recoveryReason
+	l.Revision++
+	if err = m.put(l, "relay.cleanup_uncertain"); err != nil {
+		return err
+	}
+	h.result = l
+	return nil
 }
 
 // AcquireRelayTransit admits a fresh in-process transport obligation using the
@@ -128,13 +175,18 @@ func (m *Manager) acquireOwnedTransit(ctx context.Context, request model.Request
 
 func (m *Manager) endRelayTransit(l model.Lease, outcome string) (model.Lease, error) {
 	h := m.relayTransits[l.ID]
-	if h == nil || h.key != l.Request.Key || l.State == "needs_attention" {
+	if h == nil || h.key != l.Request.Key {
 		return l, model.Err("needs_attention", "original relay owner and positive join witness are unavailable; allocation remains charged")
+	}
+	// An attention row still owns current workers. Cancellation must precede
+	// this early return just as it precedes a failed ending write.
+	defer h.cancel()
+	if l.State == "needs_attention" {
+		return l, model.Err("needs_attention", "native cleanup remains uncertain; original worker join is still required")
 	}
 	// Cancellation never certifies reclamation. Even when recording ending
 	// fails, stop the exact current owner and retain the prior charged row.
 	// Otherwise Close could wait forever for an owner it had never cancelled.
-	defer h.cancel()
 	l.State, l.Outcome = "ending", outcome
 	l.Revision++
 	if err := m.put(l, "relay.ending"); err != nil {
@@ -170,14 +222,18 @@ func (h *RelayTransit) FinishAfterJoin() (model.Lease, error) {
 	if err != nil {
 		return l, err
 	}
-	if l.Request.Kind != h.result.Request.Kind || l.Request.Key != h.key || !consuming(l.State) || l.Host != h.result.Host || l.Owner != h.result.Owner || l.PID != 0 || l.Process != nil || !reflect.DeepEqual(l.Request, h.result.Request) {
+	if l.ID != h.id || l.Request.Kind != h.result.Request.Kind || l.Request.Key != h.key || !consuming(l.State) || l.Host != h.result.Host || l.Owner != h.result.Owner || l.PID != 0 || l.Process != nil || !reflect.DeepEqual(l.Request, h.result.Request) {
 		return l, model.Err("relay_owner_changed", "durable relay allocation differs; no settlement performed")
 	}
 	if h.recoveryReason != "" {
 		l.State, l.Ended = "needs_attention", nil
 		l.Outcome, l.Failure = "interrupted", h.recoveryReason
 		l.Revision++
-		if err = m.put(l, "sync.preparation_recovery_required"); err != nil {
+		event := "relay.cleanup_recovery_required"
+		if l.Request.Kind == syncPreparationKind {
+			event = "sync.preparation_recovery_required"
+		}
+		if err = m.put(l, event); err != nil {
 			return l, err
 		}
 		h.cancel()
@@ -217,6 +273,9 @@ func (m *Manager) closeRelayTransits() error {
 	var result error
 	for id, h := range m.relayTransits {
 		owners = append(owners, h)
+		// The exact registered owner must stop even when reading its ledger
+		// fails, before End can reach endRelayTransit's cancellation defer.
+		h.cancel()
 		_, err := m.end(id, "cancelled")
 		result = errors.Join(result, err)
 	}
