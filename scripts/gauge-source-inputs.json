@@ -2,7 +2,7 @@
   "reviewed_commit": "95aa5841705edd7798a38d36ab75587c8b0abdc7",
   "canonical_base": "af7c05985aa343f2b9535a295456e456b5ced542",
   "scope": "all internal/tui Go files plus both native PTY harnesses; one separate canonical memory-consumer regression",
-  "allowed_normalization": "github.com/yrashk/arm/ -> github.com/inferal-oss/arm/ imports only; no runtime/oracle body differences",
+  "allowed_normalization": "All production TUI bytes remain import-only equivalent to95aa584. Named test/oracle adjustments use a real counted-pool action fixture and exact non-pressure message identity; no CPU override.",
   "files": [
     {
       "path": "internal/tui/actions.go",
@@ -91,8 +91,9 @@
     {
       "path": "internal/tui/integration_test.go",
       "reviewed_sha256": "88e4d8a17729798482da426750ea149a5e758584fc98f4662ceaaac6f52a864a",
-      "canonical_sha256": "1a5f52d3eee7cb2e34b94b94f9ac37f5ebd51cf7e7d3a9439bac2feff4b69f49",
-      "normalized_equal": true
+      "canonical_sha256": "28da4ec012dd7b52d71bf95419480d90ebe8db5f27d24a486120a22dd821ecdc",
+      "normalized_equal": false,
+      "fixture_oracle_adjustment": true
     },
     {
       "path": "internal/tui/io_picker.go",
@@ -523,8 +524,9 @@
     {
       "path": "scripts/test-terminal-dashboard.py",
       "reviewed_sha256": "77b12156fae4867841f4c929be96081f3c7e23082301b6e28c07091d5dbc519b",
-      "canonical_sha256": "77b12156fae4867841f4c929be96081f3c7e23082301b6e28c07091d5dbc519b",
-      "normalized_equal": true
+      "canonical_sha256": "77ca6ad15543633260ac7264ac3c6e714e2b6b69f5a32169cbeca7d83d48b231",
+      "normalized_equal": false,
+      "fixture_oracle_adjustment": true
     },
     {
       "path": "scripts/test-terminal-gauge-refresh.py",

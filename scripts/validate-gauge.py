@@ -54,7 +54,7 @@ def main():
     if not all(checks.values()):
         print(json.dumps({"refused_before_execution": checks}))
         return 2
-    os.umask(0o077)
+    child_umask = os.umask(0o077)
     output = ROOT / ".cache/gauge-ci"
     output.mkdir(parents=True, exist_ok=False)
     work, receipts = output / "work", output / "receipts"
@@ -70,7 +70,8 @@ def main():
         raise RuntimeError("gauge equivalence roster omitted source")
     for item in inputs["files"]:
         new_consumer = item.get("new_owned_regression") and item["path"] == "internal/tui/memory_projection_review_test.go"
-        if not (item["normalized_equal"] or new_consumer) or before["files"][item["path"]] != item["canonical_sha256"]:
+        fixture_oracle = item.get("fixture_oracle_adjustment") and item["path"] in {"internal/tui/integration_test.go", "scripts/test-terminal-dashboard.py"}
+        if not (item["normalized_equal"] or new_consumer or fixture_oracle) or before["files"][item["path"]] != item["canonical_sha256"]:
             raise RuntimeError("canonical gauge bytes differ from reviewed equivalence roster")
     dependencies = inputs["accepted_dependencies"]
     if set(dependencies["files"]) != {"internal/model/memory.go", "internal/observe/availability_linux.go", "internal/observe/availability_linux_test.go", "internal/observe/observe.go"}:
@@ -79,6 +80,7 @@ def main():
         raise RuntimeError("memory producer differs from the accepted source")
     write(work / "source-equivalence.json", inputs)
     metadata = {name: os.environ.get(name) for name in ("GITHUB_SHA", "GITHUB_REF", "GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "RUNNER_OS", "RUNNER_ARCH", "GAUGE_RUNNER_LABEL", "ImageOS", "ImageVersion")}
+    metadata["child_umask"] = oct(child_umask)
     metadata.update(platform=platform.platform(), machine=platform.machine(), python=sys.version, cpu_count=os.cpu_count(), macos_version=platform.mac_ver()[0])
     if sys.platform == "linux":
         release = dict(line.split("=", 1) for line in Path("/etc/os-release").read_text().splitlines() if "=" in line and not line.startswith("#"))
@@ -116,7 +118,7 @@ def main():
         code, pid, control, waited = 127, None, 0, False
         with (work / (name + ".stdout.txt")).open("wb") as stdout, (work / (name + ".stderr.txt")).open("wb") as stderr:
             try:
-                active = subprocess.Popen(argv, cwd=ROOT, env=env, stdout=stdout, stderr=stderr, start_new_session=True)
+                active = subprocess.Popen(argv, cwd=ROOT, env=env, stdout=stdout, stderr=stderr, start_new_session=True, umask=child_umask)
                 pid = active.pid
                 try:
                     code = active.wait(timeout=timeout)
@@ -219,7 +221,7 @@ def main():
         # backend SQLite state, copied source, ambient files or arbitrary trees.
         allowed = {"source-before.json", "source-after.json", "source-equivalence.json", "metadata.json", "commands.json", "environment.json", "native-target.json", "tools.json", "image.json", "closure.json", "cleanup.json", "roster.json", "result.json"}
         allowed |= {name + suffix for name in STEPS for suffix in (".stdout.txt", ".stderr.txt")}
-        allowed |= {"gauge-pty/terminal.ansi", "gauge-pty/observations.json", "dashboard-pty/terminal.ansi"}
+        allowed |= {"gauge-pty/terminal.ansi", "gauge-pty/observations.json", "dashboard-pty/terminal.ansi", "dashboard-pty/messages.json"}
         manifest = {}
         for name in sorted(allowed):
             path = work / name
