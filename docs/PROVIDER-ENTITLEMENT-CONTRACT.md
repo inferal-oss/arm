@@ -1,10 +1,12 @@
 # Provider diagnostic entitlement consumer
 
 The internal provider worker requires a trusted current-entitlement checker at
-each boundary that can begin new work. The consumer is implemented against
-`7db0e10`; its production Manager bridge remains a proposal. No clock candidate
-is integrated by this change. Registration remains unavailable and shared
-Manager/model/clock interfaces are unchanged.
+each boundary that can begin new work. The consumer originated against
+`7db0e10`; its corrected full component gate uses `f54e528`, including the
+accepted native clock primitive. The production Manager bridge remains a
+proposal: controlled checker values do not establish native clock authority.
+Registration remains unavailable and shared Manager/model/clock interfaces
+are unchanged by this consumer.
 
 ## Internal consumer interface
 
@@ -83,3 +85,11 @@ Its earlier race launch binding relied on output-file absence across an edit and
 does not establish final-source race acceptance. The
 [atomic retry correction record](validation/provider-entitlement-atomic-retry-2026-10-26.json)
 separately scopes the corrected-source normal/race and causal concurrent tests.
+
+
+The [corrected complete-package record](validation/provider-entitlement-current-2026-10-27.json)
+accepts 43 roots and 90 named cases in both normal and race modes, plus vet,
+on its exact frozen input projection. Five original build/test/vet commands
+exit zero with sole waits, retired authority, positive reaps and original
+PID/group absence. This later result does not rewrite the earlier failed
+source-binding argument or establish the missing production bridge.

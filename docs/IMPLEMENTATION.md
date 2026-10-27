@@ -1921,3 +1921,22 @@ are integrated as `d58433a`; metadata changes do not alter tested assets.
 Upstream issue #181 is tracking only: the generic PR and full upstream suite
 remain separate requirements. Private-input, authentication, backend accounting
 and production sync/forwarding authority retain their existing boundaries.
+
+
+## Provider diagnostic entitlement consumer
+
+The internal consumer `2a11fc0` replaces wall-expiry eligibility with a trusted
+original-owner context, native-boot binding and current-pair checker. It checks
+fresh positive remaining lifetime during preparation, retained start, delayed
+native entry and one-shot grant publication. A cancelled retry records its
+conditional cancellation under the same mutex as publication; retries after a
+published grant leave that original history unchanged. Notifications run outside
+bookkeeping locks. Uncertainty retains the original handle and compensation
+obligations; no checker result proves cleanup or permits replay.
+
+This is an internal primitive with controlled-checker native evidence. Scalar
+constructor inputs do not authenticate a caller or create admission authority.
+The sealed Manager/clock bridge, atomically admitted worker/temp pair, durable
+preparation, lifecycle/reset retention and positive settlement bridge remain
+required. Registration, public dispatch and general provisioning stay disabled.
+The [contract](PROVIDER-ENTITLEMENT-CONTRACT.md) records these boundaries.

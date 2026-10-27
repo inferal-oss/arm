@@ -5009,3 +5009,28 @@ with every runtime asset unchanged. It is not an upstream PR. This evidence
 belongs to the exact recorded review source; it does not claim physical mobile
 input, macOS framebuffer/OS clipboard, full remote mutation workflows, later
 composed backend validation or public installation of a later source.
+
+
+### Corrected complete provider entitlement component
+
+Reviewed source `1115509`, integrated as `2a11fc0`, completes one normal-FIFO
+current-package gate: 43 roots/90 named cases each in normal and race modes,
+zero failures/skips and successful vet. The original five build/test/vet owners
+exit zero, retire before their sole wait, positively reap and record original
+PID/group absence without cleanup signals or errors. Both test image hashes
+remain unchanged across execution.
+
+Root independently verifies the actual rosters and owner receipts, all 2,411
+frozen source inputs against Git blobs, all five harness files, and the exact
+ten-file corrected `2163d36` projection. Intent/before/after manifests agree;
+the manifest covers 15,665 selected tool files, with its declared host/SDK/cache
+limits. Integration Go/module source matches the tested baseline before the
+focused projection. Later UI assets and documentation retain their separate
+acceptance records.
+
+[Normalized evidence](validation/provider-entitlement-current-2026-10-27.json)
+keeps the earlier 42/87 launch-binding claim unaccepted and the six-root causal
+atomic-retry correction distinct. The complete current gate uses controlled
+eligibility with actual fixed native fixtures; it does not validate a real
+Manager/native-clock or durable paired-admission/retention bridge, Linux execution
+of the corrected whole package, or updated lifecycle formal correspondence.
