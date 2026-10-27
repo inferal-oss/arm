@@ -4740,3 +4740,26 @@ complete rosters, source/binary hashes and original failures, including the init
 pre-Go missing-fixture/bytecode harness failure. Local heavyweight jobs were not
 duplicated. This evidence accepts a bounded development milestone; production and
 broader clock, platform, browser, formal and performance gates remain open.
+
+### Durable external provider fixture
+
+The opt-in fixture is integrated as `5d5a423`, with independent review receipt
+`4fcdd46`. Retained native macOS standalone, macOS race and Linux ARM64 cohorts
+each pass 12 roots/14 named entries, including 11 behavior roots and the
+nonexecuting parent helper. Each joins four deliberately killed original children.
+Root rechecked complete named pass rosters/log hashes and all five image hashes;
+independent review also verifies original container exit, owned removal, exact
+absence, empty membership and private scratch cleanup. Prior missing-state and
+cleanup-verifier failures remain recorded.
+
+The [normalized receipt](validation/provider-fixture-2026-10-26.json) binds current
+`81fdccd` plus the exact fixture overlay. Actual selected source graphs match:
+192 packages/1,359 file entries for macOS standalone, 193/1,363 for macOS race
+and 167/1,321 for Linux ARM64. Nine repository Go/test sources and 16 Go tool,
+header and configuration files are pinned; module versions/checksums match the
+original native images. No runtime or test source changed during composition.
+The redundant queued rerun was cancelled before dispatch, with terminal exit 130
+and no child; it supplies no test result. SDK, loader, kernel and container engine
+remain scoped native trust boundaries. These results do not accept production
+registration/admission, elapsed entitlement, executable pinning or broader
+resource, accounting, compensation and formal integration.

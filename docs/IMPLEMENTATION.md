@@ -1780,3 +1780,21 @@ spent history. Bounded history exhaustion refuses new grants rather than resetti
 Ordinary builds remain disabled. The milestone does not supply native elapsed
 authority, complete cross-host failure handling, browser/unmodified-client breadth,
 formal completion or performance acceptance.
+
+## Durable external provider fixture
+
+The opt-in `internal/providerfixture` executable exercises the existing provider
+protocol over disposable SQLite external objects. It implements all eight
+methods with immutable registration/configuration selection, original-intent
+deduplication, bounded object/history capacity and atomic object/receipt commits.
+Delayed readiness, exact revision/receipt renewal, dependency-safe deletion and
+durable tombstones survive separate process executions. Missing or superseded
+external state returns unknown; historical successful retries never establish
+fresh entitlement. Explicit crash barriers test lost responses around commit.
+
+The fixture is never registered or discovered by ARM. It trusts its operator's
+private directory and same-UID state; its digest echo does not authenticate an
+executable. SQLite objects are its resources, not hardware capacity or kernel
+containment. Production registration, live worker/scratch holds, native elapsed
+authority, parent/cost accounting, compensation and lifecycle/formal acceptance
+remain required, as detailed in MANAGED-PROVIDER-NEXT.md.
