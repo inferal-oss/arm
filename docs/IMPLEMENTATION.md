@@ -100,6 +100,15 @@ separate composition; the disabled-text draft has textual conflicts to resolve.
 The palette's stock Doodle paint-envelope failures remain disclosed, with equal
 with/without-metadata geometry and no demonstrated feature regression.
 
+The compact Monitor follow-up `dd46716` uses stock Compact density, responsive
+trend columns, paired I/O plots and a four-to-two-column device grid. Per-core,
+memory and storage disclosures preserve reachable details and focus during live
+updates. The used/total storage note explicitly reports stale or unknown data;
+valid zero remains visible and independent available capacity is preserved.
+Its current-source bundle is reproduced by two locked builds. Scoped affected
+checks and actual Chrome desktop/phone review pass; other platforms and broader
+connection workflows retain separate gates.
+
 ## Read-only native quota diagnostics
 
 `syncfs.ProbeNativeQuota` reads an existing hard-limit configuration without

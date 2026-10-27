@@ -5280,3 +5280,45 @@ atomic-retry correction distinct. The complete current gate uses controlled
 eligibility with actual fixed native fixtures; it does not validate a real
 Manager/native-clock or durable paired-admission/retention bridge, Linux execution
 of the corrected whole package, or updated lifecycle formal correspondence.
+
+
+### Compact Monitor current-source integration
+
+Reviewed focused feature `dd46716` and evidence `8714e09` preserve the accepted
+platform and picker behavior. All four integrated source/asset blobs match the
+actual build tree; the advance from its runtime baseline to integration changes
+only documentation. Two independent locked builds produce identical five-file
+asset sets, with only the main bundle changed. One original queued gate passes
+34 selected Node cases, 14 RDF cases and three server roots/15 named cases,
+compiled CLI/bootstrap/PTY behavior, with all 11 phase children and the queue
+positively joined. The detached bootstrap daemon is checked through endpoint
+absence and an unheld lock before temporary-state removal, without claiming an
+original daemon Wait.
+
+Actual Chrome review covers 1280/390 desktop/phone widths, intermediate 768/640
+document/card bounds, disclosure keyboard/focus retention, device selection,
+pause/resume, native picker/history and Meta-K. Visible-control overflow metrics
+are scoped to desktop/phone. Separate controlled snapshots cover filesystem and
+page staleness, expiry, unknown used/total, zero, disconnect and recovery while
+the direct origin remains live. The 64-frame hash cap covers only the first five
+modes; later modes retain CUA observations and supervisor acknowledgements.
+All seven original fixture children join zero; ordinary stop reports no remaining
+children, no force, absent endpoint and unheld lock. Three actual images and 16
+native artifacts pass independent review. Six external-extension warnings are
+separate from zero application warnings/errors.
+
+[Normalized evidence](validation/semblance-compact-monitor-2026-10-27.json)
+records exact source/build hashes, rosters and evidence limits, including one
+unavailable filesystem-control executor terminal result with matching supervisor
+acknowledgement. No physical picker keyboard, interface removal, forced counter
+reset, physical suspend, other-browser/OS GUI, broader Screen workflow or full
+upstream suite acceptance is claimed.
+
+The separate numeric gate remains 509/510 passing with one compiled Calendar
+parity failure. The initial history capture reaches its 64MiB bound before that
+query and remains failed. A separately reviewed offline compact codec preserves
+all 5,046 retained events semantically in order, passes 17 synthetic witnesses
+and seven refusal controls, and reduces that measured partial history to
+7,852,522 bytes. Earlier rendered outputs remain UTF-8 digest-only; this does
+not establish full native history fit, exact UTF-16 equality or Calendar
+causality. The newly prepared bounded native capture is not yet run.
