@@ -3,6 +3,7 @@ package syncworker
 import (
 	"context"
 	"errors"
+	"io"
 	"net"
 	"os"
 	"path/filepath"
@@ -88,7 +89,12 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 			reserveTest(t, p.remoteDB, remote, other)
 			ctx, cancel := context.WithTimeout(t.Context(), 8*time.Second)
 			defer cancel()
-			a, b := net.Pipe()
+			var a, b net.Conn
+			if cut == "after-session-replacement" {
+				a, b = allocationReviewTCPPair(t)
+			} else {
+				a, b = net.Pipe()
+			}
 			defer a.Close()
 			defer b.Close()
 			foreignA, foreignB := net.Pipe()
@@ -190,6 +196,20 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 			if cut == "after-session-replacement" && (ctx.Err() != nil || re.Session != foreign) {
 				t.Fatal("replacement required parent cancellation or lost successor evidence", rerr)
 			}
+			if cut == "after-session-replacement" {
+				// The successor is a separate fixture capability. Prove the
+				// original failure did not close or consume its stream.
+				_ = foreignA.SetDeadline(time.Now().Add(time.Second))
+				_ = foreignB.SetDeadline(time.Now().Add(time.Second))
+				wrote := make(chan error, 1)
+				go func() { _, err := foreignB.Write([]byte("s")); wrote <- err }()
+				var probe [1]byte
+				_, readErr := io.ReadFull(foreignA, probe[:])
+				writeErr := <-wrote
+				if readErr != nil || writeErr != nil || probe[0] != 's' {
+					t.Fatal("successor transport was touched", readErr, writeErr)
+				}
+			}
 			if cut == "after-unknown" {
 				if _, err := os.Stat(rh.retained); err != nil {
 					t.Fatal("unknown marker evidence lost", err)
@@ -200,4 +220,26 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 			}
 		})
 	}
+}
+
+func allocationReviewTCPPair(t *testing.T) (net.Conn, net.Conn) {
+	t.Helper()
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	if err := listener.(*net.TCPListener).SetDeadline(time.Now().Add(time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	client, err := net.DialTimeout("tcp", listener.Addr().String(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	server, err := listener.Accept()
+	if err != nil {
+		_ = client.Close()
+		t.Fatal(err)
+	}
+	return client, server
 }
