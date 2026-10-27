@@ -2146,13 +2146,26 @@ labels and safe fixture authority still required before product acceptance.
 
 ## Disposable guest suspend validation status
 
-The second reviewed fixture gate observes real S3 and wake in two fresh guests.
-Its negative clock variant fails at the expected oracle. The production-clock
-guest observes suspend-inclusive elapsed time and zero remaining entitlement,
-but its post-wake operations never finish within the controller's bound.
-This is failed validation, not accepted suspend-followed-by-operations behavior.
-Both original VM processes join cleanly through their original QMP owners;
-that closure does not prove guest job cancellation, joins or settlement.
+The second reviewed fixture gate remains failed: it observes real S3/wake and
+zero production entitlement, but post-wake completion does not arrive. Both VM
+owners join, which alone does not establish guest-job settlement. The earlier
+denied-control cleanup remains unconfirmed.
+
+The source-bound successor is accepted and its five-file fixture is integrated
+as `bc7e629`. Two fresh isolated Linux guests enter deep S3 for over 25 seconds.
+The MONOTONIC control fails its clock oracle; the production-clock guest refuses
+expired renewal, cancels and joins the exact original generic and Go-SSH-library
+jobs, and retains held-input charges until completion. An unrelated sentinel
+exits normally and execution is not replayed. Dedicated output-only virtio
+results preserve completion; the exact cause of the earlier timeout is unproven.
+Actual S3 belongs to the recorded `6509f5f` source and three fixture hashes.
+
+Separate current-code composition passes 32 Darwin roots/108 nodes and ten pure
+guard cases, compiles the Linux test image without running it, and closes all
+eight original commands. All five integrated files match the reviewed feature;
+no selected compile/test inputs changed between that composition and main.
+This does not establish physical-host/Darwin suspend, system OpenSSH, full Linux
+race/recovery, provider behavior or hard kernel preemption.
 
 ## Intermittent mesh recovery candidate
 

@@ -5736,3 +5736,40 @@ embedded generated assets are not retained in the Pages artifact, so their
 receipt hashes do not establish hermetic binary reproduction. Earlier native
 interaction limits and failed CI capture remain unchanged. No new native
 browser, fullscreen, zoom or swipe acceptance is inferred from publication.
+
+### Accepted disposable-guest S3 successor
+
+[Real-guest evidence](validation/lease-clock-real-guest-s3.json) retains both
+fresh guest cycles, exact original source and tool records, the causal clock
+negative and the completed production result. The positive has two roots and
+12 passing nodes, with all three remaining values zero while the Go/SSH
+contexts remain live. Exact original jobs cancel and positively join; held SSH
+input retains its charge until completion. The unrelated sentinel exits
+normally and launch markers show no replay. The controller observes real
+SUSPEND/deep-S3, over 25 seconds suspended, system wakeup and WAKEUP/running;
+process pause is not used as a substitute. Forty host commands and two QEMU
+owners each have one original native Wait and clean retirement/reaping.
+All 127 evidence files and 2,510 source inputs retain their recorded bindings.
+
+The initial missing-ticket, media-ownership and failed Gate2 completion runs
+remain unchanged, including the first cleanup uncertainty and unproven UART
+hypothesis. Actual accepted S3 is scoped to `6509f5f` plus the three exact
+fixture sources. It covers an in-process Go SSH-library pair, not a system
+OpenSSH service, physical host/Darwin suspend or full Linux race/recovery.
+
+### S3 fixture current-code composition
+
+[Composition evidence](validation/lease-clock-s3-current-main-composition-2026-10-27.json)
+accepts the exact `a92ba68` candidate on `ef2affb`. Thirty Manager and two clock
+roots pass 108 nodes without failures/skips, including ten pure guard cases
+projected byte-for-byte from five guest-test chunks. The Linux amd64 ELF is
+compiled without that overlay and never executed. All eight original commands
+exit zero with sole original Wait, complete capture and retired/reaped owners.
+All 2,532 source and 23,325 selected tool/dependency entries remain unchanged.
+Original outer command completion is independently read back as zero.
+
+Review finds no intersection between later main changes and 819 selected
+compile/test/helper inputs. Integration `bc7e629` preserves all five feature
+files exactly, and its complete cmd/internal trees match the tested composition.
+This adds no new S3 cycle, VM/power operation, race cohort or all-descendant
+cleanup claim. Earlier actual S3 and failed-run evidence keep their own scopes.
