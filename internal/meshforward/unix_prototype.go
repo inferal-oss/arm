@@ -373,6 +373,10 @@ func (p *UnixPrototype) Close() error {
 	return p.finishErr
 }
 
+func (p *UnixPrototype) closeDescriptors() error {
+	return errors.Join(p.dir.Close(), p.parent.Close(), p.home.Close())
+}
+
 func (p *UnixPrototype) finish() error {
 	p.cancel()
 	p.closeListener()
@@ -381,25 +385,19 @@ func (p *UnixPrototype) finish() error {
 	joined, watcherJoined, prior := p.joined, p.watcherJoined, p.err
 	p.mu.Unlock()
 	if !joined || !watcherJoined || prior != nil {
-		return errors.Join(prior, errors.New("Unix adapter join or close uncertain; original path retained"))
+		return errors.Join(prior, errors.New("Unix adapter join or close uncertain; original path retained"), p.closeDescriptors())
 	}
 	if err := p.intact(); err != nil {
-		return err
+		return errors.Join(err, p.closeDescriptors())
 	}
 	if err := unix.Unlinkat(int(p.dir.Fd()), "service.sock", 0); err != nil {
-		return err
+		return errors.Join(err, p.closeDescriptors())
 	}
 	if err := unix.Unlinkat(int(p.parent.Fd()), p.name, unix.AT_REMOVEDIR); err != nil {
-		return err
+		return errors.Join(err, p.closeDescriptors())
 	}
-	if err := p.parent.Sync(); err != nil {
-		return err
-	}
-	if err := p.dir.Close(); err != nil {
-		return err
-	}
-	if err := p.parent.Close(); err != nil {
-		return err
-	}
-	return p.home.Close()
+	// Unlink has already succeeded. A durability or descriptor-close failure
+	// remains an uncertain result, but must not strand the other original FDs.
+	syncErr := p.parent.Sync()
+	return errors.Join(syncErr, p.closeDescriptors())
 }

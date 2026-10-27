@@ -164,6 +164,11 @@ func TestUnixPrototypeOriginalCloseErrorIsStickyAndRetainsPath(t *testing.T) {
 	if _, err = os.Lstat(p.Path()); err != nil {
 		t.Fatal("uncertain original socket was unlinked", err)
 	}
+	for _, fd := range []*os.File{p.dir, p.parent, p.home} {
+		if _, err = fd.Stat(); !errors.Is(err, os.ErrClosed) {
+			t.Fatal("uncertain close stranded an original directory descriptor", err)
+		}
+	}
 }
 
 func TestUnixPrototypeCopyErrorAbortsBothOriginalDirections(t *testing.T) {

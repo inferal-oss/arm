@@ -22,6 +22,42 @@ dispatch, backend RPC/status fields, Manager binding and lease lifecycle, and
 an explicit resource preview/review. No destination or relay policy schema
 change is proposed.
 
+The shared lease API needs two durable phases because a socket inode does not
+exist before bind. Under the Manager's original-owner check, acquisition would
+reserve a `forward-unix-adapter:<key>` lease bound to the exact active source
+listener lease, immutable route/grant/source identity and private path. It
+would charge resources **before** any path creation but leave admission closed.
+After exclusive directory creation and socket bind, a compare-and-swap publish
+operation would persist the original directory/socket device and inode before
+accepting a client. A duplicate key is refused and the recorded lease is
+inspected through exact status; it cannot bind again. A crash between bind and
+publish leaves an unproved path and charge for explicit inspection, never
+automatic adoption or unlink.
+
+The adapter's lifetime context must be a child of the original source
+listener's lifetime, capped at the source lease expiry. Source stop, expiry
+and backend shutdown first close adapter admission and its active pairs, then
+join its watcher, accept loop and both copy directions. A Manager finish call
+may settle the adapter charge only after that positive join, exact immutable
+lease/binding comparison, and original socket/directory cleanup. Filesystem
+work must occur outside the Manager database mutex but under the backend's
+per-home mutation authority; the final compare-and-swap must reject changed
+lease ownership. Unlink, sync, close or ledger errors retain a charge with an
+explicit uncertain outcome. The source listener's own finish cannot silently
+substitute for the adapter's join or release its charge.
+
+Recovery would require the replacement backend's exclusive daemon lock,
+exact adapter key, reviewed reason, no current in-process owner, and proof the
+original process is gone. A published identity permits only exact path
+inspection and removal; a missing or replaced socket retains uncertainty.
+An unbound lease with no published identity needs a separately recorded
+pre-bind phase and an exact absent-path check to settle resource-only charge.
+An unproved path from the bind-to-publish window stays charged for manual
+inspection. Recovery never claims application completion or restarts the
+adapter. This lifecycle would require a new immutable Manager binding and
+separate mutable socket proof; the existing TCP port-claim API cannot encode
+the pathname and inode proof by itself.
+
 The source backend would create a new directory under its existing private
 home with exclusive creation, mode 0700 and the operator UID. It would create
 one socket there with mode 0600, record the original directory and socket
