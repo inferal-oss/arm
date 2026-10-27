@@ -16,28 +16,32 @@ type ProcessUsage struct {
 	CPUSeconds           *float64        `json:"cpu_seconds"`
 	ResidentBytes        *uint64         `json:"resident_bytes"`
 	AccountedMemoryBytes *uint64         `json:"accounted_memory_bytes"`
-	MemoryMetric         string          `json:"memory_metric"`
-	Detail               string          `json:"detail,omitempty"`
+	// ProportionalResidentBytes is observed PSS, not an exclusive allocation or admission credit.
+	ProportionalResidentBytes *uint64 `json:"proportional_resident_bytes,omitempty"`
+	MemoryMetric              string  `json:"memory_metric"`
+	Detail                    string  `json:"detail,omitempty"`
 }
 
 type WorkloadUsage struct {
-	Observed             time.Time       `json:"observed_at"`
-	Live                 bool            `json:"live"`
-	Stale                bool            `json:"stale"`
-	Root                 ProcessIdentity `json:"root"`
-	IdentityVerified     bool            `json:"identity_verified"`
-	Complete             bool            `json:"complete"`
-	CPUCores             *float64        `json:"cpu_cores"`
-	CPUQuality           string          `json:"cpu_quality"`
-	Window               time.Duration   `json:"window_ns"`
-	AccountedMemoryBytes *uint64         `json:"accounted_memory_bytes"`
-	MemoryMetric         string          `json:"memory_metric"`
-	MemoryQuality        string          `json:"memory_quality"`
-	MemberCount          int             `json:"member_count"`
-	Method               string          `json:"method"`
-	Scope                string          `json:"scope"`
-	Detail               string          `json:"detail"`
-	Members              []ProcessUsage  `json:"members"`
+	Observed                    time.Time       `json:"observed_at"`
+	Live                        bool            `json:"live"`
+	Stale                       bool            `json:"stale"`
+	Root                        ProcessIdentity `json:"root"`
+	IdentityVerified            bool            `json:"identity_verified"`
+	Complete                    bool            `json:"complete"`
+	CPUCores                    *float64        `json:"cpu_cores"`
+	CPUQuality                  string          `json:"cpu_quality"`
+	Window                      time.Duration   `json:"window_ns"`
+	AccountedMemoryBytes        *uint64         `json:"accounted_memory_bytes"`
+	ProportionalResidentBytes   *uint64         `json:"proportional_resident_bytes,omitempty"`
+	ProportionalResidentQuality string          `json:"proportional_resident_quality,omitempty"`
+	MemoryMetric                string          `json:"memory_metric"`
+	MemoryQuality               string          `json:"memory_quality"`
+	MemberCount                 int             `json:"member_count"`
+	Method                      string          `json:"method"`
+	Scope                       string          `json:"scope"`
+	Detail                      string          `json:"detail"`
+	Members                     []ProcessUsage  `json:"members"`
 }
 
 type UsageView struct {

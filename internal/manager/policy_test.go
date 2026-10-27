@@ -271,6 +271,15 @@ func TestPolicyMemoryLowerBoundAndUnknownMetric(t *testing.T) {
 	if i.State != "closed" || i.Evidence.AccountedMemoryBytes == nil || *i.Evidence.AccountedMemoryBytes != memory {
 		t.Fatal("closing evidence was not recorded", i)
 	}
+	pss := uint64(4096)
+	v.AccountedMemoryBytes = nil
+	v.ProportionalResidentBytes = &pss
+	v.ProportionalResidentQuality = "reported-sum"
+	policySample(t, m, l, v, at.Add(4*time.Second))
+	policySample(t, m, l, v, at.Add(5*time.Second))
+	if i = oneIncident(t, m, l.ID); i.State != "closed" {
+		t.Fatal("observed proportional resident bytes reopened a policy incident", i)
+	}
 }
 
 func TestPolicyIntegralMemoryThresholdBoundary(t *testing.T) {

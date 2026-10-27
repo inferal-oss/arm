@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -61,6 +62,9 @@ func TestNativeCapturedGroupCountersAndIdentityChanges(t *testing.T) {
 		b, _ := json.Marshal(v)
 		t.Fatalf("native counters/units: %s", b)
 	}
+	if runtime.GOOS == "linux" && (v.ProportionalResidentBytes == nil || *v.ProportionalResidentBytes < 8<<20 || v.ProportionalResidentQuality != "reported-sum") {
+		t.Fatalf("native Linux proportional resident evidence: %+v", v)
+	}
 	for _, namespace := range []string{identity.Namespace + "-other", "darwin:boot:retained-wall-time"} {
 		changed := identity
 		changed.Namespace = namespace
@@ -74,7 +78,7 @@ func TestNativeCapturedGroupCountersAndIdentityChanges(t *testing.T) {
 	changed := identity
 	changed.Start += "other"
 	invalid := Collect(ctx, changed)
-	if invalid.Verified || View(invalid, &after).AccountedMemoryBytes != nil {
+	if invalid.Verified || View(invalid, &after).AccountedMemoryBytes != nil || View(invalid, &after).ProportionalResidentBytes != nil {
 		t.Fatal("reused PID accepted another start identity")
 	}
 	if err = child.Process.Kill(); err != nil {
@@ -115,15 +119,32 @@ func TestViewCounterMembershipAndUncertainty(t *testing.T) {
 	at := time.Now()
 	cpuBefore, cpuAfter := 2.0, 3.0
 	memory := uint64(100)
+	proportional := uint64(120)
 	before := Snapshot{Started: at, Finished: at.Add(time.Millisecond), Root: root, Verified: true, Members: []model.ProcessUsage{{Identity: root, CPUSeconds: &cpuBefore}}}
-	after := Snapshot{Started: at.Add(time.Second), Finished: at.Add(2 * time.Second), Root: root, Verified: true, Members: []model.ProcessUsage{{Identity: root, CPUSeconds: &cpuAfter, AccountedMemoryBytes: &memory}, {Identity: second, CPUSeconds: &cpuAfter, AccountedMemoryBytes: &memory}}}
+	after := Snapshot{Started: at.Add(time.Second), Finished: at.Add(2 * time.Second), Root: root, Verified: true, Members: []model.ProcessUsage{{Identity: root, CPUSeconds: &cpuAfter, AccountedMemoryBytes: &memory, ProportionalResidentBytes: &proportional}, {Identity: second, CPUSeconds: &cpuAfter, AccountedMemoryBytes: &memory, ProportionalResidentBytes: &proportional}}}
 	got := View(after, &before)
-	if got.CPUCores == nil || *got.CPUCores != .5 || got.AccountedMemoryBytes == nil || *got.AccountedMemoryBytes != 200 {
+	if got.CPUCores == nil || *got.CPUCores != .5 || got.AccountedMemoryBytes == nil || *got.AccountedMemoryBytes != 200 || got.ProportionalResidentBytes == nil || *got.ProportionalResidentBytes != 240 {
 		t.Fatalf("new member's entire lifetime CPU was charged: %+v", got)
 	}
 	after.Members[0].AccountedMemoryBytes = nil
-	if View(after, &before).AccountedMemoryBytes != nil {
+	if View(after, &before).AccountedMemoryBytes != nil || View(after, &before).ProportionalResidentBytes == nil {
 		t.Fatal("missing memory was counted as zero")
+	}
+	after.Members[0].ProportionalResidentBytes = nil
+	if View(after, &before).ProportionalResidentBytes != nil || View(after, &before).AccountedMemoryBytes != nil {
+		t.Fatal("missing proportional resident counter was counted as zero or changed private accounting")
+	}
+	after.Members[0].AccountedMemoryBytes = &memory
+	after.Members[0].ProportionalResidentBytes = &proportional
+	tooLarge := uint64(math.MaxUint64)
+	after.Members[1].ProportionalResidentBytes = &tooLarge
+	if got := View(after, &before); got.ProportionalResidentBytes != nil || got.AccountedMemoryBytes == nil || *got.AccountedMemoryBytes != 200 {
+		t.Fatal("overflowing proportional resident sum affected private accounting", got)
+	}
+	after.Complete = false
+	after.Members[1].ProportionalResidentBytes = &proportional
+	if got := View(after, &before); got.ProportionalResidentBytes == nil || got.ProportionalResidentQuality != "partial-reported-sum" {
+		t.Fatal("partial group did not qualify observed PSS", got)
 	}
 	after.Verified = false
 	if View(after, &before).CPUCores != nil {

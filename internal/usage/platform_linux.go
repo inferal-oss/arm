@@ -182,10 +182,36 @@ func privateResident(data []byte) (uint64, error) {
 	}
 	return clean + dirty, nil
 }
+func proportionalResident(data []byte) (uint64, error) {
+	seen := false
+	var bytes uint64
+	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) == 0 || fields[0] != "Pss:" {
+			continue
+		}
+		if seen || len(fields) != 3 || fields[2] != "kB" {
+			return 0, fmt.Errorf("invalid or duplicate proportional resident counter")
+		}
+		n, err := strconv.ParseUint(fields[1], 10, 64)
+		if err != nil || n > math.MaxUint64/1024 {
+			return 0, fmt.Errorf("invalid proportional resident counter")
+		}
+		bytes, seen = n*1024, true
+	}
+	if err := scanner.Err(); err != nil {
+		return 0, err
+	}
+	if !seen {
+		return 0, fmt.Errorf("proportional resident counter unavailable")
+	}
+	return bytes, nil
+}
 func collect(ctx context.Context, s *Snapshot) {
 	s.Method = "proc stat and smaps_rollup with process-start identities"
 	s.MemoryMetric = "sum-private-resident"
-	s.Detail = "Private_Clean plus Private_Dirty; excludes shared mappings, swap and memory absent from these counters. Non-atomic live group observation."
+	s.Detail = "Private_Clean plus Private_Dirty; excludes shared mappings, swap and memory absent from these counters. PSS is an observed proportional share of resident pages, not exclusive allocation or admission/compliance credit. Non-atomic live group observation."
 	directory, err := os.Open("/proc")
 	if err != nil {
 		s.Complete = false
@@ -254,6 +280,9 @@ func collect(ctx context.Context, s *Snapshot) {
 					p.AccountedMemoryBytes = &n
 				} else {
 					p.Detail = "private memory counters invalid"
+				}
+				if n, e := proportionalResident(raw); e == nil {
+					p.ProportionalResidentBytes = &n
 				}
 			}
 			if p.AccountedMemoryBytes == nil {
