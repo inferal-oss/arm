@@ -1,0 +1,106 @@
+{
+  "schema": "arm.pressure-elapsed-current-composition-validation/v1",
+  "date": "2026-10-27",
+  "scope": "Elapsed host-pressure warning adapter composed with native checkpoint-refusal cancellation on the local macOS arm64 candidate",
+  "source": {
+    "base_commit": "fc2c1ce314f9e1224057f63dfdd4edbef0b894d6",
+    "candidate_commit": "b7a208f908620899fac2dc8c698194e382e4f0cb",
+    "candidate_tree": "1fb5dd39524936e2350b14cb31bb74332de8c521",
+    "warning_patch_sha256": "932be95e4c2544f2bdd8e5f78e089a5bb4cfa95e1d7183803bdacf7a74333033",
+    "nine_warning_source_files_match_scoped_gate": true,
+    "four_checkpoint_refusal_source_files_match_integrated_base": true,
+    "tracked_source_files": 2486,
+    "tracked_source_snapshot_sha256": "63d7535e342f7a02a2c7e92da65f5f5908a98066081972a68d9b5363c388899d"
+  },
+  "execution": {
+    "platform": "darwin/arm64",
+    "go_version": "go1.27.3",
+    "race_instrumented": true,
+    "development_trace_tag": "arm_devtrace",
+    "normal_shared_fifo": true,
+    "hosted_ci_run": false,
+    "original_full_roster_gate": {
+      "status": "failed",
+      "reason": "One named native waiter test skipped because its explicit ARM_WAITER_NATIVE=1 opt-in was absent.",
+      "original_go_exit": 0,
+      "outer_exit": 1,
+      "named_roots": 17,
+      "named_run": 102,
+      "named_pass": 101,
+      "named_skip": 1,
+      "named_fail": 0,
+      "skipped_test": "TestOriginalWaiterNativeAdmissionAndExpiry",
+      "warning_nodes_passed": 32,
+      "checkpoint_nodes_passed": 34,
+      "checkpoint_nodes_expected": 35,
+      "actual_trace_nodes_passed": 35,
+      "native_wait_calls": 1,
+      "original_process_reaped_and_retired": true,
+      "capture_identity_matched": true,
+      "source_tool_sdk_postclosure_matched": true,
+      "summary_sha256": "906df481f463e9d43357464a02dbbad20663b0a06ef3331567a5bd79c5645f1a",
+      "go_log_sha256": "7ef49c251e1d214b4afa486ded02631b084ee4837618ed2ff41152c8f79134db",
+      "owner_receipt_sha256": "d83583ce4e57e73bae1b207336a862b959e6ac252e5a2246fe76906a3dc5301e"
+    },
+    "retained_actual_trace_diagnostic": {
+      "read_only_from_original_failed_gate": true,
+      "raw_rows": 112,
+      "scenarios": 34,
+      "strict_altered_history_controls_rejected": 43,
+      "receipt_sha256": "44d79fa9993a12db4d7466b818bbc9b5eab0a98905fc23563a7d57586924b43e"
+    },
+    "focused_native_waiter_successor": {
+      "status": "passed",
+      "only_named_test": "TestOriginalWaiterNativeAdmissionAndExpiry",
+      "explicit_opt_in": "ARM_WAITER_NATIVE=1",
+      "original_go_exit": 0,
+      "outer_exit": 0,
+      "named_pass": 1,
+      "named_skip": 0,
+      "named_fail": 0,
+      "native_admission_cpu_cores": 0.01,
+      "original_job_expired": true,
+      "original_process_and_io_joined_before_charge_release": true,
+      "native_wait_calls": 1,
+      "original_process_reaped_and_retired": true,
+      "capture_identity_matched": true,
+      "source_tool_sdk_postclosure_matched": true,
+      "summary_sha256": "e937ecbfcaf500c7e967cfd044d7c755a358f8f715fa98a81c58321c319d2fff",
+      "go_log_sha256": "bc3cfce422d281ef77dcc0bf84fcf9331b53f814d66e17184217ce7dc3791fd7",
+      "owner_receipt_sha256": "77426c1130141a44a7e1f0527eb8e1cf5d4cb2e4cf2eb975149cdf7af9e0c3a8",
+      "source_or_capacity_mocked": false
+    },
+    "assembled_result": {
+      "status": "passed_assembled",
+      "retained_named_pass": 101,
+      "focused_new_named_pass": 1,
+      "composed_named": 102,
+      "single_run_full_roster_pass": false,
+      "prior_failed_gate_relabelled": false
+    },
+    "pressure_and_trace_fixture_scope": "Controlled clock, eligibility and usage scenarios. The real native capacity assertion belongs to the focused original-waiter successor."
+  },
+  "closure": {
+    "before_and_after_original_commands_matched": true,
+    "external_go_files": 2904,
+    "external_go_modules": 16,
+    "external_go_snapshot_sha256": "4bafbe7d7a648d807dae7551209308d7e891cd7f5e983b210a0025f4d6db15bc",
+    "selected_sdk_inputs": 41606,
+    "selected_sdk_snapshot_sha256": "ab8f5fc885156ff832a249083f6980028a00db340262d503a11d28facdaa6a2c",
+    "selected_tool_snapshot_sha256": "115d0cd4cb6dada1b7d2c5afe43681903e33f88b8841856f7dd683c0ac11656a"
+  },
+  "related_scoped_warning_gate": {
+    "status": "passed_composed",
+    "summary_sha256": "6d2afe5be00ce7172fbb6a9c44b2b50bfd5dfe15404ffbb74e548bd5f87a5bf3",
+    "separate_causal_old_wall_negative": true,
+    "earlier_failed_attempts_remain_failed": true,
+    "record": "pressure-elapsed-warning-adapter-2026-10-27.json"
+  },
+  "limits": [
+    "The original current-composition 102-node gate remains failed with one skip; 102 passed nodes are assembled from two native commands.",
+    "The 34-scenario, 43-control actual-trace diagnostic reuses the original immutable Go log and is not a new execution.",
+    "Local macOS arm64 execution only; no Linux or hosted CI result is claimed.",
+    "The separate scoped old-wall negative was not rerun on this current-composition tree.",
+    "No physical host sleep, live user-process control, TLC, prover, or whole-workspace acceptance is claimed."
+  ]
+}
