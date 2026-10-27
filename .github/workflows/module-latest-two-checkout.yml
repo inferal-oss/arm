@@ -1,0 +1,135 @@
+name: Native latest validation with independent source
+
+on:
+  push:
+    branches: [codex/module-latest-final-ci]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: module-latest-two-checkout-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PUBLIC_SOURCE_COMMIT: 23e466ab9063a02effe311be0f331f9673704288 # Replace only after final source review; do not publish this draft.
+  REVIEWED_HELPER_COMMIT: 9ccd7daef5b4a7b9b220a942e95bb9724d123860
+  REVIEWED_HELPER_SHA256: a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b
+  REVIEWED_SUPPLEMENT_SHA256: 6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d
+  REVIEWED_TEST_SHA256: 355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc
+
+jobs:
+  native-public-latest:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - name: Require the final immutable source pin
+        shell: bash
+        run: |
+          python3 -B - <<'PY'
+          import os,re
+          if not re.fullmatch(r'[0-9a-f]{40}', os.environ['PUBLIC_SOURCE_COMMIT']):
+              raise SystemExit('Final immutable source SHA is pending; refusing any source checkout or install')
+          PY
+      - name: Check out immutable CI harness
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          persist-credentials: false
+      - name: Check out held immutable public source as a sibling
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ env.PUBLIC_SOURCE_COMMIT }}
+          path: source
+          persist-credentials: false
+      - name: Verify independent clean identities and frozen helper bytes
+        id: identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/receipts"
+          cat > "$RUNNER_TEMP/check-module-identities.py" <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,subprocess,sys
+          workspace = Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          harness, source = workspace/'harness', workspace/'source'
+          failures = []
+          def require(value, message):
+              if not value: failures.append(message)
+          def git(root, *args):
+              return subprocess.check_output(['git', *args], cwd=root).decode().strip()
+          def identity(root):
+              return {'commit':git(root,'rev-parse','HEAD'), 'tree':git(root,'rev-parse','HEAD^{tree}'), 'status':git(root,'status','--porcelain','--untracked-files=all')}
+          require(harness.resolve().parent == workspace and source.resolve().parent == workspace and harness != source, 'checkouts must be separate siblings')
+          helper_identity, source_identity = identity(harness), identity(source)
+          require(helper_identity['commit'] == os.environ['GITHUB_SHA'], 'harness differs from immutable workflow commit')
+          require(source_identity['commit'] == os.environ['PUBLIC_SOURCE_COMMIT'], 'public source differs from held commit')
+          require(not helper_identity['status'] and not source_identity['status'], 'a checkout is dirty')
+          expected = {'scripts/validate-module.py':os.environ['REVIEWED_HELPER_SHA256'], 'scripts/test-validate-module.py':os.environ['REVIEWED_TEST_SHA256'], 'scripts/module-zip-supplement.py':os.environ['REVIEWED_SUPPLEMENT_SHA256']}
+          actual = {name:hashlib.sha256((harness/name).read_bytes()).hexdigest() for name in expected}
+          require(actual == expected, 'helper bytes differ from frozen review')
+          record = {'workflow_commit':os.environ['GITHUB_SHA'], 'reviewed_helper_commit':os.environ['REVIEWED_HELPER_COMMIT'], 'harness':helper_identity, 'source':source_identity, 'helper_files_sha256':actual, 'failures':failures}
+          (workspace/'receipts'/('ci-identity-'+sys.argv[1]+'.json')).write_text(json.dumps(record,indent=2)+'\n')
+          if failures: raise SystemExit('; '.join(failures))
+          PY
+          python3 -B "$RUNNER_TEMP/check-module-identities.py" before
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: source/go.mod
+          cache: false
+      - name: Run cheap helper ownership and identity regressions
+        run: python3 -B harness/scripts/test-validate-module.py
+      - name: Run corrected helper against held public source
+        run: >-
+          python3 -B harness/scripts/validate-module.py
+          --source-root "$GITHUB_WORKSPACE/source"
+          --public-install latest
+          --output "$GITHUB_WORKSPACE/receipts/public-latest"
+      - name: Generate the complete-root public ZIP manifest
+        run: >-
+          python3 -B harness/scripts/module-zip-supplement.py manifest
+          --repo "$GITHUB_WORKSPACE/source"
+          --ref "$PUBLIC_SOURCE_COMMIT"
+          --final
+          --output "$GITHUB_WORKSPACE/receipts/required-public-zip-manifest.json"
+      - name: Fetch the public ZIP for the actual original selection once
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B harness/scripts/module-zip-supplement.py url \
+            --receipts "$GITHUB_WORKSPACE/receipts/public-latest" \
+            > "$GITHUB_WORKSPACE/receipts/public-module.url"
+          IFS= read -r module_zip_url < "$GITHUB_WORKSPACE/receipts/public-module.url"
+          curl --version > "$GITHUB_WORKSPACE/receipts/public-zip-curl-version.txt"
+          curl --proto '=https' --proto-redir '=https' --location --fail \
+            --silent --show-error --max-time 180 --retry 0 --max-filesize 67108864 \
+            --dump-header "$GITHUB_WORKSPACE/receipts/public-module.headers" \
+            --output "$GITHUB_WORKSPACE/receipts/public-module.zip" "$module_zip_url"
+      - name: Verify actual selected ZIP checksum and complete source closure
+        run: >-
+          python3 -B harness/scripts/module-zip-supplement.py verify
+          --source-root "$GITHUB_WORKSPACE/source"
+          --manifest "$GITHUB_WORKSPACE/receipts/required-public-zip-manifest.json"
+          --receipts "$GITHUB_WORKSPACE/receipts/public-latest"
+          --zip "$GITHUB_WORKSPACE/receipts/public-module.zip"
+          --output "$GITHUB_WORKSPACE/receipts/public-zip-supplement.json"
+      - name: Recheck both immutable checkouts
+        if: always() && steps.identities.outcome == 'success'
+        run: python3 -B "$RUNNER_TEMP/check-module-identities.py" after
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: module-latest-two-checkout-${{ matrix.os }}
+          path: receipts/
+          if-no-files-found: error
+          retention-days: 7
