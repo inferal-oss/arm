@@ -302,6 +302,10 @@ func (p *sshProcess) owned() error {
 	if p.manager.jobs[p.lease] != p.job || p.job.identity == nil || !p.job.controlActive() {
 		return model.Err("lease_inactive", "SSH process is no longer owned")
 	}
+	lease, err := p.manager.get(p.lease)
+	if err != nil || !p.manager.leaseLive(lease) {
+		return model.Err("lease_inactive", "elapsed SSH execution entitlement unavailable")
+	}
 	actual, err := usage.Capture(p.job.cmd.Process.Pid)
 	if err != nil || actual != *p.job.identity {
 		return model.Err("observation_unavailable", "SSH native process identity changed or is unavailable")

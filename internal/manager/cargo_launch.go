@@ -111,13 +111,13 @@ func (m *Manager) cargoWorkerCurrent(id string, worker *cargoWorker) (model.Leas
 	return l, rec, nil
 }
 func (m *Manager) cargoGate(l model.Lease, rec cargoRecord, worker *cargoWorker) error {
-	if m.closing || m.draining || m.cargoWorkers[l.ID] != worker || rec.Worker != worker.id || l.State == "ending" || l.State == "needs_attention" || l.State == "terminal" || l.Expires == nil || !time.Now().Before(*l.Expires) {
+	if m.closing || m.draining || m.cargoWorkers[l.ID] != worker || rec.Worker != worker.id || l.State == "ending" || l.State == "needs_attention" || l.State == "terminal" || l.Expires == nil || !m.leaseLive(l) {
 		return model.Err("cargo_gate_closed", "Cargo lease is closing, expired or no longer owns its worker")
 	}
 	if reason := m.startDeadlineProblem(l); reason != nil {
 		return reason
 	}
-	_, e := m.cargoStorageParent(l.Request, l.Expires)
+	_, e := m.cargoStorageParent(l.Request, l.Clock)
 	return e
 }
 func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id string, run RunRequest, source CargoHelperSource) {
@@ -308,7 +308,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		e = m.cargoGate(l, rec, worker)
 	}
 	if e == nil {
-		store, e = m.cargoStorageParent(l.Request, l.Expires)
+		store, e = m.cargoStorageParent(l.Request, l.Clock)
 	}
 	if e == nil {
 		rec.Runtime = &runtime
@@ -390,7 +390,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		l.PID = identity.PID
 		l.Process = native
 		l.Revision++
-		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor, childOwner: originalOwner}
+		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor, childOwner: originalOwner, leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
 		m.jobs[id] = j
 		e = m.putCargo(l, rec, "cargo.helper_bound")
 	}
@@ -403,7 +403,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		return
 	}
 	channel := cargoprofile.HelperChannel{In: childRead, Out: parentWrite, Lease: id, Nonce: rec.Nonce}
-	init := cargoprofile.HelperInit{Command: command, CWD: run.CWD, Allocation: store.ManagedDir, AllocationIdentity: *store.Artifact.Identity, Runtime: runtime, Expires: *l.Expires, StartDeadline: l.Request.StartDeadline}
+	init := cargoprofile.HelperInit{Clock: l.Clock, Command: command, CWD: run.CWD, Allocation: store.ManagedDir, AllocationIdentity: *store.Artifact.Identity, Runtime: runtime, Expires: *l.Expires, StartDeadline: l.Request.StartDeadline}
 	if e = channel.Send("init", init); e != nil {
 		fail(e)
 		return
@@ -434,7 +434,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 	// From this point a dropped reply is not proof that tool/filesystem work did
 	// not occur. Retain uncertainty if the helper's final receipt is unavailable.
 	preflight = true
-	if e = channel.Send("preflight", cargoprofile.HelperGrant{Approved: true, Revision: l.Revision, Expires: *l.Expires, StartDeadline: l.Request.StartDeadline}); e != nil {
+	if e = channel.Send("preflight", cargoprofile.HelperGrant{Clock: l.Clock, Approved: true, Revision: l.Revision, Expires: *l.Expires, StartDeadline: l.Request.StartDeadline}); e != nil {
 		fail(e)
 		return
 	}
@@ -528,7 +528,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 				fail(e)
 				return
 			}
-			if e = channel.Send("compile", cargoprofile.HelperGrant{Approved: true, Revision: l.Revision, Expires: *l.Expires, StartDeadline: l.Request.StartDeadline, EvidenceSHA256: digest}); e != nil {
+			if e = channel.Send("compile", cargoprofile.HelperGrant{Clock: l.Clock, Approved: true, Revision: l.Revision, Expires: *l.Expires, StartDeadline: l.Request.StartDeadline, EvidenceSHA256: digest}); e != nil {
 				fail(e)
 				return
 			}

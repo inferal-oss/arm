@@ -21,6 +21,7 @@ import (
 	"github.com/inferal-oss/arm/internal/cargoprofile"
 	"github.com/inferal-oss/arm/internal/childowner"
 	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"github.com/inferal-oss/arm/internal/local"
 	"github.com/inferal-oss/arm/internal/model"
 	"github.com/inferal-oss/arm/internal/nodestop"
@@ -41,21 +42,28 @@ type RunRequest struct {
 	sshRuntime *sshRuntime
 }
 type job struct {
-	nativeDone       chan struct{}
-	sshRuntime       *sshRuntime
-	controlMu        sync.Mutex
-	controlRetired   bool
-	controlError     error
-	childOwner       *childowner.Owner
-	cmd              *exec.Cmd
-	done             chan struct{}
-	identity         *model.ProcessIdentity
-	cpuAnchor        string
-	cpuExited        atomic.Bool
-	observationError string
-	lastUsage        *model.WorkloadUsage
+	leaseHost, leaseOwner string
+	leaseRequest          model.Request
+	nativeDone            chan struct{}
+	sshRuntime            *sshRuntime
+	controlMu             sync.Mutex
+	controlRetired        bool
+	controlError          error
+	childOwner            *childowner.Owner
+	cmd                   *exec.Cmd
+	done                  chan struct{}
+	identity              *model.ProcessIdentity
+	cpuAnchor             string
+	cpuExited             atomic.Bool
+	observationError      string
+	lastUsage             *model.WorkloadUsage
 }
 type Manager struct {
+	leaseClockCheckpoint    leaseclock.Sample
+	storageExportCancels    map[string]context.CancelFunc
+	leaseClockRead          func() (leaseclock.Sample, error)
+	leaseClockLast          leaseclock.Sample
+	leaseClockError         *model.Error
 	sshTransports           map[string]*sshLeaseHold
 	nodeStopBoundary        *nodestop.Boundary
 	nodeStopUnknown         bool
@@ -133,6 +141,10 @@ type Manager struct {
 var capabilities = []string{"cooperative-reservation", "process-group-supervision", "durable-events", "host-observation", "custom-resource-pools", "pool-capacity-journal", "local-global-pool-authority", "bulk-lease-actions", "draining-shutdown", "local-owner-policy-budgets", "counted-resource-subpools"}
 
 func Open(home string, capacity model.Resources) (*Manager, error) {
+	return openWithLeaseClock(home, capacity, leaseclock.Read)
+}
+
+func openWithLeaseClock(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error)) (*Manager, error) {
 	if !finiteCPU(capacity.CPU) || capacity.CPU < 0 || capacity.CPU > 65536 {
 		return nil, model.Err("invalid_config", "CPU ceiling must be a finite nonnegative logical-core count at most 65536")
 	}
@@ -197,6 +209,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		return nil, e
 	}
 	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, syncSourceWorkers: map[string]*SyncSourceHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m.leaseClockRead = clockRead
 	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
 	m.diskSampleSlots = make(chan struct{}, 1)
@@ -253,6 +266,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			m.storage.Close()
 		}
 	}()
+	if e = m.initLeaseClock(); e != nil {
+		db.Close()
+		return nil, e
+	}
 	// A recovered PID alone never authorizes signalling. Keep uncertain jobs charged.
 	leaves, e := m.list()
 	if e != nil {
@@ -355,7 +372,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 		} else if run.Valid && consuming(l.State) {
 			l.State = "needs_attention"
 			l.Outcome = "supervision_lost"
-			if !m.gradleObligation(l) && (l.PID == 0 || errors.Is(syscall.Kill(-l.PID, 0), syscall.ESRCH)) {
+			if _, clockErr := m.leaseRemaining(l); clockErr == nil && !m.gradleObligation(l) && (l.PID == 0 || errors.Is(syscall.Kill(-l.PID, 0), syscall.ESRCH)) {
 				now := time.Now().UTC()
 				l.State = "terminal"
 				l.Outcome = "interrupted"
@@ -390,6 +407,16 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 	}
 	if m.budgetStartupError == nil {
 		if e = m.migrateBudgetBindings(); e != nil && !m.degradeBudgetStartup(e) {
+			db.Close()
+			return nil, e
+		}
+	}
+	if e = m.retainRecoveredLeaseClocks(); e != nil {
+		db.Close()
+		return nil, e
+	}
+	if m.leaseClockError == nil {
+		if e = m.reconcileLeaseExpiries(); e != nil {
 			db.Close()
 			return nil, e
 		}
@@ -622,7 +649,7 @@ func (m *Manager) Status() (model.Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ls, e := m.list()
-	s := model.Status{PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "workspace-published-agents-poll-v1", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
+	s := model.Status{LeaseClockError: m.leaseClockError, PoolError: m.poolPolicyError(), BudgetError: m.budgetPolicyError(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Draining: m.draining, Capacity: m.capacity, Leases: ls, Capabilities: append(append([]string{}, capabilities...), "observed-usage-policy", "sender-aware-agent-messaging", "workspace-published-agents-poll-v1", "owned-gradle-services"), Infrastructure: append([]model.PortBinding{}, m.infrastructure...)}
 	s.CPUWarning = &model.CPUWarningEvidence{State: "unavailable", Detail: "CPU warning lease accounting is unavailable"}
 	if e == nil {
 		if tick, err := pressureNativeTick(); err == nil {
@@ -809,6 +836,9 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 	}
 	if m.closing || m.draining {
 		return empty, model.Err("backend_stopping", "backend is shutting down")
+	}
+	if err := m.reconcileLeaseExpiries(); err != nil {
+		return empty, err
 	}
 	if err := canonicalStartDeadline(&r); err != nil {
 		return empty, err
@@ -1024,7 +1054,9 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 		l.QueueInfo = rejectedQueueInfo(stamp, deadlineProblem)
 		l.Failure = deadlineProblem.Message
 	} else if !queued && m.fitsLiveResources(r.Resources, used) && poolFits && len(budgetBlockers) == 0 {
-		m.activate(&l, run != nil)
+		if e = m.activate(&l, run != nil); e != nil {
+			return empty, e
+		}
 	} else if !r.Queue {
 		return empty, model.Err("insufficient_capacity", "host capacity or policy ceilings are committed, or live CPU/memory/disk headroom is insufficient/unavailable; use --wait to queue")
 	}
@@ -1145,16 +1177,25 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 	return l, e
 }
 
-func (m *Manager) activate(l *model.Lease, isRun bool) {
-	now, _ := m.schedulingTime()
+func (m *Manager) activate(l *model.Lease, isRun bool) error {
+	s, err := m.readLeaseClock()
+	if err != nil {
+		return err
+	}
+	deadline, err := leaseclock.New(s, l.Request.TTL)
+	if err != nil {
+		return err
+	}
+	now, end := s.Wall, deadline.Wall
+	l.Clock = deadline
 	l.QueueInfo = nil
-	end := now.Add(l.Request.TTL)
 	l.Started = &now
 	l.Expires = &end
 	l.State = "active"
 	if isRun || l.Request.Kind == "storage" || len(l.Request.Ports) > 0 {
 		l.State = "provisioning"
 	}
+	return nil
 }
 
 func (m *Manager) End(id, outcome string) (model.Lease, error) {
@@ -1221,8 +1262,28 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.Request.Kind == forwardListenerKind {
 		return m.endForwardListener(l, outcome)
 	}
+	if worker := m.cargoWorkers[id]; worker != nil && l.RecoveryReason == "lease_clock_uncertain" {
+		rec, err := m.getCargo(id)
+		if err != nil {
+			return l, err
+		}
+		if rec.Worker != worker.id || l.Host != worker.leaseHost || l.Owner != worker.leaseOwner || !reflect.DeepEqual(l.Request, worker.leaseRequest) {
+			return l, model.Err("needs_attention", "original Cargo owner differs; obligations remain charged")
+		}
+		// Only this explicit ending operation cancels native work after clock
+		// uncertainty. Cancellation is not join; the original worker settles it.
+		worker.cancel()
+		l.State, l.Outcome = "ending", outcome
+		l.Revision++
+		return l, m.put(l, "lease.ending")
+	}
 	if l.State == "needs_attention" {
-		return l, model.Err("needs_attention", "allocation remains charged pending reconciliation; storage leases support explicit cleanup retry or handoff")
+		j := m.jobs[id]
+		// An explicit End/Close can still cancel the exact current owner whose
+		// clock became uncertain. This never adopts a recovered or replaced row.
+		if l.RecoveryReason != "lease_clock_uncertain" || j == nil || j.cmd == nil || j.cmd.Process == nil || l.PID != j.cmd.Process.Pid || l.Host != j.leaseHost || l.Owner != j.leaseOwner || !reflect.DeepEqual(l.Request, j.leaseRequest) || !reflect.DeepEqual(l.Process, j.identity) {
+			return l, model.Err("needs_attention", "allocation remains charged pending reconciliation; storage leases support explicit cleanup retry or handoff")
+		}
 	}
 	if hold := m.syncWorkers[id]; hold != nil {
 		if err := hold.checkBindingLocked(context.Background()); err != nil {
@@ -1307,6 +1368,9 @@ func (m *Manager) Renew(id string, ttl time.Duration) (model.Lease, error) {
 	return m.renew(id, ttl)
 }
 func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
+	if err := m.reconcileLeaseExpiries(); err != nil {
+		return model.Lease{}, err
+	}
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
@@ -1329,7 +1393,7 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if ttl <= 0 || ttl > 7*24*time.Hour {
 		return l, model.Err("invalid_request", "invalid renewal ttl")
 	}
-	if l.State != "active" || l.Expires == nil || !time.Now().Before(*l.Expires) {
+	if l.State != "active" || !m.leaseLive(l) {
 		return l, model.Err("lease_inactive", "only an unexpired active lease can be renewed")
 	}
 	if err := m.gradleRenew(l, ttl); err != nil {
@@ -1399,10 +1463,23 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 			return l, model.Err("renewal_denied", "queued work has priority over renewal")
 		}
 	}
-	end := time.Now().UTC().Add(ttl)
-	if end.Before(*l.Expires) {
+	s, err := m.readLeaseClock()
+	if err != nil {
+		return l, err
+	}
+	remaining, err := l.Clock.Remaining(s, l.Expires)
+	if err != nil || remaining <= 0 {
+		return l, model.Err("lease_inactive", "lease expired or elapsed deadline is uncertain")
+	}
+	if ttl < remaining {
 		return l, model.Err("invalid_request", "renewal must extend the current expiry")
 	}
+	deadline, err := leaseclock.New(s, ttl)
+	if err != nil {
+		return l, err
+	}
+	l.Clock = deadline
+	end := deadline.Wall
 	l.Expires = &end
 	m.attachBudgetEvidence(&l)
 	m.attachPoolEvidence(&l)
@@ -1469,13 +1546,12 @@ func (m *Manager) tick() {
 	if e != nil {
 		return
 	}
-	m.tickGradleWorkloads(ls)
-	now := time.Now()
-	for _, l := range ls {
-		if (l.State == "active" || l.State == "provisioning") && l.Expires != nil && !now.Before(*l.Expires) {
-			_, _ = m.end(l.ID, "expired")
-		}
+	clockErr := m.reconcileLeaseExpiries()
+	ls, e = m.list()
+	if e != nil {
+		return
 	}
+	m.tickGradleWorkloads(ls)
 	if err := m.reconcileIncidents(); err != nil {
 		return
 	}
@@ -1506,7 +1582,7 @@ func (m *Manager) tick() {
 			_, _ = m.finishPortParent(l)
 		}
 	}
-	if m.draining || m.budgetStartupError != nil || m.poolStartupError != nil {
+	if clockErr != nil || m.draining || m.budgetStartupError != nil || m.poolStartupError != nil {
 		return
 	}
 	poolUsed, e := poolReservations(ls)
@@ -1563,7 +1639,9 @@ func (m *Manager) tick() {
 		m.attachPoolEvidence(&l)
 		l.BudgetPolicy = policies
 		if len(l.Request.Ports) == 0 {
-			m.activate(&l, rb.Valid)
+			if e = m.activate(&l, rb.Valid); e != nil {
+				return
+			}
 			l.Revision++
 			if e = m.put(l, "lease.granted"); e != nil {
 				return
@@ -1615,6 +1693,9 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		if err := m.bindSSHTransport(l, r.sshRuntime); err != nil {
 			return l, err
 		}
+	}
+	if !m.leaseLive(l) {
+		return m.launchFailed(l, model.Err("lease_inactive", "elapsed entitlement unavailable before launch"))
 	}
 	if l.Request.Resources.CPU <= 0 {
 		return m.rejectUnstarted(l, &model.Error{Code: "invalid_request", Message: "supervised execution requires a positive CPU claim"})
@@ -1718,6 +1799,10 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		f.Close()
 		return m.rejectUnstarted(l, reason)
 	}
+	if !m.leaseLive(l) {
+		f.Close()
+		return m.launchFailed(l, model.Err("lease_inactive", "elapsed entitlement unavailable before process start"))
+	}
 	if e = cmd.Start(); e != nil {
 		f.Close()
 		return m.launchFailed(l, e)
@@ -1725,7 +1810,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if r.sshRuntime != nil {
 		r.sshRuntime.startCopies()
 	}
-	j := &job{cmd: cmd, done: make(chan struct{}), nativeDone: make(chan struct{}), sshRuntime: r.sshRuntime}
+	j := &job{cmd: cmd, done: make(chan struct{}), nativeDone: make(chan struct{}), sshRuntime: r.sshRuntime, leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
 	if r.sshRuntime != nil {
 		h := r.sshRuntime.leaseHold
 		h.job = j
@@ -1809,6 +1894,21 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			return current, joinErr
 		}
 		return m.rejectUnstarted(current, reason)
+	} else if !m.leaseLive(l) {
+		// The requested workload never received the gate. Closing our original
+		// endpoints makes the fixed shell exit. Keep its original owner and let the
+		// sole existing waiter prove exit; never discard it on a failed Kill/Wait.
+		_ = reader.Close()
+		_ = writer.Close()
+		l.State = "ending"
+		l.Outcome = "expired"
+		if _, err := m.leaseRemaining(l); err != nil {
+			l.Outcome = "lease_clock_uncertain"
+		}
+		l.Failure = "Elapsed entitlement unavailable before process gate"
+		l.Revision++
+		e = m.put(l, "lease.ending")
+
 	} else if r.sshRuntime != nil && r.sshRuntime.check() != nil {
 		current, joined, joinErr := m.joinUnstarted(l, j, reader, writer, f)
 		if !joined {

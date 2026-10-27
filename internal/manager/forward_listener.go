@@ -51,6 +51,26 @@ func (h *ForwardListener) Lease() (model.Lease, error) {
 	return h.manager.Inspect(h.id)
 }
 
+// Remaining fences new work with the exact current owner and native deadline.
+// Context cancellation alone is not a suspend-inclusive entitlement check.
+func (h *ForwardListener) Remaining(ctx context.Context) (time.Duration, error) {
+	if h == nil || h.manager == nil || ctx == nil || ctx.Err() != nil {
+		return 0, model.Err("lease_inactive", "live original listener required")
+	}
+	m := h.manager
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	l, err := m.get(h.id)
+	if err != nil || m.closing || h.ctx.Err() != nil || h.settled || m.forwardListeners[h.id] != h || l.ID != h.id || l.PID != 0 || l.Process != nil || l.State != "active" || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Clock, h.result.Clock) || !reflect.DeepEqual(l.Expires, h.result.Expires) || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !reflect.DeepEqual(l.Request, h.request) {
+		return 0, model.Err("lease_inactive", "original listener allocation changed")
+	}
+	remaining, err := m.leaseRemaining(l)
+	if err != nil || remaining <= 0 {
+		return 0, model.Err("lease_inactive", "elapsed listener entitlement unavailable")
+	}
+	return remaining, nil
+}
+
 func canonicalForwardHex(s string, bytes int) bool {
 	if len(s) != 2*bytes || strings.ToLower(s) != s {
 		return false
@@ -127,7 +147,13 @@ func (m *Manager) AcquireForwardListener(ctx context.Context, key, reason string
 		_, _ = m.endPortParent(lease, "listener_admission_failed")
 		return nil, err
 	}
-	life, cancel := context.WithDeadline(ctx, *lease.Expires)
+	remaining, clockErr := m.leaseRemaining(lease)
+	if clockErr != nil || remaining <= 0 {
+		listener.Close()
+		_, _ = m.endPortParent(lease, "listener_admission_failed")
+		return nil, model.Err("lease_inactive", "elapsed entitlement unavailable")
+	}
+	life, cancel := context.WithTimeout(ctx, remaining)
 	h := &ForwardListener{manager: m, id: lease.ID, key: request.Key, listener: listener, ctx: life, cancel: cancel, joined: joined, workerDone: make(chan struct{}), request: lease.Request, result: lease}
 	if m.forwardListeners == nil {
 		m.forwardListeners = map[string]*ForwardListener{}

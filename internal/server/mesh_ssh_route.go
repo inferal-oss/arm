@@ -180,6 +180,9 @@ func (m *meshService) newBoundedRouteHandler(forward bool) *meshsshrelay.Handler
 		h.ReserveFinal = m.reserveForwardFinal
 	}
 	h.Revalidate = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) error {
+		if err := meshsshrelay.CheckReservation(ctx); err != nil {
+			return err
+		}
 		a, err := m.routedSSHAdmission(ctx, outer, o)
 		if err != nil {
 			return err
@@ -188,7 +191,7 @@ func (m *meshService) newBoundedRouteHandler(forward bool) *meshsshrelay.Handler
 			a.RelayGrant != p.RelayGrant || a.DestinationGrant != p.DestinationGrant || a.ForwardGrant != p.ForwardGrant || !time.Now().Before(p.Expires) {
 			return model.Err("forbidden", "routed SSH membership, grant or endpoint identity changed")
 		}
-		return nil
+		return meshsshrelay.CheckReservation(ctx)
 	}
 	h.Forward = func(ctx context.Context, outer meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit, previous net.Conn) {
 		nextHost := o.Path[o.Hop+1]
@@ -258,7 +261,7 @@ func (m *meshService) reserveForwardFinal(admission, lifetime context.Context, j
 			return e
 		}
 		lease, e := hold.Lease()
-		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), End: func() {
+		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() {
 			if lease.ID != "" {
 				if _, endErr := m.owner.Manager.End(lease.ID, "forward_closed"); endErr != nil {
 					log.Printf("TCP destination hold end remains unconfirmed: %v", endErr)
@@ -299,20 +302,44 @@ func (m *meshService) serveRoutedForward(ctx context.Context, h *meshsshrelay.Ha
 		return
 	}
 	who := meshforward.Identity{SourcePin: p.Origin.Fingerprint, SourceSPKI: p.Origin.SPKI, TargetPin: p.Destination.Fingerprint, TargetSPKI: p.Destination.SPKI, Account: account.Username}
-	loader := func(check context.Context) (meshforward.Grant, error) {
-		if err := h.Revalidate(check, outer, o, p); err != nil {
-			return meshforward.Grant{}, err
-		}
-		policy, err := meshsshrelay.ReadPolicy(m.owner.home, p.Local.Host, p.Local.Fingerprint)
-		if err != nil {
-			return meshforward.Grant{}, err
-		}
-		return policy.Forward(o)
-	}
+	loader := routedForwardPolicyLoader(m.owner.home, p, o, func(check context.Context) error {
+		return h.Revalidate(check, outer, o, p)
+	}, meshsshrelay.ReadPolicy)
 	if err := p.ForwardGrant.Authorize(time.Now(), who.SourcePin, who.SourceSPKI, who.TargetPin, who.TargetSPKI, who.Account, q); err != nil {
 		return
 	}
 	_ = m.forwardProxy.Open(ctx, q, who, inner, loader, func() error { return meshforward.WriteAccepted(inner, q) })
+}
+
+// routedForwardPolicyLoader keeps the bound route revalidation on both sides of
+// the owned policy read. A successful calendar grant cannot establish fresh
+// native entitlement after policy filesystem IO or decoding has blocked.
+func routedForwardPolicyLoader(home string, p meshsshrelay.Permit, o meshsshrelay.Open,
+	revalidate func(context.Context) error,
+	readPolicy func(string, string, string) (meshsshrelay.Policy, error),
+) func(context.Context) (meshforward.Grant, error) {
+	return func(check context.Context) (meshforward.Grant, error) {
+		if revalidate == nil || readPolicy == nil {
+			return meshforward.Grant{}, errors.New("bound route and policy reader required")
+		}
+		if err := revalidate(check); err != nil {
+			return meshforward.Grant{}, err
+		}
+		policy, err := readPolicy(home, p.Local.Host, p.Local.Fingerprint)
+		if err != nil {
+			return meshforward.Grant{}, err
+		}
+		grant, err := policy.Forward(o)
+		if err != nil {
+			return meshforward.Grant{}, err
+		}
+		// The production callback checks all original reservation holds before
+		// and after its own membership/policy reauthorization work.
+		if err = revalidate(check); err != nil {
+			return meshforward.Grant{}, err
+		}
+		return grant, nil
+	}
 }
 
 func (m *meshService) reserveSSHRelayTransit(admission, lifetime context.Context, joined <-chan struct{}, _ meshsshrelay.Outer, o meshsshrelay.Open, p meshsshrelay.Permit) (meshsshrelay.TransitReservation, error) {
@@ -341,7 +368,7 @@ func (m *meshService) reserveSSHRelayTransit(admission, lifetime context.Context
 			return e
 		}
 		lease, e := hold.Lease()
-		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), End: func() {
+		reservation = meshsshrelay.TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() {
 			if lease.ID != "" {
 				if _, endErr := m.owner.Manager.End(lease.ID, "relay_closed"); endErr != nil {
 					log.Printf("routed SSH transit hold end remains unconfirmed: %v", endErr)

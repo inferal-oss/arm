@@ -65,6 +65,10 @@ func (h *SyncWorkerHold) CheckActive(ctx context.Context) error {
 // Manager.mu is held. Bind both checks and launch to the complete durable
 // predecessor, including same-revision replacements and the volume promise.
 func (h *SyncWorkerHold) checkActiveLocked(ctx context.Context) error {
+	lease, err := h.manager.get(h.lease)
+	if err != nil || !h.manager.leaseLive(lease) {
+		return model.Err("sync_worker_unavailable", "elapsed sync entitlement unavailable")
+	}
 	if err := h.runtime.check(); err != nil {
 		return err
 	}

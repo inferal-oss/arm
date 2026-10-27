@@ -1,0 +1,1052 @@
+{
+  "composition": {
+    "documentation_sha256": {
+      "docs/lease-clock.md": "0e554935d696be2a52d4e2d2c93c6b5e7e00c26f72afa3cb0b6a05110b92239d",
+      "formal/lease-clock/README.md": "e7a203ecf9c1a8dc5cbc4136f21af3f7578c57286d46b616c339c76d6e27fd28"
+    },
+    "feature_sources_sha256": {
+      "formal/lease-clock/LeaseClock.cfg": "df11e2ace31e730b3c4df7b6a7f578ec73452aa0c21b1c836b5d2fe20f3a7fd7",
+      "formal/lease-clock/LeaseClock.tla": "3ad7c2f05997368be8d0bcd6abe6ef1cae6b0bed099a7775404589d46f55d2bc",
+      "formal/lease-clock/LeaseClockProof.tla": "7057f9488b6c7aa1f5f63230704ee3b023c955bcd98e71620104792170ae59cc",
+      "internal/cargoprofile/helper.go": "068e1aaba68cdee93b70f577b513506b4b7885c96994a15098e3fc1236e0120f",
+      "internal/cargoprofile/helper_real_test.go": "3221ced7e48180a7a0052dbb3c6b0bce9f4f98a1f89013e09c241b336f00b4dc",
+      "internal/database/proof.go": "9a4501921feb854b42da508e3217e8f9ed9d4eb3d1262009ad7bb4333725cd12",
+      "internal/database/proof_ssh_shapes.go": "36404b8c18b428357dce84ccfe81736f4e0a72ec1d84e70930fc219ac7dd131d",
+      "internal/database/proof_ssh_shapes_test.go": "0a5b9bca93d829ee4de0dfb01cf748fc80a50bfc6e37660aed5ef51009f2b9ea",
+      "internal/leaseclock/clock.go": "68be5a50a9310b5bf9f4ba40cf8be2f9c7ece39d8fc4ded9a7d5b9f99dfd2323",
+      "internal/leaseclock/clock_test.go": "c2c3e1bfefda8c6c8245c6cfae18ba7dedc564ad53fce0c612c799af17a56afa",
+      "internal/leaseclock/native_darwin.go": "e26968d2321abe0f77d5ae897c325227d464dd068eba3d2923e177be9e017b08",
+      "internal/leaseclock/native_linux.go": "73c012040cb4ebb0a4eecec23330baead5f0156a8415467bef9b75bdf3615b9d",
+      "internal/leaseclock/stop_darwin_test.go": "340224a19a4914e8bfd7eb34d8aa8a2f13a690e4d4abef23d767d50344b7b8d1",
+      "internal/leaseclock/stop_linux_test.go": "330ac8027083c66bacbe358677e127ee5162386a318629a3b0f095290db8933d",
+      "internal/manager/cargo_launch.go": "82ebb46cd2ecd1d7f55eff848da0f581da3ca07d571cc800898cedc062fa6911",
+      "internal/manager/cargo_records.go": "be84bfa5b2a14b60b9882cd09b75f15d6ef240c5f892bea4382fe016de231584",
+      "internal/manager/forward_credit_clock_test.go": "d0b73ffd70faabf43daad28709440720743778478661aaccd9e6b70ae09c61ae",
+      "internal/manager/forward_listener.go": "fbbcb2ad6a1456d1b8202331f707d3ddce9f326b88850d03f25c4d1f4b38de87",
+      "internal/manager/gradle_lifecycle.go": "ffc66348cdd0aae102eb5f4964469df5c05e3ad539ed6983247eea7590d765d4",
+      "internal/manager/gradle_prepare.go": "4a77517056a068278bd962fab958118f81866e43cb4ac03c403696e0fa7fee06",
+      "internal/manager/gradle_probe.go": "1117ee8669b07d6ad28a1ae2d7d2d01e6f164fce5dc6332dbc4bdc92ac231599",
+      "internal/manager/lease_clock.go": "767c41bcd2b232c84d7dac6ea4a06c321bd3c5107db81dd7910c38fa99c1c657",
+      "internal/manager/lease_clock_test.go": "ef056cbaf9b4b6db07ed079a5b0039a88e8b3db89f208d04e46d67f1102a8970",
+      "internal/manager/lease_clock_trace_dev_test.go": "477b6af43e9cc208658f0c970471d372ef19f8854672360c29759b07a8802f04",
+      "internal/manager/lease_reviews.go": "4ef64652d3fa127cf8759a7418aa7ddff19ee4aeeeef584937c0bb42981b9057",
+      "internal/manager/lease_reviews_startup_test.go": "824cc324ffb91853106b4aa13dc6a179aa9b48a81521279058bb6d0559e38eed",
+      "internal/manager/manager.go": "227766521dd597b327286e283b2917a9127d5c96725fd3fa83ee9248ec494fda",
+      "internal/manager/policy.go": "4c7f9a427fe2875ec22c8947b477524287cbcf30c68568976bc0c0794c609666",
+      "internal/manager/ports.go": "b6547ed223eb5e426332c42d4e210f28af84035ba582f68e7c7b31cf711223b1",
+      "internal/manager/relay_transit.go": "ba2951f7ef5fd690b7eb86a7211bf428b2583e57d95b2bee17ed52d2533ece25",
+      "internal/manager/relay_transit_test.go": "6fd5fd82aac11a3ce12a2ff54a742bad63613259212dc8bceea8b1ef1801de28",
+      "internal/manager/scheduling.go": "3ff5b3f33c21529f3d41ec48b80a1d88b52be7b08af86d879d1f38ec3a4f405c",
+      "internal/manager/ssh_runtime.go": "9f0dfb2c66b2758b687dde04ad077a40976d5052c2a97faa147c4488fbdc35c9",
+      "internal/manager/storage.go": "978d9182d155eee9932a1ceb5450e25ee2479f276ad516d779804eaa6a12ffb4",
+      "internal/manager/storage_export.go": "6384a1884756b6a5bd94a8c907daf9044c1f153efa00c9dd7b0c0599e1a67c54",
+      "internal/manager/storage_export_test.go": "e220f912248ad67a05e024866678b4f24636c1c42bd726c4479e6872164ae5d4",
+      "internal/manager/sync_preparation.go": "42a9715db2a4e98135a781a095a65929886829edc593faf67501b9c3241ba8e7",
+      "internal/manager/sync_preparation_test.go": "6044c5dec76a87a3b15dfb1ad8f08f7b1026fe67e82fcbbdfb0d6884c5bddc41",
+      "internal/manager/sync_source_hold.go": "d5d439a63f55d6fc3c9cf0899ee3b4bac65bf70b3d6e430351c674ed8f648469",
+      "internal/manager/sync_worker_hold.go": "3497eda39ad6d17f09ecfd277acc3aea69a3b8950f9ca13c7702d6954fe51e4f",
+      "internal/meshforward/proxy.go": "00a843c3261828fb327bd1513d15bf99c9fbfeaa8d2fe2854477cb8be2137318",
+      "internal/meshsshrelay/afterfunc_test.go": "c8f7cf105fd2565382bf2521bf4b8c623380ea0fd5ac4e04a37bf25541d99cba",
+      "internal/meshsshrelay/binding.go": "f48a987af61d65b6b8977d69c6fd3e8d9ffc4eb3c631fb9e6ff58f974e96f1de",
+      "internal/meshsshrelay/carrier.go": "e7f1a66199194e2d243c152d2991b79f79c233b50bf58cea65eebc63e3f555d6",
+      "internal/meshsshrelay/carrier_test.go": "667091feb6ad99c693e14c7ec57c0837295643ac1f0e1d52e5778043244bd5f6",
+      "internal/meshsshrelay/forward_join_review_test.go": "be518ad25f4e390145a3f23090181ce9115b3012216cea2858c343f79e9982ef",
+      "internal/meshsshrelay/reservation_context.go": "75354d0935e51ef6f020a69cd48f5c9277e9257f6a862acd2944857f3e523487",
+      "internal/meshsshrelay/reservation_context_test.go": "b40ba65819a6043b80dbde8d014b0377df2cf9ba99aa9c08fc194f3a517c1154",
+      "internal/model/model.go": "aa9d9bb0e00816889d42cf98868b655af548a6f92495fa713088ea6e8a0214a5",
+      "internal/server/mesh_forward_policy_clock_test.go": "d2e33c808c83547ea15ff4d946d52361acb3076c94e1d374c46cf1668956766a",
+      "internal/server/mesh_forward_route_test.go": "ade6f70115c51369816fac61c14b7a2845e7ddea3e10c6e07ccea91af43b2981",
+      "internal/server/mesh_forward_source.go": "c00bc92eb4ff001a18c113833889413e110ee761b56dc6ded520a9209ec33169",
+      "internal/server/mesh_forward_source_route.go": "130bb2eb1fbf8d505841fd125a530a84b1faab91038353950c3a1864c94507c4",
+      "internal/server/mesh_ssh_route.go": "5ab2836575a19689aed335c289123feb2ce0050fea6279ef0e5d0873708e2e89",
+      "internal/server/screen.go": "d16552f97a168c397633f204d2bbd48f82a9c0d23b644be2d42699572c3432b8",
+      "internal/server/screen_lease_clock_test.go": "2e5895ce9537e81a6e3d1f4d4f0163171fdc2c6f94de55cb7fae28def524cb1b",
+      "internal/server/screen_regression_test.go": "7fb7cee2e9c60875c0e0d335c15d5b41de21f34740f99dbfa0776d24035c9c90",
+      "internal/server/screen_resources.go": "5e011ae376794b2efa4eb1340a7ce377254e689882d09bdef13525bb25583be7",
+      "internal/tui/actions.go": "70f55dead853b55e08b4f7d8119c323cfb7a7894506947bae8de69dc808686df",
+      "internal/tui/lease_clock_renewal_test.go": "f4841226a70d36a271899c4977b4a8aecb76e263860acc9d39f7277aec7fd845",
+      "scripts/test-lease-clock-formal-native.py": "b692efa9407baaadec174a3a50f74045b2e5272c76b09e0153fd2d1cc477c05f",
+      "scripts/test-lease-clock-formal.py": "3424586c2cf016b1f727af73a159f1de36afdcbe9a8da87361b8148ee9960a25"
+    },
+    "parent": "78feee024965a48e6ffe3a855872bb9db3385477",
+    "source_review": "All changed code/model/test/script files exactly match the tested final runtime. Integrated supervision, End, counted-proof and native-sync fixtures remain prerequisites. Newer parent UI and diagnostic files are preserved; their separate acceptance is not relabelled as a full same-source runtime test.",
+    "tested_final_runtime": "3c76a89dd17029a8dbd83d342cfe9d91c81ccc85"
+  },
+  "earlier_broad_checkpoint": {
+    "cohorts": [
+      "Full 73-root database cohort on both platforms",
+      "22 terminal UI roots including five clock renewal roots",
+      "Native clock reads and original process stop/resume",
+      "Real Cargo cancellation/expiry and SSH/native transport joins",
+      "Race instrumentation, full compile and affected vet"
+    ],
+    "native": [
+      {
+        "all_original_PID_group_absence_reported": true,
+        "all_original_commands_retired_reaped_wait_once": true,
+        "counts": {
+          "command_receipts": 8,
+          "failed_test_nodes": 0,
+          "packages": 7,
+          "passed_test_and_subtest_nodes": 830,
+          "root_tests": 260,
+          "run_test_and_subtest_nodes": 830,
+          "skipped_test_nodes": 0,
+          "subtest_nodes": 570
+        },
+        "platform": "Linux",
+        "selected_dependency_before_after_equal": true,
+        "selected_dependency_entries": 37108,
+        "source_before_after_equal": true,
+        "source_blob_count": 1916
+      },
+      {
+        "all_original_PID_group_absence_reported": true,
+        "all_original_commands_retired_reaped_wait_once": true,
+        "counts": {
+          "command_receipts": 8,
+          "failed_test_nodes": 0,
+          "packages": 7,
+          "passed_test_and_subtest_nodes": 840,
+          "root_tests": 262,
+          "run_test_and_subtest_nodes": 840,
+          "skipped_test_nodes": 0,
+          "subtest_nodes": 578
+        },
+        "platform": "Darwin",
+        "selected_dependency_before_after_equal": true,
+        "selected_dependency_entries": 41073,
+        "source_before_after_equal": true,
+        "source_blob_count": 1916
+      }
+    ],
+    "original_artifacts": [
+      {
+        "ZIP_bytes": 3831912,
+        "artifact_id": 12710870725,
+        "kind": "macos",
+        "member_count": 25,
+        "original_zip_sha256": "67a299020cb94dddb9037e40755a0b81034b2cc127ca5551a47f7bc9843e89ad"
+      },
+      {
+        "ZIP_bytes": 4267802,
+        "artifact_id": 12710313020,
+        "kind": "formal",
+        "member_count": 224,
+        "original_zip_sha256": "7e649923c6e6bc902a041bd9d8363df1a2ccae5b77f930c169a4eb78d6a61651"
+      },
+      {
+        "ZIP_bytes": 3491586,
+        "artifact_id": 12709387148,
+        "kind": "linux",
+        "member_count": 26,
+        "original_zip_sha256": "ab64f8d18eb0ad1ea5371bb8f6d6d09463ace4fd92683585d87a9ee218612749"
+      }
+    ],
+    "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40447232521",
+    "scope": "Recorded earlier runtime, before late Sync, screen, credit, PSS, End and policy-read composition.",
+    "source_commit": "ef26ba4c75f72a8bbc71efd6e5a81bcaf57faa1e"
+  },
+  "feature": "Suspend-inclusive boot-scoped lease entitlement",
+  "final_native_macos": {
+    "candidate": "3c76a89dd17029a8dbd83d342cfe9d91c81ccc85",
+    "commands": [
+      {
+        "actual_exit": 0,
+        "command": "affected-compile",
+        "expected_exit": 0,
+        "log_sha256": "ec8d99fe9644795ba7cf118bfa2cb162ac9a6566250c5da9b12e062cf97ce513",
+        "owner_receipt_sha256": "40e2d6aba633fb1a6af4f88887c17a82751c6e68cf82d31ec9c4eaaed5ad504a",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "cc-linker",
+        "expected_exit": 0,
+        "log_sha256": "83b2a256356bb337f057ffb453b4e32c9d5f5f96737855843feb966c59816c88",
+        "owner_receipt_sha256": "25ed46ca85a0785c2a9de15300d927252c2a4e042f4b68cdaa891165e6c352a8",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "cc-resource",
+        "expected_exit": 0,
+        "log_sha256": "22f1c7b7c5fcf82e1d69fbca0850e97fa884c299d215c90d4b33dc1f6afd43e9",
+        "owner_receipt_sha256": "0eb78aa29c0b09c3b6421c18107e868a6b09ca1d94062995e200b1aab2e61f72",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "full-compile",
+        "expected_exit": 0,
+        "log_sha256": "590343e3b4038036e60f08ec8ee9ccc18a602bf140dbc0bc31f3e426f21a85fe",
+        "owner_receipt_sha256": "3f242873bfc2328f3cfbf019a72b9b8c3aebfa1aadebaa37a8028f10fad257dd",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "native-cargo-path",
+        "expected_exit": 0,
+        "log_sha256": "03b6f698e7c05550bbeea69f1682d8045700b71a9a9b5e238133b70a228e2220",
+        "owner_receipt_sha256": "acaa73468fc67384815065158782c9e2d0e0f107c98458994a952c63418c44b1",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "native-race",
+        "expected_exit": 0,
+        "log_sha256": "664df6a63a2a49c4fdf8063adc8ac0f397b7e1f8c448e4e4a53fb71398419247",
+        "owner_receipt_sha256": "4a7d1220317218c9f54599586acbb2823c5c14f2452db598528f2525aaf25b09",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 1,
+        "command": "policy-negative",
+        "expected_exit": 1,
+        "log_sha256": "def5cd753eb4517b2212e6962823243a551bd37e3c7e5482dfa2ddba445342b3",
+        "owner_receipt_sha256": "c9ab766d2ae5a7f171e90a40186a33c025bc05b5083da9f96547bae9aad193d1",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "resolved-go-env",
+        "expected_exit": 0,
+        "log_sha256": "6f0af8de25c81babd3fa8a874ac64f2e74706db471c706c2ce4aaa3ba03c9cbe",
+        "owner_receipt_sha256": "495aa265523b817ff5f8cdad98d159dfe19e54b2204a9bcbc659f7a7bef464c5",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "vet",
+        "expected_exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "owner_receipt_sha256": "8111083b320c4394b89638a6e5b504b77fb66e341fe0b722d8acd07c2197b9cd",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      }
+    ],
+    "counts": {
+      "command_receipts": 9,
+      "failed_test_nodes": 0,
+      "packages": 8,
+      "passed_test_and_subtest_nodes": 379,
+      "root_tests": 205,
+      "run_test_and_subtest_nodes": 379,
+      "skipped_test_nodes": 0,
+      "subtest_nodes": 174
+    },
+    "execution_origin": "local_native_macos",
+    "github_actions_execution": false,
+    "local_wrapper_sha256": "f9811965a59eca010cd564af3e3706a9e6cfbdcc386543bede68a0306a1264c4",
+    "normal_queue_exit": 0,
+    "normalized_tool_snapshot": {
+      "C_compiler_sha256": "1590ac950a3d627817d09ade5cb60b2115f17a72182a3141e010b4bcc482a0c9",
+      "Cargo_binary_sha256": "fc7aa5077deca8abc0651f329e8ec1d968f520e996a93b428f9935014362b382",
+      "GOARCH": "arm64",
+      "GOOS": "darwin",
+      "Go_binary_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+      "Go_version": "go1.27.3",
+      "selected_tool_manifest_sha256": "d7632c789f1d80447a3854c4f8c376bee3cc6fc25c8d01f97be854fa2766816e"
+    },
+    "origin_receipt_sha256": "0e50b3e7c1e7f32791506d4482465346c4e81aafb619be2918207637f36e43df",
+    "platform_boundary": {
+      "host_wide_process_inspection_claimed": false,
+      "platform": "Darwin"
+    },
+    "policy_negative": {
+      "component_deadline_scope": "Immutable component Deadline bound through original Handler.Revalidate and actual ReadPolicy; no real Manager hold or host-suspend claim.",
+      "expected_normal_exit": 1,
+      "generated_source_sha256": "a9a096ce9a5c90d96707f082b599af47fa1c70855358f29bb63b3fb0a3d75e19",
+      "log_sha256": "def5cd753eb4517b2212e6962823243a551bd37e3c7e5482dfa2ddba445342b3",
+      "original_source_sha256": "5ab2836575a19689aed335c289123feb2ce0050fea6279ef0e5d0873708e2e89",
+      "overlay_sha256": "f686331cddc371c88a956f49cb6848252ba33b0fe242a9141b00d9ef875e0483",
+      "run_and_failed_test_nodes": 3,
+      "sole_forbidden_start_diagnostics": {
+        "TestRoutedForwardPolicyReadRechecksElapsedEntitlement/before-ready": "1 1 0 0",
+        "TestRoutedForwardPolicyReadRechecksElapsedEntitlement/before-service-dial": "1 0 0 0"
+      },
+      "status": "passed_expected_causal_failure_audit"
+    },
+    "prerequisite_result_sha256": "8b6b55e95d3ff1607c2174c789a45875c2559cfa83130cf58b6ba9eb0297a2ec",
+    "runner_metadata_unset": true,
+    "scope": "205 selected roots across eight packages, exact policy-negative control, full compile and selected vet; native sync preparation retains its real one-core/768MiB admission.",
+    "selected_dependency_before_after_equal": true,
+    "selected_dependency_entries": 124034,
+    "source_before_after_equal": true,
+    "source_binding": "GITHUB_SHA binds the frozen local source only; it does not attest GitHub Actions execution.",
+    "source_blob_count": 1939,
+    "source_manifest_sha256": "2cc382f758777ff8f39a3c8d7e0f35a5389ffe5e3ec71b2617dffe05676357dd"
+  },
+  "final_policy_linux": {
+    "candidate": "3c76a89dd17029a8dbd83d342cfe9d91c81ccc85",
+    "commands": [
+      {
+        "actual_exit": 0,
+        "command": "affected-compile",
+        "expected_exit": 0,
+        "log_sha256": "f396a2735c64fd2fba8fd09a82ee99c51071ee9c3d0de602dab86230311f42d1",
+        "owner_receipt_sha256": "c0ee0d2f1c890610918ab0279bc80e4c610cd6d2fde5ba1b472dc5dc1d1bd2aa",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "cc-linker",
+        "expected_exit": 0,
+        "log_sha256": "0fee318bca7611a664d1045f820ec79ffd7adf207e4348ec2f861cbe59503ccb",
+        "owner_receipt_sha256": "3f0a3b91e22fe976705af408669af8325370faa440170faa0e3ce6708d77a126",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "cc-resource",
+        "expected_exit": 0,
+        "log_sha256": "cb5cc056207569d14e7d36292504dce89204505b88dff2378bcc9ca66e323877",
+        "owner_receipt_sha256": "161df077b89514c0f94ba89beb3f0ab1cf8a35495852bc15b2d16bd1a8216664",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "full-compile",
+        "expected_exit": 0,
+        "log_sha256": "b57d2b56594f3980b596afff704e2b989429bbe74aea5ea23039dc4c28914340",
+        "owner_receipt_sha256": "a7ba9efa5bb4db47d7f7c14620339905929bd8b597628485ed4a84ab366c31ab",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "native-cargo-path",
+        "expected_exit": 0,
+        "log_sha256": "354bc09197246fdcf8e74cb60c3e9d545b905cc11236c16ed8dbab5da75382c2",
+        "owner_receipt_sha256": "324d1572202255b370c54c1d82a56aa153552cb61e8defa0d1f66104d99f9d28",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "native-race",
+        "expected_exit": 0,
+        "log_sha256": "c02ba892e399a2147a43952ec0f387efd45f7c93aaafc621de2a891e2c5d8f69",
+        "owner_receipt_sha256": "07d8b86428103bfc7528d61edbb3d5ea4ba5947971479c094737e08d37e67f6a",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 1,
+        "command": "policy-negative",
+        "expected_exit": 1,
+        "log_sha256": "eb26d8bbe486726506fbdd8a3e1add6f49d04f024106b16c37eef7fa1833867f",
+        "owner_receipt_sha256": "6debae99cb5eec7cfef7f0be1f0ebb97c4323288b3c02bf798fe1043e4ee6af9",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "resolved-go-env",
+        "expected_exit": 0,
+        "log_sha256": "514b3759d43c69db917df735ccb13b2e5b0ef81560b37447bf4f39ef9dec4538",
+        "owner_receipt_sha256": "ab29ef8c65f4a67fcf63fda8e2363b4bce3f8a8c0dd3c04c52c0a5bf424434b3",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "vet",
+        "expected_exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "owner_receipt_sha256": "e8c906952b7518a48ca512be7cced6fcdb093d25786c6ae1081a77e833334a17",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      }
+    ],
+    "counts": {
+      "command_receipts": 9,
+      "failed_test_nodes": 0,
+      "packages": 2,
+      "passed_test_and_subtest_nodes": 19,
+      "root_tests": 13,
+      "run_test_and_subtest_nodes": 19,
+      "skipped_test_nodes": 0,
+      "subtest_nodes": 6
+    },
+    "execution_origin": "github_actions_linux",
+    "normalized_tool_snapshot": {
+      "C_compiler_sha256": "6d99f6207153b8b2063ace5d2a6177debaf6a6b6f31649e03afac07b98ba0b4d",
+      "Cargo_binary_sha256": "a7a2b55d440156ac2c83b4cda27a25a7d100b8e69c6ac62232ebeb643859ae8a",
+      "GOARCH": "arm64",
+      "GOOS": "linux",
+      "Go_binary_sha256": "d487fddb6939f3e78f7293fcbdeae610ba8ceae966d3faa4b2094a5688559230",
+      "Go_version": "go1.27.3",
+      "selected_tool_manifest_sha256": "0153b9d25e6d2de839e5accfa21c2d5a955431d7f3eabaeb85e402d4e7f473f0"
+    },
+    "original_artifact": {
+      "id": 12713731794,
+      "zip_bytes": 3606029,
+      "zip_sha256": "99066bd8e391741f31390cd6e8de1c709ad8f621521458fe5992e544355c119d"
+    },
+    "platform_boundary": {
+      "all_capability_sets_zero": true,
+      "effective_identity_matches_real_identity": true,
+      "host_wide_process_inspection_claimed": false,
+      "independent_parent_namespace_or_original_UID_reprobe_claimed": false,
+      "no_new_privileges": true,
+      "nonroot_identity": true,
+      "original_UID_GID_restore_guard_reached_native_commands": true,
+      "platform": "Linux",
+      "private_PID_mount_guard_reached_native_commands": true,
+      "retained_namespace_receipt_sha256": "f2fd3521bc10883d17dea9995eeb5c63d12e3f325a63095d38e641018ebcac4c"
+    },
+    "policy_negative": {
+      "component_deadline_scope": "Immutable component Deadline bound through original Handler.Revalidate and actual ReadPolicy; no real Manager hold or host-suspend claim.",
+      "expected_normal_exit": 1,
+      "generated_source_sha256": "a9a096ce9a5c90d96707f082b599af47fa1c70855358f29bb63b3fb0a3d75e19",
+      "log_sha256": "eb26d8bbe486726506fbdd8a3e1add6f49d04f024106b16c37eef7fa1833867f",
+      "original_source_sha256": "5ab2836575a19689aed335c289123feb2ce0050fea6279ef0e5d0873708e2e89",
+      "overlay_sha256": "89c03693aaabc609a0e74f8638a311a0044d3e920efe7c381a98aacb125f5298",
+      "run_and_failed_test_nodes": 3,
+      "sole_forbidden_start_diagnostics": {
+        "TestRoutedForwardPolicyReadRechecksElapsedEntitlement/before-ready": "1 1 0 0",
+        "TestRoutedForwardPolicyReadRechecksElapsedEntitlement/before-service-dial": "1 0 0 0"
+      },
+      "status": "passed_expected_causal_failure_audit"
+    },
+    "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40458066788",
+    "scope": "13 affected policy-loader/Proxy/TLS/diagnostic roots; unchanged 201-root Linux composition retained separately.",
+    "selected_dependency_before_after_equal": true,
+    "selected_dependency_entries": 37108,
+    "source_before_after_equal": true,
+    "source_blob_count": 1939,
+    "source_manifest_sha256": "2cc382f758777ff8f39a3c8d7e0f35a5389ffe5e3ec71b2617dffe05676357dd"
+  },
+  "finite_model_and_physical_replay": {
+    "Go_replay_uses_VIEW": false,
+    "altered_histories": {
+      "closed_reader_rejections": 12,
+      "count": 15,
+      "model_relation_rejections": 3,
+      "names": [
+        "wall-rebases-native-end",
+        "late-renewal-revives",
+        "restart-rebases-other-boot",
+        "uncertain-capacity-freed",
+        "sticky-error-cleared",
+        "checkpoint-failure-authorizes-renew",
+        "extra-unattributed-lease",
+        "admission-before-expiry-event",
+        "unknown-record-field",
+        "renew-journal-delete",
+        "renew-journal-rename",
+        "expiry-journal-delete",
+        "expiry-journal-rename",
+        "clock-error-without-failed-read",
+        "successful-poll-claims-read-error"
+      ]
+    },
+    "carry_forward_limit": "Unchanged abstract model and selected trace code retain these recorded results. Newer runtime compilation/source closure was not replayed by this ef26 run; later native integration cannot convert it into a current Go/SQL replay.",
+    "exclusions": [
+      "kernel clock accuracy or actual hardware/VM suspend",
+      "CPU/native workload or provider settlement",
+      "SQL atomicity",
+      "complete workspace proof"
+    ],
+    "executed_source_commit": "ef26ba4c75f72a8bbc71efd6e5a81bcaf57faa1e",
+    "finite_safety": {
+      "distinct_states": 39722,
+      "generated_states": 4238819,
+      "states_left": 0,
+      "view_controls": [
+        {
+          "control": "decorative-edge",
+          "distinct_states": 1,
+          "property": null,
+          "status": "passed"
+        },
+        {
+          "control": "action-edge",
+          "distinct_states": 1,
+          "property": "Protection",
+          "status": "rejected"
+        },
+        {
+          "control": "raw-shape-edge",
+          "distinct_states": 1,
+          "property": "RawInvariant",
+          "status": "rejected"
+        }
+      ]
+    },
+    "original_artifact": {
+      "id": 12710313020,
+      "zip_bytes": 4267802,
+      "zip_sha256": "7e649923c6e6bc902a041bd9d8363df1a2ccae5b77f930c169a4eb78d6a61651"
+    },
+    "original_command_owners": {
+      "all_PID_and_group_absence_reported": true,
+      "all_capture_descriptors_match": true,
+      "all_helper_sources_match_candidate": true,
+      "all_native_wait_calls": 1,
+      "all_retired_reaped": true,
+      "count": 33,
+      "exact_exit_counts": {
+        "0": 19,
+        "1": 2,
+        "12": 10,
+        "13": 2
+      }
+    },
+    "physical_SQL_Manager_histories": [
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "poll",
+          "renew",
+          "renew-refused",
+          "renew-refused"
+        ],
+        "final_phase": "terminal",
+        "original_charge_retained": false,
+        "rows": 6,
+        "scenario": "wall-rollback",
+        "witness_states": 6
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "poll",
+          "renew",
+          "renew-refused",
+          "renew-refused"
+        ],
+        "final_phase": "terminal",
+        "original_charge_retained": false,
+        "rows": 6,
+        "scenario": "wall-forward",
+        "witness_states": 6
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "admit",
+          "renew-refused"
+        ],
+        "final_phase": "terminal",
+        "original_charge_retained": false,
+        "rows": 4,
+        "scenario": "suspend-admission",
+        "witness_states": 4
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "restart"
+        ],
+        "final_phase": "active",
+        "original_charge_retained": true,
+        "rows": 3,
+        "scenario": "restart-live",
+        "witness_states": 3
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "restart"
+        ],
+        "final_phase": "terminal",
+        "original_charge_retained": false,
+        "rows": 3,
+        "scenario": "restart-expired",
+        "witness_states": 3
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "restart"
+        ],
+        "final_phase": "needs_attention",
+        "original_charge_retained": true,
+        "rows": 3,
+        "scenario": "restart-other-boot",
+        "witness_states": 3
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "restart"
+        ],
+        "final_phase": "needs_attention",
+        "original_charge_retained": true,
+        "rows": 3,
+        "scenario": "restart-regressed",
+        "witness_states": 3
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "corrupt",
+          "poll",
+          "renew-refused"
+        ],
+        "final_phase": "needs_attention",
+        "original_charge_retained": true,
+        "rows": 5,
+        "scenario": "malformed-deadline",
+        "witness_states": 5
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "clock-refused",
+          "sticky-refused"
+        ],
+        "final_phase": "active",
+        "original_charge_retained": true,
+        "rows": 4,
+        "scenario": "sticky-read-failure",
+        "witness_states": 4
+      },
+      {
+        "actions": [
+          "initial",
+          "grant",
+          "journal-refused",
+          "poll"
+        ],
+        "final_phase": "terminal",
+        "original_charge_retained": false,
+        "rows": 4,
+        "scenario": "journal-refusal",
+        "witness_states": 4
+      }
+    ],
+    "physical_rows": 41,
+    "preserved_failed_predecessors": [
+      {
+        "repair": "Decorative wall/action VIEW only; original domains, raw Next, five proof goals and raw Go witness projection retained.",
+        "result": "unquotiented finite search exceeded unchanged 120 second limit",
+        "source_commit": "7b865e5768151705d345dd2540d28d008e200b99"
+      },
+      {
+        "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40442068763",
+        "repair": "Expected exit corrected to 13 while exact property and visited-fingerprint diagnostics retained.",
+        "result": "runner wrongly expected exit 12 for correct raw action-property violation exit 13"
+      }
+    ],
+    "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40447232521",
+    "raw_witnesses_complete": true,
+    "recorded_closure": {
+      "all_complete_raw_witnesses_rechecked": true,
+      "all_inner_source_tool_final_checks_passed": true,
+      "captured_generated_artifacts_rehashed": 77,
+      "dispatched_Git_source_blobs_independently_hashed": 1916,
+      "outer_before_after_manifests_equal": true,
+      "outer_dependency_manifest_entries": 40912
+    },
+    "result": "passed at recorded source",
+    "schema": "arm.lease-clock-finite-trace-carry-forward/v1",
+    "scope": "One bare-memory allocation at completed Manager API/physical SQLite boundaries; elapsed entitlement, refusal, retention and renewal fencing.",
+    "selected_source_identity": {
+      "matching_focused_feature_bytes": true,
+      "matching_runtime_commit": "bdc520f4eec179e0861f3772e67547180416e961",
+      "scope": "Model/config/proof, trace producer, inner runners, lock and go.mod. Historical outer CI wrapper is absent at the newer runtime commit.",
+      "whole_Go_SQL_runtime_same": false
+    },
+    "source_sha256": {
+      "formal/lease-clock/LeaseClock.cfg": "df11e2ace31e730b3c4df7b6a7f578ec73452aa0c21b1c836b5d2fe20f3a7fd7",
+      "formal/lease-clock/LeaseClock.tla": "3ad7c2f05997368be8d0bcd6abe6ef1cae6b0bed099a7775404589d46f55d2bc",
+      "formal/lease-clock/LeaseClockProof.tla": "7057f9488b6c7aa1f5f63230704ee3b023c955bcd98e71620104792170ae59cc",
+      "formal/tools.lock.json": "ba430a20f7faad593f843bef3193e8524f70bb836eb1a2d7602e3b47ec851863",
+      "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+      "internal/manager/lease_clock_trace_dev_test.go": "477b6af43e9cc208658f0c970471d372ef19f8854672360c29759b07a8802f04",
+      "scripts/formal_process.py": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76",
+      "scripts/test-formal.py": "14e699ac984949504979de33396833d0016f2d8b6c9f381faf1ebe112af8cf0c",
+      "scripts/test-lease-clock-formal-native.py": "b692efa9407baaadec174a3a50f74045b2e5272c76b09e0153fd2d1cc477c05f",
+      "scripts/test-lease-clock-formal.py": "3424586c2cf016b1f727af73a159f1de36afdcbe9a8da87361b8148ee9960a25"
+    },
+    "strict_TLAPM_proof": "not executed by this CI gate; separate local strict result"
+  },
+  "later_linux_composition": {
+    "candidate": "bdc520f4eec179e0861f3772e67547180416e961",
+    "commands": [
+      {
+        "actual_exit": 0,
+        "command": "affected-compile",
+        "expected_exit": 0,
+        "log_sha256": "59e8a7ba8ce8a280d7481f152bdd38ee381d818cfff9cb481959f8bef72fd725",
+        "owner_receipt_sha256": "8eada3ae5e1cfb8d527db4d7e9b0c78a619a0b7138ac92c02fac317f9a2f202d",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "cc-linker",
+        "expected_exit": 0,
+        "log_sha256": "0fee318bca7611a664d1045f820ec79ffd7adf207e4348ec2f861cbe59503ccb",
+        "owner_receipt_sha256": "d62e1ba7fb40eb81b2e126e2a8d912efc63e24875de012cee834d98126106269",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "cc-resource",
+        "expected_exit": 0,
+        "log_sha256": "cb5cc056207569d14e7d36292504dce89204505b88dff2378bcc9ca66e323877",
+        "owner_receipt_sha256": "baf856dc39039eeaa952705cc7df47075132570d4527933d55e0b1980849f27a",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "full-compile",
+        "expected_exit": 0,
+        "log_sha256": "5bb526af89d34b88b4228f90e66202c0cb27ddaea8f80c509281f02e86606865",
+        "owner_receipt_sha256": "dc9f1c5c7faddbb325da59e9fbe29fd089cd023d99c51f3375499105ccbfcff3",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "native-cargo-path",
+        "expected_exit": 0,
+        "log_sha256": "354bc09197246fdcf8e74cb60c3e9d545b905cc11236c16ed8dbab5da75382c2",
+        "owner_receipt_sha256": "1a2d63099011f7d27551c3733f11bdf6364cafad019b0489ad02b95036f6b889",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "native-race",
+        "expected_exit": 0,
+        "log_sha256": "64bc3ad4a62d1068cf03a0fafe39cce92174ed994b6390c0bd9da6a0a5cccb45",
+        "owner_receipt_sha256": "2b9e775ccd404aea8d78cf34eb102fdbd346d184aa3696c628eb30772e5fd81a",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "resolved-go-env",
+        "expected_exit": 0,
+        "log_sha256": "514b3759d43c69db917df735ccb13b2e5b0ef81560b37447bf4f39ef9dec4538",
+        "owner_receipt_sha256": "7a7a027ef9e74f5a3542deea65c2702fee5e12723e523785869273d008ebfc3a",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      },
+      {
+        "actual_exit": 0,
+        "command": "vet",
+        "expected_exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "owner_receipt_sha256": "b3db13ce39a4c9af5a9dec09c7d37f34eaff77dc7bd34390220a214c98b5089a",
+        "owner_retired_reaped_wait_once": true,
+        "post_wait_PID_group_absent": true
+      }
+    ],
+    "counts": {
+      "command_receipts": 8,
+      "failed_test_nodes": 0,
+      "packages": 8,
+      "passed_test_and_subtest_nodes": 365,
+      "root_tests": 201,
+      "run_test_and_subtest_nodes": 365,
+      "skipped_test_nodes": 0,
+      "subtest_nodes": 164
+    },
+    "execution_origin": "github_actions_linux",
+    "normalized_tool_snapshot": {
+      "C_compiler_sha256": "6d99f6207153b8b2063ace5d2a6177debaf6a6b6f31649e03afac07b98ba0b4d",
+      "Cargo_binary_sha256": "a7a2b55d440156ac2c83b4cda27a25a7d100b8e69c6ac62232ebeb643859ae8a",
+      "GOARCH": "arm64",
+      "GOOS": "linux",
+      "Go_binary_sha256": "d487fddb6939f3e78f7293fcbdeae610ba8ceae966d3faa4b2094a5688559230",
+      "Go_version": "go1.27.3",
+      "selected_tool_manifest_sha256": "0153b9d25e6d2de839e5accfa21c2d5a955431d7f3eabaeb85e402d4e7f473f0"
+    },
+    "original_artifact": {
+      "id": 12711489172,
+      "zip_bytes": 3461395,
+      "zip_sha256": "ad60486bcdceda9a941f94edd745ec63112cddddbaf4ba5b45b97d54184329cb"
+    },
+    "platform_boundary": {
+      "all_capability_sets_zero": true,
+      "effective_identity_matches_real_identity": true,
+      "host_wide_process_inspection_claimed": false,
+      "independent_parent_namespace_or_original_UID_reprobe_claimed": false,
+      "no_new_privileges": true,
+      "nonroot_identity": true,
+      "original_UID_GID_restore_guard_reached_native_commands": true,
+      "platform": "Linux",
+      "private_PID_mount_guard_reached_native_commands": true,
+      "retained_namespace_receipt_sha256": "f2fd3521bc10883d17dea9995eeb5c63d12e3f325a63095d38e641018ebcac4c"
+    },
+    "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40453697860",
+    "selected_dependency_before_after_equal": true,
+    "selected_dependency_entries": 37108,
+    "source_before_after_equal": true,
+    "source_blob_count": 1938,
+    "source_manifest_sha256": "13d49bb24a0ce191e25ea263119e1b788effa7c522d269e866551798fdc0d4df"
+  },
+  "limitations": [
+    "No physical hardware or VM suspend/resume experiment; native process stop/resume and controlled frozen-wall/elapsed jumps are the executed scope.",
+    "No hard kernel resource preemption, escaped-descendant sandbox, provider portfolio acceptance, SQL atomicity proof or complete workspace proof.",
+    "Strict and finite proofs cover one bare-memory allocation at completed API/SQL boundaries. Physical replay remains tied to its recorded earlier runtime; final native integration does not turn it into a proof of the whole current runtime.",
+    "The Linux private PID/mount fixture restores the original UID/GID, zeroes all capability sets and uses no_new_privs; host-wide process visibility is not claimed.",
+    "Declared prover file closure excludes sealed system dyld-cache bytes, generic OS helpers/interpreters outside its pipeline, kernel behavior and Rosetta service state.",
+    "Clock refusal and native cleanup uncertainty remain distinct. Exact original joins retain their own authority and charges; persisted PIDs cannot recreate signal authority.",
+    "Hosted macOS failures remain failures. Local native macOS success is explicitly separate and uses unchanged admission thresholds."
+  ],
+  "retained_failed_history": [
+    {
+      "fixes": [
+        "Cleanup-close regression gained a causal original-registration snapshot witness; test-only correction.",
+        "Cargo now signals its original cancellation owner before closing IPC, avoiding a race with helper self-termination."
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40443397613",
+      "source_commit": "2eae1120c69bd89fa6aa2cd516699e951e97872e",
+      "status": "failed historical candidate"
+    },
+    {
+      "cause": "Actual native sync preparation lacked one core of fresh CPU headroom within the fixture readiness/start windows.",
+      "failed_test_and_subtest_nodes": 6,
+      "failed_top_roots": 3,
+      "missing_gates": [
+        "full compile",
+        "vet",
+        "final positive source/tool closure"
+      ],
+      "original_artifact": {
+        "id": 12712500505,
+        "zip_bytes": 1921013,
+        "zip_sha256": "30d4fd3c2aa5a994bd2220a49ee468d2353ce18b4df46488afce1e3a77b0779b"
+      },
+      "platform": "Darwin",
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40453697860",
+      "skips": 0,
+      "source_commit": "bdc520f4eec179e0861f3772e67547180416e961",
+      "status": "failed historical candidate"
+    },
+    {
+      "cause": "All five actual native sync attempts lacked required one-core source headroom throughout the 15-second observation windows; no admission or dial occurred.",
+      "missing_gates": [
+        "vet",
+        "final positive source/tool closure"
+      ],
+      "original_artifact": {
+        "id": 12713355122,
+        "zip_sha256": "36c988d45c003184e6bcfa89452cf5ec3de1776a7c758c255774b94cab37e2ac"
+      },
+      "platform": "Darwin",
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40455702482",
+      "source_commit": "b99785323895a0de3eb356debce8e121515cc9a9",
+      "status": "failed hosted prerequisite; later local native execution is separate"
+    }
+  ],
+  "schema": 1,
+  "strict_proof": {
+    "audit_method": "Independent receipt, log and small-source/Git audit; no tool re-execution or native installation rehash.",
+    "command_owners": [
+      {
+        "authority": false,
+        "cleanup_error": null,
+        "command": "tlapm-version",
+        "exit": 0,
+        "log_sha256": "a9a269fc81546990809d8c2decebcb267ff9d856ca4e641671b96bd907359ac5",
+        "post_wait_pid_and_group_absent": true,
+        "reaped": true,
+        "receipt_sha256": "08ef6e2cd392be3a6ea42206a7fcd51b1c56fe8ef4dc7a13dc700697a39d7776",
+        "retired": true,
+        "signals": 0,
+        "wait_calls": 1
+      },
+      {
+        "authority": false,
+        "cleanup_error": null,
+        "command": "tlapm-config",
+        "exit": 0,
+        "log_sha256": "7712c9b8a78a41075deff11808a470b0f3a87f8711dc54b4b4bba0ea0946b77b",
+        "post_wait_pid_and_group_absent": true,
+        "reaped": true,
+        "receipt_sha256": "bdbd7eac6d666a5976d5888a5c47bfc6b2347b0b194d9bd943386581e945a103",
+        "retired": true,
+        "signals": 0,
+        "wait_calls": 1
+      },
+      {
+        "authority": false,
+        "cleanup_error": null,
+        "command": "tlapm-z3-version",
+        "exit": 0,
+        "log_sha256": "9439edeab9824420ba4db50e6831ba3d90f96b48b8cf39f22c9ef3bba32b976d",
+        "post_wait_pid_and_group_absent": true,
+        "reaped": true,
+        "receipt_sha256": "0bb826b0542a8c48892c3819421b6bc1efeb18530b5789aacc4efa118086c9f5",
+        "retired": true,
+        "signals": 0,
+        "wait_calls": 1
+      },
+      {
+        "authority": false,
+        "cleanup_error": null,
+        "command": "lease-clock-proof-scope",
+        "exit": 0,
+        "log_sha256": "67be60f3ba7255e3bc32e9d395863dd37e823ef34fce813bb01e846fc106b0cf",
+        "post_wait_pid_and_group_absent": true,
+        "reaped": true,
+        "receipt_sha256": "6cfb03f1bcb60ad1181f5a2ebff065adcf5e042bfaf47719f68f5db299b1052a",
+        "retired": true,
+        "signals": 0,
+        "wait_calls": 1
+      },
+      {
+        "authority": false,
+        "cleanup_error": null,
+        "command": "lease-clock-proof",
+        "exit": 0,
+        "log_sha256": "7363078e4d85dd72c64908d658f8f31b075fca6ecf5b928c0089de6dc5be27f7",
+        "post_wait_pid_and_group_absent": true,
+        "reaped": true,
+        "receipt_sha256": "7d404b12a206c2b43c958398b719e63ac119f9b99ddd464ecd3128724a9555b6",
+        "retired": true,
+        "signals": 0,
+        "wait_calls": 1
+      }
+    ],
+    "controls": {
+      "in_process_closure_selector_refusals": [
+        "requested-symlink-retarget",
+        "resolved-tool-byte-replacement",
+        "final-tool-closure-change",
+        "differing-cwd-relative-tool-selector",
+        "late-goroot-go-env-mutation",
+        "late-goroot-go-env-appearance",
+        "resolved-goenv-off-label-substitution",
+        "resolved-goenv-file-substitution",
+        "resolved-go-root-experiment-substitution",
+        "formal-JAVA_TOOL_OPTIONS-substitution",
+        "formal-_JAVA_OPTIONS-substitution",
+        "formal-JDK_JAVA_OPTIONS-substitution",
+        "formal-CLASSPATH-substitution",
+        "formal-TLA_LIBRARY-substitution",
+        "formal-TLA_LIBRARY_PATH-substitution",
+        "formal-TLAPM_LIBRARY_PATH-substitution",
+        "formal-TLA_PATH-substitution",
+        "formal-TLC_CLASSPATH-substitution",
+        "formal-TLAPM_SMT_SOLVER-substitution",
+        "formal-CAML_LD_LIBRARY_PATH-substitution",
+        "formal-OCAMLPATH-substitution",
+        "formal-BASH_ENV-substitution",
+        "formal-ENV-substitution",
+        "formal-SHELLOPTS-substitution",
+        "formal-BASHOPTS-substitution",
+        "formal-CDPATH-substitution",
+        "formal-GLOBIGNORE-substitution",
+        "formal-DYLD_LIBRARY_PATH-substitution",
+        "formal-DYLD_INSERT_LIBRARIES-substitution",
+        "formal-LD_PRELOAD-substitution",
+        "formal-DUNE_DIR_LOCATIONS-substitution",
+        "formal-OPAM_SWITCH_PREFIX-substitution",
+        "formal-BASH_FUNC_z3%%-substitution",
+        "go-overlay-substitution",
+        "go-modfile-substitution",
+        "go-toolexec-substitution",
+        "go-workspace-substitution",
+        "go-goenv-substitution",
+        "embedded-dyld-environment-command"
+      ],
+      "in_process_diagnostic_string_controls": {
+        "known_serial_gc_startup": "passed",
+        "rejected": [
+          "unknown-warning",
+          "duplicate-startup-warning",
+          "partial-startup-warning",
+          "late-startup-warning",
+          "out-of-memory",
+          "thread-exception"
+        ],
+        "warning_free": "passed"
+      }
+    },
+    "exclusions": [
+      "SQL atomicity",
+      "process/transport joins",
+      "provider effects",
+      "pressure control",
+      "complete workspace state machine",
+      "native clock accuracy",
+      "hardware or VM suspend/resume experiment",
+      "final runtime Go/SQL replay and native/TUI validation",
+      "sealed system dyld-cache image bytes",
+      "generic OS helpers/interpreters outside the declared proof pipeline",
+      "kernel behavior and Rosetta service state"
+    ],
+    "execution_origin": "local queued run; no public CI result claimed",
+    "historical_result_policy": "Earlier failed strict proof remains separate evidence for its earlier source state.",
+    "native_file_closure": {
+      "architectures": [
+        "arm64",
+        "x86_64"
+      ],
+      "directory_rosters": 3,
+      "external_zstd_sha256": [
+        "602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43"
+      ],
+      "file_receipts": 60,
+      "native_file_closure_digest": "a12066e2ab481817997b3f42361927aa5727f79b3b386575eb6a5708de35d2f8",
+      "native_image_records": 13,
+      "os_build_metadata_sha256": "e472903d072df1ba46173579b6f62c16c05f6cea41e9c71484cf495c1b6939df",
+      "proof_tools": {
+        "tlapm": "940a42ab3f5b51d37cd8c22b90aa33063879da8dc58f7a986dd8236d115ff57d",
+        "tlapm-TLAPS-source": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55",
+        "tlapm-ls4": "6fade9d25244f8ade5e42b9cadf27c93fd38011111dd4ed240864487f8c7ab25",
+        "tlapm-ptl_to_trp": "5462760f8809643b4e548fb56d59ee3d4e4f90086ace20e80306971bf4411fcc",
+        "tlapm-z3": "0207d927019e8d90c28acd18c4596796baef36a87583e6e853c81487a9cd0c27"
+      },
+      "tool_closure_receipt_count": 72
+    },
+    "parsed_obligations": 19,
+    "proof_module": "LeaseClockProof",
+    "proof_roots": [
+      "InitialInvariant",
+      "StepInvariant",
+      "StepProtection",
+      "AlwaysInvariant",
+      "AlwaysProtection"
+    ],
+    "proved_obligations": 19,
+    "receipt_summary_sha256": "d46d23384ede3427d2a3411b980f3bb223711ddff263557874a9305292de5156",
+    "recorded_tool_closure": "passed",
+    "result": "passed_scoped_strict_proof",
+    "scope": "One bare-memory allocation at completed Manager API/SQL boundaries; full-state elapsed-entitlement invariant and protection proofs.",
+    "selected_proof_sources_match_commit": "ef26ba4c75f72a8bbc71efd6e5a81bcaf57faa1e",
+    "source_closure": "passed",
+    "source_commit": "3578c2d984e29847b406db1b9eef327ccf09e2b9",
+    "source_sha256": {
+      "formal/lease-clock/LeaseClock.cfg": "df11e2ace31e730b3c4df7b6a7f578ec73452aa0c21b1c836b5d2fe20f3a7fd7",
+      "formal/lease-clock/LeaseClock.tla": "3ad7c2f05997368be8d0bcd6abe6ef1cae6b0bed099a7775404589d46f55d2bc",
+      "formal/lease-clock/LeaseClockProof.tla": "7057f9488b6c7aa1f5f63230704ee3b023c955bcd98e71620104792170ae59cc",
+      "scripts/formal_process.py": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76",
+      "scripts/test-formal.py": "14e699ac984949504979de33396833d0016f2d8b6c9f381faf1ebe112af8cf0c",
+      "scripts/test-lease-clock-formal-native.py": "b692efa9407baaadec174a3a50f74045b2e5272c76b09e0153fd2d1cc477c05f",
+      "scripts/test-lease-clock-formal.py": "3424586c2cf016b1f727af73a159f1de36afdcbe9a8da87361b8148ee9960a25"
+    }
+  },
+  "verdict": "Scoped feature gates passed; broader SPEC and physical suspend limits remain explicit"
+}

@@ -110,6 +110,7 @@ func (m *Manager) rejectUnstarted(l model.Lease, reason *model.Error) (model.Lea
 	l.Failure = reason.Message
 	l.Started = nil
 	l.Expires = nil
+	l.Clock = nil
 	l.Ended = &wall
 	l.Outcome = "rejected"
 	l.State = "terminal"

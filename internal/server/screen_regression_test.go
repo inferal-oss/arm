@@ -96,7 +96,7 @@ func TestScreenTLSCancellationClosesNativeHandshakeBeforeReturning(t *testing.T)
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		conn, err := s.mesh.dialScreen(ctx, bound)
+		conn, err := s.mesh.dialScreen(screenPositiveCheckerContext(ctx), bound)
 		if conn != nil {
 			conn.Close()
 		}
@@ -187,7 +187,7 @@ func TestScreenDialRejectsPlaintextRedirect(t *testing.T) {
 	s, bound := screenPairFixture(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, plaintext.URL+"/unreviewed-endpoint", http.StatusFound)
 	}))
-	conn, _ := s.mesh.dialScreen(t.Context(), bound)
+	conn, _ := s.mesh.dialScreen(screenPositiveCheckerContext(t.Context()), bound)
 	if conn != nil {
 		conn.Close()
 	}
@@ -281,7 +281,7 @@ func TestScreenDialRejectsEveryRedirectWithoutSecondRequest(t *testing.T) {
 				// Even the same pinned origin cannot redirect the reviewed path.
 				http.Redirect(w, r, "/unreviewed", status)
 			}))
-			conn, err := s.mesh.dialScreen(t.Context(), bound)
+			conn, err := s.mesh.dialScreen(screenPositiveCheckerContext(t.Context()), bound)
 			if conn != nil {
 				conn.Close()
 			}
@@ -313,7 +313,7 @@ func TestScreenDialPinnedUpgradeAndReceiveLimit(t *testing.T) {
 			}))
 			ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 			defer cancel()
-			conn, err := s.mesh.dialScreen(ctx, bound)
+			conn, err := s.mesh.dialScreen(screenPositiveCheckerContext(ctx), bound)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -392,7 +392,7 @@ func TestScreenCopyCancellationJoinsBlockedIO(t *testing.T) {
 			ctx, cancel := context.WithCancel(t.Context())
 			defer cancel()
 			done := make(chan struct{})
-			go func() { defer close(done); screenCopy(ctx, a, b) }()
+			go func() { defer close(done); screenCopy(screenPositiveCheckerContext(ctx), a, b) }()
 			if blockedWrite {
 				// Copy has consumed this byte and now waits for an unread native
 				// socket; cancellation must join that write as well as both reads.

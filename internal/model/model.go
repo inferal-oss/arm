@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"github.com/inferal-oss/arm/internal/leaseclock"
 	"strconv"
 	"time"
 )
@@ -64,6 +65,7 @@ type ForwardSourceBinding struct {
 }
 
 type Lease struct {
+	Clock          *leaseclock.Deadline   `json:"elapsed_deadline,omitempty"`
 	Cargo          *CargoBinding          `json:"cargo,omitempty"`
 	PoolBinding    *PoolClaimBinding      `json:"pool_binding,omitempty"`
 	PoolError      *Error                 `json:"pool_error,omitempty"`
@@ -105,26 +107,27 @@ type Event struct {
 }
 
 type Status struct {
-	ReviewError    *Error                 `json:"review_error,omitempty"`
-	PressureError  *Error                 `json:"host_pressure_error,omitempty"`
-	CPUWarning     *CPUWarningEvidence    `json:"cpu_warning_evidence,omitempty"`
-	Workspaces     *WorkspaceAvailability `json:"workspaces,omitempty"`
-	PoolError      *Error                 `json:"pool_error,omitempty"`
-	BudgetError    *Error                 `json:"budget_error,omitempty"`
-	Host           string                 `json:"host"`
-	Owner          string                 `json:"owner"`
-	OwnerUsername  string                 `json:"owner_username,omitempty"`
-	Draining       bool                   `json:"draining"`
-	Capacity       Resources              `json:"capacity"`
-	Reserved       Resources              `json:"reserved"`
-	Leases         []Lease                `json:"leases"`
-	Cursor         int64                  `json:"cursor"`
-	Capabilities   []string               `json:"capabilities"`
-	Resources      []ResourceView         `json:"resources"`
-	Infrastructure []PortBinding          `json:"infrastructure_ports"`
-	Disk           *DiskBudget            `json:"disk_budget"`
-	Memory         *MemoryBudget          `json:"memory_budget"`
-	CPU            *CPUBudget             `json:"cpu_budget"`
+	LeaseClockError *Error                 `json:"lease_clock_error,omitempty"`
+	ReviewError     *Error                 `json:"review_error,omitempty"`
+	PressureError   *Error                 `json:"host_pressure_error,omitempty"`
+	CPUWarning      *CPUWarningEvidence    `json:"cpu_warning_evidence,omitempty"`
+	Workspaces      *WorkspaceAvailability `json:"workspaces,omitempty"`
+	PoolError       *Error                 `json:"pool_error,omitempty"`
+	BudgetError     *Error                 `json:"budget_error,omitempty"`
+	Host            string                 `json:"host"`
+	Owner           string                 `json:"owner"`
+	OwnerUsername   string                 `json:"owner_username,omitempty"`
+	Draining        bool                   `json:"draining"`
+	Capacity        Resources              `json:"capacity"`
+	Reserved        Resources              `json:"reserved"`
+	Leases          []Lease                `json:"leases"`
+	Cursor          int64                  `json:"cursor"`
+	Capabilities    []string               `json:"capabilities"`
+	Resources       []ResourceView         `json:"resources"`
+	Infrastructure  []PortBinding          `json:"infrastructure_ports"`
+	Disk            *DiskBudget            `json:"disk_budget"`
+	Memory          *MemoryBudget          `json:"memory_budget"`
+	CPU             *CPUBudget             `json:"cpu_budget"`
 }
 
 type ResourceUse struct {
