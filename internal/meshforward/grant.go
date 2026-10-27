@@ -4,6 +4,7 @@
 package meshforward
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -16,12 +17,21 @@ import (
 	"github.com/inferal-oss/arm/internal/model"
 )
 
+func NewCreditNonce() (string, error) {
+	var nonce [16]byte
+	if _, err := rand.Read(nonce[:]); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(nonce[:]), nil
+}
+
 const (
 	MaxNodes       = 8
 	MaxLifetime    = 15 * time.Minute
 	MaxConnections = 8
 	MaxBytes       = 8 << 30
 	MaxRate        = 1 << 30
+	MaxGrantBytes  = 8 << 30
 )
 
 // Endpoint names one destination-local service. The address is installed by
@@ -93,6 +103,8 @@ type Grant struct {
 	MaxConnections     int             `json:"max_connections"`
 	BytesPerConnection int64           `json:"bytes_per_connection"`
 	BytesPerSecond     int64           `json:"bytes_per_second"`
+	TotalBytes         int64           `json:"total_bytes,omitempty"`
+	CreditNonce        string          `json:"credit_nonce,omitempty"`
 	Transit            model.Resources `json:"transit_resources"`
 	MaxTTL             time.Duration   `json:"max_ttl_ns"`
 	Expires            time.Time       `json:"expires_at"`
@@ -104,6 +116,7 @@ func (g Grant) Validate() error {
 		!hexID(g.TargetPin, 32) || !hexID(g.TargetSPKI, 32) || g.SourceGeneration < 1 || g.TargetGeneration < 1 ||
 		g.Revision < 1 || g.MaxConnections < 1 || g.MaxConnections > MaxConnections ||
 		g.BytesPerConnection < 1 || g.BytesPerConnection > MaxBytes || g.BytesPerSecond < 64<<10 || g.BytesPerSecond > MaxRate ||
+		(g.TotalBytes != 0 || g.CreditNonce != "") && (g.TotalBytes < 1 || g.TotalBytes > MaxGrantBytes || !hexID(g.CreditNonce, 16)) ||
 		g.MaxTTL <= 0 || g.MaxTTL > MaxLifetime || g.Expires.IsZero() || g.Endpoint.Validate() != nil ||
 		math.IsNaN(g.Transit.CPU) || math.IsInf(g.Transit.CPU, 0) || g.Transit.CPU <= 0 || g.Transit.CPU > 64 || g.Transit.Memory < 1<<20 || g.Transit.Memory > 1<<30 || g.Transit.Disk != 0 ||
 		len(g.Account) < 1 || len(g.Account) > 256 {
@@ -113,6 +126,18 @@ func (g Grant) Validate() error {
 		if c <= ' ' || c == 127 {
 			return errors.New("invalid destination account")
 		}
+	}
+	return nil
+}
+
+// ValidateCredit distinguishes readable legacy policy records from grants that
+// can open a new stream. A lifetime limit is never inferred from other limits.
+func (g Grant) ValidateCredit() error {
+	if err := g.Validate(); err != nil {
+		return err
+	}
+	if g.TotalBytes == 0 || !hexID(g.CreditNonce, 16) {
+		return errors.New("TCP grant needs an explicit reviewed total byte credit")
 	}
 	return nil
 }
@@ -135,7 +160,7 @@ type Request struct {
 }
 
 func (g Grant) Authorize(now time.Time, originalSource, originalSPKI, localTarget, localSPKI, account string, q Request) error {
-	if err := g.Validate(); err != nil {
+	if err := g.ValidateCredit(); err != nil {
 		return err
 	}
 	if now.IsZero() || !now.Before(g.Expires) || q.Version != 1 || q.TTL <= 0 || q.TTL > g.MaxTTL ||

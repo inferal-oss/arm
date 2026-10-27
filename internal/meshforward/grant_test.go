@@ -11,7 +11,9 @@ func testGrant() Grant {
 	return Grant{Workspace: strings.Repeat("a", 32), Generation: strings.Repeat("b", 32), Source: strings.Repeat("c", 32), Target: strings.Repeat("d", 32),
 		SourceGeneration: 1, TargetGeneration: 1, DirectoryPin: strings.Repeat("1", 64), DirectorySPKI: strings.Repeat("2", 64), SourcePin: strings.Repeat("3", 64), SourceSPKI: strings.Repeat("4", 64),
 		TargetPin: strings.Repeat("5", 64), TargetSPKI: strings.Repeat("6", 64), Account: "operator", Endpoint: Endpoint{Name: "web", Network: "tcp", Address: "127.0.0.1:8080"},
-		Revision: 1, MaxConnections: 2, BytesPerConnection: 1 << 20, BytesPerSecond: 1 << 20, Transit: model.Resources{CPU: .01, Memory: 4 << 20}, MaxTTL: time.Minute, Expires: time.Now().Add(time.Hour)}
+		Revision: 1, MaxConnections: 2, BytesPerConnection: 1 << 20, BytesPerSecond: 1 << 20,
+		TotalBytes: 4 << 20, CreditNonce: strings.Repeat("e", 32),
+		Transit: model.Resources{CPU: .01, Memory: 4 << 20}, MaxTTL: time.Minute, Expires: time.Now().Add(time.Hour)}
 }
 
 func TestGrantRequiresExactOriginalAndLiteralService(t *testing.T) {
