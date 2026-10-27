@@ -2213,12 +2213,22 @@ namespace without changing its body or Python fixtures.
 The audited fork remains in the main module with its licenses and provenance.
 Trusted artifact-catalog policy is unchanged. A plain source installation still
 has an empty companion-artifact catalog and does not authorize remote seed or
-provisioning artifacts. Exact-source local native validation passes; discovery
-metadata publication and public installation of this source are not yet accepted.
+provisioning artifacts. Exact-source local native validation passes. Canonical
+discovery and public installation are accepted for source `5b80ab9` after the
+separate gates below.
 
 Discovery source `c97b410` adds static early `go-import` metadata at the root,
 `/cmd/` and `/cmd/arm/`, preserving the eight-item Gallery and clone/carrier
 instructions. Hosted validation accepts exact candidate `2325f51` and its
 22-file artifact, including fresh source-bound dashboard captures. All relevant
-main source/build inputs match that candidate. The validation run skips
-deployment; live discovery and public Go installation remain separate gates.
+main source/build inputs match that candidate. That validation run skips
+deployment. Automatic main run `40583797256` subsequently deploys `5b80ab9`;
+all 22 public bodies and three early HTTPS discovery pages match.
+
+Workflow-only descendant `2b1313e` is integrated after its actual two-platform
+public validation `40585391192`. Literal
+`go install getarm.org/cmd/arm@latest` selects source `5b80ab9` and succeeds on
+macOS arm64 and Linux amd64 using ordinary proxy/sumdb and disposable directories.
+Installed module identity, checksums, selected-version Origin and full source ZIP
+are independently verified. This establishes installation of S and leaves the
+thin companion-catalog limitation intact; later features retain separate gates.

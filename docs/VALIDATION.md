@@ -5842,3 +5842,38 @@ accepts the hosted artifact without relabeling the local gate. Relevant main
 Go/module, website, embedded UI, capture and workflow inputs exactly match the
 tested candidate. Main publication, live HTTPS discovery and public Go-install
 acceptance remain unestablished by this validation-branch run.
+
+### Canonical live publication and first public latest
+
+[Live publication evidence](validation/website-canonical-live-publication-2026-10-27.json)
+accepts automatic main run `40583797256`, attempt 1, at exact source `5b80ab9`.
+Build and deploy succeed. All 22 actual canonical HTTPS bodies match the original
+artifact. The root discovery query returns directly; `/cmd` and `/cmd/arm`
+each follow one same-origin 301 that adds the slash and preserves `?go-get=1`.
+All three bodies contain exactly one early canonical `go-import` tag. Default
+TLS verification is used; no independent fresh-handshake claim is made. Eight
+fresh source-bound images and the unchanged static provenance are audited.
+
+Only after that gate, reviewed workflow-only descendant `2b1313e` triggers
+[public latest run `40585391192`](https://github.com/inferal-oss/arm/actions/runs/40585391192).
+[Independent evidence](validation/canonical-public-latest-2026-10-27.json)
+accepts macOS arm64 and Linux amd64 with Go1.27.3 and normal CGo. All twelve
+original commands per OS exit zero. Literal query and installation select
+`v0.0.0-20261027210504-5b80ab97fc4b`; installed buildinfo has the matching module
+version and checksum. The original latest query does not emit Origin. A separate
+selected-version read in an independent cache supplies the full Git/HTTPS
+repository/source hash, with identical version and both checksums, while actual
+literal latest installation remains in its original cache.
+
+Independent review recomputes the entire ZIP and go.mod checksums and compares
+all 2,547 file bodies and sizes directly to Git source S. The required 611 inputs
+include all 602 web-root files and nine module/license/fork files, without an
+exclusion or digest-only shortcut. Source S, harness H and four helpers remain
+clean and identical before and after. Nineteen helper and twenty-five ZIP control
+cases pass per OS. Version/help/empty-catalog probes and the no-state check pass;
+disposable roots are removed. Installed binaries are absent from the artifacts:
+their digests and sizes are original helper observations, not independent binary
+rehashes. No interrupted-descendant, hermetic or later-source acceptance follows.
+Earlier failed/source-specific runs remain preserved. The main source hold is
+released after this audit; evidence-only successors do not retroactively change
+which commit was installed.

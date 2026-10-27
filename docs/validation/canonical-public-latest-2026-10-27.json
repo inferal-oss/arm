@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "status": "accepted: original two-platform canonical public latest milestone",
+  "run": {
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40585391192",
+    "attempt": 1,
+    "conclusion": "success"
+  },
+  "source_commit": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48",
+  "source_tree": "5febb3019aa2aa815aaff130bd6b559095e20a6a",
+  "harness_commit": "2b1313e931d071b2c7148ee76b9946d22cbe193e",
+  "workflow_sha256": "6f71e55d121a0d511ddbc8466ecc3ebdc35a6c31bcad98c11cf1113817ccf5f3",
+  "selection": {
+    "module": "getarm.org",
+    "version": "v0.0.0-20261027210504-5b80ab97fc4b",
+    "literal_query": "getarm.org@latest",
+    "literal_install": "getarm.org/cmd/arm@latest",
+    "Sum": "h1:cB/aqVCiSm8R6WiDwJg7B0SY9xkTXIwnDq2xQwvg58I=",
+    "GoModSum": "h1:MvJfBgyXpnARvUvK/lGtq2bpU5eeN7bskE3sdiv33fY=",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/inferal-oss/arm",
+      "Hash": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48"
+    }
+  },
+  "platforms": [
+    {
+      "platform": "macos-15",
+      "os": "darwin",
+      "arch": "arm64",
+      "artifact_id": 12772311603,
+      "artifact_sha256": "bbf069e3d634f04ade724d9a26922a9789bd095dc3a34d7d18a2fa29bb0d0e88",
+      "artifact_files": 44,
+      "commands": [
+        "source-commit",
+        "source-tree",
+        "source-status",
+        "toolchain",
+        "public-environment",
+        "public-query",
+        "public-selected-version-origin",
+        "public-install",
+        "installed-buildinfo",
+        "installed-version",
+        "installed-help",
+        "installed-empty-catalog"
+      ],
+      "all_command_exits": 0,
+      "public_selection": {
+        "Path": "getarm.org",
+        "Version": "v0.0.0-20261027210504-5b80ab97fc4b",
+        "Sum": "h1:cB/aqVCiSm8R6WiDwJg7B0SY9xkTXIwnDq2xQwvg58I=",
+        "GoModSum": "h1:MvJfBgyXpnARvUvK/lGtq2bpU5eeN7bskE3sdiv33fY="
+      },
+      "origin": {
+        "VCS": "git",
+        "URL": "https://github.com/inferal-oss/arm",
+        "Hash": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48"
+      },
+      "raw_public_zip_sha256": "715588fa09e23bc554516370a11b17e53b6be4dde26ee734218f4879ff1b0adb",
+      "source_files_matched": 2547,
+      "required_files_matched": 611,
+      "web_files_matched": 602,
+      "additional_required_files": 9,
+      "recorded_binary": {
+        "sha256": "d2ca9328f562c02f61ef1bb3d194c9f472eaec0ad6daa1e21af52e1542ccbe70",
+        "bytes": 70207602
+      },
+      "installed_version": {
+        "arch": "arm64",
+        "go": "go1.27.3",
+        "os": "darwin",
+        "version": "0.1.0-dev"
+      },
+      "CGO_ENABLED": "1",
+      "empty_catalog": [],
+      "source_harness_clean_before_after": true,
+      "private_probes_no_state_check_passed": true,
+      "disposable_root_removed": true
+    },
+    {
+      "platform": "ubuntu-24.04",
+      "os": "linux",
+      "arch": "amd64",
+      "artifact_id": 12771347432,
+      "artifact_sha256": "d29ecedcda7fdc7cfd0eec537c768202e9f486b2e7dda4db5e77f54397b6b0a0",
+      "artifact_files": 44,
+      "commands": [
+        "source-commit",
+        "source-tree",
+        "source-status",
+        "toolchain",
+        "public-environment",
+        "public-query",
+        "public-selected-version-origin",
+        "public-install",
+        "installed-buildinfo",
+        "installed-version",
+        "installed-help",
+        "installed-empty-catalog"
+      ],
+      "all_command_exits": 0,
+      "public_selection": {
+        "Path": "getarm.org",
+        "Version": "v0.0.0-20261027210504-5b80ab97fc4b",
+        "Sum": "h1:cB/aqVCiSm8R6WiDwJg7B0SY9xkTXIwnDq2xQwvg58I=",
+        "GoModSum": "h1:MvJfBgyXpnARvUvK/lGtq2bpU5eeN7bskE3sdiv33fY="
+      },
+      "origin": {
+        "VCS": "git",
+        "URL": "https://github.com/inferal-oss/arm",
+        "Hash": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48"
+      },
+      "raw_public_zip_sha256": "715588fa09e23bc554516370a11b17e53b6be4dde26ee734218f4879ff1b0adb",
+      "source_files_matched": 2547,
+      "required_files_matched": 611,
+      "web_files_matched": 602,
+      "additional_required_files": 9,
+      "recorded_binary": {
+        "sha256": "b6d77289b76f3aeae7e67861196b27cb147fcb0546d4aac619a6d0b55eca9ebb",
+        "bytes": 72783369
+      },
+      "installed_version": {
+        "arch": "amd64",
+        "go": "go1.27.3",
+        "os": "linux",
+        "version": "0.1.0-dev"
+      },
+      "CGO_ENABLED": "1",
+      "empty_catalog": [],
+      "source_harness_clean_before_after": true,
+      "private_probes_no_state_check_passed": true,
+      "disposable_root_removed": true
+    }
+  ],
+  "verification": {
+    "artifact_files_per_platform": 44,
+    "original_commands_per_platform": 12,
+    "all_original_command_exits": 0,
+    "go_version": "go1.27.3",
+    "normal_CGo": "1",
+    "proxy": "https://proxy.golang.org",
+    "sumdb": "sum.golang.org",
+    "whole_zip_h1_independently_recomputed": "h1:cB/aqVCiSm8R6WiDwJg7B0SY9xkTXIwnDq2xQwvg58I=",
+    "go_mod_h1_independently_recomputed": "h1:MvJfBgyXpnARvUvK/lGtq2bpU5eeN7bskE3sdiv33fY=",
+    "source_files_and_sizes_equal_Git": 2547,
+    "required_complete_root_manifest": 611,
+    "web_files": 602,
+    "additional_module_license_fork_files": 9,
+    "four_helper_bytes_equal_source_and_harness": true,
+    "source_and_harness_before_after_clean": true,
+    "private_read_only_probes_no_state_check_passed": true,
+    "disposable_roots_removed": true
+  },
+  "limits": [
+    "Acceptance applies only to the retained original run and exact source commit, not later main or a subsequent latest resolution.",
+    "No local reproduction, hermetic environment, full suite, physical suspend, remote backend or mesh execution claim.",
+    "Normal successful child waits are evidenced; interrupted descendant cleanup is unproven.",
+    "Installed binary hashes/sizes are original helper observations; binary bytes were not retained for independent rehash.",
+    "Earlier failed runs remain failed and are not superseded retrospectively."
+  ],
+  "provenance_scope": "The original @latest query omitted Origin. The independently cached follow-up of its actual selected version supplied the full Git/HTTPS/commit Origin; version plus both checksums match the original query. The installation remains literal @latest using the original cache, not a pinned replacement install.",
+  "source_review_receipt_sha256": "a8958682c4229594842a9fc4b0710fc4896a806789e2a5493b5138295c3faf3b",
+  "prior_metadata_gate_root_proof_sha256": "ec86531ee50ee38808bdd32140a676953783106b4c8579a16f359c5b715d6e11",
+  "actual_cheap_controls_per_platform": {
+    "helper_unittest_count": 19,
+    "zip_controls": 25
+  },
+  "direct_Git_blob_bytes_verified": 2547
+}

@@ -1,0 +1,855 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_LIVE_PUBLICATION_AND_3_DISCOVERY_METADATA_ACCEPTED",
+  "source_commit": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48",
+  "run": {
+    "id": 40583797256,
+    "head_sha": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48",
+    "head_branch": "main",
+    "event": "push",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/inferal-oss/arm/actions/runs/40583797256"
+  },
+  "jobs": [
+    {
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifact": {
+    "id": 12772050334,
+    "zip": {
+      "bytes": 1972919,
+      "sha256": "97cb6c358c6c00cdf775f52d740125de6756326893471ce7374764c5eb5627d2"
+    },
+    "tar": {
+      "bytes": 5089280,
+      "sha256": "f0b6e9a166773dc4641e5281a77af2535a65c581d87f5aa0f8ecc40d7ea7e5e5"
+    },
+    "regular_files": 22,
+    "file_bytes": 5059994,
+    "files": {
+      "build-integrity.json": {
+        "bytes": 5013,
+        "sha256": "1be24c4a9b3061954a187a13f3ca3a732a48c4ca042c0b64b9e10de347f5acdf"
+      },
+      "favicon.svg": {
+        "bytes": 501,
+        "sha256": "fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373"
+      },
+      "brand-lockup.svg": {
+        "bytes": 788,
+        "sha256": "9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87"
+      },
+      "system-map.svg": {
+        "bytes": 7539,
+        "sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850"
+      },
+      "assets/wat-4kfTsMVw.js": {
+        "bytes": 77,
+        "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b"
+      },
+      "assets/wat-CR-H2qbq.wasm": {
+        "bytes": 102443,
+        "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+      },
+      "assets/index-B3Ud81Bn.js": {
+        "bytes": 3502823,
+        "sha256": "b25ed42d329541d16a1588f4d70031e66ea0b7db7c496b0dce552eb53d1a3977"
+      },
+      "assets/arm-wat-only-store-CpWQrDGP.js": {
+        "bytes": 152,
+        "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d"
+      },
+      "THIRD-PARTY-NOTICES.txt": {
+        "bytes": 140901,
+        "sha256": "0b59b07b2c5751f81768f500f867bf18d8774830ba8739bbaf19491d084ccd3c"
+      },
+      "index.html": {
+        "bytes": 1351,
+        "sha256": "c19f80b2f3625edd95267d9d9b0e586b96c5f2554a49fa9edb90e9b74f5f3626"
+      },
+      "brand-lockup-light.svg": {
+        "bytes": 789,
+        "sha256": "5832d31799f0a5d440124feda096d2105e413b2537f849a173b424361f6423a9"
+      },
+      "cmd/index.html": {
+        "bytes": 308,
+        "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+      },
+      "cmd/arm/index.html": {
+        "bytes": 308,
+        "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+      },
+      "screenshots/web-monitor.png": {
+        "bytes": 174318,
+        "sha256": "61c3aa1b456e1183724a94c4de1731ee43417a54894687b9ec06c97de1e0703b"
+      },
+      "screenshots/web-leases.png": {
+        "bytes": 102907,
+        "sha256": "907c0b5bff047f289aff20d171434d428769d1cec9e42b6e47ceeba91ae585f3"
+      },
+      "screenshots/metadata.json": {
+        "bytes": 3125,
+        "sha256": "1e6474db1a175617d8617d30e54eaad3aaf28e42172643bb8f5be1b46a056a75"
+      },
+      "screenshots/terminal-leases.png": {
+        "bytes": 109853,
+        "sha256": "e6f16ec186026e59e7146be725552d60b6f649994ccd5725c364bdfb3b8bf14e"
+      },
+      "screenshots/terminal-monitor.png": {
+        "bytes": 155899,
+        "sha256": "532c183e50162a614d4eec0589bed8c53e93fec2d771a7135577698f4f58c168"
+      },
+      "screenshots/web-activity.png": {
+        "bytes": 127784,
+        "sha256": "c7639b9c5a6ca42e7c5a0b3da5775d94512038bf8300086579a36ca84d83e669"
+      },
+      "screenshots/terminal.png": {
+        "bytes": 214837,
+        "sha256": "7bd871fb411b72041bcf5f6df5bd82b31ffdbaa7478f035059ef62cf785c177d"
+      },
+      "screenshots/web-host.png": {
+        "bytes": 159107,
+        "sha256": "2aee9cb27078c5ac622d1f208ca8d0d7e0a261f71f1f7c56236c74ff659d8f59"
+      },
+      "screenshots/web-resources.png": {
+        "bytes": 249171,
+        "sha256": "0f42105f18780854c4622af285380707dcef329917d5271cf8ac70a4c6ab37d2"
+      }
+    }
+  },
+  "actual_tests": {
+    "python_ownership": {
+      "cases": 18,
+      "result": "OK"
+    },
+    "python_capture": {
+      "cases": 6,
+      "result": "OK"
+    },
+    "Node_cases": [
+      "shared PTY grid fits the terminal renderer viewport",
+      "invalid or unbounded terminal raster input is refused",
+      "a stale scrollend cannot replace a newly selected last image during rekey",
+      "a reader swipe on an unchanged track still reports its selected image",
+      "leaving zoom cannot select a neighbour before the current frame is positioned",
+      "disposing cancels original fallback timers and pending animation frames",
+      "all eight actual gallery paths are required by the capture roster",
+      "an earlier commit or stale embedded UI receipt fails",
+      "missing, additional or duplicate images fail",
+      "changed image bytes, dimensions or gallery paths fail"
+    ],
+    "Node_counts": {
+      "geometry": 2,
+      "Gallery": 4,
+      "screenshot_integrity": 4,
+      "skip": 0,
+      "fail": 0
+    },
+    "typecheck": "completed success"
+  },
+  "source_binding": {
+    "source_files": 2547,
+    "source_manifest_sha256": "63dabedd266cac18aa89cf72af36bc4be88acf9e8d61a47fe028175e192b029b",
+    "only_documentation_changes_vs_validated2325": [
+      "docs/IMPLEMENTATION.md",
+      "docs/PLAN.md",
+      "docs/VALIDATION.md",
+      "docs/validation/canonical-native-local-2026-10-27.json",
+      "docs/validation/website-canonical-discovery-hosted-2026-10-27.json"
+    ],
+    "static_files_identical_to_validated2325": [
+      "favicon.svg",
+      "brand-lockup.svg",
+      "system-map.svg",
+      "assets/wat-4kfTsMVw.js",
+      "assets/wat-CR-H2qbq.wasm",
+      "assets/index-B3Ud81Bn.js",
+      "assets/arm-wat-only-store-CpWQrDGP.js",
+      "THIRD-PARTY-NOTICES.txt",
+      "index.html",
+      "brand-lockup-light.svg",
+      "cmd/index.html",
+      "cmd/arm/index.html"
+    ]
+  },
+  "fresh_capture": {
+    "source_commit": "5b80ab97fc4b5a0449da3ddc42be01cfb0a86f48",
+    "recorded_binary_sha256": "21406e90bebf5270bc92d5ec38e60968a9f76cb61cf570ffd8e34deac572c425",
+    "UI_inputs": {
+      "inputs_sha256": "bbfacc9957642e3ee787a75d94668ee676627e9676aaf8027a223bb5f41564cc",
+      "input_count": 597,
+      "engine_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "assets": [
+        {
+          "file": "LICENSES.txt",
+          "bytes": 140022,
+          "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f"
+        },
+        {
+          "file": "arm-wat-only-store-DpLv8E9I.mjs",
+          "bytes": 154,
+          "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de"
+        },
+        {
+          "file": "arm.mjs",
+          "bytes": 4258623,
+          "sha256": "34eab0730d7b13941f000c0af4e3b368bb0abc7a675315338d13d8fb2ab94e56"
+        },
+        {
+          "file": "assets/wat-C2A9nalw.wasm",
+          "bytes": 102443,
+          "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea"
+        },
+        {
+          "file": "wat-2wrDwrzy.mjs",
+          "bytes": 62,
+          "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+        }
+      ]
+    },
+    "WAT": {
+      "file": "assets/wat-CR-H2qbq.wasm",
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    },
+    "images": [
+      {
+        "file": "web-monitor.png",
+        "sha256": "61c3aa1b456e1183724a94c4de1731ee43417a54894687b9ec06c97de1e0703b",
+        "width": 1440,
+        "height": 1613,
+        "bytes": 174318,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-resources.png",
+        "sha256": "0f42105f18780854c4622af285380707dcef329917d5271cf8ac70a4c6ab37d2",
+        "width": 1440,
+        "height": 2137,
+        "bytes": 249171,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-leases.png",
+        "sha256": "907c0b5bff047f289aff20d171434d428769d1cec9e42b6e47ceeba91ae585f3",
+        "width": 1440,
+        "height": 1000,
+        "bytes": 102907,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-activity.png",
+        "sha256": "c7639b9c5a6ca42e7c5a0b3da5775d94512038bf8300086579a36ca84d83e669",
+        "width": 1440,
+        "height": 1000,
+        "bytes": 127784,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "web-host.png",
+        "sha256": "2aee9cb27078c5ac622d1f208ca8d0d7e0a261f71f1f7c56236c74ff659d8f59",
+        "width": 1440,
+        "height": 1334,
+        "bytes": 159107,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "terminal-monitor.png",
+        "sha256": "532c183e50162a614d4eec0589bed8c53e93fec2d771a7135577698f4f58c168",
+        "width": 1212,
+        "height": 1312,
+        "bytes": 155899,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "terminal.png",
+        "sha256": "7bd871fb411b72041bcf5f6df5bd82b31ffdbaa7478f035059ef62cf785c177d",
+        "width": 1212,
+        "height": 1312,
+        "bytes": 214837,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      },
+      {
+        "file": "terminal-leases.png",
+        "sha256": "e6f16ec186026e59e7146be725552d60b6f649994ccd5725c364bdfb3b8bf14e",
+        "width": 1212,
+        "height": 1312,
+        "bytes": 109853,
+        "PNG_CRC_and_bounded_decode_valid": true,
+        "changed_from_previous_publication": true
+      }
+    ],
+    "metadata_sha256": "1e6474db1a175617d8617d30e54eaad3aaf28e42172643bb8f5be1b46a056a75",
+    "build_integrity_sha256": "1be24c4a9b3061954a187a13f3ca3a732a48c4ca042c0b64b9e10de347f5acdf"
+  },
+  "live_canonical_bodies": {
+    "first_pass": true,
+    "files": 22,
+    "all_status200": true,
+    "all_lengths_and_SHA256_match_artifact": true,
+    "observed_redirects": 0,
+    "body_roster": [
+      {
+        "name": "artifact/THIRD-PARTY-NOTICES.txt",
+        "requested_url": "https://getarm.org/THIRD-PARTY-NOTICES.txt",
+        "expected": {
+          "bytes": 140901,
+          "sha256": "0b59b07b2c5751f81768f500f867bf18d8774830ba8739bbaf19491d084ccd3c"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/THIRD-PARTY-NOTICES.txt",
+        "content_type": "text/plain; charset=utf-8",
+        "etag": "\"6ae1138b-22665\"",
+        "content_length": "140901",
+        "bytes": 140901,
+        "sha256": "0b59b07b2c5751f81768f500f867bf18d8774830ba8739bbaf19491d084ccd3c",
+        "body_file": "artifact/THIRD-PARTY-NOTICES.txt",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.26464966700000003
+      },
+      {
+        "name": "artifact/assets/arm-wat-only-store-CpWQrDGP.js",
+        "requested_url": "https://getarm.org/assets/arm-wat-only-store-CpWQrDGP.js",
+        "expected": {
+          "bytes": 152,
+          "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/assets/arm-wat-only-store-CpWQrDGP.js",
+        "content_type": "application/javascript; charset=utf-8",
+        "etag": "\"6ae1138b-98\"",
+        "content_length": "152",
+        "bytes": 152,
+        "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d",
+        "body_file": "artifact/assets/arm-wat-only-store-CpWQrDGP.js",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.235908458
+      },
+      {
+        "name": "artifact/assets/index-B3Ud81Bn.js",
+        "requested_url": "https://getarm.org/assets/index-B3Ud81Bn.js",
+        "expected": {
+          "bytes": 3502823,
+          "sha256": "b25ed42d329541d16a1588f4d70031e66ea0b7db7c496b0dce552eb53d1a3977"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/assets/index-B3Ud81Bn.js",
+        "content_type": "application/javascript; charset=utf-8",
+        "etag": "\"6ae1138b-3572e7\"",
+        "content_length": "3502823",
+        "bytes": 3502823,
+        "sha256": "b25ed42d329541d16a1588f4d70031e66ea0b7db7c496b0dce552eb53d1a3977",
+        "body_file": "artifact/assets/index-B3Ud81Bn.js",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 9.741791333
+      },
+      {
+        "name": "artifact/assets/wat-4kfTsMVw.js",
+        "requested_url": "https://getarm.org/assets/wat-4kfTsMVw.js",
+        "expected": {
+          "bytes": 77,
+          "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/assets/wat-4kfTsMVw.js",
+        "content_type": "application/javascript; charset=utf-8",
+        "etag": "\"6ae1138b-4d\"",
+        "content_length": "77",
+        "bytes": 77,
+        "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b",
+        "body_file": "artifact/assets/wat-4kfTsMVw.js",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.17201216599999997
+      },
+      {
+        "name": "artifact/assets/wat-CR-H2qbq.wasm",
+        "requested_url": "https://getarm.org/assets/wat-CR-H2qbq.wasm",
+        "expected": {
+          "bytes": 102443,
+          "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/assets/wat-CR-H2qbq.wasm",
+        "content_type": "application/wasm",
+        "etag": "\"6ae1138b-1902b\"",
+        "content_length": "102443",
+        "bytes": 102443,
+        "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01",
+        "body_file": "artifact/assets/wat-CR-H2qbq.wasm",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.168054292
+      },
+      {
+        "name": "artifact/brand-lockup-light.svg",
+        "requested_url": "https://getarm.org/brand-lockup-light.svg",
+        "expected": {
+          "bytes": 789,
+          "sha256": "5832d31799f0a5d440124feda096d2105e413b2537f849a173b424361f6423a9"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/brand-lockup-light.svg",
+        "content_type": "image/svg+xml",
+        "etag": "\"6ae1138b-315\"",
+        "content_length": "789",
+        "bytes": 789,
+        "sha256": "5832d31799f0a5d440124feda096d2105e413b2537f849a173b424361f6423a9",
+        "body_file": "artifact/brand-lockup-light.svg",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.16903741699999997
+      },
+      {
+        "name": "artifact/brand-lockup.svg",
+        "requested_url": "https://getarm.org/brand-lockup.svg",
+        "expected": {
+          "bytes": 788,
+          "sha256": "9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/brand-lockup.svg",
+        "content_type": "image/svg+xml",
+        "etag": "\"6ae1138b-314\"",
+        "content_length": "788",
+        "bytes": 788,
+        "sha256": "9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87",
+        "body_file": "artifact/brand-lockup.svg",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.5798783750000001
+      },
+      {
+        "name": "artifact/build-integrity.json",
+        "requested_url": "https://getarm.org/build-integrity.json",
+        "expected": {
+          "bytes": 5013,
+          "sha256": "1be24c4a9b3061954a187a13f3ca3a732a48c4ca042c0b64b9e10de347f5acdf"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/build-integrity.json",
+        "content_type": "application/json; charset=utf-8",
+        "etag": "\"6ae1138b-1395\"",
+        "content_length": "5013",
+        "bytes": 5013,
+        "sha256": "1be24c4a9b3061954a187a13f3ca3a732a48c4ca042c0b64b9e10de347f5acdf",
+        "body_file": "artifact/build-integrity.json",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.8025551669999997
+      },
+      {
+        "name": "artifact/cmd/arm/index.html",
+        "requested_url": "https://getarm.org/cmd/arm/index.html",
+        "expected": {
+          "bytes": 308,
+          "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/cmd/arm/index.html",
+        "content_type": "text/html; charset=utf-8",
+        "etag": "\"6ae1138b-134\"",
+        "content_length": "308",
+        "bytes": 308,
+        "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1",
+        "body_file": "artifact/cmd/arm/index.html",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.17607645900000035
+      },
+      {
+        "name": "artifact/cmd/index.html",
+        "requested_url": "https://getarm.org/cmd/index.html",
+        "expected": {
+          "bytes": 308,
+          "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/cmd/index.html",
+        "content_type": "text/html; charset=utf-8",
+        "etag": "\"6ae1138b-134\"",
+        "content_length": "308",
+        "bytes": 308,
+        "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1",
+        "body_file": "artifact/cmd/index.html",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.1278062499999999
+      },
+      {
+        "name": "artifact/favicon.svg",
+        "requested_url": "https://getarm.org/favicon.svg",
+        "expected": {
+          "bytes": 501,
+          "sha256": "fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/favicon.svg",
+        "content_type": "image/svg+xml",
+        "etag": "\"6ae1138b-1f5\"",
+        "content_length": "501",
+        "bytes": 501,
+        "sha256": "fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373",
+        "body_file": "artifact/favicon.svg",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.12371075000000031
+      },
+      {
+        "name": "artifact/index.html",
+        "requested_url": "https://getarm.org/",
+        "expected": {
+          "bytes": 1351,
+          "sha256": "c19f80b2f3625edd95267d9d9b0e586b96c5f2554a49fa9edb90e9b74f5f3626"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/",
+        "content_type": "text/html; charset=utf-8",
+        "etag": "\"6ae1138b-547\"",
+        "content_length": "1351",
+        "bytes": 1351,
+        "sha256": "c19f80b2f3625edd95267d9d9b0e586b96c5f2554a49fa9edb90e9b74f5f3626",
+        "body_file": "artifact/index.html",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.13180350000000018
+      },
+      {
+        "name": "artifact/screenshots/metadata.json",
+        "requested_url": "https://getarm.org/screenshots/metadata.json",
+        "expected": {
+          "bytes": 3125,
+          "sha256": "1e6474db1a175617d8617d30e54eaad3aaf28e42172643bb8f5be1b46a056a75"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/metadata.json",
+        "content_type": "application/json; charset=utf-8",
+        "etag": "\"6ae1138b-c35\"",
+        "content_length": "3125",
+        "bytes": 3125,
+        "sha256": "1e6474db1a175617d8617d30e54eaad3aaf28e42172643bb8f5be1b46a056a75",
+        "body_file": "artifact/screenshots/metadata.json",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.139802875
+      },
+      {
+        "name": "artifact/screenshots/terminal-leases.png",
+        "requested_url": "https://getarm.org/screenshots/terminal-leases.png",
+        "expected": {
+          "bytes": 109853,
+          "sha256": "e6f16ec186026e59e7146be725552d60b6f649994ccd5725c364bdfb3b8bf14e"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/terminal-leases.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-1ad1d\"",
+        "content_length": "109853",
+        "bytes": 109853,
+        "sha256": "e6f16ec186026e59e7146be725552d60b6f649994ccd5725c364bdfb3b8bf14e",
+        "body_file": "artifact/screenshots/terminal-leases.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.2236613329999999
+      },
+      {
+        "name": "artifact/screenshots/terminal-monitor.png",
+        "requested_url": "https://getarm.org/screenshots/terminal-monitor.png",
+        "expected": {
+          "bytes": 155899,
+          "sha256": "532c183e50162a614d4eec0589bed8c53e93fec2d771a7135577698f4f58c168"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/terminal-monitor.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-260fb\"",
+        "content_length": "155899",
+        "bytes": 155899,
+        "sha256": "532c183e50162a614d4eec0589bed8c53e93fec2d771a7135577698f4f58c168",
+        "body_file": "artifact/screenshots/terminal-monitor.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 1.6214712919999998
+      },
+      {
+        "name": "artifact/screenshots/terminal.png",
+        "requested_url": "https://getarm.org/screenshots/terminal.png",
+        "expected": {
+          "bytes": 214837,
+          "sha256": "7bd871fb411b72041bcf5f6df5bd82b31ffdbaa7478f035059ef62cf785c177d"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/terminal.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-34735\"",
+        "content_length": "214837",
+        "bytes": 214837,
+        "sha256": "7bd871fb411b72041bcf5f6df5bd82b31ffdbaa7478f035059ef62cf785c177d",
+        "body_file": "artifact/screenshots/terminal.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.2945217920000003
+      },
+      {
+        "name": "artifact/screenshots/web-activity.png",
+        "requested_url": "https://getarm.org/screenshots/web-activity.png",
+        "expected": {
+          "bytes": 127784,
+          "sha256": "c7639b9c5a6ca42e7c5a0b3da5775d94512038bf8300086579a36ca84d83e669"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/web-activity.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-1f328\"",
+        "content_length": "127784",
+        "bytes": 127784,
+        "sha256": "c7639b9c5a6ca42e7c5a0b3da5775d94512038bf8300086579a36ca84d83e669",
+        "body_file": "artifact/screenshots/web-activity.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.18405445799999942
+      },
+      {
+        "name": "artifact/screenshots/web-host.png",
+        "requested_url": "https://getarm.org/screenshots/web-host.png",
+        "expected": {
+          "bytes": 159107,
+          "sha256": "2aee9cb27078c5ac622d1f208ca8d0d7e0a261f71f1f7c56236c74ff659d8f59"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/web-host.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-26d83\"",
+        "content_length": "159107",
+        "bytes": 159107,
+        "sha256": "2aee9cb27078c5ac622d1f208ca8d0d7e0a261f71f1f7c56236c74ff659d8f59",
+        "body_file": "artifact/screenshots/web-host.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.17173637499999916
+      },
+      {
+        "name": "artifact/screenshots/web-leases.png",
+        "requested_url": "https://getarm.org/screenshots/web-leases.png",
+        "expected": {
+          "bytes": 102907,
+          "sha256": "907c0b5bff047f289aff20d171434d428769d1cec9e42b6e47ceeba91ae585f3"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/web-leases.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-191fb\"",
+        "content_length": "102907",
+        "bytes": 102907,
+        "sha256": "907c0b5bff047f289aff20d171434d428769d1cec9e42b6e47ceeba91ae585f3",
+        "body_file": "artifact/screenshots/web-leases.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.18680891699999957
+      },
+      {
+        "name": "artifact/screenshots/web-monitor.png",
+        "requested_url": "https://getarm.org/screenshots/web-monitor.png",
+        "expected": {
+          "bytes": 174318,
+          "sha256": "61c3aa1b456e1183724a94c4de1731ee43417a54894687b9ec06c97de1e0703b"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/web-monitor.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-2a8ee\"",
+        "content_length": "174318",
+        "bytes": 174318,
+        "sha256": "61c3aa1b456e1183724a94c4de1731ee43417a54894687b9ec06c97de1e0703b",
+        "body_file": "artifact/screenshots/web-monitor.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 1.3880419580000005
+      },
+      {
+        "name": "artifact/screenshots/web-resources.png",
+        "requested_url": "https://getarm.org/screenshots/web-resources.png",
+        "expected": {
+          "bytes": 249171,
+          "sha256": "0f42105f18780854c4622af285380707dcef329917d5271cf8ac70a4c6ab37d2"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/screenshots/web-resources.png",
+        "content_type": "image/png",
+        "etag": "\"6ae1138b-3cd53\"",
+        "content_length": "249171",
+        "bytes": 249171,
+        "sha256": "0f42105f18780854c4622af285380707dcef329917d5271cf8ac70a4c6ab37d2",
+        "body_file": "artifact/screenshots/web-resources.png",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.18920262500000007
+      },
+      {
+        "name": "artifact/system-map.svg",
+        "requested_url": "https://getarm.org/system-map.svg",
+        "expected": {
+          "bytes": 7539,
+          "sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850"
+        },
+        "status": 200,
+        "final_url": "https://getarm.org/system-map.svg",
+        "content_type": "image/svg+xml",
+        "etag": "\"6ae1138b-1d73\"",
+        "content_length": "7539",
+        "bytes": 7539,
+        "sha256": "27aa35d5c92a788e230f383bc5b99fa3d01aa5f44c1ae34ab68ce5c992530850",
+        "body_file": "artifact/system-map.svg",
+        "artifact_match": true,
+        "passed": true,
+        "redirects": [],
+        "elapsed_seconds": 0.13236470800000077
+      }
+    ]
+  },
+  "live3metadata_PASS": true,
+  "discovery": [
+    {
+      "name": "discovery/root.html",
+      "requested_url": "https://getarm.org/?go-get=1",
+      "expected": null,
+      "status": 200,
+      "final_url": "https://getarm.org/?go-get=1",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"6ae1138b-547\"",
+      "content_length": "1351",
+      "bytes": 1351,
+      "sha256": "c19f80b2f3625edd95267d9d9b0e586b96c5f2554a49fa9edb90e9b74f5f3626",
+      "body_file": "discovery/root.html",
+      "early_single_canonical_go_import": "getarm.org git https://github.com/inferal-oss/arm",
+      "passed": true,
+      "redirects": [],
+      "elapsed_seconds": 0.04388045900000037
+    },
+    {
+      "name": "discovery/cmd.html",
+      "requested_url": "https://getarm.org/cmd?go-get=1",
+      "expected": null,
+      "status": 200,
+      "final_url": "https://getarm.org/cmd/?go-get=1",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"6ae1138b-134\"",
+      "content_length": "308",
+      "bytes": 308,
+      "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1",
+      "body_file": "discovery/cmd.html",
+      "early_single_canonical_go_import": "getarm.org git https://github.com/inferal-oss/arm",
+      "passed": true,
+      "redirects": [
+        {
+          "status": 301,
+          "from": "https://getarm.org/cmd?go-get=1",
+          "location": "https://getarm.org/cmd/?go-get=1",
+          "to": "https://getarm.org/cmd/?go-get=1"
+        }
+      ],
+      "elapsed_seconds": 0.3098893750000009
+    },
+    {
+      "name": "discovery/cmd-arm.html",
+      "requested_url": "https://getarm.org/cmd/arm?go-get=1",
+      "expected": null,
+      "status": 200,
+      "final_url": "https://getarm.org/cmd/arm/?go-get=1",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"6ae1138b-134\"",
+      "content_length": "308",
+      "bytes": 308,
+      "sha256": "a42e906a7b89e060fe2947878d57e40fe7756743300a028c90bda6dca6b1c2b1",
+      "body_file": "discovery/cmd-arm.html",
+      "early_single_canonical_go_import": "getarm.org git https://github.com/inferal-oss/arm",
+      "passed": true,
+      "redirects": [
+        {
+          "status": 301,
+          "from": "https://getarm.org/cmd/arm?go-get=1",
+          "location": "https://getarm.org/cmd/arm/?go-get=1",
+          "to": "https://getarm.org/cmd/arm/?go-get=1"
+        }
+      ],
+      "elapsed_seconds": 1.2814525000000003
+    }
+  ],
+  "default_TLS": {
+    "check_hostname": true,
+    "verify_mode": "CERT_REQUIRED",
+    "fresh_handshake_claimed": false
+  },
+  "original_network_exit": 0,
+  "one_pass_no_retry": true,
+  "public_Go_module_proxy_query_install_performed": false,
+  "warning_classification": [
+    "Vite large-minified-chunk advisory.",
+    "Action runtime Node20 deprecation/forcedNode24 notices and punycode/url.parse deprecations. No failed build step inferred from these warnings."
+  ],
+  "visual_review": "All eight fresh images viewed: expected five web and three terminal dashboards, one staged cooperative example lease and ephemeral CI runner observations. No visible personal paths, chat identities, login tokens, personal hostnames or payment/account details identified. PNGs contain only IHDR/IDAT/IEND chunks.",
+  "local_failed_gate_preserved": {
+    "status": "failed",
+    "exit": 1,
+    "all_seven_child_exits": 0,
+    "raw_dist_files": 23,
+    "only_extra": ".gitignore",
+    "result_sha256": "12eee9ef96fc953b991f9d24967505bb5319d89b9ce986f8ed67cb826f81b0a1",
+    "uploaded_artifact_files": 22,
+    "actual_filter": "Pinned upload-pages-artifact action excludes .[^/]* dotfiles."
+  },
+  "limitations": [
+    "Manual HTTPS discovery is accepted; Go module/proxy/version/install closure has not been queried or accepted by this observer.",
+    "Default certificate/hostname verification was used; no count of fresh TLS handshakes, full TLS configuration audit, or certificate fingerprint proof is claimed.",
+    "Live observations cover one bounded first pass at the held source, not continuing availability or future deployments.",
+    "Earlier native interaction qualifications remain; no new browser/fullscreen/swipe/zoom test.",
+    "Temporary capture binary and generated embedded asset bodies are not retained in Pages artifact; recorded source hashes and successful CI assertions do not establish binary hermeticity.",
+    "No all-descendant cleanup claim follows from CI job completion.",
+    "Original failed local gate and its seven successful child outcomes remain unchanged."
+  ],
+  "private_receipt_hashes": {
+    "network_original_tool_replies": "372e232136a1e8fc79a23a1fd5b80e1f9df39cd8476ee18d6a13f94c399febb9",
+    "network_observer_source": "5ad240747c2acc7d136de4a090a844e06935d30a725457677d14025830a7e83d"
+  }
+}
