@@ -57,6 +57,7 @@ jobs:
           node --test scripts/dashboard-screenshots/test_geometry.mjs
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
+      - run: npm run test:gallery
       - name: Install dashboard capture tools
         working-directory: scripts/dashboard-screenshots
         run: npm ci --ignore-scripts

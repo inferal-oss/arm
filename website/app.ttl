@@ -25,7 +25,8 @@ ui:atPage a nav:Dimension ; nav:subject ui:state ; nav:property ui:page ;
 
 ui:shell a c:Stack ; sty:theme sty:Semblance ; sty:colorScheme sty:System ;
     pos:direction pos:Column ; pos:gap tok:space-7 ; pos:inset tok:space-5 ;
-    c:children ( ui:bar ui:pages ui:divider ui:footer ) .
+    c:children ( ui:bar ui:pages ui:divider ui:footer ui:desktop ) .
+ui:desktop a c:Desktop ; c:hosts ui:screenshotLightbox .
 ui:bar a c:AppBar ; c:label "" ; c:logo ui:logo ; c:to ui:home ; c:href "#overview" ;
     c:actions ( ui:nav ) ; c:moreActions ( ui:scheme ) ; c:moreLabel "Display" .
 ui:nav a c:Segmented ; c:label "Site navigation" ; c:controls ui:state ; c:property ui:page ; c:compactAs c:Picker .
@@ -247,20 +248,19 @@ ui:apacheLink a c:Link ; c:label "Apache-2.0 license" ; c:href "https://github.c
 # Actual dashboard images are generated from isolated current-source runs on CI.
 # c:Picture is gallery data; the Gallery is a stock component.
 ui:screenshots a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 ;
-    c:children ( ui:screenshotsTitle ui:screenshotsNote ui:screenshotGallery ui:screenshotLinks ) .
+    c:children ( ui:screenshotsTitle ui:screenshotsNote ui:screenshotLayout ui:screenshotGallery ) .
 ui:screenshotsTitle a c:Heading ; c:level 2 ; c:label "Dashboard views" .
 ui:screenshotsNote a c:Text ; c:label "Views of the web and terminal interfaces, captured from a disposable ARM backend during this site's build." .
+ui:screenshotLayout a c:Segmented ; c:label "Screenshot layout" ;
+    c:controls ui:screenshotGallery ; c:property c:galleryLayout .
 ui:screenshotGallery a c:Gallery ; c:label "ARM dashboard screenshots" ; c:galleryLayout c:GridLayout ;
+    c:lightbox ui:screenshotLightbox ;
     c:images ( ui:monitorShot ui:resourcesShot ui:terminalShot ) .
+ui:screenshotLightbox a c:Lightbox ; c:label "ARM dashboard screenshots" ; c:of ui:screenshotGallery ;
+    c:thumbnails true ; c:offersOriginal true .
 ui:monitorShot a c:Picture ; c:image "screenshots/web-monitor.png" ;
     c:alt "Web dashboard — Monitor" ; c:caption "Web dashboard — Monitor" .
 ui:resourcesShot a c:Picture ; c:image "screenshots/web-resources.png" ;
     c:alt "Web dashboard — Resources" ; c:caption "Web dashboard — Resources" .
 ui:terminalShot a c:Picture ; c:image "screenshots/terminal.png" ;
     c:alt "Terminal dashboard — Resources" ; c:caption "Terminal dashboard — Resources" .
-
-ui:screenshotLinks a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-2 ;
-    c:children ( ui:monitorImageLink ui:resourcesImageLink ui:terminalImageLink ) .
-ui:monitorImageLink a c:Link ; c:label "Open web Monitor image" ; c:href "./screenshots/web-monitor.png" .
-ui:resourcesImageLink a c:Link ; c:label "Open web Resources image" ; c:href "./screenshots/web-resources.png" .
-ui:terminalImageLink a c:Link ; c:label "Open terminal Resources image" ; c:href "./screenshots/terminal.png" .

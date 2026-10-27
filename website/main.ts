@@ -1,5 +1,5 @@
-import { EventBus, MOD, Navigation, Runtime, compileStyles, rendererReveal } from '@inferal-oss/semblance'
-import { DEFAULT_LAYERS, DomRenderer, initWeb, loadStore } from '@inferal-oss/semblance/web'
+import { EventBus, Fullscreen, MOD, Navigation, Runtime, compileStyles, rendererReveal } from '@inferal-oss/semblance'
+import { DEFAULT_LAYERS, DomRenderer, attachLightboxes, attachSnaps, initWeb, loadStore } from '@inferal-oss/semblance/web'
 import app from './app.ttl?raw'
 
 // Host effects only: the interface, navigation, styles and reactions live in RDF.
@@ -27,8 +27,29 @@ try {
   const ui = 'https://getarm.org/ui#'
   const selectedPage = () => store.match(f.namedNode(ui + 'state'), f.namedNode(ui + 'page'), null, f.defaultGraph())[0]?.object
   let shownPage = selectedPage()?.value
+  let viewer: HTMLElement | null = null
+  let viewerOpener: HTMLElement | null = null
   const flush = () => {
+    // The renderer may move focus when it removes a dialog control. Capture its
+    // owner before patching so closing the viewer can still return to its opener.
+    const focused = document.activeElement as HTMLElement | null
+    const returnFocus = viewer?.contains(focused) || focused === document.body
     renderer.flush()
+    const nextViewer = [...element.querySelectorAll<HTMLElement>('[role="dialog"][aria-modal="true"]')]
+      .find(node => !node.closest('[hidden]')) ?? null
+    if (nextViewer !== viewer) {
+      if (nextViewer) {
+        viewerOpener = focused
+        nextViewer.querySelector<HTMLElement>('button')?.focus({ preventScroll: true })
+      } else {
+        if (returnFocus && viewerOpener?.isConnected &&
+            !viewerOpener.closest('[hidden], [inert]') && viewerOpener.getClientRects().length) {
+          viewerOpener.focus({ preventScroll: true })
+        }
+        viewerOpener = null
+      }
+      viewer = nextViewer
+    }
     const next = selectedPage()
     if (next && next.value !== shownPage) {
       shownPage = next.value
@@ -38,13 +59,30 @@ try {
     }
   }
   const bus = new EventBus(runtime, projection, { prefer: 'sparql' })
-  bus.attach(renderer, flush)
-  navigation.attach(runtime, {
+  const detachBus = bus.attach(renderer, flush)
+  const snaps = attachSnaps(element)
+  const lightboxes = attachLightboxes(element)
+  const detachFullscreen = new Fullscreen(bus, {
+    element: iri => {
+      const node = renderer.nodeOf(iri)
+      return node?.nodeType === 1 ? node as Element : undefined
+    },
+    onHandled: flush,
+  }).attach()
+  const detachNavigation = navigation.attach(runtime, {
     bus,
     reveal,
     onNavigate: flush,
   })
   flush()
+  import.meta.hot?.dispose(() => {
+    detachNavigation()
+    detachFullscreen()
+    lightboxes.dispose()
+    snaps.dispose()
+    detachBus()
+    document.adoptedStyleSheets = document.adoptedStyleSheets.filter(existing => existing !== sheet)
+  })
 } catch (error) {
   // Keep the useful source link if the graph or its engine cannot load.
   const message = document.createElement('p')

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "src/web/snap.ts",
+      "base_sha256": "fc69934ea26a00a1af7d1a3c2f6cfdc5b8b975a8270e432658892d85767a1130",
+      "sha256": "18cb4976be67538979236bde65a2196e1ad1a16ed2b51ba6c1c0e78ea660d10f",
+      "edits": [
+        {
+          "before": "  /** Items that were there at the last update: one that was not is jumped to, not slid to. */\n  let seen = new WeakSet<Element>()",
+          "after": "  let disposed = false\n  /** The last rendered track, to distinguish a re-key from a reader swipe. */\n  const rendered = new WeakMap<Element, { current: Element | null; children: Element[] }>()"
+        },
+        {
+          "before": "  const settling = new WeakMap<Element, ReturnType<typeof setTimeout>>()",
+          "after": "  const settling = new Map<Element, ReturnType<typeof setTimeout>>()"
+        },
+        {
+          "before": "  function update() {\n    frame = 0\n    const now = new WeakSet<Element>()\n    for (const track of host.querySelectorAll<HTMLElement>('[data-sem-snap]')) {\n      for (const item of track.children) now.add(item)\n      const current = track.querySelector(':scope > [data-sem-current]')\n      // A zoomed image's box is the person's to scroll.\n      if (!current || track.getClientRects().length === 0 || track.closest('[data-zoomed]')) continue\n      const by = offset(track, current)\n      const jump = !seen.has(current) || left.get(track) !== track.scrollLeft\n      if (Math.abs(by) >= 1) track.scrollBy({ left: by, behavior: jump || reduced(track) ? 'instant' : 'smooth' })\n      left.set(track, jump || reduced(track) ? track.scrollLeft : track.scrollLeft + by)\n    }\n    seen = now\n  }\n",
+          "after": "  const stateOf = (track: Element) => ({ current: track.querySelector(':scope > [data-sem-current]'), children: [...track.children] })\n  const sameChildren = (a: Element[], b: Element[]) => a.length === b.length && a.every((item, i) => item === b[i])\n\n  function update() {\n    frame = 0\n    if (disposed) return\n    for (const track of host.querySelectorAll<HTMLElement>('[data-sem-snap]')) {\n      const next = stateOf(track), previous = rendered.get(track)\n      const rekeyed = !previous || !sameChildren(previous.children, next.children)\n      rendered.set(track, next)\n      const current = next.current\n      // A zoomed image's box is the person's to scroll.\n      if (!current || track.getClientRects().length === 0 || track.closest('[data-zoomed]')) continue\n      const by = offset(track, current)\n      const jump = rekeyed || left.get(track) !== track.scrollLeft\n      if (Math.abs(by) >= 1) track.scrollBy({ left: by, behavior: jump || reduced(track) ? 'instant' : 'smooth' })\n      left.set(track, jump || reduced(track) ? track.scrollLeft : track.scrollLeft + by)\n    }\n  }\n"
+        },
+        {
+          "before": "    if (!frame) frame = win.requestAnimationFrame(update)",
+          "after": "    if (!disposed && !frame) frame = win.requestAnimationFrame(update)"
+        },
+        {
+          "before": "    settling.delete(track)\n    if (track.closest('[data-zoomed]')) return",
+          "after": "    settling.delete(track)\n    if (disposed || track.closest('[data-zoomed]')) return\n    const next = stateOf(track), previous = rendered.get(track)\n    // A layout change may queue scrollend before our animation frame. Position\n    // the graph's new frame before treating any scroll as a reader's choice.\n    if (next.current && (!previous || next.current !== previous.current || !sameChildren(previous.children, next.children))) {\n      if (frame) win.cancelAnimationFrame(frame)\n      update()\n      return\n    }"
+        },
+        {
+          "before": "    dispose() {\n      host.removeEventListener",
+          "after": "    dispose() {\n      disposed = true\n      for (const timer of settling.values()) clearTimeout(timer)\n      settling.clear()\n      host.removeEventListener"
+        }
+      ]
+    },
+    {
+      "path": "ontology/theme/gallery.ttl",
+      "base_sha256": "03ba4281c0020a4e2e27419a9ca6da2a16f2179b6bd7e4f64e947bed6432bfb1",
+      "sha256": "2ae3500f685bdd2d5eb1577342b769bd074ba154c94913abbb02b74ac7685e31",
+      "edits": [
+        {
+          "before": "[] a sty:StyleRule ; sty:appliesTo c:Lightbox ;\n    sty:declares [ sty:property \"position\" ; sty:raw \"fixed\" ] ,",
+          "after": "[] a sty:StyleRule ; sty:appliesTo c:Lightbox ;\n    sty:declares [ sty:property \"grid-template-columns\" ; sty:raw \"minmax(0, 1fr)\" ] ,\n                 [ sty:property \"grid-template-rows\" ; sty:raw \"minmax(0, 1fr)\" ] ,\n                 [ sty:property \"position\" ; sty:raw \"fixed\" ] ,"
+        },
+        {
+          "before": "[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part \"> .sem-panel\" ;\n    sty:declares [ sty:property \"position\" ; sty:raw \"relative\" ] ,",
+          "after": "[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part \"> .sem-panel\" ;\n    sty:declares [ sty:property \"min-width\" ; sty:raw \"0\" ] ,\n                 [ sty:property \"min-height\" ; sty:raw \"0\" ] ,\n                 [ sty:property \"max-width\" ; sty:raw \"100%\" ] ,\n                 [ sty:property \"max-height\" ; sty:raw \"100%\" ] ,\n                 [ sty:property \"position\" ; sty:raw \"relative\" ] ,"
+        },
+        {
+          "before": " ; sty:appliesTo c:Lightbox ; sty:part \".sem-thumb > img\" ;\n    sty:declares [ sty:property \"width\" ; sty:raw \"100%\" ] ,\n                 [ sty:property \"height\" ; sty:raw \"100%\" ] ,\n                 [ sty:property \"object-fit\" ; sty:raw \"cover\" ] .\n",
+          "after": " ; sty:appliesTo c:Lightbox ; sty:part \".sem-thumb > img\" ;\n    sty:declares [ sty:property \"width\" ; sty:raw \"100%\" ] ,\n                 [ sty:property \"height\" ; sty:raw \"100%\" ] ,\n                 [ sty:property \"object-fit\" ; sty:raw \"cover\" ] .\n\n# Compact Lightbox controls occupy two bounded rows; every control remains shown.\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head\" ;\n    sty:declares [ sty:property \"display\" ; sty:raw \"grid\" ] ,\n                 [ sty:property \"grid-template-columns\" ; sty:raw \"minmax(0, 1fr) auto auto auto\" ] ,\n                 [ sty:property \"gap\" ; sty:token tok:space-2 ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head h2\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"1 / span 2\" ] , [ sty:property \"grid-row\" ; sty:raw \"1\" ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head > .sem-counter\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"3\" ] , [ sty:property \"grid-row\" ; sty:raw \"1\" ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head > .sem-close\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"4\" ] , [ sty:property \"grid-row\" ; sty:raw \"1\" ] ,\n                 [ sty:property \"margin\" ; sty:raw \"0\" ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head > .sem-zoom\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"1\" ] , [ sty:property \"grid-row\" ; sty:raw \"2\" ] ,\n                 [ sty:property \"margin-inline-start\" ; sty:raw \"0\" ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head > .sem-original\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"2\" ] , [ sty:property \"grid-row\" ; sty:raw \"2\" ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head > .sem-fullscreen-toggle[data-sem-kind=viewport]\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"3\" ] , [ sty:property \"grid-row\" ; sty:raw \"2\" ] .\n[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part \"> .sem-panel > .sem-head > .sem-fullscreen-toggle[data-sem-kind=screen]\" ;\n    sty:declares [ sty:property \"grid-column\" ; sty:raw \"4\" ] , [ sty:property \"grid-row\" ; sty:raw \"2\" ] .\n"
+        }
+      ]
+    }
+  ]
+}

@@ -16,11 +16,31 @@
   "wat_sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01",
   "build_files": {
     "vite.config.ts": "e2d86a264b5fbfece34069d3cacffc7f0cb3aeb9a0e3e0f8be3354fed4c24921",
-    "arm-wat-only-store.mjs": "4a833e733aeea9e4c62e1b45a322043cd3c597a7b5100aec6e662ac29781a7c3"
+    "arm-wat-only-store.mjs": "4a833e733aeea9e4c62e1b45a322043cd3c597a7b5100aec6e662ac29781a7c3",
+    "scripts/patch-framework.mjs": "4c38e7bfc662439b1552c196958d86f7823ab4c8dbe648fa7f30e262da79fb66",
+    "scripts/assert-build.mjs": "55fcec14843b73599a74a794288bdcec7caf84395ba7e74801dd5d75219edf26",
+    "scripts/gallery-overlays.json": "0eb154b99049346758cbc0ca2b4baaf315ba6d48805e619d5d912de68888d8de"
   },
   "vite_helper": {
     "version": "8.3.5",
     "integrity": "sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ==",
     "license_sha256": "a22152baa1aef74402443008e767e7c689a524c0909d19b0431d97f5ab066a13"
+  },
+  "gallery_overlay": {
+    "patch_file": "scripts/gallery-overlays.json",
+    "patch_sha256": "0eb154b99049346758cbc0ca2b4baaf315ba6d48805e619d5d912de68888d8de",
+    "files": [
+      {
+        "path": "src/web/snap.ts",
+        "base_sha256": "fc69934ea26a00a1af7d1a3c2f6cfdc5b8b975a8270e432658892d85767a1130",
+        "sha256": "18cb4976be67538979236bde65a2196e1ad1a16ed2b51ba6c1c0e78ea660d10f"
+      },
+      {
+        "path": "ontology/theme/gallery.ttl",
+        "base_sha256": "03ba4281c0020a4e2e27419a9ca6da2a16f2179b6bd7e4f64e947bed6432bfb1",
+        "sha256": "2ae3500f685bdd2d5eb1577342b769bd074ba154c94913abbb02b74ac7685e31"
+      }
+    ],
+    "status": "Website-only generic source overlay; upstream acceptance is not claimed."
   }
 }

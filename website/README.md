@@ -2,8 +2,8 @@
 
 The public site is an actual Semblance application. `app.ttl` holds the content,
 stock components, navigation model and Semblance theme selection with the system color scheme. `main.ts` only
-loads the engine, projects the graph, and attaches Semblance's DOM/event/history
-host effects. Two small site-specific renderings bind existing brand assets and the system-map
+loads the engine, projects the graph, and attaches Semblance's DOM/event/history,
+gallery snap, lightbox and fullscreen host effects. Two small site-specific renderings bind existing brand assets and the system-map
 content image to RDF/HTML. Layout and sizing use stock components and measure
 styles, with no CSS overrides. The color-scheme
 control changes graph state; the theme remains Semblance.
@@ -21,6 +21,7 @@ Use Node.js 26 with npm. From this directory:
 ```sh
 npm ci --ignore-scripts
 npm run typecheck
+npm run test:gallery
 npm run build
 npm run preview -- --port 5198
 ```
@@ -68,6 +69,19 @@ picker properties aligned with graph selection after history and responsive
 navigation. No application DOM workaround, component, theme or style change is
 introduced. Upstream acceptance is not claimed.
 
+The same website-only patch step corrects two generic Gallery sources in this
+pinned package: `src/web/snap.ts` distinguishes a rendered-frame change from a
+reader swipe and cancels pending work on disposal; `ontology/theme/gallery.ttl`
+constrains the Lightbox grid and keeps its controls in two rows on phone screens.
+`scripts/gallery-overlays.json` and `provenance.json` bind the exact input,
+patch and output hashes. Unknown source, linked files and ambiguous patch
+anchors are refused before either Gallery source is written. The build verifies
+both corrected files and records their identities in `build-integrity.json`.
+These corrections do not modify ARM's embedded framework or claim upstream
+acceptance. The focused tests exercise the actual snap host effect with
+controlled geometry and event ordering; native browser review remains a
+separate acceptance gate.
+
 ## Content and validation boundaries
 
 The public copy follows ARM's README, implementation notes and delivery plan.
@@ -107,7 +121,12 @@ Asset SHA-256 values:
 
 The screenshot gallery references build-generated `screenshots/web-monitor.png`,
 `screenshots/web-resources.png` and `screenshots/terminal.png`. No substitute or
-placeholder images are checked in. The Gallery and Picture data use
-stock framework vocabulary; final build acceptance must confirm all three
-actual generated images and their responsive layout. Full-size image links
-below the gallery expose all three originals to keyboard and pointer users.
+placeholder images are checked in. A stock Segmented control changes the Gallery
+between Grid, Carousel and Pile layouts. Activating a Picture opens the stock
+Lightbox with thumbnails, zoom, fullscreen and an original-image link. Keyboard
+navigation, Escape, focus return and the three actual generated images are part
+of browser verification.
+
+The documentation and capability cards use `pos:AlignedColumns`, so their headers
+and bodies share row tracks on each wrapped line. They stack naturally at narrow
+widths without fixed heights, padding text or CSS overrides.

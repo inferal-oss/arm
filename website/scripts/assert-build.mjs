@@ -24,6 +24,11 @@ for (const [file, expected] of Object.entries(provenance.build_files)) {
 }
 const renderer = readFileSync(join('node_modules/@inferal-oss/semblance', provenance.renderer_overlay.path))
 if (sha(renderer) !== provenance.renderer_overlay.sha256) throw Error('Renderer overlay is absent')
+const gallery = provenance.gallery_overlay
+if (sha(readFileSync(gallery.patch_file)) !== gallery.patch_sha256) throw Error('Gallery patch provenance differs')
+for (const file of gallery.files) {
+  if (sha(readFileSync(join('node_modules/@inferal-oss/semblance', file.path))) !== file.sha256) throw Error('Gallery source correction is absent')
+}
 if (sha(readFileSync('node_modules/@inferal-oss/semblance/rdf-engine/build/wat.wasm')) !== provenance.wat_sha256) throw Error('Generated WAT source build differs')
 const lock = JSON.parse(readFileSync('package-lock.json', 'utf8'))
 const vite = lock.packages['node_modules/vite']
@@ -34,7 +39,8 @@ const metadataPath = join(dist, 'screenshots/metadata.json')
 const metadata = existsSync(metadataPath) ? JSON.parse(readFileSync(metadataPath, 'utf8')) : null
 if (process.env.GITHUB_ACTIONS === 'true' && (!metadata || metadata.source_commit !== process.env.GITHUB_SHA)) throw Error('Screenshot source does not match the build')
 const receipt = { schema: 1, source_commit: metadata?.source_commit ?? null, framework: provenance.framework,
-  renderer_overlay: provenance.renderer_overlay, wasm: { file: 'assets/' + wasm[0].name, bytes: wasmBytes.length, sha256: sha(wasmBytes) },
+  renderer_overlay: provenance.renderer_overlay, gallery_overlay: gallery,
+  wasm: { file: 'assets/' + wasm[0].name, bytes: wasmBytes.length, sha256: sha(wasmBytes) },
   runtime_chunks: chunks.map(file => 'assets/' + file.name).sort(), optional_rust_engine: false, vite_helper: provenance.vite_helper }
 writeFileSync(join(dist, 'build-integrity.json'), JSON.stringify(receipt, null, 2) + '\n')
 console.log('Verified pinned WAT-only runtime, native option overlay and full Vite helper notice.')

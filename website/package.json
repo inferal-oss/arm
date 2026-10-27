@@ -9,6 +9,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "npm run engine:build && node scripts/notices.mjs && vite build && node scripts/assert-build.mjs",
     "typecheck": "node scripts/patch-framework.mjs && tsc --noEmit",
+    "test:gallery": "node --import tsx --test scripts/test-gallery-snap.mjs",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
