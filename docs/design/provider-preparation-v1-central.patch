@@ -1,0 +1,413 @@
+diff --git a/internal/database/proof.go b/internal/database/proof.go
+--- a/internal/database/proof.go
++++ b/internal/database/proof.go
+@@ -80,39 +80,40 @@
+-	leaseReviewSchema        bool
+-	home                     string
+-	ctx                      context.Context
+-	tx                       *sql.Tx
+-	catalog                  map[string][]string
+-	result                   SettledProof
+-	rows                     int
+-	digest                   hash.Hash
+-	leases                   map[string]model.Lease
+-	pools                    map[string]model.Pool
+-	budgets                  map[string]model.Budget
+-	bindings                 map[string]model.BudgetBinding
+-	messages                 map[string]proofMessage
+-	incidents                map[string]model.UsageIncident
+-	poolChanges              map[int64]model.PoolChange
+-	budgetChanges            map[int64]model.BudgetChange
+-	gradle                   map[string]proofGradle
+-	bulkIDs                  []string
+-	maxSequence              map[string]int64
+-	recordedSequences        map[string]int64
+-	subpoolSchema            bool
+-	workspaceSchema          bool
+-	routingSchema            bool
+-	publishedSchema          bool
+-	publishedRecords         *published.Records
+-	publishedLinks           map[string]proofPublishedLink
+-	routingGraphSchema       bool
+-	sshSchema                bool
+-	syncSchema               bool
+-	syncWorkspaceSchema      bool
+-	syncUsed                 bool
+-	cargoSchema              bool
+-	cargoRuns                map[string]proofSSHRun
+-	sshRuns                  map[string]proofSSHRun
+-	poolPaths                map[string][]string
+-	poolParentRevisions      map[int64]int64
+-	resetMetadata            *resetApplied
+-	poolOperationSequences   map[int64]bool
+-	budgetOperationSequences map[int64]bool
++	providerPreparationSchema bool
++	leaseReviewSchema         bool
++	home                      string
++	ctx                       context.Context
++	tx                        *sql.Tx
++	catalog                   map[string][]string
++	result                    SettledProof
++	rows                      int
++	digest                    hash.Hash
++	leases                    map[string]model.Lease
++	pools                     map[string]model.Pool
++	budgets                   map[string]model.Budget
++	bindings                  map[string]model.BudgetBinding
++	messages                  map[string]proofMessage
++	incidents                 map[string]model.UsageIncident
++	poolChanges               map[int64]model.PoolChange
++	budgetChanges             map[int64]model.BudgetChange
++	gradle                    map[string]proofGradle
++	bulkIDs                   []string
++	maxSequence               map[string]int64
++	recordedSequences         map[string]int64
++	subpoolSchema             bool
++	workspaceSchema           bool
++	routingSchema             bool
++	publishedSchema           bool
++	publishedRecords          *published.Records
++	publishedLinks            map[string]proofPublishedLink
++	routingGraphSchema        bool
++	sshSchema                 bool
++	syncSchema                bool
++	syncWorkspaceSchema       bool
++	syncUsed                  bool
++	cargoSchema               bool
++	cargoRuns                 map[string]proofSSHRun
++	sshRuns                   map[string]proofSSHRun
++	poolPaths                 map[string][]string
++	poolParentRevisions       map[int64]int64
++	resetMetadata             *resetApplied
++	poolOperationSequences    map[int64]bool
++	budgetOperationSequences  map[int64]bool
+@@ -151 +152 @@
+-	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSSH, p.readSync, p.readWorkspaces, p.readPublished, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readLeaseReviews, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
++	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readProviderPreparations, p.readLeases, p.readSSH, p.readSync, p.readWorkspaces, p.readPublished, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readLeaseReviews, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
+@@ -346,0 +348,5 @@
++		case "provider_preparation_schema":
++			if raw != "1" {
++				return fmt.Errorf("unknown provider preparation schema")
++			}
++			p.providerPreparationSchema = true
+diff --git a/internal/database/proof_json.go b/internal/database/proof_json.go
+--- a/internal/database/proof_json.go
++++ b/internal/database/proof_json.go
+@@ -11,0 +12,2 @@
++
++	"github.com/inferal-oss/arm/internal/model"
+@@ -194,0 +197,5 @@
++	if t == reflect.TypeOf(model.Lease{}) {
++		if _, present := fields["provider_preparation"]; present {
++			return fmt.Errorf("paired provider obligation cannot establish settled or SSH lease evidence")
++		}
++	}
+diff --git a/internal/database/proof_provider_preparations.go b/internal/database/proof_provider_preparations.go
+new file mode 100644
+--- /dev/null
++++ b/internal/database/proof_provider_preparations.go
+@@ -0,0 +1,60 @@
++// Independent proposed literal catalog; no writer or installer is enabled.
++package database
++
++import "fmt"
++
++var providerPreparationResetDDL = [4]string{
++	`CREATE TABLE provider_preparations (
++id TEXT PRIMARY KEY NOT NULL CHECK(typeof(id)='text' AND length(CAST(id AS BLOB))=32),
++operation_key TEXT NOT NULL CHECK(typeof(operation_key)='text' AND length(CAST(operation_key AS BLOB)) BETWEEN 1 AND 128),
++authority TEXT NOT NULL CHECK(typeof(authority)='text' AND length(CAST(authority AS BLOB))=32),
++owner TEXT NOT NULL CHECK(typeof(owner)='text' AND length(CAST(owner AS BLOB)) BETWEEN 1 AND 10),
++profile TEXT NOT NULL CHECK(profile='inert-pair-v1'),
++generation INTEGER NOT NULL CHECK(typeof(generation)='integer' AND generation=1),
++state TEXT NOT NULL CHECK(state IN ('preparing','revoked','unknown')),
++worker TEXT NOT NULL CHECK(typeof(worker)='text' AND length(CAST(worker AS BLOB))=32),
++temp TEXT NOT NULL CHECK(typeof(temp)='text' AND length(CAST(temp AS BLOB))=32 AND worker<>temp),
++cpu_millis INTEGER NOT NULL CHECK(typeof(cpu_millis)='integer' AND cpu_millis=1000),
++memory_bytes INTEGER NOT NULL CHECK(typeof(memory_bytes)='integer' AND memory_bytes=67108864),
++disk_bytes INTEGER NOT NULL CHECK(typeof(disk_bytes)='integer' AND disk_bytes=67108864),
++initial_data TEXT NOT NULL CHECK(typeof(initial_data)='text' AND length(CAST(initial_data AS BLOB)) BETWEEN 1 AND 57344),
++initial_sha256 TEXT NOT NULL CHECK(typeof(initial_sha256)='text' AND length(CAST(initial_sha256 AS BLOB))=64),
++progress_data TEXT NOT NULL CHECK(typeof(progress_data)='text' AND length(CAST(progress_data AS BLOB)) BETWEEN 1 AND 4096),
++revision INTEGER NOT NULL CHECK(typeof(revision)='integer' AND revision BETWEEN 1 AND 3),
++record_bytes INTEGER NOT NULL CHECK(typeof(record_bytes)='integer' AND record_bytes=106496)
++)`,
++	`CREATE UNIQUE INDEX provider_preparations_operation_key ON provider_preparations(operation_key)`,
++	`CREATE TABLE provider_preparation_members (
++lease TEXT PRIMARY KEY NOT NULL CHECK(typeof(lease)='text' AND length(CAST(lease AS BLOB))=32),
++preparation TEXT NOT NULL CHECK(typeof(preparation)='text' AND length(CAST(preparation AS BLOB))=32),
++role TEXT NOT NULL CHECK(role IN ('worker','temp')),
++generation INTEGER NOT NULL CHECK(typeof(generation)='integer' AND generation=1),
++FOREIGN KEY(preparation) REFERENCES provider_preparations(id) ON DELETE RESTRICT
++)`,
++	`CREATE UNIQUE INDEX provider_preparation_roles ON provider_preparation_members(preparation,role)`,
++}
++var providerPreparationObjectIdentity = [4][3]string{
++	{"table", "provider_preparations", "provider_preparations"},
++	{"index", "provider_preparations_operation_key", "provider_preparations"},
++	{"table", "provider_preparation_members", "provider_preparation_members"},
++	{"index", "provider_preparation_roles", "provider_preparation_members"},
++}
++
++func (p *proofReader) readProviderPreparations() error {
++	_, main := p.catalog["provider_preparations"]
++	_, members := p.catalog["provider_preparation_members"]
++	if main != members || main != p.providerPreparationSchema {
++		return fmt.Errorf("provider preparation schema group and marker differ")
++	}
++	if !main {
++		return nil
++	}
++	for _, table := range []string{"provider_preparations", "provider_preparation_members"} {
++		if err := p.walk(table, func(proofRow) error {
++			return fmt.Errorf("provider preparation remains unresolved; no settlement is supported")
++		}); err != nil {
++			return err
++		}
++	}
++	return nil
++}
+diff --git a/internal/database/proof_schema.go b/internal/database/proof_schema.go
+--- a/internal/database/proof_schema.go
++++ b/internal/database/proof_schema.go
+@@ -112,0 +113 @@
++	"provider_preparations": 1, "provider_preparation_members": 1,
+@@ -127,0 +129,5 @@
++	providerObjects := map[string][3]string{}
++	providerSeen := map[string]bool{}
++	for i, q := range providerPreparationResetDDL {
++		providerObjects[normalizedSchema(q)] = providerPreparationObjectIdentity[i]
++	}
+@@ -155 +161 @@
+-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 148`)
++	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 154`)
+@@ -170 +176 @@
+-		if count > 147 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
++		if count > 153 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+@@ -191,0 +198,10 @@
++		if identity, ok := providerObjects[normal]; ok {
++			if kind != identity[0] || name != identity[1] || table != identity[2] || providerSeen[name] {
++				return nil, resetSchemaError("provider preparation object identity differs")
++			}
++			providerSeen[name] = true
++			if kind == "table" {
++				catalog[table] = nil
++			}
++			continue
++		}
+@@ -272,0 +289,8 @@
++	}
++	for _, table := range []string{"provider_preparations", "provider_preparation_members"} {
++		if autoIndexes["sqlite_autoindex_"+table+"_1"] && !providerSeen[table] {
++			return nil, resetSchemaError("orphan provider preparation constraint index")
++		}
++	}
++	if len(providerSeen) != 0 && len(providerSeen) != len(providerPreparationResetDDL) {
++		return nil, resetSchemaError("partial provider preparation schema group")
+diff --git a/internal/database/proof_ssh_shapes.go b/internal/database/proof_ssh_shapes.go
+--- a/internal/database/proof_ssh_shapes.go
++++ b/internal/database/proof_ssh_shapes.go
+@@ -20,30 +20,31 @@
+-	"leaseclock.Deadline":        "Anchor int64 `json:\"anchor_ns\"`\nBoot string `json:\"boot\"`\nEnd int64 `json:\"end_ns\"`\nVersion int `json:\"version\"`\nWall time.Time `json:\"wall_expires\"`",
+-	"model.Resources":            "CPU float64 `json:\"cpu\"`\nDisk int64 `json:\"disk_bytes\"`\nMemory int64 `json:\"memory_bytes\"`",
+-	"model.ProcessIdentity":      "Namespace string `json:\"namespace\"`\nPGID int `json:\"pgid\"`\nPID int `json:\"pid\"`\nStart string `json:\"start\"`\nUID string `json:\"uid\"`",
+-	"model.SSHExecutionRequest":  "Account string `json:\"account\"`\nCWD string `json:\"cwd\"`\nCertificate string `json:\"certificate\"`\nCommandSHA256 string `json:\"command_sha256\"`\nKey string `json:\"key\"`\nKind string `json:\"kind\"`\nPair string `json:\"pair\"`\nPublicKeySHA256 string `json:\"public_key_sha256\"`\nReason string `json:\"reason\"`\nResources model.Resources `json:\"resources\"`\nRevision int `json:\"revision\"`\nSource string `json:\"source\"`\nTTL time.Duration `json:\"ttl_ns\"`\nTarget string `json:\"target\"`\nTerminalSHA256 string `json:\"terminal_sha256\"`",
+-	"model.SSHOperation":         "AdmittedAt time.Time `json:\"admitted_at\"`\nLease string `json:\"lease\"`\nRequest model.SSHExecutionRequest `json:\"request\"`\nSchema int `json:\"schema\"`",
+-	"model.BoundPoolClaim":       "Path []string `json:\"path\"`\nPool string `json:\"pool\"`\nQuantity int64 `json:\"quantity\"`",
+-	"model.PoolClaimBinding":     "Authority string `json:\"authority\"`\nBound time.Time `json:\"bound_at\"`\nClaims []model.BoundPoolClaim `json:\"claims\"`\nOwner string `json:\"owner\"`",
+-	"model.Error":                "Code string `json:\"code\"`\nMessage string `json:\"message\"`",
+-	"model.BudgetBinding":        "Authority string `json:\"authority\"`\nBound time.Time `json:\"bound_at\"`\nOwner string `json:\"owner\"`\nPath []string `json:\"path\"`\nSelected string `json:\"selected\"`",
+-	"model.BudgetLimits":         "CPU *float64 `json:\"cpu,omitempty\"`\nDisk *int64 `json:\"disk_bytes,omitempty\"`\nMemory *int64 `json:\"memory_bytes,omitempty\"`\nPools map[string]int64 `json:\"pools,omitempty\"`",
+-	"model.BudgetPolicyRevision": "ID string `json:\"id\"`\nLimits model.BudgetLimits `json:\"limits\"`\nRevision int64 `json:\"revision\"`",
+-	"model.PoolPartition":        "Available int64 `json:\"uncarved_available\"`\nChildBacking int64 `json:\"child_backing\"`\nCommitted int64 `json:\"committed\"`\nConfigured int64 `json:\"configured\"`\nDeficit int64 `json:\"deficit\"`\nDirect int64 `json:\"direct_reserved\"`\nHeld int64 `json:\"held_backing\"`\nPendingReturn int64 `json:\"pending_return\"`",
+-	"model.QueueBlocker":         "Available *json.Number `json:\"available\"`\nBlockingCount int `json:\"blocking_count,omitempty\"`\nChildCount int `json:\"child_count,omitempty\"`\nChildren []string `json:\"blocking_children,omitempty\"`\nCode string `json:\"code\"`\nDetail string `json:\"detail\"`\nLeases []string `json:\"blocking_leases,omitempty\"`\nObservationAt *time.Time `json:\"observation_at,omitempty\"`\nPartition *model.PoolPartition `json:\"partition,omitempty\"`\nRequested *json.Number `json:\"requested\"`\nResource string `json:\"resource,omitempty\"`\nStale bool `json:\"stale,omitempty\"`\nUnit string `json:\"unit,omitempty\"`",
+-	"model.QueueEstimate":        "Detail string `json:\"detail\"`\nKind string `json:\"kind\"`\nStart *time.Time `json:\"start_at\"`",
+-	"model.QueueInfo":            "Blockers []model.QueueBlocker `json:\"blockers\"`\nEstimate model.QueueEstimate `json:\"estimate\"`\nPolicy string `json:\"policy\"`\nPosition int `json:\"position\"`\nRejection *model.Error `json:\"rejection,omitempty\"`\nUpdated time.Time `json:\"updated_at\"`",
+-	"model.PortClaim":            "Address string `json:\"address\"`\nDualStack bool `json:\"dual_stack,omitempty\"`\nMode string `json:\"mode\"`\nName string `json:\"name\"`\nNamespace string `json:\"namespace,omitempty\"`\nNetwork string `json:\"network\"`\nPort int `json:\"port\"`\nRangeEnd int `json:\"range_end,omitempty\"`",
+-	"model.PoolClaim":            "Authority string `json:\"authority,omitempty\"`\nHost string `json:\"host,omitempty\"`\nPool string `json:\"pool\"`\nQuantity int64 `json:\"quantity\"`\nScope string `json:\"scope,omitempty\"`",
+-	"model.UsagePolicy":          "Grace time.Duration `json:\"grace_ns\"`\nMode string `json:\"mode\"`\nTolerance float64 `json:\"tolerance\"`\nWarnings int `json:\"warnings\"`\nWindow time.Duration `json:\"window_ns\"`",
+-	"model.ForwardSourceBinding": "Bind string `json:\"bind\"`\nGrantRevision int64 `json:\"grant_revision\"`\nService string `json:\"service\"`\nTarget string `json:\"target\"`\nTokenSHA256 string `json:\"token_sha256\"`\nWorkspace string `json:\"workspace\"`",
+-	"model.Request":              "Agent string `json:\"agent,omitempty\"`\nBudget string `json:\"budget,omitempty\"`\nForwardSource *model.ForwardSourceBinding `json:\"forward_source,omitempty\"`\nHost string `json:\"host\"`\nKey string `json:\"idempotency_key\"`\nKind string `json:\"kind,omitempty\"`\nOriginKey string `json:\"origin_key,omitempty\"`\nPeer string `json:\"origin_peer,omitempty\"`\nPeerCertificate string `json:\"origin_certificate,omitempty\"`\nPeerGrantRevision int `json:\"origin_grant_revision,omitempty\"`\nPools []model.PoolClaim `json:\"pools,omitempty\"`\nPortLease string `json:\"port_lease,omitempty\"`\nPorts []model.PortClaim `json:\"ports,omitempty\"`\nProfile string `json:\"profile,omitempty\"`\nProject string `json:\"project,omitempty\"`\nQueue bool `json:\"queue\"`\nReason string `json:\"reason\"`\nResources model.Resources `json:\"resources\"`\nServiceLease string `json:\"service_lease,omitempty\"`\nStartDeadline *time.Time `json:\"start_deadline_at,omitempty\"`\nStorageLease string `json:\"storage_lease,omitempty\"`\nTTL time.Duration `json:\"ttl_ns\"`\nUsagePolicy *model.UsagePolicy `json:\"usage_policy,omitempty\"`",
+-	"model.FileIdentity":         "BirthKnown bool `json:\"birth_known\"`\nBornNanoseconds int64 `json:\"born_nanoseconds\"`\nBornSeconds int64 `json:\"born_seconds\"`\nDevice uint64 `json:\"device\"`\nInode uint64 `json:\"inode\"`\nOwner uint32 `json:\"owner\"`",
+-	"model.StorageRetention":     "At time.Time `json:\"at\"`\nExpires time.Time `json:\"expires_at\"`\nReason string `json:\"reason\"`",
+-	"model.Artifact":             "AllocatedBefore *int64 `json:\"allocated_before_cleanup\"`\nContentObserved bool `json:\"content_observed\"`\nDeletedEntries int `json:\"deleted_entries\"`\nIdentity *model.FileIdentity `json:\"identity\"`\nLastError string `json:\"last_error,omitempty\"`\nName string `json:\"name\"`\nNamespaceRemoved bool `json:\"namespace_removed\"`\nPath string `json:\"path\"`\nPhase string `json:\"phase\"`\nPolicy string `json:\"policy\"`\nRetention *model.StorageRetention `json:\"retention,omitempty\"`\nUpdated time.Time `json:\"updated_at\"`",
+-	"model.PortBinding":          "Detail string `json:\"detail,omitempty\"`\nPortClaim model.PortClaim ``\nSocketID string `json:\"socket_id,omitempty\"`\nState string `json:\"state\"`",
+-	"model.ProcessUsage":         "AccountedMemoryBytes *uint64 `json:\"accounted_memory_bytes\"`\nCPUSeconds *float64 `json:\"cpu_seconds\"`\nDetail string `json:\"detail,omitempty\"`\nIdentity model.ProcessIdentity `json:\"identity\"`\nMemoryMetric string `json:\"memory_metric\"`\nProportionalResidentBytes *uint64 `json:\"proportional_resident_bytes,omitempty\"`\nResidentBytes *uint64 `json:\"resident_bytes\"`",
+-	"model.WorkloadUsage":        "AccountedMemoryBytes *uint64 `json:\"accounted_memory_bytes\"`\nCPUCores *float64 `json:\"cpu_cores\"`\nCPUQuality string `json:\"cpu_quality\"`\nComplete bool `json:\"complete\"`\nDetail string `json:\"detail\"`\nIdentityVerified bool `json:\"identity_verified\"`\nLive bool `json:\"live\"`\nMemberCount int `json:\"member_count\"`\nMembers []model.ProcessUsage `json:\"members\"`\nMemoryMetric string `json:\"memory_metric\"`\nMemoryQuality string `json:\"memory_quality\"`\nMethod string `json:\"method\"`\nObserved time.Time `json:\"observed_at\"`\nProportionalResidentBytes *uint64 `json:\"proportional_resident_bytes,omitempty\"`\nProportionalResidentQuality string `json:\"proportional_resident_quality,omitempty\"`\nRoot model.ProcessIdentity `json:\"root\"`\nScope string `json:\"scope\"`\nStale bool `json:\"stale\"`\nWindow time.Duration `json:\"window_ns\"`",
+-	"model.WorkloadBinding":      "Adapter string `json:\"adapter\"`\nBuildDirectory string `json:\"build_directory,omitempty\"`\nCWD string `json:\"cwd\"`\nDetail string `json:\"detail,omitempty\"`\nExecutable string `json:\"executable\"`\nGradleVersion string `json:\"gradle_version,omitempty\"`\nHeapBytes int64 `json:\"heap_bytes\"`\nHome string `json:\"home\"`\nJVMArgs []string `json:\"jvm_args\"`\nJavaHome string `json:\"java_home\"`\nMetaspaceBytes int64 `json:\"metaspace_bytes\"`\nProjectCache string `json:\"project_cache,omitempty\"`\nRole string `json:\"role\"`\nServiceLease string `json:\"service_lease,omitempty\"`\nServiceProcess *model.ProcessIdentity `json:\"service_process,omitempty\"`\nServiceStartMillis int64 `json:\"service_start_millis,omitempty\"`\nState string `json:\"state\"`\nWorkerLimit int `json:\"worker_limit\"`",
+-	"model.CargoBinding":         "Adapter string `json:\"adapter\"`\nAuthorizedAt *time.Time `json:\"authorized_at,omitempty\"`\nBuild string `json:\"build,omitempty\"`\nCargoVersion string `json:\"cargo_version,omitempty\"`\nCommandSHA256 string `json:\"command_sha256\"`\nControl string `json:\"control,omitempty\"`\nDetail string `json:\"detail\"`\nJobs int `json:\"jobs\"`\nPreparedSHA256 string `json:\"prepared_sha256,omitempty\"`\nPreparingAt *time.Time `json:\"preparing_at,omitempty\"`\nRustcVersion string `json:\"rustc_version,omitempty\"`\nRustdocVersion string `json:\"rustdoc_version,omitempty\"`\nSchema int `json:\"schema\"`\nStartedAt *time.Time `json:\"command_started_at,omitempty\"`\nState string `json:\"state\"`\nTarget string `json:\"target,omitempty\"`\nToolchain string `json:\"toolchain,omitempty\"`\nWorkspace string `json:\"workspace,omitempty\"`",
+-	"model.Lease":                "Artifact *model.Artifact `json:\"artifact,omitempty\"`\nBudget *model.BudgetBinding `json:\"budget_binding,omitempty\"`\nBudgetError *model.Error `json:\"budget_error,omitempty\"`\nBudgetPolicy []model.BudgetPolicyRevision `json:\"budget_policy,omitempty\"`\nCapabilities []string `json:\"capabilities\"`\nCargo *model.CargoBinding `json:\"cargo,omitempty\"`\nClock *leaseclock.Deadline `json:\"elapsed_deadline,omitempty\"`\nCreated time.Time `json:\"created_at\"`\nEnded *time.Time `json:\"ended_at,omitempty\"`\nExitCode *int `json:\"exit_code,omitempty\"`\nExpires *time.Time `json:\"expires_at,omitempty\"`\nFailure string `json:\"failure,omitempty\"`\nHost string `json:\"host\"`\nID string `json:\"id\"`\nManagedDir string `json:\"managed_dir,omitempty\"`\nOutcome string `json:\"outcome,omitempty\"`\nOwner string `json:\"owner\"`\nOwnerUsername string `json:\"owner_username,omitempty\"`\nPID int `json:\"pid,omitempty\"`\nPoolBinding *model.PoolClaimBinding `json:\"pool_binding,omitempty\"`\nPoolError *model.Error `json:\"pool_error,omitempty\"`\nPorts []model.PortBinding `json:\"ports,omitempty\"`\nProcess *model.ProcessIdentity `json:\"process_identity,omitempty\"`\nQueueInfo *model.QueueInfo `json:\"queue_info,omitempty\"`\nRecoveryReason string `json:\"recovery_reason,omitempty\"`\nRequest model.Request `json:\"request\"`\nRevision int `json:\"revision\"`\nStarted *time.Time `json:\"started_at,omitempty\"`\nState string `json:\"state\"`\nUsage *model.WorkloadUsage `json:\"usage,omitempty\"`\nWorkload *model.WorkloadBinding `json:\"workload,omitempty\"`",
+-	"model.SSHLookup":            "Found bool `json:\"found\"`\nLease *model.Lease `json:\"lease,omitempty\"`\nOperation *model.SSHOperation `json:\"operation,omitempty\"`",
++	"providerpreparation.LeaseRef": "Generation providerpreparation.Decimal `json:\"generation\"`\nPair providerpreparation.Hex32 `json:\"pair\"`\nRole providerpreparation.Role `json:\"role\"`\nSchema int `json:\"schema\"`",
++	"leaseclock.Deadline":          "Anchor int64 `json:\"anchor_ns\"`\nBoot string `json:\"boot\"`\nEnd int64 `json:\"end_ns\"`\nVersion int `json:\"version\"`\nWall time.Time `json:\"wall_expires\"`",
++	"model.Resources":              "CPU float64 `json:\"cpu\"`\nDisk int64 `json:\"disk_bytes\"`\nMemory int64 `json:\"memory_bytes\"`",
++	"model.ProcessIdentity":        "Namespace string `json:\"namespace\"`\nPGID int `json:\"pgid\"`\nPID int `json:\"pid\"`\nStart string `json:\"start\"`\nUID string `json:\"uid\"`",
++	"model.SSHExecutionRequest":    "Account string `json:\"account\"`\nCWD string `json:\"cwd\"`\nCertificate string `json:\"certificate\"`\nCommandSHA256 string `json:\"command_sha256\"`\nKey string `json:\"key\"`\nKind string `json:\"kind\"`\nPair string `json:\"pair\"`\nPublicKeySHA256 string `json:\"public_key_sha256\"`\nReason string `json:\"reason\"`\nResources model.Resources `json:\"resources\"`\nRevision int `json:\"revision\"`\nSource string `json:\"source\"`\nTTL time.Duration `json:\"ttl_ns\"`\nTarget string `json:\"target\"`\nTerminalSHA256 string `json:\"terminal_sha256\"`",
++	"model.SSHOperation":           "AdmittedAt time.Time `json:\"admitted_at\"`\nLease string `json:\"lease\"`\nRequest model.SSHExecutionRequest `json:\"request\"`\nSchema int `json:\"schema\"`",
++	"model.BoundPoolClaim":         "Path []string `json:\"path\"`\nPool string `json:\"pool\"`\nQuantity int64 `json:\"quantity\"`",
++	"model.PoolClaimBinding":       "Authority string `json:\"authority\"`\nBound time.Time `json:\"bound_at\"`\nClaims []model.BoundPoolClaim `json:\"claims\"`\nOwner string `json:\"owner\"`",
++	"model.Error":                  "Code string `json:\"code\"`\nMessage string `json:\"message\"`",
++	"model.BudgetBinding":          "Authority string `json:\"authority\"`\nBound time.Time `json:\"bound_at\"`\nOwner string `json:\"owner\"`\nPath []string `json:\"path\"`\nSelected string `json:\"selected\"`",
++	"model.BudgetLimits":           "CPU *float64 `json:\"cpu,omitempty\"`\nDisk *int64 `json:\"disk_bytes,omitempty\"`\nMemory *int64 `json:\"memory_bytes,omitempty\"`\nPools map[string]int64 `json:\"pools,omitempty\"`",
++	"model.BudgetPolicyRevision":   "ID string `json:\"id\"`\nLimits model.BudgetLimits `json:\"limits\"`\nRevision int64 `json:\"revision\"`",
++	"model.PoolPartition":          "Available int64 `json:\"uncarved_available\"`\nChildBacking int64 `json:\"child_backing\"`\nCommitted int64 `json:\"committed\"`\nConfigured int64 `json:\"configured\"`\nDeficit int64 `json:\"deficit\"`\nDirect int64 `json:\"direct_reserved\"`\nHeld int64 `json:\"held_backing\"`\nPendingReturn int64 `json:\"pending_return\"`",
++	"model.QueueBlocker":           "Available *json.Number `json:\"available\"`\nBlockingCount int `json:\"blocking_count,omitempty\"`\nChildCount int `json:\"child_count,omitempty\"`\nChildren []string `json:\"blocking_children,omitempty\"`\nCode string `json:\"code\"`\nDetail string `json:\"detail\"`\nLeases []string `json:\"blocking_leases,omitempty\"`\nObservationAt *time.Time `json:\"observation_at,omitempty\"`\nPartition *model.PoolPartition `json:\"partition,omitempty\"`\nRequested *json.Number `json:\"requested\"`\nResource string `json:\"resource,omitempty\"`\nStale bool `json:\"stale,omitempty\"`\nUnit string `json:\"unit,omitempty\"`",
++	"model.QueueEstimate":          "Detail string `json:\"detail\"`\nKind string `json:\"kind\"`\nStart *time.Time `json:\"start_at\"`",
++	"model.QueueInfo":              "Blockers []model.QueueBlocker `json:\"blockers\"`\nEstimate model.QueueEstimate `json:\"estimate\"`\nPolicy string `json:\"policy\"`\nPosition int `json:\"position\"`\nRejection *model.Error `json:\"rejection,omitempty\"`\nUpdated time.Time `json:\"updated_at\"`",
++	"model.PortClaim":              "Address string `json:\"address\"`\nDualStack bool `json:\"dual_stack,omitempty\"`\nMode string `json:\"mode\"`\nName string `json:\"name\"`\nNamespace string `json:\"namespace,omitempty\"`\nNetwork string `json:\"network\"`\nPort int `json:\"port\"`\nRangeEnd int `json:\"range_end,omitempty\"`",
++	"model.PoolClaim":              "Authority string `json:\"authority,omitempty\"`\nHost string `json:\"host,omitempty\"`\nPool string `json:\"pool\"`\nQuantity int64 `json:\"quantity\"`\nScope string `json:\"scope,omitempty\"`",
++	"model.UsagePolicy":            "Grace time.Duration `json:\"grace_ns\"`\nMode string `json:\"mode\"`\nTolerance float64 `json:\"tolerance\"`\nWarnings int `json:\"warnings\"`\nWindow time.Duration `json:\"window_ns\"`",
++	"model.ForwardSourceBinding":   "Bind string `json:\"bind\"`\nGrantRevision int64 `json:\"grant_revision\"`\nService string `json:\"service\"`\nTarget string `json:\"target\"`\nTokenSHA256 string `json:\"token_sha256\"`\nWorkspace string `json:\"workspace\"`",
++	"model.Request":                "Agent string `json:\"agent,omitempty\"`\nBudget string `json:\"budget,omitempty\"`\nForwardSource *model.ForwardSourceBinding `json:\"forward_source,omitempty\"`\nHost string `json:\"host\"`\nKey string `json:\"idempotency_key\"`\nKind string `json:\"kind,omitempty\"`\nOriginKey string `json:\"origin_key,omitempty\"`\nPeer string `json:\"origin_peer,omitempty\"`\nPeerCertificate string `json:\"origin_certificate,omitempty\"`\nPeerGrantRevision int `json:\"origin_grant_revision,omitempty\"`\nPools []model.PoolClaim `json:\"pools,omitempty\"`\nPortLease string `json:\"port_lease,omitempty\"`\nPorts []model.PortClaim `json:\"ports,omitempty\"`\nProfile string `json:\"profile,omitempty\"`\nProject string `json:\"project,omitempty\"`\nQueue bool `json:\"queue\"`\nReason string `json:\"reason\"`\nResources model.Resources `json:\"resources\"`\nServiceLease string `json:\"service_lease,omitempty\"`\nStartDeadline *time.Time `json:\"start_deadline_at,omitempty\"`\nStorageLease string `json:\"storage_lease,omitempty\"`\nTTL time.Duration `json:\"ttl_ns\"`\nUsagePolicy *model.UsagePolicy `json:\"usage_policy,omitempty\"`",
++	"model.FileIdentity":           "BirthKnown bool `json:\"birth_known\"`\nBornNanoseconds int64 `json:\"born_nanoseconds\"`\nBornSeconds int64 `json:\"born_seconds\"`\nDevice uint64 `json:\"device\"`\nInode uint64 `json:\"inode\"`\nOwner uint32 `json:\"owner\"`",
++	"model.StorageRetention":       "At time.Time `json:\"at\"`\nExpires time.Time `json:\"expires_at\"`\nReason string `json:\"reason\"`",
++	"model.Artifact":               "AllocatedBefore *int64 `json:\"allocated_before_cleanup\"`\nContentObserved bool `json:\"content_observed\"`\nDeletedEntries int `json:\"deleted_entries\"`\nIdentity *model.FileIdentity `json:\"identity\"`\nLastError string `json:\"last_error,omitempty\"`\nName string `json:\"name\"`\nNamespaceRemoved bool `json:\"namespace_removed\"`\nPath string `json:\"path\"`\nPhase string `json:\"phase\"`\nPolicy string `json:\"policy\"`\nRetention *model.StorageRetention `json:\"retention,omitempty\"`\nUpdated time.Time `json:\"updated_at\"`",
++	"model.PortBinding":            "Detail string `json:\"detail,omitempty\"`\nPortClaim model.PortClaim ``\nSocketID string `json:\"socket_id,omitempty\"`\nState string `json:\"state\"`",
++	"model.ProcessUsage":           "AccountedMemoryBytes *uint64 `json:\"accounted_memory_bytes\"`\nCPUSeconds *float64 `json:\"cpu_seconds\"`\nDetail string `json:\"detail,omitempty\"`\nIdentity model.ProcessIdentity `json:\"identity\"`\nMemoryMetric string `json:\"memory_metric\"`\nProportionalResidentBytes *uint64 `json:\"proportional_resident_bytes,omitempty\"`\nResidentBytes *uint64 `json:\"resident_bytes\"`",
++	"model.WorkloadUsage":          "AccountedMemoryBytes *uint64 `json:\"accounted_memory_bytes\"`\nCPUCores *float64 `json:\"cpu_cores\"`\nCPUQuality string `json:\"cpu_quality\"`\nComplete bool `json:\"complete\"`\nDetail string `json:\"detail\"`\nIdentityVerified bool `json:\"identity_verified\"`\nLive bool `json:\"live\"`\nMemberCount int `json:\"member_count\"`\nMembers []model.ProcessUsage `json:\"members\"`\nMemoryMetric string `json:\"memory_metric\"`\nMemoryQuality string `json:\"memory_quality\"`\nMethod string `json:\"method\"`\nObserved time.Time `json:\"observed_at\"`\nProportionalResidentBytes *uint64 `json:\"proportional_resident_bytes,omitempty\"`\nProportionalResidentQuality string `json:\"proportional_resident_quality,omitempty\"`\nRoot model.ProcessIdentity `json:\"root\"`\nScope string `json:\"scope\"`\nStale bool `json:\"stale\"`\nWindow time.Duration `json:\"window_ns\"`",
++	"model.WorkloadBinding":        "Adapter string `json:\"adapter\"`\nBuildDirectory string `json:\"build_directory,omitempty\"`\nCWD string `json:\"cwd\"`\nDetail string `json:\"detail,omitempty\"`\nExecutable string `json:\"executable\"`\nGradleVersion string `json:\"gradle_version,omitempty\"`\nHeapBytes int64 `json:\"heap_bytes\"`\nHome string `json:\"home\"`\nJVMArgs []string `json:\"jvm_args\"`\nJavaHome string `json:\"java_home\"`\nMetaspaceBytes int64 `json:\"metaspace_bytes\"`\nProjectCache string `json:\"project_cache,omitempty\"`\nRole string `json:\"role\"`\nServiceLease string `json:\"service_lease,omitempty\"`\nServiceProcess *model.ProcessIdentity `json:\"service_process,omitempty\"`\nServiceStartMillis int64 `json:\"service_start_millis,omitempty\"`\nState string `json:\"state\"`\nWorkerLimit int `json:\"worker_limit\"`",
++	"model.CargoBinding":           "Adapter string `json:\"adapter\"`\nAuthorizedAt *time.Time `json:\"authorized_at,omitempty\"`\nBuild string `json:\"build,omitempty\"`\nCargoVersion string `json:\"cargo_version,omitempty\"`\nCommandSHA256 string `json:\"command_sha256\"`\nControl string `json:\"control,omitempty\"`\nDetail string `json:\"detail\"`\nJobs int `json:\"jobs\"`\nPreparedSHA256 string `json:\"prepared_sha256,omitempty\"`\nPreparingAt *time.Time `json:\"preparing_at,omitempty\"`\nRustcVersion string `json:\"rustc_version,omitempty\"`\nRustdocVersion string `json:\"rustdoc_version,omitempty\"`\nSchema int `json:\"schema\"`\nStartedAt *time.Time `json:\"command_started_at,omitempty\"`\nState string `json:\"state\"`\nTarget string `json:\"target,omitempty\"`\nToolchain string `json:\"toolchain,omitempty\"`\nWorkspace string `json:\"workspace,omitempty\"`",
++	"model.Lease":                  "Artifact *model.Artifact `json:\"artifact,omitempty\"`\nBudget *model.BudgetBinding `json:\"budget_binding,omitempty\"`\nBudgetError *model.Error `json:\"budget_error,omitempty\"`\nBudgetPolicy []model.BudgetPolicyRevision `json:\"budget_policy,omitempty\"`\nCapabilities []string `json:\"capabilities\"`\nCargo *model.CargoBinding `json:\"cargo,omitempty\"`\nClock *leaseclock.Deadline `json:\"elapsed_deadline,omitempty\"`\nCreated time.Time `json:\"created_at\"`\nEnded *time.Time `json:\"ended_at,omitempty\"`\nExitCode *int `json:\"exit_code,omitempty\"`\nExpires *time.Time `json:\"expires_at,omitempty\"`\nFailure string `json:\"failure,omitempty\"`\nHost string `json:\"host\"`\nID string `json:\"id\"`\nManagedDir string `json:\"managed_dir,omitempty\"`\nOutcome string `json:\"outcome,omitempty\"`\nOwner string `json:\"owner\"`\nOwnerUsername string `json:\"owner_username,omitempty\"`\nPID int `json:\"pid,omitempty\"`\nPoolBinding *model.PoolClaimBinding `json:\"pool_binding,omitempty\"`\nPoolError *model.Error `json:\"pool_error,omitempty\"`\nPorts []model.PortBinding `json:\"ports,omitempty\"`\nProcess *model.ProcessIdentity `json:\"process_identity,omitempty\"`\nProviderPreparation *providerpreparation.LeaseRef `json:\"provider_preparation,omitempty\"`\nQueueInfo *model.QueueInfo `json:\"queue_info,omitempty\"`\nRecoveryReason string `json:\"recovery_reason,omitempty\"`\nRequest model.Request `json:\"request\"`\nRevision int `json:\"revision\"`\nStarted *time.Time `json:\"started_at,omitempty\"`\nState string `json:\"state\"`\nUsage *model.WorkloadUsage `json:\"usage,omitempty\"`\nWorkload *model.WorkloadBinding `json:\"workload,omitempty\"`",
++	"model.SSHLookup":              "Found bool `json:\"found\"`\nLease *model.Lease `json:\"lease,omitempty\"`\nOperation *model.SSHOperation `json:\"operation,omitempty\"`",
+diff --git a/internal/manager/provider_preparation_types.go b/internal/manager/provider_preparation_types.go
+new file mode 100644
+--- /dev/null
++++ b/internal/manager/provider_preparation_types.go
+@@ -0,0 +1,18 @@
++// Proposed sealed in-process type only. No constructor/method/factory is added.
++package manager
++
++import (
++	"context"
++	"github.com/inferal-oss/arm/internal/providerpreparation"
++)
++
++type ProviderPrepareIntent struct {
++	manager    *Manager
++	pair       providerpreparation.Hex32
++	openEpoch  providerpreparation.Hex32
++	initialSHA providerpreparation.Digest
++	expected   [2]providerpreparation.RowRef
++	ctx        context.Context
++	cancel     context.CancelFunc
++	revoked    bool // Manager.mu; notifications happen only after unlocking
++}
+diff --git a/internal/model/model.go b/internal/model/model.go
+--- a/internal/model/model.go
++++ b/internal/model/model.go
+@@ -5,0 +6 @@
++	"github.com/inferal-oss/arm/internal/providerpreparation"
+@@ -68,31 +69,32 @@
+-	Clock          *leaseclock.Deadline   `json:"elapsed_deadline,omitempty"`
+-	Cargo          *CargoBinding          `json:"cargo,omitempty"`
+-	PoolBinding    *PoolClaimBinding      `json:"pool_binding,omitempty"`
+-	PoolError      *Error                 `json:"pool_error,omitempty"`
+-	Budget         *BudgetBinding         `json:"budget_binding,omitempty"`
+-	BudgetPolicy   []BudgetPolicyRevision `json:"budget_policy,omitempty"`
+-	BudgetError    *Error                 `json:"budget_error,omitempty"`
+-	QueueInfo      *QueueInfo             `json:"queue_info,omitempty"`
+-	ID             string                 `json:"id"`
+-	Host           string                 `json:"host"`
+-	Owner          string                 `json:"owner"`
+-	OwnerUsername  string                 `json:"owner_username,omitempty"`
+-	Request        Request                `json:"request"`
+-	State          string                 `json:"state"`
+-	Outcome        string                 `json:"outcome,omitempty"`
+-	RecoveryReason string                 `json:"recovery_reason,omitempty"`
+-	Failure        string                 `json:"failure,omitempty"`
+-	Created        time.Time              `json:"created_at"`
+-	Started        *time.Time             `json:"started_at,omitempty"`
+-	Expires        *time.Time             `json:"expires_at,omitempty"`
+-	Ended          *time.Time             `json:"ended_at,omitempty"`
+-	Revision       int                    `json:"revision"`
+-	PID            int                    `json:"pid,omitempty"`
+-	ManagedDir     string                 `json:"managed_dir,omitempty"`
+-	ExitCode       *int                   `json:"exit_code,omitempty"`
+-	Capabilities   []string               `json:"capabilities"`
+-	Artifact       *Artifact              `json:"artifact,omitempty"`
+-	Ports          []PortBinding          `json:"ports,omitempty"`
+-	Process        *ProcessIdentity       `json:"process_identity,omitempty"`
+-	Usage          *WorkloadUsage         `json:"usage,omitempty"`
+-	Workload       *WorkloadBinding       `json:"workload,omitempty"`
++	ProviderPreparation *providerpreparation.LeaseRef `json:"provider_preparation,omitempty"`
++	Clock               *leaseclock.Deadline          `json:"elapsed_deadline,omitempty"`
++	Cargo               *CargoBinding                 `json:"cargo,omitempty"`
++	PoolBinding         *PoolClaimBinding             `json:"pool_binding,omitempty"`
++	PoolError           *Error                        `json:"pool_error,omitempty"`
++	Budget              *BudgetBinding                `json:"budget_binding,omitempty"`
++	BudgetPolicy        []BudgetPolicyRevision        `json:"budget_policy,omitempty"`
++	BudgetError         *Error                        `json:"budget_error,omitempty"`
++	QueueInfo           *QueueInfo                    `json:"queue_info,omitempty"`
++	ID                  string                        `json:"id"`
++	Host                string                        `json:"host"`
++	Owner               string                        `json:"owner"`
++	OwnerUsername       string                        `json:"owner_username,omitempty"`
++	Request             Request                       `json:"request"`
++	State               string                        `json:"state"`
++	Outcome             string                        `json:"outcome,omitempty"`
++	RecoveryReason      string                        `json:"recovery_reason,omitempty"`
++	Failure             string                        `json:"failure,omitempty"`
++	Created             time.Time                     `json:"created_at"`
++	Started             *time.Time                    `json:"started_at,omitempty"`
++	Expires             *time.Time                    `json:"expires_at,omitempty"`
++	Ended               *time.Time                    `json:"ended_at,omitempty"`
++	Revision            int                           `json:"revision"`
++	PID                 int                           `json:"pid,omitempty"`
++	ManagedDir          string                        `json:"managed_dir,omitempty"`
++	ExitCode            *int                          `json:"exit_code,omitempty"`
++	Capabilities        []string                      `json:"capabilities"`
++	Artifact            *Artifact                     `json:"artifact,omitempty"`
++	Ports               []PortBinding                 `json:"ports,omitempty"`
++	Process             *ProcessIdentity              `json:"process_identity,omitempty"`
++	Usage               *WorkloadUsage                `json:"usage,omitempty"`
++	Workload            *WorkloadBinding              `json:"workload,omitempty"`
+@@ -110,21 +112,22 @@
+-	LeaseClockError *Error                 `json:"lease_clock_error,omitempty"`
+-	ReviewError     *Error                 `json:"review_error,omitempty"`
+-	PressureError   *Error                 `json:"host_pressure_error,omitempty"`
+-	CPUWarning      *CPUWarningEvidence    `json:"cpu_warning_evidence,omitempty"`
+-	Workspaces      *WorkspaceAvailability `json:"workspaces,omitempty"`
+-	PoolError       *Error                 `json:"pool_error,omitempty"`
+-	BudgetError     *Error                 `json:"budget_error,omitempty"`
+-	Host            string                 `json:"host"`
+-	Owner           string                 `json:"owner"`
+-	OwnerUsername   string                 `json:"owner_username,omitempty"`
+-	Draining        bool                   `json:"draining"`
+-	Capacity        Resources              `json:"capacity"`
+-	Reserved        Resources              `json:"reserved"`
+-	Leases          []Lease                `json:"leases"`
+-	Cursor          int64                  `json:"cursor"`
+-	Capabilities    []string               `json:"capabilities"`
+-	Resources       []ResourceView         `json:"resources"`
+-	Infrastructure  []PortBinding          `json:"infrastructure_ports"`
+-	Disk            *DiskBudget            `json:"disk_budget"`
+-	Memory          *MemoryBudget          `json:"memory_budget"`
+-	CPU             *CPUBudget             `json:"cpu_budget"`
++	ProviderPreparation *providerpreparation.Accounting `json:"provider_preparation,omitempty"`
++	LeaseClockError     *Error                          `json:"lease_clock_error,omitempty"`
++	ReviewError         *Error                          `json:"review_error,omitempty"`
++	PressureError       *Error                          `json:"host_pressure_error,omitempty"`
++	CPUWarning          *CPUWarningEvidence             `json:"cpu_warning_evidence,omitempty"`
++	Workspaces          *WorkspaceAvailability          `json:"workspaces,omitempty"`
++	PoolError           *Error                          `json:"pool_error,omitempty"`
++	BudgetError         *Error                          `json:"budget_error,omitempty"`
++	Host                string                          `json:"host"`
++	Owner               string                          `json:"owner"`
++	OwnerUsername       string                          `json:"owner_username,omitempty"`
++	Draining            bool                            `json:"draining"`
++	Capacity            Resources                       `json:"capacity"`
++	Reserved            Resources                       `json:"reserved"`
++	Leases              []Lease                         `json:"leases"`
++	Cursor              int64                           `json:"cursor"`
++	Capabilities        []string                        `json:"capabilities"`
++	Resources           []ResourceView                  `json:"resources"`
++	Infrastructure      []PortBinding                   `json:"infrastructure_ports"`
++	Disk                *DiskBudget                     `json:"disk_budget"`
++	Memory              *MemoryBudget                   `json:"memory_budget"`
++	CPU                 *CPUBudget                      `json:"cpu_budget"`
+diff --git a/internal/sshservice/receipt.go b/internal/sshservice/receipt.go
+--- a/internal/sshservice/receipt.go
++++ b/internal/sshservice/receipt.go
+@@ -20 +20 @@
+-	if l.Cargo != nil || l.Artifact != nil || len(l.Ports) != 0 || l.ManagedDir != "" || l.PoolBinding != nil || l.QueueInfo != nil || len(r.Pools) != 0 || len(r.Ports) != 0 || r.StorageLease != "" || r.ServiceLease != "" || r.PortLease != "" || (r.Budget != "" && r.Budget != root) {
++	if l.ProviderPreparation != nil || l.Cargo != nil || l.Artifact != nil || len(l.Ports) != 0 || l.ManagedDir != "" || l.PoolBinding != nil || l.QueueInfo != nil || len(r.Pools) != 0 || len(r.Ports) != 0 || r.StorageLease != "" || r.ServiceLease != "" || r.PortLease != "" || (r.Budget != "" && r.Budget != root) {

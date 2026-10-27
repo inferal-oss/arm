@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "scope": "Inert paired-preparation declarations compile only; central patch remains unapplied.",
+  "base_commit": "180c86e15e6caa097c140d656872626d06af55ad",
+  "reviewed_seven_file_diff_sha256": "817d72a5394279af5bb4791de7d6af70bf01dd74ea1558658e0be2afdbf3771c",
+  "source_sha256": {
+    "docs/design/PROVIDER-PREPARATION-DEPENDENCIES.md": "b833f0402333584e2e4b03f9d3192a3afecdd247e71ad5ea938e8666f5673139",
+    "docs/design/PROVIDER-PREPARATION-V1.md": "706faec9ab1aadddb36a60d7a9eede6624daed4c28a85b68f7346f1d7435f0f2",
+    "docs/design/provider-preparation-v1-central.patch": "bf251a4e1e8e1352bc84a5b55403688dbc36241fedc1f3cd6fbd7ac21d8610e0",
+    "internal/providerpreparation/doc.go": "1e2c844ad6a4eb18a9c569fab19c86360cda2cc8dceb41fc6e4ea5ceeff25a2d",
+    "internal/providerpreparation/queries.go": "25af6f36219711ae7d64d6afb9bb9616492aa66ecd74ed120985a89218e905d4",
+    "internal/providerpreparation/schema.go": "a7f8552fbaefc54e79eba10b7cbf80869e29cc472a50346c81fc4bf5fab49967",
+    "internal/providerpreparation/types.go": "318b3e349871351fe36a583454a236014260f79b4961e78c0afc07b8f0ae2a15"
+  },
+  "module_sha256": {
+    "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+    "go.sum": "25158413557a7e4a3054f760a199fe256c77b989583aee7f0f3c60624ae6f8ce"
+  },
+  "command": [
+    "go",
+    "test",
+    "-mod=readonly",
+    "-p=1",
+    "-vet=off",
+    "-run",
+    "^$",
+    "./internal/providerpreparation"
+  ],
+  "controlled_environment": {
+    "GOMAXPROCS": "1",
+    "CGO_ENABLED": "0",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "GOTOOLCHAIN": "local",
+    "GOENV": "off",
+    "GOWORK": "off",
+    "GOFLAGS": "",
+    "GOEXPERIMENT": "",
+    "GOOS": "darwin",
+    "GOARCH": "arm64",
+    "GOTELEMETRY": "off"
+  },
+  "selected_tool_sha256": {
+    "go": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+    "compile": "4d0bd4c1880e3d575827a72ac66b0f117b31da0aff1fe44f03a54c7ffb3c8ae3",
+    "link": "9674eaf9854e44afd7331046d14429f914bf9838f48e9ed77793e0686e45d4b2",
+    "asm": "4165876f4b0a389293cd05392c09ef197f36111edf5b6146e870a05dd3c26a90"
+  },
+  "go_version": "go1.27.3",
+  "queue": {
+    "launches": 1,
+    "policy": "normal FIFO with default paths and all five overrides unset",
+    "slots": 2,
+    "worker_default": 2,
+    "run_limit_seconds": 1800,
+    "helper_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "outer_exit_code": 0
+  },
+  "outcome": {
+    "go_exit_code": 0,
+    "output": "?   \tgithub.com/inferal-oss/arm/internal/providerpreparation\t[no test files]",
+    "test_files_present": false,
+    "test_cases_executed": 0,
+    "vet_run": false,
+    "sql_executed": false,
+    "log_sha256": "3616733436ccb6feff42372dc5fe46ccf2bdb2adc1a74f8867cbc197234ebceb"
+  },
+  "input_verification": {
+    "seven_source_files_before_equals_intent_equals_after": true,
+    "module_inputs_before_equals_intent_equals_after": true,
+    "selected_tools_and_harness_before_equals_intent_equals_after": true,
+    "package_inventory_exactly_four_reviewed_go_files": true,
+    "fresh_private_build_cache": true
+  },
+  "process_ownership": {
+    "direct_original_owner": true,
+    "wait_calls": 1,
+    "reaped": true,
+    "pid_absence_proven_by_esrch": true,
+    "signals_sent": 0,
+    "owner_receipt_error": false
+  },
+  "limitations": [
+    "Compile-only result establishes no SQL semantics, reset or SSH proof behavior, resource accounting, lifecycle, cancellation or recovery behavior.",
+    "No central patch was applied; no installer, factory, producer, native image/temp operation, Start or public wiring was enabled.",
+    "V0 minimum-writer/workspace-format policy remains an unresolved factory blocker.",
+    "Selected-tool/source hashes do not establish complete operating-system or standard-library reproducibility; pinning link and asm does not prove those tools ran.",
+    "Earlier design documents remain the reviewed source proposal; this separate record adds only the later compile observation."
+  ]
+}
