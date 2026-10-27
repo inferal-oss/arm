@@ -60,6 +60,12 @@ func WithStderr(stderr io.WriteCloser) Option {
 	})
 }
 
+// WithReceiverWriteLimit sets a local per-exchange regular-file write cap.
+// It is not sent to the peer or accepted from protocol arguments.
+func WithReceiverWriteLimit(limit *int64) Option {
+	return serverOptionFunc(func(s *Server) { s.receiverWriteLimit = limit })
+}
+
 func DontRestrict() Option {
 	return serverOptionFunc(func(s *Server) {
 		s.dontRestrict = true
@@ -106,9 +112,10 @@ func NewServer(modules []Module, opts ...Option) (*Server, error) {
 }
 
 type Server struct {
-	stderr       io.WriteCloser
-	logger       log.Logger
-	dontRestrict bool
+	stderr             io.WriteCloser
+	logger             log.Logger
+	dontRestrict       bool
+	receiverWriteLimit *int64
 
 	modules []Module
 }
@@ -457,6 +464,8 @@ func (s *Server) handleConnReceiver(module *Module, crd *rsyncwire.CountingReade
 			AlwaysChecksum: opts.AlwaysChecksum(),
 			DoFsync:        opts.DoFsync(),
 			KeepPartial:    opts.KeepPartial(),
+
+			ReceiverWriteLimit: s.receiverWriteLimit,
 
 			InfoGTE:  opts.InfoGTE,
 			DebugGTE: opts.DebugGTE,

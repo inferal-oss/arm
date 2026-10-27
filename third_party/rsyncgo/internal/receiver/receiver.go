@@ -16,6 +16,14 @@ import (
 
 // rsync/receiver.c:recv_files
 func (rt *Transfer) RecvFiles(fileList []*File) error {
+	var budget *int64
+	if rt.Opts.ReceiverWriteLimit != nil {
+		remaining := *rt.Opts.ReceiverWriteLimit
+		if remaining < 0 {
+			return fmt.Errorf("negative receiver write limit")
+		}
+		budget = &remaining
+	}
 	phase := 0
 	for {
 		idx, err := rt.Conn.ReadInt32()
@@ -43,7 +51,7 @@ func (rt *Transfer) RecvFiles(fileList []*File) error {
 		if rt.Opts.Progress {
 			fmt.Fprintln(rt.Env.Stdout, fileList[idx].Name)
 		}
-		if err := rt.recvFile1(fileList[idx]); err != nil {
+		if err := rt.recvFile1(fileList[idx], budget); err != nil {
 			return err
 		}
 	}
@@ -59,7 +67,7 @@ func (rt *Transfer) partialName(name string) string {
 	return filepath.Join(dir, partialDir, file)
 }
 
-func (rt *Transfer) recvFile1(f *File) error {
+func (rt *Transfer) recvFile1(f *File, budget *int64) error {
 	if rt.Opts.DryRun {
 		if !rt.Opts.Server {
 			fmt.Fprintln(rt.Env.Stdout, f.Name)
@@ -85,7 +93,7 @@ func (rt *Transfer) recvFile1(f *File) error {
 		if err == nil {
 			// partial file exists; use it.
 			defer partial.Close()
-			if err := rt.receiveData(f, partial, perm); err != nil {
+			if err := rt.receiveData(f, partial, perm, budget); err != nil {
 				return err
 			}
 			// receiveData called partial.Close()
@@ -102,7 +110,7 @@ func (rt *Transfer) recvFile1(f *File) error {
 		rt.Logger.Printf("opening local file failed, continuing: %v", err)
 	}
 	defer localFile.Close()
-	if err := rt.receiveData(f, localFile, perm); err != nil {
+	if err := rt.receiveData(f, localFile, perm, budget); err != nil {
 		return err
 	}
 	return nil
@@ -131,7 +139,7 @@ func (rt *Transfer) openLocalFile(f *File) (*os.File, error) {
 }
 
 // rsync/receiver.c:receive_data
-func (rt *Transfer) receiveData(f *File, localFile *os.File, perm fs.FileMode) error {
+func (rt *Transfer) receiveData(f *File, localFile *os.File, perm fs.FileMode, budget *int64) error {
 	rt.Progress.Reset(uint64(f.Length))
 	var sh rsync.SumHead
 	if err := sh.ReadFrom(rt.Conn); err != nil {
@@ -142,7 +150,7 @@ func (rt *Transfer) receiveData(f *File, localFile *os.File, perm fs.FileMode) e
 		local := filepath.Join(rt.Dest, f.Name)
 		rt.Logger.Printf("creating %s", local)
 	}
-	out, err := newPendingFile(rt.DestRoot, f.Name, rt.Opts.DoFsync)
+	out, err := newPendingFile(rt.DestRoot, f.Name, rt.Opts.DoFsync, budget)
 	if err != nil {
 		return err
 	}

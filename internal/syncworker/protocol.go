@@ -414,6 +414,10 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 	var dirs []syncfs.DirectoryMetadata
 	for _, b := range batches(plan) {
 		id := batchID(b)
+		writeLimit, limitErr := batchWriteLimit(plan, b)
+		if limitErr != nil {
+			return limitErr
+		}
 		if e.Side == b.Source {
 			sourceWork, ownDirs, matErr := e.materialize(ctx, plan, b, need)
 			if sourceWork != nil {
@@ -429,12 +433,12 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 			}
 			if b.Receiver == e.Side {
 				dirs = append(dirs, ownDirs...)
-				err = runLocalBatch(ctx, sourceWork.StagePath(), work.StagePath(), e.Metadata)
+				err = runLocalBatch(ctx, sourceWork.StagePath(), work.StagePath(), e.Metadata, writeLimit)
 			} else {
 				var handle transferHandle
 				handle, err = e.Session.OpenTransfer(ctx, b)
 				if err == nil {
-					err = runTransfer(ctx, handle, rsyncengine.ClientSender, sourceWork.StagePath(), e.Metadata)
+					err = runTransfer(ctx, handle, rsyncengine.ClientSender, sourceWork.StagePath(), e.Metadata, nil)
 				}
 			}
 			if err != nil {
@@ -456,7 +460,7 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 				var handle transferHandle
 				handle, err = e.Session.OpenTransfer(ctx, b)
 				if err == nil {
-					err = runTransfer(ctx, handle, rsyncengine.ServerReceiver, work.StagePath(), e.Metadata)
+					err = runTransfer(ctx, handle, rsyncengine.ServerReceiver, work.StagePath(), e.Metadata, &writeLimit)
 				}
 				if err != nil {
 					return err

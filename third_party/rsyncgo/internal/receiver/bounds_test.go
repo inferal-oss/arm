@@ -121,7 +121,7 @@ func TestCorruptAndRangeTokensRetainOldFile(t *testing.T) {
 			rt := &Transfer{Dest: rootPath, DestRoot: root, Opts: &TransferOpts{
 				DebugGTE: func(rsyncopts.DebugLevel, uint16) bool { return false },
 			}, Conn: &rsyncwire.Conn{Reader: io.NopCloser(&b)}, Progress: progress.NewPrinter(io.Discard, time.Now)}
-			err = rt.receiveData(&File{Name: "file", Length: 4}, old, 0600)
+			err = rt.receiveData(&File{Name: "file", Length: 4}, old, 0600, nil)
 			if err == nil || !strings.Contains(err.Error(), tc.want) {
 				t.Fatalf("got %v", err)
 			}

@@ -29,6 +29,8 @@ type Options struct {
 	PreserveLinks bool
 	PreservePerms bool
 	PreserveTimes bool
+	// ReceiverWriteLimit is local policy, never a protocol flag.
+	ReceiverWriteLimit *int64
 }
 
 func (o Options) flags() []string {
@@ -99,6 +101,9 @@ func (discardCloser) Close() error { return nil }
 // an isolated staging directory. Closing conn on cancellation must unblock
 // its Read and Write methods; RunClient joins its cancellation watcher.
 func RunClient(ctx context.Context, conn io.ReadWriteCloser, direction Direction, o Options, root string) (*rsyncstats.TransferStats, error) {
+	if o.ReceiverWriteLimit != nil && *o.ReceiverWriteLimit < 0 {
+		return nil, errors.New("negative receiver write limit")
+	}
 	if err := checkRoot(root); err != nil {
 		return nil, err
 	}
@@ -106,7 +111,7 @@ func RunClient(ctx context.Context, conn io.ReadWriteCloser, direction Direction
 	if err != nil {
 		return nil, err
 	}
-	env := &rsyncos.Env{Stderr: discardCloser{io.Discard}, Stdout: discardCloser{io.Discard}, DontRestrict: true}
+	env := &rsyncos.Env{Stderr: discardCloser{io.Discard}, Stdout: discardCloser{io.Discard}, DontRestrict: true, ReceiverWriteLimit: o.ReceiverWriteLimit}
 	return run(ctx, conn, func() (*rsyncstats.TransferStats, error) {
 		path := filepath.Clean(root)
 		if direction == Push {
@@ -119,11 +124,14 @@ func RunClient(ctx context.Context, conn io.ReadWriteCloser, direction Direction
 // RunServer serves the matching remote-shell role. For Push, root must be an
 // isolated staging directory. The accepted options are generated locally.
 func RunServer(ctx context.Context, conn io.ReadWriteCloser, direction Direction, o Options, root string) (*rsyncstats.TransferStats, error) {
+	if o.ReceiverWriteLimit != nil && *o.ReceiverWriteLimit < 0 {
+		return nil, errors.New("negative receiver write limit")
+	}
 	args, err := ServerArgs(direction, o, root)
 	if err != nil {
 		return nil, err
 	}
-	env := &rsyncos.Env{Stdin: conn, Stdout: discardCloser{conn}, Stderr: discardCloser{io.Discard}, DontRestrict: true}
+	env := &rsyncos.Env{Stdin: conn, Stdout: discardCloser{conn}, Stderr: discardCloser{io.Discard}, DontRestrict: true, ReceiverWriteLimit: o.ReceiverWriteLimit}
 	return run(ctx, conn, func() (*rsyncstats.TransferStats, error) {
 		return maincmd.Main(ctx, env, append([]string{"rsync"}, args...), nil)
 	})
