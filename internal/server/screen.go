@@ -278,10 +278,15 @@ func (s *Server) browserScreen(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "macOS Screen Sharing is unavailable", http.StatusBadGateway)
 			return
 		}
+		target = screenOwnTransportConn(ctx, target)
 	}
 	defer target.Close()
 	defer screenCloseOnCancel(ctx, target)()
-	c, err := websocket.Accept(w, r, &websocket.AcceptOptions{Subprotocols: []string{"arm.v1"}})
+	if ctx.Err() != nil {
+		http.Error(w, "screen transport no longer active", http.StatusServiceUnavailable)
+		return
+	}
+	c, err := websocket.Accept(screenOwnedUpgradeWriter(ctx, w), r, &websocket.AcceptOptions{Subprotocols: []string{"arm.v1"}})
 	if err != nil {
 		return
 	}
@@ -349,10 +354,15 @@ func (m *meshService) dialScreen(ctx context.Context, bound nodeSession) (net.Co
 	// Own the complete native dial/handshake here. http.Transport can detach
 	// its dial context from a canceled request; no native dial is delegated to
 	// that worker or allowed to outlive this admission interval.
-	pinned, err := (&tls.Dialer{Config: tlsConfig}).DialContext(handshake, "tcp", peer.Identity.Address)
+	native, err := (&net.Dialer{}).DialContext(handshake, "tcp", peer.Identity.Address)
 	if err != nil {
 		return nil, err
 	}
+	// Retain the first result of the exact original TCP close, including
+	// cancellation during TLS or a refused HTTP upgrade. TLS stays pinned and
+	// the HTTP transport still receives the same concrete *tls.Conn.
+	native = screenOwnTransportConn(ctx, native)
+	pinned := tls.Client(native, tlsConfig)
 	transferred := false
 	defer func() {
 		if !transferred {
@@ -360,6 +370,9 @@ func (m *meshService) dialScreen(ctx context.Context, bound nodeSession) (net.Co
 		}
 	}()
 	defer screenCloseOnCancel(handshake, pinned)()
+	if err = pinned.HandshakeContext(handshake); err != nil {
+		return nil, err
+	}
 	transport := &http.Transport{TLSClientConfig: tlsConfig, Proxy: nil, DisableKeepAlives: true, TLSHandshakeTimeout: screenHandshakeTimeout, ResponseHeaderTimeout: screenHandshakeTimeout, MaxResponseHeaderBytes: 8192}
 	transport.DialContext = func(context.Context, string, string) (net.Conn, error) {
 		return nil, fmt.Errorf("screen requires the pinned TLS endpoint")
@@ -451,9 +464,14 @@ func (m *meshService) meshScreen(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "macOS Screen Sharing unavailable", http.StatusBadGateway)
 		return
 	}
+	target = screenOwnTransportConn(ctx, target)
 	defer target.Close()
 	defer screenCloseOnCancel(ctx, target)()
-	c, err := websocket.Accept(w, r, nil)
+	if ctx.Err() != nil {
+		http.Error(w, "screen transport no longer active", http.StatusServiceUnavailable)
+		return
+	}
+	c, err := websocket.Accept(screenOwnedUpgradeWriter(ctx, w), r, nil)
 	if err != nil {
 		return
 	}
