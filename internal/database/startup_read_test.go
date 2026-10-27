@@ -236,7 +236,9 @@ func TestStartupReadLargeNoIntentDoesNotNeedScratchCopy(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, query := range []string{`CREATE TABLE payload(data BLOB)`, `INSERT INTO payload VALUES(zeroblob(67108864))`} {
+	// The baseline format gate requires ARM metadata even when no stopped intent
+	// exists. Keep the actual 64 MiB payload and unavailable-scratch assertions.
+	for _, query := range []string{`CREATE TABLE metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL)`, `INSERT INTO metadata VALUES('host','11111111111111111111111111111111')`, `CREATE TABLE payload(data BLOB)`, `INSERT INTO payload VALUES(zeroblob(67108864))`} {
 		if _, err = db.Exec(query); err != nil {
 			t.Fatal(err)
 		}

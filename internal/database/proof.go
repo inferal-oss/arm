@@ -140,6 +140,9 @@ func ProveDatabaseSettled(ctx context.Context, s *Source, owner string) (Settled
 		return result, err
 	}
 	defer tx.Rollback()
+	if err = CheckWorkspaceFormat(ctx, tx); err != nil {
+		return result, err
+	}
 	if err = RefuseRetiredMountState(ctx, tx); err != nil {
 		return result, err
 	}
@@ -269,6 +272,10 @@ func (p *proofReader) metadata() error {
 			return err
 		}
 		switch key {
+		case WorkspaceFormatKey:
+			if raw != WritableWorkspaceFormat {
+				return unsupportedWorkspaceFormat()
+			}
 		case "host":
 			if !validHost(raw) {
 				return fmt.Errorf("invalid host authority")

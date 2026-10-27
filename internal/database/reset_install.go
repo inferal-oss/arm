@@ -224,6 +224,9 @@ func ExistingAuthority(ctx context.Context, db *sql.DB) (string, error) {
 }
 
 func StartupAuthority(ctx context.Context, home string, db *sql.DB) (string, error) {
+	if err := CheckWorkspaceFormat(ctx, db); err != nil {
+		return "", err
+	}
 	host, err := ExistingAuthority(ctx, db)
 	if err != nil {
 		return "", err

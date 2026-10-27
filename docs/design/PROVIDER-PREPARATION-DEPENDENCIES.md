@@ -1,12 +1,13 @@
 # Paired-preparation v1 dependency matrix
 
-Review base `180c86e`; all rows below are proposed work, not implemented support.
-The current consumer acceptance is independent. Only unreferenced data/DDL and
-an un-applied central patch exist in this successor. No tests or queue were run.
+The original inert proposal was reviewed against `180c86e`; its compile-only
+evidence does not establish runtime support. The current consumer acceptance is
+independent. V0 now has a separate ordinary-format baseline guard candidate;
+all later rows remain proposed work. The inert central patch remains unapplied.
 
 | ID | Intersection / exact current source | Required rule before any factory | Proposed status |
 | --- | --- | --- | --- |
-| V0 | `internal/database/reset_install.go: StartupAuthority`; `internal/local/statefence.go` | Optional marker alone is not an older-writer fence. Approve minimum-writer/workspace-format policy; do not borrow a reset/sync marker or claim downgrade safety. | Explicit unresolved producer gate; no runtime patch. |
+| V0 | `internal/database/workspace_format.go`; `reset_install.go: StartupAuthority`; `startup_read.go`; restart CAS and settled proof | Two-stage [baseline rollout](PROVIDER-V0-BASELINE.md): distribute the format-1-only guard before explicit format-2 activation, exclude pre-baseline writers, never borrow reset/sync markers. | Baseline guard patch only; released-baseline/deployment evidence and activation protocol remain producer gates. |
 | V1 | `internal/providerpreparation/{types,schema,queries}.go` | Fixed inert profile, bounded exact rows and markers; no operational API. | Data/string declarations only. |
 | V2 | `internal/model/model.go` | Optional exact LeaseRef and accounting display type; plain data is never capability. | Un-applied patch. |
 | V3 | `internal/database/proof_schema.go`, `proof_provider_preparations.go`, `proof.go` | Literal four-object group, two exact autoindexes, marker 1; absence supported, partial/version mismatch refused. Catalog +6 only. Any row or held-field presence blocks default reset. | Un-applied read-only catalog patch; no installer. |
@@ -29,7 +30,7 @@ an un-applied central patch exist in this successor. No tests or queue were run.
 The exact raw/typed proof, accounting, lifecycle and scope boundaries must be
 reviewed together before A0/F1 is implemented. V3/V4 alone do not grant retention
 or settlement authority. Proposed checks are not evidence of passing behavior.
-After source approval, route scoped actual transaction/row substitution/cancelled
+After A0/F1 source approval, route scoped actual transaction/row substitution/cancelled
 read/End/storage/Close/expiry/reopen/default-reset/history cases against the composed
 source, including required Linux boundaries. Do not run a new queue or import an
 older divergent paired-retention branch as an acceptance shortcut.

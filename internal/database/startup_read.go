@@ -94,6 +94,9 @@ func OpenStartupRead(ctx context.Context, home string, lock *os.File) (read *Sta
 	if err = r.tx.QueryRowContext(ctx, `PRAGMA schema_version`).Scan(&schema); err != nil {
 		return nil, false, err
 	}
+	if err = CheckWorkspaceFormat(ctx, r.tx); err != nil {
+		return nil, false, err
+	}
 	if err = r.Validate(ctx); err != nil {
 		return nil, false, err
 	}

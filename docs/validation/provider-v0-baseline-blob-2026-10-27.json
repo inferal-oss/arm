@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "scope": "V0 ordinary-format startup baseline and two-stage rollout proposal, including corrected BLOB refusal; no paired factory or activation.",
+  "base_commit": "6f5da2fd408378ab0b9e0864f7856cb273b84bfe",
+  "branch": "codex/provider-v0-blob-guard",
+  "changed_source_sha256": {
+    "docs/design/PROVIDER-PREPARATION-DEPENDENCIES.md": "0ce4101e35a6443feedf9e8aa5afa7666327cd893eb2ec6488c50de6c154c0a1",
+    "docs/design/PROVIDER-V0-BASELINE.md": "e644a67ec45fcd1e9d726febf63f9754a245fc961a382dfbbacdc72f61741115",
+    "internal/database/proof.go": "69adf324deb9d6de20c8a3f0c28bb4d87a804b0f6f328a220ff70e7951f0c9a9",
+    "internal/database/reset_install.go": "b82e9a022e4c65578838cd55cdad55ee6f98b79aadb6866f436411c5465a47b3",
+    "internal/database/startup_read.go": "a3b5befbfc7d2a98199d3d76d6569938885bbd3551862ee8ae54f95a884d82be",
+    "internal/database/startup_read_test.go": "be8a32172b15373776fafaf2a373a7b8d6ab721d8c0b4f4800b259396560aad5",
+    "internal/database/workspace_format.go": "40836a41b42c9f5881b1b8ddb02aec50cdfdd85b4e5b0d36c08cd1431b34ad2b",
+    "internal/database/workspace_format_proof_test.go": "210411632984976089c40375d66bfa58ba328922d9ec6fc4b7510b8e7ab1bc40",
+    "internal/database/workspace_format_test.go": "9b066a6157c686d7fc9fd2501933c115a9ad6cfff7ab12f5e2922281c648eb0a",
+    "internal/manager/manager.go": "32834f8213c9944d94118035ed51c601f86de43323bae9730b5c3357ca9a442c",
+    "internal/manager/workspace_format_startup_test.go": "ad04d849a6872d44f7a3c4b04b9f7f7b7c338d018a34aaf0ed4b0073a8906a33",
+    "internal/server/node_stop_startup.go": "9bea877e58883711ad32e3380dcdc61a70f961fb98c91baebf3fc30fbe6d3c9a",
+    "internal/server/workspace_format_startup_test.go": "47597566a732ceeda93fb16506a621b8c08b2d0180dd70d0683e710466035b71"
+  },
+  "platform": "darwin/arm64",
+  "go_version": "go1.27.3",
+  "go_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+  "command_owner_source_sha256": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76",
+  "normal_and_race_roster": {
+    "database": {
+      "nodes": [
+        "TestExistingAuthorityNeverRepairsMissingOrMalformedMetadata",
+        "TestExistingAuthorityNeverRepairsMissingOrMalformedMetadata/malformed",
+        "TestExistingAuthorityNeverRepairsMissingOrMalformedMetadata/missing-host",
+        "TestExistingAuthorityNeverRepairsMissingOrMalformedMetadata/missing-table",
+        "TestResetHooksActualServeFreshAndEstablishedRestart",
+        "TestResetHooksEstablishedMissingAuthorityRefusesBeforeMigration",
+        "TestResetHooksPreserveOrdinaryFreshAndEstablishedStartup",
+        "TestResetSeedInstallNewAuthorityExactlyOnce",
+        "TestResetSeedInstallRecoversRenameAcknowledgementLoss",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority/busy-lock",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority/consumed-missing",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority/nil-lock",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority/replacement",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority/wal",
+        "TestResetSeedInstallRefusesUnlockedOrConflictingAuthority/wrong-lock",
+        "TestStartupReadAllowsObservedSQLiteEmptyBookkeepingAndPreservesErrors",
+        "TestStartupReadCloseRejectsAppendToPreexistingNonemptyWAL",
+        "TestStartupReadFinalCloseBindsInitiallyAbsentMain",
+        "TestStartupReadFinalCloseBindsInitiallyAbsentMain/false",
+        "TestStartupReadFinalCloseBindsInitiallyAbsentMain/true",
+        "TestStartupReadLargeNoIntentDoesNotNeedScratchCopy",
+        "TestStartupReadRefusesConcurrentNewCommittedWALDespiteStaleAbsentSnapshot",
+        "TestStartupReadRefusesConcurrentNewCommittedWALDespiteStaleAbsentSnapshot/after-sqlite-close",
+        "TestStartupReadRefusesConcurrentNewCommittedWALDespiteStaleAbsentSnapshot/close-only",
+        "TestStartupReadRefusesConcurrentNewCommittedWALDespiteStaleAbsentSnapshot/validate",
+        "TestStartupReadRejectsUnsafeSidecarAndOrphanWithoutMutation",
+        "TestStartupReadWALOnlyCommittedIntentAfterOwnedProcessExit",
+        "TestStartupReadWALOnlyCommittedIntentAfterOwnedProcessExit/missing-shm-false",
+        "TestStartupReadWALOnlyCommittedIntentAfterOwnedProcessExit/missing-shm-true",
+        "TestStartupRetiredMountGuardAcceptsOnlyPristineInstalledResetSeed",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/changed-bytes",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/forged-applied-marker",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/malformed-pointer",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/missing-pointer",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/missing-receipt",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/replaced-inode",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/retired-marker",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/retired-table",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/sqlite-companion",
+        "TestStartupRetiredMountGuardRefusesChangedOrUnboundSparseResetSeed/uninstalled-pointer",
+        "TestStartupRetiredMountGuardRefusesUnrelatedPartialDatabase",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/actual-header",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/checksum",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/extra-byte",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/magic",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/page",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/partial",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/version",
+        "TestStartupWALHeaderGrammarUsesActualSQLiteHeader/zero-length",
+        "TestWorkspaceFormatBaselineHonorsCancelledRead",
+        "TestWorkspaceFormatBaselineReadOnlyCompatibility",
+        "TestWorkspaceFormatBaselineReadOnlyCompatibility/1",
+        "TestWorkspaceFormatBaselineReadOnlyCompatibility/absent",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies/ordinary/1",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies/ordinary/absent",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies/ref/1",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies/ref/absent",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies/worker/1",
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies/worker/absent",
+        "TestWorkspaceFormatBaselineRefusesNoncanonicalOrdinaryLeaseStorage",
+        "TestWorkspaceFormatBaselineRefusesNoncanonicalOrdinaryLeaseStorage/integer",
+        "TestWorkspaceFormatBaselineRefusesNoncanonicalOrdinaryLeaseStorage/invalid-text-json",
+        "TestWorkspaceFormatBaselineRefusesNoncanonicalOrdinaryLeaseStorage/null",
+        "TestWorkspaceFormatBaselineRefusesNoncanonicalOrdinaryLeaseStorage/real",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/alias-ref/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/alias-ref/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/empty-header/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/empty-header/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/empty-view/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/empty-view/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/escaped-ref/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/escaped-ref/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/escaped-worker/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/escaped-worker/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/false-ref/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/false-ref/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/marker-only/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/marker-only/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/null-ref/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/null-ref/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/orphan-index/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/orphan-index/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/orphan-worker/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/orphan-worker/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/partial-member/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/partial-member/absent",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/unicode-worker/1",
+        "TestWorkspaceFormatBaselineRefusesPairsDespiteOrdinaryOrMissingMarker/unicode-worker/absent",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/blob",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/blob-key",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/case-alias",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/duplicate",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/duplicate-alias",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/future-format",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/integer",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/next-format",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/noncanonical",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/null",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/oversized-blob",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/oversized-text",
+        "TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers/whitespace",
+        "TestWorkspaceFormatSettledProofAcceptsOrdinaryAndRefusesFuture",
+        "TestWorkspaceFormatSettledProofAcceptsOrdinaryAndRefusesFuture/1",
+        "TestWorkspaceFormatSettledProofAcceptsOrdinaryAndRefusesFuture/2",
+        "TestWorkspaceFormatSettledProofRefusesBlobBeforeInterpretation"
+      ],
+      "roots": 26
+    },
+    "manager": {
+      "nodes": [
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat",
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat/1",
+        "TestWorkspaceFormatOrdinaryManagerReopensWithoutActivatingFormat/absent",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/blob-ordinary",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/blob-ref",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/blob-worker",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/format-2",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/orphan-ref",
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery/partial-pair"
+      ],
+      "roots": 2
+    },
+    "server": {
+      "nodes": [
+        "TestDurableStopRejectsAutomaticServeBeforeRecoveryOrEndpoint",
+        "TestExplicitRestartUsesExactStoppedRevisionCASAndRetainsOldDuty",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/blob-ordinary/restart-cas",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/blob-ordinary/serve",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/blob-ref/restart-cas",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/blob-ref/serve",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/blob-worker/restart-cas",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/blob-worker/serve",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/format-2/restart-cas",
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation/format-2/serve"
+      ],
+      "roots": 3
+    }
+  },
+  "summary": {
+    "roots_per_normal_and_race_cohort": 31,
+    "named_nodes_including_roots_per_cohort": 132,
+    "failed_or_skipped_positive_nodes": 0,
+    "normal_race_rosters_identical": true,
+    "vet_packages": [
+      "internal/database",
+      "internal/manager",
+      "internal/server"
+    ],
+    "vet_exit_code": 0,
+    "outer_original_exit_code": 0
+  },
+  "causal_negative": {
+    "replacement_guard_sha256": "3b9fea7774d93d24d30004e1d0e6ddd34fe003774ec714aafb6c990f80f6b10f",
+    "method": "Go source overlay replaces only workspace_format.go with retained predecessor; all BLOB witness tests and other source unchanged.",
+    "expected_and_actual_exit_per_negative_image": 1,
+    "failed_roots": {
+      "database": [
+        "TestWorkspaceFormatBaselineRefusesGoDecodableBlobLeaseBodies",
+        "TestWorkspaceFormatBaselineRefusesNoncanonicalOrdinaryLeaseStorage",
+        "TestWorkspaceFormatSettledProofRefusesBlobBeforeInterpretation"
+      ],
+      "manager": [
+        "TestWorkspaceFormatRefusesDirectManagerBeforeSchemaOrRecovery"
+      ],
+      "server": [
+        "TestWorkspaceFormatServeAndRestartRefuseBeforeStoppedMutation"
+      ]
+    },
+    "total_expected_failed_roots": 5,
+    "format_2_manager_and_both_server_controls_passed": true,
+    "actual_reviewed_restart_fixture_mutations": 3,
+    "negative_failures_are_required_counterfactual_results": true
+  },
+  "test_images": {
+    "negative-database": {
+      "after_sha256": "a8aee80f3aeba06d40fd101a8992fcee411426554bd7cd37e6fa35ecad4e378f",
+      "before_sha256": "a8aee80f3aeba06d40fd101a8992fcee411426554bd7cd37e6fa35ecad4e378f"
+    },
+    "negative-manager": {
+      "after_sha256": "ba009be5635e0f650bf7a501714fef6bdf0d0b164efc07f56947d37cd1995e7a",
+      "before_sha256": "ba009be5635e0f650bf7a501714fef6bdf0d0b164efc07f56947d37cd1995e7a"
+    },
+    "negative-server": {
+      "after_sha256": "ecaa4733cf0443900319791929fe3b4e3973245f432d5cb33df3839a9b271178",
+      "before_sha256": "ecaa4733cf0443900319791929fe3b4e3973245f432d5cb33df3839a9b271178"
+    },
+    "normal-database": {
+      "after_sha256": "f44a9fa474775cbdb0ad8a0c9a9afdcd990b530b64d0fb35a2a9dd38391cb3c2",
+      "before_sha256": "f44a9fa474775cbdb0ad8a0c9a9afdcd990b530b64d0fb35a2a9dd38391cb3c2"
+    },
+    "normal-manager": {
+      "after_sha256": "3592efdfb4c3a16c35069af9399379ed3852e9b9dd7750a22269bdde0a0cf72f",
+      "before_sha256": "3592efdfb4c3a16c35069af9399379ed3852e9b9dd7750a22269bdde0a0cf72f"
+    },
+    "normal-server": {
+      "after_sha256": "6d1e9a176466acb5e54471316af563d4007283ad60eb442fdc8e14a80341e1ac",
+      "before_sha256": "6d1e9a176466acb5e54471316af563d4007283ad60eb442fdc8e14a80341e1ac"
+    },
+    "race-database": {
+      "after_sha256": "3bd04a7379b9636fab9d620d3c891541fc20f6e0e23772a3ba004c669c64ed11",
+      "before_sha256": "3bd04a7379b9636fab9d620d3c891541fc20f6e0e23772a3ba004c669c64ed11"
+    },
+    "race-manager": {
+      "after_sha256": "b73c40f087fa68ab6131bf907798e7126f521db0d9cb8a11d8ae5943c8f6355a",
+      "before_sha256": "b73c40f087fa68ab6131bf907798e7126f521db0d9cb8a11d8ae5943c8f6355a"
+    },
+    "race-server": {
+      "after_sha256": "5a5647764f04857aceda8e01732ceaa196226dd4a0838dac92f78437de7c4a43",
+      "before_sha256": "5a5647764f04857aceda8e01732ceaa196226dd4a0838dac92f78437de7c4a43"
+    }
+  },
+  "commands": {
+    "build": "go test -mod=readonly -p=1 -vet=off -c [-race] ./internal/{database,manager,server}; separate retained images",
+    "run_regex": "^Test(WorkspaceFormat|StartupRead|StartupWAL|StartupRetiredMountGuard|ResetSeedInstall|ResetHooks|ExistingAuthorityNever|DurableStopRejectsAutomaticServe|ExplicitRestartUsesExactStoppedRevisionCAS)",
+    "image_run": "-test.v=true -test.count=1 -test.timeout=120s -test.run=REGEX",
+    "vet": "go vet -mod=readonly -p=1 ./internal/database ./internal/manager ./internal/server",
+    "controlled_environment": {
+      "GOMAXPROCS": "1",
+      "CGO_ENABLED": "1",
+      "GOPROXY": "off",
+      "GOSUMDB": "off",
+      "GOTOOLCHAIN": "local",
+      "GOENV": "off",
+      "GOWORK": "off",
+      "GOFLAGS": ""
+    }
+  },
+  "frozen_inputs": {
+    "source_files": 2519,
+    "harness_files": 5,
+    "selected_tool_files": 15663,
+    "intent_equals_before_equals_after": true,
+    "source_matches_after_gate": true,
+    "not_a_full_OS_reproducibility_claim": true
+  },
+  "original_command_closure": {
+    "commands": 19,
+    "native_waits_per_command": 1,
+    "all_reaped_and_retired": true,
+    "all_pid_and_group_absence_confirmed": true,
+    "signals_sent": 0,
+    "unknown_or_quarantined_owners": 0,
+    "native_wait_status_decoded_with_os_waitstatus_to_exitcode": true
+  },
+  "queue": {
+    "policy": "normal FIFO; default paths; all five overrides unset",
+    "slots": 2,
+    "worker_default": 2,
+    "run_limit_seconds": 1800,
+    "helper_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "successful_frozen_run_launches": 1
+  },
+  "preserved_history": {
+    "earlier_dispatch_exit_code": 76,
+    "earlier_dispatch_child_launched": false,
+    "earlier_dispatch_reason": "live ticket disappeared; no child launched",
+    "earlier_guard_sha256": "3b9fea7774d93d24d30004e1d0e6ddd34fe003774ec714aafb6c990f80f6b10f",
+    "earlier_normal_and_race_roots": 28,
+    "earlier_nodes_per_cohort": 110,
+    "earlier_scoped_pass_does_not_validate_BLOB_behavior": true
+  },
+  "compatibility": {
+    "workspace_format_key": "workspace_format",
+    "supported_TEXT_value": "1",
+    "unmarked_ordinary_legacy_supported": true,
+    "ordinary_startup_writes_format_marker": false,
+    "unknown_or_malformed_marker_refused": true,
+    "paired_evidence_refused_even_without_format_marker": true,
+    "non_TEXT_or_invalid_JSON_lease_storage_refused_without_conversion": true,
+    "BLOB_JSON_Go_decoding_witness_uses_actual_SQLite_TEXT_affinity": true,
+    "ordinary_BLOB_policy_matches_existing_Manager_retired_state_guard": true,
+    "prebaseline_binaries_require_deployment_exclusion": true,
+    "explicit_forget_remains_opaque_abandonment": true
+  },
+  "remaining_gates": [
+    "Independent integration review and composed-source checks.",
+    "Release actual baseline and record minimum writer/deployment exclusion evidence before stage two.",
+    "Separately review stopped/exclusive durable format-2 activation and acknowledgement-loss protocol.",
+    "All paired accounting/lifecycle/native/image prepayment gates remain.",
+    "No Linux execution or full-suite validation is claimed."
+  ],
+  "coordinator_owned_delivery_docs": "Unchanged; integration updates remain with coordinator.",
+  "central_inert_patch_applied": false,
+  "format_2_activated": false,
+  "paired_factory_enabled": false
+}

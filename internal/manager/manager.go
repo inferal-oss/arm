@@ -162,6 +162,11 @@ func openWithLeaseClock(home string, capacity model.Resources, clockRead func() 
 	if e != nil {
 		return nil, e
 	}
+	if !fresh {
+		if e = database.CheckWorkspaceFormatFile(context.Background(), home); e != nil {
+			return nil, e
+		}
+	}
 	db, e := sql.Open("sqlite", filepath.Join(home, "state.db"))
 	if e != nil {
 		return nil, e

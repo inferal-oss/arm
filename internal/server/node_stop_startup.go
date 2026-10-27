@@ -98,6 +98,9 @@ func applyNodeStopRestartWithin(ctx context.Context, home string, expected nodes
 		return err
 	}
 	defer tx.Rollback()
+	if err = database.CheckWorkspaceFormat(ctx, tx); err != nil {
+		return err
+	}
 	current, present, err := nodestop.ReadState(tx)
 	if err != nil || !present {
 		return fmt.Errorf("stopped intent unavailable: %w", err)
