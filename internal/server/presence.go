@@ -17,8 +17,8 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/presence"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/presence"
 )
 
 const peerPollLimit = 32

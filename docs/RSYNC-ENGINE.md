@@ -2,7 +2,7 @@
 
 `internal/rsyncengine.Run` performs one standard protocol-27 exchange over an already authenticated caller-owned duplex stream. The four roles cover Go or system-rsync peers acting as client/server and sender/receiver. This is an internal staging component, not a public `arm sync` command, a daemon or an SSH authorization layer.
 
-The local module replacement in `go.mod` uses a source-preserving fork of `gokrazy/rsync` v0.3.8, pinned to commit `7a9e59b40898516def209eb944c49f2ba42d4007`. Its BSD license and upstream source remain under `third_party/rsyncgo`; `ARM-CHANGES.md` identifies the reviewed changes. Normal ARM builds remain CGo-free.
+The main module includes a source-preserving fork of `gokrazy/rsync` v0.3.8, pinned to commit `7a9e59b40898516def209eb944c49f2ba42d4007`. Its BSD license and upstream source remain under `third_party/rsyncgo`; `ARM-CHANGES.md` identifies the reviewed changes and packaging namespace. The fork has no active nested module or local replacement, so versioned ARM installation includes its source. Original module metadata is retained as non-active provenance. Normal ARM builds remain CGo-free.
 
 The fixed option subset transfers recursive directory contents, optionally preserving symlinks, permissions and modification times. It always evaluates deltas rather than trusting size/mtime quick checks. Arbitrary flags, ownership, ACLs/xattrs, hardlink topology, sparse layout, compression, special files, filters and rsync deletion are not enabled by this API. ARM's reconciler/publisher owns exclusions and exact removals, rather than handing deletion authority to a wire list.
 

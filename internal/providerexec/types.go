@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/providerproto"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/providerproto"
 )
 
 const HelperArgument = "_provider-worker-helper"

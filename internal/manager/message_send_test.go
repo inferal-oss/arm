@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yrashk/arm/internal/agents"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestReviewedMessageConcurrentRetriesAndReceipts(t *testing.T) {

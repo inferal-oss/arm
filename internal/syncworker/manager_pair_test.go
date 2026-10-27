@@ -14,12 +14,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/sshservice"
-	"github.com/yrashk/arm/internal/syncfs"
-	"github.com/yrashk/arm/internal/syncreconcile"
-	"github.com/yrashk/arm/internal/syncservice"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/sshservice"
+	"github.com/inferal-oss/arm/internal/syncfs"
+	"github.com/inferal-oss/arm/internal/syncreconcile"
+	"github.com/inferal-oss/arm/internal/syncservice"
 	"golang.org/x/crypto/ssh"
 )
 

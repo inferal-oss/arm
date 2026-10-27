@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func deadlineAfter(d time.Duration) *time.Time { at := time.Now().UTC().Add(d); return &at }

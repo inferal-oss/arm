@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/yrashk/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/agents"
 )
 
 func reviewedAgentRequest(source, target agents.Contact, key string) AgentMessageRequest {

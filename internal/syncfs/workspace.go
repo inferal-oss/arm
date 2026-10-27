@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yrashk/arm/internal/syncreconcile"
+	"github.com/inferal-oss/arm/internal/syncreconcile"
 	"golang.org/x/sys/unix"
 )
 
@@ -183,6 +183,9 @@ func CreateWorkspace(receiver, parent *Root, v Reservation) (*Workspace, error) 
 		if e = unix.Fsync(fd); e != nil {
 			return w, e
 		}
+	}
+	if e = writeWorkspaceMarker(receiver, w); e != nil {
+		return w, e
 	}
 	return w, nil
 }

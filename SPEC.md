@@ -419,6 +419,9 @@ Coordinate heavy work with the shared script in ~/Projects/semblance and share
 actual rendered screenshots regularly. This browser migration does not replace
 the native Charm terminal dashboard. The separately requested public project site
 also uses Semblance and lives on main alongside the ARM source.
+For that public site, the later operator instruction selects stock Semblance
+with the system color scheme by default. This supersedes its initial Terminal
+theme choice; the product dashboard's Terminal default remains unchanged.
 
 Both interfaces are first-class local clients with the same operational scope. The TUI is inspired by btop's dense, responsive resource view, adapted to ARM's leases, ownership, and policy. Terminal layout can differ from the browser, but viewing or changing a lease must not require switching interfaces.
 
@@ -454,6 +457,13 @@ Destructive actions show their concrete scope and consequences before execution,
 The web dashboard supports the same numbered view shortcuts as the terminal dashboard:1 Monitor,2 Resources,3 Leases,4 Messages,5 Activity and6 Host. Navigation follows ordinary URL history and performs no mutation. Do not intercept typing, editable controls, composition, browser modifier shortcuts or modal/review interactions.
 
 ## Installation and safe uninstallation
+
+The October 26 operator instruction requires every tagged version to publish
+macOS/Linux amd64/arm64 binary releases with all supported companion carriers
+built in. Native and companion payloads must report the exact tag, preserve
+source and checksum provenance, and pass distribution checks before publication.
+Release workflows must not invent a version or create tags without authorization.
+
 
 ### Installation
 

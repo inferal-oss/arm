@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestReviewRemoveMissingPressureSchemaHumanAndJSONAreReadOnly(t *testing.T) {

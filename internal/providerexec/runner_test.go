@@ -3,7 +3,7 @@ package providerexec
 import (
 	"context"
 	"fmt"
-	"github.com/yrashk/arm/internal/providerproto"
+	"github.com/inferal-oss/arm/internal/providerproto"
 	"os"
 	"path/filepath"
 	"testing"

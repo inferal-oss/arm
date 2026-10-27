@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Lineage and claim bindings are separate durable evidence. A current mutable

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	api "github.com/yrashk/arm/internal/workspaceapi"
+	"github.com/inferal-oss/arm/internal/model"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
 )
 
 func workspaceMessageAction(s string) bool {

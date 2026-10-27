@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/rsyncchecksum"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
 	"github.com/mmcloughlin/md4"
 )
 

@@ -13,10 +13,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/gokrazy/rsync"
-	"github.com/gokrazy/rsync/internal/rsyncchecksum"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncwire"
+	"github.com/inferal-oss/arm/third_party/rsyncgo"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 )
 
 type file struct {
@@ -440,7 +440,7 @@ func (st *Transfer) SendFileList(localDir string, paths []string, excl *filterRu
 		strip := getStrip(requested)
 		// st.Logger.Printf("root=%q, strip=%q", root, strip)
 		if st.Opts.DebugGTE(rsyncopts.DEBUG_FLIST, 1) {
-			st.Logger.Printf("  fs.Walk(%q, %q), strip=%q", local, requested)
+			st.Logger.Printf("  fs.Walk(%q, %q), strip=%q", local, requested, strip)
 		}
 
 		sw := &scopedWalker{

@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/nodestop"
-	"github.com/yrashk/arm/internal/syncservice"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/syncservice"
 )
 
 func TestSyncSchemaInstalledDurablyAndReopenProvesIt(t *testing.T) {

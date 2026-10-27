@@ -81,7 +81,7 @@ func TestCreatePodIsPrivateAndKeyed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if created.Labels[KeyLabel] != plan.Review.Key[:32] || created.Annotations[KeyAnnotation] != plan.Review.Key || created.Annotations[PlanAnnotation] != plan.SHA256 || created.Spec.NodeName != "" || selectedNode(created.Spec) != "worker-a" || created.Spec.AutomountServiceAccountToken == nil || *created.Spec.AutomountServiceAccountToken || created.Spec.HostNetwork || created.Spec.Containers[0].SecurityContext.Privileged != nil || !*created.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem {
+	if created.Labels[KeyLabel] != plan.Review.Key[:32] || created.Annotations[KeyAnnotation] != plan.Review.Key || created.Annotations[PlanAnnotation] != plan.SHA256 || created.Spec.NodeName != "" || selectedNode(created.Spec) != "worker-a" || !safeReviewedTolerations(created.Spec.Tolerations) || created.Spec.AutomountServiceAccountToken == nil || *created.Spec.AutomountServiceAccountToken || created.Spec.HostNetwork || created.Spec.Containers[0].SecurityContext.Privileged != nil || !*created.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem {
 		t.Fatalf("unsafe Pod: %+v", created.Spec)
 	}
 	bootstrap := created.Spec.Containers[0].Command[2]
@@ -100,6 +100,41 @@ func TestCreatePodIsPrivateAndKeyed(t *testing.T) {
 	}
 	if count != 1 {
 		t.Fatalf("create calls: %d", count)
+	}
+}
+
+func TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod(t *testing.T) {
+	p, plan, client := fixture(t)
+	if _, err := p.Apply(t.Context(), plan); err != nil {
+		t.Fatal(err)
+	}
+	created, err := client.CoreV1().Pods("default").Get(t.Context(), "arm-node-one", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		name   string
+		mutate func(*corev1.Pod)
+	}{
+		{"missing affinity", func(pod *corev1.Pod) { pod.Spec.Affinity = nil }},
+		{"missing node affinity", func(pod *corev1.Pod) { pod.Spec.Affinity.NodeAffinity = nil }},
+		{"injected toleration", func(pod *corev1.Pod) {
+			pod.Spec.Tolerations = append(pod.Spec.Tolerations, corev1.Toleration{Key: "unreviewed", Operator: corev1.TolerationOpExists})
+		}},
+		{"changed toleration", func(pod *corev1.Pod) { seconds := int64(301); pod.Spec.Tolerations[0].TolerationSeconds = &seconds }},
+		{"injected image credential", func(pod *corev1.Pod) { pod.Spec.ImagePullSecrets = []corev1.LocalObjectReference{{Name: "unreviewed"}} }},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			mutated := created.DeepCopy()
+			test.mutate(mutated)
+			if err := client.Tracker().Update(corev1.SchemeGroupVersion.WithResource("pods"), mutated, "default"); err != nil {
+				t.Fatal(err)
+			}
+			observed, err := p.Lookup(t.Context(), plan.Review.Key)
+			if !errors.Is(err, ErrIdentity) || observed.Pod == nil || observed.Pod.UID != "pod-uid" {
+				t.Fatalf("unsafe original-key lookup: %+v, %v", observed, err)
+			}
+		})
 	}
 }
 

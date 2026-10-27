@@ -9,8 +9,8 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Remote summary is deliberately NOT model.Status. The peer supplies a narrow

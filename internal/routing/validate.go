@@ -5,9 +5,9 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/published"
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/published"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 func known(v string, values ...string) bool {

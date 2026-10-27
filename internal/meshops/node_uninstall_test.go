@@ -2,9 +2,9 @@ package meshops
 
 import (
 	"encoding/json"
-	"github.com/yrashk/arm/internal/buildinfo"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/meshssh"
+	"github.com/inferal-oss/arm/internal/buildinfo"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/meshssh"
 	"os"
 	"path/filepath"
 	"runtime"

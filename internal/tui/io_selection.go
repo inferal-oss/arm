@@ -4,7 +4,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // All tracks newly reported IDs; a custom set never silently broadens. Missing

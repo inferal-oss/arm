@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/cargoprofile"
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/cargoprofile"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Only this test binary uses an init trampoline; production's fixed hidden

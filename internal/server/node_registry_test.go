@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func registryPair(t *testing.T, leftGrant, rightGrant mesh.Grant) (*Server, *Server, *mesh.Store, *mesh.Store) {

@@ -16,8 +16,8 @@ import (
 	"unicode"
 
 	"github.com/mattn/go-isatty"
-	"github.com/yrashk/arm/internal/install"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/install"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func terminal(v any) bool {

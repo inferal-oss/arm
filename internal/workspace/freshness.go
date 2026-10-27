@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 func snapshotHash(v Snapshot) string { v.Hash = ""; return hash(v) }

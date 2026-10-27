@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Controlled admission evidence. Native accuracy is tested independently in

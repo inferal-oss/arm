@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Linux /proc task CPU counters can be adjusted to scheduler runtime while

@@ -9,8 +9,8 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/yrashk/arm/internal/companions"
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/companions"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 func TestKubernetesCatalogProofVerifiesAllPayloadStreams(t *testing.T) {

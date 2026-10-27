@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestMonitorStreamMultiplexesAndResumesWithoutAuditTraffic(t *testing.T) {

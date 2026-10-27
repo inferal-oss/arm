@@ -31,7 +31,7 @@ func epochTime() time.Time { return time.Unix(0, 0).UTC() }
 var platforms = [][2]string{{"darwin", "amd64"}, {"darwin", "arm64"}, {"linux", "amd64"}, {"linux", "arm64"}}
 var versionRE = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,95}$`)
 
-const identityPackage = "github.com/yrashk/arm/internal/buildinfo"
+const identityPackage = "github.com/inferal-oss/arm/internal/buildinfo"
 
 // Every payload and carrier binds its executable identity to the same catalog.
 func identityFlags(version string, protocol int) string {
@@ -170,7 +170,7 @@ func inspect(path, name, goos, arch, flags string) (Artifact, error) {
 	if e != nil {
 		return a, e
 	}
-	if info.Path != "github.com/yrashk/arm/cmd/arm" {
+	if info.Path != "github.com/inferal-oss/arm/cmd/arm" {
 		return a, fmt.Errorf("unexpected executable module")
 	}
 	settings := map[string]string{}

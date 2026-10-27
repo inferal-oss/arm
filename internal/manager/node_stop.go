@@ -9,8 +9,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 func (m *Manager) ConfigureNodeStop(boundary *nodestop.Boundary) error {

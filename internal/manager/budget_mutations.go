@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // MutateBudget is native same-user coordination. No caller chooses the owner,

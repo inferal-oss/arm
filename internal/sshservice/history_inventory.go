@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yrashk/arm/internal/historypack"
+	"github.com/inferal-oss/arm/internal/historypack"
 	"golang.org/x/sys/unix"
 )
 

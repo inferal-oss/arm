@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func (s *Server) requestShutdown(request model.ShutdownRequest) (model.ShutdownReport, error) {

@@ -13,13 +13,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gokrazy/rsync/internal/anonssh"
-	"github.com/gokrazy/rsync/internal/restrict"
-	"github.com/gokrazy/rsync/internal/rsyncdconfig"
-	"github.com/gokrazy/rsync/internal/rsyncopts"
-	"github.com/gokrazy/rsync/internal/rsyncos"
-	"github.com/gokrazy/rsync/internal/rsyncstats"
-	"github.com/gokrazy/rsync/rsyncd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/anonssh"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/restrict"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncstats"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 
 	// For profiling and debugging
 	_ "net/http/pprof"

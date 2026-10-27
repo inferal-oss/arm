@@ -1,0 +1,2187 @@
+{
+  "baseline": {
+    "commit": "49e2c789874822eada23b5fc26f0607859aea865",
+    "full_rosters_for_both_platforms": {
+      "fork-tests": {
+        "build-fail": [],
+        "fail": [],
+        "pass": [
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": "TestSumHeadPeerBounds"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": "TestSumHeadPeerBounds/block"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": "TestSumHeadPeerBounds/count"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": "TestSumHeadPeerBounds/negative_count"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": "TestSumHeadPeerBounds/zero_block"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/errors",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/errors",
+            "test": "TestErrors"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/errors",
+            "test": "TestNoReadPermission"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/errors",
+            "test": "TestNoSuchModule"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/flist",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/flist",
+            "test": "TestLargeFileList"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": "TestMapFS"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": "TestMapFSErrors"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": "TestMapFSLargeFile"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": "TestMapFSSingleFile"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": "TestMapFSSubdirNested"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": "TestMapFSSubdirNestedNoSlash"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInterop"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropRemoteCommand"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropRemoteDaemon"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropRemoteDaemonSSH"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropRemoteDaemonSSH/Anon"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropRemoteDaemonSSH/AuthorizedFail"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropRemoteDaemonSSH/AuthorizedPass"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSingleFile"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSingleFileNoSlash"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSubdir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSubdirExclude"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSubdirExcludeGokrazy"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSubdirExcludeMultipleNested"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestInteropSubdirNested"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestModuleContentsListingDirs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestModuleListingClient"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestModuleListingClientPort"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestModuleListingServer"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestRsyncVersion"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": "TestTridgeRsyncVersion"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/ipacl",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/ipacl",
+            "test": "TestIPACL"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/ipacl",
+            "test": "TestIPACL/10.0.0.1"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/ipacl",
+            "test": "TestIPACL/192.168.1.1"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/ipacl",
+            "test": "TestIPACL/2001:db8::1234"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverDelete"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSync"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncHardLinks"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncSubdir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncSubdir/nested_subdir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncSubdir/simple_subdir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncSubdirTraversal"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncSubdirTraversal/nested_subdir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestDaemonReceiverSyncSubdirTraversal/simple_subdir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiver"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverAlwaysChecksum"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverCommand"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverListing"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverNoPermissions"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverReadOnlyDir"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverSSH"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverSymlinkTraversal"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverSync"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverSyncDelete"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": "TestReceiverSyncPartial"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestReceiverCommandDryRun"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSender"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderBothLocal"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderBothLocalFile"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderBothLocalHang"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderNamedFileParentUnreadable"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderNamedSourceParentUnreadable"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderNoSlash"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderPartial257K"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderRelative"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": "TestSenderTraversal"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sync",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sync",
+            "test": "TestSyncExtended"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sync",
+            "test": "TestSyncMultipleSources"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/log",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/localhost:"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/localhost:/path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/localhost::path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/localhost:path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/localhost:path#01"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/rsync://localhost"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/rsync://localhost/path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/rsync://user@localhost/path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/user@[2001:db8::1]:path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/user@localhost::path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestCheckForHostspec/user@localhost:path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost/path,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost:,_url=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost:/path,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost:881,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost:881/path,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost::path,_url=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=localhost:path,_url=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=user@[2001:db8::1]:23/path,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=user@localhost/path,_url=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": "TestParseHostspec/src=user@localhost::path,_url=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress",
+            "test": "TestProgress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCaseCollisionRejectedBeforeTransfer"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile/bad_hash"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile/bad_range"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile/oversize_literal"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestLiteralTokenBound"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries/../outside"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries//absolute"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries/a/../b"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries/a//b"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-1/prefix=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-1/prefix=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-2147483648/prefix=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-2147483648/prefix=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum",
+            "test": "TestSyncExtended"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig",
+            "test": "TestConfig"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--backup-dir=/tmp/backups"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--checksum-seed_2342"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--debug=del2,acl"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--delete-missing-args"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--ignore-missing-args"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--ignore-missing-args_--delete-missing-args"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--info=name2"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/--no-motd"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-P"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-T/tmp"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-T=/tmp"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-T_/tmp"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-a"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-rtO_--delete"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArguments/-vvv"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArgumentsError"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArgumentsError/--delete=thoroughly"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArgumentsError/--does-not-exist"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArgumentsError/-Q"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArgumentsRemaining"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": "TestParseArgumentsRemaining/-aH_-e_./rsync.test_localhost:/tmp/src/_/tmp/dst"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestDeltaRechecksSourceSizeBeforeWireOrRead"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestDeltaRechecksSourceSizeBeforeWireOrRead/-1"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestDeltaRechecksSourceSizeBeforeWireOrRead/68719476737"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestMapFileRejectsNoProgress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested="
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested=/"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested=tr/"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested=tr/man5"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileFinalBytesAndZeroProgress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileFinalBytesAndZeroProgress/final-bytes-with-EOF"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileFinalBytesAndZeroProgress/zero-progress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileWireFailureRetainsOriginalReadOwner"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient",
+            "test": "TestClientCommand"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient",
+            "test": "TestClientServerCommand"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient",
+            "test": "TestClientServerCommandSender"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient",
+            "test": "TestClientServerModule"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestCancellationJoins"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestHelperGoServer"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncClientInterop"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncClientInterop/pull"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncClientInterop/push"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncServerInterop"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncServerInterop/pull"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncServerInterop/push"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestPushPullAndDelta"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestPushPullAndDelta/pull"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestPushPullAndDelta/push"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestRootSymlinkRejected"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestStagingSymlinkCannotRedirectWrites"
+          }
+        ],
+        "skip": [
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/cmd/gokr-rsync",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/cmd/gokr-rsyncd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/anonssh",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/restrict",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynccommon",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncostest",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncstats",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/version",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsynccmd",
+            "test": null
+          }
+        ]
+      },
+      "full-compile": {
+        "build-fail": [],
+        "fail": [],
+        "pass": [
+          {
+            "package": "github.com/inferal-oss/arm/internal/agents",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/buildinfo",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/cargoprofile",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/certverify",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/cli",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/client",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/database",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/historypack",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/install",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/local",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/manager",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/mesh",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/meshforward",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/meshops",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/meshssh",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/meshsshrelay",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/meshstream",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/model",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/nodestop",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/observe",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/ports",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/presence",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/pressure",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/providerexec",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/providerproto",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/routeproto",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/routing",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/rsyncengine",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/sshservice",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/storage",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/syncfs",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/syncreconcile",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/syncservice",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/syncworker",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/tui",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/usage",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/workspace",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/workspacegraph",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/workspaceroute",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/workspacetransport",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/knowledge",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/fixtures/mesh-reconnect-sshd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/errors",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/flist",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/fsfs",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/interop",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/ipacl",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/receiver",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sender",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/integration/sync",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/log",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/maincmd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncchecksum",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncopts",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncclient",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": null
+          }
+        ],
+        "skip": [
+          {
+            "package": "github.com/inferal-oss/arm/cmd/arm",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/published",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/workspaceapi",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/check-knowledge",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/node-registry-probe",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/wsbridge",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/cmd/gokr-rsync",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/cmd/gokr-rsyncd",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/anonssh",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/restrict",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynccommon",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncos",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncostest",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncstats",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/version",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsynccmd",
+            "test": null
+          }
+        ]
+      },
+      "scoped-race": {
+        "build-fail": [],
+        "fail": [],
+        "pass": [
+          {
+            "package": "github.com/inferal-oss/arm/internal/buildinfo",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/buildinfo",
+            "test": "TestBundleTagChecksCompiledVersionAndProtocol"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestAllFourCompanionsStreamWithBoundedIntegrityAndImmutableMetadata"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestCorruptTruncatedAndConcatenatedPayloadsRefused"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestCorruptTruncatedAndConcatenatedPayloadsRefused/concatenated"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestCorruptTruncatedAndConcatenatedPayloadsRefused/corrupt"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestCorruptTruncatedAndConcatenatedPayloadsRefused/plaintext-digest"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestCorruptTruncatedAndConcatenatedPayloadsRefused/plaintext-size"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestCorruptTruncatedAndConcatenatedPayloadsRefused/truncated"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestFramesPreserveExactCanonicalCompressedPayloads"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestManifestAliasesPathsVersionProtocolAndSizeFailClosed"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestManifestAliasesPathsVersionProtocolAndSizeFailClosed/alias"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestManifestAliasesPathsVersionProtocolAndSizeFailClosed/path"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestManifestAliasesPathsVersionProtocolAndSizeFailClosed/protocol"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestManifestAliasesPathsVersionProtocolAndSizeFailClosed/size"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestManifestAliasesPathsVersionProtocolAndSizeFailClosed/version"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/companions",
+            "test": "TestThinHasNoEmbeddedCatalog"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers/../outside"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers//absolute"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers/root/../../outside"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers/root//duplicate"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers/root/\\windows"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestBundleArchiveRejectsUnsafePathsLinksAndExtraMembers/root/symlink"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierSelectedTargetMatchesActualGoExecutableMetadata"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierSourceSnapshotExcludesGeneratedAssetsAndPreservesCaller"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetDefaultsNativeAndAcceptsSupportedPairs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput/-arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput/LINUX-arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput/darwin-riscv64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput/linux-"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput/linux/escape-arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestCarrierTargetValidationPrecedesSourceCompilerAndOutput/windows-amd64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestConcurrentBuildLogsSerializeWrites"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestInstallableModuleIncludesAuditedFork"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestLauncherPreservesCallerDirectoryArgumentsAndExitStatus"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestLauncherPreservesCallerDirectoryArgumentsAndExitStatus/darwin-amd64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestLauncherPreservesCallerDirectoryArgumentsAndExitStatus/darwin-arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestLauncherPreservesCallerDirectoryArgumentsAndExitStatus/linux-amd64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestLauncherPreservesCallerDirectoryArgumentsAndExitStatus/linux-arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestLauncherUnsupportedPlatformFailsExplicitly"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestParallelPayloadFailureCancelsAndWaitsForSiblings"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestParallelPayloadsBoundAndOrderedResults"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestParallelPayloadsCancelledBeforeStart"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestPayloadBudgetAndEnvironment"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestVersionCannotSelectArchivePathOrShellSyntax"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/rsyncengine",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/rsyncengine",
+            "test": "TestRunStagesStandardRsyncExchange"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetFlagsRejectArchiveAndVerifyWithoutEffects"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetFlagsRejectArchiveAndVerifyWithoutEffects/--carrier-os="
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetFlagsRejectArchiveAndVerifyWithoutEffects/--carrier-os=linux_--carrier-arch=arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetFlagsRejectArchiveAndVerifyWithoutEffects/--carrier_--verify=missing.tar.gz"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetFlagsRejectArchiveAndVerifyWithoutEffects/--carrier_--verify=missing.tar.gz_--carrier-os=linux_--carrier-arch=arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetFlagsRejectArchiveAndVerifyWithoutEffects/--verify=missing.tar.gz_--carrier-os=linux_--carrier-arch=arm64"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/scripts/build-bundle",
+            "test": "TestCarrierTargetPairAndPlatformRejectedBeforeCompiler"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCaseCollisionRejectedBeforeTransfer"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile/bad_hash"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile/bad_range"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestCorruptAndRangeTokensRetainOldFile/oversize_literal"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestLiteralTokenBound"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries/../outside"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries//absolute"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries/a/../b"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestMalformedFileEntries/a//b"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-1/prefix=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-1/prefix=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-2147483648/prefix=false"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver",
+            "test": "TestNegativeLongNameLengthRefusedBeforeAllocation/length=-2147483648/prefix=true"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestDeltaRechecksSourceSizeBeforeWireOrRead"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestDeltaRechecksSourceSizeBeforeWireOrRead/-1"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestDeltaRechecksSourceSizeBeforeWireOrRead/68719476737"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestMapFileRejectsNoProgress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested="
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested=/"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested=tr/"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestPath/requested=tr/man5"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileFinalBytesAndZeroProgress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileFinalBytesAndZeroProgress/final-bytes-with-EOF"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileFinalBytesAndZeroProgress/zero-progress"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender",
+            "test": "TestSendFileWireFailureRetainsOriginalReadOwner"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestCancellationJoins"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestHelperGoServer"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncClientInterop"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncClientInterop/pull"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncClientInterop/push"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncServerInterop"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncServerInterop/pull"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestInstalledRsyncServerInterop/push"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestPushPullAndDelta"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestPushPullAndDelta/pull"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestPushPullAndDelta/push"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestRootSymlinkRejected"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream",
+            "test": "TestStagingSymlinkCannotRedirectWrites"
+          }
+        ],
+        "skip": []
+      },
+      "trimpath-layout": {
+        "build-fail": [],
+        "fail": [],
+        "pass": [
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/distribution",
+            "test": "TestInstallableModuleIncludesAuditedFork"
+          }
+        ],
+        "skip": []
+      }
+    },
+    "platforms": {
+      "module-source-macos-15": {
+        "command_count": 18,
+        "commands": [
+          {
+            "exit": 0,
+            "name": "source-commit",
+            "seconds": 0.026
+          },
+          {
+            "exit": 0,
+            "name": "source-tree",
+            "seconds": 0.026
+          },
+          {
+            "exit": 0,
+            "name": "source-status",
+            "seconds": 0.301
+          },
+          {
+            "exit": 0,
+            "name": "toolchain",
+            "seconds": 0.02
+          },
+          {
+            "exit": 0,
+            "name": "module-tidy",
+            "seconds": 16.933
+          },
+          {
+            "exit": 0,
+            "name": "module-verify",
+            "seconds": 7.991
+          },
+          {
+            "exit": 0,
+            "name": "full-compile",
+            "seconds": 313.415
+          },
+          {
+            "exit": 0,
+            "name": "scoped-race",
+            "seconds": 81.389
+          },
+          {
+            "exit": 0,
+            "name": "fork-tests",
+            "seconds": 15.538
+          },
+          {
+            "exit": 0,
+            "name": "scoped-vet",
+            "seconds": 8.263
+          },
+          {
+            "exit": 0,
+            "name": "trimpath-layout",
+            "seconds": 23.995
+          },
+          {
+            "exit": 0,
+            "name": "rsync-version",
+            "seconds": 0.029
+          },
+          {
+            "exit": 0,
+            "name": "native-build",
+            "seconds": 25.117
+          },
+          {
+            "exit": 0,
+            "name": "linux-arm64-build",
+            "seconds": 183.625
+          },
+          {
+            "exit": 0,
+            "name": "dependencies",
+            "seconds": 3.365
+          },
+          {
+            "exit": 0,
+            "name": "final-source-status",
+            "seconds": 0.027
+          },
+          {
+            "exit": 0,
+            "name": "module-native-buildinfo",
+            "seconds": 0.041
+          },
+          {
+            "exit": 0,
+            "name": "module-linux-arm64-buildinfo",
+            "seconds": 0.028
+          }
+        ],
+        "rosters_sha256": "ba8c38fe1a7fc306db2b3ad9bded081dc2f5b77d4948d6a444dd061a41008dbf",
+        "rsync": "rsync  version 3.5.0  protocol version 32",
+        "source_manifest_entries": 1838,
+        "source_manifest_sha256": "bb47ee60caaf81b4c011c0bd3ade3e10dd2b7cf90091497899926266e0bd6ac1",
+        "toolchain": "go version go1.27.3 darwin/arm64",
+        "verified_cross_cgo_free_target": "linux/arm64",
+        "verified_native_cgo_free_target": "darwin/arm64"
+      },
+      "module-source-ubuntu-24.04": {
+        "command_count": 18,
+        "commands": [
+          {
+            "exit": 0,
+            "name": "source-commit",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "source-tree",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "source-status",
+            "seconds": 0.064
+          },
+          {
+            "exit": 0,
+            "name": "toolchain",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "module-tidy",
+            "seconds": 8.584
+          },
+          {
+            "exit": 0,
+            "name": "module-verify",
+            "seconds": 3.171
+          },
+          {
+            "exit": 0,
+            "name": "full-compile",
+            "seconds": 342.767
+          },
+          {
+            "exit": 0,
+            "name": "scoped-race",
+            "seconds": 75.551
+          },
+          {
+            "exit": 0,
+            "name": "fork-tests",
+            "seconds": 10.689
+          },
+          {
+            "exit": 0,
+            "name": "scoped-vet",
+            "seconds": 6.579
+          },
+          {
+            "exit": 0,
+            "name": "trimpath-layout",
+            "seconds": 22.92
+          },
+          {
+            "exit": 0,
+            "name": "rsync-version",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "native-build",
+            "seconds": 126.534
+          },
+          {
+            "exit": 0,
+            "name": "linux-arm64-build",
+            "seconds": 179.111
+          },
+          {
+            "exit": 0,
+            "name": "dependencies",
+            "seconds": 0.565
+          },
+          {
+            "exit": 0,
+            "name": "final-source-status",
+            "seconds": 0.008
+          },
+          {
+            "exit": 0,
+            "name": "module-native-buildinfo",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "module-linux-arm64-buildinfo",
+            "seconds": 0.004
+          }
+        ],
+        "rosters_sha256": "ba8c38fe1a7fc306db2b3ad9bded081dc2f5b77d4948d6a444dd061a41008dbf",
+        "rsync": "rsync  version 3.2.7  protocol version 31",
+        "source_manifest_entries": 1838,
+        "source_manifest_sha256": "bb47ee60caaf81b4c011c0bd3ade3e10dd2b7cf90091497899926266e0bd6ac1",
+        "toolchain": "go version go1.27.3 linux/amd64",
+        "verified_cross_cgo_free_target": "linux/arm64",
+        "verified_native_cgo_free_target": "linux/amd64"
+      }
+    },
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40424167014",
+    "tree": "905eee10115eb60ecb36e8c30799d934fe827826"
+  },
+  "final": {
+    "artifacts": [
+      {
+        "digest": "sha256:062a7b5db8a1f3ebfa52f9483acf5c1fa7be87e849bfd74c8e5c4c1d437f94ba",
+        "expires_at": "2026-11-03T00:31:53Z",
+        "id": 12700286670,
+        "name": "module-source-macos-15",
+        "size_in_bytes": 96842
+      },
+      {
+        "digest": "sha256:be831e9aaf39015add6e6aacaa042ff117be70e6ca3a56f8ccf5a3f7ad7e345d",
+        "expires_at": "2026-11-03T00:31:32Z",
+        "id": 12699902745,
+        "name": "module-public-install",
+        "size_in_bytes": 105386
+      },
+      {
+        "digest": "sha256:2a890a206ffe6f89a011f53f50a21fa4e560d3d61555b59604a88c6b0648cf2d",
+        "expires_at": "2026-11-03T00:31:47Z",
+        "id": 12699633869,
+        "name": "module-source-ubuntu-24.04",
+        "size_in_bytes": 96961
+      }
+    ],
+    "asset_platforms": {
+      "module-source-macos-15": {
+        "command_count": 6,
+        "commands": [
+          {
+            "exit": 0,
+            "name": "source-commit",
+            "seconds": 0.032
+          },
+          {
+            "exit": 0,
+            "name": "source-tree",
+            "seconds": 0.012
+          },
+          {
+            "exit": 0,
+            "name": "source-status",
+            "seconds": 0.367
+          },
+          {
+            "exit": 0,
+            "name": "toolchain",
+            "seconds": 0.017
+          },
+          {
+            "exit": 0,
+            "name": "browser-asset-closure",
+            "seconds": 223.316
+          },
+          {
+            "exit": 0,
+            "name": "final-source-status",
+            "seconds": 0.108
+          }
+        ],
+        "rosters_sha256": "1f8add08224cdfdf326f81c39cdda9abb5d7ac7a55b683a5b7e6b43724699ded",
+        "source_manifest_entries": 1839,
+        "source_manifest_sha256": "84d52b6c00696ace8e481862ddb5ccd3deb33bc8083e9191073203651be2f3e9",
+        "toolchain": "go version go1.27.3 darwin/arm64"
+      },
+      "module-source-ubuntu-24.04": {
+        "command_count": 6,
+        "commands": [
+          {
+            "exit": 0,
+            "name": "source-commit",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "source-tree",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "source-status",
+            "seconds": 0.064
+          },
+          {
+            "exit": 0,
+            "name": "toolchain",
+            "seconds": 0.004
+          },
+          {
+            "exit": 0,
+            "name": "browser-asset-closure",
+            "seconds": 227.797
+          },
+          {
+            "exit": 0,
+            "name": "final-source-status",
+            "seconds": 0.008
+          }
+        ],
+        "rosters_sha256": "1f8add08224cdfdf326f81c39cdda9abb5d7ac7a55b683a5b7e6b43724699ded",
+        "source_manifest_entries": 1839,
+        "source_manifest_sha256": "84d52b6c00696ace8e481862ddb5ccd3deb33bc8083e9191073203651be2f3e9",
+        "toolchain": "go version go1.27.3 linux/amd64"
+      }
+    },
+    "commit": "3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0",
+    "full_asset_rosters_for_both_platforms": {
+      "browser-asset-closure": {
+        "build-fail": [],
+        "fail": [],
+        "pass": [
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": null
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//ard/LICENSE.txt"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//ard/ard-patch.js"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//kube-inventory.mjs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//monitor-capacity.mjs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//novnc/core/rfb.js"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/LICENSE"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/deflate.js"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//novnc/deps/pako/lib/zlib/inflate.js"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//peer-poll.mjs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//screen-clipboard.mjs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//screen-mode.mjs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenAssetsPreserveComposedDashboardModules//screen-viewer.mjs"
+          },
+          {
+            "package": "github.com/inferal-oss/arm/internal/server",
+            "test": "TestScreenEmbeddedAssetsSurviveModuleZipLayout"
+          }
+        ],
+        "skip": []
+      }
+    },
+    "public_install": {
+      "binary": {
+        "bytes": 68552075,
+        "sha256": "38f6e6dc8356c3bffe1cd1f1f82df1e33d7a9465753eb3b763fce444c0da13f3"
+      },
+      "cleanup": {
+        "disposable_root_removed": true,
+        "user_install_or_backend_modified": false
+      },
+      "command_count": 11,
+      "commands": [
+        {
+          "exit": 0,
+          "name": "source-commit",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "source-tree",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "source-status",
+          "seconds": 0.064
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "public-environment",
+          "seconds": 0.008
+        },
+        {
+          "exit": 0,
+          "name": "public-query",
+          "seconds": 13.551
+        },
+        {
+          "exit": 0,
+          "name": "public-install",
+          "seconds": 193.733
+        },
+        {
+          "exit": 0,
+          "name": "installed-buildinfo",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "installed-version",
+          "seconds": 0.016
+        },
+        {
+          "exit": 0,
+          "name": "installed-help",
+          "seconds": 0.016
+        },
+        {
+          "exit": 0,
+          "name": "installed-empty-catalog",
+          "seconds": 0.016
+        }
+      ],
+      "empty_catalog": [],
+      "environment": {
+        "CGO_ENABLED": "1",
+        "GO111MODULE": "on",
+        "GOINSECURE": "",
+        "GOPROXY": "https://proxy.golang.org",
+        "GOSUMDB": "sum.golang.org",
+        "GOTOOLCHAIN": "local",
+        "GOWORK": "off"
+      },
+      "original_install_command": [
+        "/opt/hostedtoolcache/go/1.27.3/x64/bin/go",
+        "install",
+        "github.com/inferal-oss/arm/cmd/arm@3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0"
+      ],
+      "public_source_closure_sha256": {
+        "go.mod": "28bde17862110dcb862b6df7de5f1ce1d3554fe686331429f73c2ba9bba2a951",
+        "go.sum": "25158413557a7e4a3054f760a199fe256c77b989583aee7f0f3c60624ae6f8ce",
+        "internal/server/web/novnc/LICENSE.txt": "3ccd2242d7f5b6c5ae831a486f63cce1f18d8cd11c511f6a7a7251673763b2d1",
+        "internal/server/web/novnc/core/deflator.js": "a9cc9abbab20333b9fc7ee6f7fd268a5ce7d96a2a24d5e6786a0462ed0164538",
+        "internal/server/web/novnc/core/inflator.js": "bd19f16673464db04b0b2d8a47a5c4b744f1256fbff4b7c74afa8f4aeb5a8ae6",
+        "internal/server/web/novnc/deps/pako/LICENSE": "3bc404ffa7888053253eedcc5a667619aa08dc1be0bea400e5ff28c51602180f",
+        "internal/server/web/novnc/deps/pako/README.md": "f78ded7db9ffa4be474ce75020659f165d97adc4276ef5c7fcd698a3aa03e6ce",
+        "internal/server/web/novnc/deps/pako/lib/utils/common.js": "0749bc4661ed186714b90e7f2321c9625a8ce7c680563bfe3ac6df7aa332bf28",
+        "internal/server/web/novnc/deps/pako/lib/zlib/adler32.js": "7412dd3ecc015888b99292f45e4d4ba69abc77f208508c9a1c93e8dfe54ba6cd",
+        "internal/server/web/novnc/deps/pako/lib/zlib/constants.js": "9d2c0dd36349e6eec9d41a37f965b2ff7e7374fbf00fb139e3116d428b551898",
+        "internal/server/web/novnc/deps/pako/lib/zlib/crc32.js": "897fa9eabd2bb239ec632326dbff85bc72cc81d4da80265cde59520db339f405",
+        "internal/server/web/novnc/deps/pako/lib/zlib/deflate.js": "d2a498ad04bb5d1f67ba01696c31a2e88e8b88e4fc6c36c635294d1c445b22c1",
+        "internal/server/web/novnc/deps/pako/lib/zlib/gzheader.js": "9f9b2da72593769fcc97d397ceb771bb11d5b96f202759e2ed014c2be24d40d7",
+        "internal/server/web/novnc/deps/pako/lib/zlib/inffast.js": "ec1e0f7abeec681a0d5e3da46d06f499969cbf265eaaa5e21a135d2a9b878c16",
+        "internal/server/web/novnc/deps/pako/lib/zlib/inflate.js": "321582ddc4023e47aa981a71caed0e1dad8b58f0d9e93a0b0a34fe7e3c45e05f",
+        "internal/server/web/novnc/deps/pako/lib/zlib/inftrees.js": "94780cbdef562bcd0434c7e6f4faca1ff6be6980bf7305a200809d98d419d9c7",
+        "internal/server/web/novnc/deps/pako/lib/zlib/messages.js": "7860a8d3c873c28e4f5f92db9ca3e45006e21b084210d87b8b7775cddccf05ed",
+        "internal/server/web/novnc/deps/pako/lib/zlib/trees.js": "ad9cb5245b9e39edd164234d6ca19febb9dba683f1f99a67af48d62931d91426",
+        "internal/server/web/novnc/deps/pako/lib/zlib/zstream.js": "240917347c379b1ad33b8bf07cc6981557173bc3408f35e9875866a14b9967b2",
+        "third_party/rsyncgo/ARM-CHANGES.md": "b8ae1e9ae1c0e5331b1bc67fb2c9c9efb7585bf75d15e493d2542a7bfa35a32c",
+        "third_party/rsyncgo/LICENSE": "33bcc6a4bea2187b74a9ac5ed747a8f4631aec0d59eec3e6b32557fc9e408cb8",
+        "third_party/rsyncgo/UPSTREAM-go.mod.txt": "fbc8d732380a4a1a3c7d7851e470c791926fb106747cef51be47ba11873cce78",
+        "third_party/rsyncgo/UPSTREAM-go.sum.txt": "ee6d25c07305ab1ee0ee2e39fbc6a7ce7ac70b6af46582151d10218c8ddf13f6",
+        "third_party/rsyncgo/internal/receiver/receiver.go": "b792e85fcf3d56a5d10fb32e355019ea2bb34ef7ab16f9e3b7cba1fae05c7daa",
+        "third_party/rsyncgo/internal/sender/sender.go": "a6168e4b7b503ce0f3564401594744465f8432e5fcd87b39f9d18017b99bb03e",
+        "third_party/rsyncgo/rsyncstream/stream.go": "49339496861c01509e74632f0c82f18befde4a2ab8f5e4857ee25fffb723c790"
+      },
+      "query": {
+        "GoModSum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+        "Origin": {
+          "Hash": "3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0",
+          "URL": "https://github.com/inferal-oss/arm",
+          "VCS": "git"
+        },
+        "Path": "github.com/inferal-oss/arm",
+        "Query": "3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0",
+        "Sum": "h1:QQEEfamfrV3BQ/48E0n32+LF+p6QliXNfl2mI5nCzP0=",
+        "Version": "v0.0.0-20261027002433-3306c6bbac5d"
+      },
+      "rosters_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "source_manifest_entries": 1839,
+      "source_manifest_sha256": "84d52b6c00696ace8e481862ddb5ccd3deb33bc8083e9191073203651be2f3e9",
+      "toolchain": "go version go1.27.3 linux/amd64",
+      "version": {
+        "arch": "amd64",
+        "go": "go1.27.3",
+        "os": "linux",
+        "version": "0.1.0-dev"
+      }
+    },
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40426543555",
+    "tree": "63399b3494e1af83b9282e200cbae5173e3d8680"
+  },
+  "remaining_gates": [
+    "Coordinator integration and exact composed-source boundary checks",
+    "Coordinator main publication after source/history audit",
+    "Literal public latest query/install with new empty disposable caches after main publication"
+  ],
+  "scope_reuse": {
+    "added_inputs": [
+      "internal/server/screen_module_zip_test.go",
+      "internal/server/web/novnc/deps/pako/LICENSE",
+      "internal/server/web/novnc/deps/pako/README.md",
+      "internal/server/web/novnc/deps/pako/lib/utils/common.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/adler32.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/constants.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/crc32.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/deflate.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/gzheader.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/inffast.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/inflate.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/inftrees.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/messages.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/trees.js",
+      "internal/server/web/novnc/deps/pako/lib/zlib/zstream.js"
+    ],
+    "changed_existing_inputs": [
+      ".github/workflows/module-validation.yml",
+      "docs/VALIDATION.md",
+      "internal/server/screen_test.go",
+      "internal/server/web/novnc/core/deflator.js",
+      "internal/server/web/novnc/core/inflator.js",
+      "internal/server/web/novnc/vendor/pako/LICENSE",
+      "internal/server/web/novnc/vendor/pako/README.md",
+      "internal/server/web/novnc/vendor/pako/lib/utils/common.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/adler32.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/constants.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/crc32.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/deflate.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/gzheader.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/inffast.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/inflate.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/inftrees.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/messages.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/trees.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/zstream.js",
+      "scripts/validate-module.py"
+    ],
+    "pako_byte_preserving_relocations": {
+      "internal/server/web/novnc/vendor/pako/LICENSE": "internal/server/web/novnc/deps/pako/LICENSE",
+      "internal/server/web/novnc/vendor/pako/README.md": "internal/server/web/novnc/deps/pako/README.md",
+      "internal/server/web/novnc/vendor/pako/lib/utils/common.js": "internal/server/web/novnc/deps/pako/lib/utils/common.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/adler32.js": "internal/server/web/novnc/deps/pako/lib/zlib/adler32.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/constants.js": "internal/server/web/novnc/deps/pako/lib/zlib/constants.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/crc32.js": "internal/server/web/novnc/deps/pako/lib/zlib/crc32.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/deflate.js": "internal/server/web/novnc/deps/pako/lib/zlib/deflate.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/gzheader.js": "internal/server/web/novnc/deps/pako/lib/zlib/gzheader.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/inffast.js": "internal/server/web/novnc/deps/pako/lib/zlib/inffast.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/inflate.js": "internal/server/web/novnc/deps/pako/lib/zlib/inflate.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/inftrees.js": "internal/server/web/novnc/deps/pako/lib/zlib/inftrees.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/messages.js": "internal/server/web/novnc/deps/pako/lib/zlib/messages.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/trees.js": "internal/server/web/novnc/deps/pako/lib/zlib/trees.js",
+      "internal/server/web/novnc/vendor/pako/lib/zlib/zstream.js": "internal/server/web/novnc/deps/pako/lib/zlib/zstream.js"
+    },
+    "production_Go_module_and_fork_inputs_unchanged": true
+  },
+  "status": "candidate source and immutable public installation accepted; main publication and literal latest remain pending"
+}

@@ -1537,16 +1537,18 @@ Go installation is advertised only after its public installation gate passes.
 
 Cloudflare successfully registered `getarm.org` and `getarm.cloud` for one year,
 with checkout amounts $8.50 and $20.20 ($28.70 total). The human explicitly
-approved keeping automatic renewal enabled. `getarm.org` has a DNS-only apex
-CNAME to `inferal-oss.github.io` and the exact GitHub Pages verification TXT.
-The repository reserves only custom hostname `getarm.org`; the organization's
-existing site configuration is unchanged. The authoritative Cloudflare server
-answers the TXT, but public delegation/GitHub verification is still pending.
-The operator requires DNS-only records. The proxied alternate DNS and zone
-redirect rule were never created. A minimal separate Cloudflare Pages redirect
-source, kept under website/cloud-redirect, is being validated for the alternate's
-DNS-only hostname; its real HTTP path/query/TLS gates remain open. No final public
-DNS, HTTPS, redirect or deployed-site acceptance is claimed yet.
+approved keeping automatic renewal enabled. Both apexes now have four DNS-only
+A records pointing to GitHub Pages (185.199.108.153 through 185.199.111.153).
+The exact getarm.org verification TXT is preserved, and GitHub confirmed that
+hostname's ownership. Public resolver 1.1.1.1 returns all four addresses for both
+names. The repository reserves only custom hostname getarm.org; its certificate
+and actual deployed-site acceptance remain pending.
+
+The human explicitly prohibited new Cloudflare projects and requested direct
+GitHub Pages DNS only. An empty extra redirect project was mistakenly created;
+it was deleted and its absence verified. No files were uploaded or deployed.
+The abandoned redirect source was removed in fb164dd. No Cloudflare hosting,
+proxying, redirect rule or alternate HTTPS behavior is part of the current setup.
 
 ## Tagged release automation candidate
 
@@ -1567,3 +1569,66 @@ runs cannot publish. See [release operation and recovery](../scripts/release/REA
 This remains an unaccepted candidate until independent final-source review and
 actual Go/carrier CI gates complete. No release exists as evidence yet, and the
 workflow does not change agent installation behavior or ordinary Go installation.
+## Canonical source installation and rsync module layout
+
+ARM's module is `github.com/inferal-oss/arm`. The audited rsync fork stays under
+`third_party/rsyncgo` inside that module; it no longer requires a local replace
+or active nested module. Its original upstream module/sum files are retained
+verbatim as `UPSTREAM-go.mod.txt` and `UPSTREAM-go.sum.txt`, alongside unchanged
+license/attribution. Root dependencies include the fork's runtime and test
+requirements. Root `./...` compile/test/vet now includes fork packages; the
+focused `make test-rsync` addresses them with main-module paths.
+
+Versioned Go installation builds a thin native executable. Public immutable
+installation at reviewed candidate `3306c6b` passes using the ordinary Go proxy,
+normal hosted CGo settings and empty disposable caches. The real module ZIP
+retains the audited fork and licensed browser dependencies: noVNC's 14 pako
+files move byte-for-byte from the ZIP-omitted `vendor` directory to `deps`,
+with only the two importers' relative path prefixes changed. New embedded-file
+and HTTP race checks pass on Linux and macOS. The source/module/fork gates on
+`49e2c78` remain valid for their unchanged input-hashed scope; complete rosters
+and exact evidence are in `docs/validation/module-migration-2026-10-26.json`.
+
+Literal `go install github.com/inferal-oss/arm/cmd/arm@latest` acceptance still
+requires coordinator main integration/publication and a new public query/install.
+Carrier packaging remains an explicit source build using `make carrier` /
+`make install`. Existing `arm install` agent-integration behavior is unchanged. A possible future explicit opt-in carrier assembler could reuse
+`internal/distribution.BuildCarrier`, but needs a reviewed source identity,
+installed compatible Go toolchain, bounded CPU/memory/disk and output ownership;
+this migration adds no such command or automatic download/build authority.
+
+
+## Private sync workspace evidence
+
+Private workspace creation writes a bounded durable marker containing the
+original reservation and selected, parent, base, stage and quarantine native
+identities. Inspection reopens held roots and checks those bindings. Read-only
+lookup supports multiple workspaces per reservation, with an 8,192-entry and
+32-match bound. Missing, malformed, replaced or over-limit evidence remains
+unknown. A FIFO marker is refused before a blocking open.
+
+These records provide bounded evidence inside the reserved private namespace.
+They authorize no deletion or release and prove no physical reclamation or
+absence outside that namespace. Public sync allocation, dispatch, cleanup and
+settlement remain separate work.
+
+
+## Kubernetes admission defaults
+
+Reviewed Pod plans explicitly include the two standard not-ready/unreachable
+NoExecute tolerations for 300 seconds. Reads require that exact pair, in either
+order, and reject additions or changed values. Incomplete node affinity returns
+identity failure instead of panicking; injected image-pull credentials are
+refused. This narrow compatibility fix does not establish full carrier shipment
+or authenticated in-Pod readiness and enrollment.
+
+
+## Linux memory headroom across cgroups
+
+Linux admission uses the minimum of host MemAvailable and conservative remaining
+memory.max minus memory.current across complete visible cgroup v2 ancestry. It
+verifies the initial namespace, complete thread membership and stable mounts and
+membership during observation. Hidden, v1, ambiguous, changing or missing scope
+returns unknown admission credit. Finite ancestor limits cap total capacity;
+full existing promises remain charged. Combined host/cgroup headroom reports
+resident usage as unknown because those observations cannot establish it.

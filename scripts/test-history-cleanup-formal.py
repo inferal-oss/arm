@@ -45,7 +45,7 @@ def traces(gate):
     projection.require(before==sources(),'actual Go sources changed');gate.summary['actual_sources']=before
     expected={name}|{name+'/'+s for s in projection.SCENARIOS};ran=[];passed=[];outputs={};packages=0
     for line in log.splitlines():
-        e=projection.parse(line);projection.require(e.get('Package')=='github.com/yrashk/arm/internal/sshservice' and e.get('Action') not in ('fail','skip','build-fail'),'actual Go package/failure')
+        e=projection.parse(line);projection.require(e.get('Package')=='github.com/inferal-oss/arm/internal/sshservice' and e.get('Action') not in ('fail','skip','build-fail'),'actual Go package/failure')
         if 'Test' in e:projection.require(e['Test'] in expected,'foreign actual test')
         if e['Action']=='run':ran.append(e['Test'])
         if e['Action']=='pass':
@@ -108,7 +108,7 @@ def traces(gate):
     resetlog=gate.command([gate.args.go,'test','-p=1','-json','-race','-count=1','-timeout=180s','-run','^('+root+'|'+positive+')$/^op-(committed-partial|committed-all|completed-partial)$','./internal/database'],'independent-reset',env=env,timeout=210)
     ran=[];passed=[];packages=0
     for line in resetlog.splitlines():
-        e=projection.parse(line);projection.require(e.get('Package')=='github.com/yrashk/arm/internal/database' and e.get('Action') not in ('fail','skip','build-fail'),'independent reset package/failure')
+        e=projection.parse(line);projection.require(e.get('Package')=='github.com/inferal-oss/arm/internal/database' and e.get('Action') not in ('fail','skip','build-fail'),'independent reset package/failure')
         if 'Test' in e:projection.require(e['Test'] in selected,'foreign independent reset case')
         if e['Action']=='run':ran.append(e['Test'])
         if e['Action']=='pass':

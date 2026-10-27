@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/syncfs"
-	"github.com/yrashk/arm/internal/syncreconcile"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/syncfs"
+	"github.com/inferal-oss/arm/internal/syncreconcile"
 	_ "modernc.org/sqlite"
 )
 

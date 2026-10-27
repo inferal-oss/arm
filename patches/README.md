@@ -21,6 +21,33 @@ Temporary pointer diagnostics are excluded from both patches.
 
 Independent final composition reproduces both patches with `--fuzz=0` and
 compares every resulting ARD runtime file. The vendored `ard/LICENSE.txt` is
-the pinned upstream repository's root MPL 2.0 license. All noVNC runtime files
-match the 1.7.0 release archive; its AUTHORS file differs only by one removed
-trailing space.
+the pinned upstream repository's root MPL 2.0 license. The noVNC runtime base
+is the 1.7.0 release archive, with these explicit local distribution changes:
+
+- `vendor/pako/` is relocated to `deps/pako/`, preserving all 14 files and their
+  license byte-for-byte. Go module ZIPs omit directories named `vendor`, so the
+  original layout silently lost these browser dependencies in public installs.
+- Only the relative `../vendor/pako/` import prefixes in `core/deflator.js` and
+  `core/inflator.js` become `../deps/pako/`. Compression algorithms are unchanged.
+- AUTHORS retains the existing normalization of one trailing space.
+
+To reproduce the distribution transformation from an extracted noVNC 1.7.0
+runtime tree, run the following inside that copied tree before comparing its
+runtime files with `internal/server/web/novnc/`:
+
+```sh
+mkdir -p deps
+mv vendor/pako deps/pako
+rmdir vendor
+python3 - <<'PYCODE'
+from pathlib import Path
+for name in ('core/deflator.js', 'core/inflator.js'):
+    path = Path(name)
+    path.write_bytes(path.read_bytes().replace(b'../vendor/pako/', b'../deps/pako/'))
+PYCODE
+```
+
+This packaging transform is separate from the two ARD patches above and changes
+neither their application order nor their authentication, decoder, pointer or
+clipboard semantics. The upstream noVNC license text remains unchanged historical
+material; the relocated pako license is at `deps/pako/LICENSE`.

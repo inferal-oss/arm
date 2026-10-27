@@ -14,9 +14,9 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/presence"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/presence"
 )
 
 func peerReviewFixture(t *testing.T) (*Server, *presence.Publication, presence.Candidate) {

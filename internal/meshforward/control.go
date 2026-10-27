@@ -6,7 +6,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/yrashk/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspace"
 )
 
 const maxControl = 2048

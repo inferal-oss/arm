@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/observe"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/observe"
 )
 
 func (s *Server) nodeMetadata() (model.NodeMetadata, error) {

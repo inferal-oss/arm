@@ -7,9 +7,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/observe"
-	"github.com/yrashk/arm/internal/pressure"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/observe"
+	"github.com/inferal-oss/arm/internal/pressure"
 )
 
 // A possible-use bound needs the original owner observed before the native

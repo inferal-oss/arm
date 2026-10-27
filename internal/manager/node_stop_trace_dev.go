@@ -3,8 +3,8 @@
 package manager
 
 import (
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/nodestop"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/nodestop"
 )
 
 // traceNodeStop is always called under the actual Manager.mu, after the real

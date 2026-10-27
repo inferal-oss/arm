@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/database"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/server"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/database"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/server"
 )
 
 func TestNativeDatabaseMaintenanceUsesSeparateReader(t *testing.T) {

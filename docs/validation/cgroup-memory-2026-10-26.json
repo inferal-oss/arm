@@ -1,0 +1,103 @@
+{
+  "reviewed_source": "1f0dfd4b888d480940d801798e828829284a45be",
+  "run": "https://github.com/inferal-oss/arm/actions/runs/40427712145",
+  "platforms": {
+    "resource-safety-memory-macos-15": {
+      "source_commit": "c657587e34d16838281d3dd5fa4fa4a006e9450c",
+      "platform": "Darwin arm64",
+      "go": "go version go1.27.3 darwin/arm64",
+      "exits": {
+        "affected-vet": 0,
+        "manager-memory-race": 0,
+        "native-macos": 0,
+        "observe-race": 0
+      },
+      "source_sha256": {
+        "internal/model/memory.go": "f0f27ac1b12dbef2fc18b35de490da17c33ce0bf8c92c14ba0cb45970770cf3f",
+        "internal/observe/availability_linux.go": "c3f94585360de1bb3c28663ed6bff4a6838a27694e848933512418cdfa732cf4",
+        "internal/observe/availability_linux_test.go": "e4df395d947b22ad6cda5199272c3beaac68c5e6427d885767e964d5e8285a79",
+        "internal/observe/observe.go": "7cc21c81c7ae4e4e4d452b474060878bf37971e906e8010ebac78b08eac04cbc"
+      },
+      "tests": {
+        "affected-vet": [],
+        "observe-race": [],
+        "native-macos": [
+          "TestNativeDarwinAvailability"
+        ],
+        "diff-check": [],
+        "manager-memory-race": [
+          "TestLiveMemoryPoolShrinksPreservesClaimsAndRecoversQueue",
+          "TestLiveMemoryUnknownStaleAndConcurrentAdmission",
+          "TestLiveMemoryCeilingFailureAndExactBoundary",
+          "TestLiveMemoryRejectsImpossiblePhysicalRequestWithoutQueuing",
+          "TestLiveMemoryFreshnessIncludesSuspendAndWallClockChanges"
+        ]
+      },
+      "log_sha256": {
+        "affected-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observe-race.log": "19d8ec0dab5f588bd40ca134c6c9fc70bf92e0e7fe5ed98dc3e3b87b61f6d1df",
+        "native-macos.log": "f79a7eaeb8bf1da3ab4b697288571ab0212e5d197444eac67ddc540b072460c6",
+        "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "manager-memory-race.log": "56a34ff6941855366b335bc040e1d3e011cfbd32335fcec901cfaa0d7c082125"
+      }
+    },
+    "resource-safety-memory-ubuntu-24.04": {
+      "source_commit": "c657587e34d16838281d3dd5fa4fa4a006e9450c",
+      "platform": "Linux x86_64",
+      "go": "go version go1.27.3 linux/amd64",
+      "exits": {
+        "native-host": 0,
+        "affected-vet": 0,
+        "observe-compile": 0,
+        "manager-memory-race": 0,
+        "native-hidden": 0,
+        "observe-race": 0,
+        "native-limited": 0
+      },
+      "source_sha256": {
+        "internal/model/memory.go": "f0f27ac1b12dbef2fc18b35de490da17c33ce0bf8c92c14ba0cb45970770cf3f",
+        "internal/observe/availability_linux.go": "c3f94585360de1bb3c28663ed6bff4a6838a27694e848933512418cdfa732cf4",
+        "internal/observe/availability_linux_test.go": "e4df395d947b22ad6cda5199272c3beaac68c5e6427d885767e964d5e8285a79",
+        "internal/observe/observe.go": "7cc21c81c7ae4e4e4d452b474060878bf37971e906e8010ebac78b08eac04cbc"
+      },
+      "tests": {
+        "affected-vet": [],
+        "native-host": [
+          "TestNativeLinuxAvailability"
+        ],
+        "observe-race": [],
+        "diff-check": [],
+        "observe-compile": [],
+        "manager-memory-race": [
+          "TestLiveMemoryPoolShrinksPreservesClaimsAndRecoversQueue",
+          "TestLiveMemoryUnknownStaleAndConcurrentAdmission",
+          "TestLiveMemoryCeilingFailureAndExactBoundary",
+          "TestLiveMemoryRejectsImpossiblePhysicalRequestWithoutQueuing",
+          "TestLiveMemoryFreshnessIncludesSuspendAndWallClockChanges"
+        ],
+        "native-hidden": [
+          "TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit"
+        ],
+        "native-limited": [
+          "TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom"
+        ]
+      },
+      "log_sha256": {
+        "affected-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-host.log": "4f86241e2952c51b090dc5175b990a402faef1ea05b4a358c7c8cfb665efffb8",
+        "observe-race.log": "d82cff455946ab37941f411d828d2220bfba9856c633e3920b1e90c0497ac071",
+        "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observe-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "manager-memory-race.log": "8f3eacb02989ce7e7706f844674c170ba3793edb081118cb26a7a1b98de678a5",
+        "native-hidden.log": "6a87ddee2e86eef4b0ec9d04dc5df58ebe359da8295569a5f7b907468054b322",
+        "native-limited.log": "67d18c1333ed28b7bddee0448b94d3ac3ead3fca0c93879adbd04db970ab76dd"
+      },
+      "native-hidden": "=== RUN   TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit\n    availability_linux_test.go:143: native hidden scope refused: scope=\"memory-cgroup-unknown\" detail=\"Complete memory cgroup headroom unavailable: complete CPU quota ancestry requires the verified initial cgroup namespace\"\n--- PASS: TestNativeLinuxMemoryHiddenAncestryRefusesAdmissionCredit (0.00s)\nPASS\n",
+      "native-limited": "=== RUN   TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom\n    availability_linux_test.go:163: native finite scope: ancestor_capacity=536870912 total=536870912 available=529133568 scope=\"host+complete-memory-cgroup-ancestry\"\n--- PASS: TestNativeLinuxMemoryLimitedScopeCapsHostHeadroom (0.00s)\nPASS\n"
+    }
+  },
+  "artifact_sha256": {
+    "macos": "188edb14c37dd7ad64f9ea613fabfdc9472acbc0b30c0d410022b448457ad115",
+    "ubuntu": "74d7b1b8903777f5812836548d5e976d4f39d08509bb7f9238a16e1b8366b6e3"
+  }
+}

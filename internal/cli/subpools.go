@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func (a *app) poolHierarchy(action string, args []string) (int, error) {

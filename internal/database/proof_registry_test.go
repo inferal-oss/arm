@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/mesh"
 )
 
 func expireProofIdentity(t *testing.T, home string, identity mesh.Identity) mesh.Identity {

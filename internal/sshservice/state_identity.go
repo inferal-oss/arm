@@ -1,6 +1,6 @@
 package sshservice
 
-import "github.com/yrashk/arm/internal/mesh"
+import "github.com/inferal-oss/arm/internal/mesh"
 
 // MeshIdentity is the public local certificate identity from this exact verified
 // read snapshot. It exposes no private key and never initializes configuration.

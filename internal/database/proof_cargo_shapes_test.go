@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/cargoprofile"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/cargoprofile"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestCargoResetProofProducerGraphRequiresIndependentReview(t *testing.T) {

@@ -12,10 +12,10 @@ import (
 	"testing"
 
 	"github.com/BurntSushi/toml"
-	"github.com/gokrazy/rsync/internal/rsyncdconfig"
-	"github.com/gokrazy/rsync/internal/rsynctest"
-	"github.com/gokrazy/rsync/internal/testlogger"
-	"github.com/gokrazy/rsync/rsyncd"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncdconfig"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsynctest"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/testlogger"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncd"
 	"github.com/google/go-cmp/cmp"
 )
 

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func known(value float64, unit, scope, method, quality string) model.Measurement {
@@ -28,7 +28,11 @@ func unavailable(scope, method, detail string) model.ResourceMeasurement {
 func memoryAvailabilityValues(reading model.MemoryAvailability) model.ResourceMeasurement {
 	r := unavailable(reading.Scope, reading.Method, reading.Detail)
 	if reading.Total != nil {
-		r.Total = known(float64(*reading.Total), "bytes", "host-physical-memory", reading.Method, "reported")
+		totalScope := "host-physical-memory"
+		if reading.Scope == "host+complete-memory-cgroup-ancestry" {
+			totalScope = "minimum-host-and-memory-cgroup-capacity"
+		}
+		r.Total = known(float64(*reading.Total), "bytes", totalScope, reading.Method, "reported")
 		r.Total.At = reading.At
 	}
 	if reading.Available == nil || reading.Total == nil {
@@ -37,6 +41,13 @@ func memoryAvailabilityValues(reading model.MemoryAvailability) model.ResourceMe
 	r.Available = known(float64(*reading.Available), "bytes", reading.Scope, reading.Method, reading.Quality)
 	r.Available.Detail = reading.Detail
 	r.Available.At = reading.At
+	if reading.Scope == "host+complete-memory-cgroup-ancestry" {
+		// The minimum of host and ancestor headroom does not identify bytes
+		// exclusively resident in this cgroup or attributable to ARM.
+		r.Used = unknown("bytes", reading.Scope, reading.Method, "Combined host/cgroup headroom does not establish resident usage")
+		r.Used.At = reading.At
+		return r
+	}
 	r.Used = known(float64(*reading.Total-*reading.Available), "bytes", "host-total-minus-estimated-available", reading.Method, "estimated")
 	r.Used.Detail = "Total minus estimated available memory, including reclaimable file caches in availability; not application-exclusive usage"
 	r.Used.At = reading.At

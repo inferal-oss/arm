@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yrashk/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/routing"
 )
 
 var routingGraphResetTables = []string{"routing_graph_issuance", "routing_graph_reports", "routing_graph_observations"}

@@ -1,6 +1,6 @@
 package storage
 
-import "github.com/yrashk/arm/internal/model"
+import "github.com/inferal-oss/arm/internal/model"
 
 // DirectoryIdentity reads the native creation-time identity of an already-open
 // directory. It grants no adoption/deletion or process-control authority. The

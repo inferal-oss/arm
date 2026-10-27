@@ -9,10 +9,10 @@ import (
 
 	"github.com/coder/websocket/wsjson"
 	"github.com/google/uuid"
-	"github.com/yrashk/arm/internal/agents"
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/manager"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/agents"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 func TestInboxLongPollMultiplexesAndBoundsOutstandingRequests(t *testing.T) {

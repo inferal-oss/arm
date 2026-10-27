@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // These are hand-authored contract controls, not native authority/closure proof.

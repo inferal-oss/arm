@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/cli"
+	"github.com/inferal-oss/arm/internal/cli"
 )
 
 func TestLifecycleConflictingFlagsFailBeforeBackendAccess(t *testing.T) {

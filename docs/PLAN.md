@@ -643,7 +643,8 @@ Scope: actual Semblance graph/components/events with stock Semblance/System defa
 public setup/capability/limits site in this same repository branch, reviewed
 GitHub Actions Pages deployment, public `inferal-oss/arm` repository, standard
 one-year registrations for exact `getarm.org` and `getarm.cloud`, canonical
-`getarm.org` plus path/query-preserving alternate redirect. No runtime changes.
+`getarm.org` with both apexes pointing directly to GitHub Pages using DNS-only
+A records. The final human instruction prohibits extra Cloudflare projects.
 Dependencies: accepted runtime `181a776`, routing `21240eb`; active product
 portfolios do not become public supported claims. Coordinate shared framework
 gaps with product-web migration owner. Gates: inspect tracked source/history,
@@ -664,8 +665,318 @@ macOS/Linux amd64/arm64 carriers and publishes a complete verified draft on a
 full `vMAJOR.MINOR.PATCH` tag that belongs to reviewed main. Manual/topic runs
 produce validation artifacts only. No tag or release was created by this task.
 
-Dependencies/gates: central `inferal-oss/arm` module migration must update the
-existing identity-package string and new release helper imports when composed.
+Dependencies/gates: reviewed main 73fa6e2 provides the canonical module and
+in-module fork layout. Composition preserves version stamping, updates the
+release helper imports and uses the canonical fixture layout.
 Independent review, affected Go checks, actual four-carrier remote build and
 artifact inspection remain required. Python bounded failure-path checks pass;
 these do not establish actual GitHub publication or native macOS/ARM execution.
+
+### Gauge candidate review and shared-queue permission diagnosis
+
+Gauge owner returns candidate361e519 from clean codex/terminal-gauge-availability.
+Original disposable native PTY flickers in6/24cycles; corrected stages measure
+RAM/space in24/24 with no false unavailable, but complete final-source races and
+PTY successors remain open after earlier harness checks and queue interruption.
+Independent reviewer owns /private/tmp/arm-gauge-availability-final-review,
+composed98587ff on4e75c51, with an extra retired-receipt/remote deadline regression.
+No production source blocker found yet; no acceptance/integration is claimed.
+
+Root proves a scheduler execution-context issue: default sandbox kill(pid,0)
+returns EPERM for17 ticket PIDs; the same read-only elevated probe shows all17
+alive. Current helper treats every failed liveness probe as death, so sandboxed
+callers can remove live tickets. All active owners were told to use normal
+require_escalated execution for the SAME helper and preserve existing queue
+policy, original handles/exits and cleanup. Cancel only their own pending jobs
+before retry; do not delete/rebuild global tickets, bypass slots or edit the
+shared script. This diagnoses a cause, not proof that every external queue
+caller has adopted the execution correction. Final checks remain honestly open.
+
+Launch owner reports public inferal-oss/arm created but empty: source push waits
+for material tracked-history audit and reviewed site integration. Cloudflare
+quotes getarm.org8.50USD firstyear/11.20renewal and getarm.cloud20.20USD/year,
+total28.70USD before tax. Purchase submission was rejected by automatic approval
+review because the checkout includes automatic renewal not explicitly approved;
+no purchase is confirmed. Owner asked the human a concrete approval question
+(including immediate disable-auto-renew option), while site/audit work continues.
+No duplicate question or blocked-submission retry is authorized without approval
+or a genuinely safer applicable checkout. Actual DNS/HTTPS/site publication are
+not yet claimed.
+
+
+### Launch approval and publication review successor
+
+Launch owner reports the human answered the concrete checkout question:
+APPROVE both one-year purchases and KEEP automatic renewal enabled. This
+supersedes the pending-approval/disable-auto-renew option above. Exact domain
+registration proceeds in Chrome; no successful purchase, DNS or TLS outcome
+is inferred from approval alone. Do not ask the same renewal approval again.
+
+The bounded low-priority publication audit completes the exact reachable union
+of maina6e7f3b and site17a36ad:321commits,4337blobs,200326161bytes, original exit0,
+no material finding. Reported historical IP/email hits were verified attribution
+or rejection fixtures. This audits those refs only; unaccepted portfolio/QUIC
+branches are not publication scope and must never be pushed via --all/--mirror.
+Current source and final topic composition still require exact closure.
+
+Root inspects actual17a36ad graph/host effects/bootstrap/locked dependency/build/
+notices/Pages workflow, with no new static blocker. Independent reviewer9451517
+has byte-identical website and workflow source, verified by root Git diff/object
+IDs. Production graph uses stock Semblance Terminal with no bespoke theme, and
+deployment is restricted to main. The later requested go.mod minimum-version
+link must be included in final copy. Locked remote Actions build and actual
+built-artifact browser acceptance remain open; provisional preview/static review
+does not establish them. No site integration/deployment completion is claimed.
+
+Gauge reviewer freezes focused candidate98587ff plus independent regression/PTY
+oracle/transcript fixes59586f5. Original elevated queue session80582 progresses
+in FIFO; actual child/source-before receipt has not started yet. Shared slots
+are held by live lockf jobs. Root does not edit queue policy, reorder tickets
+or misreport this ordinary wait as a passing final validation.
+
+
+### Launch source refinements and registered-domain successor
+
+Launch owner confirms BOTH exact domain purchases after human approval to keep
+auto-renew enabled: getarm.org8.50USD and getarm.cloud20.20USD,28.70USD total.
+Cloudflare success pages are captured. The .org zone is Full DNS/RegistrarActive
+with reported expiry October26,2027; the .cloud active-zone detail still needs
+verification. No source approval or payment success substitutes for DNS/TLS
+acceptance. The .org GitHub ownership TXT value is generated but not yet written;
+new zone reported empty, unrelated domains/org Pages defaults stay untouched.
+
+Locked CI run40418656650 succeeds at candidate6e299ee after the exact Oxigraph
+license-notice fix. Root inspects fallback metadata: archive URL/integrity,
+upstream immutable commit2837810c8993da671d496eabf7677d7573c5c522 and full MIT/Apache
+texts/hashes are retained, with exact-version checks; no unknown-license skip.
+Downloaded artifact reportedly has9entries/7,976,538bytes and no Git/private
+paths. This validates that cut, not the final subsequent website refinements.
+
+The human adds technical copy, existing dashboard logo, outlined internal CTAs,
+a human-comprehensible ARM diagram, go.mod-linked minimum Go version, and
+checkout go-install then arm examples (remote @latest install is unsupported by
+current module identity/local rsync replacement). Refiner owns separate
+/private/tmp/arm-site-refine. Another independent branch/worktree under
+/private/tmp/arm-dashboard-shots owns a build-invoked script to capture actual
+compiled-source WEB and native-PTY terminal dashboard screenshots using disposable
+state and no installed binary/user backend. Whitelist published screenshots and
+provenance; do not upload tokens, raw state/logs/transcripts/private paths. Final
+script/workflow/resources/cleanup, resulting artifact and browser behavior need
+independent review and exact-source acceptance. Product migration stays isolated.
+
+LATEST public-site-only theme override: human in launch chat selects STOCK
+SEMBLANCE with SYSTEM color scheme by default. Refiner refreshes graph/bootstrap,
+copy/assets/gallery/provenance, review, CI and screenshots. This supersedes the
+site's initial Terminal choice; product dashboard migration owner retains its
+explicit Terminal default. Public site deployment, exact DNS records, ownership
+verification, both HTTPS endpoints/redirect and final screenshot build remain
+unaccepted until actually verified.
+
+
+## Canonical module and versioned installation migration — in progress
+
+Owner: canonical-module-distribution task, isolated branch
+`codex/canonical-module-distribution`, based on reviewed `67e9e3b`. This task
+owns the shared root module/import namespace and audited rsync fork packaging.
+Other active portfolios retain their isolated feature work; integrate this
+focused dependency and migrate any newly added imports before final validation.
+Canonical namespace: `github.com/inferal-oss/arm`; fork imports:
+`github.com/inferal-oss/arm/third_party/rsyncgo`. Fork code stays in place with
+no active nested module or replace; original metadata stays as provenance.
+
+Gates: independent final-source review, module-layout and source-snapshot
+regressions, rsync interoperability, full package compile, scoped race/vet and
+platform checks. Coordinator owns reviewed main integration/publication and
+public disposable-cache `go install ...@commit` then `...@latest` evidence.
+No local/proxy fixture or old-source validation establishes that public gate.
+No new `arm install` carrier-assembly contract is included.
+
+Coordination: the launch owner retains root README/site install-copy ownership.
+The tagged-release owner retains workflow/scripts and the separate Version
+variable/linker-injection change. Apply this namespace/fork-layout dependency
+first, then compose the release metadata commit using canonical package paths;
+re-run carrier/source-metadata checks against the composition. This migration's
+runtime distribution edits only change module/linker path literals, preserving
+Version behavior and the existing snapshot whitelist.
+
+Source candidate: `f897c47` (canonical imports/fork layout), `a30edd7` (direct
+fork dependencies and launch-copy ownership), `4dde3d0` (review regression
+trimpath fix). Independent reviewer checkout `codex/canonical-module-review`
+at `53bf0c0` has the same tree as `4dde3d0`:
+`fb17d2e0568448baa20efd9ad382e3fc4e25b9b6`; no source findings remain.
+Source review does not accept runtime/public installation gates. The original
+local FIFO session remains queued; do not launch a duplicate. Coordinator may
+publish reviewed/audited source to the authorized public repository for CI,
+then verify the immutable query and actual latest installation separately.
+
+### Tagged release metadata dependency (candidate `97be9f5`)
+
+Release owner candidate `97be9f5` remains separate and awaits central review;
+this module task does not import it. At composition, its new `identityPackage`
+in `internal/distribution/bundle.go` must be
+`github.com/inferal-oss/arm/internal/buildinfo`. Keep `identityFlags` injecting
+both Version and BundleTag through that canonical package for payload/carrier
+builds; do not restore this branch's superseded standalone `tagVariable`.
+Preserve the migrated carrier fixture's main-module go.mod (no replace or
+nested go.mod), canonical imports, and `main-module-fork-input` fixture value;
+carry forward the release candidate's Version variable/output and native
+execution assertion, with expected fixture output updated to that value.
+New build-bundle tests/files must use canonical imports if they introduce any.
+Re-run distribution/carrier native and cross-target metadata checks plus
+build-bundle tests against the actual composed source. Neither candidate's
+separate evidence accepts their untested composition or public installation.
+
+### Canonical module candidate accepted for central integration
+
+Source/module baseline `49e2c78` / run `40424167014` is green on Linux amd64
+and macOS arm64, including actual installed-rsync interoperability. Final asset
+successor `af7c059` at CI source `3306c6b` / run `40426543555`
+is green for both platforms' embedding/HTTP race checks and a fresh real public
+immutable install with all 26 ZIP closure inputs. Independent receipt review
+finds no discrepancies. Complete normalized rosters, original exits, source
+manifests, public version/sums, binary digest and verified artifact digests are
+in `docs/validation/module-migration-2026-10-26.json`.
+
+The publication owner remains this module task on
+`codex/canonical-module-validation-successor`; the dedicated public CI branch
+stays at tested `3306c6b`. Documentation-only provenance successor `2084eaa`
+(cherry-pick of requested `6ecfae5`) corrects noVNC's transformation record.
+Neither alternate asset implementation `d55d0ec` nor `f6b5368` is integrated.
+No runtime inputs change after the accepted final candidate; subsequent delivery
+records do not trigger another global/native run.
+
+Remaining gates belong to central composition: integrate focused reviewed
+changes while preserving other work, canonicalize any later feature imports,
+compose the separately reviewed release identity change using canonical
+`identityPackage`, audit the exact publication delta, and publish main. Root's
+`6bc990b` sync/workspace work follows this module dependency; its separately
+reported native evidence is not accepted or integrated by this module task.
+Recheck affected composed boundaries with their actual source identities.
+
+Coordinator accepts the production, test, provenance and evidence delta from
+`67e9e3b` through `10ef959`. The candidate CI workflow and validation script are
+excluded: final review found a process-group signal after child reaping in the
+cancellation helper. A separate focused correction and review must precede
+using that helper for literal latest. Normal successful command receipts remain
+valid; cancellation safety is not established by those passes.
+
+After main publication, verify literal public latest with fresh caches using
+the corrected, reviewed harness. This remains a concrete acceptance step. The launch owner retains README
+and site-copy ownership and advertises remote latest only after that proof.
+No main/tag/release/site publication or user backend/installation change is
+performed by this task's candidate CI.
+
+
+### Sync workspace evidence integrated after canonical module packaging
+
+Coordinator integrates reviewed `6bc990b` after module feature `77b962f` from
+`67e9e3b`. Owner: `Implement bidirectional sync reconciliation`, chat
+`01a1762f-1cfa-7ed3-8404-4a794cbe93b3`; independent reviewer checkout
+`/private/tmp/arm-public-sync-workspace-canonical-review`. The focused seven-file
+change binds durable private markers to original reservations and native roots
+and supports bounded read-only lookup of all matching workspaces. Review fixes
+FIFO blocking before type validation and malformed reserved siblings returning
+a complete-looking partial set. Both original failures were reproduced.
+
+Linux amd64 and macOS arm64 race/vet acceptance is recorded in
+`docs/validation/sync-workspace-2026-10-26.json`. The worker dependency includes
+the separately reviewed fork debug-format correction from module acceptance;
+no filesystem or reconciliation algorithm changes follow from that correction.
+Public sync orchestration, physical reservations, cleanup/settlement and formal
+acceptance remain open. The owner's newer durable workspace-ledger work is a
+separate candidate and is not integrated by this step.
+
+
+### Kubernetes admission fix integrated; shipment remains blocked
+
+Owner: chat `01a17669-4ad2-7e41-8616-905a94b58916`. Reviewed source `7250a04`
+is validated on the canonical dependency as focused `92c4550` and integrated
+separately from live acceptance `4d8362d`. Exact standard five-minute
+NoExecute tolerations are reviewed before creation; incomplete affinity and
+unreviewed image credentials are refused on lookup. Native provider races
+pass 82 named cases; affected CLI/server/TUI races pass 10, and vet passes.
+Source hashes and complete terminal event rosters are retained in
+`docs/validation/kubernetes-admission-2026-10-26.json`.
+
+A disposable OrbStack Pod reached Ready and exact-UID cleanup completed.
+Automatic approval review rejected transferring/executing the private carrier
+in that Pod because trusted export authorization was not established. The
+owner must not retry or bypass that rejection. Shipment, in-Pod catalog proof,
+enrollment and SSH remain unverified; the focused admission fix does not
+establish those gates.
+
+
+### Linux cgroup memory milestone integrated
+
+Owner: chat `01a1764f-7a1a-71a0-896c-60d963b3327e`; focused reviewed source
+`1f0dfd4` after canonical module packaging. Root inspects the full final four-file
+diff and verifies the source hashes against final CI run `40427712145`. Linux
+memory headroom includes all visible finite cgroup v2 ancestors and becomes
+unknown if ancestry, membership, namespace or counters are uncertain. Full
+promises remain charged; combined headroom does not invent resident usage.
+
+Linux amd64 and Darwin arm64 observe races, five Manager memory races, vet and
+native availability gates pass. Linux uses an actual 512 MiB ancestor and a
+separate hidden namespace refusal. Root verifies both artifact SHA-256 values,
+all original exit files and the exact production/test source hashes. Evidence:
+`docs/validation/cgroup-memory-2026-10-26.json`. Linux arm64 execution, broader
+CPU attribution, supervised pause/resume, elapsed-clock consumer adaptation and
+pressure-specific formal gates remain open. This milestone does not close the
+full resource-safety portfolio.
+
+
+### Coordinator audit of all returned and active handoffs
+
+The operator explicitly includes both `Implement multi-hop mesh port forwarding`
+(`01a178cc-c340-7241-98dd-22420550023f`) and
+`Implement bidirectional sync reconciliation`
+(`01a1762f-1cfa-7ed3-8404-4a794cbe93b3`), plus other unintegrated tasks. Review
+focused steps when ready; an idle chat or completion report is not acceptance.
+The coordinator has inspected primary status, all worktrees, current project
+chats, actual candidate diffs and the delivery plan. Primary work was preserved.
+
+| Portfolio / owner chat | Current integration or candidate | Remaining gate / dependency |
+| --- | --- | --- |
+| Canonical module, `01a17a8e-5258-7e01-a7df-733214f4ff82` | Production/tests/provenance and scoped evidence integrated as `77b962f`. | Unsafe cancellation helper/workflow excluded; separate correction, publication and literal public latest remain. |
+| Bidirectional sync, `01a1762f-1cfa-7ed3-8404-4a794cbe93b3` | Reviewed private workspace evidence integrated as `b50d15b`; earlier planner/worker/recovery already integrated. | New workspace ledger candidate, production allocation/public dispatch, cleanup/settlement, performance and formal gates remain. |
+| Forwarding, `01a178cc-c340-7241-98dd-22420550023f` | Foundation remains integrated but disabled. New client candidates `1659ecc` / `2b155a6` are in independent review. | Review found held-ACK cancellation and HTTP interim-response bugs. Fixes and exact compiled fixture/native gates precede integration; browser/unmodified clients, cross-host/platform/formal and sleep-clock composition stay open. Scheme approval is already recorded and is not requested again. |
+| Resource safety, `01a1764f-7a1a-71a0-896c-60d963b3327e` | Cgroup memory milestone integrated as `128d08e`. | Broader pressure attribution, supervised control, native arm64 and elapsed-clock/formal gates remain. |
+| Kubernetes, `01a17669-4ad2-7e41-8616-905a94b58916` | Admission correction integrated as `1a75e10`. | Separate live cleanup `4d8362d`; carrier export/execution rejected by automatic approval review. In-Pod identity/catalog/enrollment/SSH unverified. |
+| Gauge availability, `01a17a63-41aa-7670-ba0d-446f6a48a0d3` | Review fixes `98587ff` + `b4490b3` + `95aa584`; canonical CI composition `d0da579` is unaccepted. | Initial full race found a real click-frame regression despite successful PTY gauges. Review fixes pre-clock mouse validation and raw-event ordering; final Linux/macOS race/PTY gates remain. |
+| VNC, `01a1766f-588d-7f90-a789-3db9ffca71f7` | Manager resource-hold draft remains isolated and uncommitted. | Prior resource cases pass but wrapper exit is unknown; original final session `5471` must return durable exits and broader native/transport gates. Standard/HighPerf breadth remains. |
+| Sleep/operations, `01a17a66-fb70-7730-8fdf-ac6d3e9346a4` | Clock and original-child ownership drafts remain isolated. | Generic waiter post-reap signal correction, original transport/IO joins, exact reset proofs and native/formal gates; then elapsed-clock consumers and later operations. Forward source must validate native lease remaining before/after dialing. |
+| Providers/workloads, `01a17a67-1bb9-7031-878b-87f5bb71861c` | Focused fixture/protocol candidate remains isolated. | Original queued validation; frozen clock contract before providerexec adapter. Broader registration/resources/real workloads remain. |
+| Product Semblance UI, `01a17a68-5f5c-7411-b0da-bc6a45296adb` | Operational migration in progress; early shell is not complete. | All views/authorization/recovery, stock Terminal default, regular actual screenshots and final composed acceptance; reusable gaps require focused upstream PRs. |
+| Launch, `01a17a6b-835f-7503-ab50-466751c51eec` | Both domains purchased with approved renewal; public repo exists; site/release source remains separate. | Compose accepted module with version metadata and four-carrier release CI, final Semblance/System site screenshots/Pages deployment, public latest and actual DNS/HTTPS. Latest human requires only DNS-only GitHub Pages apex A records for both domains and no new Cloudflare projects. |
+
+Older ready reports were also reconciled: database forgetting `181a776`, Charm
+peer views `d7fab97`, original rsync worker receipts, routed SSH corrections and
+remaining-capacity dashboard views are already integrated, including equivalent
+reviewed compositions. Do not reimport their old divergent branches. QUIC
+`d115a84` stays parked by operator instruction. Obsolete mount work is not revived.
+
+The launch owner removed its exact empty `arm-cloud-redirect` project after the
+latest human clarification; no files were uploaded or deployed. Do not retry the
+declined upload or create hosting through another channel. Both DNS-only apex
+records are requested; actual GitHub Pages single-custom-hostname/HTTPS behavior
+remains a verification gate, not something inferred from DNS records alone.
+
+### Shared CPU queue operational correction
+
+Reviewed Semblance helper commit `dad66b279e54d430a539b454e82a52cc3a7124b4`
+retains tickets on EPERM/unknown liveness and exits before child launch if its
+own ticket disappears. Four isolated fixture methods, shell syntax and diff
+checks pass; root independently reruns all four tests. The root atomically
+deploys the exact helper locally with before/after SHA-256 and owner/mode checks:
+old `fa637461da9004ea7792f2729fc9c86779f53f88e5e562dd1402baa64586a00f`,
+new `769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922`.
+Evidence: `/private/tmp/arm-queue-repair-evidence/root-deployment.json`.
+
+No queue/ticket/lock/process mutation, reordering or CPU limit increase occurs.
+Existing unrelated one-slot throttle remains untouched; it accounts for genuine
+remaining backlog. Existing valid callers retain their original handles and
+exit evidence. The Semblance primary checkout's unrelated conflict/untracked
+files are preserved. Its helper is a local working-copy modification, with the
+focused commit in an isolated branch; upstream issue/plan link/PR tracking is
+assigned to the Semblance migration owner. No upstream merge/deployment is
+authorized by preparing that PR.

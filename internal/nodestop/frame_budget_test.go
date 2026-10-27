@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // Pure typed shape/boundary controls, not native closure observations. The

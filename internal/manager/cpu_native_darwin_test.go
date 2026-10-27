@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/usage"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/usage"
 )
 
 // Opt-in actual native integration, bounded to one CPU for eight seconds.

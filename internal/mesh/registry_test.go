@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yrashk/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/local"
 )
 
 func TestNodeRegistryReadDoesNotPrepareStateOrLoadKeys(t *testing.T) {

@@ -1,0 +1,515 @@
+{
+  "reviewed_source": "92c4550f805550c54609cd1b5e732f217c70814c",
+  "module_dependency": "af7c059",
+  "original_exits_reported_by_owner": {
+    "provider_race": 0,
+    "component_race": 0,
+    "vet": 0
+  },
+  "source_sha256": {
+    "internal/kubeprovision/clientgo.go": "936ba2414414cdb311eadaa12c825f2d4b0814bc2fc351830bc30f973dae00d8",
+    "internal/kubeprovision/provider_test.go": "776f793640543555438b8c216a3842e0a490fd5ee0ad43cbcf94da1064abf3ff",
+    "internal/kubeprovision/types.go": "7ca78b6352f490b4555b73522645db1eebd75f36d76325ef518f81d1a6938c8e"
+  },
+  "logs": {
+    "provider-real-race": {
+      "sha256": "ce3b07fa39d64ede47cdc7c6c220384815bd15dbb5739c8968872c03e4a6ae4c",
+      "terminal_events": [
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestActualARMBootstrapBudgetArguments"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedCatalogProofAndStartCommandsAreExact"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamEarlyChildExitWithoutDeadline/exec/before_hello"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamEarlyChildExitWithoutDeadline/forward/before_hello"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamEarlyChildExitWithoutDeadline/exec/before_result"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamEarlyChildExitWithoutDeadline/forward/before_result"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamEarlyChildExitWithoutDeadline"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedHelperRealBinaryCancellationJoins"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedHelperRealBinaryCloseJoins"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedHelperRejectsPublicInvocation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewRejectsOversizedMetadataBeforeDecode"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewMetadataResponseBoundary/small"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewMetadataResponseBoundary/exact-unknown"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewMetadataResponseBoundary/oversized-declared"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewMetadataResponseBoundary/oversized-stream"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewMetadataResponseBoundary"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestInventoryReviewPreservesUpgradedDuplexBody"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestJournalLockRespectsCancellation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestJournalReadRejectsSymlinkAndOversizedRecord"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestBoundedOutputRejectsOversize"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOversizedExecOutputCancelsStream"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestJournalWritesStayOnVerifiedDirectory"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestJournalRejectsInvalidStateCombinations"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildReceipt"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildCancellation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildOutputCap"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamRealChildDoesNotExposeSecretDiagnostic"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildDoesNotExposeCredentialPluginDiagnostic"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildParentPipeLoss"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildRejectsChangedIdentity"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedStreamsRejectChangedTLSServerBeforeAnyRequest"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOpenReviewedContextRejectsAuthProviderBeforeFactory"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedExecRealChildShipsHeldFile"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedForwardRealChildActiveConnectionCancellation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedForwardRealChildSetupCancellation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedForwardRealChildRevokedPodClosesActiveConnection"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOwnedForwardRealChildConnectionCapRecovery"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestCreatePodIsPrivateAndKeyed"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod/missing_affinity"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod/missing_node_affinity"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod/injected_toleration"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod/changed_toleration"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod/injected_image_credential"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginalKeyLookupRejectsIncompleteOrCredentialMutatedPod"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestLostCreateAcknowledgementNeverReposts"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestLostAcknowledgementFindsExactPodWithoutNewCreate"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestConcurrentOriginalKeyHasOneCreate"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestRestartUsesDurableOriginalKey"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestPreflightCrashCannotAdoptPreexistingPod"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestPreflightReadFailureDoesNotDispatchCreate"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestContextNodeAndPodIdentityFences"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestDeniedNodeReadAndAdmissionMutation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestMergedContextChoices"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestKubeconfigCAFileIsFrozenAfterReview"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestNodeTypeaheadIncludesResourceEvidence"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestDottedKubernetesNodeName"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestAdmissionMutationCannotAddExecutionHooks/env_from"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestAdmissionMutationCannotAddExecutionHooks/lifecycle"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestAdmissionMutationCannotAddExecutionHooks/probe"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestAdmissionMutationCannotAddExecutionHooks"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestPrepareReadsExactCurrentReviewWithoutMutation"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestBinaryLostACKLookupNeverResends"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestChangedBinaryDoesNotOpenExecOrConsumeAttempt"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginRejectsCredentialRedirect/selected-context"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginRejectsCredentialRedirect/inventory-context"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginRejectsCredentialRedirect/typed"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginRejectsCredentialRedirect/exec-helper"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginRejectsCredentialRedirect/forward-helper"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginRejectsCredentialRedirect"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginAllowsSameOriginRedirect/selected-context"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginAllowsSameOriginRedirect/inventory-context"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginAllowsSameOriginRedirect/reviewed-context"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedOriginAllowsSameOriginRedirect"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginRefusalClosesRequestBody"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestOriginDNSIdentityUsesIDNA"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestReviewedBinaryReplacementWithFIFOReturnsWithoutBlocking"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestNativeExecTransport"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestNativeExecCancellationSealsHeldInput"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestNativePortForwardBindsLoopbackAndCarriesBytes"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestPortForwardBoundsRemoteErrorStream"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestPortForwardStalledUpgradeCancels"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": "TestGenerateNameCreateDisablesClientGoRetries"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/kubeprovision",
+          "test": null
+        }
+      ]
+    },
+    "components-race": {
+      "sha256": "dd1b4f4a9fc769b3534d3b25b29c7dfc59aa26b3aff9609af1aa840be5c6f739",
+      "terminal_events": [
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": "TestKubernetesCatalogProofVerifiesAllPayloadStreams"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": "TestPublicKubernetesKeygenRoute"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": "TestPublicKubernetesGroupHelpIsOffline"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": "TestPublicKubernetesLeafHelpIsOffline"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": "TestKubernetesRuntimeProofUsesExactAuthenticatedLocalEndpoint"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": "TestKubernetesRuntimeProofRefusesRedirectBeforeBearerDisclosure"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/cli",
+          "test": null
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/server",
+          "test": "TestKubernetesInventoryTypeaheadReturnsCurrentResources"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/server",
+          "test": "TestKubernetesInventoryIsNotAdmittedDuringBackendStop"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/server",
+          "test": "TestKubernetesInventoryEmbeddedAndBrowserScope"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/server",
+          "test": null
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/tui",
+          "test": "TestKubernetesTUITypeaheadSelectionAndStaleRead"
+        },
+        {
+          "action": "pass",
+          "package": "github.com/inferal-oss/arm/internal/tui",
+          "test": null
+        }
+      ]
+    },
+    "vet": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_events": []
+    }
+  },
+  "limits": [
+    "Real carrier export and execution blocked by automatic approval review",
+    "In-Pod catalog proof, enrollment and SSH unverified",
+    "Live Pod Ready and exact-UID cleanup are separate scoped evidence, not shipment"
+  ]
+}

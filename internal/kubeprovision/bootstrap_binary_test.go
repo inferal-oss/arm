@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yrashk/arm/internal/client"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/client"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 type lockedOutput struct {

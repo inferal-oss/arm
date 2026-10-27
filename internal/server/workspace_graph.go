@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/routing"
-	"github.com/yrashk/arm/internal/workspace"
-	api "github.com/yrashk/arm/internal/workspaceapi"
-	route "github.com/yrashk/arm/internal/workspaceroute"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/routing"
+	"github.com/inferal-oss/arm/internal/workspace"
+	api "github.com/inferal-oss/arm/internal/workspaceapi"
+	route "github.com/inferal-oss/arm/internal/workspaceroute"
 )
 
 func (s *Server) workspaceRefresh(parent context.Context, id string) (api.RefreshResult, error) {

@@ -5,11 +5,11 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/yrashk/arm/internal/mesh"
-	"github.com/yrashk/arm/internal/model"
-	"github.com/yrashk/arm/internal/workspace"
-	"github.com/yrashk/arm/internal/workspacegraph"
-	route "github.com/yrashk/arm/internal/workspaceroute"
+	"github.com/inferal-oss/arm/internal/mesh"
+	"github.com/inferal-oss/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/workspace"
+	"github.com/inferal-oss/arm/internal/workspacegraph"
+	route "github.com/inferal-oss/arm/internal/workspaceroute"
 )
 
 type graphRouteCandidate struct {

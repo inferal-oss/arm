@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/coder/websocket/wsjson"
-	"github.com/yrashk/arm/internal/local"
-	"github.com/yrashk/arm/internal/model"
+	"github.com/inferal-oss/arm/internal/local"
+	"github.com/inferal-oss/arm/internal/model"
 )
 
 // WatchMonitor delivers the atomic initial snapshot and subsequent bounded

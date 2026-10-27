@@ -9,7 +9,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/gokrazy/rsync/rsyncstream"
+	"github.com/inferal-oss/arm/third_party/rsyncgo/rsyncstream"
 )
 
 type Role uint8
