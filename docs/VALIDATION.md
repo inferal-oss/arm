@@ -5715,3 +5715,24 @@ connection, and the owned tab and viewport are closed/reset. The initial bind
 permission failure remains separate. Integration checks all 13 candidate paths
 byte-for-byte against the reviewed source; later main changes do not intersect
 them. Public deployment is a separate gate.
+
+### Eight-image Gallery deployment
+
+[Qualified deployment evidence](validation/website-eight-gallery-deployment-ae5ef4a-2026-10-27.json)
+records successful automatic main push run `40568391669`, attempt one, at exact
+`ae5ef4a`. Independent GitHub run, job, artifact and build-log reads confirm all
+build and deployment steps. The original ZIP/TAR contains 20 safe unique regular
+files totaling 5,067,107 bytes. All 20 first-pass canonical HTTPS bodies return
+200 and match artifact lengths and hashes with normal certificate/hostname
+verification. Final URLs match requests; redirect history is not retained and
+no zero-hop claim is made. Original checker command and untruncated zero-exit
+output are independently read back rather than replaced by another fetch.
+
+All eight new PNGs pass dimensions, hashes, CRC and bounded decompression and
+are individually visually reviewed. Both provenance records identify the exact
+source. The 597 embedded UI inputs are independently rehashed; all ten static
+website files match the native-tested candidate. Temporary capture binaries and
+embedded generated assets are not retained in the Pages artifact, so their
+receipt hashes do not establish hermetic binary reproduction. Earlier native
+interaction limits and failed CI capture remain unchanged. No new native
+browser, fullscreen, zoom or swipe acceptance is inferred from publication.

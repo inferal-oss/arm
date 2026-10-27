@@ -2175,6 +2175,8 @@ web and three terminal views from disposable native fixtures during each Pages
 build. Source `829eb10` and its visible-label correction `3bb9965` are integrated
 as exact 13-path changes. The eight-item Gallery uses the existing stock layouts
 and Lightbox. Independently reviewed CI provenance and qualified native desktop
-and phone evidence support this source. The last accepted public deployment
-still has three images; verification of the new main deployment remains open.
-This change does not update the tracked product browser bundle.
+and phone evidence support this source. Integration `ae5ef4a` is published by
+automatic run `40568391669`: all 20 canonical bodies match the original artifact,
+including eight fresh images with matching source provenance. Earlier native
+interaction evidence retains its recorded scope. This change does not update
+the tracked product browser bundle.

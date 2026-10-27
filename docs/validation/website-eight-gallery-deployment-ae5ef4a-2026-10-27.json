@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_DEPLOYMENT_EVIDENCE_ACCEPTED",
+  "source_commit": "ae5ef4aab39b500a3e6964ff459ce8f1612a771c",
+  "site": "https://getarm.org/",
+  "automatic_run": {
+    "id": 40568391669,
+    "head_sha": "ae5ef4aab39b500a3e6964ff459ce8f1612a771c",
+    "head_branch": "main",
+    "event": "push",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/inferal-oss/arm/actions/runs/40568391669"
+  },
+  "artifact": {
+    "id": 12765081390,
+    "zip_sha256": "3af24b5be861984d044d323c394d74cb21f59161b41a2dea1b3de6feca071794",
+    "tar_sha256": "473ef72c13e2ba5e029a4c844964357c0278d4f38867bc405c10a26d25c53d13",
+    "regular_files": 20,
+    "total_file_bytes": 5067107,
+    "unique_safe_regular_members": true
+  },
+  "method": "Independent GitHub run/job/artifact and build-log reads, retained original canonical-HTTPS command/output verification, source/archive/body hashing and visual review of eight published screenshots. No new build, capture, test, native browser or deployment.",
+  "source_binding": {
+    "accepted_application_source": "3bb9965c415dc951cf9240690b59a2cf45d72c98",
+    "composition_changes_only_documentation": true,
+    "candidate_source_files_exact": 13,
+    "embedded_UI_input_count": 597,
+    "embedded_UI_inputs_sha256": "bbfacc9957642e3ee787a75d94668ee676627e9676aaf8027a223bb5f41564cc",
+    "ten_static_website_files_identical_to_native_tested_artifact": [
+      "favicon.svg",
+      "brand-lockup.svg",
+      "system-map.svg",
+      "assets/index-COethoDO.js",
+      "assets/wat-4kfTsMVw.js",
+      "assets/wat-CR-H2qbq.wasm",
+      "assets/arm-wat-only-store-CpWQrDGP.js",
+      "THIRD-PARTY-NOTICES.txt",
+      "index.html",
+      "brand-lockup-light.svg"
+    ]
+  },
+  "CI": {
+    "build": "success",
+    "deploy": "success",
+    "attempt": 1,
+    "trigger": "push",
+    "target": "main",
+    "actual_log_checks": {
+      "python_ownership": {
+        "cases": 18,
+        "result": "OK"
+      },
+      "python_capture": {
+        "cases": 6,
+        "result": "OK"
+      },
+      "node_geometry": {
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "skip": 0
+      },
+      "node_gallery": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "skip": 0
+      },
+      "node_integrity": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "skip": 0
+      },
+      "actual_capture_log": "Captured five web views and three terminal views from rebuilt current-source dashboards.",
+      "artifact_digest_matches_GitHub_API_and_upload_log": true
+    }
+  },
+  "canonical_publication": {
+    "files": 20,
+    "all_status200": true,
+    "all_body_lengths_and_SHA256_equal_artifact": true,
+    "default_certificate_and_hostname_verification": true,
+    "cache_busting": false,
+    "final_URLs_equal_requested_canonical_URLs": true,
+    "redirect_history_retained": false,
+    "metadata_source": "ae5ef4aab39b500a3e6964ff459ce8f1612a771c",
+    "metadata_sha256": "99eb51fa6b238b1967c04cd103e2dd0f6925d70d214e4ee6dd555582a944d82a",
+    "build_integrity_sha256": "b641b3dcb833977bb0701cbb84e3d67079cfedf22a1e726b22fb17cad03759dd"
+  },
+  "images": [
+    {
+      "file": "web-monitor.png",
+      "bytes": 174146,
+      "sha256": "f9c071e82e4d7f5013e2731fd3a374cfc8d47d4a3f1b99c9674639d6708fc6f4",
+      "width": 1440,
+      "height": 1633,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "web-resources.png",
+      "bytes": 248365,
+      "sha256": "fc01d39c3c8b802b76793edf0d71dbed4c171ccec679b000c0a618b8a1c5f292",
+      "width": 1440,
+      "height": 2137,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "web-leases.png",
+      "bytes": 102514,
+      "sha256": "a04b9c68c1aaeeb97ad82c7cc3b30ac04561416ab61cc9f13fe6145c746dba83",
+      "width": 1440,
+      "height": 1000,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "web-activity.png",
+      "bytes": 130189,
+      "sha256": "4bc6bcfba81eec0e36022e3e77bbe7cd3d96b8ab013fd3bd516d0744657117ee",
+      "width": 1440,
+      "height": 1000,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "web-host.png",
+      "bytes": 159440,
+      "sha256": "9469b7d7f3ca443c75a6ee9bed4cf2fb7b1400ecb1db723b382f7a44bc8c54c7",
+      "width": 1440,
+      "height": 1334,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "terminal-monitor.png",
+      "bytes": 157929,
+      "sha256": "79948324b5176bc9991db8185117874fe9715beee4b0376001a8c314ac40dfbd",
+      "width": 1212,
+      "height": 1312,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "terminal.png",
+      "bytes": 216856,
+      "sha256": "05d9da6a03d9ab2351611032ee96d88ddb28af2eab935f06560785a0bb2b56a7",
+      "width": 1212,
+      "height": 1312,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    },
+    {
+      "file": "terminal-leases.png",
+      "bytes": 112237,
+      "sha256": "1621497a7d0de9f4b9a91902db1129eb5ca309a3072778e25b3cfa21b581d289",
+      "width": 1212,
+      "height": 1312,
+      "bounded_decompression_and_CRC_valid": true,
+      "changed_from_branch_capture": true
+    }
+  ],
+  "visual_review": "All eight new images viewed; five web/three terminal expected content. Visible runner UID, generated host/lease/pool identities are disposable CI fixture metadata, not private native identities. No visible personal paths, login URLs/tokens, chat IDs, personal hostnames or account/payment details identified.",
+  "native_interactions": {
+    "tested_source": "3bb9965c415dc951cf9240690b59a2cf45d72c98",
+    "qualified_private_receipt_sha256": "9373414c80ee646d12748db02a74348c28f65fddc3e101957a49a7df37616eee",
+    "public_safe_record_sha256": "1718e4a77aa7f0b533b0c7f57bd8762a4b09a1fdc23f68cb15c8e33fe966b597",
+    "fresh_deployed_interactions_claimed": false
+  },
+  "limitations": [
+    "20 final canonical URLs match requested URLs; intermediate redirect history was not retained, so no zero-hop claim.",
+    "Native interaction evidence remains qualified on3bb; no fresh ae5 native interaction/fullscreen/zoom/swipe claim.",
+    "Temporary capture binary and embedded generated assets are not retained in Pages artifact; recorded hashes/provenance do not independently establish full binary reproducibility/hermeticity.",
+    "Live runner capacity and one staged example cooperative lease are illustrative. No remote mesh/message/execution scenario.",
+    "Original failed CI40561678940 remains a failed earlier attempt; accepted run40568391669 is automatic push attempt1."
+  ],
+  "evidence_hashes": {
+    "owner_manifest": "fb82454d2b6e59d35fae0c165f21790df0f9e0bb24389a0e68c0676b5f71a98c",
+    "original_checker_readback": "ac4fc0e9ba6d81b75c41ef0c0c526e2add1df2b80d91594a0b5329846c6fc613",
+    "checker_source": "560bd9324076c734b3149a1cbce4cd84d483b94673a6b7a435382b70b095c9fd"
+  }
+}
