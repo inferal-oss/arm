@@ -212,9 +212,9 @@ The closed dashboard API resolves a verified SSH destination or reviewed connect
 
 Focused native coordinator, server, Charm and CLI race tests pass. The first expanded run passes coordinator/Charm/CLI but fails server listener cases because the sandbox denies loopback binds; only the affected server scope is repeated with loopback permission, passing in30.030s. Affected five-package vet passes. All195 web tests pass without skips, including intent recovery, exact review/identity binding, read-only original lookup, separately pinned connection defaults and presentation controls. These focused checks do not establish the complete project specification or a new formal provisioning proof.
 
-The immutable Darwin UI image SHA256 `a9e7ec87f2829fb26e1caf85eb6e854d7ca4a53ffaf9d4bfef8d3ee8bd16e7f3` drives actual browser and browser-PTY workflows against a fresh Linux authority with a trusted, already-imported thin companion. Two confirmed installation declines produce no executable, target state or target receipt. One browser installation approval, key `602df98b06a3041dcb913a620216680ba0bcb89e35769613aed0912e01d3b572`, completes. Native checks confirm neither node has peer trust before the separate connection review. Charm reads the exact completed installation, opens its read-only destination/fresh-grant form and dismisses it without sending a connection request. Web then separately reviews and approves the exact linked connection with host-summary access forward and no reverse access; it completes under key `78f44b71-f459-4ac4-89db-54189e14588c`. Browser original-key lookup, structured receipt expansion and the existing-connection inspection link are observed without another installation.
+The immutable Darwin UI image SHA256 `a9e7ec87f2829fb26e1caf85eb6e854d7ca4a53ffaf9d4bfef8d3ee8bd16e7f3` drives actual browser and browser-PTY workflows against a fresh Linux authority with a trusted, already-imported thin companion. Two confirmed installation declines produce no executable, target state or target receipt. One browser installation approval completes under its original operation key. Native checks confirm neither node has peer trust before the separate connection review. Charm reads the exact completed installation, opens its read-only destination/fresh-grant form and dismisses it without sending a connection request. Web then separately reviews and approves the exact linked connection with host-summary access forward and no reverse access; it completes under its exact linked operation key. Browser original-key lookup, structured receipt expansion and the existing-connection inspection link are observed without another installation.
 
-Because the editors do not yet expose administrative grant choices, cleanup uses a distinct explicit native disconnect and reviewed reconnect granting only the exact disposable peer `node-stop`/`node-uninstall`. Original-provisioning-key managed uninstall removes the owned executable and endpoint while preserving database, configuration and identity. All17 driver commands exit0; the original source stops ordinarily and its original Popen returns0. The terminal child has positive Wait0/EOF/restored terminal settings/absent group, with no signals. Both agent-owned browser tabs are closed. Reports/screenshots remain under ignored `.cache/provision-smoke/ui-851bf46614314810b4ed0263e077f066/`; private machine details are not tracked.
+Because the editors do not yet expose administrative grant choices, cleanup uses a distinct explicit native disconnect and reviewed reconnect granting only the exact disposable peer `node-stop`/`node-uninstall`. Original-provisioning-key managed uninstall removes the owned executable and endpoint while preserving database, configuration and identity. All17 driver commands exit0; the original source stops ordinarily and its original Popen returns0. The terminal child has positive Wait0/EOF/restored terminal settings/absent group, with no signals. Both agent-owned browser tabs are closed. Reports and screenshots are retained privately; private machine details are not tracked.
 
 Actual rendering identifies a misleading summary label because list DTOs intentionally omit full review/results, and historical receipts continue to exist after connection or uninstall. A focused presentation/read-only navigation correction distinguishes recorded summaries, historical completion and active installation, removes the API error-code banner for normal decline, and opens a known linked connection through the existing keyed read instead of drafting it again. Mutation/verification gates are unchanged; six final Charm provisioning roots pass normal/race checks and the live effect/layout evidence above composes with the corrected presentation/navigation tests. The image above predates these final wording/navigation refinements. Native Terminal.app access remains unverified; actual Linux terminal/macOS destination rendering, carrier-seeded UI provisioning and the wider failure/platform matrix remain required. No public snapshot, consumer or mount support is implied.
 
@@ -224,7 +224,7 @@ Both dashboards use the shared reviewed workflow: exact source-installation sele
 
 The first real UI fixture is unsuccessful: the browser freezes the preliminary preparing review revision, so the legitimate decision revision is rejected and the review expires without consent; the terminal global Recovery shortcut also intercepts node uninstall. Routing through the actual dashboard key handler, scoping provisional metadata advancement while freezing key/host/plan/hash, and retaining strict ready-decision checks correct both defects. Rendering also corrects an unknown permission label and literal newline display. The web regression first fails and then passes; serializing all Stop/uninstall test responses avoids hiding client/server aliasing. The first fixture's ordinary target/source cleanup and browser-PTY closure are retained separately; zero declines/removals are never called acceptance.
 
-The corrected immutable Darwin UI image (`09838ebceb5a9d5e8cbe2a5651614a300accc711a2ea6bae4f69d8f9e3771323`) drives one fresh source/actual Linux destination workflow. Web default-keep and terminal p→review→decline both produce unapproved confirmation-declined records and no target uninstall receipt. One web approval, key `89e19def-d74b-4f63-a7c4-d4f4b626fe43`, completes original Stop and owned-executable removal. Same-key browser and Charm lookup show the completed result without another mutation. Expanded browser JSON shows `original_stop_observed=true` and `artifact_absent=true` with a collapsible receipt. The final driver confirms exactly two declined operations and one approved completion, absent original executable/endpoint, and retained database, configuration, identity and verified recovery companion. The original source is ordinarily stopped and positively reaped; the browser-PTY child has Wait0/EOF/restored terminal state/absent group, with no signals. Agent-owned browser tabs are closed. Reports and screenshots remain under ignored `.cache/uninstall-smoke/ui-be5ad3a8ebf24bdf9c2ea84946462be3/`; the failed fixture remains separate.
+The corrected immutable Darwin UI image (`09838ebceb5a9d5e8cbe2a5651614a300accc711a2ea6bae4f69d8f9e3771323`) drives one fresh source/actual Linux destination workflow. Web default-keep and terminal p→review→decline both produce unapproved confirmation-declined records and no target uninstall receipt. One web approval under its original operation key completes original Stop and owned-executable removal. Same-key browser and Charm lookup show the completed result without another mutation. Expanded browser JSON shows `original_stop_observed=true` and `artifact_absent=true` with a collapsible receipt. The final driver confirms exactly two declined operations and one approved completion, absent original executable/endpoint, and retained database, configuration, identity and verified recovery companion. The original source is ordinarily stopped and positively reaped; the browser-PTY child has Wait0/EOF/restored terminal state/absent group, with no signals. Agent-owned browser tabs are closed. Reports and screenshots are retained privately; the failed fixture remains separate.
 
 Actual Charm draft entry, default-keep confirmation, declined history, completed same-key lookup and 144×48/120×36 framing are observed through the existing browser-PTY adapter. Direct Terminal.app access is denied by computer-use policy; no native-app bypass is attempted or claimed. A first sandbox adapter bind fails before child launch, followed by the authorized loopback run; it is not a successful native Terminal test. Actual incomplete-finish rendering, native Terminal.app/Linux client rendering and the broader service/installation cleanup matrix remain required. No public consumer/mount capability is implied by this UI delivery.
 
@@ -708,7 +708,7 @@ This accepts only pure syntax and framing controls. Source review then finds tha
 
 The isolated `Decide` producer freezes 21 changed files over the accepted Join component. Source review corrects a failed-recordTime continuation gap before execution and preserves the normal production method body. The first source plan contains stale copied validation counts; its metadata-only successor binds 1,012 source inputs and the exact 90/769/68 test rosters without changing source or commands. Root's initial preflight checker separately mistakes package/name pairs for bare names and fails before any native launch. That checker and failure are retained; the narrow tuple-conversion correction passes complete preflight.
 
-One focused race-test command then runs through actual tool session 25555 to terminal exit 1. Raw JSON records 63 named cases started, 36 passed and 27 failed; the expected 90-case set is not reached. Failures include closed source-row/reference validation, an extra projection field/closure and an identity invocation reference. The package reports 3.747s; this is not a compilation or whole-command duration. Full development, normal and vet phases remain unlaunched. Complete source, probe, formal, Go-tool/standard-source and protected root-file postflight stays exact.
+One focused race-test command then runs through the original command to terminal exit 1. Raw JSON records 63 named cases started, 36 passed and 27 failed; the expected 90-case set is not reached. Failures include closed source-row/reference validation, an extra projection field/closure and an identity invocation reference. The package reports 3.747s; this is not a compilation or whole-command duration. Full development, normal and vet phases remain unlaunched. Complete source, probe, formal, Go-tool/standard-source and protected root-file postflight stays exact.
 
 The failed eleven-artifact result manifest is `5789702c9ef215b6b799354f756d05a025f06ba7b9d86b9a2936409db981efc4`, under ignored `.cache/`; raw log hash is `1977039c8718e8efb676ca01f6d2151f4f9ca4d287ce81256180a2bee6cd1d47`. The original source-review receipt pins the pre-correction root checker; a separate correction receipt binds the actual checker used before and after testing. This is failed development instrumentation acceptance, not a demonstrated production behavior failure. Preserve the source and failed evidence, diagnose every failure class, then review a fresh correction before another invocation. Full clock lifecycle/proof/current-composition/Linux and authenticated-agent gates remain open.
 
@@ -732,7 +732,7 @@ The specification requires sleep to count and clock changes not to silently exte
 
 The fresh successor changes only the reporting invariant to require both 33 cases and cursor membership in 1..34. The original cases, Init/Next/CasesHold, configuration and terminal readout remain exact. No warning is suppressed or allowlisted. The accepted 36-root graph is unchanged; a separate finite-stage overlay contains the one-line wrapper strengthening.
 
-One two-phase run passes wrapper source processing and the full finite check. Actual outer session 99510 exits 0; native phase times are 0.229065833s and 5.012907209s. TLC records one initial state, 34 generated/distinct states, depth 34, empty queue, the exact terminal tuple 34/33 and Finished, without warnings. Both native owners have one Wait, exit 0, retired/reaped state, no signals, unknown or quarantine, and PID/group absence. Source/tool/current-runner/user-file closure remains exact. The earlier warning refusal stays failed and retained.
+One two-phase run passes wrapper source processing and the full finite check. The original command exits 0; native phase times are 0.229065833s and 5.012907209s. TLC records one initial state, 34 generated/distinct states, depth 34, empty queue, the exact terminal tuple 34/33 and Finished, without warnings. Both native owners have one Wait, exit 0, retired/reaped state, no signals, unknown or quarantine, and PID/group absence. Source/tool/current-runner/user-file closure remains exact. The earlier warning refusal stays failed and retained.
 
 A separate pure invocation passes sixteen output-oracle controls: the unchanged real successful capture is accepted, while fifteen altered copies with missing/duplicate markers, incorrect initial/count/queue/depth/PID/worker evidence, missing semantic processing or Finished, warnings/errors and trailing output are refused. Only the reviewed finite function is compiled from its pinned source; no process owner is imported and no model or native child is rerun. These are parser controls, not additional model executions.
 
@@ -740,7 +740,7 @@ Root's closed seventeen-artifact result manifest is `d6c159f330b37738bb1abbcb5d0
 
 ## October 24, 2026: finite primitive attempt refuses a reporting-wrapper warning
 
-The separate two-phase invocation passes wrapper source processing, then runs TLC with the original 33 cases, 128 MiB heap, one worker and a 180-second phase limit. Raw output records one initial state, all 34 distinct states, depth 34, empty queue, the exact terminal tuple 34/33 and Finished. TLC also warns that PrimitiveRoster is a constant-only invariant. The unchanged strict warning oracle therefore refuses the run; actual outer session 64567 exits 1. These traversal observations do not establish an accepted finite gate.
+The separate two-phase invocation passes wrapper source processing, then runs TLC with the original 33 cases, 128 MiB heap, one worker and a 180-second phase limit. Raw output records one initial state, all 34 distinct states, depth 34, empty queue, the exact terminal tuple 34/33 and Finished. TLC also warns that PrimitiveRoster is a constant-only invariant. The unchanged strict warning oracle therefore refuses the run; the original command exits 1. These traversal observations do not establish an accepted finite gate.
 
 Both child commands exit 0 with one native Wait, retired/reaped ownership, no signals, unknown owner or quarantine, and PID/group absence. Source-processing native time is 0.33194275s; TLC native time is 5.038230458s. Root and independent review verify all thirteen retained artifacts and source/tool/user-file closure. Failed manifest is `ab8d0ef7af4e16314c3141518d7563d65177865c109ae63446b870746426c3eb`; independent review is `1714c85030cdb803c461930a381a7b371e0c440c15116cd1d31f161d42738e10`. A fresh successor must add a meaningful cursor-domain conjunct to the reporting invariant, retaining all original cases, transitions and strict warning rejection. No warning suppression, retrospective pass or automatic rerun occurs.
 
@@ -748,7 +748,7 @@ Both child commands exit 0 with one native Wait, retired/reaped ownership, no si
 
 After the reviewed one-space Startup token repair and committed Darwin runner correction, one fresh complete graph invocation passes all 36 root commands. Exact parsing, semantic processing and private-module lint sets match every root's full dependency closure, with the root last and no warnings, errors or unknown output. All 36 native receipts bind the planned source/argv/deadline, exit 0, one Wait, retired/reaped ownership, no signals or unknown state, and PID/group absence. The native aggregate is 10.05317075s, within the unchanged 300-second aggregate and 30-second phase limits; the 128 MiB heap/8 MiB stack settings are not a total RSS guarantee.
 
-Root and independent review verify the exact 189-artifact result roster, its 183-file raw index, source snapshots, selected tools, current eleven runner files and five protected user edits. Actual outer session 57199 reaches terminal exit 0; no retry or finite check occurs. Result manifest is `f13408d554d432f1cfdfe87d6375e98dd68183dc0ec842e7fa435910657bded6`; independent review is `b38fca622ca9c914e9a9c487aa653c33a4cb507688c56020470072e4337b7df5`, under ignored `.cache/`. The earlier failed graph and unknown owner remain failed and retained. This accepts complete source processing only. The separate finite controls, policy/math proofs, partial-row semantics and full consumer composition remain required.
+Root and independent review verify the exact 189-artifact result roster, its 183-file raw index, source snapshots, selected tools, current eleven runner files and five protected user edits. The original command reaches terminal exit 0; no retry or finite check occurs. Result manifest is `f13408d554d432f1cfdfe87d6375e98dd68183dc0ec842e7fa435910657bded6`; independent review is `b38fca622ca9c914e9a9c487aa653c33a4cb507688c56020470072e4337b7df5`, under ignored `.cache/`. The earlier failed graph and unknown owner remain failed and retained. This accepts complete source processing only. The separate finite controls, policy/math proofs, partial-row semantics and full consumer composition remain required.
 
 ## October 24, 2026: Darwin exit normalization passes macOS and Linux regression gates
 
@@ -2449,7 +2449,7 @@ rsync fork and exclude unrelated third parties, caches and generated payloads.
 
 A full build from that clean isolated commit compiled all four thin payloads,
 verified their compressed bytes and manifest, then built a CGo-free Linux
-ARM64 carrier on native macOS (original build session 80153, exit 0). Its size
+ARM64 carrier on native macOS (original command, exit 0). Its size
 is 110,226,254 bytes. Go metadata reports Go 1.27.3, linux/arm64, CGO_ENABLED=0
 and armcarrier; the executable is statically linked ELF. The initial local
 receipt helper failed because the system Python lacks `hashlib.file_digest`;
@@ -2523,7 +2523,7 @@ Source/account permission, real budget charging, endpoint journal integration,
 public SSH sync, recovery and formal conformance remain required.
 
 The clean primary checkpoint `48f3864` also passes the all-package Go
-compile-only gate (original session 45192 exit 0; ignored
+compile-only gate (original command exit 0; ignored
 `.cache/integrated-compile-48f3864.log`). This executes no test bodies and
 predates integration of the staging successor described here.
 
@@ -3399,7 +3399,7 @@ context/namespace controls and exact UID details are visibly checked. The
 temporary tab closes; the original fixture exits on requested keyboard
 interruption, its finalizer closes the listener, and its exact PID is absent.
 Screenshots and native logs are retained in
-`/private/tmp/arm-kubernetes-inventory-integration-review/.cache/`.
+private validation artifacts.
 This is desktop widget evidence, not a full backend/browser/cluster workflow,
 narrow viewport or native terminal GUI acceptance. Kubernetes CPU authority,
 runtime/catalog proof, mesh enrollment and dashboard provisioning/recovery
@@ -3423,7 +3423,7 @@ fixture now supplies the TTL only for renewal and explicitly checks that the
 invalid inspection still returns `invalid_request`. All original private-budget
 redaction and fresh/durable replay assertions remain. The corrected focused
 native macOS race run passes in 2.649s; the original failure and successful runs
-remain in `/private/tmp/arm-mesh-budget-projection-fixture-fix/.cache/`.
+remain in private validation artifacts.
 Production decoders and permissions are unchanged. This corrects that specific
 fixture failure; it is not a complete server-suite acceptance or a new Linux
 native CPU-capacity claim.
@@ -3500,7 +3500,7 @@ than silently omit demand, serve the embedded polling module, and render
 `memory_bytes`/`disk_bytes` instead of nonexistent fields. The retained actual
 browser screenshot shows 700 MiB held and 600 MiB queued for both local and
 peer instances, itemized expiries and durations. Screenshot and fixture source
-remain in `/private/tmp/arm-peer-primary-composition/.cache/peer-ui/`.
+remain in private validation artifacts.
 
 Fresh native macOS races pass presence 4.304s, Manager 10.527s, server 11.877s
 and CLI 1.652s; all 207 web tests pass without skips, and four-package vet
@@ -3532,8 +3532,7 @@ acceptance. The complete specification remains unfinished.
 
 ## Source sync final integration review and composed acceptance
 
-The final independent review at
-`/private/tmp/arm-source-sync-final-composition` composes the single native
+The final independent review composes the single native
 source chain and already-included ownership correction. Original context,
 channel, carrier-close/join witnesses, delayed-opener revalidation, full raw
 lease and key/side/volume/disk bindings, and charged preparation footprint
@@ -3547,7 +3546,7 @@ both pass, and it is not relabeled as a pressure failure. Exact runtime sources
 match the accepted Linux 86209b0; original Linux teardown failure, successor
 real-admission both/additive-push/additive-pull/full-removal/cancellation passes
 and VM cleanup receipts remain separate in
-`/private/tmp/arm-native-sync-linux/.cache/native-sync-linux/acceptance.json`.
+private validation artifacts.
 
 After composing onto peer integration 975d4b9, fresh primary native Manager
 races pass 24 roots/38 named sync/peer cases in 54.697s; charged-frame races
@@ -3557,7 +3556,7 @@ actual authenticated Manager-owned endpoints and original cancellation. No
 failures or skips occur in these checks, and affected four-package vet passes.
 Primary evidence is `.cache/sync-source-primary-{manager,frame,components}-race.jsonl`
 and `.cache/sync-source-primary-vet.log`; independent summary is
-`/private/tmp/arm-source-sync-final-composition/.cache/source-final-review-summary.json`.
+private validation artifacts.
 Native VM evidence applies to unchanged reviewed runtime components; it is not
 a fresh complete primary-image Linux run. Public direct/multihop dispatch,
 allocation enforcement, cleanup settlement, wider formal coverage and UI remain
@@ -3661,8 +3660,8 @@ term/owner/member Go schema and actual calendar fields, and require the exact
 mode-specific command roster. No new numeric limits, attribution assumptions,
 model actions, proof obligations or production Go changes were introduced.
 
-The corrected complete low-priority Darwin ARM64 all-mode gate passes at
-`/private/tmp/arm-cpu-warning-formal-review/.tla/review-run/run-u315hzi_/summary.json`.
+The corrected complete low-priority Darwin ARM64 all-mode gate passes; its
+complete validation artifacts are retained privately.
 It retains **383,488 distinct / 1,140,384 generated states**, empty queue;
 **31 actual scenarios / 53 calls / 106 states / 75 edges**;
 **35 altered raw histories / 12 altered model paths / five malformed witnesses**;
@@ -3706,7 +3705,7 @@ failures/skips; ordinary and tagged Manager vet pass. Python syntax, Go
 formatting and diff checks pass.
 
 Final evidence is retained in
-`/private/tmp/arm-cpu-warning-final-integration-review/.tla/final-run/run-egkat7nn/`,
+private validation artifacts,
 with `summary.json` indexing source/tool hashes, full logs, raw histories,
 projections, witnesses and original owner receipts. The preceding full composed
 pass remains under `.tla/review-run/run-cc5x0cyl/`; the exact before/after
@@ -3727,7 +3726,7 @@ witness refusals, all 125 strict no-fingerprint proof obligations and 54 exact
 original command-owner receipts. Independent review found an additional
 background CPU type gap and rejects integer booleans and boolean quantities;
 original accepted projections are unchanged. Its exact complete summary is
-`/private/tmp/arm-cpu-warning-final-integration-review/.tla/final-run/run-egkat7nn/summary.json`
+private validation artifacts
 (SHA256 `3a7db74a39a13006583489d84b93a2e66aa2a5fdf238907772928581d1df5fdd`).
 
 Fresh primary trace mode passes all the same actual scenarios and negative
@@ -3764,7 +3763,7 @@ within the focused run. All 210 web tests and five-package vet pass. Logs are
 `.cache/forward-primary-{web,vet}.log`. Reviewer complete carrier/proxy races,
 normal SSH regressions, tagged three-daemon and final hash-bound development CLI
 harness are indexed by
-`/private/tmp/arm-forward-integration-audit/.cache/forward-integration-review/summary.json`.
+private validation artifacts.
 
 An actual primary tagged run fails at the Manager-owned source HTTP connection
 with unexpected EOF. It is retained in
@@ -3792,7 +3791,7 @@ private original-opener evidence and generic connection-failure marker are
 bounded and exclude parser/application errors and bearer data. Four composed
 positive workflows (42.31/25.73/25.79/27.46s), final privacy/no-replay regression,
 and the separate final pre-opener insufficient-capacity refusal are indexed at
-`/private/tmp/arm-forward-composed-opener-audit/.cache/forward-composed-audit/summary.json`.
+private validation artifacts.
 The final helper extraction has no new positive full workflow result, and no
 cause is claimed for the earlier primary EOF. The final manifest hash is
 `a63e534d07441edc7cf77590399e8b6a1bb727896b6b2bb61cad9116418a46cb`.
@@ -3811,7 +3810,7 @@ and rejects redirects; the original counterexample is retained and the final
 regression asserts zero requests reach the target. Final independent native
 provider/helper, CLI/server/TUI and web checks pass; exact evidence and fresh
 helper-image digest are indexed at
-`/private/tmp/arm-kubernetes-final-runtime-review/.cache/kube-runtime-review-summary.json`.
+private validation artifacts.
 
 Primary composes that exact candidate onto 5ecd9f7. All Kubernetes-specific
 sources match the independent head. A new CGo-free executable SHA256
@@ -3839,7 +3838,7 @@ Both patches apply with zero fuzz to pinned upstream d699293 and reproduce
 every ARD runtime file; its MPL license matches upstream. noVNC runtime bytes
 match cached 1.7.0, with only an AUTHORS trailing-space difference. The evidence
 index and source/provenance manifests remain at
-`/private/tmp/arm-vnc-final-runtime-review/.cache/vnc-final-review-summary.json`.
+private validation artifacts.
 
 Primary composes exact VNC sources onto ebbc6da. Shared browser asset conflicts
 retain peer polling, forwarding controls, Kubernetes inventory and all screen/
@@ -3876,7 +3875,7 @@ without failures/skips, with actual authenticated transfers and retained/restart
 views. Three-package vet passes. Exact 1,652-file source manifest SHA256
 `c8fe8657cfaccfaa315b69fa6c7ec59e66d46e4109f94bf3b6ea39adfcec6274`
 and original failures/final receipts remain in
-`/private/tmp/arm-sync-recovery-final-review/.cache/`.
+private validation artifacts.
 
 Primary composes exact recovery and pair-test sources onto 228ccff. Changed
 charge/lookup races pass 2 roots/9 cases in 3.961s; source restart/destination
@@ -3935,7 +3934,7 @@ complete confirmed disposable reset/startup cycles pass. Author native broad
 races retain three pre-proof CPU-admission fixture failures; their unchanged
 18-case root passes once in an isolated successor. These are separate outcomes,
 not a relabeled broad pass. Author vet and focused tests pass. Receipts remain
-in `/Users/yrashk/.codex/worktrees/c1b6/arm/.cache/database-remove-schema/`.
+in private validation artifacts.
 
 Independent review composes c182cbd and adds regressions 8f6f655. It reproduces
 original direct proof, terminal and parsed-JSON leakage with unchanged complete
@@ -3944,7 +3943,7 @@ and CLI 2 roots/9 cases (8.272s), without failures/skips. That includes both
 missing pressure tables, no-confirmation human/JSON refusal, token/constraint
 boundaries and all three sparse-seed guard roots. Static DDL, normalizer and
 implicit-index catalogs match their original bytes. Index/source evidence is in
-`/private/tmp/arm-database-remove-diagnostic-review/.cache/`; its final manifest
+private validation artifacts; its final manifest
 SHA256 is `a14237171f8bb3c1da12d1f5b19e92fb9e218f2b9dd1669495b2645f2036a1bf`.
 
 Primary all-internal sources match the reviewed 8f6f655 composition exactly.
@@ -3973,7 +3972,7 @@ aggregate resources/counts. No production discovery or admission is changed.
 
 Final independent native races pass 9 roots/17 cases in 5.900s without failures
 or skips; index/source manifest is
-`/private/tmp/arm-charm-peers-integration-review/.cache/charm-peers-review/summary.json`
+private validation artifacts
 (manifest SHA256 `e0a469192f63c85f09242e55f032e8bc4520c593f6ef936bff309dd76aa63f6c`).
 Primary internal and PTY-harness sources match the final reviewed head exactly.
 Final composed primary races pass the same 9 roots/17 cases in 6.039s without
@@ -4004,7 +4003,7 @@ Author 3dcfbb5 was independently composed onto primary d7fab97. Review found a
 concrete bug: a bounded 526-entry plan passed compact-JSON budgeting while its
 later indented recovery receipt needed 1,050,131 bytes, exceeding 1,048,576.
 Retained counterexample logs are under
-`/private/tmp/arm-database-forget-final-review/.cache/database-forget-review/`.
+private validation artifacts.
 Correction ac9f47f reserves the actual durable writer encoding/newline and full
 UTC timestamp width. A real 530-entry private filesystem fixture now refuses
 before mutation with full snapshot equality. Independent fresh-authority/storage
@@ -4046,7 +4045,7 @@ DB image SHA256 is
 CLI image SHA256 is
 1e1a38b034024e441fd347ac06cb13b05487709fd56a05425e10e0221e79275c.
 Exact rosters, hashes and cleanup:
-`/private/tmp/arm-database-forget-linux-validation/.cache/forget-linux-summary.json`.
+private validation artifacts.
 Integrated internal source/test bytes match this final tested composition exactly.
 Only documentation is reconciled centrally. All deletion/startup fixtures are
 disposable; no user database wipe or installation was performed. No secure-media
@@ -4276,3 +4275,176 @@ importers, upstream license and all14 relocated assets before install acceptance
 No new local heavy job or queue ticket is started. Actual successor hosted Go
 and public-install results remain pending; public ZIP inspection is a concrete
 failure reproduction, not a passing installation or rendered VNC session.
+
+### Completed portable baseline and scoped final browser-asset successor
+
+Run `40424167014` on exact source `49e2c789874822eada23b5fc26f0607859aea865`
+(tree `905eee10115eb60ecb36e8c30799d934fe827826`) completes successfully on both
+Linux/macOS and public installation. Each source job's 18 original commands
+exits 0: tidy-diff, module verify, full package compile, scoped race, full fork
+tests, scoped vet, trimpath layout, native and Linux ARM64 builds, dependency
+inventory, final clean-source check and binary metadata. Full rosters retain
+all package/test outcomes. There are no named test skips/failures; package-only
+"skip" events identify packages with no test files. This result does not cover
+the subsequently discovered browser `vendor` omission.
+
+All 1,838 tracked-file source-manifest entries agree between those baseline
+jobs and public-install job. Manifest SHA256:
+`bb47ee60caaf81b4c011c0bd3ade3e10dd2b7cf90091497899926266e0bd6ac1`.
+The reviewed asset commit `af7c059` is appended directly; equivalent alternate
+asset commits are not included. All existing production Go files, root module
+and sums, fork source/fixtures, and inputs of the prior scoped race/fork/vet
+checks remain byte-identical. The only changed existing Go file is the server's
+asset test; a new server asset regression is added. Asset data/importers and
+validation tooling change as described above. The local input-hash comparison
+against the baseline manifest is retained in `.cache/module-assets-scope-reuse.json`.
+
+The successor workflow explicitly renews only browser embedding/HTTP race tests
+on both OSes and a new real public immutable install plus 26 expected public-ZIP
+closure inputs. It does not re-run unrelated fork, policy or global Go gates.
+Manual workflow runs default to full source scope; the candidate branch's final
+push scope is assets. A separate manual `public_query=latest` is guarded to the
+main ref, for use only after coordinator publication; this change does not run
+latest or move main. New scope/dispatch tooling requires independent review
+before the final candidate is published. Unchanged baseline results are reused
+only for their input-hashed scope, while final asset/public acceptance waits for
+its actual new run and receipts.
+
+### Final immutable module and browser ZIP closure — accepted candidate
+
+[Final run 40426543555](https://github.com/inferal-oss/arm/actions/runs/40426543555)
+passes all jobs at exact `3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0`, tree
+`63399b3494e1af83b9282e200cbae5173e3d8680`. Both native asset jobs record six
+original command exits of 0 and 14 named passes plus the package pass, with no
+skips/failures. This is the deliberately narrowed asset scope, not a rerun of
+all fork/policy/native checks. The complete unchanged-source portable evidence
+remains the separately identified `49e2c78` run: each OS has 67 compiled test
+packages plus 19 packages without tests, 96 named scoped race passes across 8
+packages, 167 named fork passes across 20 packages plus 13 without tests, and 1
+trimpath regression pass. No named test was skipped or failed. Full normalized
+rosters for both platforms are preserved in the JSON acceptance record below.
+
+All three final 1839-entry manifests match, SHA256
+`84d52b6c00696ace8e481862ddb5ccd3deb33bc8083e9191073203651be2f3e9`.
+Independent final receipt review confirms candidate bytes, scoped reuse,
+original exits, exact public module identity, all 26 public ZIP input hashes,
+14 byte-preserving pako/license relocations and cleanup, with no discrepancies.
+
+The actual original public query and
+`go install github.com/inferal-oss/arm/cmd/arm@3306c6bbac5d3d5a5f2308cec72cf98b7f85ffa0`
+exit 0 using Go 1.27.3 linux/amd64, normal CGo=1, ordinary
+`https://proxy.golang.org` only, SumDB enabled and new empty private
+GOBIN/GOPATH/GOMODCACHE/GOCACHE outside the checkout. No local source checkout,
+fixture proxy, local replace or prepopulated private source supplies the build.
+Resolved version: `v0.0.0-20261027002433-3306c6bbac5d`.
+Module sum: `h1:QQEEfamfrV3BQ/48E0n32+LF+p6QliXNfl2mI5nCzP0=`.
+GoModSum: `h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=`.
+Origin.Hash and installed binary buildinfo match the exact query/version/sum;
+all 11 public commands exit 0. Version reports 0.1.0-dev, help succeeds, the thin
+catalog is `[]`, no backend home is created, and the owned disposable root is
+confirmed removed. Binary SHA256:
+`38f6e6dc8356c3bffe1cd1f1f82df1e33d7a9465753eb3b763fce444c0da13f3`,
+68,552,075 bytes. No installed user binary/backend/state is touched.
+
+Final artifacts are generated receipts only. Their downloaded ZIP bytes were
+independently SHA256-checked against GitHub's exact artifact metadata:
+
+| Artifact | ID | ZIP SHA256 |
+| --- | --- | --- |
+| Linux assets |12699633869|2a890a206ffe6f89a011f53f50a21fa4e560d3d61555b59604a88c6b0648cf2d|
+| macOS assets |12700286670|062a7b5db8a1f3ebfa52f9483acf5c1fa7be87e849bfd74c8e5c4c1d437f94ba|
+| Public install |12699902745|be831e9aaf39015add6e6aacaa042ff117be70e6ca3a56f8ccf5a3f7ad7e345d|
+
+[The persistent normalized acceptance record](validation/module-migration-2026-10-26.json)
+retains complete rosters and command exits without raw backend state or fixture
+logs; downloaded full receipts remain in the task's ignored cache and GitHub
+artifacts have seven-day retention. Runtime inputs remain byte-identical after
+this accepted candidate. The later provenance-only correction `2084eaa` documents
+the noVNC transformation accurately, with no ARD/runtime patch semantics changed.
+
+Literal `@latest` remains **unperformed and unaccepted** until coordinator main
+integration/publication and correction of the separately reviewed validation
+harness cancellation path. The CI workflow and script are excluded from the
+production integration because their stop helper could signal a process group
+after reaping its leader. Successful normal-path receipts above remain valid,
+but establish no cancellation safety. After the corrected harness is accepted,
+inspect literal latest installation and its actual resolved source,
+original install exit, buildinfo/checksums, final closure and cleanup receipts.
+Do not substitute this successful immutable candidate query for literal latest
+or infer acceptance of later composed feature/release changes from these scopes.
+
+
+### Reviewed private sync workspace composition
+
+Focused source `6bc990b` is integrated after canonical module feature `77b962f`.
+[Run 40424736706](https://github.com/inferal-oss/arm/actions/runs/40424736706)
+passes on Linux amd64 and macOS arm64 with Go 1.27.3. Each platform runs all
+39 syncfs race roots, six selected worker race roots (10 named cases), and vet.
+Both original FIFO-blocking and malformed-sibling counterexamples fail as
+expected before the fixes. Final scopes contain no failed or skipped tests;
+a helper root with no activated environment is not claimed as a native case.
+
+All 1,841 tracked source hashes were verified before/after; downloaded artifact
+ZIP hashes match GitHub metadata. Complete bounded receipts, exact source
+identity and cleanup are retained in
+[the workspace evidence record](validation/sync-workspace-2026-10-26.json).
+Source comparison confirms the syncfs/worker source is unchanged by later
+module packaging. The transitive fork debug-log argument correction is
+separately reviewed and tested in the canonical module scope; it is not
+claimed byte-identical to the earlier worker dependency.
+
+No public-sync, cleanup, release or settlement acceptance follows from these
+checks. Lookup cannot prove absence outside the reserved namespace; arbitrary
+stalled kernel filesystem calls have no hard cancellation bound here.
+
+
+### Canonical Kubernetes admission correction
+
+Coordinator reviews the actual three-file `92c4550` diff, equivalent to the
+owned provider changes in `7250a04`. Native Darwin arm64 Go 1.27.3 gates on
+canonical dependency `af7c059` pass: 82 provider race cases with no skips or
+failures, 10 affected CLI/server/TUI race cases, and four-package vet. Root
+independently parses the original JSON logs, confirms the terminal rosters and
+records full source/log hashes in
+[the admission evidence](validation/kubernetes-admission-2026-10-26.json).
+Original command exits are retained from the owner's execution evidence.
+
+The separate `4d8362d` live observation covers Pod Ready and exact-UID cleanup
+only. Carrier export/execution was rejected by automatic approval review;
+shipment, in-Pod catalog proof, enrollment and SSH remain unverified. Neither
+that observation nor passing provider tests establishes those missing gates.
+
+
+### Final cgroup memory observation and admission evidence
+
+[Run 40427712145](https://github.com/inferal-oss/arm/actions/runs/40427712145)
+passes on Linux amd64 and Darwin arm64. Observe race tests, all five named
+Manager memory-admission race roots, affected vet and native observations have
+original exit 0. Linux observes a real 536,870,912-byte ancestor capacity and
+refuses admission credit in a hidden cgroup namespace. No CPU/memory policy
+overrides substitute for native observations.
+
+Root independently verifies downloaded ZIP SHA-256 values against the reported
+GitHub digests, every original exit receipt and all four focused source hashes.
+[The persistent record](validation/cgroup-memory-2026-10-26.json) retains exact
+source identities, named pass rosters, log/artifact hashes and native results.
+Current Manager, model and observation inputs match the tested composition.
+No Linux arm64 execution, full pressure policy, pause/resume, elapsed lease-clock
+adaptation or broader formal acceptance is inferred.
+
+
+### Module harness cancellation and source-identity correction
+
+Root independently reads the entire corrected harness/workflow and runs all
+seven cheap tests at source `083488d`: an already-reaped child receives no PID
+or group signal, a live original child receives one kill and is joined, a
+failed wait retains uncertainty, current/stale/missing public source identities
+are distinguished. Tests pass with no Go build or network. Timeout/interruption
+aborts further commands and reports descendants as unproven. This scope accepts
+the bounded helper, not descendant cleanup or public latest installation.
+
+The workflow uses pinned official actions, read-only repository permissions,
+normal public proxy/SumDB settings, empty disposable caches and a main-only
+literal-latest guard. Positive public acceptance additionally requires exact
+Origin.Hash equality with the checked-out source, original install exit 0,
+buildinfo/sums, source closure, smoke probes and disposable cleanup.

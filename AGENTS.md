@@ -19,6 +19,12 @@ Review each completed step before integration, fix the findings and run relevant
 
 Commit each major completed feature separately after review, fixes and validation. Update `docs/PLAN.md`, `docs/IMPLEMENTATION.md` and `docs/VALIDATION.md` to distinguish implemented behavior, scoped evidence, unsupported behavior and remaining work. Report integrated commit IDs and unresolved gates truthfully. Continue authorized work without repeatedly asking for permission; honor explicit user-review requirements and explain concrete blockers when they apply.
 
+## Repository documentation privacy
+
+Never include chat IDs, discussion minutiae, or personal information in documents committed to the repository. Describe project requirements, technical decisions, behavior, validation and limitations. Identify ownership by role, branch or commit, never by an internal conversation identifier.
+
+Keep private coordination records, tool/session handles, personal filesystem paths, native hostnames, account/payment details and raw private execution receipts outside version control. Committed evidence may contain normalized technical results, test rosters, source hashes and public CI references. Review documentation and generated evidence before committing. Preserve required license attribution and public technical citations.
+
 ## Implementation isolation and completion
 
 Each delegated implementation task or subagent must use its own Git worktree and branch. Do not let parallel workers edit a shared checkout. Preserve existing work when moving a task, copy only its owned changes and required reviewed dependencies, and integrate focused commits after review and validation. Keep the primary checkout for coordination and integration.
