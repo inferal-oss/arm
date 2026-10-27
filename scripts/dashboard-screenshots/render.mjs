@@ -7,7 +7,7 @@ import { terminalGeometry } from './geometry.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 
 async function fitResourcesViewport(page) {
-  const footer = page.getByRole('contentinfo', { name: 'ARM', exact: true })
+  const footer = page.locator('footer[data-sem-c="status-bar"][aria-label="ARM"]')
   await footer.waitFor({ timeout: 15000 })
   // A full-page screenshot keeps a fixed footer at the original viewport's
   // bottom, where it obscures content halfway through a taller image. Grow
@@ -29,7 +29,9 @@ async function fitResourcesViewport(page) {
     })
     if (Object.values(frame).some(value => !Number.isFinite(value)) || frame.width !== 1440 ||
         frame.height < 1000 || frame.height > 3600 || frame.documentWidth > frame.width + 1 || frame.footerHeight <= 0) throw Error()
-    if (frame.documentHeight <= frame.height + 1 && frame.footerTop >= frame.contentBottom - 1 &&
+    // The stock shell's viewport minimum plus inset leaves empty scroll
+    // padding. Check actual content bounds instead of growing for that padding.
+    if (frame.footerTop >= frame.contentBottom - 1 && frame.footerBottom >= frame.height - 1 &&
         frame.footerBottom <= frame.height + 1) return
     const height = Math.ceil(Math.max(frame.documentHeight + 16, frame.contentBottom + frame.footerHeight + 16, frame.height + 64))
     if (attempt === 4 || height > 3600) throw Error()
