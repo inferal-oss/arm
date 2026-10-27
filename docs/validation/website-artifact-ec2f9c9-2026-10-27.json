@@ -1,0 +1,562 @@
+{
+  "schema": 1,
+  "date": "2026-10-27",
+  "scope": "Frozen website validation artifact and its fresh browser and pixel review; no production deployment or later-source acceptance.",
+  "source_commit": "ec2f9c9e5eb7d44e793e658074be5fa8b56da753",
+  "ci": {
+    "run": 40479900956,
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40479900956",
+    "artifact_id": 12722766615,
+    "artifact_url": "https://github.com/inferal-oss/arm/actions/runs/40479900956/artifacts/12722766615",
+    "build": "success",
+    "deploy": "skipped"
+  },
+  "artifact": {
+    "zip_bytes": 1289500,
+    "zip_sha256": "bc60e9d34820ba12a33005ddb24f20640f26249f6c7aa14ccd85db4dccf6acab",
+    "tar_sha256": "189157f3c0fb73087eaa7eed00240aca7bc552cdb655abf951697cabe3eb9d56",
+    "regular_files": 15,
+    "uncompressed_bytes": 4318506
+  },
+  "runtime_assets": {
+    "arm-wat-only-store-CpWQrDGP.js": {
+      "bytes": 152,
+      "sha256": "413330f5422d9274200bbf3c89c910523542335de2b262329a27a01ea0a3220d"
+    },
+    "index-DeJ-K_oM.js": {
+      "bytes": 3487504,
+      "sha256": "325704871cd5e5238bab56308fac37bb57699117437d812b849bbd1de5a68e46"
+    },
+    "wat-4kfTsMVw.js": {
+      "bytes": 77,
+      "sha256": "6579fb113fc61d370e1577189e1322e320051d891ff8ff798ec1290cec81ab4b"
+    },
+    "wat-CR-H2qbq.wasm": {
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    }
+  },
+  "runtime_packaging": {
+    "wasm_files": 1,
+    "engine": "WAT",
+    "optional_rust_engine": false,
+    "wasm": {
+      "file": "assets/wat-CR-H2qbq.wasm",
+      "bytes": 102443,
+      "sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01"
+    },
+    "runtime_chunks": [
+      "assets/arm-wat-only-store-CpWQrDGP.js",
+      "assets/index-DeJ-K_oM.js",
+      "assets/wat-4kfTsMVw.js"
+    ]
+  },
+  "framework": {
+    "archive": "https://codeload.github.com/inferal-oss/semblance/tar.gz/88eb230991c4f63d54fe47bee5cf3fb9f121e528",
+    "integrity": "sha512-92IauJvJkyoHuvFvedbEkdOSm72Vt8MI5HN8jhaOtkX1dF726GhkkUhPjDC5TU816IsOqQrENfNKKnA8POJp1A==",
+    "commit": "88eb230991c4f63d54fe47bee5cf3fb9f121e528"
+  },
+  "renderer_overlay": {
+    "path": "src/render/dom.ts",
+    "base_sha256": "dce6c7997fe712a94caa3a5ee30aba3e8eaebc5d25e4367b2e164d4334ba8871",
+    "sha256": "2de10c3f48a289bbc84da35942ed123ed3e280a86e981d44cb301ab2a68ecca6",
+    "upstream_issue": "https://github.com/inferal-oss/semblance/issues/181",
+    "upstream_change_commit": "454e0186506f3fd2f4f0fcd76673c4e9d50667c8",
+    "status": "Reviewed generic source overlay; upstream acceptance is not claimed."
+  },
+  "vite_helper": {
+    "version": "8.3.5",
+    "integrity": "sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ==",
+    "license_sha256": "a22152baa1aef74402443008e767e7c689a524c0909d19b0431d97f5ab066a13",
+    "full_license_bytes": 98196,
+    "full_license_present_in_actual_notices": true
+  },
+  "capture": {
+    "source_commit": "ec2f9c9e5eb7d44e793e658074be5fa8b56da753",
+    "binary_sha256": "c96bb5ff43a0843b1d4f17d6397d09ec9ac1d3843e0a72a796e6904fd3ebb95d",
+    "scope": "Disposable GitHub Actions backend, real host observations and example cooperative pool lease.",
+    "terminal": "Actual arm dashboard terminal PTY bytes rendered by xterm.js.",
+    "sampling": {
+      "backend_warmup_seconds": 6,
+      "terminal_frame_seconds": 6
+    },
+    "terminal_geometry": {
+      "cols": 140,
+      "rows": 80
+    },
+    "terminal_profile": {
+      "background": "#101519",
+      "foreground": "#e1e9ed",
+      "font_family": "DejaVu Sans Mono, monospace",
+      "font_size": 14
+    },
+    "images": [
+      {
+        "file": "web-monitor.png",
+        "sha256": "e7701b176711e3023b5d5ca6a54b038d6c3608501300f3a80e097a74b5a30fc8",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "file": "web-resources.png",
+        "sha256": "e38c82582da508b76bdc7ed45713ca7f75c4385bf60cfe1bc45a34748e9cd414",
+        "width": 1440,
+        "height": 2137
+      },
+      {
+        "file": "terminal.png",
+        "sha256": "5b7a8d4b4dbc9de95ae0a2679031be33bfc3de30a923e8c0fc27f6ca5bdab5d3",
+        "width": 1212,
+        "height": 1312
+      }
+    ]
+  },
+  "visual_review": {
+    "all_eight_fresh_website_views_reviewed": true,
+    "all_three_fresh_dashboard_images_reviewed": true,
+    "resources": "Complete top header and first content, unobscured Ports and pool values, complete final pool card, status footer below all content.",
+    "sampling_limit": "Web and terminal images sample the actual disposable CI backend sequentially; they do not represent one simultaneous observation."
+  },
+  "browser": {
+    "source_commit": "ec2f9c9e5eb7d44e793e658074be5fa8b56da753",
+    "views": [
+      {
+        "page": "Overview",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#overview"
+      },
+      {
+        "page": "Get started",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#start"
+      },
+      {
+        "page": "Capabilities",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#capabilities"
+      },
+      {
+        "page": "Docs & source",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#docs"
+      },
+      {
+        "page": "Overview",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#overview"
+      },
+      {
+        "page": "Get started",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#start"
+      },
+      {
+        "page": "Capabilities",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#capabilities"
+      },
+      {
+        "page": "Docs & source",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "shape_invalid": 0,
+        "horizontal_overflow": false,
+        "images_loaded": 5,
+        "hash": "#docs"
+      }
+    ],
+    "gallery": [
+      {
+        "viewport": 1440,
+        "file": "web-monitor.png",
+        "width": 1440,
+        "height": 1000,
+        "hash_verified": true
+      },
+      {
+        "viewport": 1440,
+        "file": "web-resources.png",
+        "width": 1440,
+        "height": 2137,
+        "hash_verified": true
+      },
+      {
+        "viewport": 1440,
+        "file": "terminal.png",
+        "width": 1212,
+        "height": 1312,
+        "hash_verified": true
+      },
+      {
+        "viewport": 390,
+        "file": "web-monitor.png",
+        "width": 1440,
+        "height": 1000,
+        "hash_verified": true
+      },
+      {
+        "viewport": 390,
+        "file": "web-resources.png",
+        "width": 1440,
+        "height": 2137,
+        "hash_verified": true
+      },
+      {
+        "viewport": 390,
+        "file": "terminal.png",
+        "width": 1212,
+        "height": 1312,
+        "hash_verified": true
+      }
+    ],
+    "local_links": [
+      {
+        "viewport": 1440,
+        "path": "./system-map.svg",
+        "status": 200
+      },
+      {
+        "viewport": 1440,
+        "path": "./THIRD-PARTY-NOTICES.txt",
+        "status": 200
+      },
+      {
+        "viewport": 390,
+        "path": "./system-map.svg",
+        "status": 200
+      },
+      {
+        "viewport": 390,
+        "path": "./THIRD-PARTY-NOTICES.txt",
+        "status": 200
+      }
+    ],
+    "console_errors": 0,
+    "page_errors": 0,
+    "failed_local_requests": [],
+    "fragment_reload_1440": true,
+    "history_1440": true,
+    "diagram_1440": {
+      "width": 1120,
+      "height": 606.65625,
+      "center_error_px": 0
+    },
+    "native_image_link_1440": true,
+    "fragment_reload_390": true,
+    "history_390": true,
+    "diagram_390": {
+      "width": 326,
+      "height": 176.578125,
+      "center_error_px": 0
+    },
+    "native_image_link_390": true,
+    "result": "passed",
+    "scope": "Frozen website artifact only; no production backend or domain/TLS acceptance."
+  },
+  "native_picker": {
+    "source_commit": "ec2f9c9e5eb7d44e793e658074be5fa8b56da753",
+    "result": "passed",
+    "records": [
+      {
+        "phase": "mobile choose",
+        "expected": "Capabilities",
+        "expected_heading": "Resources and operations",
+        "heading": "Resources and operations",
+        "expected_hash": "#capabilities",
+        "hash": "#capabilities",
+        "value": "ui#Capabilities",
+        "options": [
+          {
+            "label": "Overview",
+            "value": "ui#Home",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Get started",
+            "value": "ui#Start",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Capabilities",
+            "value": "ui#Capabilities",
+            "attribute": true,
+            "property": true
+          },
+          {
+            "label": "Docs & source",
+            "value": "ui#Docs",
+            "attribute": false,
+            "property": false
+          }
+        ],
+        "matches": true
+      },
+      {
+        "phase": "mobile choose docs",
+        "expected": "Docs & source",
+        "expected_heading": "Documentation",
+        "heading": "Documentation",
+        "expected_hash": "#docs",
+        "hash": "#docs",
+        "value": "ui#Docs",
+        "options": [
+          {
+            "label": "Overview",
+            "value": "ui#Home",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Get started",
+            "value": "ui#Start",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Capabilities",
+            "value": "ui#Capabilities",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Docs & source",
+            "value": "ui#Docs",
+            "attribute": true,
+            "property": true
+          }
+        ],
+        "matches": true
+      },
+      {
+        "phase": "Back",
+        "expected": "Capabilities",
+        "expected_heading": "Resources and operations",
+        "heading": "Resources and operations",
+        "expected_hash": "#capabilities",
+        "hash": "#capabilities",
+        "value": "ui#Capabilities",
+        "options": [
+          {
+            "label": "Overview",
+            "value": "ui#Home",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Get started",
+            "value": "ui#Start",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Capabilities",
+            "value": "ui#Capabilities",
+            "attribute": true,
+            "property": true
+          },
+          {
+            "label": "Docs & source",
+            "value": "ui#Docs",
+            "attribute": false,
+            "property": false
+          }
+        ],
+        "matches": true
+      },
+      {
+        "phase": "Forward",
+        "expected": "Docs & source",
+        "expected_heading": "Documentation",
+        "heading": "Documentation",
+        "expected_hash": "#docs",
+        "hash": "#docs",
+        "value": "ui#Docs",
+        "options": [
+          {
+            "label": "Overview",
+            "value": "ui#Home",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Get started",
+            "value": "ui#Start",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Capabilities",
+            "value": "ui#Capabilities",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Docs & source",
+            "value": "ui#Docs",
+            "attribute": true,
+            "property": true
+          }
+        ],
+        "matches": true
+      },
+      {
+        "phase": "mobile choose start",
+        "expected": "Get started",
+        "expected_heading": "Install ARM",
+        "heading": "Install ARM",
+        "expected_hash": "#start",
+        "hash": "#start",
+        "value": "ui#Start",
+        "options": [
+          {
+            "label": "Overview",
+            "value": "ui#Home",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Get started",
+            "value": "ui#Start",
+            "attribute": true,
+            "property": true
+          },
+          {
+            "label": "Capabilities",
+            "value": "ui#Capabilities",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Docs & source",
+            "value": "ui#Docs",
+            "attribute": false,
+            "property": false
+          }
+        ],
+        "matches": true
+      },
+      {
+        "phase": "mobile to desktop choose to mobile",
+        "expected": "Capabilities",
+        "expected_heading": "Resources and operations",
+        "heading": "Resources and operations",
+        "expected_hash": "#capabilities",
+        "hash": "#capabilities",
+        "value": "ui#Capabilities",
+        "options": [
+          {
+            "label": "Overview",
+            "value": "ui#Home",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Get started",
+            "value": "ui#Start",
+            "attribute": false,
+            "property": false
+          },
+          {
+            "label": "Capabilities",
+            "value": "ui#Capabilities",
+            "attribute": true,
+            "property": true
+          },
+          {
+            "label": "Docs & source",
+            "value": "ui#Docs",
+            "attribute": false,
+            "property": false
+          }
+        ],
+        "matches": true
+      }
+    ],
+    "scope": "Actual frozen static artifact: native option attribute, property and value plus route heading and hash; no backend or source mutation.",
+    "value_normalization": "The fixed RDF UI namespace origin is omitted from option and select values; the same ui# fragment identity is retained for their equality checks."
+  },
+  "earlier_results_preserved": [
+    {
+      "source_commit": "70c77cd52dff266b0995670e97c3778c92aa0810",
+      "run": 40470874551,
+      "ci_build": "success",
+      "visual_result": "Resources full-page capture failed visual review because the fixed status footer obscured content. This is not final visual acceptance."
+    },
+    {
+      "source_commit": "d825c265bede9ebbc7c1d49bda3f42c3f51a6434",
+      "run": 40472632589,
+      "ci_build": "failure",
+      "failure_stage": "renderer_web_resources_viewport",
+      "reason": "Implicit contentinfo locator did not match the actual nested footer; strict document-height fitting also included empty stock bottom padding.",
+      "deployment": "skipped"
+    },
+    {
+      "source_commit": "d9e05fed29be58c59f9d5a2a76df97394a53950b",
+      "run": 40475518705,
+      "ci_build": "success",
+      "initial_eight_view_checks": "passed",
+      "deeper_native_picker_result": "failed: selected attribute and route changed while native selected property and value retained a previous option through history and breakpoint changes.",
+      "packaging_result": "failed: unused optional Rust engine WASM/glue was bundled and full Vite helper notices were absent.",
+      "deployment": "skipped"
+    }
+  ],
+  "validation_source": {
+    "browser_harness_sha256": "601e2067b15513bee394ca7873e34f351be9927349f5b7fadec805bd48e8b459",
+    "native_picker_harness_sha256": "461a397a065398f176f7188a3da88ccd923824b3272d3a0c5a109495ba216bcf",
+    "independent_acceptance_audit_sha256": "cf4c4db5d6aa7f57cf75729bd8127438634d57cc4c40adb69c25fc9c723d90b0"
+  },
+  "limitations": [
+    "This record preserves the exact ec2 website source, CI artifact and acceptance scope; subsequent main builds and HTTPS results belong to separate records.",
+    "The screenshot CLI was compiled from this CI checkout and has the recorded binary hash. Its Go build retained VCS stamping; identical tracked Go files do not establish identical compiler inputs or binary bytes across commits.",
+    "The separate carrier source 70c77cd and its release artifacts are not this website capture binary and are not relabeled by this record.",
+    "The actual disposable CI backend and PTY produced the dashboard images; browser review of the static website did not run a user or production backend.",
+    "No public domain, certificate, HTTPS enforcement or deployment acceptance is established; deployment was skipped for this validation run.",
+    "The generic renderer overlay is source-bound; upstream acceptance is not claimed."
+  ]
+}
