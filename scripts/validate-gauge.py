@@ -63,6 +63,15 @@ def main():
     write(work / "source-before.json", before)
     if before["commit"] != os.environ["GITHUB_SHA"] or before["status"]:
         raise RuntimeError("dirty source or checkout differs from immutable hosted SHA")
+    baseline = os.environ.get("GAUGE_FULL_BASELINE", "")
+    scope = "pty-successor" if baseline else "full"
+    if baseline:
+        if baseline != "77c4772bd3c02574554ea783b21c62b98bfe7381":
+            raise RuntimeError("unreviewed full-suite baseline")
+        changed = set(subprocess.check_output(["git", "diff", "--name-only", baseline, "HEAD"], cwd=ROOT).decode().splitlines())
+        if changed != {"scripts/test-terminal-gauge-refresh.py", "scripts/gauge-source-inputs.json", "scripts/validate-gauge.py", ".github/workflows/gauge-validation.yml"}:
+            raise RuntimeError("PTY successor changed inherited runtime/test inputs")
+    expected_steps = set(STEPS) - ({"tui-race", "tui-vet", "web-tests"} if baseline else set())
     inputs = json.loads((ROOT / "scripts/gauge-source-inputs.json").read_text())
     actual_scope = {name for name in before["files"] if name.startswith("internal/tui/") and name.endswith(".go")}
     actual_scope |= {"scripts/test-terminal-dashboard.py", "scripts/test-terminal-gauge-refresh.py"}
@@ -174,8 +183,9 @@ def main():
                     raise RuntimeError("toolchain is cross-targeted or uses another module")
                 write(work / "native-target.json", dict(os=native_os, arch=native_arch, **goenv))
             run("node-version", [node, "--version"], env)
-            run("tui-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-count=1", "-json", "-timeout=10m", "./internal/tui"], env, 900)
-            run("tui-vet", [go, "vet", "-mod=readonly", "-p=1", "./internal/tui"], env)
+            if not baseline:
+                run("tui-race", [go, "test", "-mod=readonly", "-race", "-p=1", "-count=1", "-json", "-timeout=10m", "./internal/tui"], env, 900)
+                run("tui-vet", [go, "vet", "-mod=readonly", "-p=1", "./internal/tui"], env)
             binary = work / "arm"
             if not run("native-build", [go, "build", "-mod=readonly", "-p=1", "-o", str(binary), "./cmd/arm"], env):
                 image = sha(binary)
@@ -187,16 +197,18 @@ def main():
             web = sorted(name for name in before["files"] if name.startswith("internal/server/web/") and name.endswith(".test.mjs"))
             if not web:
                 raise RuntimeError("empty web test roster")
-            run("web-tests", [node, "--test", *web], env)
+            if not baseline:
+                run("web-tests", [node, "--test", *web], env)
             if image:
                 run("gauge-pty", [sys.executable, "-B", "scripts/test-terminal-gauge-refresh.py", "--arm", str(binary), "--output-dir", str(work / "gauge-pty")], env, 180)
                 run("dashboard-pty", [sys.executable, "-B", "scripts/test-terminal-dashboard.py", "--arm", str(binary), "--output-dir", str(work / "dashboard-pty")], env, 180)
-            events = [json.loads(line) for line in (work / "tui-race.stdout.txt").read_text().splitlines() if line.startswith("{")]
-            roster = {action: [e for e in events if e.get("Action") == action] for action in ("run", "pass", "fail", "skip", "build-fail")}
-            write(work / "roster.json", roster)
-            passed = {e.get("Test") for e in roster["pass"]}
-            if not REQUIRED_ROOTS <= passed or roster["fail"] or roster["build-fail"]:
-                failures.append("missing required TUI success or failed race event")
+            if not baseline:
+                events = [json.loads(line) for line in (work / "tui-race.stdout.txt").read_text().splitlines() if line.startswith("{")]
+                roster = {action: [e for e in events if e.get("Action") == action] for action in ("run", "pass", "fail", "skip", "build-fail")}
+                write(work / "roster.json", roster)
+                passed = {e.get("Test") for e in roster["pass"]}
+                if not REQUIRED_ROOTS <= passed or roster["fail"] or roster["build-fail"]:
+                    failures.append("missing required TUI success or failed race event")
             for name in ("gauge-pty", "dashboard-pty"):
                 if not any(c["name"] == name and c["exit"] == 0 and c["controller_exit"] == 0 and c["waited"] for c in commands):
                     failures.append("incomplete " + name)
@@ -214,9 +226,9 @@ def main():
         if active is not None:
             stop(active)
     finally:
-        if {c["name"] for c in commands} != set(STEPS):
+        if {c["name"] for c in commands} != expected_steps:
             failures.append("incomplete command roster")
-        write(work / "result.json", dict(failures=failures, source=before["commit"], complete=not failures))
+        write(work / "result.json", dict(failures=failures, source=before["commit"], scope=scope, inherited_full_suite_source=baseline or None, inherited_full_suite_run=40434230427 if baseline else None, complete=not failures))
         # Exact generated-file whitelist. Never upload the binary, caches,
         # backend SQLite state, copied source, ambient files or arbitrary trees.
         allowed = {"source-before.json", "source-after.json", "source-equivalence.json", "metadata.json", "commands.json", "environment.json", "native-target.json", "tools.json", "image.json", "closure.json", "cleanup.json", "roster.json", "result.json"}
