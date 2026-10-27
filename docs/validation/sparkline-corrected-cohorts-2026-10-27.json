@@ -1,0 +1,170 @@
+{
+  "cohorts": {
+    "S1": {
+      "exact_names_ancestry_match": true,
+      "failed": 0,
+      "file_roster": {
+        "test/sparkline.test.ts": {
+          "cases": 33,
+          "status": "passed"
+        }
+      },
+      "observation_sha256": "2feea8d95d0a4e4ab14ecc9659b430c6fec1cd554a6882dccce65a58e82bcaf3",
+      "passed": 33,
+      "report_sha256": "b1811ea452672620abe19c0de31876bc9aed2e46c6434a4da4ea2e131bb8f049",
+      "skipped_pending_todo": 0,
+      "total": 33
+    },
+    "S2": {
+      "exact_names_ancestry_match": true,
+      "failed": 0,
+      "file_roster": {
+        "test/charts-sparql.test.ts": {
+          "cases": 6,
+          "status": "passed"
+        },
+        "test/gallery.test.ts": {
+          "cases": 5,
+          "status": "passed"
+        },
+        "test/gantt.test.ts": {
+          "cases": 5,
+          "status": "passed"
+        }
+      },
+      "observation_sha256": "c3f05636283e5a2aed1aa89c546d5a5c5c00693bba6d7e1c149c29483bf81a72",
+      "passed": 16,
+      "report_sha256": "505098583d428fc9c81577ea94984b1c3662b5ee3cc8dcfd4e488d28fa9a56f2",
+      "skipped_pending_todo": 0,
+      "total": 16
+    },
+    "S3": {
+      "exact_names_ancestry_match": true,
+      "failed": 0,
+      "file_roster": {
+        "test/cost.test.ts": {
+          "cases": 3,
+          "status": "passed"
+        }
+      },
+      "observation_sha256": "517ed2e6c8b398c1effaa259ee9a1e32bede99414c224c9e3016781f3374aeeb",
+      "passed": 3,
+      "report_sha256": "0b687981b32abd69f0b36febdc64d49b36501ff9644b208152f8e53ed5f359ef",
+      "skipped_pending_todo": 0,
+      "total": 3
+    }
+  },
+  "correction_source_review_sha256": "892b56c1fd3f7246aecde8ca6303e6b5207ce2d82fb5e0da0294f869782ae133",
+  "disposition": "Fresh corrected-source TSC and full33/16/3 targeted cohorts passed with exact identities and zero skipped/pending/todo. The new foreign canonical-graph HTML twin finding is closed within this source-bound component unit/cohort scope only.",
+  "fresh_typecheck": {
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_exit": 0,
+    "wait_calls": 1
+  },
+  "gate_source_review_sha256": "6d9b3754a3548aa85c23a1f1a4e484ff72e378b769d579511730d52fea87007c",
+  "historical_failures": {
+    "N1_wrapper_exit": 1,
+    "original_S123_wrapper_exit": 1,
+    "preservation_input_pins_unchanged": true,
+    "qualification": "Still failed; this successor does not promote numeric/Calendar or waive N1."
+  },
+  "independent_audit_sha256": "7e95bcabc01743602acdd791fd555b2ce9868b186d9a5f149b7e3636e32099e8",
+  "input_closure": {
+    "all6_before_cohort_after_final_maps_equal": true,
+    "current_contents_identities_memberships_match": true,
+    "directory_bindings": 351,
+    "files": 18316,
+    "harness_files": 20,
+    "inventories": 169
+  },
+  "limitations": [
+    "Private experimental dependency remains explicit. No all-domain numeric/Calendar, PR/merge or whole-suite acceptance.",
+    "No native browser80 configurations/keyboard/visual/example cleanup claim; those remain separately required.",
+    "Retained Rust/WAT images reused with unchanged90source inputs, not rebuilt; file-path hashing is not interception of every native read.",
+    "Original direct-child waits and known owned cache absence only; no all-descendant/OS-wide cleanup claim.",
+    "Reviewer used read/hash/JSON inspection only; no helper/candidate/native execution, build/typecheck/tests, queue/network or source mutation."
+  ],
+  "loader_image_hashes": {
+    "rust": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6",
+    "wat": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031"
+  },
+  "loader_source_sha256": "850bdd20235dff17ecc368b8ce5cfac806b57c46a663f8e89e7f00a214f18aba",
+  "manifest_sha256": "a3901a8bbed4a0ab026cfba17705b308ea274678ace2487804dcabeb83d21e15",
+  "original_children": [
+    {
+      "original_exit": 0,
+      "stage": "images-before",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "typecheck",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "S1",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "S1-observe",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "S2",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "S2-observe",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "S3",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "S3-observe",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "images-after",
+      "wait_calls": 1
+    }
+  ],
+  "outer_sha256": "579a54383366d3d13e934b2a5fdcf054af268f807afcb6c454d38a369f7495f8",
+  "owned_cleanup_paths_absent": true,
+  "owned_correction_files": {
+    "ontology/components/sparkline.ttl": "881dccb9977318e75d20e42e7e4a52747cfd37b3467971eb4fd99a2652a1cb30",
+    "test/sparkline.test.ts": "5fcb00d988591d85995f7b15b724f0ad7a1736193afe7cdfb770c313609459e0"
+  },
+  "semantic_feature_acceptance": false,
+  "snapshot_index_tree": "354d77ac0fa0336061939815940c85dab3e65b0e",
+  "source_base": "1d9ec6be12f883d4bb0f0e57f6c00053b43522c1",
+  "source_closure_sha256": "ac6eadd2ec6afb6de1caeecb1a81593d32570a0f77afe29e89991ba8a04793d9",
+  "status": "SCOPED_COMPONENT_COHORT_PASS",
+  "total_named_cases": 52,
+  "warning_scope": "No warning/unsupported/N3/stderr matching diagnostics observed in the three merged logs; no N3 SPARQL support claim.",
+  "warnings": {
+    "S1": {
+      "case_insensitive_warning_unsupported_N3_stderr_matching_lines": 0,
+      "log_bytes": 1462,
+      "log_sha256": "6e8253754b13070cf007ea1a3f22337f5b4c3e695ae0d6199a3703a50b559ea5"
+    },
+    "S2": {
+      "case_insensitive_warning_unsupported_N3_stderr_matching_lines": 0,
+      "log_bytes": 1322,
+      "log_sha256": "02a2b1b8ee98bae6ffe2feae031c2a5df60caf54f106b8d554b030d49d843868"
+    },
+    "S3": {
+      "case_insensitive_warning_unsupported_N3_stderr_matching_lines": 0,
+      "log_bytes": 531,
+      "log_sha256": "79b01c8439674fb56a3f7b002928b72c34c9c006c01f56ef95bebccb08071d36"
+    }
+  }
+}
