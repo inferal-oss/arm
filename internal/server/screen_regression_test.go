@@ -138,6 +138,7 @@ func TestBrowserScreenEnforcesInputMessageLimit(t *testing.T) {
 		n, _ := io.Copy(io.Discard, stream)
 		forwarded <- n
 	}))
+	awaitScreenTransportCapacity(t, s)
 	joined := make(chan struct{})
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer close(joined)
@@ -341,6 +342,7 @@ func TestScreenNativeDialIntervalIsRegisteredUntilCanceledAndJoined(t *testing.T
 		close(entered)
 		<-r.Context().Done()
 	}))
+	awaitScreenTransportCapacity(t, s)
 	s.authority = "127.0.0.1:1234"
 	token := strings.Repeat("c", 64)
 	s.browser.nodeSessions = map[[32]byte]nodeCredential{sha256.Sum256([]byte(token)): {Expires: time.Now().Add(time.Minute), Context: bound}}
