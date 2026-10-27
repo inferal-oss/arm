@@ -1,0 +1,155 @@
+{
+  "canonical_composed_ci": {
+    "commit": "ef26ba4c75f72a8bbc71efd6e5a81bcaf57faa1e",
+    "fixture_comment_variant": {
+      "body_and_go_tokens_unchanged": true,
+      "difference": "Exactly three descriptive header comments after imports; all other bytes equal. No build directive, import or Go token changes.",
+      "final_canonical_sha256": "61c4cd9ebe6deb4564a9dfdafa569072ea57ad764327eca7fb07fc380289d9fa",
+      "path": "internal/manager/cargo_cancel_native_test.go",
+      "root_ci_canonical_sha256": "fa1b8421ea955dbe28da63e20d44470eb90b8c723a0d1dfbc6b221592f8a8046"
+    },
+    "platforms": {
+      "darwin-arm64": {
+        "scope": "Clock and full-composition validation are not claimed by this generic feature",
+        "status": "pending_separate_integration"
+      },
+      "linux-arm64": {
+        "job_url": "https://github.com/inferal-oss/arm/actions/runs/40447232521/job/122001298154",
+        "status": "passed"
+      }
+    },
+    "status": "Linux canonical component passed; macOS full composition remains separate and pending",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40447232521",
+    "validation_relation": "Canonical composition includes separately reviewed lease-clock changes. The generic feature is an import-prefix projection; the recorded native-fixture variant differs only in three descriptive comments."
+  },
+  "canonical_projection": {
+    "base": "7430c86",
+    "conflicts": [],
+    "files": {
+      "internal/childowner/observe_darwin.go": {
+        "canonical_feature_sha256": "f792a414cfb520fad53c0aa814d8589fe51b332fe5ad054bbd3afb2995cf542c",
+        "ci_source_sha256": "f792a414cfb520fad53c0aa814d8589fe51b332fe5ad054bbd3afb2995cf542c"
+      },
+      "internal/childowner/observe_linux.go": {
+        "canonical_feature_sha256": "799b2f3d6768228409c3731b574b874ab8b3f67c5f21586bd694938e46d71cc0",
+        "ci_source_sha256": "799b2f3d6768228409c3731b574b874ab8b3f67c5f21586bd694938e46d71cc0"
+      },
+      "internal/childowner/owner.go": {
+        "canonical_feature_sha256": "580f98a6b87e060803e251b4e8dd7f64af9b90f151c0b6e3bd938dcd18d04e5e",
+        "ci_source_sha256": "580f98a6b87e060803e251b4e8dd7f64af9b90f151c0b6e3bd938dcd18d04e5e"
+      },
+      "internal/childowner/owner_darwin_test.go": {
+        "canonical_feature_sha256": "74292346cb941af8f7213b440a08b290ba29635b7876311d51bcec054e0fd1a8",
+        "ci_source_sha256": "74292346cb941af8f7213b440a08b290ba29635b7876311d51bcec054e0fd1a8"
+      },
+      "internal/childowner/owner_test.go": {
+        "canonical_feature_sha256": "67deaeb79c90e1ac85a088dfd0b2dcf172da827782a1633e63efd648cba3b9d7",
+        "ci_source_sha256": "67deaeb79c90e1ac85a088dfd0b2dcf172da827782a1633e63efd648cba3b9d7"
+      },
+      "internal/manager/cargo_cancel_native_test.go": {
+        "canonical_feature_sha256": "61c4cd9ebe6deb4564a9dfdafa569072ea57ad764327eca7fb07fc380289d9fa",
+        "ci_source_sha256": "36e788e5265e17859f413ba2af7e74e2eb58ba89c60bb8f144283e3f39fc1ccf"
+      },
+      "internal/manager/cargo_launch.go": {
+        "canonical_feature_sha256": "16d0f2190a38f09f31199eed73ada06442e9403b2090f6401332630333fa3d7f",
+        "ci_source_sha256": "3712b5dd6eceb7b91073985b96a75e1c31fe64e927672a24aeb908eccfa930c9"
+      },
+      "internal/manager/cargo_lifecycle.go": {
+        "canonical_feature_sha256": "0c922fa93bc628383dc0eb720518872eed975abd8e006d7ba3b3bb835f2c0ae1",
+        "ci_source_sha256": "54310fc3a690be0fc8dce4133468600645a3894177735036b3c49824b81bf904"
+      },
+      "internal/manager/cargo_lifecycle_test.go": {
+        "canonical_feature_sha256": "227404448abdb15caf5f66064548f7ed1f5c8e08639e095bec1b55e8bb37d814",
+        "ci_source_sha256": "ced5ba5bd43894f36247de6a4165d7012eb4e63a75db3e0514a453aff1ea6db9"
+      },
+      "internal/manager/job_control.go": {
+        "canonical_feature_sha256": "f6fb087db1fa8db0920ebaeb472af18b997521fe1ed3c1c5fbe27590035f2127",
+        "ci_source_sha256": "dfd117685a217a3249bed461dbdbdc61788aaf595d24d2ecd391b6d78912c5e3"
+      },
+      "internal/manager/job_control_native_test.go": {
+        "canonical_feature_sha256": "8c4f7e6eaccecee9c9a1deec9ba110b4fa10c432184b74b8caf0b607e40d4d8e",
+        "ci_source_sha256": "e6317f89ac022563adc98379925b664767e8461d98d13f2b2001f1313e380439"
+      },
+      "internal/manager/manager.go": {
+        "canonical_feature_sha256": "8aee5059451fbbe50b6fcb6fa578952044fb156d453ee504da0ac7275f79406b",
+        "ci_source_sha256": "97b7ada0e7982d9d461f0b048ba236f1cfeae6f8eba00aeb4523f2aad370db71"
+      },
+      "internal/manager/native_fixture_headroom_test.go": {
+        "canonical_feature_sha256": "8a065ab6142681cd6dca35e2bba8242758bbdf8a1697dc8dc31219c5aa372aea",
+        "ci_source_sha256": "b1e9b06ab1359b698ca4c461a7a8c60aa1aae11f95bc79d8348a56ebc958382a"
+      },
+      "internal/manager/scheduling.go": {
+        "canonical_feature_sha256": "45b4e93b6c703b2cf2b01e0451172ee9a04b45657bc85e4b624476e508d9cbfe",
+        "ci_source_sha256": "11643f183f8ab556473433b4faedccbc860ae0bd3e8730cd4f025f1b6db546af"
+      },
+      "internal/manager/ssh_integration_test.go": {
+        "canonical_feature_sha256": "f8b4613a59e8069d8454eb5989daf2681bbdbb61af472f66f505df7443ed18c1",
+        "ci_source_sha256": "80a2b32c590dc17f9d4c2a6c7dfb5dd05e2a38bffd14b9a38c84be0a09ab6674"
+      },
+      "internal/manager/ssh_records.go": {
+        "canonical_feature_sha256": "c90a4f260d88b0d013a20dea847892e65a3b8290fbd209d3d657e82b6273d4cc",
+        "ci_source_sha256": "a49afc7bc11257b14cb7da58e77d267b21ffd14b4b3cdd66469d8cb4fe857fc2"
+      },
+      "internal/manager/ssh_runtime.go": {
+        "canonical_feature_sha256": "b63564a1b5f90f098a4b0960d45d2bc0d97f141b5d57de2b24bc43349b9eda8d",
+        "ci_source_sha256": "3e8502adfa916d1eec5825416d64608019a1c621114e9dbc0ee345f385850e86"
+      },
+      "internal/manager/ssh_settlement.go": {
+        "canonical_feature_sha256": "c1c2731cf0e2ad506556561a7ad4c7e9282f7d06a180534b620f76d10fe5b33d",
+        "ci_source_sha256": "c5c116ad072fbd33bf3dfd900713d7b0fdca56de0cd0af2b050a9df4b50d9ae3"
+      },
+      "internal/manager/ssh_settlement_test.go": {
+        "canonical_feature_sha256": "770a3bf85872c5d79f20e73eadb096e8349913229ddb01ff8496e47731c047e7",
+        "ci_source_sha256": "dcde39916bd9e20c9d93f1a806a7ae37022ff22aa278cc4a93c370459788541d"
+      }
+    },
+    "module_prefix_only": "github.com/yrashk/arm -> github.com/inferal-oss/arm",
+    "separate_test_dependency": "a8e5d78"
+  },
+  "ci": {
+    "commit": "423ee34465e5e2fe1c08917a97e739081eac3ff5",
+    "go": "go1.27.3",
+    "original_command_cleanup": "Native/race and vet commands each exited zero, retired control authority, were reaped through exactly one native Wait, and had positive post-Wait PID/group absence with no cleanup errors",
+    "owned_source_files": 19,
+    "platforms": {
+      "darwin-arm64": {
+        "childowner_roots": 20,
+        "failures": 0,
+        "manager_roots": 37,
+        "race": "passed",
+        "roots": 57,
+        "skips": 0,
+        "vet": "passed"
+      },
+      "linux-arm64": {
+        "childowner_roots": 17,
+        "failures": 0,
+        "manager_roots": 37,
+        "race": "passed",
+        "roots": 54,
+        "skips": 0,
+        "vet": "passed"
+      }
+    },
+    "source_and_selected_tool_closures": "unchanged before and after actual native/race/vet commands on both platforms",
+    "status": "passed_scoped_native_and_vet",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40447637546"
+  },
+  "limitations": [
+    "Process-group supervision does not prove cleanup of descendants that deliberately escape the original group.",
+    "Unknown native ownership or cleanup remains charged; a later positive observation does not erase earlier failure.",
+    "Hosted image/compiler evidence is scoped to the selected CI image and dependency closure.",
+    "The EOF regression supplies a bounded opportunity to expose the old ordering; positive native join and group absence are verified independently.",
+    "Canonical macOS real-Cargo and clock/full-composition validation remain separate integration work; this commit does not claim those remaining gates."
+  ],
+  "native_cpu_scope": "Explicit original-waiter admission/expiry and SSH recovery/proof fixtures use production sampling and fail unavailable headroom; controlled tests retain their stated fixture scope",
+  "retained_failure_contract": [
+    "Actual denied signals remain sticky after a later positive native reap.",
+    "Unknown native observation or ownership does not authorize a signal or an adopted Wait.",
+    "Native readiness and positive worker completion cannot settle SSH resources before the original transport joins.",
+    "Cargo ending journal refusal still cancels the exact worker while retaining the prior charged row until its original callback joins."
+  ],
+  "schema": 1,
+  "scope": "Original native child ownership, signal retirement, Cargo cancellation and positive SSH transport settlement; controlled failures and actual native fixtures",
+  "status": "validated scoped generic supervision; clock integration is separate"
+}
