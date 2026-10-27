@@ -47,3 +47,5 @@ func observeTerminal(pid int) (terminal, error) {
 func terminalOnlyGroup(int) (bool, error) { return false, nil }
 
 const nativeTerminalGroupGrace = 0
+
+const nativePreflightSignals = false

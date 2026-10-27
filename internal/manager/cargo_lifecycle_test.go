@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"syscall"
 	"testing"
@@ -159,6 +160,7 @@ func TestCargoRecoveryNeverFreesUnknownPIDZeroSpawnIntent(t *testing.T) {
 	r.Profile = "rust-build"
 	r.StorageLease = store.ID
 	run := RunRequest{Request: r, Command: []string{"cargo", "check", "--offline"}, CWD: t.TempDir()}
+	awaitNativeFixtureHeadroom(t, m, r.Resources)
 	l, e := m.Acquire(r, &run)
 	if e != nil {
 		t.Fatal(e)
@@ -366,7 +368,19 @@ func TestCargoCancelAfterCompileGrantBeforeStartedReceiptWaitsForGroup(t *testin
 	if e != nil || ending.State != "ending" {
 		t.Fatal(ending, e)
 	}
-	cargoWait(t, func() bool { x, _ := m.Inspect(l.ID); return x.State == "terminal" })
+	cargoWait(t, func() bool {
+		current, err := m.Inspect(l.ID)
+		if err != nil {
+			t.Fatal("original Cargo lease inspection failed", err)
+		}
+		if current.State == "needs_attention" {
+			m.mu.Lock()
+			rec, recordErr := m.getCargo(l.ID)
+			m.mu.Unlock()
+			t.Fatalf("original Cargo cleanup became uncertain: failure=%q cargo_error=%q record_error=%v pid=%d process=%+v", current.Failure, rec.Error, recordErr, current.PID, current.Process)
+		}
+		return current.State == "terminal"
+	})
 	done, e := m.Inspect(l.ID)
 	if e != nil || done.Outcome != "cancelled" {
 		t.Fatal(done, e)
@@ -498,7 +512,19 @@ func TestCargoExpiryAfterAuthorizationBeforeStartedReceiptWaitsForVerifiedGroupA
 	if e != nil || live.Cargo == nil || live.Cargo.AuthorizedAt == nil || live.Cargo.StartedAt != nil {
 		t.Fatal("actual build not started before expiry", live, e)
 	}
-	cargoWait(t, func() bool { x, _ := m.Inspect(l.ID); return x.State == "terminal" })
+	cargoWait(t, func() bool {
+		current, err := m.Inspect(l.ID)
+		if err != nil {
+			t.Fatal("original Cargo lease inspection failed", err)
+		}
+		if current.State == "needs_attention" {
+			m.mu.Lock()
+			rec, recordErr := m.getCargo(l.ID)
+			m.mu.Unlock()
+			t.Fatalf("original Cargo cleanup became uncertain: failure=%q cargo_error=%q record_error=%v pid=%d process=%+v", current.Failure, rec.Error, recordErr, current.PID, current.Process)
+		}
+		return current.State == "terminal"
+	})
 	l, e = m.Inspect(l.ID)
 	if e != nil || l.Outcome != "expired" {
 		t.Fatal(l, e)
@@ -509,5 +535,191 @@ func TestCargoExpiryAfterAuthorizationBeforeStartedReceiptWaitsForVerifiedGroupA
 	status, e := m.Status()
 	if e != nil || status.Reserved.CPU != 0 {
 		t.Fatal(status, e)
+	}
+}
+
+func TestCargoEndingRefusesReplacedOriginalWorkerBinding(t *testing.T) {
+	for _, field := range []string{"host", "owner", "request"} {
+		t.Run(field, func(t *testing.T) {
+			m := newManager(t)
+			store, err := m.Acquire(storageRequest("bound-parent"), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			entered, release := make(chan struct{}), make(chan struct{})
+			var once sync.Once
+			unblock := func() { once.Do(func() { close(release) }) }
+			defer unblock()
+			if err = m.ConfigureCargoHelper(func() (string, cargoprofile.HelperRuntime, error) {
+				close(entered)
+				<-release
+				return "", cargoprofile.HelperRuntime{}, errors.New("owned source fixture completed")
+			}); err != nil {
+				t.Fatal(err)
+			}
+			request := request("bound-worker")
+			request.Profile = "rust-build"
+			request.StorageLease = store.ID
+			lease, err := m.Acquire(request, &RunRequest{Request: request, Command: []string{"cargo", "build", "--offline"}, CWD: t.TempDir()})
+			if err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case <-entered:
+			case <-time.After(time.Second):
+				t.Fatal("original source did not start")
+			}
+			m.mu.Lock()
+			original, err := m.get(lease.ID)
+			if err != nil {
+				m.mu.Unlock()
+				t.Fatal(err)
+			}
+			changed := original
+			switch field {
+			case "host":
+				changed.Host = "changed-host"
+			case "owner":
+				changed.Owner = "changed-owner"
+			case "request":
+				changed.Request.Reason = "changed intent"
+			}
+			err = m.put(changed, "test.cargo_binding_changed")
+			m.mu.Unlock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err = m.End(lease.ID, "cancelled"); errorCode(err) != "needs_attention" {
+				t.Fatal("replaced row controlled original worker", err)
+			}
+			status, err := m.Status()
+			if err != nil || status.Reserved.CPU != 1 {
+				t.Fatal("replaced row freed worker charge", status.Reserved, err)
+			}
+			m.mu.Lock()
+			err = m.put(original, "test.cargo_binding_restored")
+			m.mu.Unlock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			unblock()
+			eventually(t, func() bool { current, err := m.Inspect(lease.ID); return err == nil && current.State == "terminal" })
+		})
+	}
+}
+
+func TestCargoEndingJournalFailureCancelsOriginalWorker(t *testing.T) {
+	for _, mode := range []string{"end", "close"} {
+		t.Run(mode, func(t *testing.T) {
+			m, err := Open(filepath.Join(t.TempDir(), "arm"), model.Resources{CPU: 1, Memory: 1024, Disk: 2048})
+			if err != nil {
+				t.Fatal(err)
+			}
+			cpuReading(m, 64, 64, 0, 64, 0)
+			var closeOnce, releaseOnce, cancelOnce sync.Once
+			var closeErr error
+			closeManager := func() error { closeOnce.Do(func() { closeErr = m.Close() }); return closeErr }
+			release := make(chan struct{})
+			unblock := func() { releaseOnce.Do(func() { close(release) }) }
+			t.Cleanup(func() { unblock(); _ = closeManager() })
+			store, err := m.Acquire(storageRequest("cargo-journal-parent"), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			entered := make(chan struct{})
+			if err = m.ConfigureCargoHelper(func() (string, cargoprofile.HelperRuntime, error) {
+				close(entered)
+				<-release
+				return "", cargoprofile.HelperRuntime{}, errors.New("owned cancellable image preparation returned")
+			}); err != nil {
+				t.Fatal(err)
+			}
+			q := request("cargo-journal-cancel")
+			q.Profile = "rust-build"
+			q.StorageLease = store.ID
+			lease, err := m.Acquire(q, &RunRequest{Request: q, Command: []string{"cargo", "build", "--offline"}, CWD: t.TempDir()})
+			if err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case <-entered:
+			case <-time.After(3 * time.Second):
+				t.Fatal("original Cargo image callback did not enter")
+			}
+			cancelled := make(chan struct{})
+			m.mu.Lock()
+			worker := m.cargoWorkers[lease.ID]
+			if worker == nil {
+				m.mu.Unlock()
+				t.Fatal("original admitted Cargo worker absent")
+			}
+			originalCancel := worker.cancel
+			worker.cancel = func() {
+				originalCancel()
+				cancelOnce.Do(func() { close(cancelled) })
+				if mode == "close" {
+					unblock()
+				}
+			}
+			_, err = m.db.Exec(`CREATE TRIGGER reject_cargo_ending_journal BEFORE INSERT ON events WHEN NEW.type='cargo.ending' BEGIN SELECT RAISE(ABORT,'owned ending journal refusal'); END`)
+			m.mu.Unlock()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if mode == "end" {
+				if _, err = m.End(lease.ID, "cancelled"); err == nil {
+					t.Fatal("Cargo ending journal refusal was hidden")
+				}
+				select {
+				case <-cancelled:
+				case <-time.After(3 * time.Second):
+					t.Fatal("failed ending write did not cancel its original worker")
+				}
+				stored, err := m.Inspect(lease.ID)
+				if err != nil || stored.State != "active" || stored.Ended != nil {
+					t.Fatal("failed ending write changed the prior durable charge", stored, err)
+				}
+				status, err := m.Status()
+				if err != nil || status.Reserved.CPU != 1 {
+					t.Fatal("failed ending write freed CPU before original callback joined", status.Reserved, err)
+				}
+				select {
+				case <-worker.done:
+					t.Fatal("worker joined before original blocked callback returned")
+				default:
+				}
+				unblock()
+				select {
+				case <-worker.done:
+				case <-time.After(3 * time.Second):
+					t.Fatal("cancelled original callback did not join")
+				}
+				stored, err = m.Inspect(lease.ID)
+				if err != nil || stored.State != "terminal" {
+					t.Fatal("joined cancelled no-spawn worker did not settle", stored, err)
+				}
+			} else {
+				closed := make(chan error, 1)
+				go func() { closed <- closeManager() }()
+				select {
+				case <-cancelled:
+				case <-time.After(3 * time.Second):
+					t.Fatal("Close could not cancel original worker after journal refusal")
+				}
+				select {
+				case err = <-closed:
+					if err == nil {
+						t.Fatal("Close hid Cargo ending journal failure")
+					}
+				case <-time.After(3 * time.Second):
+					t.Fatal("Close waited on uncancelled Cargo callback")
+				}
+				select {
+				case <-worker.done:
+				default:
+					t.Fatal("Close returned before original Cargo callback joined")
+				}
+			}
+		})
 	}
 }

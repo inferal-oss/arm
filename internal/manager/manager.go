@@ -1250,6 +1250,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.Request.Kind == "ports" && l.State != "queued" {
 		return m.endPortParent(l, outcome)
 	}
+	if l.Cargo != nil || l.Request.Profile == "rust-build" {
+		return m.endCargo(l, outcome)
+	}
 	if m.gradleObligation(l) {
 		if m.jobs[id] == nil {
 			return m.reconcileGradle(l, outcome)

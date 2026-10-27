@@ -67,3 +67,37 @@ func TestNativeDarwinTerminalOnlyGroupAvoidsZombieSignal(t *testing.T) {
 		t.Fatal(err, calls)
 	}
 }
+
+func TestNativeDarwinNaturalExitBeforeFirstTermRetiresSignalsAndJoins(t *testing.T) {
+	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", "exit 0")
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	for {
+		ended, err := observeTerminal(cmd.Process.Pid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if ended.ready {
+			break
+		}
+		select {
+		case <-ctx.Done():
+			t.Fatal(ctx.Err())
+		case <-time.After(time.Millisecond):
+		}
+	}
+	calls := 0
+	o.mu.Lock()
+	o.signal = func(int, syscall.Signal) error { calls++; return syscall.EPERM }
+	o.mu.Unlock()
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, ErrRetired) || o.Active() {
+		t.Fatal(err, o.Active())
+	}
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) {
+		t.Fatal(err)
+	}
+	result := o.Wait(ctx)
+	if !result.Reaped || result.CleanupError != nil || cmd.ProcessState.ExitCode() != 0 || calls != 0 {
+		t.Fatal(result, cmd.ProcessState, calls)
+	}
+}

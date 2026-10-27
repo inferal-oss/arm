@@ -19,6 +19,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/creack/pty"
 	"github.com/yrashk/arm/internal/database"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
@@ -68,6 +69,34 @@ func newSSHManagerFixtureWithAdmission(t *testing.T, m *Manager, ttl time.Durati
 }
 
 func newSSHManagerFixtureWithAdmissionReadHold(t *testing.T, m *Manager, ttl time.Duration, admit func(context.Context, model.SSHExecutionRequest, sshservice.Execution, ssh.Channel) (model.Lease, sshservice.Process, error), holdPeerReads bool) *sshManagerFixture {
+	return newSSHManagerFixtureWithClaim(t, m, ttl, admit, holdPeerReads, .5)
+}
+
+// Recovery/proof fixtures use the real production sampler and a small actual
+// CPU claim. Unknown/stale or unavailable headroom fails instead of injecting
+// capacity. Admission still rechecks the native budget before any process gate.
+func newNativeSSHManagerFixture(t *testing.T, m *Manager, ttl time.Duration) *sshManagerFixture {
+	t.Helper()
+	const claim = .01
+	m.Start()
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		status, err := m.Status()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if status.CPU != nil && status.CPU.Known && !status.CPU.Stale && status.CPU.Available >= claim {
+			break
+		}
+		if !time.Now().Before(deadline) {
+			t.Fatalf("native SSH headroom unavailable: CPU=%+v", status.CPU)
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	return newSSHManagerFixtureWithClaim(t, m, ttl, nil, false, claim)
+}
+
+func newSSHManagerFixtureWithClaim(t *testing.T, m *Manager, ttl time.Duration, admit func(context.Context, model.SSHExecutionRequest, sshservice.Execution, ssh.Channel) (model.Lease, sshservice.Process, error), holdPeerReads bool, claim float64) *sshManagerFixture {
 	t.Helper()
 	if m == nil {
 		m = newManager(t)
@@ -84,7 +113,7 @@ func newSSHManagerFixtureWithAdmissionReadHold(t *testing.T, m *Manager, ttl tim
 		t.Fatal(err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	f := &sshManagerFixture{m: m, ctx: ctx, cancel: cancel, q: model.SSHExecutionRequest{Source: strings.Repeat("a", 32), Target: m.host, Pair: strings.Repeat("b", 64), Revision: 1, Certificate: strings.Repeat("c", 64), PublicKeySHA256: sshDigest(signer.PublicKey().Marshal()), Key: local.ID(), Account: m.ownerUsername, Reason: "private execution integration", TTL: ttl, Resources: model.Resources{CPU: .5}, CWD: t.TempDir()}}
+	f := &sshManagerFixture{m: m, ctx: ctx, cancel: cancel, q: model.SSHExecutionRequest{Source: strings.Repeat("a", 32), Target: m.host, Pair: strings.Repeat("b", 64), Revision: 1, Certificate: strings.Repeat("c", 64), PublicKeySHA256: sshDigest(signer.PublicKey().Marshal()), Key: local.ID(), Account: m.ownerUsername, Reason: "private execution integration", TTL: ttl, Resources: model.Resources{CPU: claim}, CWD: t.TempDir()}}
 	serverDone := make(chan struct{})
 	f.serverDone = serverDone
 	go func() {
@@ -260,6 +289,21 @@ func TestSSHManagerActualPTYResizeAndInput(t *testing.T) {
 	if err = s.WindowChange(37, 101); err != nil {
 		t.Fatal(err)
 	}
+	// window-change has no SSH reply; observe the original kernel PTY before
+	// sending input which allows the command to read its second size.
+	_, _, lease := f.snapshot()
+	f.m.mu.Lock()
+	original := f.m.jobs[lease.ID]
+	f.m.mu.Unlock()
+	if original == nil || original.sshRuntime == nil {
+		t.Fatal("original PTY runtime missing")
+	}
+	eventually(t, func() bool {
+		original.sshRuntime.mu.Lock()
+		defer original.sshRuntime.mu.Unlock()
+		size, err := pty.GetsizeFull(original.sshRuntime.master)
+		return err == nil && size.Rows == 37 && size.Cols == 101
+	})
 	if _, err = io.WriteString(input, "private-input\n"); err != nil {
 		t.Fatal(err)
 	}
@@ -387,8 +431,7 @@ func TestSSHManagerSettledProofAndCorruptRelationships(t *testing.T) {
 					_ = m.Close()
 				}
 			})
-			cpuReading(m, 64, 64, 0, 64, 0)
-			f := newSSHManagerFixture(t, m, time.Minute)
+			f := newNativeSSHManagerFixture(t, m, time.Minute)
 			s, err := f.client.NewSession()
 			if err != nil {
 				t.Fatal(err)
@@ -558,7 +601,7 @@ func TestSSHManagerRestartNeverReexecutesRedactedRequest(t *testing.T) {
 			_ = m.Close()
 		}
 	})
-	f := newSSHManagerFixture(t, m, time.Minute)
+	f := newNativeSSHManagerFixture(t, m, time.Minute)
 	marker := filepath.Join(f.q.CWD, "one-execution")
 	command := "printf x >> '" + marker + "'"
 	s, err := f.client.NewSession()
@@ -566,7 +609,10 @@ func TestSSHManagerRestartNeverReexecutesRedactedRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err = s.Run(command); err != nil {
-		t.Fatal(err)
+		_, _, admitted := f.snapshot()
+		current, inspectErr := m.Inspect(admitted.ID)
+		status, statusErr := m.Status()
+		t.Fatalf("original SSH execution failed: error=%v state=%s failure=%q inspect_error=%v CPU=%+v status_error=%v", err, current.State, current.Failure, inspectErr, status.CPU, statusErr)
 	}
 	s.Close()
 	q, ch, l := f.snapshot()

@@ -95,3 +95,5 @@ func terminalOnlyPIDList(pid int, ids [2]int32, n int32) (bool, error) {
 }
 
 const nativeTerminalGroupGrace = 250 * time.Millisecond
+
+const nativePreflightSignals = true

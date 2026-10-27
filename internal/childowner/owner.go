@@ -30,19 +30,23 @@ type Result struct {
 // Owner is process-local, never serialized or reconstructed after recovery.
 // Its mutex serializes signals and the irreversible retirement before Wait.
 type Owner struct {
-	mu                 sync.Mutex
-	cmd                *exec.Cmd
-	pid                int
-	retired            bool
-	waiting            bool
-	failure            error
-	killSentAt         time.Time
-	killSucceeded      bool
-	terminalOnlyGroup  func(int) (bool, error)
-	terminalGroupGrace time.Duration
-	observe            func(int) (terminal, error)
-	signal             func(int, syscall.Signal) error
-	wait               func() error
+	mu                  sync.Mutex
+	cmd                 *exec.Cmd
+	pid                 int
+	retired             bool
+	signalsRetired      bool
+	terminalGroupProven bool
+	terminalGroupExit   terminal
+	preflightSignals    bool
+	waiting             bool
+	failure             error
+	killSentAt          time.Time
+	killSucceeded       bool
+	terminalOnlyGroup   func(int) (bool, error)
+	terminalGroupGrace  time.Duration
+	observe             func(int) (terminal, error)
+	signal              func(int, syscall.Signal) error
+	wait                func() error
 }
 
 // Available checks the native observer before any child is started. The
@@ -71,14 +75,36 @@ func New(cmd *exec.Cmd) (*Owner, error) {
 	if _, err := observeTerminal(cmd.Process.Pid); err != nil {
 		return nil, fmt.Errorf("original non-reaping observation unavailable before gate: %w", err)
 	}
-	return &Owner{cmd: cmd, pid: cmd.Process.Pid, observe: observeTerminal, terminalOnlyGroup: terminalOnlyGroup, terminalGroupGrace: nativeTerminalGroupGrace, signal: func(pid int, sig syscall.Signal) error { return syscall.Kill(-pid, sig) }, wait: cmd.Wait}, nil
+	return &Owner{cmd: cmd, pid: cmd.Process.Pid, observe: observeTerminal, terminalOnlyGroup: terminalOnlyGroup, terminalGroupGrace: nativeTerminalGroupGrace, preflightSignals: nativePreflightSignals, signal: func(pid int, sig syscall.Signal) error { return syscall.Kill(-pid, sig) }, wait: cmd.Wait}, nil
 }
 
 func (o *Owner) Signal(sig syscall.Signal) error {
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	if o.retired {
+	if o.retired || o.signalsRetired {
 		return ErrRetired
+	}
+	if o.preflightSignals {
+		ended, err := o.observe(o.pid)
+		if err != nil {
+			o.failure = errors.Join(o.failure, fmt.Errorf("original child signal preflight is unknown: %w", err))
+			o.signalsRetired = true
+			return o.failure
+		}
+		if ended.ready {
+			sole, err := o.proveTerminalOnlyGroupLocked()
+			if err != nil {
+				o.failure = errors.Join(o.failure, fmt.Errorf("original terminal group signal preflight is unknown: %w", err))
+				o.signalsRetired = true
+				return o.failure
+			}
+			if sole {
+				o.terminalGroupProven = true
+				o.terminalGroupExit = ended
+				o.signalsRetired = true
+				return ErrRetired
+			}
+		}
 	}
 	return o.signalLocked(sig)
 }
@@ -101,7 +127,11 @@ func (o *Owner) signalLocked(sig syscall.Signal) error {
 	}
 	return err
 }
-func (o *Owner) Active() bool { o.mu.Lock(); defer o.mu.Unlock(); return !o.retired }
+func (o *Owner) Active() bool {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	return !o.retired && !o.signalsRetired
+}
 
 // Wait observes the leader without reaping it. A terminal unreaped leader is
 // still the original PID anchor while descendants receive the final KILL.
@@ -118,7 +148,15 @@ func (o *Owner) Wait(ctx context.Context) Result {
 	o.mu.Unlock()
 	for {
 		o.mu.Lock()
-		ended, err := o.observe(o.pid)
+		var ended terminal
+		var err error
+		if o.terminalGroupProven {
+			// This unreaped original terminal status was captured together with
+			// the positive no-live-group witness before signal retirement.
+			ended = o.terminalGroupExit
+		} else {
+			ended, err = o.observe(o.pid)
+		}
 		if errors.Is(err, syscall.EINTR) {
 			err = nil
 			ended = terminal{}
@@ -131,7 +169,13 @@ func (o *Owner) Wait(ctx context.Context) Result {
 			return result
 		}
 		if !ended.ready {
-			if ctx.Err() != nil && o.killSentAt.IsZero() {
+			if o.signalsRetired {
+				o.retired = true
+				result := Result{CleanupError: o.failure}
+				o.mu.Unlock()
+				return result
+			}
+			if ctx.Err() != nil && o.killSentAt.IsZero() && !o.signalsRetired {
 				_ = o.signalLocked(syscall.SIGKILL)
 			}
 			if !o.killSentAt.IsZero() && time.Since(o.killSentAt) >= 2*time.Second {
@@ -145,27 +189,16 @@ func (o *Owner) Wait(ctx context.Context) Result {
 			time.Sleep(20 * time.Millisecond)
 			continue
 		}
-		terminalOnly := false
-		if !o.killSucceeded && o.terminalOnlyGroup != nil {
-			// Keep the original terminal PID unreaped during a short bounded
-			// grace for already-exited descendants to leave Darwin's group.
-			// Only the exact singleton witness permits skipping the real KILL.
-			deadline := time.Now().Add(o.terminalGroupGrace)
-			for {
-				var groupErr error
-				terminalOnly, groupErr = o.terminalOnlyGroup(o.pid)
-				if groupErr != nil {
-					o.failure = errors.Join(o.failure, fmt.Errorf("original terminal group membership is unknown: %w", groupErr))
-					terminalOnly = false
-					break
-				}
-				if terminalOnly || !time.Now().Before(deadline) {
-					break
-				}
-				time.Sleep(min(10*time.Millisecond, time.Until(deadline)))
+		terminalOnly := o.terminalGroupProven
+		if !terminalOnly && !o.killSucceeded && !o.signalsRetired && o.terminalOnlyGroup != nil {
+			var groupErr error
+			terminalOnly, groupErr = o.proveTerminalOnlyGroupLocked()
+			if groupErr != nil {
+				o.failure = errors.Join(o.failure, fmt.Errorf("original terminal group membership is unknown: %w", groupErr))
+				terminalOnly = false
 			}
 		}
-		if !terminalOnly {
+		if !terminalOnly && !o.signalsRetired {
 			_ = o.signalLocked(syscall.SIGKILL)
 		}
 		o.retired = true
@@ -183,5 +216,22 @@ func (o *Owner) Wait(ctx context.Context) Result {
 			cleanupErr = errors.Join(cleanupErr, fmt.Errorf("sole original Wait disagrees with non-reaping terminal observation"))
 		}
 		return Result{WaitError: waitErr, CleanupError: cleanupErr, Reaped: matches}
+	}
+}
+
+// Caller retains the original terminal leader unreaped under Owner.mu. A
+// captured positive singleton is an irreversible no-live-group witness; false
+// remains bounded grace followed by actual control, never EPERM reinterpretation.
+func (o *Owner) proveTerminalOnlyGroupLocked() (bool, error) {
+	if o.terminalOnlyGroup == nil {
+		return false, nil
+	}
+	deadline := time.Now().Add(o.terminalGroupGrace)
+	for {
+		sole, err := o.terminalOnlyGroup(o.pid)
+		if err != nil || sole || !time.Now().Before(deadline) {
+			return sole, err
+		}
+		time.Sleep(min(10*time.Millisecond, time.Until(deadline)))
 	}
 }

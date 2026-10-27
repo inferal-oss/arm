@@ -23,9 +23,11 @@ import (
 
 type CargoHelperSource func() (string, cargoprofile.HelperRuntime, error)
 type cargoWorker struct {
-	cancel context.CancelFunc
-	done   chan struct{}
-	id     string
+	leaseHost, leaseOwner string
+	leaseRequest          model.Request
+	cancel                context.CancelFunc
+	done                  chan struct{}
+	id                    string
 }
 
 func (m *Manager) ConfigureCargoHelper(source CargoHelperSource) error {
@@ -60,7 +62,7 @@ func (m *Manager) launchCargo(l model.Lease, run RunRequest) (model.Lease, error
 	}
 	source := m.cargoHelper
 	ctx, cancel := context.WithCancel(context.Background())
-	worker := &cargoWorker{cancel: cancel, done: make(chan struct{}), id: local.ID()}
+	worker := &cargoWorker{cancel: cancel, done: make(chan struct{}), id: local.ID(), leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
 	rec.Phase, rec.Worker = "spawn_intent", worker.id
 	rec.Revision++
 	l.Revision++
@@ -84,7 +86,7 @@ func (m *Manager) cargoWorkerCurrent(id string, worker *cargoWorker) (model.Leas
 	if e != nil {
 		return l, rec, e
 	}
-	if m.cargoWorkers[id] != worker || rec.Worker != worker.id {
+	if l.ID != id || m.cargoWorkers[id] != worker || rec.Worker != worker.id || l.Host != worker.leaseHost || l.Owner != worker.leaseOwner || !reflect.DeepEqual(l.Request, worker.leaseRequest) {
 		return l, rec, model.Err("cargo_worker_changed", "Cargo worker identity no longer matches durable intent")
 	}
 	return l, rec, nil
@@ -113,7 +115,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 	var signalMu sync.Mutex
 	var signalErr error
 	recordSignal := func(err error) {
-		if err != nil && !errors.Is(err, syscall.ESRCH) {
+		if err != nil && !errors.Is(err, syscall.ESRCH) && !errors.Is(err, childowner.ErrRetired) {
 			signalMu.Lock()
 			signalErr = errors.Join(signalErr, err)
 			signalMu.Unlock()

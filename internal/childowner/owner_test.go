@@ -3,6 +3,7 @@ package childowner
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -81,19 +82,24 @@ func startOwnedFixture(t *testing.T, args ...string) (*exec.Cmd, *Owner) {
 		t.Fatalf("original fixture binding unknown; handle retained without further signal/Wait: %v", err)
 	}
 	t.Cleanup(func() {
-		if o.Active() {
+		if cmd.ProcessState == nil {
+			o.mu.Lock()
+			canJoin := !o.retired && !o.waiting
+			o.mu.Unlock()
+			if !canJoin {
+				t.Error("original fixture owner unknown; no second Wait is authorized")
+				return
+			}
 			signalErr := o.Signal(syscall.SIGKILL)
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
 			result := o.Wait(ctx)
-			if signalErr != nil && !errors.Is(signalErr, syscall.ESRCH) {
+			if signalErr != nil && !errors.Is(signalErr, syscall.ESRCH) && !errors.Is(signalErr, ErrRetired) {
 				t.Errorf("original fixture cleanup signal: %v", signalErr)
 			}
 			if !result.Reaped || result.CleanupError != nil {
 				t.Errorf("original fixture cleanup/join uncertain: %+v", result)
 			}
-		} else if cmd.ProcessState == nil {
-			t.Error("original fixture owner unknown; no post-retirement signal or Wait is authorized")
 		}
 	})
 	if _, err = writer.Write([]byte("go\n")); err != nil {
@@ -161,7 +167,7 @@ func TestRepeatedEINTRCannotBypassCancellationBound(t *testing.T) {
 }
 
 func TestNativeDeniedSignalCannotBecomeSuccessfulCleanupAfterReap(t *testing.T) {
-	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", "exit 0")
+	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", "exec sleep 30")
 	o.mu.Lock()
 	originalSignal := o.signal
 	o.signal = func(pid int, sig syscall.Signal) error {
@@ -174,10 +180,13 @@ func TestNativeDeniedSignalCannotBecomeSuccessfulCleanupAfterReap(t *testing.T) 
 	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, syscall.EPERM) {
 		t.Fatal(err)
 	}
+	if err := o.Signal(syscall.SIGKILL); err != nil {
+		t.Fatal(err)
+	}
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 	result := o.Wait(ctx)
-	if !result.Reaped || cmd.ProcessState.ExitCode() != 0 || !errors.Is(result.CleanupError, syscall.EPERM) {
+	if !result.Reaped || cmd.ProcessState.ExitCode() != -1 || !errors.Is(result.CleanupError, syscall.EPERM) {
 		t.Fatal(result, cmd.ProcessState)
 	}
 	// The permission failure above is controlled; exit/reap is actual native.
@@ -282,5 +291,65 @@ func TestTerminalGroupGraceErrorStopsPollingAndRemainsSticky(t *testing.T) {
 	result := o.Wait(context.Background())
 	if observations != 1 || signals != 1 || !errors.Is(result.CleanupError, syscall.EACCES) {
 		t.Fatal(result, observations, signals)
+	}
+}
+
+func TestSignalPreflightRetiresControlsButAllowsSoleWait(t *testing.T) {
+	signals, waits := 0, 0
+	o := &Owner{pid: 123, preflightSignals: true, observe: func(int) (terminal, error) { return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { return true, nil }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, ErrRetired) || o.Active() {
+		t.Fatal(err, o.Active())
+	}
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) {
+		t.Fatal(err)
+	}
+	result := o.Wait(context.Background())
+	if signals != 0 || waits != 1 || errors.Is(result.CleanupError, syscall.EPERM) {
+		t.Fatal(result, signals, waits)
+	}
+}
+func TestSignalPreflightDoesNotHideLiveDeniedSignal(t *testing.T) {
+	signals := 0
+	o := &Owner{pid: 123, preflightSignals: true, observe: func(int) (terminal, error) { return terminal{}, nil }, terminalOnlyGroup: func(int) (bool, error) { t.Fatal("live child consulted terminal-only witness"); return true, nil }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }}
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, syscall.EPERM) || signals != 1 || !errors.Is(o.failure, syscall.EPERM) {
+		t.Fatal(err, signals, o.failure)
+	}
+}
+func TestSignalPreflightErrorsRetainOriginalWithoutSignals(t *testing.T) {
+	for _, group := range []bool{false, true} {
+		t.Run(fmt.Sprint(group), func(t *testing.T) {
+			signals, waits := 0, 0
+			o := &Owner{pid: 123, preflightSignals: true, observe: func(int) (terminal, error) {
+				if group {
+					return terminal{ready: true}, nil
+				}
+				return terminal{}, syscall.EIO
+			}, terminalOnlyGroup: func(int) (bool, error) { return true, syscall.EACCES }, signal: func(int, syscall.Signal) error { signals++; return nil }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+			err := o.Signal(syscall.SIGTERM)
+			if err == nil || errors.Is(err, ErrRetired) || signals != 0 || o.Active() {
+				t.Fatal(err, signals, o.Active())
+			}
+			result := o.Wait(context.Background())
+			if result.CleanupError == nil || signals != 0 || (!group && waits != 0) || (group && waits != 1) {
+				t.Fatal(result, signals, waits)
+			}
+		})
+	}
+}
+
+func TestPriorDeniedSignalSurvivesPositiveSignalRetirement(t *testing.T) {
+	ended := false
+	signals, waits := 0, 0
+	o := &Owner{pid: 123, preflightSignals: true, observe: func(int) (terminal, error) { return terminal{ready: ended}, nil }, terminalOnlyGroup: func(int) (bool, error) { return true, nil }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, syscall.EPERM) {
+		t.Fatal(err)
+	}
+	ended = true
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) || o.Active() {
+		t.Fatal(err, o.Active())
+	}
+	result := o.Wait(context.Background())
+	if signals != 1 || waits != 1 || !errors.Is(result.CleanupError, syscall.EPERM) {
+		t.Fatal(result, signals, waits)
 	}
 }
