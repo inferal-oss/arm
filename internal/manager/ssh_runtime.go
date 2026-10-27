@@ -61,27 +61,30 @@ func resolveSSHAccount(ctx context.Context) (*user.User, error) {
 // This type and RunRequest.sshRuntime are intentionally unexported and have no
 // JSON representation. Persisted descriptors cannot reconstruct this capability.
 type sshRuntime struct {
-	ctx            context.Context
-	cancel         context.CancelFunc
-	request        model.SSHExecutionRequest
-	commitment     *model.SSHControlCommitment
-	execution      sshservice.Execution
-	channel        ssh.Channel
-	account        *user.User
-	mu             sync.Mutex
-	all            []*os.File
-	child          []*os.File
-	input          *os.File
-	stdout, stderr *os.File
-	master         *os.File
-	outputDone     chan struct{}
-	inputDone      chan struct{}
-	copiesStarted  bool
-	closeDone      chan struct{}
-	closeStarted   chan struct{}
-	retireClose    sync.Once
-	stopClose      func() bool
-	closeOnce      sync.Once
+	transportJoined   chan struct{}
+	transportJoinOnce sync.Once
+	leaseHold         *sshLeaseHold
+	ctx               context.Context
+	cancel            context.CancelFunc
+	request           model.SSHExecutionRequest
+	commitment        *model.SSHControlCommitment
+	execution         sshservice.Execution
+	channel           ssh.Channel
+	account           *user.User
+	mu                sync.Mutex
+	all               []*os.File
+	child             []*os.File
+	input             *os.File
+	stdout, stderr    *os.File
+	master            *os.File
+	outputDone        chan struct{}
+	inputDone         chan struct{}
+	copiesStarted     bool
+	closeDone         chan struct{}
+	closeStarted      chan struct{}
+	retireClose       sync.Once
+	stopClose         func() bool
+	closeOnce         sync.Once
 }
 
 func newSSHRuntime(ctx context.Context, q model.SSHExecutionRequest, e sshservice.Execution, ch ssh.Channel, account *user.User, until time.Time) (*sshRuntime, error) {
@@ -98,7 +101,7 @@ func newSSHRuntime(ctx context.Context, q model.SSHExecutionRequest, e sshservic
 		expiry = until
 	}
 	run, cancel := context.WithDeadline(ctx, expiry)
-	r := &sshRuntime{ctx: run, cancel: cancel, request: q, execution: e, channel: ch, account: account, outputDone: make(chan struct{}), inputDone: make(chan struct{}), closeDone: make(chan struct{}), closeStarted: make(chan struct{})}
+	r := &sshRuntime{transportJoined: make(chan struct{}), ctx: run, cancel: cancel, request: q, execution: e, channel: ch, account: account, outputDone: make(chan struct{}), inputDone: make(chan struct{}), closeDone: make(chan struct{}), closeStarted: make(chan struct{})}
 	r.stopClose = context.AfterFunc(run, func() { close(r.closeStarted); defer close(r.closeDone); r.closeFiles() })
 	return r, nil
 }
@@ -254,6 +257,11 @@ func (r *sshRuntime) joinTransport() {
 		<-r.outputDone
 	}
 	<-r.closeDone // mandatory original callback retirement, never nil→success
+	r.transportJoinOnce.Do(func() {
+		if r.transportJoined != nil {
+			close(r.transportJoined)
+		}
+	})
 }
 
 func (p *sshProcess) Wait(ctx context.Context) (sshservice.Exit, error) {
@@ -261,7 +269,7 @@ func (p *sshProcess) Wait(ctx context.Context) (sshservice.Exit, error) {
 	select {
 	case <-ctx.Done():
 		return sshservice.Exit{}, ctx.Err()
-	case <-p.job.done:
+	case <-p.job.nativeDone:
 	}
 	select {
 	case <-ctx.Done():
@@ -291,7 +299,7 @@ func (p *sshProcess) Wait(ctx context.Context) (sshservice.Exit, error) {
 var sshSignals = map[string]syscall.Signal{"HUP": syscall.SIGHUP, "INT": syscall.SIGINT, "QUIT": syscall.SIGQUIT, "TERM": syscall.SIGTERM, "KILL": syscall.SIGKILL, "USR1": syscall.SIGUSR1, "USR2": syscall.SIGUSR2, "WINCH": syscall.SIGWINCH}
 
 func (p *sshProcess) owned() error {
-	if p.manager.jobs[p.lease] != p.job || p.job.identity == nil {
+	if p.manager.jobs[p.lease] != p.job || p.job.identity == nil || !p.job.controlActive() {
 		return model.Err("lease_inactive", "SSH process is no longer owned")
 	}
 	actual, err := usage.Capture(p.job.cmd.Process.Pid)
@@ -313,7 +321,7 @@ func (p *sshProcess) Signal(ctx context.Context, name string) error {
 	if err := p.owned(); err != nil {
 		return err
 	}
-	return syscall.Kill(-p.job.cmd.Process.Pid, sig)
+	return p.job.signalGroup(sig)
 }
 func (p *sshProcess) Resize(ctx context.Context, w sshservice.Window) error {
 	if w.Columns < 1 || w.Columns > 1000 || w.Rows < 1 || w.Rows > 1000 || w.WidthPixels > 16384 || w.HeightPixels > 16384 {

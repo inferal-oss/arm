@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/inferal-oss/arm/internal/cargoprofile"
+	"github.com/inferal-oss/arm/internal/childowner"
 	"github.com/inferal-oss/arm/internal/database"
 	"github.com/inferal-oss/arm/internal/local"
 	"github.com/inferal-oss/arm/internal/model"
@@ -40,6 +41,12 @@ type RunRequest struct {
 	sshRuntime *sshRuntime
 }
 type job struct {
+	nativeDone       chan struct{}
+	sshRuntime       *sshRuntime
+	controlMu        sync.Mutex
+	controlRetired   bool
+	controlError     error
+	childOwner       *childowner.Owner
 	cmd              *exec.Cmd
 	done             chan struct{}
 	identity         *model.ProcessIdentity
@@ -49,6 +56,7 @@ type job struct {
 	lastUsage        *model.WorkloadUsage
 }
 type Manager struct {
+	sshTransports           map[string]*sshLeaseHold
 	nodeStopBoundary        *nodestop.Boundary
 	nodeStopUnknown         bool
 	nodeStopAccepted        bool
@@ -261,6 +269,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			db.Close()
 			return nil, e
 		}
+
 		if (l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind) && l.State != "terminal" {
 			// A recorded in-process allocation is not a positive join witness.
 			// In particular, PID0 must never settle a lost transport owner.
@@ -291,6 +300,23 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 				return nil, e
 			}
 			continue
+		}
+		if run.Valid && consuming(l.State) {
+			sshSaved, err := recordedSSHRun(run.String)
+			if err != nil {
+				db.Close()
+				return nil, err
+			}
+			if sshSaved {
+				l.State, l.Outcome, l.Ended = "needs_attention", "ssh_supervision_lost", nil
+				l.Failure = "Original SSH transport join was not recorded; saved process descriptors cannot settle its obligations"
+				l.Revision++
+				if e = m.put(l, "lease.ssh_recovery_required"); e != nil {
+					db.Close()
+					return nil, e
+				}
+				continue
+			}
 		}
 		if l.Cargo != nil {
 			if e = m.recoverCargo(l); e != nil {
@@ -500,9 +526,13 @@ func (m *Manager) Close() error {
 			closeErr = errors.Join(closeErr, model.Err("node_stop_outcome_unknown", "stop commit was not reconciled"))
 		}
 	}
+	for _, h := range m.sshTransports {
+		h.runtime.cancel()
+	}
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
+	closeErr = errors.Join(closeErr, m.sshSettlementErrors())
 	for _, hold := range syncOwners {
 		// This callback belongs to the original admitted runtime even when
 		// no runner was started or the lease already needs attention.
@@ -1178,6 +1208,11 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 		return l, e
 	}
 	if l.State == "terminal" || l.State == "ending" {
+		if l.State == "ending" {
+			if h := m.sshTransports[id]; h != nil && l.Host == h.original.Host && l.Owner == h.original.Owner && reflect.DeepEqual(l.Request, h.original.Request) {
+				h.runtime.cancel()
+			}
+		}
 		return l, nil
 	}
 	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind {
@@ -1215,6 +1250,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if l.Request.Kind == "ports" && l.State != "queued" {
 		return m.endPortParent(l, outcome)
 	}
+	if l.Cargo != nil || l.Request.Profile == "rust-build" {
+		return m.endCargo(l, outcome)
+	}
 	if m.gradleObligation(l) {
 		if m.jobs[id] == nil {
 			return m.reconcileGradle(l, outcome)
@@ -1230,8 +1268,10 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 		if e = m.put(l, "lease.ending"); e != nil {
 			return l, e
 		}
-		_ = syscall.Kill(-j.cmd.Process.Pid, syscall.SIGTERM)
-		pid := j.cmd.Process.Pid
+		if j.sshRuntime != nil {
+			j.sshRuntime.cancel()
+		}
+		_ = j.signalGroup(syscall.SIGTERM)
 		m.wg.Go(func() {
 			select {
 			case <-j.done:
@@ -1241,7 +1281,7 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 			m.mu.Lock()
 			defer m.mu.Unlock()
 			if m.jobs[id] == j {
-				_ = syscall.Kill(-pid, syscall.SIGKILL)
+				_ = j.signalGroup(syscall.SIGKILL)
 			}
 		})
 		return l, nil
@@ -1565,11 +1605,19 @@ func (m *Manager) tick() {
 }
 
 func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
+	if r.sshRuntime != nil {
+		if err := m.bindSSHTransport(l, r.sshRuntime); err != nil {
+			return l, err
+		}
+	}
 	if l.Request.Resources.CPU <= 0 {
 		return m.rejectUnstarted(l, &model.Error{Code: "invalid_request", Message: "supervised execution requires a positive CPU claim"})
 	}
 	if l.Request.Profile == "rust-build" {
 		return m.launchCargo(l, r)
+	}
+	if err := childowner.Available(); err != nil {
+		return m.launchFailed(l, err)
 	}
 	if (r.SSH != nil || r.sshRuntime != nil) && (r.SSH == nil || r.sshRuntime == nil) {
 		return m.launchFailed(l, model.Err("ssh_replay_denied", "a stored/wire SSH descriptor cannot reconstruct a runtime"))
@@ -1671,7 +1719,38 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if r.sshRuntime != nil {
 		r.sshRuntime.startCopies()
 	}
-	j := &job{cmd: cmd, done: make(chan struct{})}
+	j := &job{cmd: cmd, done: make(chan struct{}), nativeDone: make(chan struct{}), sshRuntime: r.sshRuntime}
+	if r.sshRuntime != nil {
+		h := r.sshRuntime.leaseHold
+		h.job = j
+		h.nativeStarted = true
+	}
+	currentOwner, ownerErr := childowner.New(cmd)
+	if ownerErr != nil {
+		_ = reader.Close()
+		_ = writer.Close()
+		_ = f.Close()
+		// An unexpected loss of the native child binding is not permission to
+		// block in Wait or discard its original handle. The private gate is closed.
+		j.retireControls()
+		m.jobs[l.ID] = j
+		if r.sshRuntime == nil {
+			close(j.done)
+		} else {
+			close(j.nativeDone)
+		}
+		l.State = "needs_attention"
+		l.Ended = nil
+		l.PID = cmd.Process.Pid
+		l.Process = j.identity
+		l.Revision++
+		l.Failure = "Original gated child binding is uncertain: " + ownerErr.Error()
+		if r.sshRuntime != nil {
+			return m.stageSSHResult(l)
+		}
+		return l, m.put(l, "lease.supervision_unknown")
+	}
+	j.childOwner = currentOwner
 	identity, identityErr := usage.Capture(cmd.Process.Pid)
 	if identityErr == nil && identity.PGID == cmd.Process.Pid && identity.UID == m.owner {
 		j.identity = &identity
@@ -1684,53 +1763,64 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		j.observationError = "native process identity unavailable; usage cannot be attributed"
 	}
 	if err := m.captureGradleLaunch(&l, j.identity); err != nil {
-		_ = cmd.Process.Kill()
-		_ = cmd.Wait()
-		f.Close()
-		return m.launchFailed(l, err)
+		current, joined, joinErr := m.joinUnstarted(l, j, reader, writer, f)
+		if !joined {
+			return current, joinErr
+		}
+		return m.launchFailed(current, err)
 	}
 	if (l.Request.UsagePolicy != nil || r.sshRuntime != nil) && j.identity == nil {
-		_ = cmd.Process.Kill()
-		_ = cmd.Wait()
-		f.Close()
-		return m.launchFailed(l, model.Err("observation_unavailable", "usage policy requires a captured process identity; command was not authorized to start"))
+		current, joined, joinErr := m.joinUnstarted(l, j, reader, writer, f)
+		if !joined {
+			return current, joinErr
+		}
+		return m.launchFailed(current, model.Err("observation_unavailable", "usage policy requires a captured process identity; command was not authorized to start"))
 	}
 	if l.Request.UsagePolicy != nil {
 		l.Capabilities = append(l.Capabilities, "observed-usage-policy")
 	}
+
 	m.jobs[l.ID] = j
 	l.PID = cmd.Process.Pid
 	l.State = "active"
 	l.Revision++
-	if e = m.put(l, "lease.started"); e != nil {
-		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+	e = m.put(l, "lease.started")
+	if e == nil && r.sshRuntime != nil {
+		h := r.sshRuntime.leaseHold
+		h.expectedPID = l.PID
+		if l.Process != nil {
+			identity := *l.Process
+			h.expectedProcess = &identity
+		} else {
+			h.expectedProcess = nil
+		}
+	}
+	if e != nil {
+		_ = j.signalGroup(syscall.SIGKILL)
 	} else if reason := m.startDeadlineProblem(l); reason != nil {
-		// The shell still waits on our private gate: no requested command ran.
-		_ = cmd.Process.Kill()
-		_ = cmd.Wait()
-		f.Close()
-		delete(m.jobs, l.ID)
-		l.PID = 0
-		l.Process = nil
-		return m.rejectUnstarted(l, reason)
+		current, joined, joinErr := m.joinUnstarted(l, j, reader, writer, f)
+		if !joined {
+			return current, joinErr
+		}
+		return m.rejectUnstarted(current, reason)
 	} else if r.sshRuntime != nil && r.sshRuntime.check() != nil {
-		_ = cmd.Process.Kill()
-		_ = cmd.Wait()
-		f.Close()
-		delete(m.jobs, l.ID)
-		l.PID = 0
-		l.Process = nil
-		return m.launchFailed(l, model.Err("ssh_cancelled", "SSH authority/stream expired before process gate"))
+		current, joined, joinErr := m.joinUnstarted(l, j, reader, writer, f)
+		if !joined {
+			return current, joinErr
+		}
+		return m.launchFailed(current, model.Err("ssh_cancelled", "SSH authority/stream expired before process gate"))
+
 	} else {
 		delete(m.startClocks, l.ID)
 		_, e = writer.Write([]byte("go\n"))
 		if e != nil {
-			_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+			_ = j.signalGroup(syscall.SIGKILL)
 		}
 	}
 	m.wg.Go(func() {
-		err := cmd.Wait()
-		j.cpuExited.Store(true)
+		waited := j.childOwner.Wait(context.Background())
+		err := waited.WaitError
+		j.cpuExited.Store(waited.Reaped)
 		sshOutcome := ""
 		if r.sshRuntime != nil && r.sshRuntime.ctx.Err() != nil {
 			sshOutcome = "interrupted"
@@ -1738,17 +1828,21 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 				sshOutcome = "expired"
 			}
 		}
+		close(j.nativeDone)
 		f.Close()
-		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
 		deadline := time.Now().Add(2 * time.Second)
-		for time.Now().Before(deadline) && !errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH) {
+		for waited.Reaped && time.Now().Before(deadline) && !errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH) {
 			time.Sleep(10 * time.Millisecond)
 		}
-		groupGone := errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH)
+		groupGone := waited.Reaped && waited.CleanupError == nil && errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH)
 		m.mu.Lock()
 		defer m.mu.Unlock()
-		defer close(j.done)
-		delete(m.jobs, l.ID)
+		if r.sshRuntime == nil {
+			defer close(j.done)
+		}
+		if waited.Reaped && r.sshRuntime == nil {
+			delete(m.jobs, l.ID)
+		}
 		current, ge := m.get(l.ID)
 		delete(m.usages, l.ID)
 		if (current.Usage == nil || !current.Usage.IdentityVerified || current.Usage.MemberCount == 0) && j.lastUsage != nil {
@@ -1762,6 +1856,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			current.Usage.Members = nil
 		}
 		if ge != nil {
+			m.failSSHSettlement(l.ID, ge)
 			return
 		}
 		code := 0
@@ -1772,7 +1867,11 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 				code = ee.ExitCode()
 			}
 		}
-		current.ExitCode = &code
+		if waited.Reaped {
+			current.ExitCode = &code
+		} else {
+			current.ExitCode = nil
+		}
 		now := time.Now().UTC()
 		current.State = "terminal"
 		if current.Outcome == "" {
@@ -1786,6 +1885,9 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		}
 		current.Ended = &now
 		if !groupGone {
+			if waited.CleanupError != nil {
+				current.Failure = waited.CleanupError.Error()
+			}
 			current.State = "needs_attention"
 			current.Outcome = "descendants_unreconciled"
 			current.Ended = nil
@@ -1805,7 +1907,14 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			}
 		}
 		current.Revision++
-		_ = m.put(current, "lease."+current.Outcome)
+		if r.sshRuntime != nil {
+			h := r.sshRuntime.leaseHold
+			h.nativeReaped = waited.Reaped
+			h.nativeSafe = groupGone
+			_, _ = m.stageSSHResultFor(l.ID, current)
+		} else {
+			_ = m.put(current, "lease."+current.Outcome)
+		}
 	})
 	return l, e
 }
@@ -1813,9 +1922,18 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 func (m *Manager) launchFailed(l model.Lease, err error) (model.Lease, error) {
 	if bound, bindErr := m.syncLeaseBound(l.ID); bindErr != nil || bound {
 		if bindErr != nil {
+			m.failSSHSettlement(l.ID, bindErr)
 			return l, bindErr
 		}
-		return l, m.retainSyncLease(&l, "sync_launch_failed")
+		err := m.retainSyncLease(&l, "sync_launch_failed")
+		if m.sshTransports[l.ID] != nil {
+			if err != nil {
+				m.failSSHSettlement(l.ID, err)
+				return l, err
+			}
+			return m.stageSSHResult(l)
+		}
+		return l, err
 	}
 	now := time.Now().UTC()
 	l.State = "terminal"
@@ -1826,6 +1944,9 @@ func (m *Manager) launchFailed(l model.Lease, err error) (model.Lease, error) {
 		m.finishPorts(&l)
 	}
 	l.Revision++
+	if m.sshTransports[l.ID] != nil {
+		return m.stageSSHResult(l)
+	}
 	return l, m.put(l, "lease.launch_failed")
 }
 
@@ -1841,8 +1962,25 @@ func (m *Manager) reconcile(id string) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	if m.sshTransports[id] != nil {
+		return l, model.Err("needs_attention", "current original SSH transport hold must join before any reconciliation")
+	}
+
 	if l.State == "terminal" {
 		return l, nil
+	}
+	var savedRun sql.NullString
+	if err := m.db.QueryRow(`SELECT run FROM leases WHERE id=?`, id).Scan(&savedRun); err != nil {
+		return l, err
+	}
+	if savedRun.Valid {
+		sshSaved, err := recordedSSHRun(savedRun.String)
+		if err != nil {
+			return l, err
+		}
+		if sshSaved {
+			return l, model.Err("needs_attention", "recovered SSH requires original transport join evidence; a saved PID cannot settle it")
+		}
 	}
 	if bound, err := m.syncLeaseBound(l.ID); err != nil {
 		return l, err
