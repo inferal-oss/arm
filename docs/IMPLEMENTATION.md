@@ -1,5 +1,15 @@
 # Backend and CLI implementation
 
+## Frozen release payload integrity
+
+The isolated public-launch composition at `c24a4d6` has an accepted artifact
+integrity milestone. Four carriers contain the same four compressed companion
+payloads; each unique stream was inflated once and checked against its catalog
+raw size/hash and actual Go build metadata. No carrier was rebuilt or thin
+payload executed during inspection. This historical composition does not accept
+later runtime/UI bytes or publish a release/site. Final UI composition, artifact
+refresh, Pages deployment and both public HTTPS endpoints remain open.
+
 ## Finite pressure control model
 
 `formal/pressure-control` models one captured execution and one pressure resource.

@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "scope": "Artifact integrity of four unique raw thin payloads in the frozen c24a4d6 four-carrier build; no later-source or deployment acceptance.",
+  "source_commit": "c24a4d665087d7766e803eb88c5641e286fb6381",
+  "workflow_run": 40441273461,
+  "artifact_id": 12707005786,
+  "artifact_zip_sha256": "feec774b104c7936a445532642a37dc8757244c7efbfe5e4bf24cf010c475e44",
+  "artifact_zip_size_bytes": 651866201,
+  "selected_carrier_binary_sha256": "160214fdb61579952ac3aacf0996bcf5049f5df73fa737f70897304f2942866f",
+  "raw_receipt_sha256": "79d2b60a914c158a34ebc9dfa50d5610c2ce7cf79ee0d490f88498ba630f9aa8",
+  "inspector_sha256": "3c416f3b15c905e15747de050b7c99a0bc88abbb6020a9c78734e132daf7f80a",
+  "original_process_controller_git_blob": "a9aa4a00f0106d3bcfb1a6c1a19dc373963e0349",
+  "independent_source_review_receipt_sha256": "3f3d5d5e5e75dec79d30c3ebcb9f12021af43b0cdfe2c0826c2073d14f365a06",
+  "unique_payloads": [
+    {
+      "platform": "darwin-amd64",
+      "compressed_sha256": "1e08686fb6720f8d3b305bc551fcb91331cbde8e0936bd067d54c7901d2a6691",
+      "compressed_size_bytes": 34873494,
+      "raw_sha256": "ea1cba6e11c9c65000727f8c086edb8eec6e5f08912936aa53d009d1fb428355",
+      "raw_size_bytes": 70202848,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "darwin",
+        "GOAMD64": "v1"
+      },
+      "armcarrier_build_tag_present": false
+    },
+    {
+      "platform": "darwin-arm64",
+      "compressed_sha256": "36c3703ee82ca6350e95b5b9a752f4220f0c83b07c15d23c8d4b4ff5d83b09a2",
+      "compressed_size_bytes": 32719238,
+      "raw_sha256": "01da403905974b13495980986edbe7fd04be30a99ba9c42d1e7ea4eb67581ef6",
+      "raw_size_bytes": 65794258,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "arm64",
+        "GOOS": "darwin",
+        "GOARM64": "v8.0"
+      },
+      "armcarrier_build_tag_present": false
+    },
+    {
+      "platform": "linux-amd64",
+      "compressed_sha256": "da7350987293e52e85a0ebccccb9a359176143ebac850784ea37748799b21044",
+      "compressed_size_bytes": 33571076,
+      "raw_sha256": "7bf0283f72dd794aed1975f9061edb6c9e6e7c9a00dc7992b12529620267a49e",
+      "raw_size_bytes": 68371571,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "linux",
+        "GOAMD64": "v1"
+      },
+      "armcarrier_build_tag_present": false
+    },
+    {
+      "platform": "linux-arm64",
+      "compressed_sha256": "e1557d79ac1416d1495394727c56c22bba30a441690645583f73bbdf3bd8aa6f",
+      "compressed_size_bytes": 30686756,
+      "raw_sha256": "71c0ca84faec60becfdbd5e714e53a0d388837858a3e74a9e15fe85a5fe696cd",
+      "raw_size_bytes": 63439571,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "arm64",
+        "GOOS": "linux",
+        "GOARM64": "v8.0"
+      },
+      "armcarrier_build_tag_present": false
+    }
+  ],
+  "compressed_occurrences": {
+    "count": 16,
+    "scope": "Prior exact-source readback verified four identical unique compressed streams in each of four carriers; the raw inspection decompressed each unique stream once."
+  },
+  "temporary_raw_files_cleaned_before_receipt": true,
+  "recursion_evidence": "All four actual Go build metadata records contain no build tags. Frozen source assets_disabled.go selects embeddedFiles() returning nil without armcarrier; assets_enabled.go requires armcarrier. No cross-platform runtime catalog enumeration is claimed.",
+  "verification": {
+    "original_normal_fifo_run": "Terminal exit zero; no replacement or rebuild.",
+    "source_review": "Bounded single-member gzip inflation, exact sizes and raw hashes, actual go version -m metadata, original process waits and drained pipes, exclusive receipt after temporary namespace removal.",
+    "independent_artifact_rehash": "Original ZIP and selected carrier match their recorded hashes; review did not repeat decompression."
+  },
+  "limits": [
+    "No Go build or carrier rebuild.",
+    "No thin payload execution or cross-platform runtime claim.",
+    "Artifact integrity and source binding do not authenticate a publisher.",
+    "No final product UI, later main, release publication, Pages deployment or HTTPS-domain acceptance."
+  ]
+}

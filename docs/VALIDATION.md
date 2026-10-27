@@ -1,5 +1,23 @@
 # Validation record
 
+## Frozen carrier raw-payload inspection
+
+The original queued artifact-only inspection of workflow `40441273461`, source
+`c24a4d665087d7766e803eb88c5641e286fb6381`, exits zero. Four unique raw payloads
+match their catalog sizes/hashes and actual `go version -m` metadata: Darwin and
+Linux, amd64 and arm64, Go 1.27.3, canonical package/module, CGo disabled and
+trimpath enabled. All lack build tags. The frozen untagged source selects the
+nil embedded catalog; no cross-platform runtime catalog enumeration is claimed.
+Prior readback bound all 16 compressed occurrences across the four carriers.
+
+Independent review rehashed the original ZIP and selected carrier, inspected the
+bounded inflater and original-child controller, and checked exclusive receipt
+creation after exact temporary-directory cleanup. It did not repeat inflation,
+build or execute a payload. The [normalized record](validation/release-payload-inspection-c24a4d6-2026-10-26.json)
+contains source, artifact, raw-payload, inspector and review hashes. This accepts
+frozen artifact integrity, not publisher authentication, later main, final UI,
+release/Pages publication or public HTTPS behavior.
+
 ## Finite pressure control fence
 
 Independent review accepted the unchanged model and two configurations in
