@@ -408,6 +408,9 @@ func (a *app) workspacesCommand(args []string) (int, error) {
 		if e := parse(); e != nil {
 			return 2, e
 		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
+		}
 		if !a.machine() {
 			var page api.Page
 			if e := a.workspaceCall("workspace_inspect", api.InspectRequest{Workspace: id, Section: "members", Limit: 1}, &page); e != nil {

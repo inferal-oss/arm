@@ -58,7 +58,7 @@ func (m *dashboardModel) editorDisplay() string {
 	case "ttl":
 		lease := ""
 		if m.detail != nil {
-			lease = fmt.Sprintf("Lease %s · revision %d\nCurrent expiry: %s\n\n", safe(m.detail.ID), m.detail.Revision, date(m.detail.Expires))
+			lease = fmt.Sprintf("Lease %s\nID: %s · revision %d\nCurrent expiry: %s\n\n", m.leaseDisplayName(m.detail.ID, m.detail.Host), safe(m.detail.ID), m.detail.Revision, date(m.detail.Expires))
 		}
 		return lease + strong.Render("New duration FROM NOW (max 7d)") + "\n\n" + field + "\n\nExamples 15m · 2h · 1d · 1h30m\nDuration starts when accepted; it is not added to the current expiry.\n\n" + keycap("Enter", "Review extension", "") + "  " + keycap("Esc", "Keep lease", "quiet")
 	case "recipient":
@@ -190,7 +190,7 @@ func (m *dashboardModel) renderMain() string {
 func (m *dashboardModel) renderFeed() string {
 	if m.nodeUI != nil {
 		ui := m.nodeUI
-		body := "REMOTE · READ ONLY\n\n" + safe(ui.selection.Host) + "\n\nThrough LOCAL gateway\n" + safe(ui.selection.Source) + "\n\nLocal activity is hidden.\nRemote monitor/event streams, contacts, messages and mutations are unavailable.\n\n[7/Esc] Return to LOCAL Mesh"
+		body := "REMOTE · READ ONLY\n\n" + m.hostDisplayName(ui.selection.Host) + "\nHost ID: " + safe(ui.selection.Host) + "\n\nThrough LOCAL gateway\n" + m.hostDisplayName(ui.selection.Source) + "\nGateway ID: " + safe(ui.selection.Source) + "\n\nLocal activity is hidden.\nRemote monitor/event streams, contacts, messages and mutations are unavailable.\n\n[7/Esc] Return to LOCAL Mesh"
 		return window("DESTINATION CONTEXT", ansi.Wrap(body, 29, ""), 33, m.bodyHeight(), false, "blue")
 	}
 	width, height := 33, m.bodyHeight()
@@ -292,17 +292,15 @@ func (m *dashboardModel) View() tea.View {
 	if m.connected {
 		status = strong.Foreground(colorAccent).Render("● connected")
 	}
-	host := m.data.status.Host
+	host := m.hostDisplayName(m.data.status.Host)
 	if m.nodeUI != nil {
-		host = "REMOTE " + m.nodeUI.selection.Host
+		host = "REMOTE " + m.hostDisplayName(m.nodeUI.selection.Host)
 		status = strong.Foreground(colorWarning).Render("read-only · stale")
 		if m.nodeUI.connected && m.nodeUI.err == "" && (m.nodeUI.lastRead.IsZero() || m.timeNow.Sub(m.nodeUI.lastRead) <= 5*time.Second) {
 			status = strong.Foreground(colorBlue).Render("remote · read-only")
 		}
 	}
-	if len(host) > 18 {
-		host = host[:8] + "…" + host[len(host)-6:]
-	}
+	host = short(host, max(12, min(48, m.width-52)))
 	if host == "" {
 		host = "local host"
 	}

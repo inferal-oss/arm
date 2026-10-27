@@ -40,6 +40,7 @@ type NodeRegistry struct {
 }
 
 type NodeEntry struct {
+	DisplayName       string            `json:"display_name,omitempty"`
 	Host              string            `json:"host"`
 	Name              string            `json:"name"`
 	Local             bool              `json:"local"`

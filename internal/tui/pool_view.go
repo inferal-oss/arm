@@ -48,10 +48,15 @@ func (m *dashboardModel) poolText() string {
 	if ui.mode == "history" {
 		return m.poolHistoryText()
 	}
+	return m.poolDetailRender().text
+}
+func (m *dashboardModel) poolDetailRender() textRows {
+	ui := m.poolUI
 	view := ui.current
 	p := view.Pool
+	rows := make(map[int]int)
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nScope: %s\nHost: %s\nAuthority: %s\nOwner: %s\nUnit: %s\n\nTotal capacity: %d\nDirectly leased: %d\nUncarved available: %d\nDeficit: %d\n\n%s\n", safe(p.Name), safe(p.ID), safe(p.State), p.Revision, safe(p.Scope), safe(p.Host), safe(p.Authority), m.owner(p.Owner, p.OwnerUsername, p.Authority), safe(p.Unit), p.Capacity, view.Reserved, view.Available, view.Deficit, safe(p.Description))
+	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nScope: %s\nHost: %s\nHost ID: %s\nAuthority: %s\nOwner: %s\nUnit: %s\n\nTotal capacity: %d\nDirectly leased: %d\nUncarved available: %d\nDeficit: %d\n\n%s\n", poolDisplayName(p), safe(p.ID), safe(p.State), p.Revision, safe(p.Scope), m.hostDisplayName(p.Host), safe(p.Host), safe(p.Authority), m.owner(p.Owner, p.OwnerUsername, p.Authority), safe(p.Unit), p.Capacity, view.Reserved, view.Available, view.Deficit, safe(p.Description))
 	if view.Review != nil && view.Review.Unavailable != "" {
 		out.WriteString("\nREAD ONLY: Complete tree exceeds dashboard review limits. Browsing and current obligations remain available; no truncated change is allowed.\n")
 	}
@@ -70,18 +75,19 @@ func (m *dashboardModel) poolText() string {
 		out.WriteString("Global uses this one authoritative ledger; capacity is not copied per host.\n")
 	}
 	out.WriteString("\nCURRENT CONSUMERS\n")
-	m.poolConsumersText(&out, view.Users, p.Unit, p.Authority, 0)
+	m.poolConsumersText(&out, view.Users, p.Unit, p.Authority, 0, rows)
 	out.WriteString("\nQUEUED CLAIMS\n")
-	m.poolConsumersText(&out, view.Queued, p.Unit, p.Authority, len(view.Users))
+	m.poolConsumersText(&out, view.Queued, p.Unit, p.Authority, len(view.Users), rows)
 	out.WriteString("\n[a] Actions · [c] Subtree leases · [b] Parent · [h] Full journal · [i] Complete record\nAbstract permits coordinate work; they do not prove an external activity stopped.")
-	return out.String()
+	return textRows{text: out.String(), rows: rows}
 }
-func (m *dashboardModel) poolConsumersText(out *strings.Builder, users []model.ResourceUse, unit, authority string, offset int) {
+func (m *dashboardModel) poolConsumersText(out *strings.Builder, users []model.ResourceUse, unit, authority string, offset int, rows map[int]int) {
 	if len(users) == 0 {
 		out.WriteString("No claims.\n")
 	}
 	for i, user := range users {
-		fmt.Fprintf(out, "%s%s · %s · %s\n  %s\n  Why: %s\n", selectedPrefix(m.poolUI.selected, offset+i), safe(user.Lease), quantity(user.Quantity, unit), safe(user.State), m.owner(user.Owner, user.OwnerUsername, authority), safe(user.Reason))
+		rows[strings.Count(out.String(), "\n")] = offset + i
+		fmt.Fprintf(out, "%s%s · %s · %s\n  %s\n  Why: %s\n", selectedPrefix(m.poolUI.selected, offset+i), m.consumerDisplayLabel(user.Lease, authority), quantity(user.Quantity, unit), safe(user.State), m.owner(user.Owner, user.OwnerUsername, authority), safe(user.Reason))
 	}
 }
 func (m *dashboardModel) poolListText() string {
@@ -105,7 +111,7 @@ func (m *dashboardModel) poolListText() string {
 		if depth > 0 {
 			prefix += "↳ "
 		}
-		row := []string{selectedPrefix(ui.selected, i) + short(prefix+safe(p.Name), widths[0]-4) + "\n" + safe(p.Scope), fmt.Sprint(p.Capacity)}
+		row := []string{selectedPrefix(ui.selected, i) + short(prefix+poolDisplayName(p), widths[0]-4) + "\n" + safe(p.Scope), fmt.Sprint(p.Capacity)}
 		if len(headers) == 5 {
 			available := fmt.Sprint(view.Available)
 			if view.Deficit > 0 {
@@ -276,8 +282,10 @@ func (m *dashboardModel) poolControls() []mouseControl {
 	}
 }
 
-func (m *dashboardModel) poolSubtreeText() string {
+func (m *dashboardModel) poolSubtreeText() string { return m.poolSubtreeRender().text }
+func (m *dashboardModel) poolSubtreeRender() textRows {
 	ui := m.poolUI
+	rows := make(map[int]int)
 	var out strings.Builder
 	fmt.Fprintf(&out, "LEASES ACROSS THIS SUBTREE\n%s\nEach lease appears once; direct claims identify the partition. Tree totals overlap.\n\n", safe(ui.current.Pool.Name))
 	if len(ui.consumers.Entries) == 0 {
@@ -285,7 +293,8 @@ func (m *dashboardModel) poolSubtreeText() string {
 	}
 	for i, entry := range ui.consumers.Entries {
 		u := entry.Use
-		fmt.Fprintf(&out, "%s%s · %s\n  Owner: %s\n  Why: %s\n", selectedPrefix(ui.selected, i), safe(u.Lease), safe(u.State), m.owner(u.Owner, u.OwnerUsername, ui.current.Pool.Authority), safe(u.Reason))
+		rows[strings.Count(out.String(), "\n")] = i
+		fmt.Fprintf(&out, "%s%s · %s\n  Owner: %s\n  Why: %s\n", selectedPrefix(ui.selected, i), m.consumerDisplayLabel(u.Lease, ui.current.Pool.Authority), safe(u.State), m.owner(u.Owner, u.OwnerUsername, ui.current.Pool.Authority), safe(u.Reason))
 		for _, claim := range entry.Claims {
 			name := claim.Pool
 			for _, v := range ui.views {
@@ -298,5 +307,5 @@ func (m *dashboardModel) poolSubtreeText() string {
 		}
 	}
 	out.WriteString("\n[p] Previous leases · [n] Next leases · [Enter] Inspect lease · [Esc] Pool")
-	return out.String()
+	return textRows{text: out.String(), rows: rows}
 }

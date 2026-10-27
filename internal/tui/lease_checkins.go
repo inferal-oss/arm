@@ -276,7 +276,7 @@ func (m *dashboardModel) checkinText() string {
 		return ""
 	}
 	width := max(10, min(m.mainWidth(), 88)-8)
-	heading := fmt.Sprintf("Lease %s · revision %d · policy generation %d\n", safe(ui.lease.ID), ui.lease.Revision, ui.policy.Generation)
+	heading := fmt.Sprintf("Lease %s\nID: %s · revision %d · policy generation %d\n", m.leaseDisplayName(ui.lease.ID, ui.lease.Host), safe(ui.lease.ID), ui.lease.Revision, ui.policy.Generation)
 	principle := "Ask the owning agent whether these resources are still needed. Replies and silence never renew, release or resize a lease."
 	if ui.loading {
 		return heading + "\nLoading durable check-in records…"

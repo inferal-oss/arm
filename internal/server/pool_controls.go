@@ -26,6 +26,9 @@ func boundedPoolRead(value any, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Count the final view bytes, including consumer labels. A complete review
+	// must never become truncated or exceed the client boundary after projection.
+	value = namedPoolRead(value)
 	raw, err := json.Marshal(value)
 	if err != nil {
 		return nil, err

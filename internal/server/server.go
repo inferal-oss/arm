@@ -705,7 +705,7 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 						resp.Error = &model.Error{Code: "internal_error", Message: "backend operation failed"}
 					}
 				} else {
-					resp.Result = result
+					resp.Result = s.namedView(req.Operation, result)
 				}
 				send(resp)
 			}(req)

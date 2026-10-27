@@ -22,6 +22,7 @@ type transport interface {
 
 type snapshot struct {
 	status      model.Status
+	names       renderLabels
 	messages    []manager.Message
 	contacts    []agents.Contact
 	reviews     model.LeaseReviewPage
@@ -51,9 +52,11 @@ type reconnectMsg struct{}
 
 func readSnapshot(ctx context.Context, session transport) (snapshot, error) {
 	var data snapshot
-	if err := session.Call(ctx, "status", nil, &data.status); err != nil {
+	var view statusRenderView
+	if err := session.Call(ctx, "status", nil, &view); err != nil {
 		return data, err
 	}
+	data.status, data.names = view.values()
 	if err := session.Call(ctx, "messages", nil, &data.messages); err != nil {
 		return data, err
 	}

@@ -47,20 +47,10 @@ func (m *dashboardModel) poolMouseRegions() []mouseRegion {
 		}
 	case "detail", "consumers":
 		if ui.current != nil {
-			users := append(append([]model.ResourceUse{}, ui.current.Users...), ui.current.Queued...)
 			if ui.mode == "consumers" {
-				users = nil
-				for _, entry := range ui.consumers.Entries {
-					users = append(users, entry.Use)
-				}
-			}
-			next := 0
-			for line, text := range strings.Split(m.displayContent(), "\n") {
-				plain := ansi.Strip(text)
-				if next < len(users) && len(plain) >= 2 && (strings.HasPrefix(plain, "> ") || strings.HasPrefix(plain, "  ")) && strings.HasPrefix(plain[2:], safe(users[next].Lease)+" · ") {
-					starts[line] = next
-					next++
-				}
+				starts = m.poolSubtreeRender().rows
+			} else {
+				starts = m.poolDetailRender().rows
 			}
 		}
 	case "actions":

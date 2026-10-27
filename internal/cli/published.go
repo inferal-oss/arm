@@ -134,12 +134,19 @@ func (a *app) agentEndpoints(args []string) error {
 	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
-	if len(f.Args()) != 0 || !published.Hex(*host, 16) {
+	if len(f.Args()) != 0 || *host == "" {
 		return model.Err("invalid_request", "exact --host and --workspace required")
 	}
 	q := api.AgentEndpoints{Host: *host, Query: published.Query{Workspace: *id, Offset: *offset, Limit: *limit, Revision: *revision, Nonce: local.ID()}}
 	if e := q.Query.Validate(); e != nil {
 		return e
+	}
+	if e := a.resolveValidatedAliases(f); e != nil {
+		return e
+	}
+	q.Host = *host
+	if !published.Hex(q.Host, 16) {
+		return model.Err("invalid_request", "exact --host and --workspace required")
 	}
 	var out json.RawMessage
 	if e := a.call("workspace_agent_endpoints", q, &out); e != nil {
@@ -165,12 +172,22 @@ func (a *app) workspaceAgentMessage(action string, q api.AgentMessage) error {
 		if len(q.Body) < 1 || len(q.Body) > 16384 || q.TTL <= 0 || q.TTL > 24*time.Hour {
 			return model.Err("invalid_request", "bounded text and positive TTL up to 24h required")
 		}
-		if action == "send" && (!published.Hex(q.Target, 16) || !q.To.Validate() || q.To.Kind != "agent") {
+		if action == "send" && (q.Target == "" || !q.To.Validate() || q.To.Kind != "agent") {
 			return model.Err("invalid_request", "workspace sends require exact --host, --endpoint and --generation from arm agent endpoints")
 		}
 		if action == "reply" && !published.Hex(q.Message, 16) {
 			return model.Err("invalid_request", "reply requires the original local inbox --message ID")
 		}
+	}
+	if q.Target != "" {
+		target, err := a.resolveHost(q.Target)
+		if err != nil {
+			return err
+		}
+		q.Target = target
+	}
+	if action == "send" && !published.Hex(q.Target, 16) {
+		return model.Err("invalid_request", "workspace sends require exact --host, --endpoint and --generation from arm agent endpoints")
 	}
 	op := "workspace_agent_" + action
 	if action == "message-lookup" {

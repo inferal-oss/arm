@@ -51,11 +51,14 @@ func (a *app) meshUninstall(args []string) (int, error) {
 	if *force && *wait || timeoutSet && (!*wait || *timeout <= 0) || *timeout > int64((1<<63-1)/int64(time.Second)) {
 		return 2, fmt.Errorf("valid exclusive wait/force and positive bounded timeout required")
 	}
+	if (*lookup || *finish) && *key == "" {
+		return 2, fmt.Errorf("original --key required")
+	}
+	if e := a.resolveValidatedAliases(f); e != nil {
+		return 1, e
+	}
 	c := a.meshCoordinator()
 	if *lookup || *finish {
-		if *key == "" {
-			return 2, fmt.Errorf("original --key required")
-		}
 		return c.UninstallLookup(*key, f.Arg(0), *finish, *yes)
 	}
 	if *key == "" {

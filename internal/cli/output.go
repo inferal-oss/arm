@@ -17,6 +17,7 @@ import (
 
 	"getarm.org/internal/install"
 	"getarm.org/internal/model"
+	"getarm.org/internal/readablename"
 	"github.com/mattn/go-isatty"
 )
 
@@ -101,6 +102,13 @@ func (a *app) scalar(key string, v any) string {
 		}
 		return n.String()
 	}
+	if id, ok := v.(string); ok && opaqueID(id) && (key == "host" || key == "lease") {
+		domain := readablename.Host
+		if key == "lease" {
+			domain = readablename.Lease
+		}
+		return terminalSafe(readablename.FromID(domain, id) + " (" + id + ")")
+	}
 	if text, ok := v.(string); ok {
 		if strings.HasSuffix(key, "_at") {
 			if at, err := time.Parse(time.RFC3339Nano, text); err == nil {
@@ -130,7 +138,7 @@ func (a *app) scalar(key string, v any) string {
 	return terminalSafe(fmt.Sprint(v))
 }
 func orderedKeys(value map[string]any) []string {
-	priority := []string{"id", "host", "name", "state", "outcome", "reason", "owner", "agent", "project", "request", "resources", "capacity", "reserved", "available", "started_at", "expires_at", "detail"}
+	priority := []string{"display_name", "name", "id", "host", "state", "outcome", "reason", "owner", "agent", "project", "request", "resources", "capacity", "reserved", "available", "started_at", "expires_at", "detail"}
 	keys := make([]string, 0, len(value))
 	used := map[string]bool{}
 	for _, key := range priority {
@@ -152,6 +160,9 @@ func (a *app) tree(w io.Writer, value any, indent int) {
 	pad := strings.Repeat("  ", indent)
 	switch value := value.(type) {
 	case map[string]any:
+		if id, ok := value["id"].(string); ok && opaqueID(id) && value["request"] != nil && value["display_name"] == nil {
+			fmt.Fprintln(w, pad+"Name: "+readablename.FromID(readablename.Lease, id))
+		}
 		for _, key := range orderedKeys(value) {
 			if (key == "owner_username" || key == "actor_username") && value[strings.TrimSuffix(key, "_username")] != nil {
 				continue
@@ -209,11 +220,17 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 		name := fmt.Sprint(row["kind"])
 		if port, ok := row["port"].(map[string]any); ok {
 			name = fmt.Sprint(port["network"]) + "://" + net.JoinHostPort(fmt.Sprint(port["address"]), fmt.Sprint(port["port"]))
+			if supplied, ok := port["name"].(string); ok && supplied != "" {
+				name = supplied
+			}
 		}
 		if custom, ok := row["custom"].(map[string]any); ok {
 			if pool, ok := custom["pool"].(map[string]any); ok {
 				name = fmt.Sprint(pool["name"])
 			}
+		}
+		if supplied, ok := row["display_name"].(string); ok && supplied != "" {
+			name = supplied
 		}
 		unit := fmt.Sprint(row["unit"])
 		total, reserved, available := row["budget_total"], row["reserved"], row["available"]
@@ -234,6 +251,9 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 				available = nil
 			}
 			total, reserved, available = cpuDisplayValue(total), cpuDisplayValue(reserved), cpuDisplayValue(available)
+		}
+		if id, ok := row["id"].(string); ok && id != "" && id != name {
+			name += " (" + id + ")"
 		}
 		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", terminalSafe(name), quantity(total, unit), quantity(reserved, unit), quantity(available, unit), terminalSafe(unit))
 	}
@@ -292,7 +312,11 @@ func (a *app) human(v any) error {
 		a.resourceTable(&b, rows)
 	} else if a.commandName == "status" || a.commandName == "daemon status" {
 		if state, ok := value.(map[string]any); ok {
-			fmt.Fprintln(&b, "Host: "+a.scalar("host", state["host"]))
+			if name, ok := state["display_name"].(string); ok && name != "" {
+				fmt.Fprintln(&b, "Host: "+terminalSafe(name)+" ("+a.scalar("id", state["host"])+")")
+			} else {
+				fmt.Fprintln(&b, "Host: "+a.scalar("host", state["host"]))
+			}
 			fmt.Fprintln(&b)
 			rows, _ := state["resources"].([]any)
 			cpu, _ := state["cpu_budget"].(map[string]any)
@@ -316,7 +340,8 @@ func (a *app) human(v any) error {
 				if !ok {
 					continue
 				}
-				fmt.Fprintf(&b, "  %s  %s", a.scalar("id", l["id"]), a.scalar("state", l["state"]))
+				id := fmt.Sprint(l["id"])
+				fmt.Fprintf(&b, "  %s (%s)  %s", readablename.FromID(readablename.Lease, id), a.scalar("id", l["id"]), a.scalar("state", l["state"]))
 				if req, ok := l["request"].(map[string]any); ok {
 					fmt.Fprint(&b, "  "+a.scalar("reason", req["reason"]))
 				}

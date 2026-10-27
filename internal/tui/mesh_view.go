@@ -142,7 +142,7 @@ func (m *dashboardModel) meshText() string {
 			return out.String() + "No exact node selected."
 		}
 		n := ui.node
-		fmt.Fprintf(&out, "%s\nStable host: %s\nRegistry source: %s\nHealth: %s · trust %s\n\n", strong.Render(safe(n.Name)), safe(n.Host), safe(ui.registry.Source), safe(n.Health), safe(n.Trust.State))
+		fmt.Fprintf(&out, "%s\nStable host: %s\nRegistry source: %s\nHealth: %s · trust %s\n\n", strong.Render(nodeDisplayName(*n)), safe(n.Host), safe(ui.registry.Source), safe(n.Health), safe(n.Trust.State))
 		if n.Local {
 			out.WriteString("LOCAL AUTHORITY · native operator\n")
 		}
@@ -313,7 +313,7 @@ func (m *dashboardModel) meshText() string {
 				connection = "This backend"
 			}
 			lines := []string{"ID " + safe(n.Host), platform, align(muted.Render("Connection"), connection, max(1, m.mainWidth()-12)), "Run as " + account}
-			title := safe(n.Name) + " · " + label
+			title := nodeDisplayName(n) + " · " + label
 			if i == ui.selected {
 				title = "> " + title
 			}

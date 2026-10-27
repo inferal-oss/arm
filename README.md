@@ -496,6 +496,17 @@ arm message broadcast --text "Host maintenance soon." --key BROADCAST_ID
 
 Reuse a key only for the same send. ARM pins current recipient registrations/settings and rejects changed broadcast membership during submission. A retry reads the existing delivery state rather than invoking agents again; a changed request conflicts. After an uncertain result, inspect `arm messages` before creating a new send. `message send --reply-to MESSAGE_ID` links a reply to that contact's message in the operator inbox.
 
+## Readable names
+
+Host and lease labels are derived directly from their stable IDs and stay the
+same across restarts. Existing host and custom-pool names remain preferred.
+Supported selectors accept the readable label or the original ID; an ambiguous
+name requires the full ID. See [readable names](docs/readable-names.md) for scope
+and the additive dashboard view fields.
+
 ## License
 
 Licensed under either the [Apache License, Version 2.0](LICENSE-APACHE) or the [MIT license](LICENSE-MIT), at your option. SPDX: `Apache-2.0 OR MIT`.
+
+The readable-label vocabulary has a separate
+[EFF attribution and CC BY 4.0 license](internal/readablename/NOTICE.md).

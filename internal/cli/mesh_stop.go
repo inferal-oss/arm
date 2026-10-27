@@ -49,11 +49,14 @@ func (a *app) meshStop(args []string) (int, error) {
 	if *timeout < 0 || *timeout > int64((1<<63-1)/int64(time.Second)) {
 		return 2, fmt.Errorf("timeout outside duration range")
 	}
+	if *lookup && *key == "" {
+		return 2, fmt.Errorf("--lookup requires the original --key")
+	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
 	q := meshops.StopDraft{Host: f.Arg(0), Reason: *reason, Policy: model.ShutdownRequest{Force: *force, Wait: *wait, Timeout: time.Duration(*timeout) * time.Second}}
 	if *lookup {
-		if *key == "" {
-			return 2, fmt.Errorf("--lookup requires the original --key")
-		}
 		original, exists, err := mesh.ReadCoordination(a.home, *key)
 		if err != nil {
 			return 1, err

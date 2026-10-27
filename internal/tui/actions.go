@@ -17,6 +17,7 @@ type detailMsg struct {
 	generation uint64
 	lease      model.Lease
 	err        error
+	label      leaseRenderLabel
 }
 type leaseReview struct {
 	request model.LeaseAction
@@ -40,9 +41,9 @@ func (m *dashboardModel) loadDetail(id string) tea.Cmd {
 	m.review = nil
 	m.notice = "Loading lease…"
 	return func() tea.Msg {
-		var lease model.Lease
-		err := session.Call(ctx, "inspect", map[string]string{"id": id}, &lease)
-		return detailMsg{generation, lease, err}
+		var view leaseRenderView
+		err := session.Call(ctx, "inspect", map[string]string{"id": id}, &view)
+		return detailMsg{generation: generation, lease: view.Lease, err: err, label: leaseRenderLabel{host: view.Host, name: view.DisplayName, hostName: view.HostDisplayName}}
 	}
 }
 func (m *dashboardModel) acceptDetail(msg detailMsg) tea.Cmd {
@@ -54,6 +55,12 @@ func (m *dashboardModel) acceptDetail(msg detailMsg) tea.Cmd {
 		return nil
 	}
 	m.detail = &msg.lease
+	if m.data.status.Host != "" && msg.label.host == m.data.status.Host {
+		if m.data.names.authority != m.data.status.Host {
+			m.data.names = renderLabels{authority: m.data.status.Host}
+		}
+		m.data.names.addLease(msg.lease, msg.label.name, msg.label.hostName)
+	}
 	if m.unknownLease == msg.lease.ID && !m.pending {
 		m.unknownLease = ""
 	}

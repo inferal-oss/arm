@@ -41,7 +41,7 @@ func (m *dashboardModel) leaseTable(leases []model.Lease) string {
 			}
 			account = short(safe(ownerName), max(1, widths[0]-ansiWidth(account)-4-len(suffix))) + suffix + " · " + account
 		}
-		row := []string{selectedPrefix(m.selected, i) + short(safe(l.ID), widths[0]-4) + "\n" + account, leaseLabel(l)}
+		row := []string{selectedPrefix(m.selected, i) + short(m.leaseDisplayName(l.ID, l.Host), widths[0]-4) + "\n" + account, leaseLabel(l)}
 		if len(headers) >= 3 {
 			row = append(row, short(safe(l.Request.Reason), widths[2]-2))
 		}

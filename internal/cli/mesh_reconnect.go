@@ -62,6 +62,9 @@ func (a *app) meshReconnect(args []string) (int, error) {
 		}
 		return mesh.Grant{Permissions: p, Contacts: ids, OperatorInbox: *inbox, Limits: model.Resources{CPU: *cpu, Memory: m, Disk: d}, MaxTTL: *ttl}
 	}
+	if e := a.resolveValidatedAliases(f); e != nil {
+		return 1, e
+	}
 	draft := meshops.ReconnectDraft{Host: f.Arg(0), Destination: *destination, Connector: *connector, Binary: *binary, RemoteHome: *home, LocalIP: *localIP, RemoteIP: *remoteIP, Public: *public, Reason: *reason, Forward: makeGrant(*grant), Reverse: makeGrant(*reverse)}
 	if *key == "" {
 		*key = local.ID() + local.ID()

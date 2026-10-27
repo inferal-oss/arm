@@ -255,7 +255,7 @@ func TestPoolOperationBackRestoresStableListSelection(t *testing.T) {
 			if op != "pool_inspect" || p.(map[string]string)["id"] != v.Pool.ID {
 				t.Fatal("wrong selected pool", op, p)
 			}
-			*out.(*model.PoolView) = v
+			out.(*poolRenderView).PoolView = v
 			return nil
 		}
 		m.Update(cmd())

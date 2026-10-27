@@ -92,7 +92,8 @@ func TestInvalidCLIArgumentsFailBeforeBackendOrFilesystemWork(t *testing.T) {
 		"pool create slots --scope global --host localhost --capacity 1 --reason test", "pool set ID 2 --reason test",
 		"pool adjust ID 0 --reason test", "pool list --reason ignored", "pool inspect", "pool history ID extra", "pool adjust ID 1 --revision 0 --reason test",
 		"usage", "usage ID extra", "usage ID --cpu 1", "incidents extra", "incidents --cpu 1", "run --reason test --usage-grace 1s -- echo test", "acquire --reason test --usage-policy revoke", "status --json=invalid", "--home", "--no-such-option", "agent register --id",
-		"start extra", "stop extra", "stop --cpu 1", "start --reason ignored",
+		// --reason is valid for an explicitly reviewed restart; it is not an invalid start flag.
+		"start extra", "stop extra", "stop --cpu 1",
 		"agents extra", "agents --adapter codex",
 		"monitor extra", "monitor --cpu 1", "monitor --after 1", "monitor --after -1 --epoch fixture",
 		"dashboard Safari extra", "dashboard --cpu 1",

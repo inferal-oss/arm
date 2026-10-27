@@ -21,7 +21,7 @@ func checkinFixture(t *testing.T) (*dashboardModel, *testTransport) {
 	s.reply = func(op string, arg, result any) error {
 		switch op {
 		case "inspect":
-			*result.(*model.Lease) = l
+			setLeaseRenderReply(t, result, l)
 		case "lease_review_policy":
 			*result.(*model.LeaseReviewPolicy) = model.LeaseReviewPolicy{Lease: l.ID, Generation: 3}
 		case "lease_review_list":
@@ -181,7 +181,7 @@ func TestLeaseCheckinSnapshotFailureDoesNotBreakCriticalDashboardData(t *testing
 	s.reply = func(op string, a, b any) error {
 		switch op {
 		case "status":
-			*b.(*model.Status) = model.Status{Host: "local", Capabilities: []string{leaseCheckinCapability}}
+			b.(*statusRenderView).Status = model.Status{Host: "local", Capabilities: []string{leaseCheckinCapability}}
 		case "lease_review_list":
 			return errors.New("optional failed")
 		}

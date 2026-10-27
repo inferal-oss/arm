@@ -12,6 +12,7 @@ import (
 	"getarm.org/internal/local"
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
+	"getarm.org/internal/readablename"
 )
 
 const nodeReadTTL = 30 * time.Second
@@ -46,6 +47,7 @@ func (s *Server) registryState() (model.NodeRegistry, *meshService, mesh.Config,
 	owner := local.CurrentIdentity()
 	account := &model.NodeExecutionAccount{UID: owner.UID, Username: owner.Username, Source: "authenticated-local-account"}
 	result := model.NodeRegistry{Source: metadata.Host, MeshState: "unconfigured", At: now, Nodes: []model.NodeEntry{{Host: metadata.Host, Name: "localhost", Local: true, Trust: model.NodeTrust{State: "local", Account: account}, Metadata: &metadata, MetadataFreshness: nodeFreshness(now, false), ScopeFreshness: nodeFreshness(time.Time{}, false), Health: "local"}}}
+	result.Nodes[0].DisplayName = readablename.FromID(readablename.Host, metadata.Host)
 	s.meshMu.Lock()
 	service := s.mesh
 	s.meshMu.Unlock()
@@ -77,6 +79,7 @@ func (s *Server) registryState() (model.NodeRegistry, *meshService, mesh.Config,
 		result.MeshState = "unavailable"
 	}
 	result.Nodes[0].Name = config.Identity.Name
+	result.Nodes[0].DisplayName = config.Identity.Name
 	identity := config.Identity
 	result.Nodes[0].Trust = model.NodeTrust{State: "local", Account: account, Address: identity.Address, Fingerprint: identity.Fingerprint, SPKI: identity.SPKI, Expires: &identity.Expires}
 	sort.Slice(config.Peers, func(i, j int) bool { return config.Peers[i].Identity.Host < config.Peers[j].Identity.Host })
@@ -93,6 +96,7 @@ func (s *Server) registryState() (model.NodeRegistry, *meshService, mesh.Config,
 func peerNodeEntry(peer mesh.Peer) model.NodeEntry {
 	grant := nodeGrant(peer.Grant)
 	e := model.NodeEntry{Host: peer.Identity.Host, Name: peer.Identity.Name, Trust: model.NodeTrust{State: peer.State, Account: &model.NodeExecutionAccount{UID: peer.Identity.Owner, Username: peer.Identity.OwnerUsername, Source: "paired-identity-snapshot"}, Address: peer.Identity.Address, Pair: peer.Pair, Revision: peer.Revision, Fingerprint: peer.Identity.Fingerprint, SPKI: peer.Identity.SPKI, Expires: &peer.Identity.Expires, Inbound: &grant}, MetadataFreshness: nodeFreshness(time.Time{}, false), ScopeFreshness: nodeFreshness(time.Time{}, false), Health: "unobserved"}
+	e.DisplayName = peer.Identity.Name
 	if peer.State != "active" {
 		e.Health = peer.State
 	} else if _, err := mesh.ValidateIdentity(peer.Identity); err != nil {

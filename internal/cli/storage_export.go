@@ -48,6 +48,9 @@ func (a *app) storageExport(args []string) (int, error) {
 	if *key == "" {
 		*key = local.ID()
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
 	request := model.StorageExportRequest{Key: *key, Lease: f.Arg(0), Destination: destination, Files: selected, Reason: *reason, Revision: *revision}
 	if *dry {
 		var plan model.StorageExportPlan
@@ -122,6 +125,9 @@ func (a *app) storageExports(args []string) (int, error) {
 			return 2, fmt.Errorf("use storage exports [--lease ID], or storage exports inspect|reconcile|handoff EXPORT_ID")
 		}
 		var operations []model.StorageExportSummary
+		if err := a.resolveValidatedAliases(f); err != nil {
+			return 1, err
+		}
 		if err := a.call("storage_exports", map[string]string{"lease": *lease}, &operations); err != nil {
 			return 1, err
 		}
@@ -148,6 +154,9 @@ func (a *app) storageRetain(args []string) (int, error) {
 	}
 	if f.NArg() != 1 || *ttl <= 0 || *ttl > 24*time.Hour || *revision < 0 || strings.TrimSpace(*reason) == "" || len(*reason) > 4096 {
 		return 2, fmt.Errorf("retain requires LEASE_ID, a positive --ttl at most 24h and --reason; it only shortens the existing deadline")
+	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
 	}
 	if *revision == 0 {
 		var lease model.Lease

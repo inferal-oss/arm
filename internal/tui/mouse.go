@@ -206,11 +206,7 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 			starts[i] = i
 		}
 	case m.resourceID != "":
-		if resource := m.selectedResource(); resource != nil {
-			for i := range resource.Users {
-				starts[9+4*i] = i
-			}
-		}
+		starts = m.resourceDetailRender().rows
 	case m.feedFocus:
 		for i := range m.feedItems() {
 			starts[3*i] = i

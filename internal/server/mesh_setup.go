@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"strings"
 	"time"
 
 	"getarm.org/internal/local"
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
+	"getarm.org/internal/readablename"
 )
 
 type preparedMeshSetup struct {
@@ -40,21 +40,7 @@ func (p *preparedMeshSetup) close() {
 }
 
 func meshNodeName(host string) string {
-	name, _ := os.Hostname()
-	name = strings.TrimSpace(name)
-	if name == "" || name == "localhost" {
-		name = "node"
-	}
-	for _, r := range name {
-		if r <= 32 || r == 127 {
-			name = "node"
-			break
-		}
-	}
-	if len(name) > 96 {
-		name = "node"
-	}
-	return name + "-" + host[:8]
+	return readablename.FromID(readablename.Host, host)
 }
 
 func (s *Server) meshSetupOperation(ctx context.Context, operation string, raw json.RawMessage) (any, error) {

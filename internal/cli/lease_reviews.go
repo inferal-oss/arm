@@ -62,6 +62,10 @@ func (a *app) leaseReviews(args []string) (int, error) {
 		if v.Revision <= 0 {
 			return 2, fmt.Errorf("--revision must be the current positive lease revision")
 		}
+		if err := a.resolveValidatedAliases(f); err != nil {
+			return 1, err
+		}
+		v.Lease = f.Arg(0)
 		if err := a.call("lease_review_configure", q, result); err != nil {
 			var api *model.Error
 			if errors.As(err, &api) {
@@ -108,6 +112,14 @@ func (a *app) leaseReviews(args []string) (int, error) {
 		}:
 			v.Lease = f.Arg(0)
 		}
+	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
+	if v, ok := q.(*struct {
+		Lease string `json:"lease"`
+	}); ok {
+		v.Lease = f.Arg(0)
 	}
 	operation := map[string]string{"list": "lease_review_list", "inspect": "lease_review_inspect", "policy": "lease_review_policy", "reply": "lease_review_reply"}[op]
 	if err := a.call(operation, q, result); err != nil {

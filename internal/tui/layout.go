@@ -175,6 +175,15 @@ func (m *dashboardModel) selectionID() string {
 func (m *dashboardModel) applySnapshot(data snapshot) {
 	id := m.selectionID()
 	previous := m.selected
+	// A newly accepted status snapshot supersedes labels from earlier pool reads.
+	if m.poolUI != nil {
+		m.poolUI.names = renderLabels{}
+		m.poolUI.namesEpoch++
+	}
+	if m.data.status.Host != data.status.Host && m.nodeUI != nil {
+		m.nodeUI.summary.names = renderLabels{}
+		m.nodeUI.displayName = ""
+	}
 	m.data = data
 	m.restoreSelection(id, previous)
 }
@@ -249,7 +258,7 @@ func (m *dashboardModel) filteredLeases() []model.Lease {
 		if m.hideInactive && l.State == "terminal" {
 			continue
 		}
-		if filter == "" || strings.Contains(strings.ToLower(l.ID+" "+l.Request.Reason+" "+l.State+" "+leaseLabel(l)+" "+l.Request.Agent+" "+l.Request.Project+" "+l.OwnerUsername), filter) {
+		if filter == "" || strings.Contains(strings.ToLower(l.ID+" "+m.leaseDisplayName(l.ID, l.Host)+" "+l.Request.Reason+" "+l.State+" "+leaseLabel(l)+" "+l.Request.Agent+" "+l.Request.Project+" "+l.OwnerUsername), filter) {
 			out = append(out, l)
 		}
 	}
@@ -259,7 +268,7 @@ func (m *dashboardModel) filteredResources() []model.ResourceView {
 	out := make([]model.ResourceView, 0)
 	filter := strings.ToLower(m.filter)
 	for _, r := range m.data.status.Resources {
-		if filter == "" || strings.Contains(strings.ToLower(r.ID+" "+r.Kind+" "+r.Pool), filter) {
+		if filter == "" || strings.Contains(strings.ToLower(r.ID+" "+m.resourceDisplayName(r)+" "+r.Kind+" "+r.Pool), filter) {
 			out = append(out, r)
 		}
 	}
@@ -310,12 +319,17 @@ func (m *dashboardModel) resourcesText() string {
 		if r.Custom != nil {
 			title = safe(r.Custom.Pool.Name) + " · " + strings.ToUpper(r.Custom.Pool.Scope)
 		}
+		name := m.resourceDisplayName(r)
+		if !strings.HasPrefix(strings.ToLower(title), strings.ToLower(name)) {
+			title = name + " · " + title
+		}
 		if i == m.selected {
 			title = "> " + title
 		}
 		inner := width - 4
 		totalText, promisedText, availableText, deficitText := m.resourceCapacityTexts(&r)
 		lines := []string{align(muted.Render(availableLabel), strong.Foreground(colorAccent).Render(availableText), inner), align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), promisedText, inner)}
+		lines = append(lines, muted.Render("ID: "+safe(r.ID)))
 		if r.Kind == "cpu" || r.Kind == "memory" || r.Kind == "disk" {
 			lines = append(lines, align(muted.Render("Shortfall"), deficitText, inner))
 		} else if r.Deficit != "" && r.Deficit != "0" {
@@ -354,7 +368,11 @@ func (m *dashboardModel) resourcesText() string {
 			lines = append(lines, muted.Render("No lease consumers"))
 		}
 		for _, u := range r.Users[:min(3, len(r.Users))] {
-			lines = append(lines, align(safe(u.Agent), quantity(u.Quantity, r.Unit), inner), muted.Render(m.owner(u.Owner, u.OwnerUsername, r.Host)), ansi.Wrap("Why: "+safe(u.Reason), inner, ""))
+			consumer := m.leaseDisplayName(u.Lease, r.Host)
+			if u.Agent != "" {
+				consumer += " · " + safe(u.Agent)
+			}
+			lines = append(lines, align(consumer, quantity(u.Quantity, r.Unit), inner), muted.Render(m.owner(u.Owner, u.OwnerUsername, r.Host)), ansi.Wrap("Why: "+safe(u.Reason), inner, ""))
 		}
 		if len(r.Users) > 3 {
 			lines = append(lines, muted.Render(fmt.Sprintf("+%d more consumers · Enter to browse", len(r.Users)-3)))
@@ -373,7 +391,7 @@ func (m *dashboardModel) resourcesText() string {
 func (m *dashboardModel) leaseDetailText() string {
 	l := m.detail
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s\nState: %s · revision %d\nWhy: %s\nOwner: %s\nAgent: %s\nProject: %s\nHost: %s\n\nCPU: %g cores\nMemory: %s\nDisk: %s\nExpires: %s\n", safe(l.ID), leaseLabel(*l), l.Revision, safe(l.Request.Reason), m.owner(l.Owner, l.OwnerUsername, l.Host), safe(l.Request.Agent), safe(l.Request.Project), safe(l.Host), l.Request.Resources.CPU, byteCount(fmt.Sprint(l.Request.Resources.Memory)), byteCount(fmt.Sprint(l.Request.Resources.Disk)), date(l.Expires))
+	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nWhy: %s\nOwner: %s\nAgent: %s\nProject: %s\nHost: %s\nHost ID: %s\n\nCPU: %g cores\nMemory: %s\nDisk: %s\nExpires: %s\n", m.leaseDisplayName(l.ID, l.Host), safe(l.ID), leaseLabel(*l), l.Revision, safe(l.Request.Reason), m.owner(l.Owner, l.OwnerUsername, l.Host), safe(l.Request.Agent), safe(l.Request.Project), m.hostDisplayName(l.Host), safe(l.Host), l.Request.Resources.CPU, byteCount(fmt.Sprint(l.Request.Resources.Memory)), byteCount(fmt.Sprint(l.Request.Resources.Disk)), date(l.Expires))
 	if l.State == "terminal" {
 		fmt.Fprintf(&out, "Lifecycle: terminal · recorded outcome: %s\n", safe(l.Outcome))
 	}
@@ -397,7 +415,7 @@ func (m *dashboardModel) leaseReviewText() string {
 	if r == nil {
 		return ""
 	}
-	out := fmt.Sprintf("REVIEW %s\n\nLease: %s\nRevision: %d\nWhy: %s\n\n%s\n", strings.ToUpper(r.request.Action), safe(r.request.ID), r.request.Revision, safe(r.lease.Request.Reason), r.text)
+	out := fmt.Sprintf("REVIEW %s\n\nLease: %s\nID: %s\nRevision: %d\nWhy: %s\n\n%s\n", strings.ToUpper(r.request.Action), m.leaseDisplayName(r.request.ID, r.lease.Host), safe(r.request.ID), r.request.Revision, safe(r.lease.Request.Reason), r.text)
 	if r.request.Action == "renew" {
 		now := m.timeNow
 		if now.IsZero() {
@@ -477,7 +495,7 @@ func (m *dashboardModel) eventsText() string {
 func (m *dashboardModel) hostText() string {
 	s := m.data.status
 	var out strings.Builder
-	fmt.Fprintf(&out, "Host: %s\nOwner: %s\nDraining: %t\nJournal cursor: %d\n\nLocal authority\nNative authenticated operator connection. This Host page describes the local authority. Mesh [7] opens explicitly selected read-only peer contexts through this gateway.\nClosing the dashboard never stops work.\n\nCapabilities\n", safe(s.Host), m.owner(s.Owner, s.OwnerUsername, s.Host), s.Draining, s.Cursor)
+	fmt.Fprintf(&out, "Host: %s\nHost ID: %s\nOwner: %s\nDraining: %t\nJournal cursor: %d\n\nLocal authority\nNative authenticated operator connection. This Host page describes the local authority. Mesh [7] opens explicitly selected read-only peer contexts through this gateway.\nClosing the dashboard never stops work.\n\nCapabilities\n", m.hostDisplayName(s.Host), safe(s.Host), m.owner(s.Owner, s.OwnerUsername, s.Host), s.Draining, s.Cursor)
 	for _, capability := range s.Capabilities {
 		out.WriteString("  • " + safe(capability) + "\n")
 	}
@@ -630,10 +648,11 @@ func (m *dashboardModel) selectedResource() *model.ResourceView {
 	}
 	return nil
 }
-func (m *dashboardModel) resourceDetailText() string {
+func (m *dashboardModel) resourceDetailText() string { return m.resourceDetailRender().text }
+func (m *dashboardModel) resourceDetailRender() textRows {
 	r := m.selectedResource()
 	if r == nil {
-		return "Resource no longer exists. Esc returns to budgets."
+		return textRows{text: "Resource no longer exists. Esc returns to budgets."}
 	}
 	total, promised, available, deficit := m.resourceCapacityTexts(r)
 	out := fmt.Sprintf("%s · %s\nHost: %s\n\nAvailable: %s\nCapacity: %s\nPromised: %s\n\nCONSUMERS · Enter opens selected lease\n", safe(r.Kind), safe(r.Pool), safe(r.Host), available, total, promised)
@@ -658,8 +677,14 @@ func (m *dashboardModel) resourceDetailText() string {
 	if len(r.Users) == 0 {
 		out += "No lease consumers.\n"
 	}
+	out = m.resourceDisplayName(*r) + "\nID: " + safe(r.ID) + "\nHost: " + m.hostDisplayName(r.Host) + "\nHost ID: " + safe(r.Host) + "\n\n" + out
+	rows := make(map[int]int)
+	line := strings.Count(out, "\n")
 	for i, u := range r.Users {
-		out += fmt.Sprintf("\n%s%s\n  %s · %s · %s\n  Why: %s\n", selectedPrefix(m.selected, i), safe(u.Lease), m.owner(u.Owner, u.OwnerUsername, r.Host), quantity(u.Quantity, r.Unit), safe(u.State), safe(u.Reason))
+		row := fmt.Sprintf("\n%s%s\n  %s · %s · %s\n  Why: %s\n", selectedPrefix(m.selected, i), m.consumerDisplayLabel(u.Lease, r.Host), m.owner(u.Owner, u.OwnerUsername, r.Host), quantity(u.Quantity, r.Unit), safe(u.State), safe(u.Reason))
+		rows[line+1] = i
+		out += row
+		line += strings.Count(row, "\n")
 	}
-	return out + "\n↑↓ selects consumer · Enter inspects lease · i record · Esc budgets"
+	return textRows{text: out + "\n↑↓ selects consumer · Enter inspects lease · i record · Esc budgets", rows: rows}
 }

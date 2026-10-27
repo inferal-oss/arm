@@ -195,7 +195,10 @@ Use COMMAND --help for options. Terminal output is human-readable; pipes use JSO
 Use --json to force JSON output, including in a terminal.
 Use arm help COMMAND or arm GROUP --help to browse commands.
 Global --home DIR goes before COMMAND; ARM_HOME selects the same state directory.
-This initial backend uses cooperative CPU/memory/disk budgets, not OS quotas.`)
+This initial backend uses cooperative CPU/memory/disk budgets, not OS quotas.
+Readable names select exact authorized objects; ambiguous names require a stable ID.
+Readable labels use EFF's Long Wordlist by Joseph Bonneau and EFF, CC BY 4.0:
+https://www.eff.org/dice (license: https://creativecommons.org/licenses/by/4.0/).`)
 }
 
 func (a *app) command(args []string) (int, error) {
@@ -306,6 +309,9 @@ func (a *app) command(args []string) (int, error) {
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
+		}
 		var result any
 		if e := a.hostCall(*host, cmd, nil, &result); e != nil {
 			return 1, e
@@ -318,6 +324,9 @@ func (a *app) command(args []string) (int, error) {
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err
 		}
+		if err := a.resolveValidatedAliases(f); err != nil {
+			return 1, err
+		}
 		var result []model.UsageIncident
 		if err := a.call("incidents", map[string]string{"lease": *lease}, &result); err != nil {
 			return 1, err
@@ -328,6 +337,9 @@ func (a *app) command(args []string) (int, error) {
 		f.Bool("json", false, "JSON output with observation scope and uncertainty")
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err
+		}
+		if err := a.resolveValidatedAliases(f); err != nil {
+			return 1, err
 		}
 		var result model.UsageView
 		if err := a.call("usage", map[string]string{"id": f.Args()[0]}, &result); err != nil {
@@ -351,6 +363,21 @@ func (a *app) command(args []string) (int, error) {
 		if e := a.parse(f, args, false); e != nil {
 			return 2, e
 		}
+		if cmd == "renew" && *ttl <= 0 {
+			return 2, fmt.Errorf("renew requires --ttl DURATION greater than zero")
+		}
+		if (cmd == "release" || cmd == "cancel") && *all && len(f.Args()) != 0 {
+			return 2, fmt.Errorf("--all cannot be combined with a lease ID")
+		}
+		if (cmd == "release" || cmd == "cancel") && !*all && (len(f.Args()) != 1 || (*key != "" && *host == "localhost")) {
+			return 2, fmt.Errorf("provide one lease ID or --all; --key requires --all or a remote host")
+		}
+		if *host == "localhost" && cmd == "renew" && *key != "" {
+			return 2, fmt.Errorf("renew --key applies only to remote operations")
+		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
+		}
 		if *host != "localhost" {
 			var status model.Status
 			if e := a.call("status", nil, &status); e != nil {
@@ -365,9 +392,6 @@ func (a *app) command(args []string) (int, error) {
 				if *host != "localhost" {
 					return 2, model.Err("unsupported_remote_operation", "remote bulk actions are not enabled")
 				}
-				if len(f.Args()) != 0 {
-					return 2, fmt.Errorf("--all cannot be combined with a lease ID")
-				}
 				return a.bulkEnd(cmd, *key)
 			}
 			if len(f.Args()) != 1 || (*key != "" && *host == "localhost") {
@@ -375,9 +399,6 @@ func (a *app) command(args []string) (int, error) {
 			}
 		}
 		id := f.Args()[0]
-		if cmd == "renew" && *ttl <= 0 {
-			return 2, fmt.Errorf("renew requires --ttl DURATION greater than zero")
-		}
 		if *host != "localhost" && mesh.Mutating(cmd) && *key == "" {
 			*key = local.ID()
 		}
@@ -610,10 +631,20 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		}
 	}()
 	var l model.Lease
+	resolveRequest := func() error {
+		if err := a.resolveValidatedAliases(f); err != nil {
+			return err
+		}
+		r.Host, r.StorageLease, r.ServiceLease, r.PortLease = *host, *storageLease, *serviceLease, *portLease
+		return nil
+	}
 	if command == "run" {
 		argv := f.Args()
 		if len(argv) == 0 {
 			return 2, fmt.Errorf("run requires -- COMMAND [ARG...]")
+		}
+		if *host, e = a.executionHost(*host); e != nil {
+			return 1, e
 		}
 		if *host != "localhost" && (*cwd == "" || !filepath.IsAbs(*cwd)) {
 			return 2, fmt.Errorf("remote run requires explicit absolute --cwd on the target host; files are not uploaded")
@@ -643,11 +674,17 @@ func (a *app) acquire(command string, args []string) (int, error) {
 			}
 			argv[0] = exe
 		}
+		if e = resolveRequest(); e != nil {
+			return 1, e
+		}
 		e = a.hostCall(*host, "run", manager.RunRequest{Request: r, Command: argv, CWD: *cwd}, &l)
 		if e != nil {
 			return 1, e
 		}
 	} else {
+		if e = resolveRequest(); e != nil {
+			return 1, e
+		}
 		if e = a.hostCall(*host, "acquire", r, &l); e != nil {
 			return 1, e
 		}
@@ -1042,6 +1079,9 @@ func (a *app) message(args []string) error {
 	var out any
 	if *body == "" || len(*body) > 16384 || len(*key) > 128 {
 		return fmt.Errorf("message requires 1 to 16384 body bytes and a key of at most 128 bytes")
+	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return err
 	}
 	if action == "operator" {
 		if err := a.call("message", map[string]string{"audience": audience, "body": *body, "lease": *lease}, &out); err != nil {

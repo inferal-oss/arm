@@ -14,6 +14,7 @@ import (
 	"getarm.org/internal/meshstream"
 	"getarm.org/internal/model"
 	"getarm.org/internal/nodestop"
+	"getarm.org/internal/readablename"
 	"getarm.org/internal/workspace"
 	"getarm.org/internal/workspaceroute"
 	"getarm.org/internal/workspacetransport"
@@ -358,7 +359,7 @@ func (m *meshService) serve(w http.ResponseWriter, r *http.Request) {
 	} else {
 		value, e = m.store.WithPeer(peer.Identity.Host, func(current mesh.Peer) (any, error) { return m.dispatch(ctx, current, request) })
 	}
-	respond(value, e)
+	respond(m.owner.namedPeerView(request.Operation, value), e)
 }
 func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh.Request) (value any, err error) {
 	leave, e := m.owner.registerStopOperation(request.Operation)
@@ -419,6 +420,10 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		resources := make([]map[string]any, 0, len(status.Resources))
 		for _, resource := range status.Resources {
 			summary := map[string]any{"id": resource.ID, "host": resource.Host, "kind": resource.Kind, "unit": resource.Unit, "budget_total": resource.BudgetTotal, "reserved": resource.Reserved, "available": resource.Available}
+			// Labels derive only from fields already in this grant's allowlist.
+			// Do not expose private pool or port names through observe-host.
+			summary["display_name"] = resourceLabel(model.ResourceView{ID: resource.ID, Kind: resource.Kind})
+			summary["host_display_name"] = readablename.FromID(readablename.Host, resource.Host)
 			if resource.Kind == "cpu" && status.CPU != nil {
 				summary["availability_known"] = status.CPU.Known
 				summary["stale"] = status.CPU.Stale

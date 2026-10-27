@@ -432,6 +432,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		if f.NArg() != 1 || *reason == "" {
 			return 2, fmt.Errorf("revoke requires HOST and --reason")
 		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
+		}
 		if e := a.meshConfirm(map[string]any{"operation": "revoke-peer", "host": f.Arg(0), "reason": *reason, "effect": "deny new operations and close peer sessions; existing local leases retain expiry/cleanup obligations"}, *yes, *dry); e != nil {
 			return 1, e
 		}
@@ -451,6 +454,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		if f.NArg() != 2 || !json.Valid([]byte(*params)) {
 			return 2, fmt.Errorf("call requires HOST OPERATION and valid --params JSON")
 		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
+		}
 		var result any
 		if e := a.call("mesh_dispatch", struct {
 			Host    string
@@ -467,6 +473,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		if f.NArg() != 1 || !mesh.ValidKey(*key) {
 			return 2, fmt.Errorf("message-lookup requires HOST --key ORIGINAL_KEY")
 		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
+		}
 		var result any
 		if e := a.hostCall(f.Arg(0), "message_lookup", map[string]string{"idempotency_key": *key}, &result); e != nil {
 			return 1, e
@@ -478,6 +487,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		}
 		if f.NArg() != 1 {
 			return 2, fmt.Errorf("contacts requires HOST (explicit contact-read grant)")
+		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
 		}
 		var result []agents.Contact
 		if e := a.hostCall(f.Arg(0), "contacts", map[string]any{}, &result); e != nil {
@@ -494,6 +506,9 @@ func (a *app) meshCommand(args []string) (int, error) {
 		}
 		if f.NArg() != 1 || *body == "" || !mesh.ValidKey(*key) {
 			return 2, fmt.Errorf("send requires HOST --body TEXT --key KEY [--to CONTACT --registration REVIEWED]")
+		}
+		if e := a.resolveValidatedAliases(f); e != nil {
+			return 1, e
 		}
 		q := manager.MessageRequest{Body: *body, Audience: *to, Targets: []agents.Contact{}}
 		if *to != "operator" {

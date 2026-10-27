@@ -115,5 +115,8 @@ func (a *app) meshDisconnect(args []string) (int, error) {
 	if !mesh.ValidKey(*key) {
 		return 2, fmt.Errorf("invalid disconnect key")
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
 	return a.meshCoordinator().Disconnect(*key, f.Arg(0), *reason, *yes, *dry)
 }

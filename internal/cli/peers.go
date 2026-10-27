@@ -11,6 +11,7 @@ import (
 
 	"getarm.org/internal/local"
 	"getarm.org/internal/model"
+	"getarm.org/internal/readablename"
 )
 
 // peers off/on is a private local preference. The daemon observes it on its
@@ -110,7 +111,7 @@ func (a *app) peersHuman(report model.PeerOverview) error {
 		fmt.Fprintln(&b, "Discovery: scan truncated")
 	}
 	for _, peer := range report.Instances {
-		fmt.Fprintf(&b, "\nUID %d · %s · %s\n", peer.UID, terminalSafe(peer.Host), terminalSafe(peer.URL))
+		fmt.Fprintf(&b, "\nUID %d · %s (%s) · %s\n", peer.UID, readablename.FromID(readablename.Host, peer.Host), terminalSafe(peer.Host), terminalSafe(peer.URL))
 		if peer.Snapshot == nil {
 			fmt.Fprintln(&b, "  "+terminalSafe(peer.Error))
 			continue

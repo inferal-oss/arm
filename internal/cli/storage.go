@@ -46,6 +46,9 @@ func (a *app) storage(args []string) (int, error) {
 		}
 		return 0, a.print(result)
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
 	target := f.Args()[0]
 	var result any
 	switch action {

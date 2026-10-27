@@ -42,7 +42,7 @@ func (m *dashboardModel) meshMouseRegions() []mouseRegion {
 			if ui.form != nil {
 				label = ui.form.fields[index].label
 			} else if ui.mode == "nodes" {
-				label = ui.registry.Nodes[index].Name
+				label = nodeDisplayName(ui.registry.Nodes[index])
 			} else {
 				label = ui.operations[index].Kind + " · " + meshPhaseLabel(ui.operations[index])
 			}

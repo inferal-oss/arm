@@ -131,6 +131,9 @@ func (a *app) sshCommand(args []string) (int, error) {
 	if !historyText(*key, 128) {
 		return 2, model.Err("invalid_request", "valid exact SSH key required")
 	}
+	if e = a.resolveValidatedAliases(f); e != nil {
+		return 1, e
+	}
 	if e = a.sshSourcePrecheck(f.Arg(0), *key); e != nil {
 		return 1, e
 	}
@@ -301,6 +304,9 @@ func (a *app) sshRecover(action string, args []string) (int, error) {
 	}
 	if len(f.Args()) != 1 || *key == "" {
 		return 2, fmt.Errorf("NODE and exact --key required")
+	}
+	if e := a.resolveValidatedAliases(f); e != nil {
+		return 1, e
 	}
 	state, home, b, e := a.sshOfflineState()
 	if e != nil {

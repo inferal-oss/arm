@@ -86,6 +86,9 @@ func (a *app) agentMessage(action string, args []string) error {
 	if request.Key == "" {
 		request.Key = local.ID()
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return err
+	}
 	if action == "send" {
 		request.Targets = []agents.Contact{}
 		if request.Audience != "operator" {

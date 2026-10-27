@@ -17,9 +17,9 @@ func TestIndependentPoolReadCannotCrossReopenedUIIdentity(t *testing.T) {
 			newView.Pool.ID = "new-view"
 			transport.reply = func(operation string, params, out any) error {
 				if operation == "pool_list" {
-					*out.(*[]model.PoolView) = []model.PoolView{oldView}
+					*out.(*[]poolRenderView) = []poolRenderView{{PoolView: oldView}}
 				} else if operation == "pool_inspect" {
-					*out.(*model.PoolView) = oldView
+					out.(*poolRenderView).PoolView = oldView
 				} else {
 					t.Fatal(operation)
 				}
@@ -40,7 +40,7 @@ func TestIndependentPoolReadCannotCrossReopenedUIIdentity(t *testing.T) {
 				if operation != "pool_list" {
 					t.Fatal(operation)
 				}
-				*out.(*[]model.PoolView) = []model.PoolView{newView}
+				*out.(*[]poolRenderView) = []poolRenderView{{PoolView: newView}}
 				return nil
 			}
 			newRead := m.openPools()
@@ -101,7 +101,7 @@ func TestSubpoolConsumerPagingFailureAndReopenedScope(t *testing.T) {
 		if fail {
 			return fmt.Errorf("connection lost")
 		}
-		*out.(*model.PoolConsumerPage) = model.PoolConsumerPage{Pool: v.Pool.ID, Descendants: true, Entries: []model.PoolConsumer{{Use: model.ResourceUse{Lease: "child-lease", Reason: "Exact child work", State: "active"}}}}
+		out.(*poolConsumersRenderView).PoolConsumerPage = model.PoolConsumerPage{Pool: v.Pool.ID, Descendants: true, Entries: []model.PoolConsumer{{Use: model.ResourceUse{Lease: "child-lease", Reason: "Exact child work", State: "active"}}}}
 		return nil
 	}
 	read := m.poolKey("n")

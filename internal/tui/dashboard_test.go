@@ -177,7 +177,7 @@ func TestDashboardLeaseUnknownRequiresFreshInspectAndCloseRace(t *testing.T) {
 	m.detail = &l
 	s.reply = func(operation string, p, result any) error {
 		if operation == "inspect" {
-			*result.(*model.Lease) = l
+			setLeaseRenderReply(t, result, l)
 			return nil
 		}
 		return errors.New("response lost")
@@ -383,7 +383,7 @@ func TestDashboardResourceConsumerDrilldownPreservesWhoAndWhy(t *testing.T) {
 			t.Fatal("resource omitted attribution/budget", want, text)
 		}
 	}
-	s.reply = func(op string, p, result any) error { *result.(*model.Lease) = activeLease("build"); return nil }
+	s.reply = func(op string, p, result any) error { setLeaseRenderReply(t, result, activeLease("build")); return nil }
 	cmd := press(m, "enter")
 	m.Update(cmd())
 	if m.detail == nil || m.detail.ID != "build" {

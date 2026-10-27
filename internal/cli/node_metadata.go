@@ -9,6 +9,9 @@ func (a *app) nodeMetadata(args []string) (int, error) {
 	if err := a.parse(f, args, false); err != nil {
 		return 2, err
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
 	var result model.NodeMetadata
 	if err := a.hostCall(*host, "node_metadata", nil, &result); err != nil {
 		return 1, err

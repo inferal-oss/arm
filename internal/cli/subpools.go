@@ -18,6 +18,9 @@ func (a *app) poolHierarchy(action string, args []string) (int, error) {
 	if err := a.parse(f, args, false); err != nil {
 		return 2, err
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
 	if action != "roots" {
 		q.ID = f.Args()[0]
 	}

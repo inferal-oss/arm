@@ -30,6 +30,9 @@ func (a *app) monitorCommand(args []string) error {
 	if q.After < 0 || (q.After > 0 && q.Epoch == "") {
 		return &argumentError{err: fmt.Errorf("--after requires --epoch and must be nonnegative"), command: "monitor"}
 	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return err
+	}
 	if !*follow {
 		var page model.MonitorPage
 		if err := a.call("monitor", q, &page); err != nil {

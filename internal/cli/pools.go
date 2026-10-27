@@ -60,6 +60,12 @@ func (a *app) pool(args []string) (int, error) {
 		if action != "list" {
 			id = f.Args()[0]
 		}
+		if err := a.resolveValidatedAliases(f); err != nil {
+			return 1, err
+		}
+		if action != "list" {
+			id = f.Arg(0)
+		}
 		var result any
 		if err := a.call("pool_"+action, map[string]any{"id": id, "all": *all, "after": *after}, &result); err != nil {
 			return 1, err
@@ -153,6 +159,12 @@ func (a *app) pool(args []string) (int, error) {
 		if action != "adjust" && r.Revision == nil {
 			return 2, fmt.Errorf("--revision is required; use arm pool inspect %s to read the current revision", r.ID)
 		}
+	}
+	if err := a.resolveValidatedAliases(f); err != nil {
+		return 1, err
+	}
+	if action != "create" {
+		r.ID = f.Arg(0)
 	}
 	if r.Key == "" {
 		r.Key = local.ID()

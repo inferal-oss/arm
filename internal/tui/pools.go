@@ -11,6 +11,8 @@ import (
 )
 
 type poolDashboard struct {
+	names            renderLabels
+	namesEpoch       uint64
 	mode             string
 	views            []model.PoolView
 	current          *model.PoolView
@@ -40,6 +42,8 @@ type poolOperation struct {
 	sequence           uint64
 }
 type poolReadMsg struct {
+	names           renderLabels
+	namesEpoch      uint64
 	ui              *poolDashboard
 	generation      uint64
 	session         transport
@@ -76,22 +80,45 @@ func (m *dashboardModel) readPools(kind, id string, after int64, draft *poolDraf
 	}
 	ui := m.poolUI
 	ui.generation++
-	generation := ui.generation
+	generation, namesEpoch := ui.generation, ui.namesEpoch
 	ui.loading = true
 	cursor := ""
 	if len(consumerCursor) > 0 {
 		cursor = consumerCursor[0]
 	}
 	session, ctx := m.session, m.ctx
+	authority := m.data.status.Host
+	poolAuthority := ""
+	if ui.current != nil && ui.current.Pool.ID == id {
+		poolAuthority = ui.current.Pool.Authority
+	}
 	return func() tea.Msg {
-		result := poolReadMsg{ui: ui, generation: generation, session: session, kind: kind, start: after, draft: draft, consumerAfter: cursor, consumerHistory: append([]string{}, ui.consumerPrevious...)}
+		result := poolReadMsg{ui: ui, generation: generation, namesEpoch: namesEpoch, session: session, kind: kind, start: after, draft: draft, consumerAfter: cursor, consumerHistory: append([]string{}, ui.consumerPrevious...)}
 		switch kind {
 		case "list":
-			result.err = session.Call(ctx, "pool_list", map[string]bool{"all": true}, &result.views)
+			var views []poolRenderView
+			result.err = session.Call(ctx, "pool_list", map[string]bool{"all": true}, &views)
+			result.names = renderLabels{authority: authority}
+			if views != nil {
+				result.views = make([]model.PoolView, len(views))
+				for i, wire := range views {
+					view, names := wire.values()
+					result.views[i] = view
+					if names.authority == authority {
+						for id, label := range names.leases {
+							result.names.addLease(model.Lease{ID: id, Host: authority}, label.name, "")
+						}
+					}
+				}
+			}
 		case "detail", "prepare":
-			result.err = session.Call(ctx, "pool_inspect", map[string]string{"id": id}, &result.view)
+			var view poolRenderView
+			result.err = session.Call(ctx, "pool_inspect", map[string]string{"id": id}, &view)
+			result.view, result.names = view.values()
 		case "consumers":
-			result.err = session.Call(ctx, "pool_consumers", model.PoolTreeQuery{ID: id, After: cursor, Limit: 20, Descendants: true}, &result.consumers)
+			var page poolConsumersRenderView
+			result.err = session.Call(ctx, "pool_consumers", model.PoolTreeQuery{ID: id, After: cursor, Limit: 20, Descendants: true}, &page)
+			result.consumers, result.names = page.values(poolAuthority)
 		case "history":
 			result.err = session.Call(ctx, "pool_history", map[string]any{"id": id, "after": after}, &result.history)
 		}
@@ -108,6 +135,10 @@ func (m *dashboardModel) acceptPoolRead(result poolReadMsg) tea.Cmd {
 		m.notice = safe(result.err.Error())
 		return nil
 	}
+	names := result.names
+	if names.authority != m.data.status.Host || result.namesEpoch != ui.namesEpoch {
+		names = renderLabels{}
+	}
 	switch result.kind {
 	case "list":
 		id := ""
@@ -120,6 +151,7 @@ func (m *dashboardModel) acceptPoolRead(result poolReadMsg) tea.Cmd {
 			return nil
 		}
 		ui.views = ordered
+		ui.names = names
 		ui.mode = "list"
 		ui.selected = 0
 		for i, view := range ui.views {
@@ -131,6 +163,7 @@ func (m *dashboardModel) acceptPoolRead(result poolReadMsg) tea.Cmd {
 	case "detail":
 		view := result.view
 		ui.current = &view
+		ui.names = names
 		ui.mode = "detail"
 		ui.selected = 0
 		m.viewport.GotoTop()
@@ -140,12 +173,14 @@ func (m *dashboardModel) acceptPoolRead(result poolReadMsg) tea.Cmd {
 			return nil
 		}
 		ui.consumers = result.consumers
+		ui.names = names
 		ui.consumerAfter = result.consumerAfter
 		ui.consumerPrevious = result.consumerHistory
 		ui.mode = "consumers"
 		ui.selected = 0
 		m.viewport.GotoTop()
 	case "history":
+		ui.names = renderLabels{}
 		ui.history = result.history
 		ui.historyStart = result.start
 		ui.mode = "history"
@@ -157,6 +192,7 @@ func (m *dashboardModel) acceptPoolRead(result poolReadMsg) tea.Cmd {
 		}
 		view := result.view
 		ui.current = &view
+		ui.names = names
 		plan, err := preparePoolPlan(*result.draft, &view, m.data.status.Host)
 		if err != nil {
 			m.notice = err.Error()

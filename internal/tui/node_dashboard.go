@@ -27,6 +27,7 @@ type nodeResourceSummary struct {
 	Stale     bool        `json:"stale"`
 }
 type nodeSummary struct {
+	names     renderLabels
 	Host      string                `json:"host"`
 	Resources []nodeResourceSummary `json:"resources"`
 	Leases    []model.Lease         `json:"leases"`
@@ -36,27 +37,29 @@ type nodeSummary struct {
 	Reported  time.Time             `json:"reported_at"`
 }
 type nodeDashboard struct {
-	selection model.NodeSelection
-	session   *client.Session
-	context   model.NodeContextReport
-	metadata  *model.NodeMetadata
-	summary   nodeSummary
-	loading   bool
-	connected bool
-	err       string
-	lastRead  time.Time
-	selected  int
-	detail    *model.Lease
+	displayName string
+	selection   model.NodeSelection
+	session     *client.Session
+	context     model.NodeContextReport
+	metadata    *model.NodeMetadata
+	summary     nodeSummary
+	loading     bool
+	connected   bool
+	err         string
+	lastRead    time.Time
+	selected    int
+	detail      *model.Lease
 }
 type nodeReadMsg struct {
-	ui       *nodeDashboard
-	session  *client.Session
-	context  model.NodeContextReport
-	metadata *model.NodeMetadata
-	summary  nodeSummary
-	detail   *model.Lease
-	opening  bool
-	err      error
+	detailLabel leaseRenderLabel
+	ui          *nodeDashboard
+	session     *client.Session
+	context     model.NodeContextReport
+	metadata    *model.NodeMetadata
+	summary     nodeSummary
+	detail      *model.Lease
+	opening     bool
+	err         error
 }
 type nodeLostMsg struct {
 	ui      *nodeDashboard
@@ -79,7 +82,7 @@ func (m *dashboardModel) openSelectedNode() tea.Cmd {
 	if m.nodeUI != nil && m.nodeUI.session != nil {
 		m.nodeUI.session.Close()
 	}
-	n := &nodeDashboard{selection: model.NodeSelection{Host: node.Host, Source: m.data.status.Host}, loading: true}
+	n := &nodeDashboard{selection: model.NodeSelection{Host: node.Host, Source: m.data.status.Host}, displayName: nodeDisplayName(*node), loading: true}
 	m.nodeUI = n
 	m.view = 1
 	m.record = nil
@@ -106,7 +109,9 @@ func readNodeSnapshot(ctx context.Context, msg nodeReadMsg) nodeReadMsg {
 		msg.err = model.Err("wrong_host", "selected authority changed")
 		return msg
 	}
-	msg.err = msg.session.Call(ctx, "status", nil, &msg.summary)
+	var view nodeSummaryRenderView
+	msg.err = msg.session.Call(ctx, "status", nil, &view)
+	msg.summary = view.values()
 	if msg.err == nil && msg.summary.Host != msg.ui.selection.Host {
 		msg.err = model.Err("wrong_host", "destination status differs from selected host")
 	}
@@ -135,8 +140,10 @@ func (m *dashboardModel) refreshNode(id string) tea.Cmd {
 	return func() tea.Msg {
 		msg := nodeReadMsg{ui: ui, session: session, context: ui.context}
 		if id != "" {
-			msg.detail = &model.Lease{}
-			msg.err = session.Call(ctx, "inspect", map[string]string{"id": id}, msg.detail)
+			var view leaseRenderView
+			msg.err = session.Call(ctx, "inspect", map[string]string{"id": id}, &view)
+			msg.detail = &view.Lease
+			msg.detailLabel = leaseRenderLabel{host: view.Host, name: view.DisplayName, hostName: view.HostDisplayName}
 			if msg.err == nil && msg.detail.Host != ui.selection.Host {
 				msg.err = model.Err("wrong_host", "lease differs from selected host")
 			}
@@ -175,9 +182,16 @@ func (m *dashboardModel) acceptNodeRead(msg nodeReadMsg) tea.Cmd {
 	}
 	if msg.detail != nil {
 		ui.detail = msg.detail
+		if ui.selection.Source == m.data.status.Host {
+			ui.summary.names.addLease(*msg.detail, msg.detailLabel.name, msg.detailLabel.hostName)
+		}
 		m.viewport.GotoTop()
 	} else {
 		ui.summary = msg.summary
+		if ui.selection.Source != m.data.status.Host {
+			ui.summary.names = renderLabels{}
+			ui.displayName = ""
+		}
 		ui.context = msg.context
 		ui.metadata = msg.metadata
 		ui.lastRead = m.timeNow
@@ -254,7 +268,7 @@ func (m *dashboardModel) nodeKey(k string) tea.Cmd {
 func (m *dashboardModel) nodeText() string {
 	ui := m.nodeUI
 	var out strings.Builder
-	fmt.Fprintf(&out, "REMOTE NODE · READ-ONLY\nDestination: %s\nThrough LOCAL gateway: %s\n", safe(ui.selection.Host), safe(ui.selection.Source))
+	fmt.Fprintf(&out, "REMOTE NODE · READ-ONLY\nDestination: %s\nHost ID: %s\nThrough LOCAL gateway: %s\nGateway ID: %s\n", m.hostDisplayName(ui.selection.Host), safe(ui.selection.Host), m.hostDisplayName(ui.selection.Source), safe(ui.selection.Source))
 	if ui.metadata != nil {
 		fmt.Fprintf(&out, "Reported: %s · %s / %s · ARM %s\n", safe(ui.metadata.Hostname), safe(ui.metadata.Platform.OS), safe(ui.metadata.Platform.Architecture), safe(ui.metadata.Build.Version))
 	}
@@ -272,11 +286,21 @@ func (m *dashboardModel) nodeText() string {
 	}
 	out.WriteString("\n")
 	if ui.detail != nil {
-		return out.String() + "DESTINATION LEASE · INSPECTION ONLY\n\n" + meshExactJSON(ui.detail) + "\n\nNo lease mutations are implemented here. [i] Collapsible record · Esc leases"
+		return out.String() + "DESTINATION LEASE · INSPECTION ONLY\n" + m.leaseDisplayName(ui.detail.ID, ui.selection.Host) + "\nID: " + safe(ui.detail.ID) + "\n\n" + meshExactJSON(ui.detail) + "\n\nNo lease mutations are implemented here. [i] Collapsible record · Esc leases"
 	}
 	switch m.view {
 	case 1:
 		for _, resource := range ui.summary.Resources {
+			name := ui.summary.names.resources[resource.ID]
+			if ui.selection.Source != m.data.status.Host {
+				name = ""
+			}
+			if strings.TrimSpace(name) == "" {
+				name = resourceFallback(resource.ID, resource.Kind)
+			} else {
+				name = safe(name)
+			}
+			fmt.Fprintf(&out, "%s\nID: %s\n", name, safe(resource.ID))
 			available := quantity(resource.Available, resource.Unit)
 			unavailable := !ui.connected || ui.err != "" || !ui.lastRead.IsZero() && m.timeNow.Sub(ui.lastRead) > 5*time.Second || resource.Stale || resource.Known != nil && !*resource.Known || nodeBudgetUnavailable(ui, resource.Kind, m.timeNow)
 			if unavailable {
@@ -312,7 +336,7 @@ func (m *dashboardModel) nodeText() string {
 	case 2:
 		out.WriteString("Only destination-authorized leases are shown; detail lookup remains source-owned.\n\n")
 		for i, lease := range ui.summary.Leases {
-			fmt.Fprintf(&out, "%s%s · %s\n  %s\n  Why: %s\n\n", selectedPrefix(ui.selected, i), safe(lease.ID), leaseLabel(lease), safe(lease.Host), safe(lease.Request.Reason))
+			fmt.Fprintf(&out, "%s%s · %s\n  ID: %s\n  Host: %s\n  Host ID: %s\n  Why: %s\n\n", selectedPrefix(ui.selected, i), m.leaseDisplayName(lease.ID, ui.selection.Host), leaseLabel(lease), safe(lease.ID), m.hostDisplayName(lease.Host), safe(lease.Host), safe(lease.Request.Reason))
 		}
 		if len(ui.summary.Leases) == 0 {
 			out.WriteString("No leases visible under the current destination grant.\n")
