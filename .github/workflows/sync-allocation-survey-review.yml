@@ -1,0 +1,110 @@
+name: Native sync allocation survey review
+on:
+  push:
+    branches: [codex/sync-allocation-survey-final-review-ci]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sync-allocation-survey-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-survey:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Bind exact source and platform
+        shell: bash
+        run: |
+          python3 scripts/inspect-sync-allocation-survey-review.py prepare
+          go version > .cache/allocation-review-ci/go-version.txt
+      - name: Reproduce prior Darwin Fsid-only value collision
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -overlay .cache/allocation-review-ci/legacy-darwin-overlay.json -json ./internal/syncfs -run '^TestWorkspaceAllocationDarwinMountIdentitySeparatesReportedMountpoints$' -count=1 -timeout=2m > .cache/allocation-review-ci/original-darwin.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-allocation-survey-review.py assess original-darwin "$code"
+      - name: Final complete native filesystem races
+        shell: bash
+        run: |
+          set +e
+          go test -mod=readonly -p=1 -race -json ./internal/syncfs -count=1 -timeout=8m > .cache/allocation-review-ci/final-race.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-allocation-survey-review.py assess final-race "$code"
+      - name: Build original symlink-skipping native policy
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          go test -mod=readonly -p=1 -race -c -overlay .cache/allocation-review-ci/original-linux-overlay.json ./internal/syncfs -o .cache/allocation-review-ci/syncfs-original.test
+          python3 scripts/inspect-sync-allocation-survey-review.py binary-before syncfs-original
+      - name: Reproduce original mounted-symlink blind spot with verified teardown
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python3 scripts/inspect-sync-allocation-survey-review.py namespace-before
+          survey_outer_namespace="$(readlink /proc/self/ns/mnt)"
+          set +e
+          sudo -n unshare --mount --propagation private env ARM_TEST_SYNC_SURVEY_PRIVATE_NS=1 ARM_SYNC_SURVEY_OUTER_NS="$survey_outer_namespace" .cache/allocation-review-ci/syncfs-original.test -test.v -test.run '^TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal$/^nested-symlink$' -test.timeout=2m > .cache/allocation-review-ci/original-symlink.stdout.txt 2>&1
+          code=$?
+          set -e
+          go tool test2json -t -p github.com/inferal-oss/arm/internal/syncfs < .cache/allocation-review-ci/original-symlink.stdout.txt > .cache/allocation-review-ci/original-symlink.jsonl
+          python3 scripts/inspect-sync-allocation-survey-review.py binary-after syncfs-original
+          python3 scripts/inspect-sync-allocation-survey-review.py assess original-symlink "$code"
+          rm .cache/allocation-review-ci/syncfs-original.test
+      - name: Build original native private-mount test image
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          go test -mod=readonly -p=1 -race -c ./internal/syncfs -o .cache/allocation-review-ci/syncfs-native.test
+          python3 scripts/inspect-sync-allocation-survey-review.py binary-before syncfs-native
+      - name: Execute real same-device file and directory binds in private namespace
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          survey_outer_namespace="$(readlink /proc/self/ns/mnt)"
+          set +e
+          sudo -n unshare --mount --propagation private env ARM_TEST_SYNC_SURVEY_PRIVATE_NS=1 ARM_SYNC_SURVEY_OUTER_NS="$survey_outer_namespace" .cache/allocation-review-ci/syncfs-native.test -test.v -test.run '^TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal$' -test.timeout=2m > .cache/allocation-review-ci/native-mount.stdout.txt 2>&1
+          code=$?
+          set -e
+          go tool test2json -t -p github.com/inferal-oss/arm/internal/syncfs < .cache/allocation-review-ci/native-mount.stdout.txt > .cache/allocation-review-ci/native-mount.jsonl
+          python3 scripts/inspect-sync-allocation-survey-review.py assess native-mount "$code"
+          python3 scripts/inspect-sync-allocation-survey-review.py binary-after syncfs-native
+          python3 scripts/inspect-sync-allocation-survey-review.py namespace-after
+          rm .cache/allocation-review-ci/syncfs-native.test
+      - name: Final affected vet and source closure
+        shell: bash
+        run: |
+          set +e
+          go vet -mod=readonly -p=1 ./internal/syncfs > .cache/allocation-review-ci/final-vet.jsonl 2>&1
+          code=$?
+          set -e
+          python3 scripts/inspect-sync-allocation-survey-review.py assess final-vet "$code"
+          python3 scripts/inspect-sync-allocation-survey-review.py closure
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: sync-allocation-survey-${{ matrix.os }}
+          path: |
+            .cache/allocation-review-ci/
+            !.cache/allocation-review-ci/*.test
+          include-hidden-files: true
+          retention-days: 7
