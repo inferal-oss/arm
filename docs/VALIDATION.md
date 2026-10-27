@@ -4763,3 +4763,25 @@ and no child; it supplies no test result. SDK, loader, kernel and container engi
 remain scoped native trust boundaries. These results do not accept production
 registration/admission, elapsed entitlement, executable pinning or broader
 resource, accounting, compensation and formal integration.
+
+### Public latest at reviewed source 81fdccd
+
+[Original run 40449550928](https://github.com/inferal-oss/arm/actions/runs/40449550928)
+passes native macOS arm64 and Linux amd64 public installation. Both literal
+query and installation use `@latest` and select
+`v0.0.0-20261027041829-81fdccddaa94`. A fresh selected-version lookup supplies
+full Origin `81fdccddaa9450e7612dec9cfa1c05e5cf3268f8`; both checksums agree
+with the query and installed buildinfo. Each platform completes 12 original
+commands and the unchanged helper's 13 regression controls. Thin version/help
+and empty-catalog probes pass with ordinary CGo enabled.
+
+Root independently verifies both original ZIP digests against GitHub artifact
+metadata, all 1,903 source-file hashes and lengths against immutable Git objects,
+26 critical public ZIP inputs, unchanged source/helper identities, actual literal
+query/install arguments, selected-version provenance/checksums and disposable
+cleanup. [Normalized evidence](validation/module-latest-81fdccd-2026-10-26.json)
+retains binary and buildinfo hashes; raw host-path-bearing buildinfo remains
+outside version control. No Go test suite is implied by public-install-only mode.
+Earlier failed and passing runs retain their own scopes. This accepts installation
+of `81fdccd`, not `675c505` or subsequent source; interruption and descendant
+cleanup remain separate gates. No user installation or backend was modified.
