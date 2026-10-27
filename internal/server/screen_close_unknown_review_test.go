@@ -63,7 +63,7 @@ func TestScreenResourceUnknownNativeCloseRetainsCharge(t *testing.T) {
 		defer stream.Close()
 		_, _ = io.Copy(stream, stream)
 	}))
-	awaitScreenTransportCapacity(t, s)
+	startAndAwaitScreenTransportCapacity(t, s)
 	joined := make(chan struct{})
 	front := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { defer close(joined); s.browserScreen(w, r) }))
 	seen := make(chan *screenUnknownCloseConn, 1)
