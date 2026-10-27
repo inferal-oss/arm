@@ -1,0 +1,196 @@
+{
+  "schema": 1,
+  "date": "2026-10-27",
+  "scope": "Integrity and native version inspection of the exact frozen carrier validation artifact; not later revisions or full specification acceptance.",
+  "source_commit": "70c77cd52dff266b0995670e97c3778c92aa0810",
+  "ci": {
+    "run": 40470874515,
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40470874515",
+    "artifact_id": 12718811627,
+    "artifact_url": "https://github.com/inferal-oss/arm/actions/runs/40470874515/artifacts/12718811627",
+    "build": "success",
+    "publish": "skipped",
+    "ownership_controls": 18,
+    "release_controls": 17,
+    "affected_go_packages": [
+      "github.com/inferal-oss/arm/internal/buildinfo",
+      "github.com/inferal-oss/arm/internal/distribution",
+      "github.com/inferal-oss/arm/scripts/build-bundle"
+    ]
+  },
+  "artifact_zip": {
+    "bytes": 670924317,
+    "sha256": "1e02dca02410b63295275212ed0d67ccda0ec82c5d872253440bde6e8421e182",
+    "closed_asset_count": 6,
+    "metadata_version_tag": "v0.0.0-ci"
+  },
+  "carriers": [
+    {
+      "platform": "darwin-amd64",
+      "archive_sha256": "e4be600c73235b0015a6f4f7ae637f207456c3020e3f7f1b8cb850ef40b18b96",
+      "binary_sha256": "51f7e0cd372b70ab6d2c5ec9d84d0a348ecd18ab5a9941133c6ded9b2dd52e26",
+      "members": 127,
+      "uncompressed_member_bytes": 211032517,
+      "compressed_payloads_verified": 4,
+      "product_notices_sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "go_notice_inventory_entries": 95
+    },
+    {
+      "platform": "darwin-arm64",
+      "archive_sha256": "50d8ceecf1282dad61d382f468cea3d71072c589b434d02aa758da1d1d4a6e69",
+      "binary_sha256": "da424fe5e86eb21e44473e638b9683595e91a5020595ffb0d22ba8f3b8eeee2c",
+      "members": 127,
+      "uncompressed_member_bytes": 207667751,
+      "compressed_payloads_verified": 4,
+      "product_notices_sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "go_notice_inventory_entries": 95
+    },
+    {
+      "platform": "linux-amd64",
+      "archive_sha256": "84bc925a51d662d31640afb900b286f697a0ae31780b76a47ce40bb16e71b502",
+      "binary_sha256": "14574090d98c4179dff78c0a978d388968959cc825cd863426ce344f7c2f23f4",
+      "members": 127,
+      "uncompressed_member_bytes": 209205025,
+      "compressed_payloads_verified": 4,
+      "product_notices_sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "go_notice_inventory_entries": 95
+    },
+    {
+      "platform": "linux-arm64",
+      "archive_sha256": "d6aae3e46663200c75a806f12cd5f9482df539663b56151a7988d8d7ea6104d6",
+      "binary_sha256": "9a39032f44bd8c0dc7601e661ae4768db5e992401f70c3b38027ca00da73337c",
+      "members": 127,
+      "uncompressed_member_bytes": 204171353,
+      "compressed_payloads_verified": 4,
+      "product_notices_sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "go_notice_inventory_entries": 95
+    }
+  ],
+  "compressed_occurrences_verified": 16,
+  "unique_raw_payloads": [
+    {
+      "platform": "darwin-amd64",
+      "compressed_sha256": "ce4cc0cf96615e2f9add0858223d71dc40c238a6b8103dfc389b9419d62c51cd",
+      "compressed_size_bytes": 35834690,
+      "raw_sha256": "c32eabd7459615d7cd2e29106f5c5789d8faa3d14e913460b0fe7f699aaf3880",
+      "raw_size_bytes": 74521088,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "darwin",
+        "GOAMD64": "v1"
+      },
+      "recursion_evidence": "No build tags in actual Go build metadata; frozen source disables embeddedFiles without armcarrier. No runtime catalog enumeration claimed."
+    },
+    {
+      "platform": "darwin-arm64",
+      "compressed_sha256": "5872c168f5019169191e190f8c1545256ef35cdacdad5cb1ca1687e0ee95d111",
+      "compressed_size_bytes": 33675789,
+      "raw_sha256": "0d0832866e9ed7b73899b4de96edf9e4f99c1695313b8d2ece5f69843054c944",
+      "raw_size_bytes": 70100834,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "arm64",
+        "GOOS": "darwin",
+        "GOARM64": "v8.0"
+      },
+      "recursion_evidence": "No build tags in actual Go build metadata; frozen source disables embeddedFiles without armcarrier. No runtime catalog enumeration claimed."
+    },
+    {
+      "platform": "linux-amd64",
+      "compressed_sha256": "17e10220123da1e59bb5105d03249979022ddada2e689eff7c2ffbbe3e315e7d",
+      "compressed_size_bytes": 34520974,
+      "raw_sha256": "05d6a979d53d1adb1295f492939bc587858ab9df3604718c32389fa46b27480c",
+      "raw_size_bytes": 72688222,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64",
+        "GOOS": "linux",
+        "GOAMD64": "v1"
+      },
+      "recursion_evidence": "No build tags in actual Go build metadata; frozen source disables embeddedFiles without armcarrier. No runtime catalog enumeration claimed."
+    },
+    {
+      "platform": "linux-arm64",
+      "compressed_sha256": "dbb425aed3e074af349e532169bae749f7136e723fc44b7b92ebf8f040259c63",
+      "compressed_size_bytes": 31598462,
+      "raw_sha256": "4e0f7109a53505d8640ce006b8666a2f8b6238b59fc9a12b01df701aca6228e4",
+      "raw_size_bytes": 67697966,
+      "go_version": "go1.27.3",
+      "executable_path": "github.com/inferal-oss/arm/cmd/arm",
+      "module": "github.com/inferal-oss/arm",
+      "build_settings": {
+        "-buildmode": "exe",
+        "-compiler": "gc",
+        "-trimpath": "true",
+        "CGO_ENABLED": "0",
+        "GOARCH": "arm64",
+        "GOOS": "linux",
+        "GOARM64": "v8.0"
+      },
+      "recursion_evidence": "No build tags in actual Go build metadata; frozen source disables embeddedFiles without armcarrier. No runtime catalog enumeration claimed."
+    }
+  ],
+  "native_probes": {
+    "darwin_arm64": {
+      "identity": {
+        "arch": "arm64",
+        "go": "go1.27.3",
+        "os": "darwin",
+        "version": "0.0.0-ci"
+      },
+      "command": [
+        "arm",
+        "--home",
+        "TEMPORARY_STATE",
+        "--json",
+        "version"
+      ],
+      "exit_code": 0,
+      "environment": "Sanitized; explicit build-owned temporary state.",
+      "controller_git_blob": "a9aa4a00f0106d3bcfb1a6c1a19dc373963e0349"
+    },
+    "linux_amd64": {
+      "scope": "Original fresh CI carrier startup/catalog and version check.",
+      "version": "0.0.0-ci",
+      "os": "linux",
+      "arch": "amd64",
+      "exit_code": 0
+    }
+  },
+  "cleanup": {
+    "temporary_extracted_binaries_and_probe_state_removed": true,
+    "evidence": "The original temporary-directory context exited and its exact retained namespace was asserted absent before the result file was created.",
+    "source_bound_inspection_exit_code": 0
+  },
+  "validation_source": {
+    "inspector_sha256": "c0e68628715aaf9349447a2e1262806441bef15fb34b428cf38efe8a79781abb",
+    "normalized_result_sha256": "1786234ce79b7bde46f8ed693cd8272bc34ae00317df9849d136a2b91e0b88d8"
+  },
+  "limitations": [
+    "No Git version tag or GitHub release was created; v0.0.0-ci is validation metadata.",
+    "No thin payload, Darwin amd64 carrier or Linux arm64 carrier was executed.",
+    "Raw payload metadata has no armcarrier build tag; the frozen source selects the disabled embedded-files provider. Runtime catalog enumeration of thin payloads was not performed.",
+    "Hash/source binding is integrity evidence, not publisher authentication or installation authorization.",
+    "No user installation, live backend, domain or deployment acceptance is established.",
+    "Later source revisions are outside this result."
+  ]
+}
