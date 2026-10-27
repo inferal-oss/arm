@@ -36,6 +36,7 @@ Production fences remain until their explicit acceptance gates pass.
 | Canonical module | `77b962f` | Installable `github.com/inferal-oss/arm`, in-module audited rsync fork, ZIP-visible licensed browser assets. |
 | Sync workspace evidence | `b50d15b` | Durable reservation/root markers and bounded read-only multiple-workspace lookup. |
 | Kubernetes admission | `1a75e10` | Exact standard tolerations, incomplete-affinity refusal and rejection of injected image credentials. |
+| PSS observation | `998eb96` | Advisory Linux proportional resident counters with identity/quality bounds; no admission or pressure credit. |
 | Cgroup memory | `128d08e` | Complete visible Linux cgroup-v2 ancestry caps memory headroom; uncertain scopes provide no admission credit. |
 | Development forwarding clients | `4e8bdb4` | Bounded HTTP/raw clients with admission cancellation fixes; production remains disabled. |
 | Forwarding local TLS | `9e5309d` | Exact local mesh certificate pin before bearer/application data; production remains disabled. |
@@ -59,7 +60,7 @@ history merely because it contains an earlier ready report.
 
 | Owner role / branch | Current step | Remaining work and acceptance gates |
 | --- | --- | --- |
-| Resource safety — `codex/resource-safety-cgroup-memory` | Memory milestone integrated. PSS candidate `095abe8` has independently reviewed native usage evidence; current policy/reset composition remains under validation. | PSS is observation only and supplies no admission or pressure credit. Broaden sound CPU/resident/shared attribution and platform evidence; supervised pressure pause/resume must retain RAM/disk obligations and never signal unrelated processes. Complete elapsed-clock adapters and pressure-specific formal gates. |
+| Resource safety — `codex/resource-safety-cgroup-memory` | Memory and PSS observation (`998eb96`) milestones integrated with independently reviewed native usage and current policy/reset evidence. | PSS is observation only and supplies no admission or pressure credit. Broaden sound CPU/resident/shared attribution and platform evidence; supervised pressure pause/resume must retain RAM/disk obligations and never signal unrelated processes. Complete elapsed-clock adapters and pressure-specific formal gates. |
 | Public sync — `codex/public-sync-delivery` | Planner, private worker, workspace markers and read-only recovery integrated. Workspace ledger and bounded read-only block survey are reviewed and integrated with native Linux/macOS evidence. | Fresh schema version 2, exact legacy/current read-only reset proof, bounded locators and write-before-staging records are supported. Schema version 1 startup is incompatible and is never repaired or migrated. Receiver staging cap, original-carrier abort and exact complete workspace checkpoints are reviewed and integrated (`1df2f18`, `353f860`, `2efd1bb`). Native enforcement contract `8567aa9` specifies the next boundary; it does not supply a quota. Existing native-quota probe candidate `0236722` is under source review; bounded subprocess teardown and exact parser bounds need correction before acceptance. Physical reservations, complete exclusive quota coverage, public/relayed dispatch, conflict/deletion policy, cleanup/settlement, performance and formal acceptance remain. |
 | TCP forwarding — `codex/forward-usable-clients` | Development clients and source-listener TLS binding are integrated with actual Linux/macOS three-node evidence; ordinary builds stay disabled. | Preserve default-off fence. Aggregate byte-credit milestone `c3e1b77` is integrated with exact native runtime and causal control evidence. Complete suspend-aware lease checks and route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
 | Kubernetes — `codex/kubernetes-pod-workflow` | Admission milestone integrated; separate live Pod Ready and exact-UID cleanup evidence. | Private-carrier export remains blocked. A separate public-source build plan now includes the full source tree and normal CPU queue; pre-create cleanup ownership and complete namespace inventory need fixes and validation before execution. In-Pod catalog/identity proof, enrollment and pinned SSH remain unverified. Hidden native CPU/quota authority stays fail closed. |
@@ -151,6 +152,7 @@ not reactivated by retaining their technical records.
   exact source pinning and native three-node/renewal/ALPN evidence.
 - [Forwarding development clients](validation/forward-client-review-2026-10-26.json):
   exact Linux race/three-node evidence and explicit production/lifecycle limits.
+- [PSS observation](validation/pss-observation-2026-10-26.json): scoped native guest evidence, current policy/producer-shape checks and explicit missing-evidence limits.
 - [Cgroup memory](validation/cgroup-memory-2026-10-26.json): native finite/hidden
   scope checks and memory-observation/admission evidence.
 

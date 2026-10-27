@@ -4785,3 +4785,27 @@ outside version control. No Go test suite is implied by public-install-only mode
 Earlier failed and passing runs retain their own scopes. This accepts installation
 of `81fdccd`, not `675c505` or subsequent source; interruption and descendant
 cleanup remain separate gates. No user installation or backend was modified.
+
+### Advisory PSS observation
+
+Reviewed `998eb96` preserves the exact eight-file `095abe8` candidate projection
+on current integration inputs. The one original normal shared queue run passes
+three policy/strict-producer/legacy roots and 13 named race cases, with no skips
+or failures; relevant four-package vet passes. Root verifies all 1,903 frozen
+source blobs and both final log hashes, plus unchanged affected current-main
+inputs. Independent review verifies that only ProcessUsage/WorkloadUsage producer
+declarations change; all 29 declaration keys and the Lease entry are preserved.
+
+[Normalized evidence](validation/pss-observation-2026-10-26.json) records the
+Linux amd64 QEMU guest's three native roots, exit zero, source/binary/module
+binding, original QEMU wait, ACPI poweroff and later process/listener absence.
+The retained host binary equals both recorded pre-execution hashes. Earlier
+macOS evidence passes five roots/15 named cases through unchanged usage inputs.
+Prior sandbox and guest preflight failures remain failures.
+
+No guest post-execution binary hash was recorded. The earlier Linux ARM64 native
+report lacks a durable raw log, so it is not independently accepted as a native
+cohort. No additional native run, VM or hosted job was started for this review.
+This accepts advisory observation only, with no admission/pressure credit,
+exclusive allocation/reclamation, complete platform or formal claim. Future
+clock fields require their separately reviewed fieldwise composition.

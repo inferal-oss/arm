@@ -1798,3 +1798,17 @@ executable. SQLite objects are its resources, not hardware capacity or kernel
 containment. Production registration, live worker/scratch holds, native elapsed
 authority, parent/cost accounting, compensation and lifecycle/formal acceptance
 remain required, as detailed in MANAGED-PROVIDER-NEXT.md.
+
+## Advisory proportional resident memory
+
+Linux supervised process samples may report PSS from the existing bounded
+smaps_rollup read. An exact single kB counter with overflow checks supplies an
+optional per-process value; missing, malformed or duplicate values stay unknown.
+The workload sum requires verified original identity and every observed member's
+counter, rejects overflow and labels incomplete sampling as partial. This adds
+no native reads or runtime workers. Private resident accounting remains separate.
+
+PSS is a proportional share of resident pages, not exclusive ownership,
+reclaimable allocation, admission credit or pressure/compliance authority. Strict
+producer declarations accept the optional usage fields while preserving older
+receipts without them. Unrelated lease/clock declarations are unchanged.

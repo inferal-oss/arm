@@ -1,0 +1,214 @@
+{
+  "base": "81fdccddaa9450e7612dec9cfa1c05e5cf3268f8",
+  "candidate": "095abe83cdfbd056e00dc275c7bd54cdd59932f7",
+  "candidate_acceptance": "Independently reviewed bounded PSS observation component; focused current composition race/vet and exact native-input closure verified.",
+  "central_docs_edited": false,
+  "current_gate_final": {
+    "failed": 0,
+    "go": "go version go1.27.3 darwin/arm64",
+    "original_log_hashes": {
+      "composed-race": "7aac41d783aeeba56b96580d8d4dfca403a6d12581aebc56c22a9c008abffe75",
+      "composed-vet": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_normal_fifo_handle_exit": 0,
+    "own_queue_ticket_retired": true,
+    "queue_limits_unchanged": true,
+    "race_exit": 0,
+    "race_named": 13,
+    "race_roots": 3,
+    "skipped": 0,
+    "source": "3860aad69d57f7c633c8b2ba2d990bd4edea37af",
+    "source_files": 1903,
+    "source_manifest_sha256": "6abce299363a80803322026eac87b2737a64b5d2acd5fc9709ae362007c73191",
+    "vet_exit": 0
+  },
+  "hosted_ci_or_source_publication": false,
+  "integration_commit": "998eb96",
+  "limitations": [
+    "Observed PSS is a reported proportional resident share, not exclusive physical allocation or reclaimable bytes.",
+    "No PSS admission credit, automatic pressure/compliance decisions, platform-wide accounting or formal claim.",
+    "Live process-group sampling remains non-atomic and excludes escaped or already exited descendants.",
+    "Scoped native Linux amd64 guest and macOS observations; no bare-metal or complete platform matrix claim.",
+    "Guest post-execution binary hash and durable prior Linux arm64 native log are absent.",
+    "Clock future lease/proof fields require their separately reviewed composition; this delta preserves current unrelated fields exactly."
+  ],
+  "linux_amd64_guest": {
+    "base_image_sha512": "f46f0671a6e5bdec5291ab8972bae2f10e5408c2f64a74078f11efc2f06a436a9d0313ed50e0472542eeabf780e9f7c792ac0a314c6c20507fcd9fd81b468c3d",
+    "binary_sha256": "c039e292f77b27f447f8bc8c481d4dbd897e3195c0387a5a00fa0c9ea3e3542e",
+    "cgo": false,
+    "cgroup_filesystem": "cgroup2fs",
+    "exit": 0,
+    "go": "go1.27.3",
+    "guest_hash_after_execution_recorded": false,
+    "guest_hash_before_execution_matches_host": true,
+    "guest_pid1_systemd_same_pid_and_cgroup_namespace": true,
+    "image": "Debian 13 genericcloud amd64 20261001-2618",
+    "image_matches_retained_vendor_manifest": true,
+    "machine": "QEMU q35 TCG, one virtual CPU, 1024 MiB RAM",
+    "native_pass_roots": [
+      "TestLinuxStatIdentityAndMemoryCounters",
+      "TestNativeCapturedGroupCountersAndIdentityChanges",
+      "TestViewCounterMembershipAndUncertainty"
+    ],
+    "original_compile_exit": 0,
+    "original_qemu_wait_exit": 0,
+    "original_vm_process_and_listener_absent_readonly": true,
+    "retained_host_binary_hash_after_execution_matches": true,
+    "serial_poweroff_verified": true,
+    "source": "095abe83cdfbd056e00dc275c7bd54cdd59932f7",
+    "source_byte_identical_to_current_usage_model_modules": true,
+    "tests_run_as_ordinary_fixture_user": true
+  },
+  "linux_arm64": {
+    "compile_exit": 0,
+    "durable_native_roster_log_available": false,
+    "independently_durable_native_acceptance_claimed": false,
+    "native_prior_scope": "author reported nonroot uid 65534 network-isolated container",
+    "retained_crosscompiled_image_sha256": "f937924a94d84279f7078efed2f419c851ed047a29b10568713b97eb4809db7b"
+  },
+  "macos_arm64_prior": {
+    "current_policy_proof_gate": {
+      "commands": [
+        {
+          "exit": 0,
+          "failed": [],
+          "log_sha256": "7aac41d783aeeba56b96580d8d4dfca403a6d12581aebc56c22a9c008abffe75",
+          "name": "composed-race",
+          "passed": [
+            "TestPolicyMemoryLowerBoundAndUnknownMetric",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.Resources",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.ProcessIdentity",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.SSHLookup",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.SSHOperation",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.SSHExecutionRequest",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.Lease",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.Request",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.WorkloadUsage",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.ProcessUsage",
+            "TestSSHProofProducerShapesRequireIndependentReview/model.CargoBinding",
+            "TestSSHProofProducerShapesRequireIndependentReview",
+            "TestSSHProofLegacyUsageWithoutProportionalResidentFields"
+          ],
+          "skipped": [],
+          "source_unchanged": true
+        },
+        {
+          "exit": 0,
+          "failed": [],
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "name": "composed-vet",
+          "passed": [],
+          "skipped": [],
+          "source_unchanged": true
+        }
+      ],
+      "complete": true,
+      "go": "go version go1.27.3 darwin/arm64",
+      "source": "3860aad69d57f7c633c8b2ba2d990bd4edea37af",
+      "source_manifest_sha256": "6abce299363a80803322026eac87b2737a64b5d2acd5fc9709ae362007c73191"
+    },
+    "failed": 0,
+    "log_sha256": "509d7edcabfd4dc131bffeb37ed61e999c156eca1701de4a12980ec540bdcb45",
+    "named": 15,
+    "native_usage_inputs_unchanged": true,
+    "roots": 5,
+    "skipped": 0,
+    "source8_file_manifest_matches": true
+  },
+  "new_vm_or_account_or_service_created": false,
+  "primary_or_author_edits": false,
+  "prior_failures_preserved": [
+    {
+      "counted_as_pass": false,
+      "failure": "native kern.bootsessionuuid denied; usage test failure and policy fixture panic retained separately",
+      "scope": "macOS sandbox"
+    },
+    {
+      "counted_as_pass": false,
+      "failure": "unprivileged PID1 namespace read stopped preflight before test execution",
+      "raw_partial_scope_retained": true,
+      "runner_exit1_is_reported_not_independently_durable": true,
+      "scope": "first LinuxAMD64 guest attempt"
+    }
+  ],
+  "reviewed_composition": "3860aad69d57f7c633c8b2ba2d990bd4edea37af",
+  "runtime_review": {
+    "admission_or_pressure_credit": false,
+    "blocker_found": false,
+    "bounded_group_members": 256,
+    "bounded_smaps_rollup_bytes": 131072,
+    "counter_units": "kernel smaps_rollup Pss kB multiplied by 1024 with uint64 overflow refusal",
+    "new_native_reads": 0,
+    "new_runtime_workers": 0,
+    "nil_overflow_partial": "unavailable and partial-reported-sum remain separate; private accounted bytes are independent",
+    "per_process_identity": "original UID/PGID/start/namespace checked before and after original bounded read",
+    "proof_fields": "only optional proportional resident fields in ProcessUsage and WorkloadUsage",
+    "unrelated_lease_proof_declaration_unchanged": true
+  },
+  "schema": 1,
+  "scope": "Advisory Linux proportional resident memory observations for original supervised process groups",
+  "source_closure": {
+    "all_current_manager_database_changes": [
+      "internal/database/proof.go",
+      "internal/database/proof_schema.go",
+      "internal/database/proof_sync.go",
+      "internal/database/proof_sync_workspace_review_test.go",
+      "internal/database/reset_sync_workspace_review_test.go",
+      "internal/manager/relay_cleanup_test.go",
+      "internal/manager/relay_transit.go",
+      "internal/manager/sync_records.go",
+      "internal/manager/sync_records_test.go",
+      "internal/manager/sync_source_hold.go",
+      "internal/manager/sync_source_transport_review_test.go",
+      "internal/manager/sync_workspace_review_test.go"
+    ],
+    "byte_identical_scopes": {
+      "native_usage": {
+        "changed": [],
+        "paths": [
+          "internal/usage",
+          "internal/model",
+          "go.mod",
+          "go.sum"
+        ]
+      },
+      "policy_core": {
+        "changed": [],
+        "paths": [
+          "internal/manager/policy.go",
+          "internal/manager/policy_test.go",
+          "internal/manager/memory.go",
+          "internal/manager/usage.go",
+          "internal/manager/manager.go"
+        ]
+      },
+      "producer_declaration": {
+        "changed": [],
+        "paths": [
+          "internal/database/proof_ssh_shapes.go",
+          "internal/database/proof_ssh_shapes_test.go",
+          "internal/database/proof_ssh_namespaces.go",
+          "internal/model",
+          "go.mod",
+          "go.sum"
+        ]
+      }
+    },
+    "composition": "3860aad69d57f7c633c8b2ba2d990bd4edea37af",
+    "current_policy_proof_gate_reason": "Changed Manager/database initialization dependencies are being checked once against current composition; producer declarations and policy core themselves remain exact.",
+    "declaration_keys": 29,
+    "lease_declaration_unchanged": true,
+    "native_dependencies": {
+      "go": "go1.27.3",
+      "linux_external_module": "golang.org/x/sys@v0.49.0",
+      "module_sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA="
+    },
+    "native_usage_rerun_required": false,
+    "proof_declarations_changed": [
+      "\"model.ProcessUsage\"",
+      "\"model.WorkloadUsage\""
+    ],
+    "source": "095abe83cdfbd056e00dc275c7bd54cdd59932f7",
+    "unrelated_declaration_keys_unchanged": true
+  }
+}
