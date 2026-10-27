@@ -21,6 +21,8 @@ type allocationCutReviewHold struct {
 	cancel           context.CancelFunc
 	fired            bool
 	marker, retained string
+	endpoint         *endpoint
+	successor        admittedSession
 }
 
 func (h *allocationCutReviewHold) CheckActive(ctx context.Context) error {
@@ -45,6 +47,10 @@ func (h *allocationCutReviewHold) CheckActive(ctx context.Context) error {
 		return nil
 	}
 	h.fired = true
+	if h.cut == "after-session-replacement" {
+		h.endpoint.Session = h.successor
+		return nil
+	}
 	if h.cut == "after-unknown" {
 		var path string
 		if err := h.ledger.DB.QueryRowContext(ctx, `SELECT path FROM sync_workspaces WHERE role='receiver'`).Scan(&path); err != nil {
@@ -59,7 +65,7 @@ func (h *allocationCutReviewHold) CheckActive(ctx context.Context) error {
 }
 
 func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testing.T) {
-	for _, cut := range []string{"before-cancel", "after-cancel", "after-unknown"} {
+	for _, cut := range []string{"before-cancel", "after-cancel", "after-unknown", "after-session-replacement"} {
 		t.Run(cut, func(t *testing.T) {
 			p := setupPair(t)
 			write(t, p.local, "file", "publish reviewed content")
@@ -85,6 +91,13 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 			a, b := net.Pipe()
 			defer a.Close()
 			defer b.Close()
+			foreignA, foreignB := net.Pipe()
+			defer foreignA.Close()
+			defer foreignB.Close()
+			foreign, err := newSingleStreamSession(foreignA, func() error { t.Error("successor session was joined"); return nil })
+			if err != nil {
+				t.Fatal(err)
+			}
 			localJoins, remoteJoins := 0, 0
 			ls, err := newSingleStreamSession(a, func() error { localJoins++; return nil })
 			if err != nil {
@@ -100,6 +113,7 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 			rh := &allocationCutReviewHold{testHold: &testHold{intent: remote, root: req.Binding.Remote.RootID, disk: res.Disk}, ledger: rl, cut: cut, cancel: cancel}
 			le := &endpoint{Side: syncreconcile.Local, Root: p.local, WorkParent: p.localWork, Names: p.names, Metadata: p.metadata, Ledger: ll, Hold: lh, Session: ls}
 			re := &endpoint{Side: syncreconcile.Remote, Root: p.remote, WorkParent: p.remoteWork, Names: p.names, Metadata: p.metadata, Ledger: rl, Hold: rh, Session: rs}
+			rh.endpoint, rh.successor = re, foreign
 			ld, rd := make(chan error, 1), make(chan error, 1)
 			go func() { ld <- runEndpoint(ctx, le) }()
 			go func() { rd <- runEndpoint(ctx, re) }()
@@ -112,7 +126,11 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 				_ = b.Close()
 				rerr = <-rd
 				lerr = <-ld
-				t.Fatal("original pair failed to terminate", lerr, rerr)
+				_ = ls.Abort()
+				_ = rs.Abort()
+				_ = ls.Join()
+				_ = rs.Join()
+				t.Fatal("original pair failed to terminate; original cleanup joined", lerr, rerr)
 			}
 			select {
 			case lerr = <-ld:
@@ -120,7 +138,9 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 				cancel()
 				_ = a.Close()
 				lerr = <-ld
-				t.Fatal("original peer failed to join", lerr)
+				_ = rs.Abort()
+				_ = rs.Join()
+				t.Fatal("original peer required cancellation; original cleanup joined", lerr)
 			}
 			if !rh.fired || rerr == nil || localJoins != 1 || remoteJoins != 1 || !ls.joined || !rs.joined || !lh.charged || !rh.charged {
 				t.Fatal("cut lost failure/hold/join witnesses", lerr, rerr, localJoins, remoteJoins)
@@ -163,6 +183,12 @@ func TestWorkerAllocationCheckpointRetainsEvidenceAcrossPublicationCuts(t *testi
 				if _, err := syncservice.LoadBaseline(t.Context(), ledger.DB, req.Binding, ledger.Side); err == nil {
 					t.Fatal("failed cut confirmed baseline")
 				}
+			}
+			if foreign.closed || foreign.joined {
+				t.Fatal("failure adopted successor transport cleanup")
+			}
+			if cut == "after-session-replacement" && (ctx.Err() != nil || re.Session != foreign) {
+				t.Fatal("replacement required parent cancellation or lost successor evidence", rerr)
 			}
 			if cut == "after-unknown" {
 				if _, err := os.Stat(rh.retained); err != nil {
