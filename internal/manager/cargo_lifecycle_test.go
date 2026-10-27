@@ -653,6 +653,11 @@ func TestCargoEndingJournalFailureCancelsOriginalWorker(t *testing.T) {
 				m.mu.Unlock()
 				t.Fatal("original admitted Cargo worker absent")
 			}
+			prior, err := m.get(lease.ID)
+			if err != nil {
+				m.mu.Unlock()
+				t.Fatal(err)
+			}
 			originalCancel := worker.cancel
 			worker.cancel = func() {
 				originalCancel()
@@ -676,8 +681,8 @@ func TestCargoEndingJournalFailureCancelsOriginalWorker(t *testing.T) {
 					t.Fatal("failed ending write did not cancel its original worker")
 				}
 				stored, err := m.Inspect(lease.ID)
-				if err != nil || stored.State != "active" || stored.Ended != nil {
-					t.Fatal("failed ending write changed the prior durable charge", stored, err)
+				if err != nil || stored.State != prior.State || stored.Revision != prior.Revision || stored.Outcome != prior.Outcome || !consuming(stored.State) || stored.Ended != nil {
+					t.Fatalf("failed ending write changed prior durable charge: state=%s prior_state=%s revision=%d prior_revision=%d outcome=%s prior_outcome=%s ended=%v error=%v", stored.State, prior.State, stored.Revision, prior.Revision, stored.Outcome, prior.Outcome, stored.Ended, err)
 				}
 				status, err := m.Status()
 				if err != nil || status.Reserved.CPU != 1 {
