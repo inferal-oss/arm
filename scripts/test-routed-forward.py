@@ -231,6 +231,13 @@ def main():
         assert b'forwarded-b-to-c' not in request(started['bind']), 'unauthenticated local access succeeded'
         response = request(started['bind'], token)
         assert b'HTTP/1.1 200 OK' in response and response.endswith(b'forwarded-b-to-c'), response
+        http_client = subprocess.run(b.prefix + ['mesh', 'forward', 'http', '--key', key,
+                                                 '--token-file', str(token_file),
+                                                 '--path', '/exact-service'],
+                                     capture_output=True, timeout=20)
+        assert (http_client.returncode, http_client.stdout, http_client.stderr) == (0, b'forwarded-b-to-c', b''), http_client
+        # The carrier admits at most two new neighbor streams per second.
+        time.sleep(1.1)
         raw_key = uuid.uuid4().hex
         raw_file = root / 'raw-token'
         raw = b.cli('mesh', 'forward', 'start', '--workspace', wid,
@@ -256,6 +263,11 @@ def main():
               '--source', b.identity['host'], '--service', 'web',
               '--reason', 'prove live destination-only service denial', '--yes')
         assert b'forwarded-b-to-c' not in request(started['bind'], token), 'revoked destination service succeeded'
+        denied_http = subprocess.run(b.prefix + ['mesh', 'forward', 'http', '--key', key,
+                                                 '--token-file', str(token_file),
+                                                 '--path', '/exact-service'],
+                                     capture_output=True, timeout=20)
+        assert denied_http.returncode != 0 and denied_http.stdout == b'', denied_http
         assert all(peer['identity']['host'] != c.identity['host'] for peer in b.cli('mesh', 'peers'))
         retained = []
         for exact in (key, raw_key):
@@ -287,7 +299,7 @@ def main():
             print('Retained routed forwarding CLI fixture:', root, failures, file=sys.stderr)
         if not original_error and failures:
             raise RuntimeError('forwarding CLI acceptance cleanup unconfirmed')
-    print('PASS public CLI B→A→C authenticated HTTP and raw duplex TCP, private-token stdio adapter, no B–C enrollment, source lifecycle and destination revocation')
+    print('PASS public CLI B→A→C authenticated HTTP and raw duplex TCP, private-token HTTP and stdio clients, no B–C enrollment, source lifecycle and destination revocation')
 
 
 if __name__ == '__main__':
