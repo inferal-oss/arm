@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "scope": "Major Semblance browser migration milestone before the separately queued platform-hint correction. No new backend operation acceptance.",
+  "reviewed_source_commit": "0ae14ef0f619c299873650421163c469865e651d",
+  "integration_commit": "412e35a6756e2e8811b395f98ceca2f87bc7e3ab",
+  "keyboard_commit": "4bfe29102f85ed93d51a71792848750760852cc1",
+  "native_baseline": "343b1b3212b36d198bd6c906f5d31a7bad009b1d",
+  "original_normal_fifo_terminal_exit": 0,
+  "source_inputs": 2346,
+  "source_before_after_identical": true,
+  "all_source_inputs_match_reviewed_git_commit": true,
+  "source_manifest_sha256": "281d964d15fd4b37760febedbde8b56093f79e27d62112313961b8bae87de009",
+  "harness_manifest_sha256": "63e37b1ed0f197f45841bd8423d867b4bf500c173d0a1f794acb49e59770e477",
+  "native_summary_sha256": "5605972db8fec86e6893296409461eafa431294c5b4b1d61550e55c31773be4e",
+  "browser_summary_sha256": "e9416d63174eb3029882ca57bb77a23e7334a5b897068f211fe483d780ed2581",
+  "original_steps": [
+    {
+      "name": "build-first",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 2.0408591670000003
+    },
+    {
+      "name": "build-second",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 0.6645755000000002
+    },
+    {
+      "name": "stage-built-assets",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 0.06148958399999982
+    },
+    {
+      "name": "provenance",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 0.20736254200000026
+    },
+    {
+      "name": "effect-policy",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 0.6842948750000004
+    },
+    {
+      "name": "real-rdf",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 4.008182833
+    },
+    {
+      "name": "server-race",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 63.115021583
+    },
+    {
+      "name": "server-vet",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 18.011328207999995
+    },
+    {
+      "name": "build-arm",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 7.639912750000008
+    },
+    {
+      "name": "compiled-dashboard",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 2.2201508750000016
+    },
+    {
+      "name": "go-module-zip",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 0.976555083000008
+    },
+    {
+      "name": "browser-fixture",
+      "exit": 0,
+      "original_child_waited": true,
+      "seconds": 309.236229834
+    }
+  ],
+  "native_server": {
+    "platform": "darwin/arm64",
+    "root_tests": 45,
+    "named_run_and_pass_once": 81,
+    "failures": 0,
+    "skips": 0,
+    "race": true,
+    "vet_passed": true,
+    "raw_log_sha256": "4167594ce8378442e6b72f94f12cf84d03bcf1eb95bcb6fe5d3c10d5934d8249"
+  },
+  "effect_policy": {
+    "passed": 325,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "64907c467bf5d6d3ca71e2f3987cdf5a826a0a3099bbe5039ca4b395825973a0"
+  },
+  "real_rdf": {
+    "unique_cases_passed": 19,
+    "log_sha256": "763912ca91fd347eef29f0cae440cfd015fc33d4c7946076dd992ae2abfef126"
+  },
+  "reproducible_asset_builds": 2,
+  "assets": {
+    "internal/server/web/assets/LICENSES.txt": "707d33ff2b8553cf013a3e0c407f845d3a102387442bf4a7d5a2167864482ad0",
+    "internal/server/web/assets/arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+    "internal/server/web/assets/arm.mjs": "0f5aa89ccc4c9be9e049ab202e94958bbd7f2da30f60a4769e16f02129edcd66",
+    "internal/server/web/assets/assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+    "internal/server/web/assets/wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+  },
+  "compiled_binary_sha256": "690128a17785535a7e8ecb1e42dbc40f2eb1548effdbdf79ec5d447916e06535",
+  "module_zip": {
+    "required_paths": 2352,
+    "all_present": true,
+    "zip_paths": 2352
+  },
+  "browser": {
+    "passed": true,
+    "meta_k_opens_palette": true,
+    "control_k_opened_palette": false,
+    "auth_fragment_removed": true,
+    "full_identifier_palette_lookup": true,
+    "screen_private_username_cleared": true,
+    "key_eight_selects_screen": true,
+    "drawer_escape_restores_focus": true,
+    "default_theme_sem_blance": true,
+    "stock_terminal_selectable": true,
+    "exact_pool_review_values": true,
+    "exact_pool_review_cancelled": true,
+    "reviewed_poll_contact_matches_native_registration": true,
+    "disposable_poll_reply_recorded_once": true,
+    "stop_shows_disconnected": true,
+    "stop_stale_fresh_auth_verified": true,
+    "console_errors": 0,
+    "known_extension_errors": 1
+  },
+  "rendered_views": [
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "view": "monitor",
+      "width": 1280,
+      "layout": "desktop",
+      "screenshot_sha256": "93553c126f383b9594855acf1c545ff58e57d9b161d53030259fdb1a56d0b2a2"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "resources",
+      "layout": "desktop",
+      "screenshot_sha256": "99a7c338cc7b3f3376ba9b04c148f1ea92b0496831599e77f4904affd43aaa23"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "leases",
+      "layout": "desktop",
+      "screenshot_sha256": "6024aff3161203fdbff8124c4ce39b7a94c878ceb297274e8312bb57aca68fe6"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "messages",
+      "layout": "desktop",
+      "screenshot_sha256": "52e0c7a8c2a6fbe741ae845d986c11a8f821bbe5e85640d5fd3843cc454e9aee"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "activity",
+      "layout": "desktop",
+      "screenshot_sha256": "093b04a8f5314a6d3fc876820028e204a2c80947cebee69af341778c0b527712"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "host",
+      "layout": "desktop",
+      "screenshot_sha256": "ce62e35344a98a7a5d28499eef248c5bda5c484abab96e2f530c2cc54621aada"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "mesh",
+      "layout": "desktop",
+      "screenshot_sha256": "34c709856e89f3f5259cfb22f12da676f429b7dbc1399d7bfe99cc3918d10978"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 1280,
+      "view": "screen",
+      "layout": "desktop",
+      "screenshot_sha256": "d55fdcf28947f1af338e326286ff3a5c102577ccdf86a331ae9ff49a616819a4"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "monitor",
+      "layout": "mobile",
+      "screenshot_sha256": "123044f1b06684daf7df63e4aef60c429d70f79c08258e109ed68231146fabf0"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "resources",
+      "layout": "mobile",
+      "screenshot_sha256": "e2e476e6505df924b2536ff0ecd6fa977340bc94fb3bfee537aa5c8676184a41"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "leases",
+      "layout": "mobile",
+      "screenshot_sha256": "7ff528c0d0f2a9bf2a69766eed4f55f29e5f538894a92985c0c896e5b1861995"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "messages",
+      "layout": "mobile",
+      "screenshot_sha256": "a3ec05757c0d888a6e272f01fbb22d144c7d6ffd75bb26b7199d22b76d1c5686"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "activity",
+      "layout": "mobile",
+      "screenshot_sha256": "1387821550a6dbd22eec1f2d00334ade51f418a5acfa2c10f7b7ab34a10b710c"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "host",
+      "layout": "mobile",
+      "screenshot_sha256": "7fe8df18d492d70debfa9781e523398b73c13843572f90e791f2683628d178af"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "mesh",
+      "layout": "mobile",
+      "screenshot_sha256": "a8c60fdf00344125a68f7eeb84d734d2b4cbd118e7ceefb483158b2d4c41f30b"
+    },
+    {
+      "horizontal_overflow": false,
+      "shape_invalid": 0,
+      "width": 390,
+      "view": "screen",
+      "layout": "mobile",
+      "screenshot_sha256": "fdc081635ea9ef04424beb21f7744f0e247f93caa0ffe725b545ea783f005c63"
+    }
+  ],
+  "fixture_cleanup": {
+    "original_cli_steps": 13,
+    "all_zero_and_waited": true,
+    "disposable_fixture": true,
+    "native_user_home_untouched": true,
+    "fixture_removed": true,
+    "endpoint_absence_and_exclusive_daemon_lock_verified": true,
+    "receipt_sha256": "46a804931ead5297929650930acfc262e243339649ec901427efaef5dfe2db18"
+  },
+  "independent_integration_review_sha256": "11651696c6221688aca1e0814d9e1f8130806be2902eb475569fdd487672b605",
+  "limits": [
+    "The macOS platform hint still displays Ctrl+K while native Command+K works. Its isolated correction and changed-asset validation remain pending.",
+    "Four reusable upstream patches have open issues and prepared candidate branches, not accepted or published PRs.",
+    "Rendered views, controlled policies and disposable local actions do not establish real Mac framebuffer/OS clipboard, remote multi-node, Kubernetes provisioning or all native SSH mutation walkthroughs.",
+    "Original subprocess waits and fixture assertions are retained; no complete before/after native compiler/SDK/module closure or separate machine-owner receipts are claimed.",
+    "Vendored framework/license whitespace and generated upstream text are retained byte-for-byte; no owned source whitespace exception was needed.",
+    "This recorded source predates current-main diagnostic-only quota additions and later clock composition; affected compositions retain their separate gates."
+  ]
+}

@@ -1,5 +1,32 @@
 # Validation record
 
+## Major Semblance browser milestone
+
+The reviewed source `0ae14ef`, integrated as `412e35a`, passes the original normal
+FIFO gate: 12 subprocess steps exit zero and are waited, with 2,346 source inputs
+and the private harness unchanged. Two builds produce the same five assets,
+including the sole pinned WAT binary. Root independently compared every source
+input with the reviewed Git objects and bound all five asset hashes to the
+integrated tree. Vendored/license and generated whitespace is retained.
+
+Native macOS server races pass 45 roots/81 named cases with no failure or skip;
+vet, the compiled dashboard HTTP/PTY/bootstrap harness and all 2,352 required
+module-ZIP paths pass. Policy tests pass 325 cases and real RDF tests pass 19
+unique cases. Actual browser review covers eight views at both 1280px and 390px,
+zero detected validation markers/overflow, exact large-integer review/cancel,
+private-field clearing, full-ID palette lookup, native Command+K, focus, one
+disposable polling reply and Stop followed by fresh authentication. The disposable
+fixture's 13 CLI steps exit zero; endpoint absence, an exclusive daemon lock and
+fixture removal are checked. One exact observed extension style-load diagnostic
+is classified separately; no app or unknown console error is accepted.
+
+The [normalized record](validation/semblance-major-review-2026-10-26.json) binds
+the source, logs, assets, screenshots and limits. The macOS hint still says
+Ctrl+K; its host-only correction needs changed-asset acceptance. Upstream PRs,
+all real remote/Kubernetes/SSH/clipboard workflows, complete compiler/SDK closure
+and later clock composition remain separate. No broad native-owner or complete
+product acceptance is inferred from rendered screens.
+
 ## Native quota diagnostic milestone
 
 Source review of the eight `syncfs` files resolved strict plist content and

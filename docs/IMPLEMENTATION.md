@@ -1,5 +1,20 @@
 # Backend and CLI implementation
 
+## Semblance operator browser
+
+The served browser now uses stock Semblance components and themes, defaulting to
+Semblance with Terminal selectable. RDF renderings and reactions own the eight
+operational views; authenticated host effects retain the existing reviewed API
+policies. Exact session integers survive HTTP and storage, and private screen
+fields stay outside RDF/change logs. Narrow noVNC/native-input islands preserve
+the existing viewer boundary. The old custom page entrypoint is no longer served.
+
+Go embeds a reproducible local bundle, one pinned WAT engine and license notices;
+there is no framework CDN/runtime dependency fetch. Rebuild inputs remain visible
+in module ZIPs. The host platform shortcut marker is a separate pending fix, and
+four generic upstream patches still need actual PRs. This UI milestone does not
+enable fenced backend features or accept every remote/native operation.
+
 ## Read-only native quota diagnostics
 
 `syncfs.ProbeNativeQuota` reads an existing hard-limit configuration without
