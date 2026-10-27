@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="780" viewBox="0 0 1440 780" role="img" aria-labelledby="system-title system-desc">
+<title id="system-title">ARM operational system map</title>
+<desc id="system-desc">AI agent builds, tests and analysis use the CLI or local API. Human operators use web and terminal dashboards. These interfaces connect to an ARM backend on a participating host. ARM coordinates cooperative CPU and memory budgets, managed storage, held TCP and UDP ports, custom pools, supervised commands, and lease history. Explicit grants authorize scoped remote leases, execution and messages with peer hosts.</desc>
+<defs>
+  <linearGradient id="arm-surface" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#faf8ff"/><stop offset="1" stop-color="#f0eafa"/></linearGradient>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M1 1L9 5L1 9Z" fill="#a699bb"/></marker>
+</defs>
+<rect width="1440" height="780" rx="24" fill="#fcfbfe"/>
+<g font-family="system-ui, -apple-system, sans-serif">
+
+<rect x="250" y="72" width="360" height="142" rx="16" fill="#ffffff" stroke="#e4deec" stroke-width="1.4"/>
+<text x="430" y="108" text-anchor="middle" font-size="23" font-weight="600" fill="#49365f">AI agent workflows</text>
+<text x="430" y="137" text-anchor="middle" font-size="18" font-weight="400" fill="#756a82">Builds · tests · analysis</text>
+<rect x="284" y="158" width="292" height="36" rx="18" fill="#f3eff9" stroke="#f3eff9" stroke-width="0"/>
+<text x="430" y="182" text-anchor="middle" font-size="18" font-weight="500" fill="#78648f">CLI / local API</text>
+<rect x="830" y="72" width="360" height="142" rx="16" fill="#ffffff" stroke="#e4deec" stroke-width="1.4"/>
+<text x="1010" y="108" text-anchor="middle" font-size="23" font-weight="600" fill="#49365f">Human operator</text>
+<text x="1010" y="137" text-anchor="middle" font-size="18" font-weight="400" fill="#756a82">Inspect · request · manage</text>
+<rect x="864" y="158" width="292" height="36" rx="18" fill="#f3eff9" stroke="#f3eff9" stroke-width="0"/>
+<text x="1010" y="182" text-anchor="middle" font-size="18" font-weight="500" fill="#78648f">Web + terminal dashboards</text>
+<path d="M430 214C430 265 650 250 650 300" fill="none" stroke="#b9a9d4" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1010 214C1010 265 790 250 790 300" fill="none" stroke="#b9a9d4" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="520" y="300" width="400" height="156" rx="22" fill="url(#arm-surface)" stroke="#cfc1e5" stroke-width="1.6"/>
+<text x="720" y="351" text-anchor="middle" font-size="31" font-weight="650" fill="#50366e">ARM backend</text>
+<text x="720" y="387" text-anchor="middle" font-size="21" font-weight="500" fill="#665176">Local resource manager</text>
+<text x="720" y="421" text-anchor="middle" font-size="18" font-weight="400" fill="#75617f">Admission · leases · ownership</text>
+<text x="265" y="350" text-anchor="middle" font-size="18" font-weight="600" fill="#756482">Lease request</text>
+<text x="265" y="381" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Resource quantities</text>
+<text x="265" y="408" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Owner · reason · TTL</text>
+<path d="M378 383H508" fill="none" stroke="#d4cadd" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 6"/>
+<rect x="1110" y="318" width="274" height="126" rx="16" fill="#faf8fc" stroke="#e4deec" stroke-width="1.2"/>
+<text x="1247" y="350" text-anchor="middle" font-size="19" font-weight="600" fill="#7d6b8e">Authorized peer host</text>
+<text x="1247" y="378" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Scoped leases, execution</text>
+<text x="1247" y="403" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">and messages</text>
+<path d="M932 378H1098" fill="none" stroke="#c6bad4" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="4 6"/>
+<text x="1015" y="359" text-anchor="middle" font-size="16" font-weight="400" fill="#7b688b">explicit grants</text>
+<path d="M720 456V526M170 526H1270" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M170 526V573" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M390 526V573" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M610 526V573" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M830 526V573" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1050 526V573" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1270 526V573" fill="none" stroke="#c8bdd7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="70" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
+<text x="170" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">CPU + memory</text>
+<text x="170" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Cooperative budgets</text>
+<rect x="290" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
+<text x="390" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Storage</text>
+<text x="390" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Managed artifacts</text>
+<rect x="510" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
+<text x="610" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Ports</text>
+<text x="610" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Held TCP / UDP</text>
+<text x="610" y="678" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">bindings</text>
+<rect x="730" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
+<text x="830" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Custom pools</text>
+<text x="830" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Counted resources</text>
+<rect x="950" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
+<text x="1050" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Commands</text>
+<text x="1050" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Supervised execution</text>
+<rect x="1170" y="584" width="200" height="120" rx="14" fill="#ffffff" stroke="#e4deec" stroke-width="1.25"/>
+<text x="1270" y="623" text-anchor="middle" font-size="21" font-weight="600" fill="#685177">Lease history</text>
+<text x="1270" y="655" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">Who reserved what,</text>
+<text x="1270" y="678" text-anchor="middle" font-size="17" font-weight="400" fill="#756a82">why, and for how long</text>
+</g></svg>

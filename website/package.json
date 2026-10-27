@@ -1,0 +1,27 @@
+{
+  "name": "arm-public-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "engine:build": "node scripts/patch-framework.mjs && node scripts/build-engine.mjs",
+    "predev": "npm run engine:build",
+    "dev": "vite --host 127.0.0.1",
+    "build": "npm run engine:build && node scripts/notices.mjs && vite build && node scripts/assert-build.mjs",
+    "typecheck": "node scripts/patch-framework.mjs && tsc --noEmit",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@inferal-oss/semblance": "https://codeload.github.com/inferal-oss/semblance/tar.gz/88eb230991c4f63d54fe47bee5cf3fb9f121e528"
+  },
+  "devDependencies": {
+    "@rdfjs/types": "2.0.1",
+    "@types/n3": "1.26.5",
+    "@types/node": "26.6.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.5",
+    "wabt": "1.0.39"
+  },
+  "license": "MIT OR Apache-2.0"
+}
