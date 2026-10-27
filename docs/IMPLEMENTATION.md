@@ -14,8 +14,9 @@ screen dial/TLS/upgrade and forwarding after blocked credit and policy reads.
 Cargo, Gradle, ports, storage, sync and export paths preserve native parent
 coverage. Explicit cleanup still needs its independent original joins and
 resource-specific evidence. The [clock contract](lease-clock.md) records the
-implemented checks and limits; provider/pressure adapters and physical suspend
-experiments remain separate work. Calendar authorization/start deadlines keep
+implemented checks and limits. Warning-only pressure composition is described
+below; the real provider bridge and physical suspend experiments remain separate
+work. Calendar authorization/start deadlines keep
 their distinct meanings.
 
 ## Cancellation after a refused clock checkpoint
@@ -35,6 +36,24 @@ writes no ending/terminal rows. Charges remain until the ordinary waiter has
 positive native/I/O joins and a successful settlement write. Other holder types,
 recovered PIDs, general database loss and physical suspend retain separate gates.
 See the [scoped native evidence](validation/lease-clock-checkpoint-refusal.json).
+
+## Elapsed pressure warning authority
+
+Integrated `d32bca2` uses one captured native sample for both warning recipients
+and managed CPU attribution. Only active/provisioning leases with positive
+native remaining time are eligible. Retained nonactive or uncertain work keeps
+its obligations and cannot lend CPU credit or become unsupported external blame.
+Warning Start rechecks the exact outbox/contact/incident/lease binding and fresh
+native remaining time under the Manager fence.
+
+The adapter is warning-only: delivery grants no resource authority or lease
+renewal. Its current composition with checkpoint-refusal cancellation has
+source-bound macOS race evidence assembled from 101 retained passing nodes and
+one explicitly enabled real native admission/expiry case. Earlier failed gates
+retain their failures. Physical suspend, native pressure pausing, Linux and the
+real provider bridge remain separate gates. See the
+[scoped evidence](validation/pressure-elapsed-warning-adapter-2026-10-27.json)
+and [current composition](validation/pressure-elapsed-current-composition-2026-10-27.json).
 
 ## Original-child control and SSH settlement
 

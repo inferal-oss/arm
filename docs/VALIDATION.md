@@ -1,5 +1,34 @@
 # Validation record
 
+## Pressure warnings with checkpoint-refusal cancellation
+
+Source `b7a208f`, integrated as `d32bca2`, preserves all nine accepted warning
+files and four checkpoint-refusal files. The scoped warning gate passes 32
+normal and 35 actual-trace nodes, with 34 histories and 43 strict controls.
+Its old-wall overlay fails only the required forward-wall case. The initial
+sandbox-clock and split-output parser failures remain failed.
+
+The current 102-node command exits zero with 101 passes and one explicit native
+opt-in skip; its overall gate remains failed. A source-identical successor runs
+only that omitted test with `ARM_WAITER_NATIVE=1`. It naturally admits 0.01 CPU,
+observes expiry and requires the original process/I/O joins before release.
+Its original Go wait exits zero. The accepted result assembles 101 plus one;
+it is not a single-run full-roster pass. Controlled pressure/trace fixtures
+remain distinct from this real native capacity observation.
+
+Root checks all 2,486 source Git blobs, nine/four source intersections, both
+actual command/event rosters and owner receipts. Independent replay of the
+current 112 raw trace rows yields all 34 scenarios and rejects all 43 controls.
+Selected tools, 2,904 external Go files and 41,606 SDK inputs match the recorded
+before/after closures. Primary Go/module source differs only by the separately
+compiled, unimported inert provider declarations; documentation has its own scope.
+
+The [current record](validation/pressure-elapsed-current-composition-2026-10-27.json)
+is integrated as `5d65777`. Its [earlier scoped record](validation/pressure-elapsed-warning-adapter-2026-10-27.json)
+retains the separate old-wall evidence. These results establish neither physical
+suspend, Linux execution, native pressure pausing, a new prover/model refinement
+nor arbitrary descendant cleanup.
+
 ## Inert provider contract compilation
 
 Reviewed `58ae02d`, integrated as `e7d1c28`, preserves the exact seven-file
