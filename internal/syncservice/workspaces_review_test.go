@@ -58,7 +58,7 @@ func reviewWorkspaceLedger(t *testing.T) (*Ledger, *syncfs.Root, *syncfs.Root, *
 }
 
 func TestWorkspaceReviewLocatorByteBounds(t *testing.T) {
-	for _, kind := range []string{"oversize-path", "invalid-utf8-path", "nul-path", "oversize-root"} {
+	for _, kind := range []string{"oversize-path", "invalid-utf8-path", "nul-path", "oversize-root", "disk-payload", "blob-path"} {
 		t.Run(kind, func(t *testing.T) {
 			l, selected, parent, w := reviewWorkspaceLedger(t)
 			if err := l.RecordWorkspace(t.Context(), "receiver", selected, parent, w); err != nil {
@@ -72,17 +72,30 @@ func TestWorkspaceReviewLocatorByteBounds(t *testing.T) {
 				path = "/invalid-\xff/" + filepath.Base(path)
 			case "nul-path":
 				path = "/invalid-\x00/" + filepath.Base(path)
+			case "disk-payload":
+				private := []byte("private-locator-disk-payload-" + strings.Repeat("x", 1<<20))
+				if _, err := l.DB.Exec(`UPDATE sync_workspaces SET disk_bytes=? WHERE key=?`, private, l.Key); err != nil {
+					t.Fatal(err)
+				}
+			case "blob-path":
+				if _, err := l.DB.Exec(`UPDATE sync_workspaces SET path=? WHERE key=?`, []byte(path), l.Key); err != nil {
+					t.Fatal(err)
+				}
 			case "oversize-root":
 				if _, err := l.DB.Exec(`UPDATE sync_workspaces SET root_id=? WHERE key=?`, "arm-sync-root-v2:"+strings.Repeat("a", 1<<20), l.Key); err != nil {
 					t.Fatal(err)
 				}
 			}
-			if kind != "oversize-root" {
+			if kind != "oversize-root" && kind != "disk-payload" && kind != "blob-path" {
 				if _, err := l.DB.Exec(`UPDATE sync_workspaces SET path=? WHERE key=?`, path, l.Key); err != nil {
 					t.Fatal(err)
 				}
 			}
-			if records, err := l.Workspaces(t.Context()); records != nil || !errors.Is(err, ErrUnknown) {
+			records, err := l.Workspaces(t.Context())
+			if err != nil && strings.Contains(err.Error(), "private-locator-disk-payload-") {
+				t.Fatal("private retained locator payload escaped through a conversion error")
+			}
+			if records != nil || !errors.Is(err, ErrUnknown) {
 				t.Fatalf("invalid native locator was accepted: %d %v", len(records), err)
 			}
 			if _, err := os.Stat(filepath.Join(w.Path(), ".arm-sync-owner.json")); err != nil {

@@ -162,7 +162,17 @@ func (l *Ledger) Workspaces(ctx context.Context) ([]WorkspaceRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := l.DB.QueryContext(ctx, `SELECT substr(CAST(role AS BLOB),1,129),substr(CAST(path AS BLOB),1,4097),substr(CAST(root_id AS BLOB),1,82),substr(CAST(parent_id AS BLOB),1,82),substr(CAST(base_id AS BLOB),1,82),disk_bytes FROM sync_workspaces WHERE key=? AND side=? ORDER BY role LIMIT 4`, l.Key, l.Side)
+	// SQLite affinities do not enforce stored types. Bound bytes and reject
+	// unexpected types inside SQL, before Scan can allocate a private BLOB or
+	// include its contents in a numeric-conversion error.
+	rows, err := l.DB.QueryContext(ctx, `SELECT
+		CASE WHEN typeof(role)='text' THEN substr(CAST(role AS BLOB),1,129) ELSE '' END,
+		CASE WHEN typeof(path)='text' THEN substr(CAST(path AS BLOB),1,4097) ELSE '' END,
+		CASE WHEN typeof(root_id)='text' THEN substr(CAST(root_id AS BLOB),1,82) ELSE '' END,
+		CASE WHEN typeof(parent_id)='text' THEN substr(CAST(parent_id AS BLOB),1,82) ELSE '' END,
+		CASE WHEN typeof(base_id)='text' THEN substr(CAST(base_id AS BLOB),1,82) ELSE '' END,
+		CASE WHEN typeof(disk_bytes)='integer' THEN disk_bytes ELSE -1 END
+		FROM sync_workspaces WHERE key=? AND side=? ORDER BY role LIMIT 4`, l.Key, l.Side)
 	if err != nil {
 		return nil, err
 	}
