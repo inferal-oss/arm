@@ -2,7 +2,7 @@ name: Public website
 
 on:
   push:
-    branches: [main, codex/arm-public-launch]
+    branches: [main, codex/arm-public-launch, codex/arm-launch-composed-ci]
     paths:
       - 'website/**'
       - '**/*.go'

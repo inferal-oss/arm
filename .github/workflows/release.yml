@@ -3,7 +3,7 @@ name: Tagged carrier releases
 on:
   push:
     tags: ['v*']
-    branches: [codex/arm-public-launch]
+    branches: [codex/arm-public-launch, codex/arm-launch-composed-ci]
     paths:
       - '.github/workflows/release.yml'
       - 'scripts/release/**'
