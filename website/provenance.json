@@ -18,8 +18,11 @@
     "vite.config.ts": "e2d86a264b5fbfece34069d3cacffc7f0cb3aeb9a0e3e0f8be3354fed4c24921",
     "arm-wat-only-store.mjs": "4a833e733aeea9e4c62e1b45a322043cd3c597a7b5100aec6e662ac29781a7c3",
     "scripts/patch-framework.mjs": "4c38e7bfc662439b1552c196958d86f7823ab4c8dbe648fa7f30e262da79fb66",
-    "scripts/assert-build.mjs": "55fcec14843b73599a74a794288bdcec7caf84395ba7e74801dd5d75219edf26",
-    "scripts/gallery-overlays.json": "0eb154b99049346758cbc0ca2b4baaf315ba6d48805e619d5d912de68888d8de"
+    "scripts/assert-build.mjs": "c8a8266c9a43844023926aaea28e9e35b8f5ea02ea9b7542dce22a4696c78fef",
+    "scripts/gallery-overlays.json": "0eb154b99049346758cbc0ca2b4baaf315ba6d48805e619d5d912de68888d8de",
+    "scripts/screenshot-integrity.mjs": "7628ec1c14aaeff2867af88ee24f780c1245161bcd12492248e546f2880575b7",
+    "../scripts/dashboard-screenshots/source.mjs": "382a64c13734433e57e08605500b0def7d4e2d88e7e39af8ea8bd992da60dfc2",
+    "../scripts/dashboard-screenshots/views.json": "b50671e0b4490550391bbfd4c2f376ed7ff7be1f8303e102ea92a6e932174d94"
   },
   "vite_helper": {
     "version": "8.3.5",

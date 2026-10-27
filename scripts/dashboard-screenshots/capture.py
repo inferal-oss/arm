@@ -83,7 +83,6 @@ def terminate(process):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--arm', type=Path, help='Optional prebuilt current-source executable; default builds privately.')
     parser.add_argument('--output', type=Path, default=REPO / 'website/public/screenshots')
     options = parser.parse_args()
     # The public images must never come from a user's live workstation or backend.
@@ -91,7 +90,8 @@ def main():
         raise CaptureError('requires_fresh_github_actions_runner')
     output = options.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    names = ('web-monitor.png', 'web-resources.png', 'terminal.png', 'metadata.json')
+    views = json.loads((HELPER / 'views.json').read_text())['images']
+    names = tuple(view['file'] for view in views) + ('metadata.json',)
     for name in names:
         if (output / name).is_symlink():
             raise CaptureError('output_symlink_refused')
@@ -109,7 +109,7 @@ def main():
         (private / 'tmp').mkdir()
         env['TMPDIR'] = str(private / 'tmp')
         home = private / 'state'
-        binary = options.arm.resolve() if options.arm else private / 'arm'
+        binary = private / 'arm'
         prefix = [str(binary), '--home', str(home)]
 
         def cli(*arguments, check=True):
@@ -117,9 +117,18 @@ def main():
             return json.loads(result.stdout) if result.returncode == 0 and result.stdout else None
 
         try:
-            if options.arm is None:
-                stage = 'build CLI'
-                run(['go', 'build', '-p', '1', '-o', str(binary), './cmd/arm'], env=env, timeout=600)
+            # Always compile the embedded browser source before Go embeds it.
+            # A caller-supplied executable cannot prove that binding.
+            stage = 'snapshot dashboard source'
+            inputs = json.loads(run(['node', str(HELPER / 'source.mjs'), 'snapshot'], env=env).stdout)
+            stage = 'rebuild embedded dashboard'
+            run(['npm', '--prefix', 'web', 'run', 'build'], env=env, timeout=180)
+            stage = 'verify rebuilt dashboard'
+            embedded_ui = json.loads(run(['node', str(HELPER / 'source.mjs'), 'verify'], env=env).stdout)
+            if any(embedded_ui[key] != value for key, value in inputs.items()):
+                raise CaptureError('dashboard_inputs_changed_during_build')
+            stage = 'build CLI'
+            run(['go', 'build', '-p', '1', '-o', str(binary), './cmd/arm'], env=env, timeout=600)
             stage = 'start private backend'
             # Disable this fixture's peer publication before the foreground backend starts.
             cli('peers', 'off')
@@ -158,7 +167,7 @@ def main():
                                             preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, previous))
             transcript = bytearray()
 
-            def read_until(text, seconds=15, minimum_seconds=0):
+            def read_until(text, seconds=15, minimum_seconds=0, boundary=0):
                 started = time.monotonic()
                 deadline = started + seconds
                 while time.monotonic() < deadline:
@@ -174,7 +183,7 @@ def main():
                         transcript.extend(chunk)
                         if len(transcript) > 4 * 1024 * 1024:
                             raise CaptureError('terminal_capture_limit')
-                    plain = re.sub(rb'\x1b\[[0-?]*[ -/]*[@-~]', b'', transcript)
+                    plain = re.sub(rb'\x1b\[[0-?]*[ -/]*[@-~]', b'', transcript[boundary:])
                     if terminal.poll() is not None:
                         raise CaptureError('terminal_exited_early')
                     if text.encode() in plain and time.monotonic() - started >= minimum_seconds:
@@ -183,18 +192,19 @@ def main():
 
             read_until('connected')
             read_until('RAM remaining')
-            os.write(master, b'2')
-            read_until('To lease')
-            # Drain subsequent real frames too: startup labels alone do not
-            # establish that the terminal consumed a measured status update.
-            # This finite window does not require healthy values or replace
-            # genuine unknowns when the host cannot report a measurement.
-            read_until('documentation-builds', minimum_seconds=TERMINAL_FRAME_SECONDS)
-            # Replay the actual PTY byte stream while it still contains the active
-            # alternate screen; the later orderly quit must not blank the image.
-            transcript_path = private / 'terminal.ansi'
-            transcript_path.write_bytes(transcript)
-            os.chmod(transcript_path, 0o600)
+            transcripts = {}
+            for view in (view for view in views if view['surface'] == 'terminal'):
+                # Require new bytes after navigation, rather than a label left
+                # in an earlier transcript. The renderer separately checks the
+                # final active screen, not just this byte-stream history.
+                boundary = 0 if view['key'] == '1' else len(transcript)
+                if view['key'] != '1':
+                    os.write(master, view['key'].encode())
+                read_until(view['labels'][0], minimum_seconds=TERMINAL_FRAME_SECONDS, boundary=boundary)
+                transcript_path = private / (view['file'] + '.ansi')
+                transcript_path.write_bytes(transcript)
+                os.chmod(transcript_path, 0o600)
+                transcripts[view['file']] = str(transcript_path)
             os.write(master, b'q')
             terminal.wait(timeout=10)
             if terminal.returncode:
@@ -211,25 +221,29 @@ def main():
             endpoint = json.loads((home / 'endpoint.json').read_text())
             config = private / 'capture.json'
             config.write_text(json.dumps({'url': link, 'endpointToken': endpoint['token'],
-                                          'transcript': str(transcript_path), 'output': str(output),
+                                          'transcripts': transcripts, 'views': views, 'output': str(output),
                                           'terminalGeometry': grid}))
             os.chmod(config, 0o600)
             # Node prints safe stage identifiers only; it never emits URLs,
             # screenshots' private bootstrap data, page console or traces.
             run(['node', str(HELPER / 'render.mjs'), str(config)], env=env, timeout=120)
+            stage = 'verify capture source unchanged'
+            if json.loads(run(['node', str(HELPER / 'source.mjs'), 'verify'], env=env).stdout) != embedded_ui:
+                raise CaptureError('dashboard_inputs_changed_during_capture')
             stage = 'write public provenance'
             source = run(['git', 'rev-parse', 'HEAD'], env=env).stdout.decode().strip()
             if not re.fullmatch(r'[0-9a-f]{40}', source):
                 raise CaptureError('invalid_source_revision')
             entries = []
-            for name in names[:3]:
+            for name in names[:-1]:
                 data = (output / name).read_bytes()
                 if not data.startswith(b'\x89PNG\r\n\x1a\n'):
                     raise CaptureError('invalid_capture_png')
                 width, height = struct.unpack('>II', data[16:24])
                 entries.append({'file': name, 'sha256': hashlib.sha256(data).hexdigest(),
                                 'width': width, 'height': height})
-            metadata = {'source_commit': source, 'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
+            metadata = {'schema': 2, 'source_commit': source, 'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
+                        'embedded_ui': embedded_ui,
                         'scope': 'Disposable GitHub Actions backend, real host observations and example cooperative pool lease.',
                         'terminal': 'Actual arm dashboard terminal PTY bytes rendered by xterm.js.',
                         'sampling': {'backend_warmup_seconds': BACKEND_SAMPLE_SECONDS,
@@ -239,7 +253,7 @@ def main():
                                              'font_family': 'DejaVu Sans Mono, monospace', 'font_size': 14},
                         'images': entries}
             (output / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
-            print('Captured real web Monitor, web Resources and terminal Resources dashboards.')
+            print('Captured five web views and three terminal views from rebuilt current-source dashboards.')
         except Exception as error:
             # Remove partial publication outputs; fail the Pages build instead of
             # silently shipping stale or mixed-source pictures.

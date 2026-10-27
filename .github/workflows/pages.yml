@@ -48,6 +48,7 @@ jobs:
           cache: npm
           cache-dependency-path: |
             website/package-lock.json
+            web/package-lock.json
             scripts/dashboard-screenshots/package-lock.json
       - name: Test capture ownership and terminal geometry
         working-directory: .
@@ -58,13 +59,17 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm run test:gallery
+      - run: npm run test:screenshots
+      - name: Install locked embedded dashboard build dependencies
+        working-directory: web
+        run: npm ci --ignore-scripts
       - name: Install dashboard capture tools
         working-directory: scripts/dashboard-screenshots
         run: npm ci --ignore-scripts
       - name: Install headless Chromium
         working-directory: scripts/dashboard-screenshots
         run: npx playwright install --with-deps chromium
-      - name: Capture current-source web and terminal dashboards
+      - name: Rebuild embedded UI and capture current-source dashboards
         working-directory: .
         run: python3 scripts/dashboard-screenshots/capture.py
       - run: npm run build

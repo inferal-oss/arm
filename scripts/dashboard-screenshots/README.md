@@ -1,12 +1,17 @@
 # Dashboard screenshots for the public website
 
-The Pages job runs this helper before the website build. It builds the current
-checkout's CLI privately, starts a foreground backend with a new temporary
+The Pages job runs this helper before the website build. It rebuilds and verifies
+the current checkout's embedded UI, then compiles its CLI privately and starts a
+foreground backend with a new temporary
 state directory, creates a genuine example counted-pool lease, and captures:
 
 - `web-monitor.png`: live physical observations in the embedded web Monitor.
 - `web-resources.png`: the Resources page, including the example pool/lease.
-- `terminal.png`: the real `arm dashboard terminal` Resources screen.
+- `web-leases.png`: the granted example cooperative lease.
+- `web-activity.png`: real durable events from that backend.
+- `web-host.png`: the current backend authority and available capabilities.
+- `terminal-monitor.png`, `terminal.png`, `terminal-leases.png`: the real
+  `arm dashboard terminal` Monitor, Resources and Leases screens.
 
 The browser waits for the stock Semblance `Backend status` toolbar to report
 `Connected`, the `Host monitor` heading and its `RAM remaining` metric. It opens
@@ -16,14 +21,14 @@ they do not depend on the old dashboard's element IDs or numbered navigation.
 The browser context starts without saved theme preferences, so the screenshot
 uses the dashboard's checked-in default theme.
 
-The terminal image is produced by replaying the command's actual 140×80 PTY
+Each terminal image is produced by replaying the command's actual 140×80 PTY
 byte stream in pinned xterm.js and capturing that terminal renderer in Chromium.
 It is not a separate implementation of the terminal dashboard. Native host
 measurements, timing and runner capacity are real and can vary between builds;
 these are illustrative CI captures, not a benchmark or a supported host limit.
 
 The backend collects native observations for six seconds before the terminal
-starts. Capture then drains at least six seconds of the Resources view's real
+starts. Capture then drains at least six seconds of each selected view's real
 PTY frames, so the first startup labels are not mistaken for an observed status
 update. This is a bounded collection window, not a requirement to show healthy
 values: genuine unavailable measurements stay unavailable. The browser ticket
@@ -44,6 +49,7 @@ Use a fresh GitHub Actions runner with Go selected by the repository's `go.mod`,
 Node.js 26, Python 3 and Chromium system libraries:
 
 ```sh
+npm --prefix web ci --ignore-scripts
 cd scripts/dashboard-screenshots
 npm ci --ignore-scripts
 npx playwright install --with-deps chromium
@@ -54,19 +60,24 @@ python3 scripts/dashboard-screenshots/capture.py
 The helper deliberately refuses execution outside GitHub Actions to prevent
 publishing a workstation's host/peer context by accident. It never installs ARM
 or reuses a live state directory. Its temporary backend, PTY, credentials and
-raw transcript are stopped/removed on success and failure. Only the three PNGs
-and `metadata.json` (source/binary/image hashes and image sizes) are placed in
+raw transcript are stopped/removed on success and failure. Only the eight PNGs
+and `metadata.json` (source input, embedded UI, binary and image hashes, plus sizes) are placed in
 `website/public/screenshots/`. Those generated files are ignored and Vite copies
 them into the Pages artifact. Partial output is removed and fails the build.
 No browser traces, videos, storage states, bootstrap URLs or transcripts are
 uploaded. Dependency licenses remain in the build-only package; these libraries
 are not bundled into the public website.
 
-For a prebuilt executable from the same source, `--arm /absolute/path/to/arm`
-avoids a second build. No local installed executable is selected automatically.
-The helper's single Go build uses `GOMAXPROCS=1` and `-p 1`; a local heavy build
-must still use the project's shared CPU queue. Source/lock metadata preparation
-and Python/JavaScript syntax checks require no build or backend.
+No prebuilt-executable bypass is supported: the helper rebuilds the embedded
+browser assets and then compiles the binary that embeds those exact files.
+Install the locked embedded UI dependencies before capture, as shown above. Source inputs are hashed before and after the
+UI build and rechecked after rendering. The generated WAT must match the pinned
+provenance; the shipped framework source and emitted runtime notices are checked
+as well. Asset hashes, input digest/count and executable identity are published
+in the receipt. The final website gate verifies all eight image files, their
+hashes/dimensions, source revision, rebuilt UI receipt and gallery paths. Missing
+or stale outputs fail publication. The Go build uses `GOMAXPROCS=1` and `-p 1`;
+local heavy builds still require the shared CPU queue.
 
 ## Command ownership
 

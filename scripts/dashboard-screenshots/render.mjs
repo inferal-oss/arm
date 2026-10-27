@@ -6,7 +6,7 @@ import { terminalGeometry } from './geometry.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
-async function fitResourcesViewport(page) {
+async function fitContentViewport(page) {
   const footer = page.locator('footer[data-sem-c="status-bar"][aria-label="ARM"]')
   await footer.waitFor({ timeout: 15000 })
   // A full-page screenshot keeps a fixed footer at the original viewport's
@@ -55,7 +55,6 @@ try {
   const ticket = new URLSearchParams(address.hash.slice(1)).get('connect')
   if (!ticket || !/^[a-f0-9]{64}$/.test(ticket)) throw Error()
   const secrets = [ticket, config.endpointToken]
-  const transcript = await readFile(config.transcript)
   stage = 'launch Chromium'
   browser = await chromium.launch({ headless: true })
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1,
@@ -80,22 +79,24 @@ try {
     const text = await page.locator('body').innerText()
     if (secrets.some(secret => secret && text.includes(secret))) throw Error()
   }
-  stage = 'web Monitor'
-  await ensureSafeScreen()
-  await page.screenshot({ path: join(config.output, 'web-monitor.png'), animations: 'disabled' })
-  stage = 'web Resources'
-  await page.getByRole('group', { name: 'Views', exact: true })
-    .getByRole('button', { name: 'Resources', exact: true }).click()
-  await page.getByRole('heading', { name: 'Resource budgets', exact: true }).waitFor({ timeout: 15000 })
-  await page.getByRole('button', { name: 'documentation-builds', exact: true }).waitFor({ timeout: 15000 })
-  stage = 'web Resources viewport'
-  await fitResourcesViewport(page)
-  await page.getByRole('toolbar', { name: 'Backend status', exact: true })
-    .getByText('Connected', { exact: true }).waitFor({ timeout: 15000 })
-  await page.getByRole('heading', { name: 'Resource budgets', exact: true }).waitFor({ timeout: 15000 })
-  await page.getByRole('button', { name: 'documentation-builds', exact: true }).waitFor({ timeout: 15000 })
-  await ensureSafeScreen()
-  await page.screenshot({ path: join(config.output, 'web-resources.png'), fullPage: false, animations: 'disabled' })
+  for (const view of config.views.filter(view => view.surface === 'web')) {
+    stage = 'web ' + view.view
+    await page.setViewportSize({ width: 1440, height: 1000 })
+    await page.getByRole('group', { name: 'Views', exact: true })
+      .getByRole('button', { name: view.view, exact: true }).click()
+    await page.getByRole('heading', { name: view.heading, exact: true }).waitFor({ timeout: 15000 })
+    for (const label of view.labels) await page.getByText(label, { exact: true }).first().waitFor({ timeout: 15000 })
+    if (view.view === 'Activity') {
+      const events = page.getByRole('combobox', { name: 'Inspect an event', exact: true })
+      await events.waitFor({ timeout: 15000 })
+      await events.locator('option').nth(1).waitFor({ state: 'attached', timeout: 15000 })
+    }
+    await fitContentViewport(page)
+    await page.getByRole('toolbar', { name: 'Backend status', exact: true })
+      .getByText('Connected', { exact: true }).waitFor({ timeout: 15000 })
+    await ensureSafeScreen()
+    await page.screenshot({ path: join(config.output, view.file), fullPage: false, animations: 'disabled' })
+  }
   await context.close()
 
   stage = 'terminal renderer'
@@ -106,46 +107,40 @@ try {
   await terminalPage.addStyleTag({ path: join(here, 'node_modules/@xterm/xterm/css/xterm.css') })
   stage = 'terminal library'
   await terminalPage.addScriptTag({ path: join(here, 'node_modules/@xterm/xterm/lib/xterm.js') })
-  stage = 'terminal initialization'
-  await terminalPage.evaluate(grid => {
-    const terminal = new Terminal({ cols: grid.cols, rows: grid.rows, fontFamily: '"DejaVu Sans Mono", monospace', fontSize: 14,
-                                    // Standard dark terminal defaults match ARM's
-                                    // canvas/text in internal/tui/theme.go. ANSI
-                                    // reset cells must not inherit browser black.
-                                    theme: { background: '#101519', foreground: '#e1e9ed' },
-                                    scrollback: 0, cursorBlink: false, allowTransparency: false })
-    terminal.open(document.getElementById('terminal'))
-    window.captureTerminal = terminal
-  }, { cols: grid.cols, rows: grid.rows })
-  stage = 'terminal byte replay'
-  await terminalPage.evaluate(async encoded => {
-    const terminal = window.captureTerminal
-    const bytes = Uint8Array.from(atob(encoded), value => value.charCodeAt(0))
-    await new Promise(resolve => terminal.write(bytes, resolve))
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-    const lines = Array.from({ length: terminal.rows }, (_, i) => terminal.buffer.active.getLine(i)?.translateToString(true) ?? '').join('\n')
-    window.terminalScreenText = lines
-  }, transcript.toString('base64'))
-  stage = 'terminal label verification'
-  // Only fixed label-presence bits leave the page during diagnostic checks;
-  // the failure stage never includes transcript text, identifiers or values.
-  const visible = await terminalPage.evaluate(() => ({
-    budget: window.terminalScreenText.includes('To lease'),
-    fixture: window.terminalScreenText.includes('documentation-builds'),
-    alternate: window.captureTerminal.buffer.active.type === 'alternate',
-    cols: window.captureTerminal.cols, rows: window.captureTerminal.rows,
-  }))
-  if (visible.cols !== grid.cols || visible.rows !== grid.rows) { stage = 'terminal verification geometry mismatch'; throw Error() }
-  if (!visible.alternate) { stage = 'terminal verification alternate missing'; throw Error() }
-  if (!visible.budget && !visible.fixture) { stage = 'terminal verification both missing'; throw Error() }
-  if (!visible.budget) { stage = 'terminal verification budget missing'; throw Error() }
-  if (!visible.fixture) { stage = 'terminal verification fixture missing'; throw Error() }
-  stage = 'terminal credential exclusion'
-  const screen = await terminalPage.evaluate(() => window.terminalScreenText)
-  if (secrets.some(secret => secret && screen.includes(secret))) throw Error()
-  stage = 'terminal PNG'
-  await terminalPage.locator('#terminal').screenshot({ path: join(config.output, 'terminal.png'), animations: 'disabled' })
-  for (const file of ['web-monitor.png', 'web-resources.png', 'terminal.png']) await access(join(config.output, file))
+  for (const view of config.views.filter(view => view.surface === 'terminal')) {
+    const transcript = await readFile(config.transcripts[view.file])
+    stage = 'terminal initialization'
+    await terminalPage.evaluate(grid => {
+      window.captureTerminal?.dispose()
+      document.getElementById('terminal').replaceChildren()
+      const terminal = new Terminal({ cols: grid.cols, rows: grid.rows, fontFamily: '"DejaVu Sans Mono", monospace', fontSize: 14,
+        theme: { background: '#101519', foreground: '#e1e9ed' }, scrollback: 0, cursorBlink: false, allowTransparency: false })
+      terminal.open(document.getElementById('terminal'))
+      window.captureTerminal = terminal
+    }, { cols: grid.cols, rows: grid.rows })
+    stage = 'terminal byte replay'
+    await terminalPage.evaluate(async encoded => {
+      const terminal = window.captureTerminal
+      const bytes = Uint8Array.from(atob(encoded), value => value.charCodeAt(0))
+      await new Promise(resolve => terminal.write(bytes, resolve))
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      window.terminalScreenText = Array.from({ length: terminal.rows }, (_, i) =>
+        terminal.buffer.active.getLine(i)?.translateToString(true) ?? '').join('\n')
+    }, transcript.toString('base64'))
+    stage = 'terminal label verification'
+    const visible = await terminalPage.evaluate(labels => ({
+      labels: labels.every(label => window.terminalScreenText.includes(label)),
+      alternate: window.captureTerminal.buffer.active.type === 'alternate',
+      cols: window.captureTerminal.cols, rows: window.captureTerminal.rows,
+    }), view.labels)
+    if (visible.cols !== grid.cols || visible.rows !== grid.rows || !visible.alternate || !visible.labels) throw Error()
+    stage = 'terminal credential exclusion'
+    const screen = await terminalPage.evaluate(() => window.terminalScreenText)
+    if (secrets.some(secret => secret && screen.includes(secret))) throw Error()
+    stage = 'terminal PNG'
+    await terminalPage.locator('#terminal').screenshot({ path: join(config.output, view.file), animations: 'disabled' })
+  }
+  for (const view of config.views) await access(join(config.output, view.file))
   await terminalContext.close()
   await browser.close()
   browser = undefined

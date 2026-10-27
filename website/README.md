@@ -119,13 +119,33 @@ Asset SHA-256 values:
 - Dashboard logo: `9739a929974ede02e6afc36721080434ccb29758f065028eb2ee43f3fa9d7a87`
 - Dashboard favicon: `fbe3a2db83e6cc24eab6872497cdaf18406ae1a1bac29b811e6957d83892b373`
 
-The screenshot gallery references build-generated `screenshots/web-monitor.png`,
-`screenshots/web-resources.png` and `screenshots/terminal.png`. No substitute or
-placeholder images are checked in. A stock Segmented control changes the Gallery
-between Grid, Carousel and Pile layouts. Activating a Picture opens the stock
-Lightbox with thumbnails, zoom, fullscreen and an original-image link. Keyboard
-navigation, Escape, focus return and the three actual generated images are part
-of browser verification.
+The screenshot roster is defined in `scripts/dashboard-screenshots/views.json`:
+web Monitor, Resources, Leases, Activity and Host, plus terminal Monitor,
+Resources and Leases. Each is an actual connected view of one disposable backend
+with an example cooperative pool lease. Messages, mesh and remote execution are
+not staged for these images. Real runner measurements and unavailable values
+remain intact.
+
+Every Pages build installs the locked embedded-UI dependencies, rebuilds its
+pinned WAT engine and browser assets, verifies framework provenance and complete
+runtime notices, then compiles the private Go capture executable. It does not
+reuse a prebuilt executable or assume committed browser output matches source.
+Capture metadata records a digest of the tracked browser/build inputs, all
+rebuilt asset hashes, the engine hash, executable hash and all eight PNG hashes
+and dimensions. Source and asset identities are checked again after capture.
+
+The website build checks that metadata belongs to the exact Actions revision,
+that its embedded UI matches the just-built source/assets, and that the complete
+image roster and hashes match both the files and gallery graph. Missing,
+additional, duplicate or changed images fail the build. Partial capture output
+is removed on failure. Screenshots are generated before artifact upload on every
+Pages workflow run; relevant UI, Go, module, knowledge, capture and workflow
+changes trigger the workflow automatically.
+
+A stock Segmented control changes the Gallery between Grid, Carousel and Pile
+layouts. Each Picture opens the stock Lightbox with thumbnails, zoom, fullscreen
+and an original-image link. No substitute images are checked in. Native keyboard
+controls, focus return and all eight decoded images remain browser review gates.
 
 The documentation and capability cards use `pos:AlignedColumns`, so their headers
 and bodies share row tracks on each wrapped line. They stack naturally at narrow

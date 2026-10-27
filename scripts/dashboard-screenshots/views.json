@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "images": [
+    {"file":"web-monitor.png","surface":"web","view":"Monitor","heading":"Host monitor","labels":["RAM remaining"]},
+    {"file":"web-resources.png","surface":"web","view":"Resources","heading":"Resource budgets","labels":["documentation-builds"]},
+    {"file":"web-leases.png","surface":"web","view":"Leases","heading":"Leases","labels":["Example documentation build"]},
+    {"file":"web-activity.png","surface":"web","view":"Activity","heading":"Activity","labels":["Latest 200 durable events · newest first"]},
+    {"file":"web-host.png","surface":"web","view":"Host","heading":"Host & capabilities","labels":["Available capabilities"]},
+    {"file":"terminal-monitor.png","surface":"terminal","view":"Monitor","key":"1","labels":["RAM remaining"]},
+    {"file":"terminal.png","surface":"terminal","view":"Resources","key":"2","labels":["To lease","documentation-builds"]},
+    {"file":"terminal-leases.png","surface":"terminal","view":"Leases","key":"3","labels":["Hide inactive leases","custom claims"]}
+  ]
+}

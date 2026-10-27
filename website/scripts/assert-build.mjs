@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { embeddedUI } from '../../scripts/dashboard-screenshots/source.mjs'
+import { verifyScreenshotSet } from './screenshot-integrity.mjs'
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex')
 const dist = process.argv[2] ?? 'dist'
@@ -36,10 +38,14 @@ if (vite.version !== provenance.vite_helper.version || vite.integrity !== proven
 const license = readFileSync('node_modules/vite/LICENSE.md')
 if (sha(license) !== provenance.vite_helper.license_sha256 || !readFileSync(join(dist, 'THIRD-PARTY-NOTICES.txt'), 'utf8').includes(license.toString('utf8'))) throw Error('Full Vite helper notices are missing')
 const metadataPath = join(dist, 'screenshots/metadata.json')
-const metadata = existsSync(metadataPath) ? JSON.parse(readFileSync(metadataPath, 'utf8')) : null
-if (process.env.GITHUB_ACTIONS === 'true' && (!metadata || metadata.source_commit !== process.env.GITHUB_SHA)) throw Error('Screenshot source does not match the build')
+const metadata = existsSync(metadataPath) ? verifyScreenshotSet(join(dist, 'screenshots'), {
+  source: process.env.GITHUB_ACTIONS === 'true' ? process.env.GITHUB_SHA : undefined,
+  embeddedUI: embeddedUI(), graph: readFileSync('app.ttl', 'utf8'),
+}) : null
+if (process.env.GITHUB_ACTIONS === 'true' && (!process.env.GITHUB_SHA || !metadata)) throw Error('Current-build screenshots are required')
 const receipt = { schema: 1, source_commit: metadata?.source_commit ?? null, framework: provenance.framework,
   renderer_overlay: provenance.renderer_overlay, gallery_overlay: gallery,
+  screenshots: metadata ? { metadata_sha256: sha(readFileSync(metadataPath)), binary_sha256: metadata.binary_sha256, embedded_ui: metadata.embedded_ui, images: metadata.images } : null,
   wasm: { file: 'assets/' + wasm[0].name, bytes: wasmBytes.length, sha256: sha(wasmBytes) },
   runtime_chunks: chunks.map(file => 'assets/' + file.name).sort(), optional_rust_engine: false, vite_helper: provenance.vite_helper }
 writeFileSync(join(dist, 'build-integrity.json'), JSON.stringify(receipt, null, 2) + '\n')
