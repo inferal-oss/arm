@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "status": "complete_diagnostic_capture_original_failure_retained",
+  "semantic_acceptance": false,
+  "scope": "One copied Calendar history prefix; no fix, full corpus acceptance, or stock baseline replay.",
+  "source": {
+    "base_commit": "eb80b431aef25ae29a999820bab6c187df6bd9d4",
+    "numeric_patch_files": 30,
+    "numeric_patch_sha256": "faafaf19b6b4b8725b7be70456ca6cabad3c794d669d40f55793eb5bc0c58db5",
+    "diagnostic_manifest_sha256": "5c59b70d86ba23943c3afc9dbfe7dae05e51db492a880dced4da81362aa2fdc1",
+    "retained_images": {
+      "rust": {
+        "bytes": 372204,
+        "sha256": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6"
+      },
+      "wat": {
+        "bytes": 115600,
+        "sha256": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031"
+      }
+    },
+    "image_qualification": "Existing images from the failed composed numeric gate; no fresh build or acceptance inferred."
+  },
+  "original_exit": {
+    "direct_child": 1,
+    "wrapper": 1,
+    "outer": 1,
+    "direct_child_waits": 1
+  },
+  "strict_roster": {
+    "files": 1,
+    "roots": 3,
+    "passed": 2,
+    "failed": 1,
+    "pending": 0,
+    "todo": 0,
+    "titles": [
+      "hold the same graph",
+      "give the same results for every query the shell ran, interpreted and compiled",
+      "prepare the same corpus queries, and give the same results for them run on their own"
+    ]
+  },
+  "target_cells": [
+    {
+      "engine": "rust",
+      "mode": "interpreted",
+      "result": "",
+      "interpreted_success_counter": 1,
+      "compiled_success_counter": 0,
+      "fallbacks": 0
+    },
+    {
+      "engine": "wat",
+      "mode": "interpreted",
+      "result": "",
+      "interpreted_success_counter": 1,
+      "compiled_success_counter": 0,
+      "fallbacks": 0
+    },
+    {
+      "engine": "rust",
+      "mode": "compiled",
+      "result": "error",
+      "compiled_selected": true,
+      "run_attempted": true,
+      "run_returned": false,
+      "interpreted_success_counter": 0,
+      "compiled_success_counter": 0,
+      "fallbacks": 0,
+      "declined": false,
+      "interrupted": false,
+      "exception": {
+        "name": "RuntimeError",
+        "message": "unreachable"
+      }
+    },
+    {
+      "engine": "wat",
+      "mode": "compiled",
+      "result": "",
+      "compiled_selected": true,
+      "run_attempted": true,
+      "run_returned": true,
+      "interpreted_success_counter": 0,
+      "compiled_success_counter": 1,
+      "fallbacks": 0
+    }
+  ],
+  "target_query_sha256": "dd72aa9ef410ec31d5a6d39a1a50fedaf41a6e9052166a6e6a56d4b1d37c2981",
+  "earlier_non_target_interruption_count": 1,
+  "journal": {
+    "bytes": 32966908,
+    "sha256": "13d888e8ab9a8f1ba577ca33dc8d2b9e94a773a9974f0dcd3a95451de56b80b2",
+    "ceiling_bytes": 67108864,
+    "starts": 3568,
+    "results": 3568,
+    "execution_observations": 3568,
+    "releases": 3568,
+    "prefix_compared": 66,
+    "prefix_mismatches": 1
+  },
+  "graphs": [
+    {
+      "complete": true,
+      "live_term_count": 579371,
+      "owner": "rust",
+      "quad_array_sha256": "4c6aa91e6978d17c90b050f17cd121e83e3c0a99a9d324b0425d500b1ee2841b",
+      "quad_count": 132822,
+      "reachable_terms": 57753
+    },
+    {
+      "complete": true,
+      "live_term_count": 69101,
+      "owner": "wat",
+      "quad_array_sha256": "4c6aa91e6978d17c90b050f17cd121e83e3c0a99a9d324b0425d500b1ee2841b",
+      "quad_count": 132822,
+      "reachable_terms": 57753
+    },
+    {
+      "complete": true,
+      "live_term_count": 67954,
+      "owner": "original-source",
+      "quad_array_sha256": "ac526dbf50a79afd323f727200f5166c24b7631bd24491c560dff25599ee9df8",
+      "quad_count": 132822,
+      "reachable_terms": 57753
+    }
+  ],
+  "unchanged_inputs": {
+    "selected_files": 18209,
+    "bytes_rehashed": 486492879,
+    "harness_files": 16,
+    "directory_bindings": 346,
+    "membership_inventories": 169,
+    "original_source_files": 625,
+    "snapshot_source_image_diagnostic_files": 628,
+    "content_and_identity_before_after_final_equal": true
+  },
+  "cleanup": {
+    "known_native_engines_and_shell_runtime_disposed": true,
+    "private_temp_cache_paths_absent": true,
+    "errors": [],
+    "all_descendants_attested": false
+  },
+  "independent_audit_sha256": "2d04d256ee5d72094b72c1a27b33d4748b4a213deaeaaf7a81e3e6186d446921",
+  "outer_transcription_sha256": "81defedc059c14ef8121472a9cce75c5af436c0415117946fdb6e7e29c41a220",
+  "historical_scopes_preserved": {
+    "prior_composed_numeric_gate": {
+      "cases": 510,
+      "passed": 509,
+      "failed": 1,
+      "status": "failed",
+      "outcome_sha256": "16551c6afadcbaf3f5b9a12b56df7ccc4bdf00e46ac530ffddd7900bb1b01b3f"
+    },
+    "empty_graph_probe": {
+      "cases": 12,
+      "target_reproduced": false,
+      "qualification": "Narrow empty-graph result, not the retained execution history."
+    },
+    "earlier_history_capture": {
+      "status": "incomplete",
+      "reason": "64 MiB journal ceiling reached; original failure retained."
+    },
+    "offline_codec_checks": {
+      "actual_partial_events": 5046,
+      "synthetic_witnesses": 17,
+      "refusal_cases": 7,
+      "qualification": "Separate offline codec evidence; not native semantic acceptance."
+    }
+  },
+  "upstream_corroboration": {
+    "issue": "https://github.com/inferal-oss/semblance/issues/190",
+    "qualification": "Reported stock Calendar mismatch only; does not replace candidate-versus-baseline replay."
+  },
+  "limits": [
+    "Earlier non-target results retain UTF-8 hashes and lengths, not reconstructible outputs or exact UTF-16 equality. Target results and errors remain exact.",
+    "Graph live term counts are not an ABI high-water mark, native RSS bound, or causal diagnosis.",
+    "Installed input pins do not attest the operating system, dynamic libraries, Python standard library, or every descendant process."
+  ]
+}
