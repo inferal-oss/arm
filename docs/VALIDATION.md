@@ -1,5 +1,40 @@
 # Validation record
 
+## Compiled UI and backend source intersection
+
+The [native composition record](validation/semblance-current-composition-2026-10-27.json)
+accepts exact source `36d80f9`: six roots/17 named session/embed race cases, a
+native build and compiled CLI/HTTP/real-PTY bootstrap all exit zero. Root independently
+checks all 2,410 source hashes against Git blobs, unchanged before/after source,
+eight selected tools and four harness inputs, the retained binary hash and all
+three original child waits. The exclusive temporary namespace is empty after
+cleanup and removed. This is a local macOS FIFO run; selected tools do not attest
+the entire SDK or trusted operating system.
+
+The frontend runtime/assets match the corrected renderer cut; its only frontend
+metadata difference is public issue tracking. No browser suite is repeated here.
+Later provider-consumer integration and physical suspend are outside this source
+cut. Earlier failed renderer cuts remain failures below.
+
+## Website capture and pending acceptance
+
+Pages run `40470874551` succeeds at `70c77cd` with deployment skipped, but its
+Resources screenshot obscures content. Capture successor `d825c26` fails its
+footer locator gate. Both observations are preserved. Corrected source `d9e05fe`
+succeeds in Pages run `40475518705`, also without deployment. Actual four-page
+website checks at 1440 and 390 pixels produce eight views without horizontal
+overflow, SHACL failures, console/page errors or failed local requests; gallery
+image bytes and natural dimensions match the captured artifact. The Resources
+image now places the footer below all content.
+
+A deeper native picker check nevertheless reproduces a property/attribute
+mismatch on history and responsive transitions; heading-only history assertions
+do not establish native selection correctness. Final acceptance requires the
+existing generic #181 renderer correction and a reviewed WAT-only site package
+with complete notices. The newer screenshot binary has different VCS metadata
+from the carrier build; no bit-identical executable claim is made. Carrier
+inspection, publication and both public HTTPS endpoints remain separate gates.
+
 ## Preserved Semblance follow-up failures
 
 The post-major platform-hint browser cut exits one on a real responsive-picker
