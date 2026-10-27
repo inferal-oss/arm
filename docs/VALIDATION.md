@@ -1,5 +1,61 @@
 # Validation record
 
+## Complete-scope sync source milestone
+
+Source `f2c6347`, integrated as `d3cd71d`, passes three macOS refusal roots
+and 15 malformed-claim subtests without skips. Linux amd64 and arm64 test
+packages compile; neither Linux image executes. Root checks all 2,372 source
+blobs, actual test events, both image hashes, all three original command waits,
+unchanged selected tools and the exact four-path primary projection. Existing
+syncfs and module inputs equal the tested source. The
+[record](validation/sync-complete-scope-source-2026-10-27.json), integrated as
+`e380ceb`, preserves the first missing-ticket exit 76 without a launched child.
+There is no positive owner constructor, native quota proof or Manager wiring.
+
+## Corrected Unix prototype native milestone
+
+Source `75a042e`, integrated as the exact ten-path `0d31680` projection, passes
+a fresh Darwin arm64 race build, tagged vet, exact roster and 31 roots/49 named
+cases. Root verifies all 2,416 source blobs, ten source files, selected harness
+and tool snapshots, new binary/buildinfo before and after, four original direct
+waits and the original outer FIFO receipt. The delayed-callback late opener is
+refused; an early opener retains its stream after the opener window.
+
+Actual homes now use the selected fixture temp root and cleanup errors fail
+tests. Its post-test snapshot has no child paths; the root remains as a receipt.
+This does not establish global filesystem or descendant cleanup. Existing
+meshforward/model/workspace/module source is unchanged in the integration
+projection. [Evidence](MESH-FORWARD-UNIX-PROTOTYPE-EVIDENCE.md), integrated as
+`9ae8be9`, preserves the earlier sandbox failure and old-source pass that missed
+the deadline defect. No Linux or production transport/Manager authority follows.
+
+## Palette metadata and native selectedness drafts
+
+Draft [PR #188](https://github.com/inferal-oss/semblance/pull/188) contains
+`e83cdc0`: typecheck and 49 targeted cases pass. Native Chrome observes 80
+configurations across both rendering paths. Eight strict Doodle phone panel
+envelope checks remain failed: the exact same rotation and rectangle occur
+with and without metadata, while document and visible controls fit. Independent
+source and actual-image review finds no metadata regression; it does not
+relabel those geometry checks as passes.
+
+Draft [PR #189](https://github.com/inferal-oss/semblance/pull/189) contains
+`6d3e2ef`: typecheck and 41 targeted cases pass. All 80 native configurations
+have dirty and reconciled states; native properties, attributes, values and
+graph agree, with original object membership retained. The responsive/history
+sequence and external graph updates pass. Its 599 unsupported N3 warning lines
+cover 74 distinct views and provide no acceptance for those skipped views.
+
+Each final review verifies owned source, 88 unchanged engine/package inputs,
+both WASM binaries, selected harnesses, actual test logs and image bytes.
+Original browser servers close, listeners refuse and tabs/viewports are restored.
+Evidence targets `eb80b431`; subsequent upstream reaction changes are unvalidated
+composition. The disabled-text draft has three textual conflicts at `bfd2343`.
+All four PRs remain drafts, unmerged and undeployed. Representative Chrome
+images do not establish other-browser or accessibility conformance. The
+[submission record](validation/semblance-upstream-prs-2026-10-27.json) retains
+these distinctions; Sparkline and its numeric dependency remain outstanding.
+
 ## Preserved Kubernetes public-source attempt
 
 The [attempt record](validation/kubernetes-public-source-build-2026-10-27.json)

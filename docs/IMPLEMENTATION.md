@@ -69,9 +69,17 @@ build and real CLI/HTTP/PTY bootstrap against unchanged source inputs. The gener
 CSSOM correction is submitted as draft
 [Semblance PR #185](https://github.com/inferal-oss/semblance/pull/185), and disabled
 text controls as draft [PR #186](https://github.com/inferal-oss/semblance/pull/186).
-Three component PRs remain, with Sparkline depending on shared numeric conversion/parity
+Palette metadata and native selectedness are submitted as draft
+[PR #188](https://github.com/inferal-oss/semblance/pull/188) and
+[PR #189](https://github.com/inferal-oss/semblance/pull/189). Sparkline remains
+dependent on shared numeric conversion/parity
 fixes. Submission does not establish upstream acceptance. This UI milestone does not
 enable fenced backend features or accept every remote/native operation.
+
+The component evidence targets `eb80b431`. Later upstream reaction changes need
+separate composition; the disabled-text draft has textual conflicts to resolve.
+The palette's stock Doodle paint-envelope failures remain disclosed, with equal
+with/without-metadata geometry and no demonstrated feature regression.
 
 ## Read-only native quota diagnostics
 
@@ -87,6 +95,33 @@ The private evidence fields are not wire claims. This diagnostic does not prove
 exclusive ownership, all-write coverage, reservation, native enforcement for a
 new operation, cleanup or settlement. No Manager/provider bridge or public sync
 dispatch is enabled. Dedicated native positive/refusal fixtures remain open.
+
+## Complete-scope sync observation contract
+
+Integrated `d3cd71d` adds bounded claims, opaque owners and cached native scope
+bindings. The Linux verifier checks a complete existing dedicated XFS project
+tree, held mount/root identities and conservative quota headroom. It configures
+no quota. The owner fence has no implementation or constructor, so ordinary
+callers cannot obtain a positive proof or execution authority. Common macOS
+refusal tests pass; Linux test packages compile without native execution.
+Manager admission, charged coverage and a positive allocation-refusal fixture
+remain separate gates. See the [source validation](validation/sync-complete-scope-source-2026-10-27.json).
+
+## Fenced Unix forwarding prototype
+
+Integrated `0d31680` contains an isolated dual-tag source adapter. It binds
+opened physical homes, checks native peer/socket controls, bounds admitted
+pairs and owners, and retains uncertain original cleanup. A strict monotonic
+opener-return deadline is checked independently of timer callback scheduling;
+timer retirement/join precedes client bytes. This is separate from native
+lease-clock authority and supplies no public dispatch or durable Manager lease.
+
+The corrected macOS race image passes 31 roots/49 named cases, build and vet.
+Actual fixture homes use the selected temp root and report cleanup errors.
+Eight admitted owners per physical home and 32 global live/setup/retained
+owners have distinct uncertainty qualifications. Production forwarding remains
+disabled; Linux, real transport/TLS/CLI, durable recovery and same-account
+security review remain open. See the [native evidence](MESH-FORWARD-UNIX-PROTOTYPE-EVIDENCE.md).
 
 ## Public website and release packaging
 

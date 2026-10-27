@@ -99,12 +99,99 @@
       },
       "upstream_merge": false,
       "deployment": false
+    },
+    {
+      "state": "draft",
+      "tested_base_commit": "eb80b431aef25ae29a999820bab6c187df6bd9d4",
+      "public_base_observed_at_submission": "bfd234307d6b6f561c5a3d543ccce1108adacb42",
+      "newer_upstream_composition_accepted": false,
+      "source_review": "passed",
+      "final_typecheck": "passed",
+      "final_files": 2,
+      "final_skipped_cases": 0,
+      "native_browser": "Chrome",
+      "native_unique_configurations": 80,
+      "theme_count": 10,
+      "schemes": 2,
+      "directions": [
+        "en",
+        "ar"
+      ],
+      "viewport_widths": [
+        1728,
+        390
+      ],
+      "engine_and_package_inputs_verified": 88,
+      "engine_binary_hashes_verified": 2,
+      "original_fixture_cleanup": {
+        "server_close_awaited": true,
+        "listener_refused": true,
+        "tab_closed": true,
+        "viewport_restored": true
+      },
+      "upstream_merge": false,
+      "deployment": false,
+      "url": "https://github.com/inferal-oss/semblance/pull/188",
+      "issue": 166,
+      "source_commit": "e83cdc084abc121129ffd8481440017af7ec80e2",
+      "commits": 4,
+      "changed_paths": 9,
+      "final_cases": 49,
+      "native_implementation_paths": 160,
+      "strict_panel_envelope_failures": 8,
+      "geometry_classification": "Unchanged stock Doodle paint envelope; same with/without metadata geometry, document and visible controls fit; strict predicate stays failed.",
+      "native_metadata_update_scope": "Updates with modal closed; live open-modal updates remain targeted-test evidence.",
+      "shape_target": "Component entries; application shapes required for other command nodes; indexing cap applies to all entries."
+    },
+    {
+      "state": "draft",
+      "tested_base_commit": "eb80b431aef25ae29a999820bab6c187df6bd9d4",
+      "public_base_observed_at_submission": "bfd234307d6b6f561c5a3d543ccce1108adacb42",
+      "newer_upstream_composition_accepted": false,
+      "source_review": "passed",
+      "final_typecheck": "passed",
+      "final_files": 2,
+      "final_skipped_cases": 0,
+      "native_browser": "Chrome",
+      "native_unique_configurations": 80,
+      "theme_count": 10,
+      "schemes": 2,
+      "directions": [
+        "en",
+        "ar"
+      ],
+      "viewport_widths": [
+        1728,
+        390
+      ],
+      "engine_and_package_inputs_verified": 88,
+      "engine_binary_hashes_verified": 2,
+      "original_fixture_cleanup": {
+        "server_close_awaited": true,
+        "listener_refused": true,
+        "tab_closed": true,
+        "viewport_restored": true
+      },
+      "upstream_merge": false,
+      "deployment": false,
+      "url": "https://github.com/inferal-oss/semblance/pull/189",
+      "issue": 181,
+      "source_commit": "6d3e2ef2f90b7260f1506f777e3ff42e72a5ff36",
+      "commits": 2,
+      "changed_paths": 2,
+      "final_cases": 41,
+      "native_states": 160,
+      "responsive_and_external_update_steps": 9,
+      "native_original_object_membership_retained": true,
+      "property_attribute_model_and_native_value_agree": true,
+      "retained_unsupported_view_warnings": 599,
+      "distinct_unsupported_n3_views": 74,
+      "n3_rendering_accepted": false,
+      "native_multiple_selection_claim": false
     }
   ],
   "remaining_component_issues": [
-    155,
-    166,
-    181
+    155
   ],
   "sparkline_dependencies": [
     159,
@@ -114,5 +201,13 @@
     "Targeted per-PR review only; full-suite validation belongs to upstream main after a merged batch.",
     "No universal CSP, other-browser or serialized-initial-style acceptance.",
     "A draft submission is not upstream acceptance."
-  ]
+  ],
+  "later_upstream_composition": {
+    "evidence_base": "eb80b431aef25ae29a999820bab6c187df6bd9d4",
+    "new_reaction_mixins_observed": "bfd234307d6b6f561c5a3d543ccce1108adacb42",
+    "accepted": false,
+    "disabled_text_draft_textual_conflict_hunks": 3,
+    "other_three_drafts_no_textual_conflicts_at_bfd": true,
+    "later_main_revisions_not_covered": true
+  }
 }
