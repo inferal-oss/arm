@@ -197,6 +197,8 @@ func TestCompletionAuthorizedIdentifiersNamesAndRefusals(t *testing.T) {
 			return []model.PoolView{{Pool: model.Pool{ID: "pool_1", Name: "build-slots"}}, {Pool: model.Pool{ID: "pool_2", Name: "duplicate"}}, {Pool: model.Pool{ID: "pool_3", Name: "duplicate"}}}, nil
 		case "status":
 			return map[string]any{"leases": []map[string]string{{"id": "123456", "Name": "calm-cedar", "reason": "private reason"}}}, nil
+		case "name_list":
+			return nameSnapshot{Document: nameDocument()}, nil
 		default:
 			return nil, &model.Error{Code: "forbidden", Message: "private error credential"}
 		}
@@ -225,11 +227,11 @@ func TestCompletionAuthorizedIdentifiersNamesAndRefusals(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	for _, op := range ops {
-		if op != "node_list" && op != "pool_list" && op != "status" && op != "mesh_dispatch" {
+		if op != "node_list" && op != "pool_list" && op != "status" && op != "mesh_dispatch" && op != "name_list" {
 			t.Fatal("completion attempted an effect", op)
 		}
 	}
-	if len(ops) != 13 {
+	if len(ops) != 22 {
 		data, _ := json.Marshal(ops)
 		t.Fatalf("unexpected completion fanout: %s", data)
 	}
@@ -237,6 +239,9 @@ func TestCompletionAuthorizedIdentifiersNamesAndRefusals(t *testing.T) {
 
 func TestCompletionRootOptionsAndCommandBoundaries(t *testing.T) {
 	home := completionEndpoint(t, func(_ context.Context, q model.WireRequest) (any, *model.Error) {
+		if q.Operation == "name_list" {
+			return nameSnapshot{Document: nameDocument()}, nil
+		}
 		if q.Operation != "node_list" {
 			t.Error("unexpected read", q.Operation)
 		}

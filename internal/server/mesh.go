@@ -837,7 +837,11 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 			params["host"] = hostJSON
 			q.Request.Params, _ = json.Marshal(params)
 		}
-		return service.store.Call(ctx, q.Host, q.Request)
+		result, err := service.store.Call(ctx, q.Host, q.Request)
+		if err != nil {
+			return nil, err
+		}
+		return s.sourceNamedView(ctx, peer.Identity.Host, q.Request.Operation, result)
 	}
 	return nil, model.Err("forbidden", "unknown local mesh operation")
 }

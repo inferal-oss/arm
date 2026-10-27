@@ -23,6 +23,10 @@ import (
 var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh"}
 
 type dashboardModel struct {
+	nameUI                            *nameEditor
+	nameDiagnostic                    *model.Error
+	namingObserved                    uint64
+	nameUnknown                       []retainedNameChange
 	checkins                          *leaseCheckins
 	checkinPending                    bool
 	recovery                          *recoveryBrowser
@@ -92,6 +96,21 @@ func Run(ctx context.Context, home string, input io.Reader, output io.Writer) er
 		}
 		if result.nodeUI != nil && result.nodeUI.session != nil {
 			result.nodeUI.session.Close()
+		}
+		for _, request := range result.nameUnknown {
+			if raw, e := json.Marshal(request.Request); e == nil {
+				fmt.Fprintln(output, "Custom-name response outcome may be unknown; local writer", safe(request.Source), "owner", safe(request.Owner), "exact request retained:", safe(string(raw)))
+			}
+		}
+		if result.nameUI != nil && result.nameUI.request != nil {
+			if raw, e := json.Marshal(result.nameUI.request); e == nil {
+				fmt.Fprintln(output, "Custom-name request was in flight; local writer", safe(result.nameUI.source), "owner", func() string {
+					if result.nameUI.snapshot != nil {
+						return safe(result.nameUI.snapshot.Owner)
+					}
+					return "unknown"
+				}(), "outcome may be unknown:", safe(string(raw)))
+			}
 		}
 		if result.checkinPending && result.checkins != nil {
 			fmt.Fprintln(output, "Check-in settings outcome may be unknown; inspect lease", safe(result.checkins.lease.ID), "and its policy before another change. No retry was sent.")
@@ -213,6 +232,9 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.retirePeerRead()
 		m.peers = &peerDashboard{}
+		if m.session != msg.session {
+			m.retireNameEditor()
+		}
 		m.session = msg.session
 		if m.meshUI != nil {
 			m.meshUI.watching = false
@@ -321,6 +343,10 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session), peerRead)
 		}
 		return m, tea.Batch(clockTick(), peerRead)
+	case nameReadMsg:
+		return m, m.acceptNameRead(msg)
+	case nameResultMsg:
+		return m, m.acceptNameResult(msg)
 	case peerReadMsg:
 		return m, m.acceptPeerRead(msg)
 	case poolReadMsg:
@@ -378,6 +404,12 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	if k == "ctrl+c" {
 		m.stopPeerReads()
 		return tea.Quit
+	}
+	if m.nameUI != nil {
+		return m.nameKey(key)
+	}
+	if k == "ctrl+n" && m.inputMode == "" {
+		return m.openNameEditor()
 	}
 	if m.view == 6 && m.record == nil && m.meshUI != nil && m.meshUI.mode == "kubernetes" {
 		return m.meshKey(k)

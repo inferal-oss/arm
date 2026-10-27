@@ -18,6 +18,18 @@ const completionDeadline = 250 * time.Millisecond
 
 func (a *app) registerCompletion(cmd *cobra.Command, name string) {
 	kind := ""
+	if strings.HasPrefix(cmd.CommandPath(), "arm name ") && name == "kind" {
+		_ = cmd.RegisterFlagCompletionFunc(name, func(_ *cobra.Command, _ []string, prefix string) ([]string, cobra.ShellCompDirective) {
+			return nameKinds(prefix), cobra.ShellCompDirectiveNoFileComp
+		})
+		return
+	}
+	if cmd.CommandPath() == "arm name clear" && name == "host" {
+		_ = cmd.RegisterFlagCompletionFunc(name, func(c *cobra.Command, args []string, prefix string) ([]string, cobra.ShellCompDirective) {
+			return a.completeNameReservations(c, args, prefix, true), cobra.ShellCompDirectiveNoFileComp
+		})
+		return
+	}
 	switch name {
 	case "host":
 		kind = "host"
@@ -54,6 +66,18 @@ func (a *app) registerCompletion(cmd *cobra.Command, name string) {
 func (a *app) completeArguments(cmd *cobra.Command, args []string, prefix string) ([]string, cobra.ShellCompDirective) {
 	path := strings.TrimPrefix(cmd.CommandPath(), "arm ")
 	kind := ""
+	if path == "name set" || path == "name clear" {
+		if len(args) == 0 {
+			return nameKinds(prefix), cobra.ShellCompDirectiveNoFileComp
+		}
+		if path == "name clear" {
+			return a.completeNameReservations(cmd, args, prefix, false), cobra.ShellCompDirectiveNoFileComp
+		}
+		if len(args) == 1 && nameKind(args[0]) {
+			return a.completeObjects(cmd, args[0], prefix), cobra.ShellCompDirectiveNoFileComp
+		}
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
 	if len(args) == 0 {
 		switch path {
 		case "inspect", "release", "cancel", "reconcile", "renew", "usage", "storage cleanup", "storage handoff", "storage export", "storage retain", "reviews policy", "reviews configure":
@@ -75,12 +99,14 @@ func (a *app) completeArguments(cmd *cobra.Command, args []string, prefix string
 // Only public identifier tokens and fixed descriptions enter the shell
 // protocol. No reasons, paths, credentials, owner names or arbitrary labels are
 // interpolated into scripts. Unusual user names remain accessible by exact ID.
-func completionToken(s string) bool {
-	if len(s) == 0 || len(s) > 128 || strings.HasPrefix(s, "-") {
+func completionToken(s string) bool   { return completionTokenLimit(s, 128, false) }
+func completionIDToken(s string) bool { return completionTokenLimit(s, 256, true) }
+func completionTokenLimit(s string, limit int, resourceID bool) bool {
+	if len(s) == 0 || len(s) > limit || strings.HasPrefix(s, "-") {
 		return false
 	}
 	for _, c := range s {
-		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || strings.ContainsRune("._:-", c)) {
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || strings.ContainsRune("._:-", c) || resourceID && c == '/') {
 			return false
 		}
 	}
@@ -111,6 +137,19 @@ func (a *app) completeObjects(cmd *cobra.Command, kind, prefix string) []string 
 		for _, node := range registry.Nodes {
 			candidates = append(candidates, readablename.Candidate{ID: node.Host, Name: node.Name})
 		}
+		if selectorNeedsCustom(host, candidates) {
+			var active []readablename.Candidate
+			for _, node := range registry.Nodes {
+				if node.Local || node.Trust.State == "active" {
+					active = append(active, readablename.Candidate{ID: node.Host, Name: node.Name})
+				}
+			}
+			joined, problem := completionCustomCandidates(ctx, endpoint, "host", "", active, nil)
+			if problem != nil {
+				return nil
+			}
+			candidates = append(candidates, joined...)
+		}
 		resolved, err := readablename.Resolve(readablename.Host, host, candidates, true)
 		if err != nil {
 			return nil
@@ -139,13 +178,24 @@ func (a *app) completeObjects(cmd *cobra.Command, kind, prefix string) []string 
 		}
 		return client.CallEndpoint(ctx, endpoint, op, params, result)
 	}
+	var candidates []readablename.Candidate
+	bindings := map[string]string{}
+	authority := ""
+	eligibleIDs := map[string]bool{}
+	normalizedHealthy := true
 	ids, allIDs, names, allowedNames := map[string]bool{}, map[string]bool{}, map[string]map[string]bool{}, map[string]bool{}
 	add := func(id, name string, eligible bool) {
+		candidates = append(candidates, readablename.Candidate{ID: id, Name: name})
+		eligibleIDs[id] = eligibleIDs[id] || eligible
 		allIDs[id] = true
-		if eligible && completionToken(id) {
+		if eligible && completionIDToken(id) {
 			ids[id] = true
 		}
-		for _, alias := range []string{name, readablename.FromID(kind, id)} {
+		domain := kind
+		if kind == readablename.Resource && strings.HasPrefix(id, "pool_") && opaqueID(strings.TrimPrefix(id, "pool_")) {
+			domain = readablename.Pool
+		}
+		for _, alias := range []string{name, readablename.FromID(domain, id)} {
 			if completionToken(alias) && alias != id {
 				if names[alias] == nil {
 					names[alias] = map[string]bool{}
@@ -176,8 +226,21 @@ func (a *app) completeObjects(cmd *cobra.Command, kind, prefix string) []string 
 		allIDs["localhost"] = true
 	case "pool":
 		var result []model.PoolView
-		if call("pool_list", map[string]bool{"all": true}, &result) != nil {
-			return nil
+		if cmd.CommandPath() == "arm name set" && host != "localhost" {
+			var status model.Status
+			if call("status", nil, &status) != nil || status.Host != host {
+				return nil
+			}
+			authority = status.Host
+			for _, resource := range status.Resources {
+				if id, name, ok := namingPoolResource(resource); ok {
+					result = append(result, model.PoolView{Pool: model.Pool{ID: id, Name: name}})
+				}
+			}
+		} else {
+			if call("pool_list", map[string]bool{"all": true}, &result) != nil {
+				return nil
+			}
 		}
 		for _, view := range result {
 			if ctx.Err() != nil {
@@ -186,8 +249,12 @@ func (a *app) completeObjects(cmd *cobra.Command, kind, prefix string) []string 
 			add(view.Pool.ID, view.Pool.Name, true)
 		}
 	case "lease":
-		var result struct{ Leases []struct{ ID string } }
+		var result model.Status
 		if call("status", nil, &result) != nil {
+			return nil
+		}
+		authority = result.Host
+		if host != "localhost" && authority != host {
 			return nil
 		}
 		for _, lease := range result.Leases {
@@ -195,6 +262,53 @@ func (a *app) completeObjects(cmd *cobra.Command, kind, prefix string) []string 
 				return nil
 			}
 			add(lease.ID, "", true)
+		}
+	case "resource":
+		var result model.Status
+		if call("status", nil, &result) != nil {
+			return nil
+		}
+		authority = result.Host
+		if host != "localhost" && authority != host {
+			return nil
+		}
+		visibleBindings, eligibleBindings := resourceBindings(result.Resources)
+		for _, resource := range result.Resources {
+			if ctx.Err() != nil {
+				return nil
+			}
+			if _, _, ok := namingPoolResource(resource); ok {
+				// A pool-backed resource uses the pool naming namespace.
+				continue
+			}
+			binding, eligible := visibleBindings[resource.ID], eligibleBindings[resource.ID]
+			if eligible {
+				bindings[resource.ID] = binding
+			}
+			add(resource.ID, "", eligible)
+		}
+		var pools []readablename.Candidate
+		for _, resource := range result.Resources {
+			if id, name, ok := namingPoolResource(resource); ok {
+				pools = append(pools, readablename.Candidate{ID: id, Name: name})
+			}
+		}
+		joined := pools
+		if custom, err := completionCustomCandidates(ctx, endpoint, "pool", authority, pools, nil); err == nil {
+			joined = custom
+		} else {
+			normalizedHealthy = false
+		}
+		for _, pool := range joined {
+			add(pool.ID, pool.Name, true)
+			add(pool.ID, readablename.FromID(readablename.Pool, pool.ID), true)
+		}
+	}
+	customHealthy := false
+	if joined, err := completionCustomCandidates(ctx, endpoint, kind, authority, candidates, bindings); err == nil {
+		customHealthy = normalizedHealthy
+		for _, candidate := range joined {
+			add(candidate.ID, candidate.Name, eligibleIDs[candidate.ID])
 		}
 	}
 	var values []string
@@ -204,6 +318,9 @@ func (a *app) completeObjects(cmd *cobra.Command, kind, prefix string) []string 
 		}
 	}
 	for name, matches := range names {
+		if !customHealthy && selectorNeedsCustom(name, nil) {
+			continue
+		}
 		if len(matches) == 1 && allowedNames[name] && !allIDs[name] && completionToken(name) && strings.HasPrefix(name, prefix) {
 			values = append(values, name+"\t"+kind+" name")
 		}

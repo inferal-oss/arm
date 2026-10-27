@@ -9,8 +9,9 @@ import (
 // Mutation and lookup receipts never pass through this projection.
 type namedPoolView struct {
 	model.PoolView
-	Users  []namedResourceUse `json:"users"`
-	Queued []namedResourceUse `json:"queued"`
+	DisplayName string             `json:"display_name,omitempty"`
+	Users       []namedResourceUse `json:"users"`
+	Queued      []namedResourceUse `json:"queued"`
 }
 
 type namedPoolConsumer struct {

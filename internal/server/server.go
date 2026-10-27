@@ -706,6 +706,25 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 					}
 				} else {
 					resp.Result = s.namedView(req.Operation, result)
+					if source, ok := result.(sourceNamedRead); ok {
+						resp.Result, resp.NamingDiagnostic = source.raw, source.diagnostic
+					} else if !remoteNodeContext(ctx) {
+						resp.Result, resp.NamingDiagnostic = s.customNamedView(ctx, req.Operation, resp.Result)
+						if poolProjectedRead(req.Operation) {
+							bounded, boundErr := boundedPoolRead(resp.Result, nil)
+							if boundErr != nil {
+								var api *model.Error
+								if errors.As(boundErr, &api) {
+									resp.Error = api
+								} else {
+									resp.Error = &model.Error{Code: "internal_error", Message: "pool view could not be encoded"}
+								}
+								resp.Result = nil
+							} else {
+								resp.Result = bounded
+							}
+						}
+					}
 				}
 				send(resp)
 			}(req)
@@ -774,6 +793,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "name_list", "name_mutate":
+		return s.nameOperation(ctx, r.Operation, r.Params)
 	case "kube_contexts", "kube_nodes":
 		return s.kubernetesInventory(ctx, r.Operation, r.Params)
 	case "peers_status":

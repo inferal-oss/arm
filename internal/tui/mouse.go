@@ -27,6 +27,29 @@ type dashboardMouseMsg struct {
 }
 
 func (m *dashboardModel) controls() []mouseControl {
+	if m.nameUI != nil {
+		if m.nameUI.busy {
+			return nil
+		}
+		if m.nameUI.loading {
+			return []mouseControl{{"esc", "Close"}}
+		}
+		if m.nameUI.snapshot == nil {
+			return []mouseControl{{"ctrl+r", "Read"}, {"esc", "Close"}}
+		}
+		label := "Exact ref"
+		if m.nameUI.manual {
+			label = "Loaded ref"
+		}
+		return []mouseControl{{"ctrl+t", label}, {"ctrl+s", "Set name"}, {"ctrl+d", "Clear"}, {"ctrl+r", "Read"}, {"esc", "Close"}}
+	}
+	controls := m.baseControls()
+	if m.nodeUI == nil && m.recovery == nil && m.connected && !m.modal() && m.record == nil {
+		controls = append([]mouseControl{{"ctrl+n", "Name"}}, controls...)
+	}
+	return controls
+}
+func (m *dashboardModel) baseControls() []mouseControl {
 	switch {
 	case m.nodeUI != nil && m.record == nil:
 		return []mouseControl{{"7", "LOCAL Mesh"}, {"r", "Read node"}, {"i", "Record"}, {"pgdown", "↓"}}
@@ -107,17 +130,20 @@ func (m *dashboardModel) controlBar() (string, []mouseRegion) {
 // Bind an input to the exact rendered state: resize, dialog replacement, pending
 // transitions, selection or content changes invalidate delayed mouse commands.
 func (m *dashboardModel) mouseFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%d/%d/%d/%t/%t/%p/%p/%p/%d/%s/%s/%p/%x", m.width, m.height, m.view, m.selected, m.viewport.YOffset(), m.feedOffset, m.detailGeneration, m.pending, m.feedFocus, m.review, m.composer, m.record, m.messageOperation, m.messageBusy, m.inputMode, m.ioPicker, sha256.Sum256([]byte(m.displayContent()+fmt.Sprint(m.feedItems())+m.poolMouseFrame())))
+	return fmt.Sprintf("%dx%d/%d/%d/%d/%d/%d/%t/%t/%p/%p/%p/%d/%s/%s/%p/%x", m.width, m.height, m.view, m.selected, m.viewport.YOffset(), m.feedOffset, m.detailGeneration, m.pending, m.feedFocus, m.review, m.composer, m.record, m.messageOperation, m.messageBusy, m.inputMode, m.ioPicker, sha256.Sum256([]byte(m.displayContent()+fmt.Sprint(m.feedItems())+m.poolMouseFrame()))) + fmt.Sprintf("/names:%p", m.nameUI)
 }
 
 // Read-only wheel deltas can be queued from one rendered frame. Scrolling or
 // telemetry refresh must not discard the next delta; navigation/modal/geometry
 // changes still prevent an old gesture from scrolling a different surface.
 func (m *dashboardModel) mouseScrollFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI)
+	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI) + fmt.Sprintf("/names:%p", m.nameUI)
 }
 
 func mouseKey(key string) tea.KeyPressMsg {
+	if strings.HasPrefix(key, "ctrl+") && len([]rune(strings.TrimPrefix(key, "ctrl+"))) == 1 {
+		return tea.KeyPressMsg{Code: []rune(strings.TrimPrefix(key, "ctrl+"))[0], Mod: tea.ModCtrl}
+	}
 	code := rune(0)
 	switch key {
 	case "down":

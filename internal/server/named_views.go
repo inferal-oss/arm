@@ -28,9 +28,10 @@ type namedResource struct {
 }
 type namedStatus struct {
 	model.Status
-	DisplayName string          `json:"display_name"`
-	Leases      []namedLease    `json:"leases"`
-	Resources   []namedResource `json:"resources"`
+	DisplayName      string          `json:"display_name"`
+	Leases           []namedLease    `json:"leases"`
+	Resources        []namedResource `json:"resources"`
+	NamingDiagnostic *model.Error    `json:"naming_diagnostic,omitempty"`
 }
 
 func leaseView(l model.Lease) namedLease {

@@ -43,6 +43,12 @@ func aliasBackend(t *testing.T, results map[string]any) (*app, func() []string) 
 		mu.Lock()
 		ops = append(ops, q.Operation)
 		result, ok := results[q.Operation]
+		// This custom composition includes a healthy optional map by default;
+		// inventory/metadata denial tests supply their own explicit response.
+		if !ok && q.Operation == "name_list" {
+			result = nameSnapshot{Document: nameDocument()}
+			ok = true
+		}
 		mu.Unlock()
 		response := model.WireResponse{Version: 1, ID: q.ID, Result: result}
 		if !ok {
@@ -180,7 +186,7 @@ func TestAliasHostNamesKeepOfflineRecoveryAndCanonicalIDs(t *testing.T) {
 		{"chosen-source", sourceID}, {readablename.FromID(readablename.Host, sourceID), sourceID},
 		{"chosen-peer", peerID}, {readablename.FromID(readablename.Host, peerID), peerID},
 	} {
-		got, err := a.resolveHost(tt.target)
+		got, err := a.resolveHostRecovery(tt.target)
 		if err != nil || got != tt.want {
 			t.Fatal(tt.target, got, err)
 		}
@@ -211,7 +217,7 @@ func TestAliasHostNamesKeepOfflineRecoveryAndCanonicalIDs(t *testing.T) {
 	// A generic exact-host field must keep the original ID, not "localhost".
 	f := flag.NewFlagSet("agent endpoints", flag.ContinueOnError)
 	host := f.String("host", "", "")
-	_ = f.Parse([]string{"--host", "chosen-source"})
+	_ = f.Parse([]string{"--host", readablename.FromID(readablename.Host, sourceID)})
 	if err := a.resolveValidatedAliases(f); err != nil || *host != sourceID {
 		t.Fatal(*host, err)
 	}
@@ -375,7 +381,7 @@ func TestAliasHostErrorsPreservePeerAndSSHCodes(t *testing.T) {
 		}
 	}
 	for _, op := range ops() {
-		if op != "node_list" {
+		if op != "node_list" && op != "name_list" {
 			t.Fatal("failed host resolution performed another operation", ops())
 		}
 	}

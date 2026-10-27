@@ -1,9 +1,11 @@
+import {namedLabel} from '../resource-names.mjs';
 import {bytes,quantity} from '../core.mjs';
 import {grantDescription} from '../mesh-model.mjs';
 import {leaseStateLabel} from '../lease-state.mjs';
 import {budgetForView,cpuBudgetKnown,remoteCPUBudget,cpuCores,memoryBudgetKnown,diskBudgetKnown} from '../metric-help.mjs';
 
 export function remoteResourceLabel(resource) {
+  if(typeof resource.display_name==='string'&&resource.display_name.trim())return resource.display_name;
   if(resource.kind==='port') {
     const match=String(resource.id??'').match(/\/(tcp[46]|udp[46])\/([^/]+)$/);
     return match?`${match[1].toUpperCase()} port · ${match[2]}`:'Port reservation';
@@ -67,7 +69,7 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
     const sameMetadata=currentView==='host'&&lastView==='host'&&lastMetadata===metadata;
     lastView=currentView;lastMetadata=metadata;
     ui.batch(()=>{
-      banner.replace(ui.badge('Remote node'),ui.heading(metadata?.hostname||context.host,2),ui.text(`Node ${context.host.slice(0,8)}…`),
+      banner.replace(ui.badge('Remote node'),ui.heading(namedLabel(snapshot,metadata?.hostname||context.host),2),ui.text(`Host ID: ${context.host}`),
         ui.text(`${metadata?.platform?.os??'Unknown OS'} / ${metadata?.platform?.process_architecture??'unknown architecture'}`),
         ui.text(`Destination permissions: ${scope?grantDescription(scope.grant):'Not yet read'}. Screen Sharing opens separately and requires macOS sign-in.`));
       if(sameMetadata)return;
@@ -82,7 +84,7 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
         const entries=(snapshot?.leases??[]).slice(0,200).map(lease=>{
           const button=ui.button(lease.request?.reason||'Lease',()=>inspect(lease,button),{disabled:!mayInspect(lease)});
           leaseRows.push({lease,button});
-          return ui.card(lease.id,[ui.badge(leaseStateLabel(lease)),button,ui.text(new Date(lease.expires_at).toLocaleString()),
+          return ui.card(namedLabel(lease,lease.id),[ui.text('ID: '+lease.id),ui.badge(leaseStateLabel(lease)),button,ui.text(new Date(lease.expires_at).toLocaleString()),
             ...(!full&&lease.request?.origin_peer!==context.source_host?[ui.text('Detail is unavailable under this source’s own-lease grant.')]:[])]);
         });
         content.replace(ui.text(full?'Lease inventory includes the destination’s currently authorized full view. Detail reads follow that observation grant.':'Only leases attributed to this source node are visible when observe-own is granted; detail reads require the same source ownership.'),...entries,
@@ -117,7 +119,7 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
       if(result?.id!==lease.id)throw Error('Destination lease differs from the selected exact lease.');
       if(!scope?.grant?.permissions?.includes('observe-all')&&result.request?.origin_peer!==context.source_host)
         throw Error('Destination lease differs from this source’s own-lease scope.');
-      ui.batch(()=>{const report=ui.json(result,'Destination lease');report.open=true;body.replace(ui.text('Remote lease mutations are not implemented in this window. Use an explicitly keyed CLI request if the destination grants it.'),report);});
+      ui.batch(()=>{const report=ui.json(result,'Destination lease');report.open=true;body.replace(ui.heading(namedLabel(result,result.id),3),ui.text('ID: '+result.id),ui.text('Remote lease mutations are not implemented in this window. Use an explicitly keyed CLI request if the destination grants it.'),report);});
     }catch(error){if(!disposed&&generation===requestGeneration&&detail===record&&dialog.open)body.replace(ui.text(error.message,{role:'alert'}));}
   }
   async function refresh() {

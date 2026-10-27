@@ -56,7 +56,7 @@ func (m *dashboardModel) poolDetailRender() textRows {
 	p := view.Pool
 	rows := make(map[int]int)
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nScope: %s\nHost: %s\nHost ID: %s\nAuthority: %s\nOwner: %s\nUnit: %s\n\nTotal capacity: %d\nDirectly leased: %d\nUncarved available: %d\nDeficit: %d\n\n%s\n", poolDisplayName(p), safe(p.ID), safe(p.State), p.Revision, safe(p.Scope), m.hostDisplayName(p.Host), safe(p.Host), safe(p.Authority), m.owner(p.Owner, p.OwnerUsername, p.Authority), safe(p.Unit), p.Capacity, view.Reserved, view.Available, view.Deficit, safe(p.Description))
+	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nScope: %s\nHost: %s\nHost ID: %s\nAuthority: %s\nOwner: %s\nUnit: %s\n\nTotal capacity: %d\nDirectly leased: %d\nUncarved available: %d\nDeficit: %d\n\n%s\n", m.poolDisplayName(p), safe(p.ID), safe(p.State), p.Revision, safe(p.Scope), m.hostDisplayName(p.Host), safe(p.Host), safe(p.Authority), m.owner(p.Owner, p.OwnerUsername, p.Authority), safe(p.Unit), p.Capacity, view.Reserved, view.Available, view.Deficit, safe(p.Description))
 	if view.Review != nil && view.Review.Unavailable != "" {
 		out.WriteString("\nREAD ONLY: Complete tree exceeds dashboard review limits. Browsing and current obligations remain available; no truncated change is allowed.\n")
 	}
@@ -111,7 +111,7 @@ func (m *dashboardModel) poolListText() string {
 		if depth > 0 {
 			prefix += "↳ "
 		}
-		row := []string{selectedPrefix(ui.selected, i) + short(prefix+poolDisplayName(p), widths[0]-4) + "\n" + safe(p.Scope), fmt.Sprint(p.Capacity)}
+		row := []string{selectedPrefix(ui.selected, i) + short(prefix+m.poolDisplayName(p), widths[0]-4) + "\n" + safe(p.Scope), fmt.Sprint(p.Capacity)}
 		if len(headers) == 5 {
 			available := fmt.Sprint(view.Available)
 			if view.Deficit > 0 {

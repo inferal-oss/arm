@@ -1,3 +1,4 @@
+import {namedLabel} from '../resource-names.mjs';
 import { stringifyJSON, count, ownerDisplay } from '../core.mjs';
 import { preparePoolMutation, poolRequestCopy, poolTreeRows } from '../pool-model.mjs';
 import { createPoolOperations } from '../pool-operations.mjs';
@@ -90,6 +91,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     }
     });
   }
+  function poolName(id){const view=pools.find(v=>v.pool.id===id);return view?namedLabel(view,view.pool.name):id;}
   function renderRows() {
     return ui.batch(()=>{
     let hierarchy;
@@ -97,8 +99,8 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     const search=filter.value.toLowerCase();
     const cards=hierarchy.filter(({view})=>stringifyJSON(view).toLowerCase().includes(search)).map(({view,depth})=>{
       const p=view.pool,parent=p.parent?pools.find(v=>v.pool.id===p.parent)?.pool:null;
-      const pick=ui.button(`${depth?'↳ '.repeat(depth):''}${p.name}`,()=>select(p.id),{pressed:selected===p.id});
-      return ui.card(p.name,[pick,ui.text(`${p.scope==='global'?'Global · one ledger':p.scope+' · '+p.host} · ${owner(p.owner,p.owner_username,p.authority)}${parent?' · Within '+parent.name:' · Root'}`),
+      const pick=ui.button(`${depth?'↳ '.repeat(depth):''}${namedLabel(view,p.name)}`,()=>select(p.id),{pressed:selected===p.id});
+      return ui.card(namedLabel(view,p.name),[pick,ui.text('ID: '+p.id),ui.text(`${p.scope==='global'?'Global · one ledger':p.scope+' · '+p.host} · ${owner(p.owner,p.owner_username,p.authority)}${parent?' · Within '+poolName(parent.id):' · Root'}`),
         ui.badge(stateLabel(p.state)),ui.text(`Total ${count(p.capacity)} ${p.unit} · Committed ${count(view.partition?.committed??view.reserved)} · ${view.deficit>0?'Deficit '+count(view.deficit):'Available '+count(view.available)}`)]);
     });
     const emptyMessage='No custom pools yet. Create one to coordinate counted permits.';
@@ -120,9 +122,9 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
       detail.replace(...(selected?[ui.button('All pools',()=>select('')),title,ui.text(`No available pool snapshot for ${selected}. Refresh to check again; the selected address has been kept.`)]:[]));
       return;
     }
-    const p=view.pool,title=ui.heading(p.name,3);focusAfterEdit=title;detailFocusTargets.set('title',title);
-    const content=[ui.button('All pools',()=>select('')),title,ui.text(`${p.scope==='global'?'Global pool · one authority':'Pool on this host'} · ${stateLabel(p.state)} · ${owner(p.owner,p.owner_username,p.authority)}`),
-      ui.stack((view.ancestors||[p.id]).map(id=>ui.button(pools.find(v=>v.pool.id===id)?.pool.name||id,()=>select(id))),{row:true})];
+    const p=view.pool,title=ui.heading(namedLabel(view,p.name),3);focusAfterEdit=title;detailFocusTargets.set('title',title);
+    const content=[ui.button('All pools',()=>select('')),title,ui.text('ID: '+p.id),ui.text(`${p.scope==='global'?'Global pool · one authority':'Pool on this host'} · ${stateLabel(p.state)} · ${owner(p.owner,p.owner_username,p.authority)}`),
+      ui.stack((view.ancestors||[p.id]).map(id=>ui.button(poolName(id),()=>select(id))),{row:true})];
     if(p.description)content.push(ui.text(p.description));
     if(view.review?.unavailable)content.push(ui.text('Read only: this complete tree exceeds dashboard review limits. Browsing and existing obligations remain available; no change can use a truncated review.',{tone:'warning'}));
     content.push(ui.table(['Budget','Exact count'],[
@@ -145,12 +147,12 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
       content.push(ui.stack(controls,{row:true}));
     }
     if(view.children?.length)content.push(ui.card('Child partitions',view.children.flatMap(id=>{
-      const child=pools.find(v=>v.pool.id===id);return child?[ui.button(`${child.pool.name} · ${count(child.partition?.held_backing??child.pool.capacity)} ${p.unit} held`,()=>select(id))]:[];
+      const child=pools.find(v=>v.pool.id===id);return child?[ui.button(`${namedLabel(child,child.pool.name)} · ${count(child.partition?.held_backing??child.pool.capacity)} ${p.unit} held`,()=>select(id))]:[];
     })));
     for(const [label,users]of [['Direct active leases',view.users],['Direct queued claims',view.queued]]) {
       const list=(users||[]).map(user=>{
-        const button=ui.button(user.lease,()=>onLease(user.lease));leaseControls.set(user.lease,{button});detailFocusTargets.set('lease:'+user.lease,button);
-        return ui.stack([button,ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${count(user.quantity)} ${p.unit} · ${user.state}`)]);
+        const button=ui.button(user.lease_display_name||user.lease,()=>onLease(user.lease));leaseControls.set(user.lease,{button});detailFocusTargets.set('lease:'+user.lease,button);
+        return ui.stack([button,ui.text('ID: '+user.lease),ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${count(user.quantity)} ${p.unit} · ${user.state}`)]);
       });
       const handle=ui.disclosure(`${label} · ${users?.length||0}`,list,{open:opened.has(label)});
       for(const user of users||[])leaseControls.get(user.lease).disclosure=handle;
@@ -159,9 +161,9 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     const subtree=[ui.text('Each lease appears once. Its direct claims identify which child holds the units; tree totals are not summed.')];
     if(consumerPage?.pool===selected) {
       for(const entry of consumerPage.entries||[]) {
-        const user=entry.use,button=ui.button(user.lease,()=>onLease(user.lease));leaseControls.set(user.lease,{button});detailFocusTargets.set('lease:'+user.lease,button);
-        subtree.push(ui.stack([button,ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${user.state}`),
-          ...(entry.direct_claims||[]).map(claim=>ui.text(`${pools.find(v=>v.pool.id===claim.pool)?.pool.name||claim.pool} · ${count(claim.quantity)} ${p.unit}`))]));
+        const user=entry.use,button=ui.button(user.lease_display_name||user.lease,()=>onLease(user.lease));leaseControls.set(user.lease,{button});detailFocusTargets.set('lease:'+user.lease,button);
+        subtree.push(ui.stack([button,ui.text('ID: '+user.lease),ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${user.state}`),
+          ...(entry.direct_claims||[]).map(claim=>ui.text(`${poolName(claim.pool)} · ${count(claim.quantity)} ${p.unit}`))]));
       }
       if(!consumerPage.entries?.length)subtree.push(ui.text('No queued or consuming claims in this subtree.'));
       subtree.push(ui.stack([

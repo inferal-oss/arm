@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -132,17 +134,18 @@ func ReadStats(ctx context.Context, s *Source) (Stats, error) {
 }
 
 type Check struct {
-	Scope        string    `json:"scope"`
-	Mode         string    `json:"mode"`
-	Findings     []string  `json:"findings"`
-	Limit        int       `json:"finding_limit"`
-	LimitReached bool      `json:"limit_reached"`
-	Complete     bool      `json:"complete"`
-	OK           bool      `json:"ok"`
-	ForeignKeys  string    `json:"foreign_keys"`
-	Started      time.Time `json:"started_at"`
-	Finished     time.Time `json:"finished_at"`
-	Detail       string    `json:"detail"`
+	CustomNames  *CustomNamesInspection `json:"custom_names,omitempty"`
+	Scope        string                 `json:"scope"`
+	Mode         string                 `json:"mode"`
+	Findings     []string               `json:"findings"`
+	Limit        int                    `json:"finding_limit"`
+	LimitReached bool                   `json:"limit_reached"`
+	Complete     bool                   `json:"complete"`
+	OK           bool                   `json:"ok"`
+	ForeignKeys  string                 `json:"foreign_keys"`
+	Started      time.Time              `json:"started_at"`
+	Finished     time.Time              `json:"finished_at"`
+	Detail       string                 `json:"detail"`
 }
 
 func CheckDatabase(ctx context.Context, s *Source, full bool) (result Check, err error) {
@@ -259,6 +262,15 @@ func CheckDatabase(ctx context.Context, s *Source, full bool) (result Check, err
 			}
 		}
 	}
+	var namesHost string
+	if err = tx.QueryRowContext(ctx, "SELECT substr(value,1,33) FROM metadata WHERE key='host'").Scan(&namesHost); err != nil {
+		return result, err
+	}
+	names, namesErr := InspectCustomNames(ctx, tx, strconv.Itoa(os.Geteuid()), namesHost)
+	if namesErr != nil {
+		return result, namesErr
+	}
+	result.CustomNames = &names
 	if err = tx.Commit(); err != nil {
 		return result, err
 	}

@@ -21,12 +21,14 @@ type transport interface {
 }
 
 type snapshot struct {
-	status      model.Status
-	names       renderLabels
-	messages    []manager.Message
-	contacts    []agents.Contact
-	reviews     model.LeaseReviewPage
-	reviewError string
+	namingDiagnostic *model.Error
+	namingSequence   uint64
+	status           model.Status
+	names            renderLabels
+	messages         []manager.Message
+	contacts         []agents.Contact
+	reviews          model.LeaseReviewPage
+	reviewError      string
 }
 type connectedMsg struct {
 	session transport
@@ -53,10 +55,16 @@ type reconnectMsg struct{}
 func readSnapshot(ctx context.Context, session transport) (snapshot, error) {
 	var data snapshot
 	var view statusRenderView
-	if err := session.Call(ctx, "status", nil, &view); err != nil {
+	diagnostic, err, sequence := callWithNamingObservation(ctx, session, "status", nil, &view)
+	if err != nil {
 		return data, err
 	}
 	data.status, data.names = view.values()
+	data.namingDiagnostic = diagnostic
+	data.namingSequence = sequence
+	if data.namingDiagnostic == nil {
+		data.namingDiagnostic = view.NamingDiagnostic
+	}
 	if err := session.Call(ctx, "messages", nil, &data.messages); err != nil {
 		return data, err
 	}

@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"flag"
+	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -38,21 +40,27 @@ func hostAliasError(err error) error {
 	return aliasError(err)
 }
 
+// hostAliasInventory is an independent legacy/generated recovery inventory.
+// It never reads optional names and never establishes custom alias authority.
 func (a *app) hostAliasInventory() ([]readablename.Candidate, string, error) {
-	// Existing reviewed mesh names remain usable by offline source-receipt and
-	// recovery commands. ReadRegistry validates the complete private registry;
-	// it does not initialize state, read private keys or contact any host.
+	objects, localHost, found, err := a.offlineHostAliases()
+	if err != nil || found {
+		return objects, localHost, err
+	}
+	return a.onlineHostAliases()
+}
+func (a *app) offlineHostAliases() ([]readablename.Candidate, string, bool, error) {
 	config, found, err := mesh.ReadRegistry(a.home)
-	if err != nil {
-		return nil, "", err
+	if err != nil || !found {
+		return nil, "", found, err
 	}
-	if found {
-		objects := []readablename.Candidate{{ID: config.Identity.Host, Name: config.Identity.Name}}
-		for _, peer := range config.Peers {
-			objects = append(objects, readablename.Candidate{ID: peer.Identity.Host, Name: peer.Identity.Name})
-		}
-		return objects, config.Identity.Host, nil
+	objects := []readablename.Candidate{{ID: config.Identity.Host, Name: config.Identity.Name}}
+	for _, peer := range config.Peers {
+		objects = append(objects, readablename.Candidate{ID: peer.Identity.Host, Name: peer.Identity.Name})
 	}
+	return objects, config.Identity.Host, true, nil
+}
+func (a *app) onlineHostAliases() ([]readablename.Candidate, string, error) {
 	ctx, cancel := context.WithTimeout(a.ctx, 3*time.Second)
 	defer cancel()
 	var registry model.NodeRegistry
@@ -78,50 +86,94 @@ func (a *app) hostAliasInventory() ([]readablename.Candidate, string, error) {
 	}
 	return objects, localHost, nil
 }
-
 func (a *app) resolveHost(target string) (string, error) {
 	if target == "" || target == "localhost" || opaqueID(target) {
 		return target, nil
 	}
-	objects, _, err := a.hostAliasInventory()
-	if err != nil {
-		return "", err
+	var objects []readablename.Candidate
+	var err error
+	if !selectorNeedsCustom(target, nil) {
+		objects, _, err = a.hostAliasInventory()
+		if err != nil {
+			return "", err
+		}
 	}
-	id, err := readablename.Resolve(readablename.Host, target, objects, true)
+	id, err := a.resolveWithCustom(readablename.Host, target, "", objects, nil)
 	if err != nil {
-		return "", hostAliasError(err)
+		return "", hostAliasErrorPreserving(err)
 	}
 	return id, nil
 }
 
-// executionHost retains existing ID/localhost argument behavior. A newly named
-// selector can use ordinary local execution defaults only after the running
-// authority confirms that exact immutable ID is its own host.
+// Only explicit offline receipt/recovery commands may use legacy registry
+// spellings without a healthy online custom-name map. Authentication, metadata
+// and incomplete-protocol failures never authorize that fallback.
+func (a *app) resolveHostRecovery(target string) (string, error) {
+	id, err := a.resolveHost(target)
+	if err == nil || !offlineNamingBackend(err) || a.ctx.Err() != nil {
+		return id, err
+	}
+	objects, _, found, readErr := a.offlineHostAliases()
+	if readErr != nil {
+		return "", readErr
+	}
+	if !found {
+		return "", err
+	}
+	id, readErr = readablename.Resolve(readablename.Host, target, objects, true)
+	if readErr != nil {
+		return "", hostAliasError(readErr)
+	}
+	return id, nil
+}
+func offlineNamingBackend(err error) bool {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return false
+	}
+	var detail *model.Error
+	if errors.As(err, &detail) {
+		return false
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return true
+	}
+	var network *net.OpError
+	return errors.As(err, &network) && network.Op == "dial"
+}
+
+// Classification validates local argv versus explicit remote CWD before
+// action reads. Its canonical ID is rechecked jointly using the original
+// selector before any request is built or dispatched.
 func (a *app) executionHost(target string) (string, error) {
+	classification, _, err := a.executionHostIdentity(target)
+	return classification, err
+}
+func (a *app) executionHostIdentity(target string) (string, string, error) {
 	if target == "" || target == "localhost" || opaqueID(target) {
-		return target, nil
+		return target, target, nil
 	}
 	objects, localHost, err := a.hostAliasInventory()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	id, err := readablename.Resolve(readablename.Host, target, objects, true)
-	if err != nil {
-		return "", hostAliasError(err)
+	if errors.Is(err, readablename.ErrNotFound) {
+		id, err = a.resolveHost(target)
 	}
-	// A reviewed direct peer is positively remote within this complete
-	// registry. Preserve remote CWD argument errors without backend contact.
+	if err != nil {
+		return "", "", hostAliasErrorPreserving(err)
+	}
 	if id != localHost {
-		return id, nil
+		return id, id, nil
 	}
 	var status model.Status
 	if err = a.call("status", nil, &status); err != nil {
-		return "", err
+		return "", "", err
 	}
 	if status.Host == id {
-		return "localhost", nil
+		return "localhost", id, nil
 	}
-	return id, nil
+	return id, id, nil
 }
 
 // resolveValidatedAliases is called by owning handlers after their argument
@@ -149,6 +201,7 @@ func (a *app) resolveValidatedAliases(f *flag.FlagSet) error {
 	}
 	var leases []readablename.Candidate
 	var pools []readablename.Candidate
+	authority := ""
 	leaseRead, poolRead := false, false
 	resolve := func(domain, target string) (string, error) {
 		if target == "" || (domain == readablename.Lease && opaqueID(target)) || (domain == readablename.Pool && strings.HasPrefix(target, "pool_") && opaqueID(strings.TrimPrefix(target, "pool_"))) {
@@ -159,6 +212,7 @@ func (a *app) resolveValidatedAliases(f *flag.FlagSet) error {
 			if err := a.hostCall(host, "status", nil, &status); err != nil {
 				return "", err
 			}
+			authority = status.Host
 			for _, l := range status.Leases {
 				leases = append(leases, readablename.Candidate{ID: l.ID})
 			}
@@ -189,9 +243,21 @@ func (a *app) resolveValidatedAliases(f *flag.FlagSet) error {
 		if domain == readablename.Pool {
 			objects = pools
 		}
-		id, err := readablename.Resolve(domain, target, objects, true)
+		var err error
+		if selectorNeedsCustom(target, objects) {
+			if authority != "" && host != "" && host != "localhost" && authority != host {
+				return "", aliasError(readablename.ErrIncomplete)
+			}
+			if authority == "" {
+				authority, err = a.nameAuthority(host)
+				if err != nil {
+					return "", err
+				}
+			}
+		}
+		id, err := a.resolveWithCustom(domain, target, authority, objects, nil)
 		if err != nil {
-			return "", aliasError(err)
+			return "", aliasErrorPreserving(err)
 		}
 		return id, nil
 	}
@@ -242,7 +308,11 @@ func (a *app) resolveValidatedAliases(f *flag.FlagSet) error {
 	}
 	switch f.Name() {
 	case "ssh", "ssh lookup", "ssh seal", "mesh revoke", "mesh call", "mesh contacts", "mesh send", "mesh message-lookup", "mesh stop", "mesh uninstall", "mesh disconnect", "mesh reconnect":
-		id, err := a.resolveHost(args[0])
+		resolveHost := a.resolveHost
+		if f.Name() == "ssh lookup" || f.Name() == "ssh seal" || f.Name() == "mesh reconnect" {
+			resolveHost = a.resolveHostRecovery
+		}
+		id, err := resolveHost(args[0])
 		if err != nil {
 			var detail *model.Error
 			if strings.HasPrefix(f.Name(), "ssh") && errors.As(err, &detail) && detail.Code == "host_unavailable" {
@@ -279,4 +349,11 @@ func (a *app) resolveValidatedAliases(f *flag.FlagSet) error {
 		}
 	}
 	return nil
+}
+
+func hostAliasErrorPreserving(err error) error {
+	if errors.Is(err, readablename.ErrNotFound) || errors.Is(err, readablename.ErrAmbiguous) || errors.Is(err, readablename.ErrIncomplete) {
+		return hostAliasError(err)
+	}
+	return err
 }

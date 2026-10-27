@@ -48,3 +48,12 @@ optional Rust engine binary is not shipped. The optional store loader source is 
 `build_overlays` records this owned packaging decision and hashes, while
 `review_overlays` pins the subsequent native option selection correction. Retained
 Oxigraph npm notice texts do not establish Rust transitive binary attribution.
+
+Custom-name response contract: a successful native `name_mutate` returns the
+validated name document directly. The naming projection operation allowlist
+excludes `name_mutate`, so success carries no `naming_diagnostic`. Ordinary
+lifecycle operations may return their successful result with a naming warning;
+the warning does not invalidate that lifecycle result. Browser and terminal
+clients treat a contradictory successful mutation with a naming warning as an
+unknown outcome, retain the exact request, and require an explicit fresh naming
+read before another attempt.

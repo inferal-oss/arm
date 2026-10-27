@@ -14,7 +14,7 @@ func (m *dashboardModel) modal() bool {
 	if m.recovery != nil {
 		return false
 	}
-	return m.meshModal() || m.poolModal() || m.ioPicker != nil || m.checkins != nil || m.review != nil || m.composer != nil || m.inputMode != ""
+	return m.nameUI != nil || m.meshModal() || m.poolModal() || m.ioPicker != nil || m.checkins != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
 	return m.nodeUI == nil && m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
@@ -74,6 +74,9 @@ func (m *dashboardModel) editorDisplay() string {
 }
 
 func (m *dashboardModel) windowTitle() (string, string) {
+	if m.nameUI != nil {
+		return "RESOURCE NAME · LOCAL PRESENTATION", "accent"
+	}
 	if m.checkins != nil && m.record == nil {
 		return "AGENT CHECK-INS · CONVERSATIONS", "accent"
 	}
@@ -339,6 +342,9 @@ func (m *dashboardModel) View() tea.View {
 		main = lipgloss.JoinHorizontal(lipgloss.Top, main, "  ", m.renderFeed())
 	}
 	notice := m.notice
+	if m.nameDiagnostic != nil && m.nodeUI == nil {
+		notice = namingWarning(m.nameDiagnostic)
+	}
 	if m.nodeUI != nil {
 		notice = "Read-only destination context · [7/Esc] returns to LOCAL Mesh · no automatic retry or localhost fallback"
 	}
@@ -349,7 +355,7 @@ func (m *dashboardModel) View() tea.View {
 		}
 	}
 	noticeStyle := muted
-	if !m.connected || m.unknownLease != "" || m.composer != nil && m.composer.unknown {
+	if !m.connected || m.nameDiagnostic != nil || m.unknownLease != "" || m.composer != nil && m.composer.unknown {
 		noticeStyle = strong.Foreground(colorWarning)
 	}
 	content := fitBlock(header, m.width, 1) + "\n" + fitBlock(strings.Join(nav, " "), m.width, 1) + "\n" + fitBlock(align(strong.Render(" "+section), muted.Render(m.freshness()+" "), m.width), m.width, 1) + "\n" + fitBlock(muted.Foreground(colorLine).Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + main + "\n" + fitBlock(noticeStyle.Render(" "+short(notice, m.width-2)), m.width, 1) + "\n" + fitBlock(func() string { bar, _ := m.controlBar(); return bar }(), m.width, 1) + "\n" + fitBlock(muted.Foreground(colorLine).Render(strings.Repeat("─", m.width)), m.width, 1) + "\n" + m.exitFooter()

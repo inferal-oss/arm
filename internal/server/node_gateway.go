@@ -75,7 +75,7 @@ func (s *Server) nodeSessionOperation(ctx context.Context, bound nodeSession, r 
 			return nil, model.Err("wrong_host", "peer response differs from bound destination")
 		}
 	}
-	return result, nil
+	return s.sourceNamedView(ctx, bound.Host, r.Operation, result)
 }
 
 // Every scoped request carries its immutable destination admission condition.

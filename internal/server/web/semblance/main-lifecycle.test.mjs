@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
+import {namedLabel} from '../resource-names.mjs';
 
 // Execute the production lifecycle functions with IO/component boundaries
 // doubled. These tests cover connection/route ownership, not RDF rendering.
@@ -21,7 +22,7 @@ const id='a'.repeat(32),tick=()=>new Promise(resolve=>setImmediate(resolve));
 function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus=false}={}){
   const log=[],calls=[],instances=[],actions=[],reviews=[];
   const oldPanel={disposed:false,dispose(){this.disposed=true;}},oldReviews={disposed:false,dispose(){this.disposed=true;}};
-  const lease={id,state:'active',owner:'operator',request:{reason:'Build'},expires_at:new Date(Date.now()+60000).toISOString()};
+  const lease=Object.freeze({id,display_name:'Build cache',host:'c'.repeat(32),revision:9007199254740993n,state:'active',owner:'operator',request:{reason:'Build'},expires_at:new Date(Date.now()+60000).toISOString()});
   let api;
   const scope={
     ARM:'https://arm.local/ui#',C:'https://semblance.dev/ns/component#',REVIEW_CAPABILITY:'reviews',
@@ -38,9 +39,10 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     nodeContextClosed:()=>false,addEvent(){},acceptMonitor(){},updateFreshness(){},updateMessages(){},scheduleRefresh(){},refreshPalette(){},
     renderCurrent(){log.push('render:view');},owner:()=> 'operator',when:value=>value,leaseStateLabel:value=>value.state,leaseActionResult:()=>'',
     owned(root,children){root.children=children;},
-    ui:{batch:fn=>fn(),put(){},text:label=>({label}),badge:label=>({label}),json:()=>({}),stack:()=>({}),
+    ui:{batch:fn=>fn(),put(){},heading:(label,level)=>({kind:'Heading',label,level}),text:label=>({label}),badge:label=>({label}),json:()=>({}),stack:()=>({}),
       bind:()=>({set(){},focus(){log.push('focus:heading');}})},
-    hostLabel:{set(){}},
+    hostLabel:{set(){}},namedLabel,
+    localOperator:()=>true,namingNotice:{set(){}},
     detail:{open,showModal(){this.open=true;log.push('open:dialog');this.focus();},focus(){log.push('focus:dialog');},close(){this.open=false;api.onDetailClose();}},
     navigation:{current:{view:'leases',lease:id},navigate(next){this.current=next;log.push('navigate');api.applyRoute(next);}},
     createLeaseActions(options){actions.push(options);return {dispose(){},updateConnection(){}};},
@@ -58,7 +60,7 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     },
   };
   api=runInNewContext(declarations+'\n({connect,applyRoute,disposeDetail,loadLease,reset:'+reset+',onDetailClose:'+onDetailClose+'})',scope);
-  return {scope,api,log,calls,instances,actions,reviews,oldPanel,oldReviews};
+  return {scope,api,log,calls,instances,actions,reviews,oldPanel,oldReviews,lease};
 }
 function onlyReads(f){const allowed=new Set(['status','inspect','monitor_subscribe','events','messages','agents','subscribe','mesh_operator_watch']);assert.ok(f.calls.every(c=>allowed.has(c.operation)));}
 
@@ -67,6 +69,12 @@ test('a new connection reloads an open lease and replaces callbacks bound to the
   assert.equal(f.oldPanel.disposed,true);assert.equal(f.oldReviews.disposed,true);assert.equal(f.scope.detail.open,true);
   assert.deepEqual(f.calls.filter(c=>c.operation==='inspect').map(c=>c.args.id),[id]);
   assert.equal(f.actions.length,1);assert.equal(f.actions[0].connected(),true);assert.equal(f.reviews[0].connected(),true);
+  const heading=f.scope.detailBody.children.find(child=>child.kind==='Heading');
+  assert.equal(heading.label,'Build cache');assert.notEqual(heading.label,id);
+  assert.ok(f.scope.detailBody.children.some(child=>child.label==='ID '+id));
+  assert.equal(f.actions[0].lease,f.lease);assert.equal(f.reviews[0].lease,f.lease);
+  assert.equal(f.actions[0].lease.id,id);assert.equal(f.actions[0].lease.host,'c'.repeat(32));
+  assert.equal(f.actions[0].lease.revision,9007199254740993n);assert.equal(f.scope.detailLeaseID,id);
   f.scope.connection={};assert.equal(f.actions[0].connected(),false);assert.equal(f.reviews[0].connected(),false);onlyReads(f);
 });
 test('authentication reset preserves a direct lease route and reconnect reopens it',async()=>{

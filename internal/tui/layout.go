@@ -62,6 +62,9 @@ func (m *dashboardModel) viewportContent() string {
 	return content
 }
 func (m *dashboardModel) displayContent() string {
+	if m.nameUI != nil {
+		return fieldLabels(m.nameText())
+	}
 	if m.nodeUI != nil && m.record == nil {
 		return fieldLabels(m.nodeText())
 	}
@@ -184,6 +187,12 @@ func (m *dashboardModel) applySnapshot(data snapshot) {
 		m.nodeUI.summary.names = renderLabels{}
 		m.nodeUI.displayName = ""
 	}
+	if m.data.status.Host != data.status.Host || m.data.status.Owner != data.status.Owner {
+		m.retireNameEditor()
+		m.namingObserved = 0
+		m.nameDiagnostic = nil
+	}
+	m.observeNaming(data.namingSequence, data.namingDiagnostic, true)
 	m.data = data
 	m.restoreSelection(id, previous)
 }

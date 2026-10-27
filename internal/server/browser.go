@@ -154,6 +154,8 @@ func (s *Server) dashboardLoginLink(raw json.RawMessage) (model.BrowserLink, err
 
 func browserAllowedOperation(op string) bool {
 	switch op {
+	case "name_list", "name_mutate":
+		return true // Explicit source-local presentation metadata, never resource authority.
 	case "dashboard_login_link":
 		return true // Local operator action; scoped node sessions are refused by dispatch.
 	case "lease_review_list", "lease_review_inspect", "lease_review_policy", "lease_review_configure":

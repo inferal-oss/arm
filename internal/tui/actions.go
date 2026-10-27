@@ -14,10 +14,12 @@ import (
 )
 
 type detailMsg struct {
-	generation uint64
-	lease      model.Lease
-	err        error
-	label      leaseRenderLabel
+	namingDiagnostic *model.Error
+	namingSequence   uint64
+	generation       uint64
+	lease            model.Lease
+	err              error
+	label            leaseRenderLabel
 }
 type leaseReview struct {
 	request model.LeaseAction
@@ -42,8 +44,8 @@ func (m *dashboardModel) loadDetail(id string) tea.Cmd {
 	m.notice = "Loading lease…"
 	return func() tea.Msg {
 		var view leaseRenderView
-		err := session.Call(ctx, "inspect", map[string]string{"id": id}, &view)
-		return detailMsg{generation: generation, lease: view.Lease, err: err, label: leaseRenderLabel{host: view.Host, name: view.DisplayName, hostName: view.HostDisplayName}}
+		diagnostic, err, sequence := callWithNamingObservation(ctx, session, "inspect", map[string]string{"id": id}, &view)
+		return detailMsg{namingDiagnostic: diagnostic, namingSequence: sequence, generation: generation, lease: view.Lease, err: err, label: leaseRenderLabel{host: view.Host, name: view.DisplayName, hostName: view.HostDisplayName}}
 	}
 }
 func (m *dashboardModel) acceptDetail(msg detailMsg) tea.Cmd {
@@ -53,6 +55,9 @@ func (m *dashboardModel) acceptDetail(msg detailMsg) tea.Cmd {
 	if msg.err != nil {
 		m.notice = msg.err.Error()
 		return nil
+	}
+	if msg.lease.Host == m.data.status.Host {
+		m.observeNaming(msg.namingSequence, msg.namingDiagnostic, false)
 	}
 	m.detail = &msg.lease
 	if m.data.status.Host != "" && msg.label.host == m.data.status.Host {

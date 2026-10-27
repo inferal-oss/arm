@@ -20,8 +20,9 @@ const sessionRequestLimit = 4
 const sessionConnectTimeout = 10 * time.Second
 
 type sessionResponse struct {
-	raw json.RawMessage
-	err error
+	namingDiagnostic *model.Error
+	raw              json.RawMessage
+	err              error
 }
 
 type sessionPending struct {
@@ -102,13 +103,14 @@ func (s *Session) fail(err error) {
 func (s *Session) read() {
 	for {
 		var response struct {
-			Version      int                `json:"version"`
-			ID           string             `json:"id"`
-			Result       json.RawMessage    `json:"result"`
-			Error        *model.Error       `json:"error"`
-			Event        *model.Event       `json:"event"`
-			Telemetry    *model.MonitorPage `json:"telemetry"`
-			Subscription string             `json:"subscription"`
+			Version          int                `json:"version"`
+			NamingDiagnostic *model.Error       `json:"naming_diagnostic"`
+			ID               string             `json:"id"`
+			Result           json.RawMessage    `json:"result"`
+			Error            *model.Error       `json:"error"`
+			Event            *model.Event       `json:"event"`
+			Telemetry        *model.MonitorPage `json:"telemetry"`
+			Subscription     string             `json:"subscription"`
 		}
 		if err := wsjson.Read(s.ctx, s.conn, &response); err != nil {
 			s.fail(fmt.Errorf("dashboard connection lost: %w", err))
@@ -195,7 +197,7 @@ func (s *Session) read() {
 			if response.Error != nil {
 				err = response.Error
 			}
-			pending.response <- sessionResponse{raw: response.Result, err: err}
+			pending.response <- sessionResponse{raw: response.Result, err: err, namingDiagnostic: namingDiagnostic(response.NamingDiagnostic)}
 		} else if response.ID == "" && response.Error != nil {
 			s.fail(response.Error)
 			return
@@ -230,6 +232,11 @@ func (s *Session) offerTelemetry(page model.MonitorPage) {
 }
 
 func (s *Session) Call(ctx context.Context, operation string, params, result any) error {
+	_, err := s.CallWithDiagnostics(ctx, operation, params, result)
+	return err
+}
+
+func (s *Session) CallWithDiagnostics(ctx context.Context, operation string, params, result any) (*model.Error, error) {
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	monitorControl := operation == "monitor_subscribe" || operation == "monitor_unsubscribe" || operation == "mesh_operator_watch"
@@ -238,14 +245,14 @@ func (s *Session) Call(ctx context.Context, operation string, params, result any
 		case s.monitorGate <- struct{}{}:
 			defer func() { <-s.monitorGate }()
 		case <-ctx.Done():
-			return ctx.Err()
+			return nil, ctx.Err()
 		case <-s.done:
-			return s.Err()
+			return nil, s.Err()
 		}
 	}
 	raw, err := json.Marshal(params)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	id := local.ID()
 	response := make(chan sessionResponse, 1)
@@ -253,11 +260,11 @@ func (s *Session) Call(ctx context.Context, operation string, params, result any
 	if s.err != nil {
 		err := s.err
 		s.mu.Unlock()
-		return err
+		return nil, err
 	}
 	if len(s.pending) >= sessionRequestLimit {
 		s.mu.Unlock()
-		return model.Err("too_many_requests", "at most four dashboard requests may be in flight")
+		return nil, model.Err("too_many_requests", "at most four dashboard requests may be in flight")
 	}
 	s.pending[id] = sessionPending{operation: operation, response: response}
 	s.mu.Unlock()
@@ -265,13 +272,13 @@ func (s *Session) Call(ctx context.Context, operation string, params, result any
 	select {
 	case s.writeGate <- struct{}{}:
 	case <-ctx.Done():
-		return ctx.Err()
+		return nil, ctx.Err()
 	case <-s.done:
-		return s.Err()
+		return nil, s.Err()
 	}
 	if err = ctx.Err(); err != nil {
 		<-s.writeGate
-		return err // Nothing was written; the existing monitor is unchanged.
+		return nil, err // Nothing was written; the existing monitor is unchanged.
 	}
 	err = wsjson.Write(ctx, s.conn, model.WireRequest{Version: 1, ID: id, Operation: operation, Params: raw})
 	<-s.writeGate
@@ -279,22 +286,22 @@ func (s *Session) Call(ctx context.Context, operation string, params, result any
 		if monitorControl {
 			s.fail(errors.New("monitor control write outcome unknown; reconnect and load a fresh snapshot"))
 		}
-		return err
+		return nil, err
 	}
 	select {
 	case got := <-response:
 		if got.err != nil || result == nil {
-			return got.err
+			return got.namingDiagnostic, got.err
 		}
 		decoder := json.NewDecoder(bytes.NewReader(got.raw))
 		decoder.UseNumber()
-		return decoder.Decode(result)
+		return got.namingDiagnostic, decoder.Decode(result)
 	case <-ctx.Done():
 		if monitorControl {
 			s.fail(errors.New("monitor control outcome unknown; reconnect and load a fresh snapshot"))
 		}
-		return ctx.Err()
+		return nil, ctx.Err()
 	case <-s.done:
-		return s.Err()
+		return nil, s.Err()
 	}
 }

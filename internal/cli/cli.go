@@ -44,6 +44,8 @@ type app struct {
 	forceJSON, colors             bool
 	commandName                   string
 	showDiff, diffShown           bool
+	namingWarningShown            bool
+	renderNames                   map[cliRenderKey]string
 	externalDispatch              bool
 	stopSignals                   func()
 	// catalogFlags stops a handler at its parsing boundary before any effect.
@@ -155,12 +157,27 @@ func (a *app) print(v any) error {
 	return enc.Encode(v)
 }
 func (a *app) call(op string, p, result any) error {
+	_, err := a.callDiagnostic(op, p, result)
+	return err
+}
+func (a *app) callDiagnostic(op string, p, result any) (*model.Error, error) {
 	if a.catalogFlags != nil {
-		return fmt.Errorf("command catalog reached a backend read before flag registration")
+		return nil, fmt.Errorf("command catalog reached a backend read before flag registration")
 	}
 	ctx, cancel := context.WithTimeout(a.ctx, 75*time.Second)
 	defer cancel()
-	return client.Call(ctx, a.home, op, p, result)
+	wire, accept := a.leaseRenderResult(result)
+	diagnostic, err := client.CallWithDiagnostics(ctx, a.home, op, p, wire)
+	if err == nil {
+		accept()
+	}
+	if err == nil && diagnostic != nil && !a.namingWarningShown {
+		a.namingWarningShown = true
+		if a.err != nil {
+			fmt.Fprintf(a.err, "Warning: %s\n", diagnostic.Error())
+		}
+	}
+	return diagnostic, err
 }
 func (a *app) help() {
 	fmt.Fprintln(a.out, a.paint("1;36", "Agent Resource Manager")+`
@@ -201,6 +218,7 @@ Commands:
   install|uninstall         Manage reversible agent instruction blocks
   database stats|check|backup|remove  Inspect, back up or review a safe local reset
   node                      Read reported local/remote node metadata
+  name list|set|clear       Manage local custom labels with revision guards
   plugins [list|inspect]    Discover external CLI commands without running them
   completion bash|zsh|fish  Generate shell completion scripts
   version                   Print build and Go versions
@@ -221,6 +239,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, nil
 	}
 	switch cmd {
+	case "name":
+		return a.names(args)
 	case "completion":
 		return a.completion(args)
 	case "reviews":
@@ -659,10 +679,11 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		if len(argv) == 0 {
 			return 2, fmt.Errorf("run requires -- COMMAND [ARG...]")
 		}
-		if *host, e = a.executionHost(*host); e != nil {
-			return 1, e
+		classified, classifiedID, classificationErr := a.executionHostIdentity(*host)
+		if classificationErr != nil {
+			return 1, classificationErr
 		}
-		if *host != "localhost" && (*cwd == "" || !filepath.IsAbs(*cwd)) {
+		if classified != "localhost" && (*cwd == "" || !filepath.IsAbs(*cwd)) {
 			return 2, fmt.Errorf("remote run requires explicit absolute --cwd on the target host; files are not uploaded")
 		}
 		if *cwd == "" {
@@ -675,7 +696,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		if e != nil {
 			return 2, e
 		}
-		if *host == "localhost" {
+		if classified == "localhost" {
 			name := argv[0]
 			if strings.ContainsRune(name, os.PathSeparator) && !filepath.IsAbs(name) {
 				name = filepath.Join(*cwd, name)
@@ -692,6 +713,13 @@ func (a *app) acquire(command string, args []string) (int, error) {
 		}
 		if e = resolveRequest(); e != nil {
 			return 1, e
+		}
+		if classifiedID != "" && classifiedID != "localhost" && *host != classifiedID {
+			return 1, model.Err("host_unavailable", "host selector changed during argument validation; use an exact host ID")
+		}
+		if classified == "localhost" {
+			*host = "localhost"
+			r.Host = "localhost"
 		}
 		e = a.hostCall(*host, "run", manager.RunRequest{Request: r, Command: argv, CWD: *cwd}, &l)
 		if e != nil {

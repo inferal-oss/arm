@@ -77,6 +77,7 @@ func rowJSON[T any](r proofRow, key string, required ...string) (T, error) {
 }
 
 type proofReader struct {
+	customNamesRaw           *string
 	leaseReviewSchema        bool
 	home                     string
 	ctx                      context.Context
@@ -151,7 +152,7 @@ func ProveDatabaseSettled(ctx context.Context, s *Source, owner string) (Settled
 		return result, err
 	}
 	p := &proofReader{ctx: ctx, home: s.Directory.Path, tx: tx, catalog: catalog, result: result, digest: sha256.New(), leases: map[string]model.Lease{}, pools: map[string]model.Pool{}, budgets: map[string]model.Budget{}, bindings: map[string]model.BudgetBinding{}, messages: map[string]proofMessage{}, incidents: map[string]model.UsageIncident{}, poolChanges: map[int64]model.PoolChange{}, budgetChanges: map[int64]model.BudgetChange{}, gradle: map[string]proofGradle{}, poolOperationSequences: map[int64]bool{}, budgetOperationSequences: map[int64]bool{}, maxSequence: map[string]int64{}, recordedSequences: map[string]int64{}}
-	for _, step := range []func() error{p.metadata, p.readResetMetadata, p.readLeases, p.readSSH, p.readSync, p.readWorkspaces, p.readPublished, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readLeaseReviews, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
+	for _, step := range []func() error{p.metadata, p.readCustomNames, p.readResetMetadata, p.readLeases, p.readSSH, p.readSync, p.readWorkspaces, p.readPublished, p.readRouting, p.readPools, p.readSubpools, p.readBudgets, p.readMessages, p.readLeaseReviews, p.readIncidents, p.readExports, p.readGradle, p.readCargo, p.readPoolJournal, p.readBudgetJournal, p.readOperations, p.readOther, p.relationships} {
 		if err = step(); err != nil {
 			return p.result, err
 		}
@@ -194,7 +195,11 @@ func (p *proofReader) walk(table string, visit func(proofRow) error) error {
 	parts := make([]string, 0, len(columns)*3)
 	for _, name := range columns {
 		q := `"` + name + `"`
-		parts = append(parts, `typeof(`+q+`)`, `length(CAST(`+q+` AS BLOB))`, `CASE WHEN length(CAST(`+q+` AS BLOB))<=1048576 THEN `+q+` END`)
+		bound := "1048576"
+		if table == "metadata" && name == "value" {
+			bound = "CASE WHEN CAST(\"key\" AS BLOB)=CAST('custom_names_v1' AS BLOB) THEN 524288 ELSE 1048576 END"
+		}
+		parts = append(parts, `typeof(`+q+`)`, `length(CAST(`+q+` AS BLOB))`, `CASE WHEN length(CAST(`+q+` AS BLOB))<=`+bound+` THEN `+q+` END`)
 	}
 	rows, err := p.tx.QueryContext(p.ctx, `SELECT `+strings.Join(parts, ",")+` FROM "`+table+`" ORDER BY rowid`)
 	if err != nil {
@@ -272,6 +277,11 @@ func (p *proofReader) metadata() error {
 			return err
 		}
 		switch key {
+		case proofCustomNamesKey:
+			if len(raw) > proofCustomNamesBytes {
+				return fmt.Errorf("custom names exceeds cosmetic metadata bound")
+			}
+			p.customNamesRaw = &raw
 		case WorkspaceFormatKey:
 			if raw != WritableWorkspaceFormat {
 				return unsupportedWorkspaceFormat()

@@ -252,7 +252,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     return box;
   }
   function renderRoster() {
-    const key = stringifyJSON((roster?.nodes ?? []).map((n) => [n.host, n.name, n.local, n.health, n.trust?.state, n.trust?.execution_account, n.metadata?.platform, n.metadata?.build, n.metadata?.inventory?.logical_cpus, n.metadata?.inventory?.host_memory?.total_bytes, n.metadata_freshness?.stale, n.error].map((value) => value ?? null)));
+    const key = stringifyJSON((roster?.nodes ?? []).map((n) => [n.host, n.name, n.display_name, n.local, n.health, n.trust?.state, n.trust?.execution_account, n.metadata?.platform, n.metadata?.build, n.metadata?.inventory?.logical_cpus, n.metadata?.inventory?.host_memory?.total_bytes, n.metadata_freshness?.stale, n.error].map((value) => value ?? null)));
     if (key === rosterKey) return;
     rosterKey = key;
     const count = roster?.nodes?.length ?? 0;
@@ -263,7 +263,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     }
     const cards = [];
     for (const entry of roster.nodes) {
-      const title = entry.name || `Node ${entry.host.slice(0, 8)}`;
+      const title = entry.display_name || entry.name || `Node ${entry.host.slice(0, 8)}`;
       const metadata = entry.metadata, platform = metadata?.platform;
       const facts = [
         ["Status", entry.health ?? "Unknown"],
@@ -300,7 +300,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     }
   }
   function renderNode(ui, entry) {
-    ui.heading.set({ label: entry.name || entry.host });
+    ui.heading.set({ label: entry.display_name || entry.name || entry.host });
     ui.body.replace();
     ui.body.append(graph.descriptions([
       ["Stable host ID", entry.host],
@@ -439,7 +439,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     note(form, meshPreparationNotice);
     if (entry) {
       const exact = graph.stack();
-      row(exact, "Exact node", entry.name || entry.host);
+      row(exact, "Exact node", entry.display_name || entry.name || entry.host);
       row(exact, "Stable host", entry.host, true);
       row(exact, "Previous enrollment", entry.trust?.pair, true);
       form.append(exact);
@@ -567,7 +567,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       return;
     }
     const ui = modal("Stop ARM on this node", "MESH / BACKEND SHUTDOWN"), facts = graph.stack();
-    row(facts, "Node", entry.name || entry.host);
+    row(facts, "Node", entry.display_name || entry.name || entry.host);
     row(facts, "Stable host", entry.host, true);
     ui.body.append(facts);
     note(ui.body, "Stops this ARM backend and all its connections. The host remains running. A separate concrete review follows before any stop is approved.", "warning");
@@ -632,7 +632,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     const ui = modal("Choose a managed installation", "MESH / UNINSTALL"), form = graph.stack(), error = graph.text("", { role: "alert" });
     error.set({ role: "alert" });
     const facts = graph.stack();
-    row(facts, "Destination", entry.name || entry.host);
+    row(facts, "Destination", entry.display_name || entry.name || entry.host);
     row(facts, "Stable host", entry.host, true);
     ui.body.append(facts);
     note(ui.body, "Remove one original ARM-managed executable after its exact backend stops. Database, identity, history, configuration, backups and recovery helper stay. A concrete review follows.", "warning");

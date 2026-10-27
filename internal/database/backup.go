@@ -7,8 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"time"
 
 	"golang.org/x/sys/unix"
@@ -16,14 +18,15 @@ import (
 )
 
 type Backup struct {
-	Destination string    `json:"destination"`
-	Host        string    `json:"host"`
-	Size        int64     `json:"size_bytes"`
-	SHA256      string    `json:"sha256"`
-	Started     time.Time `json:"started_at"`
-	Finished    time.Time `json:"finished_at"`
-	Scope       string    `json:"scope"`
-	Detail      string    `json:"detail"`
+	CustomNames *CustomNamesInspection `json:"custom_names,omitempty"`
+	Destination string                 `json:"destination"`
+	Host        string                 `json:"host"`
+	Size        int64                  `json:"size_bytes"`
+	SHA256      string                 `json:"sha256"`
+	Started     time.Time              `json:"started_at"`
+	Finished    time.Time              `json:"finished_at"`
+	Scope       string                 `json:"scope"`
+	Detail      string                 `json:"detail"`
 }
 type backupConnection interface {
 	NewBackup(string) (*sqlite.Backup, error)
@@ -155,6 +158,17 @@ func backupDatabase(ctx context.Context, source *Source, destination string, obs
 	}
 	if err == nil {
 		err = verify.QueryRowContext(ctx, "SELECT substr(value,1,33) FROM metadata WHERE key='host'").Scan(&host)
+	}
+	if err == nil && host != result.Host {
+		err = fmt.Errorf("backup authority differs from source snapshot")
+	}
+	if err == nil {
+		names, namesErr := InspectCustomNames(ctx, verify, strconv.Itoa(os.Geteuid()), result.Host)
+		if namesErr != nil {
+			err = namesErr
+		} else {
+			result.CustomNames = &names
+		}
 	}
 	closeErr := verify.Close()
 	if err = errors.Join(err, closeErr); err != nil {

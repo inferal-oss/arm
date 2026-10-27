@@ -6,13 +6,17 @@ import "getarm.org/internal/model"
 // used for accounting, review hashes, revisions and mutation requests.
 type poolRenderView struct {
 	model.PoolView
-	Users  []useRenderView `json:"users"`
-	Queued []useRenderView `json:"queued"`
+	DisplayName string          `json:"display_name"`
+	Users       []useRenderView `json:"users"`
+	Queued      []useRenderView `json:"queued"`
 }
 
 func (v poolRenderView) values() (model.PoolView, renderLabels) {
 	p := v.PoolView
 	names := renderLabels{authority: p.Pool.Authority}
+	if v.DisplayName != "" {
+		names.resources = map[string]string{p.Pool.ID: v.DisplayName}
+	}
 	copyUses := func(views []useRenderView) []model.ResourceUse {
 		if views == nil {
 			return nil

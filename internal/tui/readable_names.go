@@ -28,6 +28,7 @@ type resourceRenderView struct {
 	Users           []useRenderView `json:"users"`
 }
 type statusRenderView struct {
+	NamingDiagnostic *model.Error `json:"naming_diagnostic,omitempty"`
 	model.Status
 	DisplayName string               `json:"display_name"`
 	Leases      []leaseRenderView    `json:"leases"`
@@ -226,4 +227,20 @@ func (v nodeSummaryRenderView) values() nodeSummary {
 		}
 	}
 	return s
+}
+
+func (m *dashboardModel) poolDisplayName(pool model.Pool) string {
+	provided := ""
+	if pool.Authority == m.data.status.Host {
+		if m.poolUI != nil && m.poolUI.names.authority == pool.Authority {
+			provided = m.poolUI.names.resources[pool.ID]
+		}
+		if provided == "" && m.data.names.authority == pool.Authority {
+			provided = m.data.names.resources[pool.ID]
+		}
+	}
+	if strings.TrimSpace(provided) != "" {
+		return safe(provided)
+	}
+	return poolDisplayName(pool)
 }

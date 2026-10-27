@@ -107,7 +107,11 @@ func (a *app) scalar(key string, v any) string {
 		if key == "lease" {
 			domain = readablename.Lease
 		}
-		return terminalSafe(readablename.FromID(domain, id) + " (" + id + ")")
+		name := readablename.FromID(domain, id)
+		if key == "host" {
+			name = a.humanName(domain, id, id, "", "")
+		}
+		return terminalSafe(name + " (" + id + ")")
 	}
 	if text, ok := v.(string); ok {
 		if strings.HasSuffix(key, "_at") {
@@ -161,13 +165,18 @@ func (a *app) tree(w io.Writer, value any, indent int) {
 	switch value := value.(type) {
 	case map[string]any:
 		if id, ok := value["id"].(string); ok && opaqueID(id) && value["request"] != nil && value["display_name"] == nil {
-			fmt.Fprintln(w, pad+"Name: "+readablename.FromID(readablename.Lease, id))
+			fmt.Fprintln(w, pad+"Name: "+terminalSafe(a.humanName(readablename.Lease, renderString(value, "host"), id, "", renderString(value, "name"))))
 		}
 		for _, key := range orderedKeys(value) {
 			if (key == "owner_username" || key == "actor_username") && value[strings.TrimSuffix(key, "_username")] != nil {
 				continue
 			}
 			child := value[key]
+			if key == "host" && renderString(value, "host_display_name") != "" {
+				id := renderString(value, "host")
+				fmt.Fprintln(w, pad+label(key)+": "+terminalSafe(a.humanName(readablename.Host, id, id, renderString(value, "host_display_name"), "")+" ("+id+")"))
+				continue
+			}
 			if (key == "owner" || key == "actor") && value[key+"_username"] != nil {
 				fmt.Fprintln(w, pad+label(key)+": "+accountLabel(value, key))
 				continue
@@ -218,24 +227,27 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 			continue
 		}
 		name := fmt.Sprint(row["kind"])
+		suppliedName := ""
+		domain := readablename.Resource
 		if port, ok := row["port"].(map[string]any); ok {
 			name = fmt.Sprint(port["network"]) + "://" + net.JoinHostPort(fmt.Sprint(port["address"]), fmt.Sprint(port["port"]))
 			if supplied, ok := port["name"].(string); ok && supplied != "" {
-				name = supplied
+				name, suppliedName = supplied, supplied
 			}
 		}
 		if custom, ok := row["custom"].(map[string]any); ok {
 			if pool, ok := custom["pool"].(map[string]any); ok {
 				name = fmt.Sprint(pool["name"])
+				suppliedName, domain = renderString(pool, "name"), readablename.Pool
 			}
 		}
 		if supplied, ok := row["display_name"].(string); ok && supplied != "" {
-			name = supplied
+			name = a.humanName(domain, renderString(row, "host"), renderString(row, "id"), supplied, suppliedName)
 		}
 		unit := fmt.Sprint(row["unit"])
 		total, reserved, available := row["budget_total"], row["reserved"], row["available"]
 		if row["kind"] == "cpu" {
-			name = "cpu (live)"
+			name += " (live)"
 			unit = "cores"
 			known := row["availability_known"] == true && row["stale"] != true
 			if len(cpu) > 0 {
@@ -273,7 +285,9 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 			if !ok {
 				continue
 			}
-			fmt.Fprintf(w, "  %s  %s\n", a.paint("1", terminalSafe(fmt.Sprint(u["lease"]))), a.scalar("state", u["state"]))
+			id := renderString(u, "lease")
+			name := a.humanName(readablename.Lease, renderString(row, "host"), id, renderString(u, "lease_display_name"), "")
+			fmt.Fprintf(w, "  %s (%s)  %s\n", a.paint("1", terminalSafe(name)), terminalSafe(id), a.scalar("state", u["state"]))
 			fmt.Fprintf(w, "    Reserved: %s %s\n", quantity(u["quantity"], fmt.Sprint(row["unit"])), terminalSafe(fmt.Sprint(row["unit"])))
 			fmt.Fprintf(w, "    %s; owner %s", terminalSafe(fmt.Sprint(u["reason"])), accountLabel(u, "owner"))
 			if agent, ok := u["agent"].(string); ok && agent != "" {
@@ -313,6 +327,8 @@ func (a *app) human(v any) error {
 	} else if a.commandName == "status" || a.commandName == "daemon status" {
 		if state, ok := value.(map[string]any); ok {
 			if name, ok := state["display_name"].(string); ok && name != "" {
+				id := renderString(state, "host")
+				name = a.humanName(readablename.Host, id, id, name, renderString(state, "name"))
 				fmt.Fprintln(&b, "Host: "+terminalSafe(name)+" ("+a.scalar("id", state["host"])+")")
 			} else {
 				fmt.Fprintln(&b, "Host: "+a.scalar("host", state["host"]))
@@ -341,7 +357,8 @@ func (a *app) human(v any) error {
 					continue
 				}
 				id := fmt.Sprint(l["id"])
-				fmt.Fprintf(&b, "  %s (%s)  %s", readablename.FromID(readablename.Lease, id), a.scalar("id", l["id"]), a.scalar("state", l["state"]))
+				name := a.humanName(readablename.Lease, renderString(l, "host"), id, renderString(l, "display_name"), renderString(l, "name"))
+				fmt.Fprintf(&b, "  %s (%s)  %s", terminalSafe(name), a.scalar("id", l["id"]), a.scalar("state", l["state"]))
 				if req, ok := l["request"].(map[string]any); ok {
 					fmt.Fprint(&b, "  "+a.scalar("reason", req["reason"]))
 				}
