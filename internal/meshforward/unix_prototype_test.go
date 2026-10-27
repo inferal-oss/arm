@@ -225,42 +225,52 @@ func TestUnixPrototypeCopyErrorAbortsBothOriginalDirections(t *testing.T) {
 }
 
 func TestUnixPrototypeCanceledCopyPreservesIndependentEIO(t *testing.T) {
-	home := unixPrototypeHome(t)
-	ctx, cancel := context.WithCancel(t.Context())
-	copyErr := errors.New("independent application EIO after cancellation")
-	entered := make(chan struct{})
-	release := make(chan struct{})
-	p, err := StartUnixPrototype(ctx, home, strings.Repeat("2", 32), time.Now().Add(time.Minute), func(context.Context) (net.Conn, error) {
-		client, server := net.Pipe()
-		t.Cleanup(func() { _ = server.Close() })
-		return &unixPrototypeFaultConn{Conn: client, writeErr: copyErr, writeSeen: entered, writeGate: release}, nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	local, err := net.DialTimeout("unix", p.Path(), time.Second)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer local.Close()
-	if _, err = local.Write([]byte("effect")); err != nil {
-		t.Fatal(err)
-	}
-	select {
-	case <-entered:
-	case <-time.After(2 * time.Second):
-		t.Fatal("application write was not entered")
-	}
-	cancel()
-	close(release) // the original writer reports EIO only after cancellation
-	if err = p.Close(); !errors.Is(err, copyErr) {
-		t.Fatal("cancellation erased independent application error", err)
-	}
-	if !p.joined || !p.watcherJoined {
-		t.Fatal("independent EIO returned before original joins")
-	}
-	if _, err = os.Lstat(p.Path()); !errors.Is(err, os.ErrNotExist) {
-		t.Fatal("joined socket remained charged solely for application EIO", err)
+	for _, tc := range []struct {
+		name string
+		wrap func(error) error
+	}{
+		{"plain", func(err error) error { return err }},
+		{"mixed_join", func(err error) error { return errors.Join(err, net.ErrClosed) }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			home := unixPrototypeHome(t)
+			ctx, cancel := context.WithCancel(t.Context())
+			copyErr := errors.New("independent application EIO after cancellation")
+			entered := make(chan struct{})
+			release := make(chan struct{})
+			p, err := StartUnixPrototype(ctx, home, strings.Repeat("2", 32), time.Now().Add(time.Minute), func(context.Context) (net.Conn, error) {
+				client, server := net.Pipe()
+				t.Cleanup(func() { _ = server.Close() })
+				return &unixPrototypeFaultConn{Conn: client, writeErr: tc.wrap(copyErr), writeSeen: entered, writeGate: release}, nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			local, err := net.DialTimeout("unix", p.Path(), time.Second)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer local.Close()
+			if _, err = local.Write([]byte("effect")); err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case <-entered:
+			case <-time.After(2 * time.Second):
+				t.Fatal("application write was not entered")
+			}
+			cancel()
+			close(release) // the original writer reports EIO only after cancellation
+			if err = p.Close(); !errors.Is(err, copyErr) {
+				t.Fatal("cancellation erased independent application error", err)
+			}
+			if !p.joined || !p.watcherJoined {
+				t.Fatal("independent EIO returned before original joins")
+			}
+			if _, err = os.Lstat(p.Path()); !errors.Is(err, os.ErrNotExist) {
+				t.Fatal("joined socket remained charged solely for application EIO", err)
+			}
+		})
 	}
 }
 

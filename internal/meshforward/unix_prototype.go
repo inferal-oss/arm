@@ -384,8 +384,33 @@ func (p *UnixPrototype) recordApplication(err error) {
 }
 
 func unixPrototypeCanceledIO(err error) bool {
-	return errors.Is(err, context.Canceled) || errors.Is(err, net.ErrClosed) ||
-		errors.Is(err, os.ErrClosed) || errors.Is(err, io.ErrClosedPipe)
+	return unixPrototypeOnlyCanceledIO(err, 0)
+}
+
+// errors.Is reports true when any joined leaf matches. For a mixed
+// application/closed error that would erase the independent application
+// failure after cancellation, so every leaf must be an explicit close error.
+func unixPrototypeOnlyCanceledIO(err error, depth int) bool {
+	if err == nil || depth > 32 { // a cyclic or unbounded wrapper is uncertain
+		return false
+	}
+	if joined, ok := err.(interface{ Unwrap() []error }); ok {
+		children := joined.Unwrap()
+		if len(children) == 0 {
+			return false
+		}
+		for _, child := range children {
+			if !unixPrototypeOnlyCanceledIO(child, depth+1) {
+				return false
+			}
+		}
+		return true
+	}
+	if wrapped, ok := err.(interface{ Unwrap() error }); ok {
+		return unixPrototypeOnlyCanceledIO(wrapped.Unwrap(), depth+1)
+	}
+	return err == context.Canceled || err == net.ErrClosed ||
+		err == os.ErrClosed || err == io.ErrClosedPipe
 }
 
 // Close reports uncertainty if positive join or exact original cleanup fails.

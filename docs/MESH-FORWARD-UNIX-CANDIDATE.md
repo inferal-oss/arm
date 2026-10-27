@@ -99,7 +99,10 @@ unlink. An application copy error aborts both original connections without
 replay and leaves its outcome sticky. An admission callback that returns a
 partial connection with an error closes that original once without forwarding
 a client byte. A genuine copy error returned after cancellation remains an
-unknown application outcome; when native closes, joins and exact path cleanup
+unknown application outcome, including when it is joined with an ordinary
+closed-connection error. Only an error tree made entirely of explicit
+cancellation/closed-connection errors is treated as expected cancellation.
+When native closes, joins and exact path cleanup
 all succeed, that application error alone does not retain the adapter path.
 The prototype is deliberately absent from central CLI/backend dispatch and
 has no durable Manager lease. A crash in the prototype leaves its original
