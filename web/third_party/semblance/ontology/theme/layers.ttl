@@ -1,0 +1,344 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+
+# Theme for what the layers add: shortcut hints, busy state, shortcut lists.
+
+# --- keyboard: a hint after any element that declares a shortcut or a key hint (Apple or other glyphs),
+# left to right in a right-to-left page too (⌘K, not K⌘) ---
+# A key hint (key:hint) takes its glyphs from the part rules below; a button lays it out as a shortcut.
+[] a sty:StyleRule ; sty:part ":is(button, a, [role=button], [role=switch]):is([data-sem-shortcut], [data-sem-key-hint])::after" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "8px" ] ,
+                 [ sty:property "padding" ; sty:raw "2px 5px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "5px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid color-mix(in oklab, currentColor 28%, transparent)" ] ,
+                 [ sty:property "font" ; sty:raw "600 10px/1 var(--sem-font-mono)" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.75" ] ,
+                 [ sty:property "vertical-align" ; sty:raw "1px" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:part ":is(button, a, [role=button], [role=switch])[data-sem-shortcut]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-shortcut-other)" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-platform=apple] :is(button, a, [role=button], [role=switch])[data-sem-shortcut]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-shortcut-apple)" ] .
+
+# A hint on the part a component's class names (key:hintPart), or on a component's root (key:hint):
+# a key cap after it; at the end of a field box, gone while the field has the focus (typing there is
+# not the shortcut).
+[] a sty:StyleRule ; sty:part "[data-sem-key-hint]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-key-hint)" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "min-width" ; sty:raw "1.6em" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "padding" ; sty:raw "2px 5px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "5px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid color-mix(in oklab, currentColor 28%, transparent)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "600 11px/1.2 var(--sem-font-mono)" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-platform=apple] [data-sem-key-hint]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-key-hint-apple)" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-key-hint]:not(button, a, [role=button], [role=switch]):focus-within::after" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+
+# --- shortcut list ---
+[] a sty:StyleRule ; sty:appliesTo c:ShortcutList ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "min-width" ; sty:raw "min(100%, 360px)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShortcutList ; sty:part "> div" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "justify-content" ; sty:raw "space-between" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShortcutList ; sty:part "> div:nth-child(odd)" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-sunken ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShortcutList ; sty:part "dd" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShortcutList ; sty:part "kbd" ;
+    sty:declares [ sty:property "padding" ; sty:raw "3px 7px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "6px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-bottom-width" ; sty:raw "2px" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "font" ; sty:raw "600 11px/1 var(--sem-font-mono)" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShortcutList ; sty:part ".sem-apple" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-platform=apple] [data-sem-c=shortcut-list] .sem-apple" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-platform=apple] [data-sem-c=shortcut-list] .sem-other" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+
+# --- status: busy components ---
+[] a sty:StyleRule ; sty:part "[aria-busy=true]" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "cursor" ; sty:raw "progress" ] .
+[] a sty:StyleRule ; sty:part "[aria-busy=true] > *" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.45" ] ,
+                 [ sty:property "transition" ; sty:raw "opacity var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:part "[aria-busy=true]::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "''" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "border-radius" ; sty:raw "inherit" ] ,
+                 [ sty:property "background" ; sty:raw "linear-gradient(100deg, transparent 30%, color-mix(in oklab, var(--sem-accent) 14%, transparent) 50%, transparent 70%) 0 0 / 220% 100%" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-shimmer calc(var(--sem-duration-loop) * 4) linear infinite" ] .
+
+# --- component shapes: offenders are outlined; the report lists them ---
+[] a sty:StyleRule ; sty:part "[data-sem-shape-invalid]" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px dashed var(--sem-danger-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeReport ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeReport ; sty:part "> li" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(140px, auto) minmax(80px, auto) 1fr" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-danger-3)" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+# On a phone the three columns (the component, the property, the message) stack.
+[] a sty:StyleRule ; sty:appliesTo c:ShapeReport ; sty:part "> li" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeReport ; sty:part "> li > code" ;
+    sty:declares [ sty:property "font" ; sty:raw "500 12px/1.4 var(--sem-font-mono)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-danger-11)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeReport ; sty:part "> li > span" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] .
+
+# --- ontology docs under each specimen ---
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "border-top" ; sty:raw "1px dashed var(--sem-border)" ] ,
+                 [ sty:property "padding-top" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs > .sem-docs-toggle" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "padding" ; sty:raw "6px 8px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "500 12px/1.3 var(--sem-font)" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 # its width never depends on the (unwrapped) class list, so a long list cannot widen the card
+                 [ sty:property "contain" ; sty:raw "inline-size" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs > .sem-docs-toggle:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] , [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs > .sem-docs-toggle:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] , [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs > .sem-docs-toggle strong" ;
+    sty:declares [ sty:property "font" ; sty:raw "650 11px/1 var(--sem-font)" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.08em" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs > .sem-docs-toggle > span:not(.sem-chevron)" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs .sem-chevron" ;
+    sty:declares [ sty:property "width" ; sty:raw "7px" ] ,
+                 [ sty:property "height" ; sty:raw "7px" ] ,
+                 [ sty:property "border-right" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "transform" ; sty:raw "rotate(-45deg)" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-docs > [aria-expanded=true] .sem-chevron" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(45deg)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ClassDoc ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "max-height" ; sty:raw "420px" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-4 ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "font" ; sty:raw "12px/1.55 var(--sem-font-mono)" ] ,
+                 [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-rise-in var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ClassDoc ; sty:part ".ttl-comment" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] , [ sty:property "font-style" ; sty:raw "italic" ] .
+
+# --- remembered state: the policy list ---
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part "> li" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "auto 1fr auto" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part ".sem-what" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] , [ sty:property "gap" ; sty:raw "2px" ] , [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part ".sem-what span" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] , [ sty:property "font-size" ; sty:token tok:text-xs ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part "[role=switch]" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "width" ; sty:raw "34px" ] ,
+                 [ sty:property "height" ; sty:raw "20px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-motion), border-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part "[role=switch] > span" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "2px" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "2px" ] ,
+                 [ sty:property "width" ; sty:raw "14px" ] ,
+                 [ sty:property "height" ; sty:raw "14px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "50%" ] ,
+                 [ sty:property "background" ; sty:token tok:muted ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-motion), background var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part "[role=switch][aria-checked=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent ] , [ sty:property "border-color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part "[role=switch][aria-checked=true] > span" ;
+    sty:declares [ sty:property "transform" ; sty:raw "translateX(14px)" ] , [ sty:property "background" ; sty:raw "#ffffff" ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part ":is([role=switch], .sem-forget):focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] , [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part ".sem-forget" ;
+    sty:declares [ sty:property "width" ; sty:raw "28px" ] ,
+                 [ sty:property "height" ; sty:raw "28px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:PolicyList ; sty:part ".sem-forget:disabled" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.4" ] , [ sty:property "cursor" ; sty:raw "default" ] .
+
+# --- privacy: concealed content is blurred (text fields are masked instead) ---
+[] a sty:StyleRule ; sty:part ":is([data-sem-privacy=conceal], [data-sem-privacy=private]) [data-sem-concealed]:not([data-sem-c=text-field]), [data-sem-privacy=private] [data-sem-sensitive]" ;
+    sty:declares [ sty:property "filter" ; sty:raw "blur(9px) saturate(0.3)" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "filter var(--sem-duration-slow) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-concealed], [data-sem-sensitive]" ;
+    sty:declares [ sty:property "transition" ; sty:raw "filter var(--sem-duration-slow) var(--sem-ease)" ] .
+
+# --- dependency: a component with c:hidden is out of view, whatever its own display ---
+[] a sty:StyleRule ; sty:part "[data-sem-c][hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+
+# --- full screen (ontology/layers/fullscreen.ttl) ---
+# One rule for the host's full screen and the fallback: the shown element fills the screen on the
+# page's own background, with room at its edges, and scrolls inside. Its place and size are
+# !important, as the browser's own :fullscreen rules are: nothing a component says about its box
+# (a diagram's position, a card's height) may pull it out of the screen. The fallback is in the
+# top layer (a manual popover the effect shows). Colors are tokens, so every theme, light and dark,
+# styles it; components that look different full screen say so in their own theme, after this.
+[] a sty:StyleRule ; sty:part ":is([data-sem-fullscreen]:fullscreen, [data-sem-fullscreen=maximized], [data-sem-fullscreen=viewport])" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box !important" ] ,
+                 [ sty:property "position" ; sty:raw "fixed !important" ] ,
+                 [ sty:property "inset" ; sty:raw "0 !important" ] ,
+                 [ sty:property "width" ; sty:raw "100% !important" ] ,
+                 [ sty:property "height" ; sty:raw "100% !important" ] ,
+                 [ sty:property "max-width" ; sty:raw "none !important" ] ,
+                 [ sty:property "max-height" ; sty:raw "none !important" ] ,
+                 [ sty:property "margin" ; sty:raw "0 !important" ] ,
+                 [ sty:property "padding" ; sty:raw "max(var(--sem-space-5), env(safe-area-inset-top)) max(var(--sem-space-5), env(safe-area-inset-right)) max(var(--sem-space-5), env(safe-area-inset-bottom)) max(var(--sem-space-5), env(safe-area-inset-left))" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background-color" ; sty:token tok:canvas ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:part ":is([data-sem-fullscreen=maximized], [data-sem-fullscreen=viewport])" ;
+    sty:declares [ sty:property "z-index" ; sty:raw "2147483000" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-fullscreen]::backdrop" ;
+    sty:declares [ sty:property "background" ; sty:token tok:canvas ] .
+
+# The toggles a full-screenable component draws: small square buttons whose icon says what
+# pressing them does - a window's frame for filling the window, the screen's corners for full
+# screen, pointing out, or in while pressed. The icon is a mask over currentColor, so every theme's
+# colors draw it.
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "inline-size" ; sty:raw "28px" ] ,
+                 [ sty:property "block-size" ; sty:raw "28px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-control ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+# A component's toggles together, at the end of a row they share (a header, a bar).
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggles" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+# The first of a component's toggles keeps them at the end of a row it shares.
+[] a sty:StyleRule ; sty:part ":not(.sem-fullscreen-toggle) + .sem-fullscreen-toggle, .sem-fullscreen-toggle:first-child" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "inline-size" ; sty:raw "16px" ] ,
+                 [ sty:property "block-size" ; sty:raw "16px" ] ,
+                 [ sty:property "background-color" ; sty:raw "currentColor" ] ,
+                 [ sty:property "mask" ; sty:raw "var(--sem-fullscreen-icon) center / 16px 16px no-repeat" ] ,
+                 [ sty:property "-webkit-mask" ; sty:raw "var(--sem-fullscreen-icon) center / 16px 16px no-repeat" ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle[data-sem-kind=viewport]" ;
+    sty:declares [ sty:property "--sem-fullscreen-icon" ; sty:raw "url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27none%27 stroke=%27black%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M2.5 3.5h11v9h-11z M5 8h6 M5 8l1.6-1.6 M5 8l1.6 1.6 M11 8l-1.6-1.6 M11 8l-1.6 1.6%27/%3E%3C/svg%3E\")" ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle[data-sem-kind=viewport][aria-pressed=true]" ;
+    sty:declares [ sty:property "--sem-fullscreen-icon" ; sty:raw "url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27none%27 stroke=%27black%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M2.5 3.5h11v9h-11z M5.5 8h1.8 M7.3 8l-1.4-1.4 M7.3 8l-1.4 1.4 M10.5 8h-1.8 M8.7 8l1.4-1.4 M8.7 8l1.4 1.4%27/%3E%3C/svg%3E\")" ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle[data-sem-kind=screen]" ;
+    sty:declares [ sty:property "--sem-fullscreen-icon" ; sty:raw "url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27none%27 stroke=%27black%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M2 6V2h4 M10 2h4v4 M14 10v4h-4 M6 14H2v-4%27/%3E%3C/svg%3E\")" ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle[data-sem-kind=screen][aria-pressed=true]" ;
+    sty:declares [ sty:property "--sem-fullscreen-icon" ; sty:raw "url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27none%27 stroke=%27black%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M6 2v4H2 M14 6h-4V2 M10 14v-4h4 M2 10h4v4%27/%3E%3C/svg%3E\")" ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle:hover" ;
+    sty:declares [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle[aria-pressed=true]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:accent ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+# Its tooltip opens from the inline end (the toggle sits at an end edge), and below it while full
+# screen, where the toggle is at the top of the screen.
+[] a sty:StyleRule ; sty:part ".sem-fullscreen-toggle[data-sem-tooltip]::after" ;
+    sty:declares [ sty:property "left" ; sty:raw "auto" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "0" ] ,
+                 [ sty:property "transform" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:part ":is(:fullscreen, [data-sem-fullscreen=maximized], [data-sem-fullscreen=viewport]) .sem-fullscreen-toggle[data-sem-tooltip]::after" ;
+    sty:declares [ sty:property "bottom" ; sty:raw "auto" ] ,
+                 [ sty:property "top" ; sty:raw "calc(100% + 8px)" ] .

@@ -1,0 +1,273 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# Default theme for the data grid and the time axis. A waterfall's bars and the axis's ticks are
+# placed by custom properties the rules write (--from, --to, --scale-start, --scale-end; --tick,
+# --span), so a new scale moves them without re-rendering a row. The cells of a bars column and
+# the axis share one inset (space-3), so ticks and bars line up.
+
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "max-height" ; sty:raw "100%" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+# In a bounded container (a pane, a panel) the grid fills it and its rows scroll under the header.
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-scroll" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "table" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "table-layout" ; sty:raw "fixed" ] ,
+                 [ sty:property "border-collapse" ; sty:raw "separate" ] ,
+                 [ sty:property "border-spacing" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+
+# --- header: sticky, sortable, resizable ---
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "thead th" ;
+    sty:declares [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "vertical-align" ; sty:raw "bottom" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "thead th[aria-sort]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-sort" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "6px" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "text-align" ; sty:raw "inherit" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-sort:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-sort:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "thead th.sem-end .sem-sort" ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "row-reverse" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-sort-icon" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "opacity" ; sty:raw "0.35" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "th[aria-sort] .sem-sort-icon" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "1" ] ,
+                 [ sty:property "color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-head-label" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] .
+# The column's edge: a separator to drag (or move with arrow keys), a line while pointed at or focused.
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-resize" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "bottom" ; sty:raw "0" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "-4px" ] ,
+                 [ sty:property "width" ; sty:raw "8px" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] ,
+                 [ sty:property "cursor" ; sty:raw "col-resize" ] ,
+                 [ sty:property "touch-action" ; sty:raw "none" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-resize::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "20%" ] ,
+                 [ sty:property "bottom" ; sty:raw "20%" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "3px" ] ,
+                 [ sty:property "width" ; sty:raw "2px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "1px" ] ,
+                 [ sty:property "background" ; sty:token tok:border ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-resize:is(:hover, :focus-visible)::after" ;
+    sty:declares [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "bottom" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-accent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "thead th:last-child .sem-resize" ;
+    sty:declares [ sty:property "inset-inline-end" ; sty:raw "0" ] .
+
+# --- rows ---
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody td" ;
+    sty:declares [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "vertical-align" ; sty:raw "middle" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody tr[role=row]" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "default" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody tr[role=row]:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-2 ] .
+# A selected row stays selected under the pointer, one step stronger (the hover rule is more
+# specific than a bare [aria-selected], so the selected rules name the row's role too).
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody tr[role=row][aria-selected=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-3 ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 3px 0 0 var(--sem-accent-9)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody tr[role=row][aria-selected=true]:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-4 ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody tr[role=row]:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "tbody tr:last-child > td" ;
+    sty:declares [ sty:property "border-bottom" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "td.sem-end" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "end" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "th.sem-end" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "end" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-center" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-value" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-detail" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "td code" ;
+    sty:declares [ sty:property "padding" ; sty:raw "1px 6px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:gray-11 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] .
+# A value that is a state (a status, a level), in its tone.
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-cell-badge" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:raw "1px 8px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] ,
+                 [ sty:property "background" ; sty:raw "var(--tone-soft)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--tone-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "td.sem-empty" ;
+    sty:declares [ sty:property "padding" ; sty:token tok:space-6 ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "white-space" ; sty:raw "normal" ] .
+
+# --- the waterfall: bars on the window's scale ---
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "td.sem-bars" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-bar" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "50%" ] ,
+                 [ sty:property "height" ; sty:raw "8px" ] ,
+                 [ sty:property "margin-top" ; sty:raw "-4px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "3px" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "calc(var(--sem-space-3) + (var(--from) - var(--scale-start)) / (var(--scale-end) - var(--scale-start)) * (100% - 2 * var(--sem-space-3)))" ] ,
+                 [ sty:property "width" ; sty:raw "max(3px, calc((var(--to, var(--scale-end)) - var(--from)) / (var(--scale-end) - var(--scale-start)) * (100% - 2 * var(--sem-space-3))))" ] ,
+                 [ sty:property "background" ; sty:raw "var(--bar, var(--sem-accent-9))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-bar[data-sem-tone]" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-solid)" ] .
+# Still running: stripes moving along the bar, which runs to the end of the scale.
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-bar.sem-open" ;
+    sty:declares [ sty:property "background-image" ; sty:raw "repeating-linear-gradient(-45deg, transparent 0 4px, color-mix(in oklab, var(--sem-canvas) 45%, transparent) 4px 8px)" ] ,
+                 [ sty:property "background-size" ; sty:raw "200% 100%" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-shimmer calc(var(--sem-duration-loop) * 8) linear infinite" ] .
+
+# --- the footer: counts, follow, jump to latest, older / newer ---
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-grid-footer" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-status" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-grid-footer button" ;
+    sty:declares [ sty:property "padding" ; sty:raw "2px 10px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), border-color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-grid-footer button:hover:not([disabled])" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-grid-footer button:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-ring)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-grid-footer button[disabled]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.45" ] ,
+                 [ sty:property "cursor" ; sty:raw "default" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-follow[aria-pressed=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-3 ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--sem-accent-7)" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part ".sem-jump" ;
+    sty:declares [ sty:property "border-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-11 ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] .
+
+# --- the time axis (in a waterfall's header, or on its own) ---
+[] a sty:StyleRule ; sty:appliesTo c:TimeAxis ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 12rem" ] ,
+                 [ sty:property "min-width" ; sty:raw "8rem" ] ,
+                 [ sty:property "height" ; sty:raw "1.375rem" ] ,
+                 [ sty:property "margin-inline" ; sty:raw "var(--sem-space-3)" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "400" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "overflow" ; sty:raw "visible" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeAxis ; sty:part ".sem-tick" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "bottom" ; sty:raw "0" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "calc(var(--tick) / var(--span) * 100%)" ] ,
+                 [ sty:property "padding-inline-start" ; sty:raw "4px" ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "line-height" ; sty:raw "1.375rem" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DataGrid ; sty:part "thead th [data-sem-c=time-axis]" ;
+    sty:declares [ sty:property "margin-block-end" ; sty:raw "2px" ] .

@@ -1,0 +1,48 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Ontology docs layer. Under every c:Specimen it adds an "Ontology" section
+# that shows, as highlighted Turtle, what the components the specimen uses
+# *are*: each class with its comment and superclass, the properties whose
+# rdfs:domain it is, its renderings and their rules, the reactions it has and
+# its SHACL shape - all read from the same graph that renders them. The
+# section is built only once opened (sem:showsOntology on the specimen).
+
+sem:DocsLayer a sem:Layer ; rdfs:label "ontology"@en , "онтологія"@uk , "Ontologie"@de , "الأنطولوجيا"@ar ;
+    rdfs:comment "Shows the ontology of the components each specimen uses."@en .
+sem:showsOntology a owl:DatatypeProperty ; rdfs:domain c:Specimen ;
+    rdfs:comment "The specimen's ontology section is open."@en .
+sem:revealsOntology a owl:ObjectProperty ;
+    rdfs:comment "On a rendered element: the specimen whose ontology section activating it opens or closes."@en .
+
+sem:SpecimenOntology a sem:Rendering ;
+    sem:targets c:Specimen ;
+    sem:modality mod:Screen ;
+    sem:layer sem:DocsLayer ;
+    sem:stratum 0 ;
+    sem:needsExtension sx:Locale ;
+    sem:functionOnly """awaits sx:Locale (sx:collated): the classes are listed in collation order of their labels
+(localeCompare). The walk needs no extension: the holding properties are a fixed set (c:children, c:items, c:content,
+c:front, c:tabs, c:actions, c:steps, c:body, each a node or a list), so a property path reaches the components.""" .
+sem:SpecimenOntology-fn a sem:Rule ; sem:implements sem:SpecimenOntology ; sem:function "docs:specimen" .
+
+c:ClassDoc a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "The ontology of one class (c:of, or the value of c:bindProperty on c:bindFrom): the class, its properties, renderings, reactions and shape, as highlighted Turtle."@en ;
+    sem:slug "class-doc" .
+c:ClassDocRendering a sem:Rendering ;
+    sem:targets c:ClassDoc ;
+    sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it colors the Turtle it prints, token by token, and splitting text into tokens needs a regex-match relation no SPARQL (1.1 or 1.2) has." ;
+    sem:needsExtension sx:Matches .
+c:ClassDocRendering-fn a sem:Rule ; sem:implements c:ClassDocRendering ; sem:function "class-doc" .
+
+sem:ToggleOntology a beh:Reaction ; beh:when beh:Click ; beh:sourceClass c:Specimen ;
+    beh:deletes """CONSTRUCT { $this sem:showsOntology ?v } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:revealsOntology $this . $this sem:showsOntology ?v }""" ;
+    beh:inserts """CONSTRUCT { $this sem:showsOntology ?next } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:revealsOntology $this . OPTIONAL { $this sem:showsOntology ?v } BIND(!COALESCE(?v, false) AS ?next) }""" ;
+    sem:function "docs:toggle" .

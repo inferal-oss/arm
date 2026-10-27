@@ -1,0 +1,370 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Theme for frames (windows, palettes): their two state axes, palettes, the desktop's
+# stacking layer and the taskbar. The frame's own look is in default.ttl.
+#
+# c:windowState and c:attachedTo are hooked (data-sem-window-state, data-sem-edge), so
+# each value is styled once here for every frame. The rendering leaves out the inline
+# geometry a state does not use (all of it when maximized, the docked dimension only
+# when attached to an edge), so these rules only place the frame.
+
+[] a sty:StyleRule ; sty:appliesTo c:Frame ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-scale-in var(--sem-duration) var(--sem-ease)" ] .
+
+# --- c:windowState ------------------------------------------------------------------------------------
+
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:Maximized ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "var(--sem-dock-top, 0px) var(--sem-dock-bottom, 0px)" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "var(--sem-dock-start, 0px) var(--sem-dock-end, 0px)" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:Maximized ; sty:part ".sem-window-bar" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "default" ] .
+
+# --- c:attachedTo: a docked frame fills its edge (maximized wins) -------------------------------------------
+# A taskbar docked to an edge owns it (--sem-dock-*, set on the page below): frames dock inside it.
+
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:StartEdge ; sty:state ":not([data-sem-window-state=\"maximized\"])" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "var(--sem-dock-top, 0px) var(--sem-dock-bottom, 0px)" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "var(--sem-dock-start, 0px)" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "max-width" ; sty:raw "80vw" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0 1px 0 0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:EndEdge ; sty:state ":not([data-sem-window-state=\"maximized\"])" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "var(--sem-dock-top, 0px) var(--sem-dock-bottom, 0px)" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "var(--sem-dock-end, 0px)" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "max-width" ; sty:raw "80vw" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0 0 0 1px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:TopEdge ; sty:state ":not([data-sem-window-state=\"maximized\"])" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "var(--sem-dock-start, 0px) var(--sem-dock-end, 0px)" ] ,
+                 [ sty:property "inset-block-start" ; sty:raw "var(--sem-dock-top, 0px)" ] ,
+                 [ sty:property "inset-block-end" ; sty:raw "auto" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "max-height" ; sty:raw "70vh" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0 0 1px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:BottomEdge ; sty:state ":not([data-sem-window-state=\"maximized\"])" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "var(--sem-dock-start, 0px) var(--sem-dock-end, 0px)" ] ,
+                 [ sty:property "inset-block-end" ; sty:raw "var(--sem-dock-bottom, 0px)" ] ,
+                 [ sty:property "inset-block-start" ; sty:raw "auto" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "max-height" ; sty:raw "70vh" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "1px 0 0" ] .
+
+# On a compact screen a frame docked to the bottom is a sheet of at most half the screen.
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:BottomEdge ; sty:state ":not([data-sem-window-state=\"maximized\"])" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "max-height" ; sty:raw "50dvh" ] .
+
+# --- palette: a slim title strip, as tall as its content ------------------------------------------------------
+
+[] a sty:StyleRule ; sty:appliesTo c:Palette ;
+    sty:declares [ sty:property "grid-template-rows" ; sty:raw "auto auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "180px" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] .
+[] a sty:StyleRule ; sty:appliesTo c:Palette ; sty:part ".sem-window-bar" ;
+    sty:declares [ sty:property "padding" ; sty:raw "3px 3px 3px 10px" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Palette ; sty:part ".sem-window-bar strong" ;
+    sty:declares [ sty:property "font-size" ; sty:raw "11px" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.04em" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Palette ; sty:part ".sem-window-control" ;
+    sty:declares [ sty:property "width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "font-size" ; sty:raw "11px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Palette ; sty:part ".sem-window-body:not(:has(> [data-sem-inset]))" ;
+    sty:declares [ sty:property "padding" ; sty:token tok:space-3 ] .
+
+# --- the desktop's stacking layer ---------------------------------------------------------------------------------
+# One stacking context for the raisable frames, above the page and below the desktop's
+# dialogs and toasts; inside it, each frame's c:z (inline z-index) orders them.
+
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> .sem-frames" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "z-index" ; sty:raw "50" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> .sem-frames > *" ;
+    sty:declares [ sty:property "z-index" ; sty:raw "0" ] .
+
+# A desktop that tiles (c:tileLayout c:DesktopGridLayout) lays its normal floating windows out in
+# flow, in the layer between the docked edges. The tracks are c:Grid's (theme/layout.ttl): as many
+# columns as fit at --grid-min, capped at --grid-columns when the frames' layer has data-columns.
+# The windows' c:x, c:y, c:width and c:height stay graph state, used again when it floats.
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:when c:DesktopGridLayout ; sty:part "> .sem-frames" ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset-block" ; sty:raw "max(var(--sem-dock-top, 0px), 72px) max(var(--sem-dock-bottom, 0px), 64px)" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "max(var(--sem-dock-start, 0px), 24px) max(var(--sem-dock-end, 0px), 24px)" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fill, minmax(min(100%, var(--grid-min, 320px)), 1fr))" ] ,
+                 [ sty:property "grid-auto-rows" ; sty:raw "minmax(180px, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:when c:DesktopGridLayout ; sty:part "> .sem-frames[data-columns]" ;
+    sty:declares [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-3)) / var(--grid-columns)))), 1fr))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:when c:DesktopGridLayout ; sty:part "> .sem-frames > *" ;
+    sty:declares [ sty:property "pointer-events" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:when c:DesktopGridLayout ; sty:part "> .sem-frames > [data-sem-tiled]" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "inset" ; sty:raw "auto" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "180px" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:when c:DesktopGridLayout ; sty:part "> .sem-frames > [data-sem-tiled] .sem-window-bar" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "default" ] .
+# At phone width, one window per row whatever the cap (uncapped, the tracks already give one).
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:when c:DesktopGridLayout ; sty:part "> .sem-frames[data-columns]" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+
+# --- taskbar ---------------------------------------------------------------------------------------------------------
+
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "padding" ; sty:raw "4px" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "12px" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:state "[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part ".sem-task" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "6px" ] ,
+                 [ sty:property "height" ; sty:raw "28px" ] ,
+                 [ sty:property "max-width" ; sty:raw "180px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 10px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "8px" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "600 12px/1 var(--sem-font)" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part ".sem-task .sem-label" ;
+    sty:declares [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part ".sem-task:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part ".sem-task[aria-current=\"true\"]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part ".sem-task[data-state=\"minimized\"]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.7" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part ".sem-task:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+
+# Hosted on the desktop, the taskbar floats above the status bar, on every page.
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"]" ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset-block-end" ; sty:raw "88px" ] ,
+                 [ sty:property "left" ; sty:raw "50%" ] ,
+                 [ sty:property "translate" ; sty:raw "-50% 0" ] ,
+                 [ sty:property "z-index" ; sty:raw "55" ] ,
+                 [ sty:property "max-width" ; sty:raw "calc(100vw - 32px)" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "animation" ; sty:raw "sem-rise-in var(--sem-duration) var(--sem-ease)" ] .
+
+# On a compact screen the taskbar keeps to the end corner, off the middle of what is being read.
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"]" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "left" ; sty:raw "auto" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "12px" ] ,
+                 [ sty:property "translate" ; sty:raw "none" ] .
+
+# A frame docked to the bottom edge owns that edge: the taskbar sits just above it (anchor
+# positioning; where that is unsupported the declaration is dropped and it keeps its place).
+# Only while the taskbar is where the theme put it: placed, it stays where it was put.
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:when c:BottomEdge ; sty:state ":not([data-sem-window-state=\"maximized\"], [data-sem-window-state=\"minimized\"])" ;
+    sty:declares [ sty:property "anchor-name" ; sty:raw "--sem-bottom-dock" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ;
+    sty:state ":has(> .sem-frames > [data-sem-edge=\"bottom\"]:not([hidden], [data-sem-window-state=\"minimized\"], [data-sem-window-state=\"maximized\"]))" ;
+    sty:part "> [data-sem-c=\"taskbar\"]:not([data-sem-edge])" ;
+    sty:declares [ sty:property "position-anchor" ; sty:raw "--sem-bottom-dock" ] ,
+                 [ sty:property "inset-block-end" ; sty:raw "calc(anchor(top) + 12px)" ] .
+
+# --- a taskbar that can be moved (c:Draggable) and docked (c:Dockable) ---------------------------------------------
+# Its grip is a column of dots at its start (a row of them at its top when it stands upright).
+
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part "> .sem-grip" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "align-self" ; sty:raw "stretch" ] ,
+                 [ sty:property "width" ; sty:raw "14px" ] ,
+                 [ sty:property "min-height" ; sty:raw "24px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "6px" ] ,
+                 [ sty:property "background" ; sty:raw "radial-gradient(circle, var(--sem-faint) 1.1px, transparent 1.6px) center / 5px 5px space" ] ,
+                 [ sty:property "background-origin" ; sty:raw "content-box" ] ,
+                 [ sty:property "padding" ; sty:raw "4px 2px" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "cursor" ; sty:raw "grab" ] ,
+                 [ sty:property "touch-action" ; sty:raw "none" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-select" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part "> .sem-grip:hover" ;
+    sty:declares [ sty:property "background-color" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part "> .sem-grip:active" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "grabbing" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:part "> .sem-grip:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+
+# Placed: floating where it was put (its inline left and top), no longer centred.
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"][data-sem-edge=\"none\"]" ;
+    sty:declares [ sty:property "inset-block-end" ; sty:raw "auto" ] ,
+                 [ sty:property "right" ; sty:raw "auto" ] ,
+                 [ sty:property "translate" ; sty:raw "none" ] .
+
+# Docked: it lies along its edge, from end to end, flush with it; the page keeps that edge clear.
+# How thick it is across: --sem-taskbar-size lying, --sem-taskbar-span standing (a theme may say).
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"]:is([data-sem-edge=\"top\"], [data-sem-edge=\"bottom\"], [data-sem-edge=\"start\"], [data-sem-edge=\"end\"])" ;
+    sty:declares [ sty:property "translate" ; sty:raw "none" ] ,
+                 [ sty:property "max-width" ; sty:raw "none" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "nowrap" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "animation" ; sty:raw "none" ] ,
+                 [ sty:property "scrollbar-width" ; sty:raw "thin" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"]:is([data-sem-edge=\"top\"], [data-sem-edge=\"bottom\"])" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "0" ] ,
+                 [ sty:property "block-size" ; sty:raw "var(--sem-taskbar-size, 40px)" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "overflow-y" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"][data-sem-edge=\"top\"]" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "0 auto" ] ,
+                 [ sty:property "border-block-end-width" ; sty:raw "1px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"][data-sem-edge=\"bottom\"]" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "auto 0" ] ,
+                 [ sty:property "border-block-start-width" ; sty:raw "1px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"]:is([data-sem-edge=\"start\"], [data-sem-edge=\"end\"])" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "0" ] ,
+                 [ sty:property "inline-size" ; sty:raw "var(--sem-taskbar-span, min(168px, 40vw))" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "align-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "hidden" ] ,
+                 [ sty:property "overflow-y" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"][data-sem-edge=\"start\"]" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "0 auto" ] ,
+                 [ sty:property "border-inline-end-width" ; sty:raw "1px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Desktop ; sty:part "> [data-sem-c=\"taskbar\"][data-sem-edge=\"end\"]" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "auto 0" ] ,
+                 [ sty:property "border-inline-start-width" ; sty:raw "1px" ] .
+# Standing upright, its entries are rows as wide as it, and its grip a row of dots on top.
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:state ":is([data-sem-edge=\"start\"], [data-sem-edge=\"end\"])" ; sty:part "> .sem-task" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "max-width" ; sty:raw "none" ] ,
+                 [ sty:property "justify-content" ; sty:raw "flex-start" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Taskbar ; sty:state ":is([data-sem-edge=\"start\"], [data-sem-edge=\"end\"])" ; sty:part "> .sem-grip" ;
+    sty:declares [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "height" ; sty:raw "14px" ] ,
+                 [ sty:property "padding" ; sty:raw "2px 4px" ] .
+
+# The page keeps a docked taskbar's edge clear: the element that holds the desktop is padded by
+# it, and says how much (--sem-dock-*) to what sticks to that edge (the app bar, the status bar)
+# and to the frames that dock or maximize there.
+[] a sty:StyleRule ; sty:part ":has(> [data-sem-c=desktop] > [data-sem-c=taskbar]:is([data-sem-edge=top], [data-sem-edge=bottom], [data-sem-edge=start], [data-sem-edge=end]):not([hidden]))" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "padding-block" ; sty:raw "var(--sem-dock-top, 0px) var(--sem-dock-bottom, 0px)" ] ,
+                 [ sty:property "padding-inline" ; sty:raw "var(--sem-dock-start, 0px) var(--sem-dock-end, 0px)" ] .
+[] a sty:StyleRule ; sty:part ":has(> [data-sem-c=desktop] > [data-sem-c=taskbar][data-sem-edge=top]:not([hidden]))" ;
+    sty:declares [ sty:property "--sem-dock-top" ; sty:raw "var(--sem-taskbar-size, 40px)" ] .
+[] a sty:StyleRule ; sty:part ":has(> [data-sem-c=desktop] > [data-sem-c=taskbar][data-sem-edge=bottom]:not([hidden]))" ;
+    sty:declares [ sty:property "--sem-dock-bottom" ; sty:raw "var(--sem-taskbar-size, 40px)" ] .
+[] a sty:StyleRule ; sty:part ":has(> [data-sem-c=desktop] > [data-sem-c=taskbar][data-sem-edge=start]:not([hidden]))" ;
+    sty:declares [ sty:property "--sem-dock-start" ; sty:raw "var(--sem-taskbar-span, min(168px, 40vw))" ] .
+[] a sty:StyleRule ; sty:part ":has(> [data-sem-c=desktop] > [data-sem-c=taskbar][data-sem-edge=end]:not([hidden]))" ;
+    sty:declares [ sty:property "--sem-dock-end" ; sty:raw "var(--sem-taskbar-span, min(168px, 40vw))" ] .
+
+# --- tearing a tab off into a window, and dragging it back ------------------------------------------
+# A tab that tears off is pressed and dragged, not selected as text or held for a callout.
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "[data-sem-gesture=tear]" ;
+    sty:declares [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-touch-callout" ; sty:raw "none" ] .
+# A touch held long enough to tear: the tab gives a little; torn, it fades where it was.
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "[data-sem-tear-armed]" ;
+    sty:declares [ sty:property "scale" ; sty:raw "0.96" ] ,
+                 [ sty:property "transition" ; sty:raw "scale var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "[data-sem-tearing]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.4" ] .
+# The ghost: the window it would become (the host draws it with the frame's hooks, so every theme
+# draws its own window), smaller, see-through and outlined, under the pointer in the top layer.
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:state "[data-sem-ghost]" ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset" ; sty:raw "auto" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "1000" ] ,
+                 [ sty:property "width" ; sty:raw "min(340px, calc(100vw - 32px))" ] ,
+                 [ sty:property "height" ; sty:raw "180px" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.9" ] ,
+                 [ sty:property "outline" ; sty:raw "2px dashed var(--sem-accent-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "3px" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "opacity var(--sem-duration-fast) var(--sem-ease), outline-color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:state "[data-sem-ghost]" ; sty:part ".sem-tear-cue" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:raw "12px 16px" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "font" ; sty:raw "600 var(--sem-text-sm)/1.35 var(--sem-font)" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] .
+# Back over the tab list: letting go keeps the tab, so the ghost fades and the list lights up.
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:state "[data-sem-ghost][data-sem-tear=back]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.5" ] ,
+                 [ sty:property "outline-color" ; sty:raw "var(--sem-border-strong)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:state "[data-sem-ghost][data-sem-tear=back]" ; sty:part ".sem-tear-cue" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "[role=tablist][data-sem-gathering]" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px dashed var(--sem-accent-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-3px" ] ,
+                 [ sty:property "background-color" ; sty:raw "color-mix(in oklab, var(--sem-accent-9) 10%, transparent)" ] .
+# A window torn from a tab, dragged over that tab list: letting go returns it, and it says so (under
+# its title bar, which is where the pointer is, so it is on screen however tall the window).
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:state "[data-sem-returning]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.75" ] ,
+                 [ sty:property "outline" ; sty:raw "2px dashed var(--sem-accent-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Frame ; sty:state "[data-sem-returning]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-return-cue)" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "12px" ] ,
+                 [ sty:property "top" ; sty:raw "52px" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] ,
+                 [ sty:property "padding" ; sty:raw "8px 12px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:token tok:accent-9 ] ,
+                 [ sty:property "color" ; sty:raw "white" ] ,
+                 [ sty:property "font" ; sty:raw "600 var(--sem-text-xs)/1.35 var(--sem-font)" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .

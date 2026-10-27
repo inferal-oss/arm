@@ -1,0 +1,90 @@
+{
+  "name": "@inferal-oss/semblance",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT OR Apache-2.0",
+  "type": "module",
+  "description": "An ontologically defined web UI framework: components, layers, styles and behaviour are RDF; SPARQL rules project the graph into the DOM",
+  "keywords": [
+    "rdf",
+    "sparql",
+    "ui",
+    "framework",
+    "ontology",
+    "owl",
+    "shacl",
+    "incremental"
+  ],
+  "homepage": "https://semblance.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inferal-oss/semblance.git"
+  },
+  "bugs": {
+    "url": "https://github.com/inferal-oss/semblance/issues"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./web": "./src/web/index.ts",
+    "./node": "./src/node/index.ts",
+    "./ontology/*": "./ontology/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "ontology",
+    "rdf-engine/host",
+    "rdf-engine/build/*.wasm",
+    "docs",
+    "README.md",
+    "DESIGN.md",
+    "PERSISTENCE.md",
+    "LICENSE",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "gen:vocab": "tsx scripts/gen-rdfhtml-vocab.ts",
+    "gen:mark": "tsx scripts/gen-mark.ts",
+    "dev": "vite",
+    "build": "vite build",
+    "test": "scripts/test-queue.sh vitest run --maxWorkers=2",
+    "test:full": "tsx scripts/test-full.ts",
+    "typecheck": "tsc --noEmit",
+    "bench": "tsx bench/node.ts",
+    "build:single": "vite build --mode single && node scripts/name-single.mjs",
+    "conformance": "tsx rdf-engine/conformance/run.ts",
+    "engine:build": "tsx rdf-engine/build.ts",
+    "engine:check": "tsx rdf-engine/host/abi-check.ts",
+    "engine:compare": "tsx rdf-engine/compare.ts",
+    "engine:sizes": "tsx rdf-engine/sizes.ts",
+    "engine:speed": "tsx rdf-engine/host/speed-check.ts",
+    "predev": "npm run engine:build",
+    "prebuild": "npm run engine:build",
+    "pretest": "npm run engine:build",
+    "pretest:full": "npm run engine:build",
+    "prebuild:single": "npm run engine:build",
+    "prepack": "npm run engine:build"
+  },
+  "dependencies": {
+    "n3": "^2.13.12",
+    "oxigraph": "^0.5.13"
+  },
+  "devDependencies": {
+    "@comunica/query-sparql-rdfjs": "^5.4.1",
+    "@rdfjs/types": "^2.0.1",
+    "@types/n3": "^1.26.5",
+    "@types/node": "^26.6.5",
+    "binaryen": "^132.0.0",
+    "linkedom": "^0.18.14",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^5.0.5",
+    "wabt": "^1.0.39"
+  }
+}

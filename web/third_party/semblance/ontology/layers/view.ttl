@@ -1,0 +1,217 @@
+@prefix iv: <https://semblance.dev/ns/view#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Maintained views (docs/IVM.md). A view is a query - sem:select or sem:construct, plain
+# SPARQL that also runs from scratch - whose result the runtime keeps up to date from the
+# changes to its inputs, one tick per transaction, instead of re-running it. A query opts in
+# by also being an iv:View. Over an LDES, the stream's members are the input changes: an
+# appended member enters (+1), a retired one leaves (-1), so the retention policy bounds what
+# a view holds. CONSTRUCT views write their output to the views graph
+# (urn:semblance:views), which projections read like any input graph; SELECT views deliver
+# rows to subscribers. The runtime writes each view's plan there too, as data.
+
+iv:View a owl:Class ;
+    rdfs:subClassOf prov:Plan ;
+    rdfs:label "maintained view"@en ;
+    rdfs:comment """A query (sem:select or sem:construct) whose result is maintained from the changes to its
+inputs. Run from scratch, the same query gives the same result; tests check that after every tick."""@en .
+
+# --- how ---------------------------------------------------------------------------------------------
+
+iv:Strategy a owl:Class ; rdfs:comment "How a view is kept up to date."@en .
+iv:strategy a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range iv:Strategy ;
+    rdfs:comment """Asked for on a view (iv:Incremental makes a fallback an error), and stated by the
+runtime in the views graph: what the view got."""@en .
+# iv:strategy iv:Incremental on a SPARQL rule (or its rendering) maintains the rule as a view: its
+# query partitioned by $this, each focus's output read from the view (docs/COMPONENTS.md).
+iv:Incremental a iv:Strategy ; rdfs:label "incremental"@en ;
+    rdfs:comment "Every operator does work in proportion to the change, not to the data."@en .
+iv:Auto a iv:Strategy ; rdfs:label "as it can"@en ;
+    rdfs:comment "Asked for on a view whose query may not be maintainable (one typed into the workbench): a fallback to recompute is expected - no warning, and no error in strict mode, which still compares it."@en .
+iv:Recompute a iv:Strategy ; rdfs:label "recomputed"@en ;
+    rdfs:comment "Re-run from scratch whenever an input changes, and diffed (the fallback)."@en .
+iv:fallback a owl:DatatypeProperty ; rdfs:domain iv:View ;
+    rdfs:comment "Why the runtime recomputes a view rather than maintaining it (written by the runtime)."@en .
+
+# --- inputs and time -----------------------------------------------------------------------------------
+
+iv:over a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range ldes:EventStream ;
+    rdfs:comment "The stream whose members are the view's input changes. Optional: <stream> tree:member ?m in the query says the same."@en .
+iv:window a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range iv:Window ;
+    rdfs:comment "Only the members inside this window count; they leave it as time passes."@en .
+iv:Window a owl:Class .
+iv:SlidingWindow a owl:Class ; rdfs:subClassOf iv:Window ;
+    rdfs:label "sliding window"@en , "ковзне вікно"@uk , "gleitendes Fenster"@de , "نافذة منزلقة"@ar ;
+    rdfs:comment "The members whose timestamp is within iv:range of now. On the wall clock, one timer, set to the next expiry, moves it."@en .
+iv:range a owl:DatatypeProperty ; rdfs:domain iv:Window ; rdfs:range xsd:dayTimeDuration ;
+    rdfs:comment "How far back a sliding window reaches (e.g. \"PT30S\")."@en .
+iv:TumblingWindow a owl:Class ; rdfs:subClassOf iv:Window ;
+    rdfs:label "tumbling window"@en , "перекидне вікно"@uk , "springendes Fenster"@de , "نافذة متعاقبة"@ar ;
+    rdfs:comment """Fixed buckets of iv:size (epoch-aligned: a member's bucket starts at floor(t / size) × size); the
+newest iv:keep buckets up to now's are inside (default 1, the current one). With iv:bucketVariable,
+each member's bucket start is bound to that variable (the body does not bind it), so a view can
+GROUP BY it: counts per minute of the last ten minutes. A bucket leaves, all at once, when keep
+newer ones have begun."""@en .
+iv:size a owl:DatatypeProperty ; rdfs:domain iv:TumblingWindow ; rdfs:range xsd:dayTimeDuration ;
+    rdfs:comment "A tumbling window's bucket length (e.g. \"PT1M\")."@en .
+iv:keep a owl:DatatypeProperty ; rdfs:domain iv:TumblingWindow ; rdfs:range xsd:positiveInteger ;
+    rdfs:comment "How many buckets a tumbling window keeps, the current one included (default 1)."@en .
+iv:bucketVariable a owl:DatatypeProperty ; rdfs:domain iv:TumblingWindow ; rdfs:range xsd:string ;
+    rdfs:comment "The variable (e.g. \"bucket\") a member's bucket start is bound to: a literal of its timestamp's datatype."@en .
+iv:CountWindow a owl:Class ; rdfs:subClassOf iv:Window ;
+    rdfs:label "count window"@en , "вікно за кількістю"@uk , "Anzahlfenster"@de , "نافذة عددية"@ar ;
+    rdfs:comment """The latest ldes:amount members of the stream by timestamp (ties by IRI), whether or not the
+view's body has rows for them. No clock: an appended member pushes the oldest out, a retired one
+lets the next older back in."""@en .
+iv:timeBy a owl:ObjectProperty ; rdfs:domain iv:Window ; rdfs:range owl:DatatypeProperty ;
+    rdfs:comment "The member's timestamp (default: the stream's ldes:timestampPath): an xsd:dateTime, or a number of milliseconds."@en .
+iv:Clock a owl:Class ; rdfs:comment "What a window's now is."@en .
+iv:clock a owl:ObjectProperty ; rdfs:domain iv:Window ; rdfs:range iv:Clock .
+iv:WallClock a iv:Clock ; rdfs:label "wall clock"@en , "годинник"@uk , "Uhrzeit"@de , "ساعة الحائط"@ar ;
+    rdfs:comment "Now is the clock's time (the default); one timer, set to the earliest expiry of every window, moves windows."@en .
+iv:EventTime a iv:Clock ; rdfs:label "event time"@en , "час подій"@uk , "Ereigniszeit"@de , "وقت الحدث"@ar ;
+    rdfs:comment """Now is the watermark: the greatest timestamp among the stream's members, less iv:lateness. Expiry
+follows the data and needs no timer; timestamps need not be dates (net:Capture's are milliseconds of
+the page). A member behind the watermark is late: inside the window it still counts, behind it it
+does not (iv:lateMembers counts them)."""@en .
+iv:lateness a owl:DatatypeProperty ; rdfs:domain iv:Window ; rdfs:range xsd:dayTimeDuration ;
+    rdfs:comment "How far the watermark of an event-time window stays behind the greatest timestamp (default PT0S)."@en .
+iv:whileShown a owl:ObjectProperty ; rdfs:domain iv:View ;
+    rdfs:comment """Maintain the view only while this component - or, given a class, one of its instances - is
+shown; otherwise it is suspended (no work per tick) and rebuilt from its inputs when shown again."""@en .
+iv:partitionBy a owl:DatatypeProperty ; rdfs:domain iv:View ;
+    rdfs:comment """The variable(s) a view's body is partitioned by (e.g. "m", or "stream m"): each binding is a
+partition, evaluated with the key bound and cached, and evaluated again only when a changed triple
+reaches it through the query's own patterns. Default: the member of a <stream> tree:member ?m pattern,
+else the subject of the first triple pattern."""@en .
+iv:reads a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range iv:View ;
+    rdfs:comment """A view whose output this one reads (in the views graph): it steps after that view in each tick
+and sees what it wrote, as a change like any other."""@en .
+
+# --- a view per instance, and parameters ---------------------------------------------------------------
+
+iv:targets a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range owl:Class ;
+    rdfs:comment """A view per instance of the class, with $this bound to it (as sem:targets does for rules): its
+IRI is <instance>/~view-<local name>, its output and rows are minted under the instance, and it is
+maintained while the instance is shown (unless iv:whileShown says otherwise)."""@en .
+iv:instanceOf a owl:ObjectProperty ; rdfs:comment "Written by the runtime on a view per instance: the view it is an instance of."@en .
+iv:focus a owl:ObjectProperty ; rdfs:comment "Written by the runtime on a view per instance: its instance ($this)."@en .
+iv:parameter a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range iv:Parameter ;
+    rdfs:comment """A value from the graph the query is written with: $<iv:variable> in its text is replaced by it before
+the query runs (in a LIMIT or OFFSET, by a number). When it changes the view is built again once - or,
+when only LIMIT / OFFSET change, its top-k moves its window in place."""@en .
+iv:Parameter a owl:Class ;
+    rdfs:comment "A value a view is bound to: iv:property of iv:from (default: $this), or the ?value of iv:select; else iv:default."@en .
+iv:variable a owl:DatatypeProperty ; rdfs:domain iv:Parameter ; rdfs:comment "The name the query uses ($name)."@en .
+iv:property a owl:ObjectProperty ; rdfs:domain iv:Parameter .
+iv:from a owl:ObjectProperty ; rdfs:domain iv:Parameter .
+iv:select a owl:DatatypeProperty ; rdfs:domain iv:Parameter ;
+    rdfs:comment "A SELECT ($this bound) whose first ?value is the parameter; re-run when a triple it reads changes."@en .
+iv:default a rdf:Property ; rdfs:domain iv:Parameter ; rdfs:comment "The value when there is none."@en .
+
+# --- where the output goes ---------------------------------------------------------------------------------
+# A CONSTRUCT view writes its triples to the views graph. A SELECT view delivers rows to subscribers;
+# with iv:materialize iv:Graph it also writes them there, as a W3C result set, so a component that
+# shows a query held in data (a chart, a table, a stat, a facet's counts) reads rows that are
+# already there, and a SPARQL rendering is plain SPARQL over them:
+#
+#   <view> a rs:ResultSet ; rs:resultVariable "v" … ; rs:solution <row> …
+#   <row>  rs:binding <row>-v … ; rs:index n (ORDER BY: its position, 1-based)
+#          [ iv:multiplicity n (a row the result has n times) ]
+#   <row>-v rs:variable "v" ; rs:value term (absent: unbound)
+#
+# A row's node is <view>/~row-<hash of its values> (stable while its values are); a view per instance
+# writes them under its instance: <instance>/~view-<name>-<hash>, so a rule on the instance with
+# sem:readsMinted re-runs when they change. A binding is the row's IRI, "-", the variable.
+
+iv:materialize a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range iv:Materialization .
+iv:Materialization a owl:Class .
+iv:Graph a iv:Materialization ; rdfs:label "in the views graph"@en ;
+    rdfs:comment "A SELECT view's rows written to the views graph as a result set (rs:)."@en .
+iv:Ephemeral a iv:Materialization ; rdfs:label "to subscribers only"@en ;
+    rdfs:comment "A CONSTRUCT view's triples are not written to the views graph: only subscribers (and since()) see them."@en .
+iv:ResultSet a iv:Materialization ; rdfs:label "rows only"@en ;
+    rdfs:comment """A SELECT's rows as a result set in the views graph (as iv:Graph), a CONSTRUCT's triples nowhere (as
+iv:Ephemeral): for a query whose text anyone may type (the workbench), whose triples must not become input."""@en .
+iv:multiplicity a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "How many times a result set's row occurs (when more than once)."@en .
+
+# Designed, not built yet (docs/IVM.md §8.1): iv:maxState.
+
+# --- each step, as data (iv:deltaLog) -------------------------------------------------------------
+# A view may record its ticks in a stream: one member per tick that changed it, saying what came
+# in and what that did to its groups, in the views graph. The stream's retention (ldes:amount)
+# says how many it keeps (default 12). With iv:recordsChanges, the members carry the triples too.
+# The host reads the same changes without the graph: ViewHandle.since(tick), and src/view/replica.ts
+# sends them to another store (a tab, a worker) that holds the view's output from them alone.
+
+iv:deltaLog a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range ldes:EventStream ;
+    rdfs:comment "A stream the runtime appends one iv:Delta to for each tick that changed this view."@en .
+iv:Delta a owl:Class ; rdfs:comment "One tick of a view: iv:came, iv:changed, iv:entered, iv:left, iv:work against iv:inputRows."@en .
+iv:view a owl:ObjectProperty ; rdfs:domain iv:Delta ; rdfs:range iv:View .
+iv:tick a owl:DatatypeProperty ; rdfs:domain iv:Delta ; rdfs:range xsd:integer ; rdfs:comment "The runtime's tick number."@en .
+iv:at a owl:DatatypeProperty ; rdfs:domain iv:Delta ; rdfs:range xsd:dateTime .
+iv:came a owl:DatatypeProperty ; rdfs:domain iv:Delta ; rdfs:comment "What came in: members appended (+), retired or aged out (−), changed."@en .
+iv:changed a owl:DatatypeProperty ; rdfs:domain iv:Delta ; rdfs:comment "Which groups changed, and from what to what (the first aggregate)."@en .
+iv:entered a owl:DatatypeProperty ; rdfs:domain iv:Delta ; rdfs:range xsd:integer ; rdfs:comment "Members that entered (weight +1)."@en .
+iv:left a owl:DatatypeProperty ; rdfs:domain iv:Delta ; rdfs:range xsd:integer ; rdfs:comment "Members that left (weight −1): retired, or out of the window."@en .
+iv:work a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Rows the tick processed."@en .
+iv:recordsChanges a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment """On a delta log: each iv:Delta also lists the triples the tick added to and removed from the
+view's output (iv:added, iv:removed: rdf:Statement nodes minted under it), so a reader holding the
+output as of tick n catches up with the members whose iv:tick is greater - SPARQL alone, no
+re-evaluation. A CONSTRUCT's triples; a materialized SELECT's rs: rows."""@en .
+iv:added a owl:ObjectProperty ; rdfs:domain iv:Delta ; rdfs:range rdf:Statement ; rdfs:comment "A triple this tick added to the view's output."@en .
+iv:removed a owl:ObjectProperty ; rdfs:domain iv:Delta ; rdfs:range rdf:Statement ; rdfs:comment "A triple this tick removed from the view's output."@en .
+
+# --- the plan, as data (written by the runtime) ---------------------------------------------------------
+
+iv:Operator a owl:Class ; rdfs:comment "One step of a view's circuit."@en .
+iv:operator a owl:ObjectProperty ; rdfs:domain iv:View ; rdfs:range iv:Operator .
+iv:input a owl:ObjectProperty ; rdfs:domain iv:Operator ; rdfs:range iv:Operator ;
+    rdfs:comment "The operator whose changes this one consumes."@en .
+iv:kind a owl:ObjectProperty ; rdfs:domain iv:Operator .
+iv:algebra a owl:DatatypeProperty ; rdfs:domain iv:Operator ; rdfs:comment "The part of the query it evaluates, as text."@en .
+iv:partitionKey a owl:DatatypeProperty ; rdfs:domain iv:Operator ;
+    rdfs:comment "A partitioned operator's key: it re-evaluates only the partitions a change touches."@en .
+iv:Partition a owl:NamedIndividual ; rdfs:label "partition"@en ;
+    rdfs:comment """Evaluates the body once per partition (an LDES member, a row of a collection...) with its key bound,
+and caches its rows until a changed triple reaches the partition through one of the body's patterns
+(joins outside the member, OPTIONAL, EXISTS, MINUS: a delta query over the store's indexes)."""@en .
+iv:Project a owl:NamedIndividual ; rdfs:label "project"@en ; rdfs:comment "The partitions' rows, as a bag."@en .
+iv:Distinct a owl:NamedIndividual ; rdfs:label "distinct"@en ;
+    rdfs:comment "DISTINCT with counts: a row is in while some partition has it, so a retraction is exact."@en .
+iv:Extend a owl:NamedIndividual ; rdfs:label "extend"@en ;
+    rdfs:comment "Expressions over result rows (arithmetic over aggregates, HAVING, a CONSTRUCT's BINDs), by the store, for a tick's new rows at once."@en .
+iv:Union a owl:NamedIndividual ; rdfs:label "union"@en ; rdfs:comment "The sum of its parts (UNION of subqueries)."@en .
+iv:TopK a owl:NamedIndividual ; rdfs:label "top-k"@en ;
+    rdfs:comment "ORDER BY with LIMIT / OFFSET: every candidate in an ordered multiset (O(log n) per change), the window's rows out."@en .
+iv:Expire a owl:NamedIndividual ; rdfs:label "expire"@en ;
+    rdfs:comment "A window's edge: members leave the aggregates when their timestamp falls out of it."@en .
+iv:Group a owl:NamedIndividual ; rdfs:label "group"@en ;
+    rdfs:comment "GROUP BY with incremental aggregates: per group, COUNT and SUM add and subtract; MIN and MAX keep values in order."@en .
+iv:Sink a owl:NamedIndividual ; rdfs:label "sink"@en ;
+    rdfs:comment "Writes the triples of the groups that changed, reference-counted, to the views graph."@en .
+
+# --- figures (iv:measured views; written in idle time) ----------------------------------------------------
+
+iv:measured a owl:DatatypeProperty ; rdfs:domain iv:View ; rdfs:range xsd:boolean ;
+    rdfs:comment "Write this view's figures to the views graph in idle time, with a from-scratch run for comparison."@en .
+iv:stateRows a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Rows of state the view holds (cached member rows, accumulators, window)."@en .
+iv:ticks a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Ticks in which the view did work."@en .
+iv:lastRows a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Rows processed in the last tick that did work."@en .
+iv:lastMs a owl:DatatypeProperty ; rdfs:range xsd:decimal ; rdfs:comment "Milliseconds that tick took for this view."@en .
+iv:meanMs a owl:DatatypeProperty ; rdfs:range xsd:decimal ; rdfs:comment "Mean milliseconds per tick."@en .
+iv:scratchMs a owl:DatatypeProperty ; rdfs:range xsd:decimal ; rdfs:comment "Milliseconds a from-scratch run of the same query took (sampled)."@en .
+iv:scratchRows a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Results of that run."@en .
+iv:inputRows a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Member rows a from-scratch run reads."@en .
+iv:resultRows a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Rows (or triples) the maintained result has."@en .
+iv:matches a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether the maintained result equalled that from-scratch run, when last checked (iv:checkedTick)."@en .
+iv:checkedTick a owl:DatatypeProperty ; rdfs:range xsd:integer .
+iv:lateMembers a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Members of an event-time window's stream that arrived behind its watermark."@en .

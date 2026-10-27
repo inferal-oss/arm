@@ -1,0 +1,21 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ord: <https://ontology.inferal.com/modules/ordering/> .
+
+# The renderer also refuses an excessive or non-IRI input; shapes never silently truncate it.
+c:SparklineShape a sh:NodeShape ; sh:targetClass c:Sparkline ;
+    sh:property [ sh:path c:label ; sh:minCount 1 ; sh:nodeKind sh:Literal ] ,
+      [ sh:path c:start ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ; sh:minInclusive -1e100 ; sh:maxInclusive 1e100 ] ,
+      [ sh:path c:end ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ; sh:minInclusive -1e100 ; sh:maxInclusive 1e100 ] ,
+      [ sh:path c:min ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ; sh:minInclusive -1e100 ; sh:maxInclusive 1e100 ] ,
+      [ sh:path c:max ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ; sh:minInclusive -1e100 ; sh:maxInclusive 1e100 ] ,
+      [ sh:path c:point ; sh:maxCount 512 ; sh:nodeKind sh:IRI ;
+        sh:message "A sparkline accepts at most 512 named samples; retain an explicit bounded window."@en , "Мініграфік приймає не більше 512 іменованих вимірювань; зберігайте явне обмежене вікно."@uk , "Ein Verlauf akzeptiert höchstens 512 benannte Messwerte; ein begrenztes Fenster beibehalten."@de , "يقبل المخطط المصغر 512 قياسًا مسمى كحد أقصى؛ احتفظ بنافذة محدودة واضحة."@ar ] .
+c:SparklinePointShape a sh:NodeShape ; sh:targetClass c:SparklinePoint ;
+    sh:property [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ; sh:node c:SparklineSampleShape ] ,
+      [ sh:path c:inChart ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .
+c:SparklineSampleShape a sh:NodeShape ;
+    sh:property [ sh:path c:start ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ; sh:minInclusive -1e100 ; sh:maxInclusive 1e100 ] ,
+      [ sh:path c:value ; sh:maxCount 1 ; sh:datatype xsd:decimal ; sh:minInclusive -1e100 ; sh:maxInclusive 1e100 ] ,
+      [ sh:path ord:immediatelyPrecedes ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .

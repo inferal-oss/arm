@@ -1,0 +1,1 @@
+var e=`/assets/assets/wat-C2A9nalw.wasm`;export{e as default};

@@ -1,0 +1,385 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for the image components: the gallery's layouts and the lightbox.
+#
+# Images sit on a neutral surface (letterboxed where their shape differs). A pile's prints take
+# their lie from the rule (--tilt, --dx, --dy: small integers from the image's IRI) times the
+# tokens below, and spread by their place (--i of --n). Hovering or focusing a print straightens
+# and lifts it and fans the others out; the movement is timed by duration-move, so reduced or no
+# motion (mot:) makes it instant. Arrows point the reading way: mirrored in a right-to-left page.
+
+# --- tokens: how prints lie, and their paper and shadow ---
+tok:pile-tilt a sty:Token ; sty:scale sty:Size ; sem:slug "pile-tilt" ; sty:value "1.6deg" .
+tok:pile-jitter a sty:Token ; sty:scale sty:Size ; sem:slug "pile-jitter" ; sty:value "5px" .
+tok:print a sty:Token ; sty:scale sty:Color ; sem:slug "print" ; sty:value "light-dark(#ffffff, #f2efe8)" .
+tok:print-shadow a sty:Token ; sty:scale sty:Shadow ; sem:slug "print-shadow" ;
+    sty:value "0 1px 2px light-dark(rgb(17 17 34 / 0.18), rgb(0 0 0 / 0.6)), 0 10px 24px -10px light-dark(rgb(30 27 75 / 0.35), rgb(0 0 0 / 0.8))" .
+tok:print-lift a sty:Token ; sty:scale sty:Shadow ; sem:slug "print-lift" ;
+    sty:value "0 2px 4px light-dark(rgb(17 17 34 / 0.16), rgb(0 0 0 / 0.6)), 0 24px 48px -12px light-dark(rgb(30 27 75 / 0.45), rgb(0 0 0 / 0.9))" .
+
+# --- every layout ---
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "container-type" ; sty:raw "inline-size" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "img" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-drag" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "button" ;
+    sty:declares [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ":is(.sem-cell, .sem-photo, .sem-prev, .sem-next):focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+
+# --- carousel: one image at a time, on snap points ---
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-track" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "overscroll-behavior-x" ; sty:raw "contain" ] ,
+                 [ sty:property "scroll-snap-type" ; sty:raw "x mandatory" ] ,
+                 [ sty:property "scrollbar-width" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-track::-webkit-scrollbar" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-slide" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "flex" ; sty:raw "0 0 100%" ] ,
+                 [ sty:property "aspect-ratio" ; sty:raw "3 / 2" ] ,
+                 [ sty:property "max-height" ; sty:raw "min(420px, 70vh)" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "scroll-snap-align" ; sty:raw "center" ] ,
+                 [ sty:property "scroll-snap-stop" ; sty:raw "always" ] .
+# A slide's image fills it, letterboxed; as a button, the whole slide is the target.
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-slide-item" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "button.sem-slide-item" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "zoom-in" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-slide-item:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 3px var(--sem-accent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-slide-item > img" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "object-fit" ; sty:raw "contain" ] .
+# The controls: the arrows at either end, a dot per image between them.
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-controls" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-controls > .sem-dots" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "justify-content" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] .
+# A dot is a 24px target around a small mark; the current one is long and in the accent.
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-dot" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "24px" ] ,
+                 [ sty:property "height" ; sty:raw "24px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "none" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-dot::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "''" ] ,
+                 [ sty:property "width" ; sty:raw "8px" ] ,
+                 [ sty:property "height" ; sty:raw "8px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] ,
+                 [ sty:property "background" ; sty:token tok:border-strong ] ,
+                 [ sty:property "transition" ; sty:raw "width var(--sem-duration) var(--sem-ease), background var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-dot:hover::before" ;
+    sty:declares [ sty:property "background" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-dot[aria-current=true]::before" ;
+    sty:declares [ sty:property "width" ; sty:raw "18px" ] ,
+                 [ sty:property "background" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-dot:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-controls > :is(.sem-prev, .sem-next)" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "32px" ] ,
+                 [ sty:property "height" ; sty:raw "32px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-motion), opacity var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-controls > :is(.sem-prev, .sem-next):hover:not(:disabled)" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:part ":is([data-sem-c=gallery], [data-sem-c=lightbox]) :is(.sem-prev, .sem-next):disabled" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.35" ] ,
+                 [ sty:property "cursor" ; sty:raw "default" ] .
+# A place ("2 / 6") reads left to right in every language: isolated from a right-to-left line.
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-counter" ;
+    sty:declares [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+# Arrows point the way the images go: mirrored right to left.
+[] a sty:StyleRule ; sty:part ":is([data-sem-c=gallery], [data-sem-c=lightbox]) .sem-glyph" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-block" ] ,
+                 [ sty:property "font-size" ; sty:raw "15px" ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:part ":is([data-sem-c=gallery], [data-sem-c=lightbox]) .sem-glyph:dir(rtl)" ;
+    sty:declares [ sty:property "transform" ; sty:raw "scaleX(-1)" ] .
+
+# --- grid: equal cells, cropped to fill ---
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-cells" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "repeat(var(--gallery-columns, 3), minmax(0, 1fr))" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-cells" ;
+    sty:declares [ sty:property "--gallery-columns" ; sty:raw "2" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-cell" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "aspect-ratio" ; sty:raw "1" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "button.sem-cell" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "zoom-in" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-cell > img" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "object-fit" ; sty:raw "cover" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-duration-slow) var(--sem-ease), filter var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "button.sem-cell:is(:hover, :focus-visible) > img" ;
+    sty:declares [ sty:property "transform" ; sty:raw "scale(1.04)" ] .
+
+# --- pile: prints dropped on a table ---
+# A print's place across the pile (--x) spreads the pile over its width; --fan widens it while
+# another print is lifted.
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-pile" ;
+    sty:declares [ sty:property "--pile-spread" ; sty:raw "min(64px, calc(min(100cqi, 560px) * 0.55 / var(--n)))" ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "height" ; sty:raw "clamp(220px, 60cqi, 300px)" ] ,
+                 [ sty:property "isolation" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-photo" ;
+    sty:declares [ sty:property "--x" ; sty:raw "calc((var(--i) - (var(--n) + 1) / 2) * var(--pile-spread) * var(--fan, 1))" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "50%" ] ,
+                 [ sty:property "top" ; sty:raw "50%" ] ,
+                 [ sty:property "z-index" ; sty:raw "var(--i)" ] ,
+                 [ sty:property "width" ; sty:raw "min(46cqi, 220px)" ] ,
+                 [ sty:property "padding" ; sty:raw "6px 6px 8px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "3px" ] ,
+                 [ sty:property "background" ; sty:token tok:print ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:print-shadow ] ,
+                 [ sty:property "transform" ; sty:raw "translate(-50%, -50%) translate(calc(var(--x) + var(--dx) * var(--sem-pile-jitter)), calc(var(--dy) * var(--sem-pile-jitter))) rotate(calc(var(--tilt) * var(--sem-pile-tilt) * var(--fan, 1)))" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-duration-move) var(--sem-ease-move), box-shadow var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-photo:dir(rtl)" ;
+    sty:declares [ sty:property "transform" ; sty:raw "translate(50%, -50%) translate(calc(-1 * (var(--x) + var(--dx) * var(--sem-pile-jitter))), calc(var(--dy) * var(--sem-pile-jitter))) rotate(calc(var(--tilt) * var(--sem-pile-tilt) * var(--fan, 1)))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "button.sem-photo" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "zoom-in" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part ".sem-photo > img" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "aspect-ratio" ; sty:raw "4 / 3" ] ,
+                 [ sty:property "object-fit" ; sty:raw "cover" ] ,
+                 [ sty:property "border-radius" ; sty:raw "1px" ] .
+# Lifted: straight, raised, in front, with the ring; the others fan out.
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-pile:has(> .sem-photo:is(:hover, :focus-visible)) > .sem-photo:not(:hover, :focus-visible)" ;
+    sty:declares [ sty:property "--fan" ; sty:raw "1.35" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-pile > .sem-photo:is(:hover, :focus-visible)" ;
+    sty:declares [ sty:property "z-index" ; sty:raw "calc(var(--n) + 1)" ] ,
+                 [ sty:property "transform" ; sty:raw "translate(-50%, -50%) translate(var(--x), -10px) rotate(0deg) scale(1.08)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-print-lift)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-pile > .sem-photo:is(:hover, :focus-visible):dir(rtl)" ;
+    sty:declares [ sty:property "transform" ; sty:raw "translate(50%, -50%) translate(calc(-1 * var(--x)), -10px) rotate(0deg) scale(1.08)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Gallery ; sty:part "> .sem-pile > .sem-photo:is(:hover, :focus-visible):focus-visible" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "var(--sem-ring), var(--sem-print-lift)" ] .
+
+# --- lightbox: a large dialog whose stage is the image ---
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "60" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "width" ; sty:raw "min(1080px, 100%)" ] ,
+                 [ sty:property "height" ; sty:raw "min(calc(100vh - 48px), 860px)" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-4 ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-xl ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-4 ] ,
+                 [ sty:property "animation" ; sty:raw "sem-fade-in var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "padding" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head" ;
+    sty:declares [ sty:property "align-items" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head h2" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > .sem-zoom" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+# Its full-screen toggles sit with the zoom, before the close.
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > .sem-fullscreen-toggle[data-sem-kind]" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > .sem-close" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "margin-inline-end" ; sty:raw "-6px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > .sem-counter" ;
+    sty:declares [ sty:property "color" ; sty:raw "color-mix(in oklab, currentColor 62%, transparent)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > :is(.sem-zoom, .sem-original)" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "min-height" ; sty:raw "30px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 10px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "600 13px/1 var(--sem-font)" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "none" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > :is(.sem-zoom, .sem-original):hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-head > .sem-zoom[aria-pressed=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ":is(.sem-zoom, .sem-original, .sem-prev, .sem-next, .sem-thumb):focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+# The stage: the frames side by side on snap points, the arrows over them.
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-stage" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "flex" ; sty:raw "1" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-frames" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "overscroll-behavior" ; sty:raw "contain" ] ,
+                 [ sty:property "scroll-snap-type" ; sty:raw "x mandatory" ] ,
+                 [ sty:property "scrollbar-width" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-frames::-webkit-scrollbar" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-frame" ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 0 100%" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "justify-content" ; sty:raw "center" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "scroll-snap-align" ; sty:raw "center" ] ,
+                 [ sty:property "scroll-snap-stop" ; sty:raw "always" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-frame > img" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "max-height" ; sty:raw "100%" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "object-fit" ; sty:raw "contain" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-drag" ; sty:raw "none" ] ,
+                 [ sty:property "cursor" ; sty:raw "zoom-in" ] .
+# Zoomed: the image at its own size, in a box that scrolls both ways.
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage[data-zoomed] > .sem-frames" ;
+    sty:declares [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "scroll-snap-type" ; sty:raw "none" ] ,
+                 [ sty:property "scrollbar-width" ; sty:raw "thin" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage[data-zoomed] .sem-frame" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "margin" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage[data-zoomed] .sem-frame > img" ;
+    sty:declares [ sty:property "max-width" ; sty:raw "none" ] ,
+                 [ sty:property "max-height" ; sty:raw "none" ] ,
+                 [ sty:property "cursor" ; sty:raw "grab" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage[data-zoomed] .sem-frame > img:active" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "grabbing" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage > :is(.sem-prev, .sem-next)" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "50%" ] ,
+                 [ sty:property "translate" ; sty:raw "0 -50%" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "40px" ] ,
+                 [ sty:property "height" ; sty:raw "40px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-surface-overlay) 86%, transparent)" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-2 ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "opacity var(--sem-motion)" ] .
+# The keys are the arrows themselves: no hint beside them.
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage > :is(.sem-prev, .sem-next)[data-sem-shortcut][aria-keyshortcuts]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage > .sem-prev" ;
+    sty:declares [ sty:property "inset-inline-start" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage > .sem-next" ;
+    sty:declares [ sty:property "inset-inline-end" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-stage[data-zoomed] > :is(.sem-prev, .sem-next)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.5" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-caption" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+# The thumbnail strip: the current one ringed.
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part "> .sem-panel > .sem-strip" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "justify-content" ; sty:raw "safe center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "padding" ; sty:raw "4px" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-thumb" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "56px" ] ,
+                 [ sty:property "height" ; sty:raw "56px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "2px solid transparent" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "opacity" ; sty:raw "0.7" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "opacity var(--sem-motion), border-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-thumb:is(:hover, [aria-current=true])" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-thumb[aria-current=true]" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:Lightbox ; sty:part ".sem-thumb > img" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "object-fit" ; sty:raw "cover" ] .

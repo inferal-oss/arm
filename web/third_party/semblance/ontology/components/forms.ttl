@@ -1,0 +1,256 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Forms from shapes. A SHACL node shape already says what a resource should look like: its
+# property shapes name each property (sh:path, sh:name, sh:description), its datatype or its
+# allowed values (sh:datatype, sh:in), its bounds (sh:minCount, sh:minLength, sh:maxLength,
+# sh:pattern, sh:minInclusive, sh:maxInclusive), where it goes (sh:group, a sh:PropertyGroup) and
+# in what order (sh:order). A c:ShapeForm is that shape, shown for one resource: a rule derives
+# the form from the shape - a section per group, a field per property shape - so changing the
+# shape (another property, another datatype) changes the form, and nothing is written by hand.
+#
+# Each field is a minted c:ShapeField that follows its property shape: its control follows the
+# datatype (a text field, a text area for long text, a number with its bounds, a date, a check box
+# for a boolean, a list for sh:in), its value is the resource's, its message is the first
+# constraint the value violates (sh:message, else a plain one), and editing it writes the
+# resource's property as a typed literal - the record, not the form, is the state.
+
+c:ShapeForm a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A form derived from a SHACL node shape (c:nodeShape) for one resource (c:of): a section per
+sh:PropertyGroup (its rdfs:label as the legend, in sh:order), the property shapes without a group first,
+and in each a c:ShapeField per named property shape, in sh:order. c:label titles it."""@en ;
+    sem:slug "shape-form" .
+c:ShapeField a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """One property of a resource (c:of), shown and edited as its property shape (c:propertyShape) says:
+sh:name labels it, sh:description helps; sh:in makes a list of choices, xsd:boolean a check box,
+xsd:integer or xsd:decimal a number within sh:minInclusive / sh:maxInclusive, xsd:date a date, a
+sh:maxLength of 160 or more a text area, anything else a text field. The first constraint its value
+violates is its message (aria-invalid, role=alert); editing it writes the resource's property."""@en ;
+    sem:slug "shape-field" .
+c:nodeShape a owl:ObjectProperty ; rdfs:domain c:ShapeForm ; rdfs:range sh:NodeShape ;
+    rdfs:comment "The node shape a form is derived from."@en .
+c:propertyShape a owl:ObjectProperty ; rdfs:domain c:ShapeField ; rdfs:range sh:PropertyShape ;
+    rdfs:comment "The property shape a field shows and edits (a named one: the field follows it)."@en .
+
+# --- the form: sections and fields, from the shape ---------------------------------------------------
+
+c:ShapeFormRendering a sem:Rendering ; sem:targets c:ShapeForm ; sem:stratum 0 ; sem:follows c:nodeShape .
+c:ShapeFormRendering-fn a sem:Rule ; sem:implements c:ShapeFormRendering ; sem:function "forms:form" .
+c:ShapeFormRendering-sparql a sem:Rule ;
+    sem:implements c:ShapeFormRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?title , ?body .
+  ?title a rdfhtml:H3 ; rdfhtml:class "sem-shape-title" ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?body .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?body a rdfhtml:Div ; rdfhtml:class "sem-shape-sections" ; rdfhtml:hasChild ?section .
+  ?section a ?sectionElement ; rdfhtml:class "sem-shape-section" ; sem:orderKey ?sectionOrder ; rdfhtml:hasChild ?legend , ?fields .
+  ?legend a rdfhtml:Legend ; rdfhtml:hasChild ?legendText ; ord:immediatelyPrecedes ?fields .
+  ?legendText a rdfhtml:Text ; rdfhtml:data ?groupLabel .
+  ?fields a rdfhtml:Div ; rdfhtml:class "sem-shape-fields" ; rdfhtml:hasChild ?field .
+  ?field a c:ShapeField ; c:propertyShape ?ps ; c:of ?resource ; sem:orderKey ?fieldOrder .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:ShapeForm ; c:nodeShape ?shape ; c:of ?resource .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~body")) AS ?body)
+  {
+    OPTIONAL { $this c:label ?label0 FILTER(isLiteral(?label0)) }
+    BIND(STR(?label0) AS ?label)
+    BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~title")), ?none) AS ?title)
+    BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+  } UNION {
+    # A field per named property shape, in its group's section (or the first, unnamed one).
+    ?shape sh:property ?ps . ?ps sh:path ?path FILTER(isIRI(?ps) && isIRI(?path))
+    OPTIONAL { ?ps sh:group ?group FILTER(isIRI(?group)) }
+    OPTIONAL { ?ps sh:order ?order0 }
+    BIND(COALESCE(xsd:decimal(?order0), 0) AS ?fieldOrder)
+    BIND(IF(BOUND(?group), REPLACE(STR(?group), "^.*[#/]", ""), "") AS ?groupKey)
+    BIND(IRI(CONCAT(STR($this), "/~s-", ENCODE_FOR_URI(?groupKey))) AS ?section)
+    BIND(IRI(CONCAT(STR($this), "/~s-", ENCODE_FOR_URI(?groupKey), "-fields")) AS ?fields)
+    BIND(IRI(CONCAT(STR($this), "/~f-", ENCODE_FOR_URI(REPLACE(STR(?path), "^.*[#/]", "")))) AS ?field)
+    OPTIONAL { ?group sh:order ?groupOrder0 }
+    BIND(IF(BOUND(?group), COALESCE(xsd:decimal(?groupOrder0), 0), -1) AS ?sectionOrder)
+    BIND(IF(BOUND(?group), rdfhtml:Fieldset, rdfhtml:Div) AS ?sectionElement)
+    OPTIONAL { ?groupLabel0At l10n:of ?group ; l10n:name ?groupLabel0 }
+  OPTIONAL { ?group rdfs:label ?groupLabel0 FILTER(lang(?groupLabel0) = "" || langMatches(lang(?groupLabel0), "en")) }
+    BIND(IF(BOUND(?group), STR(COALESCE(?groupLabel0, ?groupKey)), ?none) AS ?groupLabel)
+    BIND(IF(BOUND(?group), IRI(CONCAT(STR($this), "/~s-", ENCODE_FOR_URI(?groupKey), "-legend")), ?none) AS ?legend)
+    BIND(IF(BOUND(?group), IRI(CONCAT(STR($this), "/~s-", ENCODE_FOR_URI(?groupKey), "-legend-text")), ?none) AS ?legendText)
+  }
+}""" .
+
+# --- a field: its control from the property shape, its value from the resource -----------------------
+
+c:ShapeFieldRendering a sem:Rendering ; sem:targets c:ShapeField ; sem:stratum 0 ; sem:follows c:propertyShape , c:of .
+c:ShapeFieldRendering-fn a sem:Rule ; sem:implements c:ShapeFieldRendering ; sem:function "forms:field" .
+c:ShapeFieldRendering-sparql-screen a sem:Rule ;
+    sem:implements c:ShapeFieldRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?labelEl , ?control , ?help , ?error .
+  ?labelEl a rdfhtml:Label ; rdfhtml:for ?controlId ; rdfhtml:hasChild ?labelText ; ord:precedes ?control , ?help , ?error .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?control a ?element ; rdfhtml:id ?controlId ; rdfhtml:type ?type ; rdfhtml:value ?value ; rdfhtml:min ?min ; rdfhtml:max ?max ;
+           rdfhtml:step ?step ; rdfhtml:rows ?rows ; rdfhtml:checked ?checked ; rdfhtml:hasChild ?areaText , ?option ;
+           rdfhtml:attribute ?invalidAttr , ?describedAttr ; ord:precedes ?help , ?error .
+  ?areaText a rdfhtml:Text ; rdfhtml:data ?areaData .
+  ?invalidAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-invalid" ; rdfhtml:attributeValue "true" .
+  ?describedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?describedBy .
+  ?option a rdfhtml:Option ; rdfhtml:value ?optValue ; rdfhtml:selected ?selected ; sem:orderKey ?optIndex ; rdfhtml:hasChild ?optText .
+  ?optText a rdfhtml:Text ; rdfhtml:data ?optLabel .
+  ?help a rdfhtml:Div ; rdfhtml:class "sem-help" ; rdfhtml:id ?helpId ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:id ?errorId ; rdfhtml:hasChild ?errorText ; rdfhtml:attribute ?roleAttr .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "alert" .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?problem .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:ShapeField ; c:propertyShape ?ps ; c:of ?resource .
+  ?ps sh:path ?path FILTER(isIRI(?path))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~control")) AS ?control)
+  BIND(STR(?control) AS ?controlId)
+  # What the shape says, and the resource's value as text ("" when it has none).
+  OPTIONAL { ?ps sh:name ?name_u FILTER(lang(?name_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?name_u)) ?ps sh:name ?name_en FILTER(langMatches(lang(?name_en), "en")) }
+  OPTIONAL { ?ps sh:description ?desc_u FILTER(lang(?desc_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?desc_u)) ?ps sh:description ?desc_en FILTER(langMatches(lang(?desc_en), "en")) }
+  OPTIONAL { ?msg_uAt l10n:of ?ps ; l10n:message ?msg_u }
+  OPTIONAL { ?ps sh:message ?msg_u FILTER(lang(?msg_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?msg_u)) ?ps sh:message ?msg_en FILTER(langMatches(lang(?msg_en), "en")) }
+  OPTIONAL { ?ps sh:datatype ?datatype }
+  OPTIONAL { ?ps sh:in ?allowed }
+  OPTIONAL { ?ps sh:minCount ?minCount }
+  OPTIONAL { ?ps sh:minLength ?minLength }
+  OPTIONAL { ?ps sh:maxLength ?maxLength }
+  OPTIONAL { ?ps sh:pattern ?pattern }
+  OPTIONAL { ?ps sh:flags ?flags }
+  OPTIONAL { ?ps sh:minInclusive ?minInclusive }
+  OPTIONAL { ?ps sh:maxInclusive ?maxInclusive }
+  LATERAL { OPTIONAL { SELECT ?resource ?path (MIN(STR(?v)) AS ?lex0) WHERE { ?resource ?path ?v } GROUP BY ?resource ?path } }
+  BIND(COALESCE(?lex0, "") AS ?lex)
+  BIND(STR(COALESCE(?name_u, ?name_en, REPLACE(STR(?path), "^.*[#/]", ""))) AS ?label)
+  BIND(STR(COALESCE(?desc_u, ?desc_en)) AS ?helpData)
+  BIND(COALESCE(?datatype IN (xsd:integer, xsd:decimal), false) AS ?numeric)
+  BIND(IF(BOUND(?allowed), "choice", IF(COALESCE(?datatype = xsd:boolean, false), "boolean", IF(?numeric, "number",
+       IF(COALESCE(?datatype = xsd:date, false), "date", IF(COALESCE(?maxLength >= 160, false), "textarea", "text"))))) AS ?kind)
+  # The first constraint the value violates, in the order the validation layer checks them.
+  BIND(IF(?lex = "", IF(COALESCE(?minCount > 0, false), "Required.", ?none),
+       IF(?kind != "boolean" && BOUND(?minLength) && STRLEN(?lex) < ?minLength, CONCAT("At least ", STR(?minLength), " characters."),
+       IF(?kind != "boolean" && BOUND(?maxLength) && STRLEN(?lex) > ?maxLength, CONCAT("At most ", STR(?maxLength), " characters."),
+       IF(BOUND(?pattern) && !REGEX(?lex, STR(?pattern), COALESCE(STR(?flags), "")), "Does not match the expected format.",
+       IF(?numeric && !REGEX(?lex, IF(?datatype = xsd:integer, "^-?[0-9]+$", "^-?[0-9]+([.][0-9]+)?$")), IF(?datatype = xsd:integer, "A whole number.", "A number."),
+       IF(?numeric && BOUND(?minInclusive) && xsd:decimal(?lex) < ?minInclusive, CONCAT("At least ", STR(?minInclusive), "."),
+       IF(?numeric && BOUND(?maxInclusive) && xsd:decimal(?lex) > ?maxInclusive, CONCAT("At most ", STR(?maxInclusive), "."),
+       IF(IF(BOUND(?allowed), NOT EXISTS { ?allowed rdf:rest*/rdf:first ?ok FILTER(STR(?ok) = ?lex) }, false), "Not one of the allowed values.", ?none)))))))) AS ?plain)
+  BIND(IF(BOUND(?plain), STR(COALESCE(?msg_u, ?msg_en, ?plain)), ?none) AS ?problem)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help")), ?none) AS ?help)
+  BIND(IF(BOUND(?help), STR(?help), ?none) AS ?helpId)
+  BIND(IF(BOUND(?problem), IRI(CONCAT(STR($this), "/~error")), ?none) AS ?error)
+  BIND(IF(BOUND(?error), STR(?error), ?none) AS ?errorId)
+  # (LATERAL: both branches see what was worked out above.)
+  LATERAL { {
+    BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelEl)
+    BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+    BIND(IF(?kind = "choice", rdfhtml:Select, IF(?kind = "textarea", rdfhtml:Textarea, rdfhtml:Input)) AS ?element)
+    BIND(IF(?kind IN ("text", "number", "date"), ?kind, IF(?kind = "boolean", "checkbox", ?none)) AS ?type)
+    BIND(IF(?kind IN ("text", "number", "date") && ?lex != "", ?lex, ?none) AS ?value)
+    BIND(IF(?kind = "number" && BOUND(?minInclusive), STR(?minInclusive), ?none) AS ?min)
+    BIND(IF(?kind = "number" && BOUND(?maxInclusive), STR(?maxInclusive), ?none) AS ?max)
+    BIND(IF(?kind = "number", IF(?datatype = xsd:integer, "1", "any"), ?none) AS ?step)
+    BIND(IF(?kind = "textarea", "3", ?none) AS ?rows)
+    BIND(IF(?kind = "boolean" && ?lex = "true", "", ?none) AS ?checked)
+    BIND(IF(?kind = "textarea" && ?lex != "", IRI(CONCAT(STR($this), "/~control-text")), ?none) AS ?areaText)
+    BIND(IF(BOUND(?areaText), ?lex, ?none) AS ?areaData)
+    BIND(IF(BOUND(?problem), IRI(CONCAT(STR($this), "/~control-aria-invalid")), ?none) AS ?invalidAttr)
+    BIND(IF(BOUND(?helpId) || BOUND(?errorId), CONCAT(COALESCE(?helpId, ""), IF(BOUND(?helpId) && BOUND(?errorId), " ", ""), COALESCE(?errorId, "")), ?none) AS ?describedBy)
+    BIND(IF(BOUND(?describedBy), IRI(CONCAT(STR($this), "/~control-aria-describedby")), ?none) AS ?describedAttr)
+    BIND(IF(BOUND(?help), IRI(CONCAT(STR($this), "/~help-text")), ?none) AS ?helpText)
+    BIND(IF(BOUND(?error), IRI(CONCAT(STR($this), "/~error-text")), ?none) AS ?errorText)
+    BIND(IF(BOUND(?error), IRI(CONCAT(STR($this), "/~error-role")), ?none) AS ?roleAttr)
+  } UNION {
+    # The choices of sh:in, in list order: IRIs by their label, literals as written.
+    ?ps sh:in ?list . ?list rdf:rest* ?cell . ?cell rdf:first ?choice .
+    { SELECT ?cell (COUNT(?mid) - 1 AS ?optIndex) WHERE { $this c:propertyShape/sh:in ?list0 . ?list0 rdf:rest* ?mid . ?mid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(STR(?choice) AS ?optValue)
+    BIND(IRI(CONCAT(STR($this), "/~opt-", ENCODE_FOR_URI(?optValue))) AS ?option)
+    BIND(IRI(CONCAT(STR($this), "/~opt-", ENCODE_FOR_URI(?optValue), "-text")) AS ?optText)
+    BIND(IF(?optValue = ?lex, "", ?none) AS ?selected)
+    OPTIONAL { ?choiceLabel_uAt l10n:of ?choice ; l10n:name ?choiceLabel_u }
+  OPTIONAL { ?choice rdfs:label ?choiceLabel_u FILTER(lang(?choiceLabel_u) = "") }
+    OPTIONAL { FILTER(!BOUND(?choiceLabel_u)) ?choice rdfs:label ?choiceLabel_en FILTER(langMatches(lang(?choiceLabel_en), "en")) }
+    BIND(STR(COALESCE(?choiceLabel_u, ?choiceLabel_en, IF(isIRI(?choice), REPLACE(STR(?choice), "^.*[#/]", ""), STR(?choice)))) AS ?optLabel)
+  } }
+}""" .
+c:ShapeFieldRendering-sparql-text a sem:Rule ;
+    sem:implements c:ShapeFieldRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?data .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:ShapeField ; c:propertyShape ?ps ; c:of ?resource .
+  ?ps sh:path ?path FILTER(isIRI(?path))
+  OPTIONAL { ?ps sh:name ?name_u FILTER(lang(?name_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?name_u)) ?ps sh:name ?name_en FILTER(langMatches(lang(?name_en), "en")) }
+  LATERAL { OPTIONAL { SELECT ?resource ?path (MIN(STR(?v)) AS ?lex0) WHERE { ?resource ?path ?v } GROUP BY ?resource ?path } }
+  BIND(CONCAT(STR(COALESCE(?name_u, ?name_en, REPLACE(STR(?path), "^.*[#/]", ""))), ": [", COALESCE(?lex0, ""), "_]") AS ?data)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+}""" .
+
+# --- editing: the resource's property, typed as the shape says ----------------------------------------
+
+# Typing in a text, number, date or text area field: the value, as the shape's datatype (none: cleared).
+c:EditShapeField a beh:Reaction ;
+    rdfs:label "Edit a property"@en ;
+    beh:when beh:Input ;
+    beh:sourceClass c:ShapeField ;
+    beh:deletes """CONSTRUCT { ?resource ?path ?old }
+WHERE {
+  $this c:propertyShape ?ps ; c:of ?resource . ?ps sh:path ?path .
+  FILTER NOT EXISTS { ?ps sh:in ?anyList } FILTER NOT EXISTS { ?ps sh:datatype xsd:boolean }
+  ?resource ?path ?old
+}""" ;
+    beh:inserts """CONSTRUCT { ?resource ?path ?new }
+WHERE {
+  $this c:propertyShape ?ps ; c:of ?resource . ?ps sh:path ?path .
+  FILTER NOT EXISTS { ?ps sh:in ?anyList } FILTER NOT EXISTS { ?ps sh:datatype xsd:boolean }
+  $event beh:value ?v FILTER(?v != "")
+  OPTIONAL { ?ps sh:datatype ?datatype }
+  BIND(IF(BOUND(?datatype), STRDT(?v, ?datatype), ?v) AS ?new)
+}""" ;
+    sem:function "forms:edit" .
+
+# Checking a box (a boolean) or choosing in a list (one of sh:in): that value.
+c:ChooseShapeField a beh:Reaction ;
+    rdfs:label "Choose a value"@en ;
+    beh:when beh:Change ;
+    beh:sourceClass c:ShapeField ;
+    beh:deletes """CONSTRUCT { ?resource ?path ?old }
+WHERE {
+  $this c:propertyShape ?ps ; c:of ?resource . ?ps sh:path ?path .
+  FILTER(EXISTS { ?ps sh:in ?anyList } || EXISTS { ?ps sh:datatype xsd:boolean })
+  ?resource ?path ?old
+}""" ;
+    beh:inserts """CONSTRUCT { ?resource ?path ?new }
+WHERE {
+  $this c:propertyShape ?ps ; c:of ?resource . ?ps sh:path ?path .
+  { ?ps sh:datatype xsd:boolean . $event beh:checked ?on BIND(STRDT(STR(?on), xsd:boolean) AS ?new) }
+  UNION
+  { ?ps sh:in ?allowed . $event beh:value ?v . ?allowed rdf:rest*/rdf:first ?new FILTER(STR(?new) = ?v) }
+}""" ;
+    sem:function "forms:choose" .

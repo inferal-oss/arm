@@ -1,0 +1,185 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix ol: <https://semblance.dev/ns/outline#> .
+@prefix ext: <https://semblance.dev/ns/foreign#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Foreign components (docs/FOREIGN.md): a custom element, a framework component or a vanilla widget
+# that owns a DOM subtree, wrapped as a component whose inputs come from the graph and whose
+# outputs come back as events.
+#
+#   1. A class of foreign component is a subclass of ext:Island. It says what to mount (ext:adapter
+#      and its ext:tag or ext:widget), which of an instance's properties are its inputs (ext:input)
+#      and which of its events are outputs (ext:output).
+#   2. The island's rendering (below; SPARQL with a function twin) projects an instance into a
+#      wrapper element whose child is a host-owned slot (sem:slot): the patcher never manages its
+#      children. On the slot it states the island (ext:island) and, as minted nodes, the current
+#      value of every input (ext:input → ext:name, ext:value, ext:as). Inputs are derived data, so
+#      an input changes in the DOM only when the triples it comes from change, like an attribute.
+#   3. The islands effect (src/foreign.ts) mounts the foreign thing in the slot through the adapter
+#      of its kind, pushes changed inputs to it (skipping values it already has: echo suppression),
+#      and turns its outputs into events addressed to the island (ext:emits), which ordinary
+#      reactions turn into state. Outputs of an event class marked beh:recorded false change state
+#      without being logged (a hover, a viewport move).
+#
+# The HTML serializer writes a custom element's tag with its attribute inputs inside the slot, so a
+# page rendered on the server upgrades when its script loads; the text modality shows the island's
+# label and its ext:summary property.
+
+<https://semblance.dev/ns/foreign> a owl:Ontology ;
+    rdfs:label "Semblance foreign components"@en .
+
+ext:Island a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Foreign component"@en , "Зовнішній компонент"@uk , "Fremdkomponente"@de , "مكوّن خارجي"@ar ;
+    rdfs:comment """A component whose content is owned by something else: a custom element, a framework
+component or a vanilla widget, mounted by the islands effect in a host-owned slot. Subclass it and say
+ext:adapter, ext:tag or ext:widget, ext:input and ext:output on the subclass (or on one instance)."""@en ;
+    sem:slug "sem-island" .
+
+ext:adapter a owl:ObjectProperty ; rdfs:range ext:Adapter ;
+    rdfs:comment "Which adapter mounts the island (on its class, or on an instance): ext:CustomElement, ext:Widget or one a project registers."@en .
+ext:Adapter a owl:Class ;
+    rdfs:comment "A kind of foreign component, and the host code that mounts it (registered with the islands effect by this IRI)."@en .
+ext:CustomElement a ext:Adapter ; rdfs:label "custom element"@en , "власний елемент"@uk , "benutzerdefiniertes Element"@de , "عنصر مخصّص"@ar ;
+    rdfs:comment "Creates the element named by ext:tag in the slot; inputs are its properties or attributes, outputs its DOM events."@en .
+ext:Widget a ext:Adapter ; rdfs:label "widget"@en , "віджет"@uk , "Widget"@de , "أداة"@ar ;
+    rdfs:comment "Calls the widget registered under ext:widget: mount(element, inputs, emit) → { update(changed), destroy() }. Wraps vanilla libraries and framework roots (React's createRoot) alike."@en .
+
+ext:tag a owl:DatatypeProperty ;
+    rdfs:comment "The custom element's tag name (with a hyphen, as custom elements must have)."@en .
+ext:widget a owl:DatatypeProperty ;
+    rdfs:comment "The name a widget is registered under with the islands effect."@en .
+ext:module a owl:DatatypeProperty ;
+    rdfs:comment """The name of a module the host registered with the islands effect (a loader, such as a dynamic import from
+a CDN), loaded before the island mounts the first time: the custom element's definition, the widget's
+library. A name, not a URL: what code runs is the host's choice, never the graph's."""@en .
+ext:summary a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Which property of an instance the text modality shows after its label (its value, as text)."@en .
+
+# --- inputs ----------------------------------------------------------------------------------------
+
+ext:input a owl:ObjectProperty ;
+    rdfs:comment """On an island class (or instance): an input binding (ext:name, ext:from, ext:as). On the
+island's slot (derived): the current value of one input, a node minted <island>/~in-<name>."""@en .
+ext:name a owl:DatatypeProperty ; rdfs:comment "The property, attribute or prop name the input sets."@en .
+ext:from a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Which property of the instance gives the input's value (c:value, l10n:label, a property of the app's own)."@en .
+ext:through a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Read the input's ext:from on the node the island points at through this property (c:of, which the island's rendering follows), not on the island itself: the app's own data, shown by the island."@en .
+ext:as a owl:ObjectProperty ; rdfs:range ext:Target ;
+    rdfs:comment "Whether the input is a DOM property (ext:Property, the default) or a content attribute (ext:Attribute)."@en .
+ext:Target a owl:Class .
+ext:Property a ext:Target ; rdfs:comment "Set as a property (el[name] = value), typed: numbers, booleans and rdf:JSON values arrive as such."@en .
+ext:Attribute a ext:Target ; rdfs:comment "Set as a content attribute (a string); also what server-rendered HTML carries."@en .
+ext:value a owl:DatatypeProperty ; rdfs:comment "Derived, on an input node: the input's current value, typed as in the graph."@en .
+ext:island a owl:ObjectProperty ; rdfs:comment "Derived, on a slot: the island mounted in it."@en .
+
+# --- outputs ---------------------------------------------------------------------------------------
+
+ext:output a owl:ObjectProperty ;
+    rdfs:comment "On an island class (or instance): an output binding: ext:on (the DOM event or callback name), ext:emits (the event class), ext:path and ext:field."@en .
+ext:on a owl:DatatypeProperty ; rdfs:comment "The DOM event type (a custom element) or callback name (a widget) that is an output."@en .
+ext:emits a owl:ObjectProperty ; rdfs:comment "The event class an output becomes, addressed to the island (a subclass of ext:Output)."@en .
+ext:path a owl:DatatypeProperty ;
+    rdfs:comment "A dotted path into the output's payload whose value becomes the event's beh:value (\"detail.value\", \"target.value\", \"label\")."@en .
+ext:field a owl:ObjectProperty ;
+    rdfs:comment "Further statements about the event: the value at ext:path in the payload, as the object of ext:predicate."@en .
+ext:predicate a owl:ObjectProperty ; rdfs:range rdf:Property .
+ext:Output a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Foreign output"@en , "Зовнішня подія"@uk , "Fremdereignis"@de , "حدث خارجي"@ar ;
+    rdfs:comment "An event a foreign component raised, addressed to its island; subclass it per output."@en .
+
+# --- renderings ------------------------------------------------------------------------------------
+
+ext:IslandRendering a sem:Rendering ;
+    rdfs:comment "An island: a wrapper, the host-owned slot the foreign component is mounted in, and its inputs' current values."@en ;
+    sem:targets ext:Island ;
+    sem:stratum 0 ;
+    sem:follows c:of .
+ext:IslandRendering-fn a sem:Rule ; sem:implements ext:IslandRendering ; sem:modality mod:Screen ; sem:function "foreign:island" .
+ext:IslandRendering-sparql a sem:Rule ;
+    sem:implements ext:IslandRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?mount .
+  ?mount a rdfhtml:Div ; rdfhtml:class "sem-island-mount" ; sem:slot "island" ; ext:island $this ; ext:tag ?tag ; ext:input ?in .
+  ?in ext:name ?name ; ext:value ?value ; ext:as ?as .
+}
+WHERE {
+  $this a/rdfs:subClassOf* ext:Island .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~mount")) AS ?mount)
+  OPTIONAL { { $this ext:tag ?tag } UNION { $this a/rdfs:subClassOf* ?tagged . ?tagged ext:tag ?tag } }
+  OPTIONAL {
+    { $this ext:input ?binding } UNION { $this a/rdfs:subClassOf* ?declaring . ?declaring ext:input ?binding }
+    ?binding ext:name ?name ; ext:from ?from .
+    OPTIONAL { ?binding ext:through ?link . $this ?link ?linked }
+    BIND(COALESCE(?linked, $this) AS ?source)
+    LATERAL { ?source ?from ?value }
+    OPTIONAL { ?binding ext:as ?declared }
+    BIND(COALESCE(?declared, ext:Property) AS ?as)
+    BIND(IRI(CONCAT(STR($this), "/~in-", ENCODE_FOR_URI(?name))) AS ?in)
+  }
+}""" .
+
+# Text: the label, then the summary property's value.
+ext:IslandRendering-fn-text a sem:Rule ; sem:implements ext:IslandRendering ; sem:modality mod:Text ; sem:function "foreign:island-text" .
+ext:IslandRendering-sparql-text a sem:Rule ;
+    sem:implements ext:IslandRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?data .
+}
+WHERE {
+  $this a/rdfs:subClassOf* ext:Island .
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this a/rdfs:subClassOf* ?summarized . ?summarized ext:summary ?property . $this ?property ?summary }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, "")) AS ?label)
+  BIND(IF(BOUND(?summary), IF(?label = "", STR(?summary), CONCAT(?label, ": ", STR(?summary))), ?label) AS ?data)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
+
+# --- outlines: which parts of a page are islands -----------------------------------------------------
+# An island's outline (ontology/layers/outline.ttl) is named by what it mounts, its tag or its widget's
+# name, unless it has an ol:label of its own: a component that ol:shows outlines shows which parts of a
+# page are foreign, and a switch can flip it (a c:ToggleSwitch with c:property ol:shows).
+
+ext:IslandName a sem:Rendering ;
+    rdfs:comment "An island's ol:defaultLabel: the tag it creates (ext:tag) or the widget it calls (ext:widget), its own or its class's."@en ;
+    sem:targets ext:Island ;
+    sem:stratum -5 ;
+    sem:inputOnly true ;
+    sem:watches rdf:type , ext:tag , ext:widget .
+ext:IslandName-fn a sem:Rule ; sem:implements ext:IslandName ; sem:function "foreign:island-name" .
+ext:IslandName-sparql a sem:Rule ;
+    sem:implements ext:IslandName ;
+    sem:construct """
+CONSTRUCT { $this ol:defaultLabel ?name }
+WHERE {
+  $this a/rdfs:subClassOf* ext:Island .
+  OPTIONAL { { $this ext:tag ?tag } UNION { $this a/rdfs:subClassOf* ?tagged . ?tagged ext:tag ?tag } }
+  OPTIONAL { { $this ext:widget ?widget } UNION { $this a/rdfs:subClassOf* ?widgeted . ?widgeted ext:widget ?widget } }
+  BIND(STR(COALESCE(?tag, ?widget, "island")) AS ?name)
+}""" .
+
+# --- style -----------------------------------------------------------------------------------------
+# The wrapper is a block the foreign component fills; theme tokens reach it as inherited custom
+# properties (a class maps them onto the component's own, documented ones with sty:declares).
+
+[] a sty:StyleRule ; sty:appliesTo ext:Island ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] , [ sty:property "min-inline-size" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo ext:Island ; sty:part "> .sem-island-mount" ;
+    sty:declares [ sty:property "display" ; sty:raw "contents" ] .

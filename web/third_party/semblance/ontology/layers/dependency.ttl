@@ -1,0 +1,160 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix dep: <https://semblance.dev/ns/dependency#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Dependency layer: views that depend on another view's value. A component can follow a value
+# held elsewhere in the graph - the country an order ships to, whether a profile is public - and
+# take some of its own properties from it: its label, placeholder, SHACL shape (val:validates),
+# options (c:options), whether it is disabled or shown at all (c:hidden). Nothing is specific to
+# a form or a component: the dependency is data, and one rule (dep:Facets) applies it.
+#
+#   ui:postal a c:TextField ;
+#       dep:follows ui:order ; dep:property co:country ;     # the value it depends on
+#       dep:takes co:postalField ;                           # what of that value it takes
+#       dep:otherwise [ c:label "Postal code" ] .            # when the value says nothing
+#   co:US co:postalField [ c:label "ZIP code" ; c:placeholder "94110" ; val:validates co:Zip ] .
+#
+# The value (dep:property of the dep:follows node) gives the dependent its profiles, in two ways:
+#   - the value carries them: for each dep:takes property P, the value's P (co:US co:postalField
+#     [...]). Domain data says how it shapes forms, so a new country is one more node;
+#   - the dependent lists them: a dep:case whose dep:when is the value gives its dep:gives - for
+#     literal values (true / false), or a mapping only this component needs.
+# When neither gives one, dep:otherwise does. Every property of each profile (but rdf:type)
+# becomes the dependent's own, derived before the validation layer and the components run
+# (stratum -12), so they render it like any other input. What does not vary stays on the
+# dependent itself; what varies belongs in every profile (and dep:otherwise), not on the
+# dependent too, or it would have two labels. Values are copied as they are, and rules emit no
+# blank nodes, so a profile's values are IRIs or literals: to offer a list as c:options, give
+# the list a name (co:USStates rdf:first co:US-CA ; rdf:rest ( ... )).
+#
+# Defaults are the other half of codependence: choosing a value sets other values, which the
+# person can still change. A value's dep:defaults node lists them; when a c:Choice or
+# c:RadioGroup sets its property to the value, the properties of the value's dep:defaults (and
+# those of the value it replaces, so a default that no longer applies is cleared) are written
+# onto the same node the control controls. A country's defaults pick the order's currency and
+# dialling code; a country without regions clears the region the last one chose.
+#
+# c:hidden (any component) takes a component out of view: its root is hidden, so what it shows
+# is not evaluated until it is shown again. A profile that gives c:hidden true makes a field
+# appear only where it applies - the region choice only for countries with regions.
+#
+# Unlike the decorating layers, it is not switched on per projection (sem:enables): what a
+# dependent says is what the component is, in every modality, like the components' own rules.
+
+<https://semblance.dev/ns/dependency> a owl:Ontology ;
+    rdfs:label "Semblance dependency layer"@en .
+
+dep:follows a owl:ObjectProperty ;
+    rdfs:comment "On a dependent: the node holding the value it depends on."@en .
+dep:property a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "On a dependent: the property of dep:follows whose value it depends on."@en .
+dep:takes a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "On a dependent: a property of the value whose objects are profiles the dependent takes."@en .
+dep:case a owl:ObjectProperty ;
+    rdfs:comment "On a dependent: a profile (dep:gives) for one value (dep:when)."@en .
+dep:when a owl:ObjectProperty ; rdfs:comment "On a dep:case: the value it is for (an IRI or a literal)."@en .
+dep:gives a owl:ObjectProperty ; rdfs:comment "On a dep:case: the profile the dependent takes for that value."@en .
+dep:otherwise a owl:ObjectProperty ;
+    rdfs:comment "On a dependent: the profile it takes when the value gives none (or there is no value)."@en .
+dep:defaults a owl:ObjectProperty ;
+    rdfs:comment "On a value: properties that choosing it writes onto the node the control controls."@en .
+c:hidden a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "The component is not shown (its root is hidden; what it shows is not evaluated)."@en .
+
+# --- facets: a dependent's properties, from the value it follows ------------------------------------
+# Runs again when the followed node changes (sem:follows dep:follows), so choosing another
+# country re-shapes every field that follows it, and nothing else.
+
+dep:Facets a sem:Rendering ;
+    rdfs:comment "Gives a dependent the properties of the profiles its followed value selects."@en ;
+    sem:requires dep:follows ;
+    sem:targets sem:Component ;
+    sem:stratum -12 ;
+    sem:inputOnly true ;
+    sem:follows dep:follows .
+dep:Facets-fn a sem:Rule ; sem:implements dep:Facets ; sem:function "dependency:facets" .
+dep:Facets-sparql a sem:Rule ;
+    sem:implements dep:Facets ;
+    sem:construct """
+CONSTRUCT { $this ?p ?o }
+WHERE {
+  $this dep:follows ?source ; dep:property ?property .
+  LATERAL {
+    { ?source ?property ?value . $this dep:takes ?facet . ?value ?facet ?profile }
+    UNION { ?source ?property ?value . $this dep:case ?case . ?case dep:when ?value ; dep:gives ?profile }
+    UNION {
+      $this dep:otherwise ?profile
+      FILTER NOT EXISTS { ?source ?property ?v . $this dep:takes ?f . ?v ?f ?given }
+      FILTER NOT EXISTS { ?source ?property ?w . $this dep:case ?k . ?k dep:when ?w ; dep:gives ?listed }
+    }
+  }
+  LATERAL { ?profile ?p ?o FILTER(?p != rdf:type && !isBlank(?o)) }
+}""" .
+
+# --- presence: c:hidden ------------------------------------------------------------------------------
+
+dep:Hidden a sem:Rendering ;
+    rdfs:comment "Hides a component whose c:hidden is true."@en ;
+    sem:requires c:hidden ;
+    sem:targets sem:Component ;
+    sem:stratum 10 ;
+    sem:watches c:hidden .
+dep:Hidden-fn a sem:Rule ; sem:implements dep:Hidden ; sem:function "dependency:hidden" .
+dep:Hidden-sparql a sem:Rule ;
+    sem:implements dep:Hidden ;
+    sem:construct """
+CONSTRUCT { ?root rdfhtml:hidden "" }
+WHERE {
+  $this c:hidden ?hidden FILTER(isLiteral(?hidden) && STR(?hidden) = "true")
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+}""" .
+
+# --- defaults: choosing a value sets others -----------------------------------------------------------
+# Beside the control's own reaction (c:ChoiceSelect, c:RadioGroupSelect), from the same state:
+# both see the value before the change, and their effects are applied together.
+
+dep:ChoiceDefaults a beh:Reaction ;
+    beh:when beh:Change ;
+    beh:sourceClass c:Choice ;
+    beh:deletes """
+CONSTRUCT { ?target ?q ?old }
+WHERE {
+  $this c:controls ?target ; c:property ?p . $event beh:value ?v BIND(IRI(?v) AS ?new)
+  FILTER NOT EXISTS { ?target ?p ?new }
+  { ?new dep:defaults ?d } UNION { ?target ?p ?was . ?was dep:defaults ?d }
+  ?d ?q ?any FILTER(?q != rdf:type)
+  ?target ?q ?old
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?target ?q ?o }
+WHERE {
+  $this c:controls ?target ; c:property ?p . $event beh:value ?v BIND(IRI(?v) AS ?new)
+  FILTER NOT EXISTS { ?target ?p ?new }
+  ?new dep:defaults ?d . ?d ?q ?o FILTER(?q != rdf:type)
+}""" ;
+    sem:function "dependency:defaults" .
+dep:RadioDefaults a beh:Reaction ;
+    beh:when beh:Change ;
+    beh:sourceClass c:RadioGroup ;
+    beh:deletes """
+CONSTRUCT { ?target ?q ?old }
+WHERE {
+  $this c:controls ?target ; c:property ?p . $event beh:value ?v BIND(IRI(?v) AS ?new)
+  FILTER NOT EXISTS { ?target ?p ?new }
+  { ?new dep:defaults ?d } UNION { ?target ?p ?was . ?was dep:defaults ?d }
+  ?d ?q ?any FILTER(?q != rdf:type)
+  ?target ?q ?old
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?target ?q ?o }
+WHERE {
+  $this c:controls ?target ; c:property ?p . $event beh:value ?v BIND(IRI(?v) AS ?new)
+  FILTER NOT EXISTS { ?target ?p ?new }
+  ?new dep:defaults ?d . ?d ?q ?o FILTER(?q != rdf:type)
+}""" ;
+    sem:function "dependency:defaults" .

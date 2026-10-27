@@ -1,0 +1,327 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for the command palette (ontology/components/palette.ttl). The overlay rules
+# (overlays.ttl) give it its scrim, its panel's surface and its ✕; these place the panel, lay out
+# the field, the sections and their options (the highlighted one tinted as a typeahead's is, the
+# matched part in the accent's text colour), the status and the key hints. Every value comes from a
+# token, so the themes, contrast and density restyle it; the structural themes draw it their way.
+
+# --- the palette: a panel near the top of the viewport, over a scrim ------------------------------
+# The root covers the viewport (the overlay's scrim fills it) and places the panel a little below the
+# top, where the eye already is; the typeahead's own box rules (a field's width) do not apply.
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "62" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "justify-items" ; sty:raw "center" ] ,
+                 [ sty:property "align-items" ; sty:raw "start" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "gap" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "max(48px, 12vh) var(--sem-space-4) var(--sem-space-4)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "width" ; sty:raw "min(640px, 100%)" ] ,
+                 [ sty:property "max-height" ; sty:raw "min(560px, calc(100vh - max(48px, 12vh) - 24px))" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "gap" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-xl ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-4 ] ,
+                 [ sty:property "animation" ; sty:raw "sem-scale-in var(--sem-duration) var(--sem-ease)" ] .
+
+# --- the field ---
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "min-height" ; sty:raw "56px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 var(--sem-space-3) 0 var(--sem-space-4)" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search > .sem-cp-glass" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:raw "20px" ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search > input" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "14px 0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-lg ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search > input::placeholder" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search > .sem-close" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] .
+
+# --- the sections and their options ---
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-list" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "overflow-y" ; sty:raw "auto" ] ,
+                 [ sty:property "overscroll-behavior" ; sty:raw "contain" ] ,
+                 [ sty:property "padding" ; sty:raw "6px" ] ,
+                 [ sty:property "scroll-padding-block" ; sty:raw "34px 6px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-list:not(:has([role=option]:not([hidden])))" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group:not([hidden]) ~ .sem-cp-group:not([hidden])" ;
+    sty:declares [ sty:property "margin-top" ; sty:raw "4px" ] ,
+                 [ sty:property "padding-top" ; sty:raw "4px" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-heading" ;
+    sty:declares [ sty:property "padding" ; sty:raw "8px 10px 4px" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.04em" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option]" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "10px" ] ,
+                 [ sty:property "min-height" ; sty:raw "40px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 10px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option][hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option]:hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-gray-3)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option][aria-selected=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px color-mix(in oklab, var(--sem-accent) 30%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-label" ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 1 auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-label > mark" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "font-weight" ; sty:raw "700" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "underline" ] ,
+                 [ sty:property "text-decoration-thickness" ; sty:raw "1.5px" ] ,
+                 [ sty:property "text-underline-offset" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-help" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 0" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option][aria-selected=true] > .sem-ta-help" ;
+    sty:declares [ sty:property "color" ; sty:raw "color-mix(in oklab, currentColor 70%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-keys" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+
+# --- what nothing matched, and the keys ---
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-status" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-status:empty" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-foot" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "4px 6px" ] ,
+                 [ sty:property "padding" ; sty:raw "8px var(--sem-space-4)" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-foot > span:not(:last-child)" ;
+    sty:declares [ sty:property "margin-inline-end" ; sty:raw "8px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-foot > kbd" ;
+    sty:declares [ sty:property "padding" ; sty:raw "2px 6px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "5px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-bottom-width" ; sty:raw "2px" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "600 10px/1.2 var(--sem-font-mono)" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+
+# --- a phone held upright: a full-screen sheet ---------------------------------------------------
+# No room around it, no key hints (there are no keys), a field large enough not to zoom.
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "align-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "justify-items" ; sty:raw "stretch" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "max-height" ; sty:raw "none" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-fade-in var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "padding-top" ; sty:raw "env(safe-area-inset-top)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search > input" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "font-size" ; sty:raw "17px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-search > .sem-close" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "width" ; sty:raw "40px" ] ,
+                 [ sty:property "height" ; sty:raw "40px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option]" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "min-height" ; sty:raw "48px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-keys" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part "> .sem-panel > .sem-cp-foot" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+
+# --- the structural themes (themes-structural.ttl) -----------------------------------------------
+# Each draws the panel as it draws its dialogs and the highlighted option as its selected menu items,
+# with the same guard against a differently themed subtree below.
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised), var(--sem-shadow-4)" ] ,
+                 [ sty:property "padding" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-search:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "margin" ; sty:raw "6px" ] ,
+                 [ sty:property "min-height" ; sty:raw "40px" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-foot:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--bv-dark)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true]:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-select-bg)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--bv-select-fg)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true] :is(mark, .sem-ta-help, kbd):not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=command-palette] > .sem-scrim:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "backdrop-filter" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised), var(--sem-shadow-4)" ] ,
+                 [ sty:property "padding" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-search:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "margin" ; sty:raw "6px" ] ,
+                 [ sty:property "min-height" ; sty:raw "40px" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-foot:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--bv-dark)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true]:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-select-bg)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--bv-select-fg)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true] :is(mark, .sem-ta-help, kbd):not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=command-palette] > .sem-scrim:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "backdrop-filter" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--mac-glass-strong)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "var(--mac-blur)" ] ,
+                 [ sty:property "border" ; sty:raw "0.5px solid var(--mac-hairline)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "14px" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-foot:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true]:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "color" ; sty:raw "#ffffff" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "6px" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true] :is(mark, .sem-ta-help):not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-acrylic)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "var(--fl-blur)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--fl-stroke-flyout)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "8px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-shadow-4)" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-search:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "border-bottom" ; sty:raw "1px solid var(--fl-stroke)" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true]:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-subtle-hover)" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 3px 0 0 var(--sem-accent-9)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true] mark:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part "[data-sem-c=command-palette] > .sem-scrim:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "backdrop-filter" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "2px solid var(--ink)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--wob-c)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-shadow-4)" ] ,
+                 [ sty:property "rotate" ; sty:raw "-0.4deg" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=command-palette] > .sem-panel > .sem-cp-search:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "border-bottom" ; sty:raw "2px solid var(--ink)" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-heading:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "font-family" ; sty:raw "var(--sem-font-display)" ] ,
+                 [ sty:property "font-size" ; sty:raw "17px" ] ,
+                 [ sty:property "font-weight" ; sty:raw "400" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0" ] ,
+                 [ sty:property "text-transform" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true]:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "linear-gradient(100deg, transparent 1%, var(--hl-strong) 3% 94%, transparent 98%)" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=command-palette] .sem-cp-group > [role=option][aria-selected=true] mark:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .

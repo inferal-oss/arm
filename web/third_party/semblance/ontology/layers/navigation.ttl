@@ -1,0 +1,385 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix nav: <https://semblance.dev/ns/navigation#> .
+@prefix per: <https://semblance.dev/ns/persistence#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Navigation: "where we are" is graph data. A location (nav:Location) is the set of
+# coordinates (nav:Dimension) of one mounted app: which page, which section, which
+# example. Each coordinate is a property of a node in the input graph, says where it is
+# carried (the URL's fragment or query, this tab's or this device's storage), whether
+# changing it makes history (a step Back returns to), and when it applies at all (a docs
+# section only while the page is the docs). A host effect (src/navigation.ts) reads the
+# carriers into the graph before the first projection, writes the graph back to them
+# after input changes, and turns Back, Forward and typed URLs into nav:Navigate events.
+
+<https://semblance.dev/ns/navigation> a owl:Ontology ;
+    rdfs:label "Semblance navigation"@en .
+
+# --- locations and their dimensions ---------------------------------------------------------------
+
+nav:Location a owl:Class ;
+    rdfs:label "Location"@en , "Розташування"@uk , "Ort"@de , "الموقع"@ar ;
+    rdfs:comment """Where we are in one app: its dimensions (nav:dimensions, in the order the URL spells
+them) and the component it belongs to (nav:root, the mount root of its projection). Two apps on
+one page each have their own location; only one may carry the URL's fragment."""@en .
+nav:root a owl:ObjectProperty ; rdfs:domain nav:Location ;
+    rdfs:comment "The component whose projection this location belongs to (its mount root)."@en .
+nav:dimensions a owl:ObjectProperty ; rdfs:domain nav:Location ; rdfs:range rdf:List ;
+    rdfs:comment "The location's dimensions, in the order a path-style fragment spells them."@en .
+
+nav:Dimension a owl:Class ;
+    rdfs:label "Dimension"@en , "Вимір"@uk , "Dimension"@de , "بُعد"@ar ;
+    rdfs:comment """One coordinate of a location: the value of nav:property on nav:subject. It is carried
+where nav:carriedBy says, spelled by nav:keyProperty, and applies only while its nav:parent
+has one of the nav:when values (if it has a parent)."""@en .
+nav:subject a owl:ObjectProperty ; rdfs:domain nav:Dimension ;
+    rdfs:comment "The node whose property holds the dimension's value (e.g. the app)."@en .
+nav:property a owl:ObjectProperty ; rdfs:domain nav:Dimension ; rdfs:range rdf:Property ;
+    rdfs:comment "The property holding the dimension's value (one value)."@en .
+nav:key a owl:DatatypeProperty ; rdfs:domain nav:Dimension ;
+    rdfs:comment "The dimension's name where a carrier names it: a query parameter (default: the property's local name)."@en .
+nav:keyProperty a owl:ObjectProperty ; rdfs:domain nav:Dimension ; rdfs:range rdf:Property ;
+    rdfs:comment """How a value is spelled: the literal value of this property on it (default sem:slug).
+Values without one are spelled as prefixed names (c:Window), literals by their lexical form."""@en .
+nav:spelling a owl:ObjectProperty ; rdfs:domain nav:Dimension ; rdfs:range nav:Spelling ;
+    rdfs:comment "How values are spelled: by key (nav:ByKey, the default) or as prefixed names (nav:PrefixedName, for terms of any vocabulary)."@en .
+nav:showsTerms a owl:DatatypeProperty ; rdfs:domain nav:Dimension ; rdfs:range xsd:boolean ;
+    rdfs:comment """Whether the dimension's values are terms of the vocabularies a view shows (the Reference's
+selected term): a link to a term that no component shows (c:to a class or a property) goes to it,
+with its parents' nav:when values."""@en .
+nav:Spelling a owl:Class .
+nav:ByKey a nav:Spelling ; rdfs:comment "By nav:keyProperty, then sem:slug, then as a prefixed name."@en .
+nav:PrefixedName a nav:Spelling ; rdfs:comment "As a prefixed name (c:Window, ui:page): any term, unambiguously."@en .
+nav:parent a owl:ObjectProperty ; rdfs:domain nav:Dimension ; rdfs:range nav:Dimension ;
+    rdfs:comment """Scope of applicability: the dimension applies only while this one has one of the
+nav:when values. Out of scope, it is left out of the URL and not read from it; in a path-style
+fragment it follows its parent."""@en .
+nav:when a owl:ObjectProperty ; rdfs:domain nav:Dimension ;
+    rdfs:comment "A value of nav:parent under which the dimension applies (one or more)."@en .
+
+# What to bring into view: any resource the location shows (a specimen, a section), spelled by
+# its nav:anchor or its local name, in the fragment's last segment. It applies while the
+# location shows it; following it also writes the dimension values that show it.
+nav:TargetDimension a owl:Class ; rdfs:subClassOf nav:Dimension ;
+    rdfs:label "Target"@en , "Ціль"@uk , "Ziel"@de , "الهدف"@ar ;
+    rdfs:comment """A dimension whose value is a resource shown under the location, brought into view
+(scrolled to, and focused if it can be) once it is rendered."""@en .
+nav:target a owl:ObjectProperty ;
+    rdfs:label "Target"@en , "Ціль"@uk , "Ziel"@de , "الهدف"@ar ;
+    rdfs:comment "A conventional property for a target dimension: what a followed link brings into view."@en .
+nav:anchor a owl:DatatypeProperty ;
+    rdfs:comment "On any resource: how a URL spells it as a target (default: its IRI's local name)."@en .
+
+# --- carriers: where a location lives ------------------------------------------------------------
+
+nav:Carrier a owl:Class ;
+    rdfs:comment """Where a dimension's value is kept between moments: a part of the URL, or a storage
+scope. On load, the carrier with the lowest nav:rank that has a value wins; then the graph's
+own value (the default)."""@en .
+nav:carriedBy a owl:ObjectProperty ; rdfs:domain nav:Dimension ; rdfs:range nav:Carrier ;
+    rdfs:comment "Where the dimension's value is carried (any number of carriers; none: only in the graph)."@en .
+nav:rank a owl:DatatypeProperty ; rdfs:domain nav:Carrier ; rdfs:range xsd:integer ;
+    rdfs:comment "Precedence on load: lower wins."@en .
+
+nav:Fragment a nav:Carrier ; nav:rank 1 ; sem:order 1 ;
+    rdfs:label "The address (#)"@en , "Адреса (#)"@uk , "Die Adresse (#)"@de , "العنوان (#)"@ar ;
+    rdfs:comment "The URL's fragment, path style: #docs/rules, #components/inputs/inp-codes-spec."@en .
+nav:Query a nav:Carrier ; nav:rank 2 ; sem:order 2 ;
+    rdfs:label "The address (?)"@en , "Адреса (?)"@uk , "Die Adresse (?)"@de , "العنوان (?)"@ar ;
+    rdfs:comment "The URL's query: ?key=value, one parameter per dimension (nav:key)."@en .
+# Storage carriers are the persistence scopes: a dimension carried by one is remembered by the
+# persistence effect, like a per:Policy over its subject and property (one writer of storage).
+per:Session a nav:Carrier ; nav:rank 3 .
+per:Device a nav:Carrier ; nav:rank 4 .
+per:Database a nav:Carrier ; nav:rank 5 .
+
+# --- history ------------------------------------------------------------------------------------
+
+nav:History a owl:Class ;
+    rdfs:comment "Whether changing a dimension makes a step that Back returns to. Each carrier realizes it its own way."@en .
+nav:history a owl:ObjectProperty ; rdfs:domain nav:Dimension ; rdfs:range nav:History ;
+    rdfs:comment "Default nav:MakesHistory. A change of several dimensions makes history if any of them does."@en .
+nav:MakesHistory a nav:History ;
+    rdfs:label "Makes history"@en , "Створює історію"@uk , "Erzeugt Verlauf"@de , "ينشئ سجلًا"@ar ;
+    rdfs:comment "A change is a step you can go back to (the URL carriers add a history entry)."@en .
+nav:NoHistory a nav:History ;
+    rdfs:label "No history"@en , "Без історії"@uk , "Kein Verlauf"@de , "بلا سجل"@ar ;
+    rdfs:comment "A change updates where we are in place (the URL carriers replace the current entry). Storage carriers never keep history: only the current value."@en .
+
+# --- following the URL: an event like any other -----------------------------------------------
+
+nav:Navigate a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Navigate"@en , "Перехід"@uk , "Navigieren"@de , "انتقال"@ar ;
+    rdfs:comment """The location changed outside the graph: Back, Forward, a typed or followed URL. Addressed
+to the nav:Location, with the URL's query and fragment as beh:value; recorded in the change log."""@en .
+nav:Follow a beh:Reaction ; beh:when nav:Navigate ; beh:sourceClass nav:Location ;
+    rdfs:comment "Writes the dimensions the URL carries (and the target's) into the graph."@en ;
+    sem:functionOnly "awaits sx:Text (sx:decodeURI): it reads the address, whose keys are percent-encoded." ;
+    sem:needsExtension sx:Text ;
+    sem:function "navigation:follow" .
+
+# What the effect reports (in the navigation graph, urn:semblance:navigation).
+nav:address a owl:DatatypeProperty ; rdfs:domain nav:Location ;
+    rdfs:label "Address"@en , "Адреса"@uk , "Adresse"@de , "العنوان"@ar ;
+    rdfs:comment "The location as the URL carriers last spelled it (its query and fragment)."@en .
+nav:revision a owl:DatatypeProperty ; rdfs:domain nav:Location ; rdfs:range xsd:integer ;
+    rdfs:comment "How many times the effect reported the location; views of the reports follow it."@en .
+nav:applies a owl:DatatypeProperty ; rdfs:domain nav:Dimension ; rdfs:range xsd:boolean ;
+    rdfs:comment "Reported: whether the dimension is in scope now."@en .
+nav:spelled a owl:DatatypeProperty ; rdfs:domain nav:Dimension ;
+    rdfs:comment "Reported: how the address spells the dimension's value now (while it applies)."@en .
+
+# --- where a resource is shown: links to things, not addresses -------------------------------------
+
+# A link's c:to is a resource; the framework finds the location that shows it by walking up the
+# component tree through these properties (lists are walked through their members), and at
+# each c:Switch case collects the value of the dimension the switch follows (c:controls and
+# c:property equal to the dimension's nav:subject and nav:property, c:when its value).
+nav:ContainmentProperty a owl:Class ;
+    rdfs:comment "A property that places components inside the component that has it (directly or as a list)."@en .
+c:children a nav:ContainmentProperty . c:content a nav:ContainmentProperty . c:front a nav:ContainmentProperty .
+c:back a nav:ContainmentProperty . c:body a nav:ContainmentProperty . c:cases a nav:ContainmentProperty .
+c:tabs a nav:ContainmentProperty . c:actions a nav:ContainmentProperty . c:items a nav:ContainmentProperty .
+c:primary a nav:ContainmentProperty . c:secondary a nav:ContainmentProperty . c:toolbar a nav:ContainmentProperty .
+c:footer a nav:ContainmentProperty . c:hosts a nav:ContainmentProperty .
+
+# Containers that hide what they hold until told: following a link to something inside one
+# tells it (as part of the same step), whatever dimensions the location has.
+nav:reveal a owl:ObjectProperty ; rdfs:range nav:Reveal ;
+    rdfs:comment "On a component class: how an instance is made to show what it holds through nav:via."@en .
+nav:Reveal a owl:Class ;
+    rdfs:comment "Set nav:sets on the container to nav:value (default: the part on the way to the target)."@en .
+nav:via a owl:ObjectProperty ; rdfs:domain nav:Reveal ; rdfs:range nav:ContainmentProperty .
+nav:sets a owl:ObjectProperty ; rdfs:domain nav:Reveal ; rdfs:range rdf:Property .
+nav:value a rdf:Property ;
+    rdfs:comment "On a nav:Reveal: the value to set. Reported on a dimension: its value now."@en .
+c:Tabs nav:reveal [ a nav:Reveal ; nav:via c:tabs ; nav:sets c:selected ] .
+c:AccordionItem nav:reveal [ a nav:Reveal ; nav:via c:content ; nav:sets c:expanded ; nav:value true ] .
+c:Flippable nav:reveal [ a nav:Reveal ; nav:via c:back ; nav:sets c:flipped ; nav:value true ] .
+c:Window nav:reveal [ a nav:Reveal ; nav:via c:body ; nav:sets c:open ; nav:value true ] .
+
+# Going somewhere from a reaction, as following a link to it would: the reaction inserts
+# `?anything nav:goTo ?resource`, and the navigation effect (src/navigation.ts) takes the request
+# out of the graph, spells the address of the location that shows the resource (as for a link's
+# c:to), makes it a step Back returns to, and follows it (a nav:Navigate event; the resource is
+# brought into view). A command palette's places are run this way.
+nav:goTo a owl:ObjectProperty ;
+    rdfs:label "Go to"@en , "Перейти до"@uk , "Gehe zu"@de , "انتقل إلى"@ar ;
+    rdfs:comment "A request (in a reaction's inserts): go to the location that shows this resource, as a link to it (c:to) would. The navigation effect performs and removes it."@en .
+
+nav:href a owl:DatatypeProperty ;
+    rdfs:comment "Derived, on a c:Link with c:to: the URL fragment of the location that shows its target."@en .
+# In the components' stratum, so links that other components mint (a reference's facets) get it too.
+# --- the component tree, as edges (a building block for the destinations' SPARQL) -------------
+# Each containment property (nav:ContainmentProperty) links a container to what it holds: directly,
+# or through an RDF list of them. nav:Containment states each such link as an edge of its own
+# (minted under the property: nav:from the part, nav:to the container), so a fixed property path
+# (^nav:from/nav:to)* walks up the tree. Evaluated whether shown or not (sem:always): the tree is
+# what the page is built from, read when the page loads.
+nav:Containment a sem:BuildingBlock ;
+    sem:targets nav:ContainmentProperty ;
+    sem:stratum -30 ;
+    sem:always true .
+nav:Containment-fn a sem:Rule ; sem:implements nav:Containment ; sem:function "navigation:containment" .
+nav:Containment-sparql a sem:Rule ;
+    sem:implements nav:Containment ;
+    sem:construct """
+CONSTRUCT { ?edge nav:from ?child ; nav:to ?parent }
+WHERE {
+  $this a nav:ContainmentProperty .
+  { ?parent $this ?child . FILTER(isIRI(?parent) && isIRI(?child)) }
+  UNION
+  { ?parent $this ?list . FILTER(isIRI(?parent) && !isIRI(?list)) ?list rdf:rest*/rdf:first ?child . FILTER(isIRI(?child)) }
+  BIND(IRI(CONCAT(STR($this), "/~up-", MD5(CONCAT(STR(?parent), " ", STR(?child))))) AS ?edge)
+}""" .
+nav:from a owl:ObjectProperty ; rdfs:comment "A containment edge's part."@en .
+nav:to a owl:ObjectProperty ; rdfs:comment "A containment edge's container."@en .
+
+c:LinkDestination a sem:Rendering ; sem:targets c:Link ; sem:stratum 0 ; sem:requires c:to .
+c:LinkDestination-fn a sem:Rule ; sem:implements c:LinkDestination ; sem:function "navigation:link-destination" .
+c:LinkDestination-sparql a sem:Rule ;
+    sem:implements c:LinkDestination ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT { $this nav:href ?href }
+WHERE {
+  $this c:to ?to . FILTER(isIRI(?to))
+  ?loc a nav:Location ; nav:root ?root .
+  BIND(EXISTS { ?to (^nav:from/nav:to)* ?root } AS ?shown)
+  # A term no component shows: a class, a property, or named in an owl:Ontology's namespace.
+  BIND(REPLACE(STR(?to), "[^#/]*$", "") AS ?ns)
+  BIND(!?shown && (EXISTS { ?anyOf a ?to } || EXISTS { ?anyS ?to ?anyO }
+       || EXISTS { ?onto a owl:Ontology FILTER(STR(?onto) = ?ns || STR(?onto) = SUBSTR(?ns, 1, STRLEN(?ns) - 1)) }) AS ?term)
+  FILTER(?shown || ?term)
+  OPTIONAL { SELECT ?to ?loc (GROUP_CONCAT(?part; separator="/") AS ?parts) WHERE {
+    { SELECT DISTINCT ?to ?loc ?d ?part ?order WHERE {
+      { SELECT ?to ?loc ?d ?v WHERE {
+        $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+        {
+          # Shown: the cases of the switches on the way down, and the target - unless it is a whole case.
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          ?to (^nav:from/nav:to)* ?root .
+          ?to (^nav:from/nav:to)* ?casea .
+      LATERAL { ?casea c:when ?v . ?edgea nav:from ?casea ; nav:to ?switcha .
+        ?switcha c:cases ?casesa ; c:controls ?controlsa ; c:property ?propertya .
+        ?d nav:subject ?controlsa ; nav:property ?propertya . FILTER NOT EXISTS { ?d a nav:TargetDimension } }
+          # It applies: its parent dimension's value, from a case further up, is one it is shown under.
+          OPTIONAL { ?d nav:parent ?pa }
+          FILTER(!BOUND(?pa) || EXISTS { ?d nav:when ?pw . ?to (^nav:from/nav:to)* ?casec .
+      LATERAL { ?casec c:when ?pw . ?edgec nav:from ?casec ; nav:to ?switchc .
+        ?switchc c:cases ?casesc ; c:controls ?controlsc ; c:property ?propertyc .
+        ?pa nav:subject ?controlsc ; nav:property ?propertyc . FILTER NOT EXISTS { ?pa a nav:TargetDimension } } })
+        } UNION {
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          ?to (^nav:from/nav:to)* ?root .
+          ?d a nav:TargetDimension ; nav:carriedBy nav:Fragment .
+          FILTER NOT EXISTS { ?wholeEdge nav:from ?to ; nav:to ?wholeCase . ?wholeCase c:when ?w }
+          BIND(?to AS ?v)
+        } UNION {
+          # A term: the dimension whose values are terms, and what its parents need for it to apply.
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          FILTER NOT EXISTS { ?to (^nav:from/nav:to)* ?root }
+          ?loc nav:dimensions ?termHead . ?termHead rdf:rest* ?termCell . ?termCell rdf:first ?termDim .
+          ?termDim nav:showsTerms true ; nav:carriedBy nav:Fragment .
+          { ?termDim nav:showsTerms true . BIND(?termDim AS ?d) } UNION { ?termDim nav:showsTerms true ; nav:parent* ?x . ?x nav:parent ?d ; nav:when ?when }
+          BIND(IF(?d = ?termDim, ?to, ?when) AS ?v)
+        }
+      } }
+      ?d nav:carriedBy nav:Fragment .
+      OPTIONAL { ?d nav:keyProperty ?keyPropertys }
+      BIND(EXISTS { ?d nav:spelling nav:PrefixedName } AS ?prefixeds)
+      OPTIONAL { FILTER(!?prefixeds) ?v ?keyPropertys ?ownKeys }
+      OPTIONAL { FILTER(!?prefixeds) ?v sem:slug ?slugKeys }
+      OPTIONAL { ?v nav:anchor ?anchors }
+      BIND(COALESCE(IF(isLiteral(?ownKeys), STR(?ownKeys), ?none), IF(isLiteral(?slugKeys), STR(?slugKeys), ?none)) AS ?keys)
+      # The longest namespace an IRI starts with (and that leaves a plain local name) spells it.
+      LATERAL { OPTIONAL { SELECT ?v (MAX(CONCAT(SUBSTR("0000", STRLEN(STR(STRLEN(?pnss)))), STR(STRLEN(?pnss)), " ", ?pps, ":", STRAFTER(STR(?v), ?pnss))) AS ?bests) WHERE {
+        { ?pnodes sem:prefixName ?pp0s ; sem:namespace ?pns0s } UNION { ?pnodes sh:prefix ?pp0s ; sh:namespace ?pns0s }
+        BIND(STR(?pp0s) AS ?pps) BIND(STR(?pns0s) AS ?pnss)
+        FILTER(isIRI(?v) && STRSTARTS(STR(?v), ?pnss) && REGEX(STRAFTER(STR(?v), ?pnss), "^[A-Za-z0-9_-]+$"))
+      } GROUP BY ?v } }
+      BIND(IF(isLiteral(?v), STR(?v),
+           IF(EXISTS { ?d a nav:TargetDimension }, COALESCE(STR(?anchors), REPLACE(STR(?v), "^.*[#/]", "")),
+           COALESCE(?keys, STRAFTER(?bests, " "), STR(?v)))) AS ?texts)
+      # As encodeURIComponent writes it, with ':' and '@' kept readable.
+      BIND(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ENCODE_FOR_URI(?texts),
+           "%3A", ":"), "%40", "@"), "%21", "!"), "%27", "'"), "%28", "("), "%29", ")"), "%2A", "*") AS ?part)
+      # Parents before their children, in the location's order; a parent not carried here after; the target last.
+      # (From the location's list head forward: Oxigraph walks a list path from its far end slowly.)
+      {{ SELECT ?d (COUNT(DISTINCT ?before) AS ?at) WHERE {{ ?l0 a nav:Location ; nav:dimensions ?h0 . ?h0 rdf:rest* ?before . ?before rdf:rest* ?c0 . ?c0 rdf:first ?d }} GROUP BY ?d }}
+      OPTIONAL {{ ?d nav:parent ?p1 . {{ SELECT ?p1 (COUNT(DISTINCT ?before1) AS ?at1) WHERE {{ ?l1 a nav:Location ; nav:dimensions ?h1 . ?h1 rdf:rest* ?before1 . ?before1 rdf:rest* ?c1 . ?c1 rdf:first ?p1 }} GROUP BY ?p1 }} }}
+      BIND(SUBSTR(CONCAT("000", STR(?at)), STRLEN(STR(?at)) + 1) AS ?own)
+      BIND(IF(EXISTS {{ ?d a nav:TargetDimension }}, CONCAT("2", ?own),
+           IF(!BOUND(?p1), CONCAT("0", ?own, "000"),
+           IF(EXISTS {{ ?p1 nav:carriedBy nav:Fragment }}, CONCAT("0", SUBSTR(CONCAT("000", STR(?at1)), STRLEN(STR(?at1)) + 1), ?own), CONCAT("1", ?own)))) AS ?order)
+    } ORDER BY ?order }
+  } GROUP BY ?to ?loc }
+  BIND(CONCAT("#", COALESCE(?parts, "")) AS ?href)
+}""" .
+# The current page: a link that goes to the address the location shows now (nav:address, as the
+# navigation effect reports it; its fragment, which is what links spell) is nav:current, and its
+# rendering marks it aria-current=page as if it said c:currentPage (unless it says c:currentPage
+# false). The rule is focused on the location: a step costs the links to the old and the new
+# address, found by their address, not every link.
+nav:current a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Derived, on a c:Link: it goes to the address the location shows now."@en .
+c:LinkCurrent a sem:Rendering ; sem:targets nav:Location ; sem:stratum 0 ; sem:always true .
+c:LinkCurrent-fn a sem:Rule ; sem:implements c:LinkCurrent ; sem:function "navigation:link-current" .
+c:LinkCurrent-sparql a sem:Rule ; sem:implements c:LinkCurrent ;
+    sem:construct """
+CONSTRUCT { ?link nav:current true }
+WHERE {
+  $this a nav:Location ; nav:address ?address .
+  BIND(IF(CONTAINS(?address, "#"), CONCAT("#", STRAFTER(?address, "#")), "#") AS ?fragment)
+  { ?link nav:href ?fragment } UNION { ?link c:href ?fragment FILTER NOT EXISTS { ?link nav:href ?any } }
+  ?link a/rdfs:subClassOf* c:Link .
+}""" .
+# An app bar's c:to (its home) is resolved the same way, for the link its logo and name make.
+c:AppBarDestination a sem:Rendering ; sem:targets c:AppBar ; sem:stratum 0 ; sem:requires c:to .
+c:AppBarDestination-fn a sem:Rule ; sem:implements c:AppBarDestination ; sem:function "navigation:link-destination" .
+c:AppBarDestination-sparql a sem:Rule ;
+    sem:implements c:AppBarDestination ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT { $this nav:href ?href }
+WHERE {
+  $this c:to ?to . FILTER(isIRI(?to))
+  ?loc a nav:Location ; nav:root ?root .
+  BIND(EXISTS { ?to (^nav:from/nav:to)* ?root } AS ?shown)
+  # A term no component shows: a class, a property, or named in an owl:Ontology's namespace.
+  BIND(REPLACE(STR(?to), "[^#/]*$", "") AS ?ns)
+  BIND(!?shown && (EXISTS { ?anyOf a ?to } || EXISTS { ?anyS ?to ?anyO }
+       || EXISTS { ?onto a owl:Ontology FILTER(STR(?onto) = ?ns || STR(?onto) = SUBSTR(?ns, 1, STRLEN(?ns) - 1)) }) AS ?term)
+  FILTER(?shown || ?term)
+  OPTIONAL { SELECT ?to ?loc (GROUP_CONCAT(?part; separator="/") AS ?parts) WHERE {
+    { SELECT DISTINCT ?to ?loc ?d ?part ?order WHERE {
+      { SELECT ?to ?loc ?d ?v WHERE {
+        $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+        {
+          # Shown: the cases of the switches on the way down, and the target - unless it is a whole case.
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          ?to (^nav:from/nav:to)* ?root .
+          ?to (^nav:from/nav:to)* ?casea .
+      LATERAL { ?casea c:when ?v . ?edgea nav:from ?casea ; nav:to ?switcha .
+        ?switcha c:cases ?casesa ; c:controls ?controlsa ; c:property ?propertya .
+        ?d nav:subject ?controlsa ; nav:property ?propertya . FILTER NOT EXISTS { ?d a nav:TargetDimension } }
+          # It applies: its parent dimension's value, from a case further up, is one it is shown under.
+          OPTIONAL { ?d nav:parent ?pa }
+          FILTER(!BOUND(?pa) || EXISTS { ?d nav:when ?pw . ?to (^nav:from/nav:to)* ?casec .
+      LATERAL { ?casec c:when ?pw . ?edgec nav:from ?casec ; nav:to ?switchc .
+        ?switchc c:cases ?casesc ; c:controls ?controlsc ; c:property ?propertyc .
+        ?pa nav:subject ?controlsc ; nav:property ?propertyc . FILTER NOT EXISTS { ?pa a nav:TargetDimension } } })
+        } UNION {
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          ?to (^nav:from/nav:to)* ?root .
+          ?d a nav:TargetDimension ; nav:carriedBy nav:Fragment .
+          FILTER NOT EXISTS { ?wholeEdge nav:from ?to ; nav:to ?wholeCase . ?wholeCase c:when ?w }
+          BIND(?to AS ?v)
+        } UNION {
+          # A term: the dimension whose values are terms, and what its parents need for it to apply.
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          FILTER NOT EXISTS { ?to (^nav:from/nav:to)* ?root }
+          ?loc nav:dimensions ?termHead . ?termHead rdf:rest* ?termCell . ?termCell rdf:first ?termDim .
+          ?termDim nav:showsTerms true ; nav:carriedBy nav:Fragment .
+          { ?termDim nav:showsTerms true . BIND(?termDim AS ?d) } UNION { ?termDim nav:showsTerms true ; nav:parent* ?x . ?x nav:parent ?d ; nav:when ?when }
+          BIND(IF(?d = ?termDim, ?to, ?when) AS ?v)
+        }
+      } }
+      ?d nav:carriedBy nav:Fragment .
+      OPTIONAL { ?d nav:keyProperty ?keyPropertys }
+      BIND(EXISTS { ?d nav:spelling nav:PrefixedName } AS ?prefixeds)
+      OPTIONAL { FILTER(!?prefixeds) ?v ?keyPropertys ?ownKeys }
+      OPTIONAL { FILTER(!?prefixeds) ?v sem:slug ?slugKeys }
+      OPTIONAL { ?v nav:anchor ?anchors }
+      BIND(COALESCE(IF(isLiteral(?ownKeys), STR(?ownKeys), ?none), IF(isLiteral(?slugKeys), STR(?slugKeys), ?none)) AS ?keys)
+      # The longest namespace an IRI starts with (and that leaves a plain local name) spells it.
+      LATERAL { OPTIONAL { SELECT ?v (MAX(CONCAT(SUBSTR("0000", STRLEN(STR(STRLEN(?pnss)))), STR(STRLEN(?pnss)), " ", ?pps, ":", STRAFTER(STR(?v), ?pnss))) AS ?bests) WHERE {
+        { ?pnodes sem:prefixName ?pp0s ; sem:namespace ?pns0s } UNION { ?pnodes sh:prefix ?pp0s ; sh:namespace ?pns0s }
+        BIND(STR(?pp0s) AS ?pps) BIND(STR(?pns0s) AS ?pnss)
+        FILTER(isIRI(?v) && STRSTARTS(STR(?v), ?pnss) && REGEX(STRAFTER(STR(?v), ?pnss), "^[A-Za-z0-9_-]+$"))
+      } GROUP BY ?v } }
+      BIND(IF(isLiteral(?v), STR(?v),
+           IF(EXISTS { ?d a nav:TargetDimension }, COALESCE(STR(?anchors), REPLACE(STR(?v), "^.*[#/]", "")),
+           COALESCE(?keys, STRAFTER(?bests, " "), STR(?v)))) AS ?texts)
+      # As encodeURIComponent writes it, with ':' and '@' kept readable.
+      BIND(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ENCODE_FOR_URI(?texts),
+           "%3A", ":"), "%40", "@"), "%21", "!"), "%27", "'"), "%28", "("), "%29", ")"), "%2A", "*") AS ?part)
+      # Parents before their children, in the location's order; a parent not carried here after; the target last.
+      # (From the location's list head forward: Oxigraph walks a list path from its far end slowly.)
+      {{ SELECT ?d (COUNT(DISTINCT ?before) AS ?at) WHERE {{ ?l0 a nav:Location ; nav:dimensions ?h0 . ?h0 rdf:rest* ?before . ?before rdf:rest* ?c0 . ?c0 rdf:first ?d }} GROUP BY ?d }}
+      OPTIONAL {{ ?d nav:parent ?p1 . {{ SELECT ?p1 (COUNT(DISTINCT ?before1) AS ?at1) WHERE {{ ?l1 a nav:Location ; nav:dimensions ?h1 . ?h1 rdf:rest* ?before1 . ?before1 rdf:rest* ?c1 . ?c1 rdf:first ?p1 }} GROUP BY ?p1 }} }}
+      BIND(SUBSTR(CONCAT("000", STR(?at)), STRLEN(STR(?at)) + 1) AS ?own)
+      BIND(IF(EXISTS {{ ?d a nav:TargetDimension }}, CONCAT("2", ?own),
+           IF(!BOUND(?p1), CONCAT("0", ?own, "000"),
+           IF(EXISTS {{ ?p1 nav:carriedBy nav:Fragment }}, CONCAT("0", SUBSTR(CONCAT("000", STR(?at1)), STRLEN(STR(?at1)) + 1), ?own), CONCAT("1", ?own)))) AS ?order)
+    } ORDER BY ?order }
+  } GROUP BY ?to ?loc }
+  BIND(CONCAT("#", COALESCE(?parts, "")) AS ?href)
+}""" .

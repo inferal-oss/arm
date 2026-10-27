@@ -1,0 +1,214 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Outline: data items as a document's points, with who is where (a shared agenda, a plan being
+# written together, a checklist several people work through).
+#
+# The points are data items (c:entry), in the order of one of their properties (c:sortBy), each
+# showing its text (c:entryTitle), indented by its level (c:levelProperty). Presence is graph
+# state on the points: c:presenceProperty names a property of a point whose values are the people
+# on it, shown as avatars at its start, and c:typingProperty the ones writing there, whose avatars
+# are marked as typing. c:noteProperty is a quiet line after the text (who changed it last), and
+# c:flagProperty a warning on the point (a conflict to look at), its value's text the message.
+#
+# With c:controls and c:property, an outline is also a picker, as a c:Segmented is: each point's
+# text is a button, pressed for the point the property names, and activating it sets the property
+# to that point (c:OutlinePick) - your own cursor, say. The outline mints a c:OutlineItem per
+# point, so a change to one point renders that point again, and the others stay.
+
+c:Outline a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Outline"@en , "Структура"@uk , "Gliederung"@de , "مخطط"@ar ;
+    rdfs:comment """Data items (c:entry) as the points of a document, ordered by c:sortBy, showing c:entryTitle,
+indented by c:levelProperty. The people on a point (c:presenceProperty) show as avatars, those writing
+(c:typingProperty) marked as typing; c:noteProperty is a quiet note after the text, c:flagProperty a
+warning on the point. With c:controls and c:property, a point is picked by activating it. c:label
+names the outline."""@en ;
+    sem:slug "outline" .
+c:levelProperty a owl:ObjectProperty ; rdfs:domain c:Outline ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of a point that is its indentation level (0, the default, is the top)."@en .
+c:presenceProperty a owl:ObjectProperty ; rdfs:domain c:Outline ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of a point whose values are the people (or agents, with an rdfs:label) on it."@en .
+c:typingProperty a owl:ObjectProperty ; rdfs:domain c:Outline ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of a point whose values are the people writing on it now."@en .
+c:noteProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of an item whose value (a literal, or a node's rdfs:label) is a quiet note shown after it."@en .
+c:flagProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of an item whose value (a literal, or a node's rdfs:label), when it has one, flags it as needing attention, and says why."@en .
+
+c:OutlineItem a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: one point (c:of) of an outline (c:inOutline), as the outline shows it."@en ;
+    sem:slug "outline-item" .
+c:inOutline a owl:ObjectProperty ; rdfs:domain c:OutlineItem ; rdfs:range c:Outline .
+c:TypingPhrase a c:Phrase ; rdfs:label "is typing"@en , "пише"@uk , "schreibt"@de , "يكتب"@ar .
+
+# --- the outline: its points, in order ----------------------------------------------------------------
+# A list, named by the outline's label; a c:OutlineItem per point, placed by its c:sortBy value.
+# An outline that picks hands its c:controls on to its points (they render their pressed state).
+
+c:OutlineRendering a sem:Rendering ;
+    sem:targets c:Outline ;
+    sem:stratum 0 ;
+    sem:follows c:entry .
+c:OutlineRendering-fn a sem:Rule ; sem:implements c:OutlineRendering ; sem:function "outline" .
+c:OutlineRendering-sparql a sem:Rule ;
+    sem:implements c:OutlineRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:attribute ?role , ?name ; rdfhtml:hasChild ?placed .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "list" .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?placed a c:OutlineItem ; c:of ?item ; c:inOutline $this ; sem:orderKey ?key ; c:controls ?target .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Outline .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?ownLabelAt l10n:of $this ; l10n:label ?ownLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(lang(?ownLabel) = "") }
+    BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+    BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+    BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?name)
+  } UNION {
+    $this c:entry ?item .
+    OPTIONAL { $this c:sortBy ?sortP . ?item ?sortP ?key0 }
+    OPTIONAL { $this c:controls ?target0 ; c:property ?anyProperty }
+    BIND(?target0 AS ?target)
+    BIND(STR(COALESCE(?key0, "￿")) AS ?key)
+    BIND(IRI(CONCAT(STR($this), "/~item-", ENCODE_FOR_URI(STR(?item)))) AS ?placed)
+  }
+}""" .
+
+# --- a point --------------------------------------------------------------------------------------------
+# Who is on it (an avatar each, in order of name; those typing marked, and said), its text (a button
+# when the outline picks), its note and its flag. Its level indents it (--sem-level).
+
+c:OutlineItemRendering a sem:Rendering ;
+    sem:targets c:OutlineItem ;
+    sem:stratum 0 ;
+    sem:follows c:of , c:controls .
+c:OutlineItemRendering-fn a sem:Rule ; sem:implements c:OutlineItemRendering ; sem:function "outline:item" .
+c:OutlineItemRendering-sparql-screen a sem:Rule ;
+    sem:implements c:OutlineItemRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:class ?rootClass ; rdfhtml:style ?style ; rdfhtml:attribute ?role ;
+        rdfhtml:hasChild ?people , ?text , ?note , ?flag .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "listitem" .
+  ?people a rdfhtml:Span ; rdfhtml:class "sem-people" ; rdfhtml:hasChild ?who ; ord:immediatelyPrecedes ?text .
+  ?who a rdfhtml:Span ; rdfhtml:class ?whoClass ; sem:orderKey ?whoName ; rdfhtml:hasChild ?avatar , ?typing .
+  ?avatar a c:Avatar ; c:label ?whoName ; sty:size sty:Small ; ord:immediatelyPrecedes ?typing .
+  ?typing a rdfhtml:Span ; rdfhtml:class "sem-visually-hidden" ; rdfhtml:hasChild ?typingText .
+  ?typingText a rdfhtml:Text ; rdfhtml:data ?typingPhrase .
+  ?text a ?textTag ; rdfhtml:class "sem-text" ; rdfhtml:type ?buttonType ; c:selects ?selects ; rdfhtml:attribute ?pressedAttr ;
+        rdfhtml:hasChild ?textNode ; ord:precedes ?note , ?flag .
+  ?pressedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressed .
+  ?textNode a rdfhtml:Text ; rdfhtml:data ?label .
+  ?note a rdfhtml:Span ; rdfhtml:class "sem-note" ; rdfhtml:hasChild ?noteText ; ord:precedes ?flag .
+  ?noteText a rdfhtml:Text ; rdfhtml:data ?noteData .
+  ?flag a rdfhtml:Span ; rdfhtml:class "sem-flag" ; rdfhtml:attribute ?flagRole ; rdfhtml:hasChild ?flagText .
+  ?flagRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "note" .
+  ?flagText a rdfhtml:Text ; rdfhtml:data ?flagData .
+}
+WHERE {
+  $this a c:OutlineItem .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~people")) AS ?people)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+  # Each branch binds the point and its outline itself: a branch does not see the bindings around it.
+  {
+    $this c:of ?item ; c:inOutline ?outline .
+    OPTIONAL { ?outline c:entryTitle ?titleP . ?item ?titleP ?title0 }
+    BIND(STR(COALESCE(?title0, REPLACE(STR(?item), "^.*[#/]", ""))) AS ?label)
+    OPTIONAL { ?outline c:levelProperty ?levelP . ?item ?levelP ?level0 }
+    BIND(CONCAT("--sem-level: ", STR(COALESCE(xsd:integer(?level0), 0))) AS ?style)
+    OPTIONAL { ?outline c:noteProperty ?noteP . ?item ?noteP ?noteValue . OPTIONAL { ?notePlainAt l10n:of ?noteValue ; l10n:name ?notePlain }
+  OPTIONAL { ?noteValue rdfs:label ?notePlain FILTER(lang(?notePlain) = "") } }
+    OPTIONAL { ?outline c:flagProperty ?flagP . ?item ?flagP ?flagValue . OPTIONAL { ?flagPlainAt l10n:of ?flagValue ; l10n:name ?flagPlain }
+  OPTIONAL { ?flagValue rdfs:label ?flagPlain FILTER(lang(?flagPlain) = "") } }
+    BIND(IF(isLiteral(?noteValue), STR(?noteValue), STR(COALESCE(?notePlain, REPLACE(STR(?noteValue), "^.*[#/]", "")))) AS ?noteData)
+    BIND(IF(isLiteral(?flagValue), STR(?flagValue), STR(COALESCE(?flagPlain, REPLACE(STR(?flagValue), "^.*[#/]", "")))) AS ?flagData)
+    BIND(IF(BOUND(?noteValue), IRI(CONCAT(STR($this), "/~note")), ?none) AS ?note)
+    BIND(IF(BOUND(?noteValue), IRI(CONCAT(STR($this), "/~note-text")), ?none) AS ?noteText)
+    BIND(IF(BOUND(?flagValue), IRI(CONCAT(STR($this), "/~flag")), ?none) AS ?flag)
+    BIND(IF(BOUND(?flagValue), IRI(CONCAT(STR($this), "/~flag-role")), ?none) AS ?flagRole)
+    BIND(IF(BOUND(?flagValue), IRI(CONCAT(STR($this), "/~flag-text")), ?none) AS ?flagText)
+    BIND(EXISTS { ?outline c:typingProperty ?typingP . ?item ?typingP ?anyone } AS ?busy)
+    BIND(CONCAT("sem-outline-item", IF(BOUND(?flagValue), " sem-flagged", ""), IF(?busy, " sem-busy", "")) AS ?rootClass)
+    BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+    # A picker's point is a button, pressed when it is the one picked.
+    BIND(EXISTS { ?outline c:controls ?anyTarget ; c:property ?anyProperty } AS ?picks)
+    BIND(IF(?picks, rdfhtml:Button, rdfhtml:Span) AS ?textTag)
+    BIND(IF(?picks, "button", ?none) AS ?buttonType)
+    BIND(IF(?picks, ?item, ?none) AS ?selects)
+    BIND(IF(?picks, IF(EXISTS { ?outline c:controls ?pickTarget ; c:property ?pickP . ?pickTarget ?pickP ?item }, "true", "false"), ?none) AS ?pressed)
+    BIND(IF(?picks, IRI(CONCAT(STR($this), "/~text-aria-pressed")), ?none) AS ?pressedAttr)
+    BIND(IRI(CONCAT(STR($this), "/~text-text")) AS ?textNode)
+  } UNION {
+    # Who is on it: an avatar each; writing, marked and said.
+    $this c:of ?item ; c:inOutline ?outline .
+    ?outline c:presenceProperty ?presenceP . ?item ?presenceP ?agent .
+    OPTIONAL { ?agentPlainAt l10n:of ?agent ; l10n:name ?agentPlain }
+  OPTIONAL { ?agent rdfs:label ?agentPlain FILTER(lang(?agentPlain) = "") }
+    BIND(STR(COALESCE(?agentPlain, REPLACE(STR(?agent), "^.*[#/]", ""))) AS ?whoName)
+    BIND(EXISTS { ?outline c:typingProperty ?typingP2 . ?item ?typingP2 ?agent } AS ?writing)
+    OPTIONAL { ?typingWordAt l10n:of c:TypingPhrase ; l10n:name ?typingWord }
+  OPTIONAL { c:TypingPhrase rdfs:label ?typingWord FILTER(langMatches(lang(?typingWord), "en")) }
+    BIND(CONCAT("who-", ENCODE_FOR_URI(STR(?agent))) AS ?whoKey)
+    BIND(IRI(CONCAT(STR($this), "/~", ?whoKey)) AS ?who)
+    BIND(IF(?writing, "sem-who sem-typing", "sem-who") AS ?whoClass)
+    BIND(IRI(CONCAT(STR($this), "/~", ?whoKey, "-avatar")) AS ?avatar)
+    BIND(IF(?writing, IRI(CONCAT(STR($this), "/~", ?whoKey, "-typing")), ?none) AS ?typing)
+    BIND(IF(?writing, IRI(CONCAT(STR($this), "/~", ?whoKey, "-typing-text")), ?none) AS ?typingText)
+    BIND(IF(?writing, CONCAT(" ", STR(?typingWord)), ?none) AS ?typingPhrase)
+  }
+}""" .
+c:OutlineItemRendering-sparql-text a sem:Rule ;
+    sem:implements c:OutlineItemRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:OutlineItem ; c:of ?item ; c:inOutline ?outline .
+  OPTIONAL { ?outline c:entryTitle ?titleP . ?item ?titleP ?title0 }
+  OPTIONAL { ?outline c:levelProperty ?levelP . ?item ?levelP ?level0 }
+  OPTIONAL { ?outline c:noteProperty ?noteP . ?item ?noteP ?noteValue . OPTIONAL { ?notePlainAt l10n:of ?noteValue ; l10n:name ?notePlain }
+  OPTIONAL { ?noteValue rdfs:label ?notePlain FILTER(lang(?notePlain) = "") } }
+  OPTIONAL { ?outline c:flagProperty ?flagP . ?item ?flagP ?flagValue . OPTIONAL { ?flagPlainAt l10n:of ?flagValue ; l10n:name ?flagPlain }
+  OPTIONAL { ?flagValue rdfs:label ?flagPlain FILTER(lang(?flagPlain) = "") } }
+  BIND(STR(COALESCE(?title0, REPLACE(STR(?item), "^.*[#/]", ""))) AS ?label)
+  BIND(COALESCE(xsd:integer(?level0), 0) AS ?level)
+  BIND(SUBSTR("                ", 1, 2 * ?level) AS ?indent)
+  BIND(IF(isLiteral(?noteValue), STR(?noteValue), STR(COALESCE(?notePlain, REPLACE(STR(?noteValue), "^.*[#/]", "")))) AS ?noteData)
+  BIND(IF(isLiteral(?flagValue), STR(?flagValue), STR(COALESCE(?flagPlain, REPLACE(STR(?flagValue), "^.*[#/]", "")))) AS ?flagData)
+  BIND(CONCAT(?indent, "- ", ?label, IF(BOUND(?noteData), CONCAT(" (", ?noteData, ")"), ""), IF(BOUND(?flagData), CONCAT(" ⚠ ", ?flagData), "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text-text")) AS ?text)
+}""" .
+
+# --- behaviour: picking a point ----------------------------------------------------------------------------
+# On an outline with c:controls and c:property, activating a point sets the property to it.
+
+c:OutlinePick a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:OutlineItem ;
+    beh:deletes """
+CONSTRUCT { ?target ?p ?old }
+WHERE { $this c:of ?item ; c:inOutline ?outline . ?outline c:controls ?target ; c:property ?p . ?target ?p ?old FILTER(?old != ?item) }""" ;
+    beh:inserts """
+CONSTRUCT { ?target ?p ?item }
+WHERE { $this c:of ?item ; c:inOutline ?outline . ?outline c:controls ?target ; c:property ?p }""" ;
+    sem:function "outline:pick" .

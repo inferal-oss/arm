@@ -1,0 +1,126 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+c:TextField a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A labelled single-line text input with optional help and error text. Without a c:label it
+renders the input alone, to be labelled by a c:Field. c:disabled disables its native input
+and ignores input events while preserving its value and error."""@en ;
+    sem:slug "text-field" .
+
+# --- screen ---------------------------------------------------------------------
+# Optional parts are ordered with (non-immediate) ord:precedes so that absent
+# parts simply drop out of the ordering.
+
+c:TextFieldOnScreen a sem:Rendering ;
+    sem:targets c:TextField ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 .
+
+c:TextFieldOnScreen-sparql a sem:Rule ;
+    sem:implements c:TextFieldOnScreen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?label, ?input, ?help, ?error .
+  ?label a rdfhtml:Label ; rdfhtml:for ?inputId ; rdfhtml:hasChild ?labelText ; ord:precedes ?input .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?labelData .
+  ?input a rdfhtml:Input ; rdfhtml:type ?inputType ; rdfhtml:id ?inputId ;
+         rdfhtml:value ?value ; rdfhtml:placeholder ?placeholder ; rdfhtml:disabled ?disabled ; ord:precedes ?help, ?error .
+  ?help a rdfhtml:Div ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:hasChild ?errorText .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+}
+WHERE {
+  $this a c:TextField .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?labelData)
+  OPTIONAL { $this c:value ?value }
+  OPTIONAL { $this c:placeholder ?placeholder }
+  OPTIONAL { $this c:inputType ?declaredType }
+  BIND(COALESCE(?declaredType, "text") AS ?inputType)
+  BIND(IF(EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") }, "", ?none) AS ?disabled)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(BOUND(?labelData), IRI(CONCAT(STR($this), "/~label")), ?none) AS ?label)
+  BIND(IF(BOUND(?labelData), IRI(CONCAT(STR($this), "/~label-text")), ?none) AS ?labelText)
+  BIND(IRI(CONCAT(STR($this), "/~input")) AS ?input)
+  BIND(STR(?input) AS ?inputId)
+  OPTIONAL {
+    $this c:help ?helpData .
+    BIND(IRI(CONCAT(STR($this), "/~help")) AS ?help)
+    BIND(IRI(CONCAT(STR($this), "/~help-text")) AS ?helpText)
+  }
+  OPTIONAL {
+    $this c:error ?errorData .
+    BIND(IRI(CONCAT(STR($this), "/~error")) AS ?error)
+    BIND(IRI(CONCAT(STR($this), "/~error-text")) AS ?errorText)
+  }
+}""" .
+
+c:TextFieldOnScreen-fn a sem:Rule ;
+    sem:implements c:TextFieldOnScreen ;
+    sem:function "textfield:screen" .
+
+# --- text -----------------------------------------------------------------------
+
+c:TextFieldAsText a sem:Rendering ;
+    sem:targets c:TextField ;
+    sem:modality mod:Text ;
+    sem:stratum 0 .
+
+c:TextFieldAsText-sparql a sem:Rule ;
+    sem:implements c:TextFieldAsText ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line, ?help, ?error .
+  ?line a rdfhtml:Div ; rdfhtml:hasChild ?lineText ; ord:precedes ?help, ?error .
+  ?lineText a rdfhtml:Text ; rdfhtml:data ?lineData .
+  ?help a rdfhtml:Div ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:hasChild ?errorText .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+}
+WHERE {
+  $this a c:TextField .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  OPTIONAL { $this c:value ?value }
+  BIND(CONCAT(COALESCE(CONCAT(STR(?label), ": "), ""), "[", COALESCE(STR(?value), ""), "_]") AS ?lineData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~line-text")) AS ?lineText)
+  OPTIONAL {
+    $this c:help ?h .
+    BIND(CONCAT("  ", STR(?h)) AS ?helpData)
+    BIND(IRI(CONCAT(STR($this), "/~help")) AS ?help)
+    BIND(IRI(CONCAT(STR($this), "/~help-text")) AS ?helpText)
+  }
+  OPTIONAL {
+    $this c:error ?e .
+    BIND(CONCAT("  ! ", STR(?e)) AS ?errorData)
+    BIND(IRI(CONCAT(STR($this), "/~error")) AS ?error)
+    BIND(IRI(CONCAT(STR($this), "/~error-text")) AS ?errorText)
+  }
+}""" .
+
+c:TextFieldAsText-fn a sem:Rule ;
+    sem:implements c:TextFieldAsText ;
+    sem:function "textfield:text" .
+
+# --- behaviour ----------------------------------------------------------------------
+# Typing sets the value (the graph holds input state) and clears a stale error.
+
+c:TextFieldInput a beh:Reaction ;
+    beh:when beh:Input ;
+    beh:sourceClass c:TextField ;
+    beh:deletes """CONSTRUCT { $this c:value ?old ; c:error ?error } WHERE { FILTER NOT EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") } { { $this c:value ?old } UNION { $this c:error ?error } } }""" ;
+    beh:inserts """CONSTRUCT { $this c:value ?value } WHERE { FILTER NOT EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") } $event beh:value ?value }""" ;
+    sem:function "textfield:input" .

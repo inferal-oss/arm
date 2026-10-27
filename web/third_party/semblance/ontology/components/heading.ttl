@@ -1,0 +1,78 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+c:Heading a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A section title."@en ;
+    sem:slug "heading" .
+
+c:level a owl:DatatypeProperty ; rdfs:domain c:Heading ; rdfs:range xsd:integer ;
+    rdfs:comment "Outline level, 1-6 (default 2)."@en .
+
+# --- screen ---------------------------------------------------------------------
+# The RDF/HTML element class itself is computed (rdfhtml:H1 ... rdfhtml:H6).
+
+c:HeadingOnScreen a sem:Rendering ;
+    sem:targets c:Heading ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 .
+
+c:HeadingOnScreen-sparql a sem:Rule ;
+    sem:implements c:HeadingOnScreen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a c:Heading .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  OPTIONAL { $this c:level ?l }
+  BIND(IRI(CONCAT(STR(rdfhtml:), "H", STR(COALESCE(?l, 2)))) AS ?element)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+c:HeadingOnScreen-fn a sem:Rule ;
+    sem:implements c:HeadingOnScreen ;
+    sem:function "heading:screen" .
+
+# --- text -----------------------------------------------------------------------
+
+c:HeadingAsText a sem:Rendering ;
+    sem:targets c:Heading ;
+    sem:modality mod:Text ;
+    sem:stratum 0 .
+
+c:HeadingAsText-sparql a sem:Rule ;
+    sem:implements c:HeadingAsText ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:Heading .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  BIND(CONCAT("# ", UCASE(STR(?label))) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+c:HeadingAsText-fn a sem:Rule ;
+    sem:implements c:HeadingAsText ;
+    sem:function "heading:text" .

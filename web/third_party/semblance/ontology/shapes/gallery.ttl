@@ -1,0 +1,22 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What well-formed galleries and lightboxes look like (ontology/components/gallery.ttl).
+
+c:GalleryShape a sh:NodeShape ; sh:targetClass c:Gallery ;
+    sh:property [ sh:path c:images ; sh:minCount 1 ; sh:maxCount 1 ; sh:message "A gallery has one list of images (c:images)." ] ,
+                [ sh:path c:galleryLayout ; sh:maxCount 1 ; sh:class c:GalleryLayout ;
+                  sh:message "A gallery has at most one layout (c:galleryLayout): c:CarouselLayout, c:GridLayout or c:PileLayout." ] ,
+                [ sh:path c:lightbox ; sh:maxCount 1 ; sh:class c:Lightbox ; sh:message "A gallery opens its images in at most one c:Lightbox." ] ,
+                [ sh:path c:current ; sh:maxCount 1 ; sh:message "A gallery shows one image at a time (c:current)." ] .
+c:PictureShape a sh:NodeShape ; sh:targetClass c:Picture ;
+    sh:property [ sh:path c:image ; sh:minCount 1 ; sh:maxCount 1 ; sh:message "A picture has one URL (c:image)." ] ,
+                [ sh:path c:alt ; sh:minCount 1 ; sh:severity sh:Warning ;
+                  sh:message "A picture says what it shows (c:alt): its alt text, and the name of the buttons that open it." ] ,
+                [ sh:path c:width ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minExclusive 0 ] ,
+                [ sh:path c:height ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minExclusive 0 ] .
+c:LightboxShape a sh:NodeShape ; sh:targetClass c:Lightbox ;
+    sh:property [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ; sh:class c:Gallery ; sh:message "A lightbox shows the images of one c:Gallery (c:of)." ] ,
+                [ sh:path c:open ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:zoomed ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .

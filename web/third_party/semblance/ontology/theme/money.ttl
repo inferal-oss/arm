@@ -1,0 +1,11 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+
+# Default theme for c:Money (ontology/components/money.ttl): digits that line up, an amount that
+# never breaks across lines, and an isolated direction - a price keeps its own order inside a
+# right-to-left sentence.
+
+[] a sty:StyleRule ; sty:appliesTo c:Money ;
+    sty:declares [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .

@@ -1,0 +1,16 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What well-formed sheets look like (ontology/components/sheet.ttl).
+
+c:SheetShape a sh:NodeShape ; sh:targetClass c:Sheet ;
+    sh:property [ sh:path c:columns ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 26 ;
+                  sh:message "A sheet has 1 to 26 lettered columns (c:columns)." ] ,
+                [ sh:path c:cell ; sh:class c:SheetCell ] ,
+                [ sh:path c:selectedCell ; sh:maxCount 1 ] .
+c:SheetCellShape a sh:NodeShape ; sh:targetClass c:SheetCell ;
+    sh:property [ sh:path c:row ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ;
+                  sh:message "A cell has one row (c:row), from 1." ] ,
+                [ sh:path c:column ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 26 ;
+                  sh:message "A cell has one column (c:column), from 1 to 26." ] .

@@ -1,0 +1,9 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Default theme for what formulas decide (ontology/components/formula.ttl): a Stat whose formula
+# gives it a tone (a negative balance: danger) shows its figure in that tone's text color.
+
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:state "[data-sem-tone]" ; sty:part "> .sem-figure .sem-value" ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--tone-text)" ] .

@@ -1,0 +1,184 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix val: <https://semblance.dev/ns/validation#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Component shapes layer. Every component class can carry a SHACL node shape
+# (sh:targetClass) saying what a well-formed instance looks like (ontology/
+# shapes/components.ttl). The layer validates each component declared in the
+# graph against the shapes of its classes and their superclasses, before
+# anything renders, and records standard SHACL results in the derived graph:
+#   <result> a sh:ValidationResult ; sh:focusNode <component> ; sh:resultPath <p> ;
+#            sh:resultMessage "…" ; sh:sourceShape <shape> ; sh:resultSeverity sh:Violation .
+# A component with violations is outlined, with the messages as its tooltip,
+# and c:ShapeReport lists every result. Supported constraints, in property shapes
+# (sh:property) whose sh:path is a property: sh:minCount, sh:maxCount, sh:datatype,
+# sh:class, sh:nodeKind, sh:in, sh:minInclusive, sh:maxInclusive, sh:minLength,
+# sh:maxLength, sh:pattern, sh:lessThanOrEquals. On the node shape: sh:or, a list of
+# property shapes the focus must conform to one of. Each alternative is read as needing
+# a value along its path, a property or the inverse of one (sh:path [ sh:inversePath p ]):
+# sh:minCount 1, or a value of a class (sh:qualifiedValueShape [ sh:class C ] ;
+# sh:qualifiedMinCount 1); its other constraints are not read.
+# An sh:or result is about the focus node itself: no sh:resultPath, sh:value the
+# focus, sh:sourceShape and the sh:message (if any) those of the node shape.
+
+val:ShapesLayer a sem:Layer ; rdfs:label "shapes"@en , "форми"@uk , "Formen"@de , "الأشكال"@ar ;
+    rdfs:comment "Validates component instances against the SHACL shapes of their classes."@en .
+val:violation a owl:ObjectProperty ; rdfs:range sh:ValidationResult ;
+    rdfs:comment "Derived: a SHACL result about this component."@en .
+
+val:Shapes a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:layer val:ShapesLayer ;
+    sem:stratum -9 ;
+    sem:inputOnly true .
+val:Shapes-fn a sem:Rule ; sem:implements val:Shapes ; sem:function "shapes:validate" .
+# Each constraint of each property shape of the focus's classes (shapes.ts checkProperty):
+# counts, then one test per value, then pairs with another property; then each sh:or of
+# those shapes that no alternative holds for (shapes.ts checkOr). A result is keyed by
+# what it says (path, shape, constraint, default message, value), so the same violation keeps
+# its IRI and a changed one gets a new one. Regular expressions are values, so they are
+# compiled only where a row needs them.
+val:Shapes-sparql a sem:Rule ;
+    sem:implements val:Shapes ;
+    sem:construct """
+CONSTRUCT {
+  ?result a sh:ValidationResult ; sh:focusNode $this ; sh:resultPath ?path ; sh:resultMessage ?message ;
+          sh:sourceShape ?source ; sh:resultSeverity sh:Violation ; sh:value ?value .
+  $this val:violation ?result .
+}
+WHERE {
+  ?shape sh:targetClass ?class .
+  ?type rdfs:subClassOf* ?class .
+  $this a ?type .
+  {
+    ?shape sh:property ?ps .
+    ?ps sh:path ?path ; ?constraint ?param .
+    FILTER(isIRI(?path) && ?constraint IN (sh:minCount, sh:maxCount, sh:datatype, sh:class, sh:nodeKind, sh:in, sh:minInclusive,
+                                           sh:maxInclusive, sh:minLength, sh:maxLength, sh:pattern, sh:lessThanOrEquals))
+  } UNION {
+    # The node shape's own constraint: about the focus, with no path.
+    ?shape sh:or ?param .
+    BIND(sh:or AS ?constraint)
+    BIND(?shape AS ?ps)
+  }
+  BIND($this AS ?focus)
+  VALUES ?localName { "^.*[#/]" }
+  LATERAL {
+    {
+      # Required, and one value only: no counting.
+      BIND(xsd:double(STR(?param)) AS ?bound)
+      FILTER(?bound = 1 && IF(?constraint = sh:minCount, NOT EXISTS { ?focus ?path ?any },
+                              ?constraint = sh:maxCount && EXISTS { ?focus ?path ?one, ?other FILTER(?one != ?other) }))
+      BIND(IF(?constraint = sh:minCount, "required", "one value only") AS ?fallback)
+    } UNION {
+      {
+        BIND(xsd:double(STR(?param)) AS ?bound)
+        FILTER(?constraint IN (sh:minCount, sh:maxCount) && ?bound != 1)
+      }
+      LATERAL { OPTIONAL { SELECT ?focus ?path (COUNT(?x) AS ?n) WHERE { ?focus ?path ?x } GROUP BY ?focus ?path } }
+      FILTER(IF(?constraint = sh:minCount, COALESCE(?n, 0) < ?bound, COALESCE(?n, 0) > ?bound))
+      BIND(IF(?constraint = sh:minCount, CONCAT("at least ", STR(?param), " values"), CONCAT("at most ", STR(?param), " values")) AS ?fallback)
+    } UNION {
+      FILTER(?constraint NOT IN (sh:minCount, sh:maxCount, sh:lessThanOrEquals, sh:or))
+      ?focus ?path ?value .
+      OPTIONAL { FILTER(?constraint = sh:pattern) ?ps sh:flags ?flags }
+      FILTER(IF(?constraint = sh:datatype,
+                !(COALESCE(DATATYPE(?value), sh:none) = ?param
+                  || (?param IN (xsd:integer, xsd:decimal, xsd:double, xsd:float) && DATATYPE(?value) IN (xsd:integer, xsd:decimal, xsd:double, xsd:float)
+                      && (?param != xsd:integer || COALESCE(xsd:double(STR(?value)) = FLOOR(xsd:double(STR(?value))), false)))),
+             IF(?constraint = sh:class, NOT EXISTS { ?value a/rdfs:subClassOf* ?param },
+             IF(?constraint = sh:nodeKind, (?param = sh:IRI && !isIRI(?value)) || (?param = sh:Literal && !isLiteral(?value)),
+             IF(?constraint = sh:in, NOT EXISTS { ?param rdf:rest*/rdf:first ?value },
+             isLiteral(?value) && IF(?constraint = sh:minInclusive, !COALESCE(xsd:double(STR(?value)) >= xsd:double(STR(?param)), false),
+                                  IF(?constraint = sh:maxInclusive, !COALESCE(xsd:double(STR(?value)) <= xsd:double(STR(?param)), false),
+                                  IF(?constraint = sh:minLength, STRLEN(STR(?value)) < xsd:double(STR(?param)),
+                                  IF(?constraint = sh:maxLength, STRLEN(STR(?value)) > xsd:double(STR(?param)),
+                                     !REGEX(STR(?value), STR(?param), COALESCE(STR(?flags), "")))))))))))
+      BIND(IF(?constraint = sh:datatype, CONCAT("expected ", IF(CONTAINS(STR(?param), STR(xsd:)),
+                CONCAT(STRBEFORE(STR(?param), STR(xsd:)), "xsd:", STRAFTER(STR(?param), STR(xsd:))), STR(?param))),
+           IF(?constraint = sh:class, CONCAT("expected a ", REPLACE(STR(?param), ?localName, "")),
+           IF(?constraint = sh:nodeKind, IF(?param = sh:IRI, "expected an IRI", "expected a literal"),
+           IF(?constraint = sh:in, "not an allowed value",
+           IF(?constraint = sh:minInclusive, CONCAT("at least ", STR(?param)),
+           IF(?constraint = sh:maxInclusive, CONCAT("at most ", STR(?param)),
+           IF(?constraint = sh:minLength, CONCAT("at least ", STR(?param), " characters"),
+           IF(?constraint = sh:maxLength, CONCAT("at most ", STR(?param), " characters"),
+              "does not match the expected format")))))))) AS ?fallback)
+    } UNION {
+      FILTER(?constraint = sh:lessThanOrEquals && isIRI(?param))
+      ?focus ?path ?value ; ?param ?limit .
+      FILTER(!COALESCE(xsd:double(STR(?value)) <= xsd:double(STR(?limit)), false))
+      BIND(CONCAT("more than ", REPLACE(STR(?param), ?localName, ""), " (", STR(?limit), ")") AS ?fallback)
+    } UNION {
+      # sh:or: no alternative holds. An alternative is a property shape read as needing a value
+      # along its path (a property, or [ sh:inversePath p ]), of the sh:class of its
+      # sh:qualifiedValueShape if it has one: sh:minCount 1, or sh:qualifiedMinCount 1. The ones
+      # that hold are counted in a LATERAL sub-select (a NOT EXISTS may be planned without the
+      # outer bindings, from rdf:rest* over every node).
+      FILTER(?constraint = sh:or)
+      LATERAL { OPTIONAL { SELECT ?param ?focus (COUNT(?member) AS ?holding) WHERE {
+        ?param rdf:rest*/rdf:first ?member .
+        { ?member sh:path ?memberPath FILTER(isIRI(?memberPath)) ?focus ?memberPath ?held }
+        UNION { ?member sh:path/sh:inversePath ?inverse FILTER(isIRI(?inverse)) ?held ?inverse ?focus }
+        OPTIONAL { ?member sh:qualifiedValueShape/sh:class ?qualifiedClass }
+        FILTER(!BOUND(?qualifiedClass) || EXISTS { ?held a/rdfs:subClassOf* ?qualifiedClass })
+      } GROUP BY ?param ?focus } }
+      FILTER(COALESCE(?holding, 0) = 0)
+      BIND(?focus AS ?value)
+      BIND("no alternative holds" AS ?fallback)
+    }
+  }
+  LATERAL { OPTIONAL { SELECT ?ps ?custom WHERE { ?ps sh:message ?custom }
+                       ORDER BY (lang(?custom) != "") (!langMatches(lang(?custom), "en")) LIMIT 1 } }
+  BIND(STR(COALESCE(?custom, CONCAT(REPLACE(STR(COALESCE(?path, ?shape)), ?localName, ""), ": ", ?fallback))) AS ?message)
+  BIND(IF(isIRI(?ps), ?ps, ?shape) AS ?source)
+  BIND(IRI(CONCAT(STR($this), "/~shape-", SUBSTR(MD5(CONCAT(COALESCE(STR(?path), ""), " ", STR(?source), " ", STRAFTER(STR(?constraint), "#"), " ",
+       ?fallback, " ", COALESCE(STR(?value), ""))), 1, 8))) AS ?result)
+}""" .
+
+# After the components (and before tooltips, stratum 30): outline and explain.
+val:ShapeMarks a sem:Rendering ;
+    sem:requires val:violation ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer val:ShapesLayer ;
+    sem:stratum 12 ;
+    sem:watches val:violation .
+val:ShapeMarks-fn a sem:Rule ; sem:implements val:ShapeMarks ; sem:function "shapes:mark" .
+# The messages in code point order (GROUP_CONCAT over an ordered sub-select).
+val:ShapeMarks-sparql a sem:Rule ;
+    sem:implements val:ShapeMarks ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?count ; sem:tooltip ?tip .
+  ?count a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shape-invalid" ; rdfhtml:attributeValue ?n .
+}
+WHERE {
+  # One row per marked component: its first result.
+  $this val:violation ?first .
+  FILTER NOT EXISTS { $this val:violation ?earlier FILTER(STR(?earlier) < STR(?first)) }
+  BIND($this AS ?self)
+  LATERAL { OPTIONAL { SELECT ?self (COUNT(?message) AS ?c) (GROUP_CONCAT(?message; separator=" · ") AS ?all) WHERE {
+    { SELECT ?self ?message WHERE { ?self val:violation ?result . ?result sh:resultMessage ?raw BIND(STR(?raw) AS ?message) FILTER(?message != "") }
+      ORDER BY ?message }
+  } GROUP BY ?self } }
+  BIND(STR(COALESCE(?c, 0)) AS ?n)
+  BIND(CONCAT("Shape violation: ", COALESCE(?all, "")) AS ?tip)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-shape-invalid")) AS ?count)
+}""" .
+
+c:ShapeReport a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Every SHACL result the shapes layer recorded, by component."@en ;
+    sem:slug "shape-report" .
+c:ShapeReportRendering a sem:Rendering ; sem:targets c:ShapeReport ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Locale (sx:collated): results are listed in collation order of their components and messages (localeCompare). They come from anywhere in the graph, so its SPARQL rule will also follow the results (val:violation) it lists." ;
+    sem:needsExtension sx:Locale .
+c:ShapeReportRendering-fn a sem:Rule ; sem:implements c:ShapeReportRendering ; sem:function "shape-report" .
+

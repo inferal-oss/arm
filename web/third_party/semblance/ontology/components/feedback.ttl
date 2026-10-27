@@ -1,0 +1,826 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+
+# Feedback components (DESIGN.md §3): Alert, Badge, Tag, Spinner, Skeleton, EmptyState and the toast region.
+
+c:icon a owl:DatatypeProperty ; rdfs:comment "A glyph shown with the component (a character or short string; icon fonts are a theme concern)."@en .
+
+# --- Badge -----------------------------------------------------------------------------------------
+
+c:Badge a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A short status label (c:label, optional c:icon). Toned: sty:tone and sty:emphasis (default soft)."@en ;
+    sem:slug "badge" .
+c:BadgeRendering a sem:Rendering ; sem:targets c:Badge ; sem:stratum 0 .
+c:BadgeRendering-fn a sem:Rule ; sem:implements c:BadgeRendering ; sem:function "badge" .
+c:BadgeRendering-sparql a sem:Rule ;
+    sem:implements c:BadgeRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?icon, ?labelText .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?labelText .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?iconData .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a c:Badge .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:icon ?rawIcon FILTER(STR(?rawIcon) != "") }
+  BIND(STR(?rawIcon) AS ?iconData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelText)
+  BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon")), ?none) AS ?icon)
+  BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-text")), ?none) AS ?iconText)
+  BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-aria-hidden")), ?none) AS ?iconHidden)
+}""" .
+c:BadgeRendering-sparql-text a sem:Rule ;
+    sem:implements c:BadgeRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:Badge .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:icon ?rawIcon FILTER(STR(?rawIcon) != "") }
+  BIND(STR(?rawIcon) AS ?iconData)
+  BIND(CONCAT("[", COALESCE(CONCAT(?iconData, " "), ""), ?label, "]") AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+# --- Alert -----------------------------------------------------------------------------------------
+
+c:Alert a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A message that stands out: title (c:label), body (c:help), icon (c:icon, else the
+tone's glyph) and actions (c:children). Danger alerts are announced (role=alert), others are
+polite (role=status). Toned: sty:tone and sty:emphasis (default soft)."""@en ;
+    sem:slug "alert" .
+c:AlertRendering a sem:Rendering ; sem:targets c:Alert ; sem:stratum 0 .
+c:AlertRendering-fn a sem:Rule ; sem:implements c:AlertRendering ; sem:function "alert" .
+c:AlertRendering-sparql a sem:Rule ;
+    sem:implements c:AlertRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?icon, ?content, ?actions ; rdfhtml:attribute ?role .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue ?roleValue .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?content .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?glyph .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?content a rdfhtml:Div ; rdfhtml:class "sem-content" ; rdfhtml:hasChild ?titleEl, ?bodyEl ; ord:immediatelyPrecedes ?actions .
+  ?titleEl a rdfhtml:Strong ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?bodyEl .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?title .
+  ?bodyEl a rdfhtml:P ; rdfhtml:hasChild ?bodyText .
+  ?bodyText a rdfhtml:Text ; rdfhtml:data ?body .
+  ?actions a rdfhtml:Div ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Alert .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~content")) AS ?content)
+  {
+    $this a c:Alert .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title)
+    OPTIONAL { $this c:help ?rawHelp }
+    BIND(STR(?rawHelp) AS ?body)
+    OPTIONAL { $this sty:tone/sem:slug ?rawTone }
+    BIND(COALESCE(STR(?rawTone), "neutral") AS ?tone)
+    OPTIONAL { $this c:icon ?rawIcon }
+    BIND(COALESCE(STR(?rawIcon), IF(?tone = "info", "ℹ", IF(?tone = "success", "✓", IF(?tone = "warning", "!",
+         IF(?tone = "danger", "✕", IF(?tone = "accent", "✦", "•")))))) AS ?glyph)
+    BIND(COALESCE(?title, "") != "" AS ?hasTitle)
+    BIND(COALESCE(?body, "") != "" AS ?hasBody)
+    BIND(IF(?tone = "danger", "alert", "status") AS ?roleValue)
+    BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+    BIND(IRI(CONCAT(STR($this), "/~icon")) AS ?icon)
+    BIND(IRI(CONCAT(STR($this), "/~icon-text")) AS ?iconText)
+    BIND(IRI(CONCAT(STR($this), "/~icon-aria-hidden")) AS ?iconHidden)
+    BIND(IF(?hasTitle, IRI(CONCAT(STR($this), "/~title")), ?none) AS ?titleEl)
+    BIND(IF(?hasTitle, IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+    BIND(IF(?hasBody, IRI(CONCAT(STR($this), "/~body")), ?none) AS ?bodyEl)
+    BIND(IF(?hasBody, IRI(CONCAT(STR($this), "/~body-text")), ?none) AS ?bodyText)
+    # (OPTIONAL, not EXISTS: Oxigraph evaluates a path inside EXISTS without its bound start)
+    OPTIONAL { $this c:children/rdf:rest*/rdf:first ?anyChild FILTER(isIRI(?anyChild)) }
+    BIND(IF(BOUND(?anyChild), IRI(CONCAT(STR($this), "/~actions")), ?none) AS ?actions)
+  } UNION {
+    $this a c:Alert .
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  } UNION {
+    $this a c:Alert .
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  }
+}""" .
+c:AlertRendering-sparql-text a sem:Rule ;
+    sem:implements c:AlertRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line, ?child .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?first .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Alert .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  {
+    $this a c:Alert .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title)
+    OPTIONAL { $this c:help ?rawHelp }
+    BIND(STR(?rawHelp) AS ?body)
+    OPTIONAL { $this sty:tone/sem:slug ?rawTone }
+    BIND(COALESCE(STR(?rawTone), "neutral") AS ?tone)
+    OPTIONAL { $this c:icon ?rawIcon }
+    BIND(COALESCE(STR(?rawIcon), IF(?tone = "info", "ℹ", IF(?tone = "success", "✓", IF(?tone = "warning", "!",
+         IF(?tone = "danger", "✕", IF(?tone = "accent", "✦", "•")))))) AS ?glyph)
+    BIND(IF(COALESCE(?title, "") != "" && COALESCE(?body, "") != "", CONCAT(?title, " — ", ?body),
+            IF(COALESCE(?title, "") != "", ?title, COALESCE(?body, ""))) AS ?joined)
+    BIND(CONCAT(?glyph, " ", ?joined) AS ?lineData)
+  } UNION {
+    $this a c:Alert .
+    $this c:children/rdf:first ?first FILTER(isIRI(?first))
+  } UNION {
+    $this a c:Alert .
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this a c:Alert .
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+# --- phrases: what components say of their own, localized like any label ---------------------------
+
+c:Phrase a owl:Class ;
+    rdfs:comment """A user-visible string a component shows of its own accord (not taken from its
+instance), such as the accessible name of a close button. Components read its rdfs:label in the
+viewer's language, so the localization layer covers them too."""@en .
+# Function rules read a phrase in the viewer's language; SPARQL rules cannot see that setting and
+# read its source text, else its English label.
+c:CloseCommand a c:Phrase ; rdfs:label "Close"@en , "Закрити"@uk , "Schließen"@de , "إغلاق"@ar .
+c:RemoveCommand a c:Phrase ; rdfs:label "Remove"@en , "Видалити"@uk , "Entfernen"@de , "إزالة"@ar .
+c:DismissCommand a c:Phrase ; rdfs:label "Dismiss"@en , "Закрити сповіщення"@uk , "Ausblenden"@de , "تجاهل"@ar .
+c:LoadingStatus a c:Phrase ; rdfs:label "Loading"@en , "Завантаження"@uk , "Wird geladen"@de , "جارٍ التحميل"@ar .
+c:NotificationsRegion a c:Phrase ; rdfs:label "Notifications"@en , "Сповіщення"@uk , "Benachrichtigungen"@de , "الإشعارات"@ar .
+
+# --- shared state and markers ----------------------------------------------------------------------
+
+c:open a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment """Whether a component that is shown on demand (a dialog, drawer, popover or toast) is
+shown now. Dialogs, drawers and popovers default to closed, toasts to open."""@en .
+c:closes a owl:ObjectProperty ;
+    rdfs:comment """On a rendered element (a ✕, a scrim): the component that activating it closes. On a
+c:Button: the overlay the button closes (sets c:open false), like c:opens."""@en .
+c:toggles a owl:ObjectProperty ;
+    rdfs:comment "On a rendered element: the component whose own on/off state (c:open, c:checked) activating it flips."@en .
+c:removes a owl:ObjectProperty ;
+    rdfs:comment "On a rendered element: the component that activating it removes (marks c:removed)."@en .
+
+# --- Tag -------------------------------------------------------------------------------------------
+
+c:Tag a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A label chip (c:label, optional c:icon). Toned: sty:tone and sty:emphasis (default
+soft), sized by sty:size. A c:selectable tag is a toggle button (aria-pressed) over c:checked; a
+c:removable tag has a ✕ that marks it c:removed, after which it renders nothing (the fact stays in
+the graph, so it can be restored by removing it). A tag a c:TagInput shows (c:pillOf) is not marked:
+its ✕ removes the value, by the tag input's own reaction."""@en ;
+    sem:slug "tag" .
+c:removable a owl:DatatypeProperty ; rdfs:domain c:Tag ; rdfs:range xsd:boolean .
+c:selectable a owl:DatatypeProperty ; rdfs:domain c:Tag ; rdfs:range xsd:boolean .
+c:removed a owl:DatatypeProperty ; rdfs:domain c:Tag ; rdfs:range xsd:boolean ;
+    rdfs:comment "The tag was removed by the user; it renders nothing."@en .
+# c:checked (xsd:boolean) is the shared on/off value of toggles, checkboxes and selectable tags.
+c:TagRendering a sem:Rendering ; sem:targets c:Tag ; sem:stratum 0 .
+c:TagRendering-fn a sem:Rule ; sem:implements c:TagRendering ; sem:function "tag" .
+c:TagRendering-sparql a sem:Rule ;
+    sem:implements c:TagRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?rootIcon, ?rootLabel, ?toggle, ?remove ;
+        rdfhtml:attribute ?dataChecked .
+  ?dataChecked a rdfhtml:Attribute ; rdfhtml:attributeName "data-checked" ; rdfhtml:attributeValue ?checkedValue .
+  ?toggle a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-tag-toggle" ; rdfhtml:hasChild ?toggleIcon, ?toggleLabel ;
+          rdfhtml:attribute ?pressed ; c:toggles ?toggled ; ord:immediatelyPrecedes ?remove .
+  ?pressed a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?checkedValue .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?labelText .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?iconData .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label ; ord:immediatelyPrecedes ?labelNext .
+  ?remove a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-remove" ; rdfhtml:hasChild ?removeText ;
+          rdfhtml:attribute ?removeLabel ; c:removes ?removed .
+  ?removeText a rdfhtml:Text ; rdfhtml:data "✕" .
+  ?removeLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?removeLabelValue .
+}
+WHERE {
+  $this a c:Tag .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(EXISTS { $this c:removed ?r FILTER(STR(?r) = "true") } AS ?isRemoved)
+  BIND(IF(?isRemoved, "", ?none) AS ?hidden)
+  OPTIONAL {
+    $this a c:Tag .
+    FILTER(!?isRemoved)
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+    OPTIONAL { $this c:icon ?rawIcon FILTER(STR(?rawIcon) != "") }
+    BIND(STR(?rawIcon) AS ?iconData)
+    BIND(EXISTS { $this c:removable ?rm FILTER(STR(?rm) = "true") } AS ?removable)
+    BIND(EXISTS { $this c:selectable ?sl FILTER(STR(?sl) = "true") } AS ?selectable)
+    BIND(?selectable && EXISTS { $this c:checked ?ch FILTER(STR(?ch) = "true") } AS ?checked)
+    BIND(IF(?selectable, IF(?checked, "true", "false"), ?none) AS ?checkedValue)
+    BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelText)
+    BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon")), ?none) AS ?icon)
+    BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-text")), ?none) AS ?iconText)
+    BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-aria-hidden")), ?none) AS ?iconHidden)
+    BIND(IF(?selectable, IRI(CONCAT(STR($this), "/~toggle")), ?none) AS ?toggle)
+    BIND(IF(?selectable, IRI(CONCAT(STR($this), "/~toggle-aria-pressed")), ?none) AS ?pressed)
+    BIND(IF(?selectable, IRI(CONCAT(STR($this), "/~root-data-checked")), ?none) AS ?dataChecked)
+    BIND(IF(?selectable, $this, ?none) AS ?toggled)
+    BIND(IF(?selectable, ?icon, ?none) AS ?toggleIcon)
+    BIND(IF(?selectable, ?labelText, ?none) AS ?toggleLabel)
+    BIND(IF(?selectable, ?none, ?icon) AS ?rootIcon)
+    BIND(IF(?selectable, ?none, ?labelText) AS ?rootLabel)
+    BIND(IF(?removable, IRI(CONCAT(STR($this), "/~remove")), ?none) AS ?remove)
+    BIND(IF(?removable, IRI(CONCAT(STR($this), "/~remove-text")), ?none) AS ?removeText)
+    BIND(IF(?removable, IRI(CONCAT(STR($this), "/~remove-aria-label")), ?none) AS ?removeLabel)
+    BIND(IF(?removable, $this, ?none) AS ?removed)
+    OPTIONAL { ?removeWord0At l10n:of c:RemoveCommand ; l10n:name ?removeWord0 }
+  OPTIONAL { ?removeWord0At l10n:of c:RemoveCommand ; l10n:name ?removeWord0 }
+  OPTIONAL { c:RemoveCommand rdfs:label ?removeWord0 FILTER(lang(?removeWord0) = "") }
+    OPTIONAL { c:RemoveCommand rdfs:label ?removeWord1 FILTER(langMatches(lang(?removeWord1), "en")) }
+    BIND(STR(COALESCE(?removeWord0, ?removeWord1, "Remove")) AS ?removeWord)
+    BIND(CONCAT(?removeWord, " ", ?label) AS ?removeLabelValue)
+    # Not selectable: the face (icon, label) sits in the root, before the ✕.
+    BIND(IF(?selectable, ?none, ?remove) AS ?labelNext)
+  }
+}""" .
+c:TagRendering-sparql-text a sem:Rule ;
+    sem:implements c:TagRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:Tag .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(EXISTS { $this c:removed ?r FILTER(STR(?r) = "true") } AS ?isRemoved)
+  BIND(IF(?isRemoved, "", ?none) AS ?hidden)
+  OPTIONAL {
+    $this a c:Tag .
+    FILTER(!?isRemoved)
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+    OPTIONAL { $this c:icon ?rawIcon FILTER(STR(?rawIcon) != "") }
+    BIND(STR(?rawIcon) AS ?iconData)
+    BIND(EXISTS { $this c:removable ?rm FILTER(STR(?rm) = "true") } AS ?removable)
+    BIND(EXISTS { $this c:selectable ?sl FILTER(STR(?sl) = "true") } AS ?selectable)
+    BIND(?selectable && EXISTS { $this c:checked ?ch FILTER(STR(?ch) = "true") } AS ?checked)
+    BIND(CONCAT("‹", IF(?selectable, IF(?checked, "[x] ", "[ ] "), ""), COALESCE(CONCAT(?iconData, " "), ""), ?label,
+                IF(?removable, " ✕", ""), "›") AS ?line)
+    BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+  }
+}""" .
+
+c:TagRemove a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Tag ;
+    beh:inserts """CONSTRUCT { $this c:removed true } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:removes $this FILTER NOT EXISTS { $this c:pillOf ?owner } }""" ;
+    sem:function "tag:remove" .
+c:TagToggle a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Tag ;
+    beh:deletes """CONSTRUCT { $this c:checked ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:toggles $this . $this c:checked ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:checked ?new } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:toggles $this . OPTIONAL { $this c:checked ?old } BIND(!COALESCE(?old, false) AS ?new) }""" ;
+    sem:function "tag:toggle" .
+
+# --- Spinner ---------------------------------------------------------------------------------------
+
+c:Spinner a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """An indeterminate activity indicator: a ring turning on the motion tokens (the motion
+layer calms it). role=status, named by c:label (default: the c:LoadingStatus phrase). Sized by
+sty:size, colored by sty:tone (default accent)."""@en ;
+    sem:slug "spinner" .
+c:SpinnerRendering a sem:Rendering ; sem:targets c:Spinner ; sem:stratum 0 .
+c:SpinnerRendering-fn a sem:Rule ; sem:implements c:SpinnerRendering ; sem:function "spinner" .
+c:SpinnerRendering-sparql a sem:Rule ;
+    sem:implements c:SpinnerRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?ring, ?sr ; rdfhtml:attribute ?role .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "status" .
+  ?ring a rdfhtml:Span ; rdfhtml:class "sem-ring" ; rdfhtml:attribute ?ringHidden ; ord:immediatelyPrecedes ?sr .
+  ?ringHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?sr a rdfhtml:Span ; rdfhtml:class "sem-sr" ; rdfhtml:hasChild ?srText .
+  ?srText a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a c:Spinner .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?loading0At l10n:of c:LoadingStatus ; l10n:name ?loading0 }
+  OPTIONAL { ?loading0At l10n:of c:LoadingStatus ; l10n:name ?loading0 }
+  OPTIONAL { c:LoadingStatus rdfs:label ?loading0 FILTER(lang(?loading0) = "") }
+  OPTIONAL { c:LoadingStatus rdfs:label ?loading1 FILTER(langMatches(lang(?loading1), "en")) }
+  BIND(STR(COALESCE(?loading0, ?loading1, "Loading")) AS ?loading)
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?loading)) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+  BIND(IRI(CONCAT(STR($this), "/~ring")) AS ?ring)
+  BIND(IRI(CONCAT(STR($this), "/~ring-aria-hidden")) AS ?ringHidden)
+  BIND(IRI(CONCAT(STR($this), "/~sr")) AS ?sr)
+  BIND(IRI(CONCAT(STR($this), "/~sr-text")) AS ?srText)
+}""" .
+c:SpinnerRendering-sparql-text a sem:Rule ;
+    sem:implements c:SpinnerRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:Spinner .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?loading0At l10n:of c:LoadingStatus ; l10n:name ?loading0 }
+  OPTIONAL { ?loading0At l10n:of c:LoadingStatus ; l10n:name ?loading0 }
+  OPTIONAL { c:LoadingStatus rdfs:label ?loading0 FILTER(lang(?loading0) = "") }
+  OPTIONAL { c:LoadingStatus rdfs:label ?loading1 FILTER(langMatches(lang(?loading1), "en")) }
+  BIND(STR(COALESCE(?loading0, ?loading1, "Loading")) AS ?loading)
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?loading)) AS ?label)
+  BIND(CONCAT("◌ ", ?label, "…") AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+# --- Skeleton --------------------------------------------------------------------------------------
+
+c:Skeleton a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A shimmering placeholder for content still loading (aria-hidden: the busy state is
+announced by what it stands in for). c:shape "text" (c:lines lines, the last one shorter; the
+default), "circle" or "block"; c:width / c:height in px size circles and blocks."""@en ;
+    sem:slug "skeleton" .
+c:lines a owl:DatatypeProperty ; rdfs:domain c:Skeleton ; rdfs:range xsd:integer .
+c:shape a owl:DatatypeProperty ; rdfs:domain c:Skeleton ; rdfs:range xsd:string .
+c:SkeletonRendering a sem:Rendering ; sem:targets c:Skeleton ; sem:stratum 0 .
+c:SkeletonRendering-fn a sem:Rule ; sem:implements c:SkeletonRendering ; sem:function "skeleton" .
+c:SkeletonRendering-sparql a sem:Rule ;
+    sem:implements c:SkeletonRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:style ?style ; rdfhtml:hasChild ?bone ; rdfhtml:attribute ?hidden, ?dataShape .
+  ?hidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?dataShape a rdfhtml:Attribute ; rdfhtml:attributeName "data-shape" ; rdfhtml:attributeValue ?shape .
+  ?bone a rdfhtml:Span ; rdfhtml:class "sem-bone" ; ord:immediatelyPrecedes ?nextBone .
+}
+WHERE {
+  $this a c:Skeleton .
+  OPTIONAL { $this c:lines ?rawLines }
+  BIND(COALESCE(ROUND(xsd:decimal(?rawLines)), 3) AS ?lines0)
+  BIND(xsd:integer(IF(?lines0 < 1, 1, IF(?lines0 > 12, 12, ?lines0))) AS ?lines)
+  OPTIONAL { $this c:shape ?rawShape }
+  BIND(IF(COALESCE(STR(?rawShape), "") IN ("text", "circle", "block"), STR(?rawShape), "text") AS ?shape)
+  OPTIONAL { $this c:width ?rawWidth }
+  OPTIONAL { $this c:height ?rawHeight }
+  BIND(IF(BOUND(?rawWidth), CONCAT("width: ", COALESCE(STR(xsd:decimal(?rawWidth)), "0"), "px;"), "") AS ?widthStyle)
+  BIND(IF(BOUND(?rawHeight), CONCAT("height: ", COALESCE(STR(xsd:decimal(?rawHeight)), "0"), "px;"), "") AS ?heightStyle)
+  BIND(CONCAT(?widthStyle, IF(?widthStyle != "" && ?heightStyle != "", " ", ""), ?heightStyle) AS ?style0)
+  BIND(IF(?style0 = "", ?none, ?style0) AS ?style)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-hidden")) AS ?hidden)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-shape")) AS ?dataShape)
+  # One bone per line (at most 12) for text.
+  OPTIONAL {
+    $this a c:Skeleton .
+    VALUES ?i { 0 1 2 3 4 5 6 7 8 9 10 11 }
+    FILTER(?shape = "text" && ?i < ?lines)
+    BIND(IRI(CONCAT(STR($this), "/~line-", STR(?i))) AS ?bone)
+  }
+  BIND(IF(BOUND(?bone) && ?i + 1 < ?lines, IRI(CONCAT(STR($this), "/~line-", STR(?i + 1))), ?none) AS ?nextBone)
+}""" .
+c:SkeletonRendering-sparql-text a sem:Rule ;
+    sem:implements c:SkeletonRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?bar .
+}
+WHERE {
+  $this a c:Skeleton .
+  OPTIONAL { $this c:lines ?rawLines }
+  BIND(COALESCE(ROUND(xsd:decimal(?rawLines)), 3) AS ?lines0)
+  BIND(xsd:integer(IF(?lines0 < 1, 1, IF(?lines0 > 12, 12, ?lines0))) AS ?lines)
+  OPTIONAL { $this c:shape ?rawShape }
+  BIND(IF(COALESCE(STR(?rawShape), "") IN ("text", "circle", "block"), STR(?rawShape), "text") AS ?shape)
+  BIND(IF(?shape = "circle", "( )", IF(?shape = "block", "[░░░░░░░░░░░░]",
+       IF(?lines = 1, "░░░░░░░░░░░░",
+          CONCAT(SUBSTR("░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ░░░░░░░░░░░░ / ", 1, (?lines - 1) * 15), "░░░░░░░")))) AS ?bar)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~bar")) AS ?text)
+}""" .
+
+# --- EmptyState ------------------------------------------------------------------------------------
+
+c:EmptyState a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "What a view shows when it has nothing to show: a glyph (c:icon), a title (c:label), a hint (c:help) and actions (c:children)."@en ;
+    sem:slug "empty-state" .
+c:EmptyStateRendering a sem:Rendering ; sem:targets c:EmptyState ; sem:stratum 0 .
+c:EmptyStateRendering-fn a sem:Rule ; sem:implements c:EmptyStateRendering ; sem:function "empty-state" .
+c:EmptyStateRendering-sparql a sem:Rule ;
+    sem:implements c:EmptyStateRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?icon, ?titleEl, ?bodyEl, ?actions .
+  ?icon a rdfhtml:Div ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?afterIcon .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?glyph .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?titleEl a rdfhtml:P ; rdfhtml:class "sem-title" ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?afterTitle .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?title .
+  ?bodyEl a rdfhtml:P ; rdfhtml:class "sem-body" ; rdfhtml:hasChild ?bodyText ; ord:immediatelyPrecedes ?actions .
+  ?bodyText a rdfhtml:Text ; rdfhtml:data ?body .
+  ?actions a rdfhtml:Div ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:EmptyState .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    $this a c:EmptyState .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title)
+    OPTIONAL { $this c:help ?rawHelp }
+    BIND(STR(?rawHelp) AS ?body)
+    OPTIONAL { $this c:icon ?rawIcon }
+    BIND(COALESCE(STR(?rawIcon), "∅") AS ?glyph)
+    BIND(COALESCE(?title, "") != "" AS ?hasTitle)
+    BIND(COALESCE(?body, "") != "" AS ?hasBody)
+    BIND(IRI(CONCAT(STR($this), "/~icon")) AS ?icon)
+    BIND(IRI(CONCAT(STR($this), "/~icon-text")) AS ?iconText)
+    BIND(IRI(CONCAT(STR($this), "/~icon-aria-hidden")) AS ?iconHidden)
+    BIND(IF(?hasTitle, IRI(CONCAT(STR($this), "/~title")), ?none) AS ?titleEl)
+    BIND(IF(?hasTitle, IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+    BIND(IF(?hasBody, IRI(CONCAT(STR($this), "/~body")), ?none) AS ?bodyEl)
+    BIND(IF(?hasBody, IRI(CONCAT(STR($this), "/~body-text")), ?none) AS ?bodyText)
+    # (OPTIONAL, not EXISTS: Oxigraph evaluates a path inside EXISTS without its bound start)
+    OPTIONAL { $this c:children/rdf:rest*/rdf:first ?anyChild FILTER(isIRI(?anyChild)) }
+    BIND(IF(BOUND(?anyChild), IRI(CONCAT(STR($this), "/~actions")), ?none) AS ?actions)
+    BIND(COALESCE(?bodyEl, ?actions) AS ?afterTitle)
+    BIND(COALESCE(?titleEl, ?afterTitle) AS ?afterIcon)
+  } UNION {
+    $this a c:EmptyState .
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  } UNION {
+    $this a c:EmptyState .
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:EmptyStateRendering-sparql-text a sem:Rule ;
+    sem:implements c:EmptyStateRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line, ?child .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?first .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:EmptyState .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  {
+    $this a c:EmptyState .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title)
+    OPTIONAL { $this c:help ?rawHelp }
+    BIND(STR(?rawHelp) AS ?body)
+    OPTIONAL { $this c:icon ?rawIcon }
+    BIND(COALESCE(STR(?rawIcon), "∅") AS ?glyph)
+    BIND(IF(COALESCE(?title, "") != "" && COALESCE(?body, "") != "", CONCAT(?title, " — ", ?body),
+            IF(COALESCE(?title, "") != "", ?title, COALESCE(?body, ""))) AS ?joined)
+    BIND(CONCAT("( ", ?glyph, " ) ", ?joined) AS ?lineData)
+  } UNION {
+    $this a c:EmptyState .
+    $this c:children/rdf:first ?first FILTER(isIRI(?first))
+  } UNION {
+    $this a c:EmptyState .
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this a c:EmptyState .
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+# --- Toasts ----------------------------------------------------------------------------------------
+
+c:Toast a owl:Class ;
+    rdfs:subClassOf c:Overlay ;
+    rdfs:comment """A transient message: title (c:label), body (c:help), the tone's glyph (or c:icon),
+optional actions (c:children) and a dismiss ✕. Shown unless c:open is false. Danger toasts are
+assertive (role=alert); the others are announced by the polite region they appear in. A toast makes
+no assumption about where it comes from: a person, a reaction or the announcements layer."""@en ;
+    sem:slug "toast" .
+c:ToastRendering a sem:Rendering ; sem:targets c:Toast ; sem:stratum 0 .
+c:ToastRendering-fn a sem:Rule ; sem:implements c:ToastRendering ; sem:function "toast" .
+c:ToastRendering-sparql a sem:Rule ;
+    sem:implements c:ToastRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?icon, ?content, ?close ;
+        rdfhtml:attribute ?atomic, ?role .
+  ?atomic a rdfhtml:Attribute ; rdfhtml:attributeName "aria-atomic" ; rdfhtml:attributeValue "true" .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "alert" .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?content .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?glyph .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?content a rdfhtml:Div ; rdfhtml:class "sem-content" ; rdfhtml:hasChild ?titleEl, ?bodyEl, ?actions ; ord:immediatelyPrecedes ?close .
+  ?titleEl a rdfhtml:Strong ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?afterTitle .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?title .
+  ?bodyEl a rdfhtml:P ; rdfhtml:hasChild ?bodyText ; ord:immediatelyPrecedes ?actions .
+  ?bodyText a rdfhtml:Text ; rdfhtml:data ?body .
+  ?actions a rdfhtml:Div ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+  ?close a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-close" ; rdfhtml:hasChild ?closeText ;
+         rdfhtml:attribute ?closeLabel ; c:closes ?closed .
+  ?closeText a rdfhtml:Text ; rdfhtml:data "✕" .
+  ?closeLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?dismiss .
+}
+WHERE {
+  $this a c:Toast .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(STR(?root) AS ?rootId)
+  BIND(EXISTS { $this c:open ?o FILTER(STR(?o) = "false") } AS ?isClosed)
+  {
+    $this a c:Toast .
+    BIND(IF(EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }, "", ?none) AS ?hidden)
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title)
+    OPTIONAL { $this c:help ?rawHelp }
+    BIND(STR(?rawHelp) AS ?body)
+    OPTIONAL { $this sty:tone/sem:slug ?rawTone }
+    BIND(COALESCE(STR(?rawTone), "neutral") AS ?tone)
+    OPTIONAL { $this c:icon ?rawIcon }
+    BIND(COALESCE(STR(?rawIcon), IF(?tone = "info", "ℹ", IF(?tone = "success", "✓", IF(?tone = "warning", "!",
+         IF(?tone = "danger", "✕", IF(?tone = "accent", "✦", "•")))))) AS ?glyph)
+    BIND(COALESCE(?title, "") != "" AS ?hasTitle)
+    BIND(COALESCE(?body, "") != "" AS ?hasBody)
+    BIND(IF(?tone = "danger", IRI(CONCAT(STR($this), "/~root-role")), ?none) AS ?role)
+    BIND(IRI(CONCAT(STR($this), "/~root-aria-atomic")) AS ?atomic)
+    BIND(IRI(CONCAT(STR($this), "/~icon")) AS ?icon)
+    BIND(IRI(CONCAT(STR($this), "/~icon-text")) AS ?iconText)
+    BIND(IRI(CONCAT(STR($this), "/~icon-aria-hidden")) AS ?iconHidden)
+    BIND(IRI(CONCAT(STR($this), "/~content")) AS ?content)
+    BIND(IF(?hasTitle, IRI(CONCAT(STR($this), "/~title")), ?none) AS ?titleEl)
+    BIND(IF(?hasTitle, IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+    BIND(IF(?hasBody, IRI(CONCAT(STR($this), "/~body")), ?none) AS ?bodyEl)
+    BIND(IF(?hasBody, IRI(CONCAT(STR($this), "/~body-text")), ?none) AS ?bodyText)
+    # (OPTIONAL, not EXISTS: Oxigraph evaluates a path inside EXISTS without its bound start)
+    OPTIONAL { $this c:children/rdf:rest*/rdf:first ?anyChild FILTER(isIRI(?anyChild)) }
+    BIND(IF(BOUND(?anyChild), IRI(CONCAT(STR($this), "/~actions")), ?none) AS ?actions)
+    BIND(COALESCE(?bodyEl, ?actions) AS ?afterTitle)
+    BIND(IRI(CONCAT(STR($this), "/~close")) AS ?close)
+    BIND(IRI(CONCAT(STR($this), "/~close-text")) AS ?closeText)
+    BIND(IRI(CONCAT(STR($this), "/~close-aria-label")) AS ?closeLabel)
+    BIND($this AS ?closed)
+    OPTIONAL { ?dismiss0At l10n:of c:DismissCommand ; l10n:name ?dismiss0 }
+  OPTIONAL { ?dismiss0At l10n:of c:DismissCommand ; l10n:name ?dismiss0 }
+  OPTIONAL { c:DismissCommand rdfs:label ?dismiss0 FILTER(lang(?dismiss0) = "") }
+    OPTIONAL { c:DismissCommand rdfs:label ?dismiss1 FILTER(langMatches(lang(?dismiss1), "en")) }
+    BIND(STR(COALESCE(?dismiss0, ?dismiss1, "Dismiss")) AS ?dismiss)
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:ToastRendering-sparql-text a sem:Rule ;
+    sem:implements c:ToastRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?line, ?child .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?first .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Toast .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    $this a c:Toast .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    BIND(CONCAT(STR($this), "/~root") AS ?rootId)
+    BIND("" AS ?hidden)
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title)
+    OPTIONAL { $this c:help ?rawHelp }
+    BIND(STR(?rawHelp) AS ?body)
+    OPTIONAL { $this sty:tone/sem:slug ?rawTone }
+    BIND(COALESCE(STR(?rawTone), "neutral") AS ?tone)
+    OPTIONAL { $this c:icon ?rawIcon }
+    BIND(COALESCE(STR(?rawIcon), IF(?tone = "info", "ℹ", IF(?tone = "success", "✓", IF(?tone = "warning", "!",
+         IF(?tone = "danger", "✕", IF(?tone = "accent", "✦", "•")))))) AS ?glyph)
+    BIND(IF(COALESCE(?title, "") != "" && COALESCE(?body, "") != "", CONCAT(?title, " — ", ?body),
+            IF(COALESCE(?title, "") != "", ?title, COALESCE(?body, ""))) AS ?joined)
+    BIND(CONCAT(?glyph, " ", ?joined, " [✕]") AS ?lineData)
+    BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    $this c:children/rdf:first ?first FILTER(isIRI(?first))
+    BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this a c:Toast .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "false") }
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+c:ToastRegion a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Where toasts appear: a fixed stack in the end corner, an aria-live=polite region
+(named by c:label, default the c:NotificationsRegion phrase). It shows the toasts of c:toasts (an
+rdf:List, in order) and those it c:hosts (by IRI), newest last. Put it on the shell's c:Desktop so
+it is outside every page."""@en ;
+    sem:slug "toast-region" .
+c:toasts a owl:ObjectProperty ; rdfs:domain c:ToastRegion ; rdfs:range rdf:List .
+c:ToastRegionRendering a sem:Rendering ; sem:targets c:ToastRegion ; sem:stratum 0 .
+c:ToastRegionRendering-fn a sem:Rule ; sem:implements c:ToastRegionRendering ; sem:function "toast-region" .
+c:ToastRegionRendering-sparql a sem:Rule ;
+    sem:implements c:ToastRegionRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Section ; sem:renders $this ; rdfhtml:hasChild ?toast ; rdfhtml:attribute ?ariaLabel, ?live, ?relevant .
+  ?ariaLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?live a rdfhtml:Attribute ; rdfhtml:attributeName "aria-live" ; rdfhtml:attributeValue "polite" .
+  ?relevant a rdfhtml:Attribute ; rdfhtml:attributeName "aria-relevant" ; rdfhtml:attributeValue "additions text" .
+  ?a ord:immediatelyPrecedes ?b .
+  ?hostedPrev ord:immediatelyPrecedes ?toast .
+}
+WHERE {
+  $this a c:ToastRegion .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    $this a c:ToastRegion .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?notifications0At l10n:of c:NotificationsRegion ; l10n:name ?notifications0 }
+  OPTIONAL { ?notifications0At l10n:of c:NotificationsRegion ; l10n:name ?notifications0 }
+  OPTIONAL { c:NotificationsRegion rdfs:label ?notifications0 FILTER(lang(?notifications0) = "") }
+    OPTIONAL { c:NotificationsRegion rdfs:label ?notifications1 FILTER(langMatches(lang(?notifications1), "en")) }
+    BIND(STR(COALESCE(?notifications0, ?notifications1, "Notifications")) AS ?notifications)
+    BIND(STR(COALESCE(?localLabel, ?rawLabel, ?notifications)) AS ?label)
+    BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?ariaLabel)
+    BIND(IRI(CONCAT(STR($this), "/~root-aria-live")) AS ?live)
+    BIND(IRI(CONCAT(STR($this), "/~root-aria-relevant")) AS ?relevant)
+  } UNION {
+    $this a c:ToastRegion .
+    $this c:toasts/rdf:rest*/rdf:first ?toast FILTER(isIRI(?toast))
+  } UNION {
+    $this a c:ToastRegion .
+    $this c:toasts/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  } UNION {
+    # The hosted toasts, each placed after the one before it (or after the last listed one).
+    $this a c:ToastRegion .
+    $this c:hosts ?toast FILTER(isIRI(?toast)) FILTER NOT EXISTS { ?listedCell rdf:first ?toast . $this c:toasts/rdf:rest* ?listedCell }
+    BIND($this AS ?region)
+    LATERAL {
+      OPTIONAL {
+        SELECT ?a ?toast ?region WHERE {
+          ?region c:hosts ?a FILTER(isIRI(?a) && STR(?a) < STR(?toast))
+          FILTER NOT EXISTS { ?listedCell rdf:first ?a . ?region c:toasts/rdf:rest* ?listedCell }
+        } ORDER BY DESC(STR(?a)) LIMIT 1
+      }
+    }
+    OPTIONAL {
+      FILTER(!BOUND(?a))
+      $this c:toasts/rdf:rest* ?lastCell . ?lastCell rdf:rest rdf:nil ; rdf:first ?lastListed FILTER(isIRI(?lastListed))
+    }
+    BIND(COALESCE(?a, ?lastListed) AS ?hostedPrev)
+  }
+}""" .
+c:ToastRegionRendering-sparql-text a sem:Rule ;
+    sem:implements c:ToastRegionRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?toast .
+  ?a ord:immediatelyPrecedes ?b .
+  ?hostedPrev ord:immediatelyPrecedes ?toast .
+}
+WHERE {
+  $this a c:ToastRegion .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+  } UNION {
+    $this a c:ToastRegion .
+    $this c:toasts/rdf:rest*/rdf:first ?toast FILTER(isIRI(?toast))
+  } UNION {
+    $this a c:ToastRegion .
+    $this c:toasts/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  } UNION {
+    # The hosted toasts, each placed after the one before it (or after the last listed one).
+    $this a c:ToastRegion .
+    $this c:hosts ?toast FILTER(isIRI(?toast)) FILTER NOT EXISTS { ?listedCell rdf:first ?toast . $this c:toasts/rdf:rest* ?listedCell }
+    BIND($this AS ?region)
+    LATERAL {
+      OPTIONAL {
+        SELECT ?a ?toast ?region WHERE {
+          ?region c:hosts ?a FILTER(isIRI(?a) && STR(?a) < STR(?toast))
+          FILTER NOT EXISTS { ?listedCell rdf:first ?a . ?region c:toasts/rdf:rest* ?listedCell }
+        } ORDER BY DESC(STR(?a)) LIMIT 1
+      }
+    }
+    OPTIONAL {
+      FILTER(!BOUND(?a))
+      $this c:toasts/rdf:rest* ?lastCell . ?lastCell rdf:rest rdf:nil ; rdf:first ?lastListed FILTER(isIRI(?lastListed))
+    }
+    BIND(COALESCE(?a, ?lastListed) AS ?hostedPrev)
+  }
+}""" .
+
+# Dismissing a toast closes it (c:OverlayClose, overlays.ttl); a hosted toast also leaves its
+# region, so a region fed by a stream of announcements does not grow.
+c:ToastUnhost a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Toast ;
+    beh:deletes """CONSTRUCT { ?region c:hosts $this } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:closes $this . ?region c:hosts $this }""" ;
+    sem:function "toast:unhost" .

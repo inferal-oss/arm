@@ -1,0 +1,197 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix file: <https://semblance.dev/ns/file#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Files a person picks or drops, and their uploads. A file is a node with its metadata - its name,
+# media type, size and when it was last changed - never its contents: the bytes stay with the host,
+# which keeps them under a handle (file:handle) for as long as the page lives.
+#
+# The browser's part is a host effect (src/files.ts), the way the clipboard is: the graph says what
+# (a request to open the system picker, a file to upload), the effect does it (an <input type=file>,
+# the files of a drop's DataTransfer, an upload with progress) and reports back as events, which
+# ordinary reactions turn into state.
+#
+#   Picking. A component's reaction records a file:Pick (what the picker shows, file:accept, and
+#   whether it takes several, file:multiple); the effect opens the system picker in the same task
+#   as the click (browsers require the person's activation) and reports each chosen file as a
+#   file:Arrive event addressed to the component that asked, or file:PickCancelled.
+#
+#   Dropping. Files dragged in from outside the page are a drag like any other (the dnd: layer):
+#   file:Dragged stands for them while they are carried, with what the browser tells about them
+#   before the drop - their media types and how many (dnd:count) - so every target that takes
+#   files derives its reception (accepted, or refused with the shape's message) from its SHACL,
+#   and the theme shows it. Dropped where it is accepted, each file arrives (file:Arrive); refused,
+#   the drop is a dnd:Refusal, announced.
+#
+#   Arriving. Each file is offered to the target on its own (a dnd:Drag carrying it), so the
+#   target's reception - now with the file's name and size known - decides; the effect reports the
+#   verdict as file:Added or file:Refusal (with the shape's message, announced). One file at a
+#   time, so a sh:maxCount counts the files before it.
+#
+#   Uploading. A file whose state is file:Uploading is sent by the effect - to the target's
+#   file:uploadTo (an HTTP POST of a form with the file), or through a handler the app gave the
+#   effect by name (file:handler) - which reports progress (file:Progress, not recorded), and how it
+#   ended (file:Done, file:Failure). Taking the state away (removing the file) cancels it.
+
+<https://semblance.dev/ns/file> a owl:Ontology ;
+    rdfs:label "Semblance files"@en ;
+    rdfs:comment "Files picked or dropped (their metadata, not their contents), the system picker, and uploads with progress: vocabulary for the files host effect (src/files.ts)."@en .
+
+# --- a file ------------------------------------------------------------------------------------------
+
+file:File a owl:Class ;
+    rdfs:label "File"@en , "Файл"@uk , "Datei"@de , "ملف"@ar ;
+    rdfs:comment """A file a person picked or dropped: its metadata (file:name, file:mediaType, file:size,
+file:modified), never its contents, which the host keeps under file:handle. Where it is in its
+life is file:state; while it is uploaded, file:loaded says how much has been sent."""@en .
+file:name a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:string ;
+    rdfs:label "name"@en , "назва"@uk , "Name"@de , "الاسم"@ar ;
+    rdfs:comment "The file's name, with its extension (\"report.pdf\"), as the person's system gives it."@en .
+file:mediaType a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:string ;
+    rdfs:label "media type"@en , "тип даних"@uk , "Medientyp"@de , "نوع الوسائط"@ar ;
+    rdfs:comment "The file's media type (\"image/png\"), as the browser guesses it from the name; absent when it cannot."@en .
+file:size a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:integer ;
+    rdfs:label "size"@en , "розмір"@uk , "Größe"@de , "الحجم"@ar ;
+    rdfs:comment "The file's size in bytes."@en .
+file:modified a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:dateTime ;
+    rdfs:label "modified"@en , "змінено"@uk , "geändert"@de , "تاريخ التعديل"@ar ;
+    rdfs:comment "When the file was last changed, as the person's system says."@en .
+file:handle a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:string ;
+    rdfs:comment "The files effect's key for the file's contents in this page (meaningless elsewhere, and after the page is gone)."@en .
+file:loaded a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:integer ;
+    rdfs:label "sent"@en , "надіслано"@uk , "gesendet"@de , "تم الإرسال"@ar ;
+    rdfs:comment "While the file is uploaded: how many of its bytes have been sent."@en .
+file:reason a owl:DatatypeProperty ;
+    rdfs:comment "Why a file was refused (its shape's sh:message) or its upload failed (the host's error); on the file, and on the event that says so."@en .
+file:location a owl:DatatypeProperty ; rdfs:domain file:File ; rdfs:range xsd:anyURI ;
+    rdfs:comment "Where an uploaded file is now: the address the server answered with (its Location), if it gave one."@en .
+
+file:state a owl:ObjectProperty ; rdfs:domain file:File ; rdfs:range file:State ;
+    rdfs:label "state"@en , "стан"@uk , "Zustand"@de , "الحالة"@ar ;
+    rdfs:comment "Where the file is in its life: ready, being uploaded, uploaded, failed, or refused."@en .
+file:State a owl:Class ; rdfs:comment "A state of a file (its rdfs:label says it; its sem:slug is what the theme hooks)."@en .
+file:Ready a file:State ; sem:slug "ready" ;
+    rdfs:label "Ready"@en , "Готово"@uk , "Bereit"@de , "جاهز"@ar ;
+    rdfs:comment "Accepted, and not uploaded: the app reads it from the effect (Files.fileOf)."@en .
+file:Uploading a file:State ; sem:slug "uploading" ;
+    rdfs:label "Uploading"@en , "Надсилання"@uk , "Wird hochgeladen"@de , "جارٍ الرفع"@ar ;
+    rdfs:comment "Accepted, and being sent: the effect uploads every file in this state."@en .
+file:Uploaded a file:State ; sem:slug "uploaded" ;
+    rdfs:label "Uploaded"@en , "Надіслано"@uk , "Hochgeladen"@de , "تم الرفع"@ar ;
+    rdfs:comment "Sent: the upload succeeded (file:location, if the server said where it is)."@en .
+file:Failed a file:State ; sem:slug "failed" ;
+    rdfs:label "Upload failed"@en , "Не надіслано"@uk , "Hochladen fehlgeschlagen"@de , "فشل الرفع"@ar ;
+    rdfs:comment "The upload did not succeed (file:reason); it can be tried again."@en .
+file:Refused a file:State ; sem:slug "refused" ;
+    rdfs:label "Not accepted"@en , "Не прийнято"@uk , "Nicht angenommen"@de , "غير مقبول"@ar ;
+    rdfs:comment "The target did not take it (file:reason, its shape's message): listed, never added."@en .
+
+# What only files conform to: a target that takes files from outside the page refuses anything
+# else carried over it (a card from a board).
+file:FileShape a sh:NodeShape ;
+    sh:class file:File ;
+    sh:message "Only files can go here." , "Сюди можна покласти лише файли."@uk , "Hier können nur Dateien abgelegt werden."@de , "يمكن وضع الملفات فقط هنا."@ar .
+
+# --- the files dragged in from outside -------------------------------------------------------------------
+
+file:Dragged a file:File , dnd:Draggable ;
+    rdfs:label "the files being dragged in"@en ;
+    dnd:name "Files" , "Файли"@uk , "Dateien"@de , "ملفات"@ar ;
+    rdfs:comment """Stands for the files a person drags over the page from outside it while they are carried (the
+carried resource of dnd:Current): their media types (file:mediaType, one for each kind) and how
+many (dnd:count) - all the browser tells before the drop. Names and sizes are known once they are
+dropped, when each file arrives on its own."""@en .
+
+# --- the system picker ---------------------------------------------------------------------------------
+
+file:Pick a owl:Class ;
+    rdfs:comment """A request to open the system's file picker for a component (file:requestedBy): what it shows
+(file:accept) and whether several may be chosen (file:multiple). The effect opens it when it
+appears; each chosen file then arrives (file:Arrive), and the arrival, or file:PickCancelled,
+retires it. Minted per activation: <component>/~pick-<event sequence>."""@en .
+file:requestedBy a owl:ObjectProperty ; rdfs:domain file:Pick ;
+    rdfs:comment "The component that asked: the files arrive addressed to it."@en .
+file:accept a owl:DatatypeProperty ; rdfs:range xsd:string ;
+    rdfs:comment """What the system picker offers: media types and extensions, comma-separated ("image/*,.pdf"), as
+the accept attribute of a file input. On a component, its own choice; on a request, what it asked
+for. Only a hint to the picker: what is accepted is SHACL (the component's shapes)."""@en .
+file:multiple a owl:DatatypeProperty ; rdfs:domain file:Pick ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether the picker lets several files be chosen at once."@en .
+
+# --- where uploads go ------------------------------------------------------------------------------------
+
+file:uploadTo a owl:DatatypeProperty ; rdfs:range xsd:anyURI ;
+    rdfs:label "upload to"@en , "надсилати на"@uk , "hochladen nach"@de , "الرفع إلى"@ar ;
+    rdfs:comment "On a component that takes files: where each accepted file is uploaded, at once (an HTTP POST of a form whose field \"file\" is the file)."@en .
+file:handler a owl:DatatypeProperty ; rdfs:range xsd:string ;
+    rdfs:comment "On a component that takes files: the name of an upload handler the app gave the files effect (Files options: handlers), which sends each accepted file, at once, as the app needs."@en .
+
+# --- events ----------------------------------------------------------------------------------------------
+# Reported by the files effect. Addressed to file:Dragged (the drag) or to the component the files
+# are for; each carries the file it is about (file:file), and what the host knows of it.
+
+file:file a owl:ObjectProperty ; rdfs:range file:File ;
+    rdfs:comment "On a component that takes files: a file it lists (accepted or refused). On an event: the file it is about."@en .
+
+file:DragIn a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ;
+    rdfs:comment "Files from outside the page are dragged over it: their media types (file:mediaType) and how many (dnd:count). Addressed to file:Dragged; not recorded."@en .
+file:Arrive a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ;
+    rdfs:comment "A file was picked or dropped for a component: its file:name, file:mediaType, file:size, file:modified and file:handle. Its reaction offers it to the component, whose reception decides; not recorded (file:Added or file:Refusal is)."@en .
+file:Added a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "File added"@en , "Файл додано"@uk , "Datei hinzugefügt"@de , "تمت إضافة الملف"@ar ;
+    rdfs:comment "The component accepted the file it was offered (file:file, file:name)."@en .
+file:Refusal a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "File not accepted"@en , "Файл не прийнято"@uk , "Datei nicht angenommen"@de , "لم يُقبل الملف"@ar ;
+    rdfs:comment "The component refused the file it was offered (file:file, file:name), and why (file:reason: the violated shape's message). Recorded and announced."@en .
+file:PickCancelled a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ;
+    rdfs:comment "The system picker was closed without choosing a file. Not recorded."@en .
+file:Progress a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ;
+    rdfs:comment "An upload moved on: how many bytes of the file (file:file) are sent (file:loaded). At most a few a second; not recorded."@en .
+file:Done a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Uploaded"@en , "Надіслано"@uk , "Hochgeladen"@de , "تم الرفع"@ar ;
+    rdfs:comment "The file (file:file) is uploaded; file:location says where, if the server said."@en .
+file:Failure a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Upload failed"@en , "Не надіслано"@uk , "Hochladen fehlgeschlagen"@de , "فشل الرفع"@ar ;
+    rdfs:comment "The file's (file:file) upload failed (file:reason)."@en .
+
+# --- reactions: the drag of files from outside -------------------------------------------------------------
+
+# Files come over the page: they are the drag in progress (dnd:Current), carried by the pointer,
+# copied (never moved: they stay where they are), with what is known of them, and every component
+# that takes files (and is not disabled) is offered them, so each derives its reception (dnd:Receive).
+file:Lift a beh:Reaction ;
+    rdfs:label "Files are dragged in"@en ;
+    beh:when file:DragIn ;
+    beh:source file:Dragged ;
+    beh:deletes """
+CONSTRUCT { dnd:Current ?p ?o . ?t dnd:offered dnd:Current . ?h dnd:hovered dnd:Current . ?l dnd:lifted dnd:Current . file:Dragged file:mediaType ?type ; dnd:refusedBy ?refusal }
+WHERE { { VALUES ?p { dnd:source dnd:carrying dnd:from dnd:by dnd:effect dnd:dropTarget dnd:into dnd:after dnd:before dnd:rank dnd:count } dnd:Current ?p ?o } UNION { ?t dnd:offered dnd:Current } UNION { ?h dnd:hovered dnd:Current } UNION { ?l dnd:lifted dnd:Current } UNION { file:Dragged file:mediaType ?type } UNION { file:Dragged dnd:refusedBy ?refusal } }""" ;
+    beh:inserts """
+CONSTRUCT {
+  dnd:Current a dnd:Drag ; dnd:source file:Dragged ; dnd:carrying file:Dragged ; dnd:by dnd:Pointer ; dnd:effect dnd:Copy ; dnd:count ?count .
+  file:Dragged dnd:lifted dnd:Current ; file:mediaType ?type .
+  ?target dnd:offered dnd:Current .
+}
+WHERE {
+  OPTIONAL { $event dnd:count ?count }
+  OPTIONAL { $event file:mediaType ?type }
+  OPTIONAL { ?target a/rdfs:subClassOf* c:FileDrop FILTER NOT EXISTS { ?target c:disabled true } }
+}""" ;
+    sem:function "files:lift" .
+
+# However the drag ended, what was known about the files goes with it.
+file:Forget a beh:Reaction ;
+    rdfs:label "Forget the dragged files"@en ;
+    beh:when dnd:End ;
+    beh:source dnd:Current ;
+    beh:deletes """
+CONSTRUCT { file:Dragged file:mediaType ?type . dnd:Current dnd:count ?count }
+WHERE { { file:Dragged file:mediaType ?type } UNION { dnd:Current dnd:count ?count } }""" ;
+    sem:function "files:forget" .

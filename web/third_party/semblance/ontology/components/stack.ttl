@@ -1,0 +1,35 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+c:Stack a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "An ordered container. Arrangement comes from the positioning layer."@en ;
+    sem:slug "stack" .
+
+c:children a owl:ObjectProperty ; rdfs:domain c:Stack ; rdfs:range rdf:List ;
+    rdfs:comment "Ordered child components."@en .
+
+# The children in list order: consecutive list cells are ord:immediatelyPrecedes edges.
+c:StackRendering a sem:Rendering ;
+    sem:targets c:Stack ;
+    sem:stratum 0 .
+
+c:StackRendering-fn a sem:Rule ;
+    sem:implements c:StackRendering ;
+    sem:function "stack" .
+
+c:StackRendering-sparql a sem:Rule ;
+    sem:implements c:StackRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Stack .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .

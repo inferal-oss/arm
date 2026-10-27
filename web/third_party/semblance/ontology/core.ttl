@@ -1,0 +1,243 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+# ---------------------------------------------------------------------------
+# Semblance core: components, layers and the rules that project them into
+# RDF/HTML. A UI is a graph of component instances; rendering is a stratified
+# rewrite of that graph into an RDF/HTML graph, which is then materialized.
+# ---------------------------------------------------------------------------
+
+<https://semblance.dev/ns/core> a owl:Ontology ;
+    rdfs:label "Semblance core"@en .
+
+sem:Component a owl:Class ;
+    rdfs:comment "Anything that can be rendered. Component vocabularies subclass this."@en .
+
+sem:Layer a owl:Class ;
+    rdfs:comment "A cross-cutting aspect (modality, style, a11y, behaviour, provenance...). Rules may belong to a layer; disabled layers' rules do not run."@en .
+
+sem:SourceLayer a sem:Layer ;
+    rdfs:label "source"@en ;
+    rdfs:comment "Lets c:Flippable views turn over to show the rules that make them."@en .
+
+sem:enables a owl:ObjectProperty ;
+    rdfs:range sem:Layer ;
+    rdfs:label "Layers"@en ;
+    rdfs:comment "Layers an application (or a projection of it) has switched on."@en .
+
+sem:DebugLayer a sem:Layer ;
+    rdfs:label "debug"@en ;
+    rdfs:comment "Exposes provenance (which rule rendered which node) as DOM attributes."@en .
+
+sem:slug a owl:DatatypeProperty ;
+    rdfs:comment "Short machine name used in generated attribute values and CSS."@en .
+
+# --- Rules -----------------------------------------------------------------
+
+sem:Rendering a owl:Class ;
+    rdfs:comment "An abstract rule slot. Several sem:Rule implementations (SPARQL, function) may implement it; the engine picks one by preference."@en .
+
+sem:Rule a owl:Class ;
+    rdfs:subClassOf prov:Plan ;
+    rdfs:comment """A projection from a focus node ($this) to a set of triples. The body is
+either a SPARQL CONSTRUCT (sem:construct) or a registered function (sem:function).
+Rules must not emit blank nodes; they mint IRIs as <focus>/~<local> so results are
+stable across re-evaluation and DOM identity is preserved."""@en .
+
+sem:implements a owl:ObjectProperty ; rdfs:domain sem:Rule ; rdfs:range sem:Rendering .
+sem:targets a owl:ObjectProperty ;
+    rdfs:comment "Class whose instances are the rule's focus nodes. Inherited from the implemented sem:Rendering when absent."@en .
+sem:modality a owl:ObjectProperty ;
+    rdfs:comment "Modality the rule renders for; absent means every modality."@en .
+sem:stratum a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "Evaluation stratum. Component instances may only be created in stratum 0; later strata (layers) decorate."@en .
+sem:layer a owl:ObjectProperty ; rdfs:range sem:Layer .
+sem:construct a owl:DatatypeProperty ;
+    rdfs:comment "SPARQL CONSTRUCT body. $this is substituted with the focus IRI, or with ?this for bulk evaluation, so the WHERE clause must bind $this through a triple pattern."@en .
+sem:function a owl:DatatypeProperty ; rdfs:comment "Identifier of a registered function implementation."@en .
+sem:follows a owl:ObjectProperty ;
+    rdfs:comment """Predicate from the focus to nodes the rule reads; changes on those nodes make the focus dirty.
+Its value may also be an RDF list of predicates, a path: changes on the nodes reached along it, and on
+every node on the way, make the focus dirty (a taskbar reads its desktop's frames: ( c:of c:hosts )).
+A step [ sem:zeroOrMore p ] is any number of p steps: tabs read their list's members with
+( c:tabs [ sem:zeroOrMore rdf:rest ] rdf:first )."""@en .
+sem:zeroOrMore a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "In a sem:follows path: any number (zero included) of steps along this predicate."@en .
+sem:inverse a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "In a sem:follows path: a step against this predicate (from a class to its instances: [ sem:inverse rdf:type ])."@en .
+sem:watches a owl:ObjectProperty ;
+    rdfs:comment "Restricts the predicates (on the focus and on followed nodes) whose changes make the focus dirty. Absent means all."@en .
+
+# A function rule may run a query held in the data and follow it (RuleContext.select / construct
+# with { follow: true }): it then depends on the triples the query reads - its triple patterns,
+# with the IRIs they name (src/sparql-reads.ts) - and a changed triple that matches one re-runs it.
+sem:refresh a owl:ObjectProperty ; rdfs:domain sem:Rendering ; rdfs:range sem:Refresh ;
+    rdfs:comment """When a rule of this rendering is re-run after a triple a query it follows reads has changed:
+sem:AtOnce (the default), in the same run as the change, or sem:NextFrame, at the host's next
+frame, once for every change since: a busy graph (a change-log member per keystroke) costs one
+evaluation per frame, never one per change, and the change itself does not wait for it."""@en .
+sem:Refresh a owl:Class ; rdfs:comment "When a rule that follows a query is re-run after what it read changed."@en .
+sem:AtOnce a sem:Refresh ; rdfs:label "at once"@en ; rdfs:comment "In the same run as the change that it read."@en .
+sem:NextFrame a sem:Refresh ; rdfs:label "next frame"@en ;
+    rdfs:comment "At the host's next frame (requestAnimationFrame; a microtask without a page), coalescing every change since. A slow evaluation spaces the next one out."@en .
+
+sem:forEach a owl:ObjectProperty ;
+    rdfs:range rdf:Property ;
+    rdfs:comment """Makes a rule member-wise: it is evaluated once per (focus, member) for each
+`focus <property> member`, so adding, removing or changing one member re-evaluates only that
+member. Its output places the member's part itself (e.g. hasChild + sem:orderKey). A function
+rule gets the member as an argument; in a SPARQL rule it is `$member`, substituted like `$this`
+(one query per pair, never in bulk). A SPARQL pair re-runs when its member's triples change, as
+a function pair does when a triple it read changes."""@en .
+
+sem:memberWatches a owl:ObjectProperty ;
+    rdfs:range rdf:Property ;
+    rdfs:comment """On a member-wise SPARQL rule: a predicate of the member it reads. With this (or
+sem:memberWatchesVia), only changes of those predicates on a member re-run its pair; without either,
+any change on the member does."""@en .
+sem:memberWatchesVia a owl:ObjectProperty ;
+    rdfs:range rdf:Property ;
+    rdfs:comment """On a member-wise SPARQL rule: a property of the focus whose value is a predicate of the
+member the rule reads (a list's c:sortBy names the key it reads on each item)."""@en .
+
+# --- Rendering output -------------------------------------------------------
+
+sem:renders a owl:ObjectProperty ;
+    rdfs:comment "Links the RDF/HTML root node produced for a component instance to that instance. By convention the root is <focus>/~root."@en .
+
+# --- Warmth: what may be evaluated before it is shown -------------------------------
+# Projections evaluate only what is shown (demand). In idle time the host may
+# evaluate hidden parts ahead of time so that showing them is instant - but only
+# under a component that says so: sem:warm sem:Eager. The nearest ancestor (in
+# the rendered tree) that declares a warmth decides; with none, parts are lazy:
+# evaluated when they are first shown. Pages one navigates between often are
+# eager; large, rarely visited ones (a gallery) stay lazy.
+
+sem:warm a owl:ObjectProperty ;
+    rdfs:range sem:Warmth ;
+    rdfs:comment "Whether this component's hidden parts are evaluated in idle time (inherited by what it renders)."@en .
+sem:Warmth a owl:Class .
+sem:Eager a sem:Warmth ; rdfs:label "eager"@en ;
+    rdfs:comment "Hidden parts are evaluated in idle time, so showing them is instant."@en .
+sem:Lazy a sem:Warmth ; rdfs:label "lazy"@en ;
+    rdfs:comment "Hidden parts are evaluated when first shown (the default)."@en .
+sem:OnIntent a sem:Warmth ; rdfs:label "on intent"@en ;
+    rdfs:comment """Hidden parts are evaluated as soon as the person shows intent to see them: pointing at,
+or focusing, a control that would show them (a navigation item, a tab). By the time they
+click, it is rendered."""@en .
+
+# What a control would show, when it is pointed at: intent previews. Each is a
+# SELECT with $control (the component the pointed element belongs to) and
+# $option (what the element c:selects) that returns ?content - the hidden
+# component that choosing it would show. The host runs them on hover / focus
+# and evaluates that content ahead of the click (where its warmth allows).
+sem:IntentPreview a owl:Class ;
+    rdfs:comment "A query from a pointed-at choice ($control, $option) to the ?content it would show."@en .
+
+sem:SwitchPreview a sem:IntentPreview ;
+    rdfs:label "a switch's case"@en ;
+    rdfs:comment "A control over a property that a c:Switch also follows: the case it would show."@en ;
+    sem:select """SELECT DISTINCT ?content WHERE {
+  $control c:controls ?target ; c:property ?property .
+  ?switch a c:Switch ; c:controls ?target ; c:property ?property ; c:cases/rdf:rest*/rdf:first ?case .
+  ?case c:when $option ; c:content ?content .
+}""" .
+sem:TabPreview a sem:IntentPreview ;
+    rdfs:label "a tab's content"@en ;
+    sem:select """SELECT DISTINCT ?content WHERE { $option a c:Tab ; c:content ?content }""" .
+
+sem:prefixName a owl:DatatypeProperty ;
+    rdfs:comment """A prefix the engine knows (the framework's; the graph's own are sh:declare): each engine states
+them in its derived graph, <agent>/~prefix-<p> sem:prefixName "p" ; sem:namespace "…", so SPARQL rules
+can spell an IRI as a prefixed name."""@en .
+sem:namespace a owl:DatatypeProperty ; rdfs:comment "The namespace a sem:prefixName stands for."@en .
+
+sem:requires a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment """On a rendering or rule: the focus must have at least one of these properties for the
+rule to run at all (checked with a pattern match before any query). Layer rules that target
+every component but concern few (shortcuts, busy, concealed) say so here."""@en .
+sem:unless a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment """On a rendering or rule: the opposite of sem:requires. A focus that has any of these
+properties is not run at all (its output, if any, is retracted), checked the same way before any
+query. Two renderings of one target that take turns (a typeahead's whole option list, or only its
+best matches under c:optionLimit) say which is whose."""@en .
+
+sem:bulk a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment """On a SPARQL rule: false keeps it from being evaluated once for many foci. The engine
+already decides this from the template (bulk output is grouped by the focus each subject was
+minted under, so a template writing about other nodes - sibling components, list members - is
+always evaluated per focus); this states it explicitly."""@en .
+
+sem:functionOnly a owl:DatatypeProperty ;
+    rdfs:comment """On a rendering: it has no SPARQL implementation (or none for a modality) yet, and this says
+which SPARQL extension it awaits ("awaits sx:Locale (sx:formatNumber)"), or which tracked work
+(sem:awaitsWork: "awaits #1: ..."). It is allowed only with sem:needsExtension or sem:awaitsWork:
+every other rendering has a SPARQL implementation for every modality it renders in, and a function
+twin (test/sparql-coverage.test.ts checks)."""@en .
+sem:awaitsWork a owl:ObjectProperty ;
+    rdfs:comment """On a rendering missing one side for a reason other than an extension: the issue whose work
+brings it (a building block not built yet, another branch's component). Temporary by design:
+test/sparql-coverage.test.ts lists every such rendering, so the list only shrinks on purpose."""@en .
+sem:needsExtension a owl:ObjectProperty ;
+    rdfs:comment """On a rule (or a rendering whose SPARQL rule cannot be written yet): a group of SPARQL
+extension functions it needs (sx:Math, sx:Text, sx:Locale, sx:Matches, sx:Json; see the engine's
+EXTENSIONS.md). Stores without the group run the function twin."""@en .
+
+# The groups of SPARQL extension functions Semblance's own engines will offer (the engine's
+# EXTENSIONS.md); none is implemented yet, so the renderings that need one stay function-only.
+sem:ExtensionGroup a owl:Class ;
+    rdfs:comment "A group of SPARQL extension functions a store may offer (sem:needsExtension)."@en .
+sx:Math a sem:ExtensionGroup ; rdfs:label "math"@en ; rdfs:comment "sx:log, sx:log10, sx:exp, sx:pow, sx:sqrt, trigonometry, sx:pi."@en .
+sx:Text a sem:ExtensionGroup ; rdfs:label "text"@en ; rdfs:comment "sx:codepoint, sx:char, sx:decodeURI."@en .
+sx:Locale a sem:ExtensionGroup ; rdfs:label "locale"@en ; rdfs:comment "sx:formatNumber, sx:formatDateTime, sx:collated, sx:sortKey (Intl)."@en .
+sx:Matches a sem:ExtensionGroup ; rdfs:label "matches"@en ; rdfs:comment "The sx:matches and sx:chars relations: regex matches and characters of a text as solutions (tokenizing)."@en .
+sx:Json a sem:ExtensionGroup ; rdfs:label "JSON"@en ; rdfs:comment "The sx:json relation: a JSON text's structure as solutions."@en .
+
+# --- Building blocks ------------------------------------------------------------
+# What SPARQL cannot compute from the graph, a building block puts in the graph as data, so
+# that renderings stay SPARQL: a stored query's result rows, a closure over a predicate the
+# data names, a list member's position. A building block is a slot like a sem:Rendering,
+# implemented by rules like one (a SPARQL rule where it can be written, else a small function),
+# but its output is graph data - never RDF/HTML - that SPARQL renderings read.
+
+sem:BuildingBlock a owl:Class ;
+    rdfs:comment """A rule slot whose output is graph data for SPARQL renderings to read (never RDF/HTML).
+Rules implement it with sem:implements, as they implement a sem:Rendering."""@en .
+
+sem:always a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment """On a rendering or building block: its rules are evaluated whether or not their focus is
+shown. Projections evaluate only what is shown; a rule about a node no projection shows (a
+nav:Location, the viewer, a containment property), whose output shown components read, says this. Its focus should be one node, or few, so it costs what it changes."""@en .
+
+sem:inputOnly a owl:DatatypeProperty ;
+    rdfs:comment """On a rendering: it applies only to instances typed in the input graphs, not to
+instances other rules mint. Pre-render rules (strata below the components, e.g. localization
+and validation) need it: a minted instance appears after their stratum has run."""@en .
+
+sem:orderKey a owl:DatatypeProperty ;
+    rdfs:comment """On an RDF/HTML node: orders it among siblings that carry no ord: precedence (numerically
+when both keys are numbers, else as strings; the node IRI breaks ties). Member-wise rules
+place their parts this way, so inserting one is O(log n) instead of rewriting a chain. A tuple
+key (U+0001, then components separated by U+0001: "n" and a number or "s" and a string, "-"
+before one for descending) compares component by component, e.g. a grid row by its sort value,
+missing values last, then capture order: one row's key changing moves only that row."""@en .
+
+sem:slot a owl:DatatypeProperty ;
+    rdfs:comment "Marks an RDF/HTML element as a host-owned slot: renderers create it but never manage its children, so a host application can mount its own content there."@en .
+sem:symbol a owl:DatatypeProperty ; rdfs:comment "A short glyph standing for an individual in compact UIs."@en .
+sem:order a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "Presentation order among sibling individuals (ascending)."@en .
+
+# --- Component groups -------------------------------------------------------
+# Component classes come in groups (layout, inputs, windows...): the docs, the
+# gallery and the reference list them that way. A class says which group it is in.
+
+sem:ComponentGroup a owl:Class ;
+    rdfs:comment "A group of related component classes, with their mixins and parts (rdfs:label, sem:order)."@en .
+sem:group a owl:AnnotationProperty ; rdfs:domain owl:Class ; rdfs:range sem:ComponentGroup ;
+    rdfs:comment "The group a component class (or one of its mixins or parts) belongs to."@en .

@@ -1,0 +1,337 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+
+# Default theme for the layout components.
+
+# --- specimen ---
+# One column that never grows past the card: what is wider than the stage (a table, a long
+# segmented control, a hex dump) shrinks to it and scrolls inside itself, not the page.
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-card ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-1 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> header" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-1 ] ,
+                 [ sty:property "padding-right" ; sty:raw "88px" ] .
+# On a phone only the title keeps clear of the flip control in the corner; the text below it
+# takes the card's width.
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> header" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "padding-right" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> header h3" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "padding-right" ; sty:raw "88px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> header h3" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-lg ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "-0.015em" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> header p" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] ,
+                 [ sty:property "max-width" ; sty:raw "68ch" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-stage" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:raw "radial-gradient(circle at 1px 1px, var(--sem-border) 1px, transparent 0) 0 0 / 16px 16px, var(--sem-surface-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-stage > *" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Specimen ; sty:part "> .sem-stage > [data-sem-direction=column]" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 100%" ] .
+
+# --- swatches ---
+[] a sty:StyleRule ; sty:appliesTo c:Swatches ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Swatches ; sty:part "strong" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.08em" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Swatches ; sty:part ".sem-swatch-row" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fit, minmax(36px, 1fr))" ] ,
+                 [ sty:property "gap" ; sty:raw "6px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Swatches ; sty:part ".sem-swatch" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "justify-items" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Swatches ; sty:part ".sem-swatch > span" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "40px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px rgb(127 127 127 / 0.18)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Swatches ; sty:part ".sem-swatch code" ;
+    sty:declares [ sty:property "font" ; sty:raw "500 10px/1 var(--sem-font-mono)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+
+# --- elevations (sty:Flat and sty:Raised are in theme/default.ttl) ---
+sty:Overlay a sty:Elevation ; rdfs:label "Overlay"@en ; sem:slug "overlay" ; sem:order 3 ;
+    rdfs:comment "Floats above the page: menus, popovers, dialogs."@en .
+sty:Flat rdfs:label "Flat"@en ; sem:order 1 .
+sty:Raised rdfs:label "Raised"@en ; sem:order 2 .
+
+# --- surface ---
+# Direction, gap and inset are the position layer's; the surface only fills them in
+# when they are not given, so pos:direction / pos:gap / pos:inset (and the rows a surface takes
+# from aligned columns, pos:rowSpan) always win.
+[] a sty:StyleRule ; sty:appliesTo c:Surface ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "transition" ; sty:raw "box-shadow var(--sem-duration) var(--sem-ease), background var(--sem-duration) var(--sem-ease), border-color var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:state ":not([data-sem-direction]):not([data-sem-layout]):not([data-sem-row-span])" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:state ":not([data-sem-gap])" ;
+    sty:declares [ sty:property "gap" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:state ":not([data-sem-inset])" ;
+    sty:declares [ sty:property "padding" ; sty:token tok:space-5 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:state "[data-sem-tone]" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft)" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--tone-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:when sty:Flat ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:when sty:Raised ;
+    sty:declares [ sty:property "box-shadow" ; sty:token tok:shadow-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:when sty:Overlay ;
+    sty:declares [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "border-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-xl ] .
+[] a sty:StyleRule ; sty:appliesTo c:Surface ; sty:when sty:Overlay ; sty:state ":not([data-sem-tone])" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-overlay ] .
+
+# --- divider ---
+[] a sty:StyleRule ; sty:appliesTo c:Divider ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 0 auto" ] ,
+                 [ sty:property "align-self" ; sty:raw "stretch" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+# The bare rule: a 1px line across (or, standing up, along) its container.
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":is(hr)" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "1px" ] ,
+                 [ sty:property "background" ; sty:token tok:border ] .
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":is(hr)[aria-orientation=vertical]" ;
+    sty:declares [ sty:property "width" ; sty:raw "1px" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "1.5em" ] .
+# A labelled rule: the label between two lines.
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":not(hr)" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "row" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.08em" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":not(hr)::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "''" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 0" ] ,
+                 [ sty:property "height" ; sty:raw "1px" ] ,
+                 [ sty:property "background" ; sty:token tok:border ] .
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":not(hr)::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "''" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 0" ] ,
+                 [ sty:property "height" ; sty:raw "1px" ] ,
+                 [ sty:property "background" ; sty:token tok:border ] .
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":not(hr)[aria-orientation=vertical]" ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "4em" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":not(hr)[aria-orientation=vertical]::before" ;
+    sty:declares [ sty:property "width" ; sty:raw "1px" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Divider ; sty:state ":not(hr)[aria-orientation=vertical]::after" ;
+    sty:declares [ sty:property "width" ; sty:raw "1px" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] .
+
+# --- grid ---
+# --grid-min and --grid-columns come from c:minWidth and c:columns (custom properties
+# set on the root by the grid rule). With a column count, tiles never get narrower
+# than 1/N of the row (less the widest gap), so at most N fit; they still wrap at --grid-min.
+[] a sty:StyleRule ; sty:appliesTo c:Grid ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))" ] ,
+                 [ sty:property "align-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Grid ; sty:state "[data-columns]" ;
+    sty:declares [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Grid ; sty:state ":not([data-sem-gap])" ;
+    sty:declares [ sty:property "gap" ; sty:token tok:space-4 ] .
+
+# --- spacer ---
+[] a sty:StyleRule ; sty:appliesTo c:Spacer ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "align-self" ; sty:raw "stretch" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] .
+
+# --- status bar ---
+# Its container is at least as tall as the viewport and pushes the bar to its end,
+# so the bar sits at the bottom of the window on short pages too; on long pages it
+# sticks to the bottom (above a taskbar docked there: --sem-dock-bottom, windows.ttl) while the
+# content scrolls under it.
+[] a sty:StyleRule ; sty:part ":has(> [data-sem-c=status-bar])" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "min-height" ; sty:raw "100dvh" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ;
+    sty:declares [ sty:property "margin-top" ; sty:raw "auto" ] ,
+                 [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "bottom" ; sty:raw "var(--sem-dock-bottom, 0px)" ] ,
+                 [ sty:property "z-index" ; sty:raw "40" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "min-height" ; sty:raw "40px" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-1 tok:space-5 ) ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-surface-sunken) 82%, transparent)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "blur(14px) saturate(1.4)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:part "> .sem-fold" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "padding" ; sty:raw "4px 8px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "650 11px/1 var(--sem-font)" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.08em" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:part "> .sem-fold:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:part "> .sem-fold:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:part "> .sem-fold .sem-chevron" ;
+    sty:declares [ sty:property "width" ; sty:raw "6px" ] ,
+                 [ sty:property "height" ; sty:raw "6px" ] ,
+                 [ sty:property "border-right" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "transform" ; sty:raw "rotate(45deg) translate(-1px, -1px)" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:state "[data-expanded=false]" ; sty:part "> .sem-fold .sem-chevron" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(-135deg) translate(-1px, -1px)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:part "> .sem-bar-body" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex" ; sty:raw "1" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:tokens ( tok:space-2 tok:space-4 ) ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:part "> .sem-bar-body[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+
+# On a compact or medium screen the bar is one line: what it holds scrolls sideways instead of wrapping
+# into rows that would take a quarter of the screen.
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:atWidth sty:CompactWidth , sty:MediumWidth ;
+    sty:declares [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding" ; sty:raw "2px 12px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:atWidth sty:CompactWidth , sty:MediumWidth ; sty:part "> .sem-bar-body" ;
+    sty:declares [ sty:property "flex-wrap" ; sty:raw "nowrap" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "scrollbar-width" ; sty:raw "none" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "padding-block" ; sty:raw "4px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:atWidth sty:CompactWidth , sty:MediumWidth ; sty:part "> .sem-bar-body > *" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:StatusBar ; sty:atWidth sty:CompactWidth , sty:MediumWidth ; sty:part "> .sem-fold" ;
+    sty:declares [ sty:property "min-height" ; sty:raw "36px" ] .
+
+# --- pos:Versus: the middle child centered between the two; stacked on a phone --------------------
+[] a sty:StyleRule ; sty:part "[data-sem-layout=versus] > :nth-child(2)" ;
+    sty:declares [ sty:property "align-self" ; sty:raw "center" ] ,
+                 [ sty:property "justify-self" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-layout=versus]" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+
+# --- pos:Aside: the navigation and the main column's shares --------------------------------------
+# The first child is the navigation; everything else is the main column - also content a c:Switch
+# shows, since a switch takes no part in layout (its root and shown case are display: contents).
+[] a sty:StyleRule ; sty:part "[data-sem-layout=aside] > :first-child" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 220px" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:part ":is([data-sem-layout=aside] > :not(:first-child, [data-sem-c=switch]), [data-sem-layout=aside] > [data-sem-c=switch] > :not([hidden]) > *)" ;
+    sty:declares [ sty:property "flex" ; sty:raw "999 1 0" ] ,
+                 [ sty:property "min-width" ; sty:raw "min(100%, 55%)" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-layout=aside] > :first-child:not(:only-child)" ;
+    sty:declares [ sty:property "max-width" ; sty:raw "min(100%, 240px)" ] .
+
+# Components whose size is their content - a badge, a tag, a count, a key cap - stay that size in a
+# grid cell. A grid stretches its items to the track by default, so in rows that share columns
+# (pos:Subgrid) a short badge would grow to the width of the longest one in its column; they sit at
+# the start of the track instead (logical, so right to left too). Flex containers ignore this.
+[] a sty:StyleRule ; sty:appliesTo c:Badge ;
+    sty:declares [ sty:property "justify-self" ; sty:raw "start" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tag ;
+    sty:declares [ sty:property "justify-self" ; sty:raw "start" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CountBadge ;
+    sty:declares [ sty:property "justify-self" ; sty:raw "start" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Kbd ;
+    sty:declares [ sty:property "justify-self" ; sty:raw "start" ] .
+
+# Guides (pos:guides pos:CellGuides): every cell of a row, and every part of a column, is outlined,
+# so whether cells line up across rows (and parts across columns) can be seen, not only read about.
+[] a sty:StyleRule ; sty:when pos:CellGuides ; sty:part "[data-sem-layout=subgrid] > *" ;
+    sty:declares [ sty:property "outline" ; sty:raw "1px dashed var(--sem-accent)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "2px" ] .
+# The parts of columns: of those that take rows from aligned columns (pos:RowSubgrid), and of
+# column stacks in a grid, which place their parts on their own.
+[] a sty:StyleRule ; sty:when pos:CellGuides ; sty:part ":is([data-sem-rows=subgrid], [data-sem-c=grid] > [data-sem-direction=column]) > *" ;
+    sty:declares [ sty:property "outline" ; sty:raw "1px dashed var(--sem-accent)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:when pos:CellGuides ; sty:part "[data-sem-direction=row] > *" ;
+    sty:declares [ sty:property "outline" ; sty:raw "1px dashed var(--sem-accent)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "2px" ] .
+
+# On a compact screen the navigation is always on top, and as wide as the page.
+[] a sty:StyleRule ; sty:part "[data-sem-layout=aside] > :first-child:not(:only-child)" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "flex-basis" ; sty:raw "100%" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] .

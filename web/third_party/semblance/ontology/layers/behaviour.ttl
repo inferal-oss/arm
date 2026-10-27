@@ -1,0 +1,255 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Behaviour layer: interaction is data.
+#
+# A relevant DOM interaction is recorded as an RDF *event*, addressed to the
+# component it happened in, and appended as an immutable member of the
+# beh:ChangeLog Linked Data Event Stream (LDES), together with the change it
+# caused - kept in the events graph urn:semblance:events. *Reactions*
+# - declared in component vocabularies (built-in behaviour) or in the app graph
+# (app logic) - turn events into changes of component state. Every reaction
+# matching an event is evaluated against the state before the event, and the
+# union of their changes is applied as one delta; projections follow from it.
+# An event none of whose reactions produce anything is not recorded.
+# The graph is the single source of truth: nothing touches the DOM directly.
+
+<https://semblance.dev/ns/behaviour> a owl:Ontology ;
+    rdfs:label "Semblance behaviour layer"@en .
+
+beh:Layer a sem:Layer ; rdfs:label "behaviour"@en .
+
+# --- Events ------------------------------------------------------------------------
+
+beh:Event a owl:Class ; rdfs:comment "Something that happened to a component."@en .
+beh:domEvent a owl:DatatypeProperty ; rdfs:comment "DOM event type an event class is recorded from."@en .
+
+beh:Click a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "click" .
+beh:DoubleClick a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "dblclick" ;
+    rdfs:comment "A rendered element was double-clicked (its two clicks are events too)."@en .
+beh:Input a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "input" ;
+    rdfs:comment "The value of a text control changed (per keystroke)."@en .
+beh:Change a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "change" ;
+    rdfs:comment "A control's committed state changed (e.g. a checkbox)."@en .
+
+beh:Hover a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "mouseover" ; beh:recorded false ;
+    rdfs:comment "The pointer entered a rendered element. Not recorded in the change log; reactions may still use it."@en .
+beh:Leave a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "mouseout" ; beh:recorded false ;
+    rdfs:comment "The pointer left a rendered element. Not recorded."@en .
+beh:Focus a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "focusin" ; beh:recorded false ;
+    rdfs:comment "A rendered element received focus. Not recorded."@en .
+beh:Blur a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "focusout" ; beh:recorded false ;
+    rdfs:comment "A rendered element lost focus. Not recorded."@en .
+beh:Move a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "sem-move" ;
+    rdfs:comment """A move gesture ended (beh:x, beh:y). While dragging, only the view moves; this commits the result.
+Let go over a place that takes back what was moved (a tab list a window was torn from), it says
+onto what (beh:onto) and no position."""@en .
+beh:TearOff a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "sem-tear-off" ;
+    rdfs:comment """A part was dragged out of the component it belongs to and let go there (a detachable tab, out
+of its tab list): beh:x and beh:y say where what it becomes goes (its top-left, in CSS px from the
+viewport's). Dragged back before letting go, or let go before it was out, there is no event."""@en .
+beh:Resize a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "sem-resize" ;
+    rdfs:comment "A resize gesture ended (beh:width, beh:height)."@en .
+beh:Size a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "sem-size" ;
+    rdfs:comment """A one-axis size handle (a separator, a column's edge, a panel's free edge) was dragged, or
+moved with the arrow keys: the new size of what it sizes along its axis (beh:size) and the room
+there was for it (beh:extent, its container along the same axis), in CSS px."""@en .
+
+# --- Time: things due later ---------------------------------------------------------------------
+# Any node may say when something is due about it (beh:dueAt). When the time comes, the host
+# (src/behaviour/schedule.ts, on the host's one clock) records a beh:Due event addressed to that
+# node - an ordinary recorded event, handled by ordinary reactions (beh:when beh:Due) - and the
+# beh:dueAt is spent unless a reaction set a new one. One timer serves the earliest due node. A
+# node with beh:dueWhileShown waits, past its time, until that component is shown: a script
+# playing in a page nobody looks at holds still.
+
+beh:dueAt a owl:DatatypeProperty ; rdfs:range xsd:dateTime ;
+    rdfs:comment "When a beh:Due event is due for this node."@en .
+beh:dueWhileShown a owl:ObjectProperty ; rdfs:range sem:Component ;
+    rdfs:comment "The node's beh:Due waits until this component is shown."@en .
+beh:Due a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment "A node's beh:dueAt time came (the event's target is the node; beh:at is when it fired)."@en .
+
+# --- Raising an event: one reaction asking for another -------------------------------------------
+# A reaction may ask for a further event, addressed to another node, by inserting
+# `?node beh:raise ?eventClass`: running a command from a list raises its key:Press, activating a
+# component raises its beh:Click. The statement is a request, never stated in the graph: the event
+# bus takes it out of the reaction's change, applies the rest, records the event, and then records
+# the raised one (beh:raisedBy the first), handled by the node's own reactions like any other. A
+# raised click is addressed to the component's root (beh:node), so reactions that ask which part was
+# hit do not take it for one of theirs.
+
+beh:raise a owl:ObjectProperty ; rdfs:range owl:Class ;
+    rdfs:label "Raises"@en , "Викликає"@uk , "Löst aus"@de , "يُطلق"@ar ;
+    rdfs:comment "In a reaction's inserts: raise an event of this class on the subject once this event is applied (a request, not a statement)."@en .
+beh:raisedBy a owl:ObjectProperty ; rdfs:domain beh:Event ; rdfs:range beh:Event ;
+    rdfs:label "Raised by"@en , "Викликано"@uk , "Ausgelöst von"@de , "أطلقه"@ar ;
+    rdfs:comment "On a raised event: the event whose reaction raised it."@en .
+
+beh:recorded a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "On an event class: false means its events are not appended to the change log."@en .
+beh:gesture a owl:DatatypeProperty ;
+    rdfs:comment """Rendered as data-sem-gesture="move"|"resize"|"size" on a handle: dragging it moves or resizes
+the nearest component root, then emits beh:Move / beh:Resize. A "size" handle sizes one element
+along one axis (data-sem-sizes, data-sem-axis, data-sem-sign, data-sem-min / -max / -step; arrow
+keys too) and emits beh:Size."""@en .
+beh:x a owl:DatatypeProperty ; rdfs:range xsd:integer .
+beh:y a owl:DatatypeProperty ; rdfs:range xsd:integer .
+beh:width a owl:DatatypeProperty ; rdfs:range xsd:integer .
+beh:height a owl:DatatypeProperty ; rdfs:range xsd:integer .
+beh:size a owl:DatatypeProperty ; rdfs:range xsd:integer .
+beh:extent a owl:DatatypeProperty ; rdfs:range xsd:integer .
+beh:onto a owl:ObjectProperty ; rdfs:domain beh:Event ;
+    rdfs:comment "Where a gesture was let go: the rendered element under the pointer that takes back what was moved (a tab list, for a window torn from it)."@en .
+
+beh:target a owl:ObjectProperty ; rdfs:domain beh:Event ; rdfs:comment "The component instance the event is addressed to."@en .
+beh:node a owl:ObjectProperty ; rdfs:domain beh:Event ;
+    rdfs:comment "The RDF/HTML node the interaction hit (nearest rendered element), for reactions that care where inside a component it happened."@en .
+beh:value a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:comment "The control's value after the interaction."@en .
+beh:modifiers a owl:DatatypeProperty ; rdfs:domain beh:Event ;
+    rdfs:comment "The modifier keys held during a click, or during the press that moved the focus, ordered as in a key combination (\"shift\", \"mod+shift\"); absent when none was."@en .
+beh:checked a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:range xsd:boolean .
+beh:sequence a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:range xsd:integer .
+beh:at a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:range xsd:dateTime .
+beh:handledBy a owl:ObjectProperty ; rdfs:domain beh:Event ; rdfs:range beh:Reaction .
+
+beh:added a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:range xsd:integer ;
+    rdfs:comment "Number of input-graph triples the event's reactions added."@en .
+beh:removed a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:range xsd:integer ;
+    rdfs:comment "Number of input-graph triples the event's reactions removed."@en .
+
+# --- The change log (LDES) ---------------------------------------------------------
+# An event becomes a member (`beh:ChangeLog tree:member <event>`) once its
+# reactions have been applied and its effect recorded; members are never
+# modified afterwards. The retention policy below bounds the log.
+
+beh:ChangeLog a ldes:EventStream ;
+    rdfs:label "UI interactions and the state changes they caused"@en ;
+    ldes:timestampPath beh:at ;
+    ldes:sequencePath beh:sequence ;
+    tree:shape beh:EventShape ;
+    tree:view beh:ChangeLogView .
+
+beh:ChangeLogView a tree:Node ;
+    ldes:retentionPolicy beh:ChangeLogRetention .
+
+# The log is bounded by member count, so neither memory nor anything that
+# aggregates over it (c:StreamStats, the inspector) grows with the session.
+# Set ldes:amount on the policy (in the app graph) to change the bound; an
+# ldes:DurationAgoPolicy (tree:value "PT10M") bounds by age instead. With
+# several policies a member is kept while any of them keeps it (LDES semantics).
+beh:ChangeLogRetention a beh:LatestMembersPolicy ;
+    ldes:amount 200 .
+
+beh:LatestMembersPolicy a owl:Class ;
+    rdfs:subClassOf ldes:RetentionPolicy ;
+    rdfs:comment "Keeps the ldes:amount most recent members of the stream (by its sequence path)."@en .
+
+# Constant-time access to the head of the log: the stream names its newest
+# member, and each member names the one before it (written once, with the
+# member). Reading the N newest members is N steps whatever the log's length.
+beh:latest a owl:ObjectProperty ; rdfs:domain ldes:EventStream ; rdfs:range beh:Event ;
+    rdfs:comment "The stream's most recent member."@en .
+beh:previous a owl:ObjectProperty ; rdfs:domain beh:Event ; rdfs:range beh:Event ;
+    rdfs:comment "The member appended to the same stream immediately before this one."@en .
+
+beh:EventShape a sh:NodeShape ;
+    sh:targetClass beh:Event ;
+    sh:property [ sh:path beh:target ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path beh:at ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:dateTime ] ,
+                [ sh:path beh:sequence ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:node ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path beh:value ; sh:maxCount 1 ; sh:datatype xsd:string ] ,
+                [ sh:path beh:checked ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path beh:x ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:y ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:onto ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path beh:width ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:height ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:size ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:extent ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:handledBy ; sh:class beh:Reaction ] ,
+                [ sh:path beh:previous ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path beh:raisedBy ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path beh:added ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ] ,
+                [ sh:path beh:removed ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ] .
+
+# --- Reactions ---------------------------------------------------------------------
+
+beh:Reaction a owl:Class ;
+    rdfs:comment """Turns an event into a change of state. Matches on beh:when (event class)
+and beh:source (an instance) or beh:sourceClass (a component class). The body is a
+pair of SPARQL CONSTRUCTs - beh:deletes and beh:inserts - in which $event is the
+event and $this its target, or a registered function (sem:function). A reaction
+may carry both; the function is used where SPARQL is unavailable or not preferred."""@en .
+beh:when a owl:ObjectProperty ; rdfs:domain beh:Reaction .
+beh:source a owl:ObjectProperty ; rdfs:domain beh:Reaction .
+beh:sourceClass a owl:ObjectProperty ; rdfs:domain beh:Reaction .
+beh:deletes a owl:DatatypeProperty ; rdfs:domain beh:Reaction .
+beh:inserts a owl:DatatypeProperty ; rdfs:domain beh:Reaction .
+
+# --- Undo (docs/IVM.md §16) ------------------------------------------------------------
+# A reaction marked beh:undoable has its effective change recorded on the event's member:
+# beh:asserted and beh:retracted name rdf:Statement nodes minted under it (retired with it).
+# Activating a beh:Undoer applies the opposite of the latest recorded change that is not undone
+# and still applies (what it added is all there, what it removed all absent): a change later ones
+# overlapped is skipped rather than forced. The undone member is remembered as state on the log
+# (beh:undone), forgotten once the log retires it.
+
+beh:undoable a owl:DatatypeProperty ; rdfs:domain beh:Reaction ; rdfs:range xsd:boolean ;
+    rdfs:comment "True: what this reaction changes is recorded on the event's log member, so a beh:Undoer can undo it."@en .
+beh:asserted a owl:ObjectProperty ; rdfs:domain beh:Event ; rdfs:range rdf:Statement ;
+    rdfs:comment "A triple an undoable reaction of this event added (the effective change only)."@en .
+beh:retracted a owl:ObjectProperty ; rdfs:domain beh:Event ; rdfs:range rdf:Statement ;
+    rdfs:comment "A triple an undoable reaction of this event removed."@en .
+beh:undone a owl:ObjectProperty ; rdfs:domain ldes:EventStream ; rdfs:range beh:Event ;
+    rdfs:comment "A member of the log whose recorded change was undone (state, in the input graph)."@en .
+beh:Undoer a owl:Class ;
+    rdfs:label "undo"@en , "скасувати"@uk , "rückgängig"@de , "تراجع"@ar ;
+    rdfs:comment "A component (e.g. a c:Button that is also a beh:Undoer, with key:shortcut \"mod+z\") that undoes, when clicked, the latest undoable change of its beh:log (default beh:ChangeLog)."@en .
+beh:log a owl:ObjectProperty ; rdfs:domain beh:Undoer ; rdfs:range ldes:EventStream .
+
+beh:UndoLatest a beh:Reaction ;
+    rdfs:label "Undo the latest change"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass beh:Undoer ;
+    beh:deletes """CONSTRUCT { ?s ?p ?o . ?log beh:undone ?gone } WHERE {
+  {
+    { SELECT ?log (MAX(?n) AS ?latest) WHERE {
+      $this a beh:Undoer .
+      OPTIONAL { $this beh:log ?own } BIND(COALESCE(?own, beh:ChangeLog) AS ?log)
+      ?log tree:member ?m . ?m beh:sequence ?n .
+      FILTER EXISTS { ?m beh:asserted|beh:retracted ?anything }
+      FILTER NOT EXISTS { ?log beh:undone ?m }
+      FILTER NOT EXISTS { ?m beh:asserted ?a . ?a rdf:subject ?as ; rdf:predicate ?ap ; rdf:object ?ao . FILTER NOT EXISTS { ?as ?ap ?ao } }
+      FILTER NOT EXISTS { ?m beh:retracted ?r . ?r rdf:subject ?rs ; rdf:predicate ?rp ; rdf:object ?ro . ?rs ?rp ?ro }
+    } GROUP BY ?log }
+    ?log tree:member ?m . ?m beh:sequence ?latest ; beh:asserted ?st .
+    ?st rdf:subject ?s ; rdf:predicate ?p ; rdf:object ?o .
+  } UNION {
+    $this a beh:Undoer .
+    OPTIONAL { $this beh:log ?own } BIND(COALESCE(?own, beh:ChangeLog) AS ?log)
+    ?log beh:undone ?gone FILTER NOT EXISTS { ?log tree:member ?gone }
+  }
+}""" ;
+    beh:inserts """CONSTRUCT { ?s ?p ?o . ?log beh:undone ?m } WHERE {
+  { SELECT ?log (MAX(?n) AS ?latest) WHERE {
+      $this a beh:Undoer .
+      OPTIONAL { $this beh:log ?own } BIND(COALESCE(?own, beh:ChangeLog) AS ?log)
+      ?log tree:member ?m . ?m beh:sequence ?n .
+      FILTER EXISTS { ?m beh:asserted|beh:retracted ?anything }
+      FILTER NOT EXISTS { ?log beh:undone ?m }
+      FILTER NOT EXISTS { ?m beh:asserted ?a . ?a rdf:subject ?as ; rdf:predicate ?ap ; rdf:object ?ao . FILTER NOT EXISTS { ?as ?ap ?ao } }
+      FILTER NOT EXISTS { ?m beh:retracted ?r . ?r rdf:subject ?rs ; rdf:predicate ?rp ; rdf:object ?ro . ?rs ?rp ?ro }
+  } GROUP BY ?log }
+  ?log tree:member ?m . ?m beh:sequence ?latest .
+  OPTIONAL { ?m beh:retracted ?st . ?st rdf:subject ?s ; rdf:predicate ?p ; rdf:object ?o }
+}""" ;
+    sem:function "beh:undo-latest" .

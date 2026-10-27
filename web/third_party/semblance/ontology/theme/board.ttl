@@ -1,0 +1,115 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Default theme for the board (ontology/components/board.ttl): lanes as sunken columns that wrap
+# to one per row on a narrow screen, cards as raised tiles. Logical properties throughout, so
+# a right-to-left page mirrors the board; the move arrows mirror with it.
+
+# A refused move shakes the card; its duration is a motion token, so the motion layer stills it.
+[] a sty:Keyframes ; sty:name "sem-shake" ;
+    sty:step [ sty:at "0%, 100%" ; sty:declares [ sty:property "transform" ; sty:raw "translateX(0)" ] ] ,
+             [ sty:at "25%" ; sty:declares [ sty:property "transform" ; sty:raw "translateX(-4px)" ] ] ,
+             [ sty:at "75%" ; sty:declares [ sty:property "transform" ; sty:raw "translateX(4px)" ] ] .
+
+# --- the board and its lanes ---
+[] a sty:StyleRule ; sty:appliesTo c:Board ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fit, minmax(min(15rem, 100%), 1fr))" ] ,
+                 [ sty:property "align-items" ; sty:raw "start" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+# Lanes are columns whose parts line up (as pos:AlignedColumns lays out a container's columns,
+# ontology/layers/position.ttl): each lane takes two of the board's rows - its header, its cards -
+# so a header that wraps sets the header row for every lane on its line, and their lists start
+# together. Wrapped lanes start rows of their own; on a phone each lane is a stack again.
+[] a sty:StyleRule ; sty:appliesTo c:Board ; sty:part "> .sem-lane" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-row" ; sty:raw "span 2" ] ,
+                 [ sty:property "grid-template-rows" ; sty:raw "subgrid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "padding" ; sty:token tok:space-3 ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-card ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Board ; sty:part "> .sem-lane.sem-full" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:warning-6 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Board ; sty:part "> .sem-lane > header" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "justify-content" ; sty:raw "space-between" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding-inline" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Board ; sty:part "> .sem-lane > header > h3" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.04em" ] .
+# The list fills its lane's row (lanes on a line share it), and its cards stay at its top.
+[] a sty:StyleRule ; sty:appliesTo c:Board ; sty:part "> .sem-lane > ul" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "align-content" ; sty:raw "start" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "min-height" ; sty:raw "3.5rem" ] .
+# An empty lane is a dashed drop zone.
+[] a sty:StyleRule ; sty:appliesTo c:Board ; sty:part "> .sem-lane > ul:empty" ;
+    sty:declares [ sty:property "border" ; sty:raw "1px dashed var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] .
+
+# --- a card ---
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding" ; sty:raw "10px 12px" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-1 ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-duration-fast) var(--sem-ease), box-shadow var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:state ".sem-refused" ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-shake var(--sem-duration-slow) var(--sem-ease)" ] ,
+                 [ sty:property "border-color" ; sty:token tok:warning-6 ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part "> .sem-card-head" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "flex-start" ] ,
+                 [ sty:property "justify-content" ; sty:raw "space-between" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part ".sem-title" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part "> .sem-card-foot" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "min-height" ; sty:raw "28px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part ".sem-person" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part ".sem-moves" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part ".sem-step" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] .
+# Right to left, "previous" is on the right: the arrows point the way the card goes.
+[] a sty:StyleRule ; sty:appliesTo c:BoardCard ; sty:part ".sem-step:dir(rtl)" ;
+    sty:declares [ sty:property "transform" ; sty:raw "scaleX(-1)" ] .

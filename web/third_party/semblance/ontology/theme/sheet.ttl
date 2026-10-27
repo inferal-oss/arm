@@ -1,0 +1,127 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for sheets (ontology/components/sheet.ttl): a 44px row header, 104 × 36 cells, and
+# a connector layer over the grid for the dependency arrows (drawn where the cells are). A wide
+# sheet scrolls in place.
+
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part "> .sem-sheet-tools" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ".sem-sheet-bar" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "34px" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "font" ; sty:raw "13px/1.4 var(--sem-font-mono)" ] ,
+                 [ sty:property "white-space" ; sty:raw "pre-wrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ".sem-sheet-status" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ".sem-sheet-scroll" ;
+    sty:declares [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "padding-inline-end" ; sty:raw "56px" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ".sem-sheet-grid" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-rows" ; sty:raw "30px" ] ,
+                 [ sty:property "grid-auto-rows" ; sty:raw "36px" ] ,
+                 [ sty:property "width" ; sty:raw "max-content" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ":is(.sem-sheet-head, .sem-sheet-corner)" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "600 12px var(--sem-font-mono)" ] ,
+                 [ sty:property "border-right" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ".sem-sheet-corner" ;
+    sty:declares [ sty:property "grid-row" ; sty:raw "1" ] ,
+                 [ sty:property "grid-column" ; sty:raw "1" ] .
+# The connector layer over the grid: the dependency arrows (c:Connector s) fill it.
+[] a sty:StyleRule ; sty:appliesTo c:Sheet ; sty:part ".sem-sheet-links" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "border-right" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "font" ; sty:raw "13px var(--sem-font-mono)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:part ":is(input, output)" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "padding" ; sty:raw "0 8px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-numeric]" ; sty:part ":is(input, output)" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "end" ] ,
+                 [ sty:property "justify-content" ; sty:raw "flex-end" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-kind=formula]" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft) 35%, transparent)" ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "cursor" ; sty:raw "default" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:part "input:focus" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-selected]" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 2px var(--sem-accent)" ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] .
+# A cell the last change recalculated flashes; the two names restart the flash on every change.
+[] a sty:Keyframes ; sty:name "sem-recalc-a" ;
+    sty:step [ sty:at "0%" ; sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-warning-9, #f59f00) 45%, transparent)" ] ] ,
+             [ sty:at "100%" ; sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft) 35%, transparent)" ] ] .
+[] a sty:Keyframes ; sty:name "sem-recalc-b" ;
+    sty:step [ sty:at "0%" ; sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-warning-9, #f59f00) 45%, transparent)" ] ] ,
+             [ sty:at "100%" ; sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft) 35%, transparent)" ] ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-recalculated=odd]" ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-recalc-a var(--sem-duration-slow) var(--sem-ease-out) 3" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-recalculated=even]" ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-recalc-b var(--sem-duration-slow) var(--sem-ease-out) 3" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-kind=formula]::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"ƒ\"" ] ,
+                 [ sty:property "padding-inline-start" ; sty:raw "6px" ] ,
+                 [ sty:property "font-size" ; sty:raw "10px" ] ,
+                 [ sty:property "color" ; sty:token tok:faint ] .
+# A selected range (more than one cell): its cells tinted, a line along its edges (logical, so its
+# start follows the reading direction), over the cells' own borders.
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-range]" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent) 14%, transparent)" ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-range]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0 solid var(--sem-accent)" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-range~=top]::after" ;
+    sty:declares [ sty:property "border-top-width" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-range~=bottom]::after" ;
+    sty:declares [ sty:property "border-bottom-width" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-range~=start]::after" ;
+    sty:declares [ sty:property "border-inline-start-width" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SheetCell ; sty:state "[data-sem-range~=end]::after" ;
+    sty:declares [ sty:property "border-inline-end-width" ; sty:raw "2px" ] .

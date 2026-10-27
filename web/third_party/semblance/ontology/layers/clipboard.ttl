@@ -1,0 +1,203 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix clip: <https://semblance.dev/ns/clipboard#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Copying to the clipboard. Text to copy is graph data: some node's value of some property (an
+# editor's c:value, a code sample's c:label, or what rules derive on a component's rendered root:
+# a result table's c:markdown). Any activatable
+# component that is also a clip:Copier (`a c:IconButton, clip:Copier`) copies it when activated:
+#
+#   1. The click is an event; a reaction records what to copy as a clip:Request (its clip:text,
+#      who asked, what to say when it is done) in the graph.
+#   2. The clipboard effect (src/clipboard.ts) sees the request, writes its text with the host's
+#      clipboard (navigator.clipboard.writeText, in the same task as the click, while the page
+#      still has the person's activation; tests inject their own), and reports how it went as an
+#      event addressed to the copier: clip:Copied or clip:CopyFailed. Where there is no
+#      clipboard (an insecure page, Node), the write fails, and says so.
+#   3. Reactions to that event retire the request and record the outcome on the copier
+#      (clip:outcome) until the event's clip:until (as beh:dueAt; the beh:Due event clears it).
+#      The effect stamps clip:until from the copier's clip:shownFor: SPARQL engines do not all
+#      add durations to times (Semblance's WASM engine does not yet). The announcements
+#      layer says it in a toast: what the request says (its format's clip:copiedPhrase, "Copied as
+#      Markdown"), or that it could not copy.
+#   4. While the outcome is recorded, the copier shows its glyph (✓ or ✕) instead of its own
+#      (clip:icon, default ⧉): the rule below derives the copier's c:icon, which any component
+#      that shows c:icon (c:IconButton, c:Button) shows.
+#
+# Do not give a copier a c:icon of its own: give it clip:icon. Its c:label is its accessible name.
+
+<https://semblance.dev/ns/clipboard> a owl:Ontology ;
+    rdfs:label "Semblance clipboard"@en .
+
+clip:Copier a owl:Class ;
+    rdfs:label "Copier"@en , "Копіювальник"@uk , "Kopierer"@de , "ناسخ"@ar ;
+    rdfs:comment """Mixin: activating the component copies text to the clipboard - the value of clip:property on the
+node it clip:copies, as clip:format says (plain text by default). Activation is a click, so a
+button is keyboard accessible by construction (Enter, Space, a key:shortcut). For a moment after,
+it shows how it went (clip:outcome) as its glyph, and a toast says it. Not while c:disabled."""@en .
+clip:copies a owl:ObjectProperty ; rdfs:domain clip:Copier ;
+    rdfs:label "copies"@en , "копіює"@uk , "kopiert"@de , "ينسخ"@ar ;
+    rdfs:comment "The node whose value a copier copies (e.g. a c:ResultTable, a c:QueryEditor, a c:Code)."@en .
+clip:property a owl:ObjectProperty ; rdfs:domain clip:Copier ; rdfs:range rdf:Property ;
+    rdfs:comment """Which value of the copied node is copied (c:value, c:label, c:markdown): read when it is
+activated, from the node, or from its rendered root (sem:renders), where the rules above a
+component put what they derive about it (a c:ResultTable's c:markdown). Of several values, the
+least by code point."""@en .
+clip:format a owl:ObjectProperty ; rdfs:domain clip:Copier ; rdfs:range clip:Format ;
+    rdfs:comment "What the copied text is (default clip:PlainText): says how a copy is announced."@en .
+clip:shownFor a owl:DatatypeProperty ; rdfs:domain clip:Copier ; rdfs:range xsd:dayTimeDuration ;
+    rdfs:comment "How long a copier shows how its copy went (default PT1.5S)."@en .
+clip:icon a owl:DatatypeProperty ; rdfs:domain clip:Copier ;
+    rdfs:comment "The copier's glyph at rest (default ⧉). Its c:icon is derived from it and from clip:outcome."@en .
+
+# --- formats ---------------------------------------------------------------------------------------
+
+clip:Format a owl:Class ;
+    rdfs:comment "A kind of text one copies, with what to say once it is copied (clip:copiedPhrase)."@en .
+clip:copiedPhrase a owl:DatatypeProperty ; rdfs:domain clip:Format ;
+    rdfs:comment "What a toast says once text of this format is copied, per language."@en .
+clip:PlainText a clip:Format ; rdfs:label "text"@en , "текст"@uk , "Text"@de , "نص"@ar ;
+    clip:copiedPhrase "Copied"@en , "Скопійовано"@uk , "Kopiert"@de , "تم النسخ"@ar .
+clip:Markdown a clip:Format ; rdfs:label "Markdown" ;
+    clip:copiedPhrase "Copied as Markdown"@en , "Скопійовано як Markdown"@uk , "Als Markdown kopiert"@de , "تم النسخ بصيغة Markdown"@ar .
+clip:Turtle a clip:Format ; rdfs:label "Turtle" ;
+    clip:copiedPhrase "Copied as Turtle"@en , "Скопійовано як Turtle"@uk , "Als Turtle kopiert"@de , "تم النسخ بصيغة Turtle"@ar .
+clip:Sparql a clip:Format ; rdfs:label "SPARQL" ;
+    clip:copiedPhrase "Copied the query"@en , "Запит скопійовано"@uk , "Abfrage kopiert"@de , "تم نسخ الاستعلام"@ar .
+
+# --- requests and outcomes -------------------------------------------------------------------------
+
+clip:Request a owl:Class ;
+    rdfs:comment """Text to put on the clipboard (clip:text), asked for by a copier (clip:requestedBy), with what to
+say once it is there (clip:says). The clipboard effect performs it when it appears; the reaction to
+its outcome removes it. Minted per activation: <copier>/~copy-<event sequence>."""@en .
+clip:text a owl:DatatypeProperty ; rdfs:domain clip:Request ; rdfs:comment "The text to copy."@en .
+clip:requestedBy a owl:ObjectProperty ; rdfs:domain clip:Request ; rdfs:range clip:Copier ;
+    rdfs:comment "The copier that asked: the outcome's event is addressed to it."@en .
+clip:says a owl:DatatypeProperty ;
+    rdfs:comment "On a request, and on the clip:Copied event that reports it: what to announce (language-tagged)."@en .
+clip:request a owl:ObjectProperty ; rdfs:range clip:Request ;
+    rdfs:comment "On a clip:Copied or clip:CopyFailed event: the request it reports."@en .
+clip:until a owl:DatatypeProperty ; rdfs:range xsd:dateTime ;
+    rdfs:comment "On a clip:Copied or clip:CopyFailed event: until when the copier shows the outcome (the event's time plus its clip:shownFor)."@en .
+clip:reason a owl:DatatypeProperty ;
+    rdfs:comment "On a clip:CopyFailed event: why the host could not write (its error message)."@en .
+
+clip:Copied a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Copied"@en , "Скопійовано"@uk , "Kopiert"@de , "تم النسخ"@ar ;
+    rdfs:comment "The host wrote a request's text to the clipboard (addressed to the copier)."@en .
+clip:CopyFailed a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Copy failed"@en , "Не скопійовано"@uk , "Kopieren fehlgeschlagen"@de , "فشل النسخ"@ar ;
+    rdfs:comment "The host could not write a request's text: no clipboard, or it refused (clip:reason)."@en .
+
+clip:outcome a owl:ObjectProperty ; rdfs:domain clip:Copier ; rdfs:range clip:Outcome ;
+    rdfs:comment "How the copier's last copy went, for a moment after it (cleared when its beh:dueAt comes)."@en .
+clip:Outcome a owl:Class ; rdfs:comment "How a copy went, with the glyph a copier shows meanwhile (clip:glyph)."@en .
+clip:glyph a owl:DatatypeProperty ; rdfs:domain clip:Outcome .
+clip:Success a clip:Outcome ; rdfs:label "copied"@en , "скопійовано"@uk , "kopiert"@de , "تم النسخ"@ar ; clip:glyph "✓" .
+clip:Failure a clip:Outcome ; rdfs:label "not copied"@en , "не скопійовано"@uk , "nicht kopiert"@de , "لم يُنسخ"@ar ; clip:glyph "✕" .
+
+# --- the copier's glyph ----------------------------------------------------------------------------
+# Before components render (stratum -5), so the component that shows c:icon shows this one.
+
+clip:Glyph a sem:Rendering ;
+    rdfs:comment "A copier's c:icon: its outcome's glyph while one is recorded, else its clip:icon (default ⧉)."@en ;
+    sem:targets clip:Copier ;
+    sem:stratum -5 ;
+    sem:inputOnly true ;
+    sem:watches rdf:type , clip:icon , clip:outcome .
+clip:Glyph-fn a sem:Rule ; sem:implements clip:Glyph ; sem:function "clipboard:glyph" .
+clip:Glyph-sparql a sem:Rule ;
+    sem:implements clip:Glyph ;
+    sem:construct """
+CONSTRUCT { $this c:icon ?glyph }
+WHERE {
+  $this a clip:Copier .
+  OPTIONAL { $this clip:outcome ?outcome . ?outcome clip:glyph ?shown }
+  OPTIONAL { $this clip:icon ?rest }
+  BIND(STR(COALESCE(?shown, ?rest, "⧉")) AS ?glyph)
+}""" .
+
+# --- reactions -------------------------------------------------------------------------------------
+
+# Activating a copier asks for its text to be copied: a new request (the previous one, and the
+# outcome still shown, go). Nothing to copy (no value yet): nothing happens.
+clip:Copy a beh:Reaction ;
+    rdfs:label "Copy to the clipboard"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass clip:Copier ;
+    beh:deletes """
+CONSTRUCT { ?request ?p ?o . $this clip:outcome ?outcome ; beh:dueAt ?due }
+WHERE {
+  FILTER NOT EXISTS { $this c:disabled true }
+  $this clip:copies ?node ; clip:property ?property .
+  FILTER EXISTS { { ?node ?property ?value } UNION { ?root sem:renders ?node ; ?property ?value } }
+  { ?request clip:requestedBy $this ; ?p ?o } UNION { $this clip:outcome ?outcome } UNION { $this beh:dueAt ?due }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?request a clip:Request ; clip:text ?text ; clip:requestedBy $this ; clip:says ?phrase }
+WHERE {
+  FILTER NOT EXISTS { $this c:disabled true }
+  $this clip:copies ?node ; clip:property ?property .
+  { ?node ?property ?value } UNION { ?root sem:renders ?node ; ?property ?value }
+  FILTER NOT EXISTS { { ?node ?property ?other } UNION { ?shown sem:renders ?node ; ?property ?other } FILTER(STR(?other) < STR(?value)) }
+  BIND(STR(?value) AS ?text)
+  $event beh:sequence ?sequence .
+  BIND(IRI(CONCAT(STR($this), "/~copy-", STR(?sequence))) AS ?request)
+  OPTIONAL { $this clip:format ?chosen }
+  BIND(COALESCE(?chosen, clip:PlainText) AS ?format)
+  OPTIONAL { ?format clip:copiedPhrase ?phrase }
+}""" ;
+    sem:function "clipboard:copy" .
+
+# The text is on the clipboard: the request goes, the copier shows ✓ for a moment, and a toast
+# says what the request said.
+clip:Done a beh:Reaction ;
+    rdfs:label "Copied"@en ;
+    beh:when clip:Copied ;
+    beh:sourceClass clip:Copier ;
+    ann:announcesFrom clip:says ;
+    ann:announces "Copied"@en , "Скопійовано"@uk , "Kopiert"@de , "تم النسخ"@ar ;
+    ann:tone sty:Success ;
+    beh:deletes """
+CONSTRUCT { ?request ?p ?o . $this clip:outcome ?outcome ; beh:dueAt ?due }
+WHERE {
+  { $event clip:request ?request . ?request ?p ?o } UNION { $this clip:outcome ?outcome } UNION { $this beh:dueAt ?due }
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this clip:outcome clip:Success ; beh:dueAt ?until }
+WHERE { $event clip:until ?until }""" ;
+    sem:function "clipboard:done" .
+
+# The host could not write: the request goes, the copier shows ✕ for a moment, and a toast says so.
+clip:Fail a beh:Reaction ;
+    rdfs:label "Could not copy"@en ;
+    beh:when clip:CopyFailed ;
+    beh:sourceClass clip:Copier ;
+    ann:announces "Could not copy to the clipboard"@en , "Не вдалося скопіювати в буфер обміну"@uk ,
+        "Konnte nicht in die Zwischenablage kopieren"@de , "تعذّر النسخ إلى الحافظة"@ar ;
+    ann:tone sty:Danger ;
+    beh:deletes """
+CONSTRUCT { ?request ?p ?o . $this clip:outcome ?outcome ; beh:dueAt ?due }
+WHERE {
+  { $event clip:request ?request . ?request ?p ?o } UNION { $this clip:outcome ?outcome } UNION { $this beh:dueAt ?due }
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this clip:outcome clip:Failure ; beh:dueAt ?until }
+WHERE { $event clip:until ?until }""" ;
+    sem:function "clipboard:fail" .
+
+# The moment is over: the copier shows its own glyph again.
+clip:Settle a beh:Reaction ;
+    rdfs:label "Show the copier's glyph again"@en ;
+    beh:when beh:Due ;
+    beh:sourceClass clip:Copier ;
+    beh:deletes """CONSTRUCT { $this clip:outcome ?outcome } WHERE { $this clip:outcome ?outcome }""" ;
+    sem:function "clipboard:settle" .

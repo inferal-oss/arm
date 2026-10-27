@@ -87,10 +87,10 @@ func TestKubernetesInventoryEmbeddedAndBrowserScope(t *testing.T) {
 	s := &Server{authority: "127.0.0.1:12345"}
 	mux := http.NewServeMux()
 	s.registerBrowser(mux)
-	r := httptest.NewRequest("GET", "http://"+s.authority+"/kube-inventory.mjs", nil)
+	r := httptest.NewRequest("GET", "http://"+s.authority+"/assets/arm.mjs", nil)
 	w := httptest.NewRecorder()
 	mux.ServeHTTP(w, r)
-	if w.Code != http.StatusOK || !strings.Contains(w.Body.String(), "createKubeInventory") {
+	if w.Code != http.StatusOK || !strings.Contains(w.Body.String(), "kube_nodes") {
 		t.Fatalf("embedded Kubernetes inventory unavailable: %d", w.Code)
 	}
 	for _, operation := range []string{"kube_contexts", "kube_nodes"} {

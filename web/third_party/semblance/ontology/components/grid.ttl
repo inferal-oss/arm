@@ -1,0 +1,1225 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix iv: <https://semblance.dev/ns/view#> .
+@prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
+
+# The data grid (an inspector's request list, a log viewer, an event browser, a trace viewer):
+# the members of a collection as rows under declared columns, and the time axis of its
+# waterfall columns. Everything a person changes is graph state on the grid or its columns,
+# written by reactions: the sort (c:sortColumn, c:sortDescending), the selected member
+# (c:selectedRow), which columns show (c:shows, e.g. through a c:Chips), their widths
+# (c:width), and the window: following the newest members (c:followTail) or pinned at a
+# sequence (c:windowEnd). Filters are data too (c:TextFilter, c:ValueFilter, c:FlagFilter),
+# edited by ordinary controls and honoured by the grid it is c:filteredBy.
+#
+# A grid is three rules on one focus, so a change costs what it touches:
+#   c:DataGridRendering  the frame: header (sort buttons, resize separators, time axes), the
+#                        visible columns (on <grid>/~cols, which rows follow); never the rows
+#   c:DataGridWindow     which members are rows, in which order; the scale; the footer
+#   c:GridRowRendering   each row (a minted c:GridRow), from its member and the visible columns
+# A new member costs one window evaluation (bounded by the collection, itself bounded by its
+# retention policy) and one row; a member changing in place (a response arriving) re-renders
+# its row only.
+
+# --- shared by the inspection components (grid, panes, payload, toolbar) -----------------------
+# A collection is a node and the property that links it to its members (tree:member by default:
+# an LDES stream's members). The grid shows them as rows; a count badge counts them.
+
+c:collection a owl:ObjectProperty ;
+    rdfs:comment "The node whose members a component shows or counts (an ldes:EventStream, a list's owner...)."@en .
+c:memberProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "What links c:collection to its members (default tree:member)."@en .
+c:via a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "A hop taken before reading a value: from a row (or a viewed subject) through this property first (e.g. http:resp, to read from the response)."@en .
+c:swatch a owl:ObjectProperty ; rdfs:range sty:Token ;
+    rdfs:comment "On a category (an individual such as a kind): the color it is drawn in, a token (a series color: categories are not states)."@en .
+
+c:Unsetter a owl:Class ;
+    rdfs:comment """Mixin: activating the component removes c:property of the node it c:controls (the
+counterpart of c:Setter: a Deselect, a Clear)."""@en .
+c:UnsetterUnset a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Unsetter ;
+    beh:deletes """CONSTRUCT { ?n ?p ?old } WHERE { $this c:controls ?n ; c:property ?p . ?n ?p ?old . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    sem:function "grid:unset" .
+
+# --- vocabulary -------------------------------------------------------------------------------------
+
+c:DataGrid a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Data grid"@en , "Таблиця даних"@uk , "Datenraster"@de , "شبكة البيانات"@ar ;
+    rdfs:comment """The members of c:collection (through c:memberProperty, default tree:member; only
+c:memberClass instances when given) as rows (role=grid) under c:gridColumns (an rdf:List of
+c:GridColumn), the c:shows ones visible (all when it names none). Members are taken in capture
+order - their numeric c:sequenceProperty, else the collection's ldes:sequencePath; members without
+one are not rows - after the filters it is c:filteredBy; the window is the c:pageSize (50) of them
+ending at the newest (c:followTail, the default) or at c:windowEnd. Among them, rows sort by
+c:sortColumn (c:sortDescending), missing values last. Clicking a row (or arrow keys) selects its
+member (c:selectedRow) and pins the window; the footer counts, follows, jumps to the latest and
+pages older / newer. c:label names it; c:emptyText shows when no member matches. A grid that is a
+dnd:DragSource makes each row a draggable carrying its member (drop targets elsewhere receive it)."""@en ;
+    sem:slug "data-grid" ;
+    key:navigation key:GridNavigation .
+c:GridColumn a owl:Class ;
+    rdfs:subClassOf c:Column ;
+    rdfs:comment """A data grid column: a header (c:label), what each cell shows (c:cellProperty of the row,
+or of the node c:via leads to; c:detailProperty as a second line), how (c:cellAs), c:align, whether
+its header sorts (c:sortable, default true) and its c:width in px (graph state, set by dragging the
+header's edge). A time bar column reads c:startProperty / c:endProperty and colors its bars by the
+c:swatch (else sty:tone) of the value of c:colorProperty."""@en .
+c:gridColumns a owl:ObjectProperty ; rdfs:domain c:DataGrid ; rdfs:range rdf:List ;
+    rdfs:comment "The columns, in order (c:GridColumn nodes)."@en .
+c:shows a owl:ObjectProperty ; rdfs:domain c:DataGrid ; rdfs:range c:GridColumn ;
+    rdfs:label "Columns"@en , "Стовпці"@uk , "Spalten"@de , "الأعمدة"@ar ;
+    rdfs:comment "A column that is shown (absent altogether: every column). A c:Chips over it is the grid's display preferences."@en .
+c:cellProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "What a column's cells show: this property of the row (or of the node c:via leads to)."@en .
+c:cellAs a owl:ObjectProperty ; rdfs:range c:CellKind ; rdfs:comment "How a column's cells show their value (default c:TextCell)."@en .
+c:CellKind a owl:Class .
+c:TextCell a c:CellKind ; rdfs:comment "The value as text (an IRI by its label), with c:detailProperty as a second line."@en .
+c:BadgeCell a c:CellKind ; rdfs:comment "The value (an individual) as a small badge in its sty:tone."@en .
+c:CodeCell a c:CellKind ; rdfs:comment "The value in monospace."@en .
+c:BytesCell a c:CellKind ; rdfs:comment "A number of bytes: B, KiB, MiB."@en .
+c:DurationCell a c:CellKind ; rdfs:comment "c:endProperty minus c:startProperty, in ms or s; … while it has no end."@en .
+c:TimeBarCell a c:CellKind ;
+    rdfs:comment "A bar from c:startProperty to c:endProperty on the grid's scale (open-ended: still running, to the scale's end); its header holds the c:TimeAxis."@en .
+c:startProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "When a span starts (a number, e.g. ms)."@en .
+c:endProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "When a span ends; absent while it is still going."@en .
+c:colorProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "A property whose value (a category or a state) colors a time bar."@en .
+c:sortable a owl:DatatypeProperty ; rdfs:range xsd:boolean ; rdfs:comment "Whether the column's header sorts (default true)."@en .
+c:sequenceProperty a owl:ObjectProperty ; rdfs:domain c:DataGrid ; rdfs:range rdf:Property ;
+    rdfs:comment "The members' capture order (numeric); default: the collection's ldes:sequencePath."@en .
+c:pageSize a owl:DatatypeProperty ; rdfs:domain c:DataGrid ; rdfs:range xsd:integer ; rdfs:comment "How many rows the window shows (default 50)."@en .
+c:selectedRow a owl:ObjectProperty ; rdfs:domain c:DataGrid ;
+    rdfs:label "Selected"@en , "Вибрано"@uk , "Ausgewählt"@de , "المحدد"@ar ;
+    rdfs:comment "The member whose row is selected; what detail views bind to (c:bindFrom the grid, c:bindProperty c:selectedRow)."@en .
+c:followTail a owl:DatatypeProperty ; rdfs:domain c:DataGrid ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether the window follows the newest members (default true); false pins it at c:windowEnd."@en .
+c:windowEnd a owl:DatatypeProperty ; rdfs:domain c:DataGrid ;
+    rdfs:comment "The sequence of the newest member a pinned window shows."@en .
+
+# Filters: nodes the grid is c:filteredBy, each a constraint on its rows that ordinary controls
+# edit (a c:SearchField over c:filterText, a c:Choice over c:filterValue, a c:ToggleSwitch over
+# c:included). A member is a row when it passes all of them.
+c:filteredBy a owl:ObjectProperty ; rdfs:domain c:DataGrid ; rdfs:range c:Filter .
+c:Filter a owl:Class ; rdfs:comment "A constraint on the rows of the grids that are c:filteredBy it."@en .
+c:TextFilter a owl:Class ; rdfs:subClassOf c:Filter ;
+    rdfs:comment "Rows some c:searches value of which contains c:filterText (case-insensitively); no text, no constraint."@en .
+c:ValueFilter a owl:Class ; rdfs:subClassOf c:Filter ;
+    rdfs:comment "Rows whose c:filterProperty has c:filterValue; c:AnyValue (or none), no constraint."@en .
+c:FlagFilter a owl:Class ; rdfs:subClassOf c:Filter ;
+    rdfs:comment "Rows whose c:filterProperty has c:filterValue are shown only while c:included is not false (a check box: \"Previous page loads\")."@en .
+c:filterText a owl:DatatypeProperty ; rdfs:domain c:TextFilter ; rdfs:label "Filter"@en , "Фільтр"@uk , "Filter"@de , "تصفية"@ar .
+c:searches a owl:ObjectProperty ; rdfs:domain c:TextFilter ; rdfs:range rdf:Property ; rdfs:comment "A property a text filter searches."@en .
+c:filterProperty a owl:ObjectProperty ; rdfs:range rdf:Property .
+c:filterValue a owl:ObjectProperty ; rdfs:label "Show"@en , "Показати"@uk , "Anzeigen"@de , "عرض"@ar .
+c:included a owl:DatatypeProperty ; rdfs:domain c:FlagFilter ; rdfs:range xsd:boolean .
+c:AnyValue a owl:NamedIndividual ; sem:order 0 ; rdfs:label "All"@en , "Усі"@uk , "Alle"@de , "الكل"@ar ;
+    rdfs:comment "The value of a c:ValueFilter that lets every row through."@en .
+
+# Minted by the window and read by the rows; markers on rendered elements.
+c:GridRow a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: one row of a c:DataGrid (c:of its member, c:inGrid the grid), minted by its window and placed by sem:orderKey."@en ;
+    sem:slug "grid-row" .
+# A row is a roving tab stop of its grid; dragged (a dnd:DragSource grid), it keeps that.
+c:GridRow dnd:keepsFocus true .
+c:inGrid a owl:ObjectProperty ; rdfs:domain c:GridRow .
+c:columnsFrom a owl:ObjectProperty ; rdfs:domain c:GridRow ; rdfs:comment "The grid's <grid>/~cols node, naming its c:visibleColumn s (the rows follow it)."@en .
+c:visibleColumn a owl:ObjectProperty .
+c:isSelected a owl:DatatypeProperty ; rdfs:domain c:GridRow ; rdfs:range xsd:boolean .
+c:tabStop a owl:DatatypeProperty ; rdfs:domain c:GridRow ; rdfs:range xsd:boolean ;
+    rdfs:comment "The row Tab enters the grid at: the selected one, else the first."@en .
+c:selectsRow a owl:ObjectProperty ; rdfs:comment "On a rendered row: the member that activating it selects (or deselects)."@en .
+c:resizes a owl:ObjectProperty ; rdfs:comment "On a rendered separator: the column whose c:width it sets."@en .
+c:windowTo a owl:DatatypeProperty ; rdfs:comment "On a rendered button: the sequence activating it pins the window at."@en .
+c:followsLatest a owl:DatatypeProperty ; rdfs:comment "On a rendered button: activating it follows the newest members again."@en .
+c:shownEnd a owl:DatatypeProperty ; rdfs:comment "On <grid>/~window: the sequence of the newest row shown (where selecting pins)."@en .
+
+c:TimeAxis a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Ticks across a time scale: c:start and c:end (ms; its own, or those of its c:scale node -
+a grid's <grid>/~scale), at the smallest of 1, 2, 5 × 10ⁿ ms that needs at most five steps,
+labelled in ms or s. The scale's span is a custom property (--span), each tick's offset --tick;
+the theme places them, so time bars on the same scale line up with them."""@en ;
+    sem:slug "time-axis" .
+c:scale a owl:ObjectProperty ; rdfs:range c:TimeScale .
+c:TimeScale a owl:Class ; rdfs:comment "A time range (c:start, c:end) bars and axes are drawn on."@en .
+c:start a owl:DatatypeProperty ; rdfs:range xsd:double .
+c:end a owl:DatatypeProperty ; rdfs:range xsd:double .
+
+# Arrow keys move among the rows; focusing one selects it (through the row's click reaction).
+key:GridNavigation a key:Navigation ; key:items "tbody > tr[role=row]" ; key:orientation key:Vertical ; key:activatesOnFocus true .
+
+# --- the frame ----------------------------------------------------------------------------------------
+# Header cells are placed by sem:orderKey (their column's position in c:gridColumns), so hiding a
+# column removes its cell without re-chaining the others. The SPARQL rule follows the shown
+# columns (a width changing re-renders the header); it ignores the grid's other state.
+
+c:DataGridRendering a sem:Rendering ; sem:targets c:DataGrid ; sem:stratum 0 ;
+    sem:follows c:shows ;
+    sem:watches rdf:type , c:gridColumns , c:shows , c:sortColumn , c:sortDescending , c:label , l10n:label , rdfs:label , c:width , c:cellAs , c:sortable , c:align .
+c:DataGridRendering-fn a sem:Rule ; sem:implements c:DataGridRendering ; sem:function "grid:frame" .
+c:DataGridRendering-sparql a sem:Rule ;
+    sem:implements c:DataGridRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?el a ?tag ; sem:renders ?renders ; rdfhtml:class ?cls ; rdfhtml:style ?style ; rdfhtml:scope ?scope ; rdfhtml:type ?type ;
+      rdfhtml:tabIndex ?tabIndex ; sem:orderKey ?orderKey ; c:sorts ?sorts ; c:resizes ?resizes ; c:scale ?scale .
+  ?parent rdfhtml:hasChild ?el .
+  ?prev ord:immediatelyPrecedes ?el .
+  ?owner rdfhtml:attribute ?attr . ?attr a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue ?value .
+  ?el rdfhtml:hasChild ?txt . ?txt a rdfhtml:Text ; rdfhtml:data ?data .
+  ?cols c:visibleColumn ?col .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:DataGrid .
+  BIND(STR($this) AS ?g)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?caption)
+  LATERAL {
+    {
+      # The frame: a scrolling table, its header row and body, and the footer.
+      VALUES (?local ?tag ?cls ?parentLocal ?prevLocal) {
+        ("root" rdfhtml:Div UNDEF UNDEF UNDEF) ("scroll" rdfhtml:Div "sem-scroll" "root" UNDEF)
+        ("footer" rdfhtml:Div "sem-grid-footer" "root" "scroll") ("table" rdfhtml:Table UNDEF "scroll" UNDEF)
+        ("head" rdfhtml:Thead UNDEF "table" UNDEF) ("body" rdfhtml:Tbody UNDEF "table" "head") ("head-row" rdfhtml:Tr UNDEF "head" UNDEF)
+      }
+      BIND(IRI(CONCAT(?g, "/~", ?local)) AS ?el)
+      BIND(IF(?local = "root", $this, ?none) AS ?renders)
+      BIND(IRI(CONCAT(?g, "/~", ?parentLocal)) AS ?parent)
+      BIND(IRI(CONCAT(?g, "/~", ?prevLocal)) AS ?prev)
+    } UNION {
+      VALUES (?ownerLocal ?name ?fixed) { ("table" "role" "grid") ("table" "aria-label" UNDEF) ("footer" "role" "status") }
+      BIND(COALESCE(?fixed, ?caption) AS ?value)
+      BIND(IRI(CONCAT(?g, "/~", ?ownerLocal)) AS ?owner)
+      BIND(IF(BOUND(?value), IRI(CONCAT(?g, "/~", ?ownerLocal, "-", ?name)), ?none) AS ?attr)
+    } UNION {
+      # Each shown column: its header cell (sort button or label, time axis, resize separator).
+      $this c:gridColumns ?list .
+      # LATERAL: positions within this list only (a free ?list would walk every list in the store).
+      LATERAL { SELECT ?list ?col (COUNT(?before) AS ?at) WHERE { ?list rdf:rest* ?cell . ?cell rdf:first ?col . ?list rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?list ?cell ?col }
+      FILTER(isIRI(?col))
+      FILTER(NOT EXISTS { $this c:shows ?anyShown } || EXISTS { $this c:shows ?col })
+      OPTIONAL { ?colLabel0At l10n:of ?col ; l10n:label ?colLabel0 }
+  OPTIONAL { ?col c:label ?colLabel0 FILTER(lang(?colLabel0) = "") }
+      OPTIONAL { ?colLabel1At l10n:of ?col ; l10n:name ?colLabel1 }
+  OPTIONAL { ?col rdfs:label ?colLabel1 FILTER(lang(?colLabel1) = "") }
+      BIND(STR(COALESCE(?colLabel0, ?colLabel1, REPLACE(STR(?col), "^.*[#/]", ""))) AS ?label)
+      BIND(SUBSTR(MD5(STR(?col)), 1, 8) AS ?key)
+      BIND(CONCAT(?g, "/~h-", ?key) AS ?id)
+      OPTIONAL { ?col c:cellAs ?kind }
+      OPTIONAL { ?col c:width ?widthRaw }
+      BIND(STR(xsd:integer(ROUND(xsd:double(STR(?widthRaw))))) AS ?width)
+      OPTIONAL { ?col c:align ?align }
+      BIND(NOT EXISTS { ?col c:sortable false } AS ?sortable)
+      BIND(EXISTS { $this c:sortColumn ?col } AS ?sorted)
+      BIND(EXISTS { $this c:sortDescending true } AS ?descending)
+      BIND(COALESCE(?kind = c:TimeBarCell, false) AS ?bars)
+      BIND(IRI(CONCAT(?id, IF(?sortable, "-sort", "-label"))) AS ?first)
+      BIND(IRI(CONCAT(?g, "/~axis-", ?key)) AS ?axis)
+      VALUES ?part { "cols" "th" "first" "label" "icon" "axis" "handle" "a-sort" "a-icon" "a-handle" }
+      FILTER(?part NOT IN ("label", "icon", "a-icon") || ?sortable)
+      FILTER(?part NOT IN ("axis") || ?bars)
+      FILTER(?part != "a-sort" || ?sorted)
+      LATERAL {
+        {
+          FILTER(?part = "cols")
+          BIND(IRI(CONCAT(?g, "/~cols")) AS ?cols)
+        } UNION {
+          FILTER(?part = "th")
+          BIND(IRI(?id) AS ?el) BIND(rdfhtml:Th AS ?tag) BIND("col" AS ?scope) BIND(STR(?at) AS ?orderKey)
+          BIND(IRI(CONCAT(?g, "/~head-row")) AS ?parent)
+          BIND(IF(?align = "end", "sem-end", IF(?align = "center", "sem-center", ?none)) AS ?cls)
+          BIND(CONCAT("width: ", ?width, "px") AS ?style)
+        } UNION {
+          FILTER(?part = "first")
+          BIND(?first AS ?el) BIND(IRI(?id) AS ?parent)
+          BIND(IF(?sortable, rdfhtml:Button, rdfhtml:Span) AS ?tag)
+          BIND(IF(?sortable, "button", ?none) AS ?type)
+          BIND(IF(?sortable, "sem-sort", "sem-head-label") AS ?cls)
+          BIND(IF(?sortable, ?col, ?none) AS ?sorts)
+          BIND(IF(?sortable, ?none, IRI(CONCAT(?id, "-label-text"))) AS ?txt)
+          BIND(?label AS ?data)
+        } UNION {
+          FILTER(?part = "label")
+          BIND(IRI(CONCAT(?id, "-label")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND(?first AS ?parent)
+          BIND(IRI(CONCAT(?id, "-label-text")) AS ?txt) BIND(?label AS ?data)
+        } UNION {
+          FILTER(?part = "icon")
+          BIND(IRI(CONCAT(?id, "-icon")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND("sem-sort-icon" AS ?cls)
+          BIND(?first AS ?parent) BIND(IRI(CONCAT(?id, "-label")) AS ?prev)
+          BIND(IRI(CONCAT(?id, "-icon-text")) AS ?txt) BIND(IF(?sorted, IF(?descending, "↓", "↑"), "↕") AS ?data)
+        } UNION {
+          FILTER(?part = "axis")
+          BIND(?axis AS ?el) BIND(c:TimeAxis AS ?tag) BIND(IRI(?id) AS ?parent) BIND(?first AS ?prev)
+          BIND(IRI(CONCAT(?g, "/~scale")) AS ?scale)
+        } UNION {
+          FILTER(?part = "handle")
+          BIND(IRI(CONCAT(?id, "-resize")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND("sem-resize" AS ?cls) BIND("0" AS ?tabIndex)
+          BIND(?col AS ?resizes) BIND(IRI(?id) AS ?parent) BIND(IF(?bars, ?axis, ?first) AS ?prev)
+        } UNION {
+          FILTER(?part = "a-sort")
+          BIND(IRI(?id) AS ?owner) BIND("aria-sort" AS ?name) BIND(IF(?descending, "descending", "ascending") AS ?value)
+          BIND(IRI(CONCAT(?id, "-aria-sort")) AS ?attr)
+        } UNION {
+          FILTER(?part = "a-icon")
+          BIND(IRI(CONCAT(?id, "-icon")) AS ?owner) BIND("aria-hidden" AS ?name) BIND("true" AS ?value)
+          BIND(IRI(CONCAT(?id, "-icon-aria-hidden")) AS ?attr)
+        } UNION {
+          FILTER(?part = "a-handle")
+          VALUES (?name ?fixed) { ("role" "separator") ("aria-orientation" "vertical") ("aria-label" UNDEF) ("aria-valuenow" UNDEF)
+                                  ("aria-valuemin" "48") ("data-sem-gesture" "size") ("data-sem-axis" "x") ("data-sem-sizes" "th") ("data-sem-min" "48") }
+          BIND(COALESCE(?fixed, IF(?name = "aria-label", CONCAT("Resize ", ?label), ?width)) AS ?value)
+          BIND(IRI(CONCAT(?id, "-resize")) AS ?owner)
+          BIND(IF(BOUND(?value), IRI(CONCAT(?id, "-resize-", ?name)), ?none) AS ?attr)
+        }
+      }
+    }
+  }
+}""" .
+c:DataGridRendering-sparql-text a sem:Rule ;
+    sem:implements c:DataGridRendering ;
+    sem:modality mod:Text ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?cols c:visibleColumn ?col .
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?head , ?body , ?footer .
+  ?caption a rdfhtml:Text ; rdfhtml:data ?captionText ; ord:immediatelyPrecedes ?head .
+  ?root rdfhtml:hasChild ?caption .
+  ?head a rdfhtml:Div ; rdfhtml:hasChild ?headText ; ord:immediatelyPrecedes ?body .
+  ?headText a rdfhtml:Text ; rdfhtml:data ?headLine .
+  ?body a rdfhtml:Div ; ord:immediatelyPrecedes ?footer .
+  ?footer a rdfhtml:Div .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:DataGrid .
+  OPTIONAL { $this l10n:label ?picko }
+  OPTIONAL { FILTER(!BOUND(?picko)) ?pickoAt l10n:of $this ; l10n:label ?pickoT }
+  OPTIONAL { FILTER(!BOUND(?picko) && !BOUND(?pickoT)) $this c:label ?anyo FILTER(isLiteral(?anyo)) }
+  BIND(STR(COALESCE(?picko, ?pickoT, ?anyo)) AS ?label)
+  BIND(?label AS ?captionText)
+  {
+    # The frame: the caption (if any), the header line, the body and the footer (the window fills them).
+    BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IRI(CONCAT(STR($this), "/~head-text")) AS ?headText)
+    BIND(IRI(CONCAT(STR($this), "/~body")) AS ?body)
+    BIND(IRI(CONCAT(STR($this), "/~footer")) AS ?footer)
+    OPTIONAL {
+      SELECT (GROUP_CONCAT(?colLabel; separator=" \u2502 ") AS ?labels) WHERE {
+        { SELECT DISTINCT ?col ?colLabel ?at WHERE {
+          $this c:gridColumns ?list .
+      LATERAL { SELECT ?list ?col (COUNT(?before) AS ?at) WHERE { ?list rdf:rest* ?cell . ?cell rdf:first ?col . ?list rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?list ?cell ?col }
+      FILTER(isIRI(?col))
+          FILTER(NOT EXISTS { $this c:shows ?anyShown } || EXISTS { $this c:shows ?col })
+          LATERAL { OPTIONAL { SELECT ?col ?lcc WHERE {
+  
+  OPTIONAL { ?col l10n:label ?picklcc }
+  OPTIONAL { FILTER(!BOUND(?picklcc)) ?picklccAt l10n:of ?col ; l10n:label ?picklccT }
+  OPTIONAL { FILTER(!BOUND(?picklcc) && !BOUND(?picklccT)) ?col c:label ?anylcc FILTER(isLiteral(?anylcc)) }
+  BIND(STR(COALESCE(?picklcc, ?picklccT, ?anylcc)) AS ?lcc)
+  } } }
+  LATERAL { OPTIONAL { SELECT ?col ?lrc WHERE {
+  
+  OPTIONAL { ?picklrcAt l10n:of ?col ; l10n:name ?picklrc }
+  OPTIONAL { FILTER(!BOUND(?picklrc)) ?col rdfs:label ?anylrc FILTER(isLiteral(?anylrc)) }
+  BIND(STR(COALESCE(?picklrc, ?anylrc)) AS ?lrc)
+  } } }
+  BIND(COALESCE(?lcc, ?lrc, REPLACE(STR(?col), "^.*[#/]", "")) AS ?colLabel)
+        } ORDER BY ?at }
+      }
+    }
+    BIND(COALESCE(?labels, "") AS ?headLine)
+  } UNION {
+    # The columns shown, which the rows read (only a change of them re-renders rows).
+    $this c:gridColumns ?list .
+      LATERAL { SELECT ?list ?col (COUNT(?before) AS ?at) WHERE { ?list rdf:rest* ?cell . ?cell rdf:first ?col . ?list rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?list ?cell ?col }
+      FILTER(isIRI(?col))
+    FILTER(NOT EXISTS { $this c:shows ?anyShown } || EXISTS { $this c:shows ?col })
+    BIND(IRI(CONCAT(STR($this), "/~cols")) AS ?cols)
+  }
+  BIND(IF(BOUND(?root) && COALESCE(?label, "") != "", IRI(CONCAT(STR($this), "/~caption")), ?none) AS ?caption)
+}""" .
+
+# --- the window ---------------------------------------------------------------------------------------
+# Which members are rows. Three maintained views per grid (docs/IVM.md §21; iv:targets c:DataGrid,
+# so each grid has its own, maintained while it is shown) do the work that grows with the
+# collection: each member is a partition, evaluated once when it arrives and again only when a
+# triple it reads changes (its own, its response's, its sort value's label, a filter); a top-k
+# over the members that pass keeps them in capture order. The window rule reads their rows (at
+# most three pages), so a new member, a response arriving or a filter costs what it changes, not
+# the size of the capture, and a member whose sort value changes moves at once.
+#
+#   c:GridWindowOlder   the matching members up to the pin (all of them while following), newest
+#                       first: the window is the first page of them, the next one is where Older pins
+#   c:GridWindowNewer   the matching members after the pin, oldest first: where Newer pins, and the
+#                       window itself when the pin is before every member
+#   c:GridWindowCounts  how many members match, and how many of them are up to the pin
+#
+# Each row carries the member's order key (sem:orderKey of its c:GridRow): whether it has a sort
+# value, the value (descending when the grid is), then capture order - a tuple key, so a row's
+# key changing moves only that row. Settings of the grid are parameters (iv:parameter): changing
+# the sort, the pin or the page builds the view again (the page size alone retunes its top-k).
+
+c:gridCollection a iv:Parameter ; iv:variable "collection" ; iv:property c:collection ; iv:default c:none .
+c:gridVia a iv:Parameter ; iv:variable "via" ; iv:property c:memberProperty ; iv:default tree:member .
+c:gridMemberClass a iv:Parameter ; iv:variable "memberClass" ; iv:property c:memberClass ; iv:default c:none .
+c:gridSequence a iv:Parameter ; iv:variable "sequence" ; iv:select """
+SELECT ?value WHERE { OPTIONAL { $this c:sequenceProperty ?a } OPTIONAL { $this c:collection ?c . ?c ldes:sequencePath ?b } BIND(COALESCE(?a, ?b, c:none) AS ?value) }""" .
+c:gridPin a iv:Parameter ; iv:variable "pin" ; iv:select """
+SELECT ?value WHERE { OPTIONAL { $this c:windowEnd ?p FILTER(isNumeric(?p)) } BIND(IF(EXISTS { $this c:followTail false } && BOUND(?p), xsd:double(?p), 1e300) AS ?value) }""" .
+c:gridOlderLimit a iv:Parameter ; iv:variable "olderLimit" ; iv:select """
+SELECT ?value WHERE { OPTIONAL { $this c:pageSize ?raw } BIND(COALESCE(xsd:integer(ROUND(xsd:double(STR(?raw)))), 50) AS ?p) BIND(IF(?p < 1, 1, ?p) + 1 AS ?value) }""" .
+c:gridNewerLimit a iv:Parameter ; iv:variable "newerLimit" ; iv:select """
+SELECT ?value WHERE { OPTIONAL { $this c:pageSize ?raw } BIND(COALESCE(xsd:integer(ROUND(xsd:double(STR(?raw)))), 50) AS ?p) BIND(2 * IF(?p < 1, 1, ?p) AS ?value) }""" .
+c:gridSortKind a iv:Parameter ; iv:variable "sortKind" ; iv:select """
+SELECT ?value WHERE { OPTIONAL { $this c:sortColumn ?col OPTIONAL { ?col c:cellAs ?kind } } BIND(IF(BOUND(?col), COALESCE(?kind, c:TextCell), c:none) AS ?value) }""" .
+c:gridSortVia a iv:Parameter ; iv:variable "sortVia" ; iv:select """SELECT ?value WHERE { $this c:sortColumn/c:via ?value }""" ; iv:default c:none .
+c:gridSortProperty a iv:Parameter ; iv:variable "sortProperty" ; iv:select """SELECT ?value WHERE { $this c:sortColumn/c:cellProperty ?value }""" ; iv:default c:none .
+c:gridSortStart a iv:Parameter ; iv:variable "sortStart" ; iv:select """SELECT ?value WHERE { $this c:sortColumn/c:startProperty ?value }""" ; iv:default c:none .
+c:gridSortEnd a iv:Parameter ; iv:variable "sortEnd" ; iv:select """SELECT ?value WHERE { $this c:sortColumn/c:endProperty ?value }""" ; iv:default c:none .
+c:gridDescending a iv:Parameter ; iv:variable "descending" ; iv:select """SELECT ?value WHERE { BIND(EXISTS { $this c:sortDescending true } AS ?value) }""" .
+
+c:GridWindowOlder a iv:View ; iv:targets c:DataGrid ; iv:materialize iv:Graph ;
+    rdfs:label "a grid's members up to its pin, newest first"@en ;
+    iv:parameter c:gridCollection , c:gridVia , c:gridMemberClass , c:gridSequence , c:gridPin , c:gridOlderLimit ,
+        c:gridSortKind , c:gridSortVia , c:gridSortProperty , c:gridSortStart , c:gridSortEnd , c:gridDescending ;
+    sem:select """
+SELECT ?m ?sn ?key ?hv ?isNum ?vn ?vs WHERE {
+  $collection $via ?m . FILTER(isIRI(?m))
+  ?m $sequence ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+  FILTER(?sn <= $pin)
+  FILTER($memberClass = c:none || EXISTS { ?m a/rdfs:subClassOf* $memberClass })
+  FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                      FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+  FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+  FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+  OPTIONAL { ?m $sortVia ?hop }
+  BIND(IF($sortVia = c:none, ?m, ?hop) AS ?ss)
+  OPTIONAL { ?ss $sortProperty ?sval
+    OPTIONAL { ?sval sem:order ?sord FILTER(isNumeric(?sord)) }
+    OPTIONAL { ?sval c:label ?svl0 FILTER(lang(?svl0) = "") } OPTIONAL { ?sval c:label ?svl1 FILTER(langMatches(lang(?svl1), "en")) }
+    OPTIONAL { ?sval rdfs:label ?svl2 FILTER(lang(?svl2) = "") } OPTIONAL { ?sval rdfs:label ?svl3 FILTER(langMatches(lang(?svl3), "en")) } }
+  OPTIONAL { ?ss $sortStart ?sa FILTER(isNumeric(?sa)) }
+  OPTIONAL { ?ss $sortEnd ?sb FILTER(isNumeric(?sb)) }
+  BIND(IF($sortKind = c:TimeBarCell, xsd:double(?sa), IF($sortKind = c:DurationCell, xsd:double(?sb) - xsd:double(?sa),
+       IF(!BOUND(?sval), ?unset, IF(isIRI(?sval), xsd:double(?sord), IF(isNumeric(?sval), xsd:double(?sval), ?unset))))) AS ?vnum)
+  BIND(IF($sortKind IN (c:TimeBarCell, c:DurationCell) || !BOUND(?sval), ?unset,
+       IF(isIRI(?sval), IF(BOUND(?sord), ?unset, STR(COALESCE(?svl0, ?svl1, ?svl2, ?svl3, REPLACE(STR(?sval), "^.*[#/]", "")))),
+       IF(isNumeric(?sval), ?unset, STR(?sval)))) AS ?vstr)
+  BIND(BOUND(?vnum) AS ?isNum) BIND(?isNum || BOUND(?vstr) AS ?hv)
+  BIND(COALESCE(?vnum, 0) AS ?vn) BIND(COALESCE(?vstr, STR(?vnum), "") AS ?vs)
+  BIND(CONCAT("\\u0001n", IF(?hv, "0", "1"), "\\u0001", IF($descending && ?hv, "-", ""), IF(?isNum, CONCAT("n", STR(?vn)), CONCAT("s", ?vs)),
+       "\\u0001n", STR(?sn), "\\u0001s", STR(?m)) AS ?key)
+}
+ORDER BY DESC(?sn) DESC(STR(?m)) LIMIT $olderLimit""" .
+
+c:GridWindowNewer a iv:View ; iv:targets c:DataGrid ; iv:materialize iv:Graph ;
+    rdfs:label "a grid's members after its pin, oldest first"@en ;
+    iv:parameter c:gridCollection , c:gridVia , c:gridMemberClass , c:gridSequence , c:gridPin , c:gridNewerLimit ,
+        c:gridSortKind , c:gridSortVia , c:gridSortProperty , c:gridSortStart , c:gridSortEnd , c:gridDescending ;
+    sem:select """
+SELECT ?m ?sn ?key ?hv ?isNum ?vn ?vs WHERE {
+  $collection $via ?m . FILTER(isIRI(?m))
+  ?m $sequence ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+  FILTER(?sn > $pin)
+  FILTER($memberClass = c:none || EXISTS { ?m a/rdfs:subClassOf* $memberClass })
+  FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                      FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+  FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+  FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+  OPTIONAL { ?m $sortVia ?hop }
+  BIND(IF($sortVia = c:none, ?m, ?hop) AS ?ss)
+  OPTIONAL { ?ss $sortProperty ?sval
+    OPTIONAL { ?sval sem:order ?sord FILTER(isNumeric(?sord)) }
+    OPTIONAL { ?sval c:label ?svl0 FILTER(lang(?svl0) = "") } OPTIONAL { ?sval c:label ?svl1 FILTER(langMatches(lang(?svl1), "en")) }
+    OPTIONAL { ?sval rdfs:label ?svl2 FILTER(lang(?svl2) = "") } OPTIONAL { ?sval rdfs:label ?svl3 FILTER(langMatches(lang(?svl3), "en")) } }
+  OPTIONAL { ?ss $sortStart ?sa FILTER(isNumeric(?sa)) }
+  OPTIONAL { ?ss $sortEnd ?sb FILTER(isNumeric(?sb)) }
+  BIND(IF($sortKind = c:TimeBarCell, xsd:double(?sa), IF($sortKind = c:DurationCell, xsd:double(?sb) - xsd:double(?sa),
+       IF(!BOUND(?sval), ?unset, IF(isIRI(?sval), xsd:double(?sord), IF(isNumeric(?sval), xsd:double(?sval), ?unset))))) AS ?vnum)
+  BIND(IF($sortKind IN (c:TimeBarCell, c:DurationCell) || !BOUND(?sval), ?unset,
+       IF(isIRI(?sval), IF(BOUND(?sord), ?unset, STR(COALESCE(?svl0, ?svl1, ?svl2, ?svl3, REPLACE(STR(?sval), "^.*[#/]", "")))),
+       IF(isNumeric(?sval), ?unset, STR(?sval)))) AS ?vstr)
+  BIND(BOUND(?vnum) AS ?isNum) BIND(?isNum || BOUND(?vstr) AS ?hv)
+  BIND(COALESCE(?vnum, 0) AS ?vn) BIND(COALESCE(?vstr, STR(?vnum), "") AS ?vs)
+  BIND(CONCAT("\\u0001n", IF(?hv, "0", "1"), "\\u0001", IF($descending && ?hv, "-", ""), IF(?isNum, CONCAT("n", STR(?vn)), CONCAT("s", ?vs)),
+       "\\u0001n", STR(?sn), "\\u0001s", STR(?m)) AS ?key)
+}
+ORDER BY ?sn STR(?m) LIMIT $newerLimit""" .
+
+c:GridWindowCounts a iv:View ; iv:targets c:DataGrid ; iv:materialize iv:Graph ;
+    rdfs:label "how many of a grid's members match, and how many up to its pin"@en ;
+    iv:parameter c:gridCollection , c:gridVia , c:gridMemberClass , c:gridSequence , c:gridPin ;
+    sem:select """
+SELECT (COUNT(*) AS ?total) (SUM(IF(?sn <= $pin, 1, 0)) AS ?upTo) WHERE {
+  $collection $via ?m . FILTER(isIRI(?m))
+  ?m $sequence ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+  FILTER($memberClass = c:none || EXISTS { ?m a/rdfs:subClassOf* $memberClass })
+  FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                      FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+  FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+  FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+}""" .
+
+# The rule: the window's rows, the scale, the footer - from the views' rows (rs: result sets in the
+# views graph, minted under the grid: sem:readsMinted re-runs it when they change).
+c:DataGridWindow a sem:Rendering ; sem:targets c:DataGrid ; sem:stratum 0 ; sem:readsMinted true .
+c:DataGridWindow-fn a sem:Rule ; sem:implements c:DataGridWindow ; sem:function "grid:window" .
+c:DataGridWindow-sparql a sem:Rule ;
+    sem:implements c:DataGridWindow ;
+    sem:modality mod:Screen ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?row a c:GridRow ; c:of ?m ; c:inGrid $this ; c:columnsFrom ?cols ; sem:orderKey ?orderKey ; c:isSelected ?isSelected ; c:tabStop ?tabStop .
+  ?dragRow a dnd:Draggable ; dnd:carries ?m .
+  ?el a ?tag ; rdfhtml:class ?cls ; rdfhtml:type ?type ; rdfhtml:disabled ?disabled ; rdfhtml:colSpan ?colSpan ; sem:orderKey ?elKey ;
+      c:windowTo ?windowTo ; c:followsLatest ?followsLatest .
+  ?parent rdfhtml:hasChild ?el .
+  ?owner rdfhtml:attribute ?attr . ?attr a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue ?value .
+  ?txtParent rdfhtml:hasChild ?txt . ?txt a rdfhtml:Text ; rdfhtml:data ?data .
+  ?body rdfhtml:hasChild ?row ; rdfhtml:style ?scaleStyle .
+  ?scale c:start ?lo ; c:end ?hi .
+  ?window c:shownEnd ?shownEnd .
+}
+WHERE {
+  BIND(STR($this) AS ?g)
+  BIND(IRI(CONCAT(?g, "/~body")) AS ?bodyNode)
+  BIND(IRI(CONCAT(?g, "/~view-GridWindowOlder")) AS ?older)
+  BIND(IRI(CONCAT(?g, "/~view-GridWindowNewer")) AS ?newer)
+  BIND(IRI(CONCAT(?g, "/~view-GridWindowCounts")) AS ?counts)
+  OPTIONAL { $this c:pageSize ?pageRaw }
+  BIND(COALESCE(xsd:integer(ROUND(xsd:double(STR(?pageRaw)))), 50) AS ?p0)
+  BIND(IF(?p0 < 1, 1, ?p0) AS ?P)
+  OPTIONAL { $this c:selectedRow ?sel0 }
+  BIND(COALESCE(?sel0, c:none) AS ?sel)
+  OPTIONAL { $this c:windowEnd ?pinRaw }
+  BIND(COALESCE(EXISTS { $this c:followTail false } && isNumeric(?pinRaw), false) AS ?pinned)
+  BIND(EXISTS { $this c:sortDescending true } AS ?desc)
+  # How many members match, and how many of them a pinned window reaches.
+  OPTIONAL { ?counts rs:solution ?cr . ?cr rs:binding ?cb . ?cb rs:variable "total" ; rs:value ?total0 }
+  OPTIONAL { ?counts rs:solution ?cr2 . ?cr2 rs:binding ?cb2 . ?cb2 rs:variable "upTo" ; rs:value ?upTo0 }
+  BIND(COALESCE(?total0, 0) AS ?total)
+  BIND(COALESCE(?upTo0, 0) AS ?upTo)
+  # Pinned before every member: the oldest page, from the members after the pin.
+  BIND(?pinned && ?upTo = 0 AS ?fromNewer)
+  BIND(IF(?pinned, IF(?upTo = 0, IF(?total < ?P, ?total, ?P), ?upTo), ?total) AS ?E)
+  BIND(IF(?E - ?P + 1 < 1, 1, ?E - ?P + 1) AS ?first)
+  BIND(IF(?fromNewer, ?newer, ?older) AS ?shownFrom)
+  BIND(IF(?fromNewer, ?E, ?P) AS ?shownCount)
+  # The positions the footer pins at: the newest shown, the one before the window, the page after it.
+  LATERAL { OPTIONAL { ?shownFrom rs:solution ?se . ?se rs:index ?sei . FILTER(?sei = IF(?fromNewer, ?E, 1)) ?se rs:binding ?seb . ?seb rs:variable "sn" ; rs:value ?shownEnd0 } }
+  LATERAL { OPTIONAL { FILTER(!?fromNewer) ?older rs:solution ?oe . ?oe rs:index ?oei . FILTER(?oei = ?P + 1) ?oe rs:binding ?oeb . ?oeb rs:variable "sn" ; rs:value ?olderEnd } }
+  LATERAL { OPTIONAL { ?newer rs:solution ?ne . ?ne rs:index ?nei . FILTER(?nei = IF(?fromNewer, ?E + ?P, ?P)) ?ne rs:binding ?neb . ?neb rs:variable "sn" ; rs:value ?newerEnd } }
+  BIND(?total > 0 AS ?any)
+  BIND(IF(?any, ?shownEnd0, ?unset) AS ?shownEndValue)
+  # The waterfall's column: the first time bar column in c:gridColumns.
+  OPTIONAL { { SELECT ?bars WHERE { { SELECT ?bars (COUNT(?before) AS ?bpos) WHERE {
+      $this c:gridColumns ?bl . ?bl rdf:rest* ?bcell . ?bcell rdf:first ?bars . ?bars c:cellAs c:TimeBarCell . ?bl rdf:rest* ?before . ?before rdf:rest* ?bcell
+    } GROUP BY ?bars } } ORDER BY ?bpos LIMIT 1 } }
+  BIND(COALESCE(?bars, c:none) AS ?bc)
+  OPTIONAL { ?bc c:via ?bv0 } BIND(COALESCE(?bv0, c:none) AS ?bvia)
+  OPTIONAL { ?bc c:startProperty ?bs0 } BIND(COALESCE(?bs0, c:none) AS ?bsp)
+  OPTIONAL { ?bc c:endProperty ?be0 } BIND(COALESCE(?be0, c:none) AS ?bep)
+  # The shown rows' extent on the scale, and whether the selection is among them.
+  LATERAL {
+    OPTIONAL {
+      SELECT ?shownFrom ?shownCount ?sel ?bvia ?bsp ?bep (MAX(IF(?w = ?sel, 1, 0)) AS ?selShown)
+             (MIN(IF(BOUND(?ba), ?ba, 1e300)) AS ?lo0) (MAX(IF(BOUND(?ba), COALESCE(?bb, ?ba), -1e300)) AS ?hi0)
+      WHERE {
+        ?shownFrom rs:solution ?wr . ?wr rs:index ?wi . FILTER(?wi <= ?shownCount)
+        BIND(IRI(CONCAT(STR(?wr), "-m")) AS ?wb)
+        LATERAL { ?wb rs:value ?w }
+        LATERAL { OPTIONAL { ?w ?bvia ?bhop } }
+        BIND(COALESCE(IF(?bvia = c:none, ?w, ?bhop), c:none) AS ?bsubj)
+        LATERAL { OPTIONAL { ?bsubj ?bsp ?ba0 FILTER(isNumeric(?ba0)) } }
+        LATERAL { OPTIONAL { ?bsubj ?bep ?bb0 FILTER(isNumeric(?bb0)) } }
+        BIND(xsd:double(?ba0) AS ?ba) BIND(xsd:double(?bb0) AS ?bb)
+      } GROUP BY ?shownFrom ?shownCount ?sel ?bvia ?bsp ?bep
+    }
+  }
+  BIND(COALESCE(?selShown = 1, false) AS ?selectionShown)
+  LATERAL {
+    {
+      # The rows: the shown members, placed by their order key; Tab enters at the selected one, else the first.
+      FILTER(?any)
+      # A row's binding of ?v is the node <row>-v (view.ttl): read by its IRI, one lookup each.
+      ?shownFrom rs:solution ?r . ?r rs:index ?i . FILTER(?i <= ?shownCount)
+      BIND(STR(?r) AS ?rs)
+      BIND(IRI(CONCAT(?rs, "-m")) AS ?mb) BIND(IRI(CONCAT(?rs, "-key")) AS ?kb) BIND(IRI(CONCAT(?rs, "-sn")) AS ?sb) BIND(IRI(CONCAT(?rs, "-hv")) AS ?hb)
+      BIND(IRI(CONCAT(?rs, "-isNum")) AS ?ib) BIND(IRI(CONCAT(?rs, "-vn")) AS ?nb) BIND(IRI(CONCAT(?rs, "-vs")) AS ?vb)
+      LATERAL { ?mb rs:value ?m . ?kb rs:value ?key . ?sb rs:value ?sn . ?hb rs:value ?hv . ?ib rs:value ?isNum . ?nb rs:value ?vn . ?vb rs:value ?vs }
+      # Behind another shown row in the sort: not the one Tab enters at.
+      BIND(EXISTS {
+        ?shownFrom rs:solution ?r2 . ?r2 rs:index ?i2 . FILTER(?i2 <= ?shownCount && ?r2 != ?r)
+        BIND(STR(?r2) AS ?rs2)
+        BIND(IRI(CONCAT(?rs2, "-m")) AS ?c1) BIND(IRI(CONCAT(?rs2, "-sn")) AS ?c3) BIND(IRI(CONCAT(?rs2, "-hv")) AS ?c4)
+        BIND(IRI(CONCAT(?rs2, "-isNum")) AS ?c5) BIND(IRI(CONCAT(?rs2, "-vn")) AS ?c6) BIND(IRI(CONCAT(?rs2, "-vs")) AS ?c7)
+        LATERAL { ?c1 rs:value ?n . ?c3 rs:value ?nsn . ?c4 rs:value ?nhv . ?c5 rs:value ?nIsNum . ?c6 rs:value ?nvn . ?c7 rs:value ?nvs }
+        BIND(?nsn < ?sn || (?nsn = ?sn && STR(?n) < STR(?m)) AS ?earlier)
+        FILTER(IF(?nhv && ?hv, IF(?nIsNum && ?isNum, IF(?nvn = ?vn, ?earlier, IF(?desc, ?nvn > ?vn, ?nvn < ?vn)),
+                                  IF(?nvs = ?vs, ?earlier, IF(?desc, ?nvs > ?vs, ?nvs < ?vs))),
+                  IF(?nhv != ?hv, ?nhv, ?earlier)))
+      } AS ?behind)
+      BIND(IRI(CONCAT(?g, "/~r-", SUBSTR(MD5(STR(?m)), 1, 8))) AS ?row)
+      BIND(IRI(CONCAT(?g, "/~cols")) AS ?cols)
+      BIND(?bodyNode AS ?body)
+      BIND(?key AS ?orderKey)
+      BIND(IF(?m = ?sel, true, ?unset) AS ?isSelected)
+      BIND(IF(IF(?selectionShown, ?m = ?sel, !?behind), true, ?unset) AS ?tabStop)
+      # A grid that is a drag source: each row can be picked up, carrying its member.
+      BIND(IF(EXISTS { $this a/rdfs:subClassOf* dnd:DragSource }, ?row, ?unset) AS ?dragRow)
+    } UNION {
+      # No matching member: a row saying so, across the shown columns.
+      FILTER(!?any)
+      { SELECT (COUNT(?col) AS ?shownColumns) WHERE {
+          $this c:gridColumns ?cl . ?cl rdf:rest*/rdf:first ?col . FILTER(isIRI(?col))
+          FILTER(NOT EXISTS { $this c:shows ?anyShown } || EXISTS { $this c:shows ?col })
+      } }
+      OPTIONAL { ?rawEmptyAt l10n:of $this ; l10n:emptyText ?rawEmpty }
+  OPTIONAL { $this c:emptyText ?rawEmpty FILTER(lang(?rawEmpty) = "") }
+      VALUES (?local ?tag ?parentLocal) { ("empty-row" rdfhtml:Tr "body") ("empty-cell" rdfhtml:Td "empty-row") }
+      BIND(IRI(CONCAT(?g, "/~", ?local)) AS ?el)
+      BIND(IRI(CONCAT(?g, "/~", ?parentLocal)) AS ?parent)
+      BIND(IF(?local = "empty-cell", "sem-empty", ?unset) AS ?cls)
+      BIND(IF(?local = "empty-cell", STR(IF(?shownColumns < 1, 1, ?shownColumns)), ?unset) AS ?colSpan)
+      BIND(IF(?local = "empty-cell", ?el, ?unset) AS ?txtParent)
+      BIND(IF(?local = "empty-cell", IRI(CONCAT(?g, "/~empty-text")), ?unset) AS ?txt)
+      BIND(STR(COALESCE(?rawEmpty, "No rows.")) AS ?data)
+    } UNION {
+      # The waterfall's scale: from the earliest start to the latest end of the rows shown.
+      FILTER(?any && ?lo0 < 1e300)
+      BIND(?lo0 AS ?lo)
+      BIND(IF(?hi0 < ?lo0 + 1, ?lo0 + 1, ?hi0) AS ?hi)
+      BIND(IRI(CONCAT(?g, "/~scale")) AS ?scale)
+      BIND(?bodyNode AS ?body)
+      BIND(CONCAT("--scale-start: ", STR(?lo), "; --scale-end: ", STR(?hi)) AS ?scaleStyle)
+    } UNION {
+      FILTER(?any)
+      BIND(IRI(CONCAT(?g, "/~window")) AS ?window)
+      BIND(?shownEndValue AS ?shownEnd)
+    } UNION {
+      # The footer: what matches and what is shown; follow, jump to the latest, older, newer.
+      BIND(?any && ?first > 1 AS ?hasOlder)
+      BIND(?E < ?total AS ?hasNewer)
+      VALUES (?local ?key) { ("status" 1) ("follow" 2) ("jump" 3) ("older" 4) ("newer" 5) }
+      FILTER(?local != "jump" || ?pinned)
+      BIND(IRI(CONCAT(?g, "/~", ?local)) AS ?el)
+      BIND(IRI(CONCAT(?g, "/~footer")) AS ?parent)
+      BIND(STR(IF(!?pinned && ?key > 3, ?key - 1, ?key)) AS ?elKey)
+      BIND(IF(?local = "status", rdfhtml:Span, rdfhtml:Button) AS ?tag)
+      BIND(IF(?local = "status", ?unset, "button") AS ?type)
+      BIND(IF(?local = "status", "sem-status", IF(?local = "follow", "sem-follow", IF(?local = "jump", "sem-jump", "sem-page"))) AS ?cls)
+      BIND(IF((?local = "older" && !?hasOlder) || (?local = "newer" && !?hasNewer), "", ?unset) AS ?disabled)
+      BIND(IF((?local = "follow" && ?pinned) || ?local = "jump" || (?local = "newer" && ?hasNewer && ?E + ?P >= ?total), true, ?unset) AS ?followsLatest)
+      BIND(IF(?local = "follow" && !?pinned && ?any, ?shownEndValue, IF(?local = "older" && ?hasOlder, ?olderEnd,
+           IF(?local = "newer" && ?hasNewer && ?E + ?P < ?total, ?newerEnd, ?unset))) AS ?windowTo)
+      BIND(?el AS ?txtParent)
+      BIND(IRI(CONCAT(?g, "/~", ?local, "-text")) AS ?txt)
+      BIND(IF(?local = "status", CONCAT(STR(?total), " matching · ", IF(?any, CONCAT("showing ", STR(?first), "–", STR(?E)), "none shown")),
+           IF(?local = "follow", "Follow latest", IF(?local = "jump", CONCAT(STR(?total - ?E), " new · Jump to latest"),
+           IF(?local = "older", "Older", "Newer")))) AS ?data)
+    } UNION {
+      BIND(IRI(CONCAT(?g, "/~follow")) AS ?owner)
+      BIND(IRI(CONCAT(?g, "/~follow-aria-pressed")) AS ?attr)
+      BIND("aria-pressed" AS ?name)
+      BIND(STR(!?pinned) AS ?value)
+    }
+  }
+}""" .
+c:DataGridWindow-sparql-text a sem:Rule ;
+    sem:implements c:DataGridWindow ;
+    sem:modality mod:Text ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?row a c:GridRow ; c:of ?m ; c:inGrid $this ; c:columnsFrom ?cols ; sem:orderKey ?orderKey ; c:isSelected ?isSelected ; c:tabStop ?tabStop .
+  ?el a ?tag ; rdfhtml:class ?cls ; rdfhtml:type ?type ; rdfhtml:disabled ?disabled ; rdfhtml:colSpan ?colSpan ; sem:orderKey ?elKey ;
+      c:windowTo ?windowTo ; c:followsLatest ?followsLatest .
+  ?parent rdfhtml:hasChild ?el .
+  ?owner rdfhtml:attribute ?attr . ?attr a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue ?value .
+  ?txtParent rdfhtml:hasChild ?txt . ?txt a rdfhtml:Text ; rdfhtml:data ?data .
+  ?body rdfhtml:hasChild ?row ; rdfhtml:style ?scaleStyle .
+  ?scale c:start ?lo ; c:end ?hi .
+  ?window c:shownEnd ?shownEnd .
+}
+WHERE {
+  BIND(STR($this) AS ?g)
+  BIND(IRI(CONCAT(?g, "/~body")) AS ?bodyNode)
+  OPTIONAL { $this c:pageSize ?pageRaw }
+  BIND(COALESCE(xsd:integer(ROUND(xsd:double(STR(?pageRaw)))), 50) AS ?p0)
+  BIND(IF(?p0 < 1, 1, ?p0) AS ?P)
+  OPTIONAL { $this c:selectedRow ?sel0 }
+  BIND(COALESCE(?sel0, c:none) AS ?sel)
+  # How many members match, and how many of them a pinned window reaches.
+  {
+    SELECT (COUNT(?m) AS ?total) (SUM(IF(?pinned && ?sn <= ?pinAt, 1, 0)) AS ?upTo) (MAX(IF(?pinned, 1, 0)) AS ?pinFlag) WHERE {
+      $this c:collection ?coll .
+      OPTIONAL { $this c:memberProperty ?mp } BIND(COALESCE(?mp, tree:member) AS ?via)
+      OPTIONAL { $this c:sequenceProperty ?sp1 } OPTIONAL { ?coll ldes:sequencePath ?sp2 } BIND(COALESCE(?sp1, ?sp2, c:none) AS ?seqP)
+      ?coll ?via ?m . FILTER(isIRI(?m))
+      ?m ?seqP ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+      FILTER(NOT EXISTS { $this c:memberClass ?anyClass } || EXISTS { $this c:memberClass ?mc . ?m a/rdfs:subClassOf* ?mc })
+      FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                          FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+      FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+      FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+      OPTIONAL { $this c:windowEnd ?pinRaw }
+      BIND(EXISTS { $this c:followTail false } && isNumeric(?pinRaw) AS ?pinned0)
+      BIND(COALESCE(?pinned0, false) AS ?pinned)
+      BIND(IF(?pinned, xsd:double(?pinRaw), 0) AS ?pinAt)
+    }
+  }
+  OPTIONAL { $this c:windowEnd ?pinRaw2 }
+  BIND(COALESCE(EXISTS { $this c:followTail false } && isNumeric(?pinRaw2), false) AS ?pinned)
+  BIND(IF(?pinned, IF(?upTo = 0, IF(?total < ?P, ?total, ?P), ?upTo), ?total) AS ?E)
+  BIND(IF(?E - ?P + 1 < 1, 1, ?E - ?P + 1) AS ?first)
+  # Positions in capture order: the window's bounds, whether the selection is in it, its scale.
+  LATERAL {
+    OPTIONAL {
+      SELECT ?E ?first ?P ?sel
+             (MAX(IF(?pos <= ?E, ?sn, -1e300)) AS ?shownEnd) (MAX(IF(?pos < ?first, ?sn, -1e300)) AS ?olderEnd)
+             (MAX(IF(?pos <= ?E + ?P, ?sn, -1e300)) AS ?newerEnd)
+             (MAX(IF(?pos >= ?first && ?pos <= ?E && ?m = ?sel, 1, 0)) AS ?selShown)
+             (MIN(IF(?pos >= ?first && ?pos <= ?E && BOUND(?ba), ?ba, 1e300)) AS ?lo0)
+             (MAX(IF(?pos >= ?first && ?pos <= ?E && BOUND(?ba), COALESCE(?bb, ?ba), -1e300)) AS ?hi0)
+      WHERE {
+        {
+          SELECT ?m ?sn ?ba ?bb (COUNT(?n) AS ?pos) WHERE {
+            {
+              SELECT ?m ?sn ?ba ?bb WHERE {
+                $this c:collection ?coll .
+                OPTIONAL { $this c:memberProperty ?mp } BIND(COALESCE(?mp, tree:member) AS ?via)
+                OPTIONAL { $this c:sequenceProperty ?sp1 } OPTIONAL { ?coll ldes:sequencePath ?sp2 } BIND(COALESCE(?sp1, ?sp2, c:none) AS ?seqP)
+                ?coll ?via ?m . FILTER(isIRI(?m))
+                ?m ?seqP ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+                FILTER(NOT EXISTS { $this c:memberClass ?anyClass } || EXISTS { $this c:memberClass ?mc . ?m a/rdfs:subClassOf* ?mc })
+                FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                                    FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+                FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+                FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+                OPTIONAL { { SELECT ?bars WHERE { { SELECT ?bars (COUNT(?before) AS ?bpos) WHERE {
+                    $this c:gridColumns ?bl . ?bl rdf:rest* ?bcell . ?bcell rdf:first ?bars . ?bars c:cellAs c:TimeBarCell . ?bl rdf:rest* ?before . ?before rdf:rest* ?bcell
+                  } GROUP BY ?bars } } ORDER BY ?bpos LIMIT 1 } }
+                BIND(COALESCE(?bars, c:none) AS ?bc)
+                OPTIONAL { ?bc c:via ?bv0 } BIND(COALESCE(?bv0, c:none) AS ?bvia)
+                OPTIONAL { ?bc c:startProperty ?bs0 } BIND(COALESCE(?bs0, c:none) AS ?bsp)
+                OPTIONAL { ?bc c:endProperty ?be0 } BIND(COALESCE(?be0, c:none) AS ?bep)
+                LATERAL { OPTIONAL { ?m ?bvia ?bhop } }
+                BIND(COALESCE(IF(?bvia = c:none, ?m, ?bhop), c:none) AS ?bsubj)
+                LATERAL { OPTIONAL { ?bsubj ?bsp ?ba0 FILTER(isNumeric(?ba0)) } }
+                LATERAL { OPTIONAL { ?bsubj ?bep ?bb0 FILTER(isNumeric(?bb0)) } }
+                BIND(xsd:double(?ba0) AS ?ba) BIND(xsd:double(?bb0) AS ?bb)
+              }
+            }
+            {
+              SELECT (?m AS ?n) (?sn AS ?nsn) WHERE {
+                $this c:collection ?coll .
+                OPTIONAL { $this c:memberProperty ?mp } BIND(COALESCE(?mp, tree:member) AS ?via)
+                OPTIONAL { $this c:sequenceProperty ?sp1 } OPTIONAL { ?coll ldes:sequencePath ?sp2 } BIND(COALESCE(?sp1, ?sp2, c:none) AS ?seqP)
+                ?coll ?via ?m . FILTER(isIRI(?m))
+                ?m ?seqP ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+                FILTER(NOT EXISTS { $this c:memberClass ?anyClass } || EXISTS { $this c:memberClass ?mc . ?m a/rdfs:subClassOf* ?mc })
+                FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                                    FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+                FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+                FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+              }
+            }
+            FILTER(?nsn < ?sn || (?nsn = ?sn && STR(?n) <= STR(?m)))
+          } GROUP BY ?m ?sn ?ba ?bb
+        }
+      } GROUP BY ?E ?first ?P ?sel
+    }
+  }
+  BIND(?total > 0 AS ?any)
+  BIND(IF(?first > 1, ?olderEnd, -1e300) AS ?low)
+  BIND(COALESCE(?selShown = 1, false) AS ?selectionShown)
+  LATERAL {
+    {
+      # The rows: the matching members in the window, ranked by the sort (pairs within the window).
+      FILTER(?any)
+      {
+        SELECT ?low ?shownEnd ?m (COUNT(?n) AS ?rank) WHERE {
+          {
+            SELECT ?m ?sn ?hv ?isNum ?vn ?vs ?desc WHERE {
+              $this c:collection ?coll .
+              OPTIONAL { $this c:memberProperty ?mp } BIND(COALESCE(?mp, tree:member) AS ?via)
+              OPTIONAL { $this c:sequenceProperty ?sp1 } OPTIONAL { ?coll ldes:sequencePath ?sp2 } BIND(COALESCE(?sp1, ?sp2, c:none) AS ?seqP)
+              ?coll ?via ?m . FILTER(isIRI(?m))
+              ?m ?seqP ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+              FILTER(NOT EXISTS { $this c:memberClass ?anyClass } || EXISTS { $this c:memberClass ?mc . ?m a/rdfs:subClassOf* ?mc })
+              FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                                  FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+              FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+              FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+              OPTIONAL { $this c:sortColumn ?sc0 } BIND(COALESCE(?sc0, c:none) AS ?sc) BIND(EXISTS { $this c:sortDescending true } AS ?desc)
+              OPTIONAL { ?sc c:cellAs ?sk0 } BIND(COALESCE(?sk0, c:TextCell) AS ?sk)
+              OPTIONAL { ?sc c:via ?sv0 } BIND(COALESCE(?sv0, c:none) AS ?svia)
+              OPTIONAL { ?sc c:cellProperty ?scp0 } BIND(COALESCE(?scp0, c:none) AS ?scp)
+              OPTIONAL { ?sc c:startProperty ?sst0 } BIND(COALESCE(?sst0, c:none) AS ?sst)
+              OPTIONAL { ?sc c:endProperty ?sen0 } BIND(COALESCE(?sen0, c:none) AS ?sen)
+              LATERAL { OPTIONAL { ?m ?svia ?shop } }
+              BIND(COALESCE(IF(?svia = c:none, ?m, ?shop), c:none) AS ?ss)
+              LATERAL { OPTIONAL { ?ss ?scp ?sval0 } }
+              LATERAL { OPTIONAL { ?ss ?sst ?sa FILTER(isNumeric(?sa)) } }
+              LATERAL { OPTIONAL { ?ss ?sen ?sb FILTER(isNumeric(?sb)) } }
+              BIND(COALESCE(?sval0, c:none) AS ?sval)
+              LATERAL { OPTIONAL { ?sval sem:order ?sord FILTER(isNumeric(?sord)) } }
+              LATERAL {
+                OPTIONAL { ?svl0At l10n:of ?sval ; l10n:label ?svl0 }
+  OPTIONAL { ?sval c:label ?svl0 FILTER(lang(?svl0) = "") } OPTIONAL { ?sval c:label ?svl1 FILTER(langMatches(lang(?svl1), "en")) }
+                OPTIONAL { ?svl2At l10n:of ?sval ; l10n:name ?svl2 }
+  OPTIONAL { ?sval rdfs:label ?svl2 FILTER(lang(?svl2) = "") } OPTIONAL { ?sval rdfs:label ?svl3 FILTER(langMatches(lang(?svl3), "en")) }
+              }
+              BIND(IF(?sc = c:none, ?unset, IF(?sk = c:TimeBarCell, xsd:double(?sa), IF(?sk = c:DurationCell, xsd:double(?sb) - xsd:double(?sa),
+                   IF(?sval = c:none, ?unset, IF(isIRI(?sval), xsd:double(?sord), IF(isNumeric(?sval), xsd:double(?sval), ?unset)))))) AS ?vnum)
+              BIND(IF(?sc = c:none || ?sk IN (c:TimeBarCell, c:DurationCell) || ?sval = c:none, ?unset,
+                   IF(isIRI(?sval), IF(BOUND(?sord), ?unset, STR(COALESCE(?svl0, ?svl1, ?svl2, ?svl3, REPLACE(STR(?sval), "^.*[#/]", "")))),
+                   IF(isNumeric(?sval), ?unset, STR(?sval)))) AS ?vstr)
+              BIND(BOUND(?vnum) AS ?isNum) BIND(?isNum || BOUND(?vstr) AS ?hv)
+              BIND(COALESCE(?vnum, 0) AS ?vn) BIND(COALESCE(?vstr, STR(?vnum), "") AS ?vs)
+            }
+          }
+          FILTER(?sn > ?low && ?sn <= ?shownEnd)
+          {
+            SELECT (?m AS ?n) (?sn AS ?nsn) (?hv AS ?nhv) (?isNum AS ?nIsNum) (?vn AS ?nvn) (?vs AS ?nvs) WHERE {
+              $this c:collection ?coll .
+              OPTIONAL { $this c:memberProperty ?mp } BIND(COALESCE(?mp, tree:member) AS ?via)
+              OPTIONAL { $this c:sequenceProperty ?sp1 } OPTIONAL { ?coll ldes:sequencePath ?sp2 } BIND(COALESCE(?sp1, ?sp2, c:none) AS ?seqP)
+              ?coll ?via ?m . FILTER(isIRI(?m))
+              ?m ?seqP ?seqV . FILTER(isNumeric(?seqV)) BIND(xsd:double(?seqV) AS ?sn)
+              FILTER(NOT EXISTS { $this c:memberClass ?anyClass } || EXISTS { $this c:memberClass ?mc . ?m a/rdfs:subClassOf* ?mc })
+              FILTER NOT EXISTS { $this c:filteredBy ?tf . ?tf a c:TextFilter ; c:filterText ?text . FILTER(STRLEN(STR(?text)) > 0)
+                                  FILTER NOT EXISTS { ?tf c:searches ?sp . ?m ?sp ?sv FILTER(CONTAINS(LCASE(STR(?sv)), LCASE(STR(?text)))) } }
+              FILTER NOT EXISTS { $this c:filteredBy ?vf . ?vf a c:ValueFilter ; c:filterProperty ?vp ; c:filterValue ?vv . FILTER(?vv != c:AnyValue) FILTER NOT EXISTS { ?m ?vp ?vv } }
+              FILTER NOT EXISTS { $this c:filteredBy ?ff . ?ff a c:FlagFilter ; c:filterProperty ?fp ; c:filterValue ?fv ; c:included false . ?m ?fp ?fv }
+              OPTIONAL { $this c:sortColumn ?sc0 } BIND(COALESCE(?sc0, c:none) AS ?sc) BIND(EXISTS { $this c:sortDescending true } AS ?desc)
+              OPTIONAL { ?sc c:cellAs ?sk0 } BIND(COALESCE(?sk0, c:TextCell) AS ?sk)
+              OPTIONAL { ?sc c:via ?sv0 } BIND(COALESCE(?sv0, c:none) AS ?svia)
+              OPTIONAL { ?sc c:cellProperty ?scp0 } BIND(COALESCE(?scp0, c:none) AS ?scp)
+              OPTIONAL { ?sc c:startProperty ?sst0 } BIND(COALESCE(?sst0, c:none) AS ?sst)
+              OPTIONAL { ?sc c:endProperty ?sen0 } BIND(COALESCE(?sen0, c:none) AS ?sen)
+              LATERAL { OPTIONAL { ?m ?svia ?shop } }
+              BIND(COALESCE(IF(?svia = c:none, ?m, ?shop), c:none) AS ?ss)
+              LATERAL { OPTIONAL { ?ss ?scp ?sval0 } }
+              LATERAL { OPTIONAL { ?ss ?sst ?sa FILTER(isNumeric(?sa)) } }
+              LATERAL { OPTIONAL { ?ss ?sen ?sb FILTER(isNumeric(?sb)) } }
+              BIND(COALESCE(?sval0, c:none) AS ?sval)
+              LATERAL { OPTIONAL { ?sval sem:order ?sord FILTER(isNumeric(?sord)) } }
+              LATERAL {
+                OPTIONAL { ?sval c:label ?svl0 FILTER(lang(?svl0) = "") } OPTIONAL { ?sval c:label ?svl1 FILTER(langMatches(lang(?svl1), "en")) }
+                OPTIONAL { ?sval rdfs:label ?svl2 FILTER(lang(?svl2) = "") } OPTIONAL { ?sval rdfs:label ?svl3 FILTER(langMatches(lang(?svl3), "en")) }
+              }
+              BIND(IF(?sc = c:none, ?unset, IF(?sk = c:TimeBarCell, xsd:double(?sa), IF(?sk = c:DurationCell, xsd:double(?sb) - xsd:double(?sa),
+                   IF(?sval = c:none, ?unset, IF(isIRI(?sval), xsd:double(?sord), IF(isNumeric(?sval), xsd:double(?sval), ?unset)))))) AS ?vnum)
+              BIND(IF(?sc = c:none || ?sk IN (c:TimeBarCell, c:DurationCell) || ?sval = c:none, ?unset,
+                   IF(isIRI(?sval), IF(BOUND(?sord), ?unset, STR(COALESCE(?svl0, ?svl1, ?svl2, ?svl3, REPLACE(STR(?sval), "^.*[#/]", "")))),
+                   IF(isNumeric(?sval), ?unset, STR(?sval)))) AS ?vstr)
+              BIND(BOUND(?vnum) AS ?isNum) BIND(?isNum || BOUND(?vstr) AS ?hv)
+              BIND(COALESCE(?vnum, 0) AS ?vn) BIND(COALESCE(?vstr, STR(?vnum), "") AS ?vs)
+            }
+          }
+          FILTER(?nsn > ?low && ?nsn <= ?shownEnd)
+          FILTER(?n = ?m || IF(?nhv && ?hv,
+             IF(?nIsNum && ?isNum, IF(?nvn = ?vn, ?nsn < ?sn, IF(?desc, ?nvn > ?vn, ?nvn < ?vn)),
+                                   IF(?nvs = ?vs, ?nsn < ?sn, IF(?desc, ?nvs > ?vs, ?nvs < ?vs))),
+             IF(?nhv != ?hv, ?nhv, ?nsn < ?sn)))
+        } GROUP BY ?low ?shownEnd ?m
+      }
+      BIND(IRI(CONCAT(?g, "/~r-", SUBSTR(MD5(STR(?m)), 1, 8))) AS ?row)
+      BIND(IRI(CONCAT(?g, "/~cols")) AS ?cols)
+      BIND(?bodyNode AS ?body)
+      BIND(STR(?rank) AS ?orderKey)
+      BIND(IF(?m = ?sel, true, ?unset) AS ?isSelected)
+      BIND(IF(IF(?selectionShown, ?m = ?sel, ?rank = 1), true, ?unset) AS ?tabStop)
+    } UNION {
+      # No matching member: a line saying so.
+      FILTER(!?any)
+      OPTIONAL {     ?pickeAt l10n:of $this ; l10n:emptyText ?picke }
+  OPTIONAL { FILTER(!BOUND(?picke))     $this c:emptyText ?anye FILTER(isLiteral(?anye)) }
+  BIND(STR(COALESCE(?picke, ?anye)) AS ?ownEmpty)
+      VALUES (?local ?tag ?parentLocal) { ("empty-row" rdfhtml:Div "body") }
+      BIND(IRI(CONCAT(?g, "/~", ?local)) AS ?el)
+      BIND(IRI(CONCAT(?g, "/~", ?parentLocal)) AS ?parent)
+      BIND(?el AS ?txtParent)
+      BIND(IRI(CONCAT(?g, "/~empty-text")) AS ?txt)
+      BIND(COALESCE(?ownEmpty, "No rows.") AS ?data)
+    } UNION {
+      # The waterfall's scale: from the earliest start to the latest end of the rows shown.
+      FILTER(?any && ?lo0 < 1e300)
+      BIND(?lo0 AS ?lo)
+      BIND(IF(?hi0 < ?lo0 + 1, ?lo0 + 1, ?hi0) AS ?hi)
+      BIND(IRI(CONCAT(?g, "/~scale")) AS ?scale)
+      BIND(?bodyNode AS ?body)
+      BIND(CONCAT("--scale-start: ", STR(?lo), "; --scale-end: ", STR(?hi)) AS ?scaleStyle)
+    } UNION {
+      FILTER(?any)
+      BIND(IRI(CONCAT(?g, "/~window")) AS ?window)
+    } UNION {
+      # The footer: what matches and what is shown, and (pinned) how many are new.
+      BIND(IRI(CONCAT(?g, "/~footer")) AS ?txtParent)
+      BIND(IRI(CONCAT(?g, "/~footer-text")) AS ?txt)
+      BIND(CONCAT(STR(?total), " matching · ", IF(?any, CONCAT("showing ", STR(?first), "–", STR(?E)), "none shown"),
+           IF(?pinned, CONCAT(" · ", STR(?total - ?E), " new"), "")) AS ?data)
+    }
+  }
+}""" .
+
+# --- rows ---------------------------------------------------------------------------------------------
+# A row follows its member and the grid's visible columns (<grid>/~cols); the grid's other state
+# (sort, window, selection) reaches it only as its own c:isSelected / c:tabStop, so moving the
+# selection re-renders two rows. Cells are placed by their column's position.
+
+c:GridRowRendering a sem:Rendering ; sem:targets c:GridRow ; sem:stratum 0 ; sem:follows c:of , c:columnsFrom .
+c:GridRowRendering-fn a sem:Rule ; sem:implements c:GridRowRendering ; sem:function "grid:row" .
+c:GridRowRendering-sparql a sem:Rule ;
+    sem:implements c:GridRowRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?el a ?tag ; sem:renders ?renders ; rdfhtml:class ?cls ; rdfhtml:style ?style ; rdfhtml:tabIndex ?tabIndex ; sem:orderKey ?orderKey ; c:selectsRow ?selects .
+  ?parent rdfhtml:hasChild ?el .
+  ?prev ord:immediatelyPrecedes ?el .
+  ?owner rdfhtml:attribute ?attr . ?attr a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue ?value .
+  ?txtParent rdfhtml:hasChild ?txt . ?txt a rdfhtml:Text ; rdfhtml:data ?data .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:GridRow ; c:of ?m ; c:inGrid ?grid ; c:columnsFrom ?cols .
+  BIND(STR($this) AS ?r)
+  BIND(EXISTS { $this c:isSelected true } AS ?selected)
+  LATERAL {
+    {
+      BIND(IRI(CONCAT(?r, "/~root")) AS ?el) BIND(rdfhtml:Tr AS ?tag) BIND($this AS ?renders) BIND(?m AS ?selects)
+      BIND(IF(EXISTS { $this c:tabStop true }, "0", "-1") AS ?tabIndex)
+    } UNION {
+      VALUES ?name { "role" "aria-selected" }
+      BIND(IF(?name = "role", "row", STR(?selected)) AS ?value)
+      BIND(IRI(CONCAT(?r, "/~root")) AS ?owner)
+      BIND(IRI(CONCAT(?r, "/~root-", ?name)) AS ?attr)
+    } UNION {
+      # One cell per shown column, by the column's c:cellAs.
+      ?grid c:gridColumns ?list .
+      LATERAL { SELECT ?list ?col (COUNT(?before) AS ?at) WHERE { ?list rdf:rest* ?cell . ?cell rdf:first ?col . ?list rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?list ?cell ?col }
+      ?cols c:visibleColumn ?col .
+      BIND(CONCAT(?r, "/~c-", SUBSTR(MD5(STR(?col)), 1, 8)) AS ?id)
+      OPTIONAL { ?col c:cellAs ?kindRaw } BIND(COALESCE(?kindRaw, c:TextCell) AS ?kind)
+      OPTIONAL { ?col c:align ?alignRaw } BIND(COALESCE(?alignRaw, "") AS ?align)
+      # Unset properties become c:none, which nothing has, so the lookups below stay correlated.
+      OPTIONAL { ?col c:via ?viaRaw } BIND(COALESCE(?viaRaw, c:none) AS ?viaP)
+      OPTIONAL { ?col c:cellProperty ?cpRaw } BIND(COALESCE(?cpRaw, c:none) AS ?cp)
+      OPTIONAL { ?col c:detailProperty ?dpRaw } BIND(COALESCE(?dpRaw, c:none) AS ?dp)
+      OPTIONAL { ?col c:startProperty ?spRaw } BIND(COALESCE(?spRaw, c:none) AS ?sp)
+      OPTIONAL { ?col c:endProperty ?epRaw } BIND(COALESCE(?epRaw, c:none) AS ?ep)
+      OPTIONAL { ?col c:colorProperty ?kpRaw } BIND(COALESCE(?kpRaw, c:none) AS ?kp)
+      LATERAL { OPTIONAL { ?m ?viaP ?hop } }
+      BIND(COALESCE(IF(?viaP = c:none, ?m, ?hop), c:none) AS ?s)
+      LATERAL { OPTIONAL { ?s ?cp ?v0 } }
+      LATERAL { OPTIONAL { ?s ?dp ?d0 } }
+      LATERAL { OPTIONAL { ?s ?sp ?a0 FILTER(isNumeric(?a0)) } }
+      LATERAL { OPTIONAL { ?s ?ep ?b0 FILTER(isNumeric(?b0)) } }
+      LATERAL { OPTIONAL { ?s ?kp ?k0 } }
+      BIND(COALESCE(?v0, c:none) AS ?v) BIND(COALESCE(?d0, c:none) AS ?d) BIND(COALESCE(?k0, c:none) AS ?k)
+      BIND(xsd:double(?a0) AS ?a) BIND(xsd:double(?b0) AS ?b)
+      LATERAL { OPTIONAL { ?k c:swatch/sem:slug ?swatch } }
+      LATERAL { OPTIONAL { ?k sty:tone/sem:slug ?barTone } }
+      LATERAL { OPTIONAL { ?v sty:tone/sem:slug ?valueTone } }
+      LATERAL {
+        OPTIONAL { ?vl0At l10n:of ?v ; l10n:label ?vl0 }
+  OPTIONAL { ?v c:label ?vl0 FILTER(lang(?vl0) = "") } OPTIONAL { ?v c:label ?vl1 FILTER(langMatches(lang(?vl1), "en")) }
+        OPTIONAL { ?vl2At l10n:of ?v ; l10n:name ?vl2 }
+  OPTIONAL { ?v rdfs:label ?vl2 FILTER(lang(?vl2) = "") } OPTIONAL { ?v rdfs:label ?vl3 FILTER(langMatches(lang(?vl3), "en")) }
+      }
+      LATERAL {
+        OPTIONAL { ?dl0At l10n:of ?d ; l10n:label ?dl0 }
+  OPTIONAL { ?d c:label ?dl0 FILTER(lang(?dl0) = "") } OPTIONAL { ?d c:label ?dl1 FILTER(langMatches(lang(?dl1), "en")) }
+        OPTIONAL { ?dl2At l10n:of ?d ; l10n:name ?dl2 }
+  OPTIONAL { ?d rdfs:label ?dl2 FILTER(lang(?dl2) = "") } OPTIONAL { ?d rdfs:label ?dl3 FILTER(langMatches(lang(?dl3), "en")) }
+      }
+      BIND(?v != c:none AS ?hasValue)
+      BIND(?d != c:none AS ?hasDetail)
+      BIND(IF(isIRI(?v), STR(COALESCE(?vl0, ?vl1, ?vl2, ?vl3, REPLACE(STR(?v), "^.*[#/]", ""))), STR(?v)) AS ?shown)
+      BIND(IF(isIRI(?d), STR(COALESCE(?dl0, ?dl1, ?dl2, ?dl3, REPLACE(STR(?d), "^.*[#/]", ""))), STR(?d)) AS ?detail)
+      # Durations as grid.ts formatDuration writes them: ms under a second, else s to two places.
+      BIND(IF(?a < 1000, CONCAT(STR(ROUND(?a)), " ms"), CONCAT(STR(ROUND(?a / 10) / 100), " s")) AS ?aText)
+      BIND(?b - ?a AS ?span)
+      BIND(IF(?span < 1000, CONCAT(STR(ROUND(?span)), " ms"), CONCAT(STR(ROUND(?span / 10) / 100), " s")) AS ?spanText)
+      VALUES ?part { "td" "bar" "a-bar" "text" "badge" "a-badge" "code" "value" "detail" }
+      LATERAL {
+        {
+          FILTER(?part = "td")
+          BIND(IRI(?id) AS ?el) BIND(rdfhtml:Td AS ?tag) BIND(IRI(CONCAT(?r, "/~root")) AS ?parent) BIND(STR(?at) AS ?orderKey)
+          BIND(IF(?align = "end", "sem-end", IF(?align = "center", "sem-center", IF(?kind = c:TimeBarCell, "sem-bars", ?none))) AS ?cls)
+        } UNION {
+          FILTER(?part = "bar" && ?kind = c:TimeBarCell && BOUND(?a))
+          BIND(IRI(CONCAT(?id, "-bar")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND(IRI(?id) AS ?parent)
+          BIND(IF(BOUND(?b), "sem-bar", "sem-bar sem-open") AS ?cls)
+          BIND(CONCAT("--from: ", STR(?a), IF(BOUND(?b), CONCAT("; --to: ", STR(?b)), ""), IF(BOUND(?swatch), CONCAT("; --bar: var(--sem-", ?swatch, ")"), "")) AS ?style)
+        } UNION {
+          FILTER(?part = "a-bar" && ?kind = c:TimeBarCell && BOUND(?a))
+          VALUES ?name { "data-sem-tone" "role" "aria-label" }
+          FILTER(?name != "data-sem-tone" || (!BOUND(?swatch) && BOUND(?barTone)))
+          BIND(IF(?name = "role", "img", IF(?name = "data-sem-tone", ?barTone,
+               IF(BOUND(?b), CONCAT("from ", ?aText, " for ", ?spanText), CONCAT("from ", ?aText, ", still running")))) AS ?value)
+          BIND(IRI(CONCAT(?id, "-bar")) AS ?owner) BIND(IRI(CONCAT(?id, "-bar-", ?name)) AS ?attr)
+        } UNION {
+          FILTER(?part = "text" && ((?kind = c:DurationCell && BOUND(?a)) || (?kind = c:BytesCell && isNumeric(?v))))
+          BIND(IRI(?id) AS ?txtParent) BIND(IRI(CONCAT(?id, "-text")) AS ?txt)
+          BIND(xsd:double(?v) AS ?n)
+          BIND(IF(?kind = c:DurationCell, IF(BOUND(?b), ?spanText, "…"),
+               IF(?n < 1024, CONCAT(STR(?v), " B"),
+               IF(?n < 1048576, CONCAT(STR(ROUND(?v * 10 / 1024) / 10), " KiB"), CONCAT(STR(ROUND(?v * 10 / 1048576) / 10), " MiB")))) AS ?data)
+        } UNION {
+          FILTER(?part = "badge" && ?kind = c:BadgeCell && ?hasValue)
+          BIND(IRI(CONCAT(?id, "-badge")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND("sem-cell-badge" AS ?cls) BIND(IRI(?id) AS ?parent)
+          BIND(?el AS ?txtParent) BIND(IRI(CONCAT(?id, "-text")) AS ?txt) BIND(?shown AS ?data)
+        } UNION {
+          FILTER(?part = "a-badge" && ?kind = c:BadgeCell && ?hasValue)
+          BIND(IRI(CONCAT(?id, "-badge")) AS ?owner) BIND("data-sem-tone" AS ?name) BIND(COALESCE(?valueTone, "neutral") AS ?value)
+          BIND(IRI(CONCAT(?id, "-badge-data-sem-tone")) AS ?attr)
+        } UNION {
+          FILTER(?part = "code" && ?kind = c:CodeCell && ?hasValue)
+          BIND(IRI(CONCAT(?id, "-code")) AS ?el) BIND(rdfhtml:Code AS ?tag) BIND(IRI(?id) AS ?parent)
+          BIND(?el AS ?txtParent) BIND(IRI(CONCAT(?id, "-text")) AS ?txt) BIND(?shown AS ?data)
+        } UNION {
+          FILTER(?part = "value" && ?kind = c:TextCell && ?hasValue)
+          BIND(IRI(CONCAT(?id, "-value")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND("sem-value" AS ?cls) BIND(IRI(?id) AS ?parent)
+          BIND(?el AS ?txtParent) BIND(IRI(CONCAT(?id, "-text")) AS ?txt) BIND(?shown AS ?data)
+        } UNION {
+          FILTER(?part = "detail" && ?kind = c:TextCell && ?hasDetail)
+          BIND(IRI(CONCAT(?id, "-detail")) AS ?el) BIND(rdfhtml:Span AS ?tag) BIND("sem-detail" AS ?cls) BIND(IRI(?id) AS ?parent)
+          BIND(IF(?hasValue, IRI(CONCAT(?id, "-value")), ?none) AS ?prev)
+          BIND(?el AS ?txtParent) BIND(IRI(CONCAT(?id, "-detail-text")) AS ?txt) BIND(?detail AS ?data)
+        }
+      }
+    }
+  }
+}""" .
+c:GridRowRendering-sparql-text a sem:Rule ;
+    sem:implements c:GridRowRendering ;
+    sem:modality mod:Text ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:GridRow ; c:of ?m ; c:inGrid ?grid ; c:columnsFrom ?cols .
+  BIND(EXISTS { $this c:isSelected true } AS ?selected)
+  LATERAL { OPTIONAL {
+    SELECT ?m ?grid ?cols (GROUP_CONCAT(?cellText; separator=" \u2502 ") AS ?cells) WHERE {
+      { SELECT DISTINCT ?m ?grid ?cols ?col ?cellText ?at WHERE {
+        ?grid c:gridColumns ?list .
+      LATERAL { SELECT ?list ?col (COUNT(?before) AS ?at) WHERE { ?list rdf:rest* ?cell . ?cell rdf:first ?col . ?list rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?list ?cell ?col }
+      FILTER(isIRI(?col))
+        ?cols c:visibleColumn ?col .
+        OPTIONAL { ?col c:cellAs ?kindRaw } BIND(COALESCE(?kindRaw, c:TextCell) AS ?kind)
+        FILTER(?kind != c:TimeBarCell)
+        OPTIONAL { ?col c:via ?viaRaw } BIND(COALESCE(?viaRaw, c:none) AS ?viaP)
+        OPTIONAL { ?col c:cellProperty ?cpRaw } BIND(COALESCE(?cpRaw, c:none) AS ?cp)
+        OPTIONAL { ?col c:startProperty ?spRaw } BIND(COALESCE(?spRaw, c:none) AS ?sp)
+        OPTIONAL { ?col c:endProperty ?epRaw } BIND(COALESCE(?epRaw, c:none) AS ?ep)
+        LATERAL { OPTIONAL { ?m ?viaP ?hop } }
+        BIND(COALESCE(IF(?viaP = c:none, ?m, ?hop), c:none) AS ?s)
+        LATERAL { OPTIONAL { ?s ?cp ?v0 } }
+        LATERAL { OPTIONAL { ?s ?sp ?a0 FILTER(isNumeric(?a0)) } }
+        LATERAL { OPTIONAL { ?s ?ep ?b0 FILTER(isNumeric(?b0)) } }
+        BIND(COALESCE(?v0, c:none) AS ?v)
+        BIND(xsd:double(?a0) AS ?a) BIND(xsd:double(?b0) AS ?b)
+        LATERAL { OPTIONAL { SELECT ?v ?lcv WHERE {
+  
+  OPTIONAL { ?v l10n:label ?picklcv }
+  OPTIONAL { FILTER(!BOUND(?picklcv)) ?picklcvAt l10n:of ?v ; l10n:label ?picklcvT }
+  OPTIONAL { FILTER(!BOUND(?picklcv) && !BOUND(?picklcvT)) ?v c:label ?anylcv FILTER(isLiteral(?anylcv)) }
+  BIND(STR(COALESCE(?picklcv, ?picklcvT, ?anylcv)) AS ?lcv)
+  } } }
+  LATERAL { OPTIONAL { SELECT ?v ?lrv WHERE {
+  
+  OPTIONAL { ?picklrvAt l10n:of ?v ; l10n:name ?picklrv }
+  OPTIONAL { FILTER(!BOUND(?picklrv)) ?v rdfs:label ?anylrv FILTER(isLiteral(?anylrv)) }
+  BIND(STR(COALESCE(?picklrv, ?anylrv)) AS ?lrv)
+  } } }
+  BIND(COALESCE(?lcv, ?lrv, REPLACE(STR(?v), "^.*[#/]", "")) AS ?valueLabel)
+        BIND(IF(?v = c:none, "", IF(isIRI(?v), ?valueLabel, STR(?v))) AS ?shown)
+        BIND(?b - ?a AS ?span)
+        BIND(IF(?span < 1000, CONCAT(STR(ROUND(?span)), " ms"), CONCAT(STR(ROUND(?span / 10) / 100), " s")) AS ?spanText)
+        BIND(IF(isNumeric(?v), xsd:double(?v), 0) AS ?n)
+        BIND(IF(isNumeric(?v), STR(?v), "0") AS ?nText)
+        BIND(IF(?s = c:none, "",
+             IF(?kind = c:BytesCell, IF(?n < 1024, CONCAT(?nText, " B"), IF(?n < 1048576, CONCAT(STR(ROUND(?n * 10 / 1024) / 10), " KiB"), CONCAT(STR(ROUND(?n * 10 / 1048576) / 10), " MiB"))),
+             IF(?kind = c:DurationCell, IF(!BOUND(?a), "", IF(!BOUND(?b), "\u2026", ?spanText)),
+             ?shown))) AS ?cellText)
+      } ORDER BY ?at }
+    } GROUP BY ?m ?grid ?cols
+  } }
+  BIND(CONCAT(IF(?selected, "\u25B8 ", "  "), COALESCE(?cells, "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+}""" .
+
+# --- the time axis ------------------------------------------------------------------------------------
+
+c:TimeAxisRendering a sem:Rendering ; sem:targets c:TimeAxis ; sem:stratum 0 ; sem:follows c:scale .
+c:TimeAxisRendering-fn a sem:Rule ; sem:implements c:TimeAxisRendering ; sem:function "grid:time-axis" .
+c:TimeAxisRendering-sparql a sem:Rule ;
+    sem:implements c:TimeAxisRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:style ?rootStyle ; rdfhtml:attribute ?hidden ; rdfhtml:hasChild ?tick .
+  ?hidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?tick a rdfhtml:Span ; rdfhtml:class "sem-tick" ; rdfhtml:style ?tickStyle ; rdfhtml:hasChild ?tickText .
+  ?tickText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?previous ord:immediatelyPrecedes ?tick .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:TimeAxis .
+  OPTIONAL { $this c:scale ?scale }
+  BIND(COALESCE(?scale, $this) AS ?from)
+  ?from c:start ?a ; c:end ?b .
+  FILTER(isNumeric(?a) && isNumeric(?b))
+  BIND(xsd:double(?b) - xsd:double(?a) AS ?d)
+  BIND(ROUND(IF(?d < 1, 1, ?d) * 1000) / 1000 AS ?span)
+  # The smallest 1-2-5 interval that crosses the span in at most five steps (grid.ts TICK_INTERVALS).
+  LATERAL {
+    SELECT ?span (MIN(?candidate) AS ?smallest) WHERE {
+      VALUES ?candidate { 1 2 5 10 20 50 100 200 500 1000 2000 5000 10000 20000 50000 100000 200000 500000 1000000 2000000 5000000 }
+      FILTER(?span / ?candidate <= 5)
+    } GROUP BY ?span
+  }
+  BIND(COALESCE(?smallest, 5000000) AS ?interval)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(CONCAT("--span: ", STR(?span)) AS ?rootStyle)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-hidden")) AS ?hidden)
+  VALUES ?k { 0 1 2 3 4 5 }
+  BIND(?k * ?interval AS ?t)
+  FILTER(?t <= ?span)
+  BIND(IRI(CONCAT(STR($this), "/~t", STR(?k))) AS ?tick)
+  BIND(CONCAT("--tick: ", STR(?t)) AS ?tickStyle)
+  BIND(IRI(CONCAT(STR($this), "/~t", STR(?k), "-text")) AS ?tickText)
+  BIND(IF(?t < 1000, CONCAT(STR(?t), " ms"), CONCAT(STR(?t / 1000), " s")) AS ?label)
+  BIND(IF(?k > 0, IRI(CONCAT(STR($this), "/~t", STR(?k - 1))), ?none) AS ?previous)
+}""" .
+c:TimeAxisRendering-sparql-text a sem:Rule ;
+    sem:implements c:TimeAxisRendering ;
+    sem:modality mod:Text ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:TimeAxis .
+  OPTIONAL { $this c:scale ?scale }
+  BIND(COALESCE(?scale, $this) AS ?from)
+  ?from c:start ?a ; c:end ?b .
+  FILTER(isNumeric(?a) && isNumeric(?b))
+  BIND(xsd:double(?b) - xsd:double(?a) AS ?d)
+  BIND(ROUND(IF(?d < 1, 1, ?d) * 1000) / 1000 AS ?span)
+  LATERAL {
+    SELECT ?span (MIN(?candidate) AS ?smallest) WHERE {
+      VALUES ?candidate { 1 2 5 10 20 50 100 200 500 1000 2000 5000 10000 20000 50000 100000 200000 500000 1000000 2000000 5000000 }
+      FILTER(?span / ?candidate <= 5)
+    } GROUP BY ?span
+  }
+  BIND(COALESCE(?smallest, 5000000) AS ?interval)
+  LATERAL {
+    SELECT ?span ?interval (GROUP_CONCAT(?label; separator="  \u00B7  ") AS ?line) WHERE {
+      { SELECT ?span ?interval ?label WHERE {
+        VALUES ?k { 0 1 2 3 4 5 }
+        BIND(?k * ?interval AS ?t)
+        FILTER(?t <= ?span)
+        BIND(IF(?t < 1000, CONCAT(STR(?t), " ms"), CONCAT(STR(?t / 1000), " s")) AS ?label)
+      } ORDER BY ?k }
+    } GROUP BY ?span ?interval
+  }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+}""" .
+
+# --- behaviour ----------------------------------------------------------------------------------------
+
+# A header sorts by its column; again reverses it (the table's reaction, for grids).
+c:DataGridSort a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:DataGrid ;
+    beh:deletes """CONSTRUCT { $this c:sortColumn ?old . $this c:sortDescending ?desc }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:sorts ?col .
+        { $this c:sortColumn ?old } UNION { $this c:sortDescending ?desc } }""" ;
+    beh:inserts """CONSTRUCT { $this c:sortColumn ?col ; c:sortDescending ?desc }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:sorts ?col .
+        BIND(EXISTS { $this c:sortColumn ?col . FILTER NOT EXISTS { $this c:sortDescending true } } AS ?desc) }""" ;
+    sem:function "data:table-sort" .
+
+# A row selects its member and pins the window where it is (new members do not move the row
+# away); the selected row again deselects it.
+c:DataGridSelect a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:DataGrid ;
+    beh:deletes """CONSTRUCT { $this c:selectedRow ?old ; c:followTail ?follow ; c:windowEnd ?pinned }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selectsRow ?m .
+  { $this c:selectedRow ?old }
+  UNION { FILTER NOT EXISTS { $this c:selectedRow ?m } $this c:followTail ?follow }
+  UNION { FILTER NOT EXISTS { $this c:selectedRow ?m } ?window c:shownEnd ?end FILTER(?window = IRI(CONCAT(STR($this), "/~window"))) $this c:windowEnd ?pinned }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:selectedRow ?m ; c:followTail false ; c:windowEnd ?end }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selectsRow ?m .
+  FILTER NOT EXISTS { $this c:selectedRow ?m }
+  OPTIONAL { ?window c:shownEnd ?end FILTER(?window = IRI(CONCAT(STR($this), "/~window"))) }
+}""" ;
+    sem:function "grid:select" .
+
+# Older, Newer, pausing the follow: pin the window at a sequence.
+c:DataGridPin a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:DataGrid ;
+    beh:deletes """CONSTRUCT { $this c:followTail ?follow ; c:windowEnd ?pinned }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:windowTo ?to . { $this c:followTail ?follow } UNION { $this c:windowEnd ?pinned } }""" ;
+    beh:inserts """CONSTRUCT { $this c:followTail false ; c:windowEnd ?to }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:windowTo ?to }""" ;
+    sem:function "grid:pin" .
+
+# Jump to latest, Follow, the last Newer: follow the newest members again.
+c:DataGridFollow a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:DataGrid ;
+    beh:deletes """CONSTRUCT { $this c:followTail ?follow ; c:windowEnd ?pinned }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:followsLatest true . { $this c:followTail ?follow } UNION { $this c:windowEnd ?pinned } }""" ;
+    beh:inserts """CONSTRUCT { $this c:followTail true }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:followsLatest true }""" ;
+    sem:function "grid:follow" .
+
+# A column's edge, dragged or moved by arrow keys: its width (at least 48px).
+c:DataGridResizeColumn a beh:Reaction ;
+    beh:when beh:Size ;
+    beh:sourceClass c:DataGrid ;
+    beh:deletes """CONSTRUCT { ?col c:width ?old }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:resizes ?col . ?col c:width ?old }""" ;
+    beh:inserts """CONSTRUCT { ?col c:width ?width }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:resizes ?col . $event beh:size ?size .
+        BIND(xsd:integer(IF(?size < 48, 48, ROUND(?size))) AS ?width) }""" ;
+    sem:function "grid:resize-column" .

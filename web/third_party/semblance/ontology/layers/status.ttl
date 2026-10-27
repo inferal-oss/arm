@@ -1,0 +1,38 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix st: <https://semblance.dev/ns/status#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Status layer. Any component may be busy (st:busy true): the layer marks its
+# root aria-busy, so assistive technology waits for it, and the theme dims it
+# under a shimmer (theme/layers.ttl). Whatever makes it busy - a request in
+# flight, a long computation - writes st:busy; the component knows nothing.
+
+<https://semblance.dev/ns/status> a owl:Ontology ;
+    rdfs:label "Semblance status layer"@en .
+
+st:Layer a sem:Layer ; rdfs:label "status"@en .
+
+st:busy a owl:DatatypeProperty ; rdfs:comment "The component's content is being updated."@en .
+
+st:Busy a sem:Rendering ;
+    sem:requires st:busy ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer st:Layer ;
+    sem:stratum 10 ;
+    sem:watches st:busy .
+st:Busy-fn a sem:Rule ; sem:implements st:Busy ; sem:function "status:busy" .
+st:Busy-sparql a sem:Rule ;
+    sem:implements st:Busy ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?busy .
+  ?busy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-busy" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this st:busy ?value FILTER(isLiteral(?value) && STR(?value) = "true")
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-busy")) AS ?busy)
+}""" .

@@ -1,0 +1,286 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix val: <https://semblance.dev/ns/validation#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Validation layer. A field says which SHACL property shape its value must
+# conform to (val:validates); the layer checks the field's c:value (or
+# c:checked) against the shape's constraints and derives c:error with the
+# shape's sh:message, which every field already renders (and the a11y layer
+# turns into aria-invalid + an announced message). Errors appear once the
+# field has a value; a required field without one is invalid but quiet.
+#
+# A button with val:requires (fields) is disabled while any of them is
+# invalid. The layer runs before the components (stratum -10), so they render
+# its conclusions like any other input. Supported: sh:minCount (required),
+# sh:minLength, sh:maxLength, sh:pattern (+ sh:flags), sh:minInclusive,
+# sh:maxInclusive, sh:datatype (xsd:integer / xsd:decimal), sh:in.
+#
+# A field that edits a property of another node (c:controls, c:property: a
+# combobox, a tag input) is checked by the values that node has: sh:minCount
+# (quietly), sh:maxCount (with the message, past it; and val:full at it, so the
+# field adds no more). The text typed into one that creates values
+# (c:allowsCustom) is a candidate value: it is checked against the value
+# constraints, and val:invalidEntry (the message) keeps it from being committed. A field may
+# validate against several shapes; the first violated one speaks.
+#
+# A dated field (one the localization layer gives a date pattern: a date field, a time field) over
+# a date or time property (sh:datatype, else the property's rdfs:range) also has its typed text
+# checked: it must read as a date or time in the locale's format, or the field says how to write
+# one (c:InvalidDatePhrase, with the locale's pattern). Its values are checked against
+# sh:minInclusive / sh:maxInclusive as ISO text, and against sh:lessThanOrEquals (a range's start
+# shape names the end property); a shape speaks for the property its sh:path names.
+
+<https://semblance.dev/ns/validation> a owl:Ontology ;
+    rdfs:label "Semblance validation layer"@en .
+
+val:Layer a sem:Layer ; rdfs:label "validation"@en .
+
+val:validates a owl:ObjectProperty ; rdfs:range sh:PropertyShape ;
+    rdfs:comment "The shape a field's value must conform to."@en .
+val:requires a owl:ObjectProperty ; rdfs:range rdf:List ;
+    rdfs:comment "On a button: the fields that must all be valid for it to be enabled."@en .
+val:invalid a owl:DatatypeProperty ;
+    rdfs:comment "Derived: the field's value violates its shape (or a required field is empty)."@en .
+val:invalidEntry a owl:DatatypeProperty ;
+    rdfs:comment "Derived: the text typed into a field that creates values breaks its shape's value constraints, so it cannot be committed. The value is the shape's sh:message."@en .
+val:full a owl:DatatypeProperty ;
+    rdfs:comment "Derived: the property a field edits holds as many values as its shape's sh:maxCount allows. The value is the shape's sh:message."@en .
+
+val:Check a sem:Rendering ;
+    sem:requires val:validates , val:requires , l10n:datePattern ;
+    rdfs:comment "Checks fields against their shapes and gates buttons on them."@en ;
+    sem:targets sem:Component ;
+    sem:layer val:Layer ;
+    sem:stratum -10 ;
+    sem:inputOnly true ;
+    sem:follows c:controls .
+val:Check-fn a sem:Rule ;
+    sem:implements val:Check ;
+    sem:function "validation:check" .
+# SPARQL twin of "validation:check": each field's first violated shape (in IRI order), its
+# message in the viewer's language; a field over another node's property counts that node's
+# values; a dated field reads its typed text in the locale and keeps its values within bounds;
+# a button is disabled while a field it requires (through its list) is invalid.
+val:Check-sparql a sem:Rule ;
+    sem:implements val:Check ;
+    sem:follows c:controls , ( val:requires [ sem:zeroOrMore rdf:rest ] rdf:first ) ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  $this val:invalid ?invalid ; c:error ?error ; val:full ?full ; val:invalidEntry ?entry ; c:disabled ?disabled .
+}
+WHERE {
+  { $this val:validates ?anyShape } UNION { $this val:requires ?anyList } UNION { $this l10n:datePattern ?anyPattern }
+  # A plain field: its own value against its shapes. Pristine (no value), it is invalid but says nothing.
+  OPTIONAL { SELECT ?plainProblem WHERE {
+    $this val:validates ?shape . FILTER NOT EXISTS { $this c:controls ?ct ; c:property ?cp }
+    OPTIONAL { $this c:value ?ownValue }
+    OPTIONAL { $this c:checked ?ownChecked }
+    BIND(IF(BOUND(?ownValue), STR(?ownValue), IF(BOUND(?ownChecked), IF(STR(?ownChecked) = "true", "true", ""), ?none)) AS ?value)
+    OPTIONAL { ?shape sh:minCount ?minCountp }
+    OPTIONAL { ?shape sh:minLength ?minLengthp }
+    OPTIONAL { ?shape sh:maxLength ?maxLengthp }
+    OPTIONAL { ?shape sh:pattern ?patternp }
+    OPTIONAL { ?shape sh:flags ?flagsp }
+    OPTIONAL { ?shape sh:datatype ?datatypep }
+    OPTIONAL { ?shape sh:minInclusive ?minp }
+    OPTIONAL { ?shape sh:maxInclusive ?maxp }
+    LATERAL { OPTIONAL { SELECT ?shape ?messagep WHERE {
+  
+  OPTIONAL { ?pickmsgpAt l10n:of ?shape ; l10n:message ?pickmsgp }
+  OPTIONAL { FILTER(!BOUND(?pickmsgp)) ?shape sh:message ?anymsgp FILTER(isLiteral(?anymsgp)) }
+  BIND(STR(COALESCE(?pickmsgp, ?anymsgp)) AS ?messagep)
+  } } }
+    BIND(xsd:double(REPLACE(?value, "^\\\\s+|\\\\s+$", "")) AS ?xp)
+    BIND(?datatypep = xsd:integer || ?datatypep = xsd:decimal AS ?numericp)
+    BIND(IF(!BOUND(?value) || ?value = "",
+           IF(COALESCE(xsd:double(?minCountp), 0) > 0, COALESCE(?messagep, "Required."), ?none),
+         IF(BOUND(?minLengthp) && STRLEN(?value) < xsd:double(?minLengthp), COALESCE(?messagep, CONCAT("At least ", STR(?minLengthp), " characters.")),
+         IF(BOUND(?maxLengthp) && STRLEN(?value) > xsd:double(?maxLengthp), COALESCE(?messagep, CONCAT("At most ", STR(?maxLengthp), " characters.")),
+         IF(BOUND(?patternp) && !REGEX(?value, STR(?patternp), COALESCE(STR(?flagsp), "")), COALESCE(?messagep, "Does not match the expected format."),
+         IF(COALESCE(?numericp, false) && (REPLACE(?value, "^\\\\s+|\\\\s+$", "") = "" || !BOUND(?xp) || (?datatypep = xsd:integer && ?xp != FLOOR(?xp))),
+            COALESCE(?messagep, IF(?datatypep = xsd:integer, "A whole number.", "A number.")),
+         IF(BOUND(?minp) && !COALESCE(?xp >= xsd:double(?minp), false), COALESCE(?messagep, CONCAT("At least ", STR(?minp), ".")),
+         IF(BOUND(?maxp) && !COALESCE(?xp <= xsd:double(?maxp), false), COALESCE(?messagep, CONCAT("At most ", STR(?maxp), ".")),
+         IF(EXISTS { ?shape sh:in ?listp } && NOT EXISTS { ?shape sh:in/rdf:rest*/rdf:first ?allowedp FILTER(STR(?allowedp) = ?value) },
+            COALESCE(?messagep, "Not one of the allowed values."), ?none)))))))) AS ?plainProblem)
+    FILTER(BOUND(?plainProblem))
+  } ORDER BY STR(?shape) LIMIT 1 }
+  OPTIONAL { $this c:value ?shownValue }
+  OPTIONAL { $this c:checked ?shownChecked }
+  BIND(BOUND(?shownValue) || BOUND(?shownChecked) AS ?touched)
+  # A field over another node's property: that node's values against sh:minCount / sh:maxCount,
+  # and the typed text, when it creates values (c:allowsCustom), against the value constraints.
+  OPTIONAL { FILTER EXISTS { $this c:controls ?ct ; c:property ?cp } { SELECT (COUNT(?held) AS ?count) WHERE { OPTIONAL { $this c:controls ?target ; c:property ?property . FILTER(isIRI(?target)) ?target ?property ?held } } } }
+  BIND(EXISTS { FILTER EXISTS { $this c:controls ?ct ; c:property ?cp } $this val:validates ?s1 .
+    { ?s1 sh:minCount ?lo FILTER(?count < xsd:double(?lo)) } UNION { ?s1 sh:maxCount ?hi FILTER(?count > xsd:double(?hi)) } } AS ?outOfBounds)
+  OPTIONAL { SELECT ?tooMany WHERE {
+    $this val:validates ?shape . FILTER EXISTS { $this c:controls ?ct ; c:property ?cp } { SELECT (COUNT(?held) AS ?count) WHERE { OPTIONAL { $this c:controls ?target ; c:property ?property . FILTER(isIRI(?target)) ?target ?property ?held } } } ?shape sh:maxCount ?over . FILTER(?count > xsd:double(?over))
+    LATERAL { OPTIONAL { SELECT ?shape ?overMessage WHERE {
+  
+  OPTIONAL { ?pickomAt l10n:of ?shape ; l10n:message ?pickom }
+  OPTIONAL { FILTER(!BOUND(?pickom)) ?shape sh:message ?anyom FILTER(isLiteral(?anyom)) }
+  BIND(STR(COALESCE(?pickom, ?anyom)) AS ?overMessage)
+  } } }
+    BIND(COALESCE(?overMessage, CONCAT("At most ", STR(?over), ".")) AS ?tooMany)
+    FILTER(BOUND(?tooMany))
+  } ORDER BY STR(?shape) LIMIT 1 }
+  OPTIONAL { SELECT ?atCapacity WHERE {
+    $this val:validates ?shape . FILTER EXISTS { $this c:controls ?ct ; c:property ?cp } { SELECT (COUNT(?held) AS ?count) WHERE { OPTIONAL { $this c:controls ?target ; c:property ?property . FILTER(isIRI(?target)) ?target ?property ?held } } } ?shape sh:maxCount ?cap . FILTER(?count >= xsd:double(?cap))
+    LATERAL { OPTIONAL { SELECT ?shape ?capMessage WHERE {
+  
+  OPTIONAL { ?pickcmAt l10n:of ?shape ; l10n:message ?pickcm }
+  OPTIONAL { FILTER(!BOUND(?pickcm)) ?shape sh:message ?anycm FILTER(isLiteral(?anycm)) }
+  BIND(STR(COALESCE(?pickcm, ?anycm)) AS ?capMessage)
+  } } }
+    BIND(COALESCE(?capMessage, CONCAT("At most ", STR(?cap), ".")) AS ?atCapacity)
+    FILTER(BOUND(?atCapacity))
+  } ORDER BY STR(?shape) LIMIT 1 }
+  OPTIONAL { SELECT ?entryProblem WHERE {
+    $this val:validates ?shape . FILTER EXISTS { $this c:controls ?ct ; c:property ?cp } $this c:allowsCustom ?creates . FILTER(STR(?creates) = "true")
+    $this c:value ?typedRaw . BIND(REPLACE(STR(?typedRaw), "^\\\\s+|\\\\s+$", "") AS ?typed) FILTER(?typed != "")
+    OPTIONAL { ?shape sh:minCount ?minCounte }
+    OPTIONAL { ?shape sh:minLength ?minLengthe }
+    OPTIONAL { ?shape sh:maxLength ?maxLengthe }
+    OPTIONAL { ?shape sh:pattern ?patterne }
+    OPTIONAL { ?shape sh:flags ?flagse }
+    OPTIONAL { ?shape sh:datatype ?datatypee }
+    OPTIONAL { ?shape sh:minInclusive ?mine }
+    OPTIONAL { ?shape sh:maxInclusive ?maxe }
+    LATERAL { OPTIONAL { SELECT ?shape ?messagee WHERE {
+  
+  OPTIONAL { ?pickmsgeAt l10n:of ?shape ; l10n:message ?pickmsge }
+  OPTIONAL { FILTER(!BOUND(?pickmsge)) ?shape sh:message ?anymsge FILTER(isLiteral(?anymsge)) }
+  BIND(STR(COALESCE(?pickmsge, ?anymsge)) AS ?messagee)
+  } } }
+    BIND(xsd:double(REPLACE(?typed, "^\\\\s+|\\\\s+$", "")) AS ?xe)
+    BIND(?datatypee = xsd:integer || ?datatypee = xsd:decimal AS ?numerice)
+    BIND(IF(!BOUND(?typed) || ?typed = "",
+           IF(COALESCE(xsd:double(?minCounte), 0) > 0, COALESCE(?messagee, "Required."), ?none),
+         IF(BOUND(?minLengthe) && STRLEN(?typed) < xsd:double(?minLengthe), COALESCE(?messagee, CONCAT("At least ", STR(?minLengthe), " characters.")),
+         IF(BOUND(?maxLengthe) && STRLEN(?typed) > xsd:double(?maxLengthe), COALESCE(?messagee, CONCAT("At most ", STR(?maxLengthe), " characters.")),
+         IF(BOUND(?patterne) && !REGEX(?typed, STR(?patterne), COALESCE(STR(?flagse), "")), COALESCE(?messagee, "Does not match the expected format."),
+         IF(COALESCE(?numerice, false) && (REPLACE(?typed, "^\\\\s+|\\\\s+$", "") = "" || !BOUND(?xe) || (?datatypee = xsd:integer && ?xe != FLOOR(?xe))),
+            COALESCE(?messagee, IF(?datatypee = xsd:integer, "A whole number.", "A number.")),
+         IF(BOUND(?mine) && !COALESCE(?xe >= xsd:double(?mine), false), COALESCE(?messagee, CONCAT("At least ", STR(?mine), ".")),
+         IF(BOUND(?maxe) && !COALESCE(?xe <= xsd:double(?maxe), false), COALESCE(?messagee, CONCAT("At most ", STR(?maxe), ".")),
+         IF(EXISTS { ?shape sh:in ?liste } && NOT EXISTS { ?shape sh:in/rdf:rest*/rdf:first ?allowede FILTER(STR(?allowede) = ?typed) },
+            COALESCE(?messagee, "Not one of the allowed values."), ?none)))))))) AS ?entryProblem)
+    FILTER(BOUND(?entryProblem))
+  } ORDER BY STR(?shape) LIMIT 1 }
+  # A dated field (the localization layer derived its date pattern) over a date or time property
+  # (its first shape's sh:datatype, else the property's rdfs:range): typed text (c:value, a range's
+  # end c:endValue) must read as one in the locale's format, as the field's commit reads it; then
+  # the values keep within the shapes' sh:minInclusive / sh:maxInclusive (as text, as ISO dates
+  # and times compare) and, with sh:lessThanOrEquals, do not come after that property's value.
+  OPTIONAL { SELECT ?kind WHERE {
+    $this l10n:datePattern ?kindPattern ; c:controls ?kindTarget ; c:property ?kindProperty .
+    OPTIONAL { SELECT ?shapeType WHERE { $this val:validates ?typedShape . ?typedShape sh:datatype ?shapeType } ORDER BY STR(?typedShape) LIMIT 1 }
+    OPTIONAL { ?kindProperty rdfs:range ?range }
+    BIND(COALESCE(?shapeType, ?range) AS ?datatype)
+    BIND(IF(?datatype = xsd:date, "date", IF(?datatype = xsd:time, "time", ?none)) AS ?kind)
+    FILTER(BOUND(?kind))
+  } LIMIT 1 }
+  OPTIONAL { SELECT ?badDate WHERE {
+  $this c:controls ?typedTarget ; c:property ?typedProperty .
+  VALUES (?typedP ?which) { (c:value "start") (c:endValue "end") }
+  $this ?typedP ?raw .
+  FILTER(?which = "start" || EXISTS { $this c:endProperty ?typedEnd })
+  FILTER(REPLACE(STR(?raw), "^\\\\s+|\\\\s+$", "") != "")
+  OPTIONAL { $this l10n:datePattern ?dp0 }
+  BIND(COALESCE(STR(?dp0), "%y-%m-%d") AS ?dp)
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  BIND(IF(?digits = "0123456789", STR(?raw),
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?raw),
+            SUBSTR(?digits, 1, 1), "0"), SUBSTR(?digits, 2, 1), "1"), SUBSTR(?digits, 3, 1), "2"), SUBSTR(?digits, 4, 1), "3"), SUBSTR(?digits, 5, 1), "4"),
+            SUBSTR(?digits, 6, 1), "5"), SUBSTR(?digits, 7, 1), "6"), SUBSTR(?digits, 8, 1), "7"), SUBSTR(?digits, 9, 1), "8"), SUBSTR(?digits, 10, 1), "9")) AS ?latin)
+  BIND(REPLACE(?latin, "^ +| +$", "") AS ?t)
+  BIND(REGEX(?t, "^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$") AS ?isoForm)
+  BIND(REGEX(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$") AS ?fits)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$1") AS ?g1)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$2") AS ?g2)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$3") AS ?g3)
+  BIND(STRLEN(STRBEFORE(?dp, "%d")) AS ?pd)
+  BIND(STRLEN(STRBEFORE(?dp, "%m")) AS ?pm)
+  BIND(STRLEN(STRBEFORE(?dp, "%y")) AS ?py)
+  BIND(IF(?isoForm, 2, IF(?pd > ?pm, 1, 0) + IF(?pd > ?py, 1, 0)) AS ?rd)
+  BIND(IF(?isoForm, 1, IF(?pm > ?pd, 1, 0) + IF(?pm > ?py, 1, 0)) AS ?rm)
+  BIND(IF(?isoForm, 0, IF(?py > ?pd, 1, 0) + IF(?py > ?pm, 1, 0)) AS ?ry)
+  BIND(IF(?rd = 0, ?g1, IF(?rd = 1, ?g2, ?g3)) AS ?ds)
+  BIND(IF(?rm = 0, ?g1, IF(?rm = 1, ?g2, ?g3)) AS ?ms)
+  BIND(IF(?ry = 0, ?g1, IF(?ry = 1, ?g2, ?g3)) AS ?ys)
+  BIND(xsd:integer(?ds) AS ?d)
+  BIND(xsd:integer(?ms) AS ?m)
+  BIND(IF(STRLEN(?ys) <= 2, 2000 + xsd:integer(?ys), xsd:integer(?ys)) AS ?y)
+  BIND((?y - 4 * FLOOR(?y / 4) = 0 && ?y - 100 * FLOOR(?y / 100) != 0) || ?y - 400 * FLOOR(?y / 400) = 0 AS ?leap)
+  BIND(IF(?m = 2, IF(?leap, 29, 28), IF(?m IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  FILTER(!COALESCE((?isoForm || ?fits) && STRLEN(?ys) != 3 && ?y >= 1000 && ?m >= 1 && ?m <= 12 && ?d >= 1 && ?d <= ?dim, false))
+  BIND(true AS ?badDate)
+  } LIMIT 1 }
+  OPTIONAL { SELECT ?badTime WHERE {
+  $this c:controls ?typedTarget ; c:property ?typedProperty .
+  VALUES (?typedP ?which) { (c:value "start") (c:endValue "end") }
+  $this ?typedP ?raw .
+  FILTER(?which = "start" || EXISTS { $this c:endProperty ?typedEnd })
+  FILTER(REPLACE(STR(?raw), "^\\\\s+|\\\\s+$", "") != "")
+  OPTIONAL { $this l10n:am ?am0 }
+  OPTIONAL { $this l10n:pm ?pm0 }
+  BIND(LCASE(COALESCE(STR(?am0), "AM")) AS ?am)
+  BIND(LCASE(COALESCE(STR(?pm0), "PM")) AS ?pm)
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  BIND(IF(?digits = "0123456789", STR(?raw),
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?raw),
+            SUBSTR(?digits, 1, 1), "0"), SUBSTR(?digits, 2, 1), "1"), SUBSTR(?digits, 3, 1), "2"), SUBSTR(?digits, 4, 1), "3"), SUBSTR(?digits, 5, 1), "4"),
+            SUBSTR(?digits, 6, 1), "5"), SUBSTR(?digits, 7, 1), "6"), SUBSTR(?digits, 8, 1), "7"), SUBSTR(?digits, 9, 1), "8"), SUBSTR(?digits, 10, 1), "9")) AS ?latin)
+  BIND(LCASE(REPLACE(?latin, "^ +| +$", "")) AS ?t)
+  BIND(REGEX(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$") AS ?fits)
+  BIND(xsd:integer(REPLACE(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$", "$1")) AS ?h0)
+  BIND(REPLACE(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$", "$3") AS ?mi0)
+  BIND(IF(?mi0 = "", 0, xsd:integer(?mi0)) AS ?mi)
+  BIND(CONTAINS(?t, ?pm) || REGEX(?t, "[0-9 ]p[.]?m?[.]?$") AS ?isPm)
+  BIND(!?isPm && (CONTAINS(?t, ?am) || REGEX(?t, "[0-9 ]a[.]?m?[.]?$")) AS ?isAm)
+  FILTER(!COALESCE(?fits && IF(?isPm || ?isAm, ?h0 >= 1 && ?h0 <= 12, ?h0 <= 23) && ?mi <= 59, false))
+  BIND(true AS ?badTime)
+  } LIMIT 1 }
+  BIND(BOUND(?kind) && ((?kind = "date" && BOUND(?badDate)) || (?kind = "time" && BOUND(?badTime))) AS ?unreadable)
+  BIND(IF(?kind = "date", c:InvalidDatePhrase, c:InvalidTimePhrase) AS ?unreadablePhrase)
+  OPTIONAL { FILTER(?unreadable) ?pickurAt l10n:of ?unreadablePhrase ; l10n:name ?pickur }
+  OPTIONAL { FILTER(?unreadable && !BOUND(?pickur)) ?unreadablePhrase rdfs:label ?anyur FILTER(isLiteral(?anyur)) }
+  BIND(IF(?kind = "date", l10n:dateHint, l10n:timeHint) AS ?hintP)
+  OPTIONAL { FILTER(?unreadable) $this ?hintP ?hint0 }
+  BIND(STR(COALESCE(?pickur, ?anyur, "Not a valid {}.")) AS ?unreadableText)
+  BIND(IF(CONTAINS(?unreadableText, "{}"), CONCAT(STRBEFORE(?unreadableText, "{}"), COALESCE(STR(?hint0), ""), STRAFTER(?unreadableText, "{}")), ?unreadableText) AS ?unreadableMessage)
+  OPTIONAL { SELECT ?boundProblem WHERE {
+    $this c:controls ?boundTarget ; c:property ?boundProperty . FILTER(isIRI(?boundTarget))
+    $this val:validates ?shape .
+    OPTIONAL { ?shape sh:path ?path0 }
+    BIND(COALESCE(?path0, ?boundProperty) AS ?path) FILTER(isIRI(?path))
+    ?boundTarget ?path ?held .
+    OPTIONAL { ?shape sh:minInclusive ?minb }
+    OPTIONAL { ?shape sh:maxInclusive ?maxb }
+    OPTIONAL { ?shape sh:lessThanOrEquals ?before FILTER(isIRI(?before)) }
+    LATERAL { OPTIONAL { SELECT ?shape ?messageb WHERE {
+  OPTIONAL { ?pickmsgbAt l10n:of ?shape ; l10n:message ?pickmsgb }
+  OPTIONAL { FILTER(!BOUND(?pickmsgb)) ?shape sh:message ?anymsgb FILTER(isLiteral(?anymsgb)) }
+  BIND(STR(COALESCE(?pickmsgb, ?anymsgb)) AS ?messageb)
+  } } }
+    BIND(IF(BOUND(?minb) && STR(?held) < STR(?minb), COALESCE(?messageb, CONCAT("At least ", STR(?minb), ".")),
+         IF(BOUND(?maxb) && STR(?held) > STR(?maxb), COALESCE(?messageb, CONCAT("At most ", STR(?maxb), ".")),
+         IF(BOUND(?before) && EXISTS { ?boundTarget ?before ?later FILTER(STR(?held) > STR(?later)) }, COALESCE(?messageb, "Out of order."), ?none))) AS ?boundProblem)
+    FILTER(BOUND(?boundProblem))
+  } ORDER BY STR(?shape) LIMIT 1 }
+  BIND(IF(?unreadable, ?unreadableMessage, IF(BOUND(?kind), ?boundProblem, ?none)) AS ?datedProblem)
+  BIND(IF(BOUND(?plainProblem) || ?outOfBounds || BOUND(?datedProblem), true, ?none) AS ?invalid)
+  BIND(COALESCE(?datedProblem, IF(BOUND(?plainProblem) && ?touched, ?plainProblem, ?tooMany)) AS ?error)
+  BIND(?atCapacity AS ?full)
+  BIND(COALESCE(?entryProblem, IF(?unreadable, ?datedProblem, ?none)) AS ?entry)
+  # A button: disabled while a field it requires is invalid.
+  BIND(IF(EXISTS { $this val:requires/rdf:rest*/rdf:first ?field . ?field val:invalid ?flag FILTER(STR(?flag) = "true") }, true, ?none) AS ?disabled)
+}""" .

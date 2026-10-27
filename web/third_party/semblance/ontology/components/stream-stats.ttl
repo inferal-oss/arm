@@ -1,0 +1,222 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix iv: <https://semblance.dev/ns/view#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# A view over an LDES: summary statistics of a change log. The aggregates are maintained
+# views (iv:View, docs/IVM.md): each member is counted once when it is appended and once more
+# (negatively) when it retires, so an event costs the same whatever the log's bound
+# (ldes:amount). The views write their rows about the stream into the views graph; the
+# rendering rules read those rows - a few per event kind and component, never the members -
+# rank them by pairwise ord:precedes, and re-render when the stream changes (sem:follows c:of).
+# The views are maintained while a c:StreamStats is shown (iv:whileShown) and rebuilt when one
+# is shown again.
+
+c:StreamStats a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Statistics over a Linked Data Event Stream of UI changes."@en ;
+    sem:slug "stream-stats" .
+
+# --- the maintained views --------------------------------------------------------------------------
+
+c:eventCount a owl:DatatypeProperty ; rdfs:comment "On a stream: its members that record a change (beh:added, beh:removed)."@en .
+c:addedTotal a owl:DatatypeProperty ; rdfs:comment "On a stream: triples its members added, in all."@en .
+c:removedTotal a owl:DatatypeProperty ; rdfs:comment "On a stream: triples its members removed, in all."@en .
+c:targetCount a owl:DatatypeProperty ; rdfs:comment "On a stream: distinct components its members were addressed to."@en .
+c:keyCount a owl:ObjectProperty ; rdfs:comment "On a stream: a count of its members by one key (c:dimension, c:countKey, c:count)."@en .
+c:dimension a owl:DatatypeProperty ; rdfs:comment "What a key count counts by: \"kind\" (rdf:type) or \"component\" (beh:target)."@en .
+c:countKey a owl:ObjectProperty .
+c:count a owl:DatatypeProperty ; rdfs:range xsd:integer .
+
+c:StreamTotals a iv:View ; iv:whileShown c:StreamStats ;
+    rdfs:label "stream totals"@en ;
+    rdfs:comment "Per stream: members, triples added and removed, distinct components."@en ;
+    sem:function "stream-stats:totals" ;
+    sem:construct """
+CONSTRUCT { ?stream c:eventCount ?n ; c:addedTotal ?added ; c:removedTotal ?removed ; c:targetCount ?targets }
+WHERE {
+  { SELECT ?stream (COUNT(?m) AS ?n) (SUM(?a) AS ?added) (SUM(?r) AS ?removed) (COUNT(DISTINCT ?t) AS ?targets)
+    WHERE { ?stream tree:member ?m . ?m beh:added ?a ; beh:removed ?r . OPTIONAL { ?m beh:target ?t } }
+    GROUP BY ?stream }
+}""" .
+
+c:StreamKeyCounts a iv:View ; iv:whileShown c:StreamStats ;
+    rdfs:label "members per kind and per component"@en ;
+    sem:function "stream-stats:keys" ;
+    sem:construct """
+CONSTRUCT { ?stream c:keyCount ?row . ?row c:dimension ?dim ; c:countKey ?key ; c:count ?count }
+WHERE {
+  { SELECT ?stream ?dim ?key (COUNT(?m) AS ?count)
+    WHERE { ?stream tree:member ?m . { ?m a ?key BIND("kind" AS ?dim) } UNION { ?m beh:target ?key BIND("component" AS ?dim) } }
+    GROUP BY ?stream ?dim ?key }
+  BIND(IRI(CONCAT(STR(?stream), "/~", ?dim, "-", ENCODE_FOR_URI(STR(?key)))) AS ?row)
+}""" .
+
+# --- renderings -----------------------------------------------------------------------------------
+
+c:StreamStatsOnScreen a sem:Rendering ;
+    sem:targets c:StreamStats ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 ;
+    sem:follows c:of .
+
+c:StreamStatsOnScreen-sparql a sem:Rule ;
+    sem:implements c:StreamStatsOnScreen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Section ; sem:renders $this ; rdfhtml:hasChild ?title, ?metrics, ?kindsTitle, ?kinds, ?targetsTitle, ?targets .
+  ?title a rdfhtml:H2 ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?metrics .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?metrics a rdfhtml:Dl ; rdfhtml:hasChild ?mEvents, ?mChanges, ?mComponents ; ord:immediatelyPrecedes ?kindsTitle .
+  ?mEvents a rdfhtml:Div ; rdfhtml:hasChild ?mEventsDt, ?mEventsDd .
+  ?mEventsDt a rdfhtml:Dt ; rdfhtml:hasChild ?mEventsDtText ; ord:immediatelyPrecedes ?mEventsDd .
+  ?mEventsDtText a rdfhtml:Text ; rdfhtml:data "events" .
+  ?mEventsDd a rdfhtml:Dd ; rdfhtml:hasChild ?mEventsDdText .
+  ?mEventsDdText a rdfhtml:Text ; rdfhtml:data ?events .
+  ?mEvents ord:immediatelyPrecedes ?mChanges .
+  ?mChanges a rdfhtml:Div ; rdfhtml:hasChild ?mChangesDt, ?mChangesDd ; ord:immediatelyPrecedes ?mComponents .
+  ?mChangesDt a rdfhtml:Dt ; rdfhtml:hasChild ?mChangesDtText ; ord:immediatelyPrecedes ?mChangesDd .
+  ?mChangesDtText a rdfhtml:Text ; rdfhtml:data "triples changed" .
+  ?mChangesDd a rdfhtml:Dd ; rdfhtml:hasChild ?mChangesDdText .
+  ?mChangesDdText a rdfhtml:Text ; rdfhtml:data ?changes .
+  ?mComponents a rdfhtml:Div ; rdfhtml:hasChild ?mComponentsDt, ?mComponentsDd .
+  ?mComponentsDt a rdfhtml:Dt ; rdfhtml:hasChild ?mComponentsDtText ; ord:immediatelyPrecedes ?mComponentsDd .
+  ?mComponentsDtText a rdfhtml:Text ; rdfhtml:data "components" .
+  ?mComponentsDd a rdfhtml:Dd ; rdfhtml:hasChild ?mComponentsDdText .
+  ?mComponentsDdText a rdfhtml:Text ; rdfhtml:data ?components .
+  ?kindsTitle a rdfhtml:H3 ; rdfhtml:hasChild ?kindsTitleText ; ord:immediatelyPrecedes ?kinds .
+  ?kindsTitleText a rdfhtml:Text ; rdfhtml:data "by kind" .
+  ?kinds a rdfhtml:Ul ; rdfhtml:hasChild ?kindRow ; ord:immediatelyPrecedes ?targetsTitle .
+  ?targetsTitle a rdfhtml:H3 ; rdfhtml:hasChild ?targetsTitleText ; ord:immediatelyPrecedes ?targets .
+  ?targetsTitleText a rdfhtml:Text ; rdfhtml:data "by component" .
+  ?targets a rdfhtml:Ul ; rdfhtml:hasChild ?targetRow .
+  ?row a rdfhtml:Li ; rdfhtml:style ?share ; rdfhtml:hasChild ?rowName, ?rowCount .
+  ?rowName a rdfhtml:Span ; rdfhtml:hasChild ?rowNameText ; ord:immediatelyPrecedes ?rowCount .
+  ?rowNameText a rdfhtml:Text ; rdfhtml:data ?name .
+  ?rowCount a rdfhtml:Span ; rdfhtml:hasChild ?rowCountText .
+  ?rowCountText a rdfhtml:Text ; rdfhtml:data ?countText .
+  ?rowA ord:precedes ?rowB .
+}
+WHERE {
+  $this a c:StreamStats ; c:of ?stream .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+  BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+  BIND(IRI(CONCAT(STR($this), "/~metrics")) AS ?metrics)
+  BIND(IRI(CONCAT(STR($this), "/~kinds-title")) AS ?kindsTitle)
+  BIND(IRI(CONCAT(STR($this), "/~kinds-title-text")) AS ?kindsTitleText)
+  BIND(IRI(CONCAT(STR($this), "/~kinds")) AS ?kinds)
+  BIND(IRI(CONCAT(STR($this), "/~targets-title")) AS ?targetsTitle)
+  BIND(IRI(CONCAT(STR($this), "/~targets-title-text")) AS ?targetsTitleText)
+  BIND(IRI(CONCAT(STR($this), "/~targets")) AS ?targets)
+  # Each branch binds $this itself, so the minted IRIs are right in bulk evaluation too
+  # (where a union branch sees no outer bindings).
+  {
+    # Headline metrics.
+    $this c:of ?stream .
+    # The totals view's figures (c:StreamTotals).
+    OPTIONAL { ?stream c:eventCount ?n ; c:addedTotal ?added ; c:removedTotal ?removed ; c:targetCount ?c }
+    BIND(STR(COALESCE(?n, 0)) AS ?events)
+    BIND(CONCAT("+", STR(COALESCE(?added, 0)), " / −", STR(COALESCE(?removed, 0))) AS ?changes)
+    BIND(STR(COALESCE(?c, 0)) AS ?components)
+    BIND(IRI(CONCAT(STR($this), "/~m-events")) AS ?mEvents)
+    BIND(IRI(CONCAT(STR($this), "/~m-events-dt")) AS ?mEventsDt)
+    BIND(IRI(CONCAT(STR($this), "/~m-events-dt-text")) AS ?mEventsDtText)
+    BIND(IRI(CONCAT(STR($this), "/~m-events-dd")) AS ?mEventsDd)
+    BIND(IRI(CONCAT(STR($this), "/~m-events-dd-text")) AS ?mEventsDdText)
+    BIND(IRI(CONCAT(STR($this), "/~m-changes")) AS ?mChanges)
+    BIND(IRI(CONCAT(STR($this), "/~m-changes-dt")) AS ?mChangesDt)
+    BIND(IRI(CONCAT(STR($this), "/~m-changes-dt-text")) AS ?mChangesDtText)
+    BIND(IRI(CONCAT(STR($this), "/~m-changes-dd")) AS ?mChangesDd)
+    BIND(IRI(CONCAT(STR($this), "/~m-changes-dd-text")) AS ?mChangesDdText)
+    BIND(IRI(CONCAT(STR($this), "/~m-components")) AS ?mComponents)
+    BIND(IRI(CONCAT(STR($this), "/~m-components-dt")) AS ?mComponentsDt)
+    BIND(IRI(CONCAT(STR($this), "/~m-components-dt-text")) AS ?mComponentsDtText)
+    BIND(IRI(CONCAT(STR($this), "/~m-components-dd")) AS ?mComponentsDd)
+    BIND(IRI(CONCAT(STR($this), "/~m-components-dd-text")) AS ?mComponentsDdText)
+  } UNION {
+    # One row per event kind / per component, with its share of the busiest.
+    # The key counts view's rows (c:StreamKeyCounts), and the busiest per dimension.
+    $this c:of ?stream .
+    ?stream c:keyCount ?keyRow . ?keyRow c:dimension ?dim ; c:countKey ?key ; c:count ?count .
+    { SELECT ?stream ?dim (MAX(?n) AS ?max) WHERE { ?stream c:keyCount ?r . ?r c:dimension ?dim ; c:count ?n } GROUP BY ?stream ?dim }
+    # The component's c:label (untagged, else English, else any), else its item's label.
+    LATERAL {
+      OPTIONAL { ?componentLabel0At l10n:of ?key ; l10n:label ?componentLabel0 }
+  OPTIONAL { ?key c:label ?componentLabel0 FILTER(isLiteral(?componentLabel0) && lang(?componentLabel0) = "") }
+      OPTIONAL { FILTER(!BOUND(?componentLabel0)) ?key c:label ?componentLabel1 FILTER(langMatches(lang(?componentLabel1), "en")) }
+      OPTIONAL { FILTER(!BOUND(?componentLabel0) && !BOUND(?componentLabel1)) ?key c:label ?componentLabel2 FILTER(isLiteral(?componentLabel2)) }
+      BIND(COALESCE(?componentLabel0, ?componentLabel1, ?componentLabel2) AS ?componentLabel)
+      OPTIONAL {
+        ?key c:of ?item ; c:labelFrom ?labelProp .
+        LATERAL { OPTIONAL { ?item ?labelProp ?itemLabel0 FILTER(isLiteral(?itemLabel0) && lang(?itemLabel0) = "") }
+        OPTIONAL { FILTER(!BOUND(?itemLabel0)) ?item ?labelProp ?itemLabel1 FILTER(langMatches(lang(?itemLabel1), "en")) }
+        OPTIONAL { FILTER(!BOUND(?itemLabel0) && !BOUND(?itemLabel1)) ?item ?labelProp ?itemLabel2 FILTER(isLiteral(?itemLabel2)) }
+        BIND(COALESCE(?itemLabel0, ?itemLabel1, ?itemLabel2) AS ?itemLabel) }
+      }
+    }
+    BIND(COALESCE(?componentLabel, ?itemLabel, REPLACE(STR(?key), "^.*[#/]", "")) AS ?name)
+    BIND(STR(?count) AS ?countText)
+    BIND(CONCAT("--sem-share: ", STR(xsd:integer(ROUND(100 * ?count / ?max))), "%") AS ?share)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dim, "-", ENCODE_FOR_URI(STR(?key)))) AS ?row)
+    BIND(IRI(CONCAT(STR(?row), "-name")) AS ?rowName)
+    BIND(IRI(CONCAT(STR(?row), "-name-text")) AS ?rowNameText)
+    BIND(IRI(CONCAT(STR(?row), "-count")) AS ?rowCount)
+    BIND(IRI(CONCAT(STR(?row), "-count-text")) AS ?rowCountText)
+    BIND(IF(?dim = "kind", ?row, ?none) AS ?kindRow)
+    BIND(IF(?dim = "component", ?row, ?none) AS ?targetRow)
+  } UNION {
+    # Rank order: busier rows first, ties broken by IRI.
+    $this c:of ?stream .
+    ?stream c:keyCount ?ra , ?rb .
+    ?ra c:dimension ?dim ; c:countKey ?keyA ; c:count ?countA .
+    ?rb c:dimension ?dim ; c:countKey ?keyB ; c:count ?countB .
+    FILTER(?countA > ?countB || (?countA = ?countB && STR(?keyA) < STR(?keyB)))
+    BIND(IRI(CONCAT(STR($this), "/~", ?dim, "-", ENCODE_FOR_URI(STR(?keyA)))) AS ?rowA)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dim, "-", ENCODE_FOR_URI(STR(?keyB)))) AS ?rowB)
+  }
+}""" .
+
+c:StreamStatsAsText a sem:Rendering ;
+    sem:targets c:StreamStats ;
+    sem:modality mod:Text ;
+    sem:stratum 0 ;
+    sem:follows c:of .
+
+c:StreamStatsOnScreen-fn a sem:Rule ;
+    sem:implements c:StreamStatsOnScreen ;
+    sem:function "stream-stats:screen" .
+
+c:StreamStatsAsText-sparql a sem:Rule ;
+    sem:implements c:StreamStatsAsText ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:StreamStats ; c:of ?stream .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  OPTIONAL { ?stream c:eventCount ?n ; c:addedTotal ?added ; c:removedTotal ?removed }
+  BIND(CONCAT("# ", UCASE(?label), ": ", STR(COALESCE(?n, 0)), " events, +", STR(COALESCE(?added, 0)), "/-", STR(COALESCE(?removed, 0)), " triples") AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
+
+c:StreamStatsAsText-fn a sem:Rule ;
+    sem:implements c:StreamStatsAsText ;
+    sem:function "stream-stats:text" .

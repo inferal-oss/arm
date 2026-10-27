@@ -1,0 +1,512 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix val: <https://semblance.dev/ns/validation#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Drag and drop layer: picking something up, carrying it over places that may or may not take
+# it, and putting it down - as graph state, SHACL and events.
+#
+# A dnd:Draggable component carries a resource (dnd:carries; itself by default). A
+# dnd:DropTarget receives it into a receptacle (dnd:receptacle; itself by default) - or, for a
+# component with several zones (a board's lanes), into the receptacle of each zone it names
+# (dnd:zone). Whether a target takes what is carried is SHACL: the carried resource must conform
+# to the target's dnd:accepts node shapes, and the receptacle must still conform to the shapes
+# that target it once the drop has added one more member (sh:maxCount on the membership path,
+# dnd:memberOf or dnd:members: a capacity, a work-in-progress limit). A target that is also a field
+# validating its membership property (val:validates a property shape on that path) honours that
+# shape too: its sh:node shapes are what each member must conform to, its sh:maxCount how many there
+# may be. A drag may carry several things at once (dnd:count: files dragged in from outside the
+# page), and then needs room for all of them. What SHACL Core cannot say
+# about a place (that it would overlap a booking there) a rule can: any rule may derive a
+# dnd:Objection to the drag going into a receptacle, with its reason, and the target refuses it.
+#
+# While something is carried, the drag is graph state: dnd:Current says what is carried, from
+# where, by what means and where it would go. Every target is offered the drag (dnd:offered) and
+# derives its reception (dnd:Reception: accepted, or refused with the shape's sh:message), which
+# the theme shows: accepting zones are outlined, refusing ones dimmed with a not-allowed cursor
+# and the reason over them. An ordered target (dnd:orderBy) has positions between its members:
+# the one hovered is marked on its neighbour, and the drop says where (dnd:after / dnd:before)
+# and which order key it would take (dnd:rank, half way between the neighbours' - no renumbering).
+#
+# The lifecycle is events: dnd:Start, dnd:Over and dnd:End change the drag state only and are not
+# recorded (like hovers); a dnd:Drop is recorded and handled by the target's ordinary reactions,
+# which decide what it means (move the item, set its rank); a drop the target refuses is a
+# dnd:Refusal instead - it never reaches them, and is announced with the shape's message. The
+# host drives it by pointer (mouse, pen, a long press on touch) or keyboard (Space lifts the
+# focused draggable, arrows move it, Space or Enter drops, Escape cancels), and says what is held
+# and where it would go in a live region (each draggable's dnd:status).
+#
+# The rules have no sem:layer: like behaviour, drag and drop is something an instance opts into
+# (by its classes), not a decoration a projection switches off.
+
+<https://semblance.dev/ns/dragdrop> a owl:Ontology ;
+    rdfs:label "Semblance drag and drop layer"@en .
+
+# --- what can be picked up -------------------------------------------------------------------------
+
+dnd:Draggable a owl:Class ;
+    rdfs:comment """A component that can be picked up and carried: by pointer (after a few pixels of
+movement, or a long press on touch) or by keyboard (Space). Dragging it carries dnd:carries -
+the resource it shows - or, without one, the component itself. Collections that are
+dnd:Sortable mint their members' components as draggables."""@en .
+dnd:keepsFocus a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "On a component class: its instances keep their own tab stops (a grid's roving rows), so as draggables the layer gives them none."@en .
+dnd:carries a owl:ObjectProperty ; rdfs:domain dnd:Draggable ;
+    rdfs:comment "The resource a drag of this component carries (default: the component)."@en .
+dnd:name a owl:DatatypeProperty ; rdfs:domain dnd:Draggable ;
+    rdfs:comment "What to call it while it is carried (default: its c:label, else the carried resource's local name)."@en .
+dnd:allows a owl:ObjectProperty ; rdfs:domain dnd:Draggable ; rdfs:range dnd:Effect ;
+    rdfs:comment "The effects a drag of it may have (default dnd:Move). The Alt (Option) key asks for a copy."@en .
+
+dnd:Effect a owl:Class ; rdfs:comment "What a drop does with what it carries."@en .
+dnd:Move a dnd:Effect ; rdfs:label "move"@en ; sem:slug "move" .
+dnd:Copy a dnd:Effect ; rdfs:label "copy"@en ; sem:slug "copy" .
+dnd:Link a dnd:Effect ; rdfs:label "link"@en ; sem:slug "link" .
+
+# --- where it can be put down ----------------------------------------------------------------------
+
+dnd:DropTarget a owl:Class ;
+    rdfs:comment """A component that receives drops. Its root is its zone, receiving into
+dnd:receptacle (default: the component itself); a component with several zones names them
+(dnd:zone, each an RDF/HTML node with its dnd:receptacle). What it takes is SHACL: dnd:accepts
+node shapes the carried resource must conform to, and shapes that target a receptacle
+(sh:targetNode) with sh:maxCount on the membership path (the inverse of dnd:memberOf, or
+dnd:members), which the receptacle must still meet with one more member. Its reactions to
+dnd:Drop say what a drop means."""@en .
+dnd:DragSource a owl:Class ;
+    rdfs:comment """A collection whose members can be dragged out: its members' components are draggables carrying
+the members (a data grid's rows). It receives nothing itself unless it is also a dnd:DropTarget."""@en .
+dnd:Sortable a owl:Class ; rdfs:subClassOf dnd:DropTarget , dnd:DragSource ;
+    rdfs:comment """A collection whose members can be dragged - reordered within it (dnd:orderBy) and
+moved to other targets. Its members' components are draggables carrying the members."""@en .
+
+dnd:receptacle a owl:ObjectProperty ;
+    rdfs:comment "On a target or one of its zones: the resource a drop there puts things into."@en .
+dnd:zone a owl:ObjectProperty ; rdfs:domain dnd:DropTarget ;
+    rdfs:comment "One of the target's drop zones: a rendered node with its own dnd:receptacle (derived by components with several, e.g. a board's lanes)."@en .
+dnd:accepts a owl:ObjectProperty ; rdfs:range sh:NodeShape ;
+    rdfs:comment """A shape the carried resource must conform to - on a target (every receptacle of it), or on a
+receptacle itself (a folder saying what it takes). Supported: sh:class on the node, and on property
+shapes with a predicate path sh:hasValue, sh:in, sh:class, sh:pattern (with sh:flags: a media type,
+a file's extension), and the ranges sh:minInclusive, sh:maxInclusive, sh:minExclusive and
+sh:maxExclusive (a room's seats against a meeting's attendees; a file's size). The violation's
+sh:message (the property shape's, else the node shape's) is the reason given. A target that
+val:validates a property shape on its membership path also takes that shape's sh:node shapes."""@en .
+dnd:memberOf a owl:ObjectProperty ; rdfs:domain dnd:DropTarget ; rdfs:range rdf:Property ;
+    rdfs:comment "After a drop the carried resource has this property with the receptacle as its value (a card's column)."@en .
+dnd:members a owl:ObjectProperty ; rdfs:domain dnd:DropTarget ; rdfs:range rdf:Property ;
+    rdfs:comment "After a drop the receptacle has this property with the carried resource as its value (a list's c:item)."@en .
+dnd:orderBy a owl:ObjectProperty ; rdfs:domain dnd:DropTarget ; rdfs:range rdf:Property ;
+    rdfs:comment "Makes the target ordered: its members are in ascending order of this property, and a drop has a position among them."@en .
+
+# Objections: what a component knows about a place that no shape on the target says. A rule (of
+# any component, while the drag is offered to it) derives one per receptacle it objects to; every
+# target with a zone receiving into that receptacle refuses the drag there, with the reason - unless
+# it is where the drag came from, or already holds it (putting it back changes nothing).
+dnd:Objection a owl:Class ;
+    rdfs:comment "Derived: the drag (dnd:against) may not go into a receptacle (dnd:receptacle), and why (dnd:reason)."@en .
+dnd:against a owl:ObjectProperty ; rdfs:domain dnd:Objection ; rdfs:range dnd:Drag ;
+    rdfs:comment "The drag an objection is to."@en .
+
+# --- the drag in progress ---------------------------------------------------------------------------
+# One drag at a time: dnd:Current. Its properties are written by the layer's reactions (below) and
+# copied onto the drop event, so the change log says what was dropped where.
+
+dnd:Drag a owl:Class ; rdfs:comment "Something being carried."@en .
+dnd:Current a dnd:Drag ; rdfs:label "the drag in progress"@en .
+dnd:source a owl:ObjectProperty ; rdfs:range dnd:Draggable ; rdfs:comment "The component picked up."@en .
+dnd:carrying a owl:ObjectProperty ; rdfs:comment "The resource carried."@en .
+dnd:from a owl:ObjectProperty ; rdfs:comment "The receptacle it was picked up from."@en .
+dnd:dropTarget a owl:ObjectProperty ; rdfs:range dnd:DropTarget ; rdfs:comment "The target it is over (or was dropped on)."@en .
+dnd:into a owl:ObjectProperty ; rdfs:comment "The receptacle it would go (or went) into."@en .
+dnd:after a owl:ObjectProperty ; rdfs:comment "In an ordered target: the member it would follow."@en .
+dnd:before a owl:ObjectProperty ; rdfs:comment "In an ordered target: the member it would precede."@en .
+dnd:rank a owl:DatatypeProperty ;
+    rdfs:comment """In an ordered target: the order key it would take - half way between its neighbours'
+dnd:orderBy values, one past the last, one before the first, 1 in an empty target. Nothing else
+is renumbered (sem:orderKey sorts the fractions numerically)."""@en .
+dnd:effect a owl:ObjectProperty ; rdfs:range dnd:Effect .
+dnd:count a owl:DatatypeProperty ; rdfs:domain dnd:Drag ; rdfs:range xsd:integer ;
+    rdfs:comment "How many things the drag carries at once (default 1): a receptacle needs room for all of them (files dragged in from outside the page)."@en .
+dnd:by a owl:ObjectProperty ; rdfs:range dnd:Means ; rdfs:comment "How it is being carried."@en .
+dnd:Means a owl:Class .
+dnd:Pointer a dnd:Means ; rdfs:label "pointer"@en .
+dnd:Keyboard a dnd:Means ; rdfs:label "keyboard"@en .
+dnd:reason a owl:DatatypeProperty ; rdfs:comment "Why a target refuses (a shape's sh:message)."@en .
+
+dnd:offered a owl:ObjectProperty ; rdfs:domain dnd:DropTarget ; rdfs:range dnd:Drag ;
+    rdfs:comment "State: the target is offered the drag (every target, while there is one)."@en .
+dnd:hovered a owl:ObjectProperty ; rdfs:domain dnd:DropTarget ; rdfs:range dnd:Drag ;
+    rdfs:comment "State: the drag is over this target (one at a time)."@en .
+dnd:lifted a owl:ObjectProperty ; rdfs:domain dnd:Draggable ; rdfs:range dnd:Drag ;
+    rdfs:comment "State: this draggable is the one picked up."@en .
+dnd:refusedBy a owl:ObjectProperty ; rdfs:domain dnd:Draggable ; rdfs:range dnd:Refusal ;
+    rdfs:comment "State: its last drop was refused (it shakes); cleared when it is picked up again."@en .
+
+dnd:Reception a owl:Class ;
+    rdfs:comment "Derived, per zone of a target while there is a drag: dnd:verdict and, if refused, dnd:reason."@en .
+dnd:verdict a owl:ObjectProperty ; rdfs:domain dnd:Reception ; rdfs:range dnd:Verdict .
+dnd:Verdict a owl:Class .
+dnd:Accepted a dnd:Verdict ; rdfs:label "accepts"@en ; sem:slug "accepts" .
+dnd:Refused a dnd:Verdict ; rdfs:label "refuses"@en ; sem:slug "refuses" .
+dnd:status a owl:DatatypeProperty ;
+    rdfs:comment "Rendered as data-sem-drag-status on the lifted draggable: what is held, where it would go and whether it can (the host's live region says it)."@en .
+
+# Words the status is made of (the function rules say them in the viewer's language).
+dnd:DraggablePhrase a c:Phrase ; rdfs:label "draggable"@en , "можна перетягнути"@uk , "ziehbar"@de , "قابل للسحب"@ar .
+dnd:PickedUpPhrase a c:Phrase ;
+    rdfs:label "picked up. Arrow keys move it, Space drops it, Escape puts it back."@en ,
+               "піднято. Стрілки переміщують, пробіл кладе, Escape повертає."@uk ,
+               "aufgenommen. Pfeiltasten bewegen, Leertaste legt ab, Escape bricht ab."@de ,
+               "تم الالتقاط. الأسهم تنقله، والمسافة تضعه، وEscape يعيده."@ar .
+dnd:BeforePhrase a c:Phrase ; rdfs:label "before"@en , "перед"@uk , "vor"@de , "قبل"@ar .
+dnd:AfterPhrase a c:Phrase ; rdfs:label "after"@en , "після"@uk , "nach"@de , "بعد"@ar .
+dnd:RefusedPhrase a c:Phrase ; rdfs:label "refuses it:"@en , "не приймає:"@uk , "nimmt es nicht:"@de , "يرفضه:"@ar .
+# Why a target refuses what is carried when its shape gives no message.
+dnd:UnfitPhrase a c:Phrase ;
+    rdfs:label "It does not belong here."@en , "Цьому тут не місце."@uk , "Das gehört nicht hierher."@de , "لا مكان لهذا هنا."@ar .
+dnd:NoRoomPhrase a c:Phrase ;
+    rdfs:label "There is no room for it here."@en , "Тут для цього немає місця."@uk , "Hier ist kein Platz dafür."@de , "لا يوجد متسع له هنا."@ar .
+
+# --- events ----------------------------------------------------------------------------------------
+# Recorded by the host's gestures (not from a DOM event). beh:key names the keys of the keyboard
+# drag: on a focused draggable, Space starts it; while it is held, the arrows are dnd:Over (Up and
+# Down between positions - or, in a zone without positions, to the zone above or below, as a
+# calendar's cells are laid out - Left and Right between zones), Space or Enter drops, Escape cancels.
+
+dnd:Start a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ; beh:key "space" ;
+    rdfs:comment "A draggable was picked up (dnd:from, dnd:by, dnd:effect). Addressed to the draggable; not recorded."@en .
+dnd:Over a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ; beh:key "arrowup" , "arrowdown" , "arrowleft" , "arrowright" ;
+    rdfs:comment "What is carried moved over a target's zone and position (dnd:dropTarget, dnd:into, dnd:after, dnd:before), or off every target. Not recorded."@en .
+dnd:Drop a owl:Class ; rdfs:subClassOf beh:Event ; beh:key "space" , "enter" ;
+    rdfs:comment """It was put down where the target accepts it. Addressed to the target, carrying the drag:
+dnd:carrying, dnd:source, dnd:from, dnd:into, dnd:after, dnd:before, dnd:rank, dnd:effect, dnd:by.
+The target's reactions say what it means; recorded."""@en .
+dnd:Refusal a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment "It was put down where the target refuses it (dnd:reason). Addressed to the draggable, never to the target's reactions; recorded and announced."@en .
+dnd:Cancel a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ; beh:key "escape" ;
+    rdfs:comment "The drag was abandoned: Escape, released away from every target, or put back where it was. Not recorded."@en .
+dnd:End a owl:Class ; rdfs:subClassOf beh:Event ; beh:recorded false ;
+    rdfs:comment "The drag is over, however it ended (after a drop, refusal or cancel): its state is cleared. Addressed to dnd:Current; not recorded."@en .
+
+# --- reactions: the drag state -----------------------------------------------------------------------
+
+# Picking up: the drag says what is carried, from where and how, the draggable is lifted, and every
+# target is offered it (each derives its reception). A previous refusal on the draggable is cleared.
+dnd:Lift a beh:Reaction ;
+    beh:when dnd:Start ;
+    beh:sourceClass dnd:Draggable ;
+    beh:deletes """
+CONSTRUCT { dnd:Current ?p ?o . ?t dnd:offered dnd:Current . ?h dnd:hovered dnd:Current . ?l dnd:lifted dnd:Current . $this dnd:refusedBy ?refusal }
+WHERE { { VALUES ?p { dnd:source dnd:carrying dnd:from dnd:by dnd:effect dnd:dropTarget dnd:into dnd:after dnd:before dnd:rank dnd:count } dnd:Current ?p ?o } UNION { ?t dnd:offered dnd:Current } UNION { ?h dnd:hovered dnd:Current } UNION { ?l dnd:lifted dnd:Current } UNION { $this dnd:refusedBy ?refusal } }""" ;
+    beh:inserts """
+CONSTRUCT {
+  dnd:Current a dnd:Drag ; dnd:source $this ; dnd:carrying ?carried ; dnd:from ?from ; dnd:by ?by ; dnd:effect ?effect .
+  $this dnd:lifted dnd:Current .
+  ?target dnd:offered dnd:Current .
+}
+WHERE {
+  OPTIONAL { $this dnd:carries ?declared }
+  BIND(COALESCE(?declared, $this) AS ?carried)
+  OPTIONAL { $event dnd:from ?from }
+  OPTIONAL { $event dnd:by ?by }
+  OPTIONAL { $event dnd:effect ?asked FILTER EXISTS { $this dnd:allows ?asked } }
+  BIND(COALESCE(?asked, dnd:Move) AS ?effect)
+  OPTIONAL { ?target a/rdfs:subClassOf* dnd:DropTarget }
+}""" ;
+    sem:function "dnd:lift" .
+
+# Moving over a target's zone and position: the hovered target changes, the drag says where it
+# would go and which order key it would take there (half way between the neighbours').
+dnd:Point a beh:Reaction ;
+    beh:when dnd:Over ;
+    beh:sourceClass dnd:Draggable ;
+    beh:deletes """
+CONSTRUCT { ?h dnd:hovered dnd:Current . dnd:Current ?p ?o }
+WHERE {
+  $this dnd:lifted dnd:Current .
+  # Only what changes: moving within one target leaves it hovered (and its layers asleep).
+  { ?h dnd:hovered dnd:Current FILTER NOT EXISTS { $event dnd:dropTarget ?h } }
+  UNION { VALUES ?p { dnd:dropTarget dnd:into dnd:after dnd:before dnd:rank } dnd:Current ?p ?o FILTER NOT EXISTS { $event ?p ?o } }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?target dnd:hovered dnd:Current . dnd:Current dnd:dropTarget ?target ; dnd:into ?into ; dnd:after ?after ; dnd:before ?before ; dnd:rank ?rank }
+WHERE {
+  $this dnd:lifted dnd:Current .
+  $event dnd:dropTarget ?target ; dnd:into ?into .
+  OPTIONAL { $event dnd:after ?after }
+  OPTIONAL { $event dnd:before ?before }
+  BIND(EXISTS { $event dnd:dropTarget/dnd:orderBy ?anyOrder } AS ?ordered)
+  OPTIONAL { $event dnd:dropTarget/dnd:orderBy ?order . $event dnd:after ?a . ?a ?order ?ra FILTER(isNumeric(?ra)) }
+  OPTIONAL { $event dnd:dropTarget/dnd:orderBy ?order2 . $event dnd:before ?b . ?b ?order2 ?rb FILTER(isNumeric(?rb)) }
+  BIND(IF(BOUND(?ra) && BOUND(?rb), (?ra + ?rb) / 2, IF(BOUND(?ra), ?ra + 1, IF(BOUND(?rb), ?rb - 1, IF(?ordered, 1, ?none)))) AS ?rank)
+}""" ;
+    sem:function "dnd:point" .
+
+# However it ended, the drag is over. Addressed to the drag itself: what was lifted may be gone
+# (a list item dropped into another list is that list's component now).
+dnd:Settle a beh:Reaction ;
+    beh:when dnd:End ;
+    beh:source dnd:Current ;
+    beh:deletes """
+CONSTRUCT { dnd:Current ?p ?o . ?t dnd:offered dnd:Current . ?h dnd:hovered dnd:Current . ?l dnd:lifted dnd:Current }
+WHERE { { VALUES ?p { dnd:source dnd:carrying dnd:from dnd:by dnd:effect dnd:dropTarget dnd:into dnd:after dnd:before dnd:rank dnd:count } dnd:Current ?p ?o } UNION { ?t dnd:offered dnd:Current } UNION { ?h dnd:hovered dnd:Current } UNION { ?l dnd:lifted dnd:Current } }""" ;
+    sem:function "dnd:settle" .
+
+# A refused drop marks the draggable (it shakes) and says why: the shape's message, carried by
+# the event (ann:announcesFrom).
+dnd:Refuse a beh:Reaction ;
+    beh:when dnd:Refusal ;
+    beh:sourceClass dnd:Draggable ;
+    beh:deletes """CONSTRUCT { $this dnd:refusedBy ?old } WHERE { $this dnd:refusedBy ?old }""" ;
+    beh:inserts """CONSTRUCT { $this dnd:refusedBy $event } WHERE { $this a ?anyType }""" ;
+    sem:function "dnd:refuse" ;
+    ann:announcesFrom dnd:reason ;
+    ann:announces "It can't go there" , "Сюди не можна"@uk , "Das geht dort nicht"@de , "لا يمكن وضعه هناك"@ar ;
+    ann:tone sty:Warning .
+
+# --- rendering --------------------------------------------------------------------------------------
+
+# Every target's zones are marked for the host (what each receives, whether it is ordered).
+dnd:Zones a sem:Rendering ;
+    sem:targets dnd:DropTarget ;
+    sem:modality mod:Screen ;
+    sem:stratum 10 ;
+    sem:watches rdf:type , dnd:zone , dnd:receptacle , dnd:orderBy .
+dnd:Zones-fn a sem:Rule ; sem:implements dnd:Zones ; sem:function "dnd:zones" .
+dnd:Zones-sparql a sem:Rule ;
+    sem:implements dnd:Zones ;
+    sem:construct """
+CONSTRUCT {
+  ?zone rdfhtml:attribute ?zoneAttr , ?orderedAttr .
+  ?zoneAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drop-zone" ; rdfhtml:attributeValue ?receptacleId .
+  ?orderedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drop-ordered" ; rdfhtml:attributeValue "" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* dnd:DropTarget .
+  BIND(EXISTS { $this dnd:zone ?anyZone } AS ?zoned)
+  BIND(EXISTS { $this dnd:orderBy ?anyOrder } AS ?ordered)
+  OPTIONAL { $this dnd:receptacle ?declared }
+  OPTIONAL { $this dnd:zone ?declaredZone . ?declaredZone dnd:receptacle ?zoneReceptacle }
+  BIND(IF(?zoned, ?declaredZone, IRI(CONCAT(STR($this), "/~root"))) AS ?zone)
+  BIND(STR(IF(?zoned, ?zoneReceptacle, COALESCE(?declared, $this))) AS ?receptacleId)
+  BIND(IRI(CONCAT(STR(?zone), "-data-sem-drop-zone")) AS ?zoneAttr)
+  BIND(IF(?ordered, IRI(CONCAT(STR(?zone), "-data-sem-drop-ordered")), ?none) AS ?orderedAttr)
+}""" .
+
+# While there is a drag: each zone's reception of what is carried. Refused if it does not conform
+# to a dnd:accepts shape (or the sh:node of the target's val:validates shape), or if one more member
+# (dnd:count more) would exceed a sh:maxCount on the receptacle (or of that shape); the
+# reason is the (lexically first) violated shape's sh:message in the viewer's language (its
+# l10n:message twin, else its untagged one; dnd:UnfitPhrase or dnd:NoRoomPhrase when it has none) -
+# or an objection's reason (dnd:Objection), whichever is first. The zone it came from accepts it back (a reorder adds no
+# member), and a receptacle already holding it is not objected to.
+dnd:Receive a sem:Rendering ;
+    sem:targets dnd:DropTarget ;
+    sem:modality mod:Screen ;
+    sem:stratum 10 ;
+    sem:requires dnd:offered ;
+    sem:follows dnd:offered ;
+    sem:watches dnd:offered , dnd:carrying , dnd:count , dnd:from , dnd:zone , dnd:receptacle , dnd:accepts , dnd:memberOf , dnd:members , val:validates .
+dnd:Receive-fn a sem:Rule ; sem:implements dnd:Receive ; sem:function "dnd:receive" .
+dnd:Receive-sparql a sem:Rule ;
+    sem:implements dnd:Receive ;
+    sem:construct """
+CONSTRUCT {
+  ?zone rdfhtml:attribute ?verdictAttr , ?reasonAttr .
+  ?verdictAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drop" ; rdfhtml:attributeValue ?verdictSlug .
+  ?reasonAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drop-reason" ; rdfhtml:attributeValue ?reason .
+  ?reception a dnd:Reception ; dnd:receptacle ?r ; dnd:verdict ?verdict ; dnd:reason ?reason .
+}
+WHERE {
+  $this dnd:offered ?drag . ?drag dnd:carrying ?x .
+  BIND(EXISTS { $this dnd:zone ?anyZone } AS ?zoned)
+  OPTIONAL { $this dnd:receptacle ?declared }
+  OPTIONAL { $this dnd:zone ?declaredZone . ?declaredZone dnd:receptacle ?zoneReceptacle }
+  BIND(IF(?zoned, ?declaredZone, IRI(CONCAT(STR($this), "/~root"))) AS ?zone)
+  BIND(IF(?zoned, ?zoneReceptacle, COALESCE(?declared, $this)) AS ?r)
+  # Does what is carried conform to the target's shapes? The first violation's message, if not.
+  LATERAL { OPTIONAL { SELECT ?this ?x ?r (MIN(?said) AS ?unfit) WHERE {
+    { $this dnd:accepts ?shape } UNION { ?r dnd:accepts ?shape }
+    UNION { $this val:validates ?field . ?field sh:node ?shape .
+            { $this dnd:members ?fm . ?field sh:path ?fm } UNION { $this dnd:memberOf ?fm . ?field sh:path/sh:inversePath ?fm } }
+    { ?shape sh:class ?class FILTER NOT EXISTS { ?x a/rdfs:subClassOf* ?class } BIND(?shape AS ?violated) }
+    UNION { ?shape sh:property ?ps . ?ps sh:path ?p ; sh:hasValue ?wanted FILTER(isIRI(?p)) FILTER NOT EXISTS { ?x ?p ?wanted } BIND(?ps AS ?violated) }
+    UNION { ?shape sh:property ?ps . ?ps sh:path ?p ; sh:in ?allowed FILTER(isIRI(?p)) ?x ?p ?v FILTER NOT EXISTS { ?allowed rdf:rest*/rdf:first ?v } BIND(?ps AS ?violated) }
+    UNION { ?shape sh:property ?ps . ?ps sh:path ?p ; sh:class ?valueClass FILTER(isIRI(?p)) ?x ?p ?v FILTER NOT EXISTS { ?v a/rdfs:subClassOf* ?valueClass } BIND(?ps AS ?violated) }
+    UNION { ?shape sh:property ?ps . ?ps sh:path ?p ; sh:pattern ?pattern FILTER(isIRI(?p)) ?x ?p ?v
+            OPTIONAL { ?ps sh:flags ?flags }
+            FILTER(!REGEX(STR(?v), STR(?pattern), COALESCE(STR(?flags), "")))
+            BIND(?ps AS ?violated) }
+    UNION { ?shape sh:property ?ps . ?ps sh:path ?p ; ?rangeBound ?limit FILTER(isIRI(?p) && ?rangeBound IN (sh:minInclusive, sh:maxInclusive, sh:minExclusive, sh:maxExclusive))
+            ?x ?p ?v
+            FILTER(!COALESCE(IF(?rangeBound = sh:minInclusive, ?v >= ?limit, IF(?rangeBound = sh:maxInclusive, ?v <= ?limit, IF(?rangeBound = sh:minExclusive, ?v > ?limit, ?v < ?limit))), false))
+            BIND(?ps AS ?violated) }
+    OPTIONAL { ?ownAt l10n:of ?violated ; l10n:message ?own }
+    OPTIONAL { ?violated sh:message ?own FILTER(lang(?own) = "") }
+    OPTIONAL { ?generalAt l10n:of ?shape ; l10n:message ?general }
+    OPTIONAL { ?shape sh:message ?general FILTER(lang(?general) = "") }
+    OPTIONAL { ?unfitAt l10n:of dnd:UnfitPhrase ; l10n:name ?unfit0 }
+    BIND(STR(COALESCE(?own, ?general, ?unfit0, "It does not belong here.")) AS ?said)
+  } GROUP BY ?this ?x ?r } }
+  # How many members the receptacle has, whether this is one already, and its capacity.
+  LATERAL { OPTIONAL { SELECT ?this ?r (COUNT(?o) AS ?pointing) WHERE { $this dnd:memberOf ?m . ?o ?m ?r } GROUP BY ?this ?r } }
+  LATERAL { OPTIONAL { SELECT ?this ?r (COUNT(?o) AS ?holding) WHERE { $this dnd:members ?m . ?r ?m ?o } GROUP BY ?this ?r } }
+  LATERAL { OPTIONAL { SELECT ?this ?r (MIN(?bound) AS ?max) (MIN(?said) AS ?full) WHERE {
+    ?capacity sh:targetNode ?r ; sh:property ?ps . ?ps sh:maxCount ?bound .
+    { $this dnd:memberOf ?m . ?ps sh:path/sh:inversePath ?m } UNION { $this dnd:members ?m . ?ps sh:path ?m }
+    OPTIONAL { ?ownAt l10n:of ?ps ; l10n:message ?own }
+    OPTIONAL { ?ps sh:message ?own FILTER(lang(?own) = "") }
+    OPTIONAL { ?generalAt l10n:of ?capacity ; l10n:message ?general }
+    OPTIONAL { ?capacity sh:message ?general FILTER(lang(?general) = "") }
+    OPTIONAL { ?noRoomAt l10n:of dnd:NoRoomPhrase ; l10n:name ?noRoom0 }
+    BIND(STR(COALESCE(?own, ?general, ?noRoom0, "There is no room for it here.")) AS ?said)
+  } GROUP BY ?this ?r } }
+  # A target that is a field over its membership property: that shape's sh:maxCount too.
+  LATERAL { OPTIONAL { SELECT ?this (MIN(?fieldBound) AS ?fieldMax) (MIN(?fieldSaid) AS ?fieldFull) WHERE {
+    $this val:validates ?field . ?field sh:maxCount ?fieldBound .
+    { $this dnd:members ?fm . ?field sh:path ?fm } UNION { $this dnd:memberOf ?fm . ?field sh:path/sh:inversePath ?fm }
+    OPTIONAL { ?fieldOwnAt l10n:of ?field ; l10n:message ?fieldOwn }
+    OPTIONAL { ?field sh:message ?fieldOwn FILTER(lang(?fieldOwn) = "") }
+    OPTIONAL { ?fieldNoRoomAt l10n:of dnd:NoRoomPhrase ; l10n:name ?fieldNoRoom }
+    BIND(STR(COALESCE(?fieldOwn, ?fieldNoRoom, "There is no room for it here.")) AS ?fieldSaid)
+  } GROUP BY ?this } }
+  # How many it carries at once.
+  LATERAL { OPTIONAL { ?drag dnd:count ?declaredCount } }
+  BIND(COALESCE(xsd:integer(?declaredCount), 1) AS ?adding)
+  BIND(IF(BOUND(?max) && BOUND(?fieldMax), IF(?fieldMax < ?max, ?fieldMax, ?max), COALESCE(?max, ?fieldMax)) AS ?room)
+  BIND(IF(BOUND(?full) && BOUND(?fieldFull), IF(?fieldFull < ?full, ?fieldFull, ?full), COALESCE(?full, ?fieldFull)) AS ?noRoom)
+  # What a rule objects to (dnd:Objection): the least reason given for this receptacle.
+  LATERAL { OPTIONAL { SELECT ?r ?drag (MIN(?why) AS ?objected) WHERE { ?objection a dnd:Objection ; dnd:receptacle ?r ; dnd:against ?drag ; dnd:reason ?why } GROUP BY ?r ?drag } }
+  BIND(EXISTS { ?drag dnd:from ?r } AS ?origin)
+  BIND(EXISTS { $this dnd:memberOf ?m1 . ?x ?m1 ?r } || EXISTS { $this dnd:members ?m2 . ?r ?m2 ?x } AS ?inside)
+  BIND(!?origin && !?inside && BOUND(?room) && COALESCE(?pointing, ?holding, 0) + ?adding > ?room AS ?overfull)
+  BIND(IF(?origin, ?none, ?unfit) AS ?unfitHere)
+  BIND(IF(?overfull, ?noRoom, ?none) AS ?fullHere)
+  BIND(IF(?origin || ?inside, ?none, STR(?objected)) AS ?objectedHere)
+  BIND(IF(BOUND(?unfitHere) && BOUND(?fullHere), IF(?unfitHere < ?fullHere, ?unfitHere, ?fullHere), COALESCE(?unfitHere, ?fullHere)) AS ?shaped)
+  BIND(IF(BOUND(?shaped) && BOUND(?objectedHere), IF(?shaped < ?objectedHere, ?shaped, ?objectedHere), COALESCE(?shaped, ?objectedHere)) AS ?reason)
+  BIND(IF(BOUND(?reason), dnd:Refused, dnd:Accepted) AS ?verdict)
+  BIND(IF(BOUND(?reason), "refuses", "accepts") AS ?verdictSlug)
+  BIND(IRI(CONCAT(STR($this), "/~drop-", ENCODE_FOR_URI(STR(?r)))) AS ?reception)
+  BIND(IRI(CONCAT(STR(?zone), "-data-sem-drop")) AS ?verdictAttr)
+  BIND(IF(BOUND(?reason), IRI(CONCAT(STR(?zone), "-data-sem-drop-reason")), ?none) AS ?reasonAttr)
+}""" .
+
+# The target the drag is over: its zone is marked, and in an ordered one the insertion point - on
+# the member it would precede, or after the last.
+dnd:Hover a sem:Rendering ;
+    sem:targets dnd:DropTarget ;
+    sem:modality mod:Screen ;
+    sem:stratum 10 ;
+    sem:requires dnd:hovered ;
+    sem:follows dnd:hovered ;
+    sem:watches dnd:hovered , dnd:into , dnd:after , dnd:before , dnd:zone .
+dnd:Hover-fn a sem:Rule ; sem:implements dnd:Hover ; sem:function "dnd:hover" .
+dnd:Hover-sparql a sem:Rule ;
+    sem:implements dnd:Hover ;
+    sem:construct """
+CONSTRUCT {
+  ?zone rdfhtml:attribute ?overAttr .
+  ?overAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drop-over" ; rdfhtml:attributeValue "" .
+  ?mark rdfhtml:attribute ?markAttr .
+  ?markAttr a rdfhtml:Attribute ; rdfhtml:attributeName ?markName ; rdfhtml:attributeValue "" .
+}
+WHERE {
+  $this dnd:hovered ?drag . ?drag dnd:into ?r .
+  BIND(EXISTS { $this dnd:zone ?anyZone } AS ?zoned)
+  OPTIONAL { $this dnd:zone ?declaredZone . ?declaredZone dnd:receptacle ?r }
+  BIND(IF(?zoned, ?declaredZone, IRI(CONCAT(STR($this), "/~root"))) AS ?zone)
+  BIND(IRI(CONCAT(STR(?zone), "-data-sem-drop-over")) AS ?overAttr)
+  # The neighbours' components, among this target's own.
+  OPTIONAL { ?drag dnd:before ?b . ?beforeDraggable dnd:carries ?b FILTER(STRSTARTS(STR(?beforeDraggable), CONCAT(STR($this), "/~"))) }
+  OPTIONAL { ?drag dnd:after ?a . ?afterDraggable dnd:carries ?a FILTER(STRSTARTS(STR(?afterDraggable), CONCAT(STR($this), "/~"))) }
+  BIND(IF(BOUND(?beforeDraggable), IRI(CONCAT(STR(?beforeDraggable), "/~root")), IF(BOUND(?afterDraggable), IRI(CONCAT(STR(?afterDraggable), "/~root")), ?none)) AS ?mark)
+  BIND(IF(BOUND(?beforeDraggable), "data-sem-drop-before", "data-sem-drop-after") AS ?markName)
+  BIND(IF(BOUND(?mark), IRI(CONCAT(STR($this), "/~drop-mark")), ?none) AS ?markAttr)
+}""" .
+
+# A draggable's root: the host's handle (what it carries), described as draggable, focusable for
+# the keyboard; while lifted, marked, with its status (what is held, where it would go, whether it
+# can); after a refused drop, marked refused.
+dnd:Handle a sem:Rendering ;
+    sem:targets dnd:Draggable ;
+    sem:modality mod:Screen ;
+    sem:stratum 12 ;
+    sem:follows dnd:lifted ;
+    sem:watches rdf:type , dnd:carries , dnd:name , c:label , dnd:lifted , dnd:refusedBy , dnd:dropTarget , dnd:into , dnd:after , dnd:before .
+dnd:Handle-fn a sem:Rule ; sem:implements dnd:Handle ; sem:function "dnd:handle" .
+dnd:Handle-sparql a sem:Rule ;
+    sem:implements dnd:Handle ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?gesture , ?carriedAttr , ?describe , ?tab , ?liftedAttr , ?statusAttr , ?refusedAttr .
+  ?gesture a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-gesture" ; rdfhtml:attributeValue "drag" .
+  ?carriedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drag" ; rdfhtml:attributeValue ?carriedId .
+  ?describe a rdfhtml:Attribute ; rdfhtml:attributeName "aria-roledescription" ; rdfhtml:attributeValue ?draggablePhrase .
+  ?tab a rdfhtml:Attribute ; rdfhtml:attributeName "tabindex" ; rdfhtml:attributeValue "0" .
+  ?liftedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-lifted" ; rdfhtml:attributeValue "" .
+  ?statusAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-drag-status" ; rdfhtml:attributeValue ?status .
+  ?refusedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-refused" ; rdfhtml:attributeValue "" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* dnd:Draggable .
+  OPTIONAL { $this dnd:carries ?declared }
+  OPTIONAL { $this dnd:name ?ownName FILTER(isLiteral(?ownName) && lang(?ownName) = "") }
+  OPTIONAL { ?ownLabelAt l10n:of $this ; l10n:label ?ownLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(lang(?ownLabel) = "") }
+  OPTIONAL { ?draggablePhraseAt l10n:of dnd:DraggablePhrase ; l10n:name ?draggablePhrase }
+  OPTIONAL { dnd:DraggablePhrase rdfs:label ?draggablePhrase FILTER(langMatches(lang(?draggablePhrase), "en")) }
+  BIND(COALESCE(?declared, $this) AS ?x)
+  BIND(STR(?x) AS ?carriedId)
+  BIND(STR(COALESCE(?ownName, ?ownLabel, REPLACE(STR(?x), "^.*[#/]", ""))) AS ?name)
+  BIND(EXISTS { $this dnd:lifted ?anyDrag } AS ?lifted)
+  # Where it would go: the zone's name, the verdict there, and the neighbour it would precede or follow.
+  OPTIONAL { $this dnd:lifted ?drag . ?drag dnd:into ?r ; dnd:dropTarget ?t .
+             OPTIONAL { ?zoneNameAt l10n:of ?r ; l10n:name ?zoneName }
+             OPTIONAL { ?r rdfs:label ?zoneName FILTER(lang(?zoneName) = "") }
+             OPTIONAL { ?zoneLabelAt l10n:of ?r ; l10n:label ?zoneLabel }
+             OPTIONAL { ?r c:label ?zoneLabel FILTER(lang(?zoneLabel) = "") }
+             # A zone that names itself (a workspace pane, by its tabs) says so first.
+             OPTIONAL { ?t dnd:zone ?namedZone . ?namedZone dnd:receptacle ?r ; c:label ?zoneOwn FILTER(lang(?zoneOwn) = "") } }
+  OPTIONAL { $this dnd:lifted ?drag2 . ?drag2 dnd:into ?r2 ; dnd:dropTarget ?t2 .
+             BIND(IRI(CONCAT(STR(?t2), "/~drop-", ENCODE_FOR_URI(STR(?r2)))) AS ?reception)
+             ?reception dnd:verdict dnd:Refused ; dnd:reason ?why }
+  OPTIONAL { $this dnd:lifted ?drag3 . ?drag3 dnd:before ?b ; dnd:dropTarget ?t3 . ?bd dnd:carries ?b ; dnd:name ?beforeName
+             FILTER(STRSTARTS(STR(?bd), CONCAT(STR(?t3), "/~"))) }
+  OPTIONAL { $this dnd:lifted ?drag4 . ?drag4 dnd:after ?a ; dnd:dropTarget ?t4 . ?ad dnd:carries ?a ; dnd:name ?afterName
+             FILTER(STRSTARTS(STR(?ad), CONCAT(STR(?t4), "/~"))) }
+  OPTIONAL { ?pickedUpAt l10n:of dnd:PickedUpPhrase ; l10n:name ?pickedUp }
+  OPTIONAL { dnd:PickedUpPhrase rdfs:label ?pickedUp FILTER(langMatches(lang(?pickedUp), "en")) }
+  OPTIONAL { ?beforeWordAt l10n:of dnd:BeforePhrase ; l10n:name ?beforeWord }
+  OPTIONAL { dnd:BeforePhrase rdfs:label ?beforeWord FILTER(langMatches(lang(?beforeWord), "en")) }
+  OPTIONAL { ?afterWordAt l10n:of dnd:AfterPhrase ; l10n:name ?afterWord }
+  OPTIONAL { dnd:AfterPhrase rdfs:label ?afterWord FILTER(langMatches(lang(?afterWord), "en")) }
+  OPTIONAL { ?refusedWordAt l10n:of dnd:RefusedPhrase ; l10n:name ?refusedWord }
+  OPTIONAL { dnd:RefusedPhrase rdfs:label ?refusedWord FILTER(langMatches(lang(?refusedWord), "en")) }
+  BIND(STR(COALESCE(?zoneOwn, ?zoneName, ?zoneLabel, REPLACE(STR(?r), "^.*[#/]", ""))) AS ?zone)
+  BIND(IF(!?lifted, ?none,
+       IF(!BOUND(?r), CONCAT(?name, " ", STR(?pickedUp)),
+       IF(BOUND(?why), CONCAT(?name, ": ", ?zone, " ", STR(?refusedWord), " ", STR(?why)),
+       CONCAT(?name, ": ", ?zone,
+              IF(BOUND(?beforeName), CONCAT(", ", STR(?beforeWord), " ", STR(?beforeName)),
+              IF(BOUND(?afterName), CONCAT(", ", STR(?afterWord), " ", STR(?afterName)), "")), ".")))) AS ?status)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-gesture")) AS ?gesture)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-drag")) AS ?carriedAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-roledescription")) AS ?describe)
+  # A tab stop, unless its class keeps its own (a roving grid row).
+  BIND(IF(EXISTS { $this a/rdfs:subClassOf* ?keeper . ?keeper dnd:keepsFocus true }, ?none, IRI(CONCAT(STR($this), "/~root-tabindex"))) AS ?tab)
+  BIND(IF(?lifted, IRI(CONCAT(STR($this), "/~root-data-sem-lifted")), ?none) AS ?liftedAttr)
+  BIND(IF(BOUND(?status), IRI(CONCAT(STR($this), "/~root-data-sem-drag-status")), ?none) AS ?statusAttr)
+  BIND(IF(EXISTS { $this dnd:refusedBy ?refusal }, IRI(CONCAT(STR($this), "/~root-data-sem-refused")), ?none) AS ?refusedAttr)
+}""" .

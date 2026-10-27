@@ -1,0 +1,3 @@
+# The wasm features ABI.md allows, and nothing else.
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "target-cpu=mvp", "-C", "target-feature=+mutable-globals,+sign-ext,+bulk-memory,+nontrapping-fptoint"]

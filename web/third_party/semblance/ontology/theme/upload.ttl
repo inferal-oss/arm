@@ -1,0 +1,214 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for the file drop (ontology/components/upload.ttl). The zone is a large button with a
+# dashed edge, sunken like a field, that brightens to the accent under the pointer and the focus;
+# while files are carried over the page the drag and drop layer's reception styles
+# (theme/dragdrop.ttl) mark it accepting or refusing, with the reason. A full drop (aria-disabled)
+# is dimmed. Its help and error lines are the inputs' (theme/inputs.ttl). Each file is a row: its
+# kind as a small badge, its name (cut short with an ellipsis), its size and state, a progress bar
+# while it is uploaded, and its buttons at the end; refused and failed rows are in the danger tone.
+# Every value comes from a token, so the themes, contrast and density restyle it, and every side is
+# logical, so right-to-left lays it out mirrored.
+
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "width" ; sty:raw "min(100%, 520px)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+
+# --- the zone ----------------------------------------------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "justify-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-1 ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "padding" ; sty:raw "var(--sem-space-5) var(--sem-space-4)" ] ,
+                 [ sty:property "border" ; sty:raw "2px dashed var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-duration-fast) var(--sem-ease), background-color var(--sem-duration-fast) var(--sem-ease), box-shadow var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone:is(:hover, :focus-visible):not(:disabled, [aria-disabled=true])" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-9) 6%, var(--sem-surface-sunken))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone:is(:disabled, [aria-disabled=true])" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.6" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone > .sem-glyph" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-2xl ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] ,
+                 [ sty:property "color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone > .sem-title" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone > .sem-prompt" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+# A phone has no files to drag over the page, and less room: a smaller zone.
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-zone" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "padding" ; sty:raw "var(--sem-space-4) var(--sem-space-3)" ] .
+
+# --- the list ------------------------------------------------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-files" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileDrop ; sty:part "> .sem-files:empty" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+
+# A file: its kind beside its name (and its buttons), and under the name its size, state and why, and
+# its progress, which take the rest of the row's width (a phone's narrow row too).
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "auto minmax(0, 1fr) auto" ] ,
+                 [ sty:property "grid-template-areas" ; sty:raw "\"kind name actions\" \"kind meta meta\" \"kind progress progress\"" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "column-gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "row-gap" ; sty:raw "2px" ] ,
+                 [ sty:property "padding" ; sty:raw "var(--sem-space-2) var(--sem-space-2) var(--sem-space-2) var(--sem-space-3)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> .sem-kind" ;
+    sty:declares [ sty:property "grid-area" ; sty:raw "kind" ] ,
+                 [ sty:property "min-width" ; sty:raw "4.2ch" ] ,
+                 [ sty:property "padding" ; sty:raw "6px 4px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:token tok:accent-3 ] ,
+                 [ sty:property "color" ; sty:token tok:accent-11 ] ,
+                 [ sty:property "font" ; sty:raw "700 var(--sem-text-xs)/1 var(--sem-font-mono)" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.02em" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> .sem-name" ;
+    sty:declares [ sty:property "grid-area" ; sty:raw "name" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> .sem-meta" ;
+    sty:declares [ sty:property "grid-area" ; sty:raw "meta" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "gap" ; sty:raw "0 var(--sem-space-2)" ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> .sem-meta > .sem-state::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"·\"" ] ,
+                 [ sty:property "margin-inline-end" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> .sem-meta > .sem-reason" ;
+    sty:declares [ sty:property "flex-basis" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> [data-sem-c=progress]" ;
+    sty:declares [ sty:property "grid-area" ; sty:raw "progress" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> [data-sem-c=progress] > .sem-track" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:part "> .sem-actions" ;
+    sty:declares [ sty:property "grid-area" ; sty:raw "actions" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] .
+
+# How it went: uploaded in the success tone, refused and failed in the danger tone.
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:state "[data-sem-file-state=uploaded]" ; sty:part "> .sem-meta > .sem-state" ;
+    sty:declares [ sty:property "color" ; sty:token tok:success-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:state ":is([data-sem-file-state=refused], [data-sem-file-state=failed])" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:danger-6 ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-danger-9) 6%, var(--sem-surface))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:state ":is([data-sem-file-state=refused], [data-sem-file-state=failed])" ; sty:part "> .sem-meta" ;
+    sty:declares [ sty:property "color" ; sty:token tok:danger-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:state ":is([data-sem-file-state=refused], [data-sem-file-state=failed])" ; sty:part "> .sem-kind" ;
+    sty:declares [ sty:property "background" ; sty:token tok:danger-3 ] ,
+                 [ sty:property "color" ; sty:token tok:danger-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:FileItem ; sty:state "[data-sem-file-state=refused]" ; sty:part "> .sem-name" ;
+    sty:declares [ sty:property "text-decoration" ; sty:raw "line-through" ] ,
+                 [ sty:property "text-decoration-color" ; sty:raw "color-mix(in oklab, currentColor 45%, transparent)" ] .
+
+# --- structural themes (themes-structural.ttl) ----------------------------------------------------------
+# Classic and Tracker: the zone is a sunken well with a dotted edge, each file a raised face. Doodle:
+# the zone and the files are inked on wobbly corners. Cupertino and Fluent keep the default build,
+# restyled by their tokens (hairlines, radii, accent).
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=file-drop] > .sem-zone:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "1px dotted var(--bv-dark)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=file-drop] > .sem-zone:focus-visible:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "outline" ; sty:raw "1px dotted var(--sem-text)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-6px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=file-item]:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=file-item] > .sem-kind:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-thin-sunken)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-text)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=file-drop] > .sem-zone:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "1px dotted var(--bv-dark)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=file-drop] > .sem-zone:focus-visible:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "outline" ; sty:raw "1px dotted var(--sem-text)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-6px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=file-item]:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=file-item] > .sem-kind:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-thin-sunken)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-text)" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=file-drop] > .sem-zone:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "2px dashed var(--ink)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--wob-a)" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=file-item]:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "border" ; sty:raw "2px solid var(--ink)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--wob-b)" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=file-item]:nth-child(2n):not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "rotate" ; sty:raw "-0.2deg" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part "[data-sem-c=file-item] > .sem-kind:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--hl)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--ink)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--wob-c)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-file-state=refused], [data-sem-file-state=failed])[data-sem-c=file-item] > .sem-kind:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--sem-danger-11)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-file-state=refused], [data-sem-file-state=failed])[data-sem-c=file-item] > .sem-kind:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--sem-danger-11)" ] .

@@ -1,0 +1,406 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Default theme for the data components.
+
+# --- table ---
+# The root is the scroll container, so the header sticks inside it.
+[] a sty:StyleRule ; sty:appliesTo c:Table ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "max-height" ; sty:raw "26rem" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "table" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "border-collapse" ; sty:raw "separate" ] ,
+                 [ sty:property "border-spacing" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "thead th" ;
+    sty:declares [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "thead th[aria-sort]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part ".sem-sort" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "6px" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "text-align" ; sty:raw "inherit" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part ".sem-sort:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+# Inside a scroller an outer ring would be clipped: the focus ring is drawn inside the header cell.
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part ".sem-sort:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-2px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "thead th.sem-end .sem-sort" ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "row-reverse" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part ".sem-sort-icon" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "opacity" ; sty:raw "0.35" ] ,
+                 [ sty:property "transition" ; sty:raw "opacity var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part ".sem-sort:hover .sem-sort-icon" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.7" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "th[aria-sort] .sem-sort-icon" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "1" ] ,
+                 [ sty:property "color" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "tbody :is(th, td)" ;
+    sty:declares [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "vertical-align" ; sty:raw "middle" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "font-weight" ; sty:raw "400" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "tbody th" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "550" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "tbody tr:last-child > *" ;
+    sty:declares [ sty:property "border-bottom" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "tbody tr:nth-child(even)" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-gray-2) 70%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "tbody tr:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "tbody .sem-end" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "end" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "thead .sem-end" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "end" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part ".sem-center" ;
+    sty:declares [ sty:property "text-align" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "td code" ;
+    sty:declares [ sty:property "padding" ; sty:raw "1px 6px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:gray-11 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] .
+[] a sty:StyleRule ; sty:appliesTo c:Table ; sty:part "td.sem-empty" ;
+    sty:declares [ sty:property "padding" ; sty:token tok:space-6 ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+
+# --- description list ---
+[] a sty:StyleRule ; sty:appliesTo c:DescriptionList ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(7rem, max-content) minmax(0, 1fr)" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] .
+# Beside other things in a row it takes a share of at least 320px; in a column, the column's width
+# (a flex basis there would be a height).
+[] a sty:StyleRule ; sty:appliesTo c:DescriptionList ; sty:state ":where([data-sem-direction=row] > *)" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 320px" ] ,
+                 [ sty:property "align-self" ; sty:raw "start" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DescriptionList ; sty:part "> .sem-pair" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-column" ; sty:raw "1 / -1" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "subgrid" ] ,
+                 [ sty:property "column-gap" ; sty:token tok:space-5 ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-1 ) ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DescriptionList ; sty:part "> .sem-pair:last-child" ;
+    sty:declares [ sty:property "border-bottom" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DescriptionList ; sty:part "dt" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-weight" ; sty:raw "500" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DescriptionList ; sty:part "dd" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# --- stat ---
+[] a sty:StyleRule ; sty:appliesTo c:Stat ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "align-content" ; sty:raw "start" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-1 ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 11rem" ] ,
+                 [ sty:property "align-self" ; sty:raw "stretch" ] ,
+                 [ sty:property "min-width" ; sty:raw "min(100%, 11rem)" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-4 tok:space-5 ) ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-1 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part "> .sem-label" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-weight" ; sty:raw "500" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part "> .sem-figure" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part ".sem-value" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-3xl ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "-0.025em" ] ,
+                 [ sty:property "line-height" ; sty:raw "1.1" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part ".sem-unit" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "font-weight" ; sty:raw "500" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part "> .sem-delta" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "justify-self" ; sty:raw "start" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "3px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 8px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:gray-11 ] ,
+                 [ sty:property "font" ; sty:raw "600 12px/1 var(--sem-font)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part "> .sem-delta.sem-good" ;
+    sty:declares [ sty:property "background" ; sty:token tok:success-3 ] ,
+                 [ sty:property "color" ; sty:token tok:success-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part "> .sem-delta.sem-bad" ;
+    sty:declares [ sty:property "background" ; sty:token tok:danger-3 ] ,
+                 [ sty:property "color" ; sty:token tok:danger-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Stat ; sty:part "> .sem-help" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+
+# --- avatar ---
+# Sized by sty:size (--control-h); the hue comes from the label (--avatar-hue, set by the rule).
+[] a sty:StyleRule ; sty:appliesTo c:Avatar ;
+    sty:declares [ sty:property "--avatar-size" ; sty:raw "var(--control-h, var(--sem-control-md))" ] ,
+                 [ sty:property "display" ; sty:raw "inline-grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "var(--avatar-size)" ] ,
+                 [ sty:property "height" ; sty:raw "var(--avatar-size)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "background" ; sty:raw "light-dark(oklch(0.92 0.06 var(--avatar-hue, 280)), oklch(0.36 0.08 var(--avatar-hue, 280)))" ] ,
+                 [ sty:property "color" ; sty:raw "light-dark(oklch(0.38 0.13 var(--avatar-hue, 280)), oklch(0.93 0.05 var(--avatar-hue, 280)))" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px color-mix(in oklab, currentColor 14%, transparent)" ] ,
+                 [ sty:property "font" ; sty:raw "650 calc(var(--avatar-size) * 0.38)/1 var(--sem-font)" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.02em" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Avatar ; sty:part "img" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "object-fit" ; sty:raw "cover" ] .
+
+# --- avatar group: overlapping, each ringed in the surface color ---
+[] a sty:StyleRule ; sty:appliesTo c:AvatarGroup ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "isolation" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AvatarGroup ; sty:part "> :is([data-sem-c], .sem-more)" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 2px var(--sem-surface)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AvatarGroup ; sty:part "> * + *" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "calc(var(--control-h, var(--sem-control-md)) * -0.22)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AvatarGroup ; sty:part "> .sem-more" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "var(--control-h, var(--sem-control-md))" ] ,
+                 [ sty:property "height" ; sty:raw "var(--control-h, var(--sem-control-md))" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:gray-4 ] ,
+                 [ sty:property "color" ; sty:token tok:gray-11 ] ,
+                 [ sty:property "font" ; sty:raw "650 12px/1 var(--sem-font)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+
+# --- timeline ---
+[] a sty:StyleRule ; sty:appliesTo c:Timeline ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 100%" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "20px minmax(0, 1fr) auto" ] ,
+                 [ sty:property "column-gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "padding-bottom" ; sty:token tok:space-4 ] .
+# The rail: from each dot down to the next.
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:state "::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "''" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "left" ; sty:raw "9px" ] ,
+                 [ sty:property "top" ; sty:raw "16px" ] ,
+                 [ sty:property "bottom" ; sty:raw "-2px" ] ,
+                 [ sty:property "width" ; sty:raw "2px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "1px" ] ,
+                 [ sty:property "background" ; sty:token tok:border ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:state ":last-child::before" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:part "> .sem-dot" ;
+    sty:declares [ sty:property "align-self" ; sty:raw "start" ] ,
+                 [ sty:property "width" ; sty:raw "10px" ] ,
+                 [ sty:property "height" ; sty:raw "10px" ] ,
+                 [ sty:property "margin" ; sty:raw "4px 5px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:gray-8 ] ,
+                 [ sty:property "box-shadow" ; sty:raw "0 0 0 3px var(--sem-gray-3)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:state ":first-child" ; sty:part "> .sem-dot" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:raw "0 0 0 3px var(--sem-accent-soft)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:part "> .sem-body" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "gap" ; sty:raw "6px" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:part "strong" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "600" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:part ".sem-target" ;
+    sty:declares [ sty:property "padding" ; sty:raw "1px 6px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:gray-11 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:part "> .sem-meta" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimelineItem ; sty:part ".sem-effect" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+
+# --- tree ---
+[] a sty:StyleRule ; sty:appliesTo c:Tree ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "max-height" ; sty:raw "28rem" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-2 ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "[role=group]" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-row" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "min-height" ; sty:raw "30px" ] ,
+                 [ sty:property "padding-inline" ; sty:raw "calc(var(--tree-level, 0) * 18px + 2px) var(--sem-space-2)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-row:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-twisty" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:raw "11px" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-twisty:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-5 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-twisty > span" ;
+    sty:declares [ sty:property "transition" ; sty:raw "transform var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "[aria-expanded=true] > .sem-row > .sem-twisty > span" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(90deg)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-leaf" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "background" ; sty:raw "radial-gradient(circle, var(--sem-gray-7) 2px, transparent 2.5px)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-label" ;
+    sty:declares [ sty:property "padding" ; sty:raw "2px 6px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "button.sem-label" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "span.sem-label" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "default" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "[aria-expanded] > .sem-row > span.sem-label" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ":is(.sem-twisty, .sem-label):focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "[aria-selected=true] > .sem-row" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] .
+# Under the pointer the selected row is one step stronger, as a selected grid row is.
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "[aria-selected=true] > .sem-row:hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft), var(--sem-accent) 14%)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part "[aria-selected=true] > .sem-row > .sem-label" ;
+    sty:declares [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-detail" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "auto" ] ,
+                 [ sty:property "padding-inline-start" ; sty:token tok:space-3 ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-count" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "20px" ] ,
+                 [ sty:property "margin-inline-start" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding" ; sty:raw "1px 6px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "600 11px/1.4 var(--sem-font)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tree ; sty:part ".sem-label + .sem-count" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "auto" ] .

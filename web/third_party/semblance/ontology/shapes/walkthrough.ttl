@@ -1,0 +1,30 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What a well-formed walkthrough looks like (ontology/components/walkthrough.ttl), validated by
+# the component shapes layer like ontology/shapes/components.ttl.
+
+c:WalkthroughShape a sh:NodeShape ; sh:targetClass c:Walkthrough ;
+    sh:property [ sh:path c:steps ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:message "A walkthrough needs its steps (c:steps, a list of c:WalkthroughStep)." ] ,
+                [ sh:path c:sourceView ; sh:maxCount 1 ; sh:class c:SourceView ;
+                  sh:message "A walkthrough explains at most one source (c:sourceView, a c:SourceView)." ] ,
+                [ sh:path c:current ; sh:maxCount 1 ; sh:class c:WalkthroughStep ;
+                  sh:message "A walkthrough reads one step at a time (c:current, one of its steps)." ] ,
+                [ sh:path c:pointedTerm ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:selectedTerm ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:diagramIncludes ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:diagramExcludes ; sh:nodeKind sh:IRI ] .
+c:WalkthroughStepShape a sh:NodeShape ; sh:targetClass c:WalkthroughStep ;
+    sh:property [ sh:path c:children ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:message "A step is running text (c:children: strings and mentions)." ] .
+c:MentionShape a sh:NodeShape ; sh:targetClass c:Mention ;
+    sh:property [ sh:path c:mentions ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A mention is about one resource (c:mentions, an IRI)." ] ,
+                [ sh:path c:label ; sh:minCount 1 ;
+                  sh:message "A mention needs its words (c:label)." ] ,
+                [ sh:path c:to ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .
+c:SourceViewHighlightShape a sh:NodeShape ; sh:targetClass c:SourceView ;
+    sh:property [ sh:path c:highlightsSubject ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A source view highlights the statements of at most one resource (c:highlightsSubject)." ] .

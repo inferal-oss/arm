@@ -1,0 +1,462 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Board: data items as cards in lanes (a kanban board, a pipeline, a funnel).
+#
+# The lanes are not configured: they are the individuals in the rdfs:range of the property that
+# places a card (c:property), by sem:order - as a c:Segmented's options are. Each card (c:card)
+# goes in the lane its value of that property names. A lane may be limited: a SHACL node shape
+# whose sh:targetNode is the lane, with sh:maxCount on the inverse of the property ("at most 3
+# items point at Doing"), is a work-in-progress limit. Its header then counts "n / max", and the
+# board's move reaction refuses to move a card into it while it is full (announcing why).
+#
+# Like a list, the container renders the lanes, and the cards are placed member-wise
+# (sem:forEach c:card): one evaluation per card mints its c:BoardCard and puts it in its lane, so
+# adding or moving a card re-places that card alone. A card shows its title, a tag and a person
+# (as c:Tag and c:Avatar instances it mints), and icon buttons that move it to the previous or
+# next lane and, on a c:removable board, remove it. Arrow keys on a focused card move it too.
+#
+# For the drag and drop layer the board says what it is as a drop target: each lane's list of
+# cards is a zone receiving into the lane (dnd:zone, dnd:receptacle), a card is placed by
+# c:property (dnd:memberOf) and ordered by c:cardOrder (dnd:orderBy). A board that is also a
+# dnd:Sortable mints its cards as draggables carrying their items, so they can be dragged
+# between lanes and within one; the lane limits are the same shapes, read by the layer.
+
+c:Board a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Board"@en , "Дошка"@uk , "Board"@de , "لوحة"@ar ;
+    rdfs:comment """Data items (c:card) as cards in lanes: the lanes are the individuals of c:property's
+rdfs:range, by sem:order; a card is in the lane its c:property value names. A card shows its
+c:cardTitle, c:cardTag (an individual: its rdfs:label, in its sty:tone) and c:cardPerson (an
+avatar and a name), ordered in its lane by c:cardOrder. Its ← / → buttons (and the arrow keys)
+move it to the neighbouring lane; c:removable adds a remove button. A SHACL shape targeting a lane
+with sh:maxCount on the inverse of c:property limits it: moves into a full lane are refused and
+announced. c:label names the board."""@en ;
+    sem:slug "board" .
+c:card a owl:ObjectProperty ; rdfs:domain c:Board ; rdfs:comment "A data item shown as a card on the board (unordered set)."@en .
+c:cardTitle a owl:ObjectProperty ; rdfs:domain c:Board ; rdfs:range rdf:Property ; rdfs:comment "Property of a card that is its title."@en .
+c:cardTag a owl:ObjectProperty ; rdfs:domain c:Board ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of a card whose value (an individual, with rdfs:label and sty:tone) is shown as a tag."@en .
+c:cardPerson a owl:ObjectProperty ; rdfs:domain c:Board ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of a card whose value (a name, or a node with an rdfs:label) is shown as an avatar and a name."@en .
+c:cardOrder a owl:ObjectProperty ; rdfs:domain c:Board ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of a card that orders it within its lane (ascending; missing last)."@en .
+
+# Minted per card by the board, and the markers its controls carry.
+c:BoardCard a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: the per-card instance minted by a board (c:of the item, c:onBoard the board)."@en ;
+    sem:slug "board-card" .
+c:onBoard a owl:ObjectProperty ; rdfs:domain c:BoardCard ; rdfs:range c:Board .
+c:previousLane a owl:ObjectProperty ; rdfs:domain c:BoardCard ; rdfs:comment "Derived: the lane before the card's."@en .
+c:nextLane a owl:ObjectProperty ; rdfs:domain c:BoardCard ; rdfs:comment "Derived: the lane after the card's."@en .
+c:movesTo a owl:ObjectProperty ; rdfs:comment "On a card's control: the lane that activating it moves the card to."@en .
+c:removesCard a owl:ObjectProperty ; rdfs:comment "On a card's control: the item that activating it removes from the board."@en .
+c:refusedBy a owl:ObjectProperty ; rdfs:domain c:BoardCard ; rdfs:range beh:Event ;
+    rdfs:comment "The last event whose move of this card was refused (its lane was full); cleared by a move."@en .
+c:MoveCommand a c:Phrase ; rdfs:label "Move to"@en , "Перемістити в"@uk , "Verschieben nach"@de , "نقل إلى"@ar .
+
+# --- the board: lanes, with their headers ----------------------------------------------------------
+# A lane's count is an aggregate over the cards that name it (it follows c:card, so a card that
+# moves re-runs it); its limit is the sh:maxCount of a shape on the lane. The count is a minted
+# c:Badge, toned warning when the lane is full.
+
+c:BoardRendering a sem:Rendering ;
+    sem:targets c:Board ;
+    sem:stratum 0 ;
+    sem:follows c:card .
+c:BoardRendering-fn a sem:Rule ; sem:implements c:BoardRendering ; sem:function "board" .
+c:BoardRendering-sparql-screen a sem:Rule ;
+    sem:implements c:BoardRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?lane ; rdfhtml:attribute ?role, ?name .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?lane a rdfhtml:Section ; rdfhtml:class ?laneClass ; sem:orderKey ?order ; rdfhtml:hasChild ?head, ?cards .
+  ?head a rdfhtml:Header ; rdfhtml:hasChild ?heading, ?count ; ord:immediatelyPrecedes ?cards .
+  ?heading a rdfhtml:H3 ; rdfhtml:id ?headingId ; rdfhtml:hasChild ?headingText ; ord:immediatelyPrecedes ?count .
+  ?headingText a rdfhtml:Text ; rdfhtml:data ?laneLabel .
+  ?count a c:Badge ; c:label ?countLabel ; sty:tone ?tone ; sty:size sty:Small .
+  ?cards a rdfhtml:Ul ; rdfhtml:attribute ?labelledBy .
+  ?labelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?headingId .
+  $this dnd:memberOf ?p ; dnd:orderBy ?cardOrder ; dnd:zone ?cards .
+  ?cards dnd:receptacle ?laneNode .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Board ; c:property ?p .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?ownLabelAt l10n:of $this ; l10n:label ?ownLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(lang(?ownLabel) = "") }
+    OPTIONAL { $this c:cardOrder ?cardOrder }
+    BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+    BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+    BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?name)
+  } UNION {
+    ?p rdfs:range ?range . ?laneNode a ?range FILTER(isIRI(?laneNode))
+    OPTIONAL { ?laneNode sem:order ?declaredOrder }
+    BIND(COALESCE(xsd:double(?declaredOrder), 0) AS ?order)
+    OPTIONAL { ?plainLabelAt l10n:of ?laneNode ; l10n:name ?plainLabel }
+  OPTIONAL { ?laneNode rdfs:label ?plainLabel FILTER(lang(?plainLabel) = "") }
+    BIND(STR(COALESCE(?plainLabel, REPLACE(STR(?laneNode), "^.*[#/]", ""))) AS ?laneLabel)
+    LATERAL { OPTIONAL { SELECT ?this ?p ?laneNode (COUNT(?card) AS ?held) WHERE { $this c:card ?card . ?card ?p ?laneNode } GROUP BY ?this ?p ?laneNode } }
+    LATERAL { OPTIONAL { SELECT ?laneNode ?p (MIN(?bound) AS ?max) WHERE { ?shape sh:targetNode ?laneNode ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?bound } GROUP BY ?laneNode ?p } }
+    BIND(COALESCE(?held, 0) AS ?n)
+    BIND(BOUND(?max) && ?n >= ?max AS ?full)
+    BIND(IF(BOUND(?max), CONCAT(STR(?n), " / ", STR(?max)), STR(?n)) AS ?countLabel)
+    BIND(IF(?full, sty:Warning, ?none) AS ?tone)
+    BIND(IF(?full, "sem-lane sem-full", "sem-lane") AS ?laneClass)
+    BIND(CONCAT("lane-", ENCODE_FOR_URI(STR(?laneNode))) AS ?key)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key)) AS ?lane)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-head")) AS ?head)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-heading")) AS ?heading)
+    BIND(STR(?heading) AS ?headingId)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-heading-text")) AS ?headingText)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-count")) AS ?count)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-cards")) AS ?cards)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-cards-aria-labelledby")) AS ?labelledBy)
+  }
+}""" .
+c:BoardRendering-sparql-text a sem:Rule ;
+    sem:implements c:BoardRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?lane .
+  ?lane a rdfhtml:Div ; sem:orderKey ?order ; rdfhtml:hasChild ?line, ?cards .
+  ?line a rdfhtml:Text ; rdfhtml:data ?heading ; ord:immediatelyPrecedes ?cards .
+  ?cards a rdfhtml:Div .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Board ; c:property ?p .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {} UNION {
+    ?p rdfs:range ?range . ?laneNode a ?range FILTER(isIRI(?laneNode))
+    OPTIONAL { ?laneNode sem:order ?declaredOrder }
+    BIND(COALESCE(xsd:double(?declaredOrder), 0) AS ?order)
+    OPTIONAL { ?plainLabelAt l10n:of ?laneNode ; l10n:name ?plainLabel }
+  OPTIONAL { ?laneNode rdfs:label ?plainLabel FILTER(lang(?plainLabel) = "") }
+    BIND(STR(COALESCE(?plainLabel, REPLACE(STR(?laneNode), "^.*[#/]", ""))) AS ?laneLabel)
+    LATERAL { OPTIONAL { SELECT ?this ?p ?laneNode (COUNT(?card) AS ?held) WHERE { $this c:card ?card . ?card ?p ?laneNode } GROUP BY ?this ?p ?laneNode } }
+    LATERAL { OPTIONAL { SELECT ?laneNode ?p (MIN(?bound) AS ?max) WHERE { ?shape sh:targetNode ?laneNode ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?bound } GROUP BY ?laneNode ?p } }
+    BIND(COALESCE(?held, 0) AS ?n)
+    BIND(CONCAT("## ", ?laneLabel, " (", STR(?n), IF(BOUND(?max), CONCAT(" / ", STR(?max)), ""), ")") AS ?heading)
+    BIND(CONCAT("lane-", ENCODE_FOR_URI(STR(?laneNode))) AS ?key)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key)) AS ?lane)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-line")) AS ?line)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-cards")) AS ?cards)
+  }
+}""" .
+
+# --- the cards, member-wise --------------------------------------------------------------------------
+
+c:BoardCards a sem:Rendering ;
+    sem:targets c:Board ;
+    sem:stratum 0 ;
+    sem:forEach c:card ;
+    sem:watches rdf:type , c:property , c:cardOrder , c:cardTitle .
+c:BoardCards-fn a sem:Rule ; sem:implements c:BoardCards ; sem:function "board:card" .
+# $member is the card's item. Its lane is its value of the board's property, one of the
+# individuals of that property's range; the neighbouring lanes are the ones just before and
+# after it by (sem:order, IRI). Missing order keys sort last.
+c:BoardCards-sparql a sem:Rule ;
+    sem:implements c:BoardCards ;
+    sem:memberWatchesVia c:property , c:cardOrder , c:cardTitle ;
+    sem:construct """
+CONSTRUCT {
+  ?card a c:BoardCard ; c:of $member ; c:onBoard $this ; sem:orderKey ?key ; c:previousLane ?prev ; c:nextLane ?next .
+  ?drag a dnd:Draggable ; dnd:carries $member ; dnd:name ?title .
+  ?cards rdfhtml:hasChild ?card .
+}
+WHERE {
+  $this c:property ?p . FILTER(isIRI(?p))
+  ?p rdfs:range ?range .
+  $member ?p ?lane . ?lane a ?range . FILTER(isIRI(?lane))
+  OPTIONAL { ?lane sem:order ?declared }
+  BIND(COALESCE(xsd:double(?declared), 0) AS ?o)
+  LATERAL { OPTIONAL {
+    SELECT ?range ?o ?lane ?prev WHERE {
+      ?prev a ?range . FILTER(isIRI(?prev))
+      OPTIONAL { ?prev sem:order ?pd }
+      BIND(COALESCE(xsd:double(?pd), 0) AS ?po)
+      FILTER(?po < ?o || (?po = ?o && STR(?prev) < STR(?lane)))
+    } ORDER BY DESC(?po) DESC(STR(?prev)) LIMIT 1
+  } }
+  LATERAL { OPTIONAL {
+    SELECT ?range ?o ?lane ?next WHERE {
+      ?next a ?range . FILTER(isIRI(?next))
+      OPTIONAL { ?next sem:order ?nd }
+      BIND(COALESCE(xsd:double(?nd), 0) AS ?no)
+      FILTER(?no > ?o || (?no = ?o && STR(?next) > STR(?lane)))
+    } ORDER BY ?no STR(?next) LIMIT 1
+  } }
+  OPTIONAL { $this c:cardOrder ?orderBy . FILTER(isIRI(?orderBy)) $member ?orderBy ?rawKey }
+  BIND(COALESCE(STR(?rawKey), "\\uFFFF") AS ?key)
+  BIND(IRI(CONCAT(STR($this), "/~card-", ENCODE_FOR_URI(STR($member)))) AS ?card)
+  BIND(IRI(CONCAT(STR($this), "/~lane-", ENCODE_FOR_URI(STR(?lane)), "-cards")) AS ?cards)
+  BIND(IF(EXISTS { $this a dnd:Sortable }, ?card, ?none) AS ?drag)
+  OPTIONAL { $this c:cardTitle ?titleFrom . FILTER(isIRI(?titleFrom)) $member ?titleFrom ?rawTitle }
+  BIND(IF(BOUND(?drag), STR(?rawTitle), ?none) AS ?title)
+}""" .
+
+# A card: its title (the card's accessible name), its tag, its person, and its controls. The
+# move buttons sit in .sem-step wrappers, which the theme mirrors in right-to-left layouts.
+c:BoardCardRendering a sem:Rendering ;
+    sem:targets c:BoardCard ;
+    sem:stratum 0 ;
+    sem:follows c:of , c:onBoard .
+c:BoardCardRendering-fn a sem:Rule ; sem:implements c:BoardCardRendering ; sem:function "board:card-view" .
+c:BoardCardRendering-sparql-screen a sem:Rule ;
+    sem:implements c:BoardCardRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Li ; sem:renders $this ; rdfhtml:tabIndex "0" ; rdfhtml:class ?rootClass ; rdfhtml:hasChild ?head, ?foot ;
+        rdfhtml:attribute ?labelledBy, ?keys .
+  ?labelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?titleId .
+  ?keys a rdfhtml:Attribute ; rdfhtml:attributeName "aria-keyshortcuts" ; rdfhtml:attributeValue "ArrowLeft ArrowRight" .
+  ?head a rdfhtml:Div ; rdfhtml:class "sem-card-head" ; rdfhtml:hasChild ?title, ?tag ; ord:immediatelyPrecedes ?foot .
+  ?title a rdfhtml:Span ; rdfhtml:class "sem-title" ; rdfhtml:id ?titleId ; rdfhtml:hasChild ?titleText ; ord:precedes ?tag .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?titleData .
+  ?tag a c:Tag ; c:label ?tagLabel ; sty:tone ?tagTone ; sty:size sty:Small .
+  ?foot a rdfhtml:Div ; rdfhtml:class "sem-card-foot" ; rdfhtml:hasChild ?avatar, ?person, ?moves .
+  ?avatar a c:Avatar ; c:label ?personName ; sty:size sty:Small ; ord:precedes ?person .
+  ?person a rdfhtml:Span ; rdfhtml:class "sem-person" ; rdfhtml:hasChild ?personText ; ord:precedes ?moves .
+  ?personText a rdfhtml:Text ; rdfhtml:data ?personName .
+  ?moves a rdfhtml:Span ; rdfhtml:class "sem-moves" ; rdfhtml:hasChild ?prevStep, ?nextStep, ?remove .
+  ?prevStep a rdfhtml:Span ; rdfhtml:class "sem-step" ; sem:orderKey "1" ; rdfhtml:hasChild ?prev .
+  ?prev a c:IconButton ; c:icon "←" ; c:label ?prevLabel ; c:movesTo ?prevLane ; sty:size sty:Small ; sty:emphasis sty:Ghost .
+  ?nextStep a rdfhtml:Span ; rdfhtml:class "sem-step" ; sem:orderKey "2" ; rdfhtml:hasChild ?next .
+  ?next a c:IconButton ; c:icon "→" ; c:label ?nextLabel ; c:movesTo ?nextLane ; sty:size sty:Small ; sty:emphasis sty:Ghost .
+  ?remove a c:IconButton ; sem:orderKey "3" ; c:icon "×" ; c:label ?removeLabel ; c:removesCard ?item ; sty:size sty:Small ; sty:emphasis sty:Ghost .
+}
+WHERE {
+  $this a c:BoardCard ; c:of ?item ; c:onBoard ?board .
+  ?board c:cardTitle ?titleProperty . ?item ?titleProperty ?titleValue .
+  BIND(STR(?titleValue) AS ?titleData)
+  BIND(IF(EXISTS { $this c:refusedBy ?refusal }, "sem-refused", ?none) AS ?rootClass)
+  # Optional parts are matched in OPTIONALs and minted after them (an OPTIONAL is evaluated on
+  # its own, so it cannot see $this when the rule runs for many cards at once).
+  OPTIONAL {
+    ?board c:cardTag ?tagProperty . ?item ?tagProperty ?tagValue .
+    OPTIONAL { ?tagPlainAt l10n:of ?tagValue ; l10n:name ?tagPlain }
+  OPTIONAL { ?tagValue rdfs:label ?tagPlain FILTER(lang(?tagPlain) = "") }
+    OPTIONAL { ?tagValue sty:tone ?tagTone }
+  }
+  OPTIONAL {
+    ?board c:cardPerson ?personProperty . ?item ?personProperty ?personValue .
+    OPTIONAL { ?personPlainAt l10n:of ?personValue ; l10n:name ?personPlain }
+  OPTIONAL { ?personValue rdfs:label ?personPlain FILTER(lang(?personPlain) = "") }
+  }
+  OPTIONAL { ?movePhraseAt l10n:of c:MoveCommand ; l10n:name ?movePhrase }
+  OPTIONAL { ?movePhraseAt l10n:of c:MoveCommand ; l10n:name ?movePhrase }
+  OPTIONAL { c:MoveCommand rdfs:label ?movePhrase FILTER(langMatches(lang(?movePhrase), "en")) }
+  OPTIONAL { ?removePhraseAt l10n:of c:RemoveCommand ; l10n:name ?removePhrase }
+  OPTIONAL { ?removePhraseAt l10n:of c:RemoveCommand ; l10n:name ?removePhrase }
+  OPTIONAL { c:RemoveCommand rdfs:label ?removePhrase FILTER(langMatches(lang(?removePhrase), "en")) }
+  OPTIONAL { $this c:previousLane ?prevLane . OPTIONAL { ?prevPlainAt l10n:of ?prevLane ; l10n:name ?prevPlain }
+  OPTIONAL { ?prevLane rdfs:label ?prevPlain FILTER(lang(?prevPlain) = "") } }
+  OPTIONAL { $this c:nextLane ?nextLane . OPTIONAL { ?nextPlainAt l10n:of ?nextLane ; l10n:name ?nextPlain }
+  OPTIONAL { ?nextLane rdfs:label ?nextPlain FILTER(lang(?nextPlain) = "") } }
+  BIND(EXISTS { ?board c:removable ?removable FILTER(STR(?removable) = "true") } AS ?canRemove)
+  BIND(IF(isLiteral(?tagValue), STR(?tagValue), STR(COALESCE(?tagPlain, REPLACE(STR(?tagValue), "^.*[#/]", "")))) AS ?tagLabel)
+  BIND(IF(BOUND(?tagValue), IRI(CONCAT(STR($this), "/~tag")), ?none) AS ?tag)
+  BIND(IF(isLiteral(?personValue), STR(?personValue), STR(COALESCE(?personPlain, REPLACE(STR(?personValue), "^.*[#/]", "")))) AS ?personName)
+  BIND(IF(BOUND(?personValue), IRI(CONCAT(STR($this), "/~avatar")), ?none) AS ?avatar)
+  BIND(IF(BOUND(?personValue), IRI(CONCAT(STR($this), "/~person")), ?none) AS ?person)
+  BIND(IF(BOUND(?personValue), IRI(CONCAT(STR($this), "/~person-text")), ?none) AS ?personText)
+  BIND(CONCAT(STR(?movePhrase), " ", STR(COALESCE(?prevPlain, REPLACE(STR(?prevLane), "^.*[#/]", "")))) AS ?prevLabel)
+  BIND(IF(BOUND(?prevLane), IRI(CONCAT(STR($this), "/~prev-step")), ?none) AS ?prevStep)
+  BIND(IF(BOUND(?prevLane), IRI(CONCAT(STR($this), "/~prev")), ?none) AS ?prev)
+  BIND(CONCAT(STR(?movePhrase), " ", STR(COALESCE(?nextPlain, REPLACE(STR(?nextLane), "^.*[#/]", "")))) AS ?nextLabel)
+  BIND(IF(BOUND(?nextLane), IRI(CONCAT(STR($this), "/~next-step")), ?none) AS ?nextStep)
+  BIND(IF(BOUND(?nextLane), IRI(CONCAT(STR($this), "/~next")), ?none) AS ?next)
+  BIND(IF(?canRemove, STR(?removePhrase), ?none) AS ?removeLabel)
+  BIND(IF(?canRemove, IRI(CONCAT(STR($this), "/~remove")), ?none) AS ?remove)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-labelledby")) AS ?labelledBy)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-keyshortcuts")) AS ?keys)
+  BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+  BIND(STR(?title) AS ?titleId)
+  BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+  BIND(IRI(CONCAT(STR($this), "/~foot")) AS ?foot)
+  BIND(IRI(CONCAT(STR($this), "/~moves")) AS ?moves)
+}""" .
+c:BoardCardRendering-sparql-text a sem:Rule ;
+    sem:implements c:BoardCardRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:BoardCard ; c:of ?item ; c:onBoard ?board .
+  ?board c:cardTitle ?titleProperty . ?item ?titleProperty ?titleValue .
+  OPTIONAL {
+    ?board c:cardPerson ?personProperty . ?item ?personProperty ?personValue .
+    OPTIONAL { ?personPlainAt l10n:of ?personValue ; l10n:name ?personPlain }
+  OPTIONAL { ?personValue rdfs:label ?personPlain FILTER(lang(?personPlain) = "") }
+  }
+  OPTIONAL {
+    ?board c:cardTag ?tagProperty . ?item ?tagProperty ?tagValue .
+    OPTIONAL { ?tagPlainAt l10n:of ?tagValue ; l10n:name ?tagPlain }
+  OPTIONAL { ?tagValue rdfs:label ?tagPlain FILTER(lang(?tagPlain) = "") }
+  }
+  BIND(IF(isLiteral(?personValue), STR(?personValue), STR(COALESCE(?personPlain, REPLACE(STR(?personValue), "^.*[#/]", "")))) AS ?personName)
+  BIND(IF(isLiteral(?tagValue), STR(?tagValue), STR(COALESCE(?tagPlain, REPLACE(STR(?tagValue), "^.*[#/]", "")))) AS ?tagLabel)
+  BIND(CONCAT("  - ", STR(?titleValue), IF(BOUND(?personName), CONCAT(" · ", ?personName), ""), IF(BOUND(?tagLabel), CONCAT(" [", ?tagLabel, "]"), "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
+
+# --- behaviour -----------------------------------------------------------------------------------------
+# A card's ← / → control names the lane it moves to (c:movesTo); arrow keys on a focused card
+# (c:BoardKey) move it to the previous or next lane - mirrored when the application's language
+# is written right to left. Either way the move happens only while the lane has room: no shape
+# on it, or fewer cards than its sh:maxCount. Otherwise the refusal is recorded on the card
+# (c:refusedBy, which shakes it) and announced.
+
+c:BoardKey a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "keydown" ; beh:key "arrowleft" , "arrowright" ;
+    rdfs:comment "An arrow key pressed on a board's card (or a control inside it)."@en .
+
+# Clicking a ← / → control: the card goes to the lane the control names, if it has room.
+c:BoardMove a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:BoardCard ;
+    beh:deletes """
+CONSTRUCT { ?item ?p ?from . $this c:refusedBy ?refusal }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:movesTo ?to .
+  $this c:of ?item ; c:onBoard ?board . ?board c:property ?p . ?item ?p ?from .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  LATERAL { OPTIONAL { SELECT ?to ?p (MIN(?bound) AS ?max) WHERE { ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?bound } GROUP BY ?to ?p } }
+  FILTER(!BOUND(?max) || COALESCE(?held, 0) < ?max)
+  OPTIONAL { $this c:refusedBy ?refusal }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?item ?p ?to }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:movesTo ?to .
+  $this c:of ?item ; c:onBoard ?board . ?board c:property ?p .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  LATERAL { OPTIONAL { SELECT ?to ?p (MIN(?bound) AS ?max) WHERE { ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?bound } GROUP BY ?to ?p } }
+  FILTER(!BOUND(?max) || COALESCE(?held, 0) < ?max)
+}""" ;
+    sem:function "board:move" .
+
+# An arrow key on the card: to the previous or next lane (the other way round right to left).
+c:BoardMoveByKey a beh:Reaction ;
+    beh:when c:BoardKey ;
+    beh:sourceClass c:BoardCard ;
+    beh:deletes """
+CONSTRUCT { ?item ?p ?from . $this c:refusedBy ?refusal }
+WHERE {
+  $event beh:key ?key .
+  BIND(EXISTS { ?app l10n:language/l10n:direction l10n:RTL } AS ?rtl)
+  BIND(IF((?key = "arrowright") != ?rtl, c:nextLane, c:previousLane) AS ?step)
+  $this ?step ?to .
+  $this c:of ?item ; c:onBoard ?board . ?board c:property ?p . ?item ?p ?from .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  LATERAL { OPTIONAL { SELECT ?to ?p (MIN(?bound) AS ?max) WHERE { ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?bound } GROUP BY ?to ?p } }
+  FILTER(!BOUND(?max) || COALESCE(?held, 0) < ?max)
+  OPTIONAL { $this c:refusedBy ?refusal }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?item ?p ?to }
+WHERE {
+  $event beh:key ?key .
+  BIND(EXISTS { ?app l10n:language/l10n:direction l10n:RTL } AS ?rtl)
+  BIND(IF((?key = "arrowright") != ?rtl, c:nextLane, c:previousLane) AS ?step)
+  $this ?step ?to .
+  $this c:of ?item ; c:onBoard ?board . ?board c:property ?p .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  LATERAL { OPTIONAL { SELECT ?to ?p (MIN(?bound) AS ?max) WHERE { ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?bound } GROUP BY ?to ?p } }
+  FILTER(!BOUND(?max) || COALESCE(?held, 0) < ?max)
+}""" ;
+    sem:function "board:move-key" .
+
+# The same move into a full lane: refused, recorded on the card, announced.
+c:BoardRefuse a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:BoardCard ;
+    beh:deletes """
+CONSTRUCT { $this c:refusedBy ?refusal }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:movesTo ?to .
+  $this c:of ?item ; c:onBoard ?board ; c:refusedBy ?refusal . ?board c:property ?p .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?max .
+  FILTER(COALESCE(?held, 0) >= ?max)
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:refusedBy $event }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:movesTo ?to .
+  $this c:of ?item ; c:onBoard ?board . ?board c:property ?p .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?max .
+  FILTER(COALESCE(?held, 0) >= ?max)
+}""" ;
+    sem:function "board:refuse" ;
+    ann:announces "That column is at its limit: finish a card there first" , "Ця колонка заповнена: спершу завершіть картку в ній"@uk ,
+                  "Diese Spalte ist voll: erst dort eine Karte abschließen"@de , "هذا العمود ممتلئ: أنهِ بطاقة فيه أولًا"@ar ;
+    ann:tone sty:Warning .
+
+# And by key.
+c:BoardRefuseByKey a beh:Reaction ;
+    beh:when c:BoardKey ;
+    beh:sourceClass c:BoardCard ;
+    beh:deletes """
+CONSTRUCT { $this c:refusedBy ?refusal }
+WHERE {
+  $event beh:key ?key .
+  BIND(EXISTS { ?app l10n:language/l10n:direction l10n:RTL } AS ?rtl)
+  BIND(IF((?key = "arrowright") != ?rtl, c:nextLane, c:previousLane) AS ?step)
+  $this ?step ?to .
+  $this c:of ?item ; c:onBoard ?board ; c:refusedBy ?refusal . ?board c:property ?p .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?max .
+  FILTER(COALESCE(?held, 0) >= ?max)
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:refusedBy $event }
+WHERE {
+  $event beh:key ?key .
+  BIND(EXISTS { ?app l10n:language/l10n:direction l10n:RTL } AS ?rtl)
+  BIND(IF((?key = "arrowright") != ?rtl, c:nextLane, c:previousLane) AS ?step)
+  $this ?step ?to .
+  $this c:of ?item ; c:onBoard ?board . ?board c:property ?p .
+  LATERAL { OPTIONAL { SELECT ?p ?to (COUNT(?other) AS ?held) WHERE { ?other ?p ?to } GROUP BY ?p ?to } }
+  ?shape sh:targetNode ?to ; sh:property ?ps . ?ps sh:path/sh:inversePath ?p ; sh:maxCount ?max .
+  FILTER(COALESCE(?held, 0) >= ?max)
+}""" ;
+    sem:function "board:refuse-key" ;
+    ann:announces "That column is at its limit: finish a card there first" , "Ця колонка заповнена: спершу завершіть картку в ній"@uk ,
+                  "Diese Spalte ist voll: erst dort eine Karte abschließen"@de , "هذا العمود ممتلئ: أنهِ بطاقة فيه أولًا"@ar ;
+    ann:tone sty:Warning .
+
+# The remove control (on a c:removable board): the item leaves the board, with everything said about it.
+c:BoardRemove a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:BoardCard ;
+    beh:deletes """
+CONSTRUCT { ?board c:card ?item . ?item ?p ?o }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:removesCard ?item .
+        $this c:onBoard ?board . { ?board c:card ?item } UNION { ?item ?p ?o } }""" ;
+    sem:function "board:remove" ;
+    ann:announces "Card removed" , "Картку видалено"@uk , "Karte entfernt"@de , "تمت إزالة البطاقة"@ar .

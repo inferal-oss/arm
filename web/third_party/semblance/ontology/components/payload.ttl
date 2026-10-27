@@ -1,0 +1,422 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# Payload components: a payload (a message body, an event's data: text, often JSON) shown as a
+# JSON tree (c:JsonTree), as hex (c:HexView), or switchable between text, hex and JSON
+# (c:BodyViewer).
+#
+# Where a payload comes from is the same for all three: the component's own c:value, or
+# c:payloadProperty of its subject, which is c:of or - to follow a selection - the value of
+# c:bindProperty on c:bindFrom (views.ttl), after one hop through c:via (grid.ttl) when given:
+#
+#   ui:responseBody a c:BodyViewer ; c:bindFrom ui:grid ; c:bindProperty c:selectedRow ;
+#       c:via http:resp ; c:payloadProperty net:body ; c:typeProperty net:contentType .
+
+c:payloadProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "The property of the subject (after c:via) whose literal value is the payload (e.g. net:body, net:data)."@en .
+c:typeProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "The property, on the node the payload is read from, that holds its media type (e.g. net:contentType)."@en .
+
+# --- JsonTree: a JSON value as an expandable tree -----------------------------------------------
+# Two steps. Parsing (c:JsonTreeRendering) mints one c:JsonNode per value shown - the root and the
+# children of each open container - keyed by its JSON Pointer; each node renders itself
+# (c:JsonNodeRendering). Which containers are open is graph state on the tree: c:expandedPath and
+# c:collapsedPath (JSON Pointers), over a default depth (c:expandDepth, 1: the root). The markup is
+# a tree's (role=tree, treeitems with .sem-row, .sem-twisty, .sem-label), so arrow keys move through
+# it, Right opens and Left closes (key:TreeNavigation).
+
+c:JsonTree a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A JSON payload as an expandable tree (role=tree): objects and arrays with their sizes
+({3}, [12]), keys in source order, strings, numbers, booleans and null styled by type. A container
+is open when its JSON Pointer is in c:expandedPath, or it is shallower than c:expandDepth and not in
+c:collapsedPath; a twisty (or the container's key) toggles it. Invalid JSON is shown as text, with
+a note. c:label names the root (default "root")."""@en ;
+    sem:slug "json-tree" ;
+    key:navigation key:TreeNavigation .
+c:expandDepth a owl:DatatypeProperty ; rdfs:domain c:JsonTree ; rdfs:range xsd:integer ;
+    rdfs:comment "Containers shallower than this are open unless collapsed (default 1: the root only)."@en .
+c:expandedPath a owl:DatatypeProperty ; rdfs:domain c:JsonTree ;
+    rdfs:comment "The JSON Pointer of a container the person opened (\"\" is the root, \"/items/0\" the first item)."@en .
+c:collapsedPath a owl:DatatypeProperty ; rdfs:domain c:JsonTree ;
+    rdfs:comment "The JSON Pointer of a container the person closed (it would be open by c:expandDepth)."@en .
+
+c:JsonNode a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: one value of a c:JsonTree, minted by its parsing (keyed by its JSON Pointer)."@en ;
+    sem:slug "json-node" .
+c:inTree a owl:ObjectProperty ; rdfs:domain c:JsonNode ; rdfs:range c:JsonTree .
+c:jsonPath a owl:DatatypeProperty ; rdfs:domain c:JsonNode ; rdfs:comment "Its JSON Pointer."@en .
+c:jsonKey a owl:DatatypeProperty ; rdfs:domain c:JsonNode ; rdfs:comment "Its key in its parent (an array index for items; the tree's name for the root)."@en .
+c:jsonType a owl:DatatypeProperty ; rdfs:domain c:JsonNode ; rdfs:comment "object, array, string, number, boolean or null."@en .
+c:jsonValue a owl:DatatypeProperty ; rdfs:domain c:JsonNode ; rdfs:comment "A primitive, written as JSON (strings quoted)."@en .
+c:jsonCount a owl:DatatypeProperty ; rdfs:domain c:JsonNode ; rdfs:range xsd:integer ; rdfs:comment "A container's number of members."@en .
+c:jsonDepth a owl:DatatypeProperty ; rdfs:domain c:JsonNode ; rdfs:range xsd:integer ; rdfs:comment "0 for the root."@en .
+c:jsonParent a owl:ObjectProperty ; rdfs:domain c:JsonNode ; rdfs:range c:JsonNode .
+# c:expanded (a disclosure's boolean) says whether a container node is open; sem:orderKey places it
+# among its siblings (its position in its parent).
+
+c:JsonTreeRendering a sem:Rendering ; sem:targets c:JsonTree ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Json (sx:json): it parses the payload as JSON. What it mints, the c:JsonNode structure, is rendered by SPARQL." ;
+    sem:needsExtension sx:Json .
+c:JsonTreeRendering-fn a sem:Rule ; sem:implements c:JsonTreeRendering ; sem:function "payload:json-tree" .
+
+c:JsonNodeRendering a sem:Rendering ; sem:targets c:JsonNode ; sem:stratum 0 .
+c:JsonNodeRendering-fn a sem:Rule ; sem:implements c:JsonNodeRendering ; sem:function "payload:json-node" .
+# A node's children are the nodes minted with it as their c:jsonParent (only an open container
+# has them); they are placed by their sem:orderKey.
+c:JsonNodeRendering-sparql a sem:Rule ;
+    sem:implements c:JsonNodeRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Li ; sem:renders $this ; rdfhtml:style ?style ; rdfhtml:attribute ?roleAttr, ?levelAttr, ?expandedAttr ; rdfhtml:hasChild ?row, ?group .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "treeitem" .
+  ?levelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-level" ; rdfhtml:attributeValue ?level .
+  ?expandedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openText .
+  ?row a rdfhtml:Div ; rdfhtml:class "sem-row" ; rdfhtml:hasChild ?lead, ?label, ?value ; ord:immediatelyPrecedes ?group .
+  ?lead a ?leadTag ; rdfhtml:type ?leadType ; rdfhtml:class ?leadClass ; c:expands ?expands ; rdfhtml:attribute ?leadAttr ;
+        rdfhtml:hasChild ?icon ; ord:immediatelyPrecedes ?label .
+  ?leadAttr a rdfhtml:Attribute ; rdfhtml:attributeName ?leadAttrName ; rdfhtml:attributeValue ?leadAttrValue .
+  ?icon a rdfhtml:Span ; rdfhtml:attribute ?iconHidden ; rdfhtml:hasChild ?iconText .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?iconText a rdfhtml:Text ; rdfhtml:data "▸" .
+  ?label a rdfhtml:Span ; rdfhtml:class "sem-label" ; c:expands ?expands ; rdfhtml:hasChild ?labelText ; ord:immediatelyPrecedes ?value .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?key .
+  ?value a rdfhtml:Span ; rdfhtml:class ?valueClass ; rdfhtml:hasChild ?valueText .
+  ?valueText a rdfhtml:Text ; rdfhtml:data ?shown .
+  ?group a rdfhtml:Ul ; rdfhtml:attribute ?groupRole ; rdfhtml:hasChild ?child .
+  ?groupRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+}
+WHERE {
+  $this a c:JsonNode ; c:jsonPath ?path ; c:jsonType ?type0 .
+  BIND(STR(?type0) AS ?type)
+  OPTIONAL { $this c:jsonKey ?key0 }
+  BIND(COALESCE(STR(?key0), "") AS ?key)
+  OPTIONAL { $this c:jsonDepth ?depth0 }
+  BIND(COALESCE(xsd:integer(STR(?depth0)), 0) AS ?depth)
+  OPTIONAL { $this c:jsonCount ?count0 }
+  BIND(COALESCE(xsd:integer(STR(?count0)), 0) AS ?count)
+  OPTIONAL { $this c:jsonValue ?value0 }
+  BIND(?type IN ("object", "array") AS ?container)
+  BIND(?container && EXISTS { $this c:expanded true } AS ?open)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(CONCAT("--tree-level: ", STR(?depth)) AS ?style)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?roleAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-level")) AS ?levelAttr)
+  BIND(STR(?depth + 1) AS ?level)
+  BIND(IF(?container, IRI(CONCAT(STR($this), "/~root-aria-expanded")), ?none) AS ?expandedAttr)
+  BIND(IF(?open, "true", "false") AS ?openText)
+  BIND(IRI(CONCAT(STR($this), "/~row")) AS ?row)
+  # The lead: a twisty for a container, a dot for a primitive.
+  BIND(IRI(CONCAT(STR($this), IF(?container, "/~twisty", "/~leaf"))) AS ?lead)
+  BIND(IF(?container, rdfhtml:Button, rdfhtml:Span) AS ?leadTag)
+  BIND(IF(?container, "button", ?none) AS ?leadType)
+  BIND(IF(?container, "sem-twisty", "sem-leaf") AS ?leadClass)
+  BIND(IF(?container, $this, ?none) AS ?expands)
+  BIND(IRI(CONCAT(STR(?lead), IF(?container, "-aria-label", "-aria-hidden"))) AS ?leadAttr)
+  BIND(IF(?container, "aria-label", "aria-hidden") AS ?leadAttrName)
+  BIND(IF(?container, CONCAT(IF(?open, "Collapse ", "Expand "), ?key), "true") AS ?leadAttrValue)
+  BIND(IF(?container, IRI(CONCAT(STR($this), "/~twisty-icon")), ?none) AS ?icon)
+  BIND(IF(?container, IRI(CONCAT(STR($this), "/~twisty-icon-aria-hidden")), ?none) AS ?iconHidden)
+  BIND(IF(?container, IRI(CONCAT(STR($this), "/~twisty-text")), ?none) AS ?iconText)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+  BIND(IRI(CONCAT(STR($this), "/~value")) AS ?value)
+  BIND(IRI(CONCAT(STR($this), "/~value-text")) AS ?valueText)
+  BIND(IF(?container, "sem-value sem-summary", CONCAT("sem-value sem-json-", ?type)) AS ?valueClass)
+  BIND(IF(?type = "object", CONCAT("{", STR(?count), "}"), IF(?type = "array", CONCAT("[", STR(?count), "]"), COALESCE(STR(?value0), ""))) AS ?shown)
+  BIND(IF(?open && ?count > 0, IRI(CONCAT(STR($this), "/~group")), ?none) AS ?group)
+  BIND(IF(BOUND(?group), IRI(CONCAT(STR($this), "/~group-role")), ?none) AS ?groupRole)
+  LATERAL { {} UNION { FILTER(BOUND(?group)) ?child c:jsonParent $this } }
+}""" .
+c:JsonNodeRendering-sparql-text a sem:Rule ;
+    sem:implements c:JsonNodeRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line , ?group .
+  ?line a rdfhtml:Div ; rdfhtml:hasChild ?lineText ; ord:immediatelyPrecedes ?group .
+  ?lineText a rdfhtml:Text ; rdfhtml:data ?data .
+  ?group a rdfhtml:Div ; rdfhtml:hasChild ?child .
+}
+WHERE {
+  $this a c:JsonNode ; c:jsonPath ?path ; c:jsonType ?type0 .
+  BIND(STR(?type0) AS ?type)
+  OPTIONAL { $this c:jsonKey ?key0 }
+  BIND(COALESCE(STR(?key0), "") AS ?key)
+  OPTIONAL { $this c:jsonDepth ?depth0 }
+  BIND(COALESCE(xsd:integer(STR(?depth0)), 0) AS ?depth)
+  OPTIONAL { $this c:jsonCount ?count0 }
+  BIND(COALESCE(xsd:integer(STR(?count0)), 0) AS ?count)
+  OPTIONAL { $this c:jsonValue ?value0 }
+  BIND(?type IN ("object", "array") AS ?container)
+  BIND(?container && EXISTS { $this c:expanded true } AS ?open)
+  BIND(IF(?type = "object", CONCAT("{", STR(?count), "}"), IF(?type = "array", CONCAT("[", STR(?count), "]"), COALESCE(STR(?value0), ""))) AS ?shown)
+  # Two spaces per level (a JSON tree is not deeper than this in practice).
+  BIND(SUBSTR("                                                                                                                                ", 1, 2 * ?depth) AS ?indent)
+  BIND(CONCAT(?indent, IF(?container, IF(?open, "\u25BE ", "\u25B8 "), "  "), ?key, ": ", ?shown) AS ?data)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~line-text")) AS ?lineText)
+  BIND(IF(?open && ?count > 0, IRI(CONCAT(STR($this), "/~group")), ?none) AS ?group)
+  LATERAL { {} UNION { FILTER(BOUND(?group)) ?child c:jsonParent $this } }
+}""" .
+
+c:JsonTreeToggle a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:JsonTree ;
+    beh:deletes """CONSTRUCT { $this ?from ?path }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:expands ?node . ?node c:inTree $this ; c:jsonPath ?path .
+        BIND(IF(EXISTS { ?node c:expanded true }, c:expandedPath, c:collapsedPath) AS ?from) $this ?from ?path }""" ;
+    beh:inserts """CONSTRUCT { $this ?to ?path }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:expands ?node . ?node c:inTree $this ; c:jsonPath ?path .
+        BIND(IF(EXISTS { ?node c:expanded true }, c:collapsedPath, c:expandedPath) AS ?to) }""" ;
+    sem:function "payload:json-toggle" .
+
+# --- HexView: bytes as offset | hex | ASCII ------------------------------------------------------
+
+c:HexView a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """The UTF-8 bytes of a payload, 16 to a row: the offset, the bytes in hex, and the printable
+ASCII characters ('.' for the rest), in a scrolling region. At most c:limit bytes (default 512)
+are shown; a note counts the rest."""@en ;
+    sem:slug "hex-view" .
+c:HexViewRendering a sem:Rendering ; sem:targets c:HexView ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Text (sx:codepoint): it writes each UTF-8 byte of the text in hex, which needs a character's code point." ;
+    sem:needsExtension sx:Text .
+c:HexViewRendering-fn a sem:Rule ; sem:implements c:HexViewRendering ; sem:function "payload:hex-view" .
+
+# --- BodyViewer: one payload as text, hex or JSON ------------------------------------------------
+# The representation is graph state on the viewer (c:representation), chosen by toggle buttons
+# (aria-pressed) in its header. Without a choice (or with one not offered: JSON is offered only
+# for a payload that looks like JSON), JSON is shown if it looks like JSON, else text. The view is
+# a child component given the payload as its c:value: a c:Code block, a c:HexView, or a
+# c:JsonTree minted per subject (<viewer>/~json-<key>), so each entry keeps its open nodes.
+
+c:BodyViewer a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """One payload shown as text, hex or a JSON tree (c:representation, chosen in its header,
+which also shows the media type - c:typeProperty - and the size in bytes). c:emptyText shows when
+there is no payload (e.g. nothing is selected)."""@en ;
+    sem:slug "body-viewer" ;
+    key:navigation key:SegmentedNavigation .
+c:representation a owl:ObjectProperty ; rdfs:domain c:BodyViewer ; rdfs:range c:Representation ;
+    rdfs:label "Representation"@en , "Подання"@uk , "Darstellung"@de , "العرض"@ar ;
+    rdfs:comment "How the viewer shows its payload."@en .
+c:Representation a owl:Class .
+c:AsText a c:Representation ; sem:slug "text" ; sem:order 1 ;
+    rdfs:label "Text"@en , "Текст"@uk , "Text"@de , "نص"@ar .
+c:AsHex a c:Representation ; sem:slug "hex" ; sem:order 2 ;
+    rdfs:label "Hex"@en , "Hex"@uk , "Hex"@de , "سداسي عشري"@ar .
+c:AsJson a c:Representation ; sem:slug "json" ; sem:order 3 ;
+    rdfs:label "JSON"@en , "JSON"@uk , "JSON"@de , "JSON"@ar .
+
+c:BodyViewerRendering a sem:Rendering ; sem:targets c:BodyViewer ; sem:stratum 0 ; sem:follows c:of , c:bindFrom .
+c:BodyViewerRendering-fn a sem:Rule ; sem:implements c:BodyViewerRendering ; sem:function "payload:body-viewer" .
+# The size is the payload's UTF-8 length: ENCODE_FOR_URI writes every byte that is not an
+# unreserved ASCII character as %XX, so counting each %XX as one character counts bytes.
+c:BodyViewerRendering-sparql a sem:Rule ;
+    sem:implements c:BodyViewerRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?rootTag ; sem:renders $this ; rdfhtml:class ?rootClass ; rdfhtml:hasChild ?head, ?view, ?empty .
+  ?empty a rdfhtml:Text ; rdfhtml:data ?emptyText .
+  ?head a rdfhtml:Div ; rdfhtml:class "sem-head" ; rdfhtml:hasChild ?views, ?meta ; ord:immediatelyPrecedes ?view .
+  ?views a rdfhtml:Div ; rdfhtml:class "sem-views" ; rdfhtml:hasChild ?button ; rdfhtml:attribute ?viewsRole, ?viewsLabel ; ord:immediatelyPrecedes ?meta .
+  ?viewsRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?viewsLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue "Representation" .
+  ?meta a rdfhtml:Span ; rdfhtml:class "sem-meta" ; rdfhtml:hasChild ?metaText .
+  ?metaText a rdfhtml:Text ; rdfhtml:data ?metaData .
+  ?view a ?viewClass ; c:value ?payload ; c:block ?block .
+  ?button a rdfhtml:Button ; rdfhtml:type "button" ; c:selects ?opt ; sem:orderKey ?orderKey ; rdfhtml:attribute ?pressedAttr ; rdfhtml:hasChild ?buttonText .
+  ?pressedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressed .
+  ?buttonText a rdfhtml:Text ; rdfhtml:data ?optLabel .
+}
+WHERE {
+  $this a c:BodyViewer .
+  LATERAL { OPTIONAL { $this c:value ?own FILTER(isLiteral(?own)) } }
+  LATERAL { OPTIONAL { $this c:of ?of0 FILTER(isIRI(?of0)) } }
+  LATERAL { OPTIONAL { $this c:bindFrom ?from ; c:bindProperty ?bindProperty . ?from ?bindProperty ?bound FILTER(isIRI(?bound)) } }
+  # Unbound nodes would match anything below: a missing subject or holder is a node with no triples.
+  BIND(IF(BOUND(?own), ?none, COALESCE(?of0, ?bound)) AS ?subject)
+  BIND(COALESCE(?subject, sem:Nothing) AS ?from0)
+  BIND(EXISTS { $this c:via ?anyVia } AS ?hasVia)
+  LATERAL { OPTIONAL { $this c:via ?via . ?from0 ?via ?hop } }
+  BIND(COALESCE(IF(?hasVia, ?hop, ?subject), sem:Nothing) AS ?holder)
+  LATERAL { OPTIONAL { $this c:payloadProperty ?payloadProperty . ?holder ?payloadProperty ?raw FILTER(isLiteral(?raw)) } }
+  BIND(STR(COALESCE(?own, ?raw)) AS ?payload)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  LATERAL {
+    {
+      # No payload: a muted line.
+      FILTER(!BOUND(?payload))
+      BIND(rdfhtml:P AS ?rootTag)
+      BIND("sem-empty" AS ?rootClass)
+      BIND(IRI(CONCAT(STR($this), "/~empty")) AS ?empty)
+      OPTIONAL { ?rawEmptyAt l10n:of $this ; l10n:emptyText ?rawEmpty }
+  OPTIONAL { $this c:emptyText ?rawEmpty FILTER(lang(?rawEmpty) = "") }
+      BIND(STR(COALESCE(?rawEmpty, "No payload.")) AS ?emptyText)
+    } UNION {
+      # The header and the chosen view.
+      FILTER(BOUND(?payload))
+      BIND(rdfhtml:Div AS ?rootTag)
+      BIND(REGEX(?payload, "^\\\\s*[\\\\[{]") AS ?json)
+      OPTIONAL { $this c:representation ?stated FILTER(?json || ?stated != c:AsJson) ?stated a c:Representation }
+      BIND(COALESCE(?stated, IF(?json, c:AsJson, c:AsText)) AS ?chosen)
+      ?chosen sem:slug ?chosenSlug0 .
+      BIND(STR(?chosenSlug0) AS ?chosenSlug)
+      BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+      BIND(IRI(CONCAT(STR($this), "/~views")) AS ?views)
+      BIND(IRI(CONCAT(STR($this), "/~views-role")) AS ?viewsRole)
+      BIND(IRI(CONCAT(STR($this), "/~views-aria-label")) AS ?viewsLabel)
+      BIND(IRI(CONCAT(STR($this), "/~meta")) AS ?meta)
+      BIND(IRI(CONCAT(STR($this), "/~meta-text")) AS ?metaText)
+      OPTIONAL { $this c:typeProperty ?typeProperty . ?holder ?typeProperty ?type0 }
+      BIND(STRLEN(REPLACE(ENCODE_FOR_URI(?payload), "%[0-9A-F]{2}", "x")) AS ?bytes)
+      BIND(IF(?bytes < 1024, CONCAT(STR(?bytes), " B"), CONCAT(STR(ROUND(?bytes * 10 / 1024) / 10), " KiB")) AS ?size)
+      BIND(CONCAT(IF(BOUND(?type0), CONCAT(STR(?type0), " · "), ""), ?size) AS ?metaData)
+      BIND(IRI(CONCAT(STR($this), "/~", IF(?chosenSlug = "json", CONCAT("json-", SUBSTR(MD5(COALESCE(STR(?subject), "")), 1, 8)), ?chosenSlug))) AS ?view)
+      BIND(IF(?chosenSlug = "json", c:JsonTree, IF(?chosenSlug = "hex", c:HexView, c:Code)) AS ?viewClass)
+      BIND(IF(?chosenSlug = "text", true, ?none) AS ?block)
+    } UNION {
+      # A button per offered representation, placed by its sem:order.
+      FILTER(BOUND(?payload))
+      BIND(REGEX(?payload, "^\\\\s*[\\\\[{]") AS ?json)
+      OPTIONAL { $this c:representation ?stated FILTER(?json || ?stated != c:AsJson) ?stated a c:Representation }
+      BIND(COALESCE(?stated, IF(?json, c:AsJson, c:AsText)) AS ?chosen)
+      BIND(IRI(CONCAT(STR($this), "/~views")) AS ?views)
+      ?opt a c:Representation FILTER(isIRI(?opt) && (?json || ?opt != c:AsJson))
+      OPTIONAL { ?opt sem:slug ?optSlug0 }
+      OPTIONAL { ?opt sem:order ?optOrder0 }
+      BIND(COALESCE(STR(?optSlug0), REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optSlug)
+      BIND(STR(COALESCE(?optOrder0, 0)) AS ?orderKey)
+      BIND(IRI(CONCAT(STR($this), "/~as-", ?optSlug)) AS ?button)
+      BIND(IRI(CONCAT(STR($this), "/~as-", ?optSlug, "-aria-pressed")) AS ?pressedAttr)
+      BIND(IRI(CONCAT(STR($this), "/~as-", ?optSlug, "-text")) AS ?buttonText)
+      BIND(IF(?opt = ?chosen, "true", "false") AS ?pressed)
+      BIND(IRI(CONCAT(STR($this), "/~l10n-", ?optSlug)) AS ?optLabelNode)
+      OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal }
+      OPTIONAL { ?optLabel_uAt l10n:of ?opt ; l10n:name ?optLabel_u }
+  OPTIONAL { ?opt rdfs:label ?optLabel_u FILTER(isLiteral(?optLabel_u) && lang(?optLabel_u) = "") }
+      OPTIONAL { FILTER(!BOUND(?optLabel_u)) ?opt rdfs:label ?optLabel_en FILTER(langMatches(lang(?optLabel_en), "en")) }
+      OPTIONAL { FILTER(!BOUND(?optLabel_u) && !BOUND(?optLabel_en)) ?opt rdfs:label ?optLabel_any FILTER(isLiteral(?optLabel_any)) }
+      BIND(STR(COALESCE(?optLabelLocal, ?optLabel_u, ?optLabel_en, ?optLabel_any, ?optSlug)) AS ?optLabel)
+    }
+  }
+}""" .
+c:BodyViewerRendering-sparql-text a sem:Rule ;
+    sem:implements c:BodyViewerRendering ;
+    sem:modality mod:Text ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:class ?rootClass ; rdfhtml:hasChild ?empty , ?head , ?view .
+  ?empty a rdfhtml:Text ; rdfhtml:data ?emptyText .
+  ?head a rdfhtml:Div ; rdfhtml:hasChild ?headText ; ord:immediatelyPrecedes ?view .
+  ?headText a rdfhtml:Text ; rdfhtml:data ?line .
+  ?view a ?viewClass ; c:value ?payload ; c:block ?block .
+}
+WHERE {
+  $this a c:BodyViewer .
+  LATERAL { OPTIONAL { $this c:value ?own FILTER(isLiteral(?own)) } }
+  LATERAL { OPTIONAL { $this c:of ?of0 FILTER(isIRI(?of0)) } }
+  LATERAL { OPTIONAL { $this c:bindFrom ?from ; c:bindProperty ?bindProperty . ?from ?bindProperty ?bound FILTER(isIRI(?bound)) } }
+  BIND(IF(BOUND(?own), ?none, COALESCE(?of0, ?bound)) AS ?subject)
+  BIND(COALESCE(?subject, sem:Nothing) AS ?from0)
+  BIND(EXISTS { $this c:via ?anyVia } AS ?hasVia)
+  LATERAL { OPTIONAL { $this c:via ?via . ?from0 ?via ?hop } }
+  BIND(COALESCE(IF(?hasVia, ?hop, ?subject), sem:Nothing) AS ?holder)
+  LATERAL { OPTIONAL { $this c:payloadProperty ?payloadProperty . ?holder ?payloadProperty ?raw FILTER(isLiteral(?raw)) } }
+  BIND(STR(COALESCE(?own, ?raw)) AS ?payload)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # No payload: a muted line.
+  OPTIONAL { ?pickeAt l10n:of $this ; l10n:emptyText ?picke }
+  OPTIONAL { FILTER(!BOUND(?picke)) $this c:emptyText ?anye FILTER(isLiteral(?anye)) }
+  BIND(STR(COALESCE(?picke, ?anye)) AS ?ownEmpty)
+  BIND(IF(BOUND(?payload), ?none, "sem-empty") AS ?rootClass)
+  BIND(IF(BOUND(?payload), ?none, IRI(CONCAT(STR($this), "/~empty"))) AS ?empty)
+  BIND(IF(BOUND(?payload), ?none, COALESCE(?ownEmpty, "No payload.")) AS ?emptyText)
+  # Else the offered representations (the chosen one in brackets) and the size, then the view.
+  BIND(REGEX(?payload, "^\\\\s*[\\\\[{]") AS ?json)
+  OPTIONAL { $this c:representation ?stated FILTER(?json || ?stated != c:AsJson) ?stated a c:Representation }
+  BIND(IF(BOUND(?payload), COALESCE(?stated, IF(?json, c:AsJson, c:AsText)), ?none) AS ?chosen)
+  # (An unbound node would match anything: no payload, no representation.)
+  BIND(COALESCE(?chosen, sem:Nothing) AS ?chosenNode)
+  OPTIONAL { ?chosenNode sem:slug ?chosenSlug0 }
+  BIND(STR(?chosenSlug0) AS ?chosenSlug)
+  LATERAL { OPTIONAL {
+    SELECT ?chosen ?json (GROUP_CONCAT(?entry; separator=" ") AS ?options) WHERE {
+      { SELECT DISTINCT ?chosen ?json ?opt ?entry ?k WHERE {
+        ?opt a c:Representation FILTER(isIRI(?opt) && (?json || ?opt != c:AsJson))
+        OPTIONAL { ?opt sem:slug ?optSlug0 }
+        OPTIONAL { ?opt sem:order ?optOrder0 }
+        BIND(COALESCE(STR(?optSlug0), REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optSlug)
+        LATERAL { OPTIONAL { SELECT ?opt ?optName WHERE {
+  
+  OPTIONAL { ?pickoAt l10n:of ?opt ; l10n:name ?picko }
+  OPTIONAL { FILTER(!BOUND(?picko)) ?opt rdfs:label ?anyo FILTER(isLiteral(?anyo)) }
+  BIND(STR(COALESCE(?picko, ?anyo)) AS ?optName)
+  } } }
+        BIND(COALESCE(?optName, ?optSlug) AS ?optLabel)
+        BIND(IF(?opt = ?chosen, CONCAT("[", ?optLabel, "]"), ?optLabel) AS ?entry)
+        BIND(COALESCE(xsd:double(?optOrder0), 0) AS ?k)
+      } ORDER BY ?k STR(?opt) }
+    } GROUP BY ?chosen ?json
+  } }
+  OPTIONAL { $this c:typeProperty ?typeProperty . ?holder ?typeProperty ?type0 }
+  BIND(STRLEN(REPLACE(ENCODE_FOR_URI(?payload), "%[0-9A-F]{2}", "x")) AS ?bytes)
+  BIND(IF(?bytes < 1024, CONCAT(STR(?bytes), " B"), CONCAT(STR(ROUND(?bytes * 10 / 1024) / 10), " KiB")) AS ?size)
+  BIND(CONCAT(IF(BOUND(?type0), CONCAT(STR(?type0), " \u00B7 "), ""), ?size) AS ?metaData)
+  BIND(CONCAT(COALESCE(?options, ""), "  ", ?metaData) AS ?line)
+  BIND(IF(BOUND(?chosenSlug), IRI(CONCAT(STR($this), "/~head")), ?none) AS ?head)
+  BIND(IF(BOUND(?chosenSlug), IRI(CONCAT(STR($this), "/~head-text")), ?none) AS ?headText)
+  BIND(IF(BOUND(?chosenSlug), IRI(CONCAT(STR($this), "/~", IF(?chosenSlug = "json", CONCAT("json-", SUBSTR(MD5(COALESCE(STR(?subject), "")), 1, 8)), ?chosenSlug))), ?none) AS ?view)
+  BIND(IF(?chosenSlug = "json", c:JsonTree, IF(?chosenSlug = "hex", c:HexView, c:Code)) AS ?viewClass)
+  BIND(IF(?chosenSlug = "text", true, ?none) AS ?block)
+}""" .
+
+# The localization layer for c:BodyViewer: the representations' labels in the viewer's language,
+# at <focus>/~l10n-<slug>, which the SPARQL rule prefers.
+c:BodyViewerTexts a sem:Rendering ;
+    sem:targets c:BodyViewer ;
+    sem:stratum -20 ;
+    sem:inputOnly true .
+c:BodyViewerTexts-fn a sem:Rule ; sem:implements c:BodyViewerTexts ; sem:function "payload:body-viewer-texts" .
+c:BodyViewerTexts-sparql a sem:Rule ; sem:implements c:BodyViewerTexts ;
+    sem:construct """
+CONSTRUCT { ?node l10n:label ?label }
+WHERE {
+  $this a ?type .
+  FILTER EXISTS { ?viewer l10n:prefers ?preference }
+  ?representation a c:Representation . FILTER(isIRI(?representation))
+  FILTER EXISTS { ?representation rdfs:label ?some FILTER(isLiteral(?some)) }
+  OPTIONAL { ?representation sem:slug ?declared }
+  BIND(COALESCE(STR(?declared), REPLACE(STR(?representation), "^.*[#/]", "")) AS ?slug)
+  LATERAL { OPTIONAL { SELECT ?representation ?label WHERE {
+  
+  OPTIONAL { ?pickAt l10n:of ?representation ; l10n:name ?pick }
+  OPTIONAL { FILTER(!BOUND(?pick)) ?representation rdfs:label ?any FILTER(isLiteral(?any)) }
+  BIND(STR(COALESCE(?pick, ?any)) AS ?label)
+  } } }
+  BIND(IRI(CONCAT(STR($this), "/~l10n-", ?slug)) AS ?node)
+}""" .
+
+c:BodyViewerSelect a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:BodyViewer ;
+    beh:deletes """CONSTRUCT { $this c:representation ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?option . ?option a c:Representation . $this c:representation ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:representation ?option } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?option . ?option a c:Representation }""" ;
+    sem:function "payload:select-representation" .

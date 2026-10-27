@@ -1,0 +1,797 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix fs: <https://semblance.dev/ns/fullscreen#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# General-purpose view components: cards, an app bar and logo, metric chips,
+# a toggle, query views (CONSTRUCTs rendered as Turtle) and a highlight.
+
+# --- shared properties -------------------------------------------------------------------
+
+c:subtitle a owl:DatatypeProperty .
+c:badge a owl:DatatypeProperty ; rdfs:comment "A short tag shown next to a title."@en .
+c:note a owl:DatatypeProperty ; rdfs:comment "A one-line description."@en .
+c:actions a owl:ObjectProperty ; rdfs:range rdf:List ; rdfs:comment "Components placed in a header."@en .
+c:unit a owl:DatatypeProperty ; rdfs:comment "Unit a property's values are shown with."@en .
+c:fields a owl:ObjectProperty ; rdfs:range rdf:List ; rdfs:comment "Properties to show, in order."@en .
+c:emphasis a owl:DatatypeProperty ; rdfs:range xsd:boolean ; rdfs:comment "On a property: show its values emphasized."@en .
+c:hideLabel a owl:DatatypeProperty ; rdfs:range xsd:boolean ; rdfs:comment "On a property: show its values without its label."@en .
+
+# --- Card ------------------------------------------------------------------------------------
+
+c:Card a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A titled surface (c:label, c:badge, c:note, header c:actions) around one component (c:content)."@en ;
+    sem:slug "card" ;
+    # Two parts, its header over its body: cards side by side in pos:AlignedColumns share a header
+    # row and a body row, so their bodies start on one line however their titles wrap.
+    pos:rowParts 2 .
+c:CardRendering a sem:Rendering ; sem:targets c:Card ; sem:stratum 0 .
+c:CardRendering-fn a sem:Rule ; sem:implements c:CardRendering ; sem:function "card" .
+
+c:CardRendering-sparql-screen a sem:Rule ;
+    sem:implements c:CardRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Article ; sem:renders $this ; rdfhtml:hasChild ?head, ?body .
+  ?head a rdfhtml:Header ; rdfhtml:hasChild ?title, ?badge, ?actions, ?note ; ord:immediatelyPrecedes ?body .
+  ?title a rdfhtml:H2 ; rdfhtml:hasChild ?titleText ; ord:precedes ?badge, ?actions, ?note .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?badge a rdfhtml:Span ; rdfhtml:class "sem-badge" ; rdfhtml:hasChild ?badgeText ; ord:precedes ?actions, ?note .
+  ?badgeText a rdfhtml:Text ; rdfhtml:data ?badgeData .
+  ?actions a rdfhtml:Div ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?action ; ord:precedes ?note .
+  ?note a rdfhtml:P ; rdfhtml:hasChild ?noteText .
+  ?noteText a rdfhtml:Text ; rdfhtml:data ?noteData .
+  ?body a rdfhtml:Div ; rdfhtml:class "sem-card-body" ; rdfhtml:hasChild ?content .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Card .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  OPTIONAL { ?badge0_uAt l10n:of $this ; l10n:badge ?badge0_u }
+  OPTIONAL { $this c:badge ?badge0_u FILTER(isLiteral(?badge0_u) && lang(?badge0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?badge0_u)) $this c:badge ?badge0_en FILTER(langMatches(lang(?badge0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?badge0_u) && !BOUND(?badge0_en)) $this c:badge ?badge0_any FILTER(isLiteral(?badge0_any)) }
+  BIND(STR(COALESCE(?badge0_u, ?badge0_en, ?badge0_any)) AS ?badge0)
+  OPTIONAL { ?note0_uAt l10n:of $this ; l10n:note ?note0_u }
+  OPTIONAL { $this c:note ?note0_u FILTER(isLiteral(?note0_u) && lang(?note0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?note0_u)) $this c:note ?note0_en FILTER(langMatches(lang(?note0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?note0_u) && !BOUND(?note0_en)) $this c:note ?note0_any FILTER(isLiteral(?note0_any)) }
+  BIND(STR(COALESCE(?note0_u, ?note0_en, ?note0_any)) AS ?note0)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+  BIND(IF(?label0 != "", ?label0, ?none) AS ?label)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~title")), ?none) AS ?title)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+  BIND(IF(?badge0 != "", ?badge0, ?none) AS ?badgeData)
+  BIND(IF(BOUND(?badgeData), IRI(CONCAT(STR($this), "/~badge")), ?none) AS ?badge)
+  BIND(IF(BOUND(?badgeData), IRI(CONCAT(STR($this), "/~badge-text")), ?none) AS ?badgeText)
+  BIND(IF(?note0 != "", ?note0, ?none) AS ?noteData)
+  BIND(IF(BOUND(?noteData), IRI(CONCAT(STR($this), "/~note")), ?none) AS ?note)
+  BIND(IF(BOUND(?noteData), IRI(CONCAT(STR($this), "/~note-text")), ?none) AS ?noteText)
+  BIND(IF(EXISTS { $this c:actions/rdf:first ?anyAction }, IRI(CONCAT(STR($this), "/~actions")), ?none) AS ?actions)
+  OPTIONAL { $this c:content ?content FILTER(isIRI(?content)) BIND(IRI(CONCAT(STR($this), "/~body")) AS ?body) }
+  {} UNION { $this c:actions/rdf:rest*/rdf:first ?action FILTER(isIRI(?action)) } UNION { $this c:actions/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+c:CardRendering-sparql-text a sem:Rule ;
+    sem:implements c:CardRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?title, ?content .
+  ?title a rdfhtml:Div ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?content .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Card .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  BIND(CONCAT("── ", COALESCE(?label, ""), " ──") AS ?line)
+  OPTIONAL { $this c:content ?content FILTER(isIRI(?content)) }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+  BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+}""" .
+
+# --- App bar and logo ----------------------------------------------------------------------
+
+c:AppBar a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """The application's top bar: a logo, a name (c:label), a c:subtitle, a c:byline, c:actions and
+c:moreActions. With c:to (a resource: the app's home, found as a c:Link finds its target) or c:href, the
+logo and the name are a link there. Where there is room the more actions follow the others; on a
+compact or medium screen (sty:CompactWidth, sty:MediumWidth) they fold behind a More button, shown while the bar is c:expanded; Escape or a
+press outside closes them."""@en ;
+    sem:slug "app-bar" .
+c:moreActions a owl:ObjectProperty ; rdfs:domain c:AppBar ; rdfs:range rdf:List ;
+    rdfs:comment "Secondary actions (settings, tools): after c:actions where there is room, behind a More button on a compact screen."@en .
+c:moreLabel a owl:DatatypeProperty ; rdfs:domain c:AppBar ;
+    rdfs:comment "What the More button is called for assistive technology (default \"More\")."@en .
+c:byline a owl:ObjectProperty ; rdfs:domain c:AppBar ;
+    rdfs:comment "A component after an app bar's name and subtitle: who makes or sponsors it."@en .
+c:logo a owl:ObjectProperty ;
+    rdfs:comment "A component drawn before a name: the app bar's logo, a link's logo (c:AppBar, c:Link)."@en .
+c:AppBarRendering a sem:Rendering ; sem:targets c:AppBar ; sem:stratum 0 .
+c:AppBarRendering-fn a sem:Rule ; sem:implements c:AppBarRendering ; sem:function "appbar" .
+
+c:AppBarRendering-sparql-screen a sem:Rule ;
+    sem:implements c:AppBarRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Header ; sem:renders $this ; rdfhtml:hasChild ?brand, ?actions .
+  ?brand a rdfhtml:Div ; rdfhtml:class "sem-brand" ; rdfhtml:hasChild ?logoOut, ?nameOut, ?home, ?subtitle, ?bylineBox ; ord:immediatelyPrecedes ?actions .
+  ?home a rdfhtml:A ; rdfhtml:class "sem-home" ; rdfhtml:href ?href ; rdfhtml:hasChild ?logoIn, ?nameIn ; ord:immediatelyPrecedes ?subtitle .
+  ?bylineBox a rdfhtml:Span ; rdfhtml:class "sem-byline" ; rdfhtml:hasChild ?byline .
+  ?beforeByline ord:immediatelyPrecedes ?bylineBox .
+  ?name a rdfhtml:Strong ; rdfhtml:hasChild ?nameText ; ord:immediatelyFollows ?logo ; ord:immediatelyPrecedes ?afterName .
+  ?nameText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?subtitle a rdfhtml:Span ; rdfhtml:hasChild ?subtitleText .
+  ?subtitleText a rdfhtml:Text ; rdfhtml:data ?subtitleData .
+  ?actions a rdfhtml:Div ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?action, ?more .
+  ?a ord:immediatelyPrecedes ?b .
+  ?lastAction ord:immediatelyPrecedes ?more .
+  ?more a rdfhtml:Div ; rdfhtml:class "sem-more" ; rdfhtml:attribute ?moreOpenAttr ; rdfhtml:hasChild ?moreToggle, ?moreBody .
+  ?moreOpenAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-open" ; rdfhtml:attributeValue ?openText .
+  ?moreToggle a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-more-toggle" ; c:folds $this ;
+      rdfhtml:attribute ?ariaExpanded, ?ariaControls, ?ariaLabel, ?escapeAttr, ?dismissAttr ; rdfhtml:hasChild ?moreIcon ; ord:immediatelyPrecedes ?moreBody .
+  ?ariaExpanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openText .
+  ?escapeAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+  ?dismissAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-dismiss-outside" ; rdfhtml:attributeValue "" .
+  ?ariaControls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?moreBodyId .
+  ?ariaLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?moreLabel .
+  ?moreIcon a rdfhtml:Span ; rdfhtml:attribute ?iconHidden ; rdfhtml:hasChild ?moreIconText .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?moreIconText a rdfhtml:Text ; rdfhtml:data "⋯" .
+  ?moreBody a rdfhtml:Div ; rdfhtml:class "sem-more-body" ; rdfhtml:id ?moreBodyId ; rdfhtml:hasChild ?moreAction .
+  ?ma ord:immediatelyPrecedes ?mb .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:AppBar .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  BIND(COALESCE(?label0, "") AS ?label)
+  OPTIONAL { ?subtitle0_uAt l10n:of $this ; l10n:subtitle ?subtitle0_u }
+  OPTIONAL { $this c:subtitle ?subtitle0_u FILTER(isLiteral(?subtitle0_u) && lang(?subtitle0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?subtitle0_u)) $this c:subtitle ?subtitle0_en FILTER(langMatches(lang(?subtitle0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?subtitle0_u) && !BOUND(?subtitle0_en)) $this c:subtitle ?subtitle0_any FILTER(isLiteral(?subtitle0_any)) }
+  BIND(STR(COALESCE(?subtitle0_u, ?subtitle0_en, ?subtitle0_any)) AS ?subtitle0)
+  BIND(IF(?subtitle0 != "", ?subtitle0, ?none) AS ?subtitleData)
+  OPTIONAL { $this c:logo ?logo FILTER(isIRI(?logo)) }
+  OPTIONAL { $this c:byline ?byline FILTER(isIRI(?byline)) }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~brand")) AS ?brand)
+  BIND(IF(BOUND(?byline), IRI(CONCAT(STR($this), "/~byline")), ?none) AS ?bylineBox)
+  BIND(IRI(CONCAT(STR($this), "/~name")) AS ?name)
+  BIND(IRI(CONCAT(STR($this), "/~name-text")) AS ?nameText)
+  BIND(IF(BOUND(?subtitleData), IRI(CONCAT(STR($this), "/~subtitle")), ?none) AS ?subtitle)
+  BIND(IF(BOUND(?subtitleData), IRI(CONCAT(STR($this), "/~subtitle-text")), ?none) AS ?subtitleText)
+  BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  # Home: the logo and the name are one link (c:to, resolved as nav:href; else c:href). The byline may
+  # hold a link of its own, so it stays outside.
+  OPTIONAL { $this nav:href ?href0 }
+  OPTIONAL { FILTER(!BOUND(?href0)) $this c:href ?href1 }
+  BIND(STR(COALESCE(?href0, ?href1)) AS ?href)
+  BIND(IF(BOUND(?href), IRI(CONCAT(STR($this), "/~home")), ?none) AS ?home)
+  BIND(IF(BOUND(?home), ?logo, ?none) AS ?logoIn)
+  BIND(IF(BOUND(?home), ?none, ?logo) AS ?logoOut)
+  BIND(IF(BOUND(?home), ?name, ?none) AS ?nameIn)
+  BIND(IF(BOUND(?home), ?none, ?name) AS ?nameOut)
+  BIND(IF(BOUND(?home), ?none, ?subtitle) AS ?afterName)
+  BIND(IF(BOUND(?bylineBox), COALESCE(?subtitle, ?home, ?name), ?none) AS ?beforeByline)
+  # The more actions, in a group after the last action: a toggle and the body it opens.
+  OPTIONAL { $this c:moreActions/rdf:first ?firstMore FILTER(isIRI(?firstMore)) }
+  OPTIONAL { FILTER(BOUND(?firstMore)) $this c:actions/rdf:rest* ?lastCell . ?lastCell rdf:first ?lastAction0 ; rdf:rest rdf:nil FILTER(isIRI(?lastAction0)) }
+  BIND(IF(BOUND(?firstMore), ?lastAction0, ?none) AS ?lastAction)
+  BIND(STR(EXISTS { $this c:expanded ?expanded FILTER(STR(?expanded) = "true") }) AS ?openText0)
+  OPTIONAL { ?moreLabel_uAt l10n:of $this ; l10n:moreLabel ?moreLabel_u }
+  OPTIONAL { $this c:moreLabel ?moreLabel_u FILTER(isLiteral(?moreLabel_u) && lang(?moreLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?moreLabel_u)) $this c:moreLabel ?moreLabel_en FILTER(langMatches(lang(?moreLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?moreLabel_u) && !BOUND(?moreLabel_en)) $this c:moreLabel ?moreLabel_any FILTER(isLiteral(?moreLabel_any)) }
+  BIND(COALESCE(STR(COALESCE(?moreLabel_u, ?moreLabel_en, ?moreLabel_any)), "More") AS ?moreLabel0)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more")), ?none) AS ?more)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-data-open")), ?none) AS ?moreOpenAttr)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-toggle")), ?none) AS ?moreToggle)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-toggle-aria-expanded")), ?none) AS ?ariaExpanded)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-toggle-aria-controls")), ?none) AS ?ariaControls)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-toggle-aria-label")), ?none) AS ?ariaLabel)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-icon")), ?none) AS ?moreIcon)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-icon-aria-hidden")), ?none) AS ?iconHidden)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-icon-text")), ?none) AS ?moreIconText)
+  BIND(IF(BOUND(?firstMore), IRI(CONCAT(STR($this), "/~more-body")), ?none) AS ?moreBody)
+  BIND(STR(?moreBody) AS ?moreBodyId)
+  BIND(IF(BOUND(?firstMore), ?openText0, ?none) AS ?openText)
+  # Open, Escape or a press outside closes it: the toggle says so (the event bus clicks it).
+  BIND(IF(?openText = "true", IRI(CONCAT(STR($this), "/~more-toggle-data-sem-escape")), ?none) AS ?escapeAttr)
+  BIND(IF(?openText = "true", IRI(CONCAT(STR($this), "/~more-toggle-data-sem-dismiss-outside")), ?none) AS ?dismissAttr)
+  BIND(IF(BOUND(?firstMore), ?moreLabel0, ?none) AS ?moreLabel)
+  {} UNION { $this c:actions/rdf:rest*/rdf:first ?action FILTER(isIRI(?action)) } UNION { $this c:actions/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+  UNION { $this c:moreActions/rdf:rest*/rdf:first ?moreAction FILTER(isIRI(?moreAction)) } UNION { $this c:moreActions/rdf:rest* ?morePairCell . ?morePairCell rdf:first ?ma ; rdf:rest/rdf:first ?mb FILTER(isIRI(?ma) && isIRI(?mb)) }
+}""" .
+
+# The More button opens and closes the folded actions (c:expanded; closed when absent).
+c:AppBarMore a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:AppBar ;
+    beh:deletes """CONSTRUCT { $this c:expanded ?e } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:folds $this . $this c:expanded ?e }""" ;
+    beh:inserts """CONSTRUCT { $this c:expanded ?next } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:folds $this . OPTIONAL { $this c:expanded ?e } BIND(STR(COALESCE(?e, false)) != "true" AS ?next) }""" ;
+    sem:function "appbar:more" .
+
+c:AppBarRendering-sparql-text a sem:Rule ;
+    sem:implements c:AppBarRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:AppBar .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  OPTIONAL { ?subtitle0_uAt l10n:of $this ; l10n:subtitle ?subtitle0_u }
+  OPTIONAL { $this c:subtitle ?subtitle0_u FILTER(isLiteral(?subtitle0_u) && lang(?subtitle0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?subtitle0_u)) $this c:subtitle ?subtitle0_en FILTER(langMatches(lang(?subtitle0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?subtitle0_u) && !BOUND(?subtitle0_en)) $this c:subtitle ?subtitle0_any FILTER(isLiteral(?subtitle0_any)) }
+  BIND(STR(COALESCE(?subtitle0_u, ?subtitle0_en, ?subtitle0_any)) AS ?subtitle0)
+  BIND(CONCAT(COALESCE(?label0, ""), IF(?subtitle0 != "", CONCAT(" — ", ?subtitle0), "")) AS ?line0)
+  BIND(COALESCE(?line0, COALESCE(?label0, "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+}""" .
+
+c:GraphMark a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Semblance's mark: an S drawn as a graph - three nodes on one curved edge - over the
+fainter echo of that edge (a graph and its semblance), on a gradient tile. Its geometry is data
+on the class (c:markPath, c:markEcho, c:markNode), so the app bar, the landing page, the favicon
+and the README draw the same thing from the same triples. Like a rule's query, the geometry is
+read when a projection is built. Sized by sty:size."""@en ;
+    sem:slug "graph-mark" ;
+    c:markPath "M22 9 C 9 8.5, 9 15.2, 16 16 S 23 23.5, 10 23" ;
+    c:markEcho 1.4 ;
+    c:markNode c:MarkStart , c:MarkMiddle , c:MarkEnd .
+c:markPath a owl:DatatypeProperty ; rdfs:domain owl:Class ;
+    rdfs:comment "The mark's edge, as SVG path data in a 32 × 32 box."@en .
+c:markEcho a owl:DatatypeProperty ; rdfs:domain owl:Class ; rdfs:range xsd:decimal ;
+    rdfs:comment "How far (down and to the end) the edge's echo is offset."@en .
+c:markNode a owl:ObjectProperty ; rdfs:domain owl:Class ; rdfs:range c:MarkNode .
+c:MarkNode a owl:Class ; rdfs:comment "A node of the mark: c:cx, c:cy, c:r in the 32 × 32 box, drawn in sem:order."@en .
+c:cx a owl:DatatypeProperty ; rdfs:domain c:MarkNode ; rdfs:range xsd:decimal .
+c:cy a owl:DatatypeProperty ; rdfs:domain c:MarkNode ; rdfs:range xsd:decimal .
+c:r a owl:DatatypeProperty ; rdfs:domain c:MarkNode ; rdfs:range xsd:decimal .
+c:MarkStart a c:MarkNode ; sem:order 1 ; c:cx 22 ; c:cy 9 ; c:r 3.1 .
+c:MarkMiddle a c:MarkNode ; sem:order 2 ; c:cx 16 ; c:cy 16 ; c:r 2.5 .
+c:MarkEnd a c:MarkNode ; sem:order 3 ; c:cx 10 ; c:cy 23 ; c:r 3.1 .
+
+c:GraphMarkRendering a sem:Rendering ; sem:targets c:GraphMark ; sem:modality mod:Screen ; sem:stratum 0 .
+c:GraphMarkRendering-fn a sem:Rule ; sem:implements c:GraphMarkRendering ; sem:function "graphmark" .
+
+c:GraphMarkRendering-sparql a sem:Rule ;
+    sem:implements c:GraphMarkRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a svg:Svg ; sem:renders $this ; rdfhtml:hasChild ?defs, ?tile, ?echo, ?edge, ?dot .
+  ?root rdfhtml:attribute ?rootA0 . ?rootA0 a rdfhtml:Attribute ; rdfhtml:attributeName "viewBox" ; rdfhtml:attributeValue "0 0 32 32" .
+  ?root rdfhtml:attribute ?rootA1 . ?rootA1 a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "img" .
+  ?root rdfhtml:attribute ?rootA2 . ?rootA2 a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?defs a svg:Defs ; rdfhtml:hasChild ?gradient ; ord:immediatelyPrecedes ?tile .
+  ?gradient a svg:LinearGradient ; rdfhtml:hasChild ?stopA, ?stopB .
+  ?gradient rdfhtml:attribute ?gradientA0 . ?gradientA0 a rdfhtml:Attribute ; rdfhtml:attributeName "id" ; rdfhtml:attributeValue ?id .
+  ?gradient rdfhtml:attribute ?gradientA1 . ?gradientA1 a rdfhtml:Attribute ; rdfhtml:attributeName "x1" ; rdfhtml:attributeValue "0" .
+  ?gradient rdfhtml:attribute ?gradientA2 . ?gradientA2 a rdfhtml:Attribute ; rdfhtml:attributeName "y1" ; rdfhtml:attributeValue "0" .
+  ?gradient rdfhtml:attribute ?gradientA3 . ?gradientA3 a rdfhtml:Attribute ; rdfhtml:attributeName "x2" ; rdfhtml:attributeValue "1" .
+  ?gradient rdfhtml:attribute ?gradientA4 . ?gradientA4 a rdfhtml:Attribute ; rdfhtml:attributeName "y2" ; rdfhtml:attributeValue "1" .
+  ?stopA a svg:Stop ; ord:immediatelyPrecedes ?stopB .
+  ?stopA rdfhtml:attribute ?stopAA0 . ?stopAA0 a rdfhtml:Attribute ; rdfhtml:attributeName "offset" ; rdfhtml:attributeValue "0" .
+  ?stopA rdfhtml:attribute ?stopAA1 . ?stopAA1 a rdfhtml:Attribute ; rdfhtml:attributeName "class" ; rdfhtml:attributeValue "sem-stop-a" .
+  ?stopB a svg:Stop .
+  ?stopB rdfhtml:attribute ?stopBA0 . ?stopBA0 a rdfhtml:Attribute ; rdfhtml:attributeName "offset" ; rdfhtml:attributeValue "1" .
+  ?stopB rdfhtml:attribute ?stopBA1 . ?stopBA1 a rdfhtml:Attribute ; rdfhtml:attributeName "class" ; rdfhtml:attributeValue "sem-stop-b" .
+  ?tile a svg:Rect ; ord:immediatelyPrecedes ?echo .
+  ?tile rdfhtml:attribute ?tileA0 . ?tileA0 a rdfhtml:Attribute ; rdfhtml:attributeName "width" ; rdfhtml:attributeValue "32" .
+  ?tile rdfhtml:attribute ?tileA1 . ?tileA1 a rdfhtml:Attribute ; rdfhtml:attributeName "height" ; rdfhtml:attributeValue "32" .
+  ?tile rdfhtml:attribute ?tileA2 . ?tileA2 a rdfhtml:Attribute ; rdfhtml:attributeName "rx" ; rdfhtml:attributeValue "9" .
+  ?tile rdfhtml:attribute ?tileA3 . ?tileA3 a rdfhtml:Attribute ; rdfhtml:attributeName "fill" ; rdfhtml:attributeValue ?fill .
+  ?echo a svg:Path ; ord:immediatelyPrecedes ?edge .
+  ?echo rdfhtml:attribute ?echoA0 . ?echoA0 a rdfhtml:Attribute ; rdfhtml:attributeName "d" ; rdfhtml:attributeValue ?d .
+  ?echo rdfhtml:attribute ?echoA1 . ?echoA1 a rdfhtml:Attribute ; rdfhtml:attributeName "transform" ; rdfhtml:attributeValue ?shift .
+  ?echo rdfhtml:attribute ?echoA2 . ?echoA2 a rdfhtml:Attribute ; rdfhtml:attributeName "class" ; rdfhtml:attributeValue "sem-echo" .
+  ?edge a svg:Path ; ord:immediatelyPrecedes ?firstDot .
+  ?edge rdfhtml:attribute ?edgeA0 . ?edgeA0 a rdfhtml:Attribute ; rdfhtml:attributeName "d" ; rdfhtml:attributeValue ?d .
+  ?edge rdfhtml:attribute ?edgeA1 . ?edgeA1 a rdfhtml:Attribute ; rdfhtml:attributeName "class" ; rdfhtml:attributeValue "sem-edge" .
+  ?dot a svg:Circle ; ord:immediatelyPrecedes ?dotNext .
+  ?dot rdfhtml:attribute ?dotA0 . ?dotA0 a rdfhtml:Attribute ; rdfhtml:attributeName "cx" ; rdfhtml:attributeValue ?cx .
+  ?dot rdfhtml:attribute ?dotA1 . ?dotA1 a rdfhtml:Attribute ; rdfhtml:attributeName "cy" ; rdfhtml:attributeValue ?cy .
+  ?dot rdfhtml:attribute ?dotA2 . ?dotA2 a rdfhtml:Attribute ; rdfhtml:attributeName "r" ; rdfhtml:attributeValue ?r .
+  ?dot rdfhtml:attribute ?dotA3 . ?dotA3 a rdfhtml:Attribute ; rdfhtml:attributeName "class" ; rdfhtml:attributeValue "sem-node" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:GraphMark .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    # The tile, its gradient, the edge and its echo, and the root's attributes. (Each branch binds $this itself, for bulk evaluation.)
+    $this a/rdfs:subClassOf* c:GraphMark .
+    c:GraphMark c:markPath ?d ; c:markEcho ?offset .
+    BIND(CONCAT("translate(", STR(?offset), " ", STR(?offset), ")") AS ?shift)
+    OPTIONAL { ?labelC_uAt l10n:of $this ; l10n:label ?labelC_u }
+  OPTIONAL { $this c:label ?labelC_u FILTER(isLiteral(?labelC_u) && lang(?labelC_u) = "") }
+    OPTIONAL { FILTER(!BOUND(?labelC_u)) $this c:label ?labelC_en FILTER(langMatches(lang(?labelC_en), "en")) }
+    OPTIONAL { FILTER(!BOUND(?labelC_u) && !BOUND(?labelC_en)) $this c:label ?labelC_any FILTER(isLiteral(?labelC_any)) }
+    BIND(STR(COALESCE(?labelC_u, ?labelC_en, ?labelC_any)) AS ?labelC)
+    OPTIONAL { ?labelR_uAt l10n:of $this ; l10n:name ?labelR_u }
+  OPTIONAL { $this rdfs:label ?labelR_u FILTER(isLiteral(?labelR_u) && lang(?labelR_u) = "") }
+    OPTIONAL { FILTER(!BOUND(?labelR_u)) $this rdfs:label ?labelR_en FILTER(langMatches(lang(?labelR_en), "en")) }
+    OPTIONAL { FILTER(!BOUND(?labelR_u) && !BOUND(?labelR_en)) $this rdfs:label ?labelR_any FILTER(isLiteral(?labelR_any)) }
+    BIND(STR(COALESCE(?labelR_u, ?labelR_en, ?labelR_any)) AS ?labelR)
+    BIND(COALESCE(?labelC, ?labelR, REPLACE(STR($this), "^.*[#/]", "")) AS ?label)
+    BIND(REPLACE(STR($this), "[^a-zA-Z0-9]", "") AS ?alnum)
+    BIND(CONCAT("g", IF(STRLEN(?alnum) > 12, SUBSTR(?alnum, STRLEN(?alnum) - 11), ?alnum)) AS ?id)
+    BIND(CONCAT("url(#", ?id, ")") AS ?fill)
+    BIND(IRI(CONCAT(STR($this), "/~defs")) AS ?defs)
+    BIND(IRI(CONCAT(STR($this), "/~gradient")) AS ?gradient)
+    BIND(IRI(CONCAT(STR($this), "/~stop-a")) AS ?stopA)
+    BIND(IRI(CONCAT(STR($this), "/~stop-b")) AS ?stopB)
+    BIND(IRI(CONCAT(STR($this), "/~tile")) AS ?tile)
+    BIND(IRI(CONCAT(STR($this), "/~echo")) AS ?echo)
+    BIND(IRI(CONCAT(STR($this), "/~edge")) AS ?edge)
+    BIND(IRI(CONCAT(STR($this), "/~n1")) AS ?firstDot)
+    BIND(IRI(CONCAT(STR($this), "/~", "root", "-a-viewBox")) AS ?rootA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "root", "-a-role")) AS ?rootA1)
+    BIND(IRI(CONCAT(STR($this), "/~", "root", "-a-aria-label")) AS ?rootA2)
+    BIND(IRI(CONCAT(STR($this), "/~", "gradient", "-a-id")) AS ?gradientA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "gradient", "-a-x1")) AS ?gradientA1)
+    BIND(IRI(CONCAT(STR($this), "/~", "gradient", "-a-y1")) AS ?gradientA2)
+    BIND(IRI(CONCAT(STR($this), "/~", "gradient", "-a-x2")) AS ?gradientA3)
+    BIND(IRI(CONCAT(STR($this), "/~", "gradient", "-a-y2")) AS ?gradientA4)
+    BIND(IRI(CONCAT(STR($this), "/~", "stop-a", "-a-offset")) AS ?stopAA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "stop-a", "-a-class")) AS ?stopAA1)
+    BIND(IRI(CONCAT(STR($this), "/~", "stop-b", "-a-offset")) AS ?stopBA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "stop-b", "-a-class")) AS ?stopBA1)
+    BIND(IRI(CONCAT(STR($this), "/~", "tile", "-a-width")) AS ?tileA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "tile", "-a-height")) AS ?tileA1)
+    BIND(IRI(CONCAT(STR($this), "/~", "tile", "-a-rx")) AS ?tileA2)
+    BIND(IRI(CONCAT(STR($this), "/~", "tile", "-a-fill")) AS ?tileA3)
+    BIND(IRI(CONCAT(STR($this), "/~", "echo", "-a-d")) AS ?echoA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "echo", "-a-transform")) AS ?echoA1)
+    BIND(IRI(CONCAT(STR($this), "/~", "echo", "-a-class")) AS ?echoA2)
+    BIND(IRI(CONCAT(STR($this), "/~", "edge", "-a-d")) AS ?edgeA0)
+    BIND(IRI(CONCAT(STR($this), "/~", "edge", "-a-class")) AS ?edgeA1)
+  } UNION {
+    # The nodes, in sem:order.
+    $this a/rdfs:subClassOf* c:GraphMark .
+    c:GraphMark c:markNode ?node . ?node sem:order ?order ; c:cx ?x ; c:cy ?y ; c:r ?radius .
+    BIND(STR(?x) AS ?cx) BIND(STR(?y) AS ?cy) BIND(STR(?radius) AS ?r)
+    BIND(CONCAT("n", STR(?order)) AS ?dotLocal)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dotLocal)) AS ?dot)
+    OPTIONAL { c:GraphMark c:markNode ?after . ?after sem:order ?nextOrder FILTER(?nextOrder = ?order + 1) }
+    BIND(IF(BOUND(?after), IRI(CONCAT(STR($this), "/~n", STR(?order + 1))), ?none) AS ?dotNext)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dotLocal, "-a-cx")) AS ?dotA0)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dotLocal, "-a-cy")) AS ?dotA1)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dotLocal, "-a-r")) AS ?dotA2)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dotLocal, "-a-class")) AS ?dotA3)
+  }
+}""" .
+
+# --- SourceView ------------------------------------------------------------------------------------
+
+c:SourceText a owl:Class ;
+    rdfs:comment """A text a graph was loaded from, as data: its c:path, its c:language and the c:text itself
+(comments and layout included). The host records the ones worth showing (an example's file)."""@en .
+c:path a owl:DatatypeProperty ; rdfs:domain c:SourceText ; rdfs:comment "Where the text lives, relative to the project."@en .
+c:text a owl:DatatypeProperty ; rdfs:domain c:SourceText ; rdfs:comment "The text, verbatim."@en .
+c:SourceView a owl:Class ;
+    rdfs:subClassOf sem:Component , fs:Fullscreenable ;
+    rdfs:comment """A source text (c:of, a c:SourceText) shown verbatim and syntax-colored, under its c:path, with
+line numbers. c:label names it (default: the path). The toggles in its header fill the window with it,
+or the screen (fs:Fullscreenable): a long file read at the width of the screen."""@en ;
+    sem:slug "source-view" .
+# Not what it highlights (c:SourceHighlight's): showing another statement must not render the text again.
+c:SourceViewRendering a sem:Rendering ;
+    sem:targets c:SourceView ;
+    sem:stratum 0 ;
+    sem:follows c:of ;
+    sem:watches rdf:type , c:of , c:label , c:emptyText ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it splits the text into lexical tokens for coloring." ;
+    sem:needsExtension sx:Matches .
+c:SourceViewRendering-fn a sem:Rule ; sem:implements c:SourceViewRendering ; sem:function "source-view" .
+
+# --- Emblem ---------------------------------------------------------------------------------------
+
+c:Emblem a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A logo drawn from data: one path (c:pathData, with c:fillRule) in its c:viewBox, filled with
+c:color (default: the text color). It is as tall as the text it sits in. Named by rdfs:label for
+assistive technology, or hidden from it when c:decorative (a name follows it anyway)."""@en ;
+    sem:slug "emblem" .
+c:viewBox a owl:DatatypeProperty ; rdfs:domain c:Emblem ; rdfs:comment "The SVG view box of the path's coordinates."@en .
+c:pathData a owl:DatatypeProperty ; rdfs:domain c:Emblem ; rdfs:comment "SVG path data."@en .
+c:fillRule a owl:DatatypeProperty ; rdfs:domain c:Emblem ; rdfs:comment "\"nonzero\" (default) or \"evenodd\"."@en .
+c:color a owl:DatatypeProperty ; rdfs:comment "A CSS color for a mark that has its own (a brand color)."@en .
+c:decorative a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether a picture only decorates (its name is said by the text next to it)."@en .
+c:EmblemRendering a sem:Rendering ; sem:targets c:Emblem ; sem:modality mod:Screen ; sem:stratum 0 .
+c:EmblemRendering-fn a sem:Rule ; sem:implements c:EmblemRendering ; sem:function "emblem" .
+c:EmblemRendering-sparql a sem:Rule ;
+    sem:implements c:EmblemRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a svg:Svg ; sem:renders $this ; rdfhtml:hasChild ?path .
+  ?root rdfhtml:attribute ?rootA0 . ?rootA0 a rdfhtml:Attribute ; rdfhtml:attributeName "viewBox" ; rdfhtml:attributeValue ?viewBox .
+  ?root rdfhtml:attribute ?rootA1 . ?rootA1 a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue ?role .
+  ?root rdfhtml:attribute ?rootA2 . ?rootA2 a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?root rdfhtml:attribute ?rootA3 . ?rootA3 a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?path a svg:Path .
+  ?path rdfhtml:attribute ?pathA0 . ?pathA0 a rdfhtml:Attribute ; rdfhtml:attributeName "d" ; rdfhtml:attributeValue ?d .
+  ?path rdfhtml:attribute ?pathA1 . ?pathA1 a rdfhtml:Attribute ; rdfhtml:attributeName "fill" ; rdfhtml:attributeValue ?fill .
+  ?path rdfhtml:attribute ?pathA2 . ?pathA2 a rdfhtml:Attribute ; rdfhtml:attributeName "fill-rule" ; rdfhtml:attributeValue ?rule .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Emblem ; c:viewBox ?viewBox0 ; c:pathData ?d0 .
+  BIND(STR(?viewBox0) AS ?viewBox) BIND(STR(?d0) AS ?d)
+  OPTIONAL { $this c:color ?color0 } BIND(COALESCE(STR(?color0), "currentColor") AS ?fill)
+  OPTIONAL { $this c:fillRule ?rule0 } BIND(COALESCE(STR(?rule0), "nonzero") AS ?rule)
+  BIND(EXISTS { $this c:decorative ?dec FILTER(STR(?dec) = "true") } AS ?decorative)
+  OPTIONAL { ?labelC_uAt l10n:of $this ; l10n:label ?labelC_u }
+  OPTIONAL { $this c:label ?labelC_u FILTER(isLiteral(?labelC_u) && lang(?labelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?labelC_u)) $this c:label ?labelC_en FILTER(langMatches(lang(?labelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?labelC_u) && !BOUND(?labelC_en)) $this c:label ?labelC_any FILTER(isLiteral(?labelC_any)) }
+  BIND(STR(COALESCE(?labelC_u, ?labelC_en, ?labelC_any)) AS ?labelC)
+  OPTIONAL { ?labelR_uAt l10n:of $this ; l10n:name ?labelR_u }
+  OPTIONAL { $this rdfs:label ?labelR_u FILTER(isLiteral(?labelR_u) && lang(?labelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?labelR_u)) $this rdfs:label ?labelR_en FILTER(langMatches(lang(?labelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?labelR_u) && !BOUND(?labelR_en)) $this rdfs:label ?labelR_any FILTER(isLiteral(?labelR_any)) }
+  BIND(STR(COALESCE(?labelR_u, ?labelR_en, ?labelR_any)) AS ?labelR)
+  BIND(COALESCE(?labelC, ?labelR, REPLACE(STR($this), "^.*[#/]", "")) AS ?label0)
+  BIND(IF(?decorative, ?none, "img") AS ?role)
+  BIND(IF(?decorative, ?none, ?label0) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~path")) AS ?path)
+  BIND(IRI(CONCAT(STR($this), "/~root-a-viewBox")) AS ?rootA0)
+  BIND(IF(BOUND(?role), IRI(CONCAT(STR($this), "/~root-a-role")), ?none) AS ?rootA1)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~root-a-aria-label")), ?none) AS ?rootA2)
+  BIND(IF(?decorative, IRI(CONCAT(STR($this), "/~root-a-aria-hidden")), ?none) AS ?rootA3)
+  BIND(IRI(CONCAT(STR($this), "/~path-a-d")) AS ?pathA0)
+  BIND(IRI(CONCAT(STR($this), "/~path-a-fill")) AS ?pathA1)
+  BIND(IRI(CONCAT(STR($this), "/~path-a-fill-rule")) AS ?pathA2)
+}""" .
+
+# --- Metrics -----------------------------------------------------------------------------------
+
+c:Metrics a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Chips showing c:fields of one node (c:of), labelled by the properties' rdfs:label and c:unit."@en ;
+    sem:slug "metrics" .
+c:MetricsRendering a sem:Rendering ; sem:targets c:Metrics ; sem:stratum 0 ; sem:follows c:of ;
+    sem:functionOnly "awaits sx:Text (sx:decodeURI): it shows IRIs compacted with the declared prefixes and percent-decoded." ;
+    sem:needsExtension sx:Text .
+c:MetricsRendering-fn a sem:Rule ; sem:implements c:MetricsRendering ; sem:function "metrics" .
+
+# --- Toggle ------------------------------------------------------------------------------------
+
+c:Toggle a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A pressed / not pressed button for a boolean property (c:property of c:controls)."@en ;
+    sem:slug "toggle" .
+c:ToggleRendering a sem:Rendering ; sem:targets c:Toggle ; sem:stratum 0 ; sem:follows c:controls .
+c:ToggleRendering-fn a sem:Rule ; sem:implements c:ToggleRendering ; sem:function "toggle" .
+
+c:ToggleRendering-sparql a sem:Rule ;
+    sem:implements c:ToggleRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Button ; sem:renders $this ; rdfhtml:type "button" ; rdfhtml:hasChild ?text ; sem:tooltip ?note .
+  ?root rdfhtml:attribute ?pressedAttr . ?pressedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressed .
+  ?text a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Toggle ; c:controls ?target ; c:property ?property .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownLabel2)
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownLabel2, ?propertyLabel) AS ?label)
+  OPTIONAL { ?note0_uAt l10n:of $this ; l10n:note ?note0_u }
+  OPTIONAL { $this c:note ?note0_u FILTER(isLiteral(?note0_u) && lang(?note0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?note0_u)) $this c:note ?note0_en FILTER(langMatches(lang(?note0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?note0_u) && !BOUND(?note0_en)) $this c:note ?note0_any FILTER(isLiteral(?note0_any)) }
+  BIND(STR(COALESCE(?note0_u, ?note0_en, ?note0_any)) AS ?note0)
+  BIND(IF(?note0 != "", ?note0, ?none) AS ?note)
+  BIND(IF(EXISTS { ?target ?property ?on FILTER(STR(?on) = "true") }, "true", "false") AS ?pressed)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-pressed")) AS ?pressedAttr)
+}""" .
+c:ToggleFlip a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Toggle ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?new } WHERE { $this c:controls ?target ; c:property ?p . OPTIONAL { ?target ?p ?old } BIND(!COALESCE(?old, false) AS ?new) }""" ;
+    sem:function "toggle:flip" .
+
+# --- Query views -----------------------------------------------------------------------------
+
+sem:Query a owl:Class ;
+    rdfs:comment "A named CONSTRUCT (sem:construct). $-variables are bound by the view that runs it."@en .
+sem:orderBy a owl:ObjectProperty ; rdfs:domain sem:Query ;
+    rdfs:comment "Present the result's subjects ordered by this property."@en .
+sem:descending a owl:DatatypeProperty ; rdfs:domain sem:Query ; rdfs:range xsd:boolean .
+
+c:QueryView a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Runs named CONSTRUCTs (c:queries) and shows their results as syntax-colored Turtle,
+one section per query. A variable (c:bindVariable) may be bound to the value of c:bindProperty
+on c:bindFrom; c:of names a node whose changes should refresh the view (e.g. an event stream)."""@en ;
+    sem:slug "query-view" .
+c:queries a owl:ObjectProperty ; rdfs:range rdf:List .
+c:bindVariable a owl:DatatypeProperty .
+c:bindFrom a owl:ObjectProperty .
+c:bindProperty a owl:ObjectProperty .
+c:emptyText a owl:DatatypeProperty .
+c:baseIri a owl:DatatypeProperty ; rdfs:comment "Base IRI for relative display of long IRIs."@en .
+c:QueryViewRendering a sem:Rendering ;
+    sem:targets c:QueryView ;
+    sem:stratum 0 ;
+    sem:follows c:bindFrom, c:of ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it prints the results of the queries in the data (c:queries) as colored Turtle tokens. (The results would be rows written as graph data.)" ;
+    sem:needsExtension sx:Matches .
+c:QueryViewRendering-fn a sem:Rule ; sem:implements c:QueryViewRendering ; sem:function "queryview" .
+
+# A rule may show the queries it runs on its back side (c:Flippable lists them).
+c:dataQuery a owl:ObjectProperty ; rdfs:comment "Links a component to a query or view whose result it shows."@en .
+
+# --- ElementMarkup ---------------------------------------------------------------------------------
+
+c:ElementMarkup a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """The rendered element held in c:bindProperty of c:bindFrom without its RDF/HTML encoding:
+the component that rendered it (the IRI before the node's first /~), as Turtle, and the HTML the
+element becomes - its subtree with attribute nodes and ordering triples taken off and nested
+components resolved, one element per line - both syntax-colored. Shown while c:active is true (a
+check box can drive it: c:controls it, c:property c:active); otherwise it renders an empty, hidden root."""@en ;
+    sem:slug "element-markup" .
+c:active a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether a component that can be switched on (c:ElementMarkup) is."@en .
+c:ElementMarkupRendering a sem:Rendering ;
+    sem:targets c:ElementMarkup ;
+    sem:modality mod:Screen ;
+    sem:stratum 40 ;
+    sem:follows c:bindFrom ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it prints the component's triples as Turtle and the element as HTML, colored token by token; the HTML's order is the HTML index's (a building block could state it)." ;
+    sem:needsExtension sx:Matches .
+c:ElementMarkupRendering-fn a sem:Rule ; sem:implements c:ElementMarkupRendering ; sem:function "element-markup" .
+
+# --- Highlight ------------------------------------------------------------------------------------
+
+c:Highlight a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Marks the RDF/HTML node held in c:bindProperty of c:bindFrom (data-sem-highlighted). Of its own it
+renders only an empty hidden root, so the theme shows the mark only while a highlight is shown: one parked
+with what holds it (a closed or minimized window, a tab not selected) leaves its last mark in place, unseen."""@en ;
+    sem:slug "highlight" .
+c:HighlightRendering a sem:Rendering ;
+    sem:targets c:Highlight ;
+    sem:modality mod:Screen ;
+    sem:stratum 40 ;
+    sem:follows c:bindFrom .
+c:HighlightRendering-fn a sem:Rule ; sem:implements c:HighlightRendering ; sem:function "highlight" .
+
+c:HighlightRendering-sparql a sem:Rule ;
+    sem:implements c:HighlightRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; rdfhtml:hidden "" ; sem:renders $this .
+  ?node rdfhtml:attribute ?mark .
+  ?mark a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-highlighted" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Highlight .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL {
+    $this c:bindFrom ?from ; c:bindProperty ?property .
+    ?from ?property ?node FILTER(isIRI(?node))
+    BIND(IRI(CONCAT(STR($this), "/~mark")) AS ?mark)
+  }
+}""" .
+
+# --- Switch ------------------------------------------------------------------------------------------
+
+c:Switch a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Shows the case (c:cases) whose c:when equals c:property of c:controls. Every case stays
+rendered (inactive ones hidden), so switching moves no DOM and keeps state."""@en ;
+    sem:slug "switch" .
+c:cases a owl:ObjectProperty ; rdfs:range rdf:List .
+c:when a owl:ObjectProperty .
+c:SwitchRendering a sem:Rendering ; sem:targets c:Switch ; sem:stratum 0 ; sem:follows c:controls .
+c:SwitchRendering-fn a sem:Rule ; sem:implements c:SwitchRendering ; sem:function "switch" .
+
+c:SwitchRendering-sparql a sem:Rule ;
+    sem:implements c:SwitchRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?case .
+  ?case a rdfhtml:Div ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?content ; ord:immediatelyPrecedes ?next .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Switch .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {} UNION {
+    # One panel per case (c:cases, in order), keyed by its position; the case whose c:when
+    # equals the controlled value is shown.
+    $this c:cases/rdf:rest* ?cell . ?cell rdf:first ?c .
+    { SELECT ?cell (COUNT(?mid) - 1 AS ?i) WHERE { $this c:cases/rdf:rest* ?mid . ?mid rdf:rest* ?cell } GROUP BY ?cell }
+    OPTIONAL { $this c:controls ?target ; c:property ?property . ?target ?property ?current }
+    LATERAL {
+      OPTIONAL { ?c c:content ?content FILTER(isIRI(?content)) }
+      OPTIONAL { ?c c:when ?when }
+      OPTIONAL { ?cell rdf:rest ?nextCell FILTER(?nextCell != rdf:nil) }
+    }
+    BIND((!BOUND(?when) && !BOUND(?current)) || (BOUND(?when) && BOUND(?current) && STR(?when) = STR(?current)) AS ?on)
+    BIND(IF(?on, ?none, "") AS ?hidden)
+    BIND(IRI(CONCAT(STR($this), "/~case-", STR(?i))) AS ?case)
+    BIND(IF(BOUND(?nextCell), IRI(CONCAT(STR($this), "/~case-", STR(?i + 1))), ?none) AS ?next)
+  }
+}""" .
+
+# --- Host-owned slots and projection view -------------------------------------------------------------
+
+c:HostSlot a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "An unstyled host-owned slot (c:slot) for content mounted by the embedding application."@en ;
+    sem:slug "host-slot" .
+c:HostSlotRendering a sem:Rendering ; sem:targets c:HostSlot ; sem:stratum 0 .
+c:HostSlotRendering-fn a sem:Rule ; sem:implements c:HostSlotRendering ; sem:function "hostslot" .
+
+c:HostSlotRendering-sparql a sem:Rule ;
+    sem:implements c:HostSlotRendering ;
+    sem:construct """
+CONSTRUCT { ?root a rdfhtml:Div ; sem:renders $this ; sem:slot ?slot . }
+WHERE {
+  $this a/rdfs:subClassOf* c:HostSlot .
+  OPTIONAL { $this c:slot ?slot0 }
+  BIND(COALESCE(STR(?slot0), "projection") AS ?slot)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+}""" .
+
+# --- Projection view ---------------------------------------------------------------------------------
+
+c:ProjectionView a owl:Class ;
+    rdfs:subClassOf c:HostSlot ;
+    rdfs:comment """A host-owned slot (c:slot) where another projection of the graph is mounted - e.g. the
+Text modality. c:projectionGraph names that projection's derived graph; its PROV-O says which
+rules made it, so a c:Flippable around this view can show them."""@en ;
+    sem:slug "projection-view" .
+c:projectionGraph a owl:DatatypeProperty .
+
+# --- stream members and triples views ---------------------------------------------------------
+
+c:StreamMembers a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """The newest members of an event stream (c:of an ldes:EventStream), newest first,
+ordered by the stream's own ldes:sequencePath; one c:TriplesView per member. LDES members are
+immutable, so a member's view is rendered once and never again."""@en ;
+    sem:slug "stream-members" .
+c:limit a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "How many members a c:StreamMembers shows (at most 16)."@en .
+c:StreamMembersRendering a sem:Rendering ; sem:targets c:StreamMembers ; sem:stratum 0 .
+c:StreamMembersRendering-fn a sem:Rule ; sem:implements c:StreamMembersRendering ; sem:function "streammembers" .
+# The newest c:limit members, newest first: from the head, beh:previous at most 16 steps (the
+# walk is unrolled; c:limit is capped at 16, as the function caps it), stopping at a member
+# that has retired. A stream without a head is ranked by its sequence path instead. Each
+# member's view is keyed by an MD5 of its IRI.
+c:StreamMembersRendering-sparql a sem:Rule ;
+    sem:implements c:StreamMembersRendering ;
+    sem:follows c:of ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:class ?emptyClass ; rdfhtml:hasChild ?view , ?emptyText .
+  ?view a c:TriplesView ; c:of ?member ; sem:orderKey ?rank .
+  ?emptyText a rdfhtml:Text ; rdfhtml:data ?empty .
+}
+WHERE {
+  $this c:of ?stream . FILTER(isIRI(?stream))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL {
+    {
+      $this c:of ?stream .
+      OPTIONAL { $this c:limit ?limitRawA }
+      BIND(COALESCE(xsd:double(?limitRawA), 8) AS ?wantedA)
+      BIND(IF(?wantedA > 16, 16, ?wantedA) AS ?limitA)
+      ?stream beh:latest ?m1 . FILTER(isIRI(?m1) && EXISTS { ?m1 a ?t1 })
+      LATERAL { OPTIONAL { ?m1 beh:previous ?m2 . FILTER EXISTS { ?m2 a ?t2 } LATERAL { OPTIONAL { ?m2 beh:previous ?m3 . FILTER EXISTS { ?m3 a ?t3 } LATERAL { OPTIONAL { ?m3 beh:previous ?m4 . FILTER EXISTS { ?m4 a ?t4 } LATERAL { OPTIONAL { ?m4 beh:previous ?m5 . FILTER EXISTS { ?m5 a ?t5 } LATERAL { OPTIONAL { ?m5 beh:previous ?m6 . FILTER EXISTS { ?m6 a ?t6 } LATERAL { OPTIONAL { ?m6 beh:previous ?m7 . FILTER EXISTS { ?m7 a ?t7 } LATERAL { OPTIONAL { ?m7 beh:previous ?m8 . FILTER EXISTS { ?m8 a ?t8 } LATERAL { OPTIONAL { ?m8 beh:previous ?m9 . FILTER EXISTS { ?m9 a ?t9 } LATERAL { OPTIONAL { ?m9 beh:previous ?m10 . FILTER EXISTS { ?m10 a ?t10 } LATERAL { OPTIONAL { ?m10 beh:previous ?m11 . FILTER EXISTS { ?m11 a ?t11 } LATERAL { OPTIONAL { ?m11 beh:previous ?m12 . FILTER EXISTS { ?m12 a ?t12 } LATERAL { OPTIONAL { ?m12 beh:previous ?m13 . FILTER EXISTS { ?m13 a ?t13 } LATERAL { OPTIONAL { ?m13 beh:previous ?m14 . FILTER EXISTS { ?m14 a ?t14 } LATERAL { OPTIONAL { ?m14 beh:previous ?m15 . FILTER EXISTS { ?m15 a ?t15 } LATERAL { OPTIONAL { ?m15 beh:previous ?m16 . FILTER EXISTS { ?m16 a ?t16 } } } } } } } } } } } } } } } } } } } } } } } } } } } } } } } 
+      VALUES ?i { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 }
+      BIND(COALESCE(IF(?i = 1, ?m1, ?none), IF(?i = 2, ?m2, ?none), IF(?i = 3, ?m3, ?none), IF(?i = 4, ?m4, ?none), IF(?i = 5, ?m5, ?none), IF(?i = 6, ?m6, ?none), IF(?i = 7, ?m7, ?none), IF(?i = 8, ?m8, ?none), IF(?i = 9, ?m9, ?none), IF(?i = 10, ?m10, ?none), IF(?i = 11, ?m11, ?none), IF(?i = 12, ?m12, ?none), IF(?i = 13, ?m13, ?none), IF(?i = 14, ?m14, ?none), IF(?i = 15, ?m15, ?none), IF(?i = 16, ?m16, ?none)) AS ?headMember)
+      FILTER(BOUND(?headMember) && ?i <= ?limitA)
+      BIND(?headMember AS ?member)
+      BIND(?i AS ?rank)
+    } UNION {
+      $this c:of ?stream .
+      OPTIONAL { $this c:limit ?limitRawB }
+      BIND(COALESCE(xsd:double(?limitRawB), 8) AS ?wantedB)
+      BIND(IF(?wantedB > 16, 16, ?wantedB) AS ?limitB)
+      FILTER NOT EXISTS { ?stream beh:latest ?head FILTER(isIRI(?head)) }
+      # The 16 newest by sequence (ties by IRI), and each one's rank among them: a sort, then
+      # 16 x 16 comparisons, not a comparison of every member with every other.
+      { SELECT ?member (SUM(IF(?otherSeq > ?memberSeq || (?otherSeq = ?memberSeq && STR(?other) < STR(?member)), 1, 0)) AS ?ahead) WHERE {
+        { SELECT ?member ?memberSeq WHERE {
+          $this c:of ?topStream . ?topStream tree:member ?member . FILTER(isIRI(?member))
+          OPTIONAL { ?topStream ldes:sequencePath ?topPath . ?member ?topPath ?memberSeqRaw }
+          BIND(COALESCE(xsd:double(?memberSeqRaw), 0) AS ?memberSeq)
+        } ORDER BY DESC(?memberSeq) ?member LIMIT 16 }
+        { SELECT ?other ?otherSeq WHERE {
+          $this c:of ?topStream . ?topStream tree:member ?other . FILTER(isIRI(?other))
+          OPTIONAL { ?topStream ldes:sequencePath ?topPath . ?other ?topPath ?otherSeqRaw }
+          BIND(COALESCE(xsd:double(?otherSeqRaw), 0) AS ?otherSeq)
+        } ORDER BY DESC(?otherSeq) ?other LIMIT 16 }
+      } GROUP BY ?member }
+      FILTER(?ahead < ?limitB)
+      BIND(?ahead + 1 AS ?rank)
+    }
+    BIND(IRI(CONCAT(STR($this), "/~m-", SUBSTR(MD5(STR(?member)), 1, 8))) AS ?view)
+  }
+  BIND(IF(BOUND(?view), ?none, "sem-empty") AS ?emptyClass)
+  OPTIONAL { ?pickeAt l10n:of $this ; l10n:emptyText ?picke }
+  OPTIONAL { FILTER(!BOUND(?picke)) $this c:emptyText ?anye FILTER(isLiteral(?anye)) }
+  BIND(STR(COALESCE(?picke, ?anye)) AS ?ownEmpty)
+  BIND(IF(BOUND(?view), ?none, COALESCE(?ownEmpty, "No members yet.")) AS ?empty)
+  BIND(IF(BOUND(?view), ?none, IRI(CONCAT(STR($this), "/~empty"))) AS ?emptyText)
+}""" .
+
+c:TriplesView a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "The triples about one node (c:of) as syntax-colored Turtle."@en ;
+    sem:slug "triples-view" .
+c:TriplesViewRendering a sem:Rendering ; sem:targets c:TriplesView ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it colors the Turtle it prints for the node's triples, token by token." ;
+    sem:needsExtension sx:Matches .
+c:TriplesViewRendering-fn a sem:Rule ; sem:implements c:TriplesViewRendering ; sem:function "triplesview" .

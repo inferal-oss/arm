@@ -1,0 +1,59 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# What well-formed month grids, date fields, date ranges and time fields look like
+# (ontology/components/dates.ttl), checked by the component shapes layer. The values they edit are
+# bounded by the app's own property shapes (val:validates: sh:datatype, sh:minInclusive,
+# sh:maxInclusive, sh:lessThanOrEquals), which the validation layer checks and the grid and the
+# list of times keep to.
+
+# Every dated component: a locale that is a tag, today a date.
+c:DatedShape a sh:NodeShape ; sh:targetClass l10n:Dated ;
+    sh:property [ sh:path l10n:locale ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$" ;
+                  sh:message "A locale is one BCP 47 tag (\"en-GB\")." ] ,
+                [ sh:path c:today ; sh:maxCount 1 ; sh:datatype xsd:date ; sh:message "Today is one xsd:date." ] .
+
+# What a control of dates edits: a property (and a range's end) of one node.
+c:MonthGridShape a sh:NodeShape ; sh:targetClass c:MonthGrid ;
+    sh:property [ sh:path c:controls ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A month grid sets a property of one node (c:controls)." ] ,
+                [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A month grid sets one property (c:property)." ] ,
+                [ sh:path c:endProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:firstDayOfWeek ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 7 ;
+                  sh:message "The first day of the week is 1 (Monday) to 7 (Sunday)." ] ,
+                [ sh:path c:shownMonth ; sh:maxCount 1 ; sh:datatype xsd:gYearMonth ] ,
+                [ sh:path c:activeDate ; sh:maxCount 1 ; sh:datatype xsd:date ] ,
+                [ sh:path c:previewDate ; sh:maxCount 1 ; sh:datatype xsd:date ] ,
+                [ sh:path c:gridFocus ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .
+
+c:DateFieldShape a sh:NodeShape ; sh:targetClass c:DateField ;
+    sh:property [ sh:path c:controls ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A date field edits a property of one node (c:controls)." ] ,
+                [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A date field edits one property (c:property)." ] ,
+                [ sh:path c:firstDayOfWeek ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 7 ;
+                  sh:message "The first day of the week is 1 (Monday) to 7 (Sunday)." ] ,
+                [ sh:path c:value ; sh:maxCount 1 ] ,
+                [ sh:path c:endValue ; sh:maxCount 1 ] ,
+                [ sh:path c:expanded ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .
+
+c:DateRangeFieldShape a sh:NodeShape ; sh:targetClass c:DateRangeField ;
+    sh:property [ sh:path c:endProperty ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A date range names the property of its end (c:endProperty)." ] .
+
+c:TimeFieldShape a sh:NodeShape ; sh:targetClass c:TimeField ;
+    sh:property [ sh:path c:controls ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A time field edits a property of one node (c:controls)." ] ,
+                [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A time field edits one property (c:property)." ] ,
+                [ sh:path c:minuteStep ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:in ( 1 2 3 4 5 6 10 12 15 20 30 60 ) ;
+                  sh:message "The minutes between listed times divide an hour (5, 10, 15, 30, 60…)." ] ,
+                [ sh:path c:value ; sh:maxCount 1 ] ,
+                [ sh:path c:expanded ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:activeTime ; sh:maxCount 1 ; sh:datatype xsd:time ] .

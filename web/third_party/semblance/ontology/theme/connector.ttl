@@ -1,0 +1,97 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for connectors and canvases (ontology/components/connector.ttl).
+#
+# A connector is a canvas over its positioned container, off the hit-testing path; the host
+# writes its paths, and it stays invisible until it has (data-sem-drawn). Its ink is the accent,
+# or its tone's solid colour; a solid emphasis draws it heavier. A dashed line is dashed.
+
+[] a sty:StyleRule ; sty:appliesTo c:Connector ;
+    sty:declares [ sty:property "--sem-connector-ink" ; sty:token tok:accent ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "overflow" ; sty:raw "visible" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:state "[data-sem-tone]" ;
+    sty:declares [ sty:property "--sem-connector-ink" ; sty:raw "var(--tone-solid)" ] .
+# An emphasis weighs the line, not a box: the variants' fill of a solid control does not apply.
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:when sty:Solid ;
+    sty:declares [ sty:property "background" ; sty:raw "none" ] ,
+                 [ sty:property "border-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:state ":not([data-sem-drawn])" ;
+    sty:declares [ sty:property "visibility" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:part ".sem-connector-line" ;
+    sty:declares [ sty:property "fill" ; sty:raw "none" ] ,
+                 [ sty:property "stroke" ; sty:raw "var(--sem-connector-ink)" ] ,
+                 [ sty:property "stroke-width" ; sty:raw "1.6" ] ,
+                 [ sty:property "stroke-linecap" ; sty:raw "round" ] ,
+                 [ sty:property "stroke-linejoin" ; sty:raw "round" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.82" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:part ":is(.sem-connector-head, .sem-connector-start)" ;
+    sty:declares [ sty:property "fill" ; sty:raw "var(--sem-connector-ink)" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.82" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:part ".sem-connector-leader" ;
+    sty:declares [ sty:property "fill" ; sty:raw "none" ] ,
+                 [ sty:property "stroke" ; sty:raw "var(--sem-connector-ink)" ] ,
+                 [ sty:property "stroke-width" ; sty:raw "1.2" ] ,
+                 [ sty:property "stroke-dasharray" ; sty:raw "1.5 3" ] ,
+                 [ sty:property "stroke-linecap" ; sty:raw "round" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.55" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:state "[data-sem-line=dashed]" ; sty:part ".sem-connector-line" ;
+    sty:declares [ sty:property "stroke-dasharray" ; sty:raw "4 3" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:state "[data-sem-emphasis=solid]" ; sty:part ".sem-connector-line" ;
+    sty:declares [ sty:property "stroke-width" ; sty:raw "2.4" ] ,
+                 [ sty:property "opacity" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:state "[data-sem-emphasis=solid]" ; sty:part ":is(.sem-connector-head, .sem-connector-start)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Connector ; sty:state "[data-sem-emphasis=solid]" ; sty:part ".sem-connector-leader" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.9" ] .
+
+# --- a canvas: its components in flow until placed, the connectors over them -----------------------
+
+[] a sty:StyleRule ; sty:appliesTo c:Canvas ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "justify-content" ; sty:raw "space-between" ] ,
+                 [ sty:property "align-items" ; sty:raw "flex-start" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-5 ] ,
+                 [ sty:property "padding" ; sty:token tok:space-4 ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "min-height" ; sty:raw "200px" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "border" ; sty:raw "1px dashed var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] .
+[] a sty:StyleRule ; sty:appliesTo c:Canvas ; sty:part "> .sem-canvas-grip" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "right" ; sty:raw "0" ] ,
+                 [ sty:property "bottom" ; sty:raw "0" ] ,
+                 [ sty:property "width" ; sty:raw "18px" ] ,
+                 [ sty:property "height" ; sty:raw "18px" ] ,
+                 [ sty:property "cursor" ; sty:raw "nwse-resize" ] ,
+                 [ sty:property "touch-action" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "3" ] ,
+                 [ sty:property "background" ; sty:raw "linear-gradient(135deg, transparent 0 55%, var(--sem-border-strong, var(--sem-border)) 55% 62%, transparent 62% 72%, var(--sem-border-strong, var(--sem-border)) 72% 79%, transparent 79%)" ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:CanvasItem ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "cursor" ; sty:raw "grab" ] ,
+                 [ sty:property "touch-action" ; sty:raw "none" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CanvasItem ; sty:state "[data-sem-placed]" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CanvasItem ; sty:state ":active" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "grabbing" ] .

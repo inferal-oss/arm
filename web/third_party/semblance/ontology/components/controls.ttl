@@ -1,0 +1,1288 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+
+# Selection controls. Their state lives in the graph (c:selected, or the
+# controlled property itself); selecting is an RDF event handled by a reaction.
+# Rendered buttons carry `c:selects <option>` so reactions can tell, from the
+# event's beh:node (or any RDF/HTML ancestor of it: rdfhtml:hasChild*), which
+# option was hit.
+
+c:selects a owl:ObjectProperty ;
+    rdfs:comment "On a rendered element: the option or tab that activating it selects."@en .
+
+# --- Tabs ----------------------------------------------------------------------------
+
+c:Tabs a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Panels of which one is shown at a time."@en ;
+    sem:slug "tabs" .
+c:Tab a owl:Class ; rdfs:comment "A panel of a c:Tabs: a label plus either a component (c:content) or a host-owned slot (c:slot)."@en .
+c:tabs a owl:ObjectProperty ; rdfs:domain c:Tabs ; rdfs:range rdf:List .
+c:selected a owl:ObjectProperty ; rdfs:domain c:Tabs ; rdfs:range c:Tab .
+c:content a owl:ObjectProperty ; rdfs:domain c:Tab ; rdfs:range sem:Component .
+c:slot a owl:DatatypeProperty ; rdfs:comment "Name of a host-owned slot (a tab's panel, a c:HostSlot): the host mounts its own content into renderer.slot(name)."@en .
+
+c:TabsRendering a sem:Rendering ;
+    sem:targets c:Tabs ;
+    sem:stratum 0 .
+c:TabsRendering-fn a sem:Rule ;
+    sem:implements c:TabsRendering ;
+    sem:function "tabs" .
+# SPARQL twins of the "tabs" function (src/components/functions.ts). They read the members of the
+# c:tabs list (a tab's c:detached, its label and content), following the list to them.
+c:TabsRendering-sparql-screen a sem:Rule ;
+    sem:implements c:TabsRendering ;
+    sem:modality mod:Screen ;
+    sem:follows ( c:tabs [ sem:zeroOrMore rdf:rest ] rdf:first ) , ( [ sem:inverse c:primary ] ) , ( [ sem:inverse c:secondary ] ) , ( [ sem:inverse c:rootTile ] ) ;
+    sem:watches rdf:type , c:tabs , c:selected , c:detachable , c:windowsOn , c:detached , c:content , c:slot , c:label , rdfs:label , rdf:first , rdf:rest ,
+                c:primary , c:secondary , c:rootTile ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?list , ?panel , ?looseWindow , ?splitZone .
+  ?list a rdfhtml:Div ; sem:orderKey "-1" ; rdfhtml:attribute ?listRole ; rdfhtml:hasChild ?listItem , ?detach .
+  ?listItem sem:orderKey ?buttonKey .
+  ?handle a c:TabHandle , dnd:Draggable ; c:of ?tab ; dnd:carries ?tab ; dnd:name ?handleName .
+  ?button sem:renders ?handle .
+  $this dnd:zone ?paneZone , ?splitZone .
+  ?paneZone dnd:receptacle $this ; c:label ?paneName .
+  ?splitZone a rdfhtml:Div ; rdfhtml:class "sem-split-zone" ; sem:orderKey ?zoneKey ; rdfhtml:attribute ?zoneHidden , ?zoneEdge ;
+             dnd:receptacle ?splitZone ; c:splitsAt ?edge ; c:label ?edgeSaid .
+  ?zoneHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?zoneEdge a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-edge" ; rdfhtml:attributeValue ?edgeSlug .
+  ?listRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tablist" .
+  ?list rdfhtml:attribute ?tearDistanceAttr , ?tearCueAttr , ?tearBackCueAttr , ?returnCueAttr ; c:gathers ?gathered .
+  ?tearDistanceAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-tear-distance" ; rdfhtml:attributeValue ?tearDistance .
+  ?tearCueAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-tear-cue" ; rdfhtml:attributeValue ?tearCue .
+  ?tearBackCueAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-tear-back-cue" ; rdfhtml:attributeValue ?tearBackCue .
+  ?returnCueAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-return-cue" ; rdfhtml:attributeValue ?returnCue .
+  ?button rdfhtml:attribute ?tearGesture , ?tearKeys ; c:tearsOff ?tearTab ; c:tearsInto ?tearWindow .
+  ?tearGesture a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-gesture" ; rdfhtml:attributeValue "tear" .
+  ?tearKeys a rdfhtml:Attribute ; rdfhtml:attributeName "aria-keyshortcuts" ; rdfhtml:attributeValue "Shift+Enter" .
+  ?button a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:id ?tabId ; rdfhtml:tabIndex ?tabIndex ;
+          rdfhtml:attribute ?roleAttr , ?selectedAttr , ?controlsAttr ; c:selects ?tab ; rdfhtml:hasChild ?tabLabel .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tab" .
+  ?selectedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-selected" ; rdfhtml:attributeValue ?onText .
+  ?controlsAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?panelId .
+  ?tabLabel a rdfhtml:Span ; rdfhtml:class "sem-tab-label" ; rdfhtml:hasChild ?tabLabelText .
+  ?tabLabelText a rdfhtml:Text ; rdfhtml:data ?shownName .
+  ?detach a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-detach" ; sem:orderKey ?detachKey ;
+          rdfhtml:attribute ?detachLabelAttr ; sem:tooltip ?detachLabel ; c:detaches ?tab ; rdfhtml:hasChild ?detachText .
+  ?detachLabelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?detachLabel .
+  ?detachText a rdfhtml:Text ; rdfhtml:data "\u29C9" .
+  ?panel a rdfhtml:Div ; rdfhtml:id ?panelId ; rdfhtml:hidden ?panelHidden ; sem:orderKey ?panelKey ;
+         rdfhtml:attribute ?panelRole , ?panelBy ; rdfhtml:hasChild ?panelContent .
+  ?panelRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tabpanel" .
+  ?panelBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?tabId .
+  ?slotEl a rdfhtml:Div ; sem:slot ?slot .
+  ?window a c:Window ; c:title ?windowTitle ; c:index ?index ; prov:wasDerivedFrom ?windowTab ; c:body ?windowBody .
+  ?looseWindow sem:orderKey ?windowKey .
+  ?desktop c:hosts ?hostedWindow .
+}
+WHERE {
+  $this c:tabs ?tabList .
+  BIND(IRI(CONCAT(STR($this), "/~", "root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~", "tablist")) AS ?list)
+  BIND(IRI(CONCAT(STR($this), "/~", "tablist-role")) AS ?listRole)
+  BIND(EXISTS { $this c:detachable ?detachableFlag FILTER(STR(?detachableFlag) = "true") } AS ?detachable)
+  # Sortable tabs (dnd:Sortable): each attached tab is dragged by its button, the root of a
+  # c:TabHandle carrying it, and is not torn off by dragging. A pane of a tiled workspace (below its
+  # c:rootTile, through split views) takes tabs as a whole and splits at its edges.
+  BIND(EXISTS { $this a dnd:Sortable } AS ?sortable)
+  BIND(?sortable && EXISTS { ?workspace a c:TiledWorkspace ; c:rootTile ?top . ?top (c:primary|c:secondary)* $this } AS ?pane)
+  OPTIONAL { SELECT (GROUP_CONCAT(?paneTabName; separator=", ") AS ?paneNames) WHERE {
+    { SELECT ?paneTabName WHERE {
+      $this c:tabs/rdf:rest* ?paneCell . ?paneCell rdf:first ?paneTab . FILTER(isIRI(?paneTab))
+      FILTER NOT EXISTS { ?paneTab c:detached ?paneDetached FILTER(STR(?paneDetached) = "true") }
+      { SELECT ?paneCell (COUNT(?paneBefore) AS ?paneAt) WHERE { $this c:tabs/rdf:rest* ?paneBefore . ?paneBefore rdf:rest* ?paneCell } GROUP BY ?paneCell }
+      OPTIONAL { ?paneTab l10n:label ?paneC0 }
+      OPTIONAL { FILTER(!BOUND(?paneC0)) ?paneC1At l10n:of ?paneTab ; l10n:label ?paneC1 }
+      OPTIONAL { FILTER(!BOUND(?paneC0) && !BOUND(?paneC1)) ?paneTab c:label ?paneC2 FILTER(isLiteral(?paneC2)) }
+      OPTIONAL { ?paneR0At l10n:of ?paneTab ; l10n:name ?paneR0 }
+      OPTIONAL { FILTER(!BOUND(?paneR0)) ?paneTab rdfs:label ?paneR1 FILTER(isLiteral(?paneR1)) }
+      BIND(STR(COALESCE(?paneC0, ?paneC1, ?paneC2, ?paneR0, ?paneR1, REPLACE(STR(?paneTab), "^.*[#/]", ""))) AS ?paneTabName)
+    } ORDER BY ?paneAt }
+  } }
+  BIND(IF(?pane, IRI(CONCAT(STR($this), "/~root")), ?none) AS ?paneZone)
+  BIND(IF(?pane && COALESCE(?paneNames, "") != "", ?paneNames, ?none) AS ?paneName)
+  OPTIONAL {
+    FILTER(?pane)
+    VALUES (?edge ?edgeAt) { (c:StartEdge 0) (c:EndEdge 1) (c:TopEdge 2) (c:BottomEdge 3) }
+    ?edge sem:slug ?edgeSlug0 .
+    OPTIONAL { ?edgeSaidAt l10n:of ?edge ; l10n:splitLabel ?edgeSaid0 }
+    OPTIONAL { FILTER(!BOUND(?edgeSaid0)) ?edge c:splitLabel ?edgeSaid1 FILTER(isLiteral(?edgeSaid1)) }
+    BIND(STR(?edgeSlug0) AS ?edgeSlug)
+    BIND(STR(COALESCE(?edgeSaid0, ?edgeSaid1)) AS ?edgeSaid)
+    BIND(IRI(CONCAT(STR($this), "/~split-", ?edgeSlug)) AS ?splitZone)
+    BIND(IRI(CONCAT(STR($this), "/~split-", ?edgeSlug, "-aria-hidden")) AS ?zoneHidden)
+    BIND(IRI(CONCAT(STR($this), "/~split-", ?edgeSlug, "-data-sem-edge")) AS ?zoneEdge)
+    BIND(200000 + ?edgeAt AS ?zoneKey)
+  }
+  # How far out a tab tears off, and what the ghost that follows it says (detachable tabs only).
+  OPTIONAL { c:Tabs c:tearDistance ?tearDistanceRaw }
+  BIND(COALESCE(STR(?tearDistanceRaw), "24") AS ?tearDistance)
+  OPTIONAL { ?picktcAt l10n:of c:TearOffCue ; l10n:name ?picktc }
+  OPTIONAL { FILTER(!BOUND(?picktc)) c:TearOffCue rdfs:label ?anytc FILTER(isLiteral(?anytc)) }
+  BIND(STR(COALESCE(?picktc, ?anytc)) AS ?tearCuePhrase)
+  OPTIONAL { ?picktbAt l10n:of c:TearBackCue ; l10n:name ?picktb }
+  OPTIONAL { FILTER(!BOUND(?picktb)) c:TearBackCue rdfs:label ?anytb FILTER(isLiteral(?anytb)) }
+  BIND(STR(COALESCE(?picktb, ?anytb)) AS ?tearBackPhrase)
+  OPTIONAL { ?pickrcAt l10n:of c:ReturnCue ; l10n:name ?pickrc }
+  OPTIONAL { FILTER(!BOUND(?pickrc)) c:ReturnCue rdfs:label ?anyrc FILTER(isLiteral(?anyrc)) }
+  BIND(STR(COALESCE(?pickrc, ?anyrc)) AS ?returnPhrase)
+  BIND(COALESCE(?tearCuePhrase, "Release to open in a window") AS ?tearCue)
+  BIND(COALESCE(?tearBackPhrase, "Release to keep it a tab") AS ?tearBackCue)
+  BIND(IF(?detachable, IRI(CONCAT(STR($this), "/~", "tablist-data-sem-tear-distance")), ?none) AS ?tearDistanceAttr)
+  BIND(IF(?detachable, IRI(CONCAT(STR($this), "/~", "tablist-data-sem-tear-cue")), ?none) AS ?tearCueAttr)
+  BIND(IF(?detachable, IRI(CONCAT(STR($this), "/~", "tablist-data-sem-tear-back-cue")), ?none) AS ?tearBackCueAttr)
+  # (A subquery, not EXISTS over the list path, which Oxigraph evaluates slowly.)
+  OPTIONAL { SELECT ?anyDetached WHERE { $this c:tabs/rdf:rest* ?detachedCell . ?detachedCell rdf:first ?anyDetached . ?anyDetached c:detached ?dflag FILTER(STR(?dflag) = "true") } LIMIT 1 }
+  BIND(IF(?detachable && BOUND(?anyDetached),
+       IRI(CONCAT(STR($this), "/~", "tablist-data-sem-return-cue")), ?none) AS ?returnCueAttr)
+  BIND(COALESCE(?returnPhrase, "Release to return it to its tab") AS ?returnCue)
+  OPTIONAL { $this c:windowsOn ?desktop0 FILTER(isIRI(?desktop0)) }
+  # (A join, not FILTER EXISTS over the list path: Oxigraph evaluates that one slowly.)
+  OPTIONAL { $this c:selected ?chosen ; c:tabs/rdf:rest* ?chosenCell . ?chosenCell rdf:first ?chosen .
+    FILTER NOT EXISTS { ?chosen c:detached ?chosenDetached FILTER(STR(?chosenDetached) = "true") } }
+  OPTIONAL { SELECT ?first WHERE {
+    $this c:tabs/rdf:rest* ?firstCell . ?firstCell rdf:first ?first . FILTER(isIRI(?first))
+    FILTER NOT EXISTS { ?first c:detached ?firstDetached FILTER(STR(?firstDetached) = "true") }
+    { SELECT ?firstCell (COUNT(?before) AS ?firstAt) WHERE { $this c:tabs/rdf:rest* ?before . ?before rdf:rest* ?firstCell } GROUP BY ?firstCell }
+  } ORDER BY ?firstAt LIMIT 1 }
+  BIND(COALESCE(?chosen, ?first) AS ?selected)
+  OPTIONAL {
+    $this c:tabs/rdf:rest* ?cell . ?cell rdf:first ?tab . FILTER(isIRI(?tab))
+    { SELECT ?cell (COUNT(?before) - 1 AS ?index) WHERE { $this c:tabs/rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(EXISTS { ?tab c:detached ?flag FILTER(STR(?flag) = "true") } AS ?detached)
+    BIND(ENCODE_FOR_URI(STR(?tab)) AS ?key)
+    LATERAL { OPTIONAL { SELECT ?tab ?c WHERE {
+  
+  OPTIONAL { ?tab l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?tab ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?tab c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+    LATERAL { OPTIONAL { SELECT ?tab ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?tab ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?tab rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+    BIND(COALESCE(?c, ?r, REPLACE(STR(?tab), "^.*[#/]", "")) AS ?name)
+    OPTIONAL { ?tab c:content ?component FILTER(isIRI(?component)) }
+    OPTIONAL { ?tab c:slot ?slotRaw }
+    BIND(IF(!BOUND(?component) && BOUND(?slotRaw), IRI(CONCAT(STR($this), "/~slot-", ?key)), ?none) AS ?slotEl)
+    BIND(IF(BOUND(?slotEl), STR(?slotRaw), ?none) AS ?slot)
+    BIND(COALESCE(?component, ?slotEl) AS ?content)
+  }
+  BIND(BOUND(?tab) && !?detached AS ?attached)
+  BIND(?attached && ?tab = ?selected AS ?on)
+  # An attached tab: its button (and detach control) in the list, and its panel.
+  BIND(IF(?attached && ?sortable, IRI(CONCAT(STR($this), "/~", CONCAT("drag-", ?key))), ?none) AS ?handle)
+  BIND(IF(BOUND(?handle), ?name, ?none) AS ?handleName)
+  # The button's own name (its attributes are named after it): a handle's root, else the tab's.
+  BIND(IF(?sortable, CONCAT("drag-", ?key, "/~root"), CONCAT("tab-", ?key)) AS ?b)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", ?b)), ?none) AS ?button)
+  BIND(COALESCE(?handle, ?button) AS ?listItem)
+  BIND(STR(IRI(CONCAT(STR($this), "/~", CONCAT("tab-", ?key)))) AS ?tabId)
+  # A detachable tab tears off into its window: dragged out of the list, or Shift+Enter.
+  BIND(IF(?attached && ?detachable && !?sortable, IRI(CONCAT(STR($this), "/~", CONCAT(?b, "-data-sem-gesture"))), ?none) AS ?tearGesture)
+  BIND(IF(?attached && ?detachable, IRI(CONCAT(STR($this), "/~", CONCAT(?b, "-aria-keyshortcuts"))), ?none) AS ?tearKeys)
+  BIND(IF(?attached && ?detachable, ?tab, ?none) AS ?tearTab)
+  BIND(IF(?attached && ?detachable, IRI(CONCAT(STR($this), "/~", CONCAT("window-", ?key))), ?none) AS ?tearWindow)
+  BIND(IF(?on, "0", "-1") AS ?tabIndex)
+  BIND(?index * 2 AS ?buttonKey)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT(?b, "-role"))), ?none) AS ?roleAttr)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT(?b, "-aria-selected"))), ?none) AS ?selectedAttr)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT(?b, "-aria-controls"))), ?none) AS ?controlsAttr)
+  BIND(IF(?on, "true", "false") AS ?onText)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT("tab-", ?key, "-name"))), ?none) AS ?tabLabel)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT("tab-", ?key, "-label"))), ?none) AS ?tabLabelText)
+  BIND(IF(?attached, ?name, ?none) AS ?shownName)
+  BIND(IF(?attached && ?detachable, IRI(CONCAT(STR($this), "/~", CONCAT("detach-", ?key))), ?none) AS ?detach)
+  BIND(?index * 2 + 1 AS ?detachKey)
+  BIND(IF(BOUND(?detach), IRI(CONCAT(STR($this), "/~", CONCAT("detach-", ?key, "-aria-label"))), ?none) AS ?detachLabelAttr)
+  BIND(IF(BOUND(?detach), IRI(CONCAT(STR($this), "/~", CONCAT("detach-", ?key, "-label"))), ?none) AS ?detachText)
+  BIND(CONCAT("Open ", ?name, " in a window") AS ?detachLabel)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT("panel-", ?key))), ?none) AS ?panel)
+  BIND(STR(IRI(CONCAT(STR($this), "/~", CONCAT("panel-", ?key)))) AS ?panelId)
+  BIND(IF(?on, ?none, "") AS ?panelHidden)
+  BIND(?index AS ?panelKey)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT("panel-", ?key, "-role"))), ?none) AS ?panelRole)
+  BIND(IF(?attached, IRI(CONCAT(STR($this), "/~", CONCAT("panel-", ?key, "-aria-labelledby"))), ?none) AS ?panelBy)
+  BIND(IF(?attached, ?content, ?none) AS ?panelContent)
+  # A detached tab: a window derived from it, on the desktop the tabs name (else inside the tabs).
+  BIND(IF(BOUND(?tab) && ?detached, IRI(CONCAT(STR($this), "/~", CONCAT("window-", ?key))), ?none) AS ?window)
+  # (After ?window: a BIND sees only what is bound before it.)
+  BIND(IF(?detachable && BOUND(?tab) && ?detached, ?window, ?none) AS ?gathered)
+  BIND(IF(BOUND(?window), ?name, ?none) AS ?windowTitle)
+  BIND(IF(BOUND(?window), ?tab, ?none) AS ?windowTab)
+  BIND(IF(BOUND(?window), ?content, ?none) AS ?windowBody)
+  BIND(IF(BOUND(?window) && BOUND(?desktop0), ?window, ?none) AS ?hostedWindow)
+  BIND(IF(BOUND(?hostedWindow), ?desktop0, ?none) AS ?desktop)
+  BIND(IF(BOUND(?window) && !BOUND(?desktop0), ?window, ?none) AS ?looseWindow)
+  BIND(100000 + ?index AS ?windowKey)
+}""" .
+c:TabsRendering-sparql-text a sem:Rule ;
+    sem:implements c:TabsRendering ;
+    sem:modality mod:Text ;
+    sem:follows ( c:tabs [ sem:zeroOrMore rdf:rest ] rdf:first ) ;
+    sem:watches rdf:type , c:tabs , c:selected , c:detachable , c:windowsOn , c:detached , c:content , c:slot , c:label , rdfs:label , rdf:first , rdf:rest ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?list .
+  ?list a rdfhtml:Div ; rdfhtml:hasChild ?span .
+  ?span a rdfhtml:Span ; sem:orderKey ?index ; rdfhtml:hasChild ?spanText .
+  ?spanText a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this c:tabs ?tabList .
+  BIND(IRI(CONCAT(STR($this), "/~", "root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~", "tablist")) AS ?list)
+  # (A join, not FILTER EXISTS over the list path: Oxigraph evaluates that one slowly.)
+  OPTIONAL { $this c:selected ?chosen ; c:tabs/rdf:rest* ?chosenCell . ?chosenCell rdf:first ?chosen .
+    FILTER NOT EXISTS { ?chosen c:detached ?chosenDetached FILTER(STR(?chosenDetached) = "true") } }
+  OPTIONAL { SELECT ?first WHERE {
+    $this c:tabs/rdf:rest* ?firstCell . ?firstCell rdf:first ?first . FILTER(isIRI(?first))
+    FILTER NOT EXISTS { ?first c:detached ?firstDetached FILTER(STR(?firstDetached) = "true") }
+    { SELECT ?firstCell (COUNT(?before) AS ?firstAt) WHERE { $this c:tabs/rdf:rest* ?before . ?before rdf:rest* ?firstCell } GROUP BY ?firstCell }
+  } ORDER BY ?firstAt LIMIT 1 }
+  BIND(COALESCE(?chosen, ?first) AS ?selected)
+  OPTIONAL {
+    $this c:tabs/rdf:rest* ?cell . ?cell rdf:first ?tab . FILTER(isIRI(?tab))
+    { SELECT ?cell (COUNT(?before) - 1 AS ?index) WHERE { $this c:tabs/rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(EXISTS { ?tab c:detached ?flag FILTER(STR(?flag) = "true") } AS ?detached)
+    BIND(ENCODE_FOR_URI(STR(?tab)) AS ?key)
+    LATERAL { OPTIONAL { SELECT ?tab ?c WHERE {
+  
+  OPTIONAL { ?tab l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?tab ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?tab c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+    LATERAL { OPTIONAL { SELECT ?tab ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?tab ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?tab rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+    BIND(COALESCE(?c, ?r, REPLACE(STR(?tab), "^.*[#/]", "")) AS ?name)
+    
+  }
+  BIND(IF(BOUND(?tab), IRI(CONCAT(STR($this), "/~", CONCAT("tab-", ?key))), ?none) AS ?span)
+  BIND(IF(BOUND(?tab), IRI(CONCAT(STR($this), "/~", CONCAT("tab-", ?key, "-label"))), ?none) AS ?spanText)
+  BIND(IF(?detached, CONCAT(" ", ?name, "\u2197 "), IF(?tab = ?selected, CONCAT("[", ?name, "]"), CONCAT(" ", ?name, " "))) AS ?line)
+}""" .
+
+c:TabsSelect a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Tabs ;
+    beh:deletes """CONSTRUCT { $this c:selected ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?tab . $this c:selected ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:selected ?tab } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?tab }""" ;
+    sem:function "tabs:select" .
+
+# Sortable tabs (a c:Tabs that is also a dnd:Sortable): each attached tab's button is the root of
+# a c:TabHandle the tabs mint, a draggable carrying the tab, and the tabs are a drop target receiving
+# into themselves. A tab dropped on other tabs moves there, last, and is selected; the tabs it left
+# drop it from their list (and their selection, which then falls back to their first tab). Its IRI,
+# its content and its slot stay, so whatever it shows keeps its state. A drop that empties the tabs
+# it came from asks them to close (c:CloseTile), which a tiled workspace does (panes.ttl). Such a tab
+# is not torn off by dragging (that gesture is the drag's); its window control and Shift+Enter still
+# open it in a window.
+c:TabHandle a owl:Class ; rdfs:subClassOf dnd:Draggable ;
+    rdfs:comment "Minted by sortable c:Tabs: one attached tab's button, as a draggable carrying the tab (c:of)."@en .
+# The tabs keep their roving tab stop: the drag layer gives a handle none of its own.
+c:TabHandle dnd:keepsFocus true .
+c:CloseTile a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment "Raised on a component that no longer has anything to show (tabs whose last tab moved away): its container may close it."@en .
+
+# Into these tabs: the tab, last in the list (a new cell, <tabs>/~cell-<md5 of the tab>), selected.
+c:TabsReceive a beh:Reaction ;
+    beh:when dnd:Drop ;
+    beh:sourceClass c:Tabs ;
+    beh:deletes """CONSTRUCT { $this c:tabs ?empty . ?last rdf:rest rdf:nil . $this c:selected ?old }
+WHERE {
+  $event dnd:into $this ; dnd:carrying ?tab . ?tab a c:Tab .
+  FILTER EXISTS { ?src c:tabs/rdf:rest*/rdf:first ?tab FILTER(?src != $this) }
+  BIND(IF(EXISTS { $this c:tabs rdf:nil }, rdf:nil, ?none) AS ?empty)
+  OPTIONAL { $this c:tabs/rdf:rest* ?last . ?last rdf:rest rdf:nil }
+  OPTIONAL { $this c:selected ?old }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:tabs ?head . ?last rdf:rest ?cell . ?cell rdf:first ?tab ; rdf:rest rdf:nil . $this c:selected ?tab }
+WHERE {
+  $event dnd:into $this ; dnd:carrying ?tab . ?tab a c:Tab .
+  FILTER EXISTS { ?src c:tabs/rdf:rest*/rdf:first ?tab FILTER(?src != $this) }
+  BIND(IRI(CONCAT(STR($this), "/~cell-", MD5(STR(?tab)))) AS ?cell)
+  BIND(IF(EXISTS { $this c:tabs rdf:nil }, ?cell, ?none) AS ?head)
+  OPTIONAL { $this c:tabs/rdf:rest* ?last . ?last rdf:rest rdf:nil }
+}""" ;
+    sem:function "tabs:receive" .
+
+# Out of the tabs it was in: its cell is unlinked (and its selection there dropped), whenever it
+# goes elsewhere - into other tabs, or beside these ones (a drop on an edge of a tiled workspace's
+# pane, ?zone c:splitsAt an edge), unless it is these tabs' only one. Emptied tabs are asked to close.
+c:TabsTake a beh:Reaction ;
+    beh:when dnd:Drop ;
+    beh:sourceClass c:Tabs ;
+    beh:deletes """CONSTRUCT { ?cell rdf:first ?tab ; rdf:rest ?next . ?src c:tabs ?head . ?prev rdf:rest ?cell . ?src c:selected ?selected }
+WHERE {
+  $event dnd:carrying ?tab ; dnd:into ?into . ?tab a c:Tab .
+  ?src c:tabs/rdf:rest* ?cell . ?cell rdf:first ?tab ; rdf:rest ?next .
+  BIND(EXISTS { ?into c:splitsAt ?edge } AS ?beside)
+  BIND(NOT EXISTS { ?src c:tabs/rdf:rest*/rdf:first ?other FILTER(?other != ?tab) } AS ?only)
+  FILTER(IF(?beside, ?src != $this || !?only, ?into = $this && ?src != $this))
+  BIND(IF(EXISTS { ?src c:tabs ?cell }, ?cell, ?none) AS ?head)
+  BIND(IF(EXISTS { ?src c:selected ?tab }, ?tab, ?none) AS ?selected)
+  OPTIONAL { ?prev rdf:rest ?cell }
+}""" ;
+    beh:inserts """CONSTRUCT { ?src c:tabs ?head . ?prev rdf:rest ?next . ?src beh:raise ?close }
+WHERE {
+  $event dnd:carrying ?tab ; dnd:into ?into . ?tab a c:Tab .
+  ?src c:tabs/rdf:rest* ?cell . ?cell rdf:first ?tab ; rdf:rest ?next .
+  BIND(EXISTS { ?into c:splitsAt ?edge } AS ?beside)
+  BIND(NOT EXISTS { ?src c:tabs/rdf:rest*/rdf:first ?other FILTER(?other != ?tab) } AS ?only)
+  FILTER(IF(?beside, ?src != $this || !?only, ?into = $this && ?src != $this))
+  BIND(IF(EXISTS { ?src c:tabs ?cell }, ?next, ?none) AS ?head)
+  BIND(IF(?only, c:CloseTile, ?none) AS ?close)
+  OPTIONAL { ?prev rdf:rest ?cell }
+}""" ;
+    sem:function "tabs:take" .
+
+# --- Segmented control -------------------------------------------------------------------
+
+c:Segmented a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Sets one property (c:property) of one node (c:controls). The options are not
+configured: they are the individuals in the property's rdfs:range, ordered by sem:order,
+labelled by rdfs:label and sem:symbol."""@en ;
+    sem:slug "segmented" .
+c:controls a owl:ObjectProperty ; rdfs:domain c:Segmented .
+c:property a owl:ObjectProperty ; rdfs:domain c:Segmented ; rdfs:range rdf:Property .
+
+c:ThemeSwitcher a owl:Class ;
+    rdfs:subClassOf c:Segmented ;
+    rdfs:comment "Day / night / match-the-system switch: a segmented control over sty:colorScheme."@en ;
+    sem:slug "theme-switcher" .
+
+c:SegmentedRendering a sem:Rendering ;
+    sem:targets c:Segmented ;
+    sem:stratum 0 ;
+    sem:follows c:controls .
+c:SegmentedRendering-fn a sem:Rule ;
+    sem:implements c:SegmentedRendering ;
+    sem:function "segmented" .
+
+c:SegmentedRendering-sparql-screen a sem:Rule ;
+    sem:implements c:SegmentedRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?button .
+  ?root rdfhtml:attribute ?roleAttr . ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?root rdfhtml:attribute ?labelAttr . ?labelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?button a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:hasChild ?symbol, ?name ; c:selects ?opt .
+  ?button rdfhtml:attribute ?pressedAttr . ?pressedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressed .
+  ?symbol a rdfhtml:Span ; rdfhtml:hasChild ?symbolText ; ord:immediatelyPrecedes ?name .
+  ?symbolText a rdfhtml:Text ; rdfhtml:data ?symbolData .
+  ?name a rdfhtml:Span ; rdfhtml:hasChild ?nameText .
+  ?nameText a rdfhtml:Text ; rdfhtml:data ?optLabel .
+  ?before ord:immediatelyPrecedes ?after .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Segmented ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?roleAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?labelAttr)
+  {
+    {} UNION {
+      { $this c:options/rdf:rest*/rdf:first ?opt FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      UNION
+      { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      BIND(CONCAT("opt-", ENCODE_FOR_URI(STR(?opt))) AS ?key)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key)) AS ?button)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-aria-pressed")) AS ?pressedAttr)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-label")) AS ?name)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-label-text")) AS ?nameText)
+      BIND(IF(EXISTS { $this c:controls ?pt ; c:property ?pp . ?pt ?pp ?opt }, "true", "false") AS ?pressed)
+      BIND(IRI(CONCAT(STR(?self), "/~l10n-", ENCODE_FOR_URI(STR(?opt)))) AS ?optLabelNode)
+      LATERAL { OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal } OPTIONAL { ?optLabelBaseC_uAt l10n:of ?opt ; l10n:label ?optLabelBaseC_u }
+  OPTIONAL { ?opt c:label ?optLabelBaseC_u FILTER(isLiteral(?optLabelBaseC_u) && lang(?optLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u)) ?opt c:label ?optLabelBaseC_en FILTER(langMatches(lang(?optLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u) && !BOUND(?optLabelBaseC_en)) ?opt c:label ?optLabelBaseC_any FILTER(isLiteral(?optLabelBaseC_any)) }
+  BIND(STR(COALESCE(?optLabelBaseC_u, ?optLabelBaseC_en, ?optLabelBaseC_any)) AS ?optLabelBaseC)
+  OPTIONAL { ?optLabelBaseR_uAt l10n:of ?opt ; l10n:name ?optLabelBaseR_u }
+  OPTIONAL { ?opt rdfs:label ?optLabelBaseR_u FILTER(isLiteral(?optLabelBaseR_u) && lang(?optLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u)) ?opt rdfs:label ?optLabelBaseR_en FILTER(langMatches(lang(?optLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u) && !BOUND(?optLabelBaseR_en)) ?opt rdfs:label ?optLabelBaseR_any FILTER(isLiteral(?optLabelBaseR_any)) }
+  BIND(STR(COALESCE(?optLabelBaseR_u, ?optLabelBaseR_en, ?optLabelBaseR_any)) AS ?optLabelBaseR)
+  BIND(COALESCE(?optLabelBaseC, ?optLabelBaseR, REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optLabelBase) }
+      BIND(COALESCE(?optLabelLocal, ?optLabelBase) AS ?optLabel)
+      LATERAL { OPTIONAL { ?opt sem:symbol ?sym FILTER(STR(?sym) != "") } }
+      BIND(STR(?sym) AS ?symbolData)
+      BIND(IF(BOUND(?sym), IRI(CONCAT(STR(?self), "/~", ?key, "-symbol")), ?none) AS ?symbol)
+      BIND(IF(BOUND(?sym), IRI(CONCAT(STR(?self), "/~", ?key, "-symbol-text")), ?none) AS ?symbolText)
+    } UNION {
+      { $this c:options/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) BIND($this AS ?self) }
+      UNION
+      { { SELECT ?self ?a (COUNT(?posOther) AS ?posA) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?a a ?posRange . ?posOther a ?posRange FILTER(isIRI(?a) && isIRI(?posOther))
+          OPTIONAL { ?a sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?a)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?a }
+        { SELECT ?self ?b (COUNT(?posOther) AS ?posB) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?b a ?posRange . ?posOther a ?posRange FILTER(isIRI(?b) && isIRI(?posOther))
+          OPTIONAL { ?b sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?b)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?b }
+        FILTER(?posB = ?posA + 1) }
+      BIND(IRI(CONCAT(STR(?self), "/~opt-", ENCODE_FOR_URI(STR(?a)))) AS ?before)
+      BIND(IRI(CONCAT(STR(?self), "/~opt-", ENCODE_FOR_URI(STR(?b)))) AS ?after)
+    }
+  }
+}""" .
+
+c:SegmentedRendering-sparql-text a sem:Rule ;
+    sem:implements c:SegmentedRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Segmented ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+  OPTIONAL {
+    SELECT ?self (GROUP_CONCAT(?item; separator="  ") AS ?items) WHERE {
+      { SELECT ?self ?item ?k1 ?k2 WHERE {
+        $this c:controls ?target ; c:property ?property .
+        { { $this c:options/rdf:rest* ?optCell . ?optCell rdf:first ?opt FILTER(isIRI(?opt))
+          { SELECT ?optCell (COUNT(?optMid) AS ?k1) WHERE { $this c:options/rdf:rest* ?optMid . ?optMid rdf:rest* ?optCell } GROUP BY ?optCell }
+          BIND("" AS ?k2) }
+        UNION
+        { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt))
+          OPTIONAL { ?opt sem:order ?k10 } BIND(COALESCE(xsd:double(?k10), 0) AS ?k1) BIND(STR(?opt) AS ?k2) } }
+        BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?opt)))) AS ?optLabelNode)
+      LATERAL { OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal } OPTIONAL { ?optLabelBaseC_uAt l10n:of ?opt ; l10n:label ?optLabelBaseC_u }
+  OPTIONAL { ?opt c:label ?optLabelBaseC_u FILTER(isLiteral(?optLabelBaseC_u) && lang(?optLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u)) ?opt c:label ?optLabelBaseC_en FILTER(langMatches(lang(?optLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u) && !BOUND(?optLabelBaseC_en)) ?opt c:label ?optLabelBaseC_any FILTER(isLiteral(?optLabelBaseC_any)) }
+  BIND(STR(COALESCE(?optLabelBaseC_u, ?optLabelBaseC_en, ?optLabelBaseC_any)) AS ?optLabelBaseC)
+  OPTIONAL { ?optLabelBaseR_uAt l10n:of ?opt ; l10n:name ?optLabelBaseR_u }
+  OPTIONAL { ?opt rdfs:label ?optLabelBaseR_u FILTER(isLiteral(?optLabelBaseR_u) && lang(?optLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u)) ?opt rdfs:label ?optLabelBaseR_en FILTER(langMatches(lang(?optLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u) && !BOUND(?optLabelBaseR_en)) ?opt rdfs:label ?optLabelBaseR_any FILTER(isLiteral(?optLabelBaseR_any)) }
+  BIND(STR(COALESCE(?optLabelBaseR_u, ?optLabelBaseR_en, ?optLabelBaseR_any)) AS ?optLabelBaseR)
+  BIND(COALESCE(?optLabelBaseC, ?optLabelBaseR, REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optLabelBase) }
+      BIND(COALESCE(?optLabelLocal, ?optLabelBase) AS ?optLabel)
+        BIND(CONCAT("(", IF(EXISTS { ?target ?property ?opt }, "•", " "), ") ", ?optLabel) AS ?item)
+        BIND($this AS ?self)
+      } ORDER BY ?k1 ?k2 }
+    } GROUP BY ?self
+  }
+  BIND(CONCAT(?caption, ": ", COALESCE(?items, "")) AS ?line)
+}""" .
+
+
+# The localization layer for c:Segmented: its caption and option labels in the viewer's language,
+# at <focus>/~l10n-caption and <focus>/~l10n-<option>, which the SPARQL rules prefer.
+c:SegmentedTexts a sem:Rendering ;
+    sem:targets c:Segmented ;
+    sem:stratum -20 ;
+    sem:inputOnly true .
+c:SegmentedTexts-fn a sem:Rule ; sem:implements c:SegmentedTexts ; sem:function "l10n:option-labels" .
+c:SegmentedTexts-sparql a sem:Rule ; sem:implements c:SegmentedTexts ;
+    sem:construct """
+CONSTRUCT { ?node l10n:label ?label }
+WHERE {
+  $this c:property ?property .
+  FILTER EXISTS { ?viewer l10n:prefers ?preference }
+  { $this c:property ?subject . BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?node) }
+  UNION
+  { $this c:options/rdf:rest*/rdf:first ?subject . FILTER(isIRI(?subject))
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?subject)))) AS ?node) }
+  UNION
+  { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?subject a ?range . FILTER(isIRI(?subject))
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?subject)))) AS ?node) }
+  LATERAL { OPTIONAL { SELECT ?subject ?c WHERE {
+  
+  OPTIONAL { ?subject l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?subject ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?subject c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+  LATERAL { OPTIONAL { SELECT ?subject ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?subject ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?subject rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+  BIND(COALESCE(?c, ?r, REPLACE(STR(?subject), "^.*[#/]", "")) AS ?label)
+}""" .
+
+c:SegmentedSelect a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Segmented ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?option . $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?option } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?option . $this c:controls ?target ; c:property ?p }""" ;
+    sem:function "segmented:select" .
+
+# --- On a compact screen: a picker ------------------------------------------------------------------
+# A nav list down the side of a page is a column of ten or fifteen rows, and an app bar's page
+# switcher a row wider than a phone; stacked above the content they push it off the first screen,
+# or scroll the current option out of sight. c:compactAs c:Picker asks a segmented control (a nav
+# list is one) to present itself on a compact screen (sty:CompactWidth) as one line instead: a
+# native select of the same options, showing the current one and opening the platform's own
+# picker. Both are rendered; the theme shows one (hooked: data-sem-compact-as), so focus and
+# screen readers meet only that one. A change of the select writes the property as a click on an
+# option does (c:SegmentedPick).
+
+c:compactAs a owl:ObjectProperty ;
+    rdfs:range c:CompactPresentation ;
+    rdfs:comment "How a component presents itself on a compact screen (sty:CompactWidth)."@en ;
+    sty:hookAttribute "data-sem-compact-as" .
+c:CompactPresentation a owl:Class ;
+    rdfs:comment "A way for a component to present itself on a compact screen."@en .
+c:Picker a c:CompactPresentation ; sem:slug "picker" ; rdfs:label "Picker"@en ;
+    rdfs:comment "A native select of the options in place of the list: one line, the current option shown."@en .
+
+c:SegmentedPicker a sem:Rendering ;
+    sem:targets c:Segmented ;
+    sem:requires c:compactAs ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 ;
+    sem:follows c:controls .
+c:SegmentedPicker-fn a sem:Rule ; sem:implements c:SegmentedPicker ; sem:function "segmented:picker" .
+c:SegmentedPicker-sparql a sem:Rule ;
+    sem:implements c:SegmentedPicker ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:hasChild ?picker .
+  ?picker a rdfhtml:Select ; rdfhtml:class "sem-picker" ; rdfhtml:attribute ?labelAttr ; rdfhtml:hasChild ?option ; ord:immediatelyPrecedes ?firstButton .
+  ?labelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?option a rdfhtml:Option ; rdfhtml:value ?optValue ; rdfhtml:selected ?selected ; rdfhtml:hasChild ?optText .
+  ?optText a rdfhtml:Text ; rdfhtml:data ?optLabel .
+  ?before ord:immediatelyPrecedes ?after .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Segmented ; c:compactAs c:Picker ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~picker")) AS ?picker)
+  BIND(IRI(CONCAT(STR($this), "/~picker-aria-label")) AS ?labelAttr)
+  # The first option button, which the picker goes before.
+  OPTIONAL {
+    { $this c:options/rdf:first ?first FILTER(isIRI(?first)) }
+    UNION
+    { FILTER NOT EXISTS { $this c:options ?firstExplicit }
+      $this c:property/rdfs:range ?firstRange . ?first a ?firstRange FILTER(isIRI(?first))
+      OPTIONAL { ?first sem:order ?firstOrder0 } BIND(COALESCE(xsd:double(?firstOrder0), 0) AS ?firstOrder)
+      FILTER NOT EXISTS {
+        ?earlier a ?firstRange FILTER(isIRI(?earlier))
+        OPTIONAL { ?earlier sem:order ?earlierOrder0 } BIND(COALESCE(xsd:double(?earlierOrder0), 0) AS ?earlierOrder)
+        FILTER(?earlierOrder < ?firstOrder || (?earlierOrder = ?firstOrder && STR(?earlier) < STR(?first)))
+      } }
+  }
+  BIND(IF(BOUND(?first), IRI(CONCAT(STR($this), "/~opt-", ENCODE_FOR_URI(STR(?first)))), ?none) AS ?firstButton)
+  {
+    {} UNION {
+      { $this c:options/rdf:rest*/rdf:first ?opt FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      UNION
+      { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      BIND(CONCAT("pick-", ENCODE_FOR_URI(STR(?opt))) AS ?key)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key)) AS ?option)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-text")) AS ?optText)
+      BIND(STR(?opt) AS ?optValue)
+      BIND(IF(EXISTS { $this c:controls ?pt ; c:property ?pp . ?pt ?pp ?opt }, "", ?none) AS ?selected)
+      BIND(IRI(CONCAT(STR(?self), "/~l10n-", ENCODE_FOR_URI(STR(?opt)))) AS ?optLabelNode)
+      LATERAL { OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal } OPTIONAL { ?optLabelBaseC_uAt l10n:of ?opt ; l10n:label ?optLabelBaseC_u }
+  OPTIONAL { ?opt c:label ?optLabelBaseC_u FILTER(isLiteral(?optLabelBaseC_u) && lang(?optLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u)) ?opt c:label ?optLabelBaseC_en FILTER(langMatches(lang(?optLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u) && !BOUND(?optLabelBaseC_en)) ?opt c:label ?optLabelBaseC_any FILTER(isLiteral(?optLabelBaseC_any)) }
+  BIND(STR(COALESCE(?optLabelBaseC_u, ?optLabelBaseC_en, ?optLabelBaseC_any)) AS ?optLabelBaseC)
+  OPTIONAL { ?optLabelBaseR_uAt l10n:of ?opt ; l10n:name ?optLabelBaseR_u }
+  OPTIONAL { ?opt rdfs:label ?optLabelBaseR_u FILTER(isLiteral(?optLabelBaseR_u) && lang(?optLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u)) ?opt rdfs:label ?optLabelBaseR_en FILTER(langMatches(lang(?optLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u) && !BOUND(?optLabelBaseR_en)) ?opt rdfs:label ?optLabelBaseR_any FILTER(isLiteral(?optLabelBaseR_any)) }
+  BIND(STR(COALESCE(?optLabelBaseR_u, ?optLabelBaseR_en, ?optLabelBaseR_any)) AS ?optLabelBaseR)
+  BIND(COALESCE(?optLabelBaseC, ?optLabelBaseR, REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optLabelBase) }
+      BIND(COALESCE(?optLabelLocal, ?optLabelBase) AS ?optLabel)
+    } UNION {
+      { $this c:options/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) BIND($this AS ?self) }
+      UNION
+      { { SELECT ?self ?a (COUNT(?posOther) AS ?posA) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?a a ?posRange . ?posOther a ?posRange FILTER(isIRI(?a) && isIRI(?posOther))
+          OPTIONAL { ?a sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?a)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?a }
+        { SELECT ?self ?b (COUNT(?posOther) AS ?posB) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?b a ?posRange . ?posOther a ?posRange FILTER(isIRI(?b) && isIRI(?posOther))
+          OPTIONAL { ?b sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?b)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?b }
+        FILTER(?posB = ?posA + 1) }
+      BIND(IRI(CONCAT(STR(?self), "/~pick-", ENCODE_FOR_URI(STR(?a)))) AS ?before)
+      BIND(IRI(CONCAT(STR(?self), "/~pick-", ENCODE_FOR_URI(STR(?b)))) AS ?after)
+    }
+  }
+}""" .
+# Choosing in the picker writes the property, as a click on an option does.
+c:SegmentedPick a beh:Reaction ;
+    beh:when beh:Change ;
+    beh:sourceClass c:Segmented ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?option } WHERE { $this c:controls ?target ; c:property ?p . $event beh:value ?v . BIND(IRI(?v) AS ?option) }""" ;
+    sem:function "choice:select" .
+
+# --- Flippable: any component, with its making on the back ----------------------------------
+
+c:Flippable a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A two-sided card attachable to any component (c:front). The front is the
+component itself; the back shows how it is made - the rules that rendered it, found through
+its PROV-O trail (prov:wasGeneratedBy / prov:wasInfluencedBy -> prov:hadPlan), with SPARQL
+bodies syntax-colored. c:flipped holds which side faces the viewer."""@en ;
+    sem:slug "flippable" .
+c:front a owl:ObjectProperty ; rdfs:domain c:Flippable ; rdfs:range sem:Component .
+c:flipped a owl:DatatypeProperty ; rdfs:domain c:Flippable ; rdfs:range xsd:boolean .
+c:flips a owl:ObjectProperty ; rdfs:comment "On a rendered element: the c:Flippable that activating it turns over."@en .
+c:revealed a owl:DatatypeProperty ; rdfs:domain c:Flippable ; rdfs:range xsd:boolean ;
+    rdfs:comment "The back has been shown at least once, so it is built and kept (turning over again is free)."@en .
+
+c:SourceBack a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """The back of a c:Flippable (c:of its front): the queries the front shows data from and
+the rules that rendered it. A snapshot taken when first revealed; its cost is the number of
+kinds of component inside the front, not their count."""@en ;
+    sem:slug "source-back" .
+# After the flippable's own source rule (95), so every layer that decorated the front is listed.
+c:SourceBackRendering a sem:Rendering ;
+    sem:targets c:SourceBack ;
+    sem:modality mod:Screen ;
+    sem:layer sem:SourceLayer ;
+    sem:stratum 96 ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it splits each rule's SPARQL into colored tokens." ;
+    sem:needsExtension sx:Matches .
+c:SourceBackRendering-fn a sem:Rule ;
+    sem:implements c:SourceBackRendering ;
+    sem:function "source-back" .
+
+# The base rendering only wraps the front; the source layer (below) adds the
+# floating flip control, the back face and the flipped state.
+c:FlippableRendering a sem:Rendering ;
+    sem:targets c:Flippable ;
+    sem:stratum 0 .
+c:FlippableRendering-fn a sem:Rule ;
+    sem:implements c:FlippableRendering ;
+    sem:function "flippable" .
+
+c:FlippableRendering-sparql a sem:Rule ;
+    sem:implements c:FlippableRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?faces .
+  ?faces a rdfhtml:Div ; rdfhtml:class "sem-faces" ; rdfhtml:hasChild ?frontFace .
+  ?frontFace a rdfhtml:Div ; rdfhtml:class "sem-face sem-front" ; rdfhtml:hasChild ?front .
+  ?source a c:SourceBack ; c:of ?front .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Flippable ; c:front ?front FILTER(isIRI(?front))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~faces")) AS ?faces)
+  BIND(IRI(CONCAT(STR($this), "/~front")) AS ?frontFace)
+  # The back's content is minted once the card has been turned over (c:revealed) or is turned.
+  BIND(IF(EXISTS { $this c:revealed|c:flipped ?shown FILTER(STR(?shown) = "true") }, IRI(CONCAT(STR($this), "/~source")), ?none) AS ?source)
+}""" .
+
+# Stratum 95: after every other layer, so the back lists the layers that decorated the front.
+c:FlippableSource a sem:Rendering ;
+    sem:targets c:Flippable ;
+    sem:modality mod:Screen ;
+    sem:layer sem:SourceLayer ;
+    sem:stratum 95 ;
+    sem:follows c:front .
+c:FlippableSource-fn a sem:Rule ;
+    sem:implements c:FlippableSource ;
+    sem:function "flippable:source" .
+
+c:FlippableSource-sparql a sem:Rule ;
+    sem:implements c:FlippableSource ;
+    sem:construct """
+CONSTRUCT {
+  ?frontFace rdfhtml:hasChild ?bar ; ord:precedes ?back ; rdfhtml:inert ?frontInert .
+  ?bar a rdfhtml:Div ; rdfhtml:class "sem-face-bar" ; rdfhtml:hasChild ?flipFront ; ord:precedes ?front .
+  ?flipFront a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-flip" ; rdfhtml:hasChild ?flipFrontText ; c:flips $this .
+  ?flipFront rdfhtml:attribute ?flipFrontLabel . ?flipFrontLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue "Show how this view is made" .
+  ?flipFrontText a rdfhtml:Text ; rdfhtml:data "</> Source" .
+  ?faces rdfhtml:hasChild ?back .
+  ?back a rdfhtml:Div ; rdfhtml:class "sem-face sem-back" ; rdfhtml:inert ?backInert ; rdfhtml:hasChild ?backBar, ?source .
+  ?backBar a rdfhtml:Div ; rdfhtml:class "sem-face-bar" ; rdfhtml:hasChild ?flipBack ; ord:immediatelyPrecedes ?source .
+  ?flipBack a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-flip" ; rdfhtml:hasChild ?flipBackText ; c:flips $this .
+  ?flipBack rdfhtml:attribute ?flipBackLabel . ?flipBackLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue "Show the view" .
+  ?flipBackText a rdfhtml:Text ; rdfhtml:data "↺ View" .
+  ?root rdfhtml:attribute ?flippedAttr . ?flippedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-flipped" ; rdfhtml:attributeValue ?flippedValue .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Flippable ; c:front ?front FILTER(isIRI(?front))
+  BIND(EXISTS { $this c:flipped ?f FILTER(STR(?f) = "true") } AS ?flipped)
+  BIND(?flipped || EXISTS { $this c:revealed ?r FILTER(STR(?r) = "true") } AS ?revealed)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~faces")) AS ?faces)
+  BIND(IRI(CONCAT(STR($this), "/~front")) AS ?frontFace)
+  BIND(IRI(CONCAT(STR($this), "/~front-bar")) AS ?bar)
+  BIND(IRI(CONCAT(STR($this), "/~flip-front")) AS ?flipFront)
+  BIND(IRI(CONCAT(STR($this), "/~flip-front-text")) AS ?flipFrontText)
+  BIND(IRI(CONCAT(STR($this), "/~flip-front-aria-label")) AS ?flipFrontLabel)
+  BIND(IRI(CONCAT(STR($this), "/~back")) AS ?back)
+  BIND(IRI(CONCAT(STR($this), "/~back-bar")) AS ?backBar)
+  BIND(IRI(CONCAT(STR($this), "/~flip-back")) AS ?flipBack)
+  BIND(IRI(CONCAT(STR($this), "/~flip-back-text")) AS ?flipBackText)
+  BIND(IRI(CONCAT(STR($this), "/~flip-back-aria-label")) AS ?flipBackLabel)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-flipped")) AS ?flippedAttr)
+  BIND(IF(?revealed, IRI(CONCAT(STR($this), "/~source")), ?none) AS ?source)
+  BIND(IF(?flipped, ?none, "") AS ?backInert)
+  BIND(IF(?flipped, "", ?none) AS ?frontInert)
+  BIND(STR(?flipped) AS ?flippedValue)
+}""" .
+
+c:FlippableFlip a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Flippable ;
+    beh:deletes """CONSTRUCT { $this c:flipped ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:flips $this . $this c:flipped ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:flipped ?new ; c:revealed true } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:flips $this . OPTIONAL { $this c:flipped ?old } BIND(!COALESCE(?old, false) AS ?new) }""" ;
+    sem:function "flippable:flip" .
+
+# --- Choice (dropdown) and Chips (multi-select pills) ------------------------------------------
+# Like c:Segmented they edit c:property of c:controls, with options from the
+# property's rdfs:range - or from an explicit c:options list.
+
+c:options a owl:ObjectProperty ; rdfs:range rdf:List ;
+    rdfs:comment "Explicit, ordered options (overrides the property's range)."@en .
+
+c:Choice a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A dropdown setting a single-valued property."@en ;
+    sem:slug "choice" .
+c:ChoiceRendering a sem:Rendering ;
+    sem:targets c:Choice ;
+    sem:stratum 0 ;
+    sem:follows c:controls .
+c:ChoiceRendering-fn a sem:Rule ;
+    sem:implements c:ChoiceRendering ;
+    sem:function "choice" .
+
+c:ChoiceRendering-sparql-screen a sem:Rule ;
+    sem:implements c:ChoiceRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Label ; sem:renders $this ; rdfhtml:for ?selectId ; rdfhtml:hasChild ?captionEl, ?select .
+  ?captionEl a rdfhtml:Span ; rdfhtml:hasChild ?captionText ; ord:immediatelyPrecedes ?select .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?caption .
+  ?select a rdfhtml:Select ; rdfhtml:id ?selectId ; rdfhtml:disabled ?disabled ; rdfhtml:hasChild ?option .
+  ?option a rdfhtml:Option ; rdfhtml:value ?optValue ; rdfhtml:selected ?selected ; rdfhtml:hasChild ?optText .
+  ?optText a rdfhtml:Text ; rdfhtml:data ?optLabel .
+  ?before ord:immediatelyPrecedes ?after .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Choice ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~caption")) AS ?captionEl)
+  BIND(IRI(CONCAT(STR($this), "/~caption-text")) AS ?captionText)
+  BIND(IRI(CONCAT(STR($this), "/~select")) AS ?select)
+  BIND(STR(?select) AS ?selectId)
+  BIND(IF(EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") }, "", ?none) AS ?disabled)
+  {
+    {} UNION {
+      { $this c:options/rdf:rest*/rdf:first ?opt FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      UNION
+      { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      BIND(CONCAT("opt-", ENCODE_FOR_URI(STR(?opt))) AS ?key)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key)) AS ?option)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-text")) AS ?optText)
+      BIND(STR(?opt) AS ?optValue)
+      BIND(IF(EXISTS { $this c:controls ?pt ; c:property ?pp . ?pt ?pp ?opt }, "", ?none) AS ?selected)
+      BIND(IRI(CONCAT(STR(?self), "/~l10n-", ENCODE_FOR_URI(STR(?opt)))) AS ?optLabelNode)
+      LATERAL { OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal } OPTIONAL { ?optLabelBaseC_uAt l10n:of ?opt ; l10n:label ?optLabelBaseC_u }
+  OPTIONAL { ?opt c:label ?optLabelBaseC_u FILTER(isLiteral(?optLabelBaseC_u) && lang(?optLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u)) ?opt c:label ?optLabelBaseC_en FILTER(langMatches(lang(?optLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u) && !BOUND(?optLabelBaseC_en)) ?opt c:label ?optLabelBaseC_any FILTER(isLiteral(?optLabelBaseC_any)) }
+  BIND(STR(COALESCE(?optLabelBaseC_u, ?optLabelBaseC_en, ?optLabelBaseC_any)) AS ?optLabelBaseC)
+  OPTIONAL { ?optLabelBaseR_uAt l10n:of ?opt ; l10n:name ?optLabelBaseR_u }
+  OPTIONAL { ?opt rdfs:label ?optLabelBaseR_u FILTER(isLiteral(?optLabelBaseR_u) && lang(?optLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u)) ?opt rdfs:label ?optLabelBaseR_en FILTER(langMatches(lang(?optLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u) && !BOUND(?optLabelBaseR_en)) ?opt rdfs:label ?optLabelBaseR_any FILTER(isLiteral(?optLabelBaseR_any)) }
+  BIND(STR(COALESCE(?optLabelBaseR_u, ?optLabelBaseR_en, ?optLabelBaseR_any)) AS ?optLabelBaseR)
+  BIND(COALESCE(?optLabelBaseC, ?optLabelBaseR, REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optLabelBase) }
+      BIND(COALESCE(?optLabelLocal, ?optLabelBase) AS ?optLabel)
+    } UNION {
+      { $this c:options/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) BIND($this AS ?self) }
+      UNION
+      { { SELECT ?self ?a (COUNT(?posOther) AS ?posA) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?a a ?posRange . ?posOther a ?posRange FILTER(isIRI(?a) && isIRI(?posOther))
+          OPTIONAL { ?a sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?a)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?a }
+        { SELECT ?self ?b (COUNT(?posOther) AS ?posB) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?b a ?posRange . ?posOther a ?posRange FILTER(isIRI(?b) && isIRI(?posOther))
+          OPTIONAL { ?b sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?b)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?b }
+        FILTER(?posB = ?posA + 1) }
+      BIND(IRI(CONCAT(STR(?self), "/~opt-", ENCODE_FOR_URI(STR(?a)))) AS ?before)
+      BIND(IRI(CONCAT(STR(?self), "/~opt-", ENCODE_FOR_URI(STR(?b)))) AS ?after)
+    }
+  }
+}""" .
+
+c:ChoiceRendering-sparql-text a sem:Rule ;
+    sem:implements c:ChoiceRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Choice ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+  OPTIONAL {
+    $this c:controls ?target ; c:property ?property . ?target ?property ?chosen .
+    { { $this c:options/rdf:rest*/rdf:first ?opt FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      UNION
+      { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt)) BIND($this AS ?self) } }
+    FILTER(?opt = ?chosen)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?chosen)))) AS ?chosenLabelNode)
+      LATERAL { OPTIONAL { ?chosenLabelNode l10n:label ?chosenLabelLocal } OPTIONAL { ?chosenLabelBaseC_uAt l10n:of ?chosen ; l10n:label ?chosenLabelBaseC_u }
+  OPTIONAL { ?chosen c:label ?chosenLabelBaseC_u FILTER(isLiteral(?chosenLabelBaseC_u) && lang(?chosenLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?chosenLabelBaseC_u)) ?chosen c:label ?chosenLabelBaseC_en FILTER(langMatches(lang(?chosenLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?chosenLabelBaseC_u) && !BOUND(?chosenLabelBaseC_en)) ?chosen c:label ?chosenLabelBaseC_any FILTER(isLiteral(?chosenLabelBaseC_any)) }
+  BIND(STR(COALESCE(?chosenLabelBaseC_u, ?chosenLabelBaseC_en, ?chosenLabelBaseC_any)) AS ?chosenLabelBaseC)
+  OPTIONAL { ?chosenLabelBaseR_uAt l10n:of ?chosen ; l10n:name ?chosenLabelBaseR_u }
+  OPTIONAL { ?chosen rdfs:label ?chosenLabelBaseR_u FILTER(isLiteral(?chosenLabelBaseR_u) && lang(?chosenLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?chosenLabelBaseR_u)) ?chosen rdfs:label ?chosenLabelBaseR_en FILTER(langMatches(lang(?chosenLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?chosenLabelBaseR_u) && !BOUND(?chosenLabelBaseR_en)) ?chosen rdfs:label ?chosenLabelBaseR_any FILTER(isLiteral(?chosenLabelBaseR_any)) }
+  BIND(STR(COALESCE(?chosenLabelBaseR_u, ?chosenLabelBaseR_en, ?chosenLabelBaseR_any)) AS ?chosenLabelBaseR)
+  BIND(COALESCE(?chosenLabelBaseC, ?chosenLabelBaseR, REPLACE(STR(?chosen), "^.*[#/]", "")) AS ?chosenLabelBase) }
+      BIND(COALESCE(?chosenLabelLocal, ?chosenLabelBase) AS ?chosenLabel)
+  }
+  BIND(CONCAT(?caption, ": ", COALESCE(?chosenLabel, "–"), " ▾") AS ?line)
+}""" .
+
+
+# The localization layer for c:Choice: its caption and option labels in the viewer's language,
+# at <focus>/~l10n-caption and <focus>/~l10n-<option>, which the SPARQL rules prefer.
+c:ChoiceTexts a sem:Rendering ;
+    sem:targets c:Choice ;
+    sem:stratum -20 ;
+    sem:inputOnly true .
+c:ChoiceTexts-fn a sem:Rule ; sem:implements c:ChoiceTexts ; sem:function "l10n:option-labels" .
+c:ChoiceTexts-sparql a sem:Rule ; sem:implements c:ChoiceTexts ;
+    sem:construct """
+CONSTRUCT { ?node l10n:label ?label }
+WHERE {
+  $this c:property ?property .
+  FILTER EXISTS { ?viewer l10n:prefers ?preference }
+  { $this c:property ?subject . BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?node) }
+  UNION
+  { $this c:options/rdf:rest*/rdf:first ?subject . FILTER(isIRI(?subject))
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?subject)))) AS ?node) }
+  UNION
+  { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?subject a ?range . FILTER(isIRI(?subject))
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?subject)))) AS ?node) }
+  LATERAL { OPTIONAL { SELECT ?subject ?c WHERE {
+  
+  OPTIONAL { ?subject l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?subject ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?subject c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+  LATERAL { OPTIONAL { SELECT ?subject ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?subject ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?subject rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+  BIND(COALESCE(?c, ?r, REPLACE(STR(?subject), "^.*[#/]", "")) AS ?label)
+}""" .
+c:ChoiceSelect a beh:Reaction ;
+    beh:when beh:Change ;
+    beh:sourceClass c:Choice ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $this c:controls ?target ; c:property ?p . ?target ?p ?old . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?option } WHERE { $this c:controls ?target ; c:property ?p . $event beh:value ?v . FILTER NOT EXISTS { $this c:disabled true } BIND(IRI(?v) AS ?option) }""" ;
+    sem:function "choice:select" .
+
+c:Chips a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Pills toggling membership of values of a multi-valued property."@en ;
+    sem:slug "chips" .
+c:ChipsRendering a sem:Rendering ;
+    sem:targets c:Chips ;
+    sem:stratum 0 ;
+    sem:follows c:controls .
+c:ChipsRendering-fn a sem:Rule ;
+    sem:implements c:ChipsRendering ;
+    sem:function "chips" .
+
+# Counts on chips (a facet's values: how many there are of each, given the other filters):
+# c:countQuery names a SELECT whose solutions are an option (?option) and its count (?count).
+# Each chip whose option is among them shows the count after its label, spelled out with
+# c:countLabel for assistive technology ("42 orders"); a zero is shown too, and marked
+# (.sem-zero), since choosing that value would show nothing. Like a table's or a chart's view,
+# the query re-runs when c:dataset changes (the data, and the filters it reads).
+c:countQuery a owl:ObjectProperty ; rdfs:range sem:View ; rdfs:subPropertyOf c:dataQuery ;
+    rdfs:comment "A SELECT of ?option and ?count: the count each chip shows after its label. Re-run when c:dataset changes."@en .
+c:ChipsCounts a sem:Rendering ;
+    sem:targets c:Chips ;
+    sem:requires c:countQuery ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 ;
+    sem:follows c:dataset ;
+    sem:functionOnly "awaits #1 (query results as graph rows): it runs the SELECT named in the data (c:countQuery, a sem:View), which SPARQL 1.1 cannot do from inside a query." ;
+    sem:awaitsWork <https://github.com/inferal-oss/semblance/issues/1> .
+c:ChipsCounts-fn a sem:Rule ; sem:implements c:ChipsCounts ; sem:function "chips:counts" .
+
+c:ChipsRendering-sparql-screen a sem:Rule ;
+    sem:implements c:ChipsRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?captionEl, ?chip .
+  ?root rdfhtml:attribute ?roleAttr . ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?root rdfhtml:attribute ?labelAttr . ?labelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?captionEl a rdfhtml:Span ; rdfhtml:hasChild ?captionText ; ord:immediatelyPrecedes ?firstChip .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?caption .
+  ?chip a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:hasChild ?chipText ; c:selects ?opt .
+  ?chip rdfhtml:attribute ?pressedAttr . ?pressedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressed .
+  ?chipText a rdfhtml:Text ; rdfhtml:data ?optLabel .
+  ?before ord:immediatelyPrecedes ?after .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Chips ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?roleAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?labelAttr)
+  BIND(IRI(CONCAT(STR($this), "/~caption")) AS ?captionEl)
+  BIND(IRI(CONCAT(STR($this), "/~caption-text")) AS ?captionText)
+  {
+    {} UNION {
+      { $this c:options/rdf:rest*/rdf:first ?opt FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      UNION
+      { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt)) BIND($this AS ?self) }
+      BIND(CONCAT("chip-", ENCODE_FOR_URI(STR(?opt))) AS ?key)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key)) AS ?chip)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-text")) AS ?chipText)
+      BIND(IRI(CONCAT(STR(?self), "/~", ?key, "-aria-pressed")) AS ?pressedAttr)
+      BIND(IF(EXISTS { $this c:controls ?pt ; c:property ?pp . ?pt ?pp ?opt }, "true", "false") AS ?pressed)
+      BIND(IRI(CONCAT(STR(?self), "/~l10n-", ENCODE_FOR_URI(STR(?opt)))) AS ?optLabelNode)
+      LATERAL { OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal } OPTIONAL { ?optLabelBaseC_uAt l10n:of ?opt ; l10n:label ?optLabelBaseC_u }
+  OPTIONAL { ?opt c:label ?optLabelBaseC_u FILTER(isLiteral(?optLabelBaseC_u) && lang(?optLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u)) ?opt c:label ?optLabelBaseC_en FILTER(langMatches(lang(?optLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u) && !BOUND(?optLabelBaseC_en)) ?opt c:label ?optLabelBaseC_any FILTER(isLiteral(?optLabelBaseC_any)) }
+  BIND(STR(COALESCE(?optLabelBaseC_u, ?optLabelBaseC_en, ?optLabelBaseC_any)) AS ?optLabelBaseC)
+  OPTIONAL { ?optLabelBaseR_uAt l10n:of ?opt ; l10n:name ?optLabelBaseR_u }
+  OPTIONAL { ?opt rdfs:label ?optLabelBaseR_u FILTER(isLiteral(?optLabelBaseR_u) && lang(?optLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u)) ?opt rdfs:label ?optLabelBaseR_en FILTER(langMatches(lang(?optLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u) && !BOUND(?optLabelBaseR_en)) ?opt rdfs:label ?optLabelBaseR_any FILTER(isLiteral(?optLabelBaseR_any)) }
+  BIND(STR(COALESCE(?optLabelBaseR_u, ?optLabelBaseR_en, ?optLabelBaseR_any)) AS ?optLabelBaseR)
+  BIND(COALESCE(?optLabelBaseC, ?optLabelBaseR, REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optLabelBase) }
+      BIND(COALESCE(?optLabelLocal, ?optLabelBase) AS ?optLabel)
+    } UNION {
+      { $this c:options/rdf:first ?f FILTER(isIRI(?f)) BIND($this AS ?self) }
+      UNION
+      { { SELECT ?self ?f (COUNT(?posOther) AS ?posF) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?f a ?posRange . ?posOther a ?posRange FILTER(isIRI(?f) && isIRI(?posOther))
+          OPTIONAL { ?f sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?f)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?f } FILTER(?posF = 1) }
+      BIND(IRI(CONCAT(STR(?self), "/~chip-", ENCODE_FOR_URI(STR(?f)))) AS ?firstChip)
+    } UNION {
+      { $this c:options/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) BIND($this AS ?self) }
+      UNION
+      { { SELECT ?self ?a (COUNT(?posOther) AS ?posA) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?a a ?posRange . ?posOther a ?posRange FILTER(isIRI(?a) && isIRI(?posOther))
+          OPTIONAL { ?a sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?a)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?a }
+        { SELECT ?self ?b (COUNT(?posOther) AS ?posB) WHERE {
+          FILTER NOT EXISTS { $this c:options ?posExplicit }
+          $this c:property/rdfs:range ?posRange . ?b a ?posRange . ?posOther a ?posRange FILTER(isIRI(?b) && isIRI(?posOther))
+          OPTIONAL { ?b sem:order ?posOrder0 } OPTIONAL { ?posOther sem:order ?posOtherOrder0 }
+          BIND(COALESCE(xsd:double(?posOrder0), 0) AS ?posOrder) BIND(COALESCE(xsd:double(?posOtherOrder0), 0) AS ?posOtherOrder)
+          FILTER(?posOtherOrder < ?posOrder || (?posOtherOrder = ?posOrder && STR(?posOther) <= STR(?b)))
+          BIND($this AS ?self)
+        } GROUP BY ?self ?b }
+        FILTER(?posB = ?posA + 1) }
+      BIND(IRI(CONCAT(STR(?self), "/~chip-", ENCODE_FOR_URI(STR(?a)))) AS ?before)
+      BIND(IRI(CONCAT(STR(?self), "/~chip-", ENCODE_FOR_URI(STR(?b)))) AS ?after)
+    }
+  }
+}""" .
+
+c:ChipsRendering-sparql-text a sem:Rule ;
+    sem:implements c:ChipsRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Chips ; c:controls ?target ; c:property ?property .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?ownCaption)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?localCaption } }
+  LATERAL { OPTIONAL { ?property c:label ?propertyLabelC_u FILTER(isLiteral(?propertyLabelC_u) && lang(?propertyLabelC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u)) ?property c:label ?propertyLabelC_en FILTER(langMatches(lang(?propertyLabelC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelC_u) && !BOUND(?propertyLabelC_en)) ?property c:label ?propertyLabelC_any FILTER(isLiteral(?propertyLabelC_any)) }
+  BIND(STR(COALESCE(?propertyLabelC_u, ?propertyLabelC_en, ?propertyLabelC_any)) AS ?propertyLabelC)
+  OPTIONAL { ?propertyLabelR_uAt l10n:of ?property ; l10n:name ?propertyLabelR_u }
+  OPTIONAL { ?property rdfs:label ?propertyLabelR_u FILTER(isLiteral(?propertyLabelR_u) && lang(?propertyLabelR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u)) ?property rdfs:label ?propertyLabelR_en FILTER(langMatches(lang(?propertyLabelR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?propertyLabelR_u) && !BOUND(?propertyLabelR_en)) ?property rdfs:label ?propertyLabelR_any FILTER(isLiteral(?propertyLabelR_any)) }
+  BIND(STR(COALESCE(?propertyLabelR_u, ?propertyLabelR_en, ?propertyLabelR_any)) AS ?propertyLabelR)
+  BIND(COALESCE(?propertyLabelC, ?propertyLabelR, REPLACE(STR(?property), "^.*[#/]", "")) AS ?propertyLabel) }
+  BIND(COALESCE(?ownCaption, ?localCaption, ?propertyLabel) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+  OPTIONAL {
+    SELECT ?self (GROUP_CONCAT(?item; separator="  ") AS ?items) WHERE {
+      { SELECT ?self ?item ?k1 ?k2 WHERE {
+        $this c:controls ?target ; c:property ?property .
+        { { $this c:options/rdf:rest* ?optCell . ?optCell rdf:first ?opt FILTER(isIRI(?opt))
+          { SELECT ?optCell (COUNT(?optMid) AS ?k1) WHERE { $this c:options/rdf:rest* ?optMid . ?optMid rdf:rest* ?optCell } GROUP BY ?optCell }
+          BIND("" AS ?k2) }
+        UNION
+        { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?opt a ?range FILTER(isIRI(?opt))
+          OPTIONAL { ?opt sem:order ?k10 } BIND(COALESCE(xsd:double(?k10), 0) AS ?k1) BIND(STR(?opt) AS ?k2) } }
+        BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?opt)))) AS ?optLabelNode)
+      LATERAL { OPTIONAL { ?optLabelNode l10n:label ?optLabelLocal } OPTIONAL { ?optLabelBaseC_uAt l10n:of ?opt ; l10n:label ?optLabelBaseC_u }
+  OPTIONAL { ?opt c:label ?optLabelBaseC_u FILTER(isLiteral(?optLabelBaseC_u) && lang(?optLabelBaseC_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u)) ?opt c:label ?optLabelBaseC_en FILTER(langMatches(lang(?optLabelBaseC_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseC_u) && !BOUND(?optLabelBaseC_en)) ?opt c:label ?optLabelBaseC_any FILTER(isLiteral(?optLabelBaseC_any)) }
+  BIND(STR(COALESCE(?optLabelBaseC_u, ?optLabelBaseC_en, ?optLabelBaseC_any)) AS ?optLabelBaseC)
+  OPTIONAL { ?optLabelBaseR_uAt l10n:of ?opt ; l10n:name ?optLabelBaseR_u }
+  OPTIONAL { ?opt rdfs:label ?optLabelBaseR_u FILTER(isLiteral(?optLabelBaseR_u) && lang(?optLabelBaseR_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u)) ?opt rdfs:label ?optLabelBaseR_en FILTER(langMatches(lang(?optLabelBaseR_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?optLabelBaseR_u) && !BOUND(?optLabelBaseR_en)) ?opt rdfs:label ?optLabelBaseR_any FILTER(isLiteral(?optLabelBaseR_any)) }
+  BIND(STR(COALESCE(?optLabelBaseR_u, ?optLabelBaseR_en, ?optLabelBaseR_any)) AS ?optLabelBaseR)
+  BIND(COALESCE(?optLabelBaseC, ?optLabelBaseR, REPLACE(STR(?opt), "^.*[#/]", "")) AS ?optLabelBase) }
+      BIND(COALESCE(?optLabelLocal, ?optLabelBase) AS ?optLabel)
+        BIND(CONCAT(IF(EXISTS { ?target ?property ?opt }, "[x]", "[ ]"), " ", ?optLabel) AS ?item)
+        BIND($this AS ?self)
+      } ORDER BY ?k1 ?k2 }
+    } GROUP BY ?self
+  }
+  BIND(CONCAT(?caption, ": ", COALESCE(?items, "")) AS ?line)
+}""" .
+
+
+# The localization layer for c:Chips: its caption and option labels in the viewer's language,
+# at <focus>/~l10n-caption and <focus>/~l10n-<option>, which the SPARQL rules prefer.
+c:ChipsTexts a sem:Rendering ;
+    sem:targets c:Chips ;
+    sem:stratum -20 ;
+    sem:inputOnly true .
+c:ChipsTexts-fn a sem:Rule ; sem:implements c:ChipsTexts ; sem:function "l10n:option-labels" .
+c:ChipsTexts-sparql a sem:Rule ; sem:implements c:ChipsTexts ;
+    sem:construct """
+CONSTRUCT { ?node l10n:label ?label }
+WHERE {
+  $this c:property ?property .
+  FILTER EXISTS { ?viewer l10n:prefers ?preference }
+  { $this c:property ?subject . BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?node) }
+  UNION
+  { $this c:options/rdf:rest*/rdf:first ?subject . FILTER(isIRI(?subject))
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?subject)))) AS ?node) }
+  UNION
+  { FILTER NOT EXISTS { $this c:options ?explicit } $this c:property/rdfs:range ?range . ?subject a ?range . FILTER(isIRI(?subject))
+    BIND(IRI(CONCAT(STR($this), "/~l10n-", ENCODE_FOR_URI(STR(?subject)))) AS ?node) }
+  LATERAL { OPTIONAL { SELECT ?subject ?c WHERE {
+  
+  OPTIONAL { ?subject l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?subject ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?subject c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+  LATERAL { OPTIONAL { SELECT ?subject ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?subject ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?subject rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+  BIND(COALESCE(?c, ?r, REPLACE(STR(?subject), "^.*[#/]", "")) AS ?label)
+}""" .
+c:ChipsToggle a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Chips ;
+    beh:deletes """CONSTRUCT { ?target ?p ?option } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?option . $this c:controls ?target ; c:property ?p . ?target ?p ?option }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?option } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?option . $this c:controls ?target ; c:property ?p . FILTER NOT EXISTS { ?target ?p ?option } }""" ;
+    sem:function "chips:toggle" .

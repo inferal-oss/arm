@@ -1,0 +1,72 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix prv: <https://semblance.dev/ns/privacy#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Privacy (concealment) layer. Any component can be concealed, whatever it is:
+#   prv:concealed true  - hidden whenever concealment is on;
+#   prv:sensitive true  - hidden only in private mode (e.g. while screen sharing).
+# A concealed text field becomes a password field (the layer derives
+# c:inputType "password" before it renders); any other concealed component is
+# blurred beyond recognition and can't be interacted with. The mode is a
+# hookable property of a subtree (usually the shell): Show, Conceal, Private.
+
+<https://semblance.dev/ns/privacy> a owl:Ontology ;
+    rdfs:label "Semblance privacy layer"@en .
+
+prv:Layer a sem:Layer ; rdfs:label "privacy"@en , "приватність"@uk , "Privatsphäre"@de , "الخصوصية"@ar .
+
+prv:concealed a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "The component's content is hidden while concealment is on (masked if it is a text field, blurred otherwise)."@en .
+prv:sensitive a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "The component's content is hidden in private mode."@en .
+
+prv:privacy a owl:ObjectProperty ; rdfs:range prv:Mode ;
+    rdfs:label "Privacy"@en , "Приватність"@uk , "Privatsphäre"@de , "الخصوصية"@ar ;
+    rdfs:comment "How much of a subtree is hidden."@en ;
+    sty:hookAttribute "data-sem-privacy" .
+prv:Mode a owl:Class .
+prv:Show a prv:Mode ; sem:slug "show" ; sem:order 1 ; sem:symbol "◉" ;
+    rdfs:label "Show all"@en , "Показати все"@uk , "Alles zeigen"@de , "إظهار الكل"@ar ;
+    rdfs:comment "Nothing is blurred (concealed text fields stay masked)."@en .
+prv:Conceal a prv:Mode ; sem:slug "conceal" ; sem:order 2 ; sem:symbol "◐" ;
+    rdfs:label "Conceal"@en , "Приховати"@uk , "Verbergen"@de , "إخفاء"@ar ;
+    rdfs:comment "Concealed components are hidden. The default."@en .
+prv:Private a prv:Mode ; sem:slug "private" ; sem:order 3 ; sem:symbol "●" ;
+    rdfs:label "Private"@en , "Приватно"@uk , "Privat"@de , "خاص"@ar ;
+    rdfs:comment "Sensitive components are hidden too: for screen sharing."@en .
+
+# Before the components: a concealed text field is a password field.
+prv:Mask a sem:Rendering ;
+    sem:requires prv:concealed ;
+    sem:targets c:TextField ;
+    sem:layer prv:Layer ;
+    sem:stratum -8 ;
+    sem:inputOnly true ;
+    # Not c:inputType: the rule writes it, and must not re-run on its own output.
+    sem:watches prv:concealed .
+prv:Mask-sparql a sem:Rule ; sem:implements prv:Mask ;
+    sem:construct """CONSTRUCT { $this c:inputType "password" } WHERE { $this prv:concealed true FILTER NOT EXISTS { $this c:inputType ?t } }""" .
+prv:Mask-fn a sem:Rule ; sem:implements prv:Mask ; sem:function "privacy:mask" .
+
+# After the components: mark the root, for the theme.
+prv:Marks a sem:Rendering ;
+    sem:requires prv:concealed , prv:sensitive ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer prv:Layer ;
+    sem:stratum 12 ;
+    sem:watches prv:concealed , prv:sensitive .
+prv:Marks-sparql a sem:Rule ; sem:implements prv:Marks ;
+    sem:construct """
+CONSTRUCT { ?root rdfhtml:attribute ?a . ?a a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue "" }
+WHERE {
+  { $this prv:concealed true BIND("data-sem-concealed" AS ?name) } UNION { $this prv:sensitive true BIND("data-sem-sensitive" AS ?name) }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-", ?name)) AS ?a)
+}""" .
+prv:Marks-fn a sem:Rule ; sem:implements prv:Marks ; sem:function "privacy:marks" .

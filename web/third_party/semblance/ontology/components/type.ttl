@@ -1,0 +1,636 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Type components (DESIGN.md §3): Text, Link, Kbd and Code: running text in the type scale.
+
+# --- The type-scale axis ------------------------------------------------------------------------
+# A hookable axis like sty:tone: the value's slug becomes data-sem-text-style on the
+# component root, and the declarations of each value (theme/type.ttl) compile into the
+# hooks layer, so any component carrying sty:textStyle is set in that style.
+
+sty:textStyle a owl:ObjectProperty ;
+    rdfs:range sty:TextStyle ;
+    rdfs:label "Text style"@en ;
+    rdfs:comment "Where a run of text sits in the type scale: display, title, subtitle, body, caption, overline or mono."@en ;
+    sty:hookAttribute "data-sem-text-style" .
+sty:TextStyle a owl:Class ; rdfs:comment "A step of the type scale: font size, weight, line height and letter spacing from the type tokens."@en .
+sty:Display a sty:TextStyle ; rdfs:label "Display"@en ; sem:slug "display" ; sem:order 1 ;
+    rdfs:comment "The largest step: a page's one big statement."@en .
+sty:Title a sty:TextStyle ; rdfs:label "Title"@en ; sem:slug "title" ; sem:order 2 ;
+    rdfs:comment "Titles of pages and sections."@en .
+sty:Subtitle a sty:TextStyle ; rdfs:label "Subtitle"@en ; sem:slug "subtitle" ; sem:order 3 ;
+    rdfs:comment "A quieter line under a title."@en .
+sty:Body a sty:TextStyle ; rdfs:label "Body"@en ; sem:slug "body" ; sem:order 4 ;
+    rdfs:comment "Running text (the default)."@en .
+sty:Caption a sty:TextStyle ; rdfs:label "Caption"@en ; sem:slug "caption" ; sem:order 5 ;
+    rdfs:comment "Small supporting text: hints, footnotes, metadata."@en .
+sty:Overline a sty:TextStyle ; rdfs:label "Overline"@en ; sem:slug "overline" ; sem:order 6 ;
+    rdfs:comment "A small upper-case label above a title."@en .
+sty:Mono a sty:TextStyle ; rdfs:label "Mono"@en ; sem:slug "mono" ; sem:order 7 ;
+    rdfs:comment "Monospaced text: identifiers, IRIs, numbers that line up."@en .
+
+# --- Text --------------------------------------------------------------------------------------
+
+c:Text a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Running text: c:label is the text, or c:children an inline sequence of strings and
+components (links, kbd, code). Set in the type scale by sty:textStyle (default body) and
+colored by sty:tone (its --tone-text). A paragraph, or a span when c:inline is true."""@en ;
+    sem:slug "text" .
+c:inline a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Render inline (a span) rather than as a block (a paragraph)."@en .
+c:TextRendering a sem:Rendering ; sem:targets c:Text ; sem:stratum 0 .
+c:TextRendering-fn a sem:Rule ; sem:implements c:TextRendering ; sem:function "text" .
+
+c:TextRendering-sparql-screen a sem:Rule ;
+    sem:implements c:TextRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?labelText, ?part .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label ; ord:immediatelyPrecedes ?firstPart .
+  ?partText a rdfhtml:Text ; rdfhtml:data ?partData .
+  ?p1 ord:immediatelyPrecedes ?p2 .
+  ?f1 ord:immediatelyFollows ?f2 .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Text .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  FILTER(BOUND(?label) || EXISTS { $this c:children/rdf:first ?anyPart })
+  BIND(EXISTS { $this c:inline ?inline FILTER(STR(?inline) = "true") } AS ?isInline)
+  BIND(IF(?isInline, rdfhtml:Span, rdfhtml:P) AS ?element)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~label")), ?none) AS ?labelText)
+  {} UNION {
+    # c:label, then c:children: strings become text nodes (keyed by position), components stay themselves.
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?x .
+    { SELECT ?cell (COUNT(?indexMid) - 1 AS ?i) WHERE { $this c:children/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(IF(isIRI(?x), ?x, IRI(CONCAT(STR($this), "/~part-", STR(?i)))) AS ?part)
+    BIND(IF(isIRI(?x), ?none, ?part) AS ?partText)
+    BIND(IF(isIRI(?x), ?none, STR(?x)) AS ?partData)
+    BIND(IF(?i = 0, ?part, ?none) AS ?firstPart)
+  } UNION {
+    # Consecutive parts; the edge's subject is a node this rule mints where it can be.
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?x ; rdf:rest ?next . ?next rdf:first ?y .
+    { SELECT ?cell (COUNT(?indexMid) - 1 AS ?i) WHERE { $this c:children/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(IF(isIRI(?x), ?x, IRI(CONCAT(STR($this), "/~part-", STR(?i)))) AS ?xNode)
+    BIND(IF(isIRI(?y), ?y, IRI(CONCAT(STR($this), "/~part-", STR(?i + 1)))) AS ?yNode)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?yNode, ?none) AS ?f1)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?xNode, ?none) AS ?f2)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?none, ?xNode) AS ?p1)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?none, ?yNode) AS ?p2)
+  }
+}""" .
+
+c:TextRendering-sparql-text a sem:Rule ;
+    sem:implements c:TextRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?labelText, ?part .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label ; ord:immediatelyPrecedes ?firstPart .
+  ?partText a rdfhtml:Text ; rdfhtml:data ?partData .
+  ?p1 ord:immediatelyPrecedes ?p2 .
+  ?f1 ord:immediatelyFollows ?f2 .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Text .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  FILTER(BOUND(?label) || EXISTS { $this c:children/rdf:first ?anyPart })
+  BIND(EXISTS { $this c:inline ?inline FILTER(STR(?inline) = "true") } AS ?isInline)
+  BIND(IF(?isInline, rdfhtml:Span, rdfhtml:Div) AS ?element)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~label")), ?none) AS ?labelText)
+  {} UNION {
+    # c:label, then c:children: strings become text nodes (keyed by position), components stay themselves.
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?x .
+    { SELECT ?cell (COUNT(?indexMid) - 1 AS ?i) WHERE { $this c:children/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(IF(isIRI(?x), ?x, IRI(CONCAT(STR($this), "/~part-", STR(?i)))) AS ?part)
+    BIND(IF(isIRI(?x), ?none, ?part) AS ?partText)
+    BIND(IF(isIRI(?x), ?none, STR(?x)) AS ?partData)
+    BIND(IF(?i = 0, ?part, ?none) AS ?firstPart)
+  } UNION {
+    # Consecutive parts; the edge's subject is a node this rule mints where it can be.
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?x ; rdf:rest ?next . ?next rdf:first ?y .
+    { SELECT ?cell (COUNT(?indexMid) - 1 AS ?i) WHERE { $this c:children/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(IF(isIRI(?x), ?x, IRI(CONCAT(STR($this), "/~part-", STR(?i)))) AS ?xNode)
+    BIND(IF(isIRI(?y), ?y, IRI(CONCAT(STR($this), "/~part-", STR(?i + 1)))) AS ?yNode)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?yNode, ?none) AS ?f1)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?xNode, ?none) AS ?f2)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?none, ?xNode) AS ?p1)
+    BIND(IF(isIRI(?x) && !isIRI(?y), ?none, ?yNode) AS ?p2)
+  }
+}""" .
+
+# --- Link --------------------------------------------------------------------------------------
+
+c:Link a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A hyperlink: c:label (else the address) to c:to (a resource: the link goes to the
+location that shows it, nav:href) or c:href (an address, also the fallback), after an optional c:logo (a component,
+e.g. a c:Emblem). With c:content (a component) the link's body is that component instead of the label, and
+c:label, if any, is its accessible name. Absolute http(s) addresses, or
+c:external true, open in a new tab with rel=noopener and an ↗ mark, and say so to assistive
+technology (c:externalHint). c:currentPage true marks the current destination (aria-current=page); a link
+to the address the location shows now is marked too (nav:current), unless c:currentPage is false.
+c:count (above zero) follows the label as a number, spelled out with c:countLabel for assistive
+technology (", 3 unread"). Accent by default; sty:tone recolors it."""@en ;
+    sem:slug "link" ;
+    c:externalHint "opens in a new tab"@en , "відкривається в новій вкладці"@uk , "öffnet in einem neuen Tab"@de , "يفتح في علامة تبويب جديدة"@ar .
+c:href a owl:DatatypeProperty ; rdfs:comment "The address a link goes to."@en .
+c:to a owl:ObjectProperty ;
+    rdfs:comment "The resource a link goes to (e.g. a gallery specimen): its address is the location that shows it (navigation layer)."@en .
+c:external a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether a link leaves the application (default: absolute http(s) addresses do)."@en .
+c:currentPage a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:label "Current page"@en , "Поточна сторінка"@uk , "Aktuelle Seite"@de , "الصفحة الحالية"@ar ;
+    rdfs:comment "Whether a link goes to the page being shown (aria-current=page)."@en .
+c:externalHint a owl:AnnotationProperty ;
+    rdfs:comment "On a component class: what is said, after the label, about an external link (language-tagged)."@en .
+c:LinkRendering a sem:Rendering ; sem:targets c:Link ; sem:stratum 0 .
+c:LinkRendering-fn a sem:Rule ; sem:implements c:LinkRendering ; sem:function "link" .
+
+c:LinkRendering-sparql-screen a sem:Rule ;
+    sem:implements c:LinkRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:A ; sem:renders $this ; rdfhtml:href ?href ; rdfhtml:target ?target ; rdfhtml:rel ?rel ;
+        rdfhtml:hasChild ?logo, ?body, ?count, ?mark, ?hint ; rdfhtml:attribute ?nameAttr, ?currentAttr .
+  ?logo ord:immediatelyPrecedes ?body .
+  ?body ord:immediatelyPrecedes ?afterLabel .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?nameAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?name .
+  ?currentAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-current" ; rdfhtml:attributeValue "page" .
+  ?count a rdfhtml:Span ; rdfhtml:class "sem-count" ; rdfhtml:hasChild ?figure, ?spoken ; ord:immediatelyPrecedes ?mark .
+  ?figure a rdfhtml:Span ; rdfhtml:attribute ?figureHidden ; rdfhtml:hasChild ?figureText ; ord:immediatelyPrecedes ?spoken .
+  ?figureHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?figureText a rdfhtml:Text ; rdfhtml:data ?shown .
+  ?spoken a rdfhtml:Span ; rdfhtml:class "sem-visually-hidden" ; rdfhtml:hasChild ?spokenText .
+  ?spokenText a rdfhtml:Text ; rdfhtml:data ?said .
+  ?mark a rdfhtml:Span ; rdfhtml:class "sem-external" ; rdfhtml:hasChild ?markText ; ord:immediatelyPrecedes ?hint .
+  ?mark rdfhtml:attribute ?markHidden . ?markHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?markText a rdfhtml:Text ; rdfhtml:data "↗" .
+  ?hint a rdfhtml:Span ; rdfhtml:class "sem-sr" ; rdfhtml:hasChild ?hintText .
+  ?hintText a rdfhtml:Text ; rdfhtml:data ?hintData .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Link .
+  { $this nav:href ?href0 } UNION { FILTER NOT EXISTS { $this nav:href ?any } $this c:href ?href0 }
+  BIND(STR(?href0) AS ?href)
+  OPTIONAL { $this c:logo ?logo FILTER(isIRI(?logo)) }
+  # A component as the link's body (c:content) takes the label's place.
+  OPTIONAL { $this c:content ?content FILTER(isIRI(?content)) }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  BIND(COALESCE(?label0, ?href) AS ?label)
+  # Absolute http(s) addresses leave the application unless c:external says otherwise.
+  OPTIONAL { $this c:external ?external0 }
+  BIND(IF(BOUND(?external0), STR(?external0) = "true", REGEX(?href, "^https?://", "i")) AS ?external)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(BOUND(?content), ?none, IRI(CONCAT(STR($this), "/~label"))) AS ?labelText)
+  BIND(COALESCE(?content, ?labelText) AS ?body)
+  # The current page: said (c:currentPage), or derived from the address (nav:current) unless it says otherwise.
+  BIND(EXISTS { $this c:currentPage true } || (EXISTS { $this nav:current true } && NOT EXISTS { $this c:currentPage false }) AS ?isCurrent)
+  BIND(IF(?isCurrent, IRI(CONCAT(STR($this), "/~aria-current")), ?none) AS ?currentAttr)
+  # A count above zero: the figure (99+ past 99) shown, the number and c:countLabel (in the viewer's
+  # language when c:LinkTexts put it here) said.
+  OPTIONAL { $this c:count ?n FILTER(?n > 0) }
+  OPTIONAL { $this c:countLabel ?countLabel_u FILTER(isLiteral(?countLabel_u) && lang(?countLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?countLabel_u)) $this c:countLabel ?countLabel_en FILTER(langMatches(lang(?countLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?countLabel_u) && !BOUND(?countLabel_en)) $this c:countLabel ?countLabel_any FILTER(isLiteral(?countLabel_any)) }
+  BIND(IRI(CONCAT(STR($this), "/~l10n-count")) AS ?countLabelNode)
+  LATERAL { OPTIONAL { ?countLabelNode l10n:label ?localCountLabel } }
+  BIND(STR(COALESCE(?localCountLabel, ?countLabel_u, ?countLabel_en, ?countLabel_any)) AS ?countLabel)
+  BIND(IF(?n > 99, "99+", STR(?n)) AS ?shown)
+  BIND(CONCAT(", ", STR(?n), IF(BOUND(?countLabel), CONCAT(" ", ?countLabel), "")) AS ?said)
+  BIND(IF(BOUND(?n), IRI(CONCAT(STR($this), "/~count")), ?none) AS ?count)
+  BIND(IF(BOUND(?n), IRI(CONCAT(STR($this), "/~count-figure")), ?none) AS ?figure)
+  BIND(IF(BOUND(?n), IRI(CONCAT(STR($this), "/~count-figure-aria-hidden")), ?none) AS ?figureHidden)
+  BIND(IF(BOUND(?n), IRI(CONCAT(STR($this), "/~count-text")), ?none) AS ?figureText)
+  BIND(IF(BOUND(?n), IRI(CONCAT(STR($this), "/~count-spoken")), ?none) AS ?spoken)
+  BIND(IF(BOUND(?n), IRI(CONCAT(STR($this), "/~count-spoken-text")), ?none) AS ?spokenText)
+  BIND(IF(?external, "_blank", ?none) AS ?target)
+  BIND(IF(?external, "noopener noreferrer", ?none) AS ?rel)
+  # The hint is the class's (c:externalHint on c:Link), in the viewer's language when c:LinkTexts put it here.
+  OPTIONAL { c:Link c:externalHint ?hint0_u FILTER(isLiteral(?hint0_u) && lang(?hint0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?hint0_u)) c:Link c:externalHint ?hint0_en FILTER(langMatches(lang(?hint0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?hint0_u) && !BOUND(?hint0_en)) c:Link c:externalHint ?hint0_any FILTER(isLiteral(?hint0_any)) }
+  BIND(STR(COALESCE(?hint0_u, ?hint0_en, ?hint0_any)) AS ?hint0)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-hint")) AS ?hintNode)
+  LATERAL { OPTIONAL { ?hintNode l10n:label ?localHint } }
+  BIND(CONCAT(" (", COALESCE(?localHint, ?hint0, "opens in a new tab"), ")") AS ?hintData)
+  # Around a component, a label names the link (with the hint, which the name would otherwise hide).
+  BIND(IF(BOUND(?content) && BOUND(?label0), CONCAT(?label0, COALESCE(?said, ""), IF(?external, ?hintData, "")), ?none) AS ?name)
+  BIND(IF(BOUND(?name), IRI(CONCAT(STR($this), "/~aria-label")), ?none) AS ?nameAttr)
+  BIND(IF(?external, IRI(CONCAT(STR($this), "/~external")), ?none) AS ?mark)
+  BIND(IF(?external, IRI(CONCAT(STR($this), "/~external-text")), ?none) AS ?markText)
+  BIND(IF(?external, IRI(CONCAT(STR($this), "/~external-aria-hidden")), ?none) AS ?markHidden)
+  BIND(IF(?external, IRI(CONCAT(STR($this), "/~hint")), ?none) AS ?hint)
+  BIND(IF(?external, IRI(CONCAT(STR($this), "/~hint-text")), ?none) AS ?hintText)
+  BIND(COALESCE(?count, ?mark) AS ?afterLabel)
+}""" .
+
+c:LinkRendering-sparql-text a sem:Rule ;
+    sem:implements c:LinkRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?content, ?text .
+  ?content ord:immediatelyPrecedes ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Link .
+  { $this nav:href ?href0 } UNION { FILTER NOT EXISTS { $this nav:href ?any } $this c:href ?href0 }
+  BIND(STR(?href0) AS ?href)
+  # Around a component (c:content): the component, then the address.
+  OPTIONAL { $this c:content ?content FILTER(isIRI(?content)) }
+  BIND(IF(BOUND(?content), rdfhtml:Div, rdfhtml:Span) AS ?element)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  BIND(COALESCE(?label0, ?href) AS ?label)
+  # Absolute http(s) addresses leave the application unless c:external says otherwise.
+  OPTIONAL { $this c:external ?external0 }
+  BIND(IF(BOUND(?external0), STR(?external0) = "true", REGEX(?href, "^https?://", "i")) AS ?external)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # A count above zero follows the label (or the body) in parentheses.
+  OPTIONAL { $this c:count ?n FILTER(?n > 0) }
+  BIND(IF(BOUND(?n), CONCAT(" (", STR(?n), ")"), "") AS ?countPart)
+  BIND(IF(BOUND(?content), CONCAT(?countPart, " <", ?href, ">", IF(?external, " ↗", "")),
+          IF(?label = ?href, CONCAT("<", ?href, ">", ?countPart), CONCAT(?label, ?countPart, " <", ?href, ">", IF(?external, " ↗", "")))) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+
+# A whole card (or any other non-interactive component) as one link: c:Link's rendering with
+# c:content, under its own slug, so it is styled as a surface rather than as running text.
+c:LinkedCard a owl:Class ;
+    rdfs:subClassOf c:Link ;
+    rdfs:label "Linked card"@en , "Картка-посилання"@uk , "Verlinkte Karte"@de , "بطاقة مرتبطة"@ar ;
+    rdfs:comment """A link around one non-interactive component (c:content), commonly a c:Card: c:to or c:href,
+c:label as the link's name (else the content's text), c:external, c:currentPage, as any c:Link."""@en ;
+    sem:slug "linked-card" .
+
+# The localization layer for links: the external hint in the viewer's language, at <focus>/~l10n-hint,
+# and what a link's count counts (c:countLabel), at <focus>/~l10n-count.
+c:LinkTexts a sem:Rendering ;
+    sem:targets c:Link ;
+    sem:modality mod:Screen ;
+    sem:stratum -20 ;
+    sem:inputOnly true .
+c:LinkTexts-fn a sem:Rule ; sem:implements c:LinkTexts ; sem:function "l10n:link-hint" .
+c:LinkTexts-sparql a sem:Rule ; sem:implements c:LinkTexts ;
+    sem:construct """
+CONSTRUCT { ?node l10n:label ?text }
+WHERE {
+  $this a ?type .
+  FILTER EXISTS { ?viewer l10n:prefers ?preference }
+  # (One pattern for both texts, not a UNION: the focus is bound outside, where bulk evaluation binds it.)
+  VALUES ?which { "hint" "count" }
+  OPTIONAL { FILTER(?which = "hint") ?pickAt l10n:of c:Link ; l10n:hint ?pick }
+  OPTIONAL { FILTER(?which = "hint" && !BOUND(?pick)) c:Link c:externalHint ?any FILTER(isLiteral(?any)) }
+  OPTIONAL { FILTER(?which = "count") ?countPickAt l10n:of $this ; l10n:countLabel ?countPick }
+  OPTIONAL { FILTER(?which = "count" && !BOUND(?countPick)) $this c:countLabel ?countAny FILTER(isLiteral(?countAny)) }
+  BIND(STR(COALESCE(?pick, ?any, ?countPick, ?countAny)) AS ?text)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-", ?which)) AS ?node)
+}""" .
+
+# --- Kbd ---------------------------------------------------------------------------------------
+
+c:Kbd a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Keyboard input: one key cap (c:label, e.g. "⌘K") or a combination (c:keys, a list
+such as ( "⌘" "K" )) as nested <kbd> elements. Modifier glyphs are spelled out in its title."""@en ;
+    sem:slug "kbd" .
+c:keys a owl:ObjectProperty ; rdfs:range rdf:List ; rdfs:comment "The keys of a combination, in order."@en .
+c:KbdRendering a sem:Rendering ; sem:targets c:Kbd ; sem:stratum 0 .
+c:KbdRendering-fn a sem:Rule ; sem:implements c:KbdRendering ; sem:function "kbd" .
+
+c:KbdRendering-sparql-screen a sem:Rule ;
+    sem:implements c:KbdRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Kbd ; sem:renders $this ; rdfhtml:title ?title ; rdfhtml:hasChild ?labelText, ?cap .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?cap a rdfhtml:Kbd ; rdfhtml:hasChild ?capText ; ord:immediatelyPrecedes ?nextCap .
+  ?capText a rdfhtml:Text ; rdfhtml:data ?key .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Kbd .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  BIND(EXISTS { $this c:keys/rdf:first ?anyKey } AS ?hasKeys)
+  FILTER(?hasKeys || BOUND(?label))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # One key cap (c:label), titled when it holds a modifier glyph ...
+  BIND(IF(SUBSTR(?label, 1, 1) IN ("⌘", "⇧", "⌥", "⌃", "↵", "⏎", "⌫", "⌦", "⎋", "⇥", "↑", "↓", "←", "→", "␣"), REPLACE(REPLACE(?label, "(.)", "$1 "), " $", ""), ?label) AS ?labelG0)
+  BIND(IF(CONTAINS(?labelG0, "⌘"), REPLACE(?labelG0, "⌘", "Command"), ?labelG0) AS ?labelG1)
+  BIND(IF(CONTAINS(?labelG1, "⇧"), REPLACE(?labelG1, "⇧", "Shift"), ?labelG1) AS ?labelG2)
+  BIND(IF(CONTAINS(?labelG2, "⌥"), REPLACE(?labelG2, "⌥", "Option"), ?labelG2) AS ?labelG3)
+  BIND(IF(CONTAINS(?labelG3, "⌃"), REPLACE(?labelG3, "⌃", "Control"), ?labelG3) AS ?labelG4)
+  BIND(IF(CONTAINS(?labelG4, "↵"), REPLACE(?labelG4, "↵", "Enter"), ?labelG4) AS ?labelG5)
+  BIND(IF(CONTAINS(?labelG5, "⏎"), REPLACE(?labelG5, "⏎", "Return"), ?labelG5) AS ?labelG6)
+  BIND(IF(CONTAINS(?labelG6, "⌫"), REPLACE(?labelG6, "⌫", "Backspace"), ?labelG6) AS ?labelG7)
+  BIND(IF(CONTAINS(?labelG7, "⌦"), REPLACE(?labelG7, "⌦", "Delete"), ?labelG7) AS ?labelG8)
+  BIND(IF(CONTAINS(?labelG8, "⎋"), REPLACE(?labelG8, "⎋", "Escape"), ?labelG8) AS ?labelG9)
+  BIND(IF(CONTAINS(?labelG9, "⇥"), REPLACE(?labelG9, "⇥", "Tab"), ?labelG9) AS ?labelG10)
+  BIND(IF(CONTAINS(?labelG10, "↑"), REPLACE(?labelG10, "↑", "Up"), ?labelG10) AS ?labelG11)
+  BIND(IF(CONTAINS(?labelG11, "↓"), REPLACE(?labelG11, "↓", "Down"), ?labelG11) AS ?labelG12)
+  BIND(IF(CONTAINS(?labelG12, "←"), REPLACE(?labelG12, "←", "Left"), ?labelG12) AS ?labelG13)
+  BIND(IF(CONTAINS(?labelG13, "→"), REPLACE(?labelG13, "→", "Right"), ?labelG13) AS ?labelG14)
+  BIND(IF(CONTAINS(?labelG14, "␣"), REPLACE(?labelG14, "␣", "Space"), ?labelG14) AS ?labelG15)
+  BIND(?labelG15 AS ?labelSpoken)
+  BIND(IF(!?hasKeys, IRI(CONCAT(STR($this), "/~label")), ?none) AS ?labelText)
+  BIND(IF(!?hasKeys && REGEX(?label, "[⌘⇧⌥⌃↵⏎⌫⌦⎋⇥]"), ?labelSpoken, ?none) AS ?labelTitle)
+  # ... or nested caps for a combination (c:keys), titled with every key spoken.
+  OPTIONAL {
+    SELECT ?self (GROUP_CONCAT(?keySpoken; separator=" + ") AS ?keysSpoken) WHERE {
+      { SELECT ?self ?keySpoken ?k1 ?k2 WHERE {
+        $this c:keys/rdf:rest* ?keyCell . ?keyCell rdf:first ?keyTerm .
+        { SELECT ?keyCell (COUNT(?indexMid) - 1 AS ?k1) WHERE { $this c:keys/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?keyCell } GROUP BY ?keyCell }
+        BIND(STR(?keyTerm) AS ?keyText)
+        BIND(IF(SUBSTR(?keyText, 1, 1) IN ("⌘", "⇧", "⌥", "⌃", "↵", "⏎", "⌫", "⌦", "⎋", "⇥", "↑", "↓", "←", "→", "␣"), REPLACE(REPLACE(?keyText, "(.)", "$1 "), " $", ""), ?keyText) AS ?keyTextG0)
+  BIND(IF(CONTAINS(?keyTextG0, "⌘"), REPLACE(?keyTextG0, "⌘", "Command"), ?keyTextG0) AS ?keyTextG1)
+  BIND(IF(CONTAINS(?keyTextG1, "⇧"), REPLACE(?keyTextG1, "⇧", "Shift"), ?keyTextG1) AS ?keyTextG2)
+  BIND(IF(CONTAINS(?keyTextG2, "⌥"), REPLACE(?keyTextG2, "⌥", "Option"), ?keyTextG2) AS ?keyTextG3)
+  BIND(IF(CONTAINS(?keyTextG3, "⌃"), REPLACE(?keyTextG3, "⌃", "Control"), ?keyTextG3) AS ?keyTextG4)
+  BIND(IF(CONTAINS(?keyTextG4, "↵"), REPLACE(?keyTextG4, "↵", "Enter"), ?keyTextG4) AS ?keyTextG5)
+  BIND(IF(CONTAINS(?keyTextG5, "⏎"), REPLACE(?keyTextG5, "⏎", "Return"), ?keyTextG5) AS ?keyTextG6)
+  BIND(IF(CONTAINS(?keyTextG6, "⌫"), REPLACE(?keyTextG6, "⌫", "Backspace"), ?keyTextG6) AS ?keyTextG7)
+  BIND(IF(CONTAINS(?keyTextG7, "⌦"), REPLACE(?keyTextG7, "⌦", "Delete"), ?keyTextG7) AS ?keyTextG8)
+  BIND(IF(CONTAINS(?keyTextG8, "⎋"), REPLACE(?keyTextG8, "⎋", "Escape"), ?keyTextG8) AS ?keyTextG9)
+  BIND(IF(CONTAINS(?keyTextG9, "⇥"), REPLACE(?keyTextG9, "⇥", "Tab"), ?keyTextG9) AS ?keyTextG10)
+  BIND(IF(CONTAINS(?keyTextG10, "↑"), REPLACE(?keyTextG10, "↑", "Up"), ?keyTextG10) AS ?keyTextG11)
+  BIND(IF(CONTAINS(?keyTextG11, "↓"), REPLACE(?keyTextG11, "↓", "Down"), ?keyTextG11) AS ?keyTextG12)
+  BIND(IF(CONTAINS(?keyTextG12, "←"), REPLACE(?keyTextG12, "←", "Left"), ?keyTextG12) AS ?keyTextG13)
+  BIND(IF(CONTAINS(?keyTextG13, "→"), REPLACE(?keyTextG13, "→", "Right"), ?keyTextG13) AS ?keyTextG14)
+  BIND(IF(CONTAINS(?keyTextG14, "␣"), REPLACE(?keyTextG14, "␣", "Space"), ?keyTextG14) AS ?keyTextG15)
+  BIND(?keyTextG15 AS ?keySpoken)
+        BIND("" AS ?k2)
+        BIND($this AS ?self)
+      } ORDER BY ?k1 ?k2 }
+    } GROUP BY ?self
+  }
+  BIND(IF(?hasKeys, ?keysSpoken, ?labelTitle) AS ?title)
+  {} UNION {
+    $this c:keys/rdf:rest* ?cell . ?cell rdf:first ?key0 .
+    { SELECT ?cell (COUNT(?indexMid) - 1 AS ?i) WHERE { $this c:keys/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(STR(?key0) AS ?key)
+    BIND(IRI(CONCAT(STR($this), "/~key-", STR(?i))) AS ?cap)
+    BIND(IRI(CONCAT(STR($this), "/~key-", STR(?i), "-text")) AS ?capText)
+    LATERAL { OPTIONAL { ?cell rdf:rest ?nextCell FILTER(?nextCell != rdf:nil) } }
+    BIND(IF(BOUND(?nextCell), IRI(CONCAT(STR($this), "/~key-", STR(?i + 1))), ?none) AS ?nextCap)
+  }
+}""" .
+
+c:KbdRendering-sparql-text a sem:Rule ;
+    sem:implements c:KbdRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Kbd .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  BIND(EXISTS { $this c:keys/rdf:first ?anyKey } AS ?hasKeys)
+  FILTER(?hasKeys || BOUND(?label))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL {
+    SELECT ?self (GROUP_CONCAT(?keyCap; separator="") AS ?caps) WHERE {
+      { SELECT ?self ?keyCap ?k1 ?k2 WHERE {
+        $this c:keys/rdf:rest* ?keyCell . ?keyCell rdf:first ?keyTerm .
+        { SELECT ?keyCell (COUNT(?indexMid) - 1 AS ?k1) WHERE { $this c:keys/rdf:rest* ?indexMid . ?indexMid rdf:rest* ?keyCell } GROUP BY ?keyCell }
+        BIND(CONCAT("[", STR(?keyTerm), "]") AS ?keyCap)
+        BIND("" AS ?k2)
+        BIND($this AS ?self)
+      } ORDER BY ?k1 ?k2 }
+    } GROUP BY ?self
+  }
+  BIND(IF(?hasKeys, ?caps, CONCAT("[", ?label, "]")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+# --- Code --------------------------------------------------------------------------------------
+
+c:Code a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Code: inline (<code>) or, with c:block true, a block (<pre><code>). With c:language
+"sparql" or "turtle" its tokens are colored with the same palette as the rule sources on the
+back of every card. c:label is the code."""@en ;
+    sem:slug "code" .
+c:block a owl:DatatypeProperty ; rdfs:range xsd:boolean ; rdfs:comment "Render as a block rather than inline."@en .
+c:language a owl:DatatypeProperty ; rdfs:comment "The language of a code sample (\"sparql\", \"turtle\"), for coloring."@en .
+# Code is two renderings: c:CodeRendering for everything but colored samples, and
+# c:CodeColoredRendering for SPARQL and Turtle samples on screen (their tokens colored).
+c:CodeRendering a sem:Rendering ; sem:targets c:Code ; sem:stratum 0 .
+c:CodeRendering-fn a sem:Rule ; sem:implements c:CodeRendering ; sem:function "code" .
+
+c:CodeRendering-sparql-screen a sem:Rule ;
+    sem:implements c:CodeRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?inlineText, ?tag, ?code .
+  ?root rdfhtml:attribute ?tabAttr . ?tabAttr a rdfhtml:Attribute ; rdfhtml:attributeName "tabindex" ; rdfhtml:attributeValue "0" .
+  ?inlineText a rdfhtml:Text ; rdfhtml:data ?source .
+  ?tag a rdfhtml:Span ; rdfhtml:class "sem-language" ; rdfhtml:hasChild ?tagText ; ord:immediatelyPrecedes ?code .
+  ?tag rdfhtml:attribute ?tagHidden . ?tagHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?tagText a rdfhtml:Text ; rdfhtml:data ?language .
+  ?code a rdfhtml:Code ; rdfhtml:hasChild ?codeText .
+  ?codeText a rdfhtml:Text ; rdfhtml:data ?trimmed .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Code .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  OPTIONAL { $this c:value ?value0 }
+  BIND(COALESCE(?label0, STR(?value0)) AS ?source)
+  FILTER(BOUND(?source))
+  BIND(EXISTS { $this c:block ?block0 FILTER(STR(?block0) = "true") } AS ?block)
+  OPTIONAL { $this c:language ?language0 }
+  BIND(LCASE(STR(?language0)) AS ?language)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # SPARQL and Turtle samples are colored token by token: c:CodeColoredRendering, a function.
+  FILTER(!BOUND(?language) || !(?language IN ("sparql", "turtle")))
+  BIND(IF(?block, rdfhtml:Pre, rdfhtml:Code) AS ?element)
+  BIND(REPLACE(?source, "^\\n+|[ \\t\\n\\r]+$", "") AS ?trimmed)
+  BIND(IF(!?block, IRI(CONCAT(STR($this), "/~code-text")), ?none) AS ?inlineText)
+  BIND(IF(?block, IRI(CONCAT(STR($this), "/~root-tabindex")), ?none) AS ?tabAttr)
+  BIND(IF(?block, IRI(CONCAT(STR($this), "/~code")), ?none) AS ?code)
+  BIND(IF(?block, IRI(CONCAT(STR($this), "/~code-text")), ?none) AS ?codeText)
+  BIND(IF(?block && BOUND(?language) && ?language != "", IRI(CONCAT(STR($this), "/~language")), ?none) AS ?tag)
+  BIND(IF(?block && BOUND(?language) && ?language != "", IRI(CONCAT(STR($this), "/~language-text")), ?none) AS ?tagText)
+  BIND(IF(?block && BOUND(?language) && ?language != "", IRI(CONCAT(STR($this), "/~language-aria-hidden")), ?none) AS ?tagHidden)
+}""" .
+
+c:CodeRendering-sparql-text a sem:Rule ;
+    sem:implements c:CodeRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Code .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label0)
+  OPTIONAL { $this c:value ?value0 }
+  BIND(COALESCE(?label0, STR(?value0)) AS ?source)
+  FILTER(BOUND(?source))
+  BIND(EXISTS { $this c:block ?block0 FILTER(STR(?block0) = "true") } AS ?block)
+  OPTIONAL { $this c:language ?language0 }
+  BIND(LCASE(STR(?language0)) AS ?language)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(?block, rdfhtml:Div, rdfhtml:Span) AS ?element)
+  # A block is indented four spaces, line by line.
+  BIND(IF(?block, CONCAT("    ", REPLACE(REPLACE(?source, "[ \\t\\n\\r]+$", ""), "\\n", "\\n    ")), CONCAT("`", ?source, "`")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+c:CodeColoredRendering a sem:Rendering ; sem:targets c:Code ; sem:modality mod:Screen ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it splits a SPARQL or Turtle sample into tokens to color each, which needs a regex-match relation." ;
+    sem:needsExtension sx:Matches .
+c:CodeColoredRendering-fn a sem:Rule ; sem:implements c:CodeColoredRendering ; sem:function "code:colored" .
+
+# --- Blockquote --------------------------------------------------------------------------------
+
+c:Blockquote a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A quotation (c:label) set off from the text, with an optional c:attribution."@en ;
+    sem:slug "blockquote" .
+c:attribution a owl:DatatypeProperty ; rdfs:comment "Who or what a quotation is from."@en .
+c:BlockquoteRendering a sem:Rendering ; sem:targets c:Blockquote ; sem:stratum 0 .
+c:BlockquoteRendering-fn a sem:Rule ; sem:implements c:BlockquoteRendering ; sem:function "blockquote" .
+
+c:BlockquoteRendering-sparql-screen a sem:Rule ;
+    sem:implements c:BlockquoteRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Blockquote ; sem:renders $this ; rdfhtml:hasChild ?quoteEl, ?footer .
+  ?quoteEl a rdfhtml:P ; rdfhtml:hasChild ?quoteText ; ord:immediatelyPrecedes ?footer .
+  ?quoteText a rdfhtml:Text ; rdfhtml:data ?quote .
+  ?footer a rdfhtml:Footer ; rdfhtml:hasChild ?dash, ?cite .
+  ?dash a rdfhtml:Text ; rdfhtml:data "— " ; ord:immediatelyPrecedes ?cite .
+  ?cite a rdfhtml:Cite ; rdfhtml:hasChild ?citeText .
+  ?citeText a rdfhtml:Text ; rdfhtml:data ?by .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Blockquote .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?quoteOwn)
+  OPTIONAL { ?quoteRdfs_uAt l10n:of $this ; l10n:name ?quoteRdfs_u }
+  OPTIONAL { $this rdfs:label ?quoteRdfs_u FILTER(isLiteral(?quoteRdfs_u) && lang(?quoteRdfs_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?quoteRdfs_u)) $this rdfs:label ?quoteRdfs_en FILTER(langMatches(lang(?quoteRdfs_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?quoteRdfs_u) && !BOUND(?quoteRdfs_en)) $this rdfs:label ?quoteRdfs_any FILTER(isLiteral(?quoteRdfs_any)) }
+  BIND(STR(COALESCE(?quoteRdfs_u, ?quoteRdfs_en, ?quoteRdfs_any)) AS ?quoteRdfs)
+  BIND(COALESCE(?quoteOwn, ?quoteRdfs, REPLACE(STR($this), "^.*[#/]", "")) AS ?quote)
+  OPTIONAL { $this c:attribution ?by0_u FILTER(isLiteral(?by0_u) && lang(?by0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?by0_u)) $this c:attribution ?by0_en FILTER(langMatches(lang(?by0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?by0_u) && !BOUND(?by0_en)) $this c:attribution ?by0_any FILTER(isLiteral(?by0_any)) }
+  BIND(STR(COALESCE(?by0_u, ?by0_en, ?by0_any)) AS ?by0)
+  BIND(IF(?by0 != "", ?by0, ?none) AS ?by)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~quote")) AS ?quoteEl)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?quoteText)
+  BIND(IF(BOUND(?by), IRI(CONCAT(STR($this), "/~footer")), ?none) AS ?footer)
+  BIND(IF(BOUND(?by), IRI(CONCAT(STR($this), "/~dash")), ?none) AS ?dash)
+  BIND(IF(BOUND(?by), IRI(CONCAT(STR($this), "/~cite")), ?none) AS ?cite)
+  BIND(IF(BOUND(?by), IRI(CONCAT(STR($this), "/~cite-text")), ?none) AS ?citeText)
+}""" .
+
+c:BlockquoteRendering-sparql-text a sem:Rule ;
+    sem:implements c:BlockquoteRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Blockquote .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?quoteOwn)
+  OPTIONAL { ?quoteRdfs_uAt l10n:of $this ; l10n:name ?quoteRdfs_u }
+  OPTIONAL { $this rdfs:label ?quoteRdfs_u FILTER(isLiteral(?quoteRdfs_u) && lang(?quoteRdfs_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?quoteRdfs_u)) $this rdfs:label ?quoteRdfs_en FILTER(langMatches(lang(?quoteRdfs_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?quoteRdfs_u) && !BOUND(?quoteRdfs_en)) $this rdfs:label ?quoteRdfs_any FILTER(isLiteral(?quoteRdfs_any)) }
+  BIND(STR(COALESCE(?quoteRdfs_u, ?quoteRdfs_en, ?quoteRdfs_any)) AS ?quoteRdfs)
+  BIND(COALESCE(?quoteOwn, ?quoteRdfs, REPLACE(STR($this), "^.*[#/]", "")) AS ?quote)
+  OPTIONAL { $this c:attribution ?by0_u FILTER(isLiteral(?by0_u) && lang(?by0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?by0_u)) $this c:attribution ?by0_en FILTER(langMatches(lang(?by0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?by0_u) && !BOUND(?by0_en)) $this c:attribution ?by0_any FILTER(isLiteral(?by0_any)) }
+  BIND(STR(COALESCE(?by0_u, ?by0_en, ?by0_any)) AS ?by0)
+  BIND(IF(?by0 != "", ?by0, ?none) AS ?by)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(CONCAT("> ", ?quote, IF(BOUND(?by), CONCAT("\\n> — ", ?by), "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .

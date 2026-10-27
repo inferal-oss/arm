@@ -1,0 +1,103 @@
+@prefix ext: <https://semblance.dev/ns/foreign#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix arm: <https://arm.local/ui#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# All visible components are stock Semblance instances. ARM's only interaction
+# mixin records an effect request; the host performs the authorized backend IO.
+arm:prefixes sh:declare [ sh:prefix "arm" ; sh:namespace "https://arm.local/ui#"^^xsd:anyURI ] .
+# The runtime snapshots the class hierarchy before any host effects run.
+# Private widgets therefore declare their stock foreign adapter up front.
+arm:Island a owl:Class ; rdfs:subClassOf ext:Island ;
+  sem:slug "arm-island" ; ext:adapter ext:Widget .
+arm:Effect a owl:Class .
+arm:Activate a beh:Reaction ; beh:when beh:Click ; beh:sourceClass arm:Effect ;
+  beh:inserts """CONSTRUCT { $this arm:requested $event } WHERE {}""" .
+arm:Focus a beh:Reaction ; beh:when beh:Focus ; beh:sourceClass arm:Effect ;
+  beh:inserts """CONSTRUCT { $this arm:focused $event } WHERE {}""" .
+
+arm:shell a c:Stack ; sty:theme sty:Semblance ; sty:colorScheme sty:Dark ;
+  pos:direction pos:Column ; pos:gap tok:space-4 ; pos:inset tok:space-4 ;
+  c:children ( arm:header arm:statusline arm:heading arm:notice arm:content arm:desktop arm:footer ) .
+arm:header a c:AppBar ; c:label "ARM" ; c:byline arm:host ; c:logo arm:logo ;
+  c:actions ( arm:navigation ) ; c:moreActions ( arm:theme arm:scheme ) ; c:moreLabel "Actions and display" .
+arm:logo a c:Emblem ; c:label "ARM Carve" ; c:decorative true ; c:viewBox "8 8 80 80" ;
+ c:pathData "M28 16H46V50H80V68Q80 80 68 80H28Q16 80 16 68V28Q16 16 28 16Z M63 16H75Q80 16 80 21V33Q80 38 75 38H63Q58 38 58 33V21Q58 16 63 16Z" .
+arm:statusline a c:Toolbar ; c:label "Backend status" ; c:children ( arm:connection ) .
+arm:scheme a c:ThemeSwitcher ; c:label "Color scheme" ; c:controls arm:shell ; c:property sty:colorScheme .
+arm:brand a c:Heading ; c:level 1 ; c:label "ARM / Agent Resource Manager" .
+arm:connection a c:Badge ; c:label "Connecting" .
+arm:host a c:Text ; c:label "Local operator session" .
+arm:theme a c:Choice ; c:label "Theme" ; c:controls arm:shell ; c:property sty:theme .
+arm:shell arm:view arm:monitor .
+arm:navigation a c:Segmented ; c:label "Views" ; c:controls arm:shell ; c:property arm:view ; c:compactAs c:Picker ;
+ c:options ( arm:monitor arm:resources arm:leases arm:messages arm:activityView arm:hostView arm:mesh arm:screen ) .
+arm:heading a c:Heading ; c:level 2 ; c:label "Host monitor" .
+arm:notice a c:Alert ; c:label "Waiting for backend" ; c:hidden true .
+arm:content a c:Switch ; c:controls arm:shell ; c:property arm:view ;
+ c:cases ( arm:monitorCase arm:resourcesCase arm:leasesCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase ) .
+arm:activity a c:AccordionItem ; c:label "Live activity" ; c:expanded false ; c:content arm:liveActivityContent .
+arm:liveActivityContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-2 .
+arm:desktop a c:Stack ; pos:direction pos:Column .
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+arm:monitor rdfs:label "Monitor" .
+arm:monitorCase c:when arm:monitor ; c:content arm:monitorContent .
+arm:monitorContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:resources rdfs:label "Resources" .
+arm:resourcesCase c:when arm:resources ; c:content arm:resourcesContent .
+arm:resourcesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:leases rdfs:label "Leases" .
+arm:leasesCase c:when arm:leases ; c:content arm:leasesContent .
+arm:leasesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:messages rdfs:label "Messages" .
+arm:messagesCase c:when arm:messages ; c:content arm:messagesContent .
+arm:messagesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:activityView rdfs:label "Activity" .
+arm:activityCase c:when arm:activityView ; c:content arm:activityContent .
+arm:activityContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:hostView rdfs:label "Host" .
+arm:hostCase c:when arm:hostView ; c:content arm:hostContent .
+arm:hostContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:mesh rdfs:label "Mesh" .
+arm:meshCase c:when arm:mesh ; c:content arm:meshContent .
+arm:meshContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+arm:screen rdfs:label "Screen" .
+arm:screenCase c:when arm:screen ; c:content arm:screenContent .
+arm:screenContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+
+# Application announcements decorate stock output; no local component renderer.
+arm:Announcer a sem:Rendering ; sem:targets sem:Component ; sem:stratum 10 ;
+ sem:requires arm:role ; sem:watches arm:role .
+arm:Announcer-sparql a sem:Rule ; sem:implements arm:Announcer ; sem:construct """
+CONSTRUCT {
+ ?root rdfhtml:attribute ?role .
+ ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue ?name .
+}
+WHERE {
+ $this arm:role ?name .
+ BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+ BIND(IRI(CONCAT(STR($this), "/~arm-role")) AS ?role)
+}""" .
+
+# Programmatic destinations (e.g. a text-only message selected in the palette)
+# can receive keyboard focus without adding another stop to normal Tab order.
+arm:FocusTarget a sem:Rendering ; sem:targets sem:Component ; sem:stratum 10 ;
+ sem:requires arm:focusable ; sem:watches arm:focusable .
+arm:FocusTarget-sparql a sem:Rule ; sem:implements arm:FocusTarget ;
+ sem:construct """CONSTRUCT { ?root rdfhtml:tabIndex "-1" }
+WHERE { $this arm:focusable true . BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root) }""" .
+
+# Stock StatusBar supplies the full-viewport shell layout and sticky footer.
+arm:footer a c:StatusBar ; c:label "ARM" ; c:children ( arm:sessionScope ) .
+arm:sessionScope a c:Text ; c:label "Local operator session" .
+# Host-page reset only; components and theme styling are entirely stock.
+[] a sty:StyleRule ; sty:part "body" ; sty:declares [ sty:property "margin" ; sty:raw "0" ] .

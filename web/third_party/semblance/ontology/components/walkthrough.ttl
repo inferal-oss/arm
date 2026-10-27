@@ -1,0 +1,531 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix fs: <https://semblance.dev/ns/fullscreen#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix nav: <https://semblance.dev/ns/navigation#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Walkthroughs: an explanation read beside a diagram of what it explains.
+#
+# A c:Walkthrough is an ordered list of c:WalkthroughStep s (c:steps), each a paragraph of
+# running text (a c:Text: strings and inline components) in which phrases are c:Mention s: a
+# label that c:mentions a resource of the graph. So the link between words and the graph is
+# data. Beside the steps the walkthrough draws a diagram of the graph: the mentioned
+# resources (and c:diagramIncludes), placed in bands by the step that first mentions them, and
+# the links among them - their own triples between each other, list membership (c:children
+# ( … )), and a query's text naming one (a reaction's beh:inserts writing ex:done).
+#
+# Which step is being read is graph state (c:current): the host reports the step in view as an
+# unrecorded c:StepInView event (scrolling must not flood the change log), and focusing a step
+# or a mention does the same. A rule above the rendering (c:WalkthroughFocus) derives from it
+# how salient each mark of the diagram is - the current step's mentioned nodes focused, their
+# neighbours, the rest dimmed - like a c:ResultGraph's selection. Pointing at a mention (hover,
+# focus: c:pointedTerm) or clicking a node (c:selectedTerm) focuses that one term instead, and
+# lights the mentions of it. An arrow joins each of the current step's mentions (and each lit
+# one) to its node: a c:Connector a rule derives (c:WalkthroughArrows), which leaves its phrase
+# between the lines (c:leader, the step) and stops at the node's ring; the connector effect
+# (src/web/connectors.ts) draws it where things are, and hides it while its phrase is out of view
+# or under the diagram (on a phone the diagram stays on top).
+#
+# A walkthrough may show the source it explains (c:sourceView, a c:SourceView): clicking a
+# mention shows the statement that describes its resource there (c:highlightsSubject on the
+# source view; the host records each subject's lines as a c:SourceSpan). A mention of a term the
+# source does not describe (a framework class) links to it instead (c:to): the navigation layer
+# finds where it is shown (the Reference, through nav:showsTerms).
+
+# --- vocabulary ----------------------------------------------------------------------------------
+
+c:Walkthrough a owl:Class ;
+    rdfs:subClassOf sem:Component , fs:Fullscreenable ;
+    rdfs:comment """An explanation in steps beside a diagram of what it mentions: c:label (a title), c:note (a lead),
+c:steps (an rdf:List of c:WalkthroughStep), and optionally c:sourceView, the source it explains. The
+diagram shows every resource a step's c:Mention mentions, plus c:diagramIncludes, minus
+c:diagramExcludes, and the links among them; it stays beside the steps while they scroll (they stack
+when narrow). The step being read (c:current, by default the first) focuses its mentions in the
+diagram, and arrows (c:Connector s) join each of its mentions to its node. The toggles on the
+diagram fill the window, or the screen, with the diagram (fs:Fullscreenable, fs:part): a large graph at a size it
+can be read at."""@en ;
+    sem:slug "walkthrough" ;
+    fs:part "diagram" .
+c:WalkthroughStep a owl:Class ;
+    rdfs:subClassOf c:Text ;
+    rdfs:comment """One step of a c:Walkthrough: running text (c:children: strings and inline components, among them
+c:Mention s) under an optional title (rdfs:label). Focusable; focusing it makes it the current step."""@en ;
+    sem:slug "walkthrough-step" .
+c:Mention a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A phrase in running text (c:label) that is about a resource of the graph (c:mentions). In a
+c:Walkthrough it points at its node in the diagram; activating it shows the resource's statement in the
+walkthrough's source, or, with c:to, goes where that resource is shown (a term's page in the Reference)."""@en ;
+    sem:slug "mention" .
+
+# c:steps and c:current are the c:Stepper's: the ordered steps, and the one being worked on (read).
+c:steps a nav:ContainmentProperty .
+c:mentions a owl:ObjectProperty ; rdfs:domain c:Mention ;
+    rdfs:comment "The resource a mention is about: its node in a walkthrough's diagram, its statement in the source."@en .
+c:sourceView a owl:ObjectProperty , nav:ContainmentProperty ; rdfs:domain c:Walkthrough ; rdfs:range c:SourceView ;
+    rdfs:comment "The source a walkthrough explains, shown beside its diagram; activating a mention shows the mentioned resource's statement in it."@en .
+c:diagramIncludes a owl:ObjectProperty ; rdfs:domain c:Walkthrough ;
+    rdfs:comment "A resource the diagram shows although no step mentions it (context for what is mentioned)."@en .
+c:diagramExcludes a owl:ObjectProperty ; rdfs:domain c:Walkthrough ;
+    rdfs:comment "A mentioned resource the diagram leaves out (its mentions still show it in the source)."@en .
+c:pointedTerm a rdf:Property ; rdfs:domain c:Walkthrough ;
+    rdfs:comment "The term of the mention the pointer is on, or that has focus (unrecorded): its node and its mentions stand out."@en .
+c:showsStep a owl:ObjectProperty ;
+    rdfs:comment "On a rendered step of a c:Walkthrough: the c:WalkthroughStep it shows."@en .
+c:highlightsSubject a rdf:Property ; rdfs:domain c:SourceView ;
+    rdfs:comment "The resource whose statements a source view highlights (and brings into view): the lines of its c:SourceSpan s."@en .
+c:line a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "On a rendered line of a c:SourceView: its number, from 1."@en .
+
+c:SourceSpan a owl:Class ;
+    rdfs:comment """Where a source text describes a resource: one statement about c:subject (written c:label) in the
+c:SourceText c:in, from c:fromLine to c:toLine. The host records them with the text."""@en .
+c:in a owl:ObjectProperty ; rdfs:domain c:SourceSpan ; rdfs:range c:SourceText .
+c:subject a owl:ObjectProperty ; rdfs:domain c:SourceSpan .
+c:fromLine a owl:DatatypeProperty ; rdfs:domain c:SourceSpan ; rdfs:range xsd:integer .
+c:toLine a owl:DatatypeProperty ; rdfs:domain c:SourceSpan ; rdfs:range xsd:integer .
+
+# --- rendering ------------------------------------------------------------------------------------
+
+# Not the reading state: moving between steps must not lay the diagram out again.
+c:WalkthroughRendering a sem:Rendering ; sem:targets c:Walkthrough ; sem:stratum 0 ;
+    sem:watches rdf:type , c:label , c:note , c:steps , c:sourceView , c:diagramIncludes , c:diagramExcludes ;
+    sem:functionOnly "awaits sx:Math (sx:sqrt, sx:atan2) and sx:Matches (sx:matches): it lays the diagram out (bands, rows, curved links with arrowheads) and finds links in query text." ;
+    sem:needsExtension sx:Math , sx:Matches .
+c:WalkthroughRendering-fn a sem:Rule ; sem:implements c:WalkthroughRendering ; sem:function "walkthrough" .
+
+c:MentionRendering a sem:Rendering ; sem:targets c:Mention ; sem:stratum 0 .
+c:MentionRendering-fn a sem:Rule ; sem:implements c:MentionRendering ; sem:function "mention" .
+c:MentionRendering-sparql-screen a sem:Rule ;
+    sem:implements c:MentionRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:class "sem-mention" ; rdfhtml:type ?type ; rdfhtml:href ?href ;
+        rdfhtml:hasChild ?labelText ; rdfhtml:attribute ?mentionsAttr .
+  ?mentionsAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-mentions" ; rdfhtml:attributeValue ?termIri .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Mention ; c:mentions ?term FILTER(isIRI(?term))
+  BIND(STR(?term) AS ?termIri)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?localLabel, ?ownLabel_u, ?ownLabel_en, ?ownLabel_any, REPLACE(STR(?term), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this nav:href ?href0 }
+  BIND(IF(BOUND(?href0), rdfhtml:A, rdfhtml:Button) AS ?element)
+  BIND(IF(BOUND(?href0), STR(?href0), ?none) AS ?href)
+  BIND(IF(BOUND(?href0), ?none, "button") AS ?type)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelText)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-mentions")) AS ?mentionsAttr)
+}""" .
+c:MentionRendering-sparql-text a sem:Rule ;
+    sem:implements c:MentionRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?labelText .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Mention ; c:mentions ?term FILTER(isIRI(?term))
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?localLabel, ?ownLabel_u, ?ownLabel_en, ?ownLabel_any, REPLACE(STR(?term), "^.*[#/]", ""))) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelText)
+}""" .
+
+# A mention with c:to links where the navigation layer finds its resource shown, like a c:Link.
+c:MentionDestination a sem:Rendering ; sem:targets c:Mention ; sem:stratum 0 ; sem:requires c:to .
+c:MentionDestination-fn a sem:Rule ; sem:implements c:MentionDestination ; sem:function "navigation:link-destination" .
+c:MentionDestination-sparql a sem:Rule ;
+    sem:implements c:MentionDestination ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT { $this nav:href ?href }
+WHERE {
+  $this c:to ?to . FILTER(isIRI(?to))
+  ?loc a nav:Location ; nav:root ?root .
+  BIND(EXISTS { ?to (^nav:from/nav:to)* ?root } AS ?shown)
+  # A term no component shows: a class, a property, or named in an owl:Ontology's namespace.
+  BIND(REPLACE(STR(?to), "[^#/]*$", "") AS ?ns)
+  BIND(!?shown && (EXISTS { ?anyOf a ?to } || EXISTS { ?anyS ?to ?anyO }
+       || EXISTS { ?onto a owl:Ontology FILTER(STR(?onto) = ?ns || STR(?onto) = SUBSTR(?ns, 1, STRLEN(?ns) - 1)) }) AS ?term)
+  FILTER(?shown || ?term)
+  OPTIONAL { SELECT ?to ?loc (GROUP_CONCAT(?part; separator="/") AS ?parts) WHERE {
+    { SELECT DISTINCT ?to ?loc ?d ?part ?order WHERE {
+      { SELECT ?to ?loc ?d ?v WHERE {
+        $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+        {
+          # Shown: the cases of the switches on the way down, and the target - unless it is a whole case.
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          ?to (^nav:from/nav:to)* ?root .
+          ?to (^nav:from/nav:to)* ?casea .
+      LATERAL { ?casea c:when ?v . ?edgea nav:from ?casea ; nav:to ?switcha .
+        ?switcha c:cases ?casesa ; c:controls ?controlsa ; c:property ?propertya .
+        ?d nav:subject ?controlsa ; nav:property ?propertya . FILTER NOT EXISTS { ?d a nav:TargetDimension } }
+          # It applies: its parent dimension's value, from a case further up, is one it is shown under.
+          OPTIONAL { ?d nav:parent ?pa }
+          FILTER(!BOUND(?pa) || EXISTS { ?d nav:when ?pw . ?to (^nav:from/nav:to)* ?casec .
+      LATERAL { ?casec c:when ?pw . ?edgec nav:from ?casec ; nav:to ?switchc .
+        ?switchc c:cases ?casesc ; c:controls ?controlsc ; c:property ?propertyc .
+        ?pa nav:subject ?controlsc ; nav:property ?propertyc . FILTER NOT EXISTS { ?pa a nav:TargetDimension } } })
+        } UNION {
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          ?to (^nav:from/nav:to)* ?root .
+          ?d a nav:TargetDimension ; nav:carriedBy nav:Fragment .
+          FILTER NOT EXISTS { ?wholeEdge nav:from ?to ; nav:to ?wholeCase . ?wholeCase c:when ?w }
+          BIND(?to AS ?v)
+        } UNION {
+          # A term: the dimension whose values are terms, and what its parents need for it to apply.
+          $this c:to ?to . ?loc a nav:Location ; nav:root ?root .
+          FILTER NOT EXISTS { ?to (^nav:from/nav:to)* ?root }
+          ?loc nav:dimensions ?termHead . ?termHead rdf:rest* ?termCell . ?termCell rdf:first ?termDim .
+          ?termDim nav:showsTerms true ; nav:carriedBy nav:Fragment .
+          { ?termDim nav:showsTerms true . BIND(?termDim AS ?d) } UNION { ?termDim nav:showsTerms true ; nav:parent* ?x . ?x nav:parent ?d ; nav:when ?when }
+          BIND(IF(?d = ?termDim, ?to, ?when) AS ?v)
+        }
+      } }
+      ?d nav:carriedBy nav:Fragment .
+      OPTIONAL { ?d nav:keyProperty ?keyPropertys }
+      BIND(EXISTS { ?d nav:spelling nav:PrefixedName } AS ?prefixeds)
+      OPTIONAL { FILTER(!?prefixeds) ?v ?keyPropertys ?ownKeys }
+      OPTIONAL { FILTER(!?prefixeds) ?v sem:slug ?slugKeys }
+      OPTIONAL { ?v nav:anchor ?anchors }
+      BIND(COALESCE(IF(isLiteral(?ownKeys), STR(?ownKeys), ?none), IF(isLiteral(?slugKeys), STR(?slugKeys), ?none)) AS ?keys)
+      # The longest namespace an IRI starts with (and that leaves a plain local name) spells it.
+      LATERAL { OPTIONAL { SELECT ?v (MAX(CONCAT(SUBSTR("0000", STRLEN(STR(STRLEN(?pnss)))), STR(STRLEN(?pnss)), " ", ?pps, ":", STRAFTER(STR(?v), ?pnss))) AS ?bests) WHERE {
+        { ?pnodes sem:prefixName ?pp0s ; sem:namespace ?pns0s } UNION { ?pnodes sh:prefix ?pp0s ; sh:namespace ?pns0s }
+        BIND(STR(?pp0s) AS ?pps) BIND(STR(?pns0s) AS ?pnss)
+        FILTER(isIRI(?v) && STRSTARTS(STR(?v), ?pnss) && REGEX(STRAFTER(STR(?v), ?pnss), "^[A-Za-z0-9_-]+$"))
+      } GROUP BY ?v } }
+      BIND(IF(isLiteral(?v), STR(?v),
+           IF(EXISTS { ?d a nav:TargetDimension }, COALESCE(STR(?anchors), REPLACE(STR(?v), "^.*[#/]", "")),
+           COALESCE(?keys, STRAFTER(?bests, " "), STR(?v)))) AS ?texts)
+      # As encodeURIComponent writes it, with ':' and '@' kept readable.
+      BIND(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ENCODE_FOR_URI(?texts),
+           "%3A", ":"), "%40", "@"), "%21", "!"), "%27", "'"), "%28", "("), "%29", ")"), "%2A", "*") AS ?part)
+      # Parents before their children, in the location's order; a parent not carried here after; the target last.
+      # (From the location's list head forward: Oxigraph walks a list path from its far end slowly.)
+      {{ SELECT ?d (COUNT(DISTINCT ?before) AS ?at) WHERE {{ ?l0 a nav:Location ; nav:dimensions ?h0 . ?h0 rdf:rest* ?before . ?before rdf:rest* ?c0 . ?c0 rdf:first ?d }} GROUP BY ?d }}
+      OPTIONAL {{ ?d nav:parent ?p1 . {{ SELECT ?p1 (COUNT(DISTINCT ?before1) AS ?at1) WHERE {{ ?l1 a nav:Location ; nav:dimensions ?h1 . ?h1 rdf:rest* ?before1 . ?before1 rdf:rest* ?c1 . ?c1 rdf:first ?p1 }} GROUP BY ?p1 }} }}
+      BIND(SUBSTR(CONCAT("000", STR(?at)), STRLEN(STR(?at)) + 1) AS ?own)
+      BIND(IF(EXISTS {{ ?d a nav:TargetDimension }}, CONCAT("2", ?own),
+           IF(!BOUND(?p1), CONCAT("0", ?own, "000"),
+           IF(EXISTS {{ ?p1 nav:carriedBy nav:Fragment }}, CONCAT("0", SUBSTR(CONCAT("000", STR(?at1)), STRLEN(STR(?at1)) + 1), ?own), CONCAT("1", ?own)))) AS ?order)
+    } ORDER BY ?order }
+  } GROUP BY ?to ?loc }
+  BIND(CONCAT("#", COALESCE(?parts, "")) AS ?href)
+}""" .
+
+# --- the reading state: what stands out ---------------------------------------------------------------
+# Above the tooltip layer (30), like c:ResultGraphSelection. The marks say what they show: a node
+# its term (c:term), a link its ends (c:edgeFrom, c:edgeTo), a rendered step its step
+# (c:showsStep) and what that step mentions (c:mentions) - so the rule joins marks, never walks
+# the steps' lists (a path with an open end inside EXISTS is a scan of the store). The focused terms are the pointed or selected one if any, else the current step's
+# mentions; a link touching a focused node is a neighbour, and so is its other end. The current
+# step is aria-current; mentions of the pointed or selected term are lit.
+c:WalkthroughFocus a sem:Rendering ; sem:targets c:Walkthrough ; sem:modality mod:Screen ; sem:stratum 40 ;
+    sem:readsMinted true ; sem:watches rdf:type , c:current , c:pointedTerm , c:selectedTerm .
+c:WalkthroughFocus-fn a sem:Rule ; sem:implements c:WalkthroughFocus ; sem:function "walkthrough:focus" .
+c:WalkthroughFocus-sparql a sem:Rule ;
+    sem:implements c:WalkthroughFocus ;
+    sem:construct """
+CONSTRUCT {
+  ?wrap rdfhtml:attribute ?currentAttr .
+  ?currentAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-current" ; rdfhtml:attributeValue "step" .
+  ?mark c:salience ?salience ; rdfhtml:attribute ?shown .
+  ?shown a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-salience" ; rdfhtml:attributeValue ?slug .
+  ?mentionRoot rdfhtml:attribute ?lit .
+  ?lit a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-lit" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a c:Walkthrough .
+  BIND(IRI(CONCAT(STR($this), "/~plot")) AS ?plot)
+  BIND(IRI(CONCAT(STR($this), "/~steps")) AS ?list)
+  ?plot a svg:Svg .
+  OPTIONAL { $this c:current ?chosen . ?list rdfhtml:hasChild ?chosenWrap . ?chosenWrap c:showsStep ?chosen }
+  OPTIONAL { BIND(IRI(CONCAT(STR($this), "/~step-0")) AS ?firstWrap) ?firstWrap c:showsStep ?firstStep }
+  BIND(COALESCE(?chosenWrap, ?firstWrap, $this) AS ?wrap)
+  BIND(EXISTS { $this c:pointedTerm|c:selectedTerm ?anyPicked } AS ?picked)
+  LATERAL {
+    {
+      FILTER(?wrap != $this)
+      BIND(IRI(CONCAT(STR(?wrap), "-aria-current")) AS ?currentAttr)
+    } UNION {
+      ?plot rdfhtml:hasChild ?mark . ?mark c:term ?shows .
+      BIND(IF(?picked, EXISTS { $this c:pointedTerm|c:selectedTerm ?shows }, EXISTS { ?wrap c:mentions ?shows }) AS ?isFocused)
+      BIND(EXISTS {
+        ?link c:edgeFrom|c:edgeTo ?mark . ?link c:edgeFrom|c:edgeTo ?other . ?other c:term ?otherTerm FILTER(?other != ?mark)
+        FILTER(IF(?picked, EXISTS { $this c:pointedTerm|c:selectedTerm ?otherTerm }, EXISTS { ?wrap c:mentions ?otherTerm }))
+      } AS ?isNear)
+      BIND(IF(?isFocused, c:Focused, IF(?isNear, c:Neighbour, c:Dimmed)) AS ?salience)
+      ?salience sem:slug ?slug .
+      BIND(IRI(CONCAT(STR(?mark), "-data-sem-salience")) AS ?shown)
+    } UNION {
+      ?plot rdfhtml:hasChild ?mark . ?mark c:edgeFrom ?from ; c:edgeTo ?to . ?from c:term ?fromTerm . ?to c:term ?toTerm .
+      BIND(IF(?picked, EXISTS { $this c:pointedTerm|c:selectedTerm ?fromTerm } || EXISTS { $this c:pointedTerm|c:selectedTerm ?toTerm },
+              EXISTS { ?wrap c:mentions ?fromTerm } || EXISTS { ?wrap c:mentions ?toTerm }) AS ?touches)
+      BIND(IF(?touches, c:Neighbour, c:Dimmed) AS ?salience)
+      ?salience sem:slug ?slug .
+      BIND(IRI(CONCAT(STR(?mark), "-data-sem-salience")) AS ?shown)
+    } UNION {
+      FILTER(?picked)
+      $this c:pointedTerm|c:selectedTerm ?term .
+      ?list rdfhtml:hasChild ?anyWrap . ?anyWrap c:showsStep ?step .
+      ?step c:children/rdf:rest*/rdf:first ?mention .
+      ?mention a c:Mention ; c:mentions ?term .
+      BIND(IRI(CONCAT(STR(?mention), "/~root")) AS ?mentionRoot)
+      BIND(IRI(CONCAT(STR($this), "/~lit-", REPLACE(STR(?mention), "^.*[#/]", ""))) AS ?lit)
+    }
+  }
+}""" .
+
+# --- the arrows: a connector from each mention being read to its node ------------------------------
+# The current step's mentions, and every mention of the pointed or selected term (heavier: a solid
+# emphasis), each to its node's dot (<walkthrough>/~node-<term>-dot), leaving its step between the
+# lines; a term the diagram leaves out (c:diagramExcludes) has no node, so no arrow. In stratum 0,
+# placed in the walkthrough's arrow layer (/~arrows).
+c:WalkthroughArrows a sem:Rendering ; sem:targets c:Walkthrough ; sem:modality mod:Screen ; sem:stratum 0 ;
+    sem:watches rdf:type , c:steps , c:current , c:pointedTerm , c:selectedTerm , c:diagramExcludes .
+c:WalkthroughArrows-fn a sem:Rule ; sem:implements c:WalkthroughArrows ; sem:function "walkthrough:arrows" .
+c:WalkthroughArrows-sparql a sem:Rule ;
+    sem:implements c:WalkthroughArrows ;
+    sem:construct """
+CONSTRUCT {
+  ?arrows rdfhtml:hasChild ?arrow .
+  ?arrow a c:Connector ; c:from ?mention ; c:to ?dot ; c:leader ?step ; sty:tone sty:Accent ; sty:emphasis ?emphasis ; sem:orderKey ?key .
+}
+WHERE {
+  $this a c:Walkthrough .
+  BIND(IRI(CONCAT(STR($this), "/~arrows")) AS ?arrows)
+  OPTIONAL { $this c:current ?chosen FILTER EXISTS { $this c:steps/rdf:rest*/rdf:first ?chosen } }
+  OPTIONAL { $this c:steps/rdf:first ?first }
+  BIND(COALESCE(?chosen, ?first) AS ?current)
+  {
+    ?current c:children/rdf:rest*/rdf:first ?mention .
+    BIND(?current AS ?step)
+  } UNION {
+    $this c:pointedTerm|c:selectedTerm ?picked .
+    $this c:steps/rdf:rest*/rdf:first ?step . ?step c:children/rdf:rest*/rdf:first ?mention . ?mention c:mentions ?picked .
+  }
+  ?mention a c:Mention ; c:mentions ?term FILTER(isIRI(?term))
+  FILTER NOT EXISTS { $this c:diagramExcludes ?term }
+  BIND(IF(EXISTS { $this c:pointedTerm|c:selectedTerm ?term }, sty:Solid, ?none) AS ?emphasis)
+  BIND(IRI(CONCAT(STR($this), "/~node-", ENCODE_FOR_URI(STR(?term)), "-dot")) AS ?dot)
+  BIND(IRI(CONCAT(STR($this), "/~arrow-", ENCODE_FOR_URI(STR(?mention)))) AS ?arrow)
+  BIND(STR(?mention) AS ?key)
+}""" .
+
+# --- a source view's highlighted statements ----------------------------------------------------------
+# The lines of every c:SourceSpan of the highlighted subject in the shown text, marked
+# data-sem-highlighted (the host brings the first into view), and a note in the header naming the
+# subject and its first statement's lines.
+c:SourceHighlight a sem:Rendering ; sem:targets c:SourceView ; sem:modality mod:Screen ; sem:stratum 40 ;
+    sem:readsMinted true ; sem:watches rdf:type , c:of , c:highlightsSubject .
+c:SourceHighlight-fn a sem:Rule ; sem:implements c:SourceHighlight ; sem:function "source-view:highlight" .
+c:SourceHighlight-sparql a sem:Rule ;
+    sem:implements c:SourceHighlight ;
+    sem:construct """
+CONSTRUCT {
+  ?line rdfhtml:attribute ?mark .
+  ?mark a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-highlighted" ; rdfhtml:attributeValue "true" .
+  ?head rdfhtml:hasChild ?note . ?path ord:immediatelyPrecedes ?note .
+  ?note a rdfhtml:Span ; rdfhtml:class "sem-source-focus" ; rdfhtml:hasChild ?noteText .
+  ?noteText a rdfhtml:Text ; rdfhtml:data ?say .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:SourceView ; c:of ?text ; c:highlightsSubject ?term .
+  BIND(IRI(CONCAT(STR($this), "/~code")) AS ?code)
+  ?code a rdfhtml:Pre .
+  {
+    ?span c:in ?text ; c:subject ?term ; c:fromLine ?from ; c:toLine ?to .
+    ?code rdfhtml:hasChild ?line . ?line c:line ?n FILTER(?n >= ?from && ?n <= ?to)
+    BIND(IRI(CONCAT(STR(?line), "-data-sem-highlighted")) AS ?mark)
+  } UNION {
+    { SELECT (MIN(?f) AS ?first) WHERE { $this c:of ?t0 ; c:highlightsSubject ?s0 . ?sp0 c:in ?t0 ; c:subject ?s0 ; c:fromLine ?f } }
+    ?span c:in ?text ; c:subject ?term ; c:fromLine ?first ; c:toLine ?last ; c:label ?name .
+    OPTIONAL { ?many0At l10n:of c:SourceLinesPhrase ; l10n:name ?many0 }
+  OPTIONAL { ?many0At l10n:of c:SourceLinesPhrase ; l10n:name ?many0 }
+  OPTIONAL { c:SourceLinesPhrase rdfs:label ?many0 FILTER(lang(?many0) = "") }
+    OPTIONAL { c:SourceLinesPhrase rdfs:label ?many1 FILTER(langMatches(lang(?many1), "en")) }
+    OPTIONAL { ?one0At l10n:of c:SourceLinePhrase ; l10n:name ?one0 }
+  OPTIONAL { ?one0At l10n:of c:SourceLinePhrase ; l10n:name ?one0 }
+  OPTIONAL { c:SourceLinePhrase rdfs:label ?one0 FILTER(lang(?one0) = "") }
+    OPTIONAL { c:SourceLinePhrase rdfs:label ?one1 FILTER(langMatches(lang(?one1), "en")) }
+    BIND(IF(?first = ?last, STR(COALESCE(?one0, ?one1, "{name} · line {from}")), STR(COALESCE(?many0, ?many1, "{name} · lines {from}–{to}"))) AS ?pattern)
+    BIND(CONCAT(STRBEFORE(?pattern, "{name}"), STR(?name), STRAFTER(?pattern, "{name}")) AS ?named)
+    BIND(CONCAT(STRBEFORE(?named, "{from}"), STR(?first), STRAFTER(?named, "{from}")) AS ?ranged)
+    BIND(IF(CONTAINS(?ranged, "{to}"), CONCAT(STRBEFORE(?ranged, "{to}"), STR(?last), STRAFTER(?ranged, "{to}")), ?ranged) AS ?say)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IRI(CONCAT(STR($this), "/~path")) AS ?path)
+    BIND(IRI(CONCAT(STR($this), "/~focus")) AS ?note)
+    BIND(IRI(CONCAT(STR($this), "/~focus-text")) AS ?noteText)
+  }
+}""" .
+
+# --- reading: events and reactions ------------------------------------------------------------------
+
+c:StepInView a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "sem-step" ; beh:recorded false ;
+    rdfs:comment "The host reports which rendered step of a walkthrough is being read (it crossed the reading line while scrolling). Not recorded."@en .
+
+# The step's rendered element (or a part of it) was reached: it becomes the current step. A
+# selection made in another step is let go.
+c:ReadStep a beh:Reaction ;
+    rdfs:label "Read a step"@en ;
+    beh:when c:StepInView ;
+    beh:sourceClass c:Walkthrough ;
+    beh:deletes """CONSTRUCT { $this c:current ?old . $this c:selectedTerm ?selected }
+WHERE {
+  $event beh:node ?hit . ?wrap rdfhtml:hasChild* ?hit . ?wrap c:showsStep ?step .
+  FILTER NOT EXISTS { $this c:current ?step }
+  { $this c:current ?old } UNION { $this c:selectedTerm ?selected }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:current ?step }
+WHERE { $event beh:node ?hit . ?wrap rdfhtml:hasChild* ?hit . ?wrap c:showsStep ?step . FILTER NOT EXISTS { $this c:current ?step } }""" ;
+    sem:function "walkthrough:read-step" .
+c:FocusStep a beh:Reaction ;
+    rdfs:label "Read a step"@en ;
+    beh:when beh:Focus ;
+    beh:sourceClass c:Walkthrough ;
+    beh:deletes """CONSTRUCT { $this c:current ?old . $this c:selectedTerm ?selected }
+WHERE {
+  $event beh:node ?hit . ?wrap rdfhtml:hasChild* ?hit . ?wrap c:showsStep ?step .
+  FILTER NOT EXISTS { $this c:current ?step }
+  { $this c:current ?old } UNION { $this c:selectedTerm ?selected }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:current ?step }
+WHERE { $event beh:node ?hit . ?wrap rdfhtml:hasChild* ?hit . ?wrap c:showsStep ?step . FILTER NOT EXISTS { $this c:current ?step } }""" ;
+    sem:function "walkthrough:read-step" .
+
+# A click on a node of the diagram selects its term (or lets it go, if selected): the node and the
+# mentions of it stand out, and the source shows its statement.
+c:SelectWalkthroughNode a beh:Reaction ;
+    rdfs:label "Select a node"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Walkthrough ;
+    beh:deletes """CONSTRUCT { $this c:selectedTerm ?old . ?view c:highlightsSubject ?shown }
+WHERE {
+  $event beh:node ?hit . ?node rdfhtml:hasChild* ?hit . ?node c:term ?term . ?plot rdfhtml:hasChild ?node .
+  FILTER(?plot = IRI(CONCAT(STR($this), "/~plot")))
+  BIND(EXISTS { $this c:selectedTerm ?term } AS ?again)
+  LATERAL {
+    { $this c:selectedTerm ?old }
+    UNION
+    { FILTER(!?again) $this c:sourceView ?view . ?view c:of ?text ; c:highlightsSubject ?shown FILTER(?shown != ?term)
+      FILTER EXISTS { ?span c:in ?text ; c:subject ?term } }
+  }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:selectedTerm ?term . ?view c:highlightsSubject ?term }
+WHERE {
+  $event beh:node ?hit . ?node rdfhtml:hasChild* ?hit . ?node c:term ?term . ?plot rdfhtml:hasChild ?node .
+  FILTER(?plot = IRI(CONCAT(STR($this), "/~plot")))
+  FILTER NOT EXISTS { $this c:selectedTerm ?term }
+  OPTIONAL { $this c:sourceView ?view . ?view c:of ?text FILTER EXISTS { ?span c:in ?text ; c:subject ?term } }
+}""" ;
+    sem:function "walkthrough:select-node" .
+
+# Pointing at a mention (the pointer on it, or focus in it) points at its term; leaving lets go.
+# Focus also makes the mention's step the current one.
+c:PointAtMention a beh:Reaction ;
+    rdfs:label "Point at a mention"@en ;
+    beh:when beh:Hover ;
+    beh:sourceClass c:Mention ;
+    beh:deletes """CONSTRUCT { ?walk c:pointedTerm ?old }
+WHERE {
+  $this c:mentions ?term . ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step .
+  ?walk c:pointedTerm ?old FILTER(?old != ?term)
+}""" ;
+    beh:inserts """CONSTRUCT { ?walk c:pointedTerm ?term }
+WHERE {
+  $this c:mentions ?term . ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step .
+  FILTER NOT EXISTS { ?walk c:pointedTerm ?term }
+}""" ;
+    sem:function "walkthrough:point" .
+c:FocusMention a beh:Reaction ;
+    rdfs:label "Point at a mention"@en ;
+    beh:when beh:Focus ;
+    beh:sourceClass c:Mention ;
+    beh:deletes """CONSTRUCT { ?walk c:pointedTerm ?old . ?walk c:current ?was }
+WHERE {
+  $this c:mentions ?term . ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step .
+  LATERAL { { ?walk c:pointedTerm ?old FILTER(?old != ?term) } UNION { ?walk c:current ?was FILTER(?was != ?step) } }
+}""" ;
+    beh:inserts """CONSTRUCT { ?walk c:pointedTerm ?term . ?walk c:current ?step }
+WHERE {
+  $this c:mentions ?term . ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step .
+  FILTER(NOT EXISTS { ?walk c:pointedTerm ?term } || NOT EXISTS { ?walk c:current ?step })
+}""" ;
+    sem:function "walkthrough:focus-mention" .
+c:LeaveMention a beh:Reaction ;
+    rdfs:label "Stop pointing at a mention"@en ;
+    beh:when beh:Leave ;
+    beh:sourceClass c:Mention ;
+    beh:deletes """CONSTRUCT { ?walk c:pointedTerm ?old }
+WHERE { ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step ; c:pointedTerm ?old }""" ;
+    sem:function "walkthrough:unpoint" .
+c:BlurMention a beh:Reaction ;
+    rdfs:label "Stop pointing at a mention"@en ;
+    beh:when beh:Blur ;
+    beh:sourceClass c:Mention ;
+    beh:deletes """CONSTRUCT { ?walk c:pointedTerm ?old }
+WHERE { ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step ; c:pointedTerm ?old }""" ;
+    sem:function "walkthrough:unpoint" .
+
+# Activating a mention selects its term and shows its statement in the walkthrough's source (when
+# the source describes it). A mention with c:to also follows its link.
+c:ShowMention a beh:Reaction ;
+    rdfs:label "Show it in the source"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Mention ;
+    beh:deletes """CONSTRUCT { ?walk c:selectedTerm ?old . ?view c:highlightsSubject ?shown }
+WHERE {
+  $this c:mentions ?term . ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step .
+  LATERAL {
+    { ?walk c:selectedTerm ?old FILTER(?old != ?term) }
+    UNION
+    { ?walk c:sourceView ?view . ?view c:of ?text ; c:highlightsSubject ?shown FILTER(?shown != ?term)
+      FILTER EXISTS { ?span c:in ?text ; c:subject ?term } }
+  }
+}""" ;
+    beh:inserts """CONSTRUCT { ?walk c:selectedTerm ?term . ?view c:highlightsSubject ?term }
+WHERE {
+  $this c:mentions ?term . ?step c:children/rdf:rest*/rdf:first $this . ?walk c:steps/rdf:rest*/rdf:first ?step .
+  OPTIONAL { ?walk c:sourceView ?view . ?view c:of ?text FILTER EXISTS { ?span c:in ?text ; c:subject ?term } }
+}""" ;
+    sem:function "walkthrough:show" .
+
+# --- phrases ----------------------------------------------------------------------------------------
+
+c:DiagramPhrase a c:Phrase ;
+    rdfs:label "A diagram of the graph this explains: what the steps mention, and how it is linked"@en ,
+               "Діаграма графа, який тут пояснено: що згадують кроки і як воно повʼязане"@uk ,
+               "Ein Diagramm des erklärten Graphen: was die Schritte erwähnen und wie es verbunden ist"@de ,
+               "مخطط للرسم البياني المشروح: ما تذكره الخطوات وكيف يرتبط"@ar .
+c:MentionHintPhrase a c:Phrase ;
+    rdfs:label "{name}, in the diagram; activate to see its Turtle in the source"@en ,
+               "{name}, на діаграмі; активуйте, щоб побачити його Turtle у джерелі"@uk ,
+               "{name}, im Diagramm; aktivieren, um sein Turtle in der Quelle zu sehen"@de ,
+               "{name}، في المخطط؛ فعّله لرؤية Turtle الخاص به في المصدر"@ar .
+c:MentionLinkPhrase a c:Phrase ;
+    rdfs:label "{name}, in the diagram; opens its page"@en , "{name}, на діаграмі; відкриває його сторінку"@uk ,
+               "{name}, im Diagramm; öffnet seine Seite"@de , "{name}، في المخطط؛ يفتح صفحته"@ar .
+c:SourceLinesPhrase a c:Phrase ;
+    rdfs:label "{name} · lines {from}–{to}"@en , "{name} · рядки {from}–{to}"@uk , "{name} · Zeilen {from}–{to}"@de , "{name} · الأسطر {from}–{to}"@ar .
+c:SourceLinePhrase a c:Phrase ;
+    rdfs:label "{name} · line {from}"@en , "{name} · рядок {from}"@uk , "{name} · Zeile {from}"@de , "{name} · السطر {from}"@ar .

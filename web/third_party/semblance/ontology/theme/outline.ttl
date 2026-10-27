@@ -1,0 +1,80 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for the outline (ontology/components/outline.ttl): points as rows of a page, who
+# is on each at its start, the text taking the room, a note and a flag after it. Logical
+# properties, so right to left mirrors it.
+
+[] a sty:Keyframes ; sty:name "sem-typing-pulse" ;
+    sty:step [ sty:at "0%, 100%" ; sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 2px var(--sem-accent-7)" ] ] ,
+             [ sty:at "50%" ; sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 4px color-mix(in oklab, var(--sem-accent-7) 40%, transparent)" ] ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:Outline ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "column-gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "row-gap" ; sty:raw "2px" ] ,
+                 [ sty:property "padding" ; sty:raw "6px 8px" ] ,
+                 [ sty:property "padding-inline-start" ; sty:raw "calc(8px + var(--sem-level, 0) * 1.5rem)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "3px solid transparent" ] ,
+                 [ sty:property "transition" ; sty:raw "background-color var(--sem-duration-fast) var(--sem-ease), border-color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:state ".sem-busy" ;
+    sty:declares [ sty:property "background-color" ; sty:raw "color-mix(in oklab, var(--sem-accent-9) 6%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:state ".sem-flagged" ;
+    sty:declares [ sty:property "border-inline-start-color" ; sty:token tok:warning-9 ] ,
+                 [ sty:property "background-color" ; sty:raw "color-mix(in oklab, var(--sem-warning-9) 8%, transparent)" ] .
+# The people on a point keep a column of their own, so the texts line up.
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> .sem-people" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "min-width" ; sty:raw "3.5rem" ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part ".sem-who" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part ".sem-who.sem-typing" ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-typing-pulse calc(var(--sem-duration-loop) * 4) var(--sem-ease) infinite" ] .
+[] a sty:StyleRule ; sty:part ":is([data-sem-motion=reduced], [data-sem-motion=none]) [data-sem-c=outline-item] .sem-who.sem-typing" ;
+    sty:declares [ sty:property "animation" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "0 0 0 2px var(--sem-accent-7)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> .sem-text" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 12rem" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "break-word" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] .
+# A picking outline's points are buttons that read as text, the picked one highlighted.
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> button.sem-text" ;
+    sty:declares [ sty:property "background" ; sty:raw "none" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "2px 4px" ] ,
+                 [ sty:property "margin" ; sty:raw "-2px -4px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> button.sem-text:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-sunken ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> button.sem-text:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> button.sem-text[aria-pressed=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> .sem-note" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> .sem-flag" ;
+    sty:declares [ sty:property "flex-basis" ; sty:raw "100%" ] ,
+                 [ sty:property "padding-inline-start" ; sty:raw "calc(3.5rem + var(--sem-space-2))" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:warning-11 ] .
+[] a sty:StyleRule ; sty:appliesTo c:OutlineItem ; sty:part "> .sem-flag::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"⚠ \"" ] .

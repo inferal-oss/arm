@@ -1,0 +1,100 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Default theme for the message components: a thread of bubbles, one's own at the end.
+
+[] a sty:StyleRule ; sty:appliesTo c:MessageList ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:Message ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "flex-end" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "max-width" ; sty:raw "min(36rem, 92%)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-message-main" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "border-end-start-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-message-meta" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-author" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part "time" ;
+    sty:declares [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-message-body" ;
+    sty:declares [ sty:property "margin" ; sty:raw "2px 0 0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+# A text body keeps its line breaks; a component body (a div) lays out as it does anywhere else.
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part "p.sem-message-body" ;
+    sty:declares [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# The side that is one's own in a conversation (c:OwnSide): one's messages, and what one writes.
+tok:own-side a sty:Token ; sem:slug "own-side" ; sty:value "flex-end" ;
+    rdfs:comment "Where one's own messages sit in a thread (a flex alignment): the inline end."@en .
+
+# One's own messages (c:viewer): on one's own side, the bubble in the accent's soft fill.
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:state ".sem-mine" ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "row-reverse" ] ,
+                 [ sty:property "align-self" ; sty:raw "var(--sem-own-side)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:state ".sem-mine" ; sty:part ".sem-message-main" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "border-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "border-end-start-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "border-end-end-radius" ; sty:token tok:radius-sm ] .
+
+# A message being written: three dots that rise in turn. Their timing is the motion tokens', so
+# reduced or no motion (mot:preference) slows or stills them; "is typing…" is for screen readers.
+[] a sty:Keyframes ; sty:name "sem-typing-dot" ;
+    sty:step [ sty:at "0%, 60%, 100%" ; sty:declares [ sty:property "opacity" ; sty:raw "0.35" ] , [ sty:property "transform" ; sty:raw "none" ] ] ,
+             [ sty:at "30%" ; sty:declares [ sty:property "opacity" ; sty:raw "1" ] , [ sty:property "transform" ; sty:raw "translateY(-3px)" ] ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-typing" ;
+    sty:declares [ sty:property "margin" ; sty:raw "4px 0 2px" ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-dots" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "padding-block" ; sty:raw "4px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-dots > span" ;
+    sty:declares [ sty:property "width" ; sty:raw "6px" ] ,
+                 [ sty:property "height" ; sty:raw "6px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:muted ] ,
+                 [ sty:property "opacity" ; sty:raw "0.35" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-typing-dot calc(var(--sem-duration-loop) * 4) var(--sem-ease) infinite" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-dots > span:nth-child(2)" ;
+    sty:declares [ sty:property "animation-delay" ; sty:raw "calc(var(--sem-duration-loop) * 0.5)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-dots > span:nth-child(3)" ;
+    sty:declares [ sty:property "animation-delay" ; sty:raw "var(--sem-duration-loop)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Message ; sty:part ".sem-visually-hidden" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "width" ; sty:raw "1px" ] ,
+                 [ sty:property "height" ; sty:raw "1px" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "clip-path" ; sty:raw "inset(50%)" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .

@@ -1,0 +1,282 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for walkthroughs (ontology/components/walkthrough.ttl) and the source view's lines.
+#
+# Intrinsic, without a breakpoint: the steps and the aside (the diagram over the source) share a
+# wrapping row; when both do not fit, the aside goes under the steps. Beside them it stays in view
+# while the steps scroll past, sticky under the app bar (whose height the host measures,
+# --sem-sticky-top). Every step is tall enough to be read on its own as it crosses the reading
+# line; the one being read is lit, the others recede.
+
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part "> .sem-walk-head" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part "> .sem-walk-head > h2" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xl ] ,
+                 [ sty:property "font-weight" ; sty:raw "680" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "-0.015em" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-lead" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "max-width" ; sty:raw "68ch" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part "> .sem-walk-body" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "flex-start" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-5 ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+
+# --- the steps ---
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-steps" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 300px" ] ,
+                 [ sty:property "min-width" ; sty:raw "min(100%, 40%)" ] ,
+                 [ sty:property "max-width" ; sty:raw "70ch" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0 0 min(30vh, 240px)" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-step" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "min-height" ; sty:raw "min(40vh, 360px)" ] ,
+                 [ sty:property "padding" ; sty:raw "var(--sem-space-3) var(--sem-space-4) var(--sem-space-4) 48px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "2px solid transparent" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.62" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "opacity var(--sem-motion), background-color var(--sem-motion), border-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-step[aria-current=step]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "1" ] ,
+                 [ sty:property "border-inline-start-color" ; sty:token tok:accent ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft) 45%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-step:hover" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-step:focus-visible" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 3px var(--sem-ring)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-num" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "12px" ] ,
+                 [ sty:property "top" ; sty:raw "calc(var(--sem-space-3) + 1px)" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "24px" ] ,
+                 [ sty:property "height" ; sty:raw "24px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "font" ; sty:raw "600 12px var(--sem-font-mono)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-step[aria-current=step] .sem-walk-num" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "color" ; sty:raw "white" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-title" ;
+    sty:declares [ sty:property "margin" ; sty:raw "2px 0 var(--sem-space-2)" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] .
+[] a sty:StyleRule ; sty:appliesTo c:WalkthroughStep ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "line-height" ; sty:raw "1.7" ] .
+
+# --- mentions: phrases about the graph ---
+[] a sty:StyleRule ; sty:appliesTo c:Mention ;
+    sty:declares [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-weight" ; sty:raw "560" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "background" ; sty:raw "none" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1.5px dotted color-mix(in oklab, var(--sem-accent) 70%, transparent)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "3px 3px 0 0" ] ,
+                 [ sty:property "padding" ; sty:raw "0 2px" ] ,
+                 [ sty:property "margin" ; sty:raw "0 -1px" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "background-color var(--sem-motion), border-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Mention ; sty:state ":is(:hover, :focus-visible, [data-sem-lit])" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "border-bottom-style" ; sty:raw "solid" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Mention ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 2px var(--sem-ring)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Mention ; sty:state ":is(a)::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"↗\"" ] ,
+                 [ sty:property "font-size" ; sty:raw "0.75em" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "1px" ] ,
+                 [ sty:property "vertical-align" ; sty:raw "super" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-step[aria-current=step] .sem-mention" ;
+    sty:declares [ sty:property "border-bottom-style" ; sty:raw "solid" ] .
+
+# --- the aside: the diagram over the source ---
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-aside" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 280px" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "top" ; sty:raw "var(--sem-sticky-top, 88px)" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-diagram" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-2 ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "background-image" ; sty:raw "radial-gradient(color-mix(in oklab, var(--sem-border) 70%, transparent) 1px, transparent 1px)" ] ,
+                 [ sty:property "background-size" ; sty:raw "16px 16px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-card ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-plot" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "max-height" ; sty:raw "max(240px, calc(58vh - 60px))" ] ,
+                 [ sty:property "margin-inline" ; sty:raw "auto" ] ,
+                 [ sty:property "overflow" ; sty:raw "visible" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-aside [data-sem-c=source-view]:not([data-sem-fullscreen]) > .sem-source" ;
+    sty:declares [ sty:property "max-height" ; sty:raw "max(160px, calc(42vh - 140px))" ] ,
+                 [ sty:property "scroll-behavior" ; sty:raw "smooth" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-band" ;
+    sty:declares [ sty:property "font" ; sty:raw "600 11px var(--sem-font-mono)" ] ,
+                 [ sty:property "fill" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-edge" ;
+    sty:declares [ sty:property "fill" ; sty:raw "none" ] ,
+                 [ sty:property "stroke" ; sty:raw "color-mix(in oklab, var(--sem-muted) 55%, transparent)" ] ,
+                 [ sty:property "stroke-width" ; sty:raw "1.2" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-arrow" ;
+    sty:declares [ sty:property "fill" ; sty:raw "color-mix(in oklab, var(--sem-muted) 75%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-edge-label" ;
+    sty:declares [ sty:property "font" ; sty:raw "9.5px var(--sem-font-mono)" ] ,
+                 [ sty:property "fill" ; sty:token tok:code-name ] ,
+                 [ sty:property "paint-order" ; sty:raw "stroke" ] ,
+                 [ sty:property "stroke" ; sty:token tok:surface ] ,
+                 [ sty:property "stroke-width" ; sty:raw "3px" ] .
+# A link's predicate is shown while it touches what is being read.
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-link:not([data-sem-salience=neighbour]) .sem-edge-label" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-dot" ;
+    sty:declares [ sty:property "fill" ; sty:token tok:accent ] ,
+                 [ sty:property "stroke" ; sty:token tok:surface ] ,
+                 [ sty:property "stroke-width" ; sty:raw "2" ] ,
+                 [ sty:property "transition" ; sty:raw "stroke var(--sem-motion), stroke-width var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-node-label" ;
+    sty:declares [ sty:property "font" ; sty:raw "500 11px var(--sem-font-mono)" ] ,
+                 [ sty:property "fill" ; sty:token tok:text ] ,
+                 [ sty:property "paint-order" ; sty:raw "stroke" ] ,
+                 [ sty:property "stroke" ; sty:token tok:surface ] ,
+                 [ sty:property "stroke-width" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ":is(.sem-node, .sem-link)" ;
+    sty:declares [ sty:property "transition" ; sty:raw "opacity var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-node" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-node:hover .sem-dot" ;
+    sty:declares [ sty:property "stroke" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-plot [data-sem-salience=dimmed]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.26" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-node[data-sem-salience=focused] .sem-dot" ;
+    sty:declares [ sty:property "stroke" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "stroke-width" ; sty:raw "4" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-node[data-sem-salience=focused] .sem-node-label" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "700" ] ,
+                 [ sty:property "fill" ; sty:token tok:accent-strong ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-link[data-sem-salience=neighbour] .sem-edge" ;
+    sty:declares [ sty:property "stroke" ; sty:token tok:accent ] ,
+                 [ sty:property "stroke-width" ; sty:raw "1.8" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-link[data-sem-salience=neighbour] .sem-arrow" ;
+    sty:declares [ sty:property "fill" ; sty:token tok:accent ] .
+
+# On a phone the steps and the diagram cannot sit side by side, and under the steps the diagram
+# would be read after them. It goes above them instead and stays there, a band of about a third of
+# the screen under the app bar, so the arrows and the highlights follow the step being read (the
+# host puts the reading line below it). The source's lines are left to the source view after the
+# walkthrough.
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part "> .sem-walk-body" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "nowrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-steps" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "max-width" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-aside" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "order" ; sty:raw "-1" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "max-height" ; sty:raw "35dvh" ] ,
+                 [ sty:property "padding-block" ; sty:raw "4px" ] ,
+                 [ sty:property "background" ; sty:token tok:canvas ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-aside [data-sem-c=source-view]" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-plot" ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "max-height" ; sty:raw "calc(35dvh - 28px)" ] .
+
+# --- the diagram full screen (fs:part "diagram"): its toggles in its corner; full screen, the plot
+# takes all the room it can at its own proportions ---
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-diagram" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-diagram > .sem-fullscreen-toggles" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-block-start" ; sty:token tok:space-2 ] ,
+                 [ sty:property "inset-inline-end" ; sty:token tok:space-2 ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-diagram[data-sem-fullscreen]:is(:fullscreen, [data-sem-fullscreen=maximized], [data-sem-fullscreen=viewport])" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template" ; sty:raw "minmax(0, 1fr) / minmax(0, 1fr)" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-diagram[data-sem-fullscreen]:is(:fullscreen, [data-sem-fullscreen=maximized], [data-sem-fullscreen=viewport]) > .sem-plot" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "max-height" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part ".sem-walk-diagram[data-sem-fullscreen]:is(:fullscreen, [data-sem-fullscreen=maximized], [data-sem-fullscreen=viewport]) > .sem-fullscreen-toggles" ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset-block-start" ; sty:raw "max(var(--sem-space-3), env(safe-area-inset-top))" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "max(var(--sem-space-3), env(safe-area-inset-right))" ] .
+
+# --- the arrows: connectors (c:WalkthroughArrows) in a layer over the walkthrough ---
+[] a sty:StyleRule ; sty:appliesTo c:Walkthrough ; sty:part "> .sem-walk-arrows" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] .
+
+# --- the source view's lines: numbered, a statement highlighted ---
+[] a sty:StyleRule ; sty:appliesTo c:SourceView ; sty:part "> .sem-source" ;
+    sty:declares [ sty:property "counter-reset" ; sty:raw "line" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SourceView ; sty:part ".sem-line" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "width" ; sty:raw "max-content" ] ,
+                 [ sty:property "min-width" ; sty:raw "100%" ] ,
+                 [ sty:property "counter-increment" ; sty:raw "line" ] ,
+                 [ sty:property "transition" ; sty:raw "background-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SourceView ; sty:part ".sem-line::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "counter(line)" ] ,
+                 [ sty:property "display" ; sty:raw "inline-block" ] ,
+                 [ sty:property "width" ; sty:raw "3.5ch" ] ,
+                 [ sty:property "margin-inline-end" ; sty:raw "1.5ch" ] ,
+                 [ sty:property "text-align" ; sty:raw "end" ] ,
+                 [ sty:property "color" ; sty:token tok:faint ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SourceView ; sty:part ".sem-line[data-sem-highlighted]" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft) 80%, transparent)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 3px 0 0 var(--sem-accent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SourceView ; sty:part ".sem-line[data-sem-highlighted]::before" ;
+    sty:declares [ sty:property "color" ; sty:token tok:accent-strong ] .
+[] a sty:StyleRule ; sty:appliesTo c:SourceView ; sty:part ".sem-source-focus" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "auto" ] ,
+                 [ sty:property "font" ; sty:raw "12px var(--sem-font-mono)" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] .

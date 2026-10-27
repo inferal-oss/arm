@@ -1,0 +1,26 @@
+@prefix svg: <https://semblance.dev/ns/svg#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# A minimal SVG extension of RDF/HTML (whose 0.1 draft leaves SVG out of
+# scope). Element classes map to SVG-namespace elements; attributes use the
+# RDF/HTML expanded form (rdfhtml:attribute), and children use the same
+# hasChild / ord: ordering. Renderers create these with createElementNS.
+
+<https://semblance.dev/ns/svg> a owl:Ontology ;
+    rdfs:label "Semblance SVG extension for RDF/HTML"@en ;
+    rdfs:comment "Namespace URI of rendered elements: http://www.w3.org/2000/svg"@en .
+
+svg:Element a owl:Class .
+svg:Svg a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "svg" .
+svg:G a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "g" .
+svg:Defs a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "defs" .
+svg:LinearGradient a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "linearGradient" .
+svg:Stop a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "stop" .
+svg:Rect a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "rect" .
+svg:Circle a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "circle" .
+svg:Line a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "line" .
+svg:Path a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "path" .
+svg:Text a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "text" .
+svg:Title a owl:Class ; rdfs:subClassOf svg:Element ; svg:tagName "title" .
+svg:tagName a owl:DatatypeProperty .

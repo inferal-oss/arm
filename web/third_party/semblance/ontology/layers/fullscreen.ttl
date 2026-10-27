@@ -1,0 +1,202 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix fs: <https://semblance.dev/ns/fullscreen#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Full screen, as a fact - of two kinds, each one boolean, so a c:Toggle over it (or a reaction, a
+# key:Command, the command palette, a rule, a test) asserts and retracts it:
+#
+#   <component> fs:fullscreen true     the real full screen: the host's (Element.requestFullscreen),
+#                                      over the whole screen, the browser's own chrome gone;
+#   <component> fs:fullViewport true   the browser window: the page's top layer, filling the
+#                                      viewport; no Fullscreen API, no permission, the browser stays.
+#
+# Retracting the fact (or making it false) puts the component back. With both, full screen wins;
+# retract it, and the component still fills the window.
+#
+#   1. The facts are graph state. This layer marks the element shown (the component's root, or the
+#      part its class names with fs:part: a walkthrough shows its diagram) data-sem-fullscreen, and
+#      the theme styles it: one rule for the browser's :fullscreen and for the top-layer kinds.
+#   2. The fullscreen effect (src/fullscreen.ts) performs them. For full screen it asks the host in
+#      the same task as the change - the click's or the key press's, while the page still has the
+#      person's activation, which browsers require; where it cannot (no activation: a timer's
+#      reaction; a sandboxed frame without allowfullscreen; a refusal; a host that never answers),
+#      it fills the window instead (fs:Maximized, said as such). The window it fills itself
+#      (fs:Viewport): a manual popover in the top layer, so no ancestor clips it. Either way it
+#      reports how as an fs:Entered event (fs:presentation, which says what to announce), and a
+#      reaction records it: the attribute says it, so the theme can tell them apart.
+#   3. When the facts go, the effect leaves (document.exitFullscreen, or hides the popover). When the
+#      host leaves on its own - Esc, the browser's control, another element going full screen - or
+#      Esc is pressed over a filled window, it reports fs:Exited, and a reaction retracts both facts.
+#      So the graph never claims a state the page is not in.
+#
+# A component class that is fs:Fullscreenable draws its own toggles, one per kind
+# (<component>/~viewport-toggle and <component>/~fullscreen-toggle, buttons marked fs:toggles the
+# component and fs:property the fact they flip; aria-pressed says which holds): a source view in its
+# header, a walkthrough on its diagram, a live example in its bar. Any other component can be shown
+# either way all the same; a c:Toggle over the fact, anywhere, is its affordance (with a
+# key:shortcut, its key). Entering and leaving are announced (ann:announces, ann:announcesFrom).
+
+<https://semblance.dev/ns/fullscreen> a owl:Ontology ;
+    rdfs:label "Semblance full screen layer"@en .
+
+fs:Layer a sem:Layer ;
+    rdfs:label "full screen"@en , "повний екран"@uk , "Vollbild"@de , "ملء الشاشة"@ar ;
+    rdfs:comment "Marks what is shown full screen or filling the window, for the theme and the fullscreen effect."@en .
+
+fs:fullscreen a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:label "Full screen"@en , "На весь екран"@uk , "Vollbild"@de , "ملء الشاشة"@ar ;
+    rdfs:comment """The component is shown full screen: the host's own, over the whole screen (or, where the host
+cannot, filling the window). Asserted by anything; retracted to leave, and by the reaction to the host
+leaving on its own."""@en .
+fs:fullViewport a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:label "Fill the window"@en , "На все вікно"@uk , "Fensterfüllend"@de , "ملء النافذة"@ar ;
+    rdfs:comment """The component fills the browser window, over the rest of the page (the top layer), without the
+host's full screen: no permission, and the browser's own chrome stays. Asserted by anything; retracted
+to leave, and by the reaction to Esc."""@en .
+
+fs:Fullscreenable a owl:Class ;
+    rdfs:label "Full-screenable"@en , "Розгортається на весь екран"@uk , "Vollbildfähig"@de , "قابل لملء الشاشة"@ar ;
+    rdfs:comment """Mixin: the component draws its own toggles, for fs:fullViewport and for fs:fullscreen
+(<component>/~viewport-toggle, <component>/~fullscreen-toggle: buttons marked fs:toggles it and
+fs:property the fact), which flip their fact when activated."""@en .
+fs:toggles a owl:ObjectProperty ; rdfs:range fs:Fullscreenable ;
+    rdfs:comment "On a rendered element: the component whose fact (fs:property) activating it flips."@en .
+fs:property a owl:ObjectProperty ; rdfs:range owl:DatatypeProperty ;
+    rdfs:comment "On a rendered element that fs:toggles a component: the fact it flips (fs:fullscreen or fs:fullViewport)."@en .
+fs:part a owl:DatatypeProperty ;
+    rdfs:comment """On a component class (or an instance): the local name of the part it shows full screen
+(<component>/~<part>) instead of its root. A walkthrough shows its diagram."""@en .
+
+fs:presentation a owl:ObjectProperty ; rdfs:range fs:Presentation ;
+    rdfs:comment "How the host shows the component (recorded from its fs:Entered event; gone when it leaves)."@en .
+fs:Presentation a owl:Class ;
+    rdfs:comment "How a component is shown full screen or filling the window, with what to announce (fs:says)."@en .
+fs:says a owl:DatatypeProperty ;
+    rdfs:comment "On a presentation, and on the fs:Entered event that reports it: what to announce (language-tagged)."@en .
+fs:Native a fs:Presentation ; sem:slug "native" ;
+    rdfs:label "Full screen"@en , "Повний екран"@uk , "Vollbild"@de , "ملء الشاشة"@ar ;
+    rdfs:comment "The host's own full screen (Element.requestFullscreen), for fs:fullscreen."@en ;
+    fs:says "Full screen. Esc leaves it"@en , "Повний екран. Esc — вийти"@uk , "Vollbild. Esc beendet es"@de , "ملء الشاشة. اضغط Esc للخروج"@ar .
+fs:Maximized a fs:Presentation ; sem:slug "maximized" ;
+    rdfs:label "Filling the window"@en , "На все вікно"@uk , "Fensterfüllend"@de , "ملء النافذة"@ar ;
+    rdfs:comment "For fs:fullscreen, where the host cannot: the window filled instead, as for fs:fullViewport."@en ;
+    fs:says "Full screen is not available here: filling the window instead. Esc leaves it"@en ,
+        "Повний екран тут недоступний: на все вікно. Esc — вийти"@uk ,
+        "Vollbild ist hier nicht verfügbar: stattdessen fensterfüllend. Esc beendet es"@de ,
+        "ملء الشاشة غير متاح هنا: تُملأ النافذة بدلًا منه. اضغط Esc للخروج"@ar .
+fs:Viewport a fs:Presentation ; sem:slug "viewport" ;
+    rdfs:label "Filling the window"@en , "На все вікно"@uk , "Fensterfüllend"@de , "ملء النافذة"@ar ;
+    rdfs:comment "For fs:fullViewport: the page's top layer, filling the window."@en ;
+    fs:says "Filling the window. Esc leaves it"@en , "На все вікно. Esc — вийти"@uk , "Fensterfüllend. Esc beendet es"@de , "ملء النافذة. اضغط Esc للخروج"@ar .
+
+fs:Entered a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Entered full screen"@en , "Увімкнено повний екран"@uk , "Vollbild aktiviert"@de , "تم الدخول في ملء الشاشة"@ar ;
+    rdfs:comment "The host shows the component as the event's fs:presentation says, and fs:says it (addressed to the component)."@en .
+fs:Exited a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:label "Left full screen"@en , "Вимкнено повний екран"@uk , "Vollbild beendet"@de , "تم الخروج من ملء الشاشة"@ar ;
+    rdfs:comment "The component is back in its place: its facts went, or the host (Esc, the browser) left on its own."@en .
+
+fs:ToggleCommand a c:Phrase ;
+    rdfs:label "Full screen"@en , "На весь екран"@uk , "Vollbild"@de , "ملء الشاشة"@ar .
+fs:ViewportCommand a c:Phrase ;
+    rdfs:label "Fill the window"@en , "На все вікно"@uk , "Fensterfüllend"@de , "ملء النافذة"@ar .
+
+# --- marks --------------------------------------------------------------------------------------
+# After the components (like the privacy layer's marks): the shown element says it is shown, and
+# how once the host has said (data-sem-fullscreen="native", "maximized" or "viewport"; "" until then).
+fs:Marks a sem:Rendering ;
+    sem:requires fs:fullscreen , fs:fullViewport ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer fs:Layer ;
+    sem:stratum 12 ;
+    sem:watches fs:fullscreen , fs:fullViewport , fs:presentation , fs:part .
+fs:Marks-fn a sem:Rule ; sem:implements fs:Marks ; sem:function "fullscreen:marks" .
+fs:Marks-sparql a sem:Rule ;
+    sem:implements fs:Marks ;
+    sem:construct """
+CONSTRUCT { ?shown rdfhtml:attribute ?a . ?a a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-fullscreen" ; rdfhtml:attributeValue ?how }
+WHERE {
+  FILTER EXISTS { $this ?fact ?on FILTER(?fact IN (fs:fullscreen, fs:fullViewport) && STR(?on) = "true") }
+  OPTIONAL { $this fs:part ?own }
+  OPTIONAL { FILTER(!BOUND(?own)) $this a/rdfs:subClassOf* ?cls . ?cls fs:part ?inherited }
+  BIND(COALESCE(?own, ?inherited, "root") AS ?part)
+  OPTIONAL { $this fs:presentation ?presentation . ?presentation sem:slug ?slug }
+  BIND(COALESCE(STR(?slug), "") AS ?how)
+  BIND(IRI(CONCAT(STR($this), "/~", STR(?part))) AS ?shown)
+  BIND(IRI(CONCAT(STR($this), "/~", STR(?part), "-fullscreen")) AS ?a)
+}""" .
+
+# A full-screenable component's own toggles say whether their fact holds.
+fs:Pressed a sem:Rendering ;
+    sem:targets fs:Fullscreenable ;
+    sem:modality mod:Screen ;
+    sem:layer fs:Layer ;
+    sem:stratum 12 ;
+    sem:watches rdf:type , fs:fullscreen , fs:fullViewport .
+fs:Pressed-fn a sem:Rule ; sem:implements fs:Pressed ; sem:function "fullscreen:pressed" .
+fs:Pressed-sparql a sem:Rule ;
+    sem:implements fs:Pressed ;
+    sem:construct """
+CONSTRUCT { ?toggle rdfhtml:attribute ?a . ?a a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressed }
+WHERE {
+  $this a/rdfs:subClassOf* fs:Fullscreenable .
+  VALUES (?fact ?local) { (fs:fullscreen "fullscreen-toggle") (fs:fullViewport "viewport-toggle") }
+  BIND(IF(EXISTS { $this ?fact ?on FILTER(STR(?on) = "true") }, "true", "false") AS ?pressed)
+  BIND(IRI(CONCAT(STR($this), "/~", ?local)) AS ?toggle)
+  BIND(IRI(CONCAT(STR($this), "/~", ?local, "-aria-pressed")) AS ?a)
+}""" .
+
+# --- reactions -------------------------------------------------------------------------------------
+
+# Activating a full-screenable component's own toggle flips its fact (as a c:Toggle over it does).
+fs:Flip a beh:Reaction ;
+    rdfs:label "Full screen, or back"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass fs:Fullscreenable ;
+    beh:deletes """
+CONSTRUCT { $this ?fact ?old }
+WHERE { $event beh:node ?hit . ?toggle rdfhtml:hasChild* ?hit . ?toggle fs:toggles $this ; fs:property ?fact . $this ?fact ?old }""" ;
+    beh:inserts """
+CONSTRUCT { $this ?fact ?new }
+WHERE {
+  $event beh:node ?hit . ?toggle rdfhtml:hasChild* ?hit . ?toggle fs:toggles $this ; fs:property ?fact .
+  FILTER(?fact IN (fs:fullscreen, fs:fullViewport))
+  BIND(!EXISTS { $this ?fact ?on FILTER(STR(?on) = "true") } AS ?new)
+}""" ;
+    sem:function "fullscreen:flip" .
+
+# The host shows it: how is recorded (while a fact still asks for it), and said - by the event,
+# which carries its presentation's fs:says.
+fs:Enter a beh:Reaction ;
+    rdfs:label "Shown full screen"@en ;
+    beh:when fs:Entered ;
+    beh:sourceClass sem:Component ;
+    ann:announcesFrom fs:says ;
+    beh:deletes """CONSTRUCT { $this fs:presentation ?old } WHERE { $event fs:presentation ?how . $this fs:presentation ?old FILTER(?old != ?how) }""" ;
+    beh:inserts """
+CONSTRUCT { $this fs:presentation ?how }
+WHERE {
+  $event fs:presentation ?how .
+  FILTER EXISTS { $this ?fact ?on FILTER(?fact IN (fs:fullscreen, fs:fullViewport) && STR(?on) = "true") }
+  FILTER NOT EXISTS { $this fs:presentation ?how }
+}""" ;
+    sem:function "fullscreen:enter" .
+
+# The component is back in its place: its facts go (if they are still there), and so does how.
+fs:Exit a beh:Reaction ;
+    rdfs:label "Left full screen"@en ;
+    beh:when fs:Exited ;
+    beh:sourceClass sem:Component ;
+    ann:announces "Back in its place"@en , "Повернуто на місце"@uk , "Wieder an seinem Platz"@de , "عاد إلى مكانه"@ar ;
+    beh:deletes """CONSTRUCT { $this ?p ?o } WHERE { VALUES ?p { fs:fullscreen fs:fullViewport fs:presentation } $this ?p ?o }""" ;
+    sem:function "fullscreen:exit" .

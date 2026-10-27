@@ -1,0 +1,14 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# What well-formed shape forms look like (ontology/components/forms.ttl).
+
+c:ShapeFormShape a sh:NodeShape ; sh:targetClass c:ShapeForm ;
+    sh:property [ sh:path c:nodeShape ; sh:minCount 1 ; sh:maxCount 1 ; sh:class sh:NodeShape ;
+                  sh:message "A shape form is derived from one node shape (c:nodeShape)." ] ,
+                [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A shape form edits one resource (c:of)." ] .
+c:ShapeFieldShape a sh:NodeShape ; sh:targetClass c:ShapeField ;
+    sh:property [ sh:path c:propertyShape ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A shape field shows one named property shape (c:propertyShape)." ] ,
+                [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ] .

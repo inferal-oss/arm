@@ -1,0 +1,154 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Theme for the code editor (ontology/components/editor.ttl).
+
+# The editor's metrics: the highlighted text and the transparent text area over it must match exactly.
+tok:editor-line a sty:Token ; sem:slug "editor-line" ; sty:value "20px" .
+tok:editor-pad a sty:Token ; sem:slug "editor-pad" ; sty:value "10px" .
+
+# --- a transparent text area over its highlighted text, line numbers beside ---------------------------
+
+# Code reads left to right, also in a right-to-left page: the text, its lines and its suggestions
+# (placed by column from the left). The hint is prose: it takes the direction of its own words.
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ;
+    sty:declares [ sty:property "direction" ; sty:raw "ltr" ] , [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-hint" ;
+    sty:declares [ sty:property "unicode-bidi" ; sty:raw "plaintext" ] , [ sty:property "text-align" ; sty:raw "start" ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-scroll" ;
+    sty:declares [ sty:property "min-height" ; sty:raw "7rem" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "background" ; sty:token tok:code-bg ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-duration-fast) var(--sem-ease), box-shadow var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-scroll:focus-within" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-code" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "auto minmax(max-content, 1fr)" ] ,
+                 [ sty:property "min-height" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-gutter" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "var(--sem-editor-pad) 8px var(--sem-editor-pad) 12px" ] ,
+                 [ sty:property "font" ; sty:raw "12.5px/20px var(--sem-font-mono)" ] ,
+                 [ sty:property "text-align" ; sty:raw "end" ] ,
+                 [ sty:property "color" ; sty:token tok:faint ] ,
+                 [ sty:property "border-inline-end" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "background" ; sty:token tok:code-bg ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-text" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+# Both layers share one grid cell, font, padding and whitespace rules, so every glyph lines up.
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ":is(.sem-highlight, .sem-input)" ;
+    sty:declares [ sty:property "grid-area" ; sty:raw "1 / 1" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "var(--sem-editor-pad) 14px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "font" ; sty:raw "12.5px/20px var(--sem-font-mono)" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0" ] ,
+                 [ sty:property "white-space" ; sty:raw "pre" ] ,
+                 [ sty:property "tab-size" ; sty:raw "2" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "normal" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-highlight" ;
+    sty:declares [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-input" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "resize" ; sty:raw "none" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "transparent" ] ,
+                 [ sty:property "-webkit-text-fill-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "caret-color" ; sty:token tok:text ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-input::selection" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent) 28%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-hint" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:faint ] .
+
+
+# Suggestions open below the word they complete (--line, --col: its line and column; --digits: the
+# width of the line numbers). The editor grows with its text, so only the column can be scrolled away.
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-suggestions" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] ,
+                 [ sty:property "top" ; sty:raw "calc(var(--line) * var(--sem-editor-line) + var(--sem-editor-pad) + 3px)" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "max(4px, min(calc((var(--digits) + var(--col)) * 1ch + 35px - 30px), calc(100% - 22rem)))" ] ,
+                 [ sty:property "width" ; sty:raw "max-content" ] ,
+                 [ sty:property "min-width" ; sty:raw "14rem" ] ,
+                 [ sty:property "max-width" ; sty:raw "26rem" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "4px" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "font" ; sty:raw "12.5px/20px var(--sem-font-mono)" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-overlay ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-option" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "16px auto" ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "gap" ; sty:raw "0 8px" ] ,
+                 [ sty:property "padding" ; sty:raw "4px 8px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "line-height" ; sty:raw "1.3" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-option:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-option[aria-selected=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-option code" ;
+    sty:declares [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "font-size" ; sty:raw "12px" ] ,
+                 [ sty:property "color" ; sty:token tok:code-name ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-detail" ;
+    sty:declares [ sty:property "grid-column" ; sty:raw "2" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "white-space" ; sty:raw "normal" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-kind" ;
+    sty:declares [ sty:property "font" ; sty:raw "700 10px/1 var(--sem-font-mono)" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:raw "3px 0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ":is(.sem-kind-keyword, .sem-kind-function)" ;
+    sty:declares [ sty:property "color" ; sty:token tok:code-keyword ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-kind-class" ;
+    sty:declares [ sty:property "color" ; sty:token tok:code-iri ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-kind-property" ;
+    sty:declares [ sty:property "color" ; sty:token tok:code-name ] .
+[] a sty:StyleRule ; sty:appliesTo c:CodeEditor ; sty:part ".sem-kind-variable" ;
+    sty:declares [ sty:property "color" ; sty:token tok:code-var ] .
+

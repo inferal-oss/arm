@@ -1,0 +1,506 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix a11y: <https://semblance.dev/ns/a11y#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+
+# Overlays components (DESIGN.md §3): Dialog, Drawer and Popover.
+#
+# An overlay's state is one fact, c:open. It changes only through reactions: the
+# overlay's own ✕ and scrim (rendered elements marked c:closes), a popover's
+# trigger (c:toggles), and any c:Button that c:opens or c:closes it. The
+# vocabulary for c:open / c:closes / c:toggles is declared with the feedback
+# components (feedback.ttl), which share it.
+#
+# Overlays are fixed to the viewport. An ancestor with a transform, perspective
+# or filter becomes their containing block (a c:Flippable card has one), so put
+# dialogs, drawers and toast regions on the shell's c:Desktop (`ui:desktop c:hosts
+# ui:myDialog`): it is outside every page, and they open over all of it.
+
+c:Overlay a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A component shown on demand, over the page (c:open). Closing it is one reaction for every kind."@en .
+
+c:opens a owl:ObjectProperty ; rdfs:range c:Overlay ;
+    rdfs:comment "The overlay this button (or keyboard command, key:Command) opens: sets its c:open true. A button also says so to assistive technology (aria-controls, aria-expanded, aria-haspopup)."@en .
+
+# --- Dialog ----------------------------------------------------------------------------------------
+
+c:Dialog a owl:Class ;
+    rdfs:subClassOf c:Overlay ;
+    rdfs:comment """A modal panel over a scrim: title (c:label), description (c:help), content
+(c:content) and actions (c:actions, typically buttons that c:closes it). role=dialog, aria-modal,
+labelled by its title and described by its description. The ✕ and a click on the scrim close it.
+Closed (the default) it renders an empty hidden root: its content is not evaluated."""@en ;
+    sem:slug "dialog" .
+c:DialogRendering a sem:Rendering ; sem:targets c:Dialog ; sem:stratum 0 .
+c:DialogRendering-fn a sem:Rule ; sem:implements c:DialogRendering ; sem:function "dialog" .
+c:DialogRendering-sparql a sem:Rule ;
+    sem:implements c:DialogRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?scrim, ?panel ;
+        rdfhtml:attribute ?dataSide .
+  ?scrim a rdfhtml:Div ; rdfhtml:class "sem-scrim" ; rdfhtml:attribute ?scrimHidden ; c:closes ?closed ; ord:immediatelyPrecedes ?panel .
+  ?scrimHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?panel a rdfhtml:Section ; rdfhtml:class "sem-panel" ; rdfhtml:tabIndex "-1" ; rdfhtml:hasChild ?head, ?desc, ?body, ?actions ;
+         rdfhtml:attribute ?role, ?modal, ?labelledBy, ?ariaLabel, ?describedBy .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "dialog" .
+  ?modal a rdfhtml:Attribute ; rdfhtml:attributeName "aria-modal" ; rdfhtml:attributeValue "true" .
+  ?labelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?titleId .
+  ?ariaLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?describedBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?descId .
+  ?head a rdfhtml:Header ; rdfhtml:class "sem-head" ; rdfhtml:hasChild ?titleEl, ?close ; ord:immediatelyPrecedes ?afterHead .
+  ?titleEl a rdfhtml:H2 ; rdfhtml:id ?titleId ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?close .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?title .
+  ?close a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-close" ; rdfhtml:hasChild ?closeText ;
+         rdfhtml:attribute ?closeLabel, ?escape ; c:closes ?closed .
+  ?closeText a rdfhtml:Text ; rdfhtml:data "✕" .
+  ?closeLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?closeWord .
+  ?escape a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+  ?desc a rdfhtml:P ; rdfhtml:id ?descId ; rdfhtml:class "sem-desc" ; rdfhtml:hasChild ?descText ; ord:immediatelyPrecedes ?afterDesc .
+  ?descText a rdfhtml:Text ; rdfhtml:data ?bodyText .
+  ?body a rdfhtml:Div ; rdfhtml:class "sem-body" ; rdfhtml:hasChild ?content ; ord:immediatelyPrecedes ?actions .
+  ?actions a rdfhtml:Footer ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Dialog .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(STR(?root) AS ?rootId)
+  {
+    $this a c:Dialog .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    BIND("" AS ?hidden)
+  } UNION {
+    $this a c:Dialog .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title0)
+    BIND(IF(COALESCE(?title0, "") != "", ?title0, ?none) AS ?title)
+    OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+    BIND(IF(BOUND(?title), ?none, STR(COALESCE(?title0, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", "")))) AS ?label)
+    OPTIONAL { $this c:help ?rawHelp FILTER(STR(?rawHelp) != "") }
+    BIND(STR(?rawHelp) AS ?bodyText)
+    OPTIONAL { $this c:content ?rawContent FILTER(isIRI(?rawContent)) }
+    BIND(?rawContent AS ?content)
+    OPTIONAL { $this c:actions/rdf:rest*/rdf:first ?anyAction FILTER(isIRI(?anyAction)) }
+    BIND(BOUND(?anyAction) AS ?hasActions)
+    BIND(IRI(CONCAT(STR($this), "/~scrim")) AS ?scrim)
+    BIND(IRI(CONCAT(STR($this), "/~scrim-aria-hidden")) AS ?scrimHidden)
+    BIND($this AS ?closed)
+    BIND(IRI(CONCAT(STR($this), "/~panel")) AS ?panel)
+    BIND(IRI(CONCAT(STR($this), "/~panel-role")) AS ?role)
+    BIND(IRI(CONCAT(STR($this), "/~panel-aria-modal")) AS ?modal)
+    BIND(IF(BOUND(?title), IRI(CONCAT(STR($this), "/~panel-aria-labelledby")), ?none) AS ?labelledBy)
+    BIND(IF(!BOUND(?title), IRI(CONCAT(STR($this), "/~panel-aria-label")), ?none) AS ?ariaLabel)
+    BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~panel-aria-describedby")), ?none) AS ?describedBy)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IF(BOUND(?title), IRI(CONCAT(STR($this), "/~title")), ?none) AS ?titleEl)
+    BIND(IF(BOUND(?title), IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+    BIND(CONCAT(STR($this), "/~title") AS ?titleId)
+    BIND(IRI(CONCAT(STR($this), "/~close")) AS ?close)
+    BIND(IRI(CONCAT(STR($this), "/~close-text")) AS ?closeText)
+    BIND(IRI(CONCAT(STR($this), "/~close-aria-label")) AS ?closeLabel)
+    BIND(IRI(CONCAT(STR($this), "/~close-data-sem-escape")) AS ?escape)
+    OPTIONAL { ?closeWord0At l10n:of c:CloseCommand ; l10n:name ?closeWord0 }
+  OPTIONAL { ?closeWord0At l10n:of c:CloseCommand ; l10n:name ?closeWord0 }
+  OPTIONAL { c:CloseCommand rdfs:label ?closeWord0 FILTER(lang(?closeWord0) = "") }
+    OPTIONAL { c:CloseCommand rdfs:label ?closeWord1 FILTER(langMatches(lang(?closeWord1), "en")) }
+    BIND(STR(COALESCE(?closeWord0, ?closeWord1, "Close")) AS ?closeWord)
+    BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~desc")), ?none) AS ?desc)
+    BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~desc-text")), ?none) AS ?descText)
+    BIND(IF(BOUND(?bodyText), CONCAT(STR($this), "/~desc"), ?none) AS ?descId)
+    BIND(IF(BOUND(?content), IRI(CONCAT(STR($this), "/~body")), ?none) AS ?body)
+    BIND(IF(?hasActions, IRI(CONCAT(STR($this), "/~actions")), ?none) AS ?actions)
+    BIND(COALESCE(?body, ?actions) AS ?afterDesc)
+    BIND(COALESCE(?desc, ?afterDesc) AS ?afterHead)
+  } UNION {
+    $this a c:Dialog .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  } UNION {
+    $this a c:Dialog .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:DialogRendering-sparql-text a sem:Rule ;
+    sem:implements c:DialogRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?line, ?content, ?child .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?afterLine .
+  ?content ord:immediatelyPrecedes ?first .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Dialog .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    $this a c:Dialog .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    BIND(STR(IRI(CONCAT(STR($this), "/~root"))) AS ?rootId)
+    BIND("" AS ?hidden)
+  } UNION {
+    $this a c:Dialog .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { $this c:help ?rawHelp FILTER(STR(?rawHelp) != "") }
+    BIND(CONCAT("╔ ", STR(COALESCE(?localLabel, ?rawLabel, "dialog")), " ╗", COALESCE(CONCAT(" ", STR(?rawHelp)), "")) AS ?lineData)
+    BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+    OPTIONAL { $this c:content ?rawContent FILTER(isIRI(?rawContent)) }
+    OPTIONAL { $this c:actions/rdf:first ?firstAction FILTER(isIRI(?firstAction)) }
+    BIND(?rawContent AS ?content)
+    BIND(IF(BOUND(?content), ?firstAction, ?none) AS ?first)
+    BIND(COALESCE(?content, ?firstAction) AS ?afterLine)
+  } UNION {
+    $this a c:Dialog .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this a c:Dialog .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+# --- Drawer ----------------------------------------------------------------------------------------
+
+c:Drawer a owl:Class ;
+    rdfs:subClassOf c:Overlay ;
+    rdfs:comment "A dialog that slides in from an edge of the viewport: c:side \"start\" or \"end\" (the default). Same contract as c:Dialog."@en ;
+    sem:slug "drawer" .
+c:side a owl:DatatypeProperty ; rdfs:domain c:Drawer ; rdfs:range xsd:string ;
+    rdfs:comment "\"start\" or \"end\": the inline edge a drawer is attached to."@en .
+c:DrawerRendering a sem:Rendering ; sem:targets c:Drawer ; sem:stratum 0 .
+c:DrawerRendering-fn a sem:Rule ; sem:implements c:DrawerRendering ; sem:function "drawer" .
+c:DrawerRendering-sparql a sem:Rule ;
+    sem:implements c:DrawerRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?scrim, ?panel ;
+        rdfhtml:attribute ?dataSide .
+  ?dataSide a rdfhtml:Attribute ; rdfhtml:attributeName "data-side" ; rdfhtml:attributeValue ?side .
+  ?scrim a rdfhtml:Div ; rdfhtml:class "sem-scrim" ; rdfhtml:attribute ?scrimHidden ; c:closes ?closed ; ord:immediatelyPrecedes ?panel .
+  ?scrimHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?panel a rdfhtml:Section ; rdfhtml:class "sem-panel" ; rdfhtml:tabIndex "-1" ; rdfhtml:hasChild ?head, ?desc, ?body, ?actions ;
+         rdfhtml:attribute ?role, ?modal, ?labelledBy, ?ariaLabel, ?describedBy .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "dialog" .
+  ?modal a rdfhtml:Attribute ; rdfhtml:attributeName "aria-modal" ; rdfhtml:attributeValue "true" .
+  ?labelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?titleId .
+  ?ariaLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?describedBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?descId .
+  ?head a rdfhtml:Header ; rdfhtml:class "sem-head" ; rdfhtml:hasChild ?titleEl, ?close ; ord:immediatelyPrecedes ?afterHead .
+  ?titleEl a rdfhtml:H2 ; rdfhtml:id ?titleId ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?close .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?title .
+  ?close a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-close" ; rdfhtml:hasChild ?closeText ;
+         rdfhtml:attribute ?closeLabel, ?escape ; c:closes ?closed .
+  ?closeText a rdfhtml:Text ; rdfhtml:data "✕" .
+  ?closeLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?closeWord .
+  ?escape a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+  ?desc a rdfhtml:P ; rdfhtml:id ?descId ; rdfhtml:class "sem-desc" ; rdfhtml:hasChild ?descText ; ord:immediatelyPrecedes ?afterDesc .
+  ?descText a rdfhtml:Text ; rdfhtml:data ?bodyText .
+  ?body a rdfhtml:Div ; rdfhtml:class "sem-body" ; rdfhtml:hasChild ?content ; ord:immediatelyPrecedes ?actions .
+  ?actions a rdfhtml:Footer ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Drawer .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(STR(?root) AS ?rootId)
+  {
+    $this a c:Drawer .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    BIND("" AS ?hidden)
+  } UNION {
+    $this a c:Drawer .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?title0)
+    BIND(IF(COALESCE(?title0, "") != "", ?title0, ?none) AS ?title)
+    OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+    BIND(IF(BOUND(?title), ?none, STR(COALESCE(?title0, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", "")))) AS ?label)
+    OPTIONAL { $this c:help ?rawHelp FILTER(STR(?rawHelp) != "") }
+    BIND(STR(?rawHelp) AS ?bodyText)
+    OPTIONAL { $this c:content ?rawContent FILTER(isIRI(?rawContent)) }
+    BIND(?rawContent AS ?content)
+    OPTIONAL { $this c:actions/rdf:rest*/rdf:first ?anyAction FILTER(isIRI(?anyAction)) }
+    BIND(BOUND(?anyAction) AS ?hasActions)
+    OPTIONAL { $this c:side ?rawSide }
+    BIND(IF(COALESCE(STR(?rawSide), "") = "start", "start", "end") AS ?side)
+    BIND(IRI(CONCAT(STR($this), "/~root-data-side")) AS ?dataSide)
+    BIND(IRI(CONCAT(STR($this), "/~scrim")) AS ?scrim)
+    BIND(IRI(CONCAT(STR($this), "/~scrim-aria-hidden")) AS ?scrimHidden)
+    BIND($this AS ?closed)
+    BIND(IRI(CONCAT(STR($this), "/~panel")) AS ?panel)
+    BIND(IRI(CONCAT(STR($this), "/~panel-role")) AS ?role)
+    BIND(IRI(CONCAT(STR($this), "/~panel-aria-modal")) AS ?modal)
+    BIND(IF(BOUND(?title), IRI(CONCAT(STR($this), "/~panel-aria-labelledby")), ?none) AS ?labelledBy)
+    BIND(IF(!BOUND(?title), IRI(CONCAT(STR($this), "/~panel-aria-label")), ?none) AS ?ariaLabel)
+    BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~panel-aria-describedby")), ?none) AS ?describedBy)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IF(BOUND(?title), IRI(CONCAT(STR($this), "/~title")), ?none) AS ?titleEl)
+    BIND(IF(BOUND(?title), IRI(CONCAT(STR($this), "/~title-text")), ?none) AS ?titleText)
+    BIND(CONCAT(STR($this), "/~title") AS ?titleId)
+    BIND(IRI(CONCAT(STR($this), "/~close")) AS ?close)
+    BIND(IRI(CONCAT(STR($this), "/~close-text")) AS ?closeText)
+    BIND(IRI(CONCAT(STR($this), "/~close-aria-label")) AS ?closeLabel)
+    BIND(IRI(CONCAT(STR($this), "/~close-data-sem-escape")) AS ?escape)
+    OPTIONAL { ?closeWord0At l10n:of c:CloseCommand ; l10n:name ?closeWord0 }
+  OPTIONAL { ?closeWord0At l10n:of c:CloseCommand ; l10n:name ?closeWord0 }
+  OPTIONAL { c:CloseCommand rdfs:label ?closeWord0 FILTER(lang(?closeWord0) = "") }
+    OPTIONAL { c:CloseCommand rdfs:label ?closeWord1 FILTER(langMatches(lang(?closeWord1), "en")) }
+    BIND(STR(COALESCE(?closeWord0, ?closeWord1, "Close")) AS ?closeWord)
+    BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~desc")), ?none) AS ?desc)
+    BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~desc-text")), ?none) AS ?descText)
+    BIND(IF(BOUND(?bodyText), CONCAT(STR($this), "/~desc"), ?none) AS ?descId)
+    BIND(IF(BOUND(?content), IRI(CONCAT(STR($this), "/~body")), ?none) AS ?body)
+    BIND(IF(?hasActions, IRI(CONCAT(STR($this), "/~actions")), ?none) AS ?actions)
+    BIND(COALESCE(?body, ?actions) AS ?afterDesc)
+    BIND(COALESCE(?desc, ?afterDesc) AS ?afterHead)
+  } UNION {
+    $this a c:Drawer .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  } UNION {
+    $this a c:Drawer .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:DrawerRendering-sparql-text a sem:Rule ;
+    sem:implements c:DrawerRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?line, ?content, ?child .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?afterLine .
+  ?content ord:immediatelyPrecedes ?first .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Drawer .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    $this a c:Drawer .
+    FILTER NOT EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    BIND(STR(IRI(CONCAT(STR($this), "/~root"))) AS ?rootId)
+    BIND("" AS ?hidden)
+  } UNION {
+    $this a c:Drawer .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { $this c:help ?rawHelp FILTER(STR(?rawHelp) != "") }
+    BIND(CONCAT("╔ ", STR(COALESCE(?localLabel, ?rawLabel, "drawer")), " ╗", COALESCE(CONCAT(" ", STR(?rawHelp)), "")) AS ?lineData)
+    BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+    OPTIONAL { $this c:content ?rawContent FILTER(isIRI(?rawContent)) }
+    OPTIONAL { $this c:actions/rdf:first ?firstAction FILTER(isIRI(?firstAction)) }
+    BIND(?rawContent AS ?content)
+    BIND(IF(BOUND(?content), ?firstAction, ?none) AS ?first)
+    BIND(COALESCE(?content, ?firstAction) AS ?afterLine)
+  } UNION {
+    $this a c:Drawer .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this a c:Drawer .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:actions/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+# --- Popover ---------------------------------------------------------------------------------------
+
+c:Popover a owl:Class ;
+    rdfs:subClassOf c:Overlay ;
+    rdfs:comment """A non-modal panel anchored below its trigger button (labelled by c:trigger, else
+c:label). The trigger toggles c:open and reports it (aria-expanded, aria-controls); the panel
+(role=dialog, labelled by the trigger) shows c:help and c:content while open."""@en ;
+    sem:slug "popover" .
+c:trigger a owl:DatatypeProperty ; rdfs:domain c:Popover ; rdfs:comment "The trigger button's label."@en .
+c:PopoverRendering a sem:Rendering ; sem:targets c:Popover ; sem:stratum 0 .
+c:PopoverRendering-fn a sem:Rule ; sem:implements c:PopoverRendering ; sem:function "popover" .
+c:PopoverRendering-sparql a sem:Rule ;
+    sem:implements c:PopoverRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?trigger, ?panel .
+  ?trigger a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-trigger" ; rdfhtml:id ?triggerId ;
+           rdfhtml:hasChild ?triggerText, ?caret ; c:toggles $this ; ord:immediatelyPrecedes ?panel ;
+           rdfhtml:attribute ?hasPopup, ?expanded, ?controls, ?escape .
+  ?hasPopup a rdfhtml:Attribute ; rdfhtml:attributeName "aria-haspopup" ; rdfhtml:attributeValue "dialog" .
+  ?expanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openValue .
+  ?controls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?panelId .
+  ?escape a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+  ?triggerText a rdfhtml:Text ; rdfhtml:data ?label ; ord:immediatelyPrecedes ?caret .
+  ?caret a rdfhtml:Span ; rdfhtml:class "sem-caret" ; rdfhtml:attribute ?caretHidden .
+  ?caretHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?panel a rdfhtml:Div ; rdfhtml:class "sem-panel" ; rdfhtml:id ?panelId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?desc, ?content ;
+         rdfhtml:attribute ?role, ?labelledBy .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "dialog" .
+  ?labelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?triggerId .
+  ?desc a rdfhtml:P ; rdfhtml:class "sem-desc" ; rdfhtml:hasChild ?descText ; ord:immediatelyPrecedes ?content .
+  ?descText a rdfhtml:Text ; rdfhtml:data ?bodyText .
+}
+WHERE {
+  $this a c:Popover .
+  OPTIONAL { $this c:trigger ?rawTrigger }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label0)
+  BIND(COALESCE(STR(?rawTrigger), ?label0) AS ?label)
+  BIND(EXISTS { $this c:open ?o FILTER(STR(?o) = "true") } AS ?open)
+  OPTIONAL { $this c:help ?rawHelp FILTER(STR(?rawHelp) != "") }
+  BIND(IF(?open, STR(?rawHelp), ?none) AS ?bodyText)
+  OPTIONAL { $this c:content ?rawContent FILTER(isIRI(?rawContent)) }
+  BIND(IF(?open, ?rawContent, ?none) AS ?content)
+  BIND(IF(?open, "true", "false") AS ?openValue)
+  BIND(IF(?open, ?none, "") AS ?hidden)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~trigger")) AS ?trigger)
+  BIND(STR(?trigger) AS ?triggerId)
+  BIND(IRI(CONCAT(STR($this), "/~trigger-text")) AS ?triggerText)
+  BIND(IRI(CONCAT(STR($this), "/~caret")) AS ?caret)
+  BIND(IRI(CONCAT(STR($this), "/~caret-aria-hidden")) AS ?caretHidden)
+  BIND(IRI(CONCAT(STR($this), "/~trigger-aria-haspopup")) AS ?hasPopup)
+  BIND(IRI(CONCAT(STR($this), "/~trigger-aria-expanded")) AS ?expanded)
+  BIND(IRI(CONCAT(STR($this), "/~trigger-aria-controls")) AS ?controls)
+  BIND(IF(?open, IRI(CONCAT(STR($this), "/~trigger-data-sem-escape")), ?none) AS ?escape)
+  BIND(IRI(CONCAT(STR($this), "/~panel")) AS ?panel)
+  BIND(STR(?panel) AS ?panelId)
+  BIND(IRI(CONCAT(STR($this), "/~panel-role")) AS ?role)
+  BIND(IRI(CONCAT(STR($this), "/~panel-aria-labelledby")) AS ?labelledBy)
+  BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~desc")), ?none) AS ?desc)
+  BIND(IF(BOUND(?bodyText), IRI(CONCAT(STR($this), "/~desc-text")), ?none) AS ?descText)
+}""" .
+c:PopoverRendering-sparql-text a sem:Rule ;
+    sem:implements c:PopoverRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line, ?content .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?content .
+}
+WHERE {
+  $this a c:Popover .
+  OPTIONAL { $this c:trigger ?rawTrigger }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label0)
+  BIND(COALESCE(STR(?rawTrigger), ?label0) AS ?label)
+  BIND(EXISTS { $this c:open ?o FILTER(STR(?o) = "true") } AS ?open)
+  OPTIONAL { $this c:help ?rawHelp FILTER(STR(?rawHelp) != "") }
+  BIND(IF(?open, STR(?rawHelp), ?none) AS ?bodyText)
+  OPTIONAL { $this c:content ?rawContent FILTER(isIRI(?rawContent)) }
+  BIND(IF(?open, ?rawContent, ?none) AS ?content)
+  BIND(CONCAT("[ ", ?label, IF(?open, " ▴", " ▾"), " ]", COALESCE(CONCAT(" ", ?bodyText), "")) AS ?lineData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+}""" .
+
+# --- behaviour -------------------------------------------------------------------------------------
+
+c:OverlayClose a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Overlay ;
+    beh:deletes """CONSTRUCT { $this c:open ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:closes $this . $this c:open ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:open false } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:closes $this }""" ;
+    sem:function "overlay:close" .
+
+c:PopoverToggle a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Popover ;
+    beh:deletes """CONSTRUCT { $this c:open ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:toggles $this . $this c:open ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:open ?new } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:toggles $this . OPTIONAL { $this c:open ?old } BIND(!COALESCE(?old, false) AS ?new) }""" ;
+    sem:function "popover:toggle" .
+
+# Any button opens or closes overlays by saying so (`ui:btn c:opens ui:dialog`). The
+# reactions are on c:Button, so a button inside an overlay's actions closes it by
+# c:closes rather than by its click bubbling up to the overlay.
+c:Opens a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Button ;
+    beh:deletes """CONSTRUCT { ?overlay c:open ?old } WHERE { $this c:opens ?overlay . ?overlay c:open ?old }""" ;
+    beh:inserts """CONSTRUCT { ?overlay c:open true } WHERE { $this c:opens ?overlay }""" ;
+    sem:function "overlay:open" .
+
+# A keyboard command opens an overlay the same way (`ui:openPalette a key:Command ; key:shortcut
+# "mod+k" ; c:opens ui:palette`): its key:Press sets c:open.
+c:CommandOpens a beh:Reaction ;
+    rdfs:label "Open"@en , "Відкрити"@uk , "Öffnen"@de , "فتح"@ar ;
+    beh:when key:Press ;
+    beh:sourceClass key:Command ;
+    beh:deletes """CONSTRUCT { ?overlay c:open ?old } WHERE { $this c:opens ?overlay . ?overlay c:open ?old }""" ;
+    beh:inserts """CONSTRUCT { ?overlay c:open true } WHERE { $this c:opens ?overlay }""" ;
+    sem:function "overlay:open" .
+
+c:Closes a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Button ;
+    beh:deletes """CONSTRUCT { ?overlay c:open ?old } WHERE { $this c:closes ?overlay . ?overlay c:open ?old }""" ;
+    beh:inserts """CONSTRUCT { ?overlay c:open false } WHERE { $this c:closes ?overlay }""" ;
+    sem:function "overlay:close-from" .
+
+# --- a11y: a button that opens an overlay says so --------------------------------------------------
+
+c:OpenerAria a sem:Rendering ;
+    rdfs:comment "aria-controls, aria-expanded and aria-haspopup on a c:Button that c:opens an overlay."@en ;
+    sem:targets c:Button ;
+    sem:modality mod:Screen ;
+    sem:layer a11y:Layer ;
+    sem:stratum 10 .
+c:OpenerAria-fn a sem:Rule ; sem:implements c:OpenerAria ; sem:function "overlays:opener-aria" .
+# A button that opens several overlays names the first by IRI. The rule follows c:opens, so the
+# overlay's c:open re-runs it.
+c:OpenerAria-sparql a sem:Rule ;
+    sem:implements c:OpenerAria ;
+    sem:follows c:opens ;
+    sem:watches rdf:type, c:opens, c:open ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?controls, ?expanded, ?hasPopup .
+  ?controls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?targetRoot .
+  ?expanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openValue .
+  ?hasPopup a rdfhtml:Attribute ; rdfhtml:attributeName "aria-haspopup" ; rdfhtml:attributeValue "dialog" .
+}
+WHERE {
+  $this a c:Button ; c:opens ?target FILTER(isIRI(?target))
+  FILTER NOT EXISTS { $this c:opens ?other FILTER(isIRI(?other) && STR(?other) < STR(?target)) }
+  BIND(CONCAT(STR(?target), "/~root") AS ?targetRoot)
+  BIND(IF(EXISTS { ?target c:open ?o FILTER(STR(?o) = "true") }, "true", "false") AS ?openValue)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-controls")) AS ?controls)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-expanded")) AS ?expanded)
+  BIND(IF(EXISTS { ?target a ?kind FILTER(?kind IN (c:Dialog, c:Drawer, c:Popover, c:Lightbox, c:CommandPalette)) }, IRI(CONCAT(STR($this), "/~root-aria-haspopup")), ?none) AS ?hasPopup)
+}""" .

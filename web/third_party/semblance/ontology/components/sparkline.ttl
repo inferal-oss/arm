@@ -1,0 +1,290 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix ord: <https://ontology.inferal.com/modules/ordering/> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Explicit, bounded graph points: independent of stored queries and log axes.
+c:Sparkline a owl:Class ; rdfs:subClassOf c:Chart ; sem:slug "sparkline" ;
+    rdfs:label "Sparkline"@en , "Мініграфік"@uk , "Verlauf"@de , "مخطط مصغر"@ar ;
+    rdfs:comment """A compact linear series from at most 512 named c:point nodes. The chart's c:start/c:end
+are its increasing numeric x bounds, c:min/c:max its increasing y bounds. A point's c:start is x,
+c:value is y (including zero or negative); absence is unknown. ord:immediatelyPrecedes connects
+explicitly adjacent samples. Missing values, out-of-range points and missing edges break the line;
+there is no sorting-based interpolation, clamping, query execution or retained history. The caller
+owns eviction and adjacency. Screen includes an accessible sample list; Text lists the same samples.
+Finite extents are required, not inferred from samples; their absolute magnitudes must be <= 1e100.
+Changing a value updates its mark and its predecessor. Membership/extents can redraw this bounded window."""@en .
+c:point a owl:ObjectProperty ; rdfs:range rdfs:Resource ;
+    rdfs:comment "A named explicit sample in a chart; c:start is its numeric horizontal coordinate, c:value its optional vertical observation, c:label its human-readable coordinate."@en .
+c:SparklinePoint a owl:Class ; rdfs:subClassOf sem:Component ; sem:slug "sparkline-point" ;
+    rdfs:comment "Internal per-sample projection, minted by a Sparkline. Owns its SVG mark and its alternative sample-list row."@en .
+c:SparklineReadings a owl:Class ; rdfs:subClassOf sem:Component ; sem:slug "sparkline-readings" ;
+    rdfs:comment "Internal ordered textual alternative to a Sparkline; composed under the stock AccordionItem disclosure on screen."@en .
+c:inChart a owl:ObjectProperty ; rdfs:range c:Chart ;
+    rdfs:comment "The chart an internal projected mark belongs to."@en .
+c:pointCount a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "Derived: how many explicit sample links a sparkline has, before any drawing; no truncation."@en .
+c:plotMessage a owl:DatatypeProperty ; rdfs:range xsd:string ;
+    rdfs:comment "Derived: localized empty/invalid window explanation, shared by Screen and Text."@en .
+c:sampleText a owl:DatatypeProperty ; rdfs:range xsd:string ;
+    rdfs:comment "Derived: a sparkline sample's exact coordinate label, observed value and unit, or localized unavailable text; shared by its visual and textual projections."@en .
+c:plotReady a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Derived: one finite, increasing pair of bounds per axis and 1–512 named samples."@en .
+c:SparklineSamples a c:Phrase ; rdfs:label "Samples"@en , "Вимірювання"@uk , "Messwerte"@de , "القياسات"@ar .
+c:SparklineUnknown a c:Phrase ; rdfs:label "unavailable"@en , "недоступно"@uk , "nicht verfügbar"@de , "غير متاح"@ar .
+c:SparklineEmpty a c:Phrase ; rdfs:label "No samples."@en , "Немає вимірювань."@uk , "Keine Messwerte."@de , "لا توجد قياسات."@ar .
+c:SparklineInvalid a c:Phrase ;
+    rdfs:label "Unable to plot: use finite increasing bounds and at most 512 named samples."@en ,
+      "Неможливо побудувати графік: потрібні скінченні зростаючі межі та не більше 512 іменованих вимірювань."@uk ,
+      "Nicht darstellbar: endliche aufsteigende Grenzen und höchstens 512 benannte Messwerte verwenden."@de ,
+      "تعذر الرسم: استخدم حدودًا منتهية ومتزايدة وبحد أقصى 512 قياسًا مسمى."@ar .
+
+# Count once. Marks read this result, so an excessive input never produces a truncated plot.
+c:SparklineState a sem:BuildingBlock ; sem:targets c:Sparkline ; sem:stratum -1 ;
+    sem:watches rdf:type , c:point , c:start , c:end , c:min , c:max , c:emptyText .
+c:SparklineState-fn a sem:Rule ; sem:implements c:SparklineState ; sem:function "sparkline:state" .
+c:SparklineState-sparql a sem:Rule ; sem:implements c:SparklineState ; sem:construct """
+CONSTRUCT { $this c:pointCount ?count ; c:plotReady ?ready ; c:plotMessage ?message }
+WHERE {
+  $this a c:Sparkline .
+  LATERAL { SELECT (COUNT(?point) AS ?count) WHERE { $this c:point ?point } }
+  OPTIONAL { $this c:start ?lo FILTER(isNumeric(?lo) && ABS(?lo) <= 1e100) }
+  OPTIONAL { $this c:end ?hi FILTER(isNumeric(?hi) && ABS(?hi) <= 1e100) }
+  OPTIONAL { $this c:min ?bottom FILTER(isNumeric(?bottom) && ABS(?bottom) <= 1e100) }
+  OPTIONAL { $this c:max ?top FILTER(isNumeric(?top) && ABS(?top) <= 1e100) }
+  OPTIONAL { ?customAt l10n:of $this ; l10n:emptyText ?customEmptyLocal }
+  OPTIONAL { $this c:emptyText ?customEmptyRaw FILTER(LANG(?customEmptyRaw) = "") }
+  OPTIONAL { ?emptyAt l10n:of c:SparklineEmpty ; l10n:name ?emptyLocal }
+  OPTIONAL { ?invalidAt l10n:of c:SparklineInvalid ; l10n:name ?invalidLocal }
+  BIND(IF(COALESCE(?count, 0) = 0, STR(COALESCE(?customEmptyLocal, ?customEmptyRaw, ?emptyLocal, "No samples.")),
+    STR(COALESCE(?invalidLocal, "Unable to plot: use finite increasing bounds and at most 512 named samples."))) AS ?message)
+  BIND(COALESCE(?count > 0 && ?count <= 512 && ?hi > ?lo && ?top > ?bottom &&
+    NOT EXISTS { $this c:point ?bad FILTER(!isIRI(?bad)) } &&
+    NOT EXISTS { $this c:start ?other FILTER(!sameTerm(?other, ?lo)) } &&
+    NOT EXISTS { $this c:end ?other FILTER(!sameTerm(?other, ?hi)) } &&
+    NOT EXISTS { $this c:min ?other FILTER(!sameTerm(?other, ?bottom)) } &&
+    NOT EXISTS { $this c:max ?other FILTER(!sameTerm(?other, ?top)) }, false) AS ?ready)
+}""" .
+
+c:SparklineRendering a sem:Rendering ; sem:targets c:Sparkline ; sem:stratum 0 ;
+    sem:watches rdf:type , c:label , l10n:label , c:plotReady , c:plotMessage .
+c:SparklineRendering-fn a sem:Rule ; sem:implements c:SparklineRendering ; sem:function "sparkline:frame" .
+c:SparklineRendering-sparql-screen a sem:Rule ; sem:implements c:SparklineRendering ; sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Figure ; sem:renders $this ; rdfhtml:hasChild ?caption, ?messageNode, ?plot, ?details .
+  ?caption a rdfhtml:Figcaption ; rdfhtml:hasChild ?captionText ; ord:immediatelyPrecedes ?afterCaption .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?messageNode a rdfhtml:P ; rdfhtml:class "sem-empty" ; rdfhtml:hasChild ?messageText .
+  ?messageText a rdfhtml:Text ; rdfhtml:data ?message .
+  ?plot a svg:Svg ; rdfhtml:attribute ?viewBox, ?plotRole, ?plotLabel ; ord:immediatelyPrecedes ?details .
+  ?viewBox a rdfhtml:Attribute ; rdfhtml:attributeName "viewBox" ; rdfhtml:attributeValue "0 0 1000 200" .
+  ?plotRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "img" .
+  ?plotLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?details a c:AccordionItem ; c:label ?samplesLabel ; c:content ?samples .
+  ?samples a c:SparklineReadings ; c:of $this .
+}
+WHERE {
+  $this a c:Sparkline .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(LANG(?rawLabel) = "") }
+  OPTIONAL { ?labelAt l10n:of $this ; l10n:label ?termLabel }
+  BIND(STR(COALESCE(?localLabel, ?termLabel, ?rawLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:plotReady ?valid }
+  BIND(COALESCE(?valid, false) AS ?ready)
+  OPTIONAL { ?samplesAt l10n:of c:SparklineSamples ; l10n:name ?samplesLocal }
+  BIND(STR(COALESCE(?samplesLocal, "Samples")) AS ?samplesLabel)
+  OPTIONAL { $this c:plotMessage ?message0 }
+  BIND(STR(COALESCE(?message0, "No samples.")) AS ?message)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~caption")) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~caption-text")) AS ?captionText)
+  BIND(IF(?ready, ?none, IRI(CONCAT(STR($this), "/~message"))) AS ?messageNode)
+  BIND(IF(?ready, ?none, IRI(CONCAT(STR($this), "/~message-text"))) AS ?messageText)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~readings")), ?none) AS ?samples)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~plot")), ?none) AS ?plot)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~details")), ?none) AS ?details)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~plot-a-viewBox")), ?none) AS ?viewBox)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~plot-a-role")), ?none) AS ?plotRole)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~plot-a-aria-label")), ?none) AS ?plotLabel)
+  BIND(IF(?ready, ?plot, ?messageNode) AS ?afterCaption)
+}""" .
+
+c:SparklineRendering-sparql-text a sem:Rule ; sem:implements c:SparklineRendering ; sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Figure ; sem:renders $this ; rdfhtml:hasChild ?caption, ?messageNode, ?samples .
+  ?caption a rdfhtml:Figcaption ; rdfhtml:hasChild ?captionText ; ord:immediatelyPrecedes ?afterCaption .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?messageNode a rdfhtml:P ; rdfhtml:class "sem-empty" ; rdfhtml:hasChild ?messageText .
+  ?messageText a rdfhtml:Text ; rdfhtml:data ?message .
+  ?samples a c:SparklineReadings ; c:of $this .
+}
+WHERE {
+  $this a c:Sparkline .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(LANG(?rawLabel) = "") }
+  OPTIONAL { ?labelAt l10n:of $this ; l10n:label ?termLabel }
+  BIND(STR(COALESCE(?localLabel, ?termLabel, ?rawLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:plotReady ?valid }
+  BIND(COALESCE(?valid, false) AS ?ready)
+  OPTIONAL { ?samplesAt l10n:of c:SparklineSamples ; l10n:name ?samplesLocal }
+  BIND(STR(COALESCE(?samplesLocal, "Samples")) AS ?samplesLabel)
+  OPTIONAL { $this c:plotMessage ?message0 }
+  BIND(STR(COALESCE(?message0, "No samples.")) AS ?message)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~caption")) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~caption-text")) AS ?captionText)
+  BIND(IF(?ready, ?none, IRI(CONCAT(STR($this), "/~message"))) AS ?messageNode)
+  BIND(IF(?ready, ?none, IRI(CONCAT(STR($this), "/~message-text"))) AS ?messageText)
+  BIND(IF(?ready, IRI(CONCAT(STR($this), "/~readings")), ?none) AS ?samples)
+  BIND(IF(?ready, ?samples, ?messageNode) AS ?afterCaption)
+}""" .
+
+# One component per point; values do not make the membership projection run.
+c:SparklineMembers a sem:Rendering ; sem:targets c:Sparkline ; sem:stratum 0 ;
+    sem:forEach c:point ; sem:watches rdf:type , c:plotReady .
+c:SparklineMembers-fn a sem:Rule ; sem:implements c:SparklineMembers ; sem:function "sparkline:member" .
+c:SparklineMembers-sparql-screen a sem:Rule ; sem:implements c:SparklineMembers ; sem:modality mod:Screen ;
+    sem:memberWatches c:start ; sem:construct """
+CONSTRUCT {
+  ?inst a c:SparklinePoint ; c:of $member ; c:inChart $this ; sem:orderKey ?key .
+  ?parent rdfhtml:hasChild ?inst .
+  ?samples rdfhtml:hasChild ?row . ?row sem:orderKey ?key .
+}
+WHERE {
+  $this a c:Sparkline ; c:plotReady true . FILTER(isIRI($member))
+  OPTIONAL { $member c:start ?x FILTER NOT EXISTS { $member c:start ?otherX FILTER(!sameTerm(?x, ?otherX)) } }
+  BIND(COALESCE(?x, 0) AS ?key)
+  BIND(IRI(CONCAT(STR($this), "/~p-", ENCODE_FOR_URI(STR($member)))) AS ?inst)
+  BIND(IRI(CONCAT(STR($this), "/~plot")) AS ?parent)
+  BIND(IRI(CONCAT(STR($this), "/~readings/~root")) AS ?samples)
+  BIND(IRI(CONCAT(STR(?inst), "/~sample")) AS ?row)
+}""" .
+
+c:SparklineMembers-sparql-text a sem:Rule ; sem:implements c:SparklineMembers ; sem:modality mod:Text ;
+    sem:memberWatches c:start ; sem:construct """
+CONSTRUCT {
+  ?inst a c:SparklinePoint ; c:of $member ; c:inChart $this ; sem:orderKey ?key .
+  ?parent rdfhtml:hasChild ?inst .
+}
+WHERE {
+  $this a c:Sparkline ; c:plotReady true . FILTER(isIRI($member))
+  OPTIONAL { $member c:start ?x FILTER NOT EXISTS { $member c:start ?otherX FILTER(!sameTerm(?x, ?otherX)) } }
+  BIND(COALESCE(?x, 0) AS ?key)
+  BIND(IRI(CONCAT(STR($this), "/~p-", ENCODE_FOR_URI(STR($member)))) AS ?inst)
+  BIND(IRI(CONCAT(STR($this), "/~readings/~root")) AS ?parent)
+}""" .
+
+# One shared reading description: localization/value formatting is not duplicated by modalities.
+# The datum is minted under its focus: bulk attribution must not assign a
+# self-subject triple of a minted focus to its parent chart.
+c:SparklinePointData a sem:BuildingBlock ; sem:targets c:SparklinePoint ; sem:stratum 1 ;
+    sem:follows c:of , c:inChart ;
+    sem:watches rdf:type , c:of , c:inChart , c:start , c:value , c:label , c:unit , c:plotReady .
+c:SparklinePointData-fn a sem:Rule ; sem:implements c:SparklinePointData ; sem:function "sparkline:point-data" .
+c:SparklinePointData-sparql a sem:Rule ; sem:implements c:SparklinePointData ; sem:construct """
+CONSTRUCT { ?data c:sampleText ?description ; c:start ?x ; c:value ?value }
+WHERE {
+  $this a c:SparklinePoint ; c:of ?sample ; c:inChart ?chart .
+  BIND(IRI(CONCAT(STR($this), "/~data")) AS ?data)
+  ?chart c:plotReady true .
+  OPTIONAL { ?sample c:start ?x FILTER(isNumeric(?x) && ABS(?x) <= 1e100) FILTER NOT EXISTS { ?sample c:start ?otherX FILTER(!sameTerm(?x, ?otherX)) } }
+  OPTIONAL { ?sample c:value ?value FILTER(isNumeric(?value) && ABS(?value) <= 1e100) FILTER NOT EXISTS { ?sample c:value ?otherY FILTER(!sameTerm(?value, ?otherY)) } }
+  OPTIONAL { ?chart c:unit ?unit0 FILTER(LANG(?unit0) = "") }
+  BIND(STR(COALESCE(?unit0, "")) AS ?unit)
+  OPTIONAL { ?sampleLabelAt l10n:of ?sample ; l10n:label ?sampleLocal }
+  OPTIONAL { ?sample c:label ?sampleRaw FILTER(LANG(?sampleRaw) = "") }
+  BIND(STR(COALESCE(?sampleLocal, ?sampleRaw, ?x, REPLACE(STR(?sample), "^.*[#/]", ""))) AS ?name)
+  OPTIONAL { ?unknownAt l10n:of c:SparklineUnknown ; l10n:name ?unknownLocal }
+  BIND(STR(COALESCE(?unknownLocal, "unavailable")) AS ?unknown)
+  BIND(CONCAT(?name, ": ", IF(BOUND(?value), CONCAT(STR(?value), IF(?unit = "", "", CONCAT(" ", ?unit))), ?unknown)) AS ?description)
+}""" .
+
+c:SparklinePointRendering a sem:Rendering ; sem:targets c:SparklinePoint ; sem:stratum 2 ; sem:readsMinted true ;
+    sem:follows c:of , c:inChart , ( c:of ord:immediatelyPrecedes ) .
+c:SparklinePointRendering-fn a sem:Rule ; sem:implements c:SparklinePointRendering ; sem:function "sparkline:point" .
+c:SparklinePointRendering-sparql-screen a sem:Rule ; sem:implements c:SparklinePointRendering ; sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?row a rdfhtml:Li ; rdfhtml:hasChild ?rowText .
+  ?rowText a rdfhtml:Text ; rdfhtml:data ?description .
+  ?root a svg:G ; sem:renders $this ; rdfhtml:hasChild ?line, ?dot .
+  ?line a svg:Line ; rdfhtml:class "sem-sparkline-line" ; rdfhtml:attribute ?x1, ?y1, ?x2, ?y2 ; ord:immediatelyPrecedes ?dot .
+  ?dot a svg:Circle ; rdfhtml:class "sem-sparkline-dot" ; rdfhtml:attribute ?cxAttr, ?cyAttr, ?rAttr ; sem:tooltip ?description .
+  ?x1 a rdfhtml:Attribute ; rdfhtml:attributeName "x1" ; rdfhtml:attributeValue ?cx .
+  ?y1 a rdfhtml:Attribute ; rdfhtml:attributeName "y1" ; rdfhtml:attributeValue ?cy .
+  ?x2 a rdfhtml:Attribute ; rdfhtml:attributeName "x2" ; rdfhtml:attributeValue ?nx .
+  ?y2 a rdfhtml:Attribute ; rdfhtml:attributeName "y2" ; rdfhtml:attributeValue ?ny .
+  ?cxAttr a rdfhtml:Attribute ; rdfhtml:attributeName "cx" ; rdfhtml:attributeValue ?cx .
+  ?cyAttr a rdfhtml:Attribute ; rdfhtml:attributeName "cy" ; rdfhtml:attributeValue ?cy .
+  ?rAttr a rdfhtml:Attribute ; rdfhtml:attributeName "r" ; rdfhtml:attributeValue "2" .
+}
+WHERE {
+  $this a c:SparklinePoint ; c:of ?sample ; c:inChart ?chart .
+  ?chart c:plotReady true ; c:start ?lo ; c:end ?hi ; c:min ?bottom ; c:max ?top .
+  BIND(IRI(CONCAT(STR($this), "/~data")) AS ?data)
+  ?data c:sampleText ?description .
+  OPTIONAL { ?data c:start ?x }
+  OPTIONAL { ?data c:value ?value }
+  BIND(COALESCE(?x >= ?lo && ?x <= ?hi && ?value >= ?bottom && ?value <= ?top, false) AS ?known)
+  # Coordinates are positive integers: the half unit protects the cast from an inexact ROUND double.
+  BIND(STR(xsd:integer(6 + ROUND((?x - ?lo) / (?hi - ?lo) * 988) + 0.5)) AS ?cx)
+  BIND(STR(xsd:integer(194 - ROUND((?value - ?bottom) / (?top - ?bottom) * 188) + 0.5)) AS ?cy)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~sample")) AS ?row)
+  BIND(IRI(CONCAT(STR($this), "/~sample-text")) AS ?rowText)
+  LATERAL { OPTIONAL {
+    ?sample ord:immediatelyPrecedes ?next . ?chart c:point ?next .
+    FILTER NOT EXISTS { ?sample ord:immediatelyPrecedes ?other FILTER(?other != ?next) }
+    ?next c:start ?nextX ; c:value ?nextY .
+    FILTER NOT EXISTS { ?next c:start ?otherX FILTER(!sameTerm(?nextX, ?otherX)) }
+    FILTER NOT EXISTS { ?next c:value ?otherY FILTER(!sameTerm(?nextY, ?otherY)) }
+    FILTER(isNumeric(?nextX) && isNumeric(?nextY) && ABS(?nextX) <= 1e100 && ABS(?nextY) <= 1e100 && ?nextX > ?x && ?nextX <= ?hi && ?nextY >= ?bottom && ?nextY <= ?top)
+    BIND(STR(xsd:integer(6 + ROUND((?nextX - ?lo) / (?hi - ?lo) * 988) + 0.5)) AS ?nx)
+    BIND(STR(xsd:integer(194 - ROUND((?nextY - ?bottom) / (?top - ?bottom) * 188) + 0.5)) AS ?ny)
+  } }
+  BIND(IF(?known && BOUND(?nx) && BOUND(?ny), IRI(CONCAT(STR($this), "/~line")), ?none) AS ?line)
+  BIND(IF(?known, IRI(CONCAT(STR($this), "/~dot")), ?none) AS ?dot)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~line-a-x1")), ?none) AS ?x1)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~line-a-y1")), ?none) AS ?y1)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~line-a-x2")), ?none) AS ?x2)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~line-a-y2")), ?none) AS ?y2)
+  BIND(IF(BOUND(?dot), IRI(CONCAT(STR($this), "/~dot-a-cx")), ?none) AS ?cxAttr)
+  BIND(IF(BOUND(?dot), IRI(CONCAT(STR($this), "/~dot-a-cy")), ?none) AS ?cyAttr)
+  BIND(IF(BOUND(?dot), IRI(CONCAT(STR($this), "/~dot-a-r")), ?none) AS ?rAttr)
+}""" .
+
+c:SparklinePointRendering-sparql-text a sem:Rule ; sem:implements c:SparklinePointRendering ; sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Li ; sem:renders $this ; rdfhtml:hasChild ?rowText .
+  ?rowText a rdfhtml:Text ; rdfhtml:data ?description .
+}
+WHERE {
+  $this a c:SparklinePoint .
+  BIND(IRI(CONCAT(STR($this), "/~data")) AS ?data)
+  ?data c:sampleText ?description .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~sample-text")) AS ?rowText)
+}""" .
+
+# The stock AccordionItem owns its open state and RDF click reaction. This
+# component supplies only the ordered sample-list root, in either modality.
+c:SparklineReadingsRendering a sem:Rendering ; sem:targets c:SparklineReadings ; sem:stratum 0 .
+c:SparklineReadingsRendering-fn a sem:Rule ; sem:implements c:SparklineReadingsRendering ; sem:function "sparkline:readings" .
+c:SparklineReadingsRendering-sparql a sem:Rule ; sem:implements c:SparklineReadingsRendering ; sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Ol ; sem:renders $this ; rdfhtml:attribute ?tab .
+  ?tab a rdfhtml:Attribute ; rdfhtml:attributeName "tabindex" ; rdfhtml:attributeValue "0" .
+}
+WHERE {
+  $this a c:SparklineReadings .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-a-tabindex")) AS ?tab)
+}""" .

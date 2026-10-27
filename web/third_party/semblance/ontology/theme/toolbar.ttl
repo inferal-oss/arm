@@ -1,0 +1,157 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Default theme for the toolbar pieces (ontology/components/toolbar.ttl).
+
+# A live dot breathes: a ring that grows and fades. Its duration is a motion token, so the
+# motion layer stills it.
+[] a sty:Keyframes ; sty:name "sem-pulse" ;
+    sty:step [ sty:at "0%" ; sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 0 color-mix(in oklab, var(--live-color) 55%, transparent)" ] ] ,
+             [ sty:at "70%" ; sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 6px color-mix(in oklab, var(--live-color) 0%, transparent)" ] ] ,
+             [ sty:at "100%" ; sty:declares [ sty:property "box-shadow" ; sty:raw "0 0 0 0 transparent" ] ] .
+
+# --- toolbar: a wrapping row ---
+[] a sty:StyleRule ; sty:appliesTo c:Toolbar ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "row" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:tokens ( tok:space-2 tok:space-3 ) ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+
+# --- search field: an icon, the input, a clear button, in one outline ---
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-1 ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 14rem" ] ,
+                 [ sty:property "min-width" ; sty:raw "10rem" ] ,
+                 [ sty:property "max-width" ; sty:raw "26rem" ] ,
+                 [ sty:property "height" ; sty:raw "var(--control-h, var(--sem-control-sm))" ] ,
+                 [ sty:property "padding" ; sty:raw "0 4px 0 10px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-control ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-duration-fast) var(--sem-ease), box-shadow var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:state ":focus-within" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part ".sem-icon" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part "input" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "padding" ; sty:raw "0 4px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part "input::placeholder" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+# The native cancel button would duplicate the clear button.
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part "input::-webkit-search-cancel-button" ;
+    sty:declares [ sty:property "appearance" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part ".sem-clear" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part ".sem-clear:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-4 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:SearchField ; sty:part ".sem-clear:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+
+# --- legend: swatch and label pairs in a wrapping row ---
+[] a sty:StyleRule ; sty:appliesTo c:Legend ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:tokens ( tok:space-1 tok:space-4 ) ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Legend ; sty:part "> li" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "6px" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Legend ; sty:part ".sem-swatch" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "10px" ] ,
+                 [ sty:property "height" ; sty:raw "10px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "3px" ] ,
+                 [ sty:property "background" ; sty:raw "var(--swatch, var(--sem-gray-8))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Legend ; sty:part ".sem-swatch[data-sem-tone]" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-solid)" ] .
+
+# --- live indicator: a dot and a word, as a quiet toggle button ---
+[] a sty:StyleRule ; sty:appliesTo c:LiveIndicator ;
+    sty:declares [ sty:property "--live-color" ; sty:raw "var(--sem-success-9)" ] ,
+                 [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "7px" ] ,
+                 [ sty:property "height" ; sty:raw "26px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 10px 0 8px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid transparent" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "600 12px/1 var(--sem-font)" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:LiveIndicator ; sty:state ":hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:gray-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:LiveIndicator ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:LiveIndicator ; sty:state "[data-live=false]" ;
+    sty:declares [ sty:property "--live-color" ; sty:raw "var(--sem-gray-8)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:LiveIndicator ; sty:part ".sem-dot" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "8px" ] ,
+                 [ sty:property "height" ; sty:raw "8px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "var(--live-color)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:LiveIndicator ; sty:state "[data-live=true]" ; sty:part ".sem-dot" ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-pulse calc(var(--sem-duration-loop) * 6) var(--sem-ease-out) infinite" ] .
+
+# --- count badge: a pill, toned like a badge (soft by default) ---
+[] a sty:StyleRule ; sty:appliesTo c:CountBadge ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "justify-content" ; sty:raw "center" ] ,
+                 [ sty:property "min-width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "20px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 7px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid transparent" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-gray-12))" ] ,
+                 [ sty:property "font" ; sty:raw "650 11px/1 var(--sem-font)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .

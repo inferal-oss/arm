@@ -1,0 +1,382 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Actions components (DESIGN.md §3): Button variants, IconButton, ButtonGroup and Menu.
+# c:Button lives in button.ttl; it carries sty:tone / sty:emphasis / sty:size through the style
+# layer like every toned component here.
+
+c:toggles a owl:ObjectProperty ;
+    rdfs:comment """On a rendered element: the component whose boolean state activating it flips (a menu's
+trigger flips c:open, a switch's button flips c:checked). Reactions find it from the event's
+beh:node or any RDF/HTML ancestor of it (rdfhtml:hasChild*), so clicks elsewhere in the
+component do nothing."""@en .
+c:pressed a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "A toggle button's state (aria-pressed). Absent: the button is not a toggle."@en .
+c:open a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether a disclosing component (a menu) shows its content."@en .
+c:items a owl:ObjectProperty ; rdfs:range rdf:List ;
+    rdfs:comment "The ordered entries of a component (a menu's c:MenuItem instances)."@en .
+
+# --- IconButton ------------------------------------------------------------------------------------
+
+c:IconButton a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A square, icon-only button: the glyph is c:icon and the accessible name (aria-label, and
+its tooltip) is c:label. Toned (sty:tone, sty:emphasis; soft by default) and sized (sty:size).
+With c:pressed it is a toggle button (aria-pressed); what it does is a behaviour-layer binding."""@en ;
+    sem:slug "icon-button" .
+c:IconButtonRendering a sem:Rendering ; sem:targets c:IconButton ; sem:stratum 0 .
+c:IconButtonRendering-fn a sem:Rule ; sem:implements c:IconButtonRendering ; sem:function "actions:icon-button" .
+c:IconButtonRendering-sparql a sem:Rule ;
+    sem:implements c:IconButtonRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Button ; sem:renders $this ; rdfhtml:type "button" ; rdfhtml:disabled ?disabled ; rdfhtml:hasChild ?icon ;
+        rdfhtml:attribute ?ariaLabel, ?ariaPressed ; sem:tooltip ?label .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?glyph .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?ariaLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?ariaPressed a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?pressedValue .
+}
+WHERE {
+  $this a c:IconButton .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:icon ?iconValue }
+  BIND(STR(COALESCE(?iconValue, "•")) AS ?glyph)
+  BIND(IF(EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") }, "", ?none) AS ?disabled)
+  OPTIONAL {
+    $this c:pressed ?pressed .
+    BIND(IF(STR(?pressed) = "true", "true", "false") AS ?pressedValue)
+    BIND(IRI(CONCAT(STR($this), "/~root-aria-pressed")) AS ?ariaPressed)
+  }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?ariaLabel)
+  BIND(IRI(CONCAT(STR($this), "/~icon")) AS ?icon)
+  BIND(IRI(CONCAT(STR($this), "/~icon-text")) AS ?iconText)
+  BIND(IRI(CONCAT(STR($this), "/~icon-aria-hidden")) AS ?iconHidden)
+}""" .
+c:IconButtonRendering-sparql-text a sem:Rule ;
+    sem:implements c:IconButtonRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:IconButton .
+  OPTIONAL { $this c:icon ?iconValue }
+  OPTIONAL { $this c:pressed ?pressed }
+  BIND(CONCAT("[", STR(COALESCE(?iconValue, "•")), IF(COALESCE(STR(?pressed), "") = "true", "*", ""), "]") AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+# --- ButtonGroup -----------------------------------------------------------------------------------
+
+c:ButtonGroup a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """An attached row of buttons (c:children): one outline, shared inner borders. A sty:size on
+the group sizes every button in it (the size's custom properties inherit). c:label names the
+group for assistive technology (role=group)."""@en ;
+    sem:slug "button-group" .
+c:ButtonGroupRendering a sem:Rendering ; sem:targets c:ButtonGroup ; sem:stratum 0 .
+c:ButtonGroupRendering-fn a sem:Rule ; sem:implements c:ButtonGroupRendering ; sem:function "actions:button-group" .
+c:ButtonGroupRendering-sparql a sem:Rule ;
+    sem:implements c:ButtonGroupRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?child ; rdfhtml:attribute ?role, ?ariaLabel .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?ariaLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:ButtonGroup .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+  {
+    $this a c:ButtonGroup .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel)) AS ?label)
+    BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?ariaLabel)
+  } UNION {
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:ButtonGroupRendering-sparql-text a sem:Rule ;
+    sem:implements c:ButtonGroupRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:ButtonGroup .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {} UNION {
+    $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child))
+  } UNION {
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+# --- Menu ------------------------------------------------------------------------------------------
+
+c:Menu a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A menu button: a trigger (c:label, optional c:icon) that discloses c:items, a list of
+c:MenuItem. c:open holds whether the menu is shown; clicking the trigger flips it, and Escape
+closes it (the open trigger declares the keyboard layer's escape shortcut). Toned and sized
+like a button. Items are only built while the menu is open."""@en ;
+    sem:slug "menu" .
+c:MenuItem a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """An entry of a c:Menu: c:label, optional c:icon, optional sty:tone (e.g. sty:Danger for a
+destructive action), c:disabled. Choosing it closes its menu; anything else it does is its own
+beh:Reaction (per instance or per class), applied in the same delta."""@en ;
+    sem:slug "menu-item" .
+
+c:MenuRendering a sem:Rendering ; sem:targets c:Menu ; sem:stratum 0 .
+c:MenuRendering-fn a sem:Rule ; sem:implements c:MenuRendering ; sem:function "actions:menu" .
+c:MenuRendering-sparql a sem:Rule ;
+    sem:implements c:MenuRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?trigger, ?popup ; rdfhtml:attribute ?dataOpen .
+  ?dataOpen a rdfhtml:Attribute ; rdfhtml:attributeName "data-open" ; rdfhtml:attributeValue "true" .
+  ?trigger a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:id ?triggerId ; rdfhtml:disabled ?disabled ; c:toggles $this ;
+           rdfhtml:hasChild ?icon, ?labelSpan, ?caret ; ord:immediatelyPrecedes ?popup ;
+           rdfhtml:attribute ?hasPopup, ?expanded, ?controls, ?shortcut, ?shortcutApple, ?shortcutOther .
+  ?hasPopup a rdfhtml:Attribute ; rdfhtml:attributeName "aria-haspopup" ; rdfhtml:attributeValue "menu" .
+  ?expanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openValue .
+  ?controls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?popupId .
+  ?shortcut a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shortcut" ; rdfhtml:attributeValue "escape" .
+  ?shortcutApple a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shortcut-apple" ; rdfhtml:attributeValue "Esc" .
+  ?shortcutOther a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shortcut-other" ; rdfhtml:attributeValue "Esc" .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?labelSpan .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?iconData .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?labelSpan a rdfhtml:Span ; rdfhtml:class "sem-label" ; rdfhtml:hasChild ?labelText ; ord:immediatelyPrecedes ?caret .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?labelData .
+  ?caret a rdfhtml:Span ; rdfhtml:class "sem-caret" ; rdfhtml:hasChild ?caretText ; rdfhtml:attribute ?caretHidden .
+  ?caretText a rdfhtml:Text ; rdfhtml:data "▾" .
+  ?caretHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?popup a rdfhtml:Div ; rdfhtml:id ?popupId ; rdfhtml:class "sem-menu-popup" ; rdfhtml:hasChild ?item ;
+         rdfhtml:attribute ?popupRole, ?popupLabelledBy .
+  ?popupRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "menu" .
+  ?popupLabelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?triggerId .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Menu .
+  {
+    $this a c:Menu .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+    BIND(?label AS ?labelData)
+    OPTIONAL { $this c:icon ?iconValue FILTER(STR(?iconValue) != "") }
+    BIND(STR(?iconValue) AS ?iconData)
+    BIND(EXISTS { $this c:open ?o FILTER(STR(?o) = "true") } AS ?open)
+    BIND(IF(?open, "true", "false") AS ?openValue)
+    BIND(IF(EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") }, "", ?none) AS ?disabled)
+    BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+    BIND(IRI(CONCAT(STR($this), "/~trigger")) AS ?trigger)
+    BIND(STR(?trigger) AS ?triggerId)
+    BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelSpan)
+    BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+    BIND(IRI(CONCAT(STR($this), "/~caret")) AS ?caret)
+    BIND(IRI(CONCAT(STR($this), "/~caret-text")) AS ?caretText)
+    BIND(IRI(CONCAT(STR($this), "/~caret-aria-hidden")) AS ?caretHidden)
+    BIND(IRI(CONCAT(STR($this), "/~trigger-aria-haspopup")) AS ?hasPopup)
+    BIND(IRI(CONCAT(STR($this), "/~trigger-aria-expanded")) AS ?expanded)
+    BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon")), ?none) AS ?icon)
+    BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-text")), ?none) AS ?iconText)
+    BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-aria-hidden")), ?none) AS ?iconHidden)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~popup")), ?none) AS ?popup)
+    BIND(IF(?open, STR(?popup), ?none) AS ?popupId)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~root-data-open")), ?none) AS ?dataOpen)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~trigger-aria-controls")), ?none) AS ?controls)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~trigger-data-sem-shortcut")), ?none) AS ?shortcut)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~trigger-data-sem-shortcut-apple")), ?none) AS ?shortcutApple)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~trigger-data-sem-shortcut-other")), ?none) AS ?shortcutOther)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~popup-role")), ?none) AS ?popupRole)
+    BIND(IF(?open, IRI(CONCAT(STR($this), "/~popup-aria-labelledby")), ?none) AS ?popupLabelledBy)
+  } UNION {
+    # Open: the items, in list order.
+    $this a c:Menu .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:items/rdf:rest*/rdf:first ?item FILTER(isIRI(?item))
+    BIND(IRI(CONCAT(STR($this), "/~popup")) AS ?popup)
+  } UNION {
+    $this a c:Menu .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:items/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:MenuRendering-sparql-text a sem:Rule ;
+    sem:implements c:MenuRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line, ?item .
+  ?line a rdfhtml:Div ; rdfhtml:hasChild ?lineText ; ord:immediatelyPrecedes ?first .
+  ?lineText a rdfhtml:Text ; rdfhtml:data ?lineData .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Menu .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  {
+    $this a c:Menu .
+    OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+    BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+    OPTIONAL { $this c:icon ?iconValue FILTER(STR(?iconValue) != "") }
+    BIND(EXISTS { $this c:open ?o FILTER(STR(?o) = "true") } AS ?open)
+    BIND(CONCAT("[ ", COALESCE(CONCAT(STR(?iconValue), " "), ""), ?label, IF(?open, " ▴", " ▾"), " ]") AS ?lineData)
+    BIND(IRI(CONCAT(STR($this), "/~line-text")) AS ?lineText)
+  } UNION {
+    $this a c:Menu .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:items/rdf:first ?first FILTER(isIRI(?first))
+  } UNION {
+    $this a c:Menu .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:items/rdf:rest*/rdf:first ?item FILTER(isIRI(?item))
+  } UNION {
+    $this a c:Menu .
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    $this c:items/rdf:rest* ?cell . ?cell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+c:MenuItemRendering a sem:Rendering ; sem:targets c:MenuItem ; sem:stratum 0 .
+c:MenuItemRendering-fn a sem:Rule ; sem:implements c:MenuItemRendering ; sem:function "actions:menu-item" .
+c:MenuItemRendering-sparql a sem:Rule ;
+    sem:implements c:MenuItemRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Button ; sem:renders $this ; rdfhtml:type "button" ; rdfhtml:disabled ?disabled ;
+        rdfhtml:hasChild ?icon, ?labelSpan ; rdfhtml:attribute ?role, ?ariaDisabled .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "menuitem" .
+  ?ariaDisabled a rdfhtml:Attribute ; rdfhtml:attributeName "aria-disabled" ; rdfhtml:attributeValue "true" .
+  ?icon a rdfhtml:Span ; rdfhtml:class "sem-icon" ; rdfhtml:hasChild ?iconText ; rdfhtml:attribute ?iconHidden ; ord:immediatelyPrecedes ?labelSpan .
+  ?iconText a rdfhtml:Text ; rdfhtml:data ?iconData .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?labelSpan a rdfhtml:Span ; rdfhtml:class "sem-label" ; rdfhtml:hasChild ?labelText .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?labelData .
+}
+WHERE {
+  $this a c:MenuItem .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  BIND(?label AS ?labelData)
+  OPTIONAL { $this c:icon ?iconValue FILTER(STR(?iconValue) != "") }
+  BIND(STR(?iconValue) AS ?iconData)
+  BIND(EXISTS { $this c:disabled ?d FILTER(STR(?d) = "true") } AS ?isDisabled)
+  BIND(IF(?isDisabled, "", ?none) AS ?disabled)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+  BIND(IF(?isDisabled, IRI(CONCAT(STR($this), "/~root-aria-disabled")), ?none) AS ?ariaDisabled)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?labelSpan)
+  BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+  BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon")), ?none) AS ?icon)
+  BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-text")), ?none) AS ?iconText)
+  BIND(IF(BOUND(?iconData), IRI(CONCAT(STR($this), "/~icon-aria-hidden")), ?none) AS ?iconHidden)
+}""" .
+c:MenuItemRendering-sparql-text a sem:Rule ;
+    sem:implements c:MenuItemRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:MenuItem .
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:icon ?iconValue FILTER(STR(?iconValue) != "") }
+  BIND(CONCAT("  › ", COALESCE(CONCAT(STR(?iconValue), " "), ""), ?label) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+c:MenuToggle a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Menu ;
+    beh:deletes """CONSTRUCT { $this c:open ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:toggles $this . $this c:open ?old . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    beh:inserts """CONSTRUCT { $this c:open ?new } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:toggles $this . FILTER NOT EXISTS { $this c:disabled true } OPTIONAL { $this c:open ?old } BIND(!COALESCE(?old, false) AS ?new) }""" ;
+    sem:function "actions:menu-toggle" .
+
+c:MenuItemChoose a beh:Reaction ;
+    rdfs:comment "Choosing an item closes the menus it belongs to."@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:MenuItem ;
+    beh:deletes """CONSTRUCT { ?menu c:open ?old } WHERE { ?menu c:items/rdf:rest*/rdf:first $this ; c:open ?old . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    beh:inserts """CONSTRUCT { ?menu c:open false } WHERE { ?menu c:items/rdf:rest*/rdf:first $this ; c:open true . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    sem:function "actions:menu-item-choose" .
+
+# --- Behaviour mixins ------------------------------------------------------------------------------
+# Classes without a rendering (and without a slug, so they add no style hook): an instance opts
+# into the behaviour by also having the class (`a c:IconButton, c:Pressable`). Being class-level
+# reactions they compose with the component's own (a c:MenuItem that is a c:Setter both closes
+# its menu and sets the value, in one delta).
+
+c:Pressable a owl:Class ;
+    rdfs:comment "Mixin: activating the component flips its c:pressed (a toggle button)."@en .
+c:PressableFlip a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Pressable ;
+    beh:deletes """CONSTRUCT { $this c:pressed ?old } WHERE { $this c:pressed ?old . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    beh:inserts """CONSTRUCT { $this c:pressed ?new } WHERE { FILTER NOT EXISTS { $this c:disabled true } OPTIONAL { $this c:pressed ?old } BIND(!COALESCE(?old, false) AS ?new) }""" ;
+    sem:function "actions:press" .
+
+c:Setter a owl:Class ;
+    rdfs:comment """Mixin: activating the component sets c:property of the node it c:controls to its c:value
+(a menu item that records a choice, a button that switches a mode)."""@en .
+c:SetterAssign a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Setter ;
+    beh:deletes """CONSTRUCT { ?n ?p ?old } WHERE { $this c:controls ?n ; c:property ?p ; c:value ?v . ?n ?p ?old . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    beh:inserts """CONSTRUCT { ?n ?p ?v } WHERE { $this c:controls ?n ; c:property ?p ; c:value ?v . FILTER NOT EXISTS { $this c:disabled true } }""" ;
+    sem:function "actions:assign" .

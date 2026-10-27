@@ -1,0 +1,95 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix per: <https://semblance.dev/ns/persistence#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Persistence: what is remembered is a policy - a node in the graph saying
+# which triples, where, and whether it is on (PERSISTENCE.md). A host effect
+# (src/persistence.ts) restores enabled policies before the first projection
+# and writes them back, in idle time, after input changes they cover. Every
+# write and restore is a member of per:StateLog, an LDES that says which
+# policy, where, how much, when, and which change-log event led to it.
+
+<https://semblance.dev/ns/persistence> a owl:Ontology ;
+    rdfs:label "Semblance persistence"@en .
+
+per:Policy a owl:Class ;
+    rdfs:label "Remembered state"@en , "Збережений стан"@uk , "Gespeicherter Zustand"@de , "حالة محفوظة"@ar ;
+    rdfs:comment "Something to remember: which triples (per:subject + per:properties, or per:construct), where (per:scope), and whether (per:enabled)."@en .
+
+per:scope a owl:ObjectProperty ; rdfs:domain per:Policy ; rdfs:range per:Scope ;
+    rdfs:label "Where"@en , "Де"@uk , "Wo"@de , "أين"@ar .
+per:Scope a owl:Class .
+per:Session a per:Scope ; sem:order 1 ; sem:slug "session" ;
+    rdfs:label "This tab"@en , "Ця вкладка"@uk , "Dieser Tab"@de , "علامة التبويب هذه"@ar ;
+    rdfs:comment "sessionStorage: kept until the tab is closed. The default."@en .
+per:Device a per:Scope ; sem:order 2 ; sem:slug "device" ;
+    rdfs:label "This device"@en , "Цей пристрій"@uk , "Dieses Gerät"@de , "هذا الجهاز"@ar ;
+    rdfs:comment "localStorage: kept in this browser profile."@en .
+per:Database a per:Scope ; sem:order 3 ; sem:slug "database" ;
+    rdfs:label "Browser database"@en , "База даних браузера"@uk , "Browser-Datenbank"@de , "قاعدة بيانات المتصفح"@ar ;
+    rdfs:comment "IndexedDB: for larger state, such as the change log."@en .
+
+per:enabled a owl:DatatypeProperty ; rdfs:domain per:Policy ; rdfs:range xsd:boolean ;
+    rdfs:label "Remember"@en , "Запамʼятовувати"@uk , "Merken"@de , "تذكّر"@ar ;
+    rdfs:comment "Whether the policy is on (default true). Graph state, so a switch can control it; turning it off forgets what was stored."@en .
+per:subject a owl:ObjectProperty ; rdfs:domain per:Policy ; rdfs:comment "Simple form: the node whose per:properties are remembered."@en .
+per:properties a owl:ObjectProperty ; rdfs:domain per:Policy ; rdfs:range rdf:List .
+per:construct a owl:DatatypeProperty ; rdfs:domain per:Policy ;
+    rdfs:comment "General form: a SPARQL CONSTRUCT over the input and derived graphs; its result is remembered and restored into per:graph."@en .
+per:graph a owl:DatatypeProperty ; rdfs:domain per:Policy ;
+    rdfs:comment "The named graph restored triples go to (default: the default input graph), e.g. the change log's."@en .
+per:retention a owl:DatatypeProperty ; rdfs:domain per:Policy ; rdfs:range xsd:duration ;
+    rdfs:comment "Stored state older than this is dropped instead of restored."@en .
+per:version a owl:DatatypeProperty ; rdfs:domain per:Policy ;
+    rdfs:comment "Stored with every write; a policy whose version changed discards what was stored under another."@en .
+per:sensitive a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "On a property: its values are never remembered (passwords, tokens)."@en .
+per:request a owl:DatatypeProperty ; rdfs:domain per:Policy ;
+    rdfs:comment "Written by a reaction (\"forget\"); performed and removed by the persistence effect."@en .
+
+# What the effect reports (in the persistence graph, urn:semblance:persistence).
+per:storedSize a owl:DatatypeProperty ; rdfs:domain per:Policy ; rdfs:comment "Triples currently stored."@en .
+per:lastWritten a owl:DatatypeProperty ; rdfs:domain per:Policy ; rdfs:range xsd:dateTime .
+per:restored a owl:DatatypeProperty ; rdfs:domain per:Policy ; rdfs:comment "Triples restored at the last load."@en .
+
+# --- the state log: an LDES of writes and restores ------------------------------------------------
+
+per:StateLog a ldes:EventStream ;
+    rdfs:label "Remembered state, written and restored"@en ;
+    ldes:timestampPath prov:generatedAtTime ;
+    tree:view per:StateLogView .
+per:StateLogView a tree:Node ; ldes:retentionPolicy [ a beh:LatestMembersPolicy ; ldes:amount 100 ] .
+per:Write a owl:Class ; rdfs:comment "A policy's triples were stored."@en .
+per:Restore a owl:Class ; rdfs:comment "A policy's stored triples were put back at load."@en .
+per:Forget a owl:Class ; rdfs:comment "A policy's stored triples were dropped."@en .
+per:policy a owl:ObjectProperty ; rdfs:range per:Policy .
+per:size a owl:DatatypeProperty ; rdfs:range xsd:integer .
+
+# --- c:PolicyList: every policy, with its switch, size, last write and a Forget button ------------
+
+c:PolicyList a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Every per:Policy: where it remembers, whether it is on, what is stored, and a Forget button."@en ;
+    sem:slug "policy-list" .
+c:PolicyListRendering a sem:Rendering ; sem:targets c:PolicyList ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Locale (sx:formatNumber, sx:formatDateTime): sizes and times formatted for display." ;
+    sem:needsExtension sx:Locale .
+c:PolicyListRendering-fn a sem:Rule ; sem:implements c:PolicyListRendering ; sem:function "policy-list" .
+per:toggles a owl:ObjectProperty ; rdfs:comment "On a rendered element: the policy whose per:enabled activating it flips."@en .
+per:forgets a owl:ObjectProperty ; rdfs:comment "On a rendered element: the policy whose stored state activating it drops."@en .
+c:PolicyToggle a beh:Reaction ; beh:when beh:Click ; beh:sourceClass c:PolicyList ;
+    beh:deletes """CONSTRUCT { ?p per:enabled ?e } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n per:toggles ?p . ?p per:enabled ?e }""" ;
+    beh:inserts """CONSTRUCT { ?p per:enabled ?next } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n per:toggles ?p . OPTIONAL { ?p per:enabled ?e } BIND(!COALESCE(?e, true) AS ?next) }""" ;
+    sem:function "persistence:toggle" .
+c:PolicyForget a beh:Reaction ; beh:when beh:Click ; beh:sourceClass c:PolicyList ;
+    beh:inserts """CONSTRUCT { ?p per:request "forget" } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n per:forgets ?p }""" ;
+    sem:function "persistence:forget" .

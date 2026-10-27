@@ -1,0 +1,17 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What a well-formed c:Board looks like (ontology/components/board.ttl), validated by the
+# component shapes layer like ontology/shapes/components.ttl.
+
+c:BoardShape a sh:NodeShape ; sh:targetClass c:Board ;
+    sh:property [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A board places its cards in lanes by one property (c:property), whose rdfs:range holds the lanes." ] ,
+                [ sh:path c:cardTitle ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A board needs the property that is a card's title (c:cardTitle)." ] ,
+                [ sh:path c:card ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:cardTag ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:cardPerson ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:cardOrder ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:removable ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .

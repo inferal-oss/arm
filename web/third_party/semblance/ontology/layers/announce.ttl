@@ -1,0 +1,134 @@
+@prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix iv: <https://semblance.dev/ns/view#> .
+
+# Announcements layer. A reaction may say what it means to the person who
+# triggered it (ann:announces "Todo added", optionally ann:tone). A
+# c:ToastRegion that reads a change log (ann:from beh:ChangeLog) shows the
+# most recent announcing events as c:Toast instances, newest last. Which they
+# are is a maintained view per region (ann:RecentAnnouncements, docs/IVM.md): a
+# top-k over the log's members by sequence, so an event costs O(log n) whatever
+# the log holds, and a quiet event changes nothing. Without views (a store
+# without SPARQL) the layer walks the log from its head (beh:latest /
+# beh:previous) a bounded number of steps. Toasts are minted before components
+# render (stratum -5) and hosted by the region (c:hosts); dismissing one closes it.
+
+<https://semblance.dev/ns/announce> a owl:Ontology ;
+    rdfs:label "Semblance announcements layer"@en .
+
+ann:Layer a sem:Layer ; rdfs:label "announcements"@en .
+
+ann:announces a owl:DatatypeProperty ; rdfs:domain beh:Reaction ;
+    rdfs:comment "What the reaction's effect means, told to the person (language-tagged literals translate it)."@en .
+ann:announcesFrom a owl:ObjectProperty ; rdfs:domain beh:Reaction ; rdfs:range rdf:Property ;
+    rdfs:comment "What the reaction's effect means is said by the event itself: its value of this property (e.g. a refused drop's reason), else ann:announces."@en .
+ann:tone a owl:ObjectProperty ; rdfs:domain beh:Reaction ; rdfs:range sty:Tone .
+ann:from a owl:ObjectProperty ; rdfs:domain c:ToastRegion ; rdfs:comment "The change log whose announcing events the region shows."@en .
+
+ann:RecentAnnouncements a iv:View ;
+    iv:targets c:ToastRegion ;
+    iv:materialize iv:Graph ;
+    iv:parameter [ iv:variable "limit" ; iv:property c:limit ; iv:default 3 ] ;
+    rdfs:label "recent announcements"@en ;
+    rdfs:comment "Per region: the newest members of its change log (ann:from) that a reaction announces, at most c:limit."@en ;
+    sem:select """
+SELECT DISTINCT ?m ?seq WHERE {
+  $this ann:from ?stream .
+  ?stream tree:member ?m .
+  ?m beh:sequence ?seq ; beh:handledBy ?reaction .
+  FILTER(EXISTS { ?reaction ann:announces ?said } || EXISTS { ?reaction ann:announcesFrom ?p . ?m ?p ?told })
+}
+ORDER BY DESC(?seq)
+LIMIT $limit""" .
+
+ann:Toasts a sem:Rendering ;
+    sem:targets c:ToastRegion ;
+    sem:layer ann:Layer ;
+    sem:stratum -5 ;
+    sem:inputOnly true .
+ann:Toasts-fn a sem:Rule ; sem:implements ann:Toasts ; sem:function "announce:toasts" .
+# The members the region's maintained view (ann:RecentAnnouncements) holds, as its rows in the views
+# graph (rs:, under the region: sem:readsMinted re-runs it when they change), as the function reads
+# them; without the view, the announcing events among the log's newest 50 sequence numbers, the
+# region's c:limit (default 3) newest of them. What each says, in the viewer's language.
+ann:Toasts-sparql a sem:Rule ;
+    sem:implements ann:Toasts ;
+    sem:follows ann:from ;
+    sem:watches rdf:type , ann:from , c:limit , beh:latest ;
+    sem:readsMinted true ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?toast a c:Toast ; c:label ?said ; sty:tone ?tone .
+  $this c:hosts ?toast .
+}
+WHERE {
+  $this ann:from ?stream . FILTER(isIRI(?stream))
+  {
+    BIND(IRI(CONCAT(STR($this), "/~view-RecentAnnouncements")) AS ?view)
+    ?view a rs:ResultSet ; rs:solution ?row . ?row rs:binding ?mBinding . ?mBinding rs:variable "m" ; rs:value ?m .
+    ?m beh:sequence ?seq ; beh:handledBy ?reaction .
+    FILTER(EXISTS { ?reaction ann:announces ?a } || EXISTS { ?reaction ann:announcesFrom ?from . ?m ?from ?b })
+  } UNION {
+    BIND(IRI(CONCAT(STR($this), "/~view-RecentAnnouncements")) AS ?noView)
+    FILTER NOT EXISTS { ?noView a rs:ResultSet }
+    OPTIONAL { $this c:limit ?limitRaw }
+    BIND(COALESCE(xsd:double(?limitRaw), 3) AS ?limit)
+    { SELECT ?m ?seq ?reaction WHERE {
+      $this ann:from ?stream . ?stream beh:latest ?head . ?head beh:sequence ?top .
+      ?stream tree:member ?m . ?m beh:sequence ?seq . FILTER(?seq > ?top - 50)
+      ?m beh:handledBy ?reaction .
+      FILTER(EXISTS { ?reaction ann:announces ?a } || EXISTS { ?reaction ann:announcesFrom ?from . ?m ?from ?b })
+    } }
+    # The newest c:limit of them.
+    { SELECT ?m (COUNT(DISTINCT ?newer) AS ?rank) WHERE {
+      $this ann:from ?stream . ?stream beh:latest ?head . ?head beh:sequence ?top .
+      ?stream tree:member ?m . ?m beh:sequence ?seq ; beh:handledBy ?r . FILTER(?seq > ?top - 50)
+      FILTER(EXISTS { ?r ann:announces ?a } || EXISTS { ?r ann:announcesFrom ?from . ?m ?from ?b })
+      OPTIONAL {
+        ?stream tree:member ?newer . ?newer beh:sequence ?ns ; beh:handledBy ?nr . FILTER(?ns > ?seq)
+        FILTER(EXISTS { ?nr ann:announces ?na } || EXISTS { ?nr ann:announcesFrom ?nf . ?newer ?nf ?nb })
+      }
+    } GROUP BY ?m }
+    FILTER(?rank < ?limit)
+  }
+  OPTIONAL { ?reaction ann:announcesFrom ?saidBy FILTER(isIRI(?saidBy)) }
+  LATERAL { OPTIONAL { SELECT ?m ?reaction ?saidBy ?fromEvent WHERE {
+  ?reaction ann:announcesFrom ?saidBy . 
+  OPTIONAL {
+    ?m ?saidBy ?picke . FILTER(isLiteral(?picke))
+    ?viewere l10n:prefers ?prefe . ?prefe l10n:code ?codee ; sem:order ?ranke .
+    BIND(LCASE(LANG(?picke)) AS ?tage)
+    FILTER(?tage = ?codee || STRSTARTS(?tage, CONCAT(?codee, "-")))
+    FILTER NOT EXISTS {
+      ?viewere l10n:prefers ?bettere . ?bettere l10n:code ?code2e ; sem:order ?rank2e .
+      ?m ?saidBy ?othere . FILTER(isLiteral(?othere))
+      BIND(LCASE(LANG(?othere)) AS ?tag2e)
+      FILTER(?tag2e = ?code2e || STRSTARTS(?tag2e, CONCAT(?code2e, "-")))
+      FILTER(?rank2e < ?ranke || (?rank2e = ?ranke && ?tag2e = ?code2e && ?tage != ?codee))
+    }
+  }
+  OPTIONAL { FILTER(!BOUND(?picke)) ?m ?saidBy ?plaine FILTER(isLiteral(?plaine) && LANG(?plaine) = "") }
+  OPTIONAL { FILTER(!BOUND(?picke) && !BOUND(?plaine)) ?m ?saidBy ?ene FILTER(LCASE(LANG(?ene)) = "en") }
+  OPTIONAL { FILTER(!BOUND(?picke) && !BOUND(?plaine) && !BOUND(?ene)) ?m ?saidBy ?enxe FILTER(STRSTARTS(LCASE(LANG(?enxe)), "en-")) }
+  OPTIONAL { FILTER(!BOUND(?picke) && !BOUND(?plaine) && !BOUND(?ene) && !BOUND(?enxe)) ?m ?saidBy ?anye FILTER(isLiteral(?anye)) }
+  BIND(STR(COALESCE(?picke, ?plaine, ?ene, ?enxe, ?anye)) AS ?fromEvent)
+  } } }
+  LATERAL { OPTIONAL { SELECT ?reaction ?announced WHERE {
+  
+  OPTIONAL { ?pickaAt l10n:of ?reaction ; l10n:announcement ?picka }
+  OPTIONAL { FILTER(!BOUND(?picka)) ?reaction ann:announces ?anya FILTER(isLiteral(?anya)) }
+  BIND(STR(COALESCE(?picka, ?anya)) AS ?announced)
+  } } }
+  BIND(COALESCE(?fromEvent, ?announced) AS ?said)
+  OPTIONAL { ?reaction ann:tone ?tone }
+  BIND(SUBSTR(CONCAT("0000000000", STR(?seq)), STRLEN(STR(?seq)) + 1) AS ?key)
+  BIND(IRI(CONCAT(STR($this), "/~ann-", ?key)) AS ?toast)
+}""" .

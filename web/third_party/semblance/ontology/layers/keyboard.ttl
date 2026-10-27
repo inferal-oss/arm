@@ -1,0 +1,246 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Keyboard layer. Any component may carry a shortcut (key:shortcut
+# "mod+shift+k"; "mod" is ⌘ on Apple platforms and Ctrl elsewhere). The layer
+# exposes it as aria-keyshortcuts and a visible hint on the component's root
+# (or on the part its class names, key:hintPart); the event bus turns the key
+# press into activating that root (a click on it, or on its first control), so
+# the component's own click reactions run and the change log records an
+# ordinary event. A component whose first control is a text field is focused
+# instead, its text selected, so typing replaces it ("/" to search); an Escape
+# nothing else uses there gives the focus back to where it was. A key that
+# Shift only spells ("/", "?" on another layout) is matched without Shift.
+# Shortcuts without a modifier do not apply while a text field has the focus. Horizontal arrows
+# follow the reading direction: in a right-to-left page, a part's ArrowLeft shortcut is ArrowRight.
+# An open modal dialog ([aria-modal=true]) keeps the focus: Tab and Shift+Tab go round inside it.
+# c:ShortcutList shows every shortcut in the graph.
+
+<https://semblance.dev/ns/keyboard> a owl:Ontology ;
+    rdfs:label "Semblance keyboard layer"@en .
+
+key:Layer a sem:Layer ; rdfs:label "keyboard"@en .
+
+key:shortcut a owl:DatatypeProperty ;
+    rdfs:comment "A key combination that activates the component: modifiers (mod, ctrl, alt, shift, meta) and a key, joined by +. A text field is focused (its text selected), not clicked."@en .
+key:hintPart a owl:DatatypeProperty ; rdfs:domain owl:Class ;
+    rdfs:comment """On a component class: the part (the local name after "/~") that shows its instances' shortcut hint
+(data-sem-key-hint, data-sem-key-hint-apple), when the root cannot: a typeahead's field box, whose input cannot hold one."""@en .
+c:Typeahead key:hintPart "field" .
+
+key:hint a owl:DatatypeProperty ;
+    rdfs:label "Key hint"@en , "Підказка клавіш"@uk , "Tastenhinweis"@de , "تلميح المفاتيح"@ar ;
+    rdfs:comment """A key combination shown with something that its key also reaches - a command palette's
+option for a key:Command, a button that opens what a key:Command opens - spelled as key:shortcut is:
+shown and announced (aria-keyshortcuts), never bound, so the key keeps activating what it belongs to."""@en .
+
+key:Shortcuts a sem:Rendering ;
+    sem:requires key:shortcut ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer key:Layer ;
+    sem:stratum 10 ;
+    sem:watches key:shortcut .
+key:Shortcuts-fn a sem:Rule ; sem:implements key:Shortcuts ; sem:function "keyboard:shortcut" .
+# The combination is normalized as keyboard.ts does: lower case, parts trimmed, modifiers in a
+# fixed order (mod, ctrl, alt, shift, meta), then the key. Padded with "+", a part is "+part+".
+key:Shortcuts-sparql a sem:Rule ;
+    sem:implements key:Shortcuts ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?aria, ?combo, ?apple, ?other .
+  ?aria a rdfhtml:Attribute ; rdfhtml:attributeName "aria-keyshortcuts" ; rdfhtml:attributeValue ?ariaValue .
+  ?combo a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shortcut" ; rdfhtml:attributeValue ?normalized .
+  ?apple a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shortcut-apple" ; rdfhtml:attributeValue ?appleValue .
+  ?other a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shortcut-other" ; rdfhtml:attributeValue ?otherValue .
+  ?hint rdfhtml:attribute ?hintOther, ?hintApple .
+  ?hintOther a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-key-hint" ; rdfhtml:attributeValue ?otherValue .
+  ?hintApple a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-key-hint-apple" ; rdfhtml:attributeValue ?appleValue .
+}
+WHERE {
+  $this key:shortcut ?shortcut .
+  # Patterns as values are compiled only for the components that have a shortcut.
+  VALUES (?pluses ?ends ?modifiers) { ("(\\\\s*\\\\+\\\\s*)+" "^[\\\\s+]+|[\\\\s+]+$" "\\\\+(?:(?:mod|ctrl|alt|shift|meta)\\\\+)+") }
+  BIND(CONCAT("+", REPLACE(REPLACE(LCASE(STR(?shortcut)), ?pluses, "+"), ?ends, ""), "+") AS ?parts)
+  BIND(CONTAINS(?parts, "+mod+") AS ?mod)
+  BIND(CONTAINS(?parts, "+ctrl+") AS ?ctrl)
+  BIND(CONTAINS(?parts, "+alt+") AS ?alt)
+  BIND(CONTAINS(?parts, "+shift+") AS ?shift)
+  BIND(CONTAINS(?parts, "+meta+") AS ?meta)
+  BIND(REPLACE(?parts, ?modifiers, "+") AS ?keyParts)
+  BIND(SUBSTR(?keyParts, 2, STRLEN(?keyParts) - 2) AS ?key)
+  BIND(CONCAT(IF(?mod, "mod+", ""), IF(?ctrl, "ctrl+", ""), IF(?alt, "alt+", ""), IF(?shift, "shift+", ""), IF(?meta, "meta+", ""), ?key) AS ?normalized)
+  BIND(IF(STRLEN(?key) = 1, UCASE(?key), CONCAT(UCASE(SUBSTR(?key, 1, 1)), SUBSTR(?key, 2))) AS ?k)
+  BIND(CONCAT(IF(?mod, "⌘", ""), IF(?ctrl, "⌃", ""), IF(?alt, "⌥", ""), IF(?shift, "⇧", ""), IF(?meta, "◆", ""), ?k) AS ?appleValue)
+  BIND(CONCAT(IF(?mod, "Ctrl+", ""), IF(?ctrl, "Ctrl+", ""), IF(?alt, "Alt+", ""), IF(?shift, "Shift+", ""), IF(?meta, "Win+", ""), ?k) AS ?otherValue)
+  BIND(CONCAT(IF(?mod, "Control+", ""), IF(?ctrl, "Control+", ""), IF(?alt, "Alt+", ""), IF(?shift, "Shift+", ""), IF(?meta, "Meta+", ""),
+              IF(STRLEN(?key) = 1, UCASE(?key), ?key)) AS ?ariaValue)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-keyshortcuts")) AS ?aria)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-shortcut")) AS ?combo)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-shortcut-apple")) AS ?apple)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-shortcut-other")) AS ?other)
+  # The part of the class that shows the hint, if it names one.
+  OPTIONAL { $this a/rdfs:subClassOf* ?hinted . ?hinted key:hintPart ?part }
+  BIND(IF(BOUND(?part), IRI(CONCAT(STR($this), "/~", STR(?part))), ?none) AS ?hint)
+  BIND(IF(BOUND(?part), IRI(CONCAT(STR($this), "/~", STR(?part), "-data-sem-key-hint")), ?none) AS ?hintOther)
+  BIND(IF(BOUND(?part), IRI(CONCAT(STR($this), "/~", STR(?part), "-data-sem-key-hint-apple")), ?none) AS ?hintApple)
+}""" .
+
+# A key hint on a component (key:hint): shown and announced like a shortcut - aria-keyshortcuts on
+# the root, and the same Apple / other glyphs as a shortcut's hint on a part (data-sem-key-hint,
+# data-sem-key-hint-apple; on the part its class names with key:hintPart, or the root) - but not
+# bound: the key stays what it is elsewhere (a button that opens the command palette shows ⌘K, which
+# a key:Command handles). A class whose rendering shows its instances' hints itself says
+# key:rendersHint true (a typeahead option).
+key:rendersHint a owl:DatatypeProperty ; rdfs:domain owl:Class ; rdfs:range xsd:boolean ;
+    rdfs:comment "On a component class: its rendering shows and announces its instances' key:hint itself, so the keyboard layer adds nothing."@en .
+key:Hints a sem:Rendering ;
+    sem:requires key:hint ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer key:Layer ;
+    sem:stratum 10 ;
+    sem:watches key:hint .
+key:Hints-fn a sem:Rule ; sem:implements key:Hints ; sem:function "keyboard:hint" .
+key:Hints-sparql a sem:Rule ;
+    sem:implements key:Hints ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?aria .
+  ?aria a rdfhtml:Attribute ; rdfhtml:attributeName "aria-keyshortcuts" ; rdfhtml:attributeValue ?ariaValue .
+  ?shown rdfhtml:attribute ?hintOther, ?hintApple .
+  ?hintOther a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-key-hint" ; rdfhtml:attributeValue ?otherValue .
+  ?hintApple a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-key-hint-apple" ; rdfhtml:attributeValue ?appleValue .
+}
+WHERE {
+  $this key:hint ?hint .
+  FILTER NOT EXISTS { $this key:shortcut ?bound }
+  FILTER NOT EXISTS { $this a/rdfs:subClassOf* ?self . ?self key:rendersHint true }
+  VALUES (?pluses ?ends ?modifiers) { ("(\\\\s*\\\\+\\\\s*)+" "^[\\\\s+]+|[\\\\s+]+$" "\\\\+(?:(?:mod|ctrl|alt|shift|meta)\\\\+)+") }
+  BIND(CONCAT("+", REPLACE(REPLACE(LCASE(STR(?hint)), ?pluses, "+"), ?ends, ""), "+") AS ?parts)
+  BIND(CONTAINS(?parts, "+mod+") AS ?mod)
+  BIND(CONTAINS(?parts, "+ctrl+") AS ?ctrl)
+  BIND(CONTAINS(?parts, "+alt+") AS ?alt)
+  BIND(CONTAINS(?parts, "+shift+") AS ?shift)
+  BIND(CONTAINS(?parts, "+meta+") AS ?meta)
+  BIND(REPLACE(?parts, ?modifiers, "+") AS ?keyParts)
+  BIND(SUBSTR(?keyParts, 2, STRLEN(?keyParts) - 2) AS ?key)
+  BIND(IF(STRLEN(?key) = 1, UCASE(?key), CONCAT(UCASE(SUBSTR(?key, 1, 1)), SUBSTR(?key, 2))) AS ?k)
+  BIND(CONCAT(IF(?mod, "⌘", ""), IF(?ctrl, "⌃", ""), IF(?alt, "⌥", ""), IF(?shift, "⇧", ""), IF(?meta, "◆", ""), ?k) AS ?appleValue)
+  BIND(CONCAT(IF(?mod, "Ctrl+", ""), IF(?ctrl, "Ctrl+", ""), IF(?alt, "Alt+", ""), IF(?shift, "Shift+", ""), IF(?meta, "Win+", ""), ?k) AS ?otherValue)
+  BIND(CONCAT(IF(?mod, "Control+", ""), IF(?ctrl, "Control+", ""), IF(?alt, "Alt+", ""), IF(?shift, "Shift+", ""), IF(?meta, "Meta+", ""),
+              IF(STRLEN(?key) = 1, UCASE(?key), ?key)) AS ?ariaValue)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-keyshortcuts")) AS ?aria)
+  # The part of the class that shows the hint, if it names one; else the root.
+  OPTIONAL { $this a/rdfs:subClassOf* ?hinted . ?hinted key:hintPart ?part }
+  BIND(COALESCE(STR(?part), "root") AS ?at)
+  BIND(IRI(CONCAT(STR($this), "/~", ?at)) AS ?shown)
+  BIND(IRI(CONCAT(STR($this), "/~", ?at, "-data-sem-key-hint")) AS ?hintOther)
+  BIND(IRI(CONCAT(STR($this), "/~", ?at, "-data-sem-key-hint-apple")) AS ?hintApple)
+}""" .
+
+c:ShortcutList a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Every key:shortcut in the graph, with what it activates."@en ;
+    sem:slug "shortcut-list" .
+c:ShortcutListRendering a sem:Rendering ; sem:targets c:ShortcutList ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Locale (sx:collated): shortcuts are listed in the viewer's collation order of their labels (localeCompare); the labels themselves are picked from the viewer's languages in the graph." ;
+    sem:needsExtension sx:Locale .
+c:ShortcutListRendering-fn a sem:Rule ; sem:implements c:ShortcutListRendering ; sem:function "shortcut-list" .
+
+# --- Arrow-key navigation (roving focus) -----------------------------------------------------------
+# A component class may declare how arrow keys move focus among its parts
+# (key:navigation a key:Navigation pattern). The layer copies the pattern onto
+# the component's root as data-sem-nav-* attributes; the event bus moves focus
+# among the matching parts (Up/Down or Left/Right, Home, End), keeps exactly
+# one of them in the tab order (roving tabindex), and, for patterns that
+# activate on focus, clicks the newly focused part, so selection goes through
+# the component's own reactions. Trees also expand (Right), collapse (Left)
+# and move between parent and child. Focus is view state: no graph change.
+
+key:navigation a owl:ObjectProperty ; rdfs:domain owl:Class ; rdfs:range key:Navigation ;
+    rdfs:comment "How arrow keys move focus within instances of the class."@en .
+key:Navigation a owl:Class .
+key:items a owl:DatatypeProperty ; rdfs:domain key:Navigation ; rdfs:comment "CSS selector of the focusable parts, within the component's root."@en .
+key:orientation a owl:ObjectProperty ; rdfs:domain key:Navigation ; rdfs:range key:Orientation .
+key:Orientation a owl:Class .
+key:Vertical a key:Orientation ; sem:slug "vertical" .
+key:Horizontal a key:Orientation ; sem:slug "horizontal" .
+key:wrap a owl:DatatypeProperty ; rdfs:domain key:Navigation ; rdfs:comment "Moving past the last part goes to the first."@en .
+key:activatesOnFocus a owl:DatatypeProperty ; rdfs:domain key:Navigation ; rdfs:comment "Focusing a part activates it (tabs, radio-like groups)."@en .
+key:node a owl:DatatypeProperty ; rdfs:domain key:Navigation ; rdfs:comment "Trees: selector of a node (carrying aria-expanded) that contains its part."@en .
+key:toggle a owl:DatatypeProperty ; rdfs:domain key:Navigation ; rdfs:comment "Trees: selector, within a node, of the control that expands or collapses it."@en .
+
+key:MenuNavigation a key:Navigation ; key:items "[role=menuitem]:not([disabled])" ; key:orientation key:Vertical ; key:wrap true .
+key:TabNavigation a key:Navigation ; key:items "[role=tablist] > [role=tab]" ; key:orientation key:Horizontal ; key:wrap true ; key:activatesOnFocus true .
+key:AccordionNavigation a key:Navigation ; key:items "h3 > button[aria-expanded]" ; key:orientation key:Vertical .
+key:TreeNavigation a key:Navigation ; key:items "[role=treeitem] > .sem-row > .sem-label" ; key:orientation key:Vertical ;
+    key:node "[role=treeitem]" ; key:toggle ":scope > .sem-row > .sem-twisty" .
+key:SegmentedNavigation a key:Navigation ; key:items "button[aria-pressed]" ; key:orientation key:Horizontal ; key:wrap true ; key:activatesOnFocus true .
+key:ListNavigation a key:Navigation ; key:items "button[aria-pressed]" ; key:orientation key:Vertical ; key:wrap true ; key:activatesOnFocus true .
+
+c:Menu key:navigation key:MenuNavigation .
+c:Tabs key:navigation key:TabNavigation .
+c:Accordion key:navigation key:AccordionNavigation .
+c:Tree key:navigation key:TreeNavigation .
+c:Segmented key:navigation key:SegmentedNavigation .
+c:NavList key:navigation key:ListNavigation .
+
+key:Navigation-rendering a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer key:Layer ;
+    sem:stratum 10 ;
+    sem:watches rdf:type .
+key:Navigation-fn a sem:Rule ; sem:implements key:Navigation-rendering ; sem:function "keyboard:navigation" .
+# The pattern of the nearest class that declares one: no subclass between the instance's
+# class and the declaring class declares its own.
+key:Navigation-sparql a sem:Rule ;
+    sem:implements key:Navigation-rendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?attribute .
+  ?attribute a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue ?value .
+}
+WHERE {
+  $this a ?type .
+  ?type rdfs:subClassOf* ?declaring .
+  ?declaring key:navigation ?nav .
+  FILTER NOT EXISTS { ?type rdfs:subClassOf* ?nearer . ?nearer rdfs:subClassOf+ ?declaring ; key:navigation ?closer }
+  ?nav key:items ?items .
+  LATERAL {
+    VALUES (?p ?name) { (key:items "data-sem-nav-items") (key:orientation "data-sem-nav-orientation") (key:wrap "data-sem-nav-wrap")
+                        (key:activatesOnFocus "data-sem-nav-activate") (key:node "data-sem-nav-node") (key:toggle "data-sem-nav-toggle") }
+    OPTIONAL { ?nav ?p ?raw OPTIONAL { ?raw sem:slug ?slug } }
+  }
+  BIND(IF(?p = key:orientation, STR(COALESCE(?slug, "vertical")),
+       IF(?p IN (key:wrap, key:activatesOnFocus), IF(isLiteral(?raw) && STR(?raw) = "true", "", ?none), STR(?raw))) AS ?value)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(BOUND(?value), IRI(CONCAT(STR($this), "/~root-", ?name)), ?none) AS ?attribute)
+}""" .
+
+# --- Commands: shortcuts that belong to no visible component ------------------------------------
+# A key:Command is a node with a key:shortcut. Pressing it records a key:Press
+# event addressed to the command (a member of the change log like any other)
+# and runs the reactions whose beh:source is the command. What a command does
+# is therefore graph data: its reactions' SPARQL deletes / inserts.
+
+key:Command a owl:Class ;
+    rdfs:comment "A keyboard command: a key:shortcut whose key:Press events its reactions handle."@en .
+key:Press a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment """A command's shortcut was pressed (recorded by the event bus, not from a DOM event).
+It carries where the pointer is: beh:node (the RDF/HTML node under it), beh:x / beh:y, and
+beh:toEnd / beh:toBottom (its distance to the viewport's end and bottom edges), so a command
+can act "here"."""@en .
+key:whileTyping a owl:DatatypeProperty ; rdfs:domain key:Command ; rdfs:range xsd:boolean ;
+    rdfs:comment "false: the command does not apply while a text field has focus (its key keeps its editing meaning there, e.g. ⌘Z undo)."@en .

@@ -1,0 +1,85 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for forms derived from shapes (ontology/components/forms.ttl): sections as framed
+# groups, fields in as many columns as fit, each field like a text field.
+
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ; sty:part ".sem-shape-title" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-lg ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ; sty:part ".sem-shape-sections" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ; sty:part ".sem-shape-section" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ; sty:part "fieldset.sem-shape-section" ;
+    sty:declares [ sty:property "padding" ; sty:tokens ( tok:space-3 tok:space-4 tok:space-4 ) ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ; sty:part "legend" ;
+    sty:declares [ sty:property "padding" ; sty:raw "0 var(--sem-space-2)" ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.05em" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeForm ; sty:part ".sem-shape-fields" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fill, minmax(min(100%, 220px), 1fr))" ] ,
+                 [ sty:property "gap" ; sty:tokens ( tok:space-3 tok:space-4 ) ] ,
+                 [ sty:property "align-items" ; sty:raw "start" ] .
+
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:state ":has(textarea)" ;
+    sty:declares [ sty:property "grid-column" ; sty:raw "1 / -1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part "label" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] .
+# Single-line controls take their block size from the shared control box (default.ttl); a text
+# area has padding all round. Colours are background-color, so a select keeps its chevron.
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part ":is(input:not([type=checkbox]), select, textarea)" ;
+    sty:declares [ sty:property "padding-inline" ; sty:token tok:space-3 ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-control ] ,
+                 [ sty:property "background-color" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-motion), box-shadow var(--sem-motion), background-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part "textarea" ;
+    sty:declares [ sty:property "padding-block" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part "select:not([multiple]):not([size])" ;
+    sty:declares [ sty:property "padding-inline-end" ; sty:token tok:chevron-space ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part ":is(input, select, textarea):focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background-color" ; sty:token tok:surface ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part "input[type=checkbox]" ;
+    sty:declares [ sty:property "justify-self" ; sty:raw "start" ] ,
+                 [ sty:property "width" ; sty:raw "18px" ] ,
+                 [ sty:property "height" ; sty:raw "18px" ] ,
+                 [ sty:property "accent-color" ; sty:raw "var(--sem-accent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part "[aria-invalid=true]" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:danger ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part ".sem-help" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] .
+[] a sty:StyleRule ; sty:appliesTo c:ShapeField ; sty:part "[role=alert]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:danger ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] .

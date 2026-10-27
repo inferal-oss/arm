@@ -1,0 +1,152 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix net: <https://semblance.dev/ns/network#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix http: <http://www.w3.org/2011/http#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix as: <https://www.w3.org/ns/activitystreams#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Network activity, as data: what an in-app network inspector shows. HTTP
+# exchanges, WebSocket connections and their frames, and application events
+# and spans, on one timeline. The capture effect (src/network.ts) writes
+# entries into the capture graph as members of net:Capture, an LDES bounded
+# by its retention policy (the inspector's "retention limits"). The
+# application's own RDF events (beh:ChangeLog) are on the same timeline.
+#
+# Terms align with the W3C HTTP vocabulary (http:, "HTTP Vocabulary in RDF
+# 1.0"): an exchange is an http:Request with its http:Response.
+
+<https://semblance.dev/ns/network> a owl:Ontology ;
+    rdfs:label "Semblance network activity"@en .
+
+# --- the timeline ----------------------------------------------------------------------------------
+
+net:Entry a owl:Class ;
+    rdfs:comment "Something on the inspector's timeline: an exchange, a connection, a frame, an event, a span."@en .
+net:startedAt a owl:DatatypeProperty ; rdfs:domain net:Entry ; rdfs:range xsd:double ;
+    rdfs:comment "Milliseconds since the page's time origin (performance.now() at the start)."@en .
+net:endedAt a owl:DatatypeProperty ; rdfs:domain net:Entry ; rdfs:range xsd:double ;
+    rdfs:comment "Milliseconds since the time origin when it ended; absent while it is still going."@en .
+net:sequence a owl:DatatypeProperty ; rdfs:domain net:Entry ; rdfs:range xsd:integer ;
+    rdfs:comment "Order of capture (the #n in the inspector)."@en .
+net:label a owl:DatatypeProperty ; rdfs:domain net:Entry ; rdfs:subPropertyOf rdfs:label .
+net:status a owl:ObjectProperty ; rdfs:domain net:Entry ; rdfs:range net:Status .
+net:size a owl:DatatypeProperty ; rdfs:domain net:Entry ; rdfs:range xsd:integer ; rdfs:comment "Bytes."@en .
+net:correlation a owl:DatatypeProperty ; rdfs:domain net:Entry ;
+    rdfs:comment "Ties entries that belong to the same story (an event, the request it caused, the span around both)."@en .
+net:data a owl:DatatypeProperty ; rdfs:domain net:Entry ; rdfs:comment "A payload as text (often JSON)."@en .
+
+net:Status a owl:Class .
+net:Pending a net:Status ; rdfs:label "Pending"@en ; sem:order 1 ; sem:slug "pending" .
+net:Complete a net:Status ; rdfs:label "Complete"@en ; sem:order 2 ; sem:slug "complete" .
+net:Failed a net:Status ; rdfs:label "Failed"@en ; sem:order 3 ; sem:slug "failed" .
+net:Open a net:Status ; rdfs:label "Open"@en ; sem:order 4 ; sem:slug "open" .
+net:Closed a net:Status ; rdfs:label "Closed"@en ; sem:order 5 ; sem:slug "closed" .
+net:Sent a net:Status ; rdfs:label "Sent"@en ; sem:order 6 ; sem:slug "sent" .
+net:Received a net:Status ; rdfs:label "Received"@en ; sem:order 7 ; sem:slug "received" .
+net:Recorded a net:Status ; rdfs:label "Recorded"@en ; sem:order 8 ; sem:slug "recorded" .
+
+# What kind of activity an entry is, for filtering and the legend.
+net:kind a owl:ObjectProperty ; rdfs:domain net:Entry ; rdfs:range net:Kind .
+net:Kind a owl:Class .
+net:HttpKind a net:Kind ; rdfs:label "HTTP"@en ; sem:order 1 ; sem:slug "http" .
+net:SocketKind a net:Kind ; rdfs:label "Socket lifetime"@en ; sem:order 2 ; sem:slug "socket" .
+net:FrameKind a net:Kind ; rdfs:label "Sent / received"@en ; sem:order 3 ; sem:slug "frame" .
+net:EventKind a net:Kind ; rdfs:label "Event"@en ; sem:order 4 ; sem:slug "event" .
+
+# How entries look, for legends, badges and time bars: a kind is a category, drawn in a series
+# color (c:swatch); a status or a level is state, shown in a tone (sty:tone).
+net:HttpKind c:swatch tok:series-1 .
+net:SocketKind c:swatch tok:series-2 .
+net:FrameKind c:swatch tok:series-3 .
+net:EventKind c:swatch tok:series-5 .
+net:Pending sty:tone sty:Warning .
+net:Complete sty:tone sty:Success .
+net:Failed sty:tone sty:Danger .
+net:Open sty:tone sty:Info .
+net:Closed sty:tone sty:Neutral .
+net:Sent sty:tone sty:Accent .
+net:Received sty:tone sty:Info .
+net:Recorded sty:tone sty:Neutral .
+
+# What the properties are called where an entry is described (a detail pane, a grid's columns).
+net:label rdfs:label "Entry"@en , "Запис"@uk , "Eintrag"@de , "الإدخال"@ar .
+net:kind rdfs:label "Kind"@en , "Вид"@uk , "Art"@de , "النوع"@ar .
+net:status rdfs:label "Status"@en , "Статус"@uk , "Status"@de , "الحالة"@ar .
+net:startedAt rdfs:label "Started (ms)"@en , "Початок (мс)"@uk , "Beginn (ms)"@de , "البدء (مللي ثانية)"@ar .
+net:endedAt rdfs:label "Ended (ms)"@en , "Кінець (мс)"@uk , "Ende (ms)"@de , "الانتهاء (مللي ثانية)"@ar .
+net:size rdfs:label "Size (bytes)"@en , "Розмір (байти)"@uk , "Größe (Bytes)"@de , "الحجم (بايت)"@ar .
+net:sequence rdfs:label "Sequence"@en , "Номер"@uk , "Folge"@de , "التسلسل"@ar .
+net:correlation rdfs:label "Correlation"@en , "Кореляція"@uk , "Korrelation"@de , "الارتباط"@ar .
+net:level rdfs:label "Level"@en , "Рівень"@uk , "Stufe"@de , "المستوى"@ar .
+net:initiator rdfs:label "Initiator"@en , "Ініціатор"@uk , "Auslöser"@de , "المُبادِر"@ar .
+net:url rdfs:label "URL"@en .
+net:connection rdfs:label "Connection"@en , "З'єднання"@uk , "Verbindung"@de , "الاتصال"@ar .
+net:contentType rdfs:label "Content type"@en , "Тип вмісту"@uk , "Inhaltstyp"@de , "نوع المحتوى"@ar .
+http:methodName rdfs:label "Method"@en , "Метод"@uk , "Methode"@de , "الطريقة"@ar .
+http:absoluteURI rdfs:label "URL"@en .
+http:statusCodeValue rdfs:label "HTTP code"@en , "Код HTTP"@uk , "HTTP-Code"@de , "رمز HTTP"@ar .
+
+# --- HTTP (aligned with the W3C HTTP vocabulary) ---------------------------------------------------
+
+net:Exchange a owl:Class ; rdfs:subClassOf net:Entry , http:Request ;
+    rdfs:comment "An HTTP request and its response, as made by fetch, XMLHttpRequest or the browser."@en .
+net:initiator a owl:DatatypeProperty ; rdfs:domain net:Exchange ; rdfs:comment "fetch, xhr or resource."@en .
+# Used from the HTTP vocabulary: http:methodName, http:absoluteURI, http:resp (the http:Response),
+# http:statusCodeValue (on the response), http:headers and on messages net:body / net:contentType.
+# Unlike the HTTP vocabulary (where http:headers is an rdf:List), each header is its own value of
+# http:headers - an http:MessageHeader with http:fieldName, http:fieldValue and sem:order - so a
+# view can take them member-wise.
+net:body a owl:DatatypeProperty ; rdfs:comment "A message body as text, bounded by the capture's preview limit."@en .
+net:contentType a owl:DatatypeProperty .
+
+# --- WebSockets -----------------------------------------------------------------------------------
+
+net:Connection a owl:Class ; rdfs:subClassOf net:Entry ;
+    rdfs:comment "A WebSocket connection, from opening to closing."@en .
+net:url a owl:DatatypeProperty ; rdfs:domain net:Connection .
+net:Frame a owl:Class ; rdfs:subClassOf net:Entry ;
+    rdfs:comment "One WebSocket message; net:status net:Sent or net:Received."@en .
+net:connection a owl:ObjectProperty ; rdfs:domain net:Frame ; rdfs:range net:Connection .
+
+# --- application events and spans -------------------------------------------------------------------
+
+net:Event a owl:Class ; rdfs:subClassOf net:Entry , as:Activity ;
+    rdfs:comment "Something the application records about itself (a saved draft, a changed filter)."@en .
+net:level a owl:ObjectProperty ; rdfs:domain net:Event ; rdfs:range net:Level .
+net:Level a owl:Class .
+net:Info a net:Level ; rdfs:label "Info"@en ; sem:order 1 ; sem:slug "info" .
+net:Success a net:Level ; rdfs:label "Success"@en ; sem:order 2 ; sem:slug "success" .
+net:Warning a net:Level ; rdfs:label "Warning"@en ; sem:order 3 ; sem:slug "warning" .
+net:Info sty:tone sty:Info .
+net:Success sty:tone sty:Success .
+net:Warning sty:tone sty:Warning .
+net:Span a owl:Class ; rdfs:subClassOf net:Event ;
+    rdfs:comment "An application event that takes time: started, and later finished (net:endedAt)."@en .
+
+# The application's own RDF events are on the same timeline: every beh:Event is a net:Event.
+beh:Event rdfs:subClassOf net:Event .
+
+# --- the capture: a bounded stream -------------------------------------------------------------------
+
+net:Capture a ldes:EventStream ;
+    rdfs:label "Network activity"@en ;
+    ldes:timestampPath net:startedAt ;
+    ldes:sequencePath net:sequence ;
+    tree:view net:CaptureView .
+net:CaptureView a tree:Node ; ldes:retentionPolicy net:CaptureRetention .
+net:CaptureRetention a beh:LatestMembersPolicy ; ldes:amount 250 .
+net:previewLimit a owl:DatatypeProperty ; rdfs:domain ldes:EventStream ; rdfs:range xsd:integer ;
+    rdfs:comment "Bodies longer than this many characters are cut (the preview limit)."@en .
+net:Capture net:previewLimit 16384 .
+net:recording a owl:DatatypeProperty ; rdfs:domain ldes:EventStream ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether capture is on (the inspector's record / pause)."@en .

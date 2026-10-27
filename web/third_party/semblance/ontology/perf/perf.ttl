@@ -1,0 +1,292 @@
+@prefix perf: <https://semblance.dev/ns/perf#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+
+# Benchmark results as data, and judgements about them as SPARQL.
+#
+# Each measured cell is a sosa:Observation of one configuration running one
+# scenario at one size. A perf:Judgement is a CONSTRUCT over the observations
+# that emits perf:Findings: a sentence with the numbers in it, and a verdict.
+# Judgements describe configurations by their properties (store, rules,
+# evaluation), never by label, so new configurations are judged without edits.
+
+<https://semblance.dev/ns/perf> a owl:Ontology ;
+    rdfs:label "Semblance performance observations"@en .
+
+# --- configurations and scenarios -------------------------------------------------------
+
+perf:Configuration a owl:Class .
+perf:store a owl:ObjectProperty ; rdfs:domain perf:Configuration .
+perf:rules a owl:ObjectProperty ; rdfs:domain perf:Configuration .
+perf:evaluation a owl:ObjectProperty ; rdfs:domain perf:Configuration .
+perf:Oxigraph rdfs:label "Oxigraph (WASM)"@en .
+perf:Hybrid rdfs:label "Oxigraph + N3.js mirror"@en .
+perf:N3 rdfs:label "N3.js"@en .
+perf:RustEngine rdfs:label "rdf-engine (Rust)"@en .
+perf:WatEngine rdfs:label "rdf-engine (WAT)"@en .
+perf:Sparql rdfs:label "SPARQL rules"@en .
+perf:Function rdfs:label "function rules"@en .
+perf:Bulk rdfs:label "bulk evaluation"@en .
+perf:PerFocus rdfs:label "per-focus evaluation"@en .
+perf:Compiled rdfs:label "queries compiled to WebAssembly"@en .
+
+perf:Scenario a owl:Class .
+perf:Initial a owl:Class ; rdfs:subClassOf perf:Scenario .
+perf:Update a owl:Class ; rdfs:subClassOf perf:Scenario .
+perf:InitialRender a perf:Initial ; rdfs:label "initial render" .
+perf:ToggleItem a perf:Update ; rdfs:label "toggle item" ; sem:order 1 .
+perf:RenameItem a perf:Update ; rdfs:label "rename item" ; sem:order 2 .
+perf:ReorderItem a perf:Update ; rdfs:label "reorder item" ; sem:order 3 .
+perf:AddItem a perf:Update ; rdfs:label "add item" ; sem:order 4 .
+perf:TypeInField a perf:Update ; rdfs:label "type in field" ; sem:order 5 .
+
+# --- observations --------------------------------------------------------------------------
+
+perf:configuration a owl:ObjectProperty ; rdfs:domain sosa:Observation ; rdfs:range perf:Configuration .
+perf:scenario a owl:ObjectProperty ; rdfs:domain sosa:Observation ; rdfs:range perf:Scenario .
+perf:items a owl:DatatypeProperty ; rdfs:range xsd:integer .
+perf:environment a owl:DatatypeProperty .
+perf:engineMs a owl:DatatypeProperty ; rdfs:range xsd:decimal ; rdfs:comment "Store write + rule evaluation + index update, per operation."@en .
+perf:domMs a owl:DatatypeProperty ; rdfs:range xsd:decimal ; rdfs:comment "DOM patch time per operation."@en .
+perf:totalMs a owl:DatatypeProperty ; rdfs:range xsd:decimal .
+perf:ruleRuns a owl:DatatypeProperty ; rdfs:range xsd:decimal .
+perf:derivedTriples a owl:DatatypeProperty ; rdfs:range xsd:integer .
+
+perf:frameBudgetMs a owl:DatatypeProperty ;
+    rdfs:comment "Time available per frame at 60 fps; updates over it are visible as jank."@en .
+perf:Budget perf:frameBudgetMs 16.7 .
+
+# --- findings ------------------------------------------------------------------------------
+
+perf:Finding a owl:Class .
+perf:Judgement a owl:Class ; rdfs:subClassOf sem:Query ;
+    rdfs:comment "A CONSTRUCT (sem:construct) over observations that emits findings: sem:text, sem:verdict, sem:sortKey."@en .
+perf:Run a owl:Class ; rdfs:comment "One benchmark run: its planned sizes and its observations."@en .
+perf:plannedSize a owl:DatatypeProperty ; rdfs:domain perf:Run .
+perf:hasObservation a owl:ObjectProperty ; rdfs:domain perf:Run .
+perf:judgement a owl:ObjectProperty ; rdfs:domain perf:Finding ; rdfs:range perf:Judgement .
+perf:Good rdfs:label "good"@en ; sem:slug "good" ; sem:symbol "✓" .
+perf:Concern rdfs:label "concern"@en ; sem:slug "concern" ; sem:symbol "!" .
+perf:Insight rdfs:label "insight"@en ; sem:slug "insight" ; sem:symbol "i" .
+
+# --- judgements ----------------------------------------------------------------------------
+
+perf:FastestInitialRender a perf:Judgement ;
+    rdfs:label "Fastest initial render"@en ;
+    sem:order 1 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:FastestInitialRender ; sem:verdict perf:Insight ; sem:sortKey ?n ; sem:text ?text }
+WHERE {
+  { SELECT ?n (MIN(?t) AS ?best) (MAX(?t) AS ?worst)
+    WHERE { ?o perf:scenario perf:InitialRender ; perf:items ?n ; perf:totalMs ?t } GROUP BY ?n }
+  ?o perf:scenario perf:InitialRender ; perf:items ?n ; perf:totalMs ?best ; perf:configuration/rdfs:label ?bestLabel .
+  ?w perf:scenario perf:InitialRender ; perf:items ?n ; perf:totalMs ?worst ; perf:configuration/rdfs:label ?worstLabel .
+  BIND(IRI(CONCAT(STR(perf:), "finding-initial-", STR(?n))) AS ?f)
+  BIND(CONCAT("At ", STR(?n), " items, ", ?bestLabel, " renders from scratch in ", STR(ROUND(?best)), " ms, ",
+              STR(ROUND(?worst / ?best * 10) / 10), "× faster than ", ?worstLabel, " (", STR(ROUND(?worst)), " ms).") AS ?text)
+}""" .
+
+perf:FrameBudget a perf:Judgement ;
+    rdfs:label "Updates within a 60 fps frame"@en ;
+    sem:order 2 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:FrameBudget ; sem:verdict ?verdict ; sem:sortKey ?n ; sem:text ?text }
+WHERE {
+  { SELECT (MAX(?k) AS ?n) WHERE { ?x perf:items ?k } }
+  { SELECT ?c ?n ?budget (MAX(?t) AS ?worst) (SUM(IF(?t > ?budget, 1, 0)) AS ?over) (COUNT(?o) AS ?all)
+    WHERE { perf:Budget perf:frameBudgetMs ?budget . ?o perf:configuration ?c ; perf:items ?n ; perf:scenario ?s ; perf:totalMs ?t . ?s a perf:Update }
+    GROUP BY ?c ?n ?budget }
+  ?c rdfs:label ?label .
+  ?wo perf:configuration ?c ; perf:items ?n ; perf:totalMs ?worst ; perf:scenario/rdfs:label ?worstScenario .
+  ?wo perf:scenario/a perf:Update .
+  BIND(IF(?over > 0, perf:Concern, perf:Good) AS ?verdict)
+  BIND(IRI(CONCAT(STR(perf:), "finding-frame-", ENCODE_FOR_URI(STR(?c)), "-", STR(?n))) AS ?f)
+  BIND(IF(?over > 0,
+    CONCAT(?label, ": ", STR(?over), " of ", STR(?all), " updates at ", STR(?n), " items miss a ", STR(?budget), " ms frame (worst: ", ?worstScenario, ", ", STR(ROUND(?worst * 10) / 10), " ms)."),
+    CONCAT(?label, ": every update at ", STR(?n), " items fits in a frame (worst: ", ?worstScenario, ", ", STR(ROUND(?worst * 100) / 100), " ms).")) AS ?text)
+}""" .
+
+perf:StoreEffect a perf:Judgement ;
+    rdfs:label "Store choice, same SPARQL rules"@en ;
+    sem:order 3 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:StoreEffect ; sem:verdict perf:Insight ; sem:sortKey ?n ; sem:text ?text }
+WHERE {
+  ?ox perf:store perf:Oxigraph ; perf:rules perf:Sparql ; perf:evaluation perf:Bulk .
+  ?hy perf:store perf:Hybrid ; perf:rules perf:Sparql ; perf:evaluation perf:Bulk .
+  { SELECT ?ox ?n (AVG(?t) AS ?pure) WHERE { ?o perf:configuration ?ox ; perf:items ?n ; perf:scenario/a perf:Update ; perf:totalMs ?t } GROUP BY ?ox ?n }
+  { SELECT ?hy ?n (AVG(?t) AS ?mirrored) WHERE { ?o perf:configuration ?hy ; perf:items ?n ; perf:scenario/a perf:Update ; perf:totalMs ?t } GROUP BY ?hy ?n }
+  BIND(IRI(CONCAT(STR(perf:), "finding-store-", STR(?n))) AS ?f)
+  BIND(CONCAT("With identical SPARQL rules at ", STR(?n), " items, mirroring the store into N3.js makes the average update ",
+              STR(ROUND(?pure / ?mirrored * 10) / 10), "× faster (", STR(ROUND(?mirrored * 100) / 100), " ms vs ", STR(ROUND(?pure * 100) / 100),
+              " ms on pure Oxigraph): function rules and engine bookkeeping read terms across the WASM boundary on every match.") AS ?text)
+}""" .
+
+perf:RulesEffect a perf:Judgement ;
+    rdfs:label "SPARQL vs function rules"@en ;
+    sem:order 4 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:RulesEffect ; sem:verdict perf:Insight ; sem:sortKey ?n ; sem:text ?text }
+WHERE {
+  ?sp perf:store perf:Hybrid ; perf:rules perf:Sparql .
+  ?fn perf:store perf:Hybrid ; perf:rules perf:Function .
+  ?a perf:configuration ?sp ; perf:scenario perf:InitialRender ; perf:items ?n ; perf:totalMs ?ts .
+  ?b perf:configuration ?fn ; perf:scenario perf:InitialRender ; perf:items ?n ; perf:totalMs ?tf .
+  BIND(?ts / ?tf AS ?ratio)
+  BIND(IRI(CONCAT(STR(perf:), "finding-rules-", STR(?n))) AS ?f)
+  BIND(CONCAT("On the hybrid store at ", STR(?n), " items, SPARQL rules render from scratch in ", STR(ROUND(?ts)), " ms and function rules in ",
+              STR(ROUND(?tf)), " ms: ",
+              IF(?ratio > 1.15, CONCAT("functions are ", STR(ROUND(?ratio * 10) / 10), "× faster"),
+                IF(?ratio < 0.87, CONCAT("SPARQL is ", STR(ROUND(10 / ?ratio) / 10), "× faster"), "they are on par")),
+              ".") AS ?text)
+}""" .
+
+perf:BulkEffect a perf:Judgement ;
+    rdfs:label "Bulk vs per-focus SPARQL"@en ;
+    sem:order 5 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:BulkEffect ; sem:verdict ?verdict ; sem:sortKey ?n ; sem:text ?text }
+WHERE {
+  ?bulk perf:store perf:Oxigraph ; perf:rules perf:Sparql ; perf:evaluation perf:Bulk .
+  ?per perf:store perf:Oxigraph ; perf:rules perf:Sparql ; perf:evaluation perf:PerFocus .
+  ?a perf:configuration ?bulk ; perf:scenario perf:InitialRender ; perf:items ?n ; perf:engineMs ?tb .
+  ?b perf:configuration ?per ; perf:scenario perf:InitialRender ; perf:items ?n ; perf:engineMs ?tp .
+  BIND(IF(?tp > ?tb * 1.15, perf:Good, perf:Insight) AS ?verdict)
+  BIND(IRI(CONCAT(STR(perf:), "finding-bulk-", STR(?n))) AS ?f)
+  BIND(CONCAT("At ", STR(?n), " items, evaluating each SPARQL rule once for all instances takes ", STR(ROUND(?tb)), " ms against ",
+              STR(ROUND(?tp)), " ms for one query per instance (", STR(ROUND(?tp / ?tb * 10) / 10), "×).") AS ?text)
+}""" .
+
+perf:Scaling a perf:Judgement ;
+    rdfs:label "How initial render scales"@en ;
+    sem:order 6 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:Scaling ; sem:verdict ?verdict ; sem:sortKey ?label ; sem:text ?text }
+WHERE {
+  { SELECT (MIN(?k) AS ?small) (MAX(?k) AS ?large) WHERE { ?x perf:items ?k } }
+  FILTER(?large > ?small)
+  ?a perf:configuration ?c ; perf:scenario perf:InitialRender ; perf:items ?small ; perf:totalMs ?t1 .
+  ?b perf:configuration ?c ; perf:scenario perf:InitialRender ; perf:items ?large ; perf:totalMs ?t2 .
+  ?c rdfs:label ?label .
+  BIND((?t2 / ?t1) / (?large / ?small) AS ?perItem)
+  BIND(IF(?perItem > 1.5, perf:Concern, perf:Good) AS ?verdict)
+  BIND(IRI(CONCAT(STR(perf:), "finding-scaling-", ENCODE_FOR_URI(STR(?c)))) AS ?f)
+  BIND(CONCAT(?label, ": ", STR(?small), " → ", STR(?large), " items costs ", STR(ROUND(?t2 / ?t1 * 10) / 10), "× the time (",
+              IF(?perItem > 1.5, CONCAT("super-linear: ", STR(ROUND(?perItem * 10) / 10), "× per item"),
+                IF(?perItem < 0.67, "sub-linear: fixed costs dominate at the small size", "roughly linear")), ").") AS ?text)
+}""" .
+
+perf:DomShare a perf:Judgement ;
+    rdfs:label "Where update time goes"@en ;
+    sem:order 7 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:DomShare ; sem:verdict perf:Insight ; sem:sortKey ?n ; sem:text ?text }
+WHERE {
+  { SELECT ?n (SUM(?e) AS ?engine) (SUM(?d) AS ?dom)
+    WHERE { ?o perf:items ?n ; perf:scenario/a perf:Update ; perf:engineMs ?e ; perf:domMs ?d } GROUP BY ?n }
+  FILTER(?engine + ?dom > 0)
+  BIND(IRI(CONCAT(STR(perf:), "finding-dom-", STR(?n))) AS ?f)
+  BIND(CONCAT("Across all configurations at ", STR(?n), " items, DOM patching is ", STR(ROUND(100 * ?dom / (?engine + ?dom))),
+              "% of update time; the graph engine is the rest. Keyed patching keeps DOM work proportional to what changed.") AS ?text)
+}""" .
+
+perf:CompiledEffect a perf:Judgement ;
+    rdfs:label "Compiled vs interpreted SPARQL"@en ;
+    sem:order 8 ;
+    sem:construct """
+CONSTRUCT { ?f a perf:Finding ; perf:judgement perf:CompiledEffect ; sem:verdict ?verdict ; sem:sortKey ?label ; sem:text ?text }
+WHERE {
+  ?cc perf:evaluation perf:Compiled ; perf:store ?store ; perf:evaluation ?mode ; rdfs:label ?label .
+  FILTER(?mode != perf:Compiled)
+  ?ic perf:store ?store ; perf:rules perf:Sparql ; perf:evaluation ?mode ; rdfs:label ?plain .
+  FILTER NOT EXISTS { ?ic perf:evaluation perf:Compiled }
+  ?a perf:configuration ?cc ; perf:scenario perf:InitialRender ; perf:items ?n ; perf:engineMs ?tc .
+  ?b perf:configuration ?ic ; perf:scenario perf:InitialRender ; perf:items ?n ; perf:engineMs ?ti .
+  BIND(IF(?ti > ?tc * 1.15, perf:Good, IF(?tc > ?ti * 1.15, perf:Concern, perf:Insight)) AS ?verdict)
+  BIND(IRI(CONCAT(STR(perf:), "finding-compiled-", ENCODE_FOR_URI(STR(?cc)), "-", STR(?n))) AS ?f)
+  BIND(CONCAT(?label, ": at ", STR(?n), " items the initial render takes ", STR(ROUND(?tc)), " ms against ", STR(ROUND(?ti)),
+              " ms interpreted (", ?plain, ", ", STR(ROUND(?ti / ?tc * 100) / 100), "×), compiling included.") AS ?text)
+}""" .
+
+# --- views: every chart and table on the performance page is a SELECT ---------------------------
+# Long form (facet ?items, category, series ?part, ?value). Planned sizes and
+# known configurations come first and measurements are OPTIONAL, so cells not
+# measured yet are unbound - the charts show them as pending.
+
+perf:View a owl:Class ; rdfs:subClassOf sem:View .
+
+perf:InitialRenderView a perf:View ;
+    rdfs:label "initial render, engine and DOM"@en ;
+    sem:order 1 ;
+    sem:select """
+SELECT ?items ?label ?part ?value
+WHERE {
+  perf:run perf:plannedSize ?items .
+  ?config a perf:Configuration ; rdfs:label ?label ; sem:order ?order .
+  VALUES ?part { "engine" "dom" }
+  OPTIONAL {
+    ?o perf:configuration ?config ; perf:items ?items ;
+       perf:scenario perf:InitialRender ; perf:engineMs ?engine .
+    OPTIONAL { ?o perf:domMs ?dom }
+  }
+  BIND(IF(?part = "engine", ?engine, IF(BOUND(?engine), COALESCE(?dom, 0), ?pending)) AS ?value)
+}
+ORDER BY ?items ?order ?part""" .
+
+perf:UpdateMixView a perf:View ;
+    rdfs:label "update cost by scenario"@en ;
+    sem:order 2 ;
+    sem:select """
+SELECT ?items ?label ?part ?value
+WHERE {
+  perf:run perf:plannedSize ?items .
+  ?config a perf:Configuration ; rdfs:label ?label ; sem:order ?order .
+  ?scenario a perf:Update ; rdfs:label ?part ; sem:order ?step .
+  OPTIONAL {
+    ?o perf:configuration ?config ; perf:items ?items ;
+       perf:scenario ?scenario ; perf:totalMs ?value .
+  }
+}
+ORDER BY ?items ?order ?step""" .
+
+perf:UpdateMatrixView a perf:View ;
+    rdfs:label "update latency matrix"@en ;
+    sem:order 3 ;
+    sem:select """
+SELECT ?items ?part ?label ?value ?overBudget
+WHERE {
+  perf:Budget perf:frameBudgetMs ?budget .
+  perf:run perf:plannedSize ?items .
+  ?scenario a perf:Update ; rdfs:label ?part ; sem:order ?step .
+  ?config a perf:Configuration ; rdfs:label ?label ; sem:order ?order .
+  OPTIONAL {
+    ?o perf:configuration ?config ; perf:items ?items ;
+       perf:scenario ?scenario ; perf:totalMs ?value .
+  }
+  BIND(?value > ?budget AS ?overBudget)
+}
+ORDER BY ?items ?step ?order""" .
+
+perf:ScalingView a perf:View ;
+    rdfs:label "initial render vs size"@en ;
+    sem:order 4 ;
+    sem:select """
+SELECT ?label ?items ?value
+WHERE {
+  ?config a perf:Configuration ; rdfs:label ?label ; sem:order ?order .
+  ?o perf:configuration ?config ; perf:scenario perf:InitialRender ;
+     perf:items ?items ; perf:totalMs ?value .
+}
+ORDER BY ?order ?items""" .
+
+perf:ObservationsQuery a sem:Query ;
+    rdfs:label "the latest 6 observations of the run"@en ;
+    sem:construct """
+CONSTRUCT { ?o ?p ?v }
+WHERE {
+  { SELECT ?o WHERE { perf:run perf:hasObservation ?o } ORDER BY DESC(STR(?o)) LIMIT 6 }
+  ?o ?p ?v .
+}""" .

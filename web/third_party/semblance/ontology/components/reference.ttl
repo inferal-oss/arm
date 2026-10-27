@@ -1,0 +1,1041 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# The reference: the framework's own vocabulary, read from the store that runs it. A tree lists
+# its terms (c:TermTree): the component groups (sem:group), the layers and what they render, and
+# every vocabulary (owl:Ontology) with its classes and properties. Views of one term take it from
+# a selection (c:bindFrom / c:bindProperty): what the ontology says about it (c:TermOverview) and
+# how it is aligned with other vocabularies (c:TermAlignment). Its triples as Turtle are a
+# c:ClassDoc (the docs layer), its neighbourhood a c:ResultGraph bound the same way.
+#
+# A selection re-runs the views of the term and the tree's own rule, which marks the selected item;
+# the branches, which hold the items, re-run only when opened, closed, or revealing the selection.
+
+# --- the tree ------------------------------------------------------------------------------------
+
+c:TermTree a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A navigation tree (role=tree) of vocabularies, derived from the ontology in the store. Its
+sections (c:sections, an rdf:List of c:TermSection) list branches: the instances of the section's
+c:branchClass, by sem:order, then name. A branch's terms are the subjects that point at it through
+the section's c:membersVia (e.g. sem:group), or, without one, the classes and properties in the
+branch's namespace (an owl:Ontology's IRI and "#") that have no c:exceptProperty. Each branch is a
+c:TermBranch the tree mints, opened and closed on its own. With c:controls and c:property, clicking
+a term, or a branch's own name, selects it (`<controls> <property> <term>`); the branch holding the
+selection opens to show it (until it is closed by hand), and the selected item is aria-selected. It
+lists (c:lists) every branch and term it shows, for a typeahead to search (c:optionsFrom)."""@en ;
+    sem:slug "term-tree" .
+c:sections a owl:ObjectProperty ; rdfs:domain c:TermTree ; rdfs:range rdf:List ;
+    rdfs:comment "The tree's sections, in order (c:TermSection nodes)."@en .
+c:TermSection a owl:Class ;
+    rdfs:comment "A section of a c:TermTree: a heading (rdfs:label) over the instances of c:branchClass."@en .
+c:branchClass a owl:ObjectProperty ; rdfs:domain c:TermSection ; rdfs:range owl:Class ;
+    rdfs:comment "The class whose instances are the section's branches (sem:ComponentGroup, sem:Layer, owl:Ontology)."@en .
+c:membersVia a owl:ObjectProperty ; rdfs:domain c:TermSection ; rdfs:range rdf:Property ;
+    rdfs:comment "A term is in a branch when it points at the branch through this property (sem:group, sem:layer)."@en .
+c:exceptProperty a owl:ObjectProperty ; rdfs:domain c:TermSection ; rdfs:range rdf:Property ;
+    rdfs:comment "Without c:membersVia: terms that have this property are listed elsewhere, not here (sem:group: component classes are in their groups)."@en .
+
+c:TermBranch a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Internal: one branch of a c:TermTree, minted by the tree (c:of the group, layer or vocabulary;
+c:branchOf the tree; c:section). Its row names the branch, which a click selects, and counts its
+terms; its twisty opens and closes it (c:expanded, graph state on the branch). Open, it lists its
+terms by local name, each with its kind's glyph, each selecting itself."""@en ;
+    sem:slug "term-branch" .
+c:branchOf a owl:ObjectProperty ; rdfs:domain c:TermBranch ; rdfs:range c:TermTree .
+c:section a owl:ObjectProperty ; rdfs:domain c:TermBranch ; rdfs:range c:TermSection .
+c:reveals a owl:DatatypeProperty ; rdfs:domain c:TermBranch ; rdfs:range xsd:boolean ;
+    rdfs:comment "Derived by the tree: the branch holds the selected term, so it is open unless c:expanded says otherwise."@en .
+
+# What kind of term a term is, by its rdf:type: the kind (by sem:order) one of its types makes it,
+# else an individual. The tree shows the kind's glyph (sem:symbol), the overview its name. A
+# vocabulary's branch lists the terms of the class and property kinds.
+c:TermKind a owl:Class ;
+    rdfs:comment "A kind of term (class, property, layer...): the types that make a term one (c:kindOf), a glyph (sem:symbol) and a name."@en .
+c:kindOf a owl:ObjectProperty ; rdfs:domain c:TermKind ; rdfs:range owl:Class .
+c:OntologyKind a c:TermKind ; sem:order 1 ; sem:slug "ontology" ; sem:symbol "O" ; c:kindOf owl:Ontology ;
+    rdfs:label "vocabulary"@en , "словник"@uk , "Vokabular"@de , "مفردات"@ar .
+c:GroupKind a c:TermKind ; sem:order 2 ; sem:slug "group" ; sem:symbol "G" ; c:kindOf sem:ComponentGroup ;
+    rdfs:label "component group"@en , "група компонентів"@uk , "Komponentengruppe"@de , "مجموعة مكونات"@ar .
+c:LayerKind a c:TermKind ; sem:order 3 ; sem:slug "layer" ; sem:symbol "L" ; c:kindOf sem:Layer ;
+    rdfs:label "layer"@en , "шар"@uk , "Schicht"@de , "طبقة"@ar .
+c:ClassKind a c:TermKind ; sem:order 4 ; sem:slug "class" ; sem:symbol "C" ; c:kindOf owl:Class , rdfs:Class ;
+    rdfs:label "class"@en , "клас"@uk , "Klasse"@de , "صنف"@ar .
+c:PropertyKind a c:TermKind ; sem:order 5 ; sem:slug "property" ; sem:symbol "P" ;
+    c:kindOf rdf:Property , owl:ObjectProperty , owl:DatatypeProperty , owl:AnnotationProperty ;
+    rdfs:label "property"@en , "властивість"@uk , "Eigenschaft"@de , "خاصية"@ar .
+c:RenderingKind a c:TermKind ; sem:order 6 ; sem:slug "rendering" ; sem:symbol "R" ; c:kindOf sem:Rendering ;
+    rdfs:label "rendering"@en , "відображення"@uk , "Darstellung"@de , "عرض"@ar .
+c:RuleKind a c:TermKind ; sem:order 7 ; sem:slug "rule" ; sem:symbol "ƒ" ; c:kindOf sem:Rule ;
+    rdfs:label "rule"@en , "правило"@uk , "Regel"@de , "قاعدة"@ar .
+c:ReactionKind a c:TermKind ; sem:order 8 ; sem:slug "reaction" ; sem:symbol "E" ; c:kindOf beh:Reaction ;
+    rdfs:label "reaction"@en , "реакція"@uk , "Reaktion"@de , "تفاعل"@ar .
+c:ShapeKind a c:TermKind ; sem:order 9 ; sem:slug "shape" ; sem:symbol "S" ; c:kindOf sh:NodeShape ;
+    rdfs:label "shape"@en , "форма"@uk , "Form"@de , "شكل"@ar .
+c:IndividualKind a c:TermKind ; sem:order 99 ; sem:slug "individual" ; sem:symbol "·" ;
+    rdfs:label "individual"@en , "індивід"@uk , "Individuum"@de , "فرد"@ar .
+
+c:ExpandPhrase a c:Phrase ; rdfs:label "Expand"@en , "Розгорнути"@uk , "Aufklappen"@de , "توسيع"@ar .
+c:CollapsePhrase a c:Phrase ; rdfs:label "Collapse"@en , "Згорнути"@uk , "Zuklappen"@de , "طي"@ar .
+c:NoTermPhrase a c:Phrase ; rdfs:label "Pick a term."@en , "Виберіть термін."@uk , "Wählen Sie einen Begriff."@de , "اختر مصطلحًا."@ar .
+
+c:TermTreeRendering a sem:Rendering ; sem:targets c:TermTree ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:controls .
+c:TermTreeRendering-fn a sem:Rule ; sem:implements c:TermTreeRendering ; sem:function "reference:tree" .
+c:TermTreeRendering-sparql a sem:Rule ;
+    sem:implements c:TermTreeRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Ul ; sem:renders $this ; rdfhtml:hasChild ?sli ; rdfhtml:attribute ?rootRole , ?rootLabel .
+  ?rootRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tree" .
+  ?rootLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?sli a rdfhtml:Li ; rdfhtml:class "sem-section" ; rdfhtml:hasChild ?srow , ?sgroup ; ord:immediatelyPrecedes ?nextSli ;
+       rdfhtml:attribute ?sliRole , ?sliLevel , ?sliExpanded .
+  ?sliRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "treeitem" .
+  ?sliLevel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-level" ; rdfhtml:attributeValue "1" .
+  ?sliExpanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue "true" .
+  ?srow a rdfhtml:Div ; rdfhtml:class "sem-row" ; rdfhtml:hasChild ?slabel ; ord:immediatelyPrecedes ?sgroupAfterRow .
+  ?slabel a rdfhtml:Span ; rdfhtml:class "sem-label" ; rdfhtml:tabIndex ?tab ; rdfhtml:hasChild ?slabelText .
+  ?slabelText a rdfhtml:Text ; rdfhtml:data ?sectionName .
+  ?sgroup a rdfhtml:Ul ; rdfhtml:attribute ?sgroupRole ; rdfhtml:hasChild ?inst .
+  ?sgroupRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?inst a c:TermBranch ; c:of ?b ; c:branchOf $this ; c:section ?section ; c:controls ?target ; c:property ?property ;
+        sem:orderKey ?branchKey ; c:reveals ?reveals .
+  ?selNode rdfhtml:attribute ?selAttr .
+  ?selAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-selected" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a c:TermTree .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # LATERAL: every branch below sees ?root (a plain UNION's branches would not).
+  LATERAL { {
+    BIND(IRI(CONCAT(STR(?root), "-role")) AS ?rootRole)
+    OPTIONAL { ?caption0At l10n:of $this ; l10n:label ?caption0 }
+  OPTIONAL { $this c:label ?caption0 FILTER(lang(?caption0) = "") }
+    OPTIONAL { $this c:label ?caption1 FILTER(langMatches(lang(?caption1), "en")) }
+    BIND(STR(COALESCE(?caption0, ?caption1)) AS ?caption)
+    BIND(IF(BOUND(?caption), IRI(CONCAT(STR(?root), "-aria-label")), ?none) AS ?rootLabel)
+  } UNION {
+    # One item per section, in list order; the first section's name is the tree's tab stop.
+    $this c:sections/rdf:rest* ?cell . ?cell rdf:first ?section .
+    { SELECT ?cell (COUNT(?mid) - 1 AS ?i) WHERE { $this c:sections/rdf:rest* ?mid . ?mid rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(IRI(CONCAT(STR($this), "/~s-", SUBSTR(MD5(STR(?section)), 1, 8))) AS ?sli)
+    OPTIONAL { ?cell rdf:rest ?nextCell FILTER(?nextCell != rdf:nil) ?nextCell rdf:first ?nextSection }
+    BIND(IF(BOUND(?nextSection), IRI(CONCAT(STR($this), "/~s-", SUBSTR(MD5(STR(?nextSection)), 1, 8))), ?none) AS ?nextSli)
+    OPTIONAL { ?sname0At l10n:of ?section ; l10n:name ?sname0 }
+  OPTIONAL { ?section rdfs:label ?sname0 FILTER(lang(?sname0) = "") }
+    OPTIONAL { ?section rdfs:label ?sname1 FILTER(langMatches(lang(?sname1), "en")) }
+    BIND(STR(COALESCE(?sname0, ?sname1, "")) AS ?sectionName)
+    BIND(IF(?i = 0, "0", "-1") AS ?tab)
+    BIND(IRI(CONCAT(STR(?sli), "-role")) AS ?sliRole)
+    BIND(IRI(CONCAT(STR(?sli), "-aria-level")) AS ?sliLevel)
+    BIND(IRI(CONCAT(STR(?sli), "-aria-expanded")) AS ?sliExpanded)
+    BIND(IRI(CONCAT(STR(?sli), "-row")) AS ?srow)
+    BIND(IRI(CONCAT(STR(?sli), "-label")) AS ?slabel)
+    BIND(IRI(CONCAT(STR(?sli), "-label-text")) AS ?slabelText)
+    BIND(IRI(CONCAT(STR(?sli), "-group")) AS ?sgroup)
+    BIND(?sgroup AS ?sgroupAfterRow)
+    BIND(IRI(CONCAT(STR(?sgroup), "-role")) AS ?sgroupRole)
+  } UNION {
+    # One c:TermBranch per instance of a section's branch class.
+    $this c:sections/rdf:rest*/rdf:first ?section .
+    ?section c:branchClass ?cls . ?b a ?cls FILTER(isIRI(?b))
+    OPTIONAL { ?section c:membersVia ?mp }
+    OPTIONAL { ?section c:exceptProperty ?xp }
+    BIND(SUBSTR(MD5(CONCAT(STR(?section), " ", STR(?b))), 1, 8) AS ?bk)
+    BIND(IRI(CONCAT(STR($this), "/~b-", ?bk)) AS ?inst)
+    BIND(IRI(CONCAT(STR($this), "/~s-", SUBSTR(MD5(STR(?section)), 1, 8), "-group")) AS ?sgroup)
+    OPTIONAL { $this c:controls ?target ; c:property ?property FILTER(isIRI(?target) && isIRI(?property)) }
+    OPTIONAL { ?b sem:order ?order }
+    # The branch's name (as c:TermBranch shows it): rdfs:label, dcterms:title, or its prefixed name.
+    OPTIONAL { ?bl0At l10n:of ?b ; l10n:name ?bl0 }
+  OPTIONAL { ?b rdfs:label ?bl0 FILTER(lang(?bl0) = "") }
+    OPTIONAL { ?b rdfs:label ?bl1 FILTER(langMatches(lang(?bl1), "en")) }
+    OPTIONAL { ?b dcterms:title ?bt0 FILTER(lang(?bt0) = "") }
+    OPTIONAL { ?b dcterms:title ?bt1 FILTER(langMatches(lang(?bt1), "en")) }
+    BIND(REPLACE(STR(?b), "[^#/]*$", "") AS ?bns)
+    BIND(REPLACE(STR(?b), "^.*[#/]", "") AS ?blocal)
+    OPTIONAL { { SELECT ?bns (MIN(?bp0) AS ?bpfx) WHERE { ?bd sh:prefix ?bp0 ; sh:namespace ?bn0 BIND(STR(?bn0) AS ?bns) } GROUP BY ?bns } }
+    BIND(IF(BOUND(?bpfx) && REGEX(?blocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?bpfx, ":", ?blocal), CONCAT("<", STR(?b), ">")) AS ?bcompact)
+    BIND(COALESCE(STR(?order), STR(COALESCE(?bl0, ?bl1, ?bt0, ?bt1)), ?bcompact) AS ?branchKey)
+    # The selection: the branch itself, or a term the branch holds (the test c:TermBranch lists by).
+    OPTIONAL { $this c:controls ?st ; c:property ?sp . ?st ?sp ?sel FILTER(isIRI(?sel)) }
+    BIND(BOUND(?sel) && sameTerm(?sel, ?b) AS ?isBranch)
+    BIND(BOUND(?sel) && !sameTerm(?sel, ?b) && IF(BOUND(?mp), EXISTS { ?sel ?mp ?b },
+           STRSTARTS(STR(?sel), CONCAT(STR(?b), "#"))
+           && EXISTS { VALUES ?listedKind { c:ClassKind c:PropertyKind } ?listedKind c:kindOf ?listedType . ?sel a ?listedType }
+           && (!BOUND(?xp) || NOT EXISTS { ?sel ?xp ?anything })) AS ?holds)
+    BIND(IF(?holds, true, ?none) AS ?reveals)
+    BIND(IF(?isBranch, IRI(CONCAT(STR(?inst), "/~root")), IF(?holds, IRI(CONCAT(STR(?inst), "/~t-", SUBSTR(MD5(STR(?sel)), 1, 8))), ?none)) AS ?selNode)
+    BIND(IF(?isBranch, IRI(CONCAT(STR($this), "/~sel-", ?bk, "-root")), IF(?holds, IRI(CONCAT(STR($this), "/~sel-", ?bk)), ?none)) AS ?selAttr)
+  } }
+}""" .
+
+# What the tree lists (c:lists): every branch and every term the branches hold, open or not: the
+# options of a typeahead over the tree (c:optionsFrom). Before the components and the typeahead's
+# texts (stratum -20) that read it; it hears only the sections, so a selection does not re-run it.
+c:TermTreeListing a sem:Rendering ; sem:targets c:TermTree ; sem:stratum -25 ; sem:watches rdf:type , c:sections .
+c:TermTreeListing-fn a sem:Rule ; sem:implements c:TermTreeListing ; sem:function "reference:listing" .
+c:TermTreeListing-sparql a sem:Rule ;
+    sem:implements c:TermTreeListing ;
+    sem:construct """
+CONSTRUCT { $this c:lists ?term }
+WHERE {
+  $this a c:TermTree ; c:sections/rdf:rest*/rdf:first ?section .
+  ?section c:branchClass ?cls .
+  # LATERAL: each branch below sees ?section and ?cls (a plain UNION's branches would not).
+  LATERAL { {
+    # The branches.
+    ?term a ?cls FILTER(isIRI(?term))
+  } UNION {
+    # What points at a branch through the section's c:membersVia (sem:group, sem:layer).
+    ?section c:membersVia ?via . ?term ?via ?b . ?b a ?cls FILTER(isIRI(?term) && isIRI(?b))
+  } UNION {
+    # Without one: the classes and properties in a branch's namespace (its IRI and "#"), but those
+    # that have the section's c:exceptProperty.
+    FILTER NOT EXISTS { ?section c:membersVia ?anyVia }
+    VALUES ?listedKind { c:ClassKind c:PropertyKind } ?listedKind c:kindOf ?listedType . ?term a ?listedType
+    FILTER(isIRI(?term) && CONTAINS(STR(?term), "#"))
+    BIND(IRI(STRBEFORE(STR(?term), "#")) AS ?b)
+    ?b a ?cls .
+    FILTER NOT EXISTS { ?section c:exceptProperty ?except . ?term ?except ?anything }
+  } }
+}""" .
+
+c:TermBranchRendering a sem:Rendering ; sem:targets c:TermBranch ; sem:modality mod:Screen ; sem:stratum 0 .
+c:TermBranchRendering-fn a sem:Rule ; sem:implements c:TermBranchRendering ; sem:function "reference:branch" .
+c:TermBranchRendering-sparql a sem:Rule ;
+    sem:implements c:TermBranchRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Li ; sem:renders $this ; rdfhtml:class "sem-branch" ; rdfhtml:hasChild ?row , ?group ;
+        rdfhtml:attribute ?rootRole , ?rootLevel , ?rootExpanded .
+  ?rootRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "treeitem" .
+  ?rootLevel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-level" ; rdfhtml:attributeValue "2" .
+  ?rootExpanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openText .
+  ?row a rdfhtml:Div ; rdfhtml:class "sem-row" ; rdfhtml:hasChild ?first , ?label , ?count ; ord:immediatelyPrecedes ?group .
+  ?first ord:immediatelyPrecedes ?label . ?label ord:immediatelyPrecedes ?count .
+  ?twisty a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-twisty" ; rdfhtml:tabIndex "-1" ;
+          rdfhtml:hasChild ?icon ; rdfhtml:attribute ?twistyLabel ; c:expands $this .
+  ?twistyLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?twistyWords .
+  ?icon a rdfhtml:Span ; rdfhtml:attribute ?iconHidden ; rdfhtml:hasChild ?iconText .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?iconText a rdfhtml:Text ; rdfhtml:data "▸" .
+  ?leaf a rdfhtml:Span ; rdfhtml:class "sem-leaf" ; rdfhtml:attribute ?leafHidden .
+  ?leafHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?label a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-label" ; rdfhtml:tabIndex "-1" ; rdfhtml:title ?bcompact ;
+         rdfhtml:hasChild ?labelText ; c:selects ?b .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?bname .
+  ?count a rdfhtml:Span ; rdfhtml:class "sem-count" ; rdfhtml:hasChild ?countText .
+  ?countText a rdfhtml:Text ; rdfhtml:data ?countValue .
+  ?group a rdfhtml:Ul ; rdfhtml:hidden ?hidden ; rdfhtml:attribute ?groupRole ; rdfhtml:hasChild ?li .
+  ?groupRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?li a rdfhtml:Li ; sem:orderKey ?tlocal ; rdfhtml:hasChild ?irow ; rdfhtml:attribute ?liRole , ?liLevel .
+  ?liRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "treeitem" .
+  ?liLevel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-level" ; rdfhtml:attributeValue "3" .
+  ?irow a rdfhtml:Div ; rdfhtml:class "sem-row" ; rdfhtml:hasChild ?ileaf , ?ilabel , ?ikind .
+  ?ileaf a rdfhtml:Span ; rdfhtml:class "sem-leaf" ; rdfhtml:attribute ?ileafHidden ; ord:immediatelyPrecedes ?ilabel .
+  ?ileafHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?ilabel a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-label" ; rdfhtml:tabIndex "-1" ; rdfhtml:title ?tcompact ;
+          rdfhtml:hasChild ?ilabelText ; c:selects ?t ; ord:immediatelyPrecedes ?ikind .
+  ?ilabelText a rdfhtml:Text ; rdfhtml:data ?tlocal .
+  ?ikind a rdfhtml:Span ; rdfhtml:class "sem-kind" ; rdfhtml:attribute ?ikindHidden , ?ikindSlug ; rdfhtml:hasChild ?ikindText .
+  ?ikindHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?ikindSlug a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-kind" ; rdfhtml:attributeValue ?kindSlug .
+  ?ikindText a rdfhtml:Text ; rdfhtml:data ?kindSymbol .
+}
+WHERE {
+  $this a c:TermBranch ; c:of ?b ; c:section ?section FILTER(isIRI(?b))
+  OPTIONAL { ?section c:membersVia ?mp }
+  OPTIONAL { ?section c:exceptProperty ?xp }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~group")) AS ?group)
+  # How many terms the branch holds (the same test as the items below).
+  LATERAL { OPTIONAL {
+    SELECT ?b ?mp ?xp (COUNT(DISTINCT ?member) AS ?counted) WHERE {
+      { ?member ?memberVia ?b FILTER(BOUND(?mp) && sameTerm(?memberVia, ?mp) && isIRI(?member)) }
+      UNION
+      { FILTER(!BOUND(?mp))
+        VALUES ?countedKind { c:ClassKind c:PropertyKind } ?countedKind c:kindOf ?countedType . ?member a ?countedType
+        FILTER(isIRI(?member) && STRSTARTS(STR(?member), CONCAT(STR(?b), "#")))
+        FILTER(!BOUND(?xp) || NOT EXISTS { ?member ?xp ?anything }) }
+    } GROUP BY ?b ?mp ?xp
+  } }
+  BIND(COALESCE(?counted, 0) AS ?n)
+  OPTIONAL { $this c:expanded ?expanded }
+  OPTIONAL { $this c:reveals ?revealed }
+  BIND(?n > 0 && IF(BOUND(?expanded), STR(?expanded) = "true", COALESCE(STR(?revealed) = "true", false)) AS ?open)
+  OPTIONAL { ?bl0At l10n:of ?b ; l10n:name ?bl0 }
+  OPTIONAL { ?b rdfs:label ?bl0 FILTER(lang(?bl0) = "") }
+  OPTIONAL { ?b rdfs:label ?bl1 FILTER(langMatches(lang(?bl1), "en")) }
+  OPTIONAL { ?b dcterms:title ?bt0 FILTER(lang(?bt0) = "") }
+  OPTIONAL { ?b dcterms:title ?bt1 FILTER(langMatches(lang(?bt1), "en")) }
+  BIND(REPLACE(STR(?b), "[^#/]*$", "") AS ?bns)
+  BIND(REPLACE(STR(?b), "^.*[#/]", "") AS ?blocal)
+  OPTIONAL { { SELECT ?bns (MIN(?bp0) AS ?bpfx) WHERE { ?bd sh:prefix ?bp0 ; sh:namespace ?bn0 BIND(STR(?bn0) AS ?bns) } GROUP BY ?bns } }
+  BIND(IF(BOUND(?bpfx) && REGEX(?blocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?bpfx, ":", ?blocal), CONCAT("<", STR(?b), ">")) AS ?bcompact)
+  BIND(COALESCE(STR(COALESCE(?bl0, ?bl1, ?bt0, ?bt1)), ?bcompact) AS ?bname)
+  LATERAL { {
+    BIND(IRI(CONCAT(STR(?root), "-role")) AS ?rootRole)
+    BIND(IRI(CONCAT(STR(?root), "-aria-level")) AS ?rootLevel)
+    BIND(IF(?n > 0, IRI(CONCAT(STR(?root), "-aria-expanded")), ?none) AS ?rootExpanded)
+    BIND(STR(?open) AS ?openText)
+    BIND(IRI(CONCAT(STR($this), "/~row")) AS ?row)
+    BIND(IRI(CONCAT(STR($this), "/~label")) AS ?label)
+    BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+    BIND(IRI(CONCAT(STR($this), "/~count")) AS ?count)
+    BIND(IRI(CONCAT(STR($this), "/~count-text")) AS ?countText)
+    BIND(STR(?n) AS ?countValue)
+    BIND(IF(?n > 0, IRI(CONCAT(STR($this), "/~twisty")), ?none) AS ?twisty)
+    BIND(IF(?n > 0, ?none, IRI(CONCAT(STR($this), "/~leaf"))) AS ?leaf)
+    BIND(COALESCE(?twisty, ?leaf) AS ?first)
+    BIND(IF(BOUND(?leaf), IRI(CONCAT(STR(?leaf), "-aria-hidden")), ?none) AS ?leafHidden)
+    BIND(IF(BOUND(?twisty), IRI(CONCAT(STR(?twisty), "-aria-label")), ?none) AS ?twistyLabel)
+    BIND(IF(BOUND(?twisty), IRI(CONCAT(STR($this), "/~twisty-icon")), ?none) AS ?icon)
+    BIND(IF(BOUND(?twisty), IRI(CONCAT(STR($this), "/~twisty-icon-aria-hidden")), ?none) AS ?iconHidden)
+    BIND(IF(BOUND(?twisty), IRI(CONCAT(STR($this), "/~twisty-text")), ?none) AS ?iconText)
+    OPTIONAL { ?collapse0At l10n:of c:CollapsePhrase ; l10n:name ?collapse0 }
+  OPTIONAL { ?collapse0At l10n:of c:CollapsePhrase ; l10n:name ?collapse0 }
+  OPTIONAL { c:CollapsePhrase rdfs:label ?collapse0 FILTER(lang(?collapse0) = "") }
+    OPTIONAL { c:CollapsePhrase rdfs:label ?collapse1 FILTER(langMatches(lang(?collapse1), "en")) }
+    OPTIONAL { ?expand0At l10n:of c:ExpandPhrase ; l10n:name ?expand0 }
+  OPTIONAL { ?expand0At l10n:of c:ExpandPhrase ; l10n:name ?expand0 }
+  OPTIONAL { c:ExpandPhrase rdfs:label ?expand0 FILTER(lang(?expand0) = "") }
+    OPTIONAL { c:ExpandPhrase rdfs:label ?expand1 FILTER(langMatches(lang(?expand1), "en")) }
+    BIND(CONCAT(IF(?open, STR(COALESCE(?collapse0, ?collapse1, "Collapse")), STR(COALESCE(?expand0, ?expand1, "Expand"))), " ", ?bname) AS ?twistyWords)
+    BIND(IF(?open, ?none, "") AS ?hidden)
+    BIND(IRI(CONCAT(STR(?group), "-role")) AS ?groupRole)
+  } UNION {
+    # The terms, while open: by local name, each with its kind's glyph.
+    FILTER(?open)
+    LATERAL {
+      SELECT DISTINCT ?b ?mp ?xp ?t WHERE {
+        { ?t ?termVia ?b FILTER(BOUND(?mp) && sameTerm(?termVia, ?mp) && isIRI(?t)) }
+        UNION
+        { FILTER(!BOUND(?mp))
+          VALUES ?listedKind { c:ClassKind c:PropertyKind } ?listedKind c:kindOf ?listedType . ?t a ?listedType
+          FILTER(isIRI(?t) && STRSTARTS(STR(?t), CONCAT(STR(?b), "#")))
+          FILTER(!BOUND(?xp) || NOT EXISTS { ?t ?xp ?anything }) }
+      }
+    }
+    LATERAL { OPTIONAL { SELECT ?t ?kind WHERE { ?t a ?kindType . ?kind c:kindOf ?kindType ; sem:order ?kindOrder } ORDER BY ?kindOrder ?kind LIMIT 1 } }
+    BIND(COALESCE(?kind, c:IndividualKind) AS ?k)
+    OPTIONAL { ?k sem:slug ?kslug } OPTIONAL { ?k sem:symbol ?ksym }
+    BIND(STR(COALESCE(?kslug, "")) AS ?kindSlug)
+    BIND(STR(COALESCE(?ksym, "")) AS ?kindSymbol)
+    BIND(REPLACE(STR(?t), "^.*[#/]", "") AS ?tlocal)
+    BIND(REPLACE(STR(?t), "[^#/]*$", "") AS ?tns)
+    OPTIONAL { { SELECT ?tns (MIN(?tp0) AS ?tpfx) WHERE { ?td sh:prefix ?tp0 ; sh:namespace ?tn0 BIND(STR(?tn0) AS ?tns) } GROUP BY ?tns } }
+    BIND(IF(BOUND(?tpfx) && REGEX(?tlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?tpfx, ":", ?tlocal), CONCAT("<", STR(?t), ">")) AS ?tcompact)
+    BIND(IRI(CONCAT(STR($this), "/~t-", SUBSTR(MD5(STR(?t)), 1, 8))) AS ?li)
+    BIND(IRI(CONCAT(STR(?li), "-role")) AS ?liRole)
+    BIND(IRI(CONCAT(STR(?li), "-aria-level")) AS ?liLevel)
+    BIND(IRI(CONCAT(STR(?li), "-row")) AS ?irow)
+    BIND(IRI(CONCAT(STR(?li), "-leaf")) AS ?ileaf)
+    BIND(IRI(CONCAT(STR(?li), "-leaf-aria-hidden")) AS ?ileafHidden)
+    BIND(IRI(CONCAT(STR(?li), "-label")) AS ?ilabel)
+    BIND(IRI(CONCAT(STR(?li), "-label-text")) AS ?ilabelText)
+    BIND(IRI(CONCAT(STR(?li), "-kind")) AS ?ikind)
+    BIND(IRI(CONCAT(STR(?li), "-kind-aria-hidden")) AS ?ikindHidden)
+    BIND(IRI(CONCAT(STR(?li), "-kind-data-sem-kind")) AS ?ikindSlug)
+    BIND(IRI(CONCAT(STR(?li), "-kind-text")) AS ?ikindText)
+  } }
+}""" .
+
+# The twisty opens and closes a branch: c:expanded, written explicitly, so a branch closed by hand
+# stays closed while it holds the selection.
+c:ToggleTermBranch a beh:Reaction ;
+    rdfs:label "Open or close a branch"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:TermBranch ;
+    beh:deletes """CONSTRUCT { $this c:expanded ?old }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:expands $this . $this c:expanded ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:expanded ?next }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:expands $this .
+  OPTIONAL { $this c:expanded ?old } OPTIONAL { $this c:reveals ?revealed }
+  BIND(!IF(BOUND(?old), STR(?old) = "true", COALESCE(STR(?revealed) = "true", false)) AS ?next)
+}""" ;
+    sem:function "reference:toggle" .
+
+# A click on a name selects that term: `<controls> <property> <term>`, as c:Tree and c:NavList do.
+c:SelectTerm a beh:Reaction ;
+    rdfs:label "Select a term"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:TermBranch ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?term . $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?term } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?term . $this c:controls ?target ; c:property ?p }""" ;
+    sem:function "segmented:select" .
+
+# Up and Down move among the visible names; Right opens a branch (then enters it), Left closes it
+# (then goes to its section). Enter or Space on a name is its click.
+c:TermTree key:navigation key:TreeNavigation .
+
+# --- one term: what the ontology says about it ---------------------------------------------------
+# The facts are what the term itself says (one row per predicate: rdf:type, rdfs:subClassOf,
+# sem:slug, sty:hookAttribute, skos:closeMatch...) and what points at it, as facets
+# (c:InverseFacet): subclasses, properties whose domain it is (with their ranges), instances,
+# renderings and their rules, reactions, members of a group, renderings of a layer. The shape facet
+# lists the constraints of each property shape whose node shape targets it. Facets are data: a new
+# one is a node here, rendered by both implementations alike.
+
+c:TermOverview a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """What the ontology says about one term: the term c:bindProperty of c:bindFrom holds (a
+selection). A header (its prefixed name, its kind, its IRI) and its rdfs:comment, then its facts:
+what it says, by predicate, and what points at it (c:InverseFacet, and its shape). Values that are
+our terms are links: with c:controls and c:property, clicking one selects it there. c:emptyText
+shows while nothing is bound."""@en ;
+    sem:slug "term-overview" .
+c:shownInOverview a owl:AnnotationProperty ; rdfs:domain rdf:Property ; rdfs:range xsd:boolean ;
+    rdfs:comment "false: a c:TermOverview does not list this predicate's values (long text such as a rule's body: the Turtle shows it)."@en .
+c:InverseFacet a owl:Class ;
+    rdfs:comment """A facet of a c:TermOverview: the terms that point at the shown term through c:facetProperty
+(or at a node that points at it through c:through), by sem:order among facets, named by rdfs:label.
+c:noteProperty adds a value of each (after c:noteLabel); c:ownOnly keeps only our own terms."""@en .
+c:facetProperty a owl:ObjectProperty ; rdfs:domain c:InverseFacet ; rdfs:range rdf:Property .
+c:through a owl:ObjectProperty ; rdfs:domain c:InverseFacet ; rdfs:range rdf:Property .
+c:noteProperty a owl:ObjectProperty ; rdfs:domain c:InverseFacet ; rdfs:range rdf:Property .
+c:noteLabel a owl:DatatypeProperty ; rdfs:domain c:InverseFacet .
+c:ownOnly a owl:DatatypeProperty ; rdfs:domain c:InverseFacet ; rdfs:range xsd:boolean .
+c:GalleryFacet a c:Phrase ; sem:order 95 ;
+    rdfs:label "Shown in the gallery"@en , "Показано в галереї"@uk , "In der Galerie gezeigt"@de , "معروض في المعرض"@ar ;
+    rdfs:comment "The facet linking to the gallery specimens (c:Specimen) that show the term: a c:Link to each (c:to the specimen), which the navigation layer resolves to where it is shown."@en .
+c:ShapeFacet a c:Phrase ; sem:order 90 ;
+    rdfs:label "Shape"@en , "Форма"@uk , "Form"@de , "الشكل"@ar ;
+    rdfs:comment "The facet listing the property shapes of the node shapes that target the term (sh:targetClass), with their constraints and messages."@en .
+
+rdfs:comment c:shownInOverview false .
+sem:construct c:shownInOverview false . sem:select c:shownInOverview false .
+beh:deletes c:shownInOverview false . beh:inserts c:shownInOverview false .
+
+c:SubclassesFacet a c:InverseFacet ; sem:order 10 ; c:facetProperty rdfs:subClassOf ;
+    rdfs:label "Subclasses"@en , "Підкласи"@uk , "Unterklassen"@de , "الأصناف الفرعية"@ar .
+c:PropertiesFacet a c:InverseFacet ; sem:order 20 ; c:facetProperty rdfs:domain ; c:noteProperty rdfs:range ; c:noteLabel "→" ;
+    rdfs:label "Properties"@en , "Властивості"@uk , "Eigenschaften"@de , "الخصائص"@ar .
+c:RangeOfFacet a c:InverseFacet ; sem:order 25 ; c:facetProperty rdfs:range ; c:noteProperty rdfs:domain ; c:noteLabel "on" ;
+    rdfs:label "Range of"@en , "Діапазон для"@uk , "Wertebereich von"@de , "مدى لـ"@ar .
+c:SubpropertiesFacet a c:InverseFacet ; sem:order 30 ; c:facetProperty rdfs:subPropertyOf ;
+    rdfs:label "Subproperties"@en , "Підвластивості"@uk , "Untereigenschaften"@de , "الخصائص الفرعية"@ar .
+c:InstancesFacet a c:InverseFacet ; sem:order 40 ; c:facetProperty rdf:type ; c:ownOnly true ;
+    rdfs:label "Instances"@en , "Екземпляри"@uk , "Instanzen"@de , "النسخ"@ar .
+c:MembersFacet a c:InverseFacet ; sem:order 45 ; c:facetProperty sem:group ;
+    rdfs:label "Members"@en , "Члени"@uk , "Mitglieder"@de , "الأعضاء"@ar .
+c:RenderingsFacet a c:InverseFacet ; sem:order 50 ; c:facetProperty sem:targets ; c:noteProperty sem:stratum ; c:noteLabel "stratum" ;
+    rdfs:label "Renderings"@en , "Відображення"@uk , "Darstellungen"@de , "العروض"@ar .
+c:RulesFacet a c:InverseFacet ; sem:order 55 ; c:facetProperty sem:implements ; c:through sem:targets ; c:noteProperty sem:function ; c:noteLabel "function" ;
+    rdfs:label "Rules"@en , "Правила"@uk , "Regeln"@de , "القواعد"@ar .
+c:ImplementationsFacet a c:InverseFacet ; sem:order 56 ; c:facetProperty sem:implements ; c:noteProperty sem:function ; c:noteLabel "function" ;
+    rdfs:label "Implemented by"@en , "Реалізовано"@uk , "Umgesetzt von"@de , "تنفذه"@ar .
+c:LayerRenderingsFacet a c:InverseFacet ; sem:order 60 ; c:facetProperty sem:layer ; c:noteProperty sem:targets ; c:noteLabel "for" ;
+    rdfs:label "Renders"@en , "Відображає"@uk , "Stellt dar"@de , "يعرض"@ar .
+c:ReactionsFacet a c:InverseFacet ; sem:order 70 ; c:facetProperty beh:sourceClass ; c:noteProperty beh:when ; c:noteLabel "on" ;
+    rdfs:label "Reactions"@en , "Реакції"@uk , "Reaktionen"@de , "التفاعلات"@ar .
+
+c:TermOverviewRendering a sem:Rendering ; sem:targets c:TermOverview ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:bindFrom .
+c:TermOverviewRendering-fn a sem:Rule ; sem:implements c:TermOverviewRendering ; sem:function "reference:overview" .
+c:TermOverviewRendering-sparql a sem:Rule ;
+    sem:implements c:TermOverviewRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?head , ?comment , ?facts , ?empty .
+  ?empty a rdfhtml:P ; rdfhtml:class "sem-empty" ; rdfhtml:hasChild ?emptyText .
+  ?emptyText a rdfhtml:Text ; rdfhtml:data ?emptyWords .
+  ?head a rdfhtml:Header ; rdfhtml:hasChild ?name , ?kind , ?iri ; ord:immediatelyPrecedes ?afterHead .
+  ?name a rdfhtml:H2 ; rdfhtml:hasChild ?nameText ; ord:immediatelyPrecedes ?kind .
+  ?nameText a rdfhtml:Text ; rdfhtml:data ?tName .
+  ?kind a rdfhtml:Span ; rdfhtml:class "sem-kind" ; rdfhtml:attribute ?kindAttr ; rdfhtml:hasChild ?kindText ; ord:immediatelyPrecedes ?iri .
+  ?kindAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-kind" ; rdfhtml:attributeValue ?kindSlug .
+  ?kindText a rdfhtml:Text ; rdfhtml:data ?kindName .
+  ?iri a rdfhtml:Code ; rdfhtml:class "sem-iri" ; rdfhtml:hasChild ?iriText .
+  ?iriText a rdfhtml:Text ; rdfhtml:data ?tIri .
+  ?comment a rdfhtml:P ; rdfhtml:class "sem-comment" ; rdfhtml:hasChild ?commentText ; ord:immediatelyPrecedes ?facts .
+  ?commentText a rdfhtml:Text ; rdfhtml:data ?commentWords .
+  ?facts a rdfhtml:Dl ; rdfhtml:hasChild ?fact .
+  ?fact a rdfhtml:Div ; rdfhtml:class "sem-fact" ; sem:orderKey ?factKey ; rdfhtml:hasChild ?dt , ?dd .
+  ?dt a rdfhtml:Dt ; rdfhtml:hasChild ?dtText ; ord:immediatelyPrecedes ?dd .
+  ?dtText a rdfhtml:Text ; rdfhtml:data ?factName .
+  ?dd a rdfhtml:Dd ; rdfhtml:hasChild ?item .
+  ?item a rdfhtml:Span ; rdfhtml:class "sem-item" ; sem:orderKey ?itemKey ; rdfhtml:hasChild ?term , ?note , ?constraint , ?link .
+  ?link a c:Link ; c:to ?spec ; c:label ?specLabel .
+  ?term a ?termElement ; rdfhtml:class ?termClass ; sem:orderKey "" ; rdfhtml:type ?buttonType ; rdfhtml:title ?termTitle ;
+        c:selects ?selectsTerm ; rdfhtml:hasChild ?termText .
+  ?termText a rdfhtml:Text ; rdfhtml:data ?vName .
+  ?note a rdfhtml:Span ; rdfhtml:class "sem-note" ; sem:orderKey "~" ; rdfhtml:hasChild ?noteText .
+  ?noteText a rdfhtml:Text ; rdfhtml:data ?noteWords .
+  ?constraint a rdfhtml:Span ; rdfhtml:class "sem-constraint" ; sem:orderKey ?constraintWords ; rdfhtml:hasChild ?constraintText .
+  ?constraintText a rdfhtml:Text ; rdfhtml:data ?constraintWords .
+}
+WHERE {
+  $this a c:TermOverview .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL { $this c:bindFrom ?from ; c:bindProperty ?bp . ?from ?bp ?t FILTER(isIRI(?t)) }
+  LATERAL { {
+    # Nothing bound: the empty text.
+    FILTER(!BOUND(?t))
+    BIND(IRI(CONCAT(STR($this), "/~empty")) AS ?empty)
+    BIND(IRI(CONCAT(STR($this), "/~empty-text")) AS ?emptyText)
+    OPTIONAL { ?e0At l10n:of $this ; l10n:emptyText ?e0 }
+  OPTIONAL { $this c:emptyText ?e0 FILTER(lang(?e0) = "") }
+    OPTIONAL { $this c:emptyText ?e1 FILTER(langMatches(lang(?e1), "en")) }
+    OPTIONAL { ?e2At l10n:of c:NoTermPhrase ; l10n:name ?e2 }
+  OPTIONAL { ?e2At l10n:of c:NoTermPhrase ; l10n:name ?e2 }
+  OPTIONAL { c:NoTermPhrase rdfs:label ?e2 FILTER(lang(?e2) = "") }
+    OPTIONAL { c:NoTermPhrase rdfs:label ?e3 FILTER(langMatches(lang(?e3), "en")) }
+    BIND(STR(COALESCE(?e0, ?e1, ?e2, ?e3, "Pick a term.")) AS ?emptyWords)
+  } UNION {
+    # The header: prefixed name, kind, IRI; then the comment.
+    FILTER(BOUND(?t))
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IRI(CONCAT(STR($this), "/~name")) AS ?name)
+    BIND(IRI(CONCAT(STR($this), "/~name-text")) AS ?nameText)
+    BIND(IRI(CONCAT(STR($this), "/~kind")) AS ?kind)
+    BIND(IRI(CONCAT(STR($this), "/~kind-data-sem-kind")) AS ?kindAttr)
+    BIND(IRI(CONCAT(STR($this), "/~kind-text")) AS ?kindText)
+    BIND(IRI(CONCAT(STR($this), "/~iri")) AS ?iri)
+    BIND(IRI(CONCAT(STR($this), "/~iri-text")) AS ?iriText)
+    BIND(STR(?t) AS ?tIri)
+    BIND(REPLACE(STR(?t), "[^#/]*$", "") AS ?tns)
+    BIND(REPLACE(STR(?t), "^.*[#/]", "") AS ?tlocal)
+    OPTIONAL { { SELECT ?tns (MIN(?tp0) AS ?tpfx) WHERE { ?td sh:prefix ?tp0 ; sh:namespace ?tn0 BIND(STR(?tn0) AS ?tns) } GROUP BY ?tns } }
+    BIND(IF(BOUND(?tpfx) && REGEX(?tlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?tpfx, ":", ?tlocal), CONCAT("<", STR(?t), ">")) AS ?tName)
+    LATERAL { OPTIONAL { SELECT ?t ?kind0 WHERE { ?t a ?kindType . ?kind0 c:kindOf ?kindType ; sem:order ?kindOrder } ORDER BY ?kindOrder ?kind0 LIMIT 1 } }
+    BIND(COALESCE(?kind0, c:IndividualKind) AS ?k)
+    OPTIONAL { ?k sem:slug ?kslug }
+    OPTIONAL { ?kn0At l10n:of ?k ; l10n:name ?kn0 }
+  OPTIONAL { ?k rdfs:label ?kn0 FILTER(lang(?kn0) = "") }
+    OPTIONAL { ?k rdfs:label ?kn1 FILTER(langMatches(lang(?kn1), "en")) }
+    BIND(STR(COALESCE(?kslug, "")) AS ?kindSlug)
+    BIND(STR(COALESCE(?kn0, ?kn1, "")) AS ?kindName)
+    OPTIONAL { ?t rdfs:comment ?c0 FILTER(lang(?c0) = "") }
+    OPTIONAL { ?t rdfs:comment ?c1 FILTER(langMatches(lang(?c1), "en")) }
+    BIND(COALESCE(?c0, ?c1) AS ?commentValue)
+    BIND(STR(?commentValue) AS ?commentWords)
+    BIND(IF(BOUND(?commentValue), IRI(CONCAT(STR($this), "/~comment")), ?none) AS ?comment)
+    BIND(IF(BOUND(?commentValue), IRI(CONCAT(STR($this), "/~comment-text")), ?none) AS ?commentText)
+    BIND(IRI(CONCAT(STR($this), "/~facts")) AS ?facts)
+    BIND(COALESCE(?comment, ?facts) AS ?afterHead)
+  } UNION {
+    # The facts, one value per row: what the term says, what points at it, its shape.
+    FILTER(BOUND(?t))
+    BIND(IRI(CONCAT(STR($this), "/~facts")) AS ?facts)
+    BIND(EXISTS { $this c:controls ?selectTarget ; c:property ?selectProperty FILTER(isIRI(?selectTarget) && isIRI(?selectProperty)) } AS ?selectable)
+    LATERAL {
+      {
+        ?t ?p ?v FILTER(!isBlank(?v) && ?p != rdfs:comment)
+        FILTER NOT EXISTS { ?p c:shownInOverview ?shown FILTER(STR(?shown) = "false") }
+        BIND(SUBSTR(MD5(STR(?p)), 1, 8) AS ?fk)
+        BIND(REPLACE(STR(?p), "[^#/]*$", "") AS ?pns)
+        BIND(REPLACE(STR(?p), "^.*[#/]", "") AS ?plocal)
+        OPTIONAL { { SELECT ?pns (MIN(?pp0) AS ?ppfx) WHERE { ?pd sh:prefix ?pp0 ; sh:namespace ?pn0 BIND(STR(?pn0) AS ?pns) } GROUP BY ?pns } }
+        BIND(IF(BOUND(?ppfx) && REGEX(?plocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?ppfx, ":", ?plocal), CONCAT("<", STR(?p), ">")) AS ?factName)
+        BIND(CONCAT("a", ?factName) AS ?factKey)
+        BIND(SUBSTR(MD5(IF(isLiteral(?v), CONCAT(STR(?v), "@", LANG(?v)), STR(?v))), 1, 8) AS ?vk)
+        BIND(IF(isLiteral(?v) && LANG(?v) != "", CONCAT("@", LANG(?v)), ?none) AS ?noteWords)
+      } UNION {
+        ?facet a c:InverseFacet ; c:facetProperty ?fp .
+        OPTIONAL { ?facet c:through ?through }
+        LATERAL {
+          { FILTER(!BOUND(?through)) ?v ?fp ?t }
+          UNION
+          { ?mid ?midVia ?t FILTER(BOUND(?through) && sameTerm(?midVia, ?through)) ?v ?fp ?mid }
+        }
+        FILTER(isIRI(?v))
+        FILTER(NOT EXISTS { ?facet c:ownOnly ?own FILTER(STR(?own) = "true") }
+               || EXISTS { ?vOntology a owl:Ontology FILTER(STRSTARTS(STR(?v), CONCAT(STR(?vOntology), "#"))) })
+        BIND(SUBSTR(MD5(STR(?facet)), 1, 8) AS ?fk)
+        OPTIONAL { ?facet sem:order ?facetOrder }
+        BIND(CONCAT("b", STR(COALESCE(?facetOrder, ""))) AS ?factKey)
+        OPTIONAL { ?fl0At l10n:of ?facet ; l10n:name ?fl0 }
+  OPTIONAL { ?facet rdfs:label ?fl0 FILTER(lang(?fl0) = "") }
+        OPTIONAL { ?facet rdfs:label ?fl1 FILTER(langMatches(lang(?fl1), "en")) }
+        BIND(REPLACE(STR(?facet), "[^#/]*$", "") AS ?fns)
+        BIND(REPLACE(STR(?facet), "^.*[#/]", "") AS ?flocal)
+        OPTIONAL { { SELECT ?fns (MIN(?fp0) AS ?fpfx) WHERE { ?fd sh:prefix ?fp0 ; sh:namespace ?fn0 BIND(STR(?fn0) AS ?fns) } GROUP BY ?fns } }
+        BIND(COALESCE(STR(COALESCE(?fl0, ?fl1)), IF(BOUND(?fpfx) && REGEX(?flocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?fpfx, ":", ?flocal), CONCAT("<", STR(?facet), ">"))) AS ?factName)
+        BIND(SUBSTR(MD5(STR(?v)), 1, 8) AS ?vk)
+        OPTIONAL { ?facet c:noteProperty ?np . ?v ?np ?nv }
+        OPTIONAL { ?facet c:noteLabel ?nl }
+        BIND(REPLACE(STR(?nv), "[^#/]*$", "") AS ?nns)
+        BIND(REPLACE(STR(?nv), "^.*[#/]", "") AS ?nlocal)
+        OPTIONAL { { SELECT ?nns (MIN(?np0) AS ?npfx) WHERE { ?nd sh:prefix ?np0 ; sh:namespace ?nn0 BIND(STR(?nn0) AS ?nns) } GROUP BY ?nns } }
+        BIND(IF(isIRI(?nv), IF(BOUND(?npfx) && REGEX(?nlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?npfx, ":", ?nlocal), CONCAT("<", STR(?nv), ">")), STR(?nv)) AS ?nvName)
+        BIND(IF(BOUND(?nv), CONCAT(IF(BOUND(?nl), CONCAT(STR(?nl), " "), ""), ?nvName), ?none) AS ?noteWords)
+      } UNION {
+        # Where the gallery shows it: specimens with a component that is one, has it, or (a layer)
+        # has a property one of its renderings requires. The same walk as the docs layer's.
+        { SELECT DISTINCT ?t ?v WHERE {
+            ?v a c:Specimen ; c:children/rdf:rest*/rdf:first/((c:children|c:items|c:content|c:front|c:tabs|c:actions|c:steps|c:body)/((rdf:rest*/rdf:first)?))* ?inst
+            FILTER(isIRI(?inst))
+            FILTER(EXISTS { ?inst ?t ?shownValue } || EXISTS { ?inst a ?t }
+                   || EXISTS { ?layerRendering sem:layer ?t ; sem:requires ?required . ?inst ?required ?requiredValue })
+        } }
+        BIND(true AS ?gallery)
+        BIND("gallery" AS ?fk)
+        OPTIONAL { c:GalleryFacet sem:order ?galleryOrder }
+        BIND(CONCAT("b", STR(COALESCE(?galleryOrder, ""))) AS ?factKey)
+        OPTIONAL { ?gl0At l10n:of c:GalleryFacet ; l10n:name ?gl0 }
+  OPTIONAL { ?gl0At l10n:of c:GalleryFacet ; l10n:name ?gl0 }
+  OPTIONAL { c:GalleryFacet rdfs:label ?gl0 FILTER(lang(?gl0) = "") }
+        OPTIONAL { c:GalleryFacet rdfs:label ?gl1 FILTER(langMatches(lang(?gl1), "en")) }
+        BIND(STR(COALESCE(?gl0, ?gl1, "Shown in the gallery")) AS ?factName)
+        BIND(SUBSTR(MD5(STR(?v)), 1, 8) AS ?vk)
+      } UNION {
+        ?shape sh:targetClass ?t ; sh:property ?ps . ?ps sh:path ?v FILTER(isIRI(?v))
+        BIND("shape" AS ?fk)
+        OPTIONAL { c:ShapeFacet sem:order ?shapeOrder }
+        BIND(CONCAT("b", STR(COALESCE(?shapeOrder, ""))) AS ?factKey)
+        OPTIONAL { ?sl0At l10n:of c:ShapeFacet ; l10n:name ?sl0 }
+  OPTIONAL { ?sl0At l10n:of c:ShapeFacet ; l10n:name ?sl0 }
+  OPTIONAL { c:ShapeFacet rdfs:label ?sl0 FILTER(lang(?sl0) = "") }
+        OPTIONAL { c:ShapeFacet rdfs:label ?sl1 FILTER(langMatches(lang(?sl1), "en")) }
+        BIND(STR(COALESCE(?sl0, ?sl1, "Shape")) AS ?factName)
+        BIND(SUBSTR(MD5(CONCAT(STR(?shape), " ", STR(?v))), 1, 8) AS ?vk)
+        OPTIONAL { ?ps sh:message ?message }
+        BIND(STR(?message) AS ?noteWords)
+        OPTIONAL {
+          ?ps ?cp ?cv FILTER(STRSTARTS(STR(?cp), STR(sh:)) && ?cp != sh:path && ?cp != sh:message && !isBlank(?cv))
+          BIND(REPLACE(STR(?cv), "[^#/]*$", "") AS ?cns)
+          BIND(REPLACE(STR(?cv), "^.*[#/]", "") AS ?clocal)
+          OPTIONAL { { SELECT ?cns (MIN(?cp0) AS ?cpfx) WHERE { ?cd sh:prefix ?cp0 ; sh:namespace ?cn0 BIND(STR(?cn0) AS ?cns) } GROUP BY ?cns } }
+          BIND(CONCAT(REPLACE(STR(?cp), "^.*[#/]", ""), " ",
+               IF(isIRI(?cv), IF(BOUND(?cpfx) && REGEX(?clocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?cpfx, ":", ?clocal), CONCAT("<", STR(?cv), ">")), STR(?cv))) AS ?constraintWords)
+        }
+      }
+    }
+    # The value: a link to one of our terms, another vocabulary's term, or a literal.
+    BIND(IRI(CONCAT(STR($this), "/~f-", ?fk)) AS ?fact)
+    BIND(IRI(CONCAT(STR(?fact), "-dt")) AS ?dt)
+    BIND(IRI(CONCAT(STR(?fact), "-dt-text")) AS ?dtText)
+    BIND(IRI(CONCAT(STR(?fact), "-dd")) AS ?dd)
+    BIND(IRI(CONCAT(STR(?fact), "-", ?vk)) AS ?item)
+    BIND(COALESCE(?gallery, false) AS ?isSpecimen)
+    BIND(IF(?isSpecimen, ?none, IRI(CONCAT(STR(?item), "-term"))) AS ?term)
+    BIND(IF(?isSpecimen, ?none, IRI(CONCAT(STR(?item), "-term-text"))) AS ?termText)
+    # A specimen is a c:Link to the resource itself; the navigation layer resolves where it is shown.
+    BIND(IF(?isSpecimen, IRI(CONCAT(STR(?item), "-link")), ?none) AS ?link)
+    BIND(IF(?isSpecimen, ?v, ?none) AS ?spec)
+    OPTIONAL { FILTER(?isSpecimen) ?v c:label ?specLabel }
+    BIND(IF(BOUND(?noteWords), IRI(CONCAT(STR(?item), "-note")), ?none) AS ?note)
+    BIND(IF(BOUND(?noteWords), IRI(CONCAT(STR(?item), "-note-text")), ?none) AS ?noteText)
+    BIND(IF(BOUND(?constraintWords), IRI(CONCAT(STR(?item), "-c-", SUBSTR(MD5(?constraintWords), 1, 8))), ?none) AS ?constraint)
+    BIND(IF(BOUND(?constraintWords), IRI(CONCAT(STR(?constraint), "-text")), ?none) AS ?constraintText)
+    BIND(REPLACE(STR(?v), "[^#/]*$", "") AS ?vns)
+    BIND(REPLACE(STR(?v), "^.*[#/]", "") AS ?vlocal)
+    OPTIONAL { { SELECT ?vns (MIN(?vp0) AS ?vpfx) WHERE { ?vd sh:prefix ?vp0 ; sh:namespace ?vn0 BIND(STR(?vn0) AS ?vns) } GROUP BY ?vns } }
+    BIND(IF(isIRI(?v), IF(BOUND(?vpfx) && REGEX(?vlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?vpfx, ":", ?vlocal), CONCAT("<", STR(?v), ">")), STR(?v)) AS ?vName)
+    BIND(?vName AS ?itemKey)
+    BIND(isIRI(?v) && ?selectable && EXISTS { ?ontology a owl:Ontology FILTER(STRSTARTS(STR(?v), CONCAT(STR(?ontology), "#"))) } AS ?isLink)
+    BIND(IF(?isLink, rdfhtml:Button, IF(isIRI(?v), rdfhtml:Code, rdfhtml:Span)) AS ?termElement)
+    BIND(IF(isIRI(?v), "sem-term", "sem-value") AS ?termClass)
+    BIND(IF(?isLink, "button", ?none) AS ?buttonType)
+    BIND(IF(isIRI(?v), STR(?v), ?none) AS ?termTitle)
+    BIND(IF(?isLink, ?v, ?none) AS ?selectsTerm)
+  } }
+}""" .
+
+# A click on a linked term selects it, as a click in the tree does.
+c:SelectOverviewTerm a beh:Reaction ;
+    rdfs:label "Select a term"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:TermOverview ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?term . $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?term } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?term . $this c:controls ?target ; c:property ?p }""" ;
+    sem:function "segmented:select" .
+
+# --- one term: how it is aligned with other vocabularies ------------------------------------------
+
+c:TermAlignment a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """How one term (c:bindProperty of c:bindFrom) is aligned with other vocabularies: each link from it
+through a relation that has a sem:alignmentStrength (owl:equivalentClass, rdfs:subClassOf,
+skos:closeMatch...) to a term outside the store's own ontologies, as a table of the relation, the
+other term (a prefixed name) and the link's strength, strongest first."""@en ;
+    sem:slug "term-alignment" .
+c:AlignmentRelationPhrase a c:Phrase ; rdfs:label "Relation"@en , "Звʼязок"@uk , "Beziehung"@de , "العلاقة"@ar .
+c:AlignmentTermPhrase a c:Phrase ; rdfs:label "Term"@en , "Термін"@uk , "Begriff"@de , "المصطلح"@ar .
+c:AlignmentStrengthPhrase a c:Phrase ; rdfs:label "Strength"@en , "Сила"@uk , "Stärke"@de , "القوة"@ar .
+c:NoAlignmentPhrase a c:Phrase ;
+    rdfs:label "No links to other vocabularies."@en , "Немає звʼязків з іншими словниками."@uk ,
+               "Keine Verknüpfungen mit anderen Vokabularen."@de , "لا توجد روابط بمفردات أخرى."@ar .
+
+c:TermAlignmentRendering a sem:Rendering ; sem:targets c:TermAlignment ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:bindFrom .
+c:TermAlignmentRendering-fn a sem:Rule ; sem:implements c:TermAlignmentRendering ; sem:function "reference:alignment" .
+c:TermAlignmentRendering-sparql a sem:Rule ;
+    sem:implements c:TermAlignmentRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?empty , ?table .
+  ?empty a rdfhtml:P ; rdfhtml:class "sem-empty" ; rdfhtml:hasChild ?emptyText .
+  ?emptyText a rdfhtml:Text ; rdfhtml:data ?emptyWords .
+  ?table a rdfhtml:Table ; rdfhtml:hasChild ?thead , ?tbody .
+  ?thead a rdfhtml:Thead ; rdfhtml:hasChild ?headRow ; ord:immediatelyPrecedes ?tbody .
+  ?headRow a rdfhtml:Tr ; rdfhtml:hasChild ?thRelation , ?thTerm , ?thStrength .
+  ?thRelation a rdfhtml:Th ; rdfhtml:attribute ?thRelationScope ; rdfhtml:hasChild ?thRelationText ; ord:immediatelyPrecedes ?thTerm .
+  ?thTerm a rdfhtml:Th ; rdfhtml:attribute ?thTermScope ; rdfhtml:hasChild ?thTermText ; ord:immediatelyPrecedes ?thStrength .
+  ?thStrength a rdfhtml:Th ; rdfhtml:attribute ?thStrengthScope ; rdfhtml:hasChild ?thStrengthText .
+  ?thRelationScope a rdfhtml:Attribute ; rdfhtml:attributeName "scope" ; rdfhtml:attributeValue "col" .
+  ?thTermScope a rdfhtml:Attribute ; rdfhtml:attributeName "scope" ; rdfhtml:attributeValue "col" .
+  ?thStrengthScope a rdfhtml:Attribute ; rdfhtml:attributeName "scope" ; rdfhtml:attributeValue "col" .
+  ?thRelationText a rdfhtml:Text ; rdfhtml:data ?relationWord .
+  ?thTermText a rdfhtml:Text ; rdfhtml:data ?termWord .
+  ?thStrengthText a rdfhtml:Text ; rdfhtml:data ?strengthWord .
+  ?tbody a rdfhtml:Tbody ; rdfhtml:hasChild ?tr .
+  ?tr a rdfhtml:Tr ; sem:orderKey ?rowKey ; rdfhtml:hasChild ?relCell , ?termCell , ?strengthCell .
+  ?relCell a rdfhtml:Td ; rdfhtml:hasChild ?relCode ; ord:immediatelyPrecedes ?termCell .
+  ?relCode a rdfhtml:Code ; rdfhtml:hasChild ?relText .
+  ?relText a rdfhtml:Text ; rdfhtml:data ?relName .
+  ?termCell a rdfhtml:Td ; rdfhtml:hasChild ?termCode ; ord:immediatelyPrecedes ?strengthCell .
+  ?termCode a rdfhtml:Code ; rdfhtml:title ?targetIri ; rdfhtml:hasChild ?termText .
+  ?termText a rdfhtml:Text ; rdfhtml:data ?targetName .
+  ?strengthCell a rdfhtml:Td ; rdfhtml:hasChild ?strengthSpan .
+  ?strengthSpan a rdfhtml:Span ; rdfhtml:class "sem-strength" ; rdfhtml:attribute ?strengthAttr ; rdfhtml:hasChild ?strengthText .
+  ?strengthAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-strength" ; rdfhtml:attributeValue ?strengthSlug .
+  ?strengthText a rdfhtml:Text ; rdfhtml:data ?strengthName .
+}
+WHERE {
+  $this a c:TermAlignment .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL { $this c:bindFrom ?from ; c:bindProperty ?bp . ?from ?bp ?t FILTER(isIRI(?t)) }
+  BIND(BOUND(?t) && EXISTS {
+    ?t ?anyRel ?anyTarget . ?anyRel sem:alignmentStrength ?anyStrength FILTER(isIRI(?anyTarget))
+    FILTER NOT EXISTS { ?anyOntology a owl:Ontology FILTER(STRSTARTS(STR(?anyTarget), CONCAT(STR(?anyOntology), "#"))) }
+  } AS ?linked)
+  LATERAL { {
+    FILTER(!?linked)
+    BIND(IRI(CONCAT(STR($this), "/~empty")) AS ?empty)
+    BIND(IRI(CONCAT(STR($this), "/~empty-text")) AS ?emptyText)
+    OPTIONAL { ?e0At l10n:of $this ; l10n:emptyText ?e0 }
+  OPTIONAL { $this c:emptyText ?e0 FILTER(lang(?e0) = "") }
+    OPTIONAL { $this c:emptyText ?e1 FILTER(langMatches(lang(?e1), "en")) }
+    OPTIONAL { ?e2At l10n:of c:NoTermPhrase ; l10n:name ?e2 }
+  OPTIONAL { ?e2At l10n:of c:NoTermPhrase ; l10n:name ?e2 }
+  OPTIONAL { c:NoTermPhrase rdfs:label ?e2 FILTER(lang(?e2) = "") }
+    OPTIONAL { c:NoTermPhrase rdfs:label ?e3 FILTER(langMatches(lang(?e3), "en")) }
+    OPTIONAL { ?e4At l10n:of c:NoAlignmentPhrase ; l10n:name ?e4 }
+  OPTIONAL { ?e4At l10n:of c:NoAlignmentPhrase ; l10n:name ?e4 }
+  OPTIONAL { c:NoAlignmentPhrase rdfs:label ?e4 FILTER(lang(?e4) = "") }
+    OPTIONAL { c:NoAlignmentPhrase rdfs:label ?e5 FILTER(langMatches(lang(?e5), "en")) }
+    BIND(STR(IF(BOUND(?t), COALESCE(?e4, ?e5, "No links to other vocabularies."), COALESCE(?e0, ?e1, ?e2, ?e3, "Pick a term."))) AS ?emptyWords)
+  } UNION {
+    FILTER(?linked)
+    BIND(IRI(CONCAT(STR($this), "/~table")) AS ?table)
+    BIND(IRI(CONCAT(STR($this), "/~thead")) AS ?thead)
+    BIND(IRI(CONCAT(STR($this), "/~tbody")) AS ?tbody)
+    BIND(IRI(CONCAT(STR($this), "/~head-row")) AS ?headRow)
+    BIND(IRI(CONCAT(STR($this), "/~th-relation")) AS ?thRelation)
+    BIND(IRI(CONCAT(STR($this), "/~th-term")) AS ?thTerm)
+    BIND(IRI(CONCAT(STR($this), "/~th-strength")) AS ?thStrength)
+    BIND(IRI(CONCAT(STR(?thRelation), "-scope")) AS ?thRelationScope)
+    BIND(IRI(CONCAT(STR(?thTerm), "-scope")) AS ?thTermScope)
+    BIND(IRI(CONCAT(STR(?thStrength), "-scope")) AS ?thStrengthScope)
+    BIND(IRI(CONCAT(STR(?thRelation), "-text")) AS ?thRelationText)
+    BIND(IRI(CONCAT(STR(?thTerm), "-text")) AS ?thTermText)
+    BIND(IRI(CONCAT(STR(?thStrength), "-text")) AS ?thStrengthText)
+    OPTIONAL { ?r0At l10n:of c:AlignmentRelationPhrase ; l10n:name ?r0 }
+  OPTIONAL { ?r0At l10n:of c:AlignmentRelationPhrase ; l10n:name ?r0 }
+  OPTIONAL { c:AlignmentRelationPhrase rdfs:label ?r0 FILTER(lang(?r0) = "") }
+    OPTIONAL { c:AlignmentRelationPhrase rdfs:label ?r1 FILTER(langMatches(lang(?r1), "en")) }
+    OPTIONAL { ?m0At l10n:of c:AlignmentTermPhrase ; l10n:name ?m0 }
+  OPTIONAL { ?m0At l10n:of c:AlignmentTermPhrase ; l10n:name ?m0 }
+  OPTIONAL { c:AlignmentTermPhrase rdfs:label ?m0 FILTER(lang(?m0) = "") }
+    OPTIONAL { c:AlignmentTermPhrase rdfs:label ?m1 FILTER(langMatches(lang(?m1), "en")) }
+    OPTIONAL { ?g0At l10n:of c:AlignmentStrengthPhrase ; l10n:name ?g0 }
+  OPTIONAL { ?g0At l10n:of c:AlignmentStrengthPhrase ; l10n:name ?g0 }
+  OPTIONAL { c:AlignmentStrengthPhrase rdfs:label ?g0 FILTER(lang(?g0) = "") }
+    OPTIONAL { c:AlignmentStrengthPhrase rdfs:label ?g1 FILTER(langMatches(lang(?g1), "en")) }
+    BIND(STR(COALESCE(?r0, ?r1, "Relation")) AS ?relationWord)
+    BIND(STR(COALESCE(?m0, ?m1, "Term")) AS ?termWord)
+    BIND(STR(COALESCE(?g0, ?g1, "Strength")) AS ?strengthWord)
+  } UNION {
+    FILTER(?linked)
+    BIND(IRI(CONCAT(STR($this), "/~tbody")) AS ?tbody)
+    ?t ?rel ?target . ?rel sem:alignmentStrength ?strength FILTER(isIRI(?target))
+    FILTER NOT EXISTS { ?ontology a owl:Ontology FILTER(STRSTARTS(STR(?target), CONCAT(STR(?ontology), "#"))) }
+    BIND(SUBSTR(MD5(CONCAT(STR(?rel), " ", STR(?target))), 1, 8) AS ?rk)
+    BIND(IRI(CONCAT(STR($this), "/~r-", ?rk)) AS ?tr)
+    BIND(IRI(CONCAT(STR(?tr), "-rel")) AS ?relCell)
+    BIND(IRI(CONCAT(STR(?tr), "-rel-code")) AS ?relCode)
+    BIND(IRI(CONCAT(STR(?tr), "-rel-text")) AS ?relText)
+    BIND(IRI(CONCAT(STR(?tr), "-term")) AS ?termCell)
+    BIND(IRI(CONCAT(STR(?tr), "-term-code")) AS ?termCode)
+    BIND(IRI(CONCAT(STR(?tr), "-term-text")) AS ?termText)
+    BIND(IRI(CONCAT(STR(?tr), "-cell")) AS ?strengthCell)
+    BIND(IRI(CONCAT(STR(?tr), "-strength")) AS ?strengthSpan)
+    BIND(IRI(CONCAT(STR(?tr), "-strength-data-sem-strength")) AS ?strengthAttr)
+    BIND(IRI(CONCAT(STR(?tr), "-strength-text")) AS ?strengthText)
+    BIND(STR(?target) AS ?targetIri)
+    BIND(REPLACE(STR(?rel), "[^#/]*$", "") AS ?rns)
+    BIND(REPLACE(STR(?rel), "^.*[#/]", "") AS ?rlocal)
+    OPTIONAL { { SELECT ?rns (MIN(?rp0) AS ?rpfx) WHERE { ?rd sh:prefix ?rp0 ; sh:namespace ?rn0 BIND(STR(?rn0) AS ?rns) } GROUP BY ?rns } }
+    BIND(IF(BOUND(?rpfx) && REGEX(?rlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?rpfx, ":", ?rlocal), CONCAT("<", STR(?rel), ">")) AS ?relName)
+    BIND(REPLACE(STR(?target), "[^#/]*$", "") AS ?xns)
+    BIND(REPLACE(STR(?target), "^.*[#/]", "") AS ?xlocal)
+    OPTIONAL { { SELECT ?xns (MIN(?xp0) AS ?xpfx) WHERE { ?xd sh:prefix ?xp0 ; sh:namespace ?xn0 BIND(STR(?xn0) AS ?xns) } GROUP BY ?xns } }
+    BIND(IF(BOUND(?xpfx) && REGEX(?xlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?xpfx, ":", ?xlocal), CONCAT("<", STR(?target), ">")) AS ?targetName)
+    OPTIONAL { ?strength sem:order ?strengthOrder }
+    OPTIONAL { ?strength sem:slug ?slug0 }
+    OPTIONAL { ?sn0At l10n:of ?strength ; l10n:name ?sn0 }
+  OPTIONAL { ?strength rdfs:label ?sn0 FILTER(lang(?sn0) = "") }
+    OPTIONAL { ?strength rdfs:label ?sn1 FILTER(langMatches(lang(?sn1), "en")) }
+    BIND(STR(COALESCE(?slug0, "")) AS ?strengthSlug)
+    BIND(STR(COALESCE(?sn0, ?sn1, "")) AS ?strengthName)
+    BIND(CONCAT(STR(COALESCE(?strengthOrder, "")), " ", ?relName, " ", ?targetName) AS ?rowKey)
+  } }
+}""" .
+
+# --- what a group holds, as cards ------------------------------------------------------------------
+# Selecting a branch (a component group, a layer, a vocabulary) shows everything in it: a section
+# per role (components, mixins, other classes, properties, renderings), each a grid of cards. The
+# view mints one c:TermCard per term; each card is its own focus, rendered once per term, so a
+# group's cards cost their own evaluation only the first time the group is shown.
+
+c:TermMembers a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Everything a branch of a c:TermTree (c:membersOf) holds, when the term c:bindProperty of
+c:bindFrom holds is one: a section per role (c:TermRole, by sem:order) with a grid of c:TermCard,
+one per term, by local name. Empty for a term that is no branch. With c:controls and c:property,
+a card's name selects its term there."""@en ;
+    sem:slug "term-members" .
+c:membersOf a owl:ObjectProperty ; rdfs:domain c:TermMembers ; rdfs:range c:TermTree ;
+    rdfs:comment "The tree whose sections say what a branch holds."@en .
+c:TermCard a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Internal: one term's card, minted by a c:TermMembers (c:of the term, c:role its role). Its name
+(selecting it), its slug, the first sentence of its comment, its superclasses, super-properties
+and range as tags (mixins marked), how many properties, renderings, rules (SPARQL, function) and
+reactions it has, and links to the gallery specimens that show it (c:Link c:to)."""@en ;
+    sem:slug "term-card" ;
+    # Its parts, one below the other: the header, the summary, the tags, the counts and the
+    # specimens. The members view mints its cards taking rows (pos:rows pos:RowSubgrid, and the
+    # span for these parts), so cards side by side share their rows: every card's summary starts on
+    # one line, its tags on the next.
+    pos:rowParts 5 .
+c:role a owl:ObjectProperty ; rdfs:domain c:TermCard ; rdfs:range c:TermRole .
+
+c:TermRole a owl:Class ;
+    rdfs:comment """A term's role in its group: a component (a sem:Component subclass), a mixin (a class components
+specialize that is not one itself, e.g. c:Draggable), another class, a property, a rendering, or
+anything else. rdfs:label names its section; sem:order places it."""@en .
+c:ComponentRole a c:TermRole ; sem:order 1 ; sem:slug "component" ;
+    rdfs:label "Components"@en , "Компоненти"@uk , "Komponenten"@de , "المكونات"@ar .
+c:MixinRole a c:TermRole ; sem:order 2 ; sem:slug "mixin" ;
+    rdfs:label "Mixins"@en , "Домішки"@uk , "Mixins"@de , "المزيجات"@ar .
+c:ClassRole a c:TermRole ; sem:order 3 ; sem:slug "class" ;
+    rdfs:label "Other classes"@en , "Інші класи"@uk , "Weitere Klassen"@de , "أصناف أخرى"@ar .
+c:PropertyRole a c:TermRole ; sem:order 4 ; sem:slug "property" ;
+    rdfs:label "Properties"@en , "Властивості"@uk , "Eigenschaften"@de , "الخصائص"@ar .
+c:RenderingRole a c:TermRole ; sem:order 5 ; sem:slug "rendering" ;
+    rdfs:label "Renderings"@en , "Відображення"@uk , "Darstellungen"@de , "العروض"@ar .
+c:OtherRole a c:TermRole ; sem:order 6 ; sem:slug "other" ;
+    rdfs:label "Other terms"@en , "Інші терміни"@uk , "Weitere Begriffe"@de , "مصطلحات أخرى"@ar .
+
+c:PropertyCountOnePhrase a c:Phrase ; rdfs:label "1 property"@en , "1 властивість"@uk , "1 Eigenschaft"@de , "خاصية واحدة"@ar .
+c:PropertiesCountPhrase a c:Phrase ; rdfs:label "{n} properties"@en , "властивостей: {n}"@uk , "{n} Eigenschaften"@de , "الخصائص: {n}"@ar .
+c:RenderingCountOnePhrase a c:Phrase ; rdfs:label "1 rendering"@en , "1 відображення"@uk , "1 Darstellung"@de , "عرض واحد"@ar .
+c:RenderingsCountPhrase a c:Phrase ; rdfs:label "{n} renderings"@en , "відображень: {n}"@uk , "{n} Darstellungen"@de , "العروض: {n}"@ar .
+c:SparqlRuleCountOnePhrase a c:Phrase ; rdfs:label "1 SPARQL rule"@en , "1 правило SPARQL"@uk , "1 SPARQL-Regel"@de , "قاعدة SPARQL واحدة"@ar .
+c:SparqlRulesCountPhrase a c:Phrase ; rdfs:label "{n} SPARQL rules"@en , "правил SPARQL: {n}"@uk , "{n} SPARQL-Regeln"@de , "قواعد SPARQL: {n}"@ar .
+c:FunctionRuleCountOnePhrase a c:Phrase ; rdfs:label "1 function rule"@en , "1 правило-функція"@uk , "1 Funktionsregel"@de , "قاعدة دالة واحدة"@ar .
+c:FunctionRulesCountPhrase a c:Phrase ; rdfs:label "{n} function rules"@en , "правил-функцій: {n}"@uk , "{n} Funktionsregeln"@de , "قواعد الدوال: {n}"@ar .
+c:ReactionCountOnePhrase a c:Phrase ; rdfs:label "1 reaction"@en , "1 реакція"@uk , "1 Reaktion"@de , "تفاعل واحد"@ar .
+c:ReactionsCountPhrase a c:Phrase ; rdfs:label "{n} reactions"@en , "реакцій: {n}"@uk , "{n} Reaktionen"@de , "التفاعلات: {n}"@ar .
+
+c:TermMembersRendering a sem:Rendering ; sem:targets c:TermMembers ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:bindFrom .
+c:TermMembersRendering-fn a sem:Rule ; sem:implements c:TermMembersRendering ; sem:function "reference:members" .
+c:TermMembersRendering-sparql a sem:Rule ;
+    sem:implements c:TermMembersRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?section .
+  ?section a rdfhtml:Section ; rdfhtml:class "sem-role" ; sem:orderKey ?roleOrder ; rdfhtml:attribute ?sectionRole ; rdfhtml:hasChild ?title , ?grid .
+  ?sectionRole a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-role" ; rdfhtml:attributeValue ?roleSlug .
+  ?title a rdfhtml:H3 ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?grid .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?roleName .
+  ?grid a rdfhtml:Div ; rdfhtml:class "sem-cards" ; rdfhtml:hasChild ?card .
+  ?card a c:TermCard ; c:of ?t ; c:role ?role ; c:controls ?target ; c:property ?property ; sem:orderKey ?tlocal ; pos:rows pos:RowSubgrid ; pos:rowSpan ?cardSpan .
+}
+WHERE {
+  $this a c:TermMembers .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # A card's span of the rows it shares with its neighbours: its class's parts.
+  OPTIONAL { c:TermCard pos:rowParts ?cardParts . ?cardSpan a pos:RowSpan ; pos:count ?cardCount FILTER(?cardCount = ?cardParts) }
+  OPTIONAL {
+    $this c:bindFrom ?from ; c:bindProperty ?bp ; c:membersOf ?tree . ?from ?bp ?s FILTER(isIRI(?s))
+    ?tree c:sections/rdf:rest*/rdf:first ?branchSection . ?branchSection c:branchClass ?cls . ?s a ?cls .
+    OPTIONAL { ?branchSection c:membersVia ?mp }
+    OPTIONAL { ?branchSection c:exceptProperty ?xp }
+    # The terms the branch holds: the same test as c:TermBranch's.
+    LATERAL {
+      SELECT DISTINCT ?s ?mp ?xp ?t WHERE {
+        { ?t ?termVia ?s FILTER(BOUND(?mp) && sameTerm(?termVia, ?mp) && isIRI(?t)) }
+        UNION
+        { FILTER(!BOUND(?mp))
+          VALUES ?listedKind { c:ClassKind c:PropertyKind } ?listedKind c:kindOf ?listedType . ?t a ?listedType
+          FILTER(isIRI(?t) && STRSTARTS(STR(?t), CONCAT(STR(?s), "#")))
+          FILTER(!BOUND(?xp) || NOT EXISTS { ?t ?xp ?anything }) }
+      }
+    }
+    LATERAL { OPTIONAL { SELECT ?t ?kind WHERE { ?t a ?kindType . ?kind c:kindOf ?kindType ; sem:order ?kindOrder } ORDER BY ?kindOrder ?kind LIMIT 1 } }
+    BIND(COALESCE(?kind, c:IndividualKind) AS ?k)
+    BIND(IF(EXISTS { ?t rdfs:subClassOf+ sem:Component }, c:ComponentRole,
+         IF(sameTerm(?k, c:ClassKind),
+            IF(!sameTerm(?t, sem:Component) && EXISTS { ?specialization rdfs:subClassOf+ ?t . ?specialization rdfs:subClassOf+ sem:Component }, c:MixinRole, c:ClassRole),
+         IF(sameTerm(?k, c:PropertyKind), c:PropertyRole,
+         IF(sameTerm(?k, c:RenderingKind), c:RenderingRole, c:OtherRole)))) AS ?role)
+    OPTIONAL { ?role sem:slug ?roleSlug0 }
+    OPTIONAL { ?role sem:order ?roleOrder0 }
+    OPTIONAL { ?rn0At l10n:of ?role ; l10n:name ?rn0 }
+  OPTIONAL { ?role rdfs:label ?rn0 FILTER(lang(?rn0) = "") }
+    OPTIONAL { ?role rdfs:label ?rn1 FILTER(langMatches(lang(?rn1), "en")) }
+    BIND(STR(COALESCE(?roleSlug0, "")) AS ?roleSlug)
+    BIND(STR(COALESCE(?roleOrder0, "")) AS ?roleOrder)
+    BIND(STR(COALESCE(?rn0, ?rn1, ?roleSlug)) AS ?roleName)
+    OPTIONAL { $this c:controls ?target ; c:property ?property FILTER(isIRI(?target) && isIRI(?property)) }
+    BIND(REPLACE(STR(?t), "^.*[#/]", "") AS ?tlocal)
+    BIND(IRI(CONCAT(STR($this), "/~r-", ?roleSlug)) AS ?section)
+    BIND(IRI(CONCAT(STR(?section), "-data-sem-role")) AS ?sectionRole)
+    BIND(IRI(CONCAT(STR(?section), "-title")) AS ?title)
+    BIND(IRI(CONCAT(STR(?section), "-title-text")) AS ?titleText)
+    BIND(IRI(CONCAT(STR(?section), "-cards")) AS ?grid)
+    BIND(IRI(CONCAT(STR($this), "/~card-", SUBSTR(MD5(STR(?t)), 1, 8))) AS ?card)
+  }
+}""" .
+
+c:TermCardRendering a sem:Rendering ; sem:targets c:TermCard ; sem:modality mod:Screen ; sem:stratum 0 .
+c:TermCardRendering-fn a sem:Rule ; sem:implements c:TermCardRendering ; sem:function "reference:card" .
+c:TermCardRendering-sparql a sem:Rule ;
+    sem:implements c:TermCardRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Article ; sem:renders $this ; rdfhtml:hasChild ?head , ?summary , ?tags , ?counts , ?shown ; rdfhtml:attribute ?roleAttr .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-role" ; rdfhtml:attributeValue ?roleSlug .
+  ?head a rdfhtml:Header ; sem:orderKey "1" ; rdfhtml:hasChild ?title , ?slugEl .
+  ?title a ?titleElement ; rdfhtml:type ?buttonType ; rdfhtml:class "sem-card-title" ; rdfhtml:title ?tIri ; c:selects ?selects ;
+         rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?slugEl .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?tName .
+  ?slugEl a rdfhtml:Code ; rdfhtml:class "sem-slug" ; rdfhtml:hasChild ?slugText .
+  ?slugText a rdfhtml:Text ; rdfhtml:data ?slug .
+  ?summary a rdfhtml:P ; rdfhtml:class "sem-summary" ; sem:orderKey "2" ; rdfhtml:hasChild ?summaryText .
+  ?summaryText a rdfhtml:Text ; rdfhtml:data ?summaryWords .
+  ?tags a rdfhtml:Div ; rdfhtml:class "sem-tags" ; sem:orderKey "3" ; rdfhtml:hasChild ?tag .
+  ?tag a rdfhtml:Span ; rdfhtml:class "sem-tag" ; sem:orderKey ?tagWords ; rdfhtml:hasChild ?tagText ; rdfhtml:attribute ?mixinAttr .
+  ?tagText a rdfhtml:Text ; rdfhtml:data ?tagWords .
+  ?mixinAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-mixin" ; rdfhtml:attributeValue "true" .
+  ?counts a rdfhtml:Div ; rdfhtml:class "sem-counts" ; sem:orderKey "4" ; rdfhtml:hasChild ?stat .
+  ?stat a rdfhtml:Span ; rdfhtml:class "sem-stat" ; sem:orderKey ?statOrder ; rdfhtml:hasChild ?statText .
+  ?statText a rdfhtml:Text ; rdfhtml:data ?statWords .
+  ?shown a rdfhtml:Div ; rdfhtml:class "sem-shown" ; sem:orderKey "5" ; rdfhtml:hasChild ?link .
+  ?link a c:Link ; c:to ?spec ; c:label ?specLabel ; sem:orderKey ?specName .
+}
+WHERE {
+  $this a c:TermCard ; c:of ?t FILTER(isIRI(?t))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(EXISTS { $this c:controls ?st ; c:property ?sp FILTER(isIRI(?st) && isIRI(?sp)) } AS ?selectable)
+  LATERAL { {
+    # The name (a button that selects the term) and the slug; the role on the card.
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+    BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+    BIND(IF(?selectable, rdfhtml:Button, rdfhtml:Span) AS ?titleElement)
+    BIND(IF(?selectable, "button", ?none) AS ?buttonType)
+    BIND(IF(?selectable, ?t, ?none) AS ?selects)
+    BIND(STR(?t) AS ?tIri)
+    BIND(REPLACE(STR(?t), "[^#/]*$", "") AS ?tns)
+    BIND(REPLACE(STR(?t), "^.*[#/]", "") AS ?tlocal)
+    OPTIONAL { { SELECT ?tns (MIN(?tp0) AS ?tpfx) WHERE { ?td sh:prefix ?tp0 ; sh:namespace ?tn0 BIND(STR(?tn0) AS ?tns) } GROUP BY ?tns } }
+    BIND(IF(BOUND(?tpfx) && REGEX(?tlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?tpfx, ":", ?tlocal), CONCAT("<", STR(?t), ">")) AS ?tName)
+    OPTIONAL { ?t sem:slug ?slug0 }
+    BIND(STR(?slug0) AS ?slug)
+    BIND(IF(BOUND(?slug0), IRI(CONCAT(STR($this), "/~slug")), ?none) AS ?slugEl)
+    BIND(IF(BOUND(?slug0), IRI(CONCAT(STR($this), "/~slug-text")), ?none) AS ?slugText)
+    OPTIONAL { $this c:role ?role . ?role sem:slug ?roleSlug0 }
+    BIND(STR(?roleSlug0) AS ?roleSlug)
+    BIND(IF(BOUND(?role), IRI(CONCAT(STR(?root), "-data-sem-role")), ?none) AS ?roleAttr)
+  } UNION {
+    # The first sentence of the comment, on one line.
+    OPTIONAL { ?t rdfs:comment ?c0 FILTER(lang(?c0) = "") }
+    OPTIONAL { ?t rdfs:comment ?c1 FILTER(langMatches(lang(?c1), "en")) }
+    BIND(COALESCE(?c0, ?c1) AS ?comment)
+    FILTER(BOUND(?comment))
+    BIND(IRI(CONCAT(STR($this), "/~summary")) AS ?summary)
+    BIND(IRI(CONCAT(STR($this), "/~summary-text")) AS ?summaryText)
+    BIND(REPLACE(REPLACE(STR(?comment), "[ \\t\\r\\n]+", " "), "^(.*?[.!?]) .*$", "$1") AS ?summaryWords)
+  } UNION {
+    # Tags: superclasses but sem:Component (our classes that are no component marked: mixins), super-properties, the range.
+    { ?t rdfs:subClassOf ?x FILTER(isIRI(?x) && !sameTerm(?x, sem:Component)) BIND("" AS ?arrow)
+      BIND(NOT EXISTS { ?x rdfs:subClassOf+ sem:Component }
+           && EXISTS { ?xOntology a owl:Ontology FILTER(STRSTARTS(STR(?x), CONCAT(STR(?xOntology), "#"))) } AS ?mixin) }
+    UNION { ?t rdfs:subPropertyOf ?x FILTER(isIRI(?x)) BIND("" AS ?arrow) BIND(false AS ?mixin) }
+    UNION { ?t rdfs:range ?x FILTER(isIRI(?x)) BIND("→ " AS ?arrow) BIND(false AS ?mixin) }
+    BIND(IRI(CONCAT(STR($this), "/~tags")) AS ?tags)
+    BIND(IRI(CONCAT(STR($this), "/~tag-", SUBSTR(MD5(STR(?x)), 1, 8))) AS ?tag)
+    BIND(IRI(CONCAT(STR(?tag), "-text")) AS ?tagText)
+    BIND(IF(?mixin, IRI(CONCAT(STR(?tag), "-data-sem-mixin")), ?none) AS ?mixinAttr)
+    BIND(REPLACE(STR(?x), "[^#/]*$", "") AS ?xns)
+    BIND(REPLACE(STR(?x), "^.*[#/]", "") AS ?xlocal)
+    OPTIONAL { { SELECT ?xns (MIN(?xp0) AS ?xpfx) WHERE { ?xd sh:prefix ?xp0 ; sh:namespace ?xn0 BIND(STR(?xn0) AS ?xns) } GROUP BY ?xns } }
+    BIND(CONCAT(?arrow, IF(BOUND(?xpfx) && REGEX(?xlocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?xpfx, ":", ?xlocal), CONCAT("<", STR(?x), ">"))) AS ?tagWords)
+  } UNION {
+    # How many properties, renderings, rules (SPARQL, function) and reactions it has.
+    VALUES (?statKey ?statOrder ?onePhrase ?oneFallback ?manyPhrase ?manyFallback) {
+      ("properties" "1" c:PropertyCountOnePhrase "1 property" c:PropertiesCountPhrase "{n} properties")
+      ("renderings" "2" c:RenderingCountOnePhrase "1 rendering" c:RenderingsCountPhrase "{n} renderings")
+      ("sparql" "3" c:SparqlRuleCountOnePhrase "1 SPARQL rule" c:SparqlRulesCountPhrase "{n} SPARQL rules")
+      ("functions" "4" c:FunctionRuleCountOnePhrase "1 function rule" c:FunctionRulesCountPhrase "{n} function rules")
+      ("reactions" "5" c:ReactionCountOnePhrase "1 reaction" c:ReactionsCountPhrase "{n} reactions")
+    }
+    LATERAL {
+      SELECT ?t ?statKey (COUNT(DISTINCT ?counted) AS ?n) WHERE {
+        { FILTER(?statKey = "properties") ?counted rdfs:domain ?t }
+        UNION { FILTER(?statKey = "renderings") ?counted sem:targets ?t }
+        UNION { FILTER(?statKey = "sparql") ?counted sem:implements/sem:targets ?t ; sem:construct ?body }
+        UNION { FILTER(?statKey = "functions") ?counted sem:implements/sem:targets ?t ; sem:function ?name }
+        UNION { FILTER(?statKey = "reactions") ?counted beh:sourceClass ?t }
+      } GROUP BY ?t ?statKey
+    }
+    FILTER(?n > 0)
+    BIND(IF(?n = 1, ?onePhrase, ?manyPhrase) AS ?phrase)
+    OPTIONAL { ?p0At l10n:of ?phrase ; l10n:name ?p0 }
+  OPTIONAL { ?phrase rdfs:label ?p0 FILTER(lang(?p0) = "") }
+    OPTIONAL { ?phrase rdfs:label ?p1 FILTER(langMatches(lang(?p1), "en")) }
+    BIND(STR(COALESCE(?p0, ?p1, IF(?n = 1, ?oneFallback, ?manyFallback))) AS ?pattern)
+    BIND(REPLACE(?pattern, "[{]n[}]", STR(?n)) AS ?statWords)
+    BIND(IRI(CONCAT(STR($this), "/~counts")) AS ?counts)
+    BIND(IRI(CONCAT(STR($this), "/~count-", ?statKey)) AS ?stat)
+    BIND(IRI(CONCAT(STR(?stat), "-text")) AS ?statText)
+  } UNION {
+    # Links to the gallery specimens that show it (the overview's walk).
+    { SELECT DISTINCT ?t ?spec WHERE {
+        ?spec a c:Specimen ; c:children/rdf:rest*/rdf:first/((c:children|c:items|c:content|c:front|c:tabs|c:actions|c:steps|c:body)/((rdf:rest*/rdf:first)?))* ?inst
+        FILTER(isIRI(?inst))
+        FILTER(EXISTS { ?inst ?t ?shownValue } || EXISTS { ?inst a ?t }
+               || EXISTS { ?layerRendering sem:layer ?t ; sem:requires ?required . ?inst ?required ?requiredValue })
+    } }
+    BIND(IRI(CONCAT(STR($this), "/~shown")) AS ?shown)
+    BIND(IRI(CONCAT(STR($this), "/~shown-", SUBSTR(MD5(STR(?spec)), 1, 8))) AS ?link)
+    OPTIONAL { ?spec c:label ?specLabel }
+    BIND(REPLACE(STR(?spec), "[^#/]*$", "") AS ?gns)
+    BIND(REPLACE(STR(?spec), "^.*[#/]", "") AS ?glocal)
+    OPTIONAL { { SELECT ?gns (MIN(?gp0) AS ?gpfx) WHERE { ?gd sh:prefix ?gp0 ; sh:namespace ?gn0 BIND(STR(?gn0) AS ?gns) } GROUP BY ?gns } }
+    BIND(IF(BOUND(?gpfx) && REGEX(?glocal, "^[A-Za-z_][A-Za-z0-9_-]*$"), CONCAT(?gpfx, ":", ?glocal), CONCAT("<", STR(?spec), ">")) AS ?specName)
+  } }
+}""" .
+
+# A card's name selects its term, as the tree's names do.
+c:SelectCardTerm a beh:Reaction ;
+    rdfs:label "Select a term"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:TermCard ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?term . $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?term } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?term . $this c:controls ?target ; c:property ?p }""" ;
+    sem:function "segmented:select" .

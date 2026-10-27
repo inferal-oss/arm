@@ -1,0 +1,87 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Tooltip layer. Rules annotate the nodes they render with `sem:tooltip`
+# (an annotation, not markup); this layer projects the annotations:
+#   - HTML elements get data-sem-tooltip (shown by the theme on hover/focus)
+#     and aria-description, so the text is also announced;
+#   - SVG marks get an svg:Title child (the platform tooltip for SVG).
+# With the layer off, annotations stay in the graph and nothing is shown.
+
+sem:TooltipLayer a sem:Layer ;
+    rdfs:label "tooltips"@en ;
+    rdfs:comment "Shows sem:tooltip annotations on hover and to assistive technology."@en .
+
+sem:tooltip a owl:DatatypeProperty ;
+    rdfs:comment "Supplementary text about a rendered node."@en .
+
+sem:readsMinted a owl:DatatypeProperty ;
+    rdfs:comment "On a rule: it reads what other rules minted under the same focus, so their changes re-run it."@en .
+
+sem:Tooltips a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer sem:TooltipLayer ;
+    sem:stratum 30 ;
+    sem:readsMinted true .
+sem:Tooltips-fn a sem:Rule ;
+    sem:implements sem:Tooltips ;
+    sem:function "tooltips" .
+
+# Nodes minted under the focus (<focus>/~local, local without "/~"). In bulk evaluation
+# ($this unbound) the focus test is skipped: the engine groups the output by owning focus.
+sem:Tooltips-sparql a sem:Rule ;
+    sem:implements sem:Tooltips ;
+    sem:construct """
+CONSTRUCT {
+  ?html rdfhtml:attribute ?tip, ?aria .
+  ?tip a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-tooltip" ; rdfhtml:attributeValue ?text .
+  ?aria a rdfhtml:Attribute ; rdfhtml:attributeName "aria-description" ; rdfhtml:attributeValue ?text .
+  ?mark rdfhtml:hasChild ?title .
+  ?title a svg:Title ; rdfhtml:hasChild ?titleText .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?text .
+}
+WHERE {
+  ?node sem:tooltip ?value .
+  FILTER(isIRI(?node) && CONTAINS(STR(?node), "/~"))
+  FILTER(COALESCE(STRSTARTS(STR(?node), CONCAT(STR($this), "/~")) && !CONTAINS(STRAFTER(STR(?node), CONCAT(STR($this), "/~")), "/~"), true))
+  BIND(STR(?value) AS ?text)
+  BIND(IRI(CONCAT(STR(?node), "-tip")) AS ?tipNode)
+  BIND(EXISTS { ?node a ?svgType FILTER(STRSTARTS(STR(?svgType), "https://semblance.dev/ns/svg#")) } AS ?svg)
+  BIND(IF(?svg, ?none, ?node) AS ?html)
+  BIND(IF(?svg, ?none, ?tipNode) AS ?tip)
+  BIND(IF(?svg, ?none, IRI(CONCAT(STR(?node), "-tip-aria"))) AS ?aria)
+  # Only leaf marks get a title (ignoring the title this layer itself adds).
+  BIND(IF(?svg && NOT EXISTS { ?node rdfhtml:hasChild ?child FILTER(?child != ?tipNode) }, ?node, ?none) AS ?mark)
+  BIND(IF(BOUND(?mark), ?tipNode, ?none) AS ?title)
+  BIND(IF(BOUND(?mark), IRI(CONCAT(STR(?node), "-tip-text")), ?none) AS ?titleText)
+}""" .
+
+tok:tooltip-bg a sty:Token ; sty:scale sty:Color ; sem:slug "tooltip-bg" ; sty:value "light-dark(#1c1b2e, #f2f2f7)" .
+tok:tooltip-fg a sty:Token ; sty:scale sty:Color ; sem:slug "tooltip-fg" ; sty:value "light-dark(#f2f2f7, #16161d)" .
+
+[] a sty:StyleRule ; sty:appliesTo sem:Component ; sty:part "[data-sem-tooltip]" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] .
+
+[] a sty:StyleRule ; sty:appliesTo sem:Component ; sty:part "[data-sem-tooltip]:is(:hover, :focus-visible)::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-tooltip)" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "z-index" ; sty:raw "60" ] ,
+                 [ sty:property "left" ; sty:raw "50%" ] ,
+                 [ sty:property "bottom" ; sty:raw "calc(100% + 8px)" ] ,
+                 [ sty:property "transform" ; sty:raw "translateX(-50%)" ] ,
+                 [ sty:property "width" ; sty:raw "max-content" ] ,
+                 [ sty:property "max-width" ; sty:raw "320px" ] ,
+                 [ sty:property "padding" ; sty:raw "6px 9px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "8px" ] ,
+                 [ sty:property "background" ; sty:token tok:tooltip-bg ] ,
+                 [ sty:property "color" ; sty:token tok:tooltip-fg ] ,
+                 [ sty:property "font" ; sty:raw "500 12px/1.4 var(--sem-font)" ] ,
+                 [ sty:property "white-space" ; sty:raw "pre-line" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-raised ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .

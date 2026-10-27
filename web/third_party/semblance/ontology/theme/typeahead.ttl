@@ -1,0 +1,404 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for the typeaheads (ontology/components/typeahead.ttl). Rules on c:Typeahead style
+# c:Combobox and c:TagInput alike.
+#
+# The field box (.sem-ta-field) has the text field's look - sunken, accent border and ring while
+# anything in it has the focus - and the real input inside it is bare. A tag input's pills wrap
+# inside the box, before the input. The popup is an overlay surface under the box, like a menu's;
+# the highlighted option (aria-selected) is tinted, the chosen one (data-chosen) has a check, and
+# the matched part of each label (<mark>) is in the accent's text color, not highlighter yellow.
+# Every value comes from a token, so the themes and contrast restyle it.
+
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "width" ; sty:raw "min(100%, 420px)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> label" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.005em" ] .
+
+# --- the field box -------------------------------------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "4px 6px" ] ,
+                 [ sty:property "min-height" ; sty:raw "var(--control-h, var(--sem-control-height))" ] ,
+                 [ sty:property "padding" ; sty:raw "3px 6px 3px var(--control-px, 12px)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "cursor" ; sty:raw "text" ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-motion), box-shadow var(--sem-motion), background var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field:hover:not(:has(> .sem-ta-popup:hover))" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field:focus-within" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field:has(> input[aria-invalid=true])" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:danger ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field:has(> input:disabled)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.55" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] ,
+                 [ sty:property "border-color" ; sty:token tok:border ] .
+
+# The input itself: no box of its own; it takes the rest of the line (at least a few characters).
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > input" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 6ch" ] ,
+                 [ sty:property "min-width" ; sty:raw "6ch" ] ,
+                 [ sty:property "min-height" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 8px)" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-size" ; sty:raw "var(--control-font, inherit)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > input::placeholder" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > input:disabled" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "not-allowed" ] .
+
+# The chevron of a combobox: a toggle for the pointer (the keyboard has Down and Escape).
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-chevron" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "24px" ] ,
+                 [ sty:property "height" ; sty:raw "24px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:raw "14px" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-motion), background var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-chevron:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field:has(> input[aria-expanded=true]) > .sem-ta-chevron" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(180deg)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field:has(> input:disabled) > .sem-ta-chevron" ;
+    sty:declares [ sty:property "pointer-events" ; sty:raw "none" ] .
+# A shortcut's hint (the keyboard layer's, on the field box: key:hintPart) sits before the chevron.
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-chevron" ;
+    sty:declares [ sty:property "order" ; sty:raw "2" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field[data-sem-key-hint]::after" ;
+    sty:declares [ sty:property "order" ; sty:raw "1" ] .
+
+# A tag input's pills: a list without bullets, wrapping with the input.
+[] a sty:StyleRule ; sty:appliesTo c:TagInput ; sty:part "> .sem-ta-field" ;
+    sty:declares [ sty:property "padding-inline-start" ; sty:raw "6px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TagInput ; sty:part "> .sem-ta-field > .sem-ta-pills" ;
+    sty:declares [ sty:property "display" ; sty:raw "contents" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TagInput ; sty:part "> .sem-ta-field > .sem-ta-pills > li" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TagInput ; sty:part "> .sem-ta-field > input" ;
+    sty:declares [ sty:property "padding-inline-start" ; sty:raw "4px" ] .
+
+# --- the popup -----------------------------------------------------------------------------------
+# Inside the field box, laid over what follows it: an overlay surface like a menu's.
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-popup" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "calc(100% + 5px)" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "-1px" ] ,
+                 [ sty:property "z-index" ; sty:raw "40" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "padding" ; sty:raw "5px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-overlay ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "cursor" ; sty:raw "default" ] ,
+                 [ sty:property "--tone-solid" ; sty:raw "initial" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "initial" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "initial" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-popup[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-popup > .sem-ta-list" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "max-height" ; sty:raw "min(264px, 45vh)" ] ,
+                 [ sty:property "overflow-y" ; sty:raw "auto" ] ,
+                 [ sty:property "overscroll-behavior" ; sty:raw "contain" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-popup > .sem-ta-list[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-popup > .sem-ta-status" ;
+    sty:declares [ sty:property "padding" ; sty:raw "7px 10px" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-field > .sem-ta-popup > .sem-ta-list:has(> li:not([hidden])) + .sem-ta-status" ;
+    sty:declares [ sty:property "margin-top" ; sty:raw "4px" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+
+# --- the rows ------------------------------------------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "8px" ] ,
+                 [ sty:property "min-height" ; sty:raw "32px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 10px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li:hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-gray-3)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li[aria-selected=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px color-mix(in oklab, var(--sem-accent) 35%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li > .sem-ta-label" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] .
+# A detail (another name the option is found by) follows the name, quieter.
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li > .sem-ta-detail" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li > :is(.sem-ta-label, .sem-ta-detail) > mark" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "underline" ] ,
+                 [ sty:property "text-decoration-thickness" ; sty:raw "1.5px" ] ,
+                 [ sty:property "text-underline-offset" ; sty:raw "2px" ] .
+# The chosen option of a combobox: a check at the end.
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li[data-chosen]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"✓\"" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] ,
+                 [ sty:property "color" ; sty:token tok:accent ] ,
+                 [ sty:property "font-weight" ; sty:raw "700" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li[data-chosen]" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "600" ] .
+# The "create" row: a plus, in the accent.
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > .sem-ta-create" ;
+    sty:declares [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > .sem-ta-create::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"+\"" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "18px" ] ,
+                 [ sty:property "height" ; sty:raw "18px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "999px" ] ,
+                 [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "font-weight" ; sty:raw "700" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li:not([hidden]) ~ .sem-ta-create" ;
+    sty:declares [ sty:property "margin-top" ; sty:raw "4px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "0 -1px 0 var(--sem-border)" ] ,
+                 [ sty:property "border-top-left-radius" ; sty:raw "0" ] ,
+                 [ sty:property "border-top-right-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part ".sem-ta-list > li:not([hidden]) ~ .sem-ta-create[aria-selected=true]" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "0 -1px 0 var(--sem-border), inset 0 0 0 1px color-mix(in oklab, var(--sem-accent) 35%, transparent)" ] .
+
+# --- help, the note at the maximum, the error -----------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-foot" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-1 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-foot:empty" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-foot > .sem-help" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-foot > .sem-ta-note" ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--sem-warning-11)" ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:Typeahead ; sty:part "> .sem-ta-foot > .sem-error" ;
+    sty:declares [ sty:property "color" ; sty:token tok:danger ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+
+# --- the structural themes (themes-structural.ttl) -----------------------------------------------
+# Each restyles text fields, menus and selected menu items its own way; the field box, the popup
+# and the highlighted option follow suit, with the same values (and the same guard against a
+# differently themed subtree below).
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface)" ] ,
+                 [ sty:property "border" ; sty:raw "0.5px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0.5px 1px light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.4))" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:focus-within:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "border-color" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-ring)" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--mac-glass)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "var(--mac-blur)" ] ,
+                 [ sty:property "border" ; sty:raw "0.5px solid var(--mac-hairline)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "9px" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true]:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "color" ; sty:raw "#ffffff" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true] mark:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-text)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:focus-within:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken), inset 0 0 0 2px var(--sem-accent-9)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised), var(--sem-shadow-3)" ] ,
+                 [ sty:property "padding" ; sty:raw "3px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true]:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-select-bg)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--bv-select-fg)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true] mark:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-text)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:focus-within:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised), var(--sem-shadow-3)" ] ,
+                 [ sty:property "padding" ; sty:raw "3px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true]:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-select-bg)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--bv-select-fg)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true] mark:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "2px solid var(--ink)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:focus-within:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--hl)" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--ink)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "light-dark(#fff7b0, #4a4628)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "2px 2px 18px 2px / 2px 2px 26px 2px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "4px 6px 0 light-dark(rgb(27 35 64 / 0.18), rgb(0 0 0 / 0.4))" ] ,
+                 [ sty:property "rotate" ; sty:raw "0.8deg" ] ,
+                 [ sty:property "color" ; sty:raw "light-dark(#1b2340, #fff8d6)" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true]:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "linear-gradient(100deg, transparent 1%, var(--hl-strong) 3% 94%, transparent 98%)" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true] mark:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "color" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-fill)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--fl-stroke)" ] ,
+                 [ sty:property "border-bottom-color" ; sty:raw "var(--fl-stroke-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:hover:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-fill-hover)" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field:focus-within:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-fill-input)" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--fl-stroke)" ] ,
+                 [ sty:property "border-bottom-color" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 -1px 0 var(--sem-accent-9)" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-acrylic)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "var(--fl-blur)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--fl-stroke-flyout)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "8px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-shadow-3)" ] ,
+                 [ sty:property "padding" ; sty:raw "4px" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is([data-sem-c=combobox], [data-sem-c=tag-input]) > .sem-ta-field > .sem-ta-popup > .sem-ta-list > li[aria-selected=true]:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-subtle-hover)" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 3px 0 0 var(--sem-accent-9)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] .
+
+# --- what an option does, and its keys (an option with c:help or key:hint: a command palette's) -----
+# Wherever an option is shown: its help after its label, muted; its keys at the end, in the glyphs of
+# the viewer's platform (data-sem-platform=apple on the root: ⌘ ⌥ ⇧; else Ctrl, Alt, Shift).
+[] a sty:StyleRule ; sty:appliesTo c:TypeaheadOption ; sty:part "> .sem-ta-help" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] .
+[] a sty:StyleRule ; sty:appliesTo c:TypeaheadOption ; sty:part "> .sem-ta-keys" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TypeaheadOption ; sty:part "> .sem-ta-keys > kbd" ;
+    sty:declares [ sty:property "padding" ; sty:raw "2px 6px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "5px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-bottom-width" ; sty:raw "2px" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "600 11px/1.2 var(--sem-font-mono)" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TypeaheadOption ; sty:part "> .sem-ta-keys > .sem-apple" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-platform=apple] [data-sem-c=typeahead-option] > .sem-ta-keys > .sem-apple" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-platform=apple] [data-sem-c=typeahead-option] > .sem-ta-keys > .sem-other" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .

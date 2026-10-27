@@ -1,0 +1,27 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Formulas: a component's value as a query. Any component that shows a c:value (a Stat's
+# figure, a Progress's fraction, a Badge's count) may take it from a SPARQL SELECT instead of
+# stating it: c:valueQuery names a sem:View whose first solution is the value. The rule runs
+# before the components (stratum -1) and writes what the solution says - ?value as c:value,
+# ?tone (a sty:Tone, when bound) as sty:tone, ?max as c:max and ?label as c:label - so the component renders it like a stated
+# value. Like a table's or a chart's view, it re-runs when its c:dataset changes; $this in the
+# query is the component.
+
+c:valueQuery a owl:ObjectProperty ; rdfs:range sem:View ; rdfs:subPropertyOf c:dataQuery ;
+    rdfs:comment """A SELECT (a sem:View) whose first solution is the component's value: ?value becomes its
+c:value and ?tone, ?max and ?label, when bound, its sty:tone, c:max and c:label. Re-run when c:dataset changes; $this is the component."""@en .
+
+c:Formula a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:requires c:valueQuery ;
+    sem:stratum -1 ;
+    sem:inputOnly true ;
+    sem:follows c:dataset ;
+    sem:functionOnly "awaits #1 (query results as graph rows): it runs the SELECT named in the data (c:valueQuery, a sem:View), which SPARQL 1.1 cannot do from inside a query." ;
+    sem:awaitsWork <https://github.com/inferal-oss/semblance/issues/1> .
+c:Formula-fn a sem:Rule ; sem:implements c:Formula ; sem:function "formula:value" .

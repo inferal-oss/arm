@@ -1,0 +1,88 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix a11y: <https://semblance.dev/ns/a11y#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Accessibility layer: decorations that wire up ARIA relationships. It runs
+# after components (stratum 10) and adds attributes to nodes the component
+# rules minted. DOM ids are the RDF/HTML node IRIs themselves, so references
+# like aria-describedby are just IRIs written as strings.
+
+<https://semblance.dev/ns/a11y> a owl:Ontology ;
+    rdfs:label "Semblance accessibility layer"@en .
+
+a11y:Layer a sem:Layer ; rdfs:label "a11y"@en .
+
+a11y:TextFieldDescriptions a sem:Rendering ;
+    rdfs:comment "Help and error text describe the input; an error marks it invalid and is announced."@en ;
+    sem:targets c:TextField ;
+    sem:modality mod:Screen ;
+    sem:layer a11y:Layer ;
+    sem:stratum 10 .
+
+a11y:TextFieldDescriptions-sparql a sem:Rule ;
+    sem:implements a11y:TextFieldDescriptions ;
+    sem:construct """
+CONSTRUCT {
+  ?help rdfhtml:id ?helpId .
+  ?error rdfhtml:id ?errorId ; rdfhtml:attribute ?role .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "alert" .
+  ?input rdfhtml:attribute ?invalid, ?describedBy .
+  ?invalid a rdfhtml:Attribute ; rdfhtml:attributeName "aria-invalid" ; rdfhtml:attributeValue "true" .
+  ?describedBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?ids .
+}
+WHERE {
+  $this a c:TextField .
+  BIND(IRI(CONCAT(STR($this), "/~input")) AS ?input)
+  OPTIONAL {
+    $this c:help ?h .
+    BIND(IRI(CONCAT(STR($this), "/~help")) AS ?help)
+    BIND(STR(?help) AS ?helpId)
+  }
+  OPTIONAL {
+    $this c:error ?e .
+    BIND(IRI(CONCAT(STR($this), "/~error")) AS ?error)
+    BIND(STR(?error) AS ?errorId)
+    BIND(IRI(CONCAT(STR($this), "/~error-role")) AS ?role)
+    BIND(IRI(CONCAT(STR($this), "/~input-aria-invalid")) AS ?invalid)
+  }
+  BIND(CONCAT(COALESCE(?helpId, ""), IF(BOUND(?helpId) && BOUND(?errorId), " ", ""), COALESCE(?errorId, "")) AS ?joined)
+  BIND(IF(?joined = "", ?none, ?joined) AS ?ids)
+  BIND(IF(BOUND(?ids), IRI(CONCAT(STR($this), "/~input-aria-describedby")), ?none) AS ?describedBy)
+}""" .
+
+a11y:TextFieldDescriptions-fn a sem:Rule ;
+    sem:implements a11y:TextFieldDescriptions ;
+    sem:function "a11y:textfield" .
+
+a11y:ListLabel a sem:Rendering ;
+    rdfs:comment "A list's label becomes its accessible name."@en ;
+    sem:targets c:List ;
+    sem:modality mod:Screen ;
+    sem:layer a11y:Layer ;
+    sem:stratum 10 .
+
+a11y:ListLabel-sparql a sem:Rule ;
+    sem:implements a11y:ListLabel ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?a .
+  ?a a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+}
+WHERE {
+  $this a c:List .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?a)
+}""" .
+
+a11y:ListLabel-fn a sem:Rule ;
+    sem:implements a11y:ListLabel ;
+    sem:function "a11y:list" .

@@ -1,0 +1,349 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+
+# Default theme for the panes (c:SplitView, c:DockPanel).
+
+# --- tiled workspace ---
+# The workspace is a region as tall as a working area (it fills what it is given): its root split
+# view fills it, and each split view below draws no frame of its own (see "split view in a split
+# view" below), so the tree reads as one surface divided by its dividers.
+[] a sty:StyleRule ; sty:appliesTo c:TiledWorkspace ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "inline-size" ; sty:raw "100%" ] ,
+                 [ sty:property "min-height" ; sty:raw "24rem" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TiledWorkspace ; sty:part "> *" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] .
+
+# On a compact screen the split views stack (see "split view"); in a workspace each pane is then
+# as tall as what it shows, at least a few lines, rather than half the screen, so the column of
+# panes stays short enough to see several at once.
+[] a sty:StyleRule ; sty:appliesTo c:TiledWorkspace ; sty:atWidth sty:CompactWidth ; sty:part "[data-sem-c=split-view] > .sem-pane" ;
+    sty:declares [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "min-block-size" ; sty:raw "8rem" ] .
+
+# Tabs in a pane fill it, so the whole pane takes a dropped tab: their list on top, the panel below.
+[] a sty:StyleRule ; sty:appliesTo c:TiledWorkspace ; sty:part ".sem-pane > [data-sem-c=tabs]" ;
+    sty:declares [ sty:property "min-block-size" ; sty:raw "100%" ] ,
+                 [ sty:property "grid-template-rows" ; sty:raw "auto 1fr" ] ,
+                 [ sty:property "align-content" ; sty:raw "start" ] .
+
+# A pane's edge zones (sortable c:Tabs in a workspace): strips along its edges, a quarter of it
+# deep, there only while something is carried (or the keyboard drag is at one). The one it is over
+# shows the half of the pane the new one would take; the strip keeps its size, so the pointer can
+# still reach the middle (the whole tabs, which take the tab).
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:state ":has(> .sem-split-zone)" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] ,
+                 [ sty:property "inset-block" ; sty:raw "0" ] ,
+                 [ sty:property "inline-size" ; sty:raw "25%" ] .
+# The strip itself is never drawn as a zone (the half it would take is, below).
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-drop-zone][data-sem-drop]" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-dragging] [data-sem-c=tabs] > .sem-split-zone, [data-sem-c=tabs] > .sem-split-zone[data-sem-drop-over]" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=start]" ;
+    sty:declares [ sty:property "inset-inline-start" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=end]" ;
+    sty:declares [ sty:property "inset-inline-end" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone:is([data-sem-edge=top], [data-sem-edge=bottom])" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "auto" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "25%" ] ,
+                 [ sty:property "inline-size" ; sty:raw "auto" ] ,
+                 [ sty:property "block-size" ; sty:raw "25%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=top]" ;
+    sty:declares [ sty:property "inset-block-start" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=bottom]" ;
+    sty:declares [ sty:property "inset-block-end" ; sty:raw "0" ] .
+# The half it would take (drawn by the strip, not hit by the pointer).
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] ,
+                 [ sty:property "inset-block" ; sty:raw "0" ] ,
+                 [ sty:property "inline-size" ; sty:raw "200%" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-2px" ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-9) 14%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=start][data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "inset-inline-start" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=end][data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "inset-inline-end" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone:is([data-sem-edge=top], [data-sem-edge=bottom])[data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "inset-block" ; sty:raw "auto" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "-50%" ] ,
+                 [ sty:property "inline-size" ; sty:raw "auto" ] ,
+                 [ sty:property "block-size" ; sty:raw "200%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=top][data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "inset-block-start" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Tabs ; sty:part "> .sem-split-zone[data-sem-edge=bottom][data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "inset-block-end" ; sty:raw "0" ] .
+
+# --- split view ---
+# A flex row (a column with pos:direction pos:Column); the primary pane's basis is its share
+# (--split-ratio, set by the rendering), the secondary takes the rest. Panes scroll on their own.
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "row" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "nowrap" ] ,
+                 [ sty:property "align-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "gap" ; sty:raw "0" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 100%" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "12rem" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:when pos:Column ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "min-height" ; sty:raw "20rem" ] .
+# On a compact screen a side-by-side split stacks: the primary pane above (about half the screen,
+# scrolling), the secondary below. The divider, which sizes a side-by-side split, goes.
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:atWidth sty:CompactWidth ;
+    sty:declares [ sty:property "flex-direction" ; sty:raw "column" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-primary" ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 0 auto" ] ,
+                 [ sty:property "height" ; sty:raw "min(24rem, 50dvh)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-secondary" ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 0 auto" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-divider" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-pane" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-4 ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-primary" ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 0 calc(var(--split-ratio, 0.5) * 100%)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-secondary" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 0" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-secondary[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+# Collapsed: no divider, the primary fills.
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-primary:has(+ .sem-secondary[hidden])" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 100%" ] .
+# The divider: a thin rule with a wide hit area, a grip mark, and the focus ring when focused.
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-divider" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "flex" ; sty:raw "0 0 1px" ] ,
+                 [ sty:property "background" ; sty:token tok:border ] ,
+                 [ sty:property "cursor" ; sty:raw "col-resize" ] ,
+                 [ sty:property "touch-action" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-divider::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0 -5px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-divider::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "50%" ] ,
+                 [ sty:property "left" ; sty:raw "50%" ] ,
+                 [ sty:property "width" ; sty:raw "4px" ] ,
+                 [ sty:property "height" ; sty:raw "28px" ] ,
+                 [ sty:property "transform" ; sty:raw "translate(-50%, -50%)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:border-strong ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-divider:is(:hover, :focus-visible)" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-divider:is(:hover, :focus-visible)::after" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:when pos:Column ; sty:part "> .sem-divider" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "row-resize" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:when pos:Column ; sty:part "> .sem-divider::before" ;
+    sty:declares [ sty:property "inset" ; sty:raw "-5px 0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:when pos:Column ; sty:part "> .sem-divider::after" ;
+    sty:declares [ sty:property "width" ; sty:raw "28px" ] ,
+                 [ sty:property "height" ; sty:raw "4px" ] .
+
+# A split view in a split view's pane (a workspace's tree, any nesting) is that pane: no frame,
+# corners or padding of its own, so dividers meet the outer frame and one another.
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-pane:has(> [data-sem-c=split-view])" ;
+    sty:declares [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] .
+[] a sty:StyleRule ; sty:appliesTo c:SplitView ; sty:part "> .sem-pane > [data-sem-c=split-view]" ;
+    sty:declares [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] .
+
+# --- dock panel ---
+# Docked in the flow of its container: sticky at its edge (bottom by default), so it stays in
+# view while what it is docked under scrolls; with c:overViewport, fixed to the viewport's edge.
+# Its size along the free edge is --dock-size (set by the rendering); folded, it is its header.
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ;
+    sty:declares [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "bottom" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "30" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "align-self" ; sty:raw "stretch" ] ,
+                 [ sty:property "flex" ; sty:raw "0 0 auto" ] ,
+                 [ sty:property "margin-top" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "var(--dock-size, 280px)" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-2 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:when c:TopEdge ;
+    sty:declares [ sty:property "bottom" ; sty:raw "auto" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "margin-top" ; sty:raw "0" ] ,
+                 [ sty:property "margin-bottom" ; sty:raw "auto" ] ,
+                 [ sty:property "border-top" ; sty:raw "0" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border-strong)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:when c:EndEdge ;
+    sty:declares [ sty:property "bottom" ; sty:raw "auto" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "margin-top" ; sty:raw "0" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "width" ; sty:raw "var(--dock-size, 280px)" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "border-top" ; sty:raw "0" ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "1px solid var(--sem-border-strong)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:when c:StartEdge ;
+    sty:declares [ sty:property "bottom" ; sty:raw "auto" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "margin-top" ; sty:raw "0" ] ,
+                 [ sty:property "margin-inline-end" ; sty:raw "auto" ] ,
+                 [ sty:property "order" ; sty:raw "-1" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "width" ; sty:raw "var(--dock-size, 280px)" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "border-top" ; sty:raw "0" ] ,
+                 [ sty:property "border-inline-end" ; sty:raw "1px solid var(--sem-border-strong)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-viewport]" ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-viewport]:is([data-sem-edge=start], [data-sem-edge=end])" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "auto" ] ,
+                 [ sty:property "inset-block" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-viewport][data-sem-edge=end]" ;
+    sty:declares [ sty:property "inset-inline-end" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-viewport][data-sem-edge=start]" ;
+    sty:declares [ sty:property "inset-inline-start" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-expanded=false]" ;
+    sty:declares [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] .
+# The free edge: a size handle along it (top for bottom, start for end...), a wide hit area.
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-handle" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "0" ] ,
+                 [ sty:property "top" ; sty:raw "-4px" ] ,
+                 [ sty:property "height" ; sty:raw "8px" ] ,
+                 [ sty:property "cursor" ; sty:raw "row-resize" ] ,
+                 [ sty:property "touch-action" ; sty:raw "none" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:when c:TopEdge ; sty:part "> .sem-dock-handle" ;
+    sty:declares [ sty:property "top" ; sty:raw "auto" ] ,
+                 [ sty:property "bottom" ; sty:raw "-4px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:when c:EndEdge ; sty:part "> .sem-dock-handle" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "-4px auto" ] ,
+                 [ sty:property "inset-block" ; sty:raw "0" ] ,
+                 [ sty:property "width" ; sty:raw "8px" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "cursor" ; sty:raw "col-resize" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:when c:StartEdge ; sty:part "> .sem-dock-handle" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "auto -4px" ] ,
+                 [ sty:property "inset-block" ; sty:raw "0" ] ,
+                 [ sty:property "width" ; sty:raw "8px" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "cursor" ; sty:raw "col-resize" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-handle:is(:hover, :focus-visible)" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent) 45%, transparent)" ] .
+# Header: fold control and title, then badge and actions.
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-header" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "min-height" ; sty:raw "40px" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-1 tok:space-4 ) ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-expanded=false]" ; sty:part "> .sem-dock-header" ;
+    sty:declares [ sty:property "border-bottom" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-header > .sem-fold" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding" ; sty:raw "4px 8px" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "-8px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "600 var(--sem-text-sm)/1.2 var(--sem-font)" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-header > .sem-fold:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-header > .sem-fold:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part ".sem-fold .sem-chevron" ;
+    sty:declares [ sty:property "width" ; sty:raw "6px" ] ,
+                 [ sty:property "height" ; sty:raw "6px" ] ,
+                 [ sty:property "border-right" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "transform" ; sty:raw "rotate(45deg) translate(-1px, -1px)" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:state "[data-expanded=false]" ; sty:part ".sem-fold .sem-chevron" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(-135deg) translate(-1px, -1px)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part ".sem-dock-badge" ;
+    sty:declares [ sty:property "padding" ; sty:raw "1px 8px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:token tok:gray-3 ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part ".sem-dock-actions" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] .
+# Toolbar, body (scrolls) and footer.
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-main" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part "> .sem-dock-main[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part ".sem-dock-toolbar" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-2 tok:space-4 ) ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part ".sem-dock-body" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 auto" ] ,
+                 [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DockPanel ; sty:part ".sem-dock-footer" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-1 tok:space-4 ) ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] .

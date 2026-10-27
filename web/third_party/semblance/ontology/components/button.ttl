@@ -1,0 +1,73 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+c:Button a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "An actionable control. What it does is a behaviour-layer binding."@en ;
+    sem:slug "button" .
+
+# --- screen ---------------------------------------------------------------------
+
+c:ButtonOnScreen a sem:Rendering ;
+    sem:targets c:Button ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 .
+
+c:ButtonOnScreen-sparql a sem:Rule ;
+    sem:implements c:ButtonOnScreen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Button ; sem:renders $this ; rdfhtml:type "button" ; rdfhtml:disabled ?disabled ;
+        rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a c:Button .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  OPTIONAL { $this c:disabled true . BIND("" AS ?disabled) }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+c:ButtonOnScreen-fn a sem:Rule ;
+    sem:implements c:ButtonOnScreen ;
+    sem:function "button:screen" .
+
+# --- text -----------------------------------------------------------------------
+
+c:ButtonAsText a sem:Rendering ;
+    sem:targets c:Button ;
+    sem:modality mod:Text ;
+    sem:stratum 0 .
+
+c:ButtonAsText-sparql a sem:Rule ;
+    sem:implements c:ButtonAsText ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:Button .
+  # A label, untagged or translated only (l10n:Labels then picks one, as util.text does).
+  FILTER EXISTS { $this c:label ?someLabel FILTER(isLiteral(?someLabel)) }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { $this l10n:label ?localLabel }
+  BIND(COALESCE(?localLabel, ?rawLabel) AS ?label)
+  BIND(CONCAT("[ ", STR(?label), " ]") AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?text)
+}""" .
+
+c:ButtonAsText-fn a sem:Rule ;
+    sem:implements c:ButtonAsText ;
+    sem:function "button:text" .

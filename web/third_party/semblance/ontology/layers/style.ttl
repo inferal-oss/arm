@@ -1,0 +1,219 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Style layer. Styling is described semantically (tokens, intents, densities,
+# per-component declarations) and compiled to CSS: custom properties for
+# tokens, attribute selectors for semantic hooks, and @layer for precedence.
+#
+# Only one rule runs per component instance: it copies "hookable" properties
+# of the instance onto its DOM root as data-* attributes. Everything else is
+# CSS generated from this vocabulary (src/style/compile.ts).
+
+<https://semblance.dev/ns/style> a owl:Ontology ;
+    rdfs:label "Semblance style layer"@en .
+
+sty:Layer a sem:Layer ; rdfs:label "style"@en .
+
+# --- Tokens -------------------------------------------------------------------
+
+sty:Token a owl:Class ; rdfs:comment "A named design value, emitted as --sem-<slug>."@en .
+sty:value a owl:DatatypeProperty ; rdfs:comment "CSS value of a token or an override."@en .
+sty:scale a owl:ObjectProperty ; rdfs:domain sty:Token .
+sty:Scale a owl:Class .
+sty:Space a sty:Scale .
+sty:Color a sty:Scale .
+sty:Radius a sty:Scale .
+sty:Font a sty:Scale .
+sty:Measure a sty:Scale ; rdfs:comment "Line lengths: how wide a column of content may grow (pos:measure)."@en .
+
+# --- Hooks ----------------------------------------------------------------------
+
+sty:hookAttribute a owl:DatatypeProperty ;
+    rdfs:comment "Marks a property as hookable: the instance's value (by its sem:slug) is exposed on its DOM root as this attribute."@en .
+sty:hookCssProperty a owl:DatatypeProperty ;
+    rdfs:comment "For token-valued hooks: CSS property set to the token value."@en .
+sty:tokenScale a owl:ObjectProperty ; rdfs:comment "For token-valued hooks: which tokens are allowed."@en .
+
+sty:overrides a owl:ObjectProperty ;
+    rdfs:comment """Between hookable properties: where both apply to an element and set the same CSS
+property, this one wins (e.g. an explicit alignment over a direction's default alignment)."""@en .
+
+rdf:type sty:hookAttribute "data-sem-c" .
+
+# --- Intents and densities ------------------------------------------------------
+
+sty:intent a owl:ObjectProperty ;
+    rdfs:range sty:Intent ;
+    rdfs:comment "Semantic emphasis of a component."@en ;
+    sty:hookAttribute "data-sem-intent" .
+sty:Intent a owl:Class .
+sty:Primary a sty:Intent ; sem:slug "primary" .
+sty:Secondary a sty:Intent ; sem:slug "secondary" .
+sty:Danger a sty:Intent ; sem:slug "danger" .
+
+# --- Variant axes (DESIGN.md §2) ---------------------------------------------------
+# Orthogonal, shared by every component that has them. A tone says what a thing
+# means and sets the --tone-* custom properties; an emphasis says how loud it is
+# and maps those properties onto background, border and color; a size sets the
+# control height. Theme rules with sty:when style each value once, for all.
+
+sty:tone a owl:ObjectProperty ;
+    rdfs:range sty:Tone ;
+    rdfs:label "Tone"@en ;
+    rdfs:comment "What a component means: neutral, accent, or a status."@en ;
+    sty:hookAttribute "data-sem-tone" .
+sty:Tone a owl:Class .
+
+sty:emphasis a owl:ObjectProperty ;
+    rdfs:range sty:Emphasis ;
+    rdfs:label "Emphasis"@en ;
+    rdfs:comment "How loudly a component presents its tone."@en ;
+    sty:hookAttribute "data-sem-emphasis" .
+sty:Emphasis a owl:Class .
+
+sty:size a owl:ObjectProperty ;
+    rdfs:range sty:ControlSize ;
+    rdfs:label "Size"@en ;
+    sty:hookAttribute "data-sem-size" .
+sty:ControlSize a owl:Class .
+
+sty:Keyframes a owl:Class ;
+    rdfs:comment "A named animation (sty:name) of steps (sty:step [ sty:at \"50%\" ; sty:declares ... ]), compiled to @keyframes."@en .
+sty:name a owl:DatatypeProperty .
+sty:step a owl:ObjectProperty ; rdfs:domain sty:Keyframes .
+sty:at a owl:DatatypeProperty ; rdfs:comment "A keyframe selector: from, to, or a percentage."@en .
+
+sty:when a owl:ObjectProperty ; rdfs:domain sty:StyleRule ;
+    rdfs:comment """Narrows a style rule to elements whose hooked axis has this value (e.g. sty:Solid).
+Without sty:appliesTo the rule applies to every component with that value."""@en .
+
+sty:density a owl:ObjectProperty ;
+    rdfs:range sty:Density ;
+    rdfs:comment "Spacing density of a subtree; implemented as token overrides scoped to the subtree."@en ;
+    sty:hookAttribute "data-sem-density" .
+sty:Density a owl:Class .
+sty:override a owl:ObjectProperty ; rdfs:domain sty:Density ;
+    rdfs:comment "A token re-valued within the density's subtree."@en .
+
+sty:colorScheme a owl:ObjectProperty ;
+    rdfs:range sty:ColorScheme ;
+    rdfs:label "Theme"@en ;
+    rdfs:comment "Day, night, or match the viewer's system. Theme colors are light-dark() pairs, so the CSS color-scheme of a subtree picks the side."@en ;
+    sty:hookAttribute "data-sem-color-scheme" .
+sty:ColorScheme a owl:Class .
+sty:Light a sty:ColorScheme ; rdfs:label "Day"@en ; sem:symbol "☀" ; sem:order 1 ; sem:slug "light" ;
+    sty:declares [ sty:property "color-scheme" ; sty:raw "light" ] .
+sty:Dark a sty:ColorScheme ; rdfs:label "Night"@en ; sem:symbol "☾" ; sem:order 2 ; sem:slug "dark" ;
+    sty:declares [ sty:property "color-scheme" ; sty:raw "dark" ] .
+sty:System a sty:ColorScheme ; rdfs:label "Match"@en ; sem:symbol "◐" ; sem:order 3 ; sem:slug "system" ;
+    sty:declares [ sty:property "color-scheme" ; sty:raw "light dark" ] .
+
+sty:contrast a owl:ObjectProperty ;
+    rdfs:range sty:Contrast ;
+    rdfs:label "Contrast"@en ;
+    rdfs:comment "Standard, or high contrast: role tokens re-valued for stronger text and visible borders in the subtree."@en ;
+    sty:hookAttribute "data-sem-contrast" .
+sty:Contrast a owl:Class .
+sty:StandardContrast a sty:Contrast ; rdfs:label "Standard"@en ; sem:symbol "◑" ; sem:order 1 ; sem:slug "standard" .
+sty:HighContrast a sty:Contrast ; rdfs:label "High"@en ; sem:symbol "●" ; sem:order 2 ; sem:slug "high" ;
+    sty:declares [ sty:property "--sem-text" ; sty:raw "light-dark(#000000, #ffffff)" ] ,
+                 [ sty:property "--sem-muted" ; sty:raw "light-dark(#26262f, #e4e4ee)" ] ,
+                 [ sty:property "--sem-faint" ; sty:raw "light-dark(#4a4a58, #b8b8c8)" ] ,
+                 [ sty:property "--sem-border" ; sty:raw "light-dark(#6b6b7c, #8a8a9e)" ] ,
+                 [ sty:property "--sem-border-strong" ; sty:raw "light-dark(#26262f, #e4e4ee)" ] ,
+                 [ sty:property "--sem-accent" ; sty:raw "light-dark(#3a2bc4, #b4abff)" ] ,
+                 [ sty:property "--sem-accent-strong" ; sty:raw "light-dark(#2a1d9e, #d4ceff)" ] ,
+                 [ sty:property "--sem-ring" ; sty:raw "0 0 0 3px light-dark(#000000, #ffffff)" ] .
+
+sty:backdrop a owl:ObjectProperty ;
+    rdfs:range sty:Backdrop ;
+    rdfs:comment "What a surface shows behind its content."@en ;
+    sty:hookAttribute "data-sem-backdrop" .
+sty:Backdrop a owl:Class .
+
+sty:elevation a owl:ObjectProperty ;
+    rdfs:range sty:Elevation ;
+    rdfs:comment "How far a surface stands off the page."@en ;
+    sty:hookAttribute "data-sem-elevation" .
+sty:Elevation a owl:Class .
+
+# --- Declarations ------------------------------------------------------------------
+
+sty:StyleRule a owl:Class ;
+    rdfs:comment "Declarations for a component class, optionally narrowed by intent and a part selector."@en .
+sty:appliesTo a owl:ObjectProperty ; rdfs:domain sty:StyleRule ;
+    rdfs:comment "The component class the rule styles, with its subclasses. Several values: one style a family of classes shares."@en .
+sty:part a owl:DatatypeProperty ; rdfs:comment "Descendant selector suffix (escape hatch for component internals)."@en .
+sty:state a owl:DatatypeProperty ; rdfs:comment "Pseudo-class of the component root, e.g. \":hover\" or \":focus-within\"."@en .
+sty:declares a owl:ObjectProperty ; rdfs:comment "A declaration: sty:property plus one of sty:token, sty:tokens (list), sty:raw."@en .
+sty:property a owl:DatatypeProperty .
+sty:token a owl:ObjectProperty .
+sty:tokens a owl:ObjectProperty .
+sty:raw a owl:DatatypeProperty ; rdfs:comment "Literal CSS value (escape hatch)."@en .
+
+# --- Width classes ----------------------------------------------------------------------
+# Most layout adapts intrinsically - rows that wrap, tracks with minmax(min(100%, ...)), content
+# that scrolls inside itself - and needs no condition. What cannot - a bar whose secondary
+# actions fold into a menu, a navigation list that becomes a picker - says at which widths a
+# rule applies: sty:atWidth a sty:WidthClass. The compiler puts such a rule in its layer inside
+# the class's media condition (sty:media), after the layer's other rules, so it wins there at
+# equal specificity; with several width classes it applies at any of them. Compact and regular
+# follow the size classes of phone and tablet platforms; medium is the narrow part of regular.
+
+sty:WidthClass a owl:Class ;
+    rdfs:comment "A range of viewport widths a style rule can be limited to (sty:atWidth)."@en .
+sty:atWidth a owl:ObjectProperty ; rdfs:domain sty:StyleRule ; rdfs:range sty:WidthClass ;
+    rdfs:comment "Limits a style rule to viewports of this width class (with several, of any of them)."@en .
+sty:media a owl:DatatypeProperty ;
+    rdfs:comment "A CSS media condition: a width class's, or a sty:underMedia condition's."@en .
+sty:CompactWidth a sty:WidthClass ; rdfs:label "Compact"@en ;
+    rdfs:comment "A phone held upright, or a narrow window: one column, chrome folded away."@en ;
+    sty:media "(max-width: 640px)" .
+sty:RegularWidth a sty:WidthClass ; rdfs:label "Regular"@en ;
+    rdfs:comment "Everything wider than compact: tablets, laptops, desktops."@en ;
+    sty:media "(min-width: 641px)" .
+# Within regular: a tablet, or a laptop's narrow window - room for a row of navigation, not for
+# every setting beside it.
+sty:MediumWidth a sty:WidthClass ; rdfs:label "Medium"@en ;
+    rdfs:comment "Between compact and a wide desktop window (641-1099px): tablets, narrow windows."@en ;
+    sty:media "(min-width: 641px) and (max-width: 1099px)" .
+
+# A value of a hooked property can follow the viewer's system setting: under a media condition
+# it is styled as another value of that property (mot:System is mot:Reduced where the system asks
+# for reduced motion). The compiler copies every rule that selects the other value, in its layer,
+# into the condition with this value's attribute instead, after the layer's other rules.
+sty:underMedia a owl:ObjectProperty ;
+    rdfs:comment "Under a media condition (sty:media), this value is styled as another (sty:as)."@en .
+sty:as a owl:ObjectProperty ;
+    rdfs:comment "The value a sty:underMedia condition styles its subject as."@en .
+
+# --- The single style rule ------------------------------------------------------------
+
+sty:HookAttributes a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer sty:Layer ;
+    sem:stratum 20 .
+
+sty:HookAttributes-sparql a sem:Rule ;
+    sem:implements sty:HookAttributes ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?a .
+  ?a a rdfhtml:Attribute ; rdfhtml:attributeName ?name ; rdfhtml:attributeValue ?slug .
+}
+WHERE {
+  $this ?p ?v .
+  ?p sty:hookAttribute ?name .
+  ?v sem:slug ?slug .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-hook-", ?name)) AS ?a)
+}""" .
+
+sty:HookAttributes-fn a sem:Rule ;
+    sem:implements sty:HookAttributes ;
+    sem:function "style:hooks" .

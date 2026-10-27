@@ -1,0 +1,274 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Default theme for the type components.
+
+# --- the type scale (sty:textStyle values; compiled into the hooks layer) ---
+# Component rules below never set these properties, so the scale applies to any
+# component carrying sty:textStyle. Colors are left to the component, except for
+# the quiet steps (subtitle, caption, overline), which default to muted.
+
+sty:Display sty:declares
+    [ sty:property "font-family" ; sty:token tok:font ] ,
+    [ sty:property "font-size" ; sty:token tok:text-3xl ] ,
+    [ sty:property "font-weight" ; sty:raw "750" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+    [ sty:property "letter-spacing" ; sty:raw "-0.03em" ] .
+sty:Title sty:declares
+    [ sty:property "font-family" ; sty:token tok:font ] ,
+    [ sty:property "font-size" ; sty:token tok:text-2xl ] ,
+    [ sty:property "font-weight" ; sty:raw "680" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+    [ sty:property "letter-spacing" ; sty:raw "-0.022em" ] .
+sty:Subtitle sty:declares
+    [ sty:property "font-family" ; sty:token tok:font ] ,
+    [ sty:property "font-size" ; sty:token tok:text-lg ] ,
+    [ sty:property "font-weight" ; sty:raw "500" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+    [ sty:property "letter-spacing" ; sty:raw "-0.01em" ] ,
+    [ sty:property "color" ; sty:token tok:muted ] .
+sty:Body sty:declares
+    [ sty:property "font-family" ; sty:token tok:font ] ,
+    [ sty:property "font-size" ; sty:token tok:text-md ] ,
+    [ sty:property "font-weight" ; sty:raw "400" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-normal ] ,
+    [ sty:property "letter-spacing" ; sty:raw "-0.003em" ] .
+sty:Caption sty:declares
+    [ sty:property "font-family" ; sty:token tok:font ] ,
+    [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+    [ sty:property "font-weight" ; sty:raw "400" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-normal ] ,
+    [ sty:property "letter-spacing" ; sty:raw "0" ] ,
+    [ sty:property "color" ; sty:token tok:muted ] .
+sty:Overline sty:declares
+    [ sty:property "font-family" ; sty:token tok:font ] ,
+    [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+    [ sty:property "font-weight" ; sty:raw "650" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+    [ sty:property "letter-spacing" ; sty:raw "0.09em" ] ,
+    [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+    [ sty:property "color" ; sty:token tok:muted ] .
+sty:Mono sty:declares
+    [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+    [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+    [ sty:property "font-weight" ; sty:raw "450" ] ,
+    [ sty:property "line-height" ; sty:token tok:leading-normal ] ,
+    [ sty:property "letter-spacing" ; sty:raw "0" ] ,
+    [ sty:property "font-variant-ligatures" ; sty:raw "none" ] .
+
+# --- text ---
+[] a sty:StyleRule ; sty:appliesTo c:Text ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "max-width" ; sty:raw "72ch" ] ,
+                 [ sty:property "text-wrap" ; sty:raw "pretty" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "break-word" ] .
+# Without a sty:textStyle, text is body text.
+[] a sty:StyleRule ; sty:appliesTo c:Text ; sty:state ":not([data-sem-text-style])" ;
+    sty:declares [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:Text ; sty:state ":is(span)" ;
+    sty:declares [ sty:property "max-width" ; sty:raw "none" ] .
+# A tone colors the text itself (not inherited from a toned ancestor).
+[] a sty:StyleRule ; sty:appliesTo c:Text ; sty:state "[data-sem-tone]" ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--tone-text)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Text ; sty:part "strong" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "650" ] .
+
+# --- link ---
+[] a sty:StyleRule ; sty:appliesTo c:Link ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--sem-accent-11)" ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "underline" ] ,
+                 [ sty:property "text-decoration-thickness" ; sty:raw "1px" ] ,
+                 [ sty:property "text-decoration-color" ; sty:raw "color-mix(in oklab, currentColor 35%, transparent)" ] ,
+                 [ sty:property "text-underline-offset" ; sty:raw "0.22em" ] ,
+                 [ sty:property "border-radius" ; sty:raw "3px" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "color var(--sem-duration-fast) var(--sem-ease), text-decoration-color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state "[data-sem-tone]" ;
+    sty:declares [ sty:property "color" ; sty:raw "var(--tone-text)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state ":hover" ;
+    sty:declares [ sty:property "text-decoration-color" ; sty:raw "currentColor" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+# The current page's link: bolder, its underline solid.
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state "[aria-current=page]" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "text-decoration-color" ; sty:raw "currentColor" ] .
+# A link with a logo (c:logo) reads as a brand mark: the logo and the name side by side,
+# underlined only while pointed at.
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state ":has(> [data-sem-c=emblem], > [data-sem-c=graph-mark])" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "baseline" ] ,
+                 [ sty:property "gap" ; sty:raw "0.3em" ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "text-decoration-color" ; sty:raw "transparent" ] .
+# Its logo stands on the baseline, as tall as a capital letter.
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:part "> [data-sem-c=emblem]" ;
+    sty:declares [ sty:property "height" ; sty:raw "0.72em" ] ,
+                 [ sty:property "align-self" ; sty:raw "baseline" ] ,
+                 [ sty:property "vertical-align" ; sty:raw "baseline" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state ":has(> [data-sem-c=emblem], > [data-sem-c=graph-mark]):hover" ;
+    sty:declares [ sty:property "text-decoration-color" ; sty:raw "currentColor" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:part ".sem-external" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-block" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "0.15em" ] ,
+                 [ sty:property "font-size" ; sty:raw "0.85em" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:state ":hover" ; sty:part ".sem-external" ;
+    sty:declares [ sty:property "transform" ; sty:raw "translate(1px, -1px)" ] .
+# Said to assistive technology, not shown.
+[] a sty:StyleRule ; sty:appliesTo c:Link ; sty:part ".sem-sr" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "width" ; sty:raw "1px" ] ,
+                 [ sty:property "height" ; sty:raw "1px" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "clip-path" ; sty:raw "inset(50%)" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+
+# --- Linked card: a link around a component, styled by that component (a card in every theme) ---
+[] a sty:StyleRule ; sty:appliesTo c:LinkedCard ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "text-decoration" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-card ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:LinkedCard ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+# Pointed at, or the current page: its component's edge takes the accent.
+[] a sty:StyleRule ; sty:appliesTo c:LinkedCard ; sty:part "> :not(.sem-external, .sem-sr)" ;
+    sty:declares [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:LinkedCard ; sty:state ":is(:hover, [aria-current=page])" ; sty:part "> :not(.sem-external, .sem-sr)" ;
+    sty:declares [ sty:property "border-color" ; sty:raw "var(--sem-accent-8)" ] .
+# The external mark sits in the card's top end corner.
+[] a sty:StyleRule ; sty:appliesTo c:LinkedCard ; sty:part "> .sem-external" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-block-start" ; sty:token tok:space-2 ] ,
+                 [ sty:property "inset-inline-end" ; sty:token tok:space-3 ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-muted)" ] ,
+                 [ sty:property "font-size" ; sty:raw "0.85em" ] .
+
+# --- kbd ---
+[] a sty:StyleRule ; sty:appliesTo c:Kbd ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "3px" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "vertical-align" ; sty:raw "baseline" ] .
+# A key cap: the root when it is a single key, each nested kbd of a combination.
+[] a sty:StyleRule ; sty:appliesTo c:Kbd ; sty:state ":not(:has(kbd))" ;
+    sty:declares [ sty:property "min-width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "justify-content" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:raw "0 6px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-bottom-width" ; sty:raw "2px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:raw "linear-gradient(var(--sem-surface), var(--sem-surface-sunken))" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Kbd ; sty:part "> kbd" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "justify-content" ; sty:raw "center" ] ,
+                 [ sty:property "min-width" ; sty:raw "22px" ] ,
+                 [ sty:property "height" ; sty:raw "22px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 6px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-bottom-width" ; sty:raw "2px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:raw "linear-gradient(var(--sem-surface), var(--sem-surface-sunken))" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "600 11px/1 var(--sem-font)" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+
+# --- code ---
+[] a sty:StyleRule ; sty:appliesTo c:Code ;
+    sty:declares [ sty:property "font-family" ; sty:token tok:font-mono ] ,
+                 [ sty:property "font-size" ; sty:raw "0.88em" ] ,
+                 [ sty:property "font-variant-ligatures" ; sty:raw "none" ] ,
+                 [ sty:property "padding" ; sty:raw "0.12em 0.4em" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:raw "var(--sem-gray-3)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-gray-12)" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+# Code reads left to right in a right-to-left page too (Turtle and SPARQL views wherever they are).
+[] a sty:StyleRule ; sty:part ".sem-turtle" ;
+    sty:declares [ sty:property "direction" ; sty:raw "ltr" ] , [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Code ; sty:state ":is(pre)" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-4 tok:space-4 ) ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "line-height" ; sty:raw "1.6" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "normal" ] ,
+                 [ sty:property "white-space" ; sty:raw "pre" ] ,
+                 [ sty:property "tab-size" ; sty:raw "2" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Code ; sty:state ":is(pre)" ; sty:part "> code" ;
+    sty:declares [ sty:property "font" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Code ; sty:state ":is(pre)" ; sty:part "> .sem-language" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:token tok:space-2 ] ,
+                 [ sty:property "right" ; sty:token tok:space-3 ] ,
+                 [ sty:property "font" ; sty:raw "650 10px/1 var(--sem-font)" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.08em" ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "color" ; sty:token tok:faint ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] .
+# Code tokens, wherever code is coloured (c:Code, c:CodeEditor, c:Flippable's rules, a live example's
+# data): one set of colours, from the code tokens of the theme.
+[] a sty:StyleRule ; sty:part ".tok-keyword" ; sty:declares [ sty:property "color" ; sty:token tok:code-keyword ] , [ sty:property "font-weight" ; sty:raw "600" ] .
+[] a sty:StyleRule ; sty:part ".tok-var" ; sty:declares [ sty:property "color" ; sty:token tok:code-var ] .
+[] a sty:StyleRule ; sty:part ".tok-string" ; sty:declares [ sty:property "color" ; sty:token tok:code-string ] .
+[] a sty:StyleRule ; sty:part ".tok-pname" ; sty:declares [ sty:property "color" ; sty:token tok:code-name ] .
+[] a sty:StyleRule ; sty:part ".tok-iri" ; sty:declares [ sty:property "color" ; sty:token tok:code-iri ] .
+[] a sty:StyleRule ; sty:part ".tok-number" ; sty:declares [ sty:property "color" ; sty:token tok:code-var ] .
+[] a sty:StyleRule ; sty:part ".tok-comment" ; sty:declares [ sty:property "color" ; sty:token tok:code-comment ] , [ sty:property "font-style" ; sty:raw "italic" ] .
+
+# --- blockquote ---
+[] a sty:StyleRule ; sty:appliesTo c:Blockquote ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-1 tok:space-4 ) ] ,
+                 [ sty:property "border-left" ; sty:raw "3px solid var(--tone-border, var(--sem-accent-7))" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "max-width" ; sty:raw "64ch" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Blockquote ; sty:part "> p" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-lg ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "-0.01em" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Blockquote ; sty:part "> footer" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Blockquote ; sty:part "> footer cite" ;
+    sty:declares [ sty:property "font-style" ; sty:raw "normal" ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] .

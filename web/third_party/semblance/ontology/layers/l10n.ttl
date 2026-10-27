@@ -1,0 +1,249 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Localization layer. Labels are ordinary RDF literals: the untagged one is the
+# source text, language-tagged ones are translations ("Компоненти"@uk). The
+# viewer's language (l10n:language on the application) is a projection
+# setting, which each engine also states as graph data: its agent is an
+# l10n:Viewer that l10n:prefers ranked l10n:Preferences (see below). Function
+# rules read every label through util.text(), which picks the viewer's
+# language, then the untagged source, then English. SPARQL rules pick the same
+# way from the viewer's preferences; this layer does it once for every
+# component that has translations, before anything renders (stratum -20),
+# deriving l10n:label - the label in the viewer's language - which their
+# queries prefer over the source label. A language with l10n:direction
+# l10n:RTL lays the page out right to left.
+#
+# Picking a value in the viewer's language, in SPARQL (the pattern every rule
+# that localizes a text uses, as util.text does): the value whose language tag
+# is the most preferred l10n:code (an exact tag before a sub-tag: "uk" before
+# "uk-UA"), found as a candidate with no better one (FILTER NOT EXISTS); else
+# the untagged value; else English; else any. A rule that reads l10n:prefers is
+# re-run for every focus when the viewer's languages change.
+
+<https://semblance.dev/ns/l10n> a owl:Ontology ;
+    rdfs:label "Semblance localization layer"@en .
+
+l10n:language a owl:ObjectProperty ;
+    rdfs:range l10n:Language ;
+    rdfs:label "Language"@en , "Мова"@uk , "Sprache"@de , "اللغة"@ar ;
+    rdfs:comment "The viewer's language."@en .
+l10n:Language a owl:Class .
+l10n:code a owl:DatatypeProperty ; rdfs:domain l10n:Language ; rdfs:comment "BCP 47 tag, matched against literal language tags."@en .
+l10n:direction a owl:ObjectProperty ; rdfs:domain l10n:Language .
+l10n:RTL a owl:NamedIndividual ; rdfs:label "right to left"@en .
+l10n:label a owl:DatatypeProperty ; rdfs:comment "Derived: a component's c:label in the viewer's language."@en .
+
+l10n:English a l10n:Language ; l10n:code "en" ; sem:order 1 ; sem:symbol "EN" ;
+    rdfs:label "English" , "Англійська"@uk , "Englisch"@de , "الإنجليزية"@ar .
+l10n:Ukrainian a l10n:Language ; l10n:code "uk" ; sem:order 2 ; sem:symbol "UK" ;
+    rdfs:label "Українська" , "Ukrainian"@en , "Ukrainisch"@de , "الأوكرانية"@ar .
+l10n:German a l10n:Language ; l10n:code "de" ; sem:order 3 ; sem:symbol "DE" ;
+    rdfs:label "Deutsch" , "German"@en , "Німецька"@uk , "الألمانية"@ar .
+l10n:Arabic a l10n:Language ; l10n:code "ar" ; l10n:direction l10n:RTL ; sem:order 4 ; sem:symbol "AR" ;
+    rdfs:label "العربية" , "Arabic"@en , "Арабська"@uk , "Arabisch"@de .
+
+l10n:Labels a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:stratum -20 ;
+    sem:inputOnly true ;
+    sem:watches c:label ;
+    sem:requires c:label .
+l10n:Labels-fn a sem:Rule ; sem:implements l10n:Labels ; sem:function "l10n:label" .
+# Only for components with translations (two labels, or a tagged one).
+l10n:Labels-sparql a sem:Rule ;
+    sem:implements l10n:Labels ;
+    sem:construct """
+CONSTRUCT { $this l10n:label ?label }
+WHERE {
+  $this c:label ?some . FILTER(isLiteral(?some))
+  FILTER(EXISTS { $this c:label ?tagged FILTER(LANG(?tagged) != "") } || EXISTS { $this c:label ?a , ?b FILTER(isLiteral(?a) && isLiteral(?b) && ?a != ?b) })
+  OPTIONAL {
+    $this c:label ?pick . FILTER(isLiteral(?pick))
+    ?viewer l10n:prefers ?pref . ?pref l10n:code ?code ; sem:order ?rank .
+    BIND(LCASE(LANG(?pick)) AS ?tag)
+    FILTER(?tag = ?code || STRSTARTS(?tag, CONCAT(?code, "-")))
+    FILTER NOT EXISTS {
+      ?viewer l10n:prefers ?better . ?better l10n:code ?code2 ; sem:order ?rank2 .
+      $this c:label ?other . FILTER(isLiteral(?other))
+      BIND(LCASE(LANG(?other)) AS ?tag2)
+      FILTER(?tag2 = ?code2 || STRSTARTS(?tag2, CONCAT(?code2, "-")))
+      FILTER(?rank2 < ?rank || (?rank2 = ?rank && ?tag2 = ?code2 && ?tag != ?code))
+    }
+  }
+  OPTIONAL { FILTER(!BOUND(?pick)) $this c:label ?plain FILTER(isLiteral(?plain) && LANG(?plain) = "") }
+  OPTIONAL { FILTER(!BOUND(?pick) && !BOUND(?plain)) $this c:label ?en FILTER(LCASE(LANG(?en)) = "en") }
+  OPTIONAL { FILTER(!BOUND(?pick) && !BOUND(?plain) && !BOUND(?en)) $this c:label ?enx FILTER(STRSTARTS(LCASE(LANG(?enx)), "en-")) }
+  OPTIONAL { FILTER(!BOUND(?pick) && !BOUND(?plain) && !BOUND(?en) && !BOUND(?enx)) $this c:label ?any FILTER(isLiteral(?any)) }
+  BIND(STR(COALESCE(?pick, ?plain, ?en, ?enx, ?any)) AS ?label)
+}""" .
+
+# --- the viewer, as graph data --------------------------------------------------------
+# Each engine states, in its own derived graph, whom it renders for: its agent
+# (urn:semblance:projection:<name>) is an l10n:Viewer that l10n:prefers one
+# l10n:Preference per language of its `languages` option (BCP 47 l10n:code,
+# sem:order 1 the most preferred). Nothing when it has no preference.
+
+l10n:Viewer a owl:Class ;
+    rdfs:comment "Whom a projection renders for. The engine states it, in its derived graph, from its languages option."@en .
+l10n:prefers a owl:ObjectProperty ; rdfs:domain l10n:Viewer ; rdfs:range l10n:Preference ;
+    rdfs:comment "A language the viewer reads; sem:order ranks them (1 is the most preferred)."@en .
+l10n:Preference a owl:Class ;
+    rdfs:comment "One of a viewer's languages: its l10n:code and its rank (sem:order)."@en .
+
+# --- Dates and times in the viewer's locale ---------------------------------------------------------
+# A component that shows or reads dates or times (a month grid, a date field, a time field) is an
+# l10n:Dated. Before it renders, this layer puts its locale's calendar into the graph, from the
+# host's Intl, so its SPARQL rules can write and read dates as the locale does: the month and
+# weekday names, the order and separators of a numeric date, a long date and a month heading as
+# patterns, the hour cycle, the day periods, the digits, the first day of the week and today. The
+# locale is the component's l10n:locale (a BCP 47 tag: "en-GB" writes 24/10/2026 and starts the
+# week on Monday) or the viewer's language.
+#
+# Patterns are the locale's own text with fields as %-codes, so a rule fills them with REPLACE:
+#   %d day (two digits)   %m month (two digits)   %y year (four digits)   %M month name
+#   %w weekday name       %h hour (as the hour cycle has it)   %H hour (two digits)
+#   %n minutes (two digits)   %a day period (AM / PM)
+# Numbers in a pattern are written with the locale's digits (l10n:digits, "0123456789" for Latin).
+#
+# Per instance (minted under it): <focus>/~l10n-month-1 … -12 (l10n:label, as in a month heading;
+# l10n:inDate, as in a long date: "жовтень" and "24 жовтня"), <focus>/~l10n-weekday-1 … -7 (ISO:
+# 1 is Monday; l10n:label long, l10n:abbr short), and <focus>/~l10n-<Phrase> for each c:Phrase its
+# class names with l10n:phrase. Labels of phrases in the viewer's language, as l10n:Labels does
+# for components.
+
+l10n:Dated a owl:Class ;
+    rdfs:label "Dated"@en , "З датами"@uk , "Mit Datum"@de , "مؤرَّخ"@ar ;
+    rdfs:comment """Mixin: a component that shows or reads dates or times in a locale. The localization layer
+derives its locale's calendar (l10n:CalendarTexts) before it renders: names, patterns, digits, the
+first day of the week (l10n:firstWeekday) and today (l10n:today)."""@en .
+l10n:locale a owl:DatatypeProperty ; rdfs:domain l10n:Dated ;
+    rdfs:label "Locale"@en , "Локаль"@uk , "Gebietsschema"@de , "الإعدادات المحلية"@ar ;
+    rdfs:comment "A BCP 47 tag whose formats a dated component uses (\"en-GB\", \"ar-EG\"); without one, the viewer's language."@en .
+l10n:phrase a owl:ObjectProperty ; rdfs:domain owl:Class ; rdfs:range c:Phrase ;
+    rdfs:comment "On a class of dated components: a phrase its rules show; each instance gets <focus>/~l10n-<phrase's local name> with its l10n:label in the viewer's language."@en .
+
+# Derived, on the component.
+l10n:localeTag a owl:DatatypeProperty ; rdfs:comment "Derived: the locale a dated component's texts are in (its l10n:locale or the viewer's language). It changes with the language, so rules that read the minted texts hear it."@en .
+l10n:rightToLeft a owl:DatatypeProperty ; rdfs:comment "Derived: the page reads right to left (the viewer's language has l10n:direction l10n:RTL), so the arrow keys swap their days."@en .
+l10n:firstWeekday a owl:DatatypeProperty ; rdfs:comment "Derived: the locale's first day of the week, 1 (Monday) … 7 (Sunday)."@en .
+l10n:datePattern a owl:DatatypeProperty ; rdfs:comment "Derived: a numeric date in the locale (\"%d.%m.%y\", \"%m/%d/%y\")."@en .
+l10n:dateHint a owl:DatatypeProperty ; rdfs:comment "Derived: the numeric date pattern as a person reads it (\"dd.mm.yyyy\"), for placeholders and messages."@en .
+l10n:longDatePattern a owl:DatatypeProperty ; rdfs:comment "Derived: a date with its weekday and month names (\"%w, %M %d, %y\"), for accessible names."@en .
+l10n:monthYearPattern a owl:DatatypeProperty ; rdfs:comment "Derived: a month heading (\"%M %y\")."@en .
+l10n:timePattern a owl:DatatypeProperty ; rdfs:comment "Derived: a time of day in the locale (\"%h:%n %a\", \"%H:%n\")."@en .
+l10n:timeHint a owl:DatatypeProperty ; rdfs:comment "Derived: the time pattern as a person reads it (\"hh:mm AM\")."@en .
+l10n:hourCycle a owl:DatatypeProperty ; rdfs:comment "Derived: \"h12\" (1-12 with a day period) or \"h23\" (0-23)."@en .
+l10n:am a owl:DatatypeProperty ; rdfs:comment "Derived: the day period before noon (\"AM\", \"дп\", \"ص\")."@en .
+l10n:pm a owl:DatatypeProperty ; rdfs:comment "Derived: the day period after noon."@en .
+l10n:digits a owl:DatatypeProperty ; rdfs:comment "Derived: the locale's ten digits, zero first (\"0123456789\", \"٠١٢٣٤٥٦٧٨٩\")."@en .
+l10n:today a owl:DatatypeProperty ; rdfs:range <http://www.w3.org/2001/XMLSchema#date> ;
+    rdfs:comment "Derived: the host's date when the texts were derived (its own time zone). A component's c:today wins."@en .
+# Derived, on the minted month and weekday nodes.
+l10n:inDate a owl:DatatypeProperty ; rdfs:comment "Derived, on a month node: its name as it stands in a date (\"24 жовтня\")."@en .
+l10n:abbr a owl:DatatypeProperty ; rdfs:comment "Derived, on a weekday node: its short name (\"Mon\", \"пн\")."@en .
+
+l10n:CalendarTexts a sem:Rendering ;
+    sem:targets l10n:Dated ;
+    sem:stratum -20 ;
+    sem:inputOnly true ;
+    sem:watches <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> , l10n:locale ;
+    sem:functionOnly "awaits sx:Locale (sx:formatDateTime): the locale's calendar comes from the host's Intl (names, the order of a date's fields, the hour cycle, the first day of the week)." ;
+    sem:needsExtension sx:Locale .
+l10n:CalendarTexts-fn a sem:Rule ; sem:implements l10n:CalendarTexts ; sem:function "l10n:calendar" .
+
+# --- texts in the viewer's language, for SPARQL rules -------------------------------------
+# A text property whose values are translations has an l10n: twin (l10n:pickedAs). l10n:Terms
+# derives, in each engine's derived graph, every node's twin value when it has two values or
+# more, on a node of its own about it (l10n:of, so the node's own triples stay as written): the one util.text picks (the viewer's languages by rank, then the untagged value, then
+# English, then any). A SPARQL rule reads a text as its twin, else the one value it has:
+#   OPTIONAL { ?pickedAt l10n:of ?n ; l10n:name ?picked } OPTIONAL { FILTER(!BOUND(?picked)) ?n rdfs:label ?only }
+# Components' own labels (c:label) are l10n:Labels', per component, since they may change;
+# l10n:Terms covers what does not change while the page runs (phrases, the ontology's terms,
+# options, shapes' messages), and is re-run when the viewer's languages change. Its focus is
+# the viewer (the engine's agent), never shown, so it is evaluated regardless (sem:always).
+# Only named nodes get twins (a derived node cannot be about a blank one): a translated text a
+# SPARQL rule reads lives on a node with an IRI (a shape, a phrase, an option).
+
+l10n:of a owl:ObjectProperty ; rdfs:comment "What a derived text node (l10n:Terms) gives the texts of."@en .
+l10n:pickedAs a owl:ObjectProperty ; rdfs:range owl:DatatypeProperty ;
+    rdfs:comment "A text property's twin: its value in the viewer's language (derived by l10n:Terms)."@en .
+rdfs:label l10n:pickedAs l10n:name .
+c:label l10n:pickedAs l10n:label .
+sh:message l10n:pickedAs l10n:message .
+c:title l10n:pickedAs l10n:title .
+c:externalHint l10n:pickedAs l10n:hint .
+ann:announces l10n:pickedAs l10n:announcement .
+c:emptyText l10n:pickedAs l10n:emptyText .
+c:countLabel l10n:pickedAs l10n:countLabel .
+c:pausedLabel l10n:pickedAs l10n:pausedLabel .
+c:splitLabel l10n:pickedAs l10n:splitLabel .
+c:moreLabel l10n:pickedAs l10n:moreLabel .
+c:badge l10n:pickedAs l10n:badge .
+c:note l10n:pickedAs l10n:note .
+c:subtitle l10n:pickedAs l10n:subtitle .
+c:help l10n:pickedAs l10n:help .
+c:placeholder l10n:pickedAs l10n:placeholder .
+l10n:name a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the rdfs:label in the viewer's language."@en .
+l10n:message a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the sh:message in the viewer's language."@en .
+l10n:title a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:title in the viewer's language."@en .
+l10n:hint a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:externalHint in the viewer's language."@en .
+l10n:announcement a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the ann:announces in the viewer's language."@en .
+l10n:emptyText a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:emptyText in the viewer's language."@en .
+l10n:countLabel a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:countLabel in the viewer's language."@en .
+l10n:badge a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:badge in the viewer's language."@en .
+l10n:note a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:note in the viewer's language."@en .
+l10n:subtitle a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:subtitle in the viewer's language."@en .
+l10n:help a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:help in the viewer's language."@en .
+l10n:placeholder a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:placeholder in the viewer's language."@en .
+l10n:moreLabel a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:moreLabel in the viewer's language."@en .
+l10n:pausedLabel a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:pausedLabel in the viewer's language."@en .
+l10n:splitLabel a owl:DatatypeProperty ; rdfs:comment "Derived (l10n:Terms): the c:splitLabel in the viewer's language."@en .
+
+l10n:Terms a sem:BuildingBlock ;
+    sem:targets l10n:Viewer ;
+    sem:stratum -25 ;
+    sem:always true .
+l10n:Terms-fn a sem:Rule ; sem:implements l10n:Terms ; sem:function "l10n:terms" .
+l10n:Terms-sparql a sem:Rule ;
+    sem:implements l10n:Terms ;
+    sem:construct """
+CONSTRUCT { ?at l10n:of ?n ; ?twin ?picked }
+WHERE {
+  $this a l10n:Viewer .
+  { SELECT ?p ?twin ?n WHERE {
+    ?p l10n:pickedAs ?twin . ?n ?p ?value . FILTER(isLiteral(?value) && isIRI(?n))
+  } GROUP BY ?p ?twin ?n HAVING(COUNT(DISTINCT ?value) > 1) }
+  # Components' own c:label is l10n:Labels'. (MINUS against the component classes: a path per
+  # node, in a FILTER, made this a hundred times slower on Oxigraph.)
+  MINUS { ?n a ?nt . { SELECT DISTINCT ?nt WHERE { ?nt rdfs:subClassOf* sem:Component } } BIND(c:label AS ?p) }
+  LATERAL { OPTIONAL { SELECT ?n ?p ?twin ?picked WHERE {
+  ?p l10n:pickedAs ?twin . 
+  OPTIONAL {
+    ?n ?p ?pick . FILTER(isLiteral(?pick))
+    ?viewer l10n:prefers ?pref . ?pref l10n:code ?code ; sem:order ?rank .
+    BIND(LCASE(LANG(?pick)) AS ?tag)
+    FILTER(?tag = ?code || STRSTARTS(?tag, CONCAT(?code, "-")))
+    FILTER NOT EXISTS {
+      ?viewer l10n:prefers ?better . ?better l10n:code ?code2 ; sem:order ?rank2 .
+      ?n ?p ?other . FILTER(isLiteral(?other))
+      BIND(LCASE(LANG(?other)) AS ?tag2)
+      FILTER(?tag2 = ?code2 || STRSTARTS(?tag2, CONCAT(?code2, "-")))
+      FILTER(?rank2 < ?rank || (?rank2 = ?rank && ?tag2 = ?code2 && ?tag != ?code))
+    }
+  }
+  OPTIONAL { FILTER(!BOUND(?pick)) ?n ?p ?plain FILTER(isLiteral(?plain) && LANG(?plain) = "") }
+  OPTIONAL { FILTER(!BOUND(?pick) && !BOUND(?plain)) ?n ?p ?en FILTER(LCASE(LANG(?en)) = "en") }
+  OPTIONAL { FILTER(!BOUND(?pick) && !BOUND(?plain) && !BOUND(?en)) ?n ?p ?enx FILTER(STRSTARTS(LCASE(LANG(?enx)), "en-")) }
+  OPTIONAL { FILTER(!BOUND(?pick) && !BOUND(?plain) && !BOUND(?en) && !BOUND(?enx)) ?n ?p ?any FILTER(isLiteral(?any)) }
+  BIND(STR(COALESCE(?pick, ?plain, ?en, ?enx, ?any)) AS ?picked)
+  } } }
+  BIND(IRI(CONCAT(STR($this), "/~t-", MD5(STR(?n)))) AS ?at)
+}""" .

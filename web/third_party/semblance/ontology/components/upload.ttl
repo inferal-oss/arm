@@ -1,0 +1,563 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix val: <https://semblance.dev/ns/validation#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+@prefix file: <https://semblance.dev/ns/file#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# File drop: pick or drop files, a list of them with their progress, and what is accepted as SHACL
+# (DESIGN.md §3, Inputs). The files themselves are file:File nodes (ontology/layers/files.ttl); the
+# browser's part - the system picker, a drop's files, the uploads - is the files host effect
+# (src/files.ts).
+#
+#   ex:attach a c:FileDrop ; c:label "Attachments" ;
+#       c:controls ex:application ; c:property ex:attachment ;   # the files go here
+#       val:validates ex:AttachmentsShape ;                        # what is accepted, and how many
+#       file:handler "documents" .                                 # uploaded at once (or file:uploadTo)
+#   ex:AttachmentsShape a sh:PropertyShape ; sh:path ex:attachment ; sh:maxCount 3 ;
+#       sh:message "Up to three files" ; sh:node ex:Document .
+#   ex:Document a sh:NodeShape ;
+#       sh:property [ sh:path file:mediaType ; sh:pattern "^(image/|application/pdf$)" ; sh:message "Images or PDFs only" ] ,
+#                   [ sh:path file:size ; sh:maxInclusive 5000000 ; sh:message "At most 5 MB" ] .
+#
+# The drop zone is a button: a click, Enter or Space opens the system picker (a file:Pick the
+# effect performs). It is also a drop target of the dnd: layer (c:FileDropTargets derives its zone,
+# receptacle and membership from c:controls and c:property), so while files are dragged over the
+# page it shows its reception - accepted, or refused with the shape's message - like any other
+# zone. What it accepts is the shape it validates: each file must conform to its sh:node shapes
+# (media type, extension, size: sh:in, sh:pattern, sh:maxInclusive on file:mediaType, file:name,
+# file:size), and the property may hold no more than its sh:maxCount (with sh:maxCount 1 the
+# picker takes one file). Every file that arrives is offered to the zone on its own, so the shape
+# decides with its name and size known; a refused one is listed with the reason, and announced.
+#
+# The list (role=list, a polite live region for what is added) has a c:FileItem per file: its kind
+# (the extension), name, size in the viewer's locale, state, a c:Progress while it is uploaded,
+# and icon buttons that remove it (cancel its upload) or try a failed upload again.
+
+<https://semblance.dev/ns/component/upload> a owl:Ontology ;
+    rdfs:label "Semblance file drop"@en .
+
+# --- vocabulary --------------------------------------------------------------------------------------
+
+c:FileDrop a owl:Class ;
+    rdfs:subClassOf sem:Component , dnd:DropTarget ;
+    rdfs:label "File drop"@en , "Завантаження файлів"@uk , "Datei-Ablage"@de , "إسقاط الملفات"@ar ;
+    rdfs:comment """Pick or drop files: a drop zone that is a button (a click, Enter or Space opens the system
+picker) and a drop target for files dragged in from outside the page, above the list of the files
+it holds (c:FileItem: name, size, state, progress, remove). The accepted files are the values of
+c:property of the node it c:controls (itself by default); what is accepted is the val:validates
+shape - its sh:node shapes for each file, its sh:maxCount for how many - refusals listed per file
+with the shape's message. With file:uploadTo or file:handler each accepted file is uploaded at
+once, with progress, and removing it cancels the upload. Also: c:label (its accessible name),
+c:help, c:icon, c:disabled, file:accept (what the picker offers)."""@en ;
+    sem:slug "file-drop" .
+
+c:FileItem a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "File"@en , "Файл"@uk , "Datei"@de , "ملف"@ar ;
+    rdfs:comment """One file of a c:FileDrop's list (minted by it): its kind (the extension), name, size in the viewer's
+locale and state; while it is uploaded a c:Progress, and when it failed, why and a button to try
+again; a button that removes it (cancels its upload). c:of the file, c:itemOf the drop."""@en ;
+    sem:slug "file-item" .
+c:itemOf a owl:ObjectProperty ; rdfs:domain c:FileItem ; rdfs:range c:FileDrop ;
+    rdfs:comment "On a c:FileItem: the c:FileDrop whose list it is in."@en .
+
+# Words the drop and its list are made of (said in the viewer's language by c:FileDropTexts; {name}
+# is the file's name).
+c:FileDropPrompt a c:Phrase ;
+    rdfs:label "Drop files here, or choose them"@en , "Перетягніть файли сюди або виберіть їх"@uk ,
+               "Dateien hier ablegen oder auswählen"@de , "أفلت الملفات هنا أو اخترها"@ar .
+c:FileDropPromptOne a c:Phrase ;
+    rdfs:label "Drop a file here, or choose one"@en , "Перетягніть файл сюди або виберіть його"@uk ,
+               "Eine Datei hier ablegen oder auswählen"@de , "أفلت ملفًا هنا أو اختر واحدًا"@ar .
+c:RemoveFilePhrase a c:Phrase ;
+    rdfs:label "Remove {name}"@en , "Вилучити {name}"@uk , "{name} entfernen"@de , "إزالة {name}"@ar .
+c:CancelUploadPhrase a c:Phrase ;
+    rdfs:label "Cancel the upload of {name}"@en , "Скасувати надсилання {name}"@uk , "Hochladen von {name} abbrechen"@de , "إلغاء رفع {name}"@ar .
+c:RetryUploadPhrase a c:Phrase ;
+    rdfs:label "Upload {name} again"@en , "Надіслати {name} ще раз"@uk , "{name} erneut hochladen"@de , "رفع {name} مرة أخرى"@ar .
+
+# --- the drop target ----------------------------------------------------------------------------------
+# Before the layers derive receptions (stratum 10): the zone (the button) receives into the controlled
+# node, files are members through c:property, and only files are taken (file:FileShape).
+
+c:FileDropTargets a sem:Rendering ;
+    rdfs:comment "A file drop is a dnd: drop target: its zone receives files into the node it controls, as values of its property."@en ;
+    sem:targets c:FileDrop ;
+    sem:stratum -5 ;
+    sem:inputOnly true ;
+    sem:watches rdf:type , c:controls , c:property .
+c:FileDropTargets-fn a sem:Rule ; sem:implements c:FileDropTargets ; sem:function "upload:targets" .
+c:FileDropTargets-sparql a sem:Rule ;
+    sem:implements c:FileDropTargets ;
+    sem:construct """
+CONSTRUCT { $this dnd:members ?property ; dnd:zone ?zone ; dnd:accepts file:FileShape . ?zone dnd:receptacle ?node }
+WHERE {
+  $this a/rdfs:subClassOf* c:FileDrop ; c:property ?property .
+  OPTIONAL { $this c:controls ?declared }
+  BIND(COALESCE(?declared, $this) AS ?node)
+  BIND(IRI(CONCAT(STR($this), "/~zone")) AS ?zone)
+}""" .
+
+# The words, in the viewer's language, and the files' sizes and progress in its locale.
+c:FileDropTexts a sem:Rendering ;
+    sem:targets c:FileDrop ;
+    sem:stratum -20 ;
+    sem:inputOnly true ;
+    sem:functionOnly "awaits sx:Locale (sx:formatNumber): it writes the sizes and percentages in the viewer's locale (Intl.NumberFormat)." ;
+    sem:needsExtension sx:Locale .
+c:FileDropTexts-fn a sem:Rule ; sem:implements c:FileDropTexts ; sem:function "upload:texts" .
+
+# --- rendering ------------------------------------------------------------------------------------------
+# The zone (a button: glyph, label, prompt), the help and the error that describe it, and the list.
+# While the property is full (val:full) the zone says so and is aria-disabled.
+
+c:FileDropRendering a sem:Rendering ;
+    sem:targets c:FileDrop ;
+    sem:stratum 0 ;
+    sem:readsMinted true ;
+    sem:watches rdf:type , c:label , l10n:label , c:icon , c:disabled , c:error , val:full .
+c:FileDropRendering-fn a sem:Rule ; sem:implements c:FileDropRendering ; sem:function "upload:drop" .
+c:FileDropRendering-sparql-screen a sem:Rule ;
+    sem:implements c:FileDropRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?zone , ?help , ?error , ?list .
+  ?zone a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-zone" ; rdfhtml:disabled ?disabled ;
+        rdfhtml:attribute ?describedAttr , ?fullAttr ; rdfhtml:hasChild ?glyph , ?title , ?prompt ;
+        ord:precedes ?help , ?error , ?list .
+  ?describedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?describedIds .
+  ?fullAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-disabled" ; rdfhtml:attributeValue "true" .
+  ?glyph a rdfhtml:Span ; rdfhtml:class "sem-glyph" ; rdfhtml:attribute ?glyphHidden ; rdfhtml:hasChild ?glyphText ; ord:immediatelyPrecedes ?title .
+  ?glyphHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?glyphText a rdfhtml:Text ; rdfhtml:data ?icon .
+  ?title a rdfhtml:Span ; rdfhtml:class "sem-title" ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?prompt .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?prompt a rdfhtml:Span ; rdfhtml:class "sem-prompt" ; rdfhtml:hasChild ?promptText .
+  ?promptText a rdfhtml:Text ; rdfhtml:data ?promptData .
+  ?help a rdfhtml:Div ; rdfhtml:id ?helpId ; rdfhtml:class "sem-help" ; rdfhtml:hasChild ?helpText ; ord:precedes ?error , ?list .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:id ?errorId ; rdfhtml:class "sem-error" ; rdfhtml:attribute ?errorRole ; rdfhtml:hasChild ?errorText ; ord:precedes ?list .
+  ?errorRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "alert" .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+  ?list a rdfhtml:Ul ; rdfhtml:class "sem-files" ; rdfhtml:attribute ?listLabel , ?listLive , ?listRelevant .
+  ?listLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?listLive a rdfhtml:Attribute ; rdfhtml:attributeName "aria-live" ; rdfhtml:attributeValue "polite" .
+  ?listRelevant a rdfhtml:Attribute ; rdfhtml:attributeName "aria-relevant" ; rdfhtml:attributeValue "additions" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:FileDrop .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?plainLabel FILTER(lang(?plainLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?plainLabel, "")) AS ?label)
+  OPTIONAL { $this c:icon ?ownIcon }
+  BIND(STR(COALESCE(?ownIcon, "⤒")) AS ?icon)
+  OPTIONAL { $this c:disabled true . BIND("" AS ?disabled) }
+  BIND(IRI(CONCAT(STR($this), "/~l10n-prompt")) AS ?promptNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-help")) AS ?helpNode)
+  LATERAL { OPTIONAL { ?promptNode l10n:label ?localPrompt } }
+  LATERAL { OPTIONAL { ?helpNode l10n:label ?localHelp } }
+  LATERAL { OPTIONAL { $this val:full ?fullSaid } }
+  LATERAL { OPTIONAL { $this c:error ?error0 } }
+  BIND(STR(COALESCE(?fullSaid, ?localPrompt, "")) AS ?promptData)
+  BIND(STR(?localHelp) AS ?helpData)
+  BIND(STR(?error0) AS ?errorData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~zone")) AS ?zone)
+  BIND(IRI(CONCAT(STR($this), "/~zone-glyph")) AS ?glyph)
+  BIND(IRI(CONCAT(STR($this), "/~zone-glyph-aria-hidden")) AS ?glyphHidden)
+  BIND(IRI(CONCAT(STR($this), "/~zone-glyph-text")) AS ?glyphText)
+  BIND(IRI(CONCAT(STR($this), "/~zone-title")) AS ?title)
+  BIND(IRI(CONCAT(STR($this), "/~zone-title-text")) AS ?titleText)
+  BIND(IRI(CONCAT(STR($this), "/~zone-prompt")) AS ?prompt)
+  BIND(IRI(CONCAT(STR($this), "/~zone-prompt-text")) AS ?promptText)
+  BIND(IF(BOUND(?fullSaid), IRI(CONCAT(STR($this), "/~zone-aria-disabled")), ?none) AS ?fullAttr)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help")), ?none) AS ?help)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help-text")), ?none) AS ?helpText)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error")), ?none) AS ?error)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error-role")), ?none) AS ?errorRole)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error-text")), ?none) AS ?errorText)
+  BIND(STR(?help) AS ?helpId)
+  BIND(STR(?error) AS ?errorId)
+  # The zone is described by the help and the error there are.
+  BIND(IF(BOUND(?help) || BOUND(?error), CONCAT(COALESCE(STR(?help), ""), IF(BOUND(?help) && BOUND(?error), " ", ""), COALESCE(STR(?error), "")), ?none) AS ?describedIds)
+  BIND(IF(BOUND(?describedIds), IRI(CONCAT(STR($this), "/~zone-aria-describedby")), ?none) AS ?describedAttr)
+  BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+  BIND(IRI(CONCAT(STR($this), "/~list-aria-label")) AS ?listLabel)
+  BIND(IRI(CONCAT(STR($this), "/~list-aria-live")) AS ?listLive)
+  BIND(IRI(CONCAT(STR($this), "/~list-aria-relevant")) AS ?listRelevant)
+}""" .
+c:FileDropRendering-sparql-text a sem:Rule ;
+    sem:implements c:FileDropRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line , ?list .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData ; ord:immediatelyPrecedes ?list .
+  ?list a rdfhtml:Div .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:FileDrop .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?plainLabel FILTER(lang(?plainLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?plainLabel, "")) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-prompt")) AS ?promptNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-help")) AS ?helpNode)
+  LATERAL { OPTIONAL { ?promptNode l10n:label ?localPrompt } }
+  LATERAL { OPTIONAL { ?helpNode l10n:label ?localHelp } }
+  LATERAL { OPTIONAL { $this val:full ?fullSaid } }
+  LATERAL { OPTIONAL { $this c:error ?error0 } }
+  BIND(CONCAT("[", ?label, ": ", STR(COALESCE(?fullSaid, ?localPrompt, "")), "]",
+              IF(BOUND(?localHelp), CONCAT(" ", STR(?localHelp)), ""), IF(BOUND(?error0), CONCAT(" ! ", STR(?error0)), "")) AS ?lineData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+}""" .
+
+# A c:FileItem for each file the drop lists - the values of its property (whichever drop took them
+# in), and the files it refused - in the order they arrived (sem:order).
+c:FileDropItems a sem:Rendering ;
+    sem:targets c:FileDrop ;
+    sem:stratum 0 ;
+    sem:follows c:controls .
+c:FileDropItems-fn a sem:Rule ; sem:implements c:FileDropItems ; sem:function "upload:items" .
+c:FileDropItems-sparql a sem:Rule ;
+    sem:implements c:FileDropItems ;
+    sem:construct """
+CONSTRUCT {
+  ?list rdfhtml:hasChild ?item .
+  ?item a c:FileItem ; c:of ?file ; c:itemOf $this ; sem:orderKey ?order .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:FileDrop .
+  { $this file:file ?file }
+  UNION { $this c:property ?property . OPTIONAL { $this c:controls ?declared } BIND(COALESCE(?declared, $this) AS ?node) ?node ?property ?file FILTER(isIRI(?file)) }
+  LATERAL { OPTIONAL { ?file sem:order ?ord } }
+  BIND(COALESCE(?ord, 0) AS ?order)
+  BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+  BIND(IRI(CONCAT(STR($this), "/~item-", SUBSTR(MD5(STR(?file)), 1, 8))) AS ?item)
+}""" .
+
+# A file: its kind, name, size and state (and why, if it was refused or failed), a progress bar
+# while it is uploaded, and its buttons. The words come from c:FileDropTexts, minted under the item.
+c:FileItemRendering a sem:Rendering ;
+    sem:targets c:FileItem ;
+    sem:stratum 0 ;
+    sem:readsMinted true ;
+    sem:follows c:of , c:itemOf .
+c:FileItemRendering-fn a sem:Rule ; sem:implements c:FileItemRendering ; sem:function "upload:item" .
+c:FileItemRendering-sparql-screen a sem:Rule ;
+    sem:implements c:FileItemRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Li ; sem:renders $this ; rdfhtml:attribute ?stateAttr ; rdfhtml:hasChild ?kind , ?name , ?meta , ?progress , ?actions .
+  ?stateAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-file-state" ; rdfhtml:attributeValue ?stateSlug .
+  ?kind a rdfhtml:Span ; rdfhtml:class "sem-kind" ; rdfhtml:attribute ?kindHidden ; rdfhtml:hasChild ?kindText ; ord:immediatelyPrecedes ?name .
+  ?kindHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?kindText a rdfhtml:Text ; rdfhtml:data ?kindData .
+  ?name a rdfhtml:Span ; rdfhtml:class "sem-name" ; rdfhtml:hasChild ?nameText ; ord:immediatelyPrecedes ?meta .
+  ?nameText a rdfhtml:Text ; rdfhtml:data ?nameData .
+  ?meta a rdfhtml:Span ; rdfhtml:class "sem-meta" ; rdfhtml:hasChild ?size , ?state , ?reason ; ord:precedes ?progress , ?actions .
+  ?size a rdfhtml:Span ; rdfhtml:class "sem-size" ; rdfhtml:hasChild ?sizeText ; ord:immediatelyPrecedes ?state .
+  ?sizeText a rdfhtml:Text ; rdfhtml:data ?sizeData .
+  ?state a rdfhtml:Span ; rdfhtml:class "sem-state" ; rdfhtml:hasChild ?stateText ; ord:immediatelyPrecedes ?reason .
+  ?stateText a rdfhtml:Text ; rdfhtml:data ?stateData .
+  ?reason a rdfhtml:Span ; rdfhtml:class "sem-reason" ; rdfhtml:hasChild ?reasonText .
+  ?reasonText a rdfhtml:Text ; rdfhtml:data ?reasonData .
+  ?progress a c:Progress ; c:value ?loaded ; c:max ?bytes ; c:active true ; c:label ?percent ; ord:precedes ?actions .
+  ?actions a rdfhtml:Span ; rdfhtml:class "sem-actions" ; rdfhtml:hasChild ?retry , ?remove .
+  ?retry a c:IconButton ; c:icon "↻" ; c:label ?retryLabel ; file:retries ?file ; sty:size sty:Small ; sty:emphasis sty:Ghost ; sem:orderKey "1" .
+  ?remove a c:IconButton ; c:icon "✕" ; c:label ?removeLabel ; file:removes ?file ; sty:size sty:Small ; sty:emphasis sty:Ghost ; sem:orderKey "2" .
+}
+WHERE {
+  $this a c:FileItem ; c:of ?file ; c:itemOf ?drop .
+  LATERAL { OPTIONAL { ?file file:name ?name0 } OPTIONAL { ?file file:size ?bytes } OPTIONAL { ?file file:loaded ?loaded0 } OPTIONAL { ?file file:reason ?reason0 } }
+  LATERAL { OPTIONAL { ?file file:state ?state0 . ?state0 sem:slug ?slug0 } }
+  BIND(STR(COALESCE(?name0, REPLACE(STR(?file), "^.*[#/]", ""))) AS ?nameData)
+  BIND(IF(REGEX(?nameData, "[.][A-Za-z0-9]{1,4}$"), UCASE(REPLACE(?nameData, "^.*[.]", "")), ?none) AS ?kindData)
+  BIND(STR(COALESCE(?slug0, "ready")) AS ?stateSlug)
+  BIND(?stateSlug = "uploading" AS ?uploading)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-size")) AS ?sizeNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-state")) AS ?stateNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-progress")) AS ?progressNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-remove")) AS ?removeNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-retry")) AS ?retryNode)
+  LATERAL { OPTIONAL { ?sizeNode l10n:label ?localSize } OPTIONAL { ?stateNode l10n:label ?localState } OPTIONAL { ?progressNode l10n:label ?localProgress } }
+  LATERAL { OPTIONAL { ?removeNode l10n:label ?localRemove } OPTIONAL { ?retryNode l10n:label ?localRetry } }
+  BIND(STR(COALESCE(?localSize, IF(BOUND(?bytes), CONCAT(STR(?bytes), " B"), ""))) AS ?sizeData)
+  BIND(STR(COALESCE(?localState, ?stateSlug)) AS ?stateData)
+  BIND(STR(?reason0) AS ?reasonData)
+  BIND(IF(?uploading, COALESCE(?loaded0, 0), ?none) AS ?loaded)
+  BIND(IF(?uploading, STR(COALESCE(?localProgress, "")), ?none) AS ?percent)
+  BIND(EXISTS { ?drop c:disabled ?off FILTER(STR(?off) = "true") } AS ?locked)
+  BIND(IF(?locked, ?none, STR(COALESCE(?localRemove, ?nameData))) AS ?removeLabel)
+  BIND(IF(?stateSlug = "failed" && !?locked, STR(COALESCE(?localRetry, ?nameData)), ?none) AS ?retryLabel)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-file-state")) AS ?stateAttr)
+  BIND(IF(BOUND(?kindData), IRI(CONCAT(STR($this), "/~kind")), ?none) AS ?kind)
+  BIND(IF(BOUND(?kindData), IRI(CONCAT(STR($this), "/~kind-aria-hidden")), ?none) AS ?kindHidden)
+  BIND(IF(BOUND(?kindData), IRI(CONCAT(STR($this), "/~kind-text")), ?none) AS ?kindText)
+  BIND(IRI(CONCAT(STR($this), "/~name")) AS ?name)
+  BIND(IRI(CONCAT(STR($this), "/~name-text")) AS ?nameText)
+  BIND(IRI(CONCAT(STR($this), "/~meta")) AS ?meta)
+  BIND(IRI(CONCAT(STR($this), "/~size")) AS ?size)
+  BIND(IRI(CONCAT(STR($this), "/~size-text")) AS ?sizeText)
+  BIND(IRI(CONCAT(STR($this), "/~state")) AS ?state)
+  BIND(IRI(CONCAT(STR($this), "/~state-text")) AS ?stateText)
+  BIND(IF(BOUND(?reasonData), IRI(CONCAT(STR($this), "/~reason")), ?none) AS ?reason)
+  BIND(IF(BOUND(?reasonData), IRI(CONCAT(STR($this), "/~reason-text")), ?none) AS ?reasonText)
+  BIND(IF(?uploading, IRI(CONCAT(STR($this), "/~progress")), ?none) AS ?progress)
+  BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+  BIND(IF(BOUND(?retryLabel), IRI(CONCAT(STR($this), "/~retry")), ?none) AS ?retry)
+  BIND(IF(BOUND(?removeLabel), IRI(CONCAT(STR($this), "/~remove")), ?none) AS ?remove)
+}""" .
+c:FileItemRendering-sparql-text a sem:Rule ;
+    sem:implements c:FileItemRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:FileItem ; c:of ?file .
+  LATERAL { OPTIONAL { ?file file:name ?name0 } OPTIONAL { ?file file:size ?bytes } OPTIONAL { ?file file:reason ?reason0 } }
+  LATERAL { OPTIONAL { ?file file:state ?state0 . ?state0 sem:slug ?slug0 } }
+  BIND(STR(COALESCE(?name0, REPLACE(STR(?file), "^.*[#/]", ""))) AS ?nameData)
+  BIND(STR(COALESCE(?slug0, "ready")) AS ?stateSlug)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-size")) AS ?sizeNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-state")) AS ?stateNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-progress")) AS ?progressNode)
+  LATERAL { OPTIONAL { ?sizeNode l10n:label ?localSize } OPTIONAL { ?stateNode l10n:label ?localState } OPTIONAL { ?progressNode l10n:label ?localProgress } }
+  BIND(STR(COALESCE(?localSize, IF(BOUND(?bytes), CONCAT(STR(?bytes), " B"), ""))) AS ?sizeData)
+  BIND(CONCAT("  - ", ?nameData, " (", ?sizeData, ") ", STR(COALESCE(?localState, ?stateSlug)),
+              IF(?stateSlug = "uploading" && BOUND(?localProgress), CONCAT(" ", STR(?localProgress)), ""),
+              IF(BOUND(?reason0), CONCAT(": ", STR(?reason0)), "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+}""" .
+
+# --- behaviour --------------------------------------------------------------------------------------------
+# Picking: activating the zone (a click; Enter or Space on the button) asks for the system picker,
+# unless the drop is disabled or full. What the picker offers is file:accept, else the media types
+# its shape lists (sh:in on file:mediaType); it takes one file when the shape allows one.
+c:PickFiles a beh:Reaction ;
+    rdfs:label "Choose files"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:FileDrop ;
+    beh:deletes """
+CONSTRUCT { ?pick ?p ?o }
+WHERE {
+  $event beh:node ?hit FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~zone")))
+  FILTER NOT EXISTS { $this c:disabled true }
+  FILTER NOT EXISTS { $this val:full ?full }
+  ?pick file:requestedBy $this ; ?p ?o .
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?pick a file:Pick ; file:requestedBy $this ; file:accept ?accept ; file:multiple ?multiple }
+WHERE {
+  $event beh:node ?hit FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~zone")))
+  FILTER NOT EXISTS { $this c:disabled true }
+  FILTER NOT EXISTS { $this val:full ?full }
+  $event beh:sequence ?sequence .
+  BIND(IRI(CONCAT(STR($this), "/~pick-", STR(?sequence))) AS ?pick)
+  OPTIONAL { $this file:accept ?declared }
+  OPTIONAL { SELECT (GROUP_CONCAT(DISTINCT STR(?type); separator=",") AS ?listed)
+             WHERE { $this val:validates/sh:node/sh:property ?ps . ?ps sh:path file:mediaType ; sh:in/rdf:rest*/rdf:first ?type } }
+  BIND(COALESCE(STR(?declared), IF(COALESCE(?listed, "") != "", ?listed, ?none)) AS ?accept)
+  BIND(NOT EXISTS { $this val:validates/sh:maxCount 1 } AS ?multiple)
+}""" ;
+    sem:function "upload:pick" .
+
+# The picker was closed without a choice: the request goes.
+c:CancelPick a beh:Reaction ;
+    rdfs:label "No file chosen"@en ;
+    beh:when file:PickCancelled ;
+    beh:sourceClass c:FileDrop ;
+    beh:deletes """CONSTRUCT { ?pick ?p ?o } WHERE { ?pick file:requestedBy $this ; ?p ?o }""" ;
+    sem:function "upload:cancel-pick" .
+
+# A file arrives (picked or dropped): it becomes a file:File under the drop, in arrival order, and
+# is offered to the drop as a drag of its own (<drop>/~arrival), so its reception (dnd:Receive)
+# says whether it may go in. The pick request, if any, is answered.
+c:OfferFile a beh:Reaction ;
+    rdfs:label "A file arrives"@en ;
+    beh:when file:Arrive ;
+    beh:sourceClass c:FileDrop ;
+    beh:deletes """
+CONSTRUCT { ?arrival ?p ?o . $this dnd:offered ?arrival . ?pick ?q ?v }
+WHERE {
+  BIND(IRI(CONCAT(STR($this), "/~arrival")) AS ?arrival)
+  { ?arrival ?p ?o } UNION { $this dnd:offered ?arrival } UNION { ?pick file:requestedBy $this ; ?q ?v }
+}""" ;
+    beh:inserts """
+CONSTRUCT {
+  ?file a file:File ; file:name ?name ; file:mediaType ?type ; file:size ?size ; file:modified ?modified ; file:handle ?handle ; sem:order ?sequence .
+  $this dnd:offered ?arrival . ?arrival a dnd:Drag ; dnd:carrying ?file .
+}
+WHERE {
+  $event file:name ?name ; beh:sequence ?sequence .
+  OPTIONAL { $event file:mediaType ?type }
+  OPTIONAL { $event file:size ?size }
+  OPTIONAL { $event file:modified ?modified }
+  OPTIONAL { $event file:handle ?handle }
+  BIND(IRI(CONCAT(STR($this), "/~file-", STR(?sequence))) AS ?file)
+  BIND(IRI(CONCAT(STR($this), "/~arrival")) AS ?arrival)
+}""" ;
+    sem:function "upload:offer" .
+
+# The drop takes it: it is a value of the property, listed, and uploaded at once when the drop says
+# where (file:uploadTo, file:handler), else ready.
+c:AddFile a beh:Reaction ;
+    rdfs:label "Add the file"@en ;
+    beh:when file:Added ;
+    beh:sourceClass c:FileDrop ;
+    beh:deletes """
+CONSTRUCT { ?arrival ?p ?o . $this dnd:offered ?arrival }
+WHERE { BIND(IRI(CONCAT(STR($this), "/~arrival")) AS ?arrival) { ?arrival ?p ?o } UNION { $this dnd:offered ?arrival } }""" ;
+    beh:inserts """
+CONSTRUCT { ?node ?property ?file . $this file:file ?file . ?file file:state ?state }
+WHERE {
+  $event file:file ?file .
+  $this c:property ?property .
+  OPTIONAL { $this c:controls ?declared }
+  BIND(COALESCE(?declared, $this) AS ?node)
+  BIND(IF(EXISTS { $this file:uploadTo ?to } || EXISTS { $this file:handler ?by }, file:Uploading, file:Ready) AS ?state)
+}""" ;
+    sem:function "upload:add" .
+
+# The drop refuses it: listed as refused, with the shape's message, which is announced.
+c:RefuseFile a beh:Reaction ;
+    rdfs:label "Refuse the file"@en ;
+    beh:when file:Refusal ;
+    beh:sourceClass c:FileDrop ;
+    ann:announcesFrom file:reason ;
+    ann:announces "The file was not accepted"@en , "Файл не прийнято"@uk , "Die Datei wurde nicht angenommen"@de , "لم يُقبل الملف"@ar ;
+    ann:tone sty:Warning ;
+    beh:deletes """
+CONSTRUCT { ?arrival ?p ?o . $this dnd:offered ?arrival }
+WHERE { BIND(IRI(CONCAT(STR($this), "/~arrival")) AS ?arrival) { ?arrival ?p ?o } UNION { $this dnd:offered ?arrival } }""" ;
+    beh:inserts """
+CONSTRUCT { $this file:file ?file . ?file file:state file:Refused ; file:reason ?reason }
+WHERE { $event file:file ?file . OPTIONAL { $event file:reason ?reason } }""" ;
+    sem:function "upload:refuse" .
+
+# A file's remove button: it leaves the list and the property, with everything said about it.
+c:RemoveFile a beh:Reaction ;
+    rdfs:label "Remove the file"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:FileDrop ;
+    ann:announces "File removed"@en , "Файл вилучено"@uk , "Datei entfernt"@de , "تمت إزالة الملف"@ar ;
+    beh:deletes """
+CONSTRUCT { ?lister file:file ?file . ?node ?property ?file . ?file ?p ?o }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control file:removes ?file .
+  FILTER NOT EXISTS { $this c:disabled true }
+  FILTER NOT EXISTS { ?file file:state file:Uploading }
+  # Listed here: taken in or refused by it, or a value of its property.
+  FILTER(EXISTS { $this file:file ?file } || EXISTS { $this c:property ?lp . $this c:controls ?ln . ?ln ?lp ?file } || EXISTS { $this c:property ?sp . FILTER NOT EXISTS { $this c:controls ?anyNode } $this ?sp ?file })
+  { $this c:property ?property . OPTIONAL { $this c:controls ?declared } BIND(COALESCE(?declared, $this) AS ?node) ?node ?property ?file }
+  UNION { ?lister file:file ?file }
+  UNION { ?file ?p ?o }
+}""" ;
+    sem:function "upload:remove" .
+
+# The same button while it is uploaded: the upload is cancelled (the effect stops it when the file's
+# state goes), and the file goes.
+c:CancelUpload a beh:Reaction ;
+    rdfs:label "Cancel the upload"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:FileDrop ;
+    ann:announces "Upload cancelled"@en , "Надсилання скасовано"@uk , "Hochladen abgebrochen"@de , "تم إلغاء الرفع"@ar ;
+    beh:deletes """
+CONSTRUCT { ?lister file:file ?file . ?node ?property ?file . ?file ?p ?o }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control file:removes ?file .
+  FILTER NOT EXISTS { $this c:disabled true }
+  ?file file:state file:Uploading .
+  # Listed here: taken in or refused by it, or a value of its property.
+  FILTER(EXISTS { $this file:file ?file } || EXISTS { $this c:property ?lp . $this c:controls ?ln . ?ln ?lp ?file } || EXISTS { $this c:property ?sp . FILTER NOT EXISTS { $this c:controls ?anyNode } $this ?sp ?file })
+  { $this c:property ?property . OPTIONAL { $this c:controls ?declared } BIND(COALESCE(?declared, $this) AS ?node) ?node ?property ?file }
+  UNION { ?lister file:file ?file }
+  UNION { ?file ?p ?o }
+}""" ;
+    sem:function "upload:cancel" .
+
+# A failed upload's retry button: it is uploaded again.
+c:RetryUpload a beh:Reaction ;
+    rdfs:label "Upload again"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:FileDrop ;
+    beh:deletes """
+CONSTRUCT { ?file file:state file:Failed ; file:reason ?reason ; file:loaded ?loaded }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control file:retries ?file .
+  $this file:file ?file . ?file file:state file:Failed .
+  FILTER NOT EXISTS { $this c:disabled true }
+  OPTIONAL { ?file file:reason ?reason }
+  OPTIONAL { ?file file:loaded ?loaded }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?file file:state file:Uploading }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control file:retries ?file .
+  $this file:file ?file . ?file file:state file:Failed .
+  FILTER NOT EXISTS { $this c:disabled true }
+}""" ;
+    sem:function "upload:retry" .
+
+# How far an upload is.
+c:UploadProgress a beh:Reaction ;
+    rdfs:label "Upload progress"@en ;
+    beh:when file:Progress ;
+    beh:sourceClass c:FileDrop ;
+    beh:deletes """
+CONSTRUCT { ?file file:loaded ?old }
+WHERE { $event file:file ?file ; file:loaded ?loaded . $this file:file ?file . ?file file:state file:Uploading ; file:loaded ?old }""" ;
+    beh:inserts """
+CONSTRUCT { ?file file:loaded ?loaded }
+WHERE { $event file:file ?file ; file:loaded ?loaded . $this file:file ?file . ?file file:state file:Uploading }""" ;
+    sem:function "upload:progress" .
+
+# The upload is done: the file is uploaded (and where the server put it, if it said).
+c:UploadDone a beh:Reaction ;
+    rdfs:label "Uploaded"@en ;
+    beh:when file:Done ;
+    beh:sourceClass c:FileDrop ;
+    ann:announces "File uploaded"@en , "Файл надіслано"@uk , "Datei hochgeladen"@de , "تم رفع الملف"@ar ;
+    ann:tone sty:Success ;
+    beh:deletes """
+CONSTRUCT { ?file file:state file:Uploading ; file:loaded ?loaded }
+WHERE { $event file:file ?file . $this file:file ?file . ?file file:state file:Uploading . OPTIONAL { ?file file:loaded ?loaded } }""" ;
+    beh:inserts """
+CONSTRUCT { ?file file:state file:Uploaded ; file:location ?location }
+WHERE { $event file:file ?file . $this file:file ?file . ?file file:state file:Uploading . OPTIONAL { $event file:location ?location } }""" ;
+    sem:function "upload:done" .
+
+# The upload failed: the file says why, and can be uploaded again.
+c:UploadFail a beh:Reaction ;
+    rdfs:label "Upload failed"@en ;
+    beh:when file:Failure ;
+    beh:sourceClass c:FileDrop ;
+    ann:announcesFrom file:reason ;
+    ann:announces "Upload failed"@en , "Не вдалося надіслати"@uk , "Hochladen fehlgeschlagen"@de , "فشل الرفع"@ar ;
+    ann:tone sty:Danger ;
+    beh:deletes """
+CONSTRUCT { ?file file:state file:Uploading ; file:loaded ?loaded }
+WHERE { $event file:file ?file . $this file:file ?file . ?file file:state file:Uploading . OPTIONAL { ?file file:loaded ?loaded } }""" ;
+    beh:inserts """
+CONSTRUCT { ?file file:state file:Failed ; file:reason ?reason }
+WHERE { $event file:file ?file . $this file:file ?file . ?file file:state file:Uploading . OPTIONAL { $event file:reason ?reason } }""" ;
+    sem:function "upload:fail" .

@@ -1,0 +1,196 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# A code editor: the text is graph state (c:value, c:caret), written by the input reaction on every
+# keystroke, which re-renders the editor (its highlighted lines and suggestions) and nothing else.
+# Highlighting and suggestions follow its language (c:language); the suggestions come from the
+# graph: the prefixes it knows and the classes and properties it declares. The SPARQL workbench's
+# editor is one (c:QueryEditor, in SPARQL); so are a live example's sources (Turtle).
+
+c:CodeEditor a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Code editor"@en , "Редактор коду"@uk , "Code-Editor"@de , "محرر الشيفرة"@ar ;
+    rdfs:comment """An editor of code in a language (c:language: "sparql", "turtle"; any other is plain
+text): the text (c:value) highlighted by token kind under a transparent text area, with line
+numbers, and suggestions for the word before the caret (c:caret) while c:suggesting: the prefixes
+the store knows and every class and property it declares, as prefixed names (classes first, the
+namespaces the text already uses first), and the language's own words. Up and Down move through
+them (c:activeSuggestion), Tab or Enter accepts, Escape closes, and clicking one accepts it.
+c:label is the editor's accessible name. Until it is edited it shows c:original, if it has one
+(a c:LiveExample's source as written)."""@en ;
+    sem:slug "code-editor" .
+c:original a owl:DatatypeProperty ; rdfs:range xsd:string ;
+    rdfs:comment "On an editor: the text as written. The editor shows it until it is edited (c:value); a live example's Reset brings it back."@en .
+c:caret a owl:DatatypeProperty ; rdfs:domain c:CodeEditor ; rdfs:range xsd:integer ;
+    rdfs:comment "Where the caret is in c:value (UTF-16 code units, as the text area counts)."@en .
+c:suggesting a owl:DatatypeProperty ; rdfs:domain c:CodeEditor ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether suggestions are shown: set by typing, cleared by accepting, Escape, a click or a run."@en .
+c:activeSuggestion a owl:DatatypeProperty ; rdfs:domain c:CodeEditor ; rdfs:range xsd:integer ;
+    rdfs:comment "The position of the highlighted suggestion (default 0)."@en .
+c:suggestionsOf a owl:ObjectProperty ; rdfs:range c:CodeEditor ;
+    rdfs:comment "On a rendered list of suggestions: the editor it completes."@en .
+c:replaceFrom a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "On a rendered list of suggestions: where the word an accepted suggestion replaces starts."@en .
+c:replaceTo a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "On a rendered list of suggestions: where the replaced text ends (the caret: text after it stays)."@en .
+c:suggestionCount a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "On a rendered list of suggestions: how many it shows."@en .
+c:suggestionIndex a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "On a rendered suggestion: its position in the list."@en .
+c:completion a owl:DatatypeProperty ;
+    rdfs:comment "On a rendered suggestion: the text that accepting it puts in place of the word."@en .
+
+c:CodeEditorRendering a sem:Rendering ; sem:targets c:CodeEditor ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it tokenizes the text for highlighting and finds the word before the caret to complete." ;
+    sem:needsExtension sx:Matches .
+c:CodeEditorRendering-fn a sem:Rule ; sem:implements c:CodeEditorRendering ; sem:function "workbench:editor" .
+
+# Key presses the editor reacts to. Other keys are not events (the text area handles them), and a
+# key a reaction used does nothing else (no focus move on Tab, no new line on Enter).
+c:EditorKey a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "keydown" ;
+    beh:key "tab" , "enter" , "escape" , "arrowdown" , "arrowup" ;
+    rdfs:comment "A key press in an editor that may move through, accept or close its suggestions (beh:key)."@en .
+
+# Recorded by the event bus (src/behaviour/events.ts); they belong with the behaviour layer.
+beh:caret a owl:DatatypeProperty ; rdfs:domain beh:Event ; rdfs:range xsd:integer ;
+    rdfs:comment "A text control's caret (selectionStart) after the interaction."@en .
+beh:key a owl:DatatypeProperty ;
+    rdfs:comment """On an event: the key combination pressed, normalized like key:shortcut ("tab", "mod+enter").
+On an event class recorded from key presses: a combination it is for (none: every key)."""@en .
+
+c:CodeEditorInput a beh:Reaction ;
+    rdfs:label "Edit the text"@en ;
+    beh:when beh:Input ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:value ?old ; c:caret ?caret ; c:activeSuggestion ?active }
+WHERE { { $this c:value ?old } UNION { $this c:caret ?caret } UNION { $this c:activeSuggestion ?active } }""" ;
+    beh:inserts """CONSTRUCT { $this c:value ?value ; c:caret ?caret ; c:suggesting true }
+WHERE { $event beh:value ?value . OPTIONAL { $event beh:caret ?at } BIND(COALESCE(?at, STRLEN(?value)) AS ?caret) }""" ;
+    sem:function "workbench:input" .
+
+# A click in the text (not on a suggestion) moves the caret somewhere suggestions don't belong.
+c:CodeEditorClick a beh:Reaction ;
+    rdfs:label "Close the suggestions"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:suggesting true ; c:activeSuggestion ?active }
+WHERE { $this c:suggesting true . OPTIONAL { $this c:activeSuggestion ?active } }""" ;
+    sem:function "workbench:click" .
+
+c:SuggestionDismiss a beh:Reaction ;
+    rdfs:label "Close the suggestions"@en ;
+    beh:when c:EditorKey ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:suggesting true ; c:activeSuggestion ?active }
+WHERE { $event beh:key "escape" . $this c:suggesting true . ?list c:suggestionsOf $this . OPTIONAL { $this c:activeSuggestion ?active } }""" ;
+    sem:function "workbench:dismiss" .
+
+c:SuggestionNext a beh:Reaction ;
+    rdfs:label "Next suggestion"@en ;
+    beh:when c:EditorKey ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:activeSuggestion ?active }
+WHERE { $event beh:key "arrowdown" . $this c:suggesting true ; c:activeSuggestion ?active . ?list c:suggestionsOf $this }""" ;
+    beh:inserts """CONSTRUCT { $this c:activeSuggestion ?next }
+WHERE {
+  $event beh:key "arrowdown" . $this c:suggesting true . ?list c:suggestionsOf $this ; c:suggestionCount ?count .
+  OPTIONAL { $this c:activeSuggestion ?at } BIND(COALESCE(?at, 0) AS ?active)
+  BIND(IF(?active + 1 >= ?count, 0, ?active + 1) AS ?next)
+}""" ;
+    sem:function "workbench:next" .
+
+c:SuggestionPrevious a beh:Reaction ;
+    rdfs:label "Previous suggestion"@en ;
+    beh:when c:EditorKey ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:activeSuggestion ?active }
+WHERE { $event beh:key "arrowup" . $this c:suggesting true ; c:activeSuggestion ?active . ?list c:suggestionsOf $this }""" ;
+    beh:inserts """CONSTRUCT { $this c:activeSuggestion ?next }
+WHERE {
+  $event beh:key "arrowup" . $this c:suggesting true . ?list c:suggestionsOf $this ; c:suggestionCount ?count .
+  OPTIONAL { $this c:activeSuggestion ?at } BIND(COALESCE(?at, 0) AS ?active)
+  BIND(IF(?active <= 0, ?count - 1, ?active - 1) AS ?next)
+}""" ;
+    sem:function "workbench:previous" .
+
+# Accepting replaces the word (c:replaceFrom .. c:replaceTo of the rendered list) with the
+# suggestion's c:completion and puts the caret after it; a completed prefix ("rdfs:") keeps
+# suggesting, for the term that follows it.
+c:SuggestionAccept a beh:Reaction ;
+    rdfs:label "Accept the suggestion"@en ;
+    beh:when c:EditorKey ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:value ?old ; c:caret ?caret ; c:suggesting true ; c:activeSuggestion ?active }
+WHERE {
+  $event beh:key ?key FILTER(?key IN ("tab", "enter"))
+  $this c:suggesting true ; c:value ?old . ?list c:suggestionsOf $this .
+  OPTIONAL { $this c:caret ?caret } OPTIONAL { $this c:activeSuggestion ?active }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:value ?new ; c:caret ?after ; c:suggesting ?again }
+WHERE {
+  $event beh:key ?key FILTER(?key IN ("tab", "enter"))
+  $this c:suggesting true ; c:value ?old .
+  OPTIONAL { $this c:activeSuggestion ?at } BIND(COALESCE(?at, 0) AS ?active)
+  ?list c:suggestionsOf $this ; c:replaceFrom ?from ; c:replaceTo ?to ; rdfhtml:hasChild ?option .
+  ?option c:suggestionIndex ?active ; c:completion ?word .
+  BIND(CONCAT(SUBSTR(?old, 1, ?from), ?word, SUBSTR(?old, ?to + 1)) AS ?new)
+  BIND(?from + STRLEN(?word) AS ?after)
+  BIND(IF(STRENDS(?word, ":"), true, ?unbound) AS ?again)
+}""" ;
+    sem:function "workbench:accept" .
+
+c:SuggestionPick a beh:Reaction ;
+    rdfs:label "Accept the suggestion"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:CodeEditor ;
+    beh:deletes """CONSTRUCT { $this c:value ?old ; c:caret ?caret ; c:suggesting ?suggesting ; c:activeSuggestion ?active }
+WHERE {
+  $event beh:node ?hit . ?option rdfhtml:hasChild* ?hit . ?option c:completion ?word .
+  { $this c:value ?old } UNION { $this c:caret ?caret } UNION { $this c:suggesting ?suggesting } UNION { $this c:activeSuggestion ?active }
+}""" ;
+    beh:inserts """CONSTRUCT { $this c:value ?new ; c:caret ?after ; c:suggesting ?again }
+WHERE {
+  $event beh:node ?hit . ?option rdfhtml:hasChild* ?hit . ?option c:completion ?word .
+  ?list rdfhtml:hasChild ?option ; c:suggestionsOf $this ; c:replaceFrom ?from ; c:replaceTo ?to .
+  OPTIONAL { $this c:value ?value } BIND(COALESCE(?value, "") AS ?old)
+  BIND(CONCAT(SUBSTR(?old, 1, ?from), ?word, SUBSTR(?old, ?to + 1)) AS ?new)
+  BIND(?from + STRLEN(?word) AS ?after)
+  BIND(IF(STRENDS(?word, ":"), true, ?unbound) AS ?again)
+}""" ;
+    sem:function "workbench:pick" .
+
+# --- a language's own words ---------------------------------------------------------------------------
+# Highlighted and offered as completions in an editor of their language. A word's rdfs:label is how
+# it is written and its rdfs:comment is shown beside the suggestion; its class says the language
+# (c:language, on the class or a superclass) and whether it is a keyword or a function. SPARQL's are
+# in workbench.ttl (c:SparqlWord).
+
+c:CodeWord a owl:Class ; rdfs:comment "A word of a language a code editor knows."@en .
+c:CodeKeyword a owl:Class ; rdfs:subClassOf c:CodeWord ; rdfs:comment "A keyword of a language."@en .
+c:CodeFunction a owl:Class ; rdfs:subClassOf c:CodeWord ; rdfs:comment "A built-in function of a language."@en .
+c:TurtleKeyword a owl:Class ; rdfs:subClassOf c:CodeKeyword ; c:language "turtle" ; rdfs:comment "A keyword of Turtle 1.1."@en .
+c:ttl-prefix a c:TurtleKeyword ; rdfs:label "@prefix" ; rdfs:comment "Declares a prefix: what a prefixed name's namespace is."@en .
+c:ttl-base a c:TurtleKeyword ; rdfs:label "@base" ; rdfs:comment "Declares the IRI that relative IRIs are resolved against."@en .
+c:ttl-true a c:TurtleKeyword ; rdfs:label "true" ; rdfs:comment "The boolean true (xsd:boolean)."@en .
+c:ttl-false a c:TurtleKeyword ; rdfs:label "false" ; rdfs:comment "The boolean false (xsd:boolean)."@en .
+
+c:SuggestionsPhrase a c:Phrase ; rdfs:label "Suggestions"@en , "Підказки"@uk , "Vorschläge"@de , "اقتراحات"@ar .
+c:EditorKeysPhrase a c:Phrase ;
+    rdfs:label "Tab or Enter accepts a suggestion · Esc closes"@en , "Tab або Enter приймає підказку · Esc закриває"@uk ,
+               "Tab oder Enter übernimmt einen Vorschlag · Esc schließt"@de , "Tab أو Enter لقبول الاقتراح · Esc للإغلاق"@ar .
+
+c:CodeEditorShape a sh:NodeShape ; sh:targetClass c:CodeEditor ;
+    sh:property [ sh:path c:label ; sh:minCount 1 ; sh:message "An editor needs an accessible name (c:label)." ] ,
+                [ sh:path c:value ; sh:maxCount 1 ; sh:datatype xsd:string ] ,
+                [ sh:path c:caret ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:activeSuggestion ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:suggesting ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:language ; sh:maxCount 1 ] ,
+                [ sh:path c:original ; sh:maxCount 1 ; sh:datatype xsd:string ] .

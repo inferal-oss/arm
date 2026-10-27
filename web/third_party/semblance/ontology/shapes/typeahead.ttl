@@ -1,0 +1,26 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# What well-formed typeaheads look like (ontology/components/typeahead.ttl), checked by the
+# component shapes layer. The shape applies to c:Combobox and c:TagInput alike.
+
+# A command palette, also a typeahead, edits no property (shapes/palette.ttl).
+c:TypeaheadShape a sh:NodeShape ; sh:targetClass c:Combobox , c:TagInput ;
+    sh:property [ sh:path c:controls ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A typeahead edits a property of one node (c:controls)." ] ,
+                [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A typeahead edits one property (c:property)." ] ,
+                [ sh:path c:options ; sh:maxCount 1 ] ,
+                [ sh:path c:optionClass ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:optionsInUse ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:allowsCustom ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:customAs ; sh:maxCount 1 ; sh:in ( c:NewLiteral c:NewResource ) ] ,
+                [ sh:path c:mintBase ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ,
+                [ sh:path c:value ; sh:maxCount 1 ] ,
+                [ sh:path c:expanded ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:activeOption ; sh:maxCount 1 ] ,
+                [ sh:path c:caret ; sh:maxCount 1 ; sh:datatype xsd:integer ] .

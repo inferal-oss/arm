@@ -54,7 +54,7 @@ func TestScreenAssetsPreserveComposedDashboardModules(t *testing.T) {
 	s := &Server{authority: "127.0.0.1:1234"}
 	mux := http.NewServeMux()
 	s.registerBrowser(mux)
-	for _, path := range []string{"/screen-viewer.mjs", "/screen-mode.mjs", "/screen-clipboard.mjs", "/novnc/core/rfb.js", "/novnc/deps/pako/LICENSE", "/novnc/deps/pako/lib/zlib/inflate.js", "/novnc/deps/pako/lib/zlib/deflate.js", "/ard/ard-patch.js", "/ard/LICENSE.txt", "/peer-poll.mjs", "/monitor-capacity.mjs", "/kube-inventory.mjs"} {
+	for _, path := range []string{"/assets/arm.mjs", "/novnc/core/rfb.js", "/novnc/deps/pako/LICENSE", "/novnc/deps/pako/lib/zlib/inflate.js", "/novnc/deps/pako/lib/zlib/deflate.js", "/ard/ard-patch.js", "/ard/LICENSE.txt"} {
 		t.Run(path, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			mux.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "http://"+s.authority+path, nil))

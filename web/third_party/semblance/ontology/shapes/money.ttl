@@ -1,0 +1,12 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What a well-formed c:Money looks like (ontology/components/money.ttl), validated by the
+# component shapes layer like ontology/shapes/components.ttl.
+
+c:MoneyShape a sh:NodeShape ; sh:targetClass c:Money ;
+    sh:property [ sh:path c:value ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ;
+                  sh:message "Money is one amount (c:value, an xsd:decimal)." ] ,
+                [ sh:path c:currency ; sh:maxCount 1 ; sh:pattern "^[A-Z]{3}$" ;
+                  sh:message "A currency is an ISO 4217 code, like \"EUR\"." ] .

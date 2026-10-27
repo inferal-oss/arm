@@ -1,0 +1,51 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Provenance layer. With provenance enabled, the engine records PROV-O for
+# every rule evaluation, in the projection's derived graph:
+#
+#   <focus>/~prov-<rule>  a prov:Activity ;
+#       prov:used <focus>, <nodes reached through sem:follows> ;
+#       prov:wasAssociatedWith <urn:semblance:projection:NAME> ;     # prov:SoftwareAgent
+#       prov:qualifiedAssociation [ prov:agent <...> ; prov:hadPlan <rule> ] .  # a sem:Rule is a prov:Plan
+#   <node created by the rule>    prov:wasGeneratedBy  <activity> .
+#   <node a layer only decorated> prov:wasInfluencedBy <activity> .
+#
+# The activity stands for the rule's *current* derivation for that focus; it is
+# re-used (and its prov:used updated) when the rule re-runs.
+#
+# This is an annotation-only layer: it has no DOM effect by itself. The debug
+# decoration below reads it and surfaces the plan and focus as DOM attributes.
+
+<https://semblance.dev/ns/provenance> a owl:Ontology ;
+    rdfs:label "Semblance provenance layer"@en .
+
+sem:DebugAttributes a sem:Rendering ;
+    sem:targets sem:Component ;
+    sem:modality mod:Screen ;
+    sem:layer sem:DebugLayer ;
+    sem:stratum 90 .
+
+sem:DebugAttributes-sparql a sem:Rule ;
+    sem:implements sem:DebugAttributes ;
+    sem:construct """
+CONSTRUCT {
+  ?root rdfhtml:attribute ?ruleAttr, ?focusAttr .
+  ?ruleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-rule" ; rdfhtml:attributeValue ?rule .
+  ?focusAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-focus" ; rdfhtml:attributeValue ?focus .
+}
+WHERE {
+  ?root sem:renders $this ;
+        prov:wasGeneratedBy/prov:qualifiedAssociation/prov:hadPlan ?plan .
+  BIND(STR(?plan) AS ?rule)
+  BIND(STR($this) AS ?focus)
+  BIND(IRI(CONCAT(STR(?root), "-debug-rule")) AS ?ruleAttr)
+  BIND(IRI(CONCAT(STR(?root), "-debug-focus")) AS ?focusAttr)
+}""" .
+
+sem:DebugAttributes-fn a sem:Rule ;
+    sem:implements sem:DebugAttributes ;
+    sem:function "debug:attributes" .

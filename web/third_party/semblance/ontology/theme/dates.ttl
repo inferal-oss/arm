@@ -1,0 +1,515 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Default theme for dates and times (ontology/components/dates.ttl).
+#
+# A date or time field is a field box like a combobox's: sunken, an accent border and ring while
+# anything in it has the focus, the inputs inside it bare, the button at its end. The popup is an
+# overlay surface under the box, at its end; on a phone it is as wide as the field and its days are
+# large enough to touch. A month grid's days are round keys; today is in the accent, the picked days
+# are solid accent, a range's days between them a soft band (its preview a dashed one), the days of
+# the months around faint and the days out of bounds struck out. Numbers are tabular. Every value
+# comes from a token, so the themes and contrast restyle it; the structural themes follow at the end.
+
+# --- the fields -----------------------------------------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "width" ; sty:raw "min(100%, 300px)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateRangeField ;
+    sty:declares [ sty:property "width" ; sty:raw "min(100%, 400px)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "width" ; sty:raw "min(100%, 220px)" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> label" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.005em" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-help" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-error" ;
+    sty:declares [ sty:property "color" ; sty:token tok:danger ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> label" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.005em" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-help" ;
+    sty:declares [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-error" ;
+    sty:declares [ sty:property "color" ; sty:token tok:danger ] ,
+                 [ sty:property "font-size" ; sty:token tok:font-size-small ] ,
+                 [ sty:property "font-weight" ; sty:raw "550" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "min-height" ; sty:raw "var(--control-h, var(--sem-control-height))" ] ,
+                 [ sty:property "padding" ; sty:raw "2px 3px 2px var(--control-px, 12px)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-motion), box-shadow var(--sem-motion), background var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row:hover" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row:focus-within" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row:has(> input[aria-invalid=true])" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:danger ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row:has(> input:disabled)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.55" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] ,
+                 [ sty:property "border-color" ; sty:token tok:border ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row > input" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 10ch" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 8px)" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-size" ; sty:raw "var(--control-font, inherit)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row > input::placeholder" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+# The picker button fits inside the row's border and padding (2px and 1px each way), so the row is
+# as tall as any single-line control, not a button's height plus its own frame.
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row > [data-sem-c=icon-button]" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 6px)" ] ,
+                 [ sty:property "height" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 6px)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "4px" ] ,
+                 [ sty:property "min-height" ; sty:raw "var(--control-h, var(--sem-control-height))" ] ,
+                 [ sty:property "padding" ; sty:raw "2px 3px 2px var(--control-px, 12px)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "transition" ; sty:raw "border-color var(--sem-motion), box-shadow var(--sem-motion), background var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row:hover" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row:focus-within" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "border-color" ; sty:token tok:accent ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row:has(> input[aria-invalid=true])" ;
+    sty:declares [ sty:property "border-color" ; sty:token tok:danger ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row:has(> input:disabled)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.55" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] ,
+                 [ sty:property "border-color" ; sty:token tok:border ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row > input" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1 1 10ch" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] ,
+                 [ sty:property "min-height" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 8px)" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-size" ; sty:raw "var(--control-font, inherit)" ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row > input::placeholder" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-row > [data-sem-c=icon-button]" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 6px)" ] ,
+                 [ sty:property "height" ; sty:raw "calc(var(--control-h, var(--sem-control-height)) - 6px)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+# The button draws a calendar leaf in the current colour (the glyph is for text and assistive tools).
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row > [data-sem-c=icon-button] > .sem-icon" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "width" ; sty:raw "14px" ] ,
+                 [ sty:property "height" ; sty:raw "13px" ] ,
+                 [ sty:property "font-size" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "border-top-width" ; sty:raw "4px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-row > .sem-date-dash" ;
+    sty:declares [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+
+# The popup (role=dialog) and the list of times: an overlay surface under the field box, at its end.
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-popup" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "100%" ] ,
+                 [ sty:property "inset-inline-end" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "40" ] ,
+                 [ sty:property "width" ; sty:raw "max-content" ] ,
+                 [ sty:property "max-width" ; sty:raw "calc(100vw - 32px)" ] ,
+                 [ sty:property "margin-top" ; sty:raw "-4px" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-3 ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-overlay ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "transform-origin" ; sty:raw "top" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-scale-in var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateField ;
+    sty:part "> .sem-date-popup[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "100%" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "40" ] ,
+                 [ sty:property "margin" ; sty:raw "-4px 0 0" ] ,
+                 [ sty:property "padding" ; sty:raw "5px" ] ,
+                 [ sty:property "list-style" ; sty:raw "none" ] ,
+                 [ sty:property "max-height" ; sty:raw "min(264px, 45vh)" ] ,
+                 [ sty:property "overflow-y" ; sty:raw "auto" ] ,
+                 [ sty:property "overscroll-behavior" ; sty:raw "contain" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-overlay ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "cursor" ; sty:raw "default" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list > li" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "min-height" ; sty:raw "32px" ] ,
+                 [ sty:property "padding" ; sty:raw "0 10px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list > li:hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-gray-3)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list > li[aria-selected=true]" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] ,
+                 [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px color-mix(in oklab, var(--sem-accent) 35%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list > li[data-chosen]" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "600" ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ;
+    sty:part "> .sem-time-list > li[data-chosen]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"✓\"" ] ,
+                 [ sty:property "margin-inline-start" ; sty:raw "auto" ] ,
+                 [ sty:property "color" ; sty:token tok:accent ] ,
+                 [ sty:property "font-weight" ; sty:raw "700" ] .
+
+# --- the month grid -------------------------------------------------------------------------------
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "justify-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-select" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "> .sem-mg-head" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "justify-content" ; sty:raw "space-between" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "> .sem-mg-head > .sem-mg-title" ;
+    sty:declares [ sty:property "flex" ; sty:raw "1" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "> .sem-mg-days" ;
+    sty:declares [ sty:property "border-collapse" ; sty:raw "collapse" ] ,
+                 [ sty:property "border-spacing" ; sty:raw "0" ] ,
+                 [ sty:property "margin" ; sty:raw "0 auto" ] ,
+                 [ sty:property "table-layout" ; sty:raw "fixed" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "> .sem-mg-days th" ;
+    sty:declares [ sty:property "padding" ; sty:raw "0 0 4px" ] ,
+                 [ sty:property "width" ; sty:raw "36px" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "text-transform" ; sty:raw "none" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "> .sem-mg-days td" ;
+    sty:declares [ sty:property "padding" ; sty:raw "1px 0" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part ".sem-mg-day" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "inline-grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "width" ; sty:raw "34px" ] ,
+                 [ sty:property "height" ; sty:raw "34px" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-full ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part ".sem-mg-day:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part ".sem-mg-day:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part ".sem-mg-day[data-outside]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part ".sem-mg-day[aria-current=date]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:accent-strong ] ,
+                 [ sty:property "font-weight" ; sty:raw "700" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 1px color-mix(in oklab, var(--sem-accent) 45%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part ".sem-mg-day[aria-disabled=true]" ;
+    sty:declares [ sty:property "color" ; sty:token tok:faint ] ,
+                 [ sty:property "text-decoration" ; sty:raw "line-through" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] .
+# A range: the days between the ends a soft band (the preview a dashed one), the ends solid.
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "td:is([data-range~=inside], [data-range~=preview])" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent-soft ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "td[data-range~=preview]:not([data-range~=inside])" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-accent-soft) 55%, transparent)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 1px 0 color-mix(in oklab, var(--sem-accent) 40%, transparent), inset 0 -1px 0 color-mix(in oklab, var(--sem-accent) 40%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "td[aria-selected=true] > .sem-mg-day" ;
+    sty:declares [ sty:property "background" ; sty:token tok:accent ] ,
+                 [ sty:property "color" ; sty:token tok:on-accent ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ;
+    sty:part "td[aria-selected=true] > .sem-mg-day:focus-visible" ;
+    sty:declares [ sty:property "box-shadow" ; sty:token tok:ring ] .
+
+# On a phone the popup is as wide as the field, and the days are large enough to touch.
+[] a sty:StyleRule ; sty:appliesTo c:DateField ; sty:atWidth sty:CompactWidth ;
+    sty:part "> .sem-date-popup" ;
+    sty:declares [ sty:property "inset-inline" ; sty:raw "0" ] ,
+                 [ sty:property "width" ; sty:raw "auto" ] ,
+                 [ sty:property "max-width" ; sty:raw "none" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ; sty:atWidth sty:CompactWidth ;
+    sty:part "> .sem-mg-days" ;
+    sty:declares [ sty:property "width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ; sty:atWidth sty:CompactWidth ;
+    sty:part "> .sem-mg-days th" ;
+    sty:declares [ sty:property "width" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MonthGrid ; sty:atWidth sty:CompactWidth ;
+    sty:part ".sem-mg-day" ;
+    sty:declares [ sty:property "width" ; sty:raw "min(44px, 100%)" ] ,
+                 [ sty:property "height" ; sty:raw "auto" ] ,
+                 [ sty:property "aspect-ratio" ; sty:raw "1" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-md ] .
+# A range keeps both dates on one line: tighter, and a size smaller.
+[] a sty:StyleRule ; sty:appliesTo c:DateRangeField ; sty:atWidth sty:CompactWidth ;
+    sty:part "> .sem-date-row" ;
+    sty:declares [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "padding-inline-start" ; sty:raw "8px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:DateRangeField ; sty:atWidth sty:CompactWidth ;
+    sty:part "> .sem-date-row > input" ;
+    sty:declares [ sty:property "flex-basis" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] .
+[] a sty:StyleRule ; sty:appliesTo c:TimeField ; sty:atWidth sty:CompactWidth ;
+    sty:part "> .sem-time-list > li" ;
+    sty:declares [ sty:property "min-height" ; sty:raw "42px" ] .
+
+# --- the structural themes (themes-structural.ttl) -----------------------------------------------
+# Each restyles text fields, menus and selected menu items its own way; the field boxes, the popups,
+# the picked day and the highlighted time follow suit with the same values as a combobox's (and the
+# same guard against a differently themed subtree below).
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface)" ] ,
+                 [ sty:property "border" ; sty:raw "0.5px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0.5px 1px light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.4))" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):focus-within:not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "border-color" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-ring)" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-popup, [data-sem-c=time-field] > .sem-time-list):not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--mac-glass)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "var(--mac-blur)" ] ,
+                 [ sty:property "border" ; sty:raw "0.5px solid var(--mac-hairline)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "9px" ] .
+[] a sty:StyleRule ; sty:when sty:Cupertino ;
+    sty:part ":is([data-sem-c=month-grid] td[aria-selected=true] > .sem-mg-day, [data-sem-c=time-field] > .sem-time-list > li[aria-selected=true]):not(:where([data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]), [data-sem-theme=cupertino] [data-sem-theme]:not([data-sem-theme=cupertino]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "color" ; sty:raw "#ffffff" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-text)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):focus-within:not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken), inset 0 0 0 2px var(--sem-accent-9)" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-popup, [data-sem-c=time-field] > .sem-time-list):not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised), var(--sem-shadow-3)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part ":is([data-sem-c=month-grid] td[aria-selected=true] > .sem-mg-day, [data-sem-c=time-field] > .sem-time-list > li[aria-selected=true]):not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-select-bg)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--bv-select-fg)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Tracker ;
+    sty:part "[data-sem-c=month-grid] :is(.sem-mg-day, td):not(:where([data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]), [data-sem-theme=tracker] [data-sem-theme]:not([data-sem-theme=tracker]) *))" ;
+    sty:declares [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-surface-sunken)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:raw "var(--sem-text)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):focus-within:not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "var(--bv-sunken)" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-popup, [data-sem-c=time-field] > .sem-time-list):not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-face)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--bv-raised), var(--sem-shadow-3)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part ":is([data-sem-c=month-grid] td[aria-selected=true] > .sem-mg-day, [data-sem-c=time-field] > .sem-time-list > li[aria-selected=true]):not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--bv-select-bg)" ] ,
+                 [ sty:property "color" ; sty:raw "var(--bv-select-fg)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Classic ;
+    sty:part "[data-sem-c=month-grid] :is(.sem-mg-day, td):not(:where([data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]), [data-sem-theme=classic] [data-sem-theme]:not([data-sem-theme=classic]) *))" ;
+    sty:declares [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "2px solid var(--ink)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):focus-within:not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--hl)" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--ink)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-popup, [data-sem-c=time-field] > .sem-time-list):not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "light-dark(#fff7b0, #4a4628)" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "2px 2px 18px 2px / 2px 2px 26px 2px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "4px 6px 0 light-dark(rgb(27 35 64 / 0.18), rgb(0 0 0 / 0.4))" ] ,
+                 [ sty:property "rotate" ; sty:raw "0.8deg" ] ,
+                 [ sty:property "color" ; sty:raw "light-dark(#1b2340, #fff8d6)" ] .
+[] a sty:StyleRule ; sty:when sty:Doodle ;
+    sty:part ":is([data-sem-c=month-grid] td[aria-selected=true] > .sem-mg-day, [data-sem-c=time-field] > .sem-time-list > li[aria-selected=true]):not(:where([data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]), [data-sem-theme=doodle] [data-sem-theme]:not([data-sem-theme=doodle]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "linear-gradient(100deg, transparent 1%, var(--hl-strong) 3% 94%, transparent 98%)" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-fill)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--fl-stroke)" ] ,
+                 [ sty:property "border-bottom-color" ; sty:raw "var(--fl-stroke-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "4px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-row, [data-sem-c=time-field] > .sem-time-row):focus-within:not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-fill-input)" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--fl-stroke)" ] ,
+                 [ sty:property "border-bottom-color" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 -1px 0 var(--sem-accent-9)" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is(:is([data-sem-c=date-field], [data-sem-c=date-range-field]) > .sem-date-popup, [data-sem-c=time-field] > .sem-time-list):not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--fl-acrylic)" ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "var(--fl-blur)" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--fl-stroke-flyout)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "8px" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "var(--sem-shadow-3)" ] .
+[] a sty:StyleRule ; sty:when sty:Fluent ;
+    sty:part ":is([data-sem-c=month-grid] td[aria-selected=true] > .sem-mg-day, [data-sem-c=time-field] > .sem-time-list > li[aria-selected=true]):not(:where([data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]), [data-sem-theme=fluent] [data-sem-theme]:not([data-sem-theme=fluent]) *))" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "color" ; sty:raw "#ffffff" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .

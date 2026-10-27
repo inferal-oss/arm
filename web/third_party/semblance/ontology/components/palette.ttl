@@ -1,0 +1,690 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix nav: <https://semblance.dev/ns/navigation#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# The command palette (DESIGN.md §3, Overlays): ⌘K / Ctrl+K, a searchable list of everything one can
+# do or go to in an app, as a modal overlay. It is a typeahead (typeahead.ttl) whose options are
+# things to run rather than values to set, and an overlay (c:open, overlays.ttl).
+#
+#   What it lists (c:lists, by default all three, and c:entries):
+#     c:PaletteCommands   every key:Command (its key:Press is what running it does);
+#     c:PaletteShortcuts  every component with a key:shortcut (running it clicks it, as its key does);
+#     c:PalettePlaces     every place the app's location can be: the content of each case of a
+#                         c:Switch that follows a nav:Dimension (pages, sections, examples);
+#     c:entries           a list the app gives: commands, components, or anything with a c:to.
+#   An option shows its label (in the viewer's language), what it does (c:help, rdfs:comment; for a
+#   place, the place it is in) and its keys (key:hint). Options are grouped in sections
+#   (c:PaletteSection, by sem:order): the recently run ones first, then commands, actions and
+#   places, or whatever c:paletteSection an item names.
+#
+#   Running an option (Enter, or a click) closes the palette, puts the item first among the recent
+#   ones (c:recentLimit of them, default 5, kept as c:RecentRun nodes a per:Policy can remember) and
+#   does what the item is for: a command or a component gets the event it would get from its key
+#   (beh:raise key:Press or beh:Click: its own reactions handle it); a place or a c:to is gone to as
+#   a link to it would be (nav:goTo).
+#
+# How it is made. Everything is graph state: c:open, the typed text (c:value), the highlighted
+# option (c:activeOption; none: the first one shown is highlighted) and the recent runs. The
+# WAI-ARIA combobox pattern inside a modal dialog: the field is role=combobox (aria-expanded,
+# aria-controls the role=listbox, aria-activedescendant the highlighted role=option), the options
+# are in role=group sections labelled by their headings, the focus stays in the field while the
+# arrow keys move. Opening it moves the focus into it and closing it returns the focus (the event
+# bus does that for every aria-modal overlay); a key:Command with c:opens opens it (mod+k).
+#
+# What a keystroke costs: what the palette shows, not the size of the app. The options are minted
+# once, when the palette opens (c:PaletteOptions, before the components render), from labels the
+# texts layer (c:PaletteTexts) puts in the graph in the viewer's language; then typing writes
+# c:value, the typeahead folds it (c:TypeaheadQuery) and each option decides whether it matches
+# (c:TypeaheadOptionRendering, one bulk query); the palette's own rule writes which option is
+# highlighted and which sections are shown. Closed, the palette renders an empty hidden root and
+# nothing of it is evaluated.
+
+<https://semblance.dev/ns/component/palette> a owl:Ontology ;
+    rdfs:label "Semblance command palette"@en .
+
+# --- vocabulary ------------------------------------------------------------------------------------
+
+c:CommandPalette a owl:Class ;
+    rdfs:subClassOf c:Overlay , c:Typeahead ;
+    rdfs:label "Command palette"@en , "Палітра команд"@uk , "Befehlspalette"@de , "لوحة الأوامر"@ar ;
+    rdfs:comment """A modal list of everything one can do or go to, filtered as one types: every key:Command,
+every component with a key:shortcut and every place of the app's location (c:lists), and the app's own
+c:entries, grouped in sections, the recently run ones first. Enter (or a click) runs the highlighted
+option: a command or component gets the event its key would give it, a place is gone to. Opened by a
+key:Command that c:opens it (mod+k), closed by Escape, the ✕ or the scrim; the focus comes back to where
+it was. Also: c:label (its accessible name), c:placeholder, c:recentLimit."""@en ;
+    sem:slug "command-palette" .
+
+c:PaletteSource a owl:Class ;
+    rdfs:label "Palette source"@en , "Джерело палітри"@uk , "Palettenquelle"@de , "مصدر اللوحة"@ar ;
+    rdfs:comment "What a command palette lists from the graph (c:lists)."@en .
+c:PaletteCommands a c:PaletteSource ; sem:order 1 ;
+    rdfs:label "Commands"@en , "Команди"@uk , "Befehle"@de , "الأوامر"@ar ;
+    rdfs:comment "Every key:Command (but one that opens the palette): running it records its key:Press."@en .
+c:PaletteShortcuts a c:PaletteSource ; sem:order 2 ;
+    rdfs:label "Shortcuts"@en , "Скорочення"@uk , "Tastenkürzel"@de , "الاختصارات"@ar ;
+    rdfs:comment "Every component with a key:shortcut: running it raises the beh:Click its key would give it."@en .
+c:PalettePlaces a c:PaletteSource ; sem:order 3 ;
+    rdfs:label "Places"@en , "Місця"@uk , "Orte"@de , "الأماكن"@ar ;
+    rdfs:comment "Every place the app's location can be: the content of each case of a c:Switch over a nav:Dimension's node and property, gone to as a link (c:to) to it would go."@en .
+
+c:lists a owl:ObjectProperty ; rdfs:domain c:CommandPalette ; rdfs:range c:PaletteSource ;
+    rdfs:label "Lists"@en , "Показує"@uk , "Listet"@de , "يعرض"@ar ;
+    rdfs:comment "What the palette lists from the graph (any number; none: all of c:PaletteCommands, c:PaletteShortcuts, c:PalettePlaces)."@en .
+c:entries a owl:ObjectProperty ; rdfs:domain c:CommandPalette ; rdfs:range rdf:List ;
+    rdfs:label "Entries"@en , "Записи"@uk , "Einträge"@de , "الإدخالات"@ar ;
+    rdfs:comment "More items the app lists, in this order: a key:Command, a component (clicked), or any node with a c:to (gone to). Each is labelled by c:label or rdfs:label and described by c:help or rdfs:comment."@en .
+c:keywords a owl:DatatypeProperty ; rdfs:range rdfs:Literal ;
+    rdfs:label "Search keywords"@en , "Ключові слова пошуку"@uk , "Suchbegriffe"@de , "كلمات البحث"@ar ;
+    rdfs:comment """Optional search metadata on a palette entry: one literal, at most 32768 characters.
+The palette appends its folded text to the label's normalized search key, after a line break.
+It is never shown in the label or help. Matching only keywords leaves the displayed label intact.
+Only the first 32768 characters of an oversized literal are indexed. Metadata remains graph data:
+applications must not put secrets here. Disabled entries are not listed."""@en .
+
+c:paletteSection a owl:ObjectProperty ; rdfs:range c:PaletteSection ;
+    rdfs:label "Section"@en , "Розділ"@uk , "Abschnitt"@de , "القسم"@ar ;
+    rdfs:comment "On an item a palette lists: the section it is shown in (default: by what it is: a command, an action, a place). On an option: the section it is in."@en .
+c:recentLimit a owl:DatatypeProperty ; rdfs:domain c:CommandPalette ; rdfs:range xsd:integer ;
+    rdfs:label "Recent items"@en , "Нещодавні"@uk , "Zuletzt verwendet"@de , "العناصر الأخيرة"@ar ;
+    rdfs:comment "How many recently run items the palette keeps and shows first (default 5; 0: none)."@en .
+
+c:PaletteSection a owl:Class ;
+    rdfs:label "Palette section"@en , "Розділ палітри"@uk , "Palettenabschnitt"@de , "قسم اللوحة"@ar ;
+    rdfs:comment "A group of a command palette's options, under its rdfs:label, in sem:order. An app may declare its own and put items in them (c:paletteSection)."@en .
+c:RecentSection a c:PaletteSection ; sem:order 0 ;
+    rdfs:label "Recent"@en , "Нещодавні"@uk , "Zuletzt"@de , "الأخيرة"@ar ;
+    rdfs:comment "What was run last, most recent first; shown while nothing is typed."@en .
+c:CommandsSection a c:PaletteSection ; sem:order 1 ;
+    rdfs:label "Commands"@en , "Команди"@uk , "Befehle"@de , "الأوامر"@ar .
+c:ActionsSection a c:PaletteSection ; sem:order 2 ;
+    rdfs:label "Actions"@en , "Дії"@uk , "Aktionen"@de , "الإجراءات"@ar .
+c:PlacesSection a c:PaletteSection ; sem:order 3 ;
+    rdfs:label "Go to"@en , "Перейти"@uk , "Gehe zu"@de , "انتقل إلى"@ar .
+
+# Recent runs: input state, one node per item, <palette>/~recent-<item>.
+c:RecentRun a owl:Class ;
+    rdfs:label "Recent run"@en , "Нещодавній запуск"@uk , "Zuletzt ausgeführt"@de , "تشغيل حديث"@ar ;
+    rdfs:comment "That a command palette ran an item (c:entryFor), and how recently: c:recentRank 0 is the latest. Written by running an option; a per:Policy over c:recentOf remembers them."@en .
+c:recentOf a owl:ObjectProperty ; rdfs:domain c:RecentRun ; rdfs:range c:CommandPalette ;
+    rdfs:comment "The palette that ran it."@en .
+c:entryFor a owl:ObjectProperty ; rdfs:domain c:RecentRun ;
+    rdfs:comment "The item that was run."@en .
+c:recentRank a owl:DatatypeProperty ; rdfs:domain c:RecentRun ; rdfs:range xsd:integer ;
+    rdfs:comment "0 for the latest run, 1 for the one before, …"@en .
+
+# On an option (a c:TypeaheadOption the palette mints): what running it does to its item (c:option).
+c:raises a owl:ObjectProperty ; rdfs:range owl:Class ;
+    rdfs:comment "On a palette's option: the event class running it raises on its item (key:Press for a command, beh:Click for a component)."@en .
+# c:to (navigation.ttl) on an option: the resource running it goes to.
+
+# Phrases, translated like the other c:Phrase individuals.
+c:PalettePlaceholder a c:Phrase ;
+    rdfs:label "Type a command or search…"@en , "Введіть команду або шукайте…"@uk , "Befehl eingeben oder suchen …"@de , "اكتب أمرًا أو ابحث…"@ar .
+c:PaletteMovePhrase a c:Phrase ; rdfs:label "to move"@en , "перейти"@uk , "bewegen"@de , "للتنقل"@ar .
+c:PaletteRunPhrase a c:Phrase ; rdfs:label "to run"@en , "виконати"@uk , "ausführen"@de , "للتنفيذ"@ar .
+c:PaletteClosePhrase a c:Phrase ; rdfs:label "to close"@en , "закрити"@uk , "schließen"@de , "للإغلاق"@ar .
+
+# --- texts: labels in the viewer's language, and search keys --------------------------------------
+# A function layer, like c:TypeaheadTexts: while the palette is open, every item it lists gets a node
+# <palette>/~term-<item> with its label in the viewer's language (l10n:label), its search key
+# (c:searchKey) and what it does (c:help); the sections and the phrases get theirs.
+
+c:PaletteTexts a sem:Rendering ;
+    sem:targets c:CommandPalette ;
+    sem:stratum -20 ;
+    sem:inputOnly true ;
+    sem:watches rdf:type , c:open , c:label , c:placeholder , c:lists , c:entries , c:keywords , c:disabled ;
+    sem:functionOnly "awaits sx:Locale (sx:sortKey): it folds labels for matching (NFD, combining marks removed), as c:TypeaheadTexts does; the labels themselves are picked from the viewer's languages in the graph." ;
+    sem:needsExtension sx:Locale .
+c:PaletteTexts-fn a sem:Rule ; sem:implements c:PaletteTexts ; sem:function "palette:texts" .
+
+# --- the options: minted once, when the palette opens ------------------------------------------------
+# Before the components render (stratum -5), so the palette's own rule reads them. It does not hear
+# typing: it watches whether the palette is open and what it lists, and re-runs when the texts layer's
+# nodes change. An item from two sources is listed once, at its first position. Its rank (also its
+# sem:orderKey) is its section's sem:order, its position (an entry's place in c:entries; a place's
+# sem:order, under its parent's), its search key and its IRI. A recently run item is listed a second
+# time, in the recent section, by how recently.
+
+c:PaletteOptions a sem:Rendering ;
+    sem:targets c:CommandPalette ;
+    sem:modality mod:Screen ;
+    sem:stratum -5 ;
+    sem:readsMinted true ;
+    sem:watches rdf:type , c:open , c:lists , c:entries , c:recentLimit .
+c:PaletteOptions-fn a sem:Rule ; sem:implements c:PaletteOptions ; sem:function "palette:options" .
+c:PaletteOptions-sparql a sem:Rule ;
+    sem:implements c:PaletteOptions ;
+    sem:construct """
+CONSTRUCT {
+  ?group rdfhtml:hasChild ?opt .
+  ?opt a c:TypeaheadOption ; c:of $this ; c:option ?item ; c:label ?label ; c:searchKey ?key ; c:rank ?rank ; sem:orderKey ?rank ;
+       c:paletteSection ?section ; c:help ?help ; key:hint ?hint ; c:to ?dest ; c:raises ?event .
+  ?recentGroup rdfhtml:hasChild ?recent .
+  ?recent a c:TypeaheadOption ; c:of $this ; c:option ?item ; c:label ?label ; c:searchKey ?key ; c:rank ?recentRank ; sem:orderKey ?recentRank ;
+          c:paletteSection ?recentSection ; c:help ?help ; key:hint ?hint ; c:to ?dest ; c:raises ?event .
+}
+WHERE {
+  $this a c:CommandPalette ; c:open ?open .
+  FILTER(STR(?open) = "true")
+  # Every item from every source, once: its first position, whether it is a place (whatever the
+  # palette lists), and whether the palette lists it.
+  { SELECT ?self ?item (MIN(?position) AS ?n) (MAX(?placeHit) AS ?placed) (MAX(?listedHit) AS ?listed) WHERE {
+      $this a c:CommandPalette .
+      BIND($this AS ?self)
+      {
+        FILTER(NOT EXISTS { $this c:lists ?anyList1 } || EXISTS { $this c:lists c:PaletteCommands })
+        ?item a key:Command .
+        BIND(0 AS ?position) BIND(0 AS ?placeHit) BIND(1 AS ?listedHit)
+      } UNION {
+        FILTER(NOT EXISTS { $this c:lists ?anyList2 } || EXISTS { $this c:lists c:PaletteShortcuts })
+        ?item key:shortcut ?combo .
+        FILTER(isIRI(?item))
+        FILTER NOT EXISTS { ?item a key:Command }
+        BIND(0 AS ?position) BIND(0 AS ?placeHit) BIND(1 AS ?listedHit)
+      } UNION {
+        ?switch a c:Switch ; c:controls ?subject ; c:property ?property ; c:cases ?cases .
+        ?cases rdf:rest*/rdf:first ?case .
+        ?case c:when ?value ; c:content ?item .
+        FILTER(isIRI(?item))
+        ?dimension nav:subject ?subject ; nav:property ?property .
+        OPTIONAL { ?value sem:order ?own0 }
+        OPTIONAL { ?dimension nav:when ?up FILTER NOT EXISTS { ?dimension nav:when ?otherUp FILTER(?otherUp != ?up) } OPTIONAL { ?up sem:order ?up0 } }
+        BIND(COALESCE(xsd:integer(ROUND(xsd:decimal(?own0))), 0) AS ?own)
+        BIND(IF(NOT EXISTS { $this c:lists ?anyList3 } || EXISTS { $this c:lists c:PalettePlaces }, 1, 0) AS ?listedHit)
+        BIND(IF(?listedHit = 1, IF(BOUND(?up), COALESCE(xsd:integer(ROUND(xsd:decimal(?up0))), 0) * 1000 + ?own, ?own * 1000), 99999999) AS ?position)
+        BIND(1 AS ?placeHit)
+      } UNION {
+        $this c:entries ?head . ?head rdf:rest* ?cell . ?cell rdf:first ?item .
+        FILTER(isIRI(?item))
+        { SELECT ?self ?cell (COUNT(?mid) AS ?position) WHERE {
+            $this c:entries ?head2 . ?head2 rdf:rest* ?mid . ?mid rdf:rest* ?cell .
+            BIND($this AS ?self)
+          } GROUP BY ?self ?cell }
+        BIND(0 AS ?placeHit) BIND(1 AS ?listedHit)
+      }
+    } GROUP BY ?self ?item }
+  FILTER(?self = $this && ?listed = 1)
+  # Not what opens the palette itself (its command, its button).
+  FILTER NOT EXISTS { ?item c:opens $this }
+  FILTER NOT EXISTS { ?item c:controls $this }
+  FILTER NOT EXISTS { ?item c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  # What running it does: a command's key press, a place's or a c:to's address, else a click.
+  BIND(EXISTS { ?item a key:Command } AS ?isCommand)
+  BIND(?placed = 1 AS ?isPlace)
+  LATERAL { OPTIONAL { ?item c:to ?declaredTo FILTER(isIRI(?declaredTo)) FILTER NOT EXISTS { ?item c:to ?otherTo FILTER(isIRI(?otherTo) && STR(?otherTo) < STR(?declaredTo)) } } }
+  BIND(COALESCE(?declaredTo, IF(?isPlace && !?isCommand, ?item, ?none)) AS ?dest)
+  BIND(IF(BOUND(?dest), ?none, IF(?isCommand, key:Press, beh:Click)) AS ?event)
+  # Its section and keys.
+  LATERAL { OPTIONAL { ?item c:paletteSection ?declaredSection FILTER NOT EXISTS { ?item c:paletteSection ?otherSection FILTER(STR(?otherSection) < STR(?declaredSection)) } } }
+  BIND(COALESCE(?declaredSection, IF(?isCommand, c:CommandsSection, IF(BOUND(?dest), c:PlacesSection, c:ActionsSection))) AS ?section)
+  LATERAL { OPTIONAL { ?section sem:order ?sectionOrder0 FILTER NOT EXISTS { ?section sem:order ?lowerOrder FILTER(?lowerOrder < ?sectionOrder0) } } }
+  LATERAL { OPTIONAL { ?item key:shortcut ?hint0 FILTER NOT EXISTS { ?item key:shortcut ?otherHint FILTER(STR(?otherHint) < STR(?hint0)) } } }
+  BIND(STR(?hint0) AS ?hint)
+  # Its label, search key and help, in the viewer's language (the texts layer).
+  BIND(IRI(CONCAT(STR($this), "/~term-", ENCODE_FOR_URI(STR(?item)))) AS ?textNode)
+  LATERAL { OPTIONAL { ?textNode l10n:label ?localLabel } OPTIONAL { ?textNode c:searchKey ?foldedKey } OPTIONAL { ?textNode c:help ?help0 } }
+  BIND(STR(COALESCE(?localLabel, REPLACE(STR(?item), "^.*[#/]", ""))) AS ?label)
+  BIND(COALESCE(STR(?foldedKey), LCASE(?label)) AS ?key)
+  BIND(STR(?help0) AS ?help)
+  # Its rank.
+  BIND(COALESCE(xsd:integer(ROUND(xsd:decimal(?sectionOrder0))), 0) AS ?so0)
+  BIND(IF(?so0 < 0, 0, IF(?so0 > 999, 999, ?so0)) AS ?so)
+  BIND(xsd:integer(IF(?n < 0, 0, IF(?n > 999999, 999999, ?n))) AS ?clamped)
+  BIND(CONCAT(SUBSTR("000", STRLEN(STR(?so)) + 1), STR(?so), " ", SUBSTR("000000", STRLEN(STR(?clamped)) + 1), STR(?clamped), " ", ?key, " ", STR(?item)) AS ?rank)
+  BIND(IRI(CONCAT(STR($this), "/~opt-", ENCODE_FOR_URI(STR(?item)))) AS ?opt)
+  BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)))) AS ?group)
+  # Run lately: once more, in the recent section.
+  LATERAL { OPTIONAL { ?recentNode c:recentOf $this ; c:entryFor ?item ; c:recentRank ?recentN0 } }
+  OPTIONAL { $this c:recentLimit ?limit0 }
+  BIND(COALESCE(xsd:integer(?limit0), 5) AS ?limit)
+  BIND(xsd:integer(?recentN0) AS ?recentN)
+  BIND(BOUND(?recentN) && ?recentN >= 0 && ?recentN < ?limit AS ?isRecent)
+  BIND(IF(?isRecent, IRI(CONCAT(STR($this), "/~recent-opt-", ENCODE_FOR_URI(STR(?item)))), ?none) AS ?recent)
+  BIND(IF(?isRecent, IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(c:RecentSection)))), ?none) AS ?recentGroup)
+  BIND(IF(?isRecent, c:RecentSection, ?none) AS ?recentSection)
+  BIND(IF(?isRecent, CONCAT("000 ", SUBSTR("000000", STRLEN(STR(?recentN)) + 1), STR(?recentN), " ", ?key, " ", STR(?item)), ?none) AS ?recentRank)
+}""" .
+
+# --- the palette: a scrim and a panel with the field, the sections and the hints -------------------
+# One rule. Closed, an empty hidden root. Open: the field (the combobox), the listbox with a group per
+# section that has options (hidden while none of them is shown), a status line (no matches) and the
+# key hints. It writes which option is highlighted (aria-selected on its row, aria-activedescendant on
+# the field): c:activeOption while it is shown, else the first shown. It reads the options
+# (sem:readsMinted) and the texts layer's nodes.
+
+c:CommandPaletteRendering a sem:Rendering ;
+    sem:targets c:CommandPalette ;
+    sem:stratum 0 ;
+    sem:readsMinted true .
+c:CommandPaletteRendering-fn a sem:Rule ; sem:implements c:CommandPaletteRendering ; sem:function "command-palette" .
+c:CommandPaletteRendering-sparql-screen a sem:Rule ;
+    sem:implements c:CommandPaletteRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:id ?rootId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?scrim, ?panel .
+  ?scrim a rdfhtml:Div ; rdfhtml:class "sem-scrim" ; rdfhtml:attribute ?scrimHidden ; c:closes ?closed ; ord:immediatelyPrecedes ?panel .
+  ?scrimHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?panel a rdfhtml:Section ; rdfhtml:class "sem-panel" ; rdfhtml:tabIndex "-1" ; rdfhtml:attribute ?panelRole, ?panelModal, ?panelLabel ;
+         rdfhtml:hasChild ?search, ?list, ?status, ?foot .
+  ?panelRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "dialog" .
+  ?panelModal a rdfhtml:Attribute ; rdfhtml:attributeName "aria-modal" ; rdfhtml:attributeValue "true" .
+  ?panelLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?search a rdfhtml:Div ; rdfhtml:class "sem-cp-search" ; rdfhtml:hasChild ?glass, ?input, ?close ; ord:immediatelyPrecedes ?list .
+  ?glass a rdfhtml:Span ; rdfhtml:class "sem-cp-glass" ; rdfhtml:attribute ?glassHidden ; rdfhtml:hasChild ?glassText ; ord:immediatelyPrecedes ?input .
+  ?glassHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?glassText a rdfhtml:Text ; rdfhtml:data "⌕" .
+  ?input a rdfhtml:Input ; rdfhtml:type "text" ; rdfhtml:id ?inputId ; rdfhtml:value ?typed ; rdfhtml:placeholder ?placeholder ;
+         rdfhtml:autocomplete "off" ; rdfhtml:spellcheck "false" ; rdfhtml:autofocus "" ;
+         rdfhtml:attribute ?inputRole, ?inputAuto, ?inputControls, ?inputExpanded, ?inputActive, ?inputLabel, ?inputCaret ;
+         ord:immediatelyPrecedes ?close .
+  ?inputRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "combobox" .
+  ?inputAuto a rdfhtml:Attribute ; rdfhtml:attributeName "aria-autocomplete" ; rdfhtml:attributeValue "list" .
+  ?inputControls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?listId .
+  ?inputExpanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue "true" .
+  ?inputActive a rdfhtml:Attribute ; rdfhtml:attributeName "aria-activedescendant" ; rdfhtml:attributeValue ?activeId .
+  ?inputLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?inputCaret a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-caret" ; rdfhtml:attributeValue ?caretValue .
+  ?close a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-close" ; rdfhtml:attribute ?closeLabel, ?closeEscape ;
+         rdfhtml:hasChild ?closeText ; c:closes ?closed .
+  ?closeLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?closeWord .
+  ?closeEscape a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+  ?closeText a rdfhtml:Text ; rdfhtml:data "✕" .
+  ?list a rdfhtml:Div ; rdfhtml:id ?listId ; rdfhtml:class "sem-cp-list" ; rdfhtml:attribute ?listRole, ?listLabel, ?listKeep ;
+        rdfhtml:hasChild ?group ; ord:immediatelyPrecedes ?status .
+  ?listRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "listbox" .
+  ?listLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?listKeep a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-keep-focus" ; rdfhtml:attributeValue "" .
+  ?group a rdfhtml:Ul ; rdfhtml:class "sem-cp-group" ; rdfhtml:hidden ?groupHidden ; sem:orderKey ?groupKey ;
+         rdfhtml:attribute ?groupRole, ?groupLabelledBy ; rdfhtml:hasChild ?heading .
+  ?groupRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?groupLabelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?headingId .
+  ?heading a rdfhtml:Li ; rdfhtml:id ?headingId ; rdfhtml:class "sem-cp-heading" ; sem:orderKey "!" ;
+           rdfhtml:attribute ?headingRole ; rdfhtml:hasChild ?headingText .
+  ?headingRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "presentation" .
+  ?headingText a rdfhtml:Text ; rdfhtml:data ?sectionLabel .
+  ?status a rdfhtml:Div ; rdfhtml:class "sem-cp-status" ; rdfhtml:attribute ?statusRole ; rdfhtml:hasChild ?statusText ;
+          ord:immediatelyPrecedes ?foot .
+  ?statusRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "status" .
+  ?statusText a rdfhtml:Text ; rdfhtml:data ?statusLine .
+  ?foot a rdfhtml:Footer ; rdfhtml:class "sem-cp-foot" ; rdfhtml:attribute ?footHidden ;
+        rdfhtml:hasChild ?moveKey, ?moveHint, ?runKey, ?runHint, ?closeKey, ?closeHint .
+  ?footHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?moveKey a rdfhtml:Kbd ; rdfhtml:hasChild ?moveKeyText ; ord:immediatelyPrecedes ?moveHint .
+  ?moveKeyText a rdfhtml:Text ; rdfhtml:data "↑↓" .
+  ?moveHint a rdfhtml:Span ; rdfhtml:hasChild ?moveWords ; ord:immediatelyPrecedes ?runKey .
+  ?moveWords a rdfhtml:Text ; rdfhtml:data ?movePhrase .
+  ?runKey a rdfhtml:Kbd ; rdfhtml:hasChild ?runKeyText ; ord:immediatelyPrecedes ?runHint .
+  ?runKeyText a rdfhtml:Text ; rdfhtml:data "↵" .
+  ?runHint a rdfhtml:Span ; rdfhtml:hasChild ?runWords ; ord:immediatelyPrecedes ?closeKey .
+  ?runWords a rdfhtml:Text ; rdfhtml:data ?runPhrase .
+  ?closeKey a rdfhtml:Kbd ; rdfhtml:hasChild ?closeKeyText ; ord:immediatelyPrecedes ?closeHint .
+  ?closeKeyText a rdfhtml:Text ; rdfhtml:data "esc" .
+  ?closeHint a rdfhtml:Span ; rdfhtml:hasChild ?closeWords .
+  ?closeWords a rdfhtml:Text ; rdfhtml:data ?closePhrase .
+  ?activeRow rdfhtml:attribute ?selectedAttr .
+  ?selectedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-selected" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a c:CommandPalette .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(STR(?root) AS ?rootId)
+  {
+    FILTER NOT EXISTS { $this c:open ?shut FILTER(STR(?shut) = "true") }
+    BIND("" AS ?hidden)
+  } UNION {
+    FILTER EXISTS { $this c:open ?o FILTER(STR(?o) = "true") }
+    OPTIONAL { $this c:value ?typed0 }
+    BIND(STR(?typed0) AS ?typed)
+    OPTIONAL { $this c:foldedQuery ?q0 }
+    BIND(COALESCE(STR(?q0), "") AS ?q)
+    # Words in the viewer's language (the texts layer), else English.
+    BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-placeholder")) AS ?placeholderNode)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-close")) AS ?closeNode)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-no-matches")) AS ?noMatchesNode)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-move")) AS ?moveNode)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-run")) AS ?runNode)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-dismiss")) AS ?dismissNode)
+    LATERAL { OPTIONAL { ?captionNode l10n:label ?caption0 } OPTIONAL { ?placeholderNode l10n:label ?placeholder0 } OPTIONAL { ?closeNode l10n:label ?closeWord0 }
+              OPTIONAL { ?noMatchesNode l10n:label ?noMatches0 } OPTIONAL { ?moveNode l10n:label ?move0 } OPTIONAL { ?runNode l10n:label ?run0 }
+              OPTIONAL { ?dismissNode l10n:label ?dismiss0 } }
+    OPTIONAL { c:CommandPalette rdfs:label ?caption1 FILTER(langMatches(lang(?caption1), "en")) }
+    OPTIONAL { c:PalettePlaceholder rdfs:label ?placeholder1 FILTER(langMatches(lang(?placeholder1), "en")) }
+    OPTIONAL { c:NoMatches rdfs:label ?noMatches1 FILTER(langMatches(lang(?noMatches1), "en")) }
+    OPTIONAL { c:PaletteMovePhrase rdfs:label ?move1 FILTER(langMatches(lang(?move1), "en")) }
+    OPTIONAL { c:PaletteRunPhrase rdfs:label ?run1 FILTER(langMatches(lang(?run1), "en")) }
+    OPTIONAL { c:PaletteClosePhrase rdfs:label ?dismiss1 FILTER(langMatches(lang(?dismiss1), "en")) }
+    BIND(STR(COALESCE(?caption0, ?caption1, "Command palette")) AS ?caption)
+    BIND(STR(COALESCE(?placeholder0, ?placeholder1)) AS ?placeholder)
+    BIND(STR(COALESCE(?closeWord0, "Close")) AS ?closeWord)
+    BIND(STR(COALESCE(?noMatches0, ?noMatches1)) AS ?noMatches)
+    BIND(STR(COALESCE(?move0, ?move1)) AS ?movePhrase)
+    BIND(STR(COALESCE(?run0, ?run1)) AS ?runPhrase)
+    BIND(STR(COALESCE(?dismiss0, ?dismiss1)) AS ?closePhrase)
+    # The options shown: those that match (the recent ones only while nothing is typed). The
+    # highlighted one: c:activeOption while it is shown, else the first shown.
+    OPTIONAL { SELECT (MIN(?shownRank) AS ?firstRank) WHERE {
+        OPTIONAL { $this c:foldedQuery ?sq0 }
+        BIND(COALESCE(STR(?sq0), "") AS ?sq)
+        ?shown a c:TypeaheadOption ; c:of $this ; c:searchKey ?shownKey ; c:rank ?shownRank .
+        FILTER(?sq = "" || (CONTAINS(STR(?shownKey), ?sq) && NOT EXISTS { ?shown c:paletteSection c:RecentSection }))
+      } }
+    LATERAL { OPTIONAL { ?first a c:TypeaheadOption ; c:of $this ; c:rank ?firstRank0 FILTER(?firstRank0 = ?firstRank) } }
+    LATERAL { OPTIONAL {
+      $this c:activeOption ?chosen . ?chosen a c:TypeaheadOption ; c:of $this ; c:searchKey ?chosenKey .
+      FILTER(?q = "" || (CONTAINS(STR(?chosenKey), ?q) && NOT EXISTS { ?chosen c:paletteSection c:RecentSection }))
+    } }
+    BIND(COALESCE(?chosen, ?first) AS ?active)
+    BIND(IF(BOUND(?active), IRI(CONCAT(STR(?active), "/~root")), ?none) AS ?activeRow)
+    BIND(STR(?activeRow) AS ?activeId)
+    BIND(IF(BOUND(?activeRow), IRI(CONCAT(STR($this), "/~active-aria-selected")), ?none) AS ?selectedAttr)
+    BIND(IF(BOUND(?activeRow), IRI(CONCAT(STR($this), "/~input-aria-activedescendant")), ?none) AS ?inputActive)
+    BIND(IF(?q != "" && !BOUND(?firstRank), ?noMatches, ?none) AS ?statusLine)
+    # Where the caret is, while the field keeps the focus (c:caret).
+    OPTIONAL { $this c:caret ?caret0 }
+    BIND(IF(BOUND(?caret0), STR(?caret0), ?none) AS ?caretValue)
+    BIND(IF(BOUND(?caretValue), IRI(CONCAT(STR($this), "/~input-data-sem-caret")), ?none) AS ?inputCaret)
+    # The parts.
+    BIND($this AS ?closed)
+    BIND(IRI(CONCAT(STR($this), "/~scrim")) AS ?scrim)
+    BIND(IRI(CONCAT(STR($this), "/~scrim-aria-hidden")) AS ?scrimHidden)
+    BIND(IRI(CONCAT(STR($this), "/~panel")) AS ?panel)
+    BIND(IRI(CONCAT(STR($this), "/~panel-role")) AS ?panelRole)
+    BIND(IRI(CONCAT(STR($this), "/~panel-aria-modal")) AS ?panelModal)
+    BIND(IRI(CONCAT(STR($this), "/~panel-aria-label")) AS ?panelLabel)
+    BIND(IRI(CONCAT(STR($this), "/~search")) AS ?search)
+    BIND(IRI(CONCAT(STR($this), "/~glass")) AS ?glass)
+    BIND(IRI(CONCAT(STR($this), "/~glass-aria-hidden")) AS ?glassHidden)
+    BIND(IRI(CONCAT(STR($this), "/~glass-text")) AS ?glassText)
+    BIND(IRI(CONCAT(STR($this), "/~input")) AS ?input)
+    BIND(STR(?input) AS ?inputId)
+    BIND(IRI(CONCAT(STR($this), "/~input-role")) AS ?inputRole)
+    BIND(IRI(CONCAT(STR($this), "/~input-aria-autocomplete")) AS ?inputAuto)
+    BIND(IRI(CONCAT(STR($this), "/~input-aria-controls")) AS ?inputControls)
+    BIND(IRI(CONCAT(STR($this), "/~input-aria-expanded")) AS ?inputExpanded)
+    BIND(IRI(CONCAT(STR($this), "/~input-aria-label")) AS ?inputLabel)
+    BIND(IRI(CONCAT(STR($this), "/~close")) AS ?close)
+    BIND(IRI(CONCAT(STR($this), "/~close-aria-label")) AS ?closeLabel)
+    BIND(IRI(CONCAT(STR($this), "/~close-data-sem-escape")) AS ?closeEscape)
+    BIND(IRI(CONCAT(STR($this), "/~close-text")) AS ?closeText)
+    BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+    BIND(STR(?list) AS ?listId)
+    BIND(IRI(CONCAT(STR($this), "/~list-role")) AS ?listRole)
+    BIND(IRI(CONCAT(STR($this), "/~list-aria-label")) AS ?listLabel)
+    BIND(IRI(CONCAT(STR($this), "/~list-data-sem-keep-focus")) AS ?listKeep)
+    BIND(IRI(CONCAT(STR($this), "/~status")) AS ?status)
+    BIND(IRI(CONCAT(STR($this), "/~status-role")) AS ?statusRole)
+    BIND(IF(BOUND(?statusLine), IRI(CONCAT(STR($this), "/~status-text")), ?none) AS ?statusText)
+    BIND(IRI(CONCAT(STR($this), "/~foot")) AS ?foot)
+    BIND(IRI(CONCAT(STR($this), "/~foot-aria-hidden")) AS ?footHidden)
+    BIND(IRI(CONCAT(STR($this), "/~move-key")) AS ?moveKey)
+    BIND(IRI(CONCAT(STR($this), "/~move-key-text")) AS ?moveKeyText)
+    BIND(IRI(CONCAT(STR($this), "/~move-hint")) AS ?moveHint)
+    BIND(IRI(CONCAT(STR($this), "/~move-hint-text")) AS ?moveWords)
+    BIND(IRI(CONCAT(STR($this), "/~run-key")) AS ?runKey)
+    BIND(IRI(CONCAT(STR($this), "/~run-key-text")) AS ?runKeyText)
+    BIND(IRI(CONCAT(STR($this), "/~run-hint")) AS ?runHint)
+    BIND(IRI(CONCAT(STR($this), "/~run-hint-text")) AS ?runWords)
+    BIND(IRI(CONCAT(STR($this), "/~close-key")) AS ?closeKey)
+    BIND(IRI(CONCAT(STR($this), "/~close-key-text")) AS ?closeKeyText)
+    BIND(IRI(CONCAT(STR($this), "/~close-hint")) AS ?closeHint)
+    BIND(IRI(CONCAT(STR($this), "/~close-hint-text")) AS ?closeWords)
+  } UNION {
+    # A group for each section that has options, in sem:order, hidden while none of them is shown.
+    FILTER EXISTS { $this c:open ?o2 FILTER(STR(?o2) = "true") }
+    { SELECT DISTINCT ?section WHERE { ?member a c:TypeaheadOption ; c:of $this ; c:paletteSection ?section } }
+    OPTIONAL { $this c:foldedQuery ?gq0 }
+    BIND(COALESCE(STR(?gq0), "") AS ?gq)
+    BIND(EXISTS { ?shownMember a c:TypeaheadOption ; c:of $this ; c:paletteSection ?section ; c:searchKey ?memberKey .
+                  FILTER(?gq = "" || (CONTAINS(STR(?memberKey), ?gq) && ?section != c:RecentSection)) } AS ?groupShown)
+    BIND(IF(?groupShown, ?none, "") AS ?groupHidden)
+    LATERAL { OPTIONAL { ?section sem:order ?go0 FILTER NOT EXISTS { ?section sem:order ?lowerGo FILTER(?lowerGo < ?go0) } } }
+    BIND(COALESCE(xsd:integer(ROUND(xsd:decimal(?go0))), 0) AS ?go1)
+    BIND(IF(?go1 < 0, 0, IF(?go1 > 999, 999, ?go1)) AS ?go)
+    BIND(CONCAT(SUBSTR("000", STRLEN(STR(?go)) + 1), STR(?go), " ", STR(?section)) AS ?groupKey)
+    BIND(IRI(CONCAT(STR($this), "/~l10n-section-", ENCODE_FOR_URI(STR(?section)))) AS ?sectionNode)
+    LATERAL { OPTIONAL { ?sectionNode l10n:label ?sectionLabel0 } }
+    BIND(STR(COALESCE(?sectionLabel0, REPLACE(STR(?section), "^.*[#/]", ""))) AS ?sectionLabel)
+    BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+    BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)))) AS ?group)
+    BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)), "-role")) AS ?groupRole)
+    BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)), "-aria-labelledby")) AS ?groupLabelledBy)
+    BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)), "-heading")) AS ?heading)
+    BIND(STR(?heading) AS ?headingId)
+    BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)), "-heading-role")) AS ?headingRole)
+    BIND(IRI(CONCAT(STR($this), "/~section-", ENCODE_FOR_URI(STR(?section)), "-heading-text")) AS ?headingText)
+  }
+}""" .
+
+# Text: one line while open, "⌘ Command palette: [typed_]".
+c:CommandPaletteRendering-sparql-text a sem:Rule ;
+    sem:implements c:CommandPaletteRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?lineData .
+}
+WHERE {
+  $this a c:CommandPalette .
+  BIND(EXISTS { $this c:open ?o FILTER(STR(?o) = "true") } AS ?open)
+  BIND(IF(?open, ?none, "") AS ?hidden)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-caption")) AS ?captionNode)
+  LATERAL { OPTIONAL { ?captionNode l10n:label ?caption0 } }
+  OPTIONAL { c:CommandPalette rdfs:label ?caption1 FILTER(langMatches(lang(?caption1), "en")) }
+  OPTIONAL { $this c:value ?typed0 }
+  BIND(IF(?open, CONCAT("⌘ ", STR(COALESCE(?caption0, ?caption1, "Command palette")), ": [", COALESCE(STR(?typed0), ""), "_]"), ?none) AS ?lineData)
+  BIND(IF(BOUND(?lineData), IRI(CONCAT(STR($this), "/~line")), ?none) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+}""" .
+
+# --- behaviour --------------------------------------------------------------------------------------
+# Typing is the typeahead's (c:TypeaheadInput: the text, the caret, no option highlighted); the
+# palette's field sends the typeahead's key events (c:TypeaheadKey). What is shown, and which option
+# is highlighted, is decided as the rendering decides it.
+
+# Down: the next option shown (wrapping); Up: the one before.
+c:PaletteNext a beh:Reaction ;
+    rdfs:label "Next option"@en , "Наступний варіант"@uk , "Nächste Option"@de , "الخيار التالي"@ar ;
+    beh:when c:TypeaheadKey ;
+    beh:sourceClass c:CommandPalette ;
+    beh:deletes """CONSTRUCT { $this c:activeOption ?old } WHERE { $event beh:key "arrowdown" . $this a c:CommandPalette ; c:activeOption ?old }""" ;
+    beh:inserts """
+CONSTRUCT { $this c:activeOption ?next }
+WHERE {
+  $event beh:key "arrowdown" .
+  $this a c:CommandPalette .
+  OPTIONAL { $this c:foldedQuery ?q0 } BIND(COALESCE(STR(?q0), "") AS ?q)
+  { SELECT (MIN(?r) AS ?firstRank) WHERE {
+      OPTIONAL { $this c:foldedQuery ?sq0 } BIND(COALESCE(STR(?sq0), "") AS ?sq)
+      ?o a c:TypeaheadOption ; c:of $this ; c:searchKey ?k ; c:rank ?r .
+      FILTER(?sq = "" || (CONTAINS(STR(?k), ?sq) && NOT EXISTS { ?o c:paletteSection c:RecentSection })) } }
+  FILTER(BOUND(?firstRank))
+  LATERAL { OPTIONAL { ?first a c:TypeaheadOption ; c:of $this ; c:rank ?firstRank0 FILTER(?firstRank0 = ?firstRank) } }
+  LATERAL { OPTIONAL { $this c:activeOption ?chosen . ?chosen a c:TypeaheadOption ; c:of $this ; c:searchKey ?chosenKey ; c:rank ?chosenRank .
+                       FILTER(?q = "" || (CONTAINS(STR(?chosenKey), ?q) && NOT EXISTS { ?chosen c:paletteSection c:RecentSection })) } }
+  BIND(COALESCE(?chosenRank, ?firstRank) AS ?activeRank)
+  LATERAL { OPTIONAL {
+    ?after a c:TypeaheadOption ; c:of $this ; c:searchKey ?afterKey ; c:rank ?afterRank .
+    FILTER(?afterRank > ?activeRank)
+    FILTER(?q = "" || (CONTAINS(STR(?afterKey), ?q) && NOT EXISTS { ?after c:paletteSection c:RecentSection }))
+    FILTER NOT EXISTS {
+      ?between a c:TypeaheadOption ; c:of $this ; c:searchKey ?betweenKey ; c:rank ?betweenRank .
+      FILTER(?betweenRank > ?activeRank && ?betweenRank < ?afterRank)
+      FILTER(?q = "" || (CONTAINS(STR(?betweenKey), ?q) && NOT EXISTS { ?between c:paletteSection c:RecentSection }))
+    }
+  } }
+  BIND(COALESCE(?after, ?first) AS ?next)
+}""" .
+
+c:PalettePrevious a beh:Reaction ;
+    rdfs:label "Previous option"@en , "Попередній варіант"@uk , "Vorherige Option"@de , "الخيار السابق"@ar ;
+    beh:when c:TypeaheadKey ;
+    beh:sourceClass c:CommandPalette ;
+    beh:deletes """CONSTRUCT { $this c:activeOption ?old } WHERE { $event beh:key "arrowup" . $this a c:CommandPalette ; c:activeOption ?old }""" ;
+    beh:inserts """
+CONSTRUCT { $this c:activeOption ?next }
+WHERE {
+  $event beh:key "arrowup" .
+  $this a c:CommandPalette .
+  OPTIONAL { $this c:foldedQuery ?q0 } BIND(COALESCE(STR(?q0), "") AS ?q)
+  { SELECT (MIN(?r) AS ?firstRank) (MAX(?r) AS ?lastRank) WHERE {
+      OPTIONAL { $this c:foldedQuery ?sq0 } BIND(COALESCE(STR(?sq0), "") AS ?sq)
+      ?o a c:TypeaheadOption ; c:of $this ; c:searchKey ?k ; c:rank ?r .
+      FILTER(?sq = "" || (CONTAINS(STR(?k), ?sq) && NOT EXISTS { ?o c:paletteSection c:RecentSection })) } }
+  FILTER(BOUND(?firstRank))
+  LATERAL { OPTIONAL { ?last a c:TypeaheadOption ; c:of $this ; c:rank ?lastRank0 FILTER(?lastRank0 = ?lastRank) } }
+  LATERAL { OPTIONAL { $this c:activeOption ?chosen . ?chosen a c:TypeaheadOption ; c:of $this ; c:searchKey ?chosenKey ; c:rank ?chosenRank .
+                       FILTER(?q = "" || (CONTAINS(STR(?chosenKey), ?q) && NOT EXISTS { ?chosen c:paletteSection c:RecentSection })) } }
+  BIND(COALESCE(?chosenRank, ?firstRank) AS ?activeRank)
+  LATERAL { OPTIONAL {
+    ?before a c:TypeaheadOption ; c:of $this ; c:searchKey ?beforeKey ; c:rank ?beforeRank .
+    FILTER(?beforeRank < ?activeRank)
+    FILTER(?q = "" || (CONTAINS(STR(?beforeKey), ?q) && NOT EXISTS { ?before c:paletteSection c:RecentSection }))
+    FILTER NOT EXISTS {
+      ?between a c:TypeaheadOption ; c:of $this ; c:searchKey ?betweenKey ; c:rank ?betweenRank .
+      FILTER(?betweenRank < ?activeRank && ?betweenRank > ?beforeRank)
+      FILTER(?q = "" || (CONTAINS(STR(?betweenKey), ?q) && NOT EXISTS { ?between c:paletteSection c:RecentSection }))
+    }
+  } }
+  BIND(COALESCE(?before, ?last) AS ?next)
+}""" .
+
+# Escape (in the field): the palette closes, forgetting what was typed. (A press elsewhere in it
+# reaches its ✕, data-sem-escape.) The ✕ and the scrim close it too (c:OverlayClose), and forget it.
+c:PaletteEscape a beh:Reaction ;
+    rdfs:label "Close the palette"@en , "Закрити палітру"@uk , "Palette schließen"@de , "إغلاق اللوحة"@ar ;
+    beh:when c:TypeaheadKey ;
+    beh:sourceClass c:CommandPalette ;
+    beh:deletes """CONSTRUCT { $this c:open ?open ; c:value ?typed ; c:activeOption ?active ; c:caret ?caret }
+WHERE { $event beh:key "escape" . $this a c:CommandPalette .
+  { $this c:open ?open } UNION { $this c:value ?typed } UNION { $this c:activeOption ?active } UNION { $this c:caret ?caret } }""" ;
+    beh:inserts """CONSTRUCT { $this c:open false } WHERE { $event beh:key "escape" . $this a c:CommandPalette ; c:open ?o FILTER(STR(?o) = "true") }""" .
+
+c:PaletteDismiss a beh:Reaction ;
+    rdfs:label "Close the palette"@en , "Закрити палітру"@uk , "Palette schließen"@de , "إغلاق اللوحة"@ar ;
+    beh:when beh:Click ;
+    beh:sourceClass c:CommandPalette ;
+    beh:deletes """CONSTRUCT { $this c:value ?typed ; c:activeOption ?active ; c:caret ?caret }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:closes $this .
+  { $this c:value ?typed } UNION { $this c:activeOption ?active } UNION { $this c:caret ?caret } }""" .
+
+# Enter runs the highlighted option (c:activeOption while shown, else the first shown); a click runs
+# the option clicked. Running: the palette closes and forgets what was typed; the item becomes the
+# latest recent run (the others move down; past c:recentLimit they are forgotten); and the item gets
+# what it is for - the event it raises (beh:raise), or the place it goes to (nav:goTo).
+c:PaletteRun a beh:Reaction ;
+    rdfs:label "Run the option"@en , "Виконати"@uk , "Ausführen"@de , "تنفيذ الخيار"@ar ;
+    beh:when c:TypeaheadKey ;
+    beh:sourceClass c:CommandPalette ;
+    beh:deletes """
+CONSTRUCT { $this c:open ?open ; c:value ?typed ; c:activeOption ?active ; c:caret ?caret ; nav:goTo ?went .
+            ?ranked c:recentRank ?rank . ?gone ?gp ?go . }
+WHERE {
+  $event beh:key "enter" .
+  $this a c:CommandPalette .
+  OPTIONAL { $this c:foldedQuery ?q0 } BIND(COALESCE(STR(?q0), "") AS ?q)
+  { SELECT (MIN(?r) AS ?firstRank) WHERE {
+      OPTIONAL { $this c:foldedQuery ?sq0 } BIND(COALESCE(STR(?sq0), "") AS ?sq)
+      ?o a c:TypeaheadOption ; c:of $this ; c:searchKey ?k ; c:rank ?r .
+      FILTER(?sq = "" || (CONTAINS(STR(?k), ?sq) && NOT EXISTS { ?o c:paletteSection c:RecentSection })) } }
+  FILTER(BOUND(?firstRank))
+  LATERAL { OPTIONAL { ?first a c:TypeaheadOption ; c:of $this ; c:rank ?firstRank0 FILTER(?firstRank0 = ?firstRank) } }
+  LATERAL { OPTIONAL { $this c:activeOption ?chosen . ?chosen a c:TypeaheadOption ; c:of $this ; c:searchKey ?chosenKey .
+                       FILTER(?q = "" || (CONTAINS(STR(?chosenKey), ?q) && NOT EXISTS { ?chosen c:paletteSection c:RecentSection })) } }
+  BIND(COALESCE(?chosen, ?first) AS ?run)
+  ?run c:option ?item .
+  OPTIONAL { $this c:recentLimit ?limit0 } BIND(COALESCE(xsd:integer(?limit0), 5) AS ?limit)
+  OPTIONAL { ?old c:recentOf $this ; c:entryFor ?item ; c:recentRank ?oldRank0 }
+  BIND(xsd:integer(?oldRank0) AS ?oldRank)
+  {
+    { $this c:open ?open } UNION { $this c:value ?typed } UNION { $this c:activeOption ?active } UNION { $this c:caret ?caret }
+    UNION { $this nav:goTo ?went } UNION { ?ranked c:recentOf $this ; c:recentRank ?rank }
+    UNION { ?gone c:recentOf $this ; c:recentRank ?goneRank0 ; c:entryFor ?goneItem ; ?gp ?go }
+  }
+  BIND(xsd:integer(?goneRank0) AS ?goneRank)
+  FILTER(!BOUND(?gone) || ?limit <= 0 || (?goneItem != ?item && IF(!BOUND(?oldRank) || ?goneRank < ?oldRank, ?goneRank + 1, ?goneRank) >= ?limit))
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:open false ; nav:goTo ?dest . ?item beh:raise ?event .
+            ?mine a c:RecentRun ; c:recentOf $this ; c:entryFor ?item ; c:recentRank 0 . ?kept c:recentRank ?shifted . }
+WHERE {
+  $event beh:key "enter" .
+  $this a c:CommandPalette .
+  OPTIONAL { $this c:foldedQuery ?q0 } BIND(COALESCE(STR(?q0), "") AS ?q)
+  { SELECT (MIN(?r) AS ?firstRank) WHERE {
+      OPTIONAL { $this c:foldedQuery ?sq0 } BIND(COALESCE(STR(?sq0), "") AS ?sq)
+      ?o a c:TypeaheadOption ; c:of $this ; c:searchKey ?k ; c:rank ?r .
+      FILTER(?sq = "" || (CONTAINS(STR(?k), ?sq) && NOT EXISTS { ?o c:paletteSection c:RecentSection })) } }
+  FILTER(BOUND(?firstRank))
+  LATERAL { OPTIONAL { ?first a c:TypeaheadOption ; c:of $this ; c:rank ?firstRank0 FILTER(?firstRank0 = ?firstRank) } }
+  LATERAL { OPTIONAL { $this c:activeOption ?chosen . ?chosen a c:TypeaheadOption ; c:of $this ; c:searchKey ?chosenKey .
+                       FILTER(?q = "" || (CONTAINS(STR(?chosenKey), ?q) && NOT EXISTS { ?chosen c:paletteSection c:RecentSection })) } }
+  BIND(COALESCE(?chosen, ?first) AS ?run)
+  ?run c:option ?item .
+  OPTIONAL { ?run c:raises ?event }
+  OPTIONAL { ?run c:to ?dest }
+  OPTIONAL { $this c:recentLimit ?limit0 } BIND(COALESCE(xsd:integer(?limit0), 5) AS ?limit)
+  OPTIONAL { ?old c:recentOf $this ; c:entryFor ?item ; c:recentRank ?oldRank0 }
+  BIND(xsd:integer(?oldRank0) AS ?oldRank)
+  BIND(IF(?limit > 0, IRI(CONCAT(STR($this), "/~recent-", ENCODE_FOR_URI(STR(?item)))), ?none) AS ?mine)
+  { {} UNION { ?rec c:recentOf $this ; c:recentRank ?recRank0 ; c:entryFor ?recItem } }
+  FILTER(!BOUND(?rec) || ?recItem != ?item)
+  BIND(xsd:integer(?recRank0) AS ?recRank)
+  BIND(IF(!BOUND(?oldRank) || ?recRank < ?oldRank, ?recRank + 1, ?recRank) AS ?shifted0)
+  BIND(IF(BOUND(?rec) && ?shifted0 < ?limit, ?rec, ?none) AS ?kept)
+  BIND(IF(BOUND(?kept), ?shifted0, ?none) AS ?shifted)
+}""" .
+
+c:PalettePick a beh:Reaction ;
+    rdfs:label "Run the option"@en , "Виконати"@uk , "Ausführen"@de , "تنفيذ الخيار"@ar ;
+    beh:when beh:Click ;
+    beh:sourceClass c:CommandPalette ;
+    beh:deletes """
+CONSTRUCT { $this c:open ?open ; c:value ?typed ; c:activeOption ?active ; c:caret ?caret ; nav:goTo ?went .
+            ?ranked c:recentRank ?rank . ?gone ?gp ?go . }
+WHERE {
+  $event beh:node ?hit . ?row rdfhtml:hasChild* ?hit . ?row c:optionRow $this ; sem:renders ?run .
+  ?run c:option ?item .
+  OPTIONAL { $this c:recentLimit ?limit0 } BIND(COALESCE(xsd:integer(?limit0), 5) AS ?limit)
+  OPTIONAL { ?old c:recentOf $this ; c:entryFor ?item ; c:recentRank ?oldRank0 }
+  BIND(xsd:integer(?oldRank0) AS ?oldRank)
+  {
+    { $this c:open ?open } UNION { $this c:value ?typed } UNION { $this c:activeOption ?active } UNION { $this c:caret ?caret }
+    UNION { $this nav:goTo ?went } UNION { ?ranked c:recentOf $this ; c:recentRank ?rank }
+    UNION { ?gone c:recentOf $this ; c:recentRank ?goneRank0 ; c:entryFor ?goneItem ; ?gp ?go }
+  }
+  BIND(xsd:integer(?goneRank0) AS ?goneRank)
+  FILTER(!BOUND(?gone) || ?limit <= 0 || (?goneItem != ?item && IF(!BOUND(?oldRank) || ?goneRank < ?oldRank, ?goneRank + 1, ?goneRank) >= ?limit))
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:open false ; nav:goTo ?dest . ?item beh:raise ?event .
+            ?mine a c:RecentRun ; c:recentOf $this ; c:entryFor ?item ; c:recentRank 0 . ?kept c:recentRank ?shifted . }
+WHERE {
+  $event beh:node ?hit . ?row rdfhtml:hasChild* ?hit . ?row c:optionRow $this ; sem:renders ?run .
+  ?run c:option ?item .
+  OPTIONAL { ?run c:raises ?event }
+  OPTIONAL { ?run c:to ?dest }
+  OPTIONAL { $this c:recentLimit ?limit0 } BIND(COALESCE(xsd:integer(?limit0), 5) AS ?limit)
+  OPTIONAL { ?old c:recentOf $this ; c:entryFor ?item ; c:recentRank ?oldRank0 }
+  BIND(xsd:integer(?oldRank0) AS ?oldRank)
+  BIND(IF(?limit > 0, IRI(CONCAT(STR($this), "/~recent-", ENCODE_FOR_URI(STR(?item)))), ?none) AS ?mine)
+  { {} UNION { ?rec c:recentOf $this ; c:recentRank ?recRank0 ; c:entryFor ?recItem } }
+  FILTER(!BOUND(?rec) || ?recItem != ?item)
+  BIND(xsd:integer(?recRank0) AS ?recRank)
+  BIND(IF(!BOUND(?oldRank) || ?recRank < ?oldRank, ?recRank + 1, ?recRank) AS ?shifted0)
+  BIND(IF(BOUND(?rec) && ?shifted0 < ?limit, ?rec, ?none) AS ?kept)
+  BIND(IF(BOUND(?kept), ?shifted0, ?none) AS ?shifted)
+}""" .

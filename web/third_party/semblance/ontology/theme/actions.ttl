@@ -1,0 +1,207 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Default theme for the actions components.
+#
+# Like c:Button, the toned actions default to a raised surface whose border and
+# text read the --tone-* custom properties (neutral fallbacks), so a sty:tone
+# alone tints them and an explicit sty:emphasis (theme/variants.ttl, the
+# sem.variants layer) replaces the look. Sizes come from --control-*.
+
+# --- button: the disabled state (the base look is in default.ttl) ---
+[] a sty:StyleRule ; sty:appliesTo c:Button ; sty:state ":disabled" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.45" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] ,
+                 [ sty:property "transform" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+
+# --- icon button ---
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "var(--control-h, var(--sem-control-height))" ] ,
+                 [ sty:property "height" ; sty:raw "var(--control-h, var(--sem-control-height))" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--tone-border, var(--sem-border-strong))" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-text))" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow ] ,
+                 [ sty:property "font" ; sty:raw "600 calc(var(--control-font, 15px) * 1.1)/1 var(--sem-font)" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-motion), border-color var(--sem-motion), color var(--sem-motion), box-shadow var(--sem-motion), transform var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ; sty:state ":not(:disabled):hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-surface-hover))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ; sty:state ":not(:disabled):active" ;
+    sty:declares [ sty:property "transform" ; sty:raw "translateY(1px) scale(0.96)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ; sty:state "[aria-pressed=true]" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-accent-soft))" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-accent-strong))" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--tone-border, color-mix(in oklab, var(--sem-accent) 40%, transparent))" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 1px 2px rgb(0 0 0 / 0.08)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ; sty:state ":disabled" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.45" ] ,
+                 [ sty:property "cursor" ; sty:raw "not-allowed" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:IconButton ; sty:part ".sem-icon" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .
+
+# --- button group: attached, one outline, shared inner borders ---
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "stretch" ] ,
+                 [ sty:property "isolation" ; sty:raw "isolate" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow ] .
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ; sty:part "> [data-sem-c]" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ; sty:part "> [data-sem-c] + [data-sem-c]" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "-1px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ; sty:part "> [data-sem-c]:first-child" ;
+    sty:declares [ sty:property "border-start-start-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "border-end-start-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ; sty:part "> [data-sem-c]:last-child" ;
+    sty:declares [ sty:property "border-start-end-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "border-end-end-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ; sty:part "> [data-sem-c]:is(:hover, :focus-visible, [aria-pressed=true])" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:ButtonGroup ; sty:part "> [data-sem-c]:active" ;
+    sty:declares [ sty:property "transform" ; sty:raw "none" ] .
+
+# --- menu: the root is the button's skin (so tone x emphasis paint it), the trigger fills it ---
+[] a sty:StyleRule ; sty:appliesTo c:Menu ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "min-height" ; sty:raw "var(--control-h, var(--sem-control-height))" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--tone-border, var(--sem-border-strong))" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-text))" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-motion), border-color var(--sem-motion), box-shadow var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:state ":has(> button:not(:disabled):hover)" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-surface-hover))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:state "[data-open]" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-surface-hover))" ] .
+# The skin is a div, so the emphasis hover rules (which match buttons) are restated for it.
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:when sty:Solid ; sty:state ":has(> button:not(:disabled):hover)" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-solid-hover, light-dark(#2c2c3a, #ffffff))" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--tone-solid-hover, light-dark(#2c2c3a, #ffffff))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:when sty:Soft ; sty:state ":has(> button:not(:disabled):hover)" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft-hover, var(--sem-gray-4))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:when sty:Outline ; sty:state ":has(> button:not(:disabled):hover)" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:when sty:Ghost ; sty:state ":has(> button:not(:disabled):hover)" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:state ":has(> button:focus-visible)" ;
+    sty:declares [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:state ":has(> button:disabled)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.45" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:part "> button" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding" ; sty:raw "0 calc(var(--control-px, var(--sem-space-4)) - 2px) 0 var(--control-px, var(--sem-space-4))" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "inherit" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "inherit" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-size" ; sty:raw "var(--control-font, inherit)" ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "line-height" ; sty:raw "1.2" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:part "> button:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:part "> button:disabled" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "not-allowed" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:part "> button .sem-caret" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-block" ] ,
+                 [ sty:property "font-size" ; sty:raw "0.9em" ] ,
+                 [ sty:property "line-height" ; sty:raw "1" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.65" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:state "[data-open]" ; sty:part "> button .sem-caret" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(180deg)" ] .
+# The open trigger declares the escape shortcut; its hint reads as a quiet chip.
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:part "> button[data-sem-shortcut]::after" ;
+    sty:declares [ sty:property "margin-inline-start" ; sty:raw "2px" ] ,
+                 [ sty:property "opacity" ; sty:raw "0.55" ] .
+
+# The popup: an overlay surface, reset to the neutral tone so items are tinted only by their own.
+[] a sty:StyleRule ; sty:appliesTo c:Menu ; sty:part "> .sem-menu-popup" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "calc(100% + 6px)" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "-1px" ] ,
+                 [ sty:property "z-index" ; sty:raw "40" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "1px" ] ,
+                 [ sty:property "min-width" ; sty:raw "max(100%, 200px)" ] ,
+                 # Never wider than the screen: long items wrap instead.
+                 [ sty:property "max-width" ; sty:raw "min(360px, calc(100vw - 32px))" ] ,
+                 [ sty:property "padding" ; sty:raw "5px" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface-overlay ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "transform-origin" ; sty:raw "top left" ] ,
+                 [ sty:property "--tone-solid" ; sty:raw "initial" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "initial" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "initial" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "initial" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "initial" ] .
+
+# --- menu item ---
+[] a sty:StyleRule ; sty:appliesTo c:MenuItem ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:raw "10px" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "min-height" ; sty:raw "32px" ] ,
+                 [ sty:property "padding" ; sty:raw "4px 10px" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-text))" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "font-weight" ; sty:raw "500" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 # A label longer than the popup is wide wraps inside its item.
+                 [ sty:property "white-space" ; sty:raw "normal" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MenuItem ; sty:state ":not(:disabled):is(:hover, :focus-visible)" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MenuItem ; sty:state ":focus-visible" ;
+    sty:declares [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 2px color-mix(in oklab, var(--sem-accent) 45%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MenuItem ; sty:state ":disabled" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.45" ] ,
+                 [ sty:property "cursor" ; sty:raw "default" ] .
+[] a sty:StyleRule ; sty:appliesTo c:MenuItem ; sty:part ".sem-icon" ;
+    sty:declares [ sty:property "width" ; sty:raw "18px" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-muted))" ] .

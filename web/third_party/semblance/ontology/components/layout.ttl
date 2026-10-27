@@ -1,0 +1,507 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix pos: <https://semblance.dev/ns/position#> .
+
+# Layout components (DESIGN.md §3): Grid, Surface, Divider and the Specimen frame the gallery is built from.
+
+# --- Specimen: a titled example (the unit of the component gallery) -----------------------------
+
+c:Specimen a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A titled example: heading (c:label), description (c:help) and a stage of components (c:children)."@en ;
+    sem:slug "specimen" .
+c:demonstrates a owl:ObjectProperty ; rdfs:domain c:Specimen ; rdfs:range owl:Class ;
+    rdfs:label "demonstrates"@en , "демонструє"@uk , "zeigt"@de , "يعرض"@ar ;
+    rdfs:comment """The classes a specimen is a specimen of (components, their mixins or parts): what it is
+about, not every class it uses (a toolbar's specimen uses a search field, and demonstrates the
+toolbar). A gallery shows a specimen with its classes' group (sem:group); a test keeps it there."""@en .
+c:stage a owl:ObjectProperty ; rdfs:domain c:Specimen ; rdfs:range pos:Layout ;
+    rdfs:comment "How the stage lays its children out (a pos:Layout)."@en .
+c:SpecimenRendering a sem:Rendering ; sem:targets c:Specimen ; sem:stratum 0 .
+c:SpecimenRendering-fn a sem:Rule ; sem:implements c:SpecimenRendering ; sem:function "specimen" .
+
+c:SpecimenRendering-sparql-screen a sem:Rule ;
+    sem:implements c:SpecimenRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Section ; sem:renders $this ; rdfhtml:hasChild ?header, ?stage .
+  ?header a rdfhtml:Header ; rdfhtml:hasChild ?title, ?help ; ord:immediatelyPrecedes ?stage .
+  ?title a rdfhtml:H3 ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?help .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?help a rdfhtml:P ; rdfhtml:hasChild ?helpText .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?stage a rdfhtml:Div ; rdfhtml:class "sem-stage" ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Specimen .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?labelOwn)
+  OPTIONAL { ?labelRdfs_uAt l10n:of $this ; l10n:name ?labelRdfs_u }
+  OPTIONAL { $this rdfs:label ?labelRdfs_u FILTER(isLiteral(?labelRdfs_u) && lang(?labelRdfs_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?labelRdfs_u)) $this rdfs:label ?labelRdfs_en FILTER(langMatches(lang(?labelRdfs_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?labelRdfs_u) && !BOUND(?labelRdfs_en)) $this rdfs:label ?labelRdfs_any FILTER(isLiteral(?labelRdfs_any)) }
+  BIND(STR(COALESCE(?labelRdfs_u, ?labelRdfs_en, ?labelRdfs_any)) AS ?labelRdfs)
+  BIND(COALESCE(?labelOwn, ?labelRdfs, REPLACE(STR($this), "^.*[#/]", "")) AS ?label)
+  OPTIONAL { ?help0_uAt l10n:of $this ; l10n:help ?help0_u }
+  OPTIONAL { $this c:help ?help0_u FILTER(isLiteral(?help0_u) && lang(?help0_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?help0_u)) $this c:help ?help0_en FILTER(langMatches(lang(?help0_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?help0_u) && !BOUND(?help0_en)) $this c:help ?help0_any FILTER(isLiteral(?help0_any)) }
+  BIND(STR(COALESCE(?help0_u, ?help0_en, ?help0_any)) AS ?help0)
+  BIND(IF(?help0 != "", ?help0, ?none) AS ?helpData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~header")) AS ?header)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+  BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+  BIND(IRI(CONCAT(STR($this), "/~stage")) AS ?stage)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help")), ?none) AS ?help)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help-text")), ?none) AS ?helpText)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+c:SpecimenRendering-sparql-text a sem:Rule ;
+    sem:implements c:SpecimenRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?title, ?child .
+  ?title a rdfhtml:Div ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?first .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?line .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Specimen .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?labelOwn)
+  OPTIONAL { ?labelRdfs_uAt l10n:of $this ; l10n:name ?labelRdfs_u }
+  OPTIONAL { $this rdfs:label ?labelRdfs_u FILTER(isLiteral(?labelRdfs_u) && lang(?labelRdfs_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?labelRdfs_u)) $this rdfs:label ?labelRdfs_en FILTER(langMatches(lang(?labelRdfs_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?labelRdfs_u) && !BOUND(?labelRdfs_en)) $this rdfs:label ?labelRdfs_any FILTER(isLiteral(?labelRdfs_any)) }
+  BIND(STR(COALESCE(?labelRdfs_u, ?labelRdfs_en, ?labelRdfs_any)) AS ?labelRdfs)
+  BIND(COALESCE(?labelOwn, ?labelRdfs, REPLACE(STR($this), "^.*[#/]", "")) AS ?label)
+  BIND(CONCAT("## ", ?label) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+  BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:first ?first FILTER(isIRI(?first)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+# --- Swatches: the tokens of a scale --------------------------------------------------------------
+
+c:Swatches a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "The tokens of one scale (c:of a sty:Scale) whose slug starts with c:prefix, in step order."@en ;
+    sem:slug "swatches" .
+c:prefix a owl:DatatypeProperty ; rdfs:domain c:Swatches .
+c:SwatchesRendering a sem:Rendering ; sem:targets c:Swatches ; sem:stratum 0 .
+c:SwatchesRendering-fn a sem:Rule ; sem:implements c:SwatchesRendering ; sem:function "swatches" .
+
+c:SwatchesRendering-sparql-screen a sem:Rule ;
+    sem:implements c:SwatchesRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?caption, ?row .
+  ?caption a rdfhtml:Strong ; rdfhtml:hasChild ?captionText ; ord:immediatelyPrecedes ?row .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?label .
+  ?row a rdfhtml:Div ; rdfhtml:class "sem-swatch-row" ; rdfhtml:hasChild ?item .
+  ?item a rdfhtml:Div ; rdfhtml:class "sem-swatch" ; rdfhtml:hasChild ?chip, ?name .
+  ?chip a rdfhtml:Span ; rdfhtml:style ?chipStyle ; ord:immediatelyPrecedes ?name .
+  ?name a rdfhtml:Code ; rdfhtml:hasChild ?nameText .
+  ?nameText a rdfhtml:Text ; rdfhtml:data ?nameData .
+  ?before ord:immediatelyPrecedes ?after .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Swatches ; c:of ?scale .
+  BIND($this AS ?self)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?labelOwn)
+  OPTIONAL { ?labelRdfs_uAt l10n:of $this ; l10n:name ?labelRdfs_u }
+  OPTIONAL { $this rdfs:label ?labelRdfs_u FILTER(isLiteral(?labelRdfs_u) && lang(?labelRdfs_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?labelRdfs_u)) $this rdfs:label ?labelRdfs_en FILTER(langMatches(lang(?labelRdfs_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?labelRdfs_u) && !BOUND(?labelRdfs_en)) $this rdfs:label ?labelRdfs_any FILTER(isLiteral(?labelRdfs_any)) }
+  BIND(STR(COALESCE(?labelRdfs_u, ?labelRdfs_en, ?labelRdfs_any)) AS ?labelRdfs)
+  BIND(COALESCE(?labelOwn, ?labelRdfs, REPLACE(STR($this), "^.*[#/]", "")) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~caption")) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~caption-text")) AS ?captionText)
+  BIND(IRI(CONCAT(STR($this), "/~row")) AS ?row)
+  {} UNION {
+    # One swatch per token of the scale whose slug starts with c:prefix, showing it through the token itself.
+    $this c:of ?scale . OPTIONAL { $this c:prefix ?prefix0 } BIND(COALESCE(STR(?prefix0), "") AS ?prefix)
+      ?tok sty:scale ?scale . OPTIONAL { ?tok sem:slug ?tokSlug0 } BIND(COALESCE(STR(?tokSlug0), "") AS ?tokSlug)
+      FILTER(STRSTARTS(?tokSlug, ?prefix))
+      BIND(COALESCE(xsd:double(SUBSTR(?tokSlug, STRLEN(?prefix) + 1)), 0) AS ?tokStep0) BIND(IF(?tokStep0 = ?tokStep0, ?tokStep0, 0) AS ?tokStep)
+    BIND(CONCAT("s-", ?tokSlug) AS ?key)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key)) AS ?item)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-chip")) AS ?chip)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-name")) AS ?name)
+    BIND(IRI(CONCAT(STR($this), "/~", ?key, "-name-text")) AS ?nameText)
+    BIND(CONCAT("background: var(--sem-", ?tokSlug, ")") AS ?chipStyle)
+    BIND(SUBSTR(?tokSlug, STRLEN(?prefix) + 1) AS ?suffix)
+    BIND(IF(?suffix != "", ?suffix, ?tokSlug) AS ?nameData)
+  } UNION {
+    # In step order (the number after the prefix), then by slug.
+    { SELECT ?self (?tokSlug AS ?slugA) (COUNT(?otherSlug) AS ?posA) WHERE {
+      $this c:of ?scale . OPTIONAL { $this c:prefix ?prefix0 } BIND(COALESCE(STR(?prefix0), "") AS ?prefix)
+      ?tok sty:scale ?scale . OPTIONAL { ?tok sem:slug ?tokSlug0 } BIND(COALESCE(STR(?tokSlug0), "") AS ?tokSlug)
+      FILTER(STRSTARTS(?tokSlug, ?prefix))
+      BIND(COALESCE(xsd:double(SUBSTR(?tokSlug, STRLEN(?prefix) + 1)), 0) AS ?tokStep0) BIND(IF(?tokStep0 = ?tokStep0, ?tokStep0, 0) AS ?tokStep)
+      ?other sty:scale ?scale . OPTIONAL { ?other sem:slug ?otherSlug0 } BIND(COALESCE(STR(?otherSlug0), "") AS ?otherSlug)
+      FILTER(STRSTARTS(?otherSlug, ?prefix))
+      BIND(COALESCE(xsd:double(SUBSTR(?otherSlug, STRLEN(?prefix) + 1)), 0) AS ?otherStep0) BIND(IF(?otherStep0 = ?otherStep0, ?otherStep0, 0) AS ?otherStep)
+      FILTER(?otherStep < ?tokStep || (?otherStep = ?tokStep && ?otherSlug <= ?tokSlug))
+      BIND($this AS ?self)
+    } GROUP BY ?self ?tokSlug }
+    { SELECT ?self (?tokSlug AS ?slugB) (COUNT(?otherSlug) AS ?posB) WHERE {
+      $this c:of ?scale . OPTIONAL { $this c:prefix ?prefix0 } BIND(COALESCE(STR(?prefix0), "") AS ?prefix)
+      ?tok sty:scale ?scale . OPTIONAL { ?tok sem:slug ?tokSlug0 } BIND(COALESCE(STR(?tokSlug0), "") AS ?tokSlug)
+      FILTER(STRSTARTS(?tokSlug, ?prefix))
+      BIND(COALESCE(xsd:double(SUBSTR(?tokSlug, STRLEN(?prefix) + 1)), 0) AS ?tokStep0) BIND(IF(?tokStep0 = ?tokStep0, ?tokStep0, 0) AS ?tokStep)
+      ?other sty:scale ?scale . OPTIONAL { ?other sem:slug ?otherSlug0 } BIND(COALESCE(STR(?otherSlug0), "") AS ?otherSlug)
+      FILTER(STRSTARTS(?otherSlug, ?prefix))
+      BIND(COALESCE(xsd:double(SUBSTR(?otherSlug, STRLEN(?prefix) + 1)), 0) AS ?otherStep0) BIND(IF(?otherStep0 = ?otherStep0, ?otherStep0, 0) AS ?otherStep)
+      FILTER(?otherStep < ?tokStep || (?otherStep = ?tokStep && ?otherSlug <= ?tokSlug))
+      BIND($this AS ?self)
+    } GROUP BY ?self ?tokSlug }
+    FILTER(?posB = ?posA + 1)
+    BIND(IRI(CONCAT(STR(?self), "/~s-", ?slugA)) AS ?before)
+    BIND(IRI(CONCAT(STR(?self), "/~s-", ?slugB)) AS ?after)
+  }
+}""" .
+
+c:SwatchesRendering-sparql-text a sem:Rule ;
+    sem:implements c:SwatchesRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Swatches ; c:of ?scale .
+  BIND($this AS ?self)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+  OPTIONAL {
+    SELECT ?self (GROUP_CONCAT(?tokSlug; separator=" ") AS ?slugs) WHERE {
+      { SELECT ?self ?tokSlug ?k1 ?k2 WHERE {
+        $this c:of ?scale . OPTIONAL { $this c:prefix ?prefix0 } BIND(COALESCE(STR(?prefix0), "") AS ?prefix)
+      ?tok sty:scale ?scale . OPTIONAL { ?tok sem:slug ?tokSlug0 } BIND(COALESCE(STR(?tokSlug0), "") AS ?tokSlug)
+      FILTER(STRSTARTS(?tokSlug, ?prefix))
+      BIND(COALESCE(xsd:double(SUBSTR(?tokSlug, STRLEN(?prefix) + 1)), 0) AS ?tokStep0) BIND(IF(?tokStep0 = ?tokStep0, ?tokStep0, 0) AS ?tokStep)
+        BIND(?tokStep AS ?k1) BIND(?tokSlug AS ?k2)
+        BIND($this AS ?self)
+      } ORDER BY ?k1 ?k2 }
+    } GROUP BY ?self
+  }
+  BIND(COALESCE(?slugs, "") AS ?line)
+}""" .
+
+# --- Surface: a padded container that stands off the page -----------------------------------------
+
+c:Surface a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A padded container for c:children. How far it stands off the page is sty:elevation
+(sty:Flat, the default, sty:Raised or sty:Overlay); sty:tone tints its background soft and its
+border in the tone. Padding is pos:inset (default space-5); children stack with pos:gap."""@en ;
+    sem:slug "surface" .
+c:SurfaceRendering a sem:Rendering ; sem:targets c:Surface ; sem:stratum 0 .
+c:SurfaceRendering-fn a sem:Rule ; sem:implements c:SurfaceRendering ; sem:function "surface" .
+
+c:SurfaceRendering-sparql-screen a sem:Rule ;
+    sem:implements c:SurfaceRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Surface .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+c:SurfaceRendering-sparql-text a sem:Rule ;
+    sem:implements c:SurfaceRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?top, ?child, ?bottom .
+  ?top a rdfhtml:Text ; rdfhtml:data "┌" ; ord:immediatelyPrecedes ?first .
+  ?bottom a rdfhtml:Text ; rdfhtml:data "└" ; ord:immediatelyFollows ?last .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Surface .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~top")) AS ?top)
+  BIND(IRI(CONCAT(STR($this), "/~bottom")) AS ?bottom)
+  # With no children the corners meet.
+  BIND(IF(EXISTS { $this c:children/rdf:first ?anyChild }, ?none, ?bottom) AS ?first)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:first ?first FILTER(isIRI(?first)) } UNION { $this c:children/rdf:rest* ?lastCell . ?lastCell rdf:first ?last ; rdf:rest ?lastRest FILTER(?lastRest = rdf:nil && isIRI(?last)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+# --- Divider: a rule between content ----------------------------------------------------------------
+
+c:Divider a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A separator. Horizontal by default; pos:direction pos:Column stands it upright (between
+items of a row). An optional c:label sits centred in the line."""@en ;
+    sem:slug "divider" .
+c:DividerRendering a sem:Rendering ; sem:targets c:Divider ; sem:stratum 0 .
+c:DividerRendering-fn a sem:Rule ; sem:implements c:DividerRendering ; sem:function "divider" .
+
+c:DividerRendering-sparql-screen a sem:Rule ;
+    sem:implements c:DividerRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?labelEl .
+  ?root rdfhtml:attribute ?roleAttr . ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "separator" .
+  ?root rdfhtml:attribute ?ariaAttr . ?ariaAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?root rdfhtml:attribute ?orientAttr . ?orientAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-orientation" ; rdfhtml:attributeValue "vertical" .
+  ?labelEl a rdfhtml:Span ; rdfhtml:class "sem-label" ; rdfhtml:hasChild ?labelText .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?label .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Divider .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  BIND(EXISTS { $this pos:direction pos:Column } AS ?vertical)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # An <hr>; with a label, a separator whose label sits in the line.
+  BIND(IF(BOUND(?label), rdfhtml:Div, rdfhtml:Hr) AS ?element)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~label")), ?none) AS ?labelEl)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~label-text")), ?none) AS ?labelText)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~root-role")), ?none) AS ?roleAttr)
+  BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?ariaAttr)
+  BIND(IF(?vertical, IRI(CONCAT(STR($this), "/~root-aria-orientation")), ?none) AS ?orientAttr)
+}""" .
+
+c:DividerRendering-sparql-text a sem:Rule ;
+    sem:implements c:DividerRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?element ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Divider .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+  BIND(EXISTS { $this pos:direction pos:Column } AS ?vertical)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(?vertical, rdfhtml:Span, rdfhtml:Div) AS ?element)
+  BIND(IF(?vertical, " │ ", IF(COALESCE(?label, "") != "", CONCAT("──── ", ?label, " ────"), "────────")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?text)
+}""" .
+
+# --- Grid: tiles in a responsive grid ------------------------------------------------------------------
+
+c:Grid a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """c:children as tiles of equal width. c:minWidth (a CSS length, default 240px) is the
+narrowest a tile may get: as many columns as fit. c:columns caps the columns at that count; they
+still wrap when tiles would be narrower than c:minWidth (default 160px then). Spacing: pos:gap."""@en ;
+    sem:slug "grid" .
+c:columns a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "The most columns a grid shows."@en .
+c:minWidth a owl:DatatypeProperty ;
+    rdfs:comment "The narrowest a grid tile may get, as a CSS length (\"240px\", \"16rem\")."@en .
+c:GridRendering a sem:Rendering ; sem:targets c:Grid ; sem:stratum 0 .
+c:GridRendering-fn a sem:Rule ; sem:implements c:GridRendering ; sem:function "grid" .
+
+c:GridRendering-sparql-screen a sem:Rule ;
+    sem:implements c:GridRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:style ?style ; rdfhtml:hasChild ?child .
+  ?root rdfhtml:attribute ?colsAttr . ?colsAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-columns" ; rdfhtml:attributeValue ?columns .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Grid .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # The grid's parameters reach the theme as custom properties on its root.
+  OPTIONAL { $this c:columns ?columns0 }
+  BIND(ROUND(xsd:double(?columns0)) AS ?columns1)
+  BIND(IF(?columns1 >= 1 && ?columns1 <= 24, STR(xsd:integer(?columns1)), ?none) AS ?columns)
+  OPTIONAL { $this c:minWidth ?min0 }
+  BIND(REPLACE(STR(?min0), "^[ \\t\\n\\r]+|[ \\t\\n\\r]+$", "") AS ?min1)
+  BIND(IF(REGEX(?min1, "^[0-9]+([.][0-9]+)?(px|rem|em|ch|vw|%)$"), CONCAT("--grid-min: ", ?min1), ?none) AS ?minVar)
+  BIND(IF(BOUND(?columns), CONCAT("--grid-columns: ", ?columns), ?none) AS ?columnsVar)
+  BIND(IF(BOUND(?minVar) && BOUND(?columnsVar), CONCAT(?minVar, "; ", ?columnsVar), COALESCE(?minVar, ?columnsVar)) AS ?style)
+  BIND(IF(BOUND(?columns), IRI(CONCAT(STR($this), "/~root-data-columns")), ?none) AS ?colsAttr)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+c:GridRendering-sparql-text a sem:Rule ;
+    sem:implements c:GridRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Grid .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+# --- Spacer: pushes its neighbours apart ------------------------------------------------------------
+
+c:Spacer a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Empty space that grows, pushing what follows it in a row or column to the far end."@en ;
+    sem:slug "spacer" .
+c:SpacerRendering a sem:Rendering ; sem:targets c:Spacer ; sem:stratum 0 .
+c:SpacerRendering-fn a sem:Rule ; sem:implements c:SpacerRendering ; sem:function "spacer" .
+
+c:SpacerRendering-sparql-screen a sem:Rule ;
+    sem:implements c:SpacerRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this .
+  ?root rdfhtml:attribute ?hiddenAttr . ?hiddenAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Spacer .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-hidden")) AS ?hiddenAttr)
+}""" .
+
+c:SpacerRendering-sparql-text a sem:Rule ;
+    sem:implements c:SpacerRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT { ?root a rdfhtml:Span ; sem:renders $this . }
+WHERE { $this a/rdfs:subClassOf* c:Spacer . BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root) }""" .
+
+# --- StatusBar: a bar docked to the bottom of its container ---------------------------------------
+
+c:StatusBar a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A bar that stays at the bottom of its container while the page scrolls under it:
+a caption (c:label) and components (c:children). Its caption is a fold control: c:expanded
+false folds the bar to the caption."""@en ;
+    sem:slug "status-bar" .
+c:folds a owl:ObjectProperty ; rdfs:comment "On a rendered element: the component whose c:expanded activating it flips."@en .
+c:StatusBarRendering a sem:Rendering ; sem:targets c:StatusBar ; sem:stratum 0 .
+c:StatusBarRendering-fn a sem:Rule ; sem:implements c:StatusBarRendering ; sem:function "status-bar" .
+
+c:StatusBarRendering-sparql-screen a sem:Rule ;
+    sem:implements c:StatusBarRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Footer ; sem:renders $this ; rdfhtml:hasChild ?toggle, ?body .
+  ?root rdfhtml:attribute ?expandedAttr . ?expandedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-expanded" ; rdfhtml:attributeValue ?openText .
+  ?root rdfhtml:attribute ?labelAttr . ?labelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?captionData .
+  ?toggle a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-fold" ; rdfhtml:hasChild ?captionEl, ?chevron ;
+          c:folds $this ; ord:immediatelyPrecedes ?body .
+  ?toggle rdfhtml:attribute ?ariaExpanded . ?ariaExpanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openText .
+  ?toggle rdfhtml:attribute ?ariaControls . ?ariaControls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?bodyId .
+  ?captionEl a rdfhtml:Strong ; rdfhtml:hasChild ?captionText ; ord:immediatelyPrecedes ?chevron .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?captionData .
+  ?chevron a rdfhtml:Span ; rdfhtml:class "sem-chevron" .
+  ?chevron rdfhtml:attribute ?chevronHidden . ?chevronHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?body a rdfhtml:Div ; rdfhtml:class "sem-bar-body" ; rdfhtml:id ?bodyId ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:StatusBar .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?caption)
+  BIND(NOT EXISTS { $this c:expanded ?expanded FILTER(STR(?expanded) = "false") } AS ?open)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(STR(?open) AS ?openText)
+  BIND(IF(?caption != "", ?caption, ?none) AS ?captionData)
+  BIND(IF(?open, ?none, "") AS ?hidden)
+  BIND(IRI(CONCAT(STR($this), "/~toggle")) AS ?toggle)
+  BIND(IRI(CONCAT(STR($this), "/~body")) AS ?body)
+  BIND(IRI(CONCAT(STR($this), "/~chevron")) AS ?chevron)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-expanded")) AS ?expandedAttr)
+  BIND(IRI(CONCAT(STR($this), "/~toggle-aria-expanded")) AS ?ariaExpanded)
+  BIND(IRI(CONCAT(STR($this), "/~toggle-aria-controls")) AS ?ariaControls)
+  BIND(IRI(CONCAT(STR($this), "/~chevron-aria-hidden")) AS ?chevronHidden)
+  BIND(IF(BOUND(?captionData), IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?labelAttr)
+  BIND(IF(BOUND(?captionData), IRI(CONCAT(STR($this), "/~caption")), ?none) AS ?captionEl)
+  BIND(IF(BOUND(?captionData), IRI(CONCAT(STR($this), "/~caption-text")), ?none) AS ?captionText)
+  BIND(STR(?body) AS ?bodyId)
+  {} UNION { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } UNION { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) }
+}""" .
+
+c:StatusBarRendering-sparql-text a sem:Rule ;
+    sem:implements c:StatusBarRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?captionText, ?child .
+  ?captionText a rdfhtml:Text ; rdfhtml:data ?line ; ord:immediatelyPrecedes ?first .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:StatusBar .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+  OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+  BIND(STR(COALESCE(?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?ownLabel)
+  BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?caption)
+  BIND(NOT EXISTS { $this c:expanded ?expanded FILTER(STR(?expanded) = "false") } AS ?open)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(CONCAT("— ", COALESCE(?caption, ""), " —") AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~caption")) AS ?captionText)
+  # Folded, it shows the caption alone.
+  {} UNION { FILTER NOT EXISTS { $this c:expanded ?folded FILTER(STR(?folded) = "false") } { $this c:children/rdf:rest*/rdf:first ?child FILTER(isIRI(?child)) } } UNION { FILTER NOT EXISTS { $this c:expanded ?folded FILTER(STR(?folded) = "false") } { $this c:children/rdf:first ?first FILTER(isIRI(?first)) } } UNION { FILTER NOT EXISTS { $this c:expanded ?folded FILTER(STR(?folded) = "false") } { $this c:children/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b)) } }
+}""" .
+c:StatusBarFold a beh:Reaction ; beh:when beh:Click ; beh:sourceClass c:StatusBar ;
+    beh:deletes """CONSTRUCT { $this c:expanded ?e } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:folds $this . $this c:expanded ?e }""" ;
+    beh:inserts """CONSTRUCT { $this c:expanded ?next } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:folds $this . OPTIONAL { $this c:expanded ?e } BIND(COALESCE(?e, true) = false AS ?next) }""" ;
+    sem:function "status-bar:fold" .

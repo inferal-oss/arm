@@ -14,7 +14,7 @@ func TestLeaseReviewEmbeddedOperatorModuleHasClosedAssetRoutes(t *testing.T) {
 	for _, tc := range []struct {
 		method, path, host string
 		code               int
-	}{{"GET", "/lease-reviews.mjs", s.authority, 200}, {"HEAD", "/lease-reviews.mjs", s.authority, 200}, {"POST", "/lease-reviews.mjs", s.authority, 405}, {"GET", "/lease-reviews.mjs", "external.invalid", 403}, {"GET", "/lease-reviews.mjs/extra", s.authority, 404}} {
+	}{{"GET", "/assets/arm.mjs", s.authority, 200}, {"HEAD", "/assets/arm.mjs", s.authority, 200}, {"POST", "/assets/arm.mjs", s.authority, 405}, {"GET", "/assets/arm.mjs", "external.invalid", 403}, {"GET", "/assets/arm.mjs/extra", s.authority, 404}} {
 		r := httptest.NewRequest(tc.method, "http://"+tc.host+tc.path, nil)
 		w := httptest.NewRecorder()
 		mux.ServeHTTP(w, r)

@@ -1,0 +1,1362 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix val: <https://semblance.dev/ns/validation#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Dates and times (DESIGN.md §3, Inputs).
+#
+#   c:MonthGrid       a month of days to pick from: the WAI-ARIA date grid. It stands alone, and it
+#                     is the popup of a date field.
+#   c:DateField       an xsd:date typed in the locale's format or picked from a month grid in a popup
+#                     (the WAI-ARIA date picker dialog).
+#   c:DateRangeField  two dates, a start and an end, picked one after the other on one grid: the
+#                     days between them are highlighted, and while the end is being chosen the span
+#                     up to the day under the pointer (or the keyboard's day) is previewed.
+#   c:TimeField       an xsd:time typed in the locale's format or picked from a list of times (the
+#                     WAI-ARIA combobox pattern over a listbox).
+#
+# Like every control they edit c:property of the node they c:controls (a range also c:endProperty),
+# and the value is a typed literal there: the record, not the field, is the state. What a field
+# shows is that value in its locale (l10n:Dated: the localization layer puts the locale's calendar
+# into the graph, ontology/layers/l10n.ttl); what is typed is c:value (c:endValue for a range's
+# end) until it is committed, read in the same format; text that does not read as a date or time
+# stays, and the validation layer says why. Bounds are SHACL: the val:validates shapes'
+# sh:minInclusive and sh:maxInclusive bound the value, and the days the grid and the times the
+# list offer; sh:lessThanOrEquals on the start's shape keeps a range in order.
+#
+# Dates are computed in SPARQL with integer arithmetic (the weekday by Sakamoto's method, month
+# lengths with leap years, a day's neighbours across month ends), so every store renders them.
+# The grid's state is graph state on it: the month shown (c:shownMonth), the day that has the
+# roving focus (c:activeDate), the day under the pointer while a range's end is picked
+# (c:previewDate), and whether that day takes the focus after an event (c:gridFocus false when a
+# month button was pressed, so the focus stays on the button).
+
+<https://semblance.dev/ns/component/dates> a owl:Ontology ;
+    rdfs:label "Semblance dates and times: month grid, date field, date range, time field"@en .
+
+# --- vocabulary ------------------------------------------------------------------------------------
+
+c:MonthGrid a owl:Class ;
+    rdfs:subClassOf sem:Component , l10n:Dated ;
+    rdfs:label "Month grid"@en , "Сітка місяця"@uk , "Monatsraster"@de , "شبكة الشهر"@ar ;
+    rdfs:comment """A month of days (role=grid) under a heading with the previous and next month buttons; it sets
+c:property of the node it c:controls (an xsd:date) to the day picked, or, with c:endProperty, a range: the
+first pick is the start, the next one on or after it the end. The weeks start on c:firstDayOfWeek (else
+the locale's), today is marked (c:today, else the host's), and days outside the val:validates shapes'
+sh:minInclusive / sh:maxInclusive cannot be picked. Keys (WAI-ARIA date grid): the arrows move by a day
+and a week (left and right swap in a right-to-left page), Home and End to the week's first and last day,
+Page Up and Page Down by a month, with Shift by a year; Enter or Space picks."""@en ;
+    sem:slug "month-grid" ;
+    l10n:phrase c:PreviousMonthPhrase , c:NextMonthPhrase .
+
+c:DateField a owl:Class ;
+    rdfs:subClassOf sem:Component , l10n:Dated ;
+    rdfs:label "Date field"@en , "Поле дати"@uk , "Datumsfeld"@de , "حقل التاريخ"@ar ;
+    rdfs:comment """A labelled field for an xsd:date (c:property of the node it c:controls): the date is shown and
+typed in the locale's numeric format (dd.mm.yyyy, mm/dd/yyyy, or ISO), committed when the field is left;
+the button beside it opens a month grid in a popup (role=dialog), which takes the focus on the date (or
+today), picks with a click or Enter and closes, giving the focus back to the button, as Escape does.
+Also: c:label, c:placeholder (default: the locale's pattern), c:help, c:disabled, val:validates."""@en ;
+    sem:slug "date-field" ;
+    c:labelPart "input" ;
+    l10n:phrase c:ChooseDatePhrase , c:EndDatePhrase , c:InvalidDatePhrase , c:PreviousMonthPhrase , c:NextMonthPhrase .
+
+c:DateRangeField a owl:Class ;
+    rdfs:subClassOf c:DateField ;
+    rdfs:label "Date range"@en , "Діапазон дат"@uk , "Datumsbereich"@de , "نطاق التاريخ"@ar ;
+    rdfs:comment """Two dates of one node: c:property the start, c:endProperty the end, typed in two inputs or picked
+on one month grid, the start first and then the end; the days between are highlighted, and while the
+end is being picked the span to the day under the pointer (or the focused day) is previewed. A pick
+before the start starts again from there."""@en ;
+    sem:slug "date-range-field" ;
+    c:labelPart "input" .
+
+c:TimeField a owl:Class ;
+    rdfs:subClassOf sem:Component , l10n:Dated ;
+    rdfs:label "Time field"@en , "Поле часу"@uk , "Zeitfeld"@de , "حقل الوقت"@ar ;
+    rdfs:comment """A labelled field for an xsd:time (c:property of the node it c:controls), typed in the locale's
+format (14:30, 2:30 PM) or picked from a list of times every c:minuteStep minutes (default 30) within
+the val:validates shapes' bounds: role=combobox over a role=listbox, Down and Up open the list and move
+through it, Enter picks, Escape closes. Also: c:label, c:placeholder, c:help, c:disabled."""@en ;
+    sem:slug "time-field" ;
+    c:labelPart "input" ;
+    l10n:phrase c:ChooseTimePhrase , c:InvalidTimePhrase .
+
+c:endProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:label "End property"@en , "Властивість кінця"@uk , "Endeigenschaft"@de , "خاصية النهاية"@ar ;
+    rdfs:comment "Of a control that edits a span (a date range, a month grid picking one): the property of the controlled node that is its end; c:property is its start."@en .
+c:endValue a owl:DatatypeProperty ;
+    rdfs:comment "The text typed into a range's end input, until it is committed (c:value is the start's)."@en .
+c:firstDayOfWeek a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:label "First day of the week"@en , "Перший день тижня"@uk , "Erster Wochentag"@de , "أول يوم في الأسبوع"@ar ;
+    rdfs:comment "The weekday a month grid's weeks start on, ISO: 1 Monday … 7 Sunday (default: the locale's)."@en .
+c:today a owl:DatatypeProperty ; rdfs:range xsd:date ;
+    rdfs:label "Today"@en , "Сьогодні"@uk , "Heute"@de , "اليوم"@ar ;
+    rdfs:comment "The date a dated component takes for today (marked, and where its grid opens without a value). Default: the host's (l10n:today)."@en .
+c:minuteStep a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:label "Minute step"@en , "Крок хвилин"@uk , "Minutenschritt"@de , "خطوة الدقائق"@ar ;
+    rdfs:comment "The minutes between the times a time field lists (a divisor of 60; default 30)."@en .
+
+# State.
+c:shownMonth a owl:DatatypeProperty ; rdfs:range xsd:gYearMonth ;
+    rdfs:comment "The month a month grid shows. Default: the month of its active day."@en .
+c:activeDate a owl:DatatypeProperty ; rdfs:range xsd:date ;
+    rdfs:comment "The day of a month grid in the tab order (roving focus), which the keys move. Default: the start value, else today."@en .
+c:previewDate a owl:DatatypeProperty ; rdfs:range xsd:date ;
+    rdfs:comment "While a range's end is being picked: the day under the pointer, which the span is previewed to."@en .
+c:gridFocus a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:comment "false: a month grid's active day does not take the focus after an event (a month button was pressed, and keeps it)."@en .
+c:activeTime a owl:DatatypeProperty ; rdfs:range xsd:time ;
+    rdfs:comment "The highlighted time of a time field's open list (aria-activedescendant)."@en .
+c:pickerFor a owl:ObjectProperty ; rdfs:domain c:MonthGrid ;
+    rdfs:comment "Derived, on the month grid a date field mints for its popup: the field. The grid takes its settings and texts from it, and closes it when a pick is complete."@en .
+
+# Key presses the grid and the fields react to (other keys do what they do in a field).
+c:MonthGridKey a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "keydown" ;
+    beh:key "arrowleft" , "arrowright" , "arrowup" , "arrowdown" , "home" , "end" , "pageup" , "pagedown" , "shift+pageup" , "shift+pagedown" ;
+    rdfs:comment "A key press on a month grid's day that moves its active day (beh:key)."@en .
+c:TimeFieldKey a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "keydown" ;
+    beh:key "arrowdown" , "arrowup" , "enter" , "escape" ;
+    rdfs:comment "A key press in a time field's input that opens, moves through, picks from or closes its list."@en .
+
+# Phrases, translated like the other c:Phrase individuals. "{}" stands for a pattern.
+c:PreviousMonthPhrase a c:Phrase ; rdfs:label "Previous month"@en , "Попередній місяць"@uk , "Vorheriger Monat"@de , "الشهر السابق"@ar .
+c:NextMonthPhrase a c:Phrase ; rdfs:label "Next month"@en , "Наступний місяць"@uk , "Nächster Monat"@de , "الشهر التالي"@ar .
+c:ChooseDatePhrase a c:Phrase ; rdfs:label "Choose a date"@en , "Виберіть дату"@uk , "Datum wählen"@de , "اختر تاريخًا"@ar .
+c:EndDatePhrase a c:Phrase ; rdfs:label "end"@en , "кінець"@uk , "Ende"@de , "النهاية"@ar .
+c:InvalidDatePhrase a c:Phrase ; rdfs:label "Enter a date as {}."@en , "Введіть дату як {}."@uk , "Datum als {} eingeben."@de , "أدخل التاريخ بالشكل {}."@ar .
+c:ChooseTimePhrase a c:Phrase ; rdfs:label "Choose a time"@en , "Виберіть час"@uk , "Uhrzeit wählen"@de , "اختر وقتًا"@ar .
+c:InvalidTimePhrase a c:Phrase ; rdfs:label "Enter a time as {}."@en , "Введіть час як {}."@uk , "Uhrzeit als {} eingeben."@de , "أدخل الوقت بالشكل {}."@ar .
+
+# --- the month grid -----------------------------------------------------------------------------------
+# The head (previous month, the month and year, next month: minted icon buttons and a live
+# heading), then a table: a row of weekday names and a row per week, as many as the month spans.
+# Each day is a button in its cell: in the tab order only the active day (tabindex 0), named by
+# its long date, aria-current on today, aria-selected on the cell of a picked day, aria-disabled
+# outside the bounds, data-outside for the days of the months around, data-range (start, end,
+# inside, preview) in a range. Cells are keyed by position, so going to another month patches
+# texts and attributes, not the table.
+
+c:MonthGridRendering a sem:Rendering ;
+    sem:targets c:MonthGrid ;
+    sem:stratum 0 ;
+    sem:readsMinted true ;
+    sem:follows c:controls , c:pickerFor .
+c:MonthGridRendering-fn a sem:Rule ; sem:implements c:MonthGridRendering ; sem:function "dates:month-grid" .
+c:MonthGridRendering-sparql-screen a sem:Rule ;
+    sem:implements c:MonthGridRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?head , ?table .
+  ?head a rdfhtml:Div ; rdfhtml:class "sem-mg-head" ; rdfhtml:hasChild ?prev , ?title , ?next ; ord:immediatelyPrecedes ?table .
+  ?prev a c:IconButton ; c:icon "‹" ; c:label ?prevLabel ; sty:emphasis sty:Ghost ; sty:size sty:Small ; ord:immediatelyPrecedes ?title .
+  ?title a rdfhtml:Div ; rdfhtml:class "sem-mg-title" ; rdfhtml:id ?titleId ; rdfhtml:attribute ?live ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?next .
+  ?live a rdfhtml:Attribute ; rdfhtml:attributeName "aria-live" ; rdfhtml:attributeValue "polite" .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?heading .
+  ?next a c:IconButton ; c:icon "›" ; c:label ?nextLabel ; sty:emphasis sty:Ghost ; sty:size sty:Small .
+  ?table a rdfhtml:Table ; rdfhtml:class "sem-mg-days" ; rdfhtml:attribute ?gridRole , ?gridName ; rdfhtml:hasChild ?thead , ?tbody .
+  ?gridRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "grid" .
+  ?gridName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?titleId .
+  ?thead a rdfhtml:Thead ; rdfhtml:hasChild ?headRow ; ord:immediatelyPrecedes ?tbody .
+  ?headRow a rdfhtml:Tr ; rdfhtml:hasChild ?th .
+  ?th a rdfhtml:Th ; rdfhtml:scope "col" ; rdfhtml:abbr ?weekdayName ; sem:orderKey ?colKey ; rdfhtml:hasChild ?thText .
+  ?thText a rdfhtml:Text ; rdfhtml:data ?weekdayAbbr .
+  ?tbody a rdfhtml:Tbody ; rdfhtml:hasChild ?week .
+  ?week a rdfhtml:Tr ; sem:orderKey ?weekKey ; rdfhtml:hasChild ?cell .
+  ?cell a rdfhtml:Td ; sem:orderKey ?colKey ; rdfhtml:attribute ?selectedAttr , ?rangeAttr ; rdfhtml:hasChild ?day .
+  ?selectedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-selected" ; rdfhtml:attributeValue "true" .
+  ?rangeAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-range" ; rdfhtml:attributeValue ?range .
+  ?day a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-mg-day" ; rdfhtml:tabIndex ?tab ; c:pick ?date ;
+       rdfhtml:attribute ?dayName , ?currentAttr , ?disabledAttr , ?outsideAttr , ?focusAttr ; rdfhtml:hasChild ?dayText .
+  ?dayName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?longDate .
+  ?currentAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-current" ; rdfhtml:attributeValue "date" .
+  ?disabledAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-disabled" ; rdfhtml:attributeValue "true" .
+  ?outsideAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-outside" ; rdfhtml:attributeValue "" .
+  ?focusAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-takes-focus" ; rdfhtml:attributeValue "" .
+  ?dayText a rdfhtml:Text ; rdfhtml:data ?dayNumber .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:MonthGrid .
+  # Settings and texts are the field's when the grid is a field's popup, else its own.
+  OPTIONAL { $this c:pickerFor ?picker }
+  BIND(COALESCE(?picker, $this) AS ?owner)
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:endProperty ?endProperty }
+  BIND(BOUND(?endProperty) AS ?ranged)
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  # (A predicate nothing has stands in for a missing end, so the subquery is bound to it.)
+  BIND(COALESCE(?endProperty, c:noEndProperty) AS ?endP)
+  LATERAL { OPTIONAL { SELECT ?target ?endP (MIN(STR(?w)) AS ?endValue) WHERE { ?target ?endP ?w } GROUP BY ?target ?endP } }
+  OPTIONAL { ?owner c:today ?today0 }
+  OPTIONAL { ?owner l10n:today ?today1 }
+  BIND(STR(COALESCE(?today0, ?today1)) AS ?today)
+  OPTIONAL { ?owner c:firstDayOfWeek ?fdw0 }
+  OPTIONAL { ?owner l10n:firstWeekday ?fdw1 }
+  BIND(xsd:integer(COALESCE(?fdw0, ?fdw1, 1)) AS ?fdw)
+  LATERAL { OPTIONAL { SELECT ?owner (MAX(STR(?min0)) AS ?minDate) WHERE { ?owner val:validates/sh:minInclusive ?min0 } GROUP BY ?owner } }
+  LATERAL { OPTIONAL { SELECT ?owner (MIN(STR(?max0)) AS ?maxDate) WHERE { ?owner val:validates/sh:maxInclusive ?max0 } GROUP BY ?owner } }
+  OPTIONAL { ?owner l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  OPTIONAL { ?owner l10n:monthYearPattern ?myp0 }
+  OPTIONAL { ?owner l10n:longDatePattern ?ldp0 }
+  # State: the active day (else the start, else today), the month shown (else the active day's).
+  OPTIONAL { $this c:activeDate ?active0 }
+  OPTIONAL { $this c:shownMonth ?shown0 }
+  OPTIONAL { $this c:previewDate ?preview0 }
+  BIND(NOT EXISTS { $this c:gridFocus ?gridFocus0 FILTER(STR(?gridFocus0) = "false") } AS ?holdsFocus)
+  BIND(STR(COALESCE(?active0, ?startValue, ?today, "2000-01-01")) AS ?active)
+  BIND(COALESCE(STR(?shown0), SUBSTR(?active, 1, 7)) AS ?month)
+  BIND(IF(SUBSTR(?active, 1, 7) = ?month, ?active, CONCAT(?month, "-01")) AS ?focusDay)
+  BIND(IF(?ranged && BOUND(?startValue) && !BOUND(?endValue), STR(COALESCE(?preview0, ?active0)), ?none) AS ?previewEnd)
+  # The month: its length, its neighbours, the weekday of its first day (Sakamoto; 1 Monday …
+  # 7 Sunday), the days of the week before it (?lead) and how many weeks it spans.
+  BIND(xsd:integer(SUBSTR(?month, 1, 4)) AS ?Y)
+  BIND(xsd:integer(SUBSTR(?month, 6, 2)) AS ?M)
+  BIND((?Y - 4 * FLOOR(?Y / 4) = 0 && ?Y - 100 * FLOOR(?Y / 100) != 0) || ?Y - 400 * FLOOR(?Y / 400) = 0 AS ?leap)
+  BIND(IF(?M = 2, IF(?leap, 29, 28), IF(?M IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  BIND(IF(?M = 1, ?Y - 1, ?Y) AS ?PY)
+  BIND(IF(?M = 1, 12, ?M - 1) AS ?PM)
+  BIND(IF(?M = 12, ?Y + 1, ?Y) AS ?NY)
+  BIND(IF(?M = 12, 1, ?M + 1) AS ?NM)
+  BIND((?PY - 4 * FLOOR(?PY / 4) = 0 && ?PY - 100 * FLOOR(?PY / 100) != 0) || ?PY - 400 * FLOOR(?PY / 400) = 0 AS ?pleap)
+  BIND(IF(?PM = 2, IF(?pleap, 29, 28), IF(?PM IN (4, 6, 9, 11), 30, 31)) AS ?pdim)
+  BIND(?Y - IF(?M < 3, 1, 0) AS ?sy)
+  BIND(?sy + FLOOR(?sy / 4) - FLOOR(?sy / 100) + FLOOR(?sy / 400) + xsd:integer(SUBSTR("032503514624", ?M, 1)) + 1 AS ?s0)
+  BIND(xsd:integer(?s0 - 7 * FLOOR(?s0 / 7)) AS ?dow0)
+  BIND(IF(?dow0 = 0, 7, ?dow0) AS ?wd1)
+  BIND(?wd1 - ?fdw + 7 AS ?lead0)
+  BIND(xsd:integer(?lead0 - 7 * FLOOR(?lead0 / 7)) AS ?lead)
+  BIND(xsd:integer(CEIL((?lead + ?dim) / 7)) AS ?weeks)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?titleNode)
+  BIND(STR(?titleNode) AS ?titleId)
+  LATERAL {
+    {
+      # The head and the table.
+      BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+      BIND(IRI(CONCAT(STR($this), "/~prev")) AS ?prev)
+      BIND(IRI(CONCAT(STR($this), "/~next")) AS ?next)
+      BIND(?titleNode AS ?title)
+      BIND(IRI(CONCAT(STR($this), "/~title-aria-live")) AS ?live)
+      BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-PreviousMonthPhrase")) AS ?prevNode)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-NextMonthPhrase")) AS ?nextNode)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-month-", STR(?M))) AS ?monthNode)
+      OPTIONAL { ?prevNode l10n:label ?prev0 }
+      OPTIONAL { ?nextNode l10n:label ?next0 }
+      OPTIONAL { c:PreviousMonthPhrase rdfs:label ?prev1 FILTER(langMatches(lang(?prev1), "en")) }
+      OPTIONAL { c:NextMonthPhrase rdfs:label ?next1 FILTER(langMatches(lang(?next1), "en")) }
+      OPTIONAL { ?monthNode l10n:label ?monthName0 }
+      BIND(STR(COALESCE(?prev0, ?prev1)) AS ?prevLabel)
+      BIND(STR(COALESCE(?next0, ?next1)) AS ?nextLabel)
+      BIND(REPLACE(REPLACE(COALESCE(STR(?myp0), "%M %y"), "%M", COALESCE(STR(?monthName0), STR(?M))), "%y", STR(?Y)) AS ?heading0)
+      BIND(IF(?digits = "0123456789", ?heading0,
+              REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?heading0,
+                "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+                "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?heading)
+      BIND(IRI(CONCAT(STR($this), "/~days")) AS ?table)
+      BIND(IRI(CONCAT(STR($this), "/~days-role")) AS ?gridRole)
+      BIND(IRI(CONCAT(STR($this), "/~days-aria-labelledby")) AS ?gridName)
+      BIND(IRI(CONCAT(STR($this), "/~thead")) AS ?thead)
+      BIND(IRI(CONCAT(STR($this), "/~wdrow")) AS ?headRow)
+      BIND(IRI(CONCAT(STR($this), "/~tbody")) AS ?tbody)
+    } UNION {
+      # The weekdays, from the first day of the week.
+      VALUES ?col { 0 1 2 3 4 5 6 }
+      BIND(?fdw - 1 + ?col AS ?k0)
+      BIND(xsd:integer(?k0 - 7 * FLOOR(?k0 / 7)) + 1 AS ?iwd)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-weekday-", STR(?iwd))) AS ?weekdayNode)
+      OPTIONAL { ?weekdayNode l10n:label ?weekdayName0 }
+      OPTIONAL { ?weekdayNode l10n:abbr ?weekdayAbbr0 }
+      BIND(STR(COALESCE(?weekdayName0, STR(?iwd))) AS ?weekdayName)
+      BIND(STR(COALESCE(?weekdayAbbr0, ?weekdayName)) AS ?weekdayAbbr)
+      BIND(IRI(CONCAT(STR($this), "/~wdrow")) AS ?headRow)
+      BIND(IRI(CONCAT(STR($this), "/~wd", STR(?col))) AS ?th)
+      BIND(IRI(CONCAT(STR($this), "/~wd", STR(?col), "-text")) AS ?thText)
+      BIND(STR(?col) AS ?colKey)
+    } UNION {
+      # The days: a week a row; those of the months before and after fill the first and last.
+      VALUES ?w { 0 1 2 3 4 5 }
+      VALUES ?col { 0 1 2 3 4 5 6 }
+      FILTER(?w < ?weeks)
+      BIND(?w * 7 + ?col - ?lead + 1 AS ?n)
+      BIND(IF(?n < 1, ?PY, IF(?n > ?dim, ?NY, ?Y)) AS ?cy)
+      BIND(IF(?n < 1, ?PM, IF(?n > ?dim, ?NM, ?M)) AS ?cm)
+      BIND(xsd:integer(IF(?n < 1, ?pdim + ?n, IF(?n > ?dim, ?n - ?dim, ?n))) AS ?cd)
+      BIND(CONCAT(STR(?cy), "-", IF(?cm < 10, "0", ""), STR(?cm), "-", IF(?cd < 10, "0", ""), STR(?cd)) AS ?iso)
+      BIND(STRDT(?iso, xsd:date) AS ?date)
+      BIND(?fdw - 1 + ?col AS ?k1)
+      BIND(xsd:integer(?k1 - 7 * FLOOR(?k1 / 7)) + 1 AS ?cwd)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-weekday-", STR(?cwd))) AS ?cellWeekday)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-month-", STR(?cm))) AS ?cellMonth)
+      OPTIONAL { ?cellWeekday l10n:label ?cellWeekdayName }
+      OPTIONAL { ?cellMonth l10n:inDate ?cellMonthName }
+      BIND(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(STR(?ldp0), "%y-%m-%d"), "%w", COALESCE(STR(?cellWeekdayName), "")),
+           "%e", STR(?cd)), "%M", COALESCE(STR(?cellMonthName), STR(?cm))), "%y", STR(?cy)) AS ?long0)
+      BIND(IF(?digits = "0123456789", ?long0,
+              REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?long0,
+                "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+                "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?longDate)
+      BIND(IF(?digits = "0123456789", STR(?cd),
+              REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?cd),
+                "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+                "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?dayNumber)
+      # What the day is: picked, in a range (or its preview), today, out of bounds, of another month.
+      BIND(COALESCE(?iso = ?startValue, false) AS ?isStart)
+      BIND(COALESCE(?iso = ?endValue, false) AS ?isEnd)
+      BIND(COALESCE(?iso > ?startValue && ?iso < ?endValue, false) AS ?isInside)
+      BIND(COALESCE(?iso > ?startValue && ?iso <= ?previewEnd, false) AS ?isPreview)
+      BIND(CONCAT(IF(?isStart, " start", ""), IF(?isEnd, " end", ""), IF(?isInside, " inside", ""), IF(?isPreview, " preview", "")) AS ?range0)
+      BIND(IF(?ranged && ?range0 != "", SUBSTR(?range0, 2), ?none) AS ?range)
+      BIND((BOUND(?minDate) && ?iso < ?minDate) || (BOUND(?maxDate) && ?iso > ?maxDate) AS ?outOfBounds)
+      BIND(?iso = ?focusDay AS ?isActive)
+      BIND(IF(?isActive, "0", "-1") AS ?tab)
+      BIND(STR(?w) AS ?weekKey)
+      BIND(STR(?col) AS ?colKey)
+      BIND(CONCAT("c", STR(?w), "-", STR(?col)) AS ?local)
+      BIND(IRI(CONCAT(STR($this), "/~tbody")) AS ?tbody)
+      BIND(IRI(CONCAT(STR($this), "/~w", STR(?w))) AS ?week)
+      BIND(IRI(CONCAT(STR($this), "/~", ?local)) AS ?cell)
+      BIND(IRI(CONCAT(STR($this), "/~", ?local, "-day")) AS ?day)
+      BIND(IRI(CONCAT(STR($this), "/~", ?local, "-text")) AS ?dayText)
+      BIND(IRI(CONCAT(STR($this), "/~", ?local, "-day-aria-label")) AS ?dayName)
+      BIND(IF(?isStart || ?isEnd, IRI(CONCAT(STR($this), "/~", ?local, "-aria-selected")), ?none) AS ?selectedAttr)
+      BIND(IF(BOUND(?range), IRI(CONCAT(STR($this), "/~", ?local, "-data-range")), ?none) AS ?rangeAttr)
+      BIND(IF(?iso = ?today, IRI(CONCAT(STR($this), "/~", ?local, "-day-aria-current")), ?none) AS ?currentAttr)
+      BIND(IF(?outOfBounds, IRI(CONCAT(STR($this), "/~", ?local, "-day-aria-disabled")), ?none) AS ?disabledAttr)
+      BIND(IF(?n < 1 || ?n > ?dim, IRI(CONCAT(STR($this), "/~", ?local, "-day-data-outside")), ?none) AS ?outsideAttr)
+      BIND(IF(?isActive && ?holdsFocus, IRI(CONCAT(STR($this), "/~", ?local, "-day-data-sem-takes-focus")), ?none) AS ?focusAttr)
+    }
+  }
+}""" .
+
+# As text: the heading between the month arrows, the weekdays, then a line a week (the picked
+# days in brackets, the other months' days as dots).
+c:MonthGridRendering-sparql-text a sem:Rule ;
+    sem:implements c:MonthGridRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Div ; sem:orderKey ?lineKey ; rdfhtml:hasChild ?word .
+  ?word a rdfhtml:Text ; sem:orderKey ?wordKey ; rdfhtml:data ?wordData .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:MonthGrid .
+  OPTIONAL { $this c:pickerFor ?picker }
+  BIND(COALESCE(?picker, $this) AS ?owner)
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:endProperty ?endProperty }
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  # (A predicate nothing has stands in for a missing end, so the subquery is bound to it.)
+  BIND(COALESCE(?endProperty, c:noEndProperty) AS ?endP)
+  LATERAL { OPTIONAL { SELECT ?target ?endP (MIN(STR(?w)) AS ?endValue) WHERE { ?target ?endP ?w } GROUP BY ?target ?endP } }
+  OPTIONAL { ?owner c:today ?today0 }
+  OPTIONAL { ?owner l10n:today ?today1 }
+  BIND(STR(COALESCE(?today0, ?today1)) AS ?today)
+  OPTIONAL { ?owner c:firstDayOfWeek ?fdw0 }
+  OPTIONAL { ?owner l10n:firstWeekday ?fdw1 }
+  BIND(xsd:integer(COALESCE(?fdw0, ?fdw1, 1)) AS ?fdw)
+  OPTIONAL { ?owner l10n:monthYearPattern ?myp0 }
+  OPTIONAL { $this c:activeDate ?active0 }
+  OPTIONAL { $this c:shownMonth ?shown0 }
+  BIND(STR(COALESCE(?active0, ?startValue, ?today, "2000-01-01")) AS ?active)
+  BIND(COALESCE(STR(?shown0), SUBSTR(?active, 1, 7)) AS ?month)
+  BIND(xsd:integer(SUBSTR(?month, 1, 4)) AS ?Y)
+  BIND(xsd:integer(SUBSTR(?month, 6, 2)) AS ?M)
+  BIND((?Y - 4 * FLOOR(?Y / 4) = 0 && ?Y - 100 * FLOOR(?Y / 100) != 0) || ?Y - 400 * FLOOR(?Y / 400) = 0 AS ?leap)
+  BIND(IF(?M = 2, IF(?leap, 29, 28), IF(?M IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  BIND(?Y - IF(?M < 3, 1, 0) AS ?sy)
+  BIND(?sy + FLOOR(?sy / 4) - FLOOR(?sy / 100) + FLOOR(?sy / 400) + xsd:integer(SUBSTR("032503514624", ?M, 1)) + 1 AS ?s0)
+  BIND(xsd:integer(?s0 - 7 * FLOOR(?s0 / 7)) AS ?dow0)
+  BIND(IF(?dow0 = 0, 7, ?dow0) AS ?wd1)
+  BIND(?wd1 - ?fdw + 7 AS ?lead0)
+  BIND(xsd:integer(?lead0 - 7 * FLOOR(?lead0 / 7)) AS ?lead)
+  BIND(xsd:integer(CEIL((?lead + ?dim) / 7)) AS ?weeks)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  LATERAL {
+    {
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-month-", STR(?M))) AS ?monthNode)
+      OPTIONAL { ?monthNode l10n:label ?monthName0 }
+      BIND(CONCAT("‹ ", REPLACE(REPLACE(COALESCE(STR(?myp0), "%M %y"), "%M", COALESCE(STR(?monthName0), STR(?M))), "%y", STR(?Y)), " ›") AS ?wordData)
+      BIND("0" AS ?lineKey)
+      BIND("0" AS ?wordKey)
+      BIND(IRI(CONCAT(STR($this), "/~t-title")) AS ?line)
+      BIND(IRI(CONCAT(STR($this), "/~t-title-text")) AS ?word)
+    } UNION {
+      VALUES ?col { 0 1 2 3 4 5 6 }
+      BIND(?fdw - 1 + ?col AS ?k0)
+      BIND(xsd:integer(?k0 - 7 * FLOOR(?k0 / 7)) + 1 AS ?iwd)
+      BIND(IRI(CONCAT(STR(?owner), "/~l10n-weekday-", STR(?iwd))) AS ?weekdayNode)
+      OPTIONAL { ?weekdayNode l10n:abbr ?weekdayAbbr0 }
+      BIND(STR(COALESCE(?weekdayAbbr0, STR(?iwd))) AS ?wordData)
+      BIND("1" AS ?lineKey)
+      BIND(STR(?col) AS ?wordKey)
+      BIND(IRI(CONCAT(STR($this), "/~t-head")) AS ?line)
+      BIND(IRI(CONCAT(STR($this), "/~t-wd", STR(?col))) AS ?word)
+    } UNION {
+      VALUES ?w { 0 1 2 3 4 5 }
+      VALUES ?col { 0 1 2 3 4 5 6 }
+      FILTER(?w < ?weeks)
+      BIND(?w * 7 + ?col - ?lead + 1 AS ?n)
+      BIND(CONCAT(?month, "-", IF(?n < 10, "0", ""), STR(?n)) AS ?iso)
+      BIND(IF(?n < 1 || ?n > ?dim, "·", IF(COALESCE(?iso = ?startValue, false) || COALESCE(?iso = ?endValue, false), CONCAT("[", STR(?n), "]"), STR(?n))) AS ?wordData)
+      BIND(STR(?w + 2) AS ?lineKey)
+      BIND(STR(?col) AS ?wordKey)
+      BIND(IRI(CONCAT(STR($this), "/~t-w", STR(?w))) AS ?line)
+      BIND(IRI(CONCAT(STR($this), "/~t-c", STR(?w), "-", STR(?col))) AS ?word)
+    }
+  }
+}""" .
+
+# --- the month grid's behaviour --------------------------------------------------------------------
+
+# A day clicked (or Enter / Space on it: it is a button): in a single grid it becomes the value; in a
+# range the first pick is the start (the end is cleared), and a pick on or after a start without an
+# end is the end. A complete pick closes the field the grid is a popup of (the focus goes back to
+# its button) and drops what was typed there. Days out of bounds are not picked.
+c:MonthGridPick a beh:Reaction ;
+    rdfs:label "Pick a day"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:MonthGrid ;
+    beh:deletes """
+CONSTRUCT { ?target ?valueP ?old . ?owner ?ownerP ?ownerOld . $this ?stateP ?stateOld . }
+WHERE {
+  $event beh:node ?hit . ?hit c:pick ?date .
+  FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~")))
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:pickerFor ?picker }
+  BIND(COALESCE(?picker, $this) AS ?owner)
+  FILTER NOT EXISTS { ?owner c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  FILTER NOT EXISTS { ?owner val:validates/sh:minInclusive ?min FILTER(STR(?date) < STR(?min)) }
+  FILTER NOT EXISTS { ?owner val:validates/sh:maxInclusive ?max FILTER(STR(?date) > STR(?max)) }
+  OPTIONAL { $this c:endProperty ?endProperty }
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  # (A predicate nothing has stands in for a missing end, so the subquery is bound to it.)
+  BIND(COALESCE(?endProperty, c:noEndProperty) AS ?endP)
+  LATERAL { OPTIONAL { SELECT ?target ?endP (MIN(STR(?w)) AS ?endValue) WHERE { ?target ?endP ?w } GROUP BY ?target ?endP } }
+  BIND(IF(!BOUND(?endProperty), "single", IF(BOUND(?startValue) && !BOUND(?endValue) && STR(?date) >= ?startValue, "end", "start")) AS ?mode)
+  LATERAL {
+    { FILTER(?mode != "end") BIND(?property AS ?valueP) ?target ?valueP ?old }
+    UNION { FILTER(?mode != "single") BIND(?endProperty AS ?valueP) ?target ?valueP ?old }
+    UNION { FILTER(?mode != "start" && ?owner != $this) VALUES ?ownerP { c:expanded c:value c:endValue } ?owner ?ownerP ?ownerOld }
+    UNION { VALUES ?stateP { c:activeDate c:previewDate c:gridFocus c:shownMonth } $this ?stateP ?stateOld }
+  }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?target ?setP ?date . $this c:activeDate ?stay . }
+WHERE {
+  $event beh:node ?hit . ?hit c:pick ?date .
+  FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~")))
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:pickerFor ?picker }
+  BIND(COALESCE(?picker, $this) AS ?owner)
+  FILTER NOT EXISTS { ?owner c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  FILTER NOT EXISTS { ?owner val:validates/sh:minInclusive ?min FILTER(STR(?date) < STR(?min)) }
+  FILTER NOT EXISTS { ?owner val:validates/sh:maxInclusive ?max FILTER(STR(?date) > STR(?max)) }
+  OPTIONAL { $this c:endProperty ?endProperty }
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  # (A predicate nothing has stands in for a missing end, so the subquery is bound to it.)
+  BIND(COALESCE(?endProperty, c:noEndProperty) AS ?endP)
+  LATERAL { OPTIONAL { SELECT ?target ?endP (MIN(STR(?w)) AS ?endValue) WHERE { ?target ?endP ?w } GROUP BY ?target ?endP } }
+  BIND(IF(!BOUND(?endProperty), "single", IF(BOUND(?startValue) && !BOUND(?endValue) && STR(?date) >= ?startValue, "end", "start")) AS ?mode)
+  BIND(IF(?mode = "end", ?endProperty, ?property) AS ?setP)
+  # A grid of its own keeps the picked day active; a popup's stays open only for a range's end.
+  BIND(IF(?mode = "start" || ?owner = $this, ?date, ?none) AS ?stay)
+}""" .
+
+# The month buttons: the month before or after, the active day moving with it (the same day, or the
+# month's last); the focus stays on the button.
+c:MonthGridStep a beh:Reaction ;
+    rdfs:label "Another month"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:MonthGrid ;
+    beh:deletes """
+CONSTRUCT { $this ?stateP ?stateOld }
+WHERE {
+  $event beh:node ?hit .
+  VALUES ?local { "prev" "next" }
+  FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~", ?local, "/")))
+  VALUES ?stateP { c:activeDate c:shownMonth c:gridFocus c:previewDate }
+  $this ?stateP ?stateOld
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:shownMonth ?newMonth ; c:activeDate ?newActive ; c:gridFocus false . }
+WHERE {
+  $event beh:node ?hit .
+  VALUES (?local ?step) { ("prev" -1) ("next" 1) }
+  FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~", ?local, "/")))
+  OPTIONAL { $this c:pickerFor ?picker }
+  BIND(COALESCE(?picker, $this) AS ?owner)
+  $this c:controls ?target ; c:property ?property .
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  OPTIONAL { ?owner c:today ?today0 }
+  OPTIONAL { ?owner l10n:today ?today1 }
+  OPTIONAL { $this c:activeDate ?active0 }
+  OPTIONAL { $this c:shownMonth ?shown0 }
+  BIND(STR(COALESCE(?active0, ?startValue, ?today0, ?today1, "2000-01-01")) AS ?active)
+  BIND(COALESCE(STR(?shown0), SUBSTR(?active, 1, 7)) AS ?month)
+  BIND(xsd:integer(SUBSTR(?month, 1, 4)) * 12 + xsd:integer(SUBSTR(?month, 6, 2)) - 1 + ?step AS ?months)
+  BIND(xsd:integer(FLOOR(?months / 12)) AS ?y)
+  BIND(xsd:integer(?months - ?y * 12 + 1) AS ?m)
+  BIND((?y - 4 * FLOOR(?y / 4) = 0 && ?y - 100 * FLOOR(?y / 100) != 0) || ?y - 400 * FLOOR(?y / 400) = 0 AS ?leap)
+  BIND(IF(?m = 2, IF(?leap, 29, 28), IF(?m IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  BIND(xsd:integer(SUBSTR(?active, 9, 2)) AS ?d0)
+  BIND(IF(?d0 > ?dim, ?dim, ?d0) AS ?d)
+  BIND(CONCAT(STR(?y), "-", IF(?m < 10, "0", ""), STR(?m)) AS ?ym)
+  BIND(STRDT(?ym, xsd:gYearMonth) AS ?newMonth)
+  BIND(STRDT(CONCAT(?ym, "-", IF(?d < 10, "0", ""), STR(?d)), xsd:date) AS ?newActive)
+}""" .
+
+# The keys move the active day, and the month shown with it: a day (left and right swap in a
+# right-to-left page), a week, to the week's first or last day, a month (Shift: a year; the same day,
+# or the month's last). The day takes the focus.
+c:MonthGridMove a beh:Reaction ;
+    rdfs:label "Move the active day"@en ;
+    beh:when c:MonthGridKey ;
+    beh:sourceClass c:MonthGrid ;
+    beh:deletes """
+CONSTRUCT { $this ?stateP ?stateOld }
+WHERE {
+  $event beh:key ?key .
+  VALUES ?stateP { c:activeDate c:shownMonth c:gridFocus }
+  $this ?stateP ?stateOld
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:activeDate ?newActive ; c:shownMonth ?newMonth . }
+WHERE {
+  $event beh:key ?key .
+  VALUES (?key ?kind ?step) {
+    ("arrowleft" "day" -1) ("arrowright" "day" 1) ("arrowup" "day" -7) ("arrowdown" "day" 7)
+    ("home" "first" 0) ("end" "last" 0)
+    ("pageup" "month" -1) ("pagedown" "month" 1) ("shift+pageup" "month" -12) ("shift+pagedown" "month" 12)
+  }
+  OPTIONAL { $this c:pickerFor ?picker }
+  BIND(COALESCE(?picker, $this) AS ?owner)
+  $this c:controls ?target ; c:property ?property .
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  OPTIONAL { ?owner c:today ?today0 }
+  OPTIONAL { ?owner l10n:today ?today1 }
+  OPTIONAL { ?owner c:firstDayOfWeek ?fdw0 }
+  OPTIONAL { ?owner l10n:firstWeekday ?fdw1 }
+  BIND(xsd:integer(COALESCE(?fdw0, ?fdw1, 1)) AS ?fdw)
+  BIND(EXISTS { ?owner l10n:rightToLeft ?rtl0 FILTER(STR(?rtl0) = "true") } AS ?rtl)
+  OPTIONAL { $this c:activeDate ?active0 }
+  OPTIONAL { $this c:shownMonth ?shown0 }
+  BIND(STR(COALESCE(?active0, ?startValue, ?today0, ?today1, "2000-01-01")) AS ?active1)
+  # Moving from the month shown: the active day if it is in it, else its first.
+  BIND(COALESCE(STR(?shown0), SUBSTR(?active1, 1, 7)) AS ?month)
+  BIND(IF(SUBSTR(?active1, 1, 7) = ?month, ?active1, CONCAT(?month, "-01")) AS ?active)
+  BIND(xsd:integer(SUBSTR(?active, 1, 4)) AS ?Y)
+  BIND(xsd:integer(SUBSTR(?active, 6, 2)) AS ?M)
+  BIND(xsd:integer(SUBSTR(?active, 9, 2)) AS ?D)
+  BIND((?Y - 4 * FLOOR(?Y / 4) = 0 && ?Y - 100 * FLOOR(?Y / 100) != 0) || ?Y - 400 * FLOOR(?Y / 400) = 0 AS ?leap)
+  BIND(IF(?M = 2, IF(?leap, 29, 28), IF(?M IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  BIND(IF(?M = 1, ?Y - 1, ?Y) AS ?PY)
+  BIND(IF(?M = 1, 12, ?M - 1) AS ?PM)
+  BIND((?PY - 4 * FLOOR(?PY / 4) = 0 && ?PY - 100 * FLOOR(?PY / 100) != 0) || ?PY - 400 * FLOOR(?PY / 400) = 0 AS ?pleap)
+  BIND(IF(?PM = 2, IF(?pleap, 29, 28), IF(?PM IN (4, 6, 9, 11), 30, 31)) AS ?pdim)
+  # The active day's place in its week (Sakamoto's weekday, from the first day of the week).
+  BIND(?Y - IF(?M < 3, 1, 0) AS ?sy)
+  BIND(?sy + FLOOR(?sy / 4) - FLOOR(?sy / 100) + FLOOR(?sy / 400) + xsd:integer(SUBSTR("032503514624", ?M, 1)) + ?D AS ?s0)
+  BIND(xsd:integer(?s0 - 7 * FLOOR(?s0 / 7)) AS ?dow0)
+  BIND(IF(?dow0 = 0, 7, ?dow0) - ?fdw + 7 AS ?o0)
+  BIND(xsd:integer(?o0 - 7 * FLOOR(?o0 / 7)) AS ?offset)
+  # Days to move (within a week either way: one month's carry at most).
+  BIND(IF(?kind = "day", IF(?rtl && (?step = 1 || ?step = -1), 0 - ?step, ?step), IF(?kind = "first", 0 - ?offset, IF(?kind = "last", 6 - ?offset, 0))) AS ?delta)
+  BIND(?D + ?delta AS ?nd)
+  BIND(IF(?kind = "month", ?none, IF(?nd < 1, ?PY, IF(?nd > ?dim, IF(?M = 12, ?Y + 1, ?Y), ?Y))) AS ?dy)
+  BIND(IF(?kind = "month", ?none, IF(?nd < 1, ?PM, IF(?nd > ?dim, IF(?M = 12, 1, ?M + 1), ?M))) AS ?dm)
+  BIND(IF(?kind = "month", ?none, IF(?nd < 1, ?pdim + ?nd, IF(?nd > ?dim, ?nd - ?dim, ?nd))) AS ?dd)
+  # Months to move: the same day, or the last of a shorter month.
+  BIND(?Y * 12 + ?M - 1 + ?step AS ?months)
+  BIND(xsd:integer(FLOOR(?months / 12)) AS ?my)
+  BIND(xsd:integer(?months - ?my * 12 + 1) AS ?mm)
+  BIND((?my - 4 * FLOOR(?my / 4) = 0 && ?my - 100 * FLOOR(?my / 100) != 0) || ?my - 400 * FLOOR(?my / 400) = 0 AS ?mleap)
+  BIND(IF(?mm = 2, IF(?mleap, 29, 28), IF(?mm IN (4, 6, 9, 11), 30, 31)) AS ?mdim)
+  BIND(xsd:integer(IF(?kind = "month", ?my, ?dy)) AS ?ny)
+  BIND(xsd:integer(IF(?kind = "month", ?mm, ?dm)) AS ?nm)
+  BIND(xsd:integer(IF(?kind = "month", IF(?D > ?mdim, ?mdim, ?D), ?dd)) AS ?ndd)
+  BIND(CONCAT(STR(?ny), "-", IF(?nm < 10, "0", ""), STR(?nm)) AS ?ym)
+  BIND(STRDT(?ym, xsd:gYearMonth) AS ?newMonth)
+  BIND(STRDT(CONCAT(?ym, "-", IF(?ndd < 10, "0", ""), STR(?ndd)), xsd:date) AS ?newActive)
+}""" .
+
+# While a range's end is being picked, the day under the pointer is where the preview goes to.
+c:MonthGridPreview a beh:Reaction ;
+    rdfs:label "Preview the range"@en ;
+    beh:when beh:Hover ;
+    beh:sourceClass c:MonthGrid ;
+    beh:deletes """
+CONSTRUCT { $this c:previewDate ?old }
+WHERE {
+  $event beh:node ?hit . ?hit c:pick ?date .
+  $this c:previewDate ?old FILTER(?old != ?date)
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:previewDate ?date }
+WHERE {
+  $event beh:node ?hit . ?hit c:pick ?date .
+  FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~")))
+  $this c:controls ?target ; c:property ?property ; c:endProperty ?endProperty .
+  FILTER EXISTS { ?target ?property ?start FILTER(STR(?date) >= STR(?start)) }
+  FILTER NOT EXISTS { ?target ?endProperty ?end }
+  FILTER NOT EXISTS { $this c:previewDate ?same FILTER(?same = ?date) }
+}""" .
+
+# --- the date field -----------------------------------------------------------------------------------
+# Label, the field box (the input, a range's dash and end input, the button that opens the popup:
+# a minted icon button, told aria-haspopup / aria-expanded / aria-controls), the popup (role=dialog,
+# hidden while closed; its month grid is minted only while it is open), help, the error. While
+# open, the button is what Escape and a press outside the popup click (data-sem-escape,
+# data-sem-dismiss-outside); while closed, it is where the focus goes back to after a pick
+# (data-sem-takes-focus).
+
+c:DateFieldRendering a sem:Rendering ;
+    # It writes on its minted button's root (<field>/~open/~root), which bulk evaluation would
+    # file under the button: one focus a query.
+    sem:bulk false ;
+    sem:targets c:DateField ;
+    sem:stratum 0 ;
+    sem:readsMinted true ;
+    sem:follows c:controls .
+c:DateFieldRendering-fn a sem:Rule ; sem:implements c:DateFieldRendering ; sem:function "dates:field" .
+c:DateFieldRendering-sparql-screen a sem:Rule ;
+    sem:implements c:DateFieldRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?label , ?row , ?popup , ?help , ?error .
+  ?label a rdfhtml:Label ; rdfhtml:for ?inputId ; rdfhtml:hasChild ?labelText ; ord:immediatelyPrecedes ?row .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?caption .
+  ?row a rdfhtml:Div ; rdfhtml:class "sem-date-row" ; rdfhtml:hasChild ?input , ?dash , ?endInput , ?opener ; ord:immediatelyPrecedes ?popup .
+  ?input a rdfhtml:Input ; rdfhtml:type "text" ; rdfhtml:class "sem-date-input" ; rdfhtml:id ?inputId ; rdfhtml:value ?shown ;
+         rdfhtml:placeholder ?placeholder ; rdfhtml:autocomplete "off" ; rdfhtml:spellcheck "false" ; rdfhtml:disabled ?disabled ;
+         rdfhtml:attribute ?inputDescribed , ?inputInvalid ; ord:immediatelyPrecedes ?afterInput .
+  ?inputDescribed a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?describedIds .
+  ?inputInvalid a rdfhtml:Attribute ; rdfhtml:attributeName "aria-invalid" ; rdfhtml:attributeValue "true" .
+  ?dash a rdfhtml:Span ; rdfhtml:class "sem-date-dash" ; rdfhtml:attribute ?dashHidden ; rdfhtml:hasChild ?dashText ; ord:immediatelyPrecedes ?endInput .
+  ?dashHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?dashText a rdfhtml:Text ; rdfhtml:data "–" .
+  ?endInput a rdfhtml:Input ; rdfhtml:type "text" ; rdfhtml:class "sem-date-input" ; rdfhtml:id ?endId ; rdfhtml:value ?endShown ;
+            rdfhtml:placeholder ?placeholder ; rdfhtml:autocomplete "off" ; rdfhtml:spellcheck "false" ; rdfhtml:disabled ?disabled ;
+            rdfhtml:attribute ?endName , ?endDescribed , ?endInvalid ; ord:immediatelyPrecedes ?opener .
+  ?endName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?endLabel .
+  ?endDescribed a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?describedIds .
+  ?endInvalid a rdfhtml:Attribute ; rdfhtml:attributeName "aria-invalid" ; rdfhtml:attributeValue "true" .
+  ?opener a c:IconButton ; c:icon "▦" ; c:label ?chooseLabel ; c:disabled ?openerDisabled ; sty:emphasis sty:Ghost .
+  ?openerRoot rdfhtml:attribute ?hasPopup , ?expanded , ?controls , ?escape , ?outside , ?takesFocus .
+  ?hasPopup a rdfhtml:Attribute ; rdfhtml:attributeName "aria-haspopup" ; rdfhtml:attributeValue "dialog" .
+  ?expanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openValue .
+  ?controls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?popupId .
+  ?escape a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+  ?outside a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-dismiss-outside" ; rdfhtml:attributeValue "" .
+  ?takesFocus a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-takes-focus" ; rdfhtml:attributeValue "" .
+  ?popup a rdfhtml:Div ; rdfhtml:class "sem-date-popup" ; rdfhtml:id ?popupId ; rdfhtml:hidden ?popupHidden ;
+         rdfhtml:attribute ?popupRole , ?popupName ; rdfhtml:hasChild ?grid ; ord:precedes ?help , ?error .
+  ?popupRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "dialog" .
+  ?popupName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?chooseLabel .
+  ?grid a c:MonthGrid ; c:pickerFor $this ; c:controls ?target ; c:property ?property ; c:endProperty ?endProperty .
+  ?help a rdfhtml:Div ; rdfhtml:class "sem-help" ; rdfhtml:id ?helpId ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:class "sem-error" ; rdfhtml:id ?errorId ; rdfhtml:attribute ?errorRole ; rdfhtml:hasChild ?errorText .
+  ?errorRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "alert" .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:DateField ; c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:endProperty ?endProperty0 FILTER EXISTS { $this a/rdfs:subClassOf* c:DateRangeField } }
+  BIND(?endProperty0 AS ?endProperty)
+  BIND(BOUND(?endProperty) AS ?ranged)
+  BIND(EXISTS { $this c:disabled ?disabled0 FILTER(STR(?disabled0) = "true") } AS ?isDisabled)
+  BIND(IF(?isDisabled, "", ?none) AS ?disabled)
+  BIND(IF(?isDisabled, true, ?none) AS ?openerDisabled)
+  BIND(!?isDisabled && EXISTS { $this c:expanded ?expanded0 FILTER(STR(?expanded0) = "true") } AS ?open)
+  # The locale's numeric date, its digits and the phrases (the localization layer's).
+  OPTIONAL { $this l10n:datePattern ?dp0 }
+  OPTIONAL { $this l10n:dateHint ?hint0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?dp0), "%y-%m-%d") AS ?dp)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  OPTIONAL { $this c:placeholder ?placeholder0 }
+  BIND(STR(COALESCE(?placeholder0, ?hint0, "yyyy-mm-dd")) AS ?placeholder)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-ChooseDatePhrase")) AS ?chooseNode)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-EndDatePhrase")) AS ?endNode)
+  OPTIONAL { ?chooseNode l10n:label ?choose0 }
+  OPTIONAL { ?endNode l10n:label ?end0 }
+  OPTIONAL { c:ChooseDatePhrase rdfs:label ?choose1 FILTER(langMatches(lang(?choose1), "en")) }
+  OPTIONAL { c:EndDatePhrase rdfs:label ?end1 FILTER(langMatches(lang(?end1), "en")) }
+  BIND(STR(COALESCE(?choose0, ?choose1)) AS ?chooseLabel)
+  # The caption: c:label in the viewer's language, else the property's label.
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(isLiteral(?ownLabel) && lang(?ownLabel) = "") }
+  OPTIONAL { ?property rdfs:label ?propertyLabel FILTER(lang(?propertyLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?ownLabel, ?propertyLabel, REPLACE(STR(?property), "^.*[#/]", ""))) AS ?caption)
+  BIND(IF(?ranged, CONCAT(?caption, " – ", STR(COALESCE(?end0, ?end1))), ?none) AS ?endLabel)
+  # What the inputs show: what is typed, else the value in the locale's format.
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  # (A predicate nothing has stands in for a missing end, so the subquery is bound to it.)
+  BIND(COALESCE(?endProperty, c:noEndProperty) AS ?endP)
+  LATERAL { OPTIONAL { SELECT ?target ?endP (MIN(STR(?w)) AS ?endValue) WHERE { ?target ?endP ?w } GROUP BY ?target ?endP } }
+  OPTIONAL { $this c:value ?typed0 }
+  OPTIONAL { $this c:endValue ?endTyped0 }
+  BIND(REPLACE(REPLACE(REPLACE(?dp, "%d", SUBSTR(?startValue, 9, 2)), "%m", SUBSTR(?startValue, 6, 2)), "%y", SUBSTR(?startValue, 1, 4)) AS ?start0)
+  BIND(REPLACE(REPLACE(REPLACE(?dp, "%d", SUBSTR(?endValue, 9, 2)), "%m", SUBSTR(?endValue, 6, 2)), "%y", SUBSTR(?endValue, 1, 4)) AS ?end2)
+  BIND(IF(?digits = "0123456789", ?start0,
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?start0,
+            "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+            "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?startFormatted)
+  BIND(IF(?digits = "0123456789", ?end2,
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?end2,
+            "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+            "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?endFormatted)
+  BIND(COALESCE(STR(?typed0), ?startFormatted, "") AS ?shown)
+  BIND(IF(?ranged, COALESCE(STR(?endTyped0), ?endFormatted, ""), ?none) AS ?endShown)
+  # Help and the error (the validation layer's); the inputs are described by them.
+  OPTIONAL { $this c:help ?help0 }
+  OPTIONAL { $this c:error ?error0 }
+  BIND(STR(?help0) AS ?helpData)
+  BIND(STR(?error0) AS ?errorData)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help")), ?none) AS ?help)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help-text")), ?none) AS ?helpText)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error")), ?none) AS ?error)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error-text")), ?none) AS ?errorText)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error-role")), ?none) AS ?errorRole)
+  BIND(STR(?help) AS ?helpId)
+  BIND(STR(?error) AS ?errorId)
+  BIND(IF(BOUND(?help) || BOUND(?error), CONCAT(COALESCE(?helpId, ""), IF(BOUND(?help) && BOUND(?error), " ", ""), COALESCE(?errorId, "")), ?none) AS ?describedIds)
+  # The parts.
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+  BIND(IRI(CONCAT(STR($this), "/~row")) AS ?row)
+  BIND(IRI(CONCAT(STR($this), "/~input")) AS ?input)
+  BIND(STR(?input) AS ?inputId)
+  BIND(IF(BOUND(?describedIds), IRI(CONCAT(STR($this), "/~input-aria-describedby")), ?none) AS ?inputDescribed)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~input-aria-invalid")), ?none) AS ?inputInvalid)
+  BIND(IF(?ranged, IRI(CONCAT(STR($this), "/~dash")), ?none) AS ?dash)
+  BIND(IF(?ranged, IRI(CONCAT(STR($this), "/~dash-aria-hidden")), ?none) AS ?dashHidden)
+  BIND(IF(?ranged, IRI(CONCAT(STR($this), "/~dash-text")), ?none) AS ?dashText)
+  BIND(IF(?ranged, IRI(CONCAT(STR($this), "/~end-input")), ?none) AS ?endInput)
+  BIND(STR(?endInput) AS ?endId)
+  BIND(IF(?ranged, IRI(CONCAT(STR($this), "/~end-input-aria-label")), ?none) AS ?endName)
+  BIND(IF(?ranged && BOUND(?describedIds), IRI(CONCAT(STR($this), "/~end-input-aria-describedby")), ?none) AS ?endDescribed)
+  BIND(IF(?ranged && BOUND(?errorData), IRI(CONCAT(STR($this), "/~end-input-aria-invalid")), ?none) AS ?endInvalid)
+  BIND(IRI(CONCAT(STR($this), "/~open")) AS ?opener)
+  BIND(COALESCE(?dash, ?opener) AS ?afterInput)
+  BIND(IRI(CONCAT(STR($this), "/~open/~root")) AS ?openerRoot)
+  BIND(IRI(CONCAT(STR($this), "/~open-aria-haspopup")) AS ?hasPopup)
+  BIND(IRI(CONCAT(STR($this), "/~open-aria-expanded")) AS ?expanded)
+  BIND(IRI(CONCAT(STR($this), "/~open-aria-controls")) AS ?controls)
+  BIND(IF(?open, IRI(CONCAT(STR($this), "/~open-data-sem-escape")), ?none) AS ?escape)
+  BIND(IF(?open, IRI(CONCAT(STR($this), "/~open-data-sem-dismiss-outside")), ?none) AS ?outside)
+  BIND(IF(?open, ?none, IRI(CONCAT(STR($this), "/~open-data-sem-takes-focus"))) AS ?takesFocus)
+  BIND(IF(?open, "true", "false") AS ?openValue)
+  BIND(IRI(CONCAT(STR($this), "/~popup")) AS ?popup)
+  BIND(STR(?popup) AS ?popupId)
+  BIND(IF(?open, ?none, "") AS ?popupHidden)
+  BIND(IRI(CONCAT(STR($this), "/~popup-role")) AS ?popupRole)
+  BIND(IRI(CONCAT(STR($this), "/~popup-aria-label")) AS ?popupName)
+  BIND(IF(?open, IRI(CONCAT(STR($this), "/~grid")), ?none) AS ?grid)
+}""" .
+
+# Text: one line, "Departure: [24.10.2026_] ▦" (a range: "Trip: [24.10.2026_] – [31.10.2026_] ▦"), then help and error.
+c:DateFieldRendering-sparql-text a sem:Rule ;
+    sem:implements c:DateFieldRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line , ?help , ?error .
+  ?line a rdfhtml:Div ; rdfhtml:hasChild ?lineText ; ord:precedes ?help , ?error .
+  ?lineText a rdfhtml:Text ; rdfhtml:data ?lineData .
+  ?help a rdfhtml:Div ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:hasChild ?errorText .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:DateField ; c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:endProperty ?endProperty0 FILTER EXISTS { $this a/rdfs:subClassOf* c:DateRangeField } }
+  BIND(?endProperty0 AS ?endProperty)
+  OPTIONAL { $this l10n:datePattern ?dp0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?dp0), "%y-%m-%d") AS ?dp)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(isLiteral(?ownLabel) && lang(?ownLabel) = "") }
+  OPTIONAL { ?property rdfs:label ?propertyLabel FILTER(lang(?propertyLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?ownLabel, ?propertyLabel, REPLACE(STR(?property), "^.*[#/]", ""))) AS ?caption)
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?startValue) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  # (A predicate nothing has stands in for a missing end, so the subquery is bound to it.)
+  BIND(COALESCE(?endProperty, c:noEndProperty) AS ?endP)
+  LATERAL { OPTIONAL { SELECT ?target ?endP (MIN(STR(?w)) AS ?endValue) WHERE { ?target ?endP ?w } GROUP BY ?target ?endP } }
+  OPTIONAL { $this c:value ?typed0 }
+  OPTIONAL { $this c:endValue ?endTyped0 }
+  BIND(REPLACE(REPLACE(REPLACE(?dp, "%d", SUBSTR(?startValue, 9, 2)), "%m", SUBSTR(?startValue, 6, 2)), "%y", SUBSTR(?startValue, 1, 4)) AS ?start0)
+  BIND(REPLACE(REPLACE(REPLACE(?dp, "%d", SUBSTR(?endValue, 9, 2)), "%m", SUBSTR(?endValue, 6, 2)), "%y", SUBSTR(?endValue, 1, 4)) AS ?end2)
+  BIND(IF(?digits = "0123456789", ?start0,
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?start0,
+            "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+            "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?startFormatted)
+  BIND(IF(?digits = "0123456789", ?end2,
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?end2,
+            "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+            "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?endFormatted)
+  BIND(COALESCE(STR(?typed0), ?startFormatted, "") AS ?shown)
+  BIND(IF(BOUND(?endProperty), CONCAT(" – [", COALESCE(STR(?endTyped0), ?endFormatted, ""), "_]"), "") AS ?endPart)
+  BIND(CONCAT(?caption, ": [", ?shown, "_]", ?endPart, " ▦") AS ?lineData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~line-text")) AS ?lineText)
+  OPTIONAL { $this c:help ?h . BIND(CONCAT("  ", STR(?h)) AS ?helpData) BIND(IRI(CONCAT(STR($this), "/~help")) AS ?help) BIND(IRI(CONCAT(STR($this), "/~help-text")) AS ?helpText) }
+  OPTIONAL { $this c:error ?e . BIND(CONCAT("  ! ", STR(?e)) AS ?errorData) BIND(IRI(CONCAT(STR($this), "/~error")) AS ?error) BIND(IRI(CONCAT(STR($this), "/~error-text")) AS ?errorText) }
+}""" .
+
+# --- the date field's behaviour ---------------------------------------------------------------------
+
+# Typing: the text of the input typed into (c:value, a range's end c:endValue).
+c:DateFieldType a beh:Reaction ;
+    rdfs:label "Type a date"@en ;
+    beh:when beh:Input ;
+    beh:sourceClass c:DateField ;
+    beh:deletes """CONSTRUCT { $this ?typedP ?old }
+WHERE {
+  $event beh:node ?hit .
+  VALUES (?local ?typedP) { ("input" c:value) ("end-input" c:endValue) }
+  FILTER(STR(?hit) = CONCAT(STR($this), "/~", ?local))
+  $this ?typedP ?old
+}""" ;
+    beh:inserts """CONSTRUCT { $this ?typedP ?value }
+WHERE {
+  $event beh:node ?hit ; beh:value ?value .
+  VALUES (?local ?typedP) { ("input" c:value) ("end-input" c:endValue) }
+  FILTER(STR(?hit) = CONCAT(STR($this), "/~", ?local))
+}""" .
+
+# Leaving an input after typing (or Enter: the browser's change event) commits it, read in the
+# locale's format (its digits, the order of day, month and year; ISO is always understood; a
+# two-digit year is in this century): a date becomes the value, nothing typed removes it, and
+# text that is not a date stays to be corrected (the validation layer says why).
+c:DateFieldCommit a beh:Reaction ;
+    rdfs:label "Commit the typed date"@en ;
+    beh:when beh:Change ;
+    beh:sourceClass c:DateField ;
+    beh:deletes """
+CONSTRUCT { ?target ?p ?old . $this ?typedP ?typed . }
+WHERE {
+  $event beh:node ?hit ; beh:value ?raw .
+  VALUES (?local ?which ?typedP) { ("input" "start" c:value) ("end-input" "end" c:endValue) }
+  FILTER(STR(?hit) = CONCAT(STR($this), "/~", ?local))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:endProperty ?endProperty }
+  # (No end property: a predicate nothing has, so the patterns below match nothing.)
+  BIND(IF(?which = "end", COALESCE(?endProperty, c:noEndProperty), ?property) AS ?p)
+  OPTIONAL { $this l10n:datePattern ?dp0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?dp0), "%y-%m-%d") AS ?dp)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  BIND(IF(?digits = "0123456789", STR(?raw),
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?raw),
+            SUBSTR(?digits, 1, 1), "0"), SUBSTR(?digits, 2, 1), "1"), SUBSTR(?digits, 3, 1), "2"), SUBSTR(?digits, 4, 1), "3"), SUBSTR(?digits, 5, 1), "4"),
+            SUBSTR(?digits, 6, 1), "5"), SUBSTR(?digits, 7, 1), "6"), SUBSTR(?digits, 8, 1), "7"), SUBSTR(?digits, 9, 1), "8"), SUBSTR(?digits, 10, 1), "9")) AS ?latin)
+  BIND(REPLACE(?latin, "^ +| +$", "") AS ?t)
+  BIND(REGEX(?t, "^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$") AS ?isoForm)
+  BIND(REGEX(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$") AS ?fits)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$1") AS ?g1)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$2") AS ?g2)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$3") AS ?g3)
+  BIND(STRLEN(STRBEFORE(?dp, "%d")) AS ?pd)
+  BIND(STRLEN(STRBEFORE(?dp, "%m")) AS ?pm)
+  BIND(STRLEN(STRBEFORE(?dp, "%y")) AS ?py)
+  BIND(IF(?isoForm, 2, IF(?pd > ?pm, 1, 0) + IF(?pd > ?py, 1, 0)) AS ?rd)
+  BIND(IF(?isoForm, 1, IF(?pm > ?pd, 1, 0) + IF(?pm > ?py, 1, 0)) AS ?rm)
+  BIND(IF(?isoForm, 0, IF(?py > ?pd, 1, 0) + IF(?py > ?pm, 1, 0)) AS ?ry)
+  BIND(IF(?rd = 0, ?g1, IF(?rd = 1, ?g2, ?g3)) AS ?ds)
+  BIND(IF(?rm = 0, ?g1, IF(?rm = 1, ?g2, ?g3)) AS ?ms)
+  BIND(IF(?ry = 0, ?g1, IF(?ry = 1, ?g2, ?g3)) AS ?ys)
+  BIND(xsd:integer(?ds) AS ?d)
+  BIND(xsd:integer(?ms) AS ?m)
+  BIND(IF(STRLEN(?ys) <= 2, 2000 + xsd:integer(?ys), xsd:integer(?ys)) AS ?y)
+  BIND((?y - 4 * FLOOR(?y / 4) = 0 && ?y - 100 * FLOOR(?y / 100) != 0) || ?y - 400 * FLOOR(?y / 400) = 0 AS ?leap)
+  BIND(IF(?m = 2, IF(?leap, 29, 28), IF(?m IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  BIND(IF((?isoForm || ?fits) && STRLEN(?ys) != 3 && ?y >= 1000 && ?m >= 1 && ?m <= 12 && ?d >= 1 && ?d <= ?dim,
+          STRDT(CONCAT(STR(?y), "-", IF(?m < 10, "0", ""), STR(?m), "-", IF(?d < 10, "0", ""), STR(?d)), xsd:date), ?none) AS ?date)
+  FILTER(?t = "" || BOUND(?date))
+  { ?target ?p ?old } UNION { $this ?typedP ?typed }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?target ?p ?date }
+WHERE {
+  $event beh:node ?hit ; beh:value ?raw .
+  VALUES (?local ?which) { ("input" "start") ("end-input" "end") }
+  FILTER(STR(?hit) = CONCAT(STR($this), "/~", ?local))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this c:endProperty ?endProperty }
+  # (No end property: a predicate nothing has, so the patterns below match nothing.)
+  BIND(IF(?which = "end", COALESCE(?endProperty, c:noEndProperty), ?property) AS ?p)
+  OPTIONAL { $this l10n:datePattern ?dp0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?dp0), "%y-%m-%d") AS ?dp)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  BIND(IF(?digits = "0123456789", STR(?raw),
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?raw),
+            SUBSTR(?digits, 1, 1), "0"), SUBSTR(?digits, 2, 1), "1"), SUBSTR(?digits, 3, 1), "2"), SUBSTR(?digits, 4, 1), "3"), SUBSTR(?digits, 5, 1), "4"),
+            SUBSTR(?digits, 6, 1), "5"), SUBSTR(?digits, 7, 1), "6"), SUBSTR(?digits, 8, 1), "7"), SUBSTR(?digits, 9, 1), "8"), SUBSTR(?digits, 10, 1), "9")) AS ?latin)
+  BIND(REPLACE(?latin, "^ +| +$", "") AS ?t)
+  BIND(REGEX(?t, "^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$") AS ?isoForm)
+  BIND(REGEX(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$") AS ?fits)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$1") AS ?g1)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$2") AS ?g2)
+  BIND(REPLACE(?t, "^([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]+([0-9]{1,4})[^0-9]*$", "$3") AS ?g3)
+  BIND(STRLEN(STRBEFORE(?dp, "%d")) AS ?pd)
+  BIND(STRLEN(STRBEFORE(?dp, "%m")) AS ?pm)
+  BIND(STRLEN(STRBEFORE(?dp, "%y")) AS ?py)
+  BIND(IF(?isoForm, 2, IF(?pd > ?pm, 1, 0) + IF(?pd > ?py, 1, 0)) AS ?rd)
+  BIND(IF(?isoForm, 1, IF(?pm > ?pd, 1, 0) + IF(?pm > ?py, 1, 0)) AS ?rm)
+  BIND(IF(?isoForm, 0, IF(?py > ?pd, 1, 0) + IF(?py > ?pm, 1, 0)) AS ?ry)
+  BIND(IF(?rd = 0, ?g1, IF(?rd = 1, ?g2, ?g3)) AS ?ds)
+  BIND(IF(?rm = 0, ?g1, IF(?rm = 1, ?g2, ?g3)) AS ?ms)
+  BIND(IF(?ry = 0, ?g1, IF(?ry = 1, ?g2, ?g3)) AS ?ys)
+  BIND(xsd:integer(?ds) AS ?d)
+  BIND(xsd:integer(?ms) AS ?m)
+  BIND(IF(STRLEN(?ys) <= 2, 2000 + xsd:integer(?ys), xsd:integer(?ys)) AS ?y)
+  BIND((?y - 4 * FLOOR(?y / 4) = 0 && ?y - 100 * FLOOR(?y / 100) != 0) || ?y - 400 * FLOOR(?y / 400) = 0 AS ?leap)
+  BIND(IF(?m = 2, IF(?leap, 29, 28), IF(?m IN (4, 6, 9, 11), 30, 31)) AS ?dim)
+  BIND(IF((?isoForm || ?fits) && STRLEN(?ys) != 3 && ?y >= 1000 && ?m >= 1 && ?m <= 12 && ?d >= 1 && ?d <= ?dim,
+          STRDT(CONCAT(STR(?y), "-", IF(?m < 10, "0", ""), STR(?m), "-", IF(?d < 10, "0", ""), STR(?d)), xsd:date), ?none) AS ?date)
+  FILTER(BOUND(?p) && BOUND(?date))
+}""" .
+
+# The button opens and closes the popup. Opening starts the grid afresh: at the value (or today),
+# with the focus on that day.
+c:DateFieldToggle a beh:Reaction ;
+    rdfs:label "Open the calendar"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:DateField ;
+    beh:deletes """
+CONSTRUCT { $this c:expanded ?open . ?grid ?stateP ?stateOld . }
+WHERE {
+  $event beh:node ?hit FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~open/")))
+  BIND(IRI(CONCAT(STR($this), "/~grid")) AS ?grid)
+  { $this c:expanded ?open }
+  UNION { VALUES ?stateP { c:activeDate c:shownMonth c:previewDate c:gridFocus } ?grid ?stateP ?stateOld }
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:expanded ?toggled }
+WHERE {
+  $event beh:node ?hit FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~open/")))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  BIND(NOT EXISTS { $this c:expanded ?open FILTER(STR(?open) = "true") } AS ?toggled)
+}""" .
+
+# --- the time field -----------------------------------------------------------------------------------
+# Label, the field box (the input, role=combobox, and a minted icon button out of the tab order that
+# opens the list), the list (role=listbox, its options minted only while it is open: every
+# c:minuteStep minutes within the bounds, the value marked data-chosen, the highlighted one
+# aria-selected and the input's aria-activedescendant), help, the error. While the list is open the
+# input takes the focus back after an event (a click on the button).
+
+c:TimeFieldRendering a sem:Rendering ;
+    # It writes on its minted button's root (<field>/~open/~root), which bulk evaluation would
+    # file under the button: one focus a query.
+    sem:bulk false ;
+    sem:targets c:TimeField ;
+    sem:stratum 0 ;
+    sem:readsMinted true ;
+    sem:follows c:controls .
+c:TimeFieldRendering-fn a sem:Rule ; sem:implements c:TimeFieldRendering ; sem:function "dates:time-field" .
+c:TimeFieldRendering-sparql-screen a sem:Rule ;
+    sem:implements c:TimeFieldRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?label , ?row , ?list , ?help , ?error .
+  ?label a rdfhtml:Label ; rdfhtml:for ?inputId ; rdfhtml:hasChild ?labelText ; ord:immediatelyPrecedes ?row .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?caption .
+  ?row a rdfhtml:Div ; rdfhtml:class "sem-time-row" ; rdfhtml:hasChild ?input , ?opener ; ord:immediatelyPrecedes ?list .
+  ?input a rdfhtml:Input ; rdfhtml:type "text" ; rdfhtml:class "sem-time-input" ; rdfhtml:id ?inputId ; rdfhtml:value ?shown ;
+         rdfhtml:placeholder ?placeholder ; rdfhtml:autocomplete "off" ; rdfhtml:spellcheck "false" ; rdfhtml:disabled ?disabled ;
+         rdfhtml:attribute ?roleAttr , ?autoAttr , ?controlsAttr , ?expandedAttr , ?activeAttr , ?describedAttr , ?invalidAttr , ?focusAttr ;
+         ord:immediatelyPrecedes ?opener .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "combobox" .
+  ?autoAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-autocomplete" ; rdfhtml:attributeValue "none" .
+  ?controlsAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?listId .
+  ?expandedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openValue .
+  ?activeAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-activedescendant" ; rdfhtml:attributeValue ?activeId .
+  ?describedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?describedIds .
+  ?invalidAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-invalid" ; rdfhtml:attributeValue "true" .
+  ?focusAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-takes-focus" ; rdfhtml:attributeValue "" .
+  ?opener a c:IconButton ; c:icon "◷" ; c:label ?chooseLabel ; c:disabled ?openerDisabled ; sty:emphasis sty:Ghost .
+  ?openerRoot rdfhtml:tabIndex "-1" ; rdfhtml:attribute ?openerControls , ?openerExpanded .
+  ?openerControls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?listId .
+  ?openerExpanded a rdfhtml:Attribute ; rdfhtml:attributeName "aria-expanded" ; rdfhtml:attributeValue ?openValue .
+  ?list a rdfhtml:Ul ; rdfhtml:class "sem-time-list" ; rdfhtml:id ?listId ; rdfhtml:hidden ?listHidden ;
+        rdfhtml:attribute ?listRole , ?listName , ?listKeep ; rdfhtml:hasChild ?option ; ord:precedes ?help , ?error .
+  ?listRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "listbox" .
+  ?listName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?listKeep a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-keep-focus" ; rdfhtml:attributeValue "" .
+  ?option a rdfhtml:Li ; rdfhtml:id ?optionId ; sem:orderKey ?optionKey ; c:pick ?time ;
+          rdfhtml:attribute ?optionRole , ?optionSelected , ?optionChosen ; rdfhtml:hasChild ?optionText .
+  ?optionRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "option" .
+  ?optionSelected a rdfhtml:Attribute ; rdfhtml:attributeName "aria-selected" ; rdfhtml:attributeValue "true" .
+  ?optionChosen a rdfhtml:Attribute ; rdfhtml:attributeName "data-chosen" ; rdfhtml:attributeValue "" .
+  ?optionText a rdfhtml:Text ; rdfhtml:data ?optionLabel .
+  ?help a rdfhtml:Div ; rdfhtml:class "sem-help" ; rdfhtml:id ?helpId ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:class "sem-error" ; rdfhtml:id ?errorId ; rdfhtml:attribute ?errorRole ; rdfhtml:hasChild ?errorText .
+  ?errorRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "alert" .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:TimeField ; c:controls ?target ; c:property ?property .
+  BIND(EXISTS { $this c:disabled ?disabled0 FILTER(STR(?disabled0) = "true") } AS ?isDisabled)
+  BIND(IF(?isDisabled, "", ?none) AS ?disabled)
+  BIND(IF(?isDisabled, true, ?none) AS ?openerDisabled)
+  BIND(!?isDisabled && EXISTS { $this c:expanded ?expanded0 FILTER(STR(?expanded0) = "true") } AS ?open)
+  # The locale's time of day: its pattern, hour cycle, day periods and digits.
+  OPTIONAL { $this l10n:timePattern ?tp0 }
+  OPTIONAL { $this l10n:timeHint ?hint0 }
+  OPTIONAL { $this l10n:hourCycle ?cycle0 }
+  OPTIONAL { $this l10n:am ?am0 }
+  OPTIONAL { $this l10n:pm ?pm0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?tp0), "%H:%n") AS ?tp)
+  BIND(COALESCE(STR(?cycle0), "h23") AS ?cycle)
+  BIND(COALESCE(STR(?am0), "AM") AS ?am)
+  BIND(COALESCE(STR(?pm0), "PM") AS ?pm)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  OPTIONAL { $this c:placeholder ?placeholder0 }
+  BIND(STR(COALESCE(?placeholder0, ?hint0, "hh:mm")) AS ?placeholder)
+  BIND(IRI(CONCAT(STR($this), "/~l10n-ChooseTimePhrase")) AS ?chooseNode)
+  OPTIONAL { ?chooseNode l10n:label ?choose0 }
+  OPTIONAL { c:ChooseTimePhrase rdfs:label ?choose1 FILTER(langMatches(lang(?choose1), "en")) }
+  BIND(STR(COALESCE(?choose0, ?choose1)) AS ?chooseLabel)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(isLiteral(?ownLabel) && lang(?ownLabel) = "") }
+  OPTIONAL { ?property rdfs:label ?propertyLabel FILTER(lang(?propertyLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?ownLabel, ?propertyLabel, REPLACE(STR(?property), "^.*[#/]", ""))) AS ?caption)
+  # The value in the locale's format, unless something is typed.
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?value) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  OPTIONAL { $this c:value ?typed0 }
+  BIND(xsd:integer(SUBSTR(?value, 1, 2)) AS ?VH)
+  BIND(xsd:integer(SUBSTR(?value, 4, 2)) AS ?VM)
+  BIND(IF(?cycle = "h12", IF(?VH = 0, 12, IF(?VH > 12, ?VH - 12, ?VH)), ?VH) AS ?vh)
+  BIND(REPLACE(REPLACE(REPLACE(REPLACE(?tp, "%H", CONCAT(IF(?vh < 10, "0", ""), STR(?vh))), "%h", STR(?vh)),
+       "%n", CONCAT(IF(?VM < 10, "0", ""), STR(?VM))), "%a", IF(?VH < 12, ?am, ?pm)) AS ?value0)
+  BIND(IF(?digits = "0123456789", ?value0,
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?value0,
+            "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+            "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?valueFormatted)
+  BIND(COALESCE(STR(?typed0), ?valueFormatted, "") AS ?shown)
+  # The list: every step within the bounds, while open.
+  OPTIONAL { $this c:minuteStep ?step0 }
+  BIND(xsd:integer(COALESCE(?step0, 30)) AS ?step)
+  LATERAL { OPTIONAL { SELECT ?this (MAX(STR(?min0)) AS ?minTime) WHERE { $this val:validates/sh:minInclusive ?min0 } GROUP BY ?this } }
+  LATERAL { OPTIONAL { SELECT ?this (MIN(STR(?max0)) AS ?maxTime) WHERE { $this val:validates/sh:maxInclusive ?max0 } GROUP BY ?this } }
+  OPTIONAL { $this c:activeTime ?active0 FILTER(?open) }
+  BIND(IF(BOUND(?active0), xsd:integer(SUBSTR(STR(?active0), 1, 2)) * 60 + xsd:integer(SUBSTR(STR(?active0), 4, 2)), ?none) AS ?activeMinutes)
+  BIND(IF(BOUND(?activeMinutes), CONCAT(STR($this), "/~t-", STR(?activeMinutes)), ?none) AS ?activeId)
+  # Help and the error.
+  OPTIONAL { $this c:help ?help0 }
+  OPTIONAL { $this c:error ?error0 }
+  BIND(STR(?help0) AS ?helpData)
+  BIND(STR(?error0) AS ?errorData)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help")), ?none) AS ?help)
+  BIND(IF(BOUND(?helpData), IRI(CONCAT(STR($this), "/~help-text")), ?none) AS ?helpText)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error")), ?none) AS ?error)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error-text")), ?none) AS ?errorText)
+  BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~error-role")), ?none) AS ?errorRole)
+  BIND(STR(?help) AS ?helpId)
+  BIND(STR(?error) AS ?errorId)
+  BIND(IF(BOUND(?help) || BOUND(?error), CONCAT(COALESCE(?helpId, ""), IF(BOUND(?help) && BOUND(?error), " ", ""), COALESCE(?errorId, "")), ?none) AS ?describedIds)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+  BIND(STR(?list) AS ?listId)
+  LATERAL {
+    {
+      BIND(IRI(CONCAT(STR($this), "/~label")) AS ?label)
+      BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+      BIND(IRI(CONCAT(STR($this), "/~row")) AS ?row)
+      BIND(IRI(CONCAT(STR($this), "/~input")) AS ?input)
+      BIND(STR(?input) AS ?inputId)
+      BIND(IRI(CONCAT(STR($this), "/~input-role")) AS ?roleAttr)
+      BIND(IRI(CONCAT(STR($this), "/~input-aria-autocomplete")) AS ?autoAttr)
+      BIND(IRI(CONCAT(STR($this), "/~input-aria-controls")) AS ?controlsAttr)
+      BIND(IRI(CONCAT(STR($this), "/~input-aria-expanded")) AS ?expandedAttr)
+      BIND(IF(BOUND(?activeId), IRI(CONCAT(STR($this), "/~input-aria-activedescendant")), ?none) AS ?activeAttr)
+      BIND(IF(BOUND(?describedIds), IRI(CONCAT(STR($this), "/~input-aria-describedby")), ?none) AS ?describedAttr)
+      BIND(IF(BOUND(?errorData), IRI(CONCAT(STR($this), "/~input-aria-invalid")), ?none) AS ?invalidAttr)
+      BIND(IF(?open, IRI(CONCAT(STR($this), "/~input-data-sem-takes-focus")), ?none) AS ?focusAttr)
+      BIND(IF(?open, "true", "false") AS ?openValue)
+      BIND(IRI(CONCAT(STR($this), "/~open")) AS ?opener)
+      BIND(IRI(CONCAT(STR($this), "/~open/~root")) AS ?openerRoot)
+      BIND(IRI(CONCAT(STR($this), "/~open-aria-controls")) AS ?openerControls)
+      BIND(IRI(CONCAT(STR($this), "/~open-aria-expanded")) AS ?openerExpanded)
+      BIND(IF(?open, ?none, "") AS ?listHidden)
+      BIND(IRI(CONCAT(STR($this), "/~list-role")) AS ?listRole)
+      BIND(IRI(CONCAT(STR($this), "/~list-aria-label")) AS ?listName)
+      BIND(IRI(CONCAT(STR($this), "/~list-data-sem-keep-focus")) AS ?listKeep)
+    } UNION {
+      FILTER(?open)
+      VALUES ?h { 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 }
+      VALUES ?q { 0 1 2 3 4 5 6 7 8 9 10 11 }
+      FILTER(?q * ?step < 60)
+      BIND(?q * ?step AS ?mi)
+      BIND(?h * 60 + ?mi AS ?minutes)
+      BIND(CONCAT(IF(?h < 10, "0", ""), STR(?h), ":", IF(?mi < 10, "0", ""), STR(?mi), ":00") AS ?iso)
+      FILTER(!BOUND(?minTime) || ?iso >= ?minTime)
+      FILTER(!BOUND(?maxTime) || ?iso <= ?maxTime)
+      BIND(STRDT(?iso, xsd:time) AS ?time)
+      BIND(IF(?cycle = "h12", IF(?h = 0, 12, IF(?h > 12, ?h - 12, ?h)), ?h) AS ?hh)
+      BIND(REPLACE(REPLACE(REPLACE(REPLACE(?tp, "%H", CONCAT(IF(?hh < 10, "0", ""), STR(?hh))), "%h", STR(?hh)),
+           "%n", CONCAT(IF(?mi < 10, "0", ""), STR(?mi))), "%a", IF(?h < 12, ?am, ?pm)) AS ?label0)
+      BIND(IF(?digits = "0123456789", ?label0,
+              REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?label0,
+                "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+                "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?optionLabel)
+      BIND(IRI(CONCAT(STR($this), "/~t-", STR(?minutes))) AS ?option)
+      BIND(STR(?option) AS ?optionId)
+      BIND(SUBSTR(CONCAT("000", STR(?minutes)), STRLEN(STR(?minutes))) AS ?optionKey)
+      BIND(IRI(CONCAT(STR($this), "/~t-", STR(?minutes), "-role")) AS ?optionRole)
+      BIND(IRI(CONCAT(STR($this), "/~t-", STR(?minutes), "-text")) AS ?optionText)
+      BIND(IF(COALESCE(?minutes = ?activeMinutes, false), IRI(CONCAT(STR($this), "/~t-", STR(?minutes), "-aria-selected")), ?none) AS ?optionSelected)
+      BIND(IF(COALESCE(?iso = ?value, false), IRI(CONCAT(STR($this), "/~t-", STR(?minutes), "-data-chosen")), ?none) AS ?optionChosen)
+    }
+  }
+}""" .
+c:TimeFieldRendering-sparql-text a sem:Rule ;
+    sem:implements c:TimeFieldRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line , ?help , ?error .
+  ?line a rdfhtml:Div ; rdfhtml:hasChild ?lineText ; ord:precedes ?help , ?error .
+  ?lineText a rdfhtml:Text ; rdfhtml:data ?lineData .
+  ?help a rdfhtml:Div ; rdfhtml:hasChild ?helpText ; ord:precedes ?error .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?error a rdfhtml:Div ; rdfhtml:hasChild ?errorText .
+  ?errorText a rdfhtml:Text ; rdfhtml:data ?errorData .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:TimeField ; c:controls ?target ; c:property ?property .
+  OPTIONAL { $this l10n:timePattern ?tp0 }
+  OPTIONAL { $this l10n:hourCycle ?cycle0 }
+  OPTIONAL { $this l10n:am ?am0 }
+  OPTIONAL { $this l10n:pm ?pm0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(COALESCE(STR(?tp0), "%H:%n") AS ?tp)
+  BIND(COALESCE(STR(?cycle0), "h23") AS ?cycle)
+  BIND(COALESCE(STR(?am0), "AM") AS ?am)
+  BIND(COALESCE(STR(?pm0), "PM") AS ?pm)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(isLiteral(?ownLabel) && lang(?ownLabel) = "") }
+  OPTIONAL { ?property rdfs:label ?propertyLabel FILTER(lang(?propertyLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?ownLabel, ?propertyLabel, REPLACE(STR(?property), "^.*[#/]", ""))) AS ?caption)
+  LATERAL { OPTIONAL { SELECT ?target ?property (MIN(STR(?v)) AS ?value) WHERE { ?target ?property ?v } GROUP BY ?target ?property } }
+  OPTIONAL { $this c:value ?typed0 }
+  BIND(xsd:integer(SUBSTR(?value, 1, 2)) AS ?VH)
+  BIND(xsd:integer(SUBSTR(?value, 4, 2)) AS ?VM)
+  BIND(IF(?cycle = "h12", IF(?VH = 0, 12, IF(?VH > 12, ?VH - 12, ?VH)), ?VH) AS ?vh)
+  BIND(REPLACE(REPLACE(REPLACE(REPLACE(?tp, "%H", CONCAT(IF(?vh < 10, "0", ""), STR(?vh))), "%h", STR(?vh)),
+       "%n", CONCAT(IF(?VM < 10, "0", ""), STR(?VM))), "%a", IF(?VH < 12, ?am, ?pm)) AS ?value0)
+  BIND(IF(?digits = "0123456789", ?value0,
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?value0,
+            "0", SUBSTR(?digits, 1, 1)), "1", SUBSTR(?digits, 2, 1)), "2", SUBSTR(?digits, 3, 1)), "3", SUBSTR(?digits, 4, 1)), "4", SUBSTR(?digits, 5, 1)),
+            "5", SUBSTR(?digits, 6, 1)), "6", SUBSTR(?digits, 7, 1)), "7", SUBSTR(?digits, 8, 1)), "8", SUBSTR(?digits, 9, 1)), "9", SUBSTR(?digits, 10, 1))) AS ?valueFormatted)
+  BIND(CONCAT(?caption, ": [", COALESCE(STR(?typed0), ?valueFormatted, ""), "_] ◷") AS ?lineData)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~line-text")) AS ?lineText)
+  OPTIONAL { $this c:help ?h . BIND(CONCAT("  ", STR(?h)) AS ?helpData) BIND(IRI(CONCAT(STR($this), "/~help")) AS ?help) BIND(IRI(CONCAT(STR($this), "/~help-text")) AS ?helpText) }
+  OPTIONAL { $this c:error ?e . BIND(CONCAT("  ! ", STR(?e)) AS ?errorData) BIND(IRI(CONCAT(STR($this), "/~error")) AS ?error) BIND(IRI(CONCAT(STR($this), "/~error-text")) AS ?errorText) }
+}""" .
+
+# --- the time field's behaviour ---------------------------------------------------------------------
+
+c:TimeFieldType a beh:Reaction ;
+    rdfs:label "Type a time"@en ;
+    beh:when beh:Input ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """CONSTRUCT { $this ?p ?old }
+WHERE { $event beh:node ?hit FILTER(STR(?hit) = CONCAT(STR($this), "/~input")) VALUES ?p { c:value c:activeTime } $this ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:value ?value }
+WHERE { $event beh:node ?hit ; beh:value ?value FILTER(STR(?hit) = CONCAT(STR($this), "/~input")) }""" .
+
+# Leaving the input after typing commits it, read in the locale's format: hours and minutes ("14:30",
+# "1430", "9"), a day period ("2:30 pm", the locale's own words too) in a 12-hour reading.
+c:TimeFieldCommit a beh:Reaction ;
+    rdfs:label "Commit the typed time"@en ;
+    beh:when beh:Change ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """
+CONSTRUCT { ?target ?property ?old . $this c:value ?typed . }
+WHERE {
+  $event beh:node ?hit ; beh:value ?raw . FILTER(STR(?hit) = CONCAT(STR($this), "/~input"))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this l10n:am ?am0 }
+  OPTIONAL { $this l10n:pm ?pm0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(LCASE(COALESCE(STR(?am0), "AM")) AS ?am)
+  BIND(LCASE(COALESCE(STR(?pm0), "PM")) AS ?pm)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  BIND(IF(?digits = "0123456789", STR(?raw),
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?raw),
+            SUBSTR(?digits, 1, 1), "0"), SUBSTR(?digits, 2, 1), "1"), SUBSTR(?digits, 3, 1), "2"), SUBSTR(?digits, 4, 1), "3"), SUBSTR(?digits, 5, 1), "4"),
+            SUBSTR(?digits, 6, 1), "5"), SUBSTR(?digits, 7, 1), "6"), SUBSTR(?digits, 8, 1), "7"), SUBSTR(?digits, 9, 1), "8"), SUBSTR(?digits, 10, 1), "9")) AS ?latin)
+  BIND(LCASE(REPLACE(?latin, "^ +| +$", "")) AS ?t)
+  BIND(REGEX(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$") AS ?fits)
+  BIND(xsd:integer(REPLACE(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$", "$1")) AS ?h0)
+  BIND(REPLACE(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$", "$3") AS ?mi0)
+  BIND(IF(?mi0 = "", 0, xsd:integer(?mi0)) AS ?mi)
+  BIND(CONTAINS(?t, ?pm) || REGEX(?t, "[0-9 ]p[.]?m?[.]?$") AS ?isPm)
+  BIND(!?isPm && (CONTAINS(?t, ?am) || REGEX(?t, "[0-9 ]a[.]?m?[.]?$")) AS ?isAm)
+  BIND(IF(?isPm, IF(?h0 = 12, 12, ?h0 + 12), IF(?isAm, IF(?h0 = 12, 0, ?h0), ?h0)) AS ?H)
+  BIND(IF(?fits && IF(?isPm || ?isAm, ?h0 >= 1 && ?h0 <= 12, ?h0 <= 23) && ?mi <= 59,
+          STRDT(CONCAT(IF(?H < 10, "0", ""), STR(?H), ":", IF(?mi < 10, "0", ""), STR(?mi), ":00"), xsd:time), ?none) AS ?time)
+  FILTER(?t = "" || BOUND(?time))
+  { ?target ?property ?old } UNION { $this c:value ?typed }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?target ?property ?time }
+WHERE {
+  $event beh:node ?hit ; beh:value ?raw . FILTER(STR(?hit) = CONCAT(STR($this), "/~input"))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  $this c:controls ?target ; c:property ?property .
+  OPTIONAL { $this l10n:am ?am0 }
+  OPTIONAL { $this l10n:pm ?pm0 }
+  OPTIONAL { $this l10n:digits ?digits0 }
+  BIND(LCASE(COALESCE(STR(?am0), "AM")) AS ?am)
+  BIND(LCASE(COALESCE(STR(?pm0), "PM")) AS ?pm)
+  BIND(COALESCE(STR(?digits0), "0123456789") AS ?digits)
+  BIND(IF(?digits = "0123456789", STR(?raw),
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(STR(?raw),
+            SUBSTR(?digits, 1, 1), "0"), SUBSTR(?digits, 2, 1), "1"), SUBSTR(?digits, 3, 1), "2"), SUBSTR(?digits, 4, 1), "3"), SUBSTR(?digits, 5, 1), "4"),
+            SUBSTR(?digits, 6, 1), "5"), SUBSTR(?digits, 7, 1), "6"), SUBSTR(?digits, 8, 1), "7"), SUBSTR(?digits, 9, 1), "8"), SUBSTR(?digits, 10, 1), "9")) AS ?latin)
+  BIND(LCASE(REPLACE(?latin, "^ +| +$", "")) AS ?t)
+  BIND(REGEX(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$") AS ?fits)
+  BIND(xsd:integer(REPLACE(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$", "$1")) AS ?h0)
+  BIND(REPLACE(?t, "^[^0-9]*([0-9]{1,2})([^0-9]*([0-9]{2}))?[^0-9]*$", "$3") AS ?mi0)
+  BIND(IF(?mi0 = "", 0, xsd:integer(?mi0)) AS ?mi)
+  BIND(CONTAINS(?t, ?pm) || REGEX(?t, "[0-9 ]p[.]?m?[.]?$") AS ?isPm)
+  BIND(!?isPm && (CONTAINS(?t, ?am) || REGEX(?t, "[0-9 ]a[.]?m?[.]?$")) AS ?isAm)
+  BIND(IF(?isPm, IF(?h0 = 12, 12, ?h0 + 12), IF(?isAm, IF(?h0 = 12, 0, ?h0), ?h0)) AS ?H)
+  BIND(IF(?fits && IF(?isPm || ?isAm, ?h0 >= 1 && ?h0 <= 12, ?h0 <= 23) && ?mi <= 59,
+          STRDT(CONCAT(IF(?H < 10, "0", ""), STR(?H), ":", IF(?mi < 10, "0", ""), STR(?mi), ":00"), xsd:time), ?none) AS ?time)
+  FILTER(BOUND(?time))
+}""" .
+
+# The button opens and closes the list (opening highlights the value).
+c:TimeFieldToggle a beh:Reaction ;
+    rdfs:label "Open the times"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """CONSTRUCT { $this ?p ?old }
+WHERE { $event beh:node ?hit FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~open/"))) VALUES ?p { c:expanded c:activeTime } $this ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:expanded ?toggled ; c:activeTime ?active }
+WHERE {
+  $event beh:node ?hit FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~open/")))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  BIND(NOT EXISTS { $this c:expanded ?open FILTER(STR(?open) = "true") } AS ?toggled)
+  OPTIONAL { $this c:controls ?target ; c:property ?property . ?target ?property ?value FILTER(?toggled) }
+  BIND(?value AS ?active)
+}""" .
+
+# A time clicked in the list: the value; the list closes and what was typed is dropped.
+c:TimeFieldPick a beh:Reaction ;
+    rdfs:label "Pick a time"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """CONSTRUCT { ?target ?property ?old . $this ?p ?state . }
+WHERE {
+  $event beh:node ?hit . ?hit c:pick ?time FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~t-")))
+  $this c:controls ?target ; c:property ?property .
+  { ?target ?property ?old } UNION { VALUES ?p { c:expanded c:activeTime c:value } $this ?p ?state }
+}""" ;
+    beh:inserts """CONSTRUCT { ?target ?property ?time }
+WHERE {
+  $event beh:node ?hit . ?hit c:pick ?time FILTER(STRSTARTS(STR(?hit), CONCAT(STR($this), "/~t-")))
+  $this c:controls ?target ; c:property ?property .
+}""" .
+
+# Down and Up open the list and move through it, wrapping within the bounds (from the value, else
+# from the first or the last time); Enter picks the highlighted time; Escape closes the list, and in
+# a closed one drops what was typed.
+c:TimeFieldMove a beh:Reaction ;
+    rdfs:label "Move through the times"@en ;
+    beh:when c:TimeFieldKey ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """CONSTRUCT { $this ?p ?old }
+WHERE {
+  $event beh:key ?key FILTER(?key IN ("arrowdown", "arrowup"))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  VALUES ?p { c:activeTime c:expanded }
+  $this ?p ?old
+}""" ;
+    beh:inserts """
+CONSTRUCT { $this c:activeTime ?next ; c:expanded true . }
+WHERE {
+  $event beh:key ?key FILTER(?key IN ("arrowdown", "arrowup"))
+  FILTER NOT EXISTS { $this c:disabled ?disabled FILTER(STR(?disabled) = "true") }
+  BIND(EXISTS { $this c:expanded ?open0 FILTER(STR(?open0) = "true") } AS ?open)
+  OPTIONAL { $this c:minuteStep ?step0 }
+  BIND(xsd:integer(COALESCE(?step0, 30)) AS ?step)
+  LATERAL { OPTIONAL { SELECT ?this (MAX(STR(?min0)) AS ?minTime) WHERE { $this val:validates/sh:minInclusive ?min0 } GROUP BY ?this } }
+  LATERAL { OPTIONAL { SELECT ?this (MIN(STR(?max0)) AS ?maxTime) WHERE { $this val:validates/sh:maxInclusive ?max0 } GROUP BY ?this } }
+  BIND(COALESCE(xsd:integer(SUBSTR(?minTime, 1, 2)) * 60 + xsd:integer(SUBSTR(?minTime, 4, 2)), 0) AS ?lo0)
+  BIND(COALESCE(xsd:integer(SUBSTR(?maxTime, 1, 2)) * 60 + xsd:integer(SUBSTR(?maxTime, 4, 2)), 1439) AS ?hi0)
+  BIND(xsd:integer(CEIL(?lo0 / ?step) * ?step) AS ?lo)
+  BIND(xsd:integer(FLOOR(?hi0 / ?step) * ?step) AS ?hi)
+  OPTIONAL { $this c:activeTime ?active0 FILTER(?open) }
+  OPTIONAL { $this c:controls ?target ; c:property ?property . ?target ?property ?value0 }
+  BIND(xsd:integer(SUBSTR(STR(?active0), 1, 2)) * 60 + xsd:integer(SUBSTR(STR(?active0), 4, 2)) AS ?a)
+  BIND(xsd:integer(SUBSTR(STR(?value0), 1, 2)) * 60 + xsd:integer(SUBSTR(STR(?value0), 4, 2)) AS ?v)
+  BIND(?key = "arrowdown" AS ?down)
+  BIND(IF(BOUND(?a), IF(?down, (FLOOR(?a / ?step) + 1) * ?step, (CEIL(?a / ?step) - 1) * ?step),
+       IF(BOUND(?v), IF(?down, CEIL(?v / ?step) * ?step, FLOOR(?v / ?step) * ?step), IF(?down, ?lo, ?hi))) AS ?n0)
+  BIND(xsd:integer(IF(?n0 > ?hi, ?lo, IF(?n0 < ?lo, ?hi, ?n0))) AS ?n)
+  BIND(xsd:integer(FLOOR(?n / 60)) AS ?nh)
+  BIND(?n - ?nh * 60 AS ?nm)
+  BIND(STRDT(CONCAT(IF(?nh < 10, "0", ""), STR(?nh), ":", IF(?nm < 10, "0", ""), STR(?nm), ":00"), xsd:time) AS ?next)
+}""" .
+c:TimeFieldChoose a beh:Reaction ;
+    rdfs:label "Pick the highlighted time"@en ;
+    beh:when c:TimeFieldKey ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """CONSTRUCT { ?target ?property ?old . $this ?p ?state . }
+WHERE {
+  $event beh:key "enter" .
+  $this c:expanded ?open FILTER(STR(?open) = "true")
+  $this c:activeTime ?active ; c:controls ?target ; c:property ?property .
+  { ?target ?property ?old } UNION { VALUES ?p { c:expanded c:activeTime c:value } $this ?p ?state }
+}""" ;
+    beh:inserts """CONSTRUCT { ?target ?property ?active }
+WHERE {
+  $event beh:key "enter" .
+  $this c:expanded ?open FILTER(STR(?open) = "true")
+  $this c:activeTime ?active ; c:controls ?target ; c:property ?property .
+}""" .
+c:TimeFieldEscape a beh:Reaction ;
+    rdfs:label "Close the times"@en ;
+    beh:when c:TimeFieldKey ;
+    beh:sourceClass c:TimeField ;
+    beh:deletes """CONSTRUCT { $this ?p ?old }
+WHERE {
+  $event beh:key "escape" .
+  BIND(EXISTS { $this c:expanded ?open FILTER(STR(?open) = "true") } AS ?isOpen)
+  VALUES ?p { c:expanded c:activeTime c:value }
+  $this ?p ?old
+  FILTER(IF(?isOpen, ?p != c:value, ?p = c:value))
+}""" .

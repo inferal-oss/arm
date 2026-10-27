@@ -1,0 +1,105 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Charts. A chart projects a sem:View (a SPARQL SELECT, sem:select) in "long"
+# form: each solution is one value (c:valueVariable) of one series
+# (c:seriesVariable) for one category (c:categoryVariable), optionally
+# faceted into small multiples (c:facetVariable). Encodings come from the
+# theme: categorical series colors are tokens tok:series-1 ... tok:series-6,
+# the sequential ramp is tok:ramp-0 ... tok:ramp-12. Marks carry sem:tooltip.
+# A chart re-renders when its dataset (c:dataset) changes.
+
+sem:View a owl:Class ; rdfs:comment "A named SPARQL SELECT (sem:select)."@en .
+sem:select a owl:DatatypeProperty ; rdfs:domain sem:View .
+
+c:view a owl:ObjectProperty ; rdfs:range sem:View ; rdfs:subPropertyOf c:dataQuery .
+c:dataset a owl:ObjectProperty ; rdfs:comment "A node whose changes mean the chart's data changed."@en .
+c:facetVariable a owl:DatatypeProperty .
+c:facetLabel a owl:DatatypeProperty ; rdfs:comment "Caption template for a facet; {value} is replaced."@en .
+c:categoryVariable a owl:DatatypeProperty .
+c:seriesVariable a owl:DatatypeProperty .
+c:valueVariable a owl:DatatypeProperty .
+c:flagVariable a owl:DatatypeProperty ; rdfs:comment "A boolean variable marking values that need attention."@en .
+c:flagLabel a owl:DatatypeProperty .
+c:legend a owl:ObjectProperty ; rdfs:range rdf:List ; rdfs:comment "Series in display order (with labels); else first-seen order."@en .
+c:series a owl:Class ; rdfs:comment "A series shown in a legend: rdfs:label, and the value it has in the data (c:key)."@en .
+c:key a owl:DatatypeProperty .
+c:logScale a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+c:referenceLine a owl:DatatypeProperty ; rdfs:comment "Name of a reference to draw (\"linear\" = proportional growth)."@en .
+
+c:Chart a owl:Class ; rdfs:subClassOf sem:Component .
+
+c:BarChart a owl:Class ;
+    rdfs:subClassOf c:Chart ;
+    rdfs:comment "Horizontal stacked bars: one bar per category, one segment per series, totals at the end. With no rows, its c:emptyText (when it has one)."@en ;
+    sem:slug "bar-chart" .
+c:BarChartRendering a sem:Rendering ; sem:targets c:BarChart ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:dataset ;
+    sem:functionOnly "awaits #1 (query results as graph rows): it runs the SELECT named in the data (c:view, a sem:View), which SPARQL 1.1 cannot do from inside a query." ;
+    sem:awaitsWork <https://github.com/inferal-oss/semblance/issues/1> .
+c:BarChartRendering-fn a sem:Rule ; sem:implements c:BarChartRendering ; sem:function "barchart" .
+
+c:Heatmap a owl:Class ;
+    rdfs:subClassOf c:Chart ;
+    rdfs:comment "A table of values: series down, categories across, cells colored on a log ramp; flagged cells are outlined."@en ;
+    sem:slug "heatmap" .
+c:HeatmapRendering a sem:Rendering ; sem:targets c:Heatmap ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:dataset ;
+    sem:functionOnly "awaits sx:Math (sx:log10): its color ramp is logarithmic. (Its rows, the SELECT named in c:view, become graph data with the views runtime.)" ;
+    sem:needsExtension sx:Math .
+c:HeatmapRendering-fn a sem:Rule ; sem:implements c:HeatmapRendering ; sem:function "heatmap" .
+
+c:LineChart a owl:Class ;
+    rdfs:subClassOf c:Chart ;
+    rdfs:comment "Lines of value against a numeric category (log–log when c:logScale), one per series."@en ;
+    sem:slug "line-chart" .
+c:LineChartRendering a sem:Rendering ; sem:targets c:LineChart ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:dataset ;
+    sem:functionOnly "awaits sx:Math (sx:log10): its axes may be logarithmic. (Its rows, the SELECT named in c:view, become graph data with the views runtime.)" ;
+    sem:needsExtension sx:Math .
+c:LineChartRendering-fn a sem:Rule ; sem:implements c:LineChartRendering ; sem:function "linechart" .
+
+c:FindingList a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Runs every judgement of a class (c:judgementClass, each with a CONSTRUCT body) and lists
+the findings they write, grouped by judgement, each with its verdict (label and sem:symbol)."""@en ;
+    sem:slug "finding-list" .
+c:judgementClass a owl:ObjectProperty .
+c:FindingListRendering a sem:Rendering ; sem:targets c:FindingList ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:dataset ;
+    sem:functionOnly "awaits #1 (query results as graph rows): it runs the CONSTRUCT of every judgement of a class (sem:construct in the data), which SPARQL 1.1 cannot do from inside a query." ;
+    sem:awaitsWork <https://github.com/inferal-oss/semblance/issues/1> .
+c:FindingListRendering-fn a sem:Rule ; sem:implements c:FindingListRendering ; sem:function "findings" .
+
+# --- encodings (theme tokens) ------------------------------------------------------------------
+# Categorical slots follow a validated palette (adjacent-pair CVD separation);
+# the sequential ramp is one blue hue, light to dark.
+
+tok:series-1 a sty:Token ; sty:scale sty:Color ; sem:slug "series-1" ; sty:value "light-dark(#2a78d6, #3987e5)" .
+tok:series-2 a sty:Token ; sty:scale sty:Color ; sem:slug "series-2" ; sty:value "light-dark(#eb6834, #d95926)" .
+tok:series-3 a sty:Token ; sty:scale sty:Color ; sem:slug "series-3" ; sty:value "light-dark(#1baf7a, #199e70)" .
+tok:series-4 a sty:Token ; sty:scale sty:Color ; sem:slug "series-4" ; sty:value "light-dark(#eda100, #c98500)" .
+tok:series-5 a sty:Token ; sty:scale sty:Color ; sem:slug "series-5" ; sty:value "light-dark(#e87ba4, #d55181)" .
+tok:series-6 a sty:Token ; sty:scale sty:Color ; sem:slug "series-6" ; sty:value "light-dark(#008300, #2a9d2a)" .
+
+tok:ramp-0 a sty:Token ; sem:slug "ramp-0" ; sty:value "#cde2fb" .
+tok:ramp-1 a sty:Token ; sem:slug "ramp-1" ; sty:value "#b7d3f6" .
+tok:ramp-2 a sty:Token ; sem:slug "ramp-2" ; sty:value "#9ec5f4" .
+tok:ramp-3 a sty:Token ; sem:slug "ramp-3" ; sty:value "#86b6ef" .
+tok:ramp-4 a sty:Token ; sem:slug "ramp-4" ; sty:value "#6da7ec" .
+tok:ramp-5 a sty:Token ; sem:slug "ramp-5" ; sty:value "#5598e7" .
+tok:ramp-6 a sty:Token ; sem:slug "ramp-6" ; sty:value "#3987e5" .
+tok:ramp-7 a sty:Token ; sem:slug "ramp-7" ; sty:value "#2a78d6" .
+tok:ramp-8 a sty:Token ; sem:slug "ramp-8" ; sty:value "#256abf" .
+tok:ramp-9 a sty:Token ; sem:slug "ramp-9" ; sty:value "#1c5cab" .
+tok:ramp-10 a sty:Token ; sem:slug "ramp-10" ; sty:value "#184f95" .
+tok:ramp-11 a sty:Token ; sem:slug "ramp-11" ; sty:value "#104281" .
+tok:ramp-12 a sty:Token ; sem:slug "ramp-12" ; sty:value "#0d366b" .
+tok:ramp-ink-light a sty:Token ; sem:slug "ramp-ink-light" ; sty:value "#0d366b" .
+tok:ramp-ink-dark a sty:Token ; sem:slug "ramp-ink-dark" ; sty:value "#ffffff" .
+tok:flag a sty:Token ; sty:scale sty:Color ; sem:slug "flag" ; sty:value "light-dark(#c2410c, #fb923c)" .
+tok:good a sty:Token ; sty:scale sty:Color ; sem:slug "good" ; sty:value "light-dark(#0f8a5f, #4fd8a8)" .

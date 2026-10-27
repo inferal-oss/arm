@@ -1,0 +1,316 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Connectors: an arrow from one thing on the page to another, kept attached as they move.
+#
+# A c:Connector is data: c:from and c:to name its ends - a component (its rendered root) or a
+# rendered node (a diagram's mark) - and the rest says how it looks: c:route (curved, straight,
+# elbow, or an arc out to the side), c:arrowheads (at the to end, the from end, both or neither),
+# c:line (solid or dashed), sty:tone and sty:emphasis, c:label. c:leader routes it first along the
+# bottom of its from end to the edge of a box (a phrase in running text leaves its paragraph
+# between the lines, never through the words), and c:shownWhile c:FromPointed shows it only while
+# its from end is pointed at or has focus.
+#
+# Where things are only the page knows, so the rendering draws nothing: it renders an empty SVG
+# canvas (filling its positioned container: a sheet's grid, a walkthrough, a c:Canvas) with its
+# paths, names its ends' elements (data-sem-from, data-sem-to: their ids, which it gives them), and
+# says what it joins in words (role img, "B3 → D3"). The host effect (src/web/connectors.ts)
+# measures the ends and writes the paths: once a frame at most, when something moved (scrolling,
+# resizing, a layout change, an animation, a drag), and only the paths that changed. It never
+# writes geometry back into the graph. An end that is not rendered, hidden, scrolled out of
+# view or covered (by a sticky bar, a diagram that stays on top) hides the connector.
+#
+# Connectors are usually derived: a sheet's rule mints one per dependency of the selected cell, a
+# walkthrough's one per mention being read. Mint them in stratum 0, like any component.
+#
+# A c:Canvas is a surface for things joined by connectors: its children sit in flow until they
+# are dragged (each is held by a c:CanvasItem, which is c:Draggable), and a c:Canvas that is also
+# c:Resizable has a grip.
+
+c:Connector a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Connector"@en , "Зʼєднувач"@uk , "Verbinder"@de , "موصل"@ar ;
+    rdfs:comment """An arrow from c:from to c:to (each a component or a rendered node), drawn over the positioned
+container it is placed in and kept attached while either end moves. c:route, c:arrowheads, c:line,
+sty:tone, sty:emphasis and c:label say how it looks; c:leader and c:shownWhile how it is routed and
+when it shows. Its text alternative names its ends ("B3 → D3") and its label. An end that cannot be
+seen hides it."""@en ;
+    sem:slug "connector" .
+c:from a owl:ObjectProperty ; rdfs:domain c:Connector ;
+    rdfs:comment "Where a connector starts: a component (its rendered root) or a rendered node."@en .
+# c:to (type.ttl) is a link's destination; on a connector it is where it points.
+
+c:route a owl:ObjectProperty ; rdfs:domain c:Connector ; rdfs:range c:Route ;
+    rdfs:comment "How a connector runs between its ends (absent: c:Curved)."@en .
+c:Route a owl:Class .
+c:Curved a c:Route ; sem:slug "curved" ; rdfs:label "Curved"@en , "Вигнутий"@uk , "Gebogen"@de , "منحنٍ"@ar ;
+    rdfs:comment "A curve out of the facing sides of its ends (side by side), or of their facing edges (one above the other)."@en .
+c:Straight a c:Route ; sem:slug "straight" ; rdfs:label "Straight"@en , "Прямий"@uk , "Gerade"@de , "مستقيم"@ar ;
+    rdfs:comment "A straight line between the ends' edges, along the line between their centres."@en .
+c:Elbow a c:Route ; sem:slug "elbow" ; rdfs:label "Elbow"@en , "Ламаний"@uk , "Gewinkelt"@de , "مرفقي"@ar ;
+    rdfs:comment "Horizontal and vertical segments, turning half way."@en .
+c:Arc a c:Route ; sem:slug "arc" ; rdfs:label "Arc"@en , "Дуга"@uk , "Bogen"@de , "قوس"@ar ;
+    rdfs:comment "Out of the inline end side of one end and back into the same side of the other, bulging further the further apart they are: for things in one column (cells of a sheet)."@en .
+
+c:arrowheads a owl:ObjectProperty ; rdfs:domain c:Connector ; rdfs:range c:Arrowheads ;
+    rdfs:comment "Which ends of a connector have an arrowhead (absent: c:AtTo)."@en .
+c:Arrowheads a owl:Class .
+c:AtTo a c:Arrowheads ; sem:slug "to" ; rdfs:label "At the end"@en , "На кінці"@uk , "Am Ende"@de , "عند النهاية"@ar .
+c:AtFrom a c:Arrowheads ; sem:slug "from" ; rdfs:label "At the start"@en , "На початку"@uk , "Am Anfang"@de , "عند البداية"@ar .
+c:AtBoth a c:Arrowheads ; sem:slug "both" ; rdfs:label "At both ends"@en , "На обох кінцях"@uk , "An beiden Enden"@de , "عند الطرفين"@ar .
+c:AtNeither a c:Arrowheads ; sem:slug "none" ; rdfs:label "None"@en , "Без стрілок"@uk , "Keine"@de , "بلا رؤوس"@ar .
+
+c:line a owl:ObjectProperty ; rdfs:domain c:Connector ; rdfs:range c:LineStyle ;
+    rdfs:comment "How a connector's line is drawn (absent: c:SolidLine)."@en .
+c:LineStyle a owl:Class .
+c:SolidLine a c:LineStyle ; sem:slug "solid" ; rdfs:label "Solid"@en , "Суцільна"@uk , "Durchgezogen"@de , "متصل"@ar .
+c:DashedLine a c:LineStyle ; sem:slug "dashed" ; rdfs:label "Dashed"@en , "Пунктирна"@uk , "Gestrichelt"@de , "متقطع"@ar .
+
+c:leader a owl:ObjectProperty ; rdfs:domain c:Connector ;
+    rdfs:comment """A box (a component or a rendered node) a connector first leaves along the bottom of its from
+end, to the box's edge on the side of its to end, before it turns towards it: a phrase in running text
+points out of its paragraph between the lines, never through the words. When the to end is above,
+it leaves towards the nearer side and turns up."""@en .
+
+c:shownWhile a owl:ObjectProperty ; rdfs:domain c:Connector ; rdfs:range c:ConnectorCondition ;
+    rdfs:comment "When a connector shows (absent: c:Always)."@en .
+c:ConnectorCondition a owl:Class .
+c:Always a c:ConnectorCondition ; sem:slug "always" ; rdfs:label "Always"@en , "Завжди"@uk , "Immer"@de , "دائمًا"@ar .
+c:FromPointed a c:ConnectorCondition ; sem:slug "pointed" ;
+    rdfs:label "While its start is pointed at"@en , "Поки на початок наведено"@uk , "Solange auf den Anfang gezeigt wird"@de , "أثناء الإشارة إلى البداية"@ar ;
+    rdfs:comment "Only while the pointer is on its from end, or focus is in it."@en .
+
+c:Canvas a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Canvas"@en , "Полотно"@uk , "Leinwand"@de , "لوحة"@ar ;
+    rdfs:comment """A surface for components joined by connectors (c:children: components and c:Connector s). Each
+component sits in a c:CanvasItem, in flow until it is dragged, then where it was put (the item's c:x,
+c:y; a child's own c:x, c:y place it to begin with); the connectors are drawn over them. c:width and
+c:height size it; one that is also c:Resizable has a grip."""@en ;
+    sem:slug "canvas" .
+c:CanvasItem a owl:Class ;
+    rdfs:subClassOf sem:Component , c:Draggable ;
+    rdfs:comment "Minted by a c:Canvas for each of its components (c:of): the box that is dragged, and where it was put (c:x, c:y)."@en ;
+    sem:slug "canvas-item" .
+c:canvas a owl:ObjectProperty ; rdfs:domain c:CanvasItem ; rdfs:range c:Canvas ;
+    rdfs:comment "On a c:CanvasItem: the canvas it is in."@en .
+
+c:ConnectorPhrase a c:Phrase ;
+    rdfs:label "{from} → {to}"@en , "{from} → {to}"@uk , "{from} → {to}"@de , "{from} ← {to}"@ar .
+
+# --- a connector ---------------------------------------------------------------------------------
+# After the components (stratum 0: what it joins is rendered, and a derived connector is minted
+# there) and before the layers that decorate it. An end that is a component is its root
+# (<end>/~root, as the style hooks have it); any other end is a rendered node itself. Each end
+# gets its own IRI as its id, which the connector names.
+
+c:ConnectorRendering a sem:Rendering ; sem:targets c:Connector ; sem:stratum 5 ;
+    sem:watches rdf:type , c:from , c:to , c:label , c:route , c:arrowheads , c:line , c:leader , c:shownWhile .
+c:ConnectorRendering-fn a sem:Rule ; sem:implements c:ConnectorRendering ; sem:function "connector" .
+c:ConnectorRendering-sparql-screen a sem:Rule ;
+    sem:implements c:ConnectorRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a svg:Svg ; sem:renders $this ; rdfhtml:class "sem-connector" ;
+        rdfhtml:attribute ?roleAttr , ?altAttr , ?fromAttr , ?toAttr , ?routeAttr , ?headsAttr , ?lineAttr , ?leaderAttr , ?whileAttr ;
+        rdfhtml:hasChild ?leaderPath , ?start , ?path , ?headTo , ?headFrom .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "img" .
+  ?altAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?alt .
+  ?fromAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-from" ; rdfhtml:attributeValue ?fromId .
+  ?toAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-to" ; rdfhtml:attributeValue ?toId .
+  ?routeAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-route" ; rdfhtml:attributeValue ?routeSlug .
+  ?headsAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-heads" ; rdfhtml:attributeValue ?headsSlug .
+  ?lineAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-line" ; rdfhtml:attributeValue ?lineSlug .
+  ?leaderAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-leader" ; rdfhtml:attributeValue ?leaderId .
+  ?whileAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-shown-while" ; rdfhtml:attributeValue ?whileSlug .
+  ?leaderPath a svg:Path ; rdfhtml:class "sem-connector-leader" ; sem:orderKey "1" .
+  ?start a svg:Circle ; rdfhtml:class "sem-connector-start" ; sem:orderKey "2" .
+  ?path a svg:Path ; rdfhtml:class "sem-connector-line" ; sem:orderKey "3" .
+  ?headTo a svg:Path ; rdfhtml:class "sem-connector-head" ; sem:orderKey "4" ; rdfhtml:attribute ?headToEnd .
+  ?headToEnd a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-end" ; rdfhtml:attributeValue "to" .
+  ?headFrom a svg:Path ; rdfhtml:class "sem-connector-head" ; sem:orderKey "5" ; rdfhtml:attribute ?headFromEnd .
+  ?headFromEnd a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-end" ; rdfhtml:attributeValue "from" .
+  ?fromNode rdfhtml:id ?fromId .
+  ?toNode rdfhtml:id ?toId .
+  ?leaderNode rdfhtml:id ?leaderId .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Connector ; c:from ?from ; c:to ?to .
+  FILTER(isIRI(?from) && isIRI(?to))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  # Each end's element: a component's root, else the rendered node itself.
+  BIND(IF(EXISTS { ?from a/rdfs:subClassOf* sem:Component }, IRI(CONCAT(STR(?from), "/~root")), ?from) AS ?fromNode)
+  BIND(IF(EXISTS { ?to a/rdfs:subClassOf* sem:Component }, IRI(CONCAT(STR(?to), "/~root")), ?to) AS ?toNode)
+  BIND(STR(?fromNode) AS ?fromId)
+  BIND(STR(?toNode) AS ?toId)
+  OPTIONAL { $this c:leader ?leader FILTER(isIRI(?leader)) }
+  BIND(IF(BOUND(?leader), IF(EXISTS { ?leader a/rdfs:subClassOf* sem:Component }, IRI(CONCAT(STR(?leader), "/~root")), ?leader), ?none) AS ?leaderNode)
+  BIND(IF(BOUND(?leaderNode), STR(?leaderNode), ?none) AS ?leaderId)
+  # What it looks like (the host routes by these).
+  OPTIONAL { $this c:route/sem:slug ?route0 }
+  OPTIONAL { $this c:arrowheads/sem:slug ?heads0 }
+  OPTIONAL { $this c:line/sem:slug ?line0 }
+  OPTIONAL { $this c:shownWhile/sem:slug ?while0 }
+  BIND(COALESCE(?route0, "curved") AS ?routeSlug)
+  BIND(COALESCE(?heads0, "to") AS ?headsSlug)
+  BIND(COALESCE(?line0, "solid") AS ?lineSlug)
+  BIND(IF(BOUND(?while0) && ?while0 != "always", ?while0, ?none) AS ?whileSlug)
+  # What it joins, in words: each end's name, then the connector's label.
+  OPTIONAL { ?from l10n:label ?fromL10n }
+  OPTIONAL { ?from c:label ?fromPlain FILTER(isLiteral(?fromPlain) && lang(?fromPlain) = "") }
+  OPTIONAL { ?from rdfs:label ?fromRdfs FILTER(isLiteral(?fromRdfs) && lang(?fromRdfs) = "") }
+  OPTIONAL { ?from c:term ?fromTerm }
+  OPTIONAL { ?to l10n:label ?toL10n }
+  OPTIONAL { ?to c:label ?toPlain FILTER(isLiteral(?toPlain) && lang(?toPlain) = "") }
+  OPTIONAL { ?to rdfs:label ?toRdfs FILTER(isLiteral(?toRdfs) && lang(?toRdfs) = "") }
+  OPTIONAL { ?to c:term ?toTerm }
+  OPTIONAL { $this l10n:label ?ownL10n }
+  OPTIONAL { $this c:label ?ownPlain FILTER(isLiteral(?ownPlain) && lang(?ownPlain) = "") }
+  BIND(STR(COALESCE(?fromL10n, ?fromPlain, ?fromRdfs, REPLACE(STR(COALESCE(?fromTerm, ?from)), "^.*[#/]", ""))) AS ?fromName)
+  BIND(STR(COALESCE(?toL10n, ?toPlain, ?toRdfs, REPLACE(STR(COALESCE(?toTerm, ?to)), "^.*[#/]", ""))) AS ?toName)
+  BIND(COALESCE(?ownL10n, ?ownPlain) AS ?own)
+  BIND(CONCAT(?fromName, " → ", ?toName, IF(BOUND(?own), CONCAT(": ", STR(?own)), "")) AS ?alt)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?roleAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?altAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-from")) AS ?fromAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-to")) AS ?toAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-route")) AS ?routeAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-heads")) AS ?headsAttr)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-line")) AS ?lineAttr)
+  BIND(IF(BOUND(?leaderId), IRI(CONCAT(STR($this), "/~root-data-sem-leader")), ?none) AS ?leaderAttr)
+  BIND(IF(BOUND(?whileSlug), IRI(CONCAT(STR($this), "/~root-data-sem-shown-while")), ?none) AS ?whileAttr)
+  # Its parts: a leader and its start (with c:leader), the line, and a head at each end that has one.
+  BIND(IF(BOUND(?leaderId), IRI(CONCAT(STR($this), "/~leader")), ?none) AS ?leaderPath)
+  BIND(IF(BOUND(?leaderId), IRI(CONCAT(STR($this), "/~start")), ?none) AS ?start)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?path)
+  BIND(IF((?headsSlug = "to" || ?headsSlug = "both"), IRI(CONCAT(STR($this), "/~head-to")), ?none) AS ?headTo)
+  BIND(IF((?headsSlug = "to" || ?headsSlug = "both"), IRI(CONCAT(STR($this), "/~head-to-a-data-sem-end")), ?none) AS ?headToEnd)
+  BIND(IF((?headsSlug = "from" || ?headsSlug = "both"), IRI(CONCAT(STR($this), "/~head-from")), ?none) AS ?headFrom)
+  BIND(IF((?headsSlug = "from" || ?headsSlug = "both"), IRI(CONCAT(STR($this), "/~head-from-a-data-sem-end")), ?none) AS ?headFromEnd)
+}""" .
+c:ConnectorRendering-sparql-text a sem:Rule ;
+    sem:implements c:ConnectorRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?altText .
+  ?altText a rdfhtml:Text ; rdfhtml:data ?alt .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Connector ; c:from ?from ; c:to ?to .
+  FILTER(isIRI(?from) && isIRI(?to))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~alt")) AS ?altText)
+  OPTIONAL { ?from l10n:label ?fromL10n }
+  OPTIONAL { ?from c:label ?fromPlain FILTER(isLiteral(?fromPlain) && lang(?fromPlain) = "") }
+  OPTIONAL { ?from rdfs:label ?fromRdfs FILTER(isLiteral(?fromRdfs) && lang(?fromRdfs) = "") }
+  OPTIONAL { ?from c:term ?fromTerm }
+  OPTIONAL { ?to l10n:label ?toL10n }
+  OPTIONAL { ?to c:label ?toPlain FILTER(isLiteral(?toPlain) && lang(?toPlain) = "") }
+  OPTIONAL { ?to rdfs:label ?toRdfs FILTER(isLiteral(?toRdfs) && lang(?toRdfs) = "") }
+  OPTIONAL { ?to c:term ?toTerm }
+  OPTIONAL { $this l10n:label ?ownL10n }
+  OPTIONAL { $this c:label ?ownPlain FILTER(isLiteral(?ownPlain) && lang(?ownPlain) = "") }
+  BIND(STR(COALESCE(?fromL10n, ?fromPlain, ?fromRdfs, REPLACE(STR(COALESCE(?fromTerm, ?from)), "^.*[#/]", ""))) AS ?fromName)
+  BIND(STR(COALESCE(?toL10n, ?toPlain, ?toRdfs, REPLACE(STR(COALESCE(?toTerm, ?to)), "^.*[#/]", ""))) AS ?toName)
+  BIND(COALESCE(?ownL10n, ?ownPlain) AS ?own)
+  BIND(CONCAT(?fromName, " → ", ?toName, IF(BOUND(?own), CONCAT(": ", STR(?own)), "")) AS ?alt)
+}""" .
+
+# --- a canvas ------------------------------------------------------------------------------------
+# Its children in list order (sem:orderKey by position): a connector placed as it is, any other
+# component in an item minted for it (<canvas>/~item-<child>), which is what is dragged.
+
+c:CanvasRendering a sem:Rendering ; sem:targets c:Canvas ; sem:stratum 0 ;
+    sem:watches rdf:type , c:children , c:width , c:height , c:label .
+c:CanvasRendering-fn a sem:Rule ; sem:implements c:CanvasRendering ; sem:function "canvas" .
+c:CanvasRendering-sparql a sem:Rule ;
+    sem:implements c:CanvasRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:style ?style ; rdfhtml:attribute ?labelAttr , ?roleAttr ; rdfhtml:hasChild ?placed , ?grip .
+  ?labelAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?roleAttr a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?placed sem:orderKey ?key .
+  ?item a c:CanvasItem ; c:of ?child ; c:canvas $this .
+  ?grip a rdfhtml:Span ; rdfhtml:class "sem-canvas-grip" ; sem:orderKey "~" ; rdfhtml:attribute ?gripGesture , ?gripHidden .
+  ?gripGesture a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-gesture" ; rdfhtml:attributeValue "resize" .
+  ?gripHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Canvas .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    OPTIONAL { $this c:width ?w }
+    OPTIONAL { $this c:height ?h }
+    BIND(IF(BOUND(?w) || BOUND(?h), CONCAT(IF(BOUND(?w), CONCAT("width: ", STR(?w), "px"), ""), IF(BOUND(?w) && BOUND(?h), "; ", ""), IF(BOUND(?h), CONCAT("height: ", STR(?h), "px"), "")), ?none) AS ?style)
+    OPTIONAL { $this c:label ?label0 FILTER(isLiteral(?label0) && lang(?label0) = "") }
+    BIND(IF(BOUND(?label0), STR(?label0), ?none) AS ?label)
+    BIND(IF(BOUND(?label0), IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?labelAttr)
+    BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?roleAttr)
+    BIND(IF(EXISTS { $this a/rdfs:subClassOf* c:Resizable }, IRI(CONCAT(STR($this), "/~grip")), ?none) AS ?grip)
+    BIND(IF(BOUND(?grip), IRI(CONCAT(STR($this), "/~grip-data-sem-gesture")), ?none) AS ?gripGesture)
+    BIND(IF(BOUND(?grip), IRI(CONCAT(STR($this), "/~grip-aria-hidden")), ?none) AS ?gripHidden)
+  } UNION {
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?child FILTER(isIRI(?child))
+    OPTIONAL { SELECT ?cell (COUNT(?before) AS ?n) WHERE { $this c:children/rdf:rest* ?before . ?before rdf:rest+ ?cell } GROUP BY ?cell }
+    BIND(COALESCE(?n, 0) AS ?pos)
+    BIND(SUBSTR(CONCAT("000", STR(?pos)), STRLEN(STR(?pos)) + 1) AS ?key)
+    BIND(EXISTS { ?child a/rdfs:subClassOf* c:Connector } AS ?isConnector)
+    BIND(IF(?isConnector, ?none, IRI(CONCAT(STR($this), "/~item-", ENCODE_FOR_URI(STR(?child))))) AS ?item)
+    BIND(COALESCE(?item, ?child) AS ?placed)
+  }
+}""" .
+
+c:CanvasRendering-sparql-text a sem:Rule ;
+    sem:implements c:CanvasRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?child .
+  ?child sem:orderKey ?key .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Canvas .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL {
+    $this c:children/rdf:rest* ?cell . ?cell rdf:first ?child FILTER(isIRI(?child))
+    OPTIONAL { SELECT ?cell (COUNT(?before) AS ?n) WHERE { $this c:children/rdf:rest* ?before . ?before rdf:rest+ ?cell } GROUP BY ?cell }
+    BIND(COALESCE(?n, 0) AS ?pos)
+    BIND(SUBSTR(CONCAT("000", STR(?pos)), STRLEN(STR(?pos)) + 1) AS ?key)
+  }
+}""" .
+
+# An item: in flow until it has a place (its own c:x and c:y, else its component's), then there.
+c:CanvasItemRendering a sem:Rendering ; sem:targets c:CanvasItem ; sem:stratum 0 ;
+    sem:watches rdf:type , c:of , c:x , c:y .
+c:CanvasItemRendering-fn a sem:Rule ; sem:implements c:CanvasItemRendering ; sem:function "canvas:item" .
+c:CanvasItemRendering-sparql a sem:Rule ;
+    sem:implements c:CanvasItemRendering ;
+    # Like the function, the same in every modality.
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:class "sem-canvas-item" ; rdfhtml:style ?style ; rdfhtml:hasChild ?of ;
+        rdfhtml:attribute ?gesture , ?placedAttr .
+  ?gesture a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-gesture" ; rdfhtml:attributeValue "move" .
+  ?placedAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-placed" ; rdfhtml:attributeValue "true" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:CanvasItem ; c:of ?of FILTER(isIRI(?of))
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-data-sem-gesture")) AS ?gesture)
+  OPTIONAL { $this c:x ?ownX ; c:y ?ownY }
+  OPTIONAL { ?of c:x ?ofX ; c:y ?ofY }
+  BIND(COALESCE(?ownX, ?ofX) AS ?x)
+  BIND(COALESCE(?ownY, ?ofY) AS ?y)
+  BIND(IF(BOUND(?x), CONCAT("left: ", STR(?x), "px; top: ", STR(?y), "px"), ?none) AS ?style)
+  BIND(IF(BOUND(?x), IRI(CONCAT(STR($this), "/~root-data-sem-placed")), ?none) AS ?placedAttr)
+}""" .

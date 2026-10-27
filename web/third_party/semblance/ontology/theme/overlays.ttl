@@ -1,0 +1,179 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Default theme for the overlays components.
+
+# Overlays sit above the page (windows are at 50, toasts at 70). They animate in on
+# the motion tokens, so the motion layer calms or removes the movement.
+
+# --- every overlay ---
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:state "[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel .sem-close" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "flex" ; sty:raw "none" ] ,
+                 [ sty:property "width" ; sty:raw "30px" ] ,
+                 [ sty:property "height" ; sty:raw "30px" ] ,
+                 [ sty:property "margin" ; sty:raw "-4px -6px 0 auto" ] ,
+                 [ sty:property "padding" ; sty:raw "0" ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font" ; sty:raw "600 14px/1 var(--sem-font)" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), color var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel .sem-close:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel .sem-close:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-trigger:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:ring ] .
+
+# --- dialog and drawer: a scrim and a panel over the viewport ---
+[] a sty:StyleRule ; sty:appliesTo c:Dialog ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "60" ] ,
+                 [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "place-items" ; sty:raw "center" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Drawer ;
+    sty:declares [ sty:property "position" ; sty:raw "fixed" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "60" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-scrim" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:token tok:scrim ] ,
+                 [ sty:property "backdrop-filter" ; sty:raw "blur(2px)" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-fade-in var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "background" ; sty:token tok:surface-overlay ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .
+[] a sty:StyleRule ; sty:appliesTo c:Dialog ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "width" ; sty:raw "min(480px, 100%)" ] ,
+                 [ sty:property "max-height" ; sty:raw "calc(100vh - 48px)" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-5 ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-xl ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-4 ] ,
+                 [ sty:property "animation" ; sty:raw "sem-scale-in var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Drawer ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-block" ; sty:raw "0" ] ,
+                 [ sty:property "width" ; sty:raw "min(400px, 92vw)" ] ,
+                 [ sty:property "overflow" ; sty:raw "auto" ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-5 tok:space-5 ) ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-4 ] ,
+                 [ sty:property "animation" ; sty:raw "sem-slide-in-end var(--sem-duration-slow) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Drawer ; sty:state "[data-side=end]" ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "inset-inline-end" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0 0 0 1px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--sem-radius-xl) 0 0 var(--sem-radius-xl)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Drawer ; sty:state "[data-side=start]" ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "inset-inline-start" ; sty:raw "0" ] ,
+                 [ sty:property "border-width" ; sty:raw "0 1px 0 0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0 var(--sem-radius-xl) var(--sem-radius-xl) 0" ] ,
+                 [ sty:property "animation-name" ; sty:raw "sem-slide-in-start" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel > .sem-head" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "flex-start" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel > .sem-head h2" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-lg ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "-0.015em" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part ".sem-desc" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel > .sem-body" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "padding-block" ; sty:token tok:space-1 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Overlay ; sty:part "> .sem-panel > .sem-actions" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+                 [ sty:property "justify-content" ; sty:raw "flex-end" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "padding-top" ; sty:token tok:space-2 ] .
+[] a sty:StyleRule ; sty:appliesTo c:Drawer ; sty:part "> .sem-panel > .sem-actions" ;
+    sty:declares [ sty:property "margin-top" ; sty:raw "auto" ] ,
+                 [ sty:property "padding-top" ; sty:token tok:space-4 ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+
+# --- popover: anchored below its trigger ---
+[] a sty:StyleRule ; sty:appliesTo c:Popover ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "display" ; sty:raw "inline-block" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+[] a sty:StyleRule ; sty:appliesTo c:Popover ; sty:part "> .sem-trigger" ;
+    sty:declares [ sty:property "display" ; sty:raw "inline-flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-2 ] ,
+                 [ sty:property "min-height" ; sty:raw "var(--control-h, 36px)" ] ,
+                 [ sty:property "padding" ; sty:raw "0 var(--control-px, var(--sem-space-3))" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border-strong)" ] ,
+                 [ sty:property "border-radius" ; sty:raw "var(--control-radius, var(--sem-radius-control))" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow ] ,
+                 [ sty:property "font" ; sty:raw "600 var(--control-font, 14px)/1.2 var(--sem-font)" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-motion), border-color var(--sem-motion)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Popover ; sty:part "> .sem-trigger:is(:hover, [aria-expanded=true])" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:appliesTo c:Popover ; sty:part "> .sem-trigger .sem-caret" ;
+    sty:declares [ sty:property "width" ; sty:raw "6px" ] ,
+                 [ sty:property "height" ; sty:raw "6px" ] ,
+                 [ sty:property "margin-top" ; sty:raw "-3px" ] ,
+                 [ sty:property "border-right" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1.5px solid currentColor" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "transform" ; sty:raw "rotate(45deg)" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-duration) var(--sem-ease), margin var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Popover ; sty:part "> .sem-trigger[aria-expanded=true] .sem-caret" ;
+    sty:declares [ sty:property "transform" ; sty:raw "rotate(225deg)" ] ,
+                 [ sty:property "margin-top" ; sty:raw "3px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Popover ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "top" ; sty:raw "calc(100% + 8px)" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "40" ] ,
+                 [ sty:property "width" ; sty:raw "max-content" ] ,
+                 [ sty:property "min-width" ; sty:raw "220px" ] ,
+                 [ sty:property "max-width" ; sty:raw "min(320px, calc(100vw - 32px))" ] ,
+                 [ sty:property "padding" ; sty:token tok:space-4 ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "transform-origin" ; sty:raw "top left" ] ,
+                 [ sty:property "animation" ; sty:raw "sem-scale-in var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Popover ; sty:part "> .sem-panel[hidden]" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .

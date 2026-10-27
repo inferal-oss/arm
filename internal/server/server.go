@@ -725,6 +725,9 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	}
 	defer leave()
 	if bound, ok := ctx.Value(nodeSessionKey{}).(nodeSession); ok {
+		if r.Operation == "dashboard_login_link" {
+			return nil, model.Err("forbidden", "scoped node sessions cannot issue local dashboard login links")
+		}
 		if !bound.Local {
 			return s.nodeSessionOperation(ctx, bound, r)
 		}
@@ -842,6 +845,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, model.Err("invalid_request", "dashboard sends require at least one explicitly reviewed agent recipient")
 		}
 		return s.Manager.SendMessage(ctx, q)
+	case "dashboard_login_link":
+		return s.dashboardLoginLink(r.Params)
 	case "browser_ticket":
 		return s.browser.issue(s.authority, time.Now())
 	case "monitor":

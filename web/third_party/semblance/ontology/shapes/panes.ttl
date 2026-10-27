@@ -1,0 +1,31 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What well-formed panes look like (validated by the component shapes layer).
+
+c:TiledWorkspaceShape a sh:NodeShape ; sh:targetClass c:TiledWorkspace ;
+    sh:property [ sh:path c:rootTile ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A tiled workspace needs one root component (c:rootTile)." ] .
+
+c:SplitViewShape a sh:NodeShape ; sh:targetClass c:SplitView ;
+    sh:property [ sh:path c:primary ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A split view needs its first pane (c:primary): the one its divider sizes." ] ,
+                [ sh:path c:secondary ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A split view needs its second pane (c:secondary)." ] ,
+                [ sh:path c:ratio ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ;
+                  sh:message "A split's c:ratio is the first pane's share, from 0 to 1." ] ,
+                [ sh:path c:minSize ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:collapsed ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .
+
+c:DockPanelShape a sh:NodeShape ; sh:targetClass c:DockPanel ;
+    sh:property [ sh:path c:label ; sh:minCount 1 ; sh:message "A dock panel needs a title (c:label): it names the panel's region and its handle." ] ,
+                [ sh:path c:content ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:toolbar ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:footer ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:attachedTo ; sh:maxCount 1 ; sh:class c:Edge ] ,
+                [ sh:path c:height ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:width ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:minSize ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:expanded ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .

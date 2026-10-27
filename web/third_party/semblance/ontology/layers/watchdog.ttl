@@ -1,0 +1,328 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix tree: <https://w3id.org/tree#> .
+
+# Watchdog: what happens when the page is busy for too long.
+#
+# A turn is everything one input causes: an event's reactions, the tick's maintained views and
+# every projection's rule evaluations. A turn has a budget (sem:budget, 1.5 s by default). The
+# engine checks it between evaluations (a counter; the clock is read every few evaluations), and
+# when the turn is over budget it suspends the turn at a consistent point: strata below the one it
+# reached are complete, every derived triple comes from a complete evaluation, and the pending
+# (rule, focus) pairs are held, not lost. The page then renders and answers again, and the host
+# (src/behaviour/stall.ts) records a sem:Stall - what was running, how much is done and waiting,
+# the event that started it - and raises a sem:Stalled event on the app's sem:Watchdog, whose
+# reaction opens the stall dialog (sem:stallDialog, an ordinary c:Dialog). Its buttons decide
+# (sem:decides the watchdog, sem:stallChoice what): a reaction writes sem:decision, and the host
+# does it:
+#
+#   - sem:Continue: the held work runs in slices (sem:slice, 50 ms) with a yield between them,
+#     so the page stays responsive and shows progress. Continued to the end, the result is the
+#     same as a turn that was never suspended.
+#   - sem:Stop: the held work is dropped. Pairs whose focus is gone are retracted (no query);
+#     the others keep their output from before the stall and are counted out of date
+#     (sem:outOfDate) until their input changes again or sem:Retry runs them. Nothing is rolled
+#     back: the input change, the views and the change log stay as the stalled turn left them.
+#     The projection is never inconsistent silently: what is out of date is counted, shown and
+#     retried on demand.
+#   - Closing the dialog (✕, Escape, the scrim) without deciding continues in the background.
+#
+# Reactions and maintained views are atomic (they compute one consistent change), so they are
+# timed and blamed, not suspended: a turn they took over budget suspends at the engine's first
+# check. A single SPARQL query cannot be interrupted from outside; a store that has a deadline
+# (GraphStore.setDeadline: Semblance's WASM engines) cuts it off at the end of the budget, which
+# is a stall like any other (sem:QueryDeadline); Oxigraph has no such hook, and its long query
+# runs to the end. What nothing could interrupt (a long task, a frozen frame) is noticed after
+# the fact by a heartbeat in a Web Worker and the browser's long-task observers, and logged.
+#
+# Every stall, suspended or observed, is a member of sem:StallLog, a bounded LDES in the
+# performance graph (urn:semblance:perf), so "the page sometimes hangs" can be traced to a cause.
+
+<https://semblance.dev/ns/watchdog> a owl:Ontology ;
+    rdfs:label "Semblance watchdog"@en .
+
+# --- the watchdog --------------------------------------------------------------------------------
+
+sem:Watchdog a owl:Class ;
+    rdfs:label "Watchdog"@en , "Сторож"@uk , "Wächter"@de , "المراقب"@ar ;
+    rdfs:comment "An application's turn budget, and what is done about a turn over it: the dialog that asks, the log of stalls."@en .
+sem:budget a owl:DatatypeProperty ; rdfs:domain sem:Watchdog ; rdfs:range xsd:duration ;
+    rdfs:comment "How long a turn may run before it is suspended (default PT1.5S)."@en .
+sem:slice a owl:DatatypeProperty ; rdfs:domain sem:Watchdog ; rdfs:range xsd:duration ;
+    rdfs:comment "How long each slice of continued work runs before the page gets a turn (default PT0.05S)."@en .
+sem:heartbeat a owl:DatatypeProperty ; rdfs:domain sem:Watchdog ; rdfs:range xsd:duration ;
+    rdfs:comment "How often the page tells its heartbeat worker it is alive (default PT0.25S)."@en .
+sem:hangAfter a owl:DatatypeProperty ; rdfs:domain sem:Watchdog ; rdfs:range xsd:duration ;
+    rdfs:comment "A gap in the heartbeat this long is a hang (default PT2S)."@en .
+sem:logAfter a owl:DatatypeProperty ; rdfs:domain sem:Watchdog ; rdfs:range xsd:duration ;
+    rdfs:comment "A long task or frame this long is logged (default PT0.5S); one over sem:hangAfter is announced too."@en .
+sem:stallDialog a owl:ObjectProperty ; rdfs:domain sem:Watchdog ; rdfs:range c:Dialog ;
+    rdfs:comment "The dialog a stall opens (sem:OpenStallDialog) and its end closes (sem:SettleStall)."@en .
+sem:stallLog a owl:ObjectProperty ; rdfs:domain sem:Watchdog ; rdfs:range ldes:EventStream ;
+    rdfs:comment "The stream stalls are logged to (default sem:StallLog)."@en .
+sem:stall a owl:ObjectProperty ; rdfs:domain sem:Watchdog ; rdfs:range sem:Stall ;
+    rdfs:comment "The stall in progress (written by the host, in the performance graph); absent when none is."@en .
+sem:outOfDate a owl:DatatypeProperty ; rdfs:domain sem:Watchdog ; rdfs:range xsd:integer ;
+    rdfs:label "out of date"@en , "застаріло"@uk , "veraltet"@de , "غير محدّث"@ar ;
+    rdfs:comment "How many renderings a stopped stall left out of date (the host writes it; absent when none)."@en .
+sem:decision a owl:ObjectProperty ; rdfs:domain sem:Watchdog ; rdfs:range sem:StallChoice ;
+    rdfs:comment "What the person chose to do about the stall (written by sem:DecideStall; the host does it)."@en .
+sem:lastHang a owl:ObjectProperty ; rdfs:domain sem:Watchdog ;
+    rdfs:comment "The latest sem:Unresponsive event (written by sem:NoteHang)."@en .
+
+sem:StallChoice a owl:Class ; rdfs:comment "What can be done about a stall."@en .
+sem:Continue a sem:StallChoice ; rdfs:label "Continue"@en , "Продовжити"@uk , "Fortsetzen"@de , "متابعة"@ar ;
+    rdfs:comment "Run the held work to the end, in slices, with the page responsive in between."@en .
+sem:Stop a sem:StallChoice ; rdfs:label "Stop"@en , "Зупинити"@uk , "Anhalten"@de , "إيقاف"@ar ;
+    rdfs:comment "Drop the held work; what it would have updated stays as it was, counted out of date."@en .
+sem:Retry a sem:StallChoice ; rdfs:label "Retry"@en , "Повторити"@uk , "Wiederholen"@de , "إعادة المحاولة"@ar ;
+    rdfs:comment "Evaluate what a stopped stall left out of date."@en .
+
+sem:decides a owl:ObjectProperty ; rdfs:domain c:Button ; rdfs:range sem:Watchdog ;
+    rdfs:comment "On a button: the watchdog whose stall it decides (with sem:stallChoice)."@en .
+sem:stallChoice a owl:ObjectProperty ; rdfs:domain c:Button ; rdfs:range sem:StallChoice ;
+    rdfs:comment "On a button that sem:decides a watchdog: what clicking it chooses."@en .
+
+# --- stalls --------------------------------------------------------------------------------------
+
+sem:Stall a owl:Class ;
+    rdfs:label "Stall"@en , "Зависання"@uk , "Stillstand"@de , "توقف"@ar ;
+    rdfs:comment """A turn that went over budget (suspended, then continued or stopped), or a hang the page
+noticed after the fact (a heartbeat gap, a long task, a long animation frame). A member of sem:StallLog."""@en .
+sem:stallState a owl:ObjectProperty ; rdfs:domain sem:Stall ; rdfs:range sem:StallState ;
+    rdfs:label "state"@en , "стан"@uk , "Zustand"@de , "الحالة"@ar .
+sem:StallState a owl:Class .
+sem:Suspended a sem:StallState ; sem:order 1 ; sem:slug "suspended" ; sty:tone sty:Warning ;
+    rdfs:label "Suspended"@en , "Призупинено"@uk , "Angehalten"@de , "معلّق"@ar .
+sem:Continuing a sem:StallState ; sem:order 2 ; sem:slug "continuing" ; sty:tone sty:Info ;
+    rdfs:label "Continuing"@en , "Продовжується"@uk , "Wird fortgesetzt"@de , "قيد المتابعة"@ar .
+sem:Continued a sem:StallState ; sem:order 3 ; sem:slug "continued" ; sty:tone sty:Success ;
+    rdfs:label "Continued"@en , "Продовжено"@uk , "Fortgesetzt"@de , "تمت المتابعة"@ar .
+sem:Stopped a sem:StallState ; sem:order 4 ; sem:slug "stopped" ; sty:tone sty:Danger ;
+    rdfs:label "Stopped"@en , "Зупинено"@uk , "Abgebrochen"@de , "أوقف"@ar .
+sem:Observed a sem:StallState ; sem:order 5 ; sem:slug "observed" ; sty:tone sty:Neutral ;
+    rdfs:label "Observed"@en , "Помічено"@uk , "Beobachtet"@de , "مرصود"@ar ;
+    rdfs:comment "A hang nothing could interrupt, noticed when the page was responsive again."@en .
+
+sem:detectedBy a owl:ObjectProperty ; rdfs:domain sem:Stall ; rdfs:range sem:Detector ;
+    rdfs:label "Noticed by"@en , "Помічено через"@uk , "Bemerkt durch"@de , "رُصد عبر"@ar .
+sem:Detector a owl:Class .
+sem:BudgetCheck a sem:Detector ; sem:order 1 ; rdfs:label "turn budget"@en , "бюджет ходу"@uk , "Zugbudget"@de , "ميزانية الدورة"@ar .
+sem:QueryDeadline a sem:Detector ; sem:order 2 ; rdfs:label "query deadline"@en , "термін запиту"@uk , "Abfragefrist"@de , "مهلة الاستعلام"@ar .
+sem:Heartbeat a sem:Detector ; sem:order 3 ; rdfs:label "heartbeat"@en , "серцебиття"@uk , "Herzschlag"@de , "نبض"@ar .
+sem:LongTask a sem:Detector ; sem:order 4 ; rdfs:label "long task"@en , "довге завдання"@uk , "lange Aufgabe"@de , "مهمة طويلة"@ar .
+sem:LongFrame a sem:Detector ; sem:order 5 ; rdfs:label "long animation frame"@en , "довгий кадр"@uk , "langer Frame"@de , "إطار طويل"@ar .
+
+sem:culprit a owl:ObjectProperty ; rdfs:domain sem:Stall ;
+    rdfs:label "Slowest work"@en , "Найповільніша робота"@uk , "Langsamste Arbeit"@de , "أبطأ عمل"@ar ;
+    rdfs:comment "The rule, maintained view or reaction that took longest in the turn (or was running when the budget ran out)."@en .
+sem:workKind a owl:ObjectProperty ; rdfs:domain sem:Stall ; rdfs:range sem:WorkKind .
+sem:WorkKind a owl:Class .
+sem:RuleWork a sem:WorkKind ; rdfs:label "rule"@en , "правило"@uk , "Regel"@de , "قاعدة"@ar .
+sem:ViewWork a sem:WorkKind ; rdfs:label "maintained view"@en , "підтримуване подання"@uk , "gepflegte Sicht"@de , "عرض مُحدَّث"@ar .
+sem:ReactionWork a sem:WorkKind ; rdfs:label "reaction"@en , "реакція"@uk , "Reaktion"@de , "تفاعل"@ar .
+sem:QueryWork a sem:WorkKind ; rdfs:label "query"@en , "запит"@uk , "Abfrage"@de , "استعلام"@ar .
+sem:RenderWork a sem:WorkKind ; rdfs:label "DOM patching"@en , "оновлення DOM"@uk , "DOM-Aktualisierung"@de , "تحديث DOM"@ar .
+sem:script a owl:DatatypeProperty ; rdfs:domain sem:Stall ;
+    rdfs:label "Script"@en , "Скрипт"@uk , "Skript"@de , "البرنامج النصي"@ar ;
+    rdfs:comment "For a long animation frame: the script that took longest in it (invoker, function, file:position, ms)."@en .
+sem:sequence a owl:DatatypeProperty ; rdfs:domain sem:Stall ; rdfs:range xsd:integer ; rdfs:comment "Order of the record in the log."@en .
+sem:about a owl:ObjectProperty ; rdfs:comment "On a sem:Stalled or sem:StallSettled event: the stall record it is about."@en .
+sem:culpritFocus a owl:ObjectProperty ; rdfs:domain sem:Stall ;
+    rdfs:label "For"@en , "Для"@uk , "Für"@de , "لـ"@ar ;
+    rdfs:comment "The focus the slowest work was evaluated for (the first, when it covered several)."@en .
+sem:culpritMs a owl:DatatypeProperty ; rdfs:domain sem:Stall ; rdfs:range xsd:integer ; c:unit "ms" ;
+    rdfs:label "it took"@en , "тривала"@uk , "dauerte"@de , "استغرق"@ar .
+sem:done a owl:DatatypeProperty ; rdfs:domain sem:Stall ; rdfs:range xsd:integer ;
+    rdfs:label "done"@en , "виконано"@uk , "erledigt"@de , "مُنجَز"@ar ;
+    rdfs:comment "Evaluations done since the stalled turn started."@en .
+sem:pending a owl:DatatypeProperty ; rdfs:domain sem:Stall ; rdfs:range xsd:integer ;
+    rdfs:label "waiting"@en , "очікує"@uk , "wartend"@de , "قيد الانتظار"@ar ;
+    rdfs:comment "(rule, focus) pairs held, still to evaluate."@en .
+sem:spentMs a owl:DatatypeProperty ; rdfs:domain sem:Stall ; rdfs:range xsd:integer ; c:unit "ms" ;
+    rdfs:label "busy"@en , "зайнято"@uk , "beschäftigt"@de , "مشغول"@ar ;
+    rdfs:comment "Milliseconds the page was busy with it (an observed hang: how long it lasted)."@en .
+sem:startedBy a owl:ObjectProperty ; rdfs:domain sem:Stall ; rdfs:comment "The event that started the turn (a beh:ChangeLog member, if it was recorded)."@en .
+sem:eventType a owl:ObjectProperty ; rdfs:domain sem:Stall ;
+    rdfs:label "Started by"@en , "Почато подією"@uk , "Ausgelöst durch"@de , "بدأه"@ar .
+sem:at a owl:DatatypeProperty ; rdfs:domain sem:Stall ; rdfs:range xsd:dateTime ;
+    rdfs:label "when"@en , "коли"@uk , "wann"@de , "متى"@ar .
+sem:NoStallPhrase rdfs:label "Nothing has stalled."@en , "Нічого не зависало."@uk , "Nichts ist hängen geblieben."@de , "لم يتوقف شيء."@ar .
+sem:BusyPhrase rdfs:label "The page is busy"@en , "Сторінка зайнята"@uk , "Die Seite ist beschäftigt"@de , "الصفحة مشغولة"@ar .
+
+# The log: a bounded LDES in the performance graph (the host writes it).
+sem:StallLog a ldes:EventStream ;
+    rdfs:label "Stall log"@en , "Журнал зависань"@uk , "Stillstandsprotokoll"@de , "سجل التوقفات"@ar ;
+    ldes:timestampPath sem:at ;
+    tree:view sem:StallLogView .
+sem:StallLogView a tree:Node ; ldes:retentionPolicy sem:StallLogRetention .
+sem:StallLogRetention a beh:LatestMembersPolicy ; ldes:amount 50 .
+
+# --- events and reactions ------------------------------------------------------------------------
+
+sem:Stalled a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment "The host's: a turn went over budget and is suspended (addressed to the sem:Watchdog)."@en .
+sem:StallSettled a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment "The host's: the stall's work was continued to the end or stopped."@en .
+sem:Unresponsive a owl:Class ; rdfs:subClassOf beh:Event ;
+    rdfs:comment "The host's: the page did not answer for longer than sem:hangAfter (a heartbeat gap or a long task), noticed once it answered again."@en .
+
+sem:OpenStallDialog a beh:Reaction ; beh:when sem:Stalled ; beh:sourceClass sem:Watchdog ;
+    beh:deletes """CONSTRUCT { ?dialog c:open ?open . $this sem:decision ?old }
+WHERE { { $this sem:stallDialog ?dialog . ?dialog c:open ?open } UNION { $this sem:decision ?old } }""" ;
+    beh:inserts """CONSTRUCT { ?dialog c:open true } WHERE { $this sem:stallDialog ?dialog }""" ;
+    sem:function "watchdog:open" .
+
+sem:SettleStall a beh:Reaction ; beh:when sem:StallSettled ; beh:sourceClass sem:Watchdog ;
+    beh:deletes """CONSTRUCT { ?dialog c:open ?open . $this sem:decision ?old }
+WHERE { { $this sem:stallDialog ?dialog . ?dialog c:open ?open } UNION { $this sem:decision ?old } }""" ;
+    beh:inserts """CONSTRUCT { ?dialog c:open false } WHERE { $this sem:stallDialog ?dialog }""" ;
+    sem:function "watchdog:settle" .
+
+sem:DecideStall a beh:Reaction ; beh:when beh:Click ; beh:sourceClass c:Button ;
+    beh:deletes """CONSTRUCT { ?wd sem:decision ?old } WHERE { $this sem:decides ?wd ; sem:stallChoice ?choice . ?wd sem:decision ?old }""" ;
+    beh:inserts """CONSTRUCT { ?wd sem:decision ?choice } WHERE { $this sem:decides ?wd ; sem:stallChoice ?choice }""" ;
+    sem:function "watchdog:decide" .
+
+sem:NoteHang a beh:Reaction ; beh:when sem:Unresponsive ; beh:sourceClass sem:Watchdog ;
+    beh:deletes """CONSTRUCT { $this sem:lastHang ?old } WHERE { $this sem:lastHang ?old }""" ;
+    beh:inserts """CONSTRUCT { $this sem:lastHang $event } WHERE { }""" ;
+    sem:function "watchdog:hang" ;
+    ann:announces "The page did not answer for a while · Tools › Engine shows why" ,
+                  "Сторінка деякий час не відповідала · Інструменти › Рушій покажуть чому"@uk ,
+                  "Die Seite hat eine Weile nicht reagiert · Werkzeuge › Engine zeigt, warum"@de ,
+                  "لم تستجب الصفحة لفترة · الأدوات › المحرك يوضح السبب"@ar ;
+    ann:tone sty:Warning .
+
+# --- the report ----------------------------------------------------------------------------------
+
+c:StallReport a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """The stall in progress of a watchdog (c:of a sem:Watchdog): its state with what is done
+and waiting, the slowest work (a link to the rule, view or reaction in the reference), the focus it
+was for, the event that started it and how it was noticed; a progress bar while it is continued;
+how many renderings a stopped stall left out of date. c:emptyText (else "Nothing has stalled.") when
+there is nothing to say."""@en ;
+    sem:slug "stall-report" .
+c:StallReportRendering a sem:Rendering ; sem:targets c:StallReport ; sem:modality mod:Screen ; sem:stratum 0 ; sem:follows c:of .
+c:StallReportRendering-fn a sem:Rule ; sem:implements c:StallReportRendering ; sem:function "stall-report" .
+c:StallReportRendering-sparql a sem:Rule ;
+    sem:implements c:StallReportRendering ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?empty , ?summary , ?facts , ?progress , ?stale ;
+        rdfhtml:attribute ?stateAttr .
+  ?stateAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-state" ; rdfhtml:attributeValue ?stateSlug .
+  ?empty a rdfhtml:P ; rdfhtml:class "sem-empty" ; sem:orderKey "0" ; rdfhtml:hasChild ?emptyText .
+  ?emptyText a rdfhtml:Text ; rdfhtml:data ?emptyWords .
+  ?summary a rdfhtml:P ; rdfhtml:class "sem-summary" ; sem:orderKey "1" ; rdfhtml:hasChild ?summaryText .
+  ?summaryText a rdfhtml:Text ; rdfhtml:data ?summaryWords .
+  ?facts a rdfhtml:Dl ; rdfhtml:class "sem-facts" ; sem:orderKey "2" ; rdfhtml:hasChild ?fact .
+  ?fact a rdfhtml:Div ; rdfhtml:class "sem-fact" ; sem:orderKey ?factKey ; rdfhtml:hasChild ?dt , ?dd .
+  ?dt a rdfhtml:Dt ; rdfhtml:hasChild ?dtText ; ord:immediatelyPrecedes ?dd .
+  ?dtText a rdfhtml:Text ; rdfhtml:data ?factName .
+  ?dd a rdfhtml:Dd ; rdfhtml:hasChild ?value , ?link , ?note .
+  ?value a ?valueElement ; sem:orderKey "1" ; rdfhtml:hasChild ?valueText .
+  ?valueText a rdfhtml:Text ; rdfhtml:data ?valueWords .
+  ?link a c:Link ; c:to ?culprit ; c:label ?culpritName ; sem:orderKey "1" .
+  ?note a rdfhtml:Span ; rdfhtml:class "sem-note" ; sem:orderKey "2" ; rdfhtml:hasChild ?noteText .
+  ?noteText a rdfhtml:Text ; rdfhtml:data ?noteWords .
+  ?progress a c:Progress ; c:value ?done ; c:max ?total ; c:label ?stateName ; c:active true ; sem:orderKey "3" .
+  ?stale a rdfhtml:P ; rdfhtml:class "sem-stale" ; sem:orderKey "4" ; rdfhtml:hasChild ?staleText .
+  ?staleText a rdfhtml:Text ; rdfhtml:data ?staleWords .
+}
+WHERE {
+  $this a c:StallReport .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  OPTIONAL { $this c:of ?wd0 }
+  BIND(COALESCE(?wd0, $this) AS ?wd)
+  OPTIONAL { ?wd sem:stall ?s0 }
+  OPTIONAL { ?wd sem:outOfDate ?n0 FILTER(?n0 > 0) }
+  LATERAL { {
+    # Nothing to say.
+    FILTER(!BOUND(?s0) && !BOUND(?n0))
+    BIND(IRI(CONCAT(STR($this), "/~empty")) AS ?empty)
+    BIND(IRI(CONCAT(STR($this), "/~empty-text")) AS ?emptyText)
+    OPTIONAL { $this c:emptyText ?e0 FILTER(lang(?e0) = "") }
+    OPTIONAL { sem:NoStallPhrase rdfs:label ?e1 FILTER(langMatches(lang(?e1), "en")) }
+    BIND(STR(COALESCE(?e0, ?e1, "Nothing has stalled.")) AS ?emptyWords)
+  } UNION {
+    # The state, as an attribute the theme can hook, and the summary line.
+    ?wd sem:stall ?s .
+    ?s sem:stallState ?state .
+    OPTIONAL { ?state sem:slug ?stateSlug0 }
+    BIND(COALESCE(?stateSlug0, "") AS ?stateSlug)
+    BIND(IRI(CONCAT(STR($this), "/~root-data-sem-state")) AS ?stateAttr)
+    OPTIONAL { ?state rdfs:label ?sl FILTER(langMatches(lang(?sl), "en")) }
+    OPTIONAL { ?s sem:done ?d0 } OPTIONAL { ?s sem:pending ?p0 } OPTIONAL { ?s sem:spentMs ?ms0 }
+    OPTIONAL { sem:done rdfs:label ?doneWord FILTER(langMatches(lang(?doneWord), "en")) }
+    OPTIONAL { sem:pending rdfs:label ?pendingWord FILTER(langMatches(lang(?pendingWord), "en")) }
+    BIND(IRI(CONCAT(STR($this), "/~summary")) AS ?summary)
+    BIND(IRI(CONCAT(STR($this), "/~summary-text")) AS ?summaryText)
+    BIND(CONCAT(STR(COALESCE(?sl, "")), " · ", STR(COALESCE(?d0, 0)), " ", STR(COALESCE(?doneWord, "done")), " · ",
+                STR(COALESCE(?p0, 0)), " ", STR(COALESCE(?pendingWord, "waiting")), " · ", STR(COALESCE(?ms0, 0)), " ms") AS ?summaryWords)
+  } UNION {
+    # A progress bar while it is continued.
+    ?wd sem:stall ?s .
+    ?s sem:stallState sem:Continuing ; sem:done ?done ; sem:pending ?pending .
+    BIND(?done + ?pending AS ?total)
+    OPTIONAL { sem:Continuing rdfs:label ?cl FILTER(langMatches(lang(?cl), "en")) }
+    BIND(STR(COALESCE(?cl, "Continuing")) AS ?stateName)
+    BIND(IRI(CONCAT(STR($this), "/~progress")) AS ?progress)
+  } UNION {
+    # The facts: slowest work (a link), what it was for, what started it, how it was noticed.
+    ?wd sem:stall ?s .
+    BIND(IRI(CONCAT(STR($this), "/~facts")) AS ?facts)
+    {
+      ?s sem:culprit ?culprit .
+      BIND("1" AS ?factKey) BIND(sem:culprit AS ?factProperty) BIND("culprit" AS ?local)
+      BIND(REPLACE(STR(?culprit), "^.*[#/]", "") AS ?culpritName)
+      OPTIONAL { ?s sem:workKind ?kind . ?kind rdfs:label ?kl FILTER(langMatches(lang(?kl), "en")) }
+      OPTIONAL { ?s sem:culpritMs ?cms }
+      BIND(CONCAT(COALESCE(CONCAT(STR(?kl), " · "), ""), STR(COALESCE(?cms, 0)), " ms") AS ?noteWords)
+      BIND(IRI(CONCAT(STR($this), "/~fact-culprit-link")) AS ?link)
+      BIND(IRI(CONCAT(STR($this), "/~fact-culprit-note")) AS ?note)
+      BIND(IRI(CONCAT(STR($this), "/~fact-culprit-note-text")) AS ?noteText)
+    } UNION {
+      ?s sem:culpritFocus ?focus .
+      BIND("2" AS ?factKey) BIND(sem:culpritFocus AS ?factProperty) BIND("focus" AS ?local)
+      BIND(STR(?focus) AS ?valueWords)
+      BIND(IRI(CONCAT(STR($this), "/~fact-focus-value")) AS ?value)
+    } UNION {
+      ?s sem:eventType ?type .
+      BIND("3" AS ?factKey) BIND(sem:eventType AS ?factProperty) BIND("event" AS ?local)
+      BIND(REPLACE(STR(?type), "^.*[#/]", "") AS ?valueWords)
+      BIND(IRI(CONCAT(STR($this), "/~fact-event-value")) AS ?value)
+    } UNION {
+      ?s sem:detectedBy ?detector .
+      BIND("4" AS ?factKey) BIND(sem:detectedBy AS ?factProperty) BIND("detector" AS ?local)
+      OPTIONAL { ?detector rdfs:label ?dl FILTER(langMatches(lang(?dl), "en")) }
+      BIND(STR(COALESCE(?dl, REPLACE(STR(?detector), "^.*[#/]", ""))) AS ?valueWords)
+      BIND(IRI(CONCAT(STR($this), "/~fact-detector-value")) AS ?value)
+    }
+    OPTIONAL { ?factProperty rdfs:label ?fl FILTER(langMatches(lang(?fl), "en")) }
+    BIND(STR(COALESCE(?fl, ?local)) AS ?factName)
+    BIND(IRI(CONCAT(STR($this), "/~fact-", ?local)) AS ?fact)
+    BIND(IRI(CONCAT(STR($this), "/~fact-", ?local, "-dt")) AS ?dt)
+    BIND(IRI(CONCAT(STR($this), "/~fact-", ?local, "-dt-text")) AS ?dtText)
+    BIND(IRI(CONCAT(STR($this), "/~fact-", ?local, "-dd")) AS ?dd)
+    BIND(IF(BOUND(?valueWords), rdfhtml:Code, ?none) AS ?valueElement)
+    BIND(IF(BOUND(?valueWords), IRI(CONCAT(STR($this), "/~fact-", ?local, "-value-text")), ?none) AS ?valueText)
+  } UNION {
+    # How many renderings a stopped stall left out of date.
+    ?wd sem:outOfDate ?n FILTER(?n > 0)
+    OPTIONAL { sem:outOfDate rdfs:label ?ol FILTER(langMatches(lang(?ol), "en")) }
+    BIND(CONCAT(STR(?n), " ", STR(COALESCE(?ol, "out of date"))) AS ?staleWords)
+    BIND(IRI(CONCAT(STR($this), "/~stale")) AS ?stale)
+    BIND(IRI(CONCAT(STR($this), "/~stale-text")) AS ?staleText)
+  } }
+}""" .

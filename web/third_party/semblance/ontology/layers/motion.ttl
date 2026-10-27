@@ -1,0 +1,50 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mot: <https://semblance.dev/ns/motion#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Motion layer. Every transition and animation in the theme is timed by the
+# motion tokens (duration-fast, duration, duration-slow, ease, motion; the long
+# movements by duration-move and ease-move, the repeating animations by
+# duration-loop). A motion preference on any component (usually the shell)
+# re-values them for its subtree: Reduced keeps opacity changes short, drops
+# the springs, makes long movements instant (move-fade fades in what they
+# bring instead) and slows the loops; None makes every change instant and
+# stills the loops; System (Match) is Full, or Reduced where the system asks for
+# reduced motion (prefers-reduced-motion). It is pure style: a hookable property
+# whose values carry token overrides.
+
+<https://semblance.dev/ns/motion> a owl:Ontology ;
+    rdfs:label "Semblance motion layer"@en .
+
+mot:preference a owl:ObjectProperty ;
+    rdfs:range mot:Preference ;
+    rdfs:label "Motion"@en ;
+    rdfs:comment "How much a subtree moves."@en ;
+    sty:hookAttribute "data-sem-motion" .
+mot:Preference a owl:Class .
+
+mot:Full a mot:Preference ; rdfs:label "Full"@en ; sem:symbol "≋" ; sem:order 1 ; sem:slug "full" .
+mot:Reduced a mot:Preference ; rdfs:label "Reduced"@en ; sem:symbol "≈" ; sem:order 2 ; sem:slug "reduced" ;
+    sty:declares [ sty:property "--sem-duration-fast" ; sty:raw "60ms" ] ,
+                 [ sty:property "--sem-duration" ; sty:raw "80ms" ] ,
+                 [ sty:property "--sem-duration-slow" ; sty:raw "120ms" ] ,
+                 [ sty:property "--sem-spring" ; sty:raw "linear" ] ,
+                 [ sty:property "--sem-ease" ; sty:raw "linear" ] ,
+                 [ sty:property "--sem-motion" ; sty:raw "80ms linear" ] ,
+                 [ sty:property "--sem-duration-move" ; sty:raw "0ms" ] ,
+                 [ sty:property "--sem-ease-move" ; sty:raw "linear" ] ,
+                 [ sty:property "--sem-move-fade" ; sty:raw "sem-fade-in 80ms linear" ] ,
+                 [ sty:property "--sem-duration-loop" ; sty:raw "640ms" ] .
+mot:None a mot:Preference ; rdfs:label "None"@en ; sem:symbol "–" ; sem:order 3 ; sem:slug "none" ;
+    sty:declares [ sty:property "--sem-duration-fast" ; sty:raw "0ms" ] ,
+                 [ sty:property "--sem-duration" ; sty:raw "0ms" ] ,
+                 [ sty:property "--sem-duration-slow" ; sty:raw "0ms" ] ,
+                 [ sty:property "--sem-motion" ; sty:raw "0ms linear" ] ,
+                 [ sty:property "--sem-duration-move" ; sty:raw "0ms" ] ,
+                 [ sty:property "--sem-move-fade" ; sty:raw "none" ] ,
+                 [ sty:property "--sem-duration-loop" ; sty:raw "0ms" ] .
+mot:System a mot:Preference ; rdfs:label "Match"@en ; sem:symbol "◐" ; sem:order 4 ; sem:slug "system" ;
+    rdfs:comment "Follows the system's setting: reduced motion where it asks for it (prefers-reduced-motion), full otherwise."@en ;
+    sty:underMedia [ sty:media "(prefers-reduced-motion: reduce)" ; sty:as mot:Reduced ] .

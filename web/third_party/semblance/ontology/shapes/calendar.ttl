@@ -1,0 +1,18 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What a well-formed c:Calendar looks like (ontology/components/calendar.ttl), validated by the
+# component shapes layer like ontology/shapes/components.ttl.
+
+c:CalendarShape a sh:NodeShape ; sh:targetClass c:Calendar ;
+    sh:property [ sh:path c:dayProperty ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A calendar places its items in days by one property (c:dayProperty), whose rdfs:range holds the days." ] ,
+                [ sh:path c:startProperty ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A calendar needs the property that is an item's start, in hours (c:startProperty)." ] ,
+                [ sh:path c:entry ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:durationProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:entryTitle ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:entryDetail ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:fromHour ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ; sh:maxInclusive 23 ] ,
+                [ sh:path c:toHour ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 24 ] .

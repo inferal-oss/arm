@@ -1,0 +1,487 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Data components (DESIGN.md §3): Table, DescriptionList, Stat, Avatar, Timeline and Tree.
+
+# Shared by the data components.
+# c:items (an rdf:List of entries) is shared with the action and disclosure components.
+c:parentProperty a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Hierarchy link: a node's parents are its values of this property, so its children are the subjects that point at it (e.g. rdfs:subClassOf)."@en .
+
+# --- Table: rows from a SELECT, columns declared -----------------------------------------------
+# The rows are the solutions of c:query (a sem:View: sem:select). Columns are c:Column nodes
+# naming a variable. Sorting is graph state on the table (c:sortColumn, c:sortDescending),
+# written by a reaction when a header is clicked; the rule sorts the selected rows. A row's
+# elements are keyed by its content, so re-sorting moves rows without re-rendering them.
+
+c:Table a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Rows of a SPARQL SELECT (c:query, a sem:View with sem:select) under declared columns
+(c:tableColumns, an rdf:List of c:Column). Headers sort: clicking one writes c:sortColumn (and toggles
+c:sortDescending on a second click). c:label names the table; c:emptyText shows when there are no rows;
+c:dataset names a node whose changes mean the rows changed."""@en ;
+    sem:slug "table" .
+c:query a owl:ObjectProperty ; rdfs:subPropertyOf c:dataQuery ; rdfs:range sem:View ;
+    rdfs:comment "The SELECT whose solutions are the rows (sem:select)."@en .
+c:tableColumns a owl:ObjectProperty ; rdfs:domain c:Table ; rdfs:range rdf:List ;
+    rdfs:comment "The columns, in order (c:Column nodes). Not c:columns, which is a c:Grid's column count."@en .
+c:Column a owl:Class ; rdfs:comment "A table column: the SELECT variable it shows (c:variable), a header (c:label), c:align, c:format and c:unit."@en .
+c:variable a owl:DatatypeProperty ; rdfs:domain c:Column ; rdfs:comment "Name of a SELECT variable, without the '?'."@en .
+c:align a owl:DatatypeProperty ; rdfs:domain c:Column ;
+    rdfs:comment "\"end\" aligns the column's cells to the end (numbers); \"start\" (default) or \"center\"."@en .
+c:format a owl:DatatypeProperty ; rdfs:domain c:Column ;
+    rdfs:comment "How cells are written: \"number\" (grouped), \"decimal\" (2 places), \"percent\" (of a fraction), \"code\" (monospace), \"time\" (an xsd:dateTime's clock time). IRIs show their label."@en .
+c:sortColumn a owl:ObjectProperty ; rdfs:domain c:Table ; rdfs:range c:Column ; rdfs:comment "The column the rows are sorted by."@en .
+c:sortDescending a owl:DatatypeProperty ; rdfs:domain c:Table ; rdfs:range xsd:boolean .
+c:sorts a owl:ObjectProperty ; rdfs:comment "On a rendered header: the c:Column that activating it sorts by."@en .
+
+c:TableRendering a sem:Rendering ; sem:targets c:Table ; sem:stratum 0 ; sem:follows c:dataset ;
+    sem:functionOnly "awaits sx:Locale (sx:formatNumber, sx:formatDateTime): numbers and times in the viewer's locale. (Its rows, the result of the SELECT named in c:query, become graph data with the views runtime.)" ;
+    sem:needsExtension sx:Locale .
+c:TableRendering-fn a sem:Rule ; sem:implements c:TableRendering ; sem:function "data:table" .
+
+c:TableSort a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Table ;
+    beh:deletes """CONSTRUCT { $this c:sortColumn ?old . $this c:sortDescending ?desc }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:sorts ?col .
+        { $this c:sortColumn ?old } UNION { $this c:sortDescending ?desc } }""" ;
+    beh:inserts """CONSTRUCT { $this c:sortColumn ?col ; c:sortDescending ?desc }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:sorts ?col .
+        BIND(EXISTS { $this c:sortColumn ?col . FILTER NOT EXISTS { $this c:sortDescending true } } AS ?desc) }""" ;
+    sem:function "data:table-sort" .
+
+# --- DescriptionList: key / value pairs -----------------------------------------------------------
+
+c:DescriptionList a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Key / value pairs as a <dl>: the values of c:fields (properties, labelled by their
+rdfs:label, with their c:unit) on c:of, or explicit c:items (each a c:label and a c:value), or the
+entries of c:of (its c:entryProperty values, each a c:keyProperty / c:valueProperty pair, by
+sem:order: HTTP headers). Instead of c:of it may describe what c:bindProperty of c:bindFrom holds
+(a grid's selection), and c:via takes one hop from there first (an exchange's response)."""@en ;
+    sem:slug "description-list" .
+c:entryProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "A multi-valued property whose values are the pairs to list (e.g. http:headers)."@en .
+c:keyProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "An entry's key (e.g. http:fieldName)."@en .
+c:valueProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "An entry's value (e.g. http:fieldValue)."@en .
+c:DescriptionListRendering a sem:Rendering ; sem:targets c:DescriptionList ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Locale (sx:formatNumber): numeric values are written in the viewer's locale (Intl.NumberFormat)." ;
+    sem:needsExtension sx:Locale .
+c:DescriptionListRendering-fn a sem:Rule ; sem:implements c:DescriptionListRendering ; sem:function "data:description-list" .
+
+# --- Stat: a KPI tile -------------------------------------------------------------------------------
+
+c:Stat a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A key figure: c:label, c:value (numbers are grouped) with c:unit, a signed change
+(c:delta, with c:deltaUnit) shown as a trend arrow toned good or bad (c:lowerIsBetter flips which),
+and c:help."""@en ;
+    sem:slug "stat" .
+c:delta a owl:DatatypeProperty ; rdfs:domain c:Stat ; rdfs:range xsd:decimal ; rdfs:comment "Signed change since the previous period."@en .
+c:deltaUnit a owl:DatatypeProperty ; rdfs:domain c:Stat ; rdfs:comment "Unit of c:delta (e.g. \"%\")."@en .
+c:lowerIsBetter a owl:DatatypeProperty ; rdfs:domain c:Stat ; rdfs:range xsd:boolean ;
+    rdfs:comment "A falling value is good news (latency, errors): the trend's tone flips."@en .
+c:StatRendering a sem:Rendering ; sem:targets c:Stat ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Locale (sx:formatNumber): the value and its change are written in the viewer's locale." ;
+    sem:needsExtension sx:Locale .
+c:StatRendering-fn a sem:Rule ; sem:implements c:StatRendering ; sem:function "data:stat" .
+
+# --- Avatar and AvatarGroup ---------------------------------------------------------------------
+
+c:Avatar a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A person or thing as a round tile: c:image (a URL) or the initials of c:label on a
+background whose hue is derived from the label (the same label always gets the same hue). Sized by sty:size."""@en ;
+    sem:slug "avatar" .
+c:image a owl:DatatypeProperty ; rdfs:range xsd:anyURI ; rdfs:comment "URL of an image."@en .
+c:AvatarRendering a sem:Rendering ; sem:targets c:Avatar ; sem:stratum 0 .
+c:AvatarRendering-fn a sem:Rule ; sem:implements c:AvatarRendering ; sem:function "data:avatar" .
+# Initials: separators collapse to single spaces, then the first letters of the first and
+# last words (or the first two letters of a single word). The hue is the first four hex
+# digits of the label's MD5, modulo 360 (data.ts hueOf).
+c:AvatarRendering-sparql a sem:Rule ;
+    sem:implements c:AvatarRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:style ?style ; rdfhtml:hasChild ?image, ?initials ;
+        rdfhtml:attribute ?role, ?name ; sem:tooltip ?label .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "img" .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?image a rdfhtml:Img ; rdfhtml:src ?src ; rdfhtml:alt "" ; rdfhtml:loading "lazy" .
+  ?initials a rdfhtml:Span ; rdfhtml:attribute ?hidden ; rdfhtml:hasChild ?initialsText .
+  ?hidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?initialsText a rdfhtml:Text ; rdfhtml:data ?letters .
+}
+WHERE {
+  $this a c:Avatar .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  OPTIONAL { $this c:image ?img }
+  BIND(MD5(?label) AS ?h)
+  BIND("0123456789abcdef" AS ?hex)
+  BIND(STRLEN(STRBEFORE(?hex, SUBSTR(?h, 1, 1))) * 4096 + STRLEN(STRBEFORE(?hex, SUBSTR(?h, 2, 1))) * 256
+     + STRLEN(STRBEFORE(?hex, SUBSTR(?h, 3, 1))) * 16 + STRLEN(STRBEFORE(?hex, SUBSTR(?h, 4, 1))) AS ?n)
+  BIND(CONCAT("--avatar-hue: ", STR(?n - 360 * xsd:integer(FLOOR(?n / 360)))) AS ?style)
+  BIND(REPLACE(?label, "[\\\\s_.·-]+", " ") AS ?spaced)
+  BIND(IF(STRSTARTS(?spaced, " "), SUBSTR(?spaced, 2), ?spaced) AS ?trimmed)
+  BIND(IF(STRENDS(?trimmed, " "), SUBSTR(?trimmed, 1, STRLEN(?trimmed) - 1), ?trimmed) AS ?words)
+  BIND(IF(?words = "", "?", UCASE(IF(CONTAINS(?words, " "),
+       CONCAT(SUBSTR(?words, 1, 1), SUBSTR(REPLACE(?words, "^.* ", ""), 1, 1)), SUBSTR(?words, 1, 2)))) AS ?letters)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?name)
+  BIND(IF(BOUND(?img), IRI(CONCAT(STR($this), "/~image")), ?none) AS ?image)
+  BIND(STR(?img) AS ?src)
+  BIND(IF(BOUND(?img), ?none, IRI(CONCAT(STR($this), "/~initials"))) AS ?initials)
+  BIND(IF(BOUND(?img), ?none, IRI(CONCAT(STR($this), "/~initials-aria-hidden"))) AS ?hidden)
+  BIND(IF(BOUND(?img), ?none, IRI(CONCAT(STR($this), "/~initials-text"))) AS ?initialsText)
+}""" .
+c:AvatarRendering-sparql-text a sem:Rule ;
+    sem:implements c:AvatarRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?text .
+}
+WHERE {
+  $this a c:Avatar .
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  OPTIONAL { ?rdfsLabelAt l10n:of $this ; l10n:name ?rdfsLabel }
+  OPTIONAL { $this rdfs:label ?rdfsLabel FILTER(lang(?rdfsLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, ?rdfsLabel, REPLACE(STR($this), "^.*[#/]", ""))) AS ?label)
+  BIND(REPLACE(?label, "[\\\\s_.·-]+", " ") AS ?spaced)
+  BIND(IF(STRSTARTS(?spaced, " "), SUBSTR(?spaced, 2), ?spaced) AS ?trimmed)
+  BIND(IF(STRENDS(?trimmed, " "), SUBSTR(?trimmed, 1, STRLEN(?trimmed) - 1), ?trimmed) AS ?words)
+  BIND(IF(?words = "", "?", UCASE(IF(CONTAINS(?words, " "),
+       CONCAT(SUBSTR(?words, 1, 1), SUBSTR(REPLACE(?words, "^.* ", ""), 1, 1)), SUBSTR(?words, 1, 2)))) AS ?letters)
+  BIND(CONCAT("(", ?letters, ")") AS ?text)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+}""" .
+
+c:AvatarGroup a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Overlapping avatars (c:children); past c:max, the rest are counted in a \"+N\" tile."@en ;
+    sem:slug "avatar-group" .
+c:AvatarGroupRendering a sem:Rendering ; sem:targets c:AvatarGroup ; sem:stratum 0 .
+c:AvatarGroupRendering-fn a sem:Rule ; sem:implements c:AvatarGroupRendering ; sem:function "data:avatar-group" .
+# A member's position is the number of named entries before it in the list (rdf:rest*
+# pairs; the list is short). Members before c:max are shown; the tile names the rest, in
+# order (GROUP_CONCAT over an ordered sub-select).
+c:AvatarGroupRendering-sparql a sem:Rule ;
+    sem:implements c:AvatarGroupRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:attribute ?role, ?name ; rdfhtml:hasChild ?child .
+  ?role a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?a ord:immediatelyPrecedes ?b .
+  ?c ord:immediatelyPrecedes ?d .
+  ?more a rdfhtml:Span ; rdfhtml:class "sem-more" ; rdfhtml:hasChild ?wrap ; rdfhtml:attribute ?moreRole, ?moreName ; sem:tooltip ?tip .
+  ?moreRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "img" .
+  ?moreName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?moreLabel .
+  ?wrap a rdfhtml:Span ; rdfhtml:attribute ?wrapHidden ; rdfhtml:hasChild ?wrapText .
+  ?wrapHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?wrapText a rdfhtml:Text ; rdfhtml:data ?plus .
+}
+WHERE {
+  $this a c:AvatarGroup ; c:children ?list .
+  LATERAL { OPTIONAL { SELECT ?list (COUNT(?m) AS ?n) WHERE { ?list rdf:rest*/rdf:first ?m FILTER(isIRI(?m)) } GROUP BY ?list } }
+  BIND(COALESCE(?n, 0) AS ?count)
+  OPTIONAL { $this c:max ?maxRaw }
+  BIND(COALESCE(xsd:double(STR(?maxRaw)), ?count) AS ?max0)
+  BIND(xsd:integer(FLOOR(IF(?max0 < 1, 1, ?max0))) AS ?max)
+  BIND(IF(?count > ?max, ?count - ?max, 0) AS ?rest)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~more")) AS ?moreNode)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, CONCAT(STR(?count), IF(?count = 1, " member", " members")))) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?role)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?name)
+  LATERAL {
+    {
+      # The shown members; the last one precedes the tile.
+      { SELECT ?list ?member (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?member FILTER(isIRI(?member))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?b FILTER(isIRI(?b))
+        } GROUP BY ?list ?cell ?member }
+      FILTER(?pos < ?max)
+      BIND(?member AS ?child)
+      BIND(IF(?rest > 0 && ?pos = ?max - 1, ?member, ?none) AS ?a)
+      BIND(IF(BOUND(?a), ?moreNode, ?none) AS ?b)
+    } UNION {
+      # Each shown member precedes the next one.
+      { SELECT ?list ?c (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?c FILTER(isIRI(?c))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?b FILTER(isIRI(?b))
+        } GROUP BY ?list ?cell ?c }
+      { SELECT ?list ?d (COUNT(?before) - 1 AS ?next) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?d FILTER(isIRI(?d))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?d }
+      FILTER(?next = ?pos + 1 && ?next < ?max)
+    } UNION {
+      # The "+N" tile, naming the rest.
+      FILTER(?rest > 0)
+      BIND(?moreNode AS ?more)
+      BIND(?moreNode AS ?child)
+      BIND(IRI(CONCAT(STR($this), "/~more-role")) AS ?moreRole)
+      BIND(IRI(CONCAT(STR($this), "/~more-aria-label")) AS ?moreName)
+      BIND(IRI(CONCAT(STR($this), "/~more-text-wrap")) AS ?wrap)
+      BIND(IRI(CONCAT(STR($this), "/~more-text-wrap-aria-hidden")) AS ?wrapHidden)
+      BIND(IRI(CONCAT(STR($this), "/~more-text")) AS ?wrapText)
+      BIND(CONCAT("+", STR(?rest)) AS ?plus)
+      BIND(CONCAT(STR(?rest), " more") AS ?moreLabel)
+      { SELECT ?list ?max (GROUP_CONCAT(?memberLabel; separator=", ") AS ?tip) WHERE {
+          { SELECT ?list ?max ?pos ?memberLabel WHERE {
+              { SELECT ?list ?member (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?member FILTER(isIRI(?member))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?b FILTER(isIRI(?b))
+        } GROUP BY ?list ?cell ?member }
+              FILTER(?pos >= ?max)
+              OPTIONAL { ?member l10n:label ?memberLocal }
+              OPTIONAL { ?memberRawAt l10n:of ?member ; l10n:label ?memberRaw }
+  OPTIONAL { ?member c:label ?memberRaw FILTER(lang(?memberRaw) = "") }
+              OPTIONAL { ?memberRdfsAt l10n:of ?member ; l10n:name ?memberRdfs }
+  OPTIONAL { ?member rdfs:label ?memberRdfs FILTER(lang(?memberRdfs) = "") }
+              BIND(STR(COALESCE(?memberLocal, ?memberRaw, ?memberRdfs, REPLACE(STR(?member), "^.*[#/]", ""))) AS ?memberLabel)
+            } ORDER BY ?pos }
+        } GROUP BY ?list ?max }
+    }
+  }
+}""" .
+c:AvatarGroupRendering-sparql-text a sem:Rule ;
+    sem:implements c:AvatarGroupRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?child .
+  ?a ord:immediatelyPrecedes ?b .
+  ?c ord:immediatelyPrecedes ?d .
+  ?more a rdfhtml:Text ; rdfhtml:data ?plus .
+}
+WHERE {
+  $this a c:AvatarGroup ; c:children ?list .
+  LATERAL { OPTIONAL { SELECT ?list (COUNT(?m) AS ?n) WHERE { ?list rdf:rest*/rdf:first ?m FILTER(isIRI(?m)) } GROUP BY ?list } }
+  BIND(COALESCE(?n, 0) AS ?count)
+  OPTIONAL { $this c:max ?maxRaw }
+  BIND(COALESCE(xsd:double(STR(?maxRaw)), ?count) AS ?max0)
+  BIND(xsd:integer(FLOOR(IF(?max0 < 1, 1, ?max0))) AS ?max)
+  BIND(IF(?count > ?max, ?count - ?max, 0) AS ?rest)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~more")) AS ?moreNode)
+  LATERAL {
+    {
+      # The shown members; the last one precedes the tile.
+      { SELECT ?list ?member (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?member FILTER(isIRI(?member))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?b FILTER(isIRI(?b))
+        } GROUP BY ?list ?cell ?member }
+      FILTER(?pos < ?max)
+      BIND(?member AS ?child)
+      BIND(IF(?rest > 0 && ?pos = ?max - 1, ?member, ?none) AS ?a)
+      BIND(IF(BOUND(?a), ?moreNode, ?none) AS ?b)
+    } UNION {
+      # Each shown member precedes the next one.
+      { SELECT ?list ?c (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?c FILTER(isIRI(?c))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?b FILTER(isIRI(?b))
+        } GROUP BY ?list ?cell ?c }
+      { SELECT ?list ?d (COUNT(?before) - 1 AS ?next) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?d FILTER(isIRI(?d))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?d }
+      FILTER(?next = ?pos + 1 && ?next < ?max)
+    } UNION {
+      FILTER(?rest > 0)
+      BIND(?moreNode AS ?more)
+      BIND(?moreNode AS ?child)
+      BIND(CONCAT(" +", STR(?rest)) AS ?plus)
+    }
+  }
+}""" .
+
+# --- Timeline: the newest members of an event stream ------------------------------------------------
+# Read from the stream's head (beh:latest, then beh:previous), c:limit steps. One c:TimelineItem
+# is minted per member and keyed by it; members are immutable, so each is rendered once.
+
+c:Timeline a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A vertical list of the newest events of a stream (c:of an ldes:EventStream that names its
+head, beh:latest / beh:previous), newest first, at most c:limit (default 8): when (beh:at), what (the
+event's class) and on what (beh:target)."""@en ;
+    sem:slug "timeline" .
+c:TimelineItem a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: one event (c:of) of a c:Timeline."@en ;
+    sem:slug "timeline-item" .
+c:TimelineRendering a sem:Rendering ; sem:targets c:Timeline ; sem:stratum 0 ; sem:follows c:of .
+c:TimelineRendering-fn a sem:Rule ; sem:implements c:TimelineRendering ; sem:function "data:timeline" .
+# The members linked back from the head are the stream's members (retired ones lose their
+# triples), so walking c:limit steps back from beh:latest is taking the c:limit members of
+# highest beh:sequence: the 50 newest are sorted once, and each is ranked among them.
+c:TimelineRendering-sparql a sem:Rule ;
+    sem:implements c:TimelineRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a ?tag ; sem:renders $this ; rdfhtml:class ?emptyClass ; rdfhtml:hasChild ?child ; rdfhtml:attribute ?name .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?item a c:TimelineItem ; c:of ?m .
+  ?a ord:immediatelyPrecedes ?b .
+  ?empty a rdfhtml:Text ; rdfhtml:data ?emptyText .
+}
+WHERE {
+  $this a c:Timeline ; c:of ?stream . FILTER(isIRI(?stream))
+  OPTIONAL { $this c:limit ?limitRaw }
+  BIND(COALESCE(xsd:double(STR(?limitRaw)), 8) AS ?limit0)
+  BIND(IF(?limit0 < 1, 1, IF(?limit0 > 50, 50, ?limit0)) AS ?limit)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(EXISTS { ?stream beh:latest ?head . ?head a ?headType } AS ?any)
+  LATERAL {
+    {
+      FILTER(!?any)
+      BIND(rdfhtml:P AS ?tag)
+      BIND("sem-empty" AS ?emptyClass)
+      BIND(IRI(CONCAT(STR($this), "/~empty")) AS ?empty)
+      BIND(?empty AS ?child)
+      OPTIONAL { ?rawEmptyAt l10n:of $this ; l10n:emptyText ?rawEmpty }
+  OPTIONAL { $this c:emptyText ?rawEmpty FILTER(lang(?rawEmpty) = "") }
+      BIND(STR(COALESCE(?rawEmpty, "No events yet.")) AS ?emptyText)
+    } UNION {
+      FILTER(?any)
+      BIND(rdfhtml:Ol AS ?tag)
+      BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?name)
+      OPTIONAL { $this l10n:label ?localLabel }
+      OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+      OPTIONAL { ?streamLabelAt l10n:of ?stream ; l10n:label ?streamLabel }
+  OPTIONAL { ?stream c:label ?streamLabel FILTER(lang(?streamLabel) = "") }
+      OPTIONAL { ?streamRdfsAt l10n:of ?stream ; l10n:name ?streamRdfs }
+  OPTIONAL { ?stream rdfs:label ?streamRdfs FILTER(lang(?streamRdfs) = "") }
+      BIND(STR(COALESCE(?localLabel, ?rawLabel, ?streamLabel, ?streamRdfs, REPLACE(STR(?stream), "^.*[#/]", ""))) AS ?label)
+    } UNION {
+      FILTER(?any)
+      { SELECT ?stream ?m (COUNT(?newer) AS ?rank) WHERE {
+          { SELECT ?stream ?m ?s WHERE { ?stream tree:member ?m . ?m beh:sequence ?s } ORDER BY DESC(?s) LIMIT 50 }
+          { SELECT ?stream ?newer ?t WHERE { ?stream tree:member ?newer . ?newer beh:sequence ?t } ORDER BY DESC(?t) LIMIT 50 }
+          FILTER(?t >= ?s)
+        } GROUP BY ?stream ?m }
+      FILTER(?rank <= ?limit)
+      BIND(IRI(CONCAT(STR($this), "/~e-", SUBSTR(MD5(STR(?m)), 1, 8))) AS ?item)
+      BIND(?item AS ?child)
+      OPTIONAL { ?m beh:previous ?older . ?stream tree:member ?older }
+      BIND(IF(BOUND(?older) && ?rank < ?limit, ?item, ?none) AS ?a)
+      BIND(IF(BOUND(?a), IRI(CONCAT(STR($this), "/~e-", SUBSTR(MD5(STR(?older)), 1, 8))), ?none) AS ?b)
+    }
+  }
+}""" .
+c:TimelineRendering-sparql-text a sem:Rule ;
+    sem:implements c:TimelineRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:class ?emptyClass ; rdfhtml:hasChild ?child .
+  ?item a c:TimelineItem ; c:of ?m .
+  ?a ord:immediatelyPrecedes ?b .
+  ?empty a rdfhtml:Text ; rdfhtml:data ?emptyText .
+}
+WHERE {
+  $this a c:Timeline ; c:of ?stream . FILTER(isIRI(?stream))
+  OPTIONAL { $this c:limit ?limitRaw }
+  BIND(COALESCE(xsd:double(STR(?limitRaw)), 8) AS ?limit0)
+  BIND(IF(?limit0 < 1, 1, IF(?limit0 > 50, 50, ?limit0)) AS ?limit)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(EXISTS { ?stream beh:latest ?head . ?head a ?headType } AS ?any)
+  LATERAL {
+    {
+      FILTER(!?any)
+      BIND("sem-empty" AS ?emptyClass)
+      BIND(IRI(CONCAT(STR($this), "/~empty")) AS ?empty)
+      BIND(?empty AS ?child)
+      OPTIONAL { ?rawEmptyAt l10n:of $this ; l10n:emptyText ?rawEmpty }
+  OPTIONAL { $this c:emptyText ?rawEmpty FILTER(lang(?rawEmpty) = "") }
+      BIND(STR(COALESCE(?rawEmpty, "No events yet.")) AS ?emptyText)
+    } UNION {
+      FILTER(?any)
+      { SELECT ?stream ?m (COUNT(?newer) AS ?rank) WHERE {
+          { SELECT ?stream ?m ?s WHERE { ?stream tree:member ?m . ?m beh:sequence ?s } ORDER BY DESC(?s) LIMIT 50 }
+          { SELECT ?stream ?newer ?t WHERE { ?stream tree:member ?newer . ?newer beh:sequence ?t } ORDER BY DESC(?t) LIMIT 50 }
+          FILTER(?t >= ?s)
+        } GROUP BY ?stream ?m }
+      FILTER(?rank <= ?limit)
+      BIND(IRI(CONCAT(STR($this), "/~e-", SUBSTR(MD5(STR(?m)), 1, 8))) AS ?item)
+      BIND(?item AS ?child)
+      OPTIONAL { ?m beh:previous ?older . ?stream tree:member ?older }
+      BIND(IF(BOUND(?older) && ?rank < ?limit, ?item, ?none) AS ?a)
+      BIND(IF(BOUND(?a), IRI(CONCAT(STR($this), "/~e-", SUBSTR(MD5(STR(?older)), 1, 8))), ?none) AS ?b)
+    }
+  }
+}""" .
+c:TimelineItemRendering a sem:Rendering ; sem:targets c:TimelineItem ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Locale (sx:formatDateTime): the event's clock time in the viewer's time zone and locale." ;
+    sem:needsExtension sx:Locale .
+c:TimelineItemRendering-fn a sem:Rule ; sem:implements c:TimelineItemRendering ; sem:function "data:timeline-item" .
+
+# --- Tree: an expandable hierarchy ----------------------------------------------------------------
+# The tree starts at c:of; a node's children are the subjects whose c:parentProperty is the node
+# (for rdfs:subClassOf: its direct subclasses). Which nodes are open is graph state on the tree
+# (c:expandedNode), toggled by a reaction on the twisty. With c:controls and c:property, a node's label
+# selects it: clicking writes `<controls> <property> <node>`, and that node is aria-selected.
+
+c:Tree a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """An expandable tree (role=tree) of a hierarchy: c:of is the root; children are the subjects
+pointing at a node through c:parentProperty. c:expandedNode lists the open nodes; the twisty toggles one.
+c:detailProperty is shown beside each label. With c:controls and c:property, clicking a label selects it.
+A tree that is a dnd:DropTarget receives drops into its nodes: each node's row is a zone whose
+receptacle is the node."""@en ;
+    sem:slug "tree" .
+c:expandedNode a owl:ObjectProperty ; rdfs:domain c:Tree ;
+    rdfs:comment "A node whose children are shown (c:expanded is a disclosure's own boolean)."@en .
+c:detailProperty a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "A property whose value is shown beside each node's label."@en .
+c:expands a owl:ObjectProperty ; rdfs:comment "On a rendered twisty: the tree node that activating it opens or closes."@en .
+
+c:TreeRendering a sem:Rendering ; sem:targets c:Tree ; sem:stratum 0 ;
+    sem:needsExtension sx:Locale ;
+    sem:functionOnly """awaits sx:Locale (sx:collated, or sx:sortKey for sem:orderKey): siblings sort in the viewer's collation
+(localeCompare), which no SPARQL (1.1 or 1.2) function gives. The walk itself needs no extension: per-tree step edges
+along c:parentProperty, as c:BreadcrumbSteps mints them, and items keyed by their path, which a building block can mint
+level by level for the open nodes.""" .
+c:TreeRendering-fn a sem:Rule ; sem:implements c:TreeRendering ; sem:function "data:tree" .
+
+c:TreeToggle a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Tree ;
+    beh:deletes """CONSTRUCT { $this c:expandedNode ?node }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:expands ?node . $this c:expandedNode ?node }""" ;
+    beh:inserts """CONSTRUCT { $this c:expandedNode ?node }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:expands ?node . FILTER NOT EXISTS { $this c:expandedNode ?node } }""" ;
+    sem:function "data:tree-toggle" .
+
+c:TreeSelect a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Tree ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?node . $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?node } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?node . $this c:controls ?target ; c:property ?p }""" ;
+    sem:function "segmented:select" .

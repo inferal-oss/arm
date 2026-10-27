@@ -1,0 +1,20 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# Well-formed message threads, and counts on navigation options (validated by the component shapes layer).
+
+c:MessageListShape a sh:NodeShape ; sh:targetClass c:MessageList ;
+    sh:property [ sh:path c:item ; sh:nodeKind sh:IRI ;
+                  sh:message "A thread's messages (c:item) are nodes; use as:content for text or c:content for a component body." ] ,
+                [ sh:path c:viewer ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A thread is read by one person (c:viewer)." ] .
+
+c:SegmentedCountsShape a sh:NodeShape ; sh:targetClass c:Segmented ;
+    sh:property [ sh:path c:countProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "Options show one count (c:countProperty, a property of the options)." ] .

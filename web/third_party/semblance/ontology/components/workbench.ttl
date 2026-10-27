@@ -1,0 +1,645 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# The SPARQL workbench: an editor, sample queries, and results as a table, a graph and Turtle.
+#
+# Everything is graph state. The editor's text is its c:value and its caret c:caret, written by
+# the input reaction on every keystroke; that re-renders the editor (its highlighted lines and
+# suggestions) and nothing else. Running copies the text into the query node the results show
+# (c:runs, a sem:Query with sem:select or sem:construct) and counts the run (c:runCount), so
+# the results change only when a query is run - unless the workbench follows updates
+# (c:followUpdates true): then they follow the triples the query reads, re-run at most once a
+# frame when one of them changes, and a live indicator says so. The results are ordinary views of that node,
+# usually the panels of a c:Tabs. Autocompletion comes from the graph too: SPARQL's words are
+# individuals of c:SparqlWord, and the terms are every class and property the store declares,
+# named with the prefixes it knows.
+
+# --- the workbench ----------------------------------------------------------------------------------
+
+c:QueryWorkbench a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "SPARQL workbench"@en , "Робоче місце SPARQL"@uk , "SPARQL-Werkbank"@de , "منضدة SPARQL"@ar ;
+    rdfs:comment """A place to write and run SPARQL over the live graph: sample queries (c:samples, sem:Query
+nodes with rdfs:label and rdfs:comment), an editor (c:editor, a c:QueryEditor), header components
+(c:actions, e.g. a c:RunQueryButton), the query last run (c:runs) and its results (c:results, e.g. a
+c:Tabs of c:QueryResultView panels). Picking a sample loads it into the editor, runs it and shows
+its c:resultTab. The sample whose text was run last is shown pressed. With c:followUpdates true
+(e.g. a c:ToggleSwitch among its actions), the results follow what the query reads, and a
+c:LiveIndicator in the toolbar shows that they are live."""@en ;
+    sem:slug "query-workbench" .
+c:editor a owl:ObjectProperty ; rdfs:domain c:QueryWorkbench ; rdfs:range c:QueryEditor ;
+    rdfs:comment "The editor whose text a run executes."@en .
+c:results a owl:ObjectProperty ; rdfs:domain c:QueryWorkbench ; rdfs:range sem:Component ;
+    rdfs:comment "The component showing the results of the query last run (a c:Tabs of result views)."@en .
+c:runs a owl:ObjectProperty ; rdfs:domain c:QueryWorkbench ; rdfs:range sem:Query ;
+    rdfs:comment "The query node a run writes: its sem:select or sem:construct is what was executed."@en .
+c:samples a owl:ObjectProperty ; rdfs:domain c:QueryWorkbench ; rdfs:range rdf:List ;
+    rdfs:comment "Sample queries (sem:Query), in order."@en .
+c:resultTab a owl:ObjectProperty ; rdfs:domain sem:Query ; rdfs:range c:Tab ;
+    rdfs:comment "On a sample: the results tab that shows it best (selected when it is loaded)."@en .
+c:runCount a owl:DatatypeProperty ; rdfs:domain sem:Query ; rdfs:range xsd:integer ;
+    rdfs:comment "How many times the query was run: running the same text again re-evaluates its views."@en .
+c:followUpdates a owl:DatatypeProperty ; rdfs:range xsd:boolean ;
+    rdfs:label "Follow updates"@en , "Стежити за змінами"@uk , "Änderungen folgen"@de , "متابعة التحديثات"@ar ;
+    rdfs:comment """On a c:QueryWorkbench (or one c:QueryResultView): whether the results of the query it runs
+follow the graph. True: each view depends on the triples its query reads (its triple patterns,
+with the IRIs they name) and is re-run, at most once a frame, when one of them changes; changes
+to anything else re-run nothing. False or absent: the results stay as of the last run."""@en .
+c:loads a owl:ObjectProperty ; rdfs:range sem:Query ;
+    rdfs:comment "On a rendered element: the sample query that activating it loads and runs."@en .
+
+c:QueryWorkbenchRendering a sem:Rendering ; sem:targets c:QueryWorkbench ; sem:stratum 0 ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it names each sample's query form, found by tokenizing past the prologue (comments, PREFIX and BASE), which REGEX alone only approximates." ;
+    sem:needsExtension sx:Matches .
+c:QueryWorkbenchRendering-fn a sem:Rule ; sem:implements c:QueryWorkbenchRendering ; sem:function "workbench:workbench" .
+
+# Arrow keys move between the samples (focus only; Enter or Space loads one).
+c:SampleNavigation a key:Navigation ; key:items ".sem-sample-list > button" ; key:orientation key:Horizontal ; key:wrap true .
+c:QueryWorkbench key:navigation c:SampleNavigation .
+
+c:LoadSample a beh:Reaction ;
+    rdfs:label "Load a sample query"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:QueryWorkbench ;
+    beh:deletes """
+CONSTRUCT {
+  ?editor c:value ?value ; c:caret ?caret ; c:suggesting ?suggesting ; c:activeSuggestion ?active .
+  ?query sem:select ?select ; sem:construct ?construct ; c:runCount ?runs .
+  ?results c:selected ?tab .
+  ?graph c:selectedTerm ?term .
+}
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:loads ?sample .
+  $this c:editor ?editor ; c:runs ?query .
+  { ?editor c:value ?value } UNION { ?editor c:caret ?caret } UNION { ?editor c:suggesting ?suggesting }
+  UNION { ?editor c:activeSuggestion ?active } UNION { ?query sem:select ?select } UNION { ?query sem:construct ?construct }
+  UNION { ?query c:runCount ?runs }
+  UNION { ?sample c:resultTab ?want . $this c:results ?results . ?results c:selected ?tab }
+  # A new run's graph may not have the selected node: the selection goes with the old results.
+  UNION { ?graph c:of ?query ; c:selectedTerm ?term }
+}""" ;
+    beh:inserts """
+CONSTRUCT {
+  ?editor c:value ?text ; c:caret ?caret .
+  ?query ?form ?text ; c:runCount ?next .
+  ?results c:selected ?want .
+}
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:loads ?sample .
+  $this c:editor ?editor ; c:runs ?query .
+  VALUES ?form { sem:select sem:construct }
+  ?sample ?form ?text .
+  BIND(STRLEN(?text) AS ?caret)
+  OPTIONAL { ?query c:runCount ?runs }
+  BIND(COALESCE(?runs, 0) + 1 AS ?next)
+  OPTIONAL { ?sample c:resultTab ?want . $this c:results ?results }
+}""" ;
+    sem:function "workbench:load" .
+
+# --- running ------------------------------------------------------------------------------------------
+
+c:RunQueryButton a owl:Class ;
+    rdfs:subClassOf c:Button ;
+    rdfs:comment """A button that runs the editor's text of a c:QueryWorkbench (c:of): the text goes to the
+workbench's query node (c:runs) as sem:construct when it is a CONSTRUCT or DESCRIBE, else as
+sem:select, and the run is counted (c:runCount). Give it a key:shortcut (mod+enter) to run from the
+editor. Type instances c:Button too: SPARQL renderings match asserted classes only."""@en ;
+    sem:slug "run-query-button" .
+
+# The query form is found past the prologue: whitespace, comments, PREFIX and BASE declarations.
+# The same pattern is used by the function variant (src/components/workbench.ts, CONSTRUCT_FORM).
+c:RunQuery a beh:Reaction ;
+    rdfs:label "Run the query"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:RunQueryButton ;
+    beh:deletes """
+CONSTRUCT {
+  ?query sem:select ?select ; sem:construct ?construct ; c:runCount ?runs .
+  ?editor c:suggesting ?suggesting ; c:activeSuggestion ?active .
+  ?graph c:selectedTerm ?term .
+}
+WHERE {
+  $this c:of ?workbench . ?workbench c:runs ?query ; c:editor ?editor .
+  { ?query sem:select ?select } UNION { ?query sem:construct ?construct } UNION { ?query c:runCount ?runs }
+  UNION { ?editor c:suggesting ?suggesting } UNION { ?editor c:activeSuggestion ?active }
+  UNION { ?graph c:of ?query ; c:selectedTerm ?term }
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?query ?form ?text ; c:runCount ?next }
+WHERE {
+  $this c:of ?workbench . ?workbench c:runs ?query ; c:editor ?editor .
+  OPTIONAL { ?editor c:value ?value }
+  BIND(COALESCE(?value, "") AS ?text)
+  BIND(IF(REGEX(?text, "^(?:[ \\t\\r\\n]+|#[^\\n]*|PREFIX[ \\t\\r\\n]+[A-Za-z0-9_.-]*:[ \\t\\r\\n]*<[^>]*>|BASE[ \\t\\r\\n]*<[^>]*>)*(?:CONSTRUCT|DESCRIBE)", "i"), sem:construct, sem:select) AS ?form)
+  OPTIONAL { ?query c:runCount ?runs }
+  BIND(COALESCE(?runs, 0) + 1 AS ?next)
+}""" ;
+    sem:function "workbench:run" .
+
+# Following updates, the query is a maintained view (docs/IVM.md, iv:): the switch over a workbench's
+# c:followUpdates also types the query it runs as an iv:View - its rows a result set the result views
+# read (iv:ResultSet: a CONSTRUCT's triples are never written, so a typed query cannot become input),
+# measured, a fallback to recompute expected (iv:Auto) - and the plan the runtime writes for it is
+# what the Plan tab shows. Off again, it is a plain query. Every reaction sees the state before the
+# click: on (true now) means the switch is turning it off.
+c:FollowAsView a beh:Reaction ;
+    rdfs:label "Maintain the query as a view while the results follow updates"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:ToggleSwitch ;
+    beh:deletes """CONSTRUCT { ?query a iv:View ; iv:materialize iv:ResultSet ; iv:strategy iv:Auto ; iv:measured true } WHERE {
+  $event beh:node ?hit . ?t rdfhtml:hasChild* ?hit . ?t c:toggles $this .
+  FILTER NOT EXISTS { $this c:disabled true }
+  $this c:controls ?bench ; c:property c:followUpdates . ?bench a c:QueryWorkbench ; c:runs ?query .
+  ?bench c:followUpdates ?on FILTER(STR(?on) = "true") }""" ;
+    beh:inserts """CONSTRUCT { ?query a iv:View ; iv:materialize iv:ResultSet ; iv:strategy iv:Auto ; iv:measured true } WHERE {
+  $event beh:node ?hit . ?t rdfhtml:hasChild* ?hit . ?t c:toggles $this .
+  FILTER NOT EXISTS { $this c:disabled true }
+  $this c:controls ?bench ; c:property c:followUpdates . ?bench a c:QueryWorkbench ; c:runs ?query .
+  FILTER NOT EXISTS { ?bench c:followUpdates ?on FILTER(STR(?on) = "true") } }""" ;
+    sem:function "workbench:follow-as-view" .
+# The toolbar's live indicator stops following too: the same, from it.
+c:FollowAsViewLive a beh:Reaction ;
+    rdfs:label "Stop maintaining the query as a view when the live indicator stops following"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:LiveIndicator ;
+    beh:deletes """CONSTRUCT { ?query a iv:View ; iv:materialize iv:ResultSet ; iv:strategy iv:Auto ; iv:measured true } WHERE {
+  $event beh:node ?hit . ?t rdfhtml:hasChild* ?hit . ?t c:toggles $this .
+  FILTER NOT EXISTS { $this c:disabled true }
+  $this c:controls ?bench ; c:property c:followUpdates . ?bench a c:QueryWorkbench ; c:runs ?query .
+  ?bench c:followUpdates ?on FILTER(STR(?on) = "true") }""" ;
+    beh:inserts """CONSTRUCT { ?query a iv:View ; iv:materialize iv:ResultSet ; iv:strategy iv:Auto ; iv:measured true } WHERE {
+  $event beh:node ?hit . ?t rdfhtml:hasChild* ?hit . ?t c:toggles $this .
+  FILTER NOT EXISTS { $this c:disabled true }
+  $this c:controls ?bench ; c:property c:followUpdates . ?bench a c:QueryWorkbench ; c:runs ?query .
+  FILTER NOT EXISTS { ?bench c:followUpdates ?on FILTER(STR(?on) = "true") } }""" ;
+    sem:function "workbench:follow-as-view" .
+
+# --- the editor -----------------------------------------------------------------------------------------
+# The workbench's editor is a code editor (c:CodeEditor, ontology/components/editor.ttl) in SPARQL.
+
+c:QueryEditor a owl:Class ;
+    rdfs:subClassOf c:CodeEditor ;
+    rdfs:label "SPARQL editor"@en , "Редактор SPARQL"@uk , "SPARQL-Editor"@de , "محرر SPARQL"@ar ;
+    rdfs:comment """A c:CodeEditor whose language is SPARQL (unless c:language says otherwise): SPARQL's
+words (c:SparqlWord) are highlighted and suggested beside the prefixes and terms, and so are the
+query's variables after ? or $."""@en ;
+    sem:slug "query-editor" .
+
+# --- SPARQL's own words (c:CodeWord, ontology/components/editor.ttl) ------------------------------------------------------------------------------------
+# Highlighted as keywords (in any case) and offered as completions. A c:SparqlWord's rdfs:label is
+# how it is written; its rdfs:comment is shown beside the suggestion.
+
+c:SparqlWord a owl:Class ; rdfs:subClassOf c:CodeWord ; c:language "sparql" ; rdfs:comment "A word of the SPARQL 1.1 language."@en .
+c:SparqlKeyword a owl:Class ; rdfs:subClassOf c:SparqlWord , c:CodeKeyword ; rdfs:comment "A SPARQL keyword: a query form, clause or modifier."@en .
+c:SparqlFunction a owl:Class ; rdfs:subClassOf c:SparqlWord , c:CodeFunction ; rdfs:comment "A SPARQL built-in function or aggregate."@en .
+
+c:kw-select a c:SparqlKeyword ; rdfs:label "SELECT" ; rdfs:comment "Query form: a table of variable bindings."@en .
+c:kw-construct a c:SparqlKeyword ; rdfs:label "CONSTRUCT" ; rdfs:comment "Query form: a graph built from a template."@en .
+c:kw-describe a c:SparqlKeyword ; rdfs:label "DESCRIBE" ; rdfs:comment "Query form: a graph about the resources found."@en .
+c:kw-ask a c:SparqlKeyword ; rdfs:label "ASK" ; rdfs:comment "Query form: whether the pattern has a match."@en .
+c:kw-where a c:SparqlKeyword ; rdfs:label "WHERE" ; rdfs:comment "The graph pattern to match."@en .
+c:kw-prefix a c:SparqlKeyword ; rdfs:label "PREFIX" ; rdfs:comment "Declares a prefix for IRIs."@en .
+c:kw-base a c:SparqlKeyword ; rdfs:label "BASE" ; rdfs:comment "Declares the base IRI for relative IRIs."@en .
+c:kw-distinct a c:SparqlKeyword ; rdfs:label "DISTINCT" ; rdfs:comment "Drops duplicate solutions."@en .
+c:kw-reduced a c:SparqlKeyword ; rdfs:label "REDUCED" ; rdfs:comment "Permits dropping duplicate solutions."@en .
+c:kw-from a c:SparqlKeyword ; rdfs:label "FROM" ; rdfs:comment "Names a graph for the default graph."@en .
+c:kw-named a c:SparqlKeyword ; rdfs:label "NAMED" ; rdfs:comment "With FROM: a named graph to query."@en .
+c:kw-graph a c:SparqlKeyword ; rdfs:label "GRAPH" ; rdfs:comment "Matches a pattern in a named graph."@en .
+c:kw-optional a c:SparqlKeyword ; rdfs:label "OPTIONAL" ; rdfs:comment "A pattern that may or may not match."@en .
+c:kw-filter a c:SparqlKeyword ; rdfs:label "FILTER" ; rdfs:comment "Keeps the solutions for which an expression is true."@en .
+c:kw-bind a c:SparqlKeyword ; rdfs:label "BIND" ; rdfs:comment "Assigns an expression's value to a variable."@en .
+c:kw-as a c:SparqlKeyword ; rdfs:label "AS" ; rdfs:comment "Names a computed value."@en .
+c:kw-union a c:SparqlKeyword ; rdfs:label "UNION" ; rdfs:comment "Solutions of either pattern."@en .
+c:kw-minus a c:SparqlKeyword ; rdfs:label "MINUS" ; rdfs:comment "Removes solutions compatible with a pattern."@en .
+c:kw-values a c:SparqlKeyword ; rdfs:label "VALUES" ; rdfs:comment "Inline data: a table of bindings."@en .
+c:kw-service a c:SparqlKeyword ; rdfs:label "SERVICE" ; rdfs:comment "Matches a pattern at a remote endpoint."@en .
+c:kw-group-by a c:SparqlKeyword ; rdfs:label "GROUP BY" ; rdfs:comment "Groups solutions for aggregates."@en .
+c:kw-having a c:SparqlKeyword ; rdfs:label "HAVING" ; rdfs:comment "Filters groups."@en .
+c:kw-order-by a c:SparqlKeyword ; rdfs:label "ORDER BY" ; rdfs:comment "Sorts the solutions."@en .
+c:kw-asc a c:SparqlKeyword ; rdfs:label "ASC" ; rdfs:comment "Ascending order."@en .
+c:kw-desc a c:SparqlKeyword ; rdfs:label "DESC" ; rdfs:comment "Descending order."@en .
+c:kw-limit a c:SparqlKeyword ; rdfs:label "LIMIT" ; rdfs:comment "At most this many solutions."@en .
+c:kw-offset a c:SparqlKeyword ; rdfs:label "OFFSET" ; rdfs:comment "Skips this many solutions."@en .
+c:kw-exists a c:SparqlKeyword ; rdfs:label "EXISTS" ; rdfs:comment "Whether a pattern matches (in a FILTER)."@en .
+c:kw-not a c:SparqlKeyword ; rdfs:label "NOT" ; rdfs:comment "With EXISTS or IN: the negation."@en .
+c:kw-in a c:SparqlKeyword ; rdfs:label "IN" ; rdfs:comment "Whether a value is one of a list."@en .
+c:kw-undef a c:SparqlKeyword ; rdfs:label "UNDEF" ; rdfs:comment "In VALUES: no binding."@en .
+c:kw-lateral a c:SparqlKeyword ; rdfs:label "LATERAL" ; rdfs:comment "Evaluates a pattern once per solution (SPARQL 1.2 draft; Oxigraph)."@en .
+c:kw-true a c:SparqlKeyword ; rdfs:label "true" ; rdfs:comment "The boolean true."@en .
+c:kw-false a c:SparqlKeyword ; rdfs:label "false" ; rdfs:comment "The boolean false."@en .
+
+c:fn-count a c:SparqlFunction ; rdfs:label "COUNT" ; rdfs:comment "Aggregate: the number of values."@en .
+c:fn-sum a c:SparqlFunction ; rdfs:label "SUM" ; rdfs:comment "Aggregate: the sum of the values."@en .
+c:fn-min a c:SparqlFunction ; rdfs:label "MIN" ; rdfs:comment "Aggregate: the least value."@en .
+c:fn-max a c:SparqlFunction ; rdfs:label "MAX" ; rdfs:comment "Aggregate: the greatest value."@en .
+c:fn-avg a c:SparqlFunction ; rdfs:label "AVG" ; rdfs:comment "Aggregate: the mean."@en .
+c:fn-sample a c:SparqlFunction ; rdfs:label "SAMPLE" ; rdfs:comment "Aggregate: any one value."@en .
+c:fn-group-concat a c:SparqlFunction ; rdfs:label "GROUP_CONCAT" ; rdfs:comment "Aggregate: the values joined (SEPARATOR)."@en .
+c:fn-str a c:SparqlFunction ; rdfs:label "STR" ; rdfs:comment "The lexical form of a literal or an IRI."@en .
+c:fn-lang a c:SparqlFunction ; rdfs:label "LANG" ; rdfs:comment "A literal's language tag."@en .
+c:fn-langmatches a c:SparqlFunction ; rdfs:label "LANGMATCHES" ; rdfs:comment "Whether a language tag matches a range."@en .
+c:fn-datatype a c:SparqlFunction ; rdfs:label "DATATYPE" ; rdfs:comment "A literal's datatype IRI."@en .
+c:fn-iri a c:SparqlFunction ; rdfs:label "IRI" ; rdfs:comment "An IRI from a string."@en .
+c:fn-bnode a c:SparqlFunction ; rdfs:label "BNODE" ; rdfs:comment "A fresh blank node."@en .
+c:fn-strlen a c:SparqlFunction ; rdfs:label "STRLEN" ; rdfs:comment "The length of a string."@en .
+c:fn-substr a c:SparqlFunction ; rdfs:label "SUBSTR" ; rdfs:comment "Part of a string (1-based)."@en .
+c:fn-ucase a c:SparqlFunction ; rdfs:label "UCASE" ; rdfs:comment "Upper case."@en .
+c:fn-lcase a c:SparqlFunction ; rdfs:label "LCASE" ; rdfs:comment "Lower case."@en .
+c:fn-strstarts a c:SparqlFunction ; rdfs:label "STRSTARTS" ; rdfs:comment "Whether a string starts with another."@en .
+c:fn-strends a c:SparqlFunction ; rdfs:label "STRENDS" ; rdfs:comment "Whether a string ends with another."@en .
+c:fn-contains a c:SparqlFunction ; rdfs:label "CONTAINS" ; rdfs:comment "Whether a string contains another."@en .
+c:fn-strbefore a c:SparqlFunction ; rdfs:label "STRBEFORE" ; rdfs:comment "The part of a string before another."@en .
+c:fn-strafter a c:SparqlFunction ; rdfs:label "STRAFTER" ; rdfs:comment "The part of a string after another."@en .
+c:fn-concat a c:SparqlFunction ; rdfs:label "CONCAT" ; rdfs:comment "Strings joined."@en .
+c:fn-replace a c:SparqlFunction ; rdfs:label "REPLACE" ; rdfs:comment "A string with a pattern's matches replaced."@en .
+c:fn-regex a c:SparqlFunction ; rdfs:label "REGEX" ; rdfs:comment "Whether a string matches a pattern."@en .
+c:fn-encode-for-uri a c:SparqlFunction ; rdfs:label "ENCODE_FOR_URI" ; rdfs:comment "A string percent-encoded."@en .
+c:fn-abs a c:SparqlFunction ; rdfs:label "ABS" ; rdfs:comment "The absolute value."@en .
+c:fn-round a c:SparqlFunction ; rdfs:label "ROUND" ; rdfs:comment "The nearest integer."@en .
+c:fn-ceil a c:SparqlFunction ; rdfs:label "CEIL" ; rdfs:comment "Rounded up."@en .
+c:fn-floor a c:SparqlFunction ; rdfs:label "FLOOR" ; rdfs:comment "Rounded down."@en .
+c:fn-now a c:SparqlFunction ; rdfs:label "NOW" ; rdfs:comment "The time the query runs."@en .
+c:fn-year a c:SparqlFunction ; rdfs:label "YEAR" ; rdfs:comment "The year of a date-time."@en .
+c:fn-if a c:SparqlFunction ; rdfs:label "IF" ; rdfs:comment "One of two values, by a condition."@en .
+c:fn-coalesce a c:SparqlFunction ; rdfs:label "COALESCE" ; rdfs:comment "The first argument that has a value."@en .
+c:fn-bound a c:SparqlFunction ; rdfs:label "BOUND" ; rdfs:comment "Whether a variable has a value."@en .
+c:fn-isiri a c:SparqlFunction ; rdfs:label "isIRI" ; rdfs:comment "Whether a term is an IRI."@en .
+c:fn-isblank a c:SparqlFunction ; rdfs:label "isBlank" ; rdfs:comment "Whether a term is a blank node."@en .
+c:fn-isliteral a c:SparqlFunction ; rdfs:label "isLiteral" ; rdfs:comment "Whether a term is a literal."@en .
+c:fn-isnumeric a c:SparqlFunction ; rdfs:label "isNumeric" ; rdfs:comment "Whether a term is a number."@en .
+c:fn-sameterm a c:SparqlFunction ; rdfs:label "sameTerm" ; rdfs:comment "Whether two terms are the same term."@en .
+c:fn-uuid a c:SparqlFunction ; rdfs:label "UUID" ; rdfs:comment "A fresh urn:uuid IRI."@en .
+
+# --- results ------------------------------------------------------------------------------------------------
+
+c:QueryResultView a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A view of the results of a query (c:of a sem:Query with sem:select or sem:construct). It
+runs the query when shown and again when its text or c:runCount changes, not when the graph does -
+unless it follows updates (its own c:followUpdates, or that of a workbench that c:runs its query):
+then also when a triple the query reads changes, at the next frame. At most c:limit results are
+shown. A query that fails shows its error (a c:Alert) instead. Components in its c:actions (e.g. a
+clip:Copier of its c:markdown) are shown beside the summary line of its results."""@en .
+
+c:ResultTable a owl:Class ;
+    rdfs:subClassOf c:QueryResultView ;
+    rdfs:label "Result table"@en , "Таблиця результатів"@uk , "Ergebnistabelle"@de , "جدول النتائج"@ar ;
+    rdfs:comment "The results as a table: one column per variable the query selects, or subject, predicate and object for a graph."@en ;
+    sem:slug "result-table" .
+c:ResultTableRendering a sem:Rendering ; sem:targets c:ResultTable ; sem:stratum 0 ; sem:follows c:of ; sem:refresh sem:NextFrame ;
+    sem:watches rdf:type , c:of , c:limit , sem:select , sem:construct , c:runCount , c:followUpdates , c:actions ;
+    sem:functionOnly "awaits #1 (query results as graph rows): it runs the query held in the data (sem:select / sem:construct of c:of); SPARQL cannot evaluate a query given as a string." ;
+    sem:awaitsWork <https://github.com/inferal-oss/semblance/issues/1> .
+c:ResultTableRendering-fn a sem:Rule ; sem:implements c:ResultTableRendering ; sem:function "workbench:table" .
+
+# --- the table as Markdown ----------------------------------------------------------------------------
+# What a table shows is graph data: each header cell and each row's cells say which column they are
+# in (c:column), each row which row it is (c:row), a cell showing an IRI says which (c:term), and the
+# rest is the text the cells show. From those a rule above the table derives its text as a Markdown
+# table (c:markdown), on its rendered root (rules above a component put what they derive there: a
+# triple about the component itself would invalidate the rules below that read it), which a
+# clip:Copier of the table copies: a header row of what the columns show, the separator row, then
+# the rows the table shows, in order. IRIs are prefixed names, with the prefixes the graph declares
+# (sh:declare; the longest namespace that leaves a valid local name, then the least prefix), else
+# <iri>, as code; blank nodes are their label, as code; literals are as the table shows them (cut at
+# 240 characters), with @lang when tagged. In a cell, | is &#124; and a line break is <br>: a
+# backslash would need REPLACE's escapes, which engines read differently.
+c:markdown a owl:DatatypeProperty ; rdfs:range xsd:string ;
+    rdfs:label "Markdown"@en , "Markdown"@uk , "Markdown"@de , "Markdown"@ar ;
+    rdfs:comment "Derived, on a component's rendered root: its content as Markdown text (a c:ResultTable's rows as a Markdown table)."@en .
+c:row a owl:DatatypeProperty ; rdfs:range xsd:integer ;
+    rdfs:comment "On a rendered row of a table view: its position among the rows shown (from 0)."@en .
+# (c:column, on a rendered cell of a table view: its position among the cells of its row, from 0.)
+
+c:ResultTableMarkdown a sem:Rendering ; sem:targets c:ResultTable ; sem:modality mod:Screen ; sem:stratum 40 ; sem:readsMinted true .
+c:ResultTableMarkdown-fn a sem:Rule ; sem:implements c:ResultTableMarkdown ; sem:function "workbench:table-markdown" .
+# Per table (sem:bulk false), so every sub-select starts from $this, and costs what the table shows:
+# each cell is read once, by its row and column; each IRI it shows is matched once against the
+# declared namespaces (the longest, by MAX, then the least prefix, by MIN: no declaration is
+# compared with every other). The cells of a row, then the rows, are joined in order: GROUP_CONCAT
+# over an ordered sub-select.
+c:ResultTableMarkdown-sparql a sem:Rule ;
+    sem:implements c:ResultTableMarkdown ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT { ?root c:markdown ?markdown }
+WHERE {
+  $this a c:ResultTable .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~head-row")) AS ?head)
+  ?head a rdfhtml:Tr .
+  FILTER EXISTS { ?head rdfhtml:hasChild ?anyHeader }
+  { SELECT (GROUP_CONCAT(?name; separator=" | ") AS ?names) (GROUP_CONCAT(?dash; separator=" | ") AS ?rule) WHERE {
+      { SELECT ?name ?dash WHERE {
+          BIND(IRI(CONCAT(STR($this), "/~head-row")) AS ?row)
+          ?row rdfhtml:hasChild ?th . ?th c:column ?i ; rdfhtml:hasChild ?label . ?label rdfhtml:data ?raw .
+          BIND(REPLACE(REPLACE(STR(?raw), "[|]", "&#124;"), "\\r?\\n", "<br>") AS ?name)
+          BIND("---" AS ?dash)
+        } ORDER BY ?i }
+  } }
+  OPTIONAL { SELECT (GROUP_CONCAT(?line; separator="\\n") AS ?lines) WHERE {
+      { SELECT ?line WHERE {
+          { SELECT ?row (GROUP_CONCAT(?cell; separator=" | ") AS ?cells) WHERE {
+              { SELECT ?row ?cell WHERE {
+                  BIND(IRI(CONCAT(STR($this), "/~body")) AS ?body)
+                  ?body rdfhtml:hasChild ?tr . ?tr c:row ?row ; rdfhtml:hasChild ?td . ?td c:column ?column .
+                  OPTIONAL { ?td c:term ?iri }
+                  BIND(COALESCE(?iri, ?td) AS ?key)
+                  # The prefixed name of each IRI the table shows (?key is the IRI a cell shows, else the cell).
+                  OPTIONAL { SELECT ?key (CONCAT(?prefix, ":", SUBSTR(STR(?key), ?length + 1)) AS ?prefixed) WHERE {
+                      { SELECT ?key ?length (MIN(STR(?p)) AS ?prefix) WHERE {
+                          { SELECT ?key (MAX(STRLEN(STR(?ns))) AS ?length) WHERE {
+                              { SELECT DISTINCT ?key WHERE {
+                                  BIND(IRI(CONCAT(STR($this), "/~body")) AS ?rows)
+                                  ?rows rdfhtml:hasChild/rdfhtml:hasChild/c:term ?key .
+                                } }
+                              ?declaration sh:prefix ?p ; sh:namespace ?ns .
+                              FILTER(STRSTARTS(STR(?key), STR(?ns)) && REGEX(SUBSTR(STR(?key), STRLEN(STR(?ns)) + 1), "^[A-Za-z_][A-Za-z0-9_-]*$"))
+                            } GROUP BY ?key }
+                          ?declaration sh:prefix ?p ; sh:namespace ?ns .
+                          FILTER(STRLEN(STR(?ns)) = ?length && STRSTARTS(STR(?key), STR(?ns)))
+                        } GROUP BY ?key ?length }
+                    } }
+                  # What the cell shows: a blank node's label (code), a literal's text, its language.
+                  OPTIONAL { ?td rdfhtml:hasChild ?code . ?code a rdfhtml:Code ; rdfhtml:hasChild ?codeText . ?codeText rdfhtml:data ?codeValue }
+                  OPTIONAL { ?td rdfhtml:hasChild ?text . ?text a rdfhtml:Text ; rdfhtml:data ?value }
+                  OPTIONAL { ?td rdfhtml:hasChild ?lang . ?lang rdfhtml:class "sem-lang" ; rdfhtml:hasChild ?langText . ?langText rdfhtml:data ?tag }
+                  BIND(IF(BOUND(?iri), CONCAT("`", COALESCE(?prefixed, CONCAT("<", STR(?iri), ">")), "`"),
+                       IF(BOUND(?codeValue), CONCAT("`", STR(?codeValue), "`"),
+                          CONCAT(REPLACE(REPLACE(STR(COALESCE(?value, "")), "[|]", "&#124;"), "\\r?\\n", "<br>"), STR(COALESCE(?tag, ""))))) AS ?cell)
+                } ORDER BY ?row ?column }
+            } GROUP BY ?row }
+          BIND(CONCAT("| ", ?cells, " |") AS ?line)
+        } ORDER BY ?row }
+  } }
+  BIND(CONCAT("| ", ?names, " |\\n| ", ?rule, " |", IF(BOUND(?lines), CONCAT("\\n", ?lines), "")) AS ?markdown)
+}""" .
+
+c:ResultGraph a owl:Class ;
+    rdfs:subClassOf c:QueryResultView ;
+    rdfs:label "Result graph"@en , "Граф результатів"@uk , "Ergebnisgraph"@de , "رسم النتائج"@ar ;
+    rdfs:comment """The results as a node-link diagram: the triples of a CONSTRUCT, or of SELECT rows (?s ?p ?o,
+or each row's first value linked to the others by variable name). The best-connected nodes are
+shown (at most c:limit, default 40), laid out in layers when the graph is acyclic and narrow
+enough, else around its hub; nodes are prefixed names, edges are labelled by predicate. Selecting a
+node (a click, or Enter or Space on it) highlights it and its connections and dims the rest; see
+c:selectedTerm."""@en ;
+    sem:slug "result-graph" .
+# Not the selection: changing it must not run the query or lay the graph out again.
+c:ResultGraphRendering a sem:Rendering ; sem:targets c:ResultGraph ; sem:stratum 0 ; sem:follows c:of ; sem:refresh sem:NextFrame ;
+    sem:watches rdf:type , c:of , c:limit , sem:select , sem:construct , c:runCount , c:followUpdates , c:actions ;
+    sem:functionOnly "awaits sx:Math (sx:sin, sx:cos): it lays the result graph out (trigonometry, layering by longest path). (Its triples would come from a step that writes the result as graph data.)" ;
+    sem:needsExtension sx:Math .
+c:ResultGraphRendering-fn a sem:Rule ; sem:implements c:ResultGraphRendering ; sem:function "workbench:graph" .
+
+# --- selecting in the graph ----------------------------------------------------------------------------
+# The selection is graph state on the view (c:selectedTerm), changed by reactions. The rendering says
+# what its marks show: each node the term it stands for (c:term), each link the nodes it joins
+# (c:edgeFrom, c:edgeTo). A rule above it (c:ResultGraphSelection) derives from those how salient
+# every mark is, a c:Salience: the selected node is focused, the nodes within c:neighbourhood links
+# of it and the links that reach them are neighbours, the rest is dimmed. It also says so: the node's
+# aria-pressed, and a line naming the node and its connections. A selection re-runs that rule only.
+
+c:selectedTerm a rdf:Property ; rdfs:domain c:ResultGraph ;
+    rdfs:comment "The term of the selected node: an IRI or a literal, as the node's c:term (a blank node's stand-in is its mark). None: nothing is selected."@en .
+c:neighbourhood a owl:DatatypeProperty ; rdfs:domain c:ResultGraph ; rdfs:range xsd:integer ;
+    rdfs:comment "How many links away from the selected node its neighbours are (1 to 3, default 1)."@en .
+c:term a rdf:Property ;
+    rdfs:comment "On a rendered mark of a result view (a c:ResultGraph's node, a c:ResultTable's cell showing an IRI): the term it shows. Rules mint no blank nodes, so a blank node's mark stands in for it in a graph."@en .
+c:edgeFrom a owl:ObjectProperty ; rdfs:comment "On a rendered link of a c:ResultGraph: the node mark it starts at."@en .
+c:edgeTo a owl:ObjectProperty ; rdfs:comment "On a rendered link of a c:ResultGraph: the node mark it points to."@en .
+c:salience a owl:ObjectProperty ; rdfs:range c:Salience ;
+    rdfs:comment "On a rendered mark: how it stands out while a node is selected. Shown as data-sem-salience, the salience's sem:slug."@en .
+
+c:Salience a owl:Class ; rdfs:comment "How much a mark of a view stands out while something in it is selected."@en .
+c:Focused a c:Salience ; sem:slug "focused" ; rdfs:label "focused"@en ; rdfs:comment "The selected node."@en .
+c:Neighbour a c:Salience ; sem:slug "neighbour" ; rdfs:label "neighbour"@en ;
+    rdfs:comment "Connected to the selection: a node within c:neighbourhood links of it, or a link on the way there."@en .
+c:Dimmed a c:Salience ; sem:slug "dimmed" ; rdfs:label "dimmed"@en ; rdfs:comment "Not connected to the selection."@en .
+
+# Stratum 40, above the tooltip layer (30), which re-runs for any change under a focus below it.
+c:ResultGraphSelection a sem:Rendering ; sem:targets c:ResultGraph ; sem:modality mod:Screen ; sem:stratum 40 ;
+    sem:readsMinted true ; sem:watches rdf:type , c:selectedTerm , c:neighbourhood .
+c:ResultGraphSelection-fn a sem:Rule ; sem:implements c:ResultGraphSelection ; sem:function "workbench:graph-selection" .
+
+# A step is one link, either way: node <-edgeFrom- link -edgeTo-> node, or back. SPARQL has no
+# bounded repetition, so each distance (1 to 3) is its own fixed-length path, asked only when the
+# neighbourhood reaches it (IF is lazy). Not S? segments: a zero-length step with an unbound end
+# matches every term in the store. The marks are the rendered view's, so paths stay within it.
+# LATERAL lets every branch see the selected node.
+c:ResultGraphSelection-sparql a sem:Rule ;
+    sem:implements c:ResultGraphSelection ;
+    sem:construct """
+CONSTRUCT {
+  ?node rdfhtml:attribute ?pressed .
+  ?pressed a rdfhtml:Attribute ; rdfhtml:attributeName "aria-pressed" ; rdfhtml:attributeValue ?isPressed .
+  ?mark c:salience ?salience ; rdfhtml:attribute ?shown .
+  ?shown a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-salience" ; rdfhtml:attributeValue ?slug .
+  ?described rdfhtml:attribute ?describedBy .
+  ?describedBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?detailsId .
+  ?details rdfhtml:hasChild ?line , ?clear .
+  ?line a rdfhtml:Text ; rdfhtml:data ?text ; ord:immediatelyPrecedes ?clear .
+  ?clear a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-clear" ; rdfhtml:hasChild ?clearText ; rdfhtml:attribute ?clearLabel , ?escape .
+  ?clearText a rdfhtml:Text ; rdfhtml:data "✕" .
+  ?clearLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?clearWord .
+  ?escape a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-escape" ; rdfhtml:attributeValue "" .
+}
+WHERE {
+  $this a c:ResultGraph .
+  BIND(IRI(CONCAT(STR($this), "/~plot")) AS ?plot)
+  BIND(IRI(CONCAT(STR($this), "/~selection")) AS ?details)
+  ?plot a svg:Svg . ?details a rdfhtml:P .
+  # Every variable LATERAL passes in is bound (an unbound one would be free inside): with nothing
+  # selected, ?sel is $this, which is no mark.
+  OPTIONAL { $this c:selectedTerm ?term . ?plot rdfhtml:hasChild ?chosen . ?chosen c:term ?term }
+  BIND(BOUND(?chosen) AS ?selected)
+  BIND(COALESCE(?chosen, $this) AS ?sel)
+  OPTIONAL { { SELECT ?sel (COUNT(?link) AS ?count) WHERE { ?link c:edgeFrom|c:edgeTo ?sel } GROUP BY ?sel } }
+  BIND(COALESCE(?count, 0) AS ?links)
+  OPTIONAL { $this c:neighbourhood ?wanted }
+  BIND(COALESCE(?wanted, 1) AS ?w)
+  BIND(IF(?w <= 1, 1, IF(?w <= 2, 2, 3)) AS ?depth)
+  LATERAL {
+    {
+      ?plot rdfhtml:hasChild ?node . ?node c:term ?shows .
+      BIND(IRI(CONCAT(STR(?node), "-aria-pressed")) AS ?pressed)
+      BIND(IF(sameTerm(?node, ?sel), "true", "false") AS ?isPressed)
+    } UNION {
+      FILTER(?selected)
+      ?plot rdfhtml:hasChild ?mark . ?mark c:term ?shows .
+      BIND(IF(sameTerm(?mark, ?sel), c:Focused,
+           IF(EXISTS { ?sel (^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom) ?mark }
+              || IF(?depth >= 2, EXISTS { ?sel (^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom)/(^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom) ?mark }, false)
+              || IF(?depth >= 3, EXISTS { ?sel (^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom)/(^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom)/(^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom) ?mark }, false),
+              c:Neighbour, c:Dimmed)) AS ?salience)
+      ?salience sem:slug ?slug .
+      BIND(IRI(CONCAT(STR(?mark), "-data-sem-salience")) AS ?shown)
+    } UNION {
+      # A link is on the way when an end is nearer than the neighbourhood's edge.
+      FILTER(?selected)
+      ?plot rdfhtml:hasChild ?mark . ?mark c:edgeFrom ?from .
+      BIND(IF(EXISTS { ?mark c:edgeFrom|c:edgeTo ?sel }
+              || IF(?depth >= 2, EXISTS { ?mark c:edgeFrom|c:edgeTo ?end . ?sel (^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom) ?end }, false)
+              || IF(?depth >= 3, EXISTS { ?mark c:edgeFrom|c:edgeTo ?end . ?sel (^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom)/(^c:edgeFrom/c:edgeTo|^c:edgeTo/c:edgeFrom) ?end }, false),
+              c:Neighbour, c:Dimmed) AS ?salience)
+      ?salience sem:slug ?slug .
+      BIND(IRI(CONCAT(STR(?mark), "-data-sem-salience")) AS ?shown)
+    } UNION {
+      FILTER(!?selected)
+      BIND(IRI(CONCAT(STR($this), "/~selection-text")) AS ?line)
+      OPTIONAL { ?hint0At l10n:of c:GraphHintPhrase ; l10n:name ?hint0 }
+  OPTIONAL { ?hint0At l10n:of c:GraphHintPhrase ; l10n:name ?hint0 }
+  OPTIONAL { c:GraphHintPhrase rdfs:label ?hint0 FILTER(lang(?hint0) = "") }
+      OPTIONAL { c:GraphHintPhrase rdfs:label ?hint1 FILTER(langMatches(lang(?hint1), "en")) }
+      BIND(STR(COALESCE(?hint0, ?hint1, "Select a node to highlight its connections: click it, or press Enter on it.")) AS ?text)
+    } UNION {
+      FILTER(?selected)
+      BIND(?sel AS ?described)
+      BIND(IRI(CONCAT(STR(?sel), "-aria-describedby")) AS ?describedBy)
+      BIND(STR(?details) AS ?detailsId)
+    } UNION {
+      # The line: the node's name (its aria-label) and how many links it has.
+      FILTER(?selected)
+      BIND(IRI(CONCAT(STR(?sel), "-a-aria-label")) AS ?nameAttribute)
+      ?nameAttribute rdfhtml:attributeValue ?name .
+      OPTIONAL { ?many0At l10n:of c:GraphSelectionPhrase ; l10n:name ?many0 }
+  OPTIONAL { ?many0At l10n:of c:GraphSelectionPhrase ; l10n:name ?many0 }
+  OPTIONAL { c:GraphSelectionPhrase rdfs:label ?many0 FILTER(lang(?many0) = "") }
+      OPTIONAL { c:GraphSelectionPhrase rdfs:label ?many1 FILTER(langMatches(lang(?many1), "en")) }
+      OPTIONAL { ?one0At l10n:of c:GraphSelectionOnePhrase ; l10n:name ?one0 }
+  OPTIONAL { ?one0At l10n:of c:GraphSelectionOnePhrase ; l10n:name ?one0 }
+  OPTIONAL { c:GraphSelectionOnePhrase rdfs:label ?one0 FILTER(lang(?one0) = "") }
+      OPTIONAL { c:GraphSelectionOnePhrase rdfs:label ?one1 FILTER(langMatches(lang(?one1), "en")) }
+      BIND(IF(?links = 1, STR(COALESCE(?one0, ?one1, "{name} — 1 connection")), STR(COALESCE(?many0, ?many1, "{name} — {n} connections"))) AS ?pattern)
+      BIND(IF(CONTAINS(?pattern, "{name}"), CONCAT(STRBEFORE(?pattern, "{name}"), ?name, STRAFTER(?pattern, "{name}")), ?pattern) AS ?named)
+      BIND(IF(CONTAINS(?named, "{n}"), CONCAT(STRBEFORE(?named, "{n}"), STR(?links), STRAFTER(?named, "{n}")), ?named) AS ?text)
+      BIND(IRI(CONCAT(STR($this), "/~selection-text")) AS ?line)
+      BIND(IRI(CONCAT(STR($this), "/~selection-clear")) AS ?clear)
+      BIND(IRI(CONCAT(STR($this), "/~selection-clear-text")) AS ?clearText)
+      BIND(IRI(CONCAT(STR($this), "/~selection-clear-aria-label")) AS ?clearLabel)
+      BIND(IRI(CONCAT(STR($this), "/~selection-clear-data-sem-escape")) AS ?escape)
+      OPTIONAL { ?clear0At l10n:of c:ClearSelectionPhrase ; l10n:name ?clear0 }
+  OPTIONAL { ?clear0At l10n:of c:ClearSelectionPhrase ; l10n:name ?clear0 }
+  OPTIONAL { c:ClearSelectionPhrase rdfs:label ?clear0 FILTER(lang(?clear0) = "") }
+      OPTIONAL { c:ClearSelectionPhrase rdfs:label ?clear1 FILTER(langMatches(lang(?clear1), "en")) }
+      BIND(STR(COALESCE(?clear0, ?clear1, "Clear the selection")) AS ?clearWord)
+    }
+  }
+}""" .
+
+# Arrow keys move among the nodes (focus only); Enter or Space selects the focused one.
+c:GraphNodeNavigation a key:Navigation ; key:items ".sem-plot > .sem-node" ; key:orientation key:Horizontal ; key:wrap true .
+c:ResultGraph key:navigation c:GraphNodeNavigation .
+
+c:GraphKey a owl:Class ; rdfs:subClassOf beh:Event ; beh:domEvent "keydown" ;
+    beh:key "enter" , "space" , "escape" ;
+    rdfs:comment "A key press in a c:ResultGraph: Enter or Space on a node selects it (or clears it, if selected); Escape clears the selection."@en .
+
+# A click on a node selects it, or clears the selection when it is the selected one; a click
+# anywhere else in the view (the background, the clear button) clears it.
+c:SelectGraphNode a beh:Reaction ;
+    rdfs:label "Select a node"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:ResultGraph ;
+    beh:deletes """CONSTRUCT { $this c:selectedTerm ?old } WHERE { $this c:selectedTerm ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:selectedTerm ?term }
+WHERE { $event beh:node ?hit . ?node rdfhtml:hasChild* ?hit . ?node c:term ?term . FILTER NOT EXISTS { $this c:selectedTerm ?term } }""" ;
+    sem:function "workbench:select-node" .
+
+# The same from the keyboard, on a node only: Enter on the clear button is that button's click.
+c:SelectGraphNodeByKey a beh:Reaction ;
+    rdfs:label "Select a node"@en ;
+    beh:when c:GraphKey ;
+    beh:sourceClass c:ResultGraph ;
+    beh:deletes """CONSTRUCT { $this c:selectedTerm ?old }
+WHERE { $event beh:key ?key FILTER(?key IN ("enter", "space")) $event beh:node ?hit . ?node rdfhtml:hasChild* ?hit . ?node c:term ?any . $this c:selectedTerm ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:selectedTerm ?term }
+WHERE {
+  $event beh:key ?key FILTER(?key IN ("enter", "space"))
+  $event beh:node ?hit . ?node rdfhtml:hasChild* ?hit . ?node c:term ?term . FILTER NOT EXISTS { $this c:selectedTerm ?term }
+}""" ;
+    sem:function "workbench:select-node-by-key" .
+
+# Escape from within the view; from elsewhere it reaches the clear button (data-sem-escape).
+c:ClearGraphSelection a beh:Reaction ;
+    rdfs:label "Clear the selection"@en ;
+    beh:when c:GraphKey ;
+    beh:sourceClass c:ResultGraph ;
+    beh:deletes """CONSTRUCT { $this c:selectedTerm ?old } WHERE { $event beh:key "escape" . $this c:selectedTerm ?old }""" ;
+    sem:function "workbench:clear-node" .
+
+c:ResultTurtle a owl:Class ;
+    rdfs:subClassOf c:QueryResultView ;
+    rdfs:label "Result Turtle"@en , "Результати в Turtle"@uk , "Ergebnis als Turtle"@de , "النتائج بصيغة Turtle"@ar ;
+    rdfs:comment """The results as syntax-colored Turtle: the graph of a CONSTRUCT, or the bindings of a SELECT
+as a SPARQL result set (the rs: vocabulary of the SPARQL test suite)."""@en ;
+    sem:slug "result-turtle" .
+c:ResultTurtleRendering a sem:Rendering ; sem:targets c:ResultTurtle ; sem:stratum 0 ; sem:follows c:of ; sem:refresh sem:NextFrame ;
+    sem:watches rdf:type , c:of , c:limit , sem:select , sem:construct , c:runCount , c:followUpdates , c:actions ;
+    sem:functionOnly "awaits sx:Matches (sx:matches): it prints the result as Turtle colored token by token. (Its rows would come from a step that writes them as graph data, as the views runtime does.)" ;
+    sem:needsExtension sx:Matches .
+c:ResultTurtleRendering-fn a sem:Rule ; sem:implements c:ResultTurtleRendering ; sem:function "workbench:turtle" .
+
+# --- phrases --------------------------------------------------------------------------------------------------
+
+c:SamplesPhrase a c:Phrase ; rdfs:label "Sample queries"@en , "Приклади запитів"@uk , "Beispielabfragen"@de , "استعلامات نموذجية"@ar .
+c:NotRunPhrase a c:Phrase ;
+    rdfs:label "Run a query, or pick a sample, to see its results here."@en , "Виконайте запит або виберіть приклад, щоб побачити результати тут."@uk ,
+               "Führen Sie eine Abfrage aus oder wählen Sie ein Beispiel, um hier die Ergebnisse zu sehen."@de , "نفّذ استعلامًا أو اختر نموذجًا لعرض نتائجه هنا."@ar .
+c:NoSparqlPhrase a c:Phrase ;
+    rdfs:label "Queries need SPARQL; choose a store that has it (Semblance WASM, Semblance Rust, Oxigraph or Hybrid)."@en , "Запитам потрібен SPARQL; виберіть сховище з ним (Semblance WASM, Semblance Rust, Oxigraph або Hybrid)."@uk ,
+               "Abfragen brauchen SPARQL; wählen Sie einen Speicher, der es kann (Semblance WASM, Semblance Rust, Oxigraph oder Hybrid)."@de , "تحتاج الاستعلامات إلى SPARQL؛ اختر مخزنًا يدعمه (Semblance WASM أو Semblance Rust أو Oxigraph أو Hybrid)."@ar .
+c:QueryFailedPhrase a c:Phrase ; rdfs:label "The query failed"@en , "Запит не вдався"@uk , "Die Abfrage ist fehlgeschlagen"@de , "فشل الاستعلام"@ar .
+c:NoResultsPhrase a c:Phrase ; rdfs:label "No results."@en , "Немає результатів."@uk , "Keine Ergebnisse."@de , "لا توجد نتائج."@ar .
+c:RowsPhrase a c:Phrase ; rdfs:label "Rows: {n}"@en , "Рядків: {n}"@uk , "Zeilen: {n}"@de , "الصفوف: {n}"@ar .
+c:TriplesPhrase a c:Phrase ; rdfs:label "Triples: {n}"@en , "Трійок: {n}"@uk , "Tripel: {n}"@de , "الثلاثيات: {n}"@ar .
+c:GraphSizePhrase a c:Phrase ; rdfs:label "Nodes: {n} · edges: {m}"@en , "Вузлів: {n} · ребер: {m}"@uk , "Knoten: {n} · Kanten: {m}"@de , "العقد: {n} · الحواف: {m}"@ar .
+c:MorePhrase a c:Phrase ; rdfs:label "+{n} more"@en , "+{n} ще"@uk , "+{n} weitere"@de , "+{n} أخرى"@ar .
+c:AnswerPhrase a c:Phrase ; rdfs:label "Answer: {v}"@en , "Відповідь: {v}"@uk , "Antwort: {v}"@de , "الإجابة: {v}"@ar .
+c:NoGraphPhrase a c:Phrase ;
+    rdfs:label "Nothing to draw: the results link no nodes."@en , "Нічого малювати: результати не повʼязують вузлів."@uk ,
+               "Nichts zu zeichnen: die Ergebnisse verbinden keine Knoten."@de , "لا شيء للرسم: النتائج لا تربط أي عقد."@ar .
+c:ResultSetPhrase a c:Phrase ;
+    rdfs:label "The bindings, as a SPARQL result set"@en , "Привʼязки як набір результатів SPARQL"@uk ,
+               "Die Bindungen als SPARQL-Ergebnismenge"@de , "الارتباطات كمجموعة نتائج SPARQL"@ar .
+c:RanSamplePhrase a c:Phrase ; rdfs:label "Results of: {name}"@en , "Результати: {name}"@uk , "Ergebnisse von: {name}"@de , "نتائج: {name}"@ar .
+c:GraphHintPhrase a c:Phrase ;
+    rdfs:label "Select a node to highlight its connections: click it, or press Enter on it."@en ,
+               "Виберіть вузол, щоб підсвітити його звʼязки: клацніть його або натисніть на ньому Enter."@uk ,
+               "Wählen Sie einen Knoten, um seine Verbindungen hervorzuheben: klicken Sie ihn an oder drücken Sie darauf Enter."@de ,
+               "اختر عقدة لإبراز اتصالاتها: انقر عليها أو اضغط Enter عليها."@ar .
+c:GraphSelectionPhrase a c:Phrase ;
+    rdfs:label "{name} — {n} connections"@en , "{name} — звʼязків: {n}"@uk , "{name} — {n} Verbindungen"@de , "{name} — الاتصالات: {n}"@ar .
+c:GraphSelectionOnePhrase a c:Phrase ;
+    rdfs:label "{name} — 1 connection"@en , "{name} — 1 звʼязок"@uk , "{name} — 1 Verbindung"@de , "{name} — اتصال واحد"@ar .
+c:ClearSelectionPhrase a c:Phrase ;
+    rdfs:label "Clear the selection"@en , "Скасувати вибір"@uk , "Auswahl aufheben"@de , "مسح التحديد"@ar .
+c:FollowingPhrase a c:Phrase ; rdfs:label "Live"@en , "Наживо"@uk , "Live"@de , "مباشر"@ar .
+c:RanQueryPhrase a c:Phrase ; rdfs:label "Results of your query"@en , "Результати вашого запиту"@uk , "Ergebnisse Ihrer Abfrage"@de , "نتائج استعلامك"@ar .
+
+# --- shapes ---------------------------------------------------------------------------------------------------
+
+c:QueryWorkbenchShape a sh:NodeShape ; sh:targetClass c:QueryWorkbench ;
+    sh:property [ sh:path c:editor ; sh:minCount 1 ; sh:maxCount 1 ; sh:class c:QueryEditor ; sh:message "A workbench needs exactly one editor (c:editor, a c:QueryEditor)." ] ,
+                [ sh:path c:runs ; sh:minCount 1 ; sh:maxCount 1 ; sh:class sem:Query ; sh:message "A workbench needs one query node to run into (c:runs, a sem:Query)." ] ,
+                [ sh:path c:results ; sh:maxCount 1 ] ,
+                [ sh:path c:followUpdates ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .
+c:QueryResultViewShape a sh:NodeShape ; sh:targetClass c:QueryResultView ;
+    sh:property [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ; sh:class sem:Query ; sh:message "A result view shows one query (c:of, a sem:Query)." ] ,
+                [ sh:path c:limit ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ] .
+c:ResultGraphShape a sh:NodeShape ; sh:targetClass c:ResultGraph ;
+    sh:property [ sh:path c:selectedTerm ; sh:maxCount 1 ; sh:message "A graph view selects at most one node (c:selectedTerm)." ] ,
+                [ sh:path c:neighbourhood ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 3 ] .
+c:RunQueryButtonShape a sh:NodeShape ; sh:targetClass c:RunQueryButton ;
+    sh:property [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ; sh:class c:QueryWorkbench ; sh:message "A run button runs one workbench (c:of)." ] .

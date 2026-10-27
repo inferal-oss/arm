@@ -1,0 +1,106 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Default theme for the disclosure components.
+
+# --- accordion: one bordered card, items divided by hairlines ---
+[] a sty:StyleRule ; sty:appliesTo c:Accordion ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-lg ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-1 ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "font-family" ; sty:token tok:font ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+
+# --- accordion item ---
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:state ":not(:first-child)" ;
+    sty:declares [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:state "[data-expanded=true]" ;
+    sty:declares [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--sem-surface-sunken) 55%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part "> .sem-heading" ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-trigger" ;
+    sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "align-items" ; sty:raw "center" ] ,
+                 [ sty:property "justify-content" ; sty:raw "space-between" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-4 ] ,
+                 [ sty:property "width" ; sty:raw "100%" ] ,
+                 [ sty:property "min-height" ; sty:token tok:control-lg ] ,
+                 [ sty:property "padding" ; sty:tokens ( tok:space-3 tok:space-4 ) ] ,
+                 [ sty:property "border" ; sty:raw "0" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] ,
+                 [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] ,
+                 [ sty:property "font" ; sty:raw "inherit" ] ,
+                 [ sty:property "text-align" ; sty:raw "start" ] ,
+                 [ sty:property "cursor" ; sty:raw "pointer" ] ,
+                 [ sty:property "transition" ; sty:raw "background var(--sem-duration-fast) var(--sem-ease), box-shadow var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-trigger:hover" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-hover ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-trigger:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "inset 0 0 0 2px color-mix(in oklab, var(--sem-accent) 60%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-title" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:raw "2px" ] ,
+                 [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-label" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-md ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "-0.01em" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-help" ;
+    sty:declares [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "font-weight" ; sty:raw "400" ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] .
+# A chevron drawn from two borders; it turns over as the item opens.
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part ".sem-chevron" ;
+    sty:declares [ sty:property "flex" ; sty:raw "0 0 auto" ] ,
+                 [ sty:property "width" ; sty:raw "7px" ] ,
+                 [ sty:property "height" ; sty:raw "7px" ] ,
+                 [ sty:property "margin-right" ; sty:raw "4px" ] ,
+                 [ sty:property "border-right" ; sty:raw "1.75px solid currentColor" ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1.75px solid currentColor" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "transform" ; sty:raw "translateY(-2px) rotate(45deg)" ] ,
+                 [ sty:property "transition" ; sty:raw "transform var(--sem-duration) var(--sem-ease), color var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:state "[data-expanded=true]" ; sty:part "> .sem-heading .sem-chevron" ;
+    sty:declares [ sty:property "transform" ; sty:raw "translateY(2px) rotate(-135deg)" ] ,
+                 [ sty:property "color" ; sty:token tok:text ] .
+# The panel animates its height (grid rows 0fr -> 1fr) and opacity with the motion tokens.
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-rows" ; sty:raw "0fr" ] ,
+                 [ sty:property "opacity" ; sty:raw "0" ] ,
+                 [ sty:property "transition" ; sty:raw "grid-template-rows var(--sem-duration) var(--sem-ease), opacity var(--sem-duration) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:state "[data-expanded=true]" ; sty:part "> .sem-panel" ;
+    sty:declares [ sty:property "grid-template-rows" ; sty:raw "1fr" ] ,
+                 [ sty:property "opacity" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part "> .sem-panel > .sem-panel-clip" ;
+    sty:declares [ sty:property "min-height" ; sty:raw "0" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AccordionItem ; sty:part "> .sem-panel .sem-panel-body" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "gap" ; sty:token tok:space-3 ] ,
+                 [ sty:property "padding" ; sty:raw "0 var(--sem-space-4) var(--sem-space-4)" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-normal ] .

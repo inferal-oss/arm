@@ -1,0 +1,21 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Properties shared by several component vocabularies. Each component file
+# stays thin: its class, what is specific to it, and its renderings.
+
+<https://semblance.dev/ns/component> a owl:Ontology ;
+    rdfs:label "Semblance components"@en .
+
+c:label a owl:DatatypeProperty ; rdfs:comment "Human-readable label."@en .
+c:value a owl:DatatypeProperty ; rdfs:comment "Current value (the graph is the source of truth for input state)."@en .
+c:placeholder a owl:DatatypeProperty .
+c:help a owl:DatatypeProperty ; rdfs:comment "Supplementary description."@en .
+c:error a owl:DatatypeProperty ; rdfs:comment "Validation message; its presence means the value is invalid."@en .
+c:disabled a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+
+c:inputType a owl:DatatypeProperty ;
+    rdfs:comment "What a text field takes: text (the default), password (masked), email, number, search, tel, url or date - the HTML input type, which also picks the on-screen keyboard. A date is the browser's own date input, its c:value an ISO date; for an xsd:date in the locale's format with a month grid, use c:DateField."@en .

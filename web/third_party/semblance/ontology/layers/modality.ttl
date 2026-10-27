@@ -1,0 +1,22 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Modality layer: which surface a UI is projected onto. It works by
+# *substitution*: rules declare the modality they render for, and the engine
+# only runs rules matching the active modality. The same component graph can
+# be projected onto several modalities at once (one engine per modality).
+
+<https://semblance.dev/ns/modality> a owl:Ontology ;
+    rdfs:label "Semblance modality layer"@en .
+
+mod:Modality a owl:Class .
+
+mod:Screen a mod:Modality ;
+    rdfs:label "screen"@en ;
+    rdfs:comment "Interactive, styled visual HTML."@en .
+
+mod:Text a mod:Modality ;
+    rdfs:label "text"@en ;
+    rdfs:comment "Plain text lines (terminal-like, or for agents and logs)."@en .

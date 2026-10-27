@@ -1,0 +1,169 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+c:List a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "A view over a set of data items, ordered by one of their properties."@en ;
+    sem:slug "list" .
+
+c:item a owl:ObjectProperty ; rdfs:domain c:List ; rdfs:comment "A data item shown by the list (unordered set)."@en .
+c:sortBy a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of the items to order by (ascending); ties break on item IRI. On a c:List or a c:Outline."@en .
+c:itemLabel a owl:ObjectProperty ; rdfs:domain c:List ; rdfs:range rdf:Property .
+c:itemChecked a owl:ObjectProperty ; rdfs:domain c:List ; rdfs:range rdf:Property ;
+    rdfs:comment "Boolean property of the items rendered as a checkbox."@en .
+
+# One component instance is minted per data item, so a change to one item only
+# re-renders that item.
+c:ListItem a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: the per-item instance minted by a List rendering."@en ;
+    sem:slug "list-item" .
+c:of a owl:ObjectProperty ; rdfs:domain c:ListItem ; rdfs:comment "The data item."@en .
+c:inList a owl:ObjectProperty ; rdfs:domain c:ListItem .
+c:labelFrom a owl:ObjectProperty ; rdfs:domain c:ListItem .
+c:checkedFrom a owl:ObjectProperty ; rdfs:domain c:ListItem .
+
+# --- list: the container, and its items member-wise ------------------------------
+# The container rule renders the list element only. The items are placed by a
+# member-wise rule (sem:forEach c:item): one evaluation per item, which mints the
+# item's c:ListItem and places it by sem:orderKey (its c:sortBy value). Adding,
+# removing or re-sorting an item re-runs that item's evaluation alone.
+
+c:ListRendering a sem:Rendering ;
+    sem:targets c:List ;
+    sem:stratum 0 .
+
+c:ListRendering-fn a sem:Rule ;
+    sem:implements c:ListRendering ;
+    sem:function "list" .
+
+# The element depends on the modality only, so there is one SPARQL rule per modality.
+# Like the function (whose watches are empty), it ignores the list's other triples:
+# adding an item (c:item) re-runs only that item's member-wise evaluation.
+c:ListRendering-sparql-screen a sem:Rule ;
+    sem:implements c:ListRendering ;
+    sem:modality mod:Screen ;
+    sem:watches rdf:type ;
+    sem:construct """
+CONSTRUCT { ?root a rdfhtml:Ul ; sem:renders $this . }
+WHERE { $this a c:List . BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root) }""" .
+
+c:ListRendering-sparql-text a sem:Rule ;
+    sem:implements c:ListRendering ;
+    sem:modality mod:Text ;
+    sem:watches rdf:type ;
+    sem:construct """
+CONSTRUCT { ?root a rdfhtml:Div ; sem:renders $this . }
+WHERE { $this a c:List . BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root) }""" .
+
+c:ListMembers a sem:Rendering ;
+    sem:targets c:List ;
+    sem:stratum 0 ;
+    sem:forEach c:item ;
+    sem:watches rdf:type , c:sortBy , c:itemLabel , c:itemChecked .
+
+c:ListMembers-fn a sem:Rule ;
+    sem:implements c:ListMembers ;
+    sem:function "list:member" .
+
+# $member is the item. Missing sort keys sort last.
+c:ListMembers-sparql a sem:Rule ;
+    sem:implements c:ListMembers ;
+    sem:memberWatchesVia c:sortBy , c:itemLabel ;
+    sem:construct """
+CONSTRUCT {
+  ?inst a c:ListItem ; c:of $member ; c:inList $this ; c:labelFrom ?labelFrom ; c:checkedFrom ?checkedFrom ; sem:orderKey ?key .
+  ?drag a dnd:Draggable ; dnd:carries $member ; dnd:name ?name .
+  ?root rdfhtml:hasChild ?inst .
+}
+WHERE {
+  $this a c:List .
+  OPTIONAL { $this c:itemLabel ?labelFrom }
+  OPTIONAL { $this c:itemChecked ?checkedFrom }
+  OPTIONAL { $this c:sortBy ?sortBy . $member ?sortBy ?rawKey }
+  BIND(COALESCE(STR(?rawKey), "\\uFFFF") AS ?key)
+  BIND(IRI(CONCAT(STR($this), "/~i-", ENCODE_FOR_URI(STR($member)))) AS ?inst)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IF(EXISTS { $this a dnd:Sortable }, ?inst, ?none) AS ?drag)
+  OPTIONAL { $this c:itemLabel ?nameFrom . $member ?nameFrom ?rawName }
+  BIND(IF(BOUND(?drag), STR(?rawName), ?none) AS ?name)
+}""" .
+
+# --- items: screen -----------------------------------------------------------------
+
+c:ListItemOnScreen a sem:Rendering ;
+    sem:targets c:ListItem ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 ;
+    sem:follows c:of .
+
+c:ListItemOnScreen-sparql a sem:Rule ;
+    sem:implements c:ListItemOnScreen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Li ; sem:renders $this ; rdfhtml:hasChild ?check, ?label .
+  ?check a rdfhtml:Input ; rdfhtml:type "checkbox" ; rdfhtml:id ?checkId ; rdfhtml:checked ?checked ;
+         ord:immediatelyPrecedes ?label .
+  ?label a rdfhtml:Label ; rdfhtml:for ?checkId ; rdfhtml:hasChild ?labelText .
+  ?labelText a rdfhtml:Text ; rdfhtml:data ?text .
+}
+WHERE {
+  $this a c:ListItem ; c:of ?item ; c:labelFrom ?labelProp .
+  ?item ?labelProp ?text .
+  # EXISTS rather than OPTIONAL: Oxigraph evaluates this correlated OPTIONAL
+  # uncorrelated in bulk mode (~30x slower).
+  BIND(IF(EXISTS { $this c:checkedFrom ?checkedProp . ?item ?checkedProp true }, "", ?none) AS ?checked)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~check")) AS ?check)
+  BIND(STR(?check) AS ?checkId)
+  BIND(IRI(CONCAT(STR($this), "/~label")) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?labelText)
+}""" .
+
+c:ListItemOnScreen-fn a sem:Rule ;
+    sem:implements c:ListItemOnScreen ;
+    sem:function "listitem:screen" .
+
+# --- items: text -------------------------------------------------------------------
+
+c:ListItemAsText a sem:Rendering ;
+    sem:targets c:ListItem ;
+    sem:modality mod:Text ;
+    sem:stratum 0 ;
+    sem:follows c:of .
+
+c:ListItemAsText-sparql a sem:Rule ;
+    sem:implements c:ListItemAsText ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:ListItem ; c:of ?item ; c:labelFrom ?labelProp .
+  ?item ?labelProp ?label .
+  BIND(EXISTS { $this c:checkedFrom ?checkedProp . ?item ?checkedProp true } AS ?done)
+  BIND(CONCAT(IF(?done, "  [x] ", "  [ ] "), STR(?label)) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~label-text")) AS ?text)
+}""" .
+
+c:ListItemAsText-fn a sem:Rule ;
+    sem:implements c:ListItemAsText ;
+    sem:function "listitem:text" .
+
+# --- behaviour ----------------------------------------------------------------------
+# Changing an item's checkbox writes the checked state to the data item.
+
+c:ListItemChange a beh:Reaction ;
+    beh:when beh:Change ;
+    beh:sourceClass c:ListItem ;
+    beh:deletes """CONSTRUCT { ?item ?p ?old } WHERE { $this c:of ?item ; c:checkedFrom ?p . ?item ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?item ?p ?checked } WHERE { $this c:of ?item ; c:checkedFrom ?p . $event beh:checked ?checked }""" ;
+    sem:function "listitem:change" .

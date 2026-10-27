@@ -1,0 +1,27 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What well-formed toolbar pieces look like (ontology/components/toolbar.ttl), validated by the
+# component shapes layer like ontology/shapes/components.ttl.
+
+c:ToolbarShape a sh:NodeShape ; sh:targetClass c:Toolbar ;
+    sh:property [ sh:path c:children ; sh:minCount 1 ; sh:maxCount 1 ; sh:message "A toolbar holds its controls in c:children (one list)." ] .
+c:SearchFieldShape a sh:NodeShape ; sh:targetClass c:SearchField ;
+    sh:property [ sh:path c:controls ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A search field edits a property (c:property) of one node (c:controls)." ] ,
+                [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:placeholder ; sh:nodeKind sh:Literal ] .
+c:LegendShape a sh:NodeShape ; sh:targetClass c:Legend ;
+    sh:property [ sh:path c:items ; sh:maxCount 1 ] ,
+                [ sh:path c:of ; sh:maxCount 1 ; sh:nodeKind sh:IRI ; sh:message "A legend's categories are c:items, or the instances of one class (c:of)." ] .
+c:LiveIndicatorShape a sh:NodeShape ; sh:targetClass c:LiveIndicator ;
+    sh:property [ sh:path c:controls ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:property ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:pausedLabel ; sh:nodeKind sh:Literal ] .
+c:CountBadgeShape a sh:NodeShape ; sh:targetClass c:CountBadge ;
+    sh:property [ sh:path c:collection ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A count badge counts the members of one collection (c:collection)." ] ,
+                [ sh:path c:memberProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:memberClass ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .

@@ -1,0 +1,17 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# What a well-formed c:Outline looks like (ontology/components/outline.ttl), validated by the
+# component shapes layer like ontology/shapes/components.ttl.
+
+c:OutlineShape a sh:NodeShape ; sh:targetClass c:Outline ;
+    sh:property [ sh:path c:entryTitle ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "An outline needs the property that is a point's text (c:entryTitle)." ] ,
+                [ sh:path c:entry ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:sortBy ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:levelProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:presenceProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:typingProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:noteProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:flagProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:controls ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .

@@ -1,0 +1,24 @@
+{
+  "name": "arm-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --import tsx third_party/semblance/rdf-engine/wat/build.ts third_party/semblance/rdf-engine/build/wat.wasm && vite build --configLoader runner",
+    "test": "\"${SEMBLANCE_TEST_QUEUE:?Set SEMBLANCE_TEST_QUEUE to the shared Semblance test-queue.sh}\" vitest run --maxWorkers=2"
+  },
+  "dependencies": {
+    "n3": "^2.13.12",
+    "oxigraph": "^0.5.13"
+  },
+  "devDependencies": {
+    "@rdfjs/types": "^2.0.1",
+    "@types/n3": "^1.26.5",
+    "@types/node": "^26.6.5",
+    "linkedom": "^0.18.14",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5",
+    "wabt": "^1.0.39"
+  }
+}

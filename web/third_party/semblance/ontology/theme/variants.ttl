@@ -1,0 +1,121 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# The variant axes of the default theme (DESIGN.md §2). Tones set the --tone-*
+# custom properties; emphases map them to background, border and color; sizes
+# set --control-h / --control-px / --control-font. Six tones x four emphases x
+# three sizes, for every component that carries the axes, from these rules.
+#
+# The neutral tone is also the default (declared on :root by sty:Neutral's
+# values being the fallbacks in each emphasis rule).
+
+# --- tones ---
+sty:Neutral a sty:Tone ; rdfs:label "Neutral"@en ; sem:slug "neutral" ; sem:order 1 ;
+    sty:declares [ sty:property "--tone-solid" ; sty:raw "var(--sem-gray-12)" ] ,
+                 [ sty:property "--tone-solid-hover" ; sty:raw "light-dark(#2c2c3a, #ffffff)" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "var(--sem-gray-3)" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "var(--sem-gray-4)" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "var(--sem-gray-7)" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "var(--sem-gray-12)" ] ,
+                 [ sty:property "--tone-on-solid" ; sty:raw "var(--sem-gray-1)" ] .
+sty:Accent a sty:Tone ; rdfs:label "Accent"@en ; sem:slug "accent" ; sem:order 2 ;
+    sty:declares [ sty:property "--tone-solid" ; sty:raw "var(--sem-accent-9)" ] ,
+                 [ sty:property "--tone-solid-hover" ; sty:raw "var(--sem-accent-10)" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "var(--sem-accent-3)" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "var(--sem-accent-4)" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "var(--sem-accent-7)" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "var(--sem-accent-11)" ] ,
+                 [ sty:property "--tone-on-solid" ; sty:raw "#ffffff" ] .
+sty:Info a sty:Tone ; rdfs:label "Info"@en ; sem:slug "info" ; sem:order 3 ;
+    sty:declares [ sty:property "--tone-solid" ; sty:raw "var(--sem-info-9)" ] ,
+                 [ sty:property "--tone-solid-hover" ; sty:raw "var(--sem-info-10)" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "var(--sem-info-3)" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "var(--sem-info-4)" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "var(--sem-info-6)" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "var(--sem-info-11)" ] ,
+                 [ sty:property "--tone-on-solid" ; sty:raw "#ffffff" ] .
+sty:Success a sty:Tone ; rdfs:label "Success"@en ; sem:slug "success" ; sem:order 4 ;
+    sty:declares [ sty:property "--tone-solid" ; sty:raw "var(--sem-success-9)" ] ,
+                 [ sty:property "--tone-solid-hover" ; sty:raw "var(--sem-success-10)" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "var(--sem-success-3)" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "var(--sem-success-4)" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "var(--sem-success-6)" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "var(--sem-success-11)" ] ,
+                 [ sty:property "--tone-on-solid" ; sty:raw "#ffffff" ] .
+sty:Warning a sty:Tone ; rdfs:label "Warning"@en ; sem:slug "warning" ; sem:order 5 ;
+    sty:declares [ sty:property "--tone-solid" ; sty:raw "var(--sem-warning-9)" ] ,
+                 [ sty:property "--tone-solid-hover" ; sty:raw "var(--sem-warning-10)" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "var(--sem-warning-3)" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "var(--sem-warning-4)" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "var(--sem-warning-6)" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "var(--sem-warning-11)" ] ,
+                 [ sty:property "--tone-on-solid" ; sty:raw "#2b1a00" ] .
+sty:Danger a sty:Tone ; rdfs:label "Danger"@en ; sem:slug "danger" ; sem:order 6 ;
+    sty:declares [ sty:property "--tone-solid" ; sty:raw "var(--sem-danger-9)" ] ,
+                 [ sty:property "--tone-solid-hover" ; sty:raw "var(--sem-danger-10)" ] ,
+                 [ sty:property "--tone-soft" ; sty:raw "var(--sem-danger-3)" ] ,
+                 [ sty:property "--tone-soft-hover" ; sty:raw "var(--sem-danger-4)" ] ,
+                 [ sty:property "--tone-border" ; sty:raw "var(--sem-danger-6)" ] ,
+                 [ sty:property "--tone-text" ; sty:raw "var(--sem-danger-11)" ] ,
+                 [ sty:property "--tone-on-solid" ; sty:raw "#ffffff" ] .
+
+# --- emphases ---
+sty:Solid a sty:Emphasis ; rdfs:label "Solid"@en ; sem:slug "solid" ; sem:order 1 .
+sty:Soft a sty:Emphasis ; rdfs:label "Soft"@en ; sem:slug "soft" ; sem:order 2 .
+sty:Outline a sty:Emphasis ; rdfs:label "Outline"@en ; sem:slug "outline" ; sem:order 3 .
+sty:Ghost a sty:Emphasis ; rdfs:label "Ghost"@en ; sem:slug "ghost" ; sem:order 4 .
+
+[] a sty:StyleRule ; sty:when sty:Solid ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-solid, var(--sem-gray-12))" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-on-solid, var(--sem-gray-1))" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--tone-solid, var(--sem-gray-12))" ] .
+
+[] a sty:StyleRule ; sty:when sty:Solid ; sty:state ":is(button, a, summary, [role=button]):not(:disabled):hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-solid-hover, light-dark(#2c2c3a, #ffffff))" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--tone-solid-hover, light-dark(#2c2c3a, #ffffff))" ] .
+
+[] a sty:StyleRule ; sty:when sty:Soft ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-gray-12))" ] ,
+                 [ sty:property "border-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+
+[] a sty:StyleRule ; sty:when sty:Soft ; sty:state ":is(button, a, summary, [role=button]):not(:disabled):hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft-hover, var(--sem-gray-4))" ] .
+
+[] a sty:StyleRule ; sty:when sty:Outline ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-gray-12))" ] ,
+                 [ sty:property "border-color" ; sty:raw "var(--tone-border, var(--sem-gray-7))" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+
+[] a sty:StyleRule ; sty:when sty:Outline ; sty:state ":is(button, a, summary, [role=button]):not(:disabled):hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] .
+
+[] a sty:StyleRule ; sty:when sty:Ghost ;
+    sty:declares [ sty:property "background" ; sty:raw "transparent" ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text, var(--sem-gray-12))" ] ,
+                 [ sty:property "border-color" ; sty:raw "transparent" ] ,
+                 [ sty:property "box-shadow" ; sty:raw "none" ] .
+
+[] a sty:StyleRule ; sty:when sty:Ghost ; sty:state ":is(button, a, summary, [role=button]):not(:disabled):hover" ;
+    sty:declares [ sty:property "background" ; sty:raw "var(--tone-soft, var(--sem-gray-3))" ] .
+
+# --- sizes ---
+sty:Small a sty:ControlSize ; rdfs:label "Small"@en ; sem:slug "sm" ; sem:order 1 ;
+    sty:declares [ sty:property "--control-h" ; sty:token tok:control-sm ] ,
+                 [ sty:property "--control-px" ; sty:token tok:space-2 ] ,
+                 [ sty:property "--control-font" ; sty:token tok:text-sm ] ,
+                 [ sty:property "--control-radius" ; sty:token tok:radius-sm ] .
+sty:Medium a sty:ControlSize ; rdfs:label "Medium"@en ; sem:slug "md" ; sem:order 2 ;
+    sty:declares [ sty:property "--control-h" ; sty:token tok:control-md ] ,
+                 [ sty:property "--control-px" ; sty:token tok:space-3 ] ,
+                 [ sty:property "--control-font" ; sty:token tok:text-md ] ,
+                 [ sty:property "--control-radius" ; sty:token tok:radius-md ] .
+sty:Large a sty:ControlSize ; rdfs:label "Large"@en ; sem:slug "lg" ; sem:order 3 ;
+    sty:declares [ sty:property "--control-h" ; sty:token tok:control-lg ] ,
+                 [ sty:property "--control-px" ; sty:token tok:space-4 ] ,
+                 [ sty:property "--control-font" ; sty:token tok:text-lg ] ,
+                 [ sty:property "--control-radius" ; sty:token tok:radius-lg ] .

@@ -14,14 +14,14 @@ func TestMeshForwardSourceBrowserBoundary(t *testing.T) {
 	for _, tc := range []struct {
 		method, path, host string
 		code               int
-	}{{"GET", "/mesh-forward-console.mjs", s.authority, 200}, {"HEAD", "/mesh-forward-console.mjs", s.authority, 200}, {"POST", "/mesh-forward-console.mjs", s.authority, 405}, {"GET", "/mesh-forward-console.mjs", "external.invalid", 403}, {"GET", "/mesh-forward-console.mjs/extra", s.authority, 404}} {
+	}{{"GET", "/assets/arm.mjs", s.authority, 200}, {"HEAD", "/assets/arm.mjs", s.authority, 200}, {"POST", "/assets/arm.mjs", s.authority, 405}, {"GET", "/assets/arm.mjs", "external.invalid", 403}, {"GET", "/assets/arm.mjs/extra", s.authority, 404}} {
 		r := httptest.NewRequest(tc.method, "http://"+tc.host+tc.path, nil)
 		w := httptest.NewRecorder()
 		mux.ServeHTTP(w, r)
 		if w.Code != tc.code {
 			t.Fatal(tc, w.Code, w.Body.String())
 		}
-		if tc.method == "GET" && tc.code == 200 && (!strings.Contains(w.Body.String(), "prepareForwardSource") || !strings.Contains(w.Header().Get("Content-Type"), "javascript")) {
+		if tc.method == "GET" && tc.code == 200 && (!strings.Contains(w.Body.String(), "mesh_forward_start") || !strings.Contains(w.Header().Get("Content-Type"), "javascript")) {
 			t.Fatal("embedded source asset missing", w.Header())
 		}
 	}

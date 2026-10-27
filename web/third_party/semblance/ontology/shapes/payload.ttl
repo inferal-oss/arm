@@ -1,0 +1,28 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Shapes of the payload components (ontology/components/payload.ttl). Each takes its payload
+# from one place: its own c:value, or c:payloadProperty of one subject (c:of, or c:bindFrom with
+# c:bindProperty) after at most one c:via hop.
+
+c:PayloadSourceShape a sh:NodeShape ; sh:targetClass c:JsonTree , c:HexView , c:BodyViewer ;
+    sh:property [ sh:path c:value ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ,
+                [ sh:path c:of ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:bindFrom ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:bindProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:via ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ,
+                [ sh:path c:payloadProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A payload view reads one property (c:payloadProperty) of its subject." ] .
+c:JsonTreeShape a sh:NodeShape ; sh:targetClass c:JsonTree ;
+    sh:property [ sh:path c:expandDepth ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path c:expandedPath ; sh:nodeKind sh:Literal ; sh:pattern "^(/.*)?$" ;
+                  sh:message "An open path is a JSON Pointer: empty (the root) or starting with \"/\"." ] ,
+                [ sh:path c:collapsedPath ; sh:nodeKind sh:Literal ; sh:pattern "^(/.*)?$" ] .
+c:HexViewShape a sh:NodeShape ; sh:targetClass c:HexView ;
+    sh:property [ sh:path c:limit ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 16 ;
+                  sh:message "A hex view shows at least one row (c:limit 16 bytes or more)." ] .
+c:BodyViewerShape a sh:NodeShape ; sh:targetClass c:BodyViewer ;
+    sh:property [ sh:path c:representation ; sh:maxCount 1 ; sh:class c:Representation ] ,
+                [ sh:path c:typeProperty ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .

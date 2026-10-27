@@ -14,14 +14,14 @@ func TestUninstallEmbeddedAssetAndNarrowOperatorRoutes(t *testing.T) {
 	for _, c := range []struct {
 		method, host, path string
 		want               int
-	}{{"GET", s.authority, "/mesh-uninstall.mjs", 200}, {"HEAD", s.authority, "/mesh-uninstall.mjs", 200}, {"POST", s.authority, "/mesh-uninstall.mjs", 405}, {"GET", "foreign.invalid", "/mesh-uninstall.mjs", 403}, {"GET", s.authority, "/mesh-uninstall.mjs/extra", 404}} {
+	}{{"GET", s.authority, "/assets/arm.mjs", 200}, {"HEAD", s.authority, "/assets/arm.mjs", 200}, {"POST", s.authority, "/assets/arm.mjs", 405}, {"GET", "foreign.invalid", "/assets/arm.mjs", 403}, {"GET", s.authority, "/assets/arm.mjs/extra", 404}} {
 		r := httptest.NewRequest(c.method, "http://"+c.host+c.path, nil)
 		w := httptest.NewRecorder()
 		mux.ServeHTTP(w, r)
 		if w.Code != c.want {
 			t.Fatal(c, w.Code)
 		}
-		if c.method == "GET" && c.want == 200 && (!strings.Contains(w.Body.String(), "uninstallReviewView") || !strings.Contains(w.Header().Get("Content-Type"), "javascript")) {
+		if c.method == "GET" && c.want == 200 && (!strings.Contains(w.Body.String(), "mesh_operator_uninstall_finish") || !strings.Contains(w.Header().Get("Content-Type"), "javascript")) {
 			t.Fatal("missing embedded uninstall module")
 		}
 	}

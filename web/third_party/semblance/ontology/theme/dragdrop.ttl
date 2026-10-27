@@ -1,0 +1,108 @@
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Theme for the drag and drop layer (ontology/layers/dragdrop.ttl): what can be picked up, what is
+# carried, which zones take it and which don't (and why), and where it would land. Every motion is
+# timed by the motion tokens, so the motion layer stills the lift, the zones and the refusal.
+
+# A refused drop shakes the draggable.
+[] a sty:Keyframes ; sty:name "sem-drop-refused" ;
+    sty:step [ sty:at "0%, 100%" ; sty:declares [ sty:property "translate" ; sty:raw "0" ] ] ,
+             [ sty:at "25%" ; sty:declares [ sty:property "translate" ; sty:raw "-4px 0" ] ] ,
+             [ sty:at "75%" ; sty:declares [ sty:property "translate" ; sty:raw "4px 0" ] ] .
+
+# --- what can be picked up ---
+# The host's live region, which says what is carried and where it would go: heard, not seen.
+[] a sty:StyleRule ; sty:part "[data-sem-drag-live]" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "width" ; sty:raw "1px" ] ,
+                 [ sty:property "height" ; sty:raw "1px" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "clip-path" ; sty:raw "inset(50%)" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] .
+
+# Pointer drags are the layer's own gesture: no text selection, no touch callout, no native drag.
+[] a sty:StyleRule ; sty:part "[data-sem-gesture=drag]" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "grab" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-touch-callout" ; sty:raw "none" ] ,
+                 [ sty:property "transition" ; sty:raw "box-shadow var(--sem-duration-fast) var(--sem-ease), opacity var(--sem-duration-fast) var(--sem-ease), scale var(--sem-duration-fast) var(--sem-ease)" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-gesture=drag]:focus-visible" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "2px" ] .
+# Lifted: raised above everything, following the pointer (the host moves it with translate).
+[] a sty:StyleRule ; sty:part "[data-sem-lifted]" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "background-color" ; sty:token tok:surface ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "z-index" ; sty:raw "30" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-4 ] ,
+                 [ sty:property "scale" ; sty:raw "1.02" ] ,
+                 [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "2px" ] .
+[] a sty:StyleRule ; sty:part ":is([data-sem-motion=reduced], [data-sem-motion=none]) [data-sem-lifted]" ;
+    sty:declares [ sty:property "scale" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-refused]" ;
+    sty:declares [ sty:property "animation" ; sty:raw "sem-drop-refused var(--sem-duration-slow) var(--sem-ease)" ] .
+# While a pointer drag is on, the page does not select text and the pointer says "carrying".
+[] a sty:StyleRule ; sty:part ":root[data-sem-dragging], :root[data-sem-dragging] *" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "grabbing" ] ,
+                 [ sty:property "user-select" ; sty:raw "none" ] ,
+                 [ sty:property "-webkit-user-select" ; sty:raw "none" ] .
+
+# --- zones while something is carried ---
+[] a sty:StyleRule ; sty:part "[data-sem-drop-zone][data-sem-drop]" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "3px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "transition" ; sty:raw "outline-color var(--sem-duration-fast) var(--sem-ease), background-color var(--sem-duration-fast) var(--sem-ease), opacity var(--sem-duration-fast) var(--sem-ease)" ] .
+# A zone that takes it: outlined; brighter while it is over it.
+[] a sty:StyleRule ; sty:part "[data-sem-drop-zone][data-sem-drop=accepts]" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px dashed var(--sem-accent-7)" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-drop-zone][data-sem-drop=accepts][data-sem-drop-over]" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px solid var(--sem-accent-9)" ] ,
+                 [ sty:property "background-color" ; sty:raw "color-mix(in oklab, var(--sem-accent-9) 8%, transparent)" ] .
+# A zone that does not: dimmed, a not-allowed pointer, and over it the reason why.
+[] a sty:StyleRule ; sty:part "[data-sem-drop-zone][data-sem-drop=refuses]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.55" ] ,
+                 [ sty:property "outline" ; sty:raw "2px dashed var(--sem-border-strong)" ] .
+[] a sty:StyleRule ; sty:part ":root[data-sem-dragging] [data-sem-drop-zone][data-sem-drop=refuses], :root[data-sem-dragging] [data-sem-drop-zone][data-sem-drop=refuses] *" ;
+    sty:declares [ sty:property "cursor" ; sty:raw "not-allowed" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-drop-zone][data-sem-drop=refuses][data-sem-drop-over]" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.9" ] ,
+                 [ sty:property "outline" ; sty:raw "2px solid var(--sem-danger-9)" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-drop-zone][data-sem-drop=refuses][data-sem-drop-over]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "attr(data-sem-drop-reason)" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "8px" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "translate" ; sty:raw "0 -50%" ] ,
+                 [ sty:property "z-index" ; sty:raw "20" ] ,
+                 [ sty:property "padding" ; sty:raw "8px 10px" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-md ] ,
+                 [ sty:property "background" ; sty:token tok:danger-9 ] ,
+                 [ sty:property "color" ; sty:raw "white" ] ,
+                 [ sty:property "font" ; sty:raw "600 var(--sem-text-xs)/1.35 var(--sem-font)" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "box-shadow" ; sty:token tok:shadow-3 ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .
+
+# --- where it would land: a line before the member it would precede, or after the last ---
+[] a sty:StyleRule ; sty:part ":is([data-sem-drop-before], [data-sem-drop-after])" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-drop-before]::before, [data-sem-drop-after]::after" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"\"" ] ,
+                 [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "inset-inline" ; sty:raw "0" ] ,
+                 [ sty:property "height" ; sty:raw "3px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "2px" ] ,
+                 [ sty:property "background" ; sty:token tok:accent-9 ] ,
+                 [ sty:property "pointer-events" ; sty:raw "none" ] .
+# Where it would land is not shown where it can't.
+[] a sty:StyleRule ; sty:part "[data-sem-drop=refuses] :is([data-sem-drop-before], [data-sem-drop-after])::before, [data-sem-drop=refuses] :is([data-sem-drop-before], [data-sem-drop-after])::after" ;
+    sty:declares [ sty:property "display" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-drop-before]::before" ;
+    sty:declares [ sty:property "top" ; sty:raw "-5px" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-drop-after]::after" ;
+    sty:declares [ sty:property "bottom" ; sty:raw "-5px" ] .

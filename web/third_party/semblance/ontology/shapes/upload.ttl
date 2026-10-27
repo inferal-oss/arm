@@ -1,0 +1,37 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix file: <https://semblance.dev/ns/file#> .
+@prefix val: <https://semblance.dev/ns/validation#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# What well-formed file drops and files look like (ontology/components/upload.ttl,
+# ontology/layers/files.ttl), checked by the component shapes layer. What a drop accepts is not here:
+# it is the shape the drop validates (val:validates), its sh:node shapes and its sh:maxCount.
+
+c:FileDropShape a sh:NodeShape ; sh:targetClass c:FileDrop ;
+    sh:property [ sh:path c:label ; sh:minCount 1 ;
+                  sh:message "A file drop needs a label (c:label): its zone is a button, and that is its name." ] ,
+                [ sh:path c:property ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A file drop fills one property (c:property) with the files it accepts." ] ,
+                [ sh:path c:controls ; sh:maxCount 1 ; sh:nodeKind sh:IRI ;
+                  sh:message "A file drop fills a property of one node (c:controls; itself by default)." ] ,
+                [ sh:path val:validates ; sh:nodeKind sh:IRI ] ,
+                [ sh:path file:accept ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ,
+                [ sh:path file:uploadTo ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ,
+                [ sh:path file:handler ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ,
+                [ sh:path file:file ; sh:class file:File ] .
+
+c:FileItemShape a sh:NodeShape ; sh:targetClass c:FileItem ;
+    sh:property [ sh:path c:of ; sh:minCount 1 ; sh:maxCount 1 ; sh:class file:File ] ,
+                [ sh:path c:itemOf ; sh:minCount 1 ; sh:maxCount 1 ; sh:class c:FileDrop ] .
+
+# A file's metadata, as the files effect reports it.
+file:FileMetadataShape a sh:NodeShape ; sh:targetClass file:File ;
+    sh:property [ sh:path file:name ; sh:maxCount 1 ; sh:datatype xsd:string ] ,
+                [ sh:path file:mediaType ; sh:datatype xsd:string ] ,
+                [ sh:path file:size ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path file:loaded ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ,
+                [ sh:path file:modified ; sh:maxCount 1 ; sh:datatype xsd:dateTime ] ,
+                [ sh:path file:handle ; sh:maxCount 1 ; sh:datatype xsd:string ] ,
+                [ sh:path file:state ; sh:maxCount 1 ; sh:in ( file:Ready file:Uploading file:Uploaded file:Failed file:Refused ) ] .

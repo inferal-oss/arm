@@ -1,0 +1,30 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# The same stock tokens in every theme; chronology stays increasing left to right
+# while labels, the disclosure and its readings follow the viewer's direction.
+[] a sty:StyleRule ; sty:appliesTo c:Sparkline ;
+    sty:declares [ sty:property "margin" ; sty:raw "0" ] ,
+      [ sty:property "min-inline-size" ; sty:raw "0" ] ,
+      [ sty:property "color" ; sty:token tok:text ] ,
+      [ sty:property "font-family" ; sty:token tok:font ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sparkline ; sty:part "> svg" ;
+    sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+      [ sty:property "inline-size" ; sty:raw "100%" ] ,
+      [ sty:property "block-size" ; sty:raw "auto" ] ,
+      [ sty:property "direction" ; sty:raw "ltr" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sparkline ; sty:part ".sem-sparkline-line" ;
+    sty:declares [ sty:property "stroke" ; sty:token tok:accent ] ,
+      [ sty:property "stroke-width" ; sty:raw "1.5" ] ,
+      [ sty:property "vector-effect" ; sty:raw "non-scaling-stroke" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sparkline ; sty:part ".sem-sparkline-dot" ;
+    sty:declares [ sty:property "fill" ; sty:token tok:accent ] ,
+      [ sty:property "stroke" ; sty:token tok:accent ] ,
+      [ sty:property "stroke-width" ; sty:raw "2" ] ,
+      [ sty:property "vector-effect" ; sty:raw "non-scaling-stroke" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Sparkline ; sty:part "ol" ;
+    sty:declares [ sty:property "max-block-size" ; sty:raw "12rem" ] ,
+      [ sty:property "overflow" ; sty:raw "auto" ] ,
+      [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+      [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] .

@@ -1,0 +1,621 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Navigation components (DESIGN.md §3): NavLink, NavList, Breadcrumbs, Pagination and Stepper.
+
+# --- NavLink: a link as a row of a site's navigation -------------------------------------------
+# A c:Link (one rule and its twin: c:href or c:to, c:label, c:logo, c:currentPage, c:count with
+# c:countLabel, external links) under its own slug, so every theme draws it as a nav list's row:
+# full width, the count at the end, the current page marked as a nav list marks its choice.
+
+c:NavLink a owl:Class ;
+    rdfs:subClassOf c:Link ;
+    rdfs:label "Navigation link"@en , "Навігаційне посилання"@uk , "Navigationslink"@de , "رابط تنقل"@ar ;
+    rdfs:comment "A link in a site's navigation, drawn as a nav list's row: a c:Link with c:currentPage for the page being shown and c:count for what waits there."@en ;
+    sem:slug "nav-link" .
+
+# --- NavList: vertical navigation over one property's values -----------------------------------
+# A c:Segmented laid out as a list: the same graph contract (c:controls,
+# c:property, options from the property's range), the same reaction.
+
+c:NavList a owl:Class ;
+    rdfs:subClassOf c:Segmented ;
+    rdfs:comment "Vertical navigation: picks one value of c:property on c:controls, from the property's range."@en ;
+    sem:slug "nav-list" .
+
+# A count beside each option (unread messages, open issues): c:countProperty names a numeric
+# property of the options; the rendering adds the value after the option's label when it is
+# above zero, with c:countLabel spelled out for assistive technology ("3 unread"). Any
+# c:Segmented can have one; a nav list is where it is usual.
+c:countProperty a owl:ObjectProperty ; rdfs:domain c:Segmented ; rdfs:range rdf:Property ;
+    rdfs:comment "A numeric property of each option, shown as a count after its label when above zero."@en .
+c:countLabel a owl:DatatypeProperty ;
+    rdfs:comment "What the count counts, read after it by assistive technology (\"unread\"): on a c:Link (c:count), c:Segmented with c:countProperty, or c:Chips with c:countQuery."@en .
+c:SegmentedCounts a sem:Rendering ;
+    sem:targets c:Segmented ;
+    sem:requires c:countProperty ;
+    sem:modality mod:Screen ;
+    sem:stratum 0 .
+c:SegmentedCounts-fn a sem:Rule ; sem:implements c:SegmentedCounts ; sem:function "nav:counts" .
+# The options are the members of c:options or the individuals of the property's range; their counts
+# are theirs, so the rule follows both ways to them (the range's instances: [ sem:inverse rdf:type ]).
+c:SegmentedCounts-sparql a sem:Rule ;
+    sem:implements c:SegmentedCounts ;
+    sem:follows ( c:property rdfs:range [ sem:inverse rdf:type ] ) , ( c:options [ sem:zeroOrMore rdf:rest ] rdf:first ) ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?button rdfhtml:hasChild ?count .
+  ?label ord:immediatelyPrecedes ?count .
+  ?count a rdfhtml:Span ; rdfhtml:class "sem-count" ; rdfhtml:hasChild ?figure , ?spoken .
+  ?figure a rdfhtml:Span ; rdfhtml:attribute ?figureHidden ; rdfhtml:hasChild ?figureText ; ord:immediatelyPrecedes ?spoken .
+  ?figureHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?figureText a rdfhtml:Text ; rdfhtml:data ?shown .
+  ?spoken a rdfhtml:Span ; rdfhtml:class "sem-visually-hidden" ; rdfhtml:hasChild ?spokenText .
+  ?spokenText a rdfhtml:Text ; rdfhtml:data ?spokenLine .
+}
+WHERE {
+  $this c:property ?property ; c:countProperty ?countProperty . FILTER(isIRI(?property) && isIRI(?countProperty))
+  { $this c:options/rdf:rest*/rdf:first ?opt . FILTER(isIRI(?opt)) }
+  UNION
+  { FILTER NOT EXISTS { $this c:options ?explicit } ?property rdfs:range ?range . ?opt a ?range . FILTER(isIRI(?opt)) }
+  ?opt ?countProperty ?raw .
+  BIND(xsd:double(?raw) AS ?n)
+  FILTER(?n > 0)
+  BIND(IF(?n = FLOOR(?n), STR(xsd:integer(?n)), STR(?raw)) AS ?figureValue)
+  BIND(IF(?n > 99, "99+", ?figureValue) AS ?shown)
+  OPTIONAL { ?pickAt l10n:of $this ; l10n:countLabel ?pick }
+  OPTIONAL { FILTER(!BOUND(?pick)) $this c:countLabel ?any FILTER(isLiteral(?any)) }
+  BIND(STR(COALESCE(?pick, ?any)) AS ?spokenWord)
+  BIND(CONCAT(", ", ?figureValue, IF(COALESCE(?spokenWord, "") != "", CONCAT(" ", ?spokenWord), "")) AS ?spokenLine)
+  BIND(CONCAT("opt-", ENCODE_FOR_URI(STR(?opt))) AS ?key)
+  BIND(IRI(CONCAT(STR($this), "/~", ?key)) AS ?button)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-label"))) AS ?label)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-count"))) AS ?count)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-count-figure"))) AS ?figure)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-count-figure-aria-hidden"))) AS ?figureHidden)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-count-text"))) AS ?figureText)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-count-spoken"))) AS ?spoken)
+  BIND(IRI(CONCAT(STR($this), "/~", CONCAT(?key, "-count-spoken-text"))) AS ?spokenText)
+}""" .
+
+# --- Breadcrumbs: where you are in a hierarchy ----------------------------------------------------
+# The trail is c:items (nodes, labelled), or derived: from an end node up through c:parentProperty
+# (`?node <parentProperty> ?parent`) to a node with no parent. The end node is c:of, or the
+# current value of c:property on c:controls. With c:controls and c:property, an ancestor is a
+# button that writes `<controls> <property> <ancestor>` (the c:Segmented reaction). The last crumb
+# is the current page (aria-current=page).
+
+c:Breadcrumbs a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """A trail of nodes in a <nav> (c:label names it, default "Breadcrumb"): c:items, or the path
+from the root down to c:of (or to c:property of c:controls) through c:parentProperty. The last is
+aria-current=page. With c:controls and c:property, earlier crumbs select a graph node. Otherwise,
+an earlier crumb with nav:href (where the navigation layer resolved a c:Link's c:to) or c:href is
+a link to that address."""@en ;
+    sem:slug "breadcrumbs" .
+# It reads the trail the building blocks below mint under it (sem:readsMinted).
+c:BreadcrumbsRendering a sem:Rendering ; sem:targets c:Breadcrumbs ; sem:stratum 0 ; sem:readsMinted true .
+c:BreadcrumbsRendering-fn a sem:Rule ; sem:implements c:BreadcrumbsRendering ; sem:function "nav:breadcrumbs" .
+# SPARQL twins of "nav:breadcrumbs" (src/components/navigation.ts), over the building blocks below.
+c:BreadcrumbsRendering-sparql-screen a sem:Rule ;
+    sem:implements c:BreadcrumbsRendering ;
+    sem:modality mod:Screen ;
+    sem:follows c:controls ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Nav ; sem:renders $this ; rdfhtml:attribute ?nameAttr ; rdfhtml:hasChild ?list .
+  ?nameAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?name .
+  ?list a rdfhtml:Ol ; rdfhtml:hasChild ?li .
+  ?li a rdfhtml:Li ; sem:orderKey ?pos ; rdfhtml:hasChild ?content , ?sep .
+  ?content a ?contentClass ; rdfhtml:type ?buttonType ; rdfhtml:href ?href ; rdfhtml:class ?contentStyle ; rdfhtml:attribute ?currentAttr ;
+           c:selects ?selects ; rdfhtml:hasChild ?text ; ord:immediatelyPrecedes ?sep .
+  ?currentAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-current" ; rdfhtml:attributeValue "page" .
+  ?text a rdfhtml:Text ; rdfhtml:data ?label .
+  ?sep a rdfhtml:Span ; rdfhtml:class "sem-sep" ; rdfhtml:attribute ?sepHidden ; rdfhtml:hasChild ?sepText .
+  ?sepHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?sepText a rdfhtml:Text ; rdfhtml:data "/" .
+}
+WHERE {
+  # The crumbs: c:items, else the trail from the end node (c:of, or what c:property of
+  # c:controls holds) up, ordered top first; ?last is the end.
+  {
+    $this c:items/rdf:rest* ?cell . ?cell rdf:first ?crumb . FILTER(isIRI(?crumb))
+    { SELECT ?cell (COUNT(?before) AS ?pos) WHERE { $this c:items/rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(NOT EXISTS { ?cell rdf:rest+ ?later . ?later rdf:first ?laterCrumb FILTER(isIRI(?laterCrumb)) } AS ?last)
+  } UNION {
+    FILTER NOT EXISTS { $this c:items/rdf:rest*/rdf:first ?anyItem FILTER(isIRI(?anyItem)) }
+    $this c:parentProperty ?prop . FILTER(isIRI(?prop))
+    OPTIONAL { $this c:of ?of }
+    OPTIONAL { $this c:controls ?target ; c:property ?property . FILTER(isIRI(?target) && isIRI(?property)) ?target ?property ?selectedEnd }
+    BIND(COALESCE(?of, ?selectedEnd) AS ?end)
+    FILTER(isIRI(?end))
+    BIND(IRI(CONCAT(STR($this), "/~at-", ENCODE_FOR_URI(STR(?end)))) AS ?endAt)
+    # LATERAL: the walk starts from the bound end (a zero-length path from an unbound one is every node).
+    LATERAL { ?endAt c:trailUp* ?crumbAt }
+    OPTIONAL { ?crumbAt c:stepOf ?stepNode }
+    BIND(COALESCE(?stepNode, ?end) AS ?crumb)
+    LATERAL { SELECT ?crumbAt (COUNT(?up) AS ?pos) WHERE { ?crumbAt c:trailUp* ?up } GROUP BY ?crumbAt }
+    BIND(?crumbAt = ?endAt AS ?last)
+  }
+  BIND(EXISTS { $this c:controls ?t ; c:property ?p . FILTER(isIRI(?t) && isIRI(?p)) } AS ?navigates)
+  OPTIONAL { $this l10n:label ?pickn }
+  OPTIONAL { FILTER(!BOUND(?pickn)) ?picknAt l10n:of $this ; l10n:label ?picknT }
+  OPTIONAL { FILTER(!BOUND(?pickn) && !BOUND(?picknT)) $this c:label ?anyn FILTER(isLiteral(?anyn)) }
+  BIND(STR(COALESCE(?pickn, ?picknT, ?anyn)) AS ?ownName)
+  BIND(COALESCE(?ownName, "Breadcrumb") AS ?name)
+  LATERAL { SELECT ?crumb ?label WHERE {
+    LATERAL { OPTIONAL { SELECT ?crumb ?c WHERE {
+  
+  OPTIONAL { ?crumb l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?crumb ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?crumb c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+    LATERAL { OPTIONAL { SELECT ?crumb ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?crumb ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?crumb rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+    BIND(COALESCE(?c, ?r, REPLACE(STR(?crumb), "^.*[#/]", "")) AS ?label)
+    } }
+  BIND(CONCAT("c", SUBSTR(MD5(STR(?crumb)), 1, 8)) AS ?id)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?nameAttr)
+  BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+  BIND(IRI(CONCAT(STR($this), "/~", ?id)) AS ?li)
+  # A crumb that neither is the end nor selects: a link where the navigation layer resolved it
+  # (a c:Link with c:to: nav:href), else its c:href; a plain span without either.
+  OPTIONAL { FILTER(!?last && !?navigates) ?crumb nav:href ?navHref }
+  OPTIONAL { FILTER(!?last && !?navigates && !BOUND(?navHref)) ?crumb c:href ?ownHref }
+  BIND(STR(COALESCE(?navHref, ?ownHref)) AS ?href)
+  BIND(IRI(CONCAT(STR($this), "/~", ?id, IF(?last, "-current", IF(?navigates || BOUND(?href), "-link", "-crumb")))) AS ?content)
+  BIND(IF(!?last && ?navigates, rdfhtml:Button, IF(BOUND(?href), rdfhtml:A, rdfhtml:Span)) AS ?contentClass)
+  BIND(IF(!?last && ?navigates, "button", ?none) AS ?buttonType)
+  BIND(IF(?last, "sem-current", "sem-crumb") AS ?contentStyle)
+  BIND(IF(?last, IRI(CONCAT(STR($this), "/~", ?id, "-current-aria-current")), ?none) AS ?currentAttr)
+  BIND(IF(!?last && ?navigates, ?crumb, ?none) AS ?selects)
+  BIND(IRI(CONCAT(STR($this), "/~", ?id, "-text")) AS ?text)
+  BIND(IF(?last, ?none, IRI(CONCAT(STR($this), "/~", ?id, "-sep"))) AS ?sep)
+  BIND(IF(?last, ?none, IRI(CONCAT(STR($this), "/~", ?id, "-sep-aria-hidden"))) AS ?sepHidden)
+  BIND(IF(?last, ?none, IRI(CONCAT(STR($this), "/~", ?id, "-sep-text"))) AS ?sepText)
+}""" .
+c:BreadcrumbsRendering-sparql-text a sem:Rule ;
+    sem:implements c:BreadcrumbsRendering ;
+    sem:modality mod:Text ;
+    sem:follows c:controls ;
+    sem:bulk false ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?trail .
+}
+WHERE {
+  { SELECT (GROUP_CONCAT(?label; separator=" \\u203A ") AS ?trail) WHERE {
+    { SELECT DISTINCT ?pos ?crumb ?label WHERE {
+      # The crumbs: c:items, else the trail from the end node (c:of, or what c:property of
+  # c:controls holds) up, ordered top first; ?last is the end.
+  {
+    $this c:items/rdf:rest* ?cell . ?cell rdf:first ?crumb . FILTER(isIRI(?crumb))
+    { SELECT ?cell (COUNT(?before) AS ?pos) WHERE { $this c:items/rdf:rest* ?before . ?before rdf:rest* ?cell } GROUP BY ?cell }
+    BIND(NOT EXISTS { ?cell rdf:rest+ ?later . ?later rdf:first ?laterCrumb FILTER(isIRI(?laterCrumb)) } AS ?last)
+  } UNION {
+    FILTER NOT EXISTS { $this c:items/rdf:rest*/rdf:first ?anyItem FILTER(isIRI(?anyItem)) }
+    $this c:parentProperty ?prop . FILTER(isIRI(?prop))
+    OPTIONAL { $this c:of ?of }
+    OPTIONAL { $this c:controls ?target ; c:property ?property . FILTER(isIRI(?target) && isIRI(?property)) ?target ?property ?selectedEnd }
+    BIND(COALESCE(?of, ?selectedEnd) AS ?end)
+    FILTER(isIRI(?end))
+    BIND(IRI(CONCAT(STR($this), "/~at-", ENCODE_FOR_URI(STR(?end)))) AS ?endAt)
+    # LATERAL: the walk starts from the bound end (a zero-length path from an unbound one is every node).
+    LATERAL { ?endAt c:trailUp* ?crumbAt }
+    OPTIONAL { ?crumbAt c:stepOf ?stepNode }
+    BIND(COALESCE(?stepNode, ?end) AS ?crumb)
+    LATERAL { SELECT ?crumbAt (COUNT(?up) AS ?pos) WHERE { ?crumbAt c:trailUp* ?up } GROUP BY ?crumbAt }
+    BIND(?crumbAt = ?endAt AS ?last)
+  }
+      LATERAL { SELECT ?crumb ?label WHERE {
+    LATERAL { OPTIONAL { SELECT ?crumb ?c WHERE {
+  
+  OPTIONAL { ?crumb l10n:label ?pickc }
+  OPTIONAL { FILTER(!BOUND(?pickc)) ?pickcAt l10n:of ?crumb ; l10n:label ?pickcT }
+  OPTIONAL { FILTER(!BOUND(?pickc) && !BOUND(?pickcT)) ?crumb c:label ?anyc FILTER(isLiteral(?anyc)) }
+  BIND(STR(COALESCE(?pickc, ?pickcT, ?anyc)) AS ?c)
+  } } }
+    LATERAL { OPTIONAL { SELECT ?crumb ?r WHERE {
+  
+  OPTIONAL { ?pickrAt l10n:of ?crumb ; l10n:name ?pickr }
+  OPTIONAL { FILTER(!BOUND(?pickr)) ?crumb rdfs:label ?anyr FILTER(isLiteral(?anyr)) }
+  BIND(STR(COALESCE(?pickr, ?anyr)) AS ?r)
+  } } }
+    BIND(COALESCE(?c, ?r, REPLACE(STR(?crumb), "^.*[#/]", "")) AS ?label)
+    } }
+    } ORDER BY ?pos }
+  } HAVING (COUNT(?label) > 0) }
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+}""" .
+
+# --- building blocks: the hierarchy as fixed-predicate edges, per breadcrumbs ---------------------
+# A property path needs a fixed predicate, and c:parentProperty is named in the data. So the
+# breadcrumbs first mint their own copy of the hierarchy: a step node per node
+# (<crumbs>/~at-<node>, c:stepOf it), joined by c:stepUp along the parent property - one hop
+# over a predicate in a variable is a plain triple pattern. Minted per breadcrumbs, so two with
+# different parent properties never mix. Then the step each node's trail takes (c:trailUp): to
+# its least parent (by IRI) that reaches c:upTo, never up from c:upTo itself. The rendering
+# walks c:trailUp*. Only the hierarchy's own predicate is read, so they re-run when the
+# breadcrumbs' c:parentProperty or c:upTo change, not when the data's hierarchy does.
+c:stepOf a owl:ObjectProperty ; rdfs:comment "On a breadcrumbs' step node: the node it stands for."@en .
+c:hasStep a owl:ObjectProperty ; rdfs:comment "From breadcrumbs to their step nodes."@en .
+c:stepUp a owl:ObjectProperty ; rdfs:comment "From a step node to the step node of a parent (along c:parentProperty)."@en .
+c:trailUp a owl:ObjectProperty ; rdfs:comment "From a step node to the step its trail takes up (the least parent reaching c:upTo)."@en .
+
+c:BreadcrumbSteps a sem:BuildingBlock ; sem:targets c:Breadcrumbs ; sem:stratum -6 ;
+    sem:requires c:parentProperty ; sem:watches rdf:type , c:parentProperty .
+c:BreadcrumbSteps-fn a sem:Rule ; sem:implements c:BreadcrumbSteps ; sem:function "nav:breadcrumb-steps" .
+c:BreadcrumbSteps-sparql a sem:Rule ;
+    sem:implements c:BreadcrumbSteps ;
+    sem:construct """
+CONSTRUCT { $this c:hasStep ?at , ?parentAt . ?at c:stepOf ?node ; c:stepUp ?parentAt . ?parentAt c:stepOf ?parent . }
+WHERE {
+  $this c:parentProperty ?prop . FILTER(isIRI(?prop))
+  ?node ?prop ?parent . FILTER(isIRI(?node) && isIRI(?parent))
+  BIND(IRI(CONCAT(STR($this), "/~at-", ENCODE_FOR_URI(STR(?node)))) AS ?at)
+  BIND(IRI(CONCAT(STR($this), "/~at-", ENCODE_FOR_URI(STR(?parent)))) AS ?parentAt)
+}""" .
+
+c:BreadcrumbTrail a sem:BuildingBlock ; sem:targets c:Breadcrumbs ; sem:stratum -5 ;
+    sem:requires c:parentProperty ; sem:readsMinted true ; sem:watches rdf:type , c:parentProperty , c:upTo .
+c:BreadcrumbTrail-fn a sem:Rule ; sem:implements c:BreadcrumbTrail ; sem:function "nav:breadcrumb-trail" .
+c:BreadcrumbTrail-sparql a sem:Rule ;
+    sem:implements c:BreadcrumbTrail ;
+    sem:construct """
+CONSTRUCT { ?at c:trailUp ?parentAt }
+WHERE {
+  $this c:hasStep ?at . ?at c:stepOf ?node ; c:stepUp ?parentAt . ?parentAt c:stepOf ?parent .
+  FILTER(?parent != ?node)
+  OPTIONAL { $this c:upTo ?upTo }
+  FILTER(!BOUND(?upTo) || ?node != ?upTo)
+  BIND(IRI(CONCAT(STR($this), "/~at-", ENCODE_FOR_URI(STR(?upTo)))) AS ?upToAt)
+  FILTER(!BOUND(?upTo) || ?parent = ?upTo || EXISTS { ?parentAt c:stepUp+ ?upToAt })
+  FILTER NOT EXISTS {
+    ?at c:stepUp ?otherAt . ?otherAt c:stepOf ?other .
+    FILTER(?other != ?node && STR(?other) < STR(?parent))
+    FILTER(!BOUND(?upTo) || ?other = ?upTo || EXISTS { ?otherAt c:stepUp+ ?upToAt })
+  }
+}""" .
+
+c:BreadcrumbsSelect a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Breadcrumbs ;
+    beh:deletes """CONSTRUCT { ?target ?p ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?node . $this c:controls ?target ; c:property ?p . ?target ?p ?old }""" ;
+    beh:inserts """CONSTRUCT { ?target ?p ?node } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?node . $this c:controls ?target ; c:property ?p }""" ;
+    sem:function "segmented:select" .
+
+# --- Pagination ------------------------------------------------------------------------------------
+
+c:Pagination a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Pages 1 to c:pages, the current one c:page: previous / next and numbered buttons, with
+an ellipsis for long runs. Clicking writes c:page."""@en ;
+    sem:slug "pagination" .
+c:page a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "The current page (1-based)."@en .
+c:pages a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "How many pages there are."@en .
+c:goesTo a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:comment "On a rendered button: the page that activating it shows."@en .
+c:PaginationRendering a sem:Rendering ; sem:targets c:Pagination ; sem:stratum 0 .
+c:PaginationRendering-fn a sem:Rule ; sem:implements c:PaginationRendering ; sem:function "nav:pagination" .
+# The pages shown (navigation.ts pageWindow): all of them up to 7; otherwise the ends, the
+# current page and its neighbours, and the first or last five when the current page is near
+# that end. A long run is an ellipsis: after page 1 from the 5th page on, before the last page
+# up to the 4th from the end. Candidates come from VALUES (1-7, around the page, the last five).
+c:PaginationRendering-sparql a sem:Rule ;
+    sem:implements c:PaginationRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Nav ; sem:renders $this ; rdfhtml:hasChild ?list ; rdfhtml:attribute ?name .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?list a rdfhtml:Ul ; rdfhtml:hasChild ?li .
+  ?li a rdfhtml:Li ; rdfhtml:hasChild ?liChild ; rdfhtml:class ?liClass ; rdfhtml:attribute ?liHidden .
+  ?liHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?button a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class ?buttonClass ; rdfhtml:disabled ?disabled ;
+          rdfhtml:hasChild ?content ; rdfhtml:attribute ?buttonName, ?current ; c:goesTo ?to .
+  ?buttonName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?buttonLabel .
+  ?current a rdfhtml:Attribute ; rdfhtml:attributeName "aria-current" ; rdfhtml:attributeValue "page" .
+  ?icon a rdfhtml:Span ; rdfhtml:attribute ?iconHidden ; rdfhtml:hasChild ?iconText .
+  ?iconHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?text a rdfhtml:Text ; rdfhtml:data ?data .
+  ?a ord:immediatelyPrecedes ?b .
+  ?c ord:immediatelyPrecedes ?d .
+}
+WHERE {
+  $this a c:Pagination .
+  OPTIONAL { $this c:pages ?pagesRaw }
+  OPTIONAL { $this c:page ?pageRaw }
+  BIND(COALESCE(xsd:integer(FLOOR(xsd:double(STR(?pagesRaw)))), 1) AS ?pages0)
+  BIND(IF(?pages0 < 1, 1, ?pages0) AS ?pages)
+  BIND(COALESCE(xsd:integer(FLOOR(xsd:double(STR(?pageRaw)))), 1) AS ?page0)
+  BIND(IF(?page0 > ?pages, ?pages, IF(?page0 < 1, 1, ?page0)) AS ?page)
+  BIND(?pages > 7 && ?page >= 5 AS ?leftGap)
+  BIND(?pages > 7 && ?page <= ?pages - 4 AS ?rightGap)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~list")) AS ?list)
+  LATERAL {
+    {
+      # The nav, and the previous / next steps.
+      BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?name)
+      OPTIONAL { $this l10n:label ?localLabel }
+      OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+      BIND(STR(COALESCE(?localLabel, ?rawLabel, "Pagination")) AS ?label)
+      VALUES (?step ?glyph ?buttonLabel ?delta) { ("prev" "‹" "Previous page" -1) ("next" "›" "Next page" 1) }
+      BIND(?page + ?delta AS ?target)
+      BIND(?target < 1 || ?target > ?pages AS ?off)
+      BIND(IRI(CONCAT(STR($this), "/~", ?step, "-li")) AS ?li)
+      BIND(IRI(CONCAT(STR($this), "/~", ?step)) AS ?button)
+      BIND(?button AS ?liChild)
+      BIND("sem-step" AS ?buttonClass)
+      BIND(IF(?off, "", ?none) AS ?disabled)
+      BIND(IF(?off, ?none, ?target) AS ?to)
+      BIND(IRI(CONCAT(STR($this), "/~", ?step, "-aria-label")) AS ?buttonName)
+      BIND(IRI(CONCAT(STR($this), "/~", ?step, "-icon")) AS ?icon)
+      BIND(?icon AS ?content)
+      BIND(IRI(CONCAT(STR($this), "/~", ?step, "-icon-aria-hidden")) AS ?iconHidden)
+      BIND(IRI(CONCAT(STR($this), "/~", ?step, "-icon-text")) AS ?iconText)
+      BIND(?iconText AS ?text)
+      BIND(?glyph AS ?data)
+      BIND(IF(?step = "prev", ?li, ?none) AS ?a)
+      BIND(IF(?step = "prev", IRI(CONCAT(STR($this), "/~p1-li")), ?none) AS ?b)
+      BIND(IF(?step = "next", IRI(CONCAT(STR($this), "/~p", STR(?pages), "-li")), ?none) AS ?c)
+      BIND(IF(?step = "next", ?li, ?none) AS ?d)
+    } UNION {
+      # A numbered page, and the page after it when that is shown too.
+      VALUES ?k { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 }
+      BIND(IF(?k <= 7, ?k, IF(?k <= 10, ?page + ?k - 9, ?pages + ?k - 15)) AS ?q)
+      FILTER(?q >= 1 && ?q <= ?pages && (?pages <= 7 || ?q = 1 || ?q = ?pages || ABS(?q - ?page) <= 1
+             || (?page <= 4 && ?q <= 5) || (?page >= ?pages - 3 && ?q >= ?pages - 4)))
+      BIND(?q + 1 AS ?q1)
+      BIND(?q1 <= ?pages && (?pages <= 7 || ?q1 = ?pages || ABS(?q1 - ?page) <= 1
+           || (?page <= 4 && ?q1 <= 5) || (?page >= ?pages - 3 && ?q1 >= ?pages - 4)) AS ?adjacent)
+      BIND(CONCAT(STR($this), "/~p", STR(?q)) AS ?id)
+      BIND(IRI(CONCAT(?id, "-li")) AS ?li)
+      BIND(IRI(?id) AS ?button)
+      BIND(?button AS ?liChild)
+      BIND("sem-page" AS ?buttonClass)
+      BIND(IRI(CONCAT(?id, "-text")) AS ?text)
+      BIND(?text AS ?content)
+      BIND(STR(?q) AS ?data)
+      BIND(IRI(CONCAT(?id, "-aria-label")) AS ?buttonName)
+      BIND(CONCAT("Page ", STR(?q)) AS ?buttonLabel)
+      BIND(IF(?q = ?page, IRI(CONCAT(?id, "-aria-current")), ?none) AS ?current)
+      BIND(IF(?q = ?page, ?none, ?q) AS ?to)
+      BIND(IF(?adjacent, ?li, ?none) AS ?a)
+      BIND(IF(?adjacent, IRI(CONCAT(STR($this), "/~p", STR(?q1), "-li")), ?none) AS ?b)
+    } UNION {
+      # The ellipses: gap0 is the first, gap1 the second.
+      VALUES ?side { "left" "right" }
+      FILTER(IF(?side = "left", ?leftGap, ?rightGap))
+      BIND(IF(?side = "right" && ?leftGap, "gap1", "gap0") AS ?gap)
+      BIND(IRI(CONCAT(STR($this), "/~", ?gap)) AS ?li)
+      BIND("sem-gap" AS ?liClass)
+      BIND(IRI(CONCAT(STR($this), "/~", ?gap, "-aria-hidden")) AS ?liHidden)
+      BIND(IRI(CONCAT(STR($this), "/~", ?gap, "-text")) AS ?text)
+      BIND(?text AS ?liChild)
+      BIND("…" AS ?data)
+      BIND(IF(?page >= ?pages - 3 && ?pages - 4 < ?page - 1, ?pages - 4, ?page - 1) AS ?leftNext)
+      BIND(IF(?page <= 4 && 5 > ?page + 1, 5, ?page + 1) AS ?rightPrev)
+      BIND(IRI(CONCAT(STR($this), "/~p", STR(IF(?side = "left", 1, ?rightPrev)), "-li")) AS ?a)
+      BIND(?li AS ?b)
+      BIND(?li AS ?c)
+      BIND(IRI(CONCAT(STR($this), "/~p", STR(IF(?side = "left", ?leftNext, ?pages)), "-li")) AS ?d)
+    }
+  }
+}""" .
+c:PaginationRendering-sparql-text a sem:Rule ;
+    sem:implements c:PaginationRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?data .
+}
+WHERE {
+  $this a c:Pagination .
+  OPTIONAL { $this c:pages ?pagesRaw }
+  OPTIONAL { $this c:page ?pageRaw }
+  BIND(COALESCE(xsd:integer(FLOOR(xsd:double(STR(?pagesRaw)))), 1) AS ?pages0)
+  BIND(IF(?pages0 < 1, 1, ?pages0) AS ?pages)
+  BIND(COALESCE(xsd:integer(FLOOR(xsd:double(STR(?pageRaw)))), 1) AS ?page0)
+  BIND(IF(?page0 > ?pages, ?pages, IF(?page0 < 1, 1, ?page0)) AS ?page)
+  LATERAL {
+    SELECT ?page ?pages (GROUP_CONCAT(?token; separator=" ") AS ?tokens) WHERE {
+      { SELECT DISTINCT ?page ?pages ?q ?token WHERE {
+          VALUES ?k { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 }
+          BIND(IF(?k <= 7, ?k, IF(?k <= 10, ?page + ?k - 9, ?pages + ?k - 15)) AS ?q)
+          FILTER(?q >= 1 && ?q <= ?pages && (?pages <= 7 || ?q = 1 || ?q = ?pages || ABS(?q - ?page) <= 1
+                 || (?page <= 4 && ?q <= 5) || (?page >= ?pages - 3 && ?q >= ?pages - 4)))
+          BIND(IF(?page <= 4 && 5 > ?page + 1, 5, ?page + 1) AS ?rightPrev)
+          BIND(CONCAT(IF(?q = ?page, CONCAT("[", STR(?q), "]"), STR(?q)),
+                      IF(?pages > 7 && ?page >= 5 && ?q = 1, " …", ""),
+                      IF(?pages > 7 && ?page <= ?pages - 4 && ?q = ?rightPrev, " …", "")) AS ?token)
+        } ORDER BY ?q }
+    } GROUP BY ?page ?pages
+  }
+  BIND(CONCAT("‹ ", ?tokens, " ›") AS ?data)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+}""" .
+c:PaginationGo a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Pagination ;
+    beh:deletes """CONSTRUCT { $this c:page ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:goesTo ?page . $this c:page ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:page ?page } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:goesTo ?page }""" ;
+    sem:function "nav:pagination-go" .
+
+# --- Stepper ------------------------------------------------------------------------------------
+
+c:Stepper a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment """Progress through ordered steps (c:steps, an rdf:List of nodes with c:label and c:help):
+steps before c:current are complete, c:current is current (aria-current=step), the rest upcoming.
+With c:navigable true, clicking a step makes it current."""@en ;
+    sem:slug "stepper" .
+c:steps a owl:ObjectProperty ; rdfs:domain c:Stepper ; rdfs:range rdf:List .
+c:current a owl:ObjectProperty ; rdfs:domain c:Stepper ; rdfs:comment "The step being worked on."@en .
+c:navigable a owl:DatatypeProperty ; rdfs:range xsd:boolean ; rdfs:comment "Steps can be visited by clicking them."@en .
+c:StepperRendering a sem:Rendering ; sem:targets c:Stepper ; sem:stratum 0 .
+c:StepperRendering-fn a sem:Rule ; sem:implements c:StepperRendering ; sem:function "nav:stepper" .
+# A step's position is the number of named entries before it in c:steps (rdf:rest* pairs);
+# steps before c:current's position are complete. Step labels are read like util.text():
+# the untagged value, else English, else any (steps are not components, so l10n:label
+# does not apply to them).
+c:StepperRendering-sparql a sem:Rule ;
+    sem:implements c:StepperRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Ol ; sem:renders $this ; rdfhtml:hasChild ?li ; rdfhtml:attribute ?name .
+  ?name a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?li a rdfhtml:Li ; rdfhtml:hasChild ?content ; rdfhtml:attribute ?stateAttr .
+  ?stateAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-state" ; rdfhtml:attributeValue ?state .
+  ?content a ?contentType ; rdfhtml:type ?buttonType ; rdfhtml:class "sem-step" ; c:selects ?selects ;
+           rdfhtml:hasChild ?marker, ?body, ?status ; rdfhtml:attribute ?currentAttr .
+  ?currentAttr a rdfhtml:Attribute ; rdfhtml:attributeName "aria-current" ; rdfhtml:attributeValue "step" .
+  ?marker a rdfhtml:Span ; rdfhtml:class "sem-marker" ; rdfhtml:attribute ?markerHidden ; rdfhtml:hasChild ?markerText ;
+          ord:immediatelyPrecedes ?body .
+  ?markerHidden a rdfhtml:Attribute ; rdfhtml:attributeName "aria-hidden" ; rdfhtml:attributeValue "true" .
+  ?markerText a rdfhtml:Text ; rdfhtml:data ?markerData .
+  ?body a rdfhtml:Span ; rdfhtml:class "sem-body" ; rdfhtml:hasChild ?stepLabel, ?help ; ord:immediatelyPrecedes ?status .
+  ?stepLabel a rdfhtml:Span ; rdfhtml:class "sem-label" ; rdfhtml:hasChild ?stepLabelText ; ord:immediatelyPrecedes ?help .
+  ?stepLabelText a rdfhtml:Text ; rdfhtml:data ?labelData .
+  ?help a rdfhtml:Span ; rdfhtml:class "sem-help" ; rdfhtml:hasChild ?helpText .
+  ?helpText a rdfhtml:Text ; rdfhtml:data ?helpData .
+  ?status a rdfhtml:Span ; rdfhtml:class "sem-visually-hidden" ; rdfhtml:hasChild ?statusText .
+  ?statusText a rdfhtml:Text ; rdfhtml:data ?statusData .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a c:Stepper ; c:steps ?list .
+  OPTIONAL {
+    $this c:steps ?list ; c:current ?current .
+    LATERAL { SELECT ?list ?current (MIN(?p) AS ?currentPos) WHERE {
+      { SELECT ?list ?current (COUNT(?before) - 1 AS ?p) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?current .
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?current }
+    } GROUP BY ?list ?current }
+  }
+  BIND(COALESCE(?currentPos, 0) AS ?at)
+  BIND(EXISTS { $this c:navigable ?navigable FILTER(isLiteral(?navigable) && STR(?navigable) = "true") } AS ?go)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-label")) AS ?name)
+  OPTIONAL { $this l10n:label ?localLabel }
+  OPTIONAL { ?rawLabelAt l10n:of $this ; l10n:label ?rawLabel }
+  OPTIONAL { $this c:label ?rawLabel FILTER(lang(?rawLabel) = "") }
+  BIND(STR(COALESCE(?localLabel, ?rawLabel, "Progress")) AS ?label)
+  LATERAL {
+    {
+      { SELECT ?list ?step (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?step FILTER(isIRI(?step))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?step }
+      BIND(IF(?pos < ?at, "complete", IF(?pos = ?at, "current", "upcoming")) AS ?state)
+      BIND(CONCAT(STR($this), "/~s", SUBSTR(MD5(STR(?step)), 1, 8)) AS ?id)
+      BIND(IRI(?id) AS ?li)
+      BIND(IRI(CONCAT(?id, "-data-state")) AS ?stateAttr)
+      BIND(IRI(CONCAT(?id, IF(?go, "-go", "-step"))) AS ?content)
+      BIND(IF(?go, rdfhtml:Button, rdfhtml:Div) AS ?contentType)
+      BIND(IF(?go, "button", ?none) AS ?buttonType)
+      BIND(IF(?go, ?step, ?none) AS ?selects)
+      BIND(IF(?state = "current", IRI(CONCAT(STR(?content), "-aria-current")), ?none) AS ?currentAttr)
+      BIND(IRI(CONCAT(?id, "-marker")) AS ?marker)
+      BIND(IRI(CONCAT(?id, "-marker-aria-hidden")) AS ?markerHidden)
+      BIND(IRI(CONCAT(?id, "-marker-text")) AS ?markerText)
+      BIND(IF(?state = "complete", "✓", STR(?pos + 1)) AS ?markerData)
+      BIND(IRI(CONCAT(?id, "-body")) AS ?body)
+      BIND(IRI(CONCAT(?id, "-label")) AS ?stepLabel)
+      BIND(IRI(CONCAT(?id, "-label-text")) AS ?stepLabelText)
+      LATERAL { OPTIONAL { SELECT ?step ?stepName WHERE { { ?step c:label ?stepName BIND(0 AS ?source) } UNION { ?step rdfs:label ?stepName BIND(1 AS ?source) } }
+                           ORDER BY ?source (lang(?stepName) != "") (!langMatches(lang(?stepName), "en")) LIMIT 1 } }
+      BIND(STR(COALESCE(?stepName, REPLACE(STR(?step), "^.*[#/]", ""))) AS ?labelData)
+      LATERAL { OPTIONAL { SELECT ?step ?helpValue WHERE { ?step c:help ?helpValue }
+                           ORDER BY (lang(?helpValue) != "") (!langMatches(lang(?helpValue), "en")) LIMIT 1 } }
+      BIND(IF(BOUND(?helpValue), IRI(CONCAT(?id, "-help")), ?none) AS ?help)
+      BIND(IF(BOUND(?helpValue), IRI(CONCAT(?id, "-help-text")), ?none) AS ?helpText)
+      BIND(STR(?helpValue) AS ?helpData)
+      BIND(IF(?state = "current", ?none, IRI(CONCAT(?id, "-status"))) AS ?status)
+      BIND(IF(?state = "current", ?none, IRI(CONCAT(?id, "-status-text"))) AS ?statusText)
+      BIND(IF(?state = "complete", " (completed)", "") AS ?statusData)
+    } UNION {
+      # Each step precedes the next one.
+      { SELECT ?list ?step (COUNT(?before) - 1 AS ?pos) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?step FILTER(isIRI(?step))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?step }
+      { SELECT ?list ?following (COUNT(?before) - 1 AS ?next) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?following FILTER(isIRI(?following))
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?following }
+      FILTER(?next = ?pos + 1)
+      BIND(IRI(CONCAT(STR($this), "/~s", SUBSTR(MD5(STR(?step)), 1, 8))) AS ?a)
+      BIND(IRI(CONCAT(STR($this), "/~s", SUBSTR(MD5(STR(?following)), 1, 8))) AS ?b)
+    }
+  }
+}""" .
+c:StepperRendering-sparql-text a sem:Rule ;
+    sem:implements c:StepperRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?data .
+}
+WHERE {
+  $this a c:Stepper ; c:steps ?list .
+  OPTIONAL {
+    $this c:steps ?list ; c:current ?current .
+    LATERAL { SELECT ?list ?current (MIN(?p) AS ?currentPos) WHERE {
+      { SELECT ?list ?current (COUNT(?before) - 1 AS ?p) WHERE {
+          ?list rdf:rest* ?cell . ?cell rdf:first ?current .
+          ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+        } GROUP BY ?list ?cell ?current }
+    } GROUP BY ?list ?current }
+  }
+  BIND(COALESCE(?currentPos, 0) AS ?at)
+  LATERAL {
+    SELECT ?list ?at (GROUP_CONCAT(?entry; separator=" → ") AS ?entries) WHERE {
+      { SELECT ?list ?at ?pos ?entry WHERE {
+          { SELECT ?list ?step (COUNT(?before) - 1 AS ?pos) WHERE {
+              ?list rdf:rest* ?cell . ?cell rdf:first ?step FILTER(isIRI(?step))
+              ?list rdf:rest* ?before . ?before rdf:rest* ?cell . ?before rdf:first ?x FILTER(isIRI(?x))
+            } GROUP BY ?list ?cell ?step }
+          LATERAL { OPTIONAL { SELECT ?step ?stepName WHERE { { ?step c:label ?stepName BIND(0 AS ?source) } UNION { ?step rdfs:label ?stepName BIND(1 AS ?source) } }
+                               ORDER BY ?source (lang(?stepName) != "") (!langMatches(lang(?stepName), "en")) LIMIT 1 } }
+          BIND(CONCAT(IF(?pos < ?at, "✓", IF(?pos = ?at, "●", "○")), " ",
+                      STR(COALESCE(?stepName, REPLACE(STR(?step), "^.*[#/]", "")))) AS ?entry)
+        } ORDER BY ?pos }
+    } GROUP BY ?list ?at
+  }
+  BIND(?entries AS ?data)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~line")) AS ?line)
+}""" .
+c:StepperGo a beh:Reaction ;
+    beh:when beh:Click ;
+    beh:sourceClass c:Stepper ;
+    beh:deletes """CONSTRUCT { $this c:current ?old } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?step . $this c:navigable true ; c:current ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:current ?step } WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n c:selects ?step . $this c:navigable true }""" ;
+    sem:function "nav:stepper-go" .
+
+c:upTo a owl:ObjectProperty ; rdfs:domain c:Breadcrumbs ;
+    rdfs:comment "Where a derived trail stops going up (and which parent to take where there are several: one that leads here)."@en .

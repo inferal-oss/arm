@@ -1,0 +1,610 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix key: <https://semblance.dev/ns/keyboard#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix fs: <https://semblance.dev/ns/fullscreen#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# A live example: the Turtle of a small app, editable, beside its rendering.
+#
+# The sources are editors (c:CodeEditor with c:language "turtle") whose text is graph state like
+# any editor's: c:original is the text as written, c:value the text as edited. The example runs in
+# a sandbox of its own - its own store, runtime and projection, mounted in a host-owned slot of
+# this component - so a broken edit or a rule that throws stays inside it, and the reactions of
+# the example run in it. The host effect (src/sandbox.ts) only parses the sources, builds and mounts
+# the sandbox while it is shown, and writes back what happened: c:sandboxState, the problems it met
+# (c:problem), how long the rendering took (c:renderTime), whether a source was edited (c:edited) and
+# whether the example was used (c:interacted).
+# Reset and Copy are reactions; copying is a request (c:copied) the host carries out.
+
+c:LiveExample a owl:Class ;
+    rdfs:subClassOf sem:Component , fs:Fullscreenable ;
+    rdfs:label "Live example"@en , "Живий приклад"@uk , "Live-Beispiel"@de , "مثال حي"@ar ;
+    rdfs:comment """The Turtle of a small app (c:sources, editors in load order: component definitions before
+the app that uses them) beside its rendering (c:exampleRoot, a resource of the example's own
+graph), re-rendered as it is edited. With several sources, tabs choose the one shown
+(c:selectedSource). A source that does not parse, or a rule that fails, is reported inline
+(c:problem) and the last rendering that worked stays. Reset brings back the sources as written;
+Copy copies the one shown, with the prefixes it uses. With c:textPreview true the example is
+also shown in the Text modality. c:label names the example. Its own toggles fill the window with
+it, or the screen (fs:Fullscreenable): the sources beside the rendering, with room for both."""@en ;
+    sem:slug "live-example" ;
+    key:navigation key:TabNavigation .
+
+c:sources a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range rdf:List ;
+    rdfs:comment "The example's Turtle, as editors (c:CodeEditor, c:language \"turtle\"), in load order."@en .
+c:exampleRoot a owl:ObjectProperty ; rdfs:domain c:LiveExample ;
+    rdfs:comment "The component the example shows: a resource of the example's own graph, the root of its projection."@en .
+c:selectedSource a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:CodeEditor ;
+    rdfs:comment "The source shown (default: the first)."@en .
+c:textPreview a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether the example is also shown in the Text modality, under its rendering on screen."@en .
+c:textHeading a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:Phrase ;
+    rdfs:comment "What the Text pane is headed (default: c:LiveTextPhrase, \"As text\")."@en .
+c:showSources a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether the sources' editors are shown beside the rendering (default true; false shows the panes only, and Copy still copies the source)."@en .
+c:dataPreview a owl:DatatypeProperty ; rdfs:domain c:LiveExample ;
+    rdfs:comment """The example's data to show beside its rendering: a CONSTRUCT over the example's own graph (the
+Semblance prefixes and the sources' own are declared). Its result is shown as a tree - each subject
+with its predicates and objects under it, written as Turtle writes them - that follows every
+interaction; the triples the last one added and removed are marked, and arrows run from the
+rendering to the first of them and on to the text (with c:textPreview), with a caption that says
+what happened."""@en .
+
+# Written by the host effect (src/sandbox.ts).
+c:sandboxState a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:SandboxState ;
+    rdfs:comment "What the rendering shows: the sources as they are (c:SandboxLive), the last that worked (c:SandboxStale), or nothing (c:SandboxBroken)."@en .
+c:SandboxState a owl:Class ; rdfs:comment "The state of a live example's sandbox."@en .
+c:SandboxLive a c:SandboxState ; sem:slug "live" ; rdfs:label "Live"@en , "Наживо"@uk , "Live"@de , "مباشر"@ar ;
+    rdfs:comment "The rendering is of the sources as they are."@en .
+c:SandboxStale a c:SandboxState ; sem:slug "stale" ; rdfs:label "Stale"@en , "Застаріле"@uk , "Veraltet"@de , "قديم"@ar ;
+    rdfs:comment "The sources have an error; the rendering is the last one that worked."@en .
+c:SandboxBroken a c:SandboxState ; sem:slug "broken" ; rdfs:label "Broken"@en , "Зламане"@uk , "Defekt"@de , "معطّل"@ar ;
+    rdfs:comment "The sources have an error and nothing has rendered yet."@en .
+c:problem a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:SandboxProblem ;
+    rdfs:comment "What the last build of the sandbox met: a source that does not parse, a rule that failed, a shape violation."@en .
+c:SandboxProblem a owl:Class ;
+    rdfs:comment """A problem a live example's sandbox met: c:message, where (c:inSource, c:line), how bad
+(sty:tone sty:Danger for an error that stops the rendering, sty:Warning for one that does not) and its
+place in the list (sem:order)."""@en .
+c:message a owl:DatatypeProperty ; rdfs:domain c:SandboxProblem ; rdfs:comment "What went wrong, in words."@en .
+c:inSource a owl:ObjectProperty ; rdfs:domain c:SandboxProblem ; rdfs:range c:CodeEditor ; rdfs:comment "The source the problem is in."@en .
+c:sourceLine a owl:DatatypeProperty ; rdfs:domain c:SandboxProblem ; rdfs:range xsd:integer ; rdfs:comment "The line of the source, from 1."@en .
+c:renderTime a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:integer ;
+    rdfs:comment "How long the last build of the sandbox took, in whole milliseconds: loading the store, projecting and rendering."@en .
+c:edited a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether a source differs from its c:original (Reset is enabled)."@en .
+c:interacted a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether an interaction changed the example since it was built (Reset is enabled, and builds it again as written)."@en .
+c:copied a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:CodeEditor ;
+    rdfs:comment "A request to copy a source to the clipboard: the host carries it out and removes it a moment later."@en .
+# The data (c:dataPreview), as the host last found it: a line per triple, each with its terms as
+# Turtle writes them (subject, predicate, object, each with its kind of token for colouring), its
+# subject's node (c:lineNode, a key) and its place (c:lineKey: by subject, then rdf:type, rdfs:label
+# and the other predicates). A triple the last interaction added is c:LineAdded; one it removed stays, as
+# c:LineRemoved, until the next. c:changedLine is the first changed line, c:triplesAdded and
+# c:triplesRemoved count them (absent until something changed).
+c:dataLine a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:DataLine ;
+    rdfs:comment "A line of the example's data, as Turtle (written by the host)."@en .
+c:DataLine a owl:Class ; rdfs:comment "One triple of a live example's data, as a line of Turtle."@en .
+c:lineSubject a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "The subject."@en .
+c:lineNode a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "A key of the line's subject: the lines of one subject share its node."@en .
+c:linePredicate a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "The predicate (a for rdf:type)."@en .
+c:lineObject a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "The object."@en .
+c:subjectToken a owl:DatatypeProperty ; rdfs:domain c:DataLine ;
+    rdfs:comment "The kind of token the subject is, as the code colours name them: pname, iri, string, number, keyword."@en .
+c:predicateToken a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "The kind of token the predicate is."@en .
+c:objectToken a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "The kind of token the object is."@en .
+c:lineKey a owl:DatatypeProperty ; rdfs:domain c:DataLine ; rdfs:comment "Where the line goes: lines sort by it."@en .
+c:lineChange a owl:ObjectProperty ; rdfs:domain c:DataLine ; rdfs:range c:LineChange ;
+    rdfs:comment "What the last interaction did to the line's triple (absent: nothing)."@en .
+c:LineChange a owl:Class .
+c:LineAdded a c:LineChange ; sem:slug "added" ; rdfs:label "Added"@en , "Додано"@uk , "Hinzugefügt"@de , "مضاف"@ar .
+c:LineRemoved a c:LineChange ; sem:slug "removed" ; rdfs:label "Removed"@en , "Вилучено"@uk , "Entfernt"@de , "محذوف"@ar .
+c:changedLine a owl:ObjectProperty ; rdfs:domain c:LiveExample ; rdfs:range c:DataLine ;
+    rdfs:comment "The first line the last interaction changed: where the arrows point."@en .
+c:triplesAdded a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:integer ;
+    rdfs:comment "How many triples of the data the last interaction added."@en .
+c:triplesRemoved a owl:DatatypeProperty ; rdfs:domain c:LiveExample ; rdfs:range xsd:integer ;
+    rdfs:comment "How many triples of the data the last interaction removed."@en .
+
+# On the rendered parts: what activating them does.
+c:showsSource a owl:ObjectProperty ; rdfs:comment "On a rendered tab of a c:LiveExample: the source it shows."@en .
+c:resets a owl:ObjectProperty ; rdfs:range c:LiveExample ; rdfs:comment "On a live example's control: the example whose sources activating it resets."@en .
+c:copies a owl:ObjectProperty ; rdfs:range c:LiveExample ; rdfs:comment "On a live example's control: the example whose shown source activating it copies."@en .
+
+c:LiveSourcesPhrase a c:Phrase ; rdfs:label "Sources"@en , "Джерела"@uk , "Quellen"@de , "المصادر"@ar .
+c:LiveResetPhrase a c:Phrase ; rdfs:label "Reset"@en , "Скинути"@uk , "Zurücksetzen"@de , "إعادة تعيين"@ar .
+c:LiveCopyPhrase a c:Phrase ; rdfs:label "Copy"@en , "Копіювати"@uk , "Kopieren"@de , "نسخ"@ar .
+c:LiveCopiedPhrase a c:Phrase ; rdfs:label "Copied"@en , "Скопійовано"@uk , "Kopiert"@de , "تم النسخ"@ar .
+c:LiveRenderingPhrase a c:Phrase ; rdfs:label "Rendering"@en , "Відображення"@uk , "Darstellung"@de , "العرض"@ar .
+c:LiveTextPhrase a c:Phrase ; rdfs:label "As text"@en , "Як текст"@uk , "Als Text"@de , "كنص"@ar .
+c:LiveTimePhrase a c:Phrase ; rdfs:label "{ms} ms"@en , "{ms} мс"@uk , "{ms} ms"@de , "{ms} م.ث"@ar .
+c:LiveStalePhrase a c:Phrase ;
+    rdfs:label "The source has an error, so this is the last rendering that worked."@en ,
+               "У джерелі помилка, тож це останнє відображення, яке вдалося."@uk ,
+               "Die Quelle hat einen Fehler; dies ist die letzte Darstellung, die gelang."@de ,
+               "في المصدر خطأ، لذا هذا آخر عرض نجح."@ar .
+c:LiveBrokenPhrase a c:Phrase ;
+    rdfs:label "The source has an error, and nothing has rendered yet."@en ,
+               "У джерелі помилка, і ще нічого не відображено."@uk ,
+               "Die Quelle hat einen Fehler, und noch wurde nichts dargestellt."@de ,
+               "في المصدر خطأ، ولم يُعرض شيء بعد."@ar .
+c:LiveScreenPhrase a c:Phrase ; rdfs:label "On screen"@en , "На екрані"@uk , "Auf dem Bildschirm"@de , "على الشاشة"@ar .
+c:LiveDataPhrase a c:Phrase ; rdfs:label "Data"@en , "Дані"@uk , "Daten"@de , "البيانات"@ar .
+c:LiveFlowHintPhrase a c:Phrase ;
+    rdfs:label "Use the example: what you do changes its data, and the screen and the text follow."@en ,
+               "Скористайтеся прикладом: ваші дії змінюють його дані, а екран і текст ідуть за ними."@uk ,
+               "Benutzen Sie das Beispiel: Was Sie tun, ändert seine Daten, und Bildschirm und Text folgen."@de ,
+               "استخدم المثال: ما تفعله يغيّر بياناته، والشاشة والنص يتبعانها."@ar .
+c:LiveFlowPhrase a c:Phrase ;
+    rdfs:label "You changed the data (+{added} −{removed}); the screen and the text followed."@en ,
+               "Ви змінили дані (+{added} −{removed}); екран і текст пішли за ними."@uk ,
+               "Sie haben die Daten geändert (+{added} −{removed}); Bildschirm und Text sind gefolgt."@de ,
+               "غيّرتَ البيانات (+{added} −{removed})؛ وتبعتها الشاشة والنص."@ar .
+c:LiveCausePhrase a c:Phrase ; rdfs:label "you changed this"@en , "ви змінили це"@uk , "Sie haben dies geändert"@de , "غيّرتَ هذا"@ar .
+c:LiveFollowPhrase a c:Phrase ; rdfs:label "the text followed"@en , "текст пішов за ним"@uk , "der Text folgte"@de , "تبعه النص"@ar .
+c:LiveLinePhrase a c:Phrase ; rdfs:label "line {n}"@en , "рядок {n}"@uk , "Zeile {n}"@de , "السطر {n}"@ar .
+
+c:LiveExampleRendering a sem:Rendering ; sem:targets c:LiveExample ; sem:stratum 0 ; sem:follows c:problem ;
+    # Not the data (its lines and the flow are renderings of their own): an interaction does not render the frame again.
+    sem:watches rdf:type , c:label , c:sources , c:selectedSource , c:textPreview , c:textHeading , c:showSources , c:dataPreview ,
+                c:sandboxState , c:problem , c:renderTime , c:edited , c:interacted , c:copied , fs:fullscreen , fs:fullViewport , l10n:label ,
+                sem:order , c:message , c:inSource , c:sourceLine , sty:tone .
+c:LiveExampleRendering-fn a sem:Rule ; sem:implements c:LiveExampleRendering ; sem:function "live-example" .
+
+# The bar (the sources' tabs; the time, Reset and Copy), then the body: the shown source's editor
+# beside the preview (problems, the slot where the host mounts the example, and the Text slot).
+# Tabs and panels are keyed by their place in c:sources. With c:showSources false there are no
+# tabs and no editor. With c:dataPreview the body has panes - the rendering, the data, the text -
+# after a caption of what happened (~flow) and before a layer for the arrows between them (~links),
+# which c:LiveExampleFlow fills; c:LiveExampleData fills the data pane's lines.
+c:LiveExampleRendering-sparql-screen a sem:Rule ;
+    sem:implements c:LiveExampleRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?bar, ?body ; rdfhtml:attribute ?rootRole, ?rootLabel, ?rootState, ?rootSources .
+  ?rootSources a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-sources" ; rdfhtml:attributeValue "hidden" .
+  ?rootRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?rootLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?caption .
+  ?rootState a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-state" ; rdfhtml:attributeValue ?stateSlug .
+  ?bar a rdfhtml:Div ; rdfhtml:class "sem-live-bar" ; rdfhtml:hasChild ?tabs, ?actions ; ord:immediatelyPrecedes ?body .
+  ?tabs a rdfhtml:Div ; rdfhtml:class "sem-live-tabs" ; rdfhtml:attribute ?tabsRole, ?tabsLabel ; ord:immediatelyPrecedes ?actions .
+  ?tabsRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tablist" .
+  ?tabsLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?sourcesPhrase .
+  ?actions a rdfhtml:Div ; rdfhtml:class "sem-live-actions" ; rdfhtml:hasChild ?time, ?reset, ?copy, ?vpToggle, ?fsToggle .
+  ?time a rdfhtml:Span ; rdfhtml:class "sem-live-time" ; rdfhtml:hasChild ?timeText ; ord:immediatelyPrecedes ?reset .
+  ?timeText a rdfhtml:Text ; rdfhtml:data ?timeData .
+  ?reset a c:Button ; c:label ?resetPhrase ; c:resets $this ; c:disabled ?pristine ; sty:size sty:Small ; sty:emphasis sty:Ghost ; ord:immediatelyPrecedes ?copy .
+  ?copy a c:Button ; c:label ?copyLabel ; c:copies $this ; sty:size sty:Small ; sty:emphasis sty:Ghost ; ord:immediatelyPrecedes ?vpToggle .
+  ?vpToggle a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-fullscreen-toggle" ; fs:toggles $this ; fs:property fs:fullViewport ; sem:tooltip ?vpPhrase ;
+            rdfhtml:attribute ?vpKind, ?vpLabel ; ord:immediatelyPrecedes ?fsToggle .
+  ?vpKind a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-kind" ; rdfhtml:attributeValue "viewport" .
+  ?vpLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?vpPhrase .
+  ?fsToggle a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:class "sem-fullscreen-toggle" ; fs:toggles $this ; fs:property fs:fullscreen ; sem:tooltip ?fsPhrase ;
+            rdfhtml:attribute ?fsKind, ?fsLabel .
+  ?fsKind a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-kind" ; rdfhtml:attributeValue "screen" .
+  ?fsLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?fsPhrase .
+  ?body a rdfhtml:Div ; rdfhtml:class "sem-live-body" ; rdfhtml:hasChild ?flow, ?sources, ?preview, ?dataPane, ?textPane, ?links .
+  ?flow a rdfhtml:P ; rdfhtml:class "sem-live-flow" ; rdfhtml:attribute ?flowRole ; ord:immediatelyPrecedes ?afterFlow .
+  ?flowRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "status" .
+  ?sources a rdfhtml:Div ; rdfhtml:class "sem-live-sources" ; ord:immediatelyPrecedes ?preview .
+  ?preview a rdfhtml:Div ; rdfhtml:class "sem-live-preview" ; rdfhtml:hasChild ?status, ?screenHead, ?screen ; rdfhtml:attribute ?previewRole, ?previewLabel ;
+           ord:immediatelyPrecedes ?dataPane .
+  ?screenHead a rdfhtml:P ; rdfhtml:class "sem-live-modality" ; rdfhtml:hasChild ?screenHeadText ; ord:immediatelyPrecedes ?screen .
+  ?screenHeadText a rdfhtml:Text ; rdfhtml:data ?screenPhrase .
+  ?dataPane a rdfhtml:Div ; rdfhtml:class "sem-live-pane" ; rdfhtml:hasChild ?dataHead, ?data ; rdfhtml:attribute ?dataRole, ?dataLabel ; ord:immediatelyPrecedes ?afterData .
+  ?dataRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "region" .
+  ?dataLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?dataPhrase .
+  ?dataHead a rdfhtml:P ; rdfhtml:class "sem-live-modality" ; rdfhtml:hasChild ?dataHeadText ; ord:immediatelyPrecedes ?data .
+  ?dataHeadText a rdfhtml:Text ; rdfhtml:data ?dataPhrase .
+  ?data a rdfhtml:Div ; rdfhtml:class "sem-live-data" .
+  ?textPane a rdfhtml:Div ; rdfhtml:class "sem-live-pane" ; ord:immediatelyPrecedes ?links .
+  ?links a rdfhtml:Div ; rdfhtml:class "sem-live-links" .
+  ?textParent rdfhtml:hasChild ?textHead, ?textSlot .
+  ?previewRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "region" .
+  ?previewLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?renderingPhrase .
+  ?status a rdfhtml:Div ; rdfhtml:class "sem-live-status" ; rdfhtml:hasChild ?summary, ?problems ; rdfhtml:attribute ?statusRole ; ord:immediatelyPrecedes ?afterStatus .
+  ?statusRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "status" .
+  ?summary a rdfhtml:P ; rdfhtml:class "sem-live-summary" ; rdfhtml:hasChild ?summaryText ; ord:immediatelyPrecedes ?problems .
+  ?summaryText a rdfhtml:Text ; rdfhtml:data ?summaryData .
+  ?problems a rdfhtml:Ul ; rdfhtml:class "sem-live-problems" ; rdfhtml:hasChild ?item .
+  ?screen a rdfhtml:Div ; rdfhtml:class "sem-live-screen" ; sem:slot ?screenSlot ; ord:immediatelyPrecedes ?afterScreen .
+  ?textHead a rdfhtml:P ; rdfhtml:class "sem-live-modality" ; rdfhtml:hasChild ?textHeadText ; ord:immediatelyPrecedes ?textSlot .
+  ?textHeadText a rdfhtml:Text ; rdfhtml:data ?textPhrase .
+  ?textSlot a rdfhtml:Div ; rdfhtml:class "sem-live-text" ; sem:slot ?textSlotName .
+  ?sources rdfhtml:hasChild ?panel .
+  ?tabs rdfhtml:hasChild ?tab .
+  ?tab a rdfhtml:Button ; rdfhtml:type "button" ; rdfhtml:id ?tabId ; rdfhtml:class "sem-live-tab" ; rdfhtml:hasChild ?tabText ; c:showsSource ?editor ;
+       rdfhtml:attribute ?tabRole, ?tabSelected, ?tabControls ; ord:immediatelyPrecedes ?nextTab .
+  ?tabRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tab" .
+  ?tabSelected a rdfhtml:Attribute ; rdfhtml:attributeName "aria-selected" ; rdfhtml:attributeValue ?selected .
+  ?tabControls a rdfhtml:Attribute ; rdfhtml:attributeName "aria-controls" ; rdfhtml:attributeValue ?panelId .
+  ?tabText a rdfhtml:Text ; rdfhtml:data ?sourceName .
+  ?panel a rdfhtml:Div ; rdfhtml:id ?panelId ; rdfhtml:class "sem-live-panel" ; rdfhtml:hidden ?hidden ; rdfhtml:hasChild ?editor ;
+         rdfhtml:attribute ?panelRole, ?panelLabelledBy ; ord:immediatelyPrecedes ?nextPanel .
+  ?panelRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "tabpanel" .
+  ?panelLabelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?tabId .
+  ?item a rdfhtml:Li ; rdfhtml:class "sem-live-problem" ; rdfhtml:hasChild ?where, ?what ; rdfhtml:attribute ?itemTone ; ord:immediatelyPrecedes ?nextItem .
+  ?itemTone a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-tone" ; rdfhtml:attributeValue ?toneSlug .
+  ?where a rdfhtml:Span ; rdfhtml:class "sem-live-where" ; rdfhtml:hasChild ?whereText ; ord:immediatelyPrecedes ?what .
+  ?whereText a rdfhtml:Text ; rdfhtml:data ?whereData .
+  ?what a rdfhtml:Span ; rdfhtml:class "sem-live-message" ; rdfhtml:hasChild ?whatText .
+  ?whatText a rdfhtml:Text ; rdfhtml:data ?message .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:LiveExample .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+    OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+    OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+    BIND(STR(COALESCE(?localLabel, ?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?caption)
+    OPTIONAL { $this c:sandboxState ?state0 . ?state0 sem:slug ?stateSlug0 }
+    BIND(COALESCE(STR(?stateSlug0), "pending") AS ?stateSlug)
+    OPTIONAL { ?sourcesPhrase0At l10n:of c:LiveSourcesPhrase ; l10n:name ?sourcesPhrase0 }
+  OPTIONAL { ?sourcesPhrase0At l10n:of c:LiveSourcesPhrase ; l10n:name ?sourcesPhrase0 }
+  OPTIONAL { c:LiveSourcesPhrase rdfs:label ?sourcesPhrase0 FILTER(langMatches(lang(?sourcesPhrase0), "en")) }
+    OPTIONAL { ?resetPhrase0At l10n:of c:LiveResetPhrase ; l10n:name ?resetPhrase0 }
+  OPTIONAL { ?resetPhrase0At l10n:of c:LiveResetPhrase ; l10n:name ?resetPhrase0 }
+  OPTIONAL { c:LiveResetPhrase rdfs:label ?resetPhrase0 FILTER(langMatches(lang(?resetPhrase0), "en")) }
+    OPTIONAL { ?copyPhrase0At l10n:of c:LiveCopyPhrase ; l10n:name ?copyPhrase0 }
+  OPTIONAL { ?copyPhrase0At l10n:of c:LiveCopyPhrase ; l10n:name ?copyPhrase0 }
+  OPTIONAL { c:LiveCopyPhrase rdfs:label ?copyPhrase0 FILTER(langMatches(lang(?copyPhrase0), "en")) }
+    OPTIONAL { ?copiedPhrase0At l10n:of c:LiveCopiedPhrase ; l10n:name ?copiedPhrase0 }
+  OPTIONAL { ?copiedPhrase0At l10n:of c:LiveCopiedPhrase ; l10n:name ?copiedPhrase0 }
+  OPTIONAL { c:LiveCopiedPhrase rdfs:label ?copiedPhrase0 FILTER(langMatches(lang(?copiedPhrase0), "en")) }
+    OPTIONAL { ?renderingPhrase0At l10n:of c:LiveRenderingPhrase ; l10n:name ?renderingPhrase0 }
+  OPTIONAL { ?renderingPhrase0At l10n:of c:LiveRenderingPhrase ; l10n:name ?renderingPhrase0 }
+  OPTIONAL { c:LiveRenderingPhrase rdfs:label ?renderingPhrase0 FILTER(langMatches(lang(?renderingPhrase0), "en")) }
+    OPTIONAL { ?timePhrase0At l10n:of c:LiveTimePhrase ; l10n:name ?timePhrase0 }
+  OPTIONAL { ?timePhrase0At l10n:of c:LiveTimePhrase ; l10n:name ?timePhrase0 }
+  OPTIONAL { c:LiveTimePhrase rdfs:label ?timePhrase0 FILTER(langMatches(lang(?timePhrase0), "en")) }
+    BIND(STR(?sourcesPhrase0) AS ?sourcesPhrase)
+    BIND(STR(?resetPhrase0) AS ?resetPhrase)
+    BIND(STR(?renderingPhrase0) AS ?renderingPhrase)
+    BIND(IF(EXISTS { $this c:copied ?copiedSource }, STR(?copiedPhrase0), STR(?copyPhrase0)) AS ?copyLabel)
+    BIND(IF(EXISTS { $this c:edited|c:interacted ?changed FILTER(STR(?changed) = "true") }, ?none, true) AS ?pristine)
+    OPTIONAL { $this c:renderTime ?ms }
+    BIND(CONCAT(STRBEFORE(STR(?timePhrase0), "{ms}"), STR(?ms), STRAFTER(STR(?timePhrase0), "{ms}")) AS ?timeData)
+    BIND(IF(BOUND(?ms), IRI(CONCAT(STR($this), "/~time")), ?none) AS ?time)
+    BIND(IF(BOUND(?ms), IRI(CONCAT(STR($this), "/~time-text")), ?none) AS ?timeText)
+    BIND(IRI(CONCAT(STR($this), "/~root-role")) AS ?rootRole)
+    BIND(IF(?caption != "", IRI(CONCAT(STR($this), "/~root-aria-label")), ?none) AS ?rootLabel)
+    BIND(IRI(CONCAT(STR($this), "/~root-data-sem-state")) AS ?rootState)
+    BIND(IRI(CONCAT(STR($this), "/~bar")) AS ?bar)
+    BIND(NOT EXISTS { $this c:showSources ?ss FILTER(STR(?ss) = "false") } AS ?withSources)
+    BIND(IF(?withSources, ?none, IRI(CONCAT(STR($this), "/~root-data-sem-sources"))) AS ?rootSources)
+    BIND(IF(?withSources, IRI(CONCAT(STR($this), "/~tabs")), ?none) AS ?tabs)
+    BIND(IF(?withSources, IRI(CONCAT(STR($this), "/~tabs-role")), ?none) AS ?tabsRole)
+    BIND(IF(?withSources, IRI(CONCAT(STR($this), "/~tabs-aria-label")), ?none) AS ?tabsLabel)
+    BIND(IRI(CONCAT(STR($this), "/~actions")) AS ?actions)
+    BIND(IRI(CONCAT(STR($this), "/~reset")) AS ?reset)
+    BIND(IRI(CONCAT(STR($this), "/~copy")) AS ?copy)
+    # Its own toggles (fs:Fullscreenable): fill the window, full screen; the layer says which is pressed.
+    OPTIONAL { fs:ViewportCommand rdfs:label ?vpPhrase0 FILTER(langMatches(lang(?vpPhrase0), "en")) }
+    OPTIONAL { fs:ToggleCommand rdfs:label ?fsPhrase0 FILTER(langMatches(lang(?fsPhrase0), "en")) }
+    BIND(STR(?vpPhrase0) AS ?vpPhrase)
+    BIND(STR(?fsPhrase0) AS ?fsPhrase)
+    BIND(IRI(CONCAT(STR($this), "/~viewport-toggle")) AS ?vpToggle)
+    BIND(IRI(CONCAT(STR($this), "/~viewport-toggle-data-sem-kind")) AS ?vpKind)
+    BIND(IRI(CONCAT(STR($this), "/~viewport-toggle-aria-label")) AS ?vpLabel)
+    BIND(IRI(CONCAT(STR($this), "/~fullscreen-toggle")) AS ?fsToggle)
+    BIND(IRI(CONCAT(STR($this), "/~fullscreen-toggle-data-sem-kind")) AS ?fsKind)
+    BIND(IRI(CONCAT(STR($this), "/~fullscreen-toggle-aria-label")) AS ?fsLabel)
+    BIND(IRI(CONCAT(STR($this), "/~body")) AS ?body)
+    BIND(IF(?withSources, IRI(CONCAT(STR($this), "/~sources")), ?none) AS ?sources)
+    BIND(IRI(CONCAT(STR($this), "/~preview")) AS ?preview)
+    BIND(IRI(CONCAT(STR($this), "/~preview-role")) AS ?previewRole)
+    BIND(IRI(CONCAT(STR($this), "/~preview-aria-label")) AS ?previewLabel)
+    BIND(IRI(CONCAT(STR($this), "/~screen")) AS ?screen)
+    BIND(STR($this) AS ?screenSlot)
+    # Problems: a summary when the rendering is not of the sources as they are, and the list.
+    BIND(EXISTS { $this c:problem ?anyProblem } AS ?hasProblems)
+    OPTIONAL { FILTER(?stateSlug = "stale") c:LiveStalePhrase rdfs:label ?stalePhrase FILTER(langMatches(lang(?stalePhrase), "en")) }
+    OPTIONAL { FILTER(?stateSlug = "broken") c:LiveBrokenPhrase rdfs:label ?brokenPhrase FILTER(langMatches(lang(?brokenPhrase), "en")) }
+    BIND(STR(COALESCE(?stalePhrase, ?brokenPhrase)) AS ?summaryData)
+    BIND(IF(?hasProblems || BOUND(?summaryData), IRI(CONCAT(STR($this), "/~status")), ?none) AS ?status)
+    BIND(IF(?hasProblems || BOUND(?summaryData), IRI(CONCAT(STR($this), "/~status-role")), ?none) AS ?statusRole)
+    BIND(IF(BOUND(?summaryData), IRI(CONCAT(STR($this), "/~summary")), ?none) AS ?summary)
+    BIND(IF(BOUND(?summaryData), IRI(CONCAT(STR($this), "/~summary-text")), ?none) AS ?summaryText)
+    BIND(IF(?hasProblems, IRI(CONCAT(STR($this), "/~problems")), ?none) AS ?problems)
+    # The data, when asked for: a head over the rendering, the data pane, the text in a pane of its
+    # own, the caption before them and the layer of arrows after.
+    BIND(EXISTS { $this c:dataPreview ?dq } AS ?withData)
+    OPTIONAL { FILTER(?withData) ?screenPhrase0At l10n:of c:LiveScreenPhrase ; l10n:name ?screenPhrase0 }
+    OPTIONAL { FILTER(?withData) c:LiveScreenPhrase rdfs:label ?screenPhrase0 FILTER(langMatches(lang(?screenPhrase0), "en")) }
+    OPTIONAL { FILTER(?withData) ?dataPhrase0At l10n:of c:LiveDataPhrase ; l10n:name ?dataPhrase0 }
+    OPTIONAL { FILTER(?withData) c:LiveDataPhrase rdfs:label ?dataPhrase0 FILTER(langMatches(lang(?dataPhrase0), "en")) }
+    BIND(STR(?screenPhrase0) AS ?screenPhrase)
+    BIND(STR(?dataPhrase0) AS ?dataPhrase)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~flow")), ?none) AS ?flow)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~flow-role")), ?none) AS ?flowRole)
+    BIND(COALESCE(?sources, ?preview) AS ?afterFlow)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~screen-head")), ?none) AS ?screenHead)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~screen-head-text")), ?none) AS ?screenHeadText)
+    BIND(COALESCE(?screenHead, ?screen) AS ?afterStatus)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~data-pane")), ?none) AS ?dataPane)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~data-pane-role")), ?none) AS ?dataRole)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~data-pane-aria-label")), ?none) AS ?dataLabel)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~data-head")), ?none) AS ?dataHead)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~data-head-text")), ?none) AS ?dataHeadText)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~data")), ?none) AS ?data)
+    BIND(IF(?withData, IRI(CONCAT(STR($this), "/~links")), ?none) AS ?links)
+    # The Text modality, when asked for.
+    BIND(EXISTS { $this c:textPreview ?tp FILTER(STR(?tp) = "true") } AS ?withText)
+    OPTIONAL { FILTER(?withText) $this c:textHeading ?ownTextPhrase }
+    BIND(COALESCE(?ownTextPhrase, c:LiveTextPhrase) AS ?textPhraseIri)
+    OPTIONAL { FILTER(?withText) ?textPhrase0At l10n:of ?textPhraseIri ; l10n:name ?textPhrase0 }
+    OPTIONAL { FILTER(?withText) ?textPhraseIri rdfs:label ?textPhrase0 FILTER(langMatches(lang(?textPhrase0), "en")) }
+    BIND(STR(?textPhrase0) AS ?textPhrase)
+    BIND(IF(?withText, IRI(CONCAT(STR($this), "/~text-head")), ?none) AS ?textHead)
+    BIND(IF(?withText, IRI(CONCAT(STR($this), "/~text-head-text")), ?none) AS ?textHeadText)
+    BIND(IF(?withText, IRI(CONCAT(STR($this), "/~text")), ?none) AS ?textSlot)
+    BIND(IF(?withText, CONCAT(STR($this), " text"), ?none) AS ?textSlotName)
+    BIND(IF(?withText && ?withData, IRI(CONCAT(STR($this), "/~text-pane")), ?none) AS ?textPane)
+    BIND(IF(?withData, ?textPane, IF(?withText, ?preview, ?none)) AS ?textParent)
+    BIND(IF(?withData, ?none, ?textHead) AS ?afterScreen)
+    BIND(COALESCE(?textPane, ?links) AS ?afterData)
+  } UNION {
+    # A tab and a panel per source, in order; the selected one (else the first) is shown.
+    FILTER NOT EXISTS { $this c:showSources ?ss FILTER(STR(?ss) = "false") }
+    $this c:sources/rdf:rest* ?cell . ?cell rdf:first ?editor .
+    { SELECT ?cell (COUNT(?mid) - 1 AS ?i) WHERE { $this c:sources/rdf:rest* ?mid . ?mid rdf:rest* ?cell } GROUP BY ?cell }
+    LATERAL {
+      OPTIONAL { $this c:selectedSource ?chosen }
+      OPTIONAL { $this c:sources/rdf:first ?first }
+      OPTIONAL { ?cell rdf:rest ?nextCell FILTER(?nextCell != rdf:nil) }
+      OPTIONAL { ?name_uAt l10n:of ?editor ; l10n:label ?name_u }
+  OPTIONAL { ?editor c:label ?name_u FILTER(isLiteral(?name_u) && lang(?name_u) = "") }
+      OPTIONAL { FILTER(!BOUND(?name_u)) ?editor c:label ?name_any FILTER(isLiteral(?name_any)) }
+    }
+    BIND(STR(COALESCE(?name_u, ?name_any, REPLACE(STR(?editor), "^.*[#/]", ""))) AS ?sourceName)
+    BIND(COALESCE(?chosen, ?first) = ?editor AS ?on)
+    BIND(IF(?on, "true", "false") AS ?selected)
+    BIND(IF(?on, ?none, "") AS ?hidden)
+    BIND(IRI(CONCAT(STR($this), "/~tabs")) AS ?tabs)
+    BIND(IRI(CONCAT(STR($this), "/~sources")) AS ?sources)
+    BIND(IRI(CONCAT(STR($this), "/~tab-", STR(?i))) AS ?tab)
+    BIND(STR(?tab) AS ?tabId)
+    BIND(IRI(CONCAT(STR($this), "/~tab-", STR(?i), "-text")) AS ?tabText)
+    BIND(IRI(CONCAT(STR($this), "/~tab-", STR(?i), "-role")) AS ?tabRole)
+    BIND(IRI(CONCAT(STR($this), "/~tab-", STR(?i), "-aria-selected")) AS ?tabSelected)
+    BIND(IRI(CONCAT(STR($this), "/~tab-", STR(?i), "-aria-controls")) AS ?tabControls)
+    BIND(IRI(CONCAT(STR($this), "/~panel-", STR(?i))) AS ?panel)
+    BIND(STR(?panel) AS ?panelId)
+    BIND(IRI(CONCAT(STR($this), "/~panel-", STR(?i), "-role")) AS ?panelRole)
+    BIND(IRI(CONCAT(STR($this), "/~panel-", STR(?i), "-aria-labelledby")) AS ?panelLabelledBy)
+    BIND(IF(BOUND(?nextCell), IRI(CONCAT(STR($this), "/~tab-", STR(?i + 1))), ?none) AS ?nextTab)
+    BIND(IF(BOUND(?nextCell), IRI(CONCAT(STR($this), "/~panel-", STR(?i + 1))), ?none) AS ?nextPanel)
+  } UNION {
+    # A problem per c:problem, by sem:order: where (the source's name, the line) and what.
+    $this c:problem ?problem . ?problem sem:order ?i ; c:message ?message0 .
+    LATERAL {
+      OPTIONAL { ?problem c:inSource ?in . OPTIONAL { ?in c:label ?inName FILTER(isLiteral(?inName)) } }
+      OPTIONAL { ?problem c:sourceLine ?line }
+      OPTIONAL { ?problem sty:tone/sem:slug ?tone0 }
+      OPTIONAL { $this c:problem ?nextProblem . ?nextProblem sem:order ?nextOrder FILTER(?nextOrder = ?i + 1) }
+      OPTIONAL { ?linePhraseAt l10n:of c:LiveLinePhrase ; l10n:name ?linePhrase }
+  OPTIONAL { ?linePhraseAt l10n:of c:LiveLinePhrase ; l10n:name ?linePhrase }
+  OPTIONAL { c:LiveLinePhrase rdfs:label ?linePhrase FILTER(langMatches(lang(?linePhrase), "en")) }
+    }
+    BIND(STR(?message0) AS ?message)
+    BIND(COALESCE(STR(?tone0), "danger") AS ?toneSlug)
+    BIND(IF(BOUND(?line), CONCAT(STRBEFORE(STR(?linePhrase), "{n}"), STR(?line), STRAFTER(STR(?linePhrase), "{n}")), ?none) AS ?lineData)
+    BIND(IF(BOUND(?inName) && BOUND(?lineData), CONCAT(STR(?inName), ", ", ?lineData), COALESCE(STR(?inName), ?lineData)) AS ?whereData)
+    BIND(IRI(CONCAT(STR($this), "/~problems")) AS ?problems)
+    BIND(IRI(CONCAT(STR($this), "/~problem-", STR(?i))) AS ?item)
+    BIND(IRI(CONCAT(STR($this), "/~problem-", STR(?i), "-data-sem-tone")) AS ?itemTone)
+    BIND(IF(BOUND(?whereData), IRI(CONCAT(STR($this), "/~problem-", STR(?i), "-where")), ?none) AS ?where)
+    BIND(IF(BOUND(?whereData), IRI(CONCAT(STR($this), "/~problem-", STR(?i), "-where-text")), ?none) AS ?whereText)
+    BIND(IRI(CONCAT(STR($this), "/~problem-", STR(?i), "-message")) AS ?what)
+    BIND(IRI(CONCAT(STR($this), "/~problem-", STR(?i), "-message-text")) AS ?whatText)
+    BIND(IF(BOUND(?nextProblem), IRI(CONCAT(STR($this), "/~problem-", STR(?i + 1))), ?none) AS ?nextItem)
+  }
+}""" .
+
+# In the Text modality: the example's name and its sources (the rendering is the host's, on screen).
+c:LiveExampleRendering-sparql-text a sem:Rule ;
+    sem:implements c:LiveExampleRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?head, ?editor .
+  ?head a rdfhtml:Div ; rdfhtml:hasChild ?headText .
+  ?headText a rdfhtml:Text ; rdfhtml:data ?line .
+  ?head ord:precedes ?editor .
+  ?a ord:immediatelyPrecedes ?b .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:LiveExample .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?ownLabel_uAt l10n:of $this ; l10n:label ?ownLabel_u }
+  OPTIONAL { $this c:label ?ownLabel_u FILTER(isLiteral(?ownLabel_u) && lang(?ownLabel_u) = "") }
+    OPTIONAL { FILTER(!BOUND(?ownLabel_u)) $this c:label ?ownLabel_en FILTER(langMatches(lang(?ownLabel_en), "en")) }
+    OPTIONAL { FILTER(!BOUND(?ownLabel_u) && !BOUND(?ownLabel_en)) $this c:label ?ownLabel_any FILTER(isLiteral(?ownLabel_any)) }
+    OPTIONAL { ?kindAt l10n:of c:LiveExample ; l10n:name ?kind }
+  OPTIONAL { c:LiveExample rdfs:label ?kind FILTER(langMatches(lang(?kind), "en")) }
+    BIND(STR(COALESCE(?localLabel, ?ownLabel_u, ?ownLabel_en, ?ownLabel_any)) AS ?caption)
+    BIND(CONCAT("[", STR(?kind), IF(BOUND(?caption) && ?caption != "", CONCAT(": ", ?caption), ""), "]") AS ?line)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+    BIND(IRI(CONCAT(STR($this), "/~head-text")) AS ?headText)
+  } UNION {
+    $this c:sources/rdf:rest*/rdf:first ?editor FILTER(isIRI(?editor))
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?head)
+  } UNION {
+    $this c:sources/rdf:rest* ?pairCell . ?pairCell rdf:first ?a ; rdf:rest/rdf:first ?b FILTER(isIRI(?a) && isIRI(?b))
+  }
+}""" .
+
+# --- the data and what happened ----------------------------------------------------------------------------
+# The data as a tree, member-wise (sem:forEach c:dataLine): each subject a node, its predicates and
+# objects the rows under it. Each line places its row in its subject's node, and the node in the data
+# pane (the lines of one subject mint the same node), so an interaction re-runs the lines it changed,
+# not the others. A row is marked with what the last interaction did to it (data-sem-change); terms
+# are coloured by kind (tok-<kind>, as code is).
+
+c:LiveExampleData a sem:Rendering ; sem:targets c:LiveExample ; sem:modality mod:Screen ; sem:stratum 0 ;
+    sem:forEach c:dataLine ;
+    sem:watches rdf:type , c:dataPreview .
+c:LiveExampleData-fn a sem:Rule ; sem:implements c:LiveExampleData ; sem:function "live-example:line" .
+c:LiveExampleData-sparql a sem:Rule ;
+    sem:implements c:LiveExampleData ;
+    sem:construct """
+CONSTRUCT {
+  ?data rdfhtml:hasChild ?node .
+  ?node a rdfhtml:Div ; rdfhtml:class "sem-live-node" ; sem:orderKey ?s ; rdfhtml:attribute ?nodeRole , ?nodeLabel ; rdfhtml:hasChild ?subject , ?rows .
+  ?nodeRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "group" .
+  ?nodeLabel a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?s .
+  ?subject a rdfhtml:Span ; rdfhtml:class ?subjectClass ; rdfhtml:hasChild ?subjectText ; ord:immediatelyPrecedes ?rows .
+  ?subjectText a rdfhtml:Text ; rdfhtml:data ?s .
+  ?rows a rdfhtml:Div ; rdfhtml:class "sem-live-rows" ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Div ; rdfhtml:class "sem-live-line" ; sem:orderKey ?key ; rdfhtml:attribute ?changeAttr ; rdfhtml:hasChild ?predicate , ?object .
+  ?changeAttr a rdfhtml:Attribute ; rdfhtml:attributeName "data-sem-change" ; rdfhtml:attributeValue ?change .
+  ?predicate a rdfhtml:Span ; rdfhtml:class ?predicateClass ; rdfhtml:hasChild ?predicateText ; ord:immediatelyPrecedes ?object .
+  ?predicateText a rdfhtml:Text ; rdfhtml:data ?p .
+  ?object a rdfhtml:Span ; rdfhtml:class ?objectClass ; rdfhtml:hasChild ?objectText .
+  ?objectText a rdfhtml:Text ; rdfhtml:data ?o .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:LiveExample ; c:dataPreview ?query .
+  $member c:lineSubject ?s0 ; c:subjectToken ?sk ; c:lineNode ?n0 ; c:linePredicate ?p0 ; c:predicateToken ?pk ;
+          c:lineObject ?o0 ; c:objectToken ?ok ; c:lineKey ?key0 .
+  OPTIONAL { $member c:lineChange/sem:slug ?change }
+  BIND(STR(?key0) AS ?key)
+  BIND(STR(?s0) AS ?s) BIND(STR(?p0) AS ?p) BIND(STR(?o0) AS ?o)
+  BIND(CONCAT("sem-live-subject tok-", STR(?sk)) AS ?subjectClass)
+  BIND(CONCAT("tok-", STR(?pk)) AS ?predicateClass)
+  BIND(CONCAT("tok-", STR(?ok)) AS ?objectClass)
+  BIND(IRI(CONCAT(STR($this), "/~data")) AS ?data)
+  BIND(CONCAT(STR($this), "/~node-", STR(?n0)) AS ?nodeLocal)
+  BIND(IRI(?nodeLocal) AS ?node)
+  BIND(IRI(CONCAT(?nodeLocal, "-role")) AS ?nodeRole)
+  BIND(IRI(CONCAT(?nodeLocal, "-aria-label")) AS ?nodeLabel)
+  BIND(IRI(CONCAT(?nodeLocal, "-subject")) AS ?subject)
+  BIND(IRI(CONCAT(?nodeLocal, "-subject-text")) AS ?subjectText)
+  BIND(IRI(CONCAT(?nodeLocal, "-rows")) AS ?rows)
+  BIND(CONCAT(STR($this), "/~line-", REPLACE(STR($member), "^.*/", "")) AS ?local)
+  BIND(IRI(?local) AS ?line)
+  BIND(IF(BOUND(?change), IRI(CONCAT(?local, "-data-sem-change")), ?none) AS ?changeAttr)
+  BIND(IRI(CONCAT(?local, "-p")) AS ?predicate)
+  BIND(IRI(CONCAT(?local, "-p-text")) AS ?predicateText)
+  BIND(IRI(CONCAT(?local, "-o")) AS ?object)
+  BIND(IRI(CONCAT(?local, "-o-text")) AS ?objectText)
+}""" .
+
+# What happened, once something did: the caption says it, and two arrows show it - from the
+# rendering to the first line it changed (the accent), and from that line on to the text (success,
+# dashed). Before anything happened, the caption invites the reader to try.
+
+c:LiveExampleFlow a sem:Rendering ; sem:targets c:LiveExample ; sem:modality mod:Screen ; sem:stratum 0 ;
+    sem:watches rdf:type , c:dataPreview , c:textPreview , c:changedLine , c:triplesAdded , c:triplesRemoved , l10n:label .
+c:LiveExampleFlow-fn a sem:Rule ; sem:implements c:LiveExampleFlow ; sem:function "live-example:flow" .
+c:LiveExampleFlow-sparql a sem:Rule ;
+    sem:implements c:LiveExampleFlow ;
+    sem:construct """
+CONSTRUCT {
+  ?flow rdfhtml:hasChild ?flowText .
+  ?flowText a rdfhtml:Text ; rdfhtml:data ?caption .
+  ?links rdfhtml:hasChild ?cause , ?follow .
+  ?cause a c:Connector ; c:from ?screen ; c:to ?line ; c:label ?causeLabel ; sty:tone sty:Accent ; sem:orderKey "1" .
+  ?follow a c:Connector ; c:from ?line ; c:to ?text ; c:label ?followLabel ; sty:tone sty:Success ; c:line c:DashedLine ; sem:orderKey "2" .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:LiveExample ; c:dataPreview ?query .
+  OPTIONAL { $this c:triplesAdded ?added }
+  OPTIONAL { $this c:triplesRemoved ?removed }
+  OPTIONAL { $this c:changedLine ?changed }
+  BIND(BOUND(?added) || BOUND(?removed) AS ?happened)
+  OPTIONAL { FILTER(!?happened) ?hintAt l10n:of c:LiveFlowHintPhrase ; l10n:name ?hint0 }
+  OPTIONAL { FILTER(!?happened) c:LiveFlowHintPhrase rdfs:label ?hint0 FILTER(langMatches(lang(?hint0), "en")) }
+  OPTIONAL { FILTER(?happened) ?flowAt l10n:of c:LiveFlowPhrase ; l10n:name ?flow0 }
+  OPTIONAL { FILTER(?happened) c:LiveFlowPhrase rdfs:label ?flow0 FILTER(langMatches(lang(?flow0), "en")) }
+  BIND(COALESCE(STR(?added), "0") AS ?a)
+  BIND(COALESCE(STR(?removed), "0") AS ?r)
+  BIND(IF(?happened, CONCAT(STRBEFORE(STR(?flow0), "{added}"), ?a, STRBEFORE(STRAFTER(STR(?flow0), "{added}"), "{removed}"), ?r, STRAFTER(STR(?flow0), "{removed}")), STR(?hint0)) AS ?caption)
+  BIND(IRI(CONCAT(STR($this), "/~flow")) AS ?flow)
+  BIND(IRI(CONCAT(STR($this), "/~flow-text")) AS ?flowText)
+  # The arrows, while a changed line is shown.
+  BIND(IF(BOUND(?changed), IRI(CONCAT(STR($this), "/~line-", REPLACE(STR(?changed), "^.*/", ""))), ?none) AS ?line)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~links")), ?none) AS ?links)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~screen")), ?none) AS ?screen)
+  BIND(IF(BOUND(?line), IRI(CONCAT(STR($this), "/~cause")), ?none) AS ?cause)
+  OPTIONAL { FILTER(BOUND(?line)) ?causeAt l10n:of c:LiveCausePhrase ; l10n:name ?cause0 }
+  OPTIONAL { FILTER(BOUND(?line)) c:LiveCausePhrase rdfs:label ?cause0 FILTER(langMatches(lang(?cause0), "en")) }
+  BIND(STR(?cause0) AS ?causeLabel)
+  BIND(EXISTS { $this c:textPreview ?tp FILTER(STR(?tp) = "true") } AS ?withText)
+  BIND(IF(BOUND(?line) && ?withText, IRI(CONCAT(STR($this), "/~text")), ?none) AS ?text)
+  BIND(IF(BOUND(?text), IRI(CONCAT(STR($this), "/~follow")), ?none) AS ?follow)
+  OPTIONAL { FILTER(BOUND(?text)) ?followAt l10n:of c:LiveFollowPhrase ; l10n:name ?follow0 }
+  OPTIONAL { FILTER(BOUND(?text)) c:LiveFollowPhrase rdfs:label ?follow0 FILTER(langMatches(lang(?follow0), "en")) }
+  BIND(STR(?follow0) AS ?followLabel)
+}""" .
+
+# --- reactions ---------------------------------------------------------------------------------------------
+
+c:LiveExampleShowSource a beh:Reaction ;
+    rdfs:label "Show a source"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:LiveExample ;
+    beh:deletes """CONSTRUCT { $this c:selectedSource ?old }
+WHERE { $event beh:node ?hit . ?tab rdfhtml:hasChild* ?hit . ?tab c:showsSource ?editor . $this c:selectedSource ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:selectedSource ?editor }
+WHERE { $event beh:node ?hit . ?tab rdfhtml:hasChild* ?hit . ?tab c:showsSource ?editor }""" ;
+    sem:function "live-example:show" .
+
+c:LiveExampleReset a beh:Reaction ;
+    rdfs:label "Reset the example"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:LiveExample ;
+    ann:announces "The example is back as written."@en , "Приклад знову такий, як написано."@uk ,
+                  "Das Beispiel ist wieder wie geschrieben."@de , "عاد المثال كما كُتب."@ar ;
+    # The sources as written; and, the example having been used, the request to build it again
+    # (removing c:interacted, which the host carries out).
+    beh:deletes """CONSTRUCT { ?editor c:value ?value ; c:caret ?caret ; c:suggesting ?suggesting ; c:activeSuggestion ?active . $this c:interacted ?used }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:resets $this .
+  { $this c:sources/rdf:rest*/rdf:first ?editor .
+    { ?editor c:value ?value } UNION { ?editor c:caret ?caret } UNION { ?editor c:suggesting ?suggesting } UNION { ?editor c:activeSuggestion ?active } }
+  UNION { $this c:interacted ?used }
+}""" ;
+    sem:function "live-example:reset" .
+
+c:LiveExampleCopy a beh:Reaction ;
+    rdfs:label "Copy the source"@en ;
+    beh:when beh:Click ;
+    beh:sourceClass c:LiveExample ;
+    ann:announces "Copied."@en , "Скопійовано."@uk , "Kopiert."@de , "تم النسخ."@ar ;
+    beh:deletes """CONSTRUCT { $this c:copied ?old }
+WHERE { $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:copies $this . $this c:copied ?old }""" ;
+    beh:inserts """CONSTRUCT { $this c:copied ?editor }
+WHERE {
+  $event beh:node ?hit . ?n rdfhtml:hasChild* ?hit . ?n sem:renders ?control . ?control c:copies $this .
+  OPTIONAL { $this c:selectedSource ?chosen } OPTIONAL { $this c:sources/rdf:first ?first }
+  BIND(COALESCE(?chosen, ?first) AS ?editor) FILTER(BOUND(?editor))
+}""" ;
+    sem:function "live-example:copy" .
+
+# --- shape ---------------------------------------------------------------------------------------------------
+
+c:LiveExampleShape a sh:NodeShape ; sh:targetClass c:LiveExample ;
+    sh:property [ sh:path c:sources ; sh:minCount 1 ; sh:maxCount 1 ; sh:message "A live example needs its sources (c:sources, a list of editors)." ] ,
+                [ sh:path c:exampleRoot ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ; sh:message "A live example shows one resource of its graph (c:exampleRoot)." ] ,
+                [ sh:path c:selectedSource ; sh:maxCount 1 ; sh:class c:CodeEditor ] ,
+                [ sh:path c:textPreview ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:showSources ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path c:textHeading ; sh:maxCount 1 ; sh:class c:Phrase ] ,
+                [ sh:path c:dataPreview ; sh:maxCount 1 ; sh:message "A live example shows at most one data query (c:dataPreview, a CONSTRUCT)." ] .

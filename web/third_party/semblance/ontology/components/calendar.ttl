@@ -1,0 +1,470 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix beh: <https://semblance.dev/ns/behaviour#> .
+@prefix ann: <https://semblance.dev/ns/announce#> .
+@prefix dnd: <https://semblance.dev/ns/dragdrop#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Calendar: data items placed in a week (a schedule, room bookings, shifts).
+#
+# Like a board's lanes, the days are not configured: they are the individuals in the rdfs:range
+# of the property that says an item's day (c:dayProperty), by sem:order. The rows are the hours
+# from c:fromHour to c:toHour. An item (c:entry) sits in its day at its start (c:startProperty,
+# in hours: 9.5 is half past nine) for its length (c:durationProperty, in hours, default one).
+# Items that overlap in time share their day's width, side by side.
+#
+# Some things are held by one item at a time: a room is booked by one meeting, a person works one
+# shift. SHACL Core has no word for "these must not overlap", so the calendar adds one: a shape
+# with c:exclusiveBy (the parameter of c:NoOverlapConstraintComponent) says that two of its
+# targets sharing a value of that property must not overlap. The calendar checks it: overlapping
+# items are marked as conflicting (each names the other), and while one is carried every place
+# where it would overlap objects to it (a dnd:Objection with the shape's sh:message) - its cells
+# at those hours, and the values of the property it would collide in (the other rooms, booked
+# then) wherever they are drop targets.
+#
+# The calendar is a drop target: each cell is a zone receiving into a slot (a day and an hour), and
+# its items are draggables carrying themselves. Dropping one on a cell moves it there (the day and
+# the hour; c:CalendarMove), by pointer or keyboard; a drop where it would overlap is refused with
+# the shape's message. The grid is one SPARQL rule over the week's items (it re-runs when one of
+# them changes, writing only what changed); each item renders itself as a c:CalendarEntry.
+
+c:Calendar a owl:Class ;
+    rdfs:subClassOf sem:Component , dnd:DropTarget ;
+    rdfs:label "Calendar"@en , "Календар"@uk , "Kalender"@de , "تقويم"@ar ;
+    rdfs:comment """Data items (c:entry) in a week: the days are the individuals of c:dayProperty's rdfs:range,
+by sem:order; the rows the hours from c:fromHour (default 8) to c:toHour (default 18). An item starts
+at c:startProperty (hours) on its day and lasts c:durationProperty (hours, default 1); it shows its
+c:entryTitle, its time and its c:entryDetail (whose sty:tone tints it). Overlapping items share the
+day side by side. A shape with c:exclusiveBy on the items' class makes overlaps that share its value
+conflicts: they are marked, and drops that would make one are refused with the shape's message.
+Items are dragged between cells (dnd); c:label names the calendar."""@en ;
+    sem:slug "calendar" .
+c:entry a owl:ObjectProperty ; rdfs:comment "A data item shown by a calendar or an outline (an unordered set; the component orders it)."@en .
+c:dayProperty a owl:ObjectProperty ; rdfs:domain c:Calendar ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of an item that is its day: an individual of the property's rdfs:range (the calendar's columns, by sem:order)."@en .
+c:startProperty a owl:ObjectProperty ; rdfs:domain c:Calendar ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of an item that is its start, in hours from midnight (9.5 is 09:30)."@en .
+c:durationProperty a owl:ObjectProperty ; rdfs:domain c:Calendar ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of an item that is its length in hours (default 1)."@en .
+c:fromHour a owl:DatatypeProperty ; rdfs:domain c:Calendar ; rdfs:range xsd:integer ; rdfs:comment "The first hour shown (default 8)."@en .
+c:toHour a owl:DatatypeProperty ; rdfs:domain c:Calendar ; rdfs:range xsd:integer ; rdfs:comment "The hour the day ends (exclusive; default 18)."@en .
+c:entryTitle a owl:ObjectProperty ; rdfs:range rdf:Property ; rdfs:comment "Property of an item (c:entry) that is its title or text."@en .
+c:entryDetail a owl:ObjectProperty ; rdfs:domain c:Calendar ; rdfs:range rdf:Property ;
+    rdfs:comment "Property of an item whose value (a node with an rdfs:label, or a literal) is shown under its time; the value's sty:tone tints the item."@en .
+
+# The constraint SHACL Core lacks: no two targets sharing a value of c:exclusiveBy overlap in time.
+# A SHACL processor that does not know the component ignores it; the calendar implements it.
+c:NoOverlapConstraintComponent a sh:ConstraintComponent ;
+    rdfs:label "No overlap"@en , "Без перетину"@uk , "Keine Überschneidung"@de , "بلا تداخل"@ar ;
+    rdfs:comment """On a node shape whose targets are a calendar's items: two of them that share a value of
+c:exclusiveBy (the same room) must not overlap in time. sh:message says why a drop that would
+make them overlap is refused."""@en ;
+    sh:parameter [ sh:path c:exclusiveBy ] .
+c:exclusiveBy a owl:ObjectProperty ; rdfs:range rdf:Property ;
+    rdfs:comment "On a shape: the property whose value its targets hold one at a time (c:NoOverlapConstraintComponent)."@en .
+
+# Minted per item, per cell, per slot by the calendar.
+c:CalendarEntry a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:comment "Internal: an item (c:of) as the calendar (c:onCalendar) shows it."@en ;
+    sem:slug "calendar-entry" .
+c:onCalendar a owl:ObjectProperty ; rdfs:domain c:CalendarEntry ; rdfs:range c:Calendar .
+c:conflictsWith a owl:ObjectProperty ; rdfs:domain c:CalendarEntry ;
+    rdfs:comment "Derived: an item this one overlaps while sharing the value of a c:exclusiveBy shape."@en .
+c:onDay a owl:ObjectProperty ; rdfs:comment "On a calendar's slot (a cell's receptacle): its day."@en .
+c:atHour a owl:DatatypeProperty ; rdfs:comment "On a calendar's slot: its hour (its rdfs:label names the day and the hour, for what a drag says)."@en .
+c:OverlapsPhrase a c:Phrase ; rdfs:label "Overlaps"@en , "Перетинається з"@uk , "Überschneidet sich mit"@de , "يتداخل مع"@ar .
+
+# --- the week: days, hours, cells, and where each item goes ------------------------------------------
+# A table of rows: the header (the days), then one row per hour (its label, then a cell per day).
+# Every cell is a drop zone receiving into its slot. An item is placed in the cell of its day and
+# start hour, in a positioned wrapper (.sem-cal-place) whose custom properties say where in the
+# cell it starts (minutes), how long it is (minutes) and its lane among the items it overlaps.
+
+c:CalendarRendering a sem:Rendering ;
+    sem:targets c:Calendar ;
+    sem:stratum 0 ;
+    sem:follows c:entry .
+c:CalendarRendering-fn a sem:Rule ; sem:implements c:CalendarRendering ; sem:function "calendar" .
+c:CalendarRendering-sparql-screen a sem:Rule ;
+    sem:implements c:CalendarRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?grid .
+  ?grid a rdfhtml:Div ; rdfhtml:class "sem-cal-grid" ; rdfhtml:style ?gridStyle ; rdfhtml:attribute ?gridRole , ?gridName ; rdfhtml:hasChild ?row .
+  ?gridRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "table" .
+  ?gridName a rdfhtml:Attribute ; rdfhtml:attributeName "aria-label" ; rdfhtml:attributeValue ?label .
+  ?row a rdfhtml:Div ; rdfhtml:class ?rowClass ; sem:orderKey ?rowKey ; rdfhtml:attribute ?rowRole ; rdfhtml:hasChild ?cell .
+  ?rowRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue "row" .
+  ?cell a rdfhtml:Div ; rdfhtml:class ?cellClass ; sem:orderKey ?cellKey ; rdfhtml:attribute ?cellRole ; rdfhtml:hasChild ?cellText .
+  ?cellRole a rdfhtml:Attribute ; rdfhtml:attributeName "role" ; rdfhtml:attributeValue ?cellRoleName .
+  ?cellText a rdfhtml:Text ; rdfhtml:data ?cellData .
+  $this dnd:zone ?zone .
+  ?zone dnd:receptacle ?slot .
+  ?slot c:onDay ?day ; c:atHour ?h ; rdfs:label ?slotLabel .
+  ?placeCell rdfhtml:hasChild ?place .
+  ?place a rdfhtml:Div ; rdfhtml:class "sem-cal-place" ; rdfhtml:style ?placeStyle ; sem:orderKey ?placeKey ; rdfhtml:hasChild ?placed .
+  ?placed a c:CalendarEntry , dnd:Draggable ; c:of ?item ; c:onCalendar $this ; dnd:carries ?item ; dnd:name ?entryName ; sty:tone ?entryTone .
+  ?entry c:conflictsWith ?rival .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Calendar ; c:dayProperty ?dayP ; c:startProperty ?startP .
+  OPTIONAL { $this c:fromHour ?from0 }
+  OPTIONAL { $this c:toHour ?to0 }
+  BIND(COALESCE(xsd:integer(?from0), 8) AS ?from)
+  BIND(COALESCE(xsd:integer(?to0), 18) AS ?to)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~grid")) AS ?grid)
+  {
+    # The table, named by the calendar's label, as wide as its days; and the header row's corner.
+    OPTIONAL { $this l10n:label ?localLabel }
+    OPTIONAL { ?ownLabelAt l10n:of $this ; l10n:label ?ownLabel }
+  OPTIONAL { $this c:label ?ownLabel FILTER(lang(?ownLabel) = "") }
+    BIND(STR(COALESCE(?localLabel, ?ownLabel)) AS ?label)
+    BIND(IF(BOUND(?label), IRI(CONCAT(STR($this), "/~grid-aria-label")), ?none) AS ?gridName)
+    BIND(IRI(CONCAT(STR($this), "/~grid-role")) AS ?gridRole)
+    LATERAL { OPTIONAL { SELECT ?dayP (COUNT(DISTINCT ?anyDay) AS ?days) WHERE { ?dayP rdfs:range ?dayRange . ?anyDay a ?dayRange FILTER(isIRI(?anyDay)) } GROUP BY ?dayP } }
+    BIND(CONCAT("--sem-cal-days: ", STR(COALESCE(?days, 0))) AS ?gridStyle)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?row)
+    BIND("-1" AS ?rowKey)
+    BIND("sem-cal-head" AS ?rowClass)
+    BIND(IRI(CONCAT(STR($this), "/~head-role")) AS ?rowRole)
+    BIND(IRI(CONCAT(STR($this), "/~corner")) AS ?cell)
+    BIND("-1" AS ?cellKey)
+    BIND("sem-cal-corner" AS ?cellClass)
+    BIND(IRI(CONCAT(STR($this), "/~corner-role")) AS ?cellRole)
+    BIND("columnheader" AS ?cellRoleName)
+  } UNION {
+    # A column header per day.
+    ?dayP rdfs:range ?range . ?day a ?range FILTER(isIRI(?day))
+    OPTIONAL { ?day sem:order ?dayOrder0 }
+    OPTIONAL { ?dayPlainAt l10n:of ?day ; l10n:name ?dayPlain }
+  OPTIONAL { ?day rdfs:label ?dayPlain FILTER(lang(?dayPlain) = "") }
+    BIND(STR(COALESCE(xsd:double(?dayOrder0), 0)) AS ?cellKey)
+    BIND(STR(COALESCE(?dayPlain, REPLACE(STR(?day), "^.*[#/]", ""))) AS ?cellData)
+    BIND(CONCAT("day-", ENCODE_FOR_URI(STR(?day))) AS ?dayKey)
+    BIND(IRI(CONCAT(STR($this), "/~head")) AS ?row)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dayKey)) AS ?cell)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dayKey, "-role")) AS ?cellRole)
+    BIND(IRI(CONCAT(STR($this), "/~", ?dayKey, "-text")) AS ?cellText)
+    BIND("sem-cal-day" AS ?cellClass)
+    BIND("columnheader" AS ?cellRoleName)
+  } UNION {
+    # A row per hour, with its label.
+    VALUES ?h { 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 }
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?h))) AS ?row)
+    BIND(STR(?h) AS ?rowKey)
+    BIND("sem-cal-row" AS ?rowClass)
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?h), "-role")) AS ?rowRole)
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?h), "-label")) AS ?cell)
+    BIND("-1" AS ?cellKey)
+    BIND("sem-cal-hour" AS ?cellClass)
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?h), "-label-role")) AS ?cellRole)
+    BIND("rowheader" AS ?cellRoleName)
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?h), "-label-text")) AS ?cellText)
+    BIND(CONCAT(IF(?h < 10, "0", ""), STR(?h), ":00") AS ?cellData)
+  } UNION {
+    # A cell per hour and day: a drop zone receiving into its slot.
+    VALUES ?h { 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 }
+    ?dayP rdfs:range ?range . ?day a ?range FILTER(isIRI(?day))
+    OPTIONAL { ?day sem:order ?dayOrder0 }
+    BIND(STR(COALESCE(xsd:double(?dayOrder0), 0)) AS ?cellKey)
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?h))) AS ?row)
+    BIND(CONCAT("h", STR(?h), "-", ENCODE_FOR_URI(STR(?day))) AS ?cellLocal)
+    BIND(IRI(CONCAT(STR($this), "/~", ?cellLocal)) AS ?cell)
+    BIND(IRI(CONCAT(STR($this), "/~", ?cellLocal, "-role")) AS ?cellRole)
+    BIND("sem-cal-cell" AS ?cellClass)
+    BIND("cell" AS ?cellRoleName)
+    BIND(?cell AS ?zone)
+    BIND(IRI(CONCAT(STR($this), "/~slot-", ENCODE_FOR_URI(STR(?day)), "-", STR(?h))) AS ?slot)
+    OPTIONAL { ?day rdfs:label ?slotDayPlain FILTER(lang(?slotDayPlain) = "") }
+    BIND(CONCAT(STR(COALESCE(?slotDayPlain, REPLACE(STR(?day), "^.*[#/]", ""))), " ", IF(?h < 10, "0", ""), STR(?h), ":00") AS ?slotLabel)
+  } UNION {
+    # Each item, in the cell of its day and start hour: where it starts in it, how long it is,
+    # and its lane among the items of that day it overlaps (those starting earlier go first).
+    $this c:entry ?item . ?item ?dayP ?itemDay ; ?startP ?start0 .
+    ?dayP rdfs:range ?range . ?itemDay a ?range
+    OPTIONAL { $this c:durationProperty ?durP . ?item ?durP ?dur0 }
+    BIND(xsd:integer(ROUND(xsd:decimal(?start0) * 60)) AS ?sm)
+    BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?dur0), 1) * 60)) AS ?dm)
+    BIND(xsd:integer(FLOOR(?sm / 60)) AS ?startHour)
+    LATERAL { OPTIONAL { SELECT ?this ?item ?itemDay ?sm ?dm (COUNT(?other) AS ?overlaps) (SUM(?earlier) AS ?ahead) WHERE {
+      $this c:entry ?other ; c:dayProperty ?dayP2 ; c:startProperty ?startP2 . ?other ?dayP2 ?itemDay ; ?startP2 ?otherStart0 FILTER(?other != ?item)
+      OPTIONAL { $this c:durationProperty ?durP2 . ?other ?durP2 ?otherDur0 }
+      BIND(xsd:integer(ROUND(xsd:decimal(?otherStart0) * 60)) AS ?osm)
+      BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?otherDur0), 1) * 60)) AS ?odm)
+      FILTER(?osm < ?sm + ?dm && ?sm < ?osm + ?odm)
+      BIND(IF(?osm < ?sm || (?osm = ?sm && STR(?other) < STR(?item)), 1, 0) AS ?earlier)
+    } GROUP BY ?this ?item ?itemDay ?sm ?dm } }
+    BIND(COALESCE(?ahead, 0) AS ?lane)
+    BIND(COALESCE(?overlaps, 0) + 1 AS ?lanes)
+    BIND(CONCAT("--sem-start: ", STR(?sm - ?startHour * 60), "; --sem-span: ", STR(?dm), "; --sem-lane: ", STR(?lane), "; --sem-lanes: ", STR(?lanes)) AS ?placeStyle)
+    BIND(STR(?lane) AS ?placeKey)
+    OPTIONAL { $this c:entryTitle ?titleP . ?item ?titleP ?title0 }
+    OPTIONAL { $this c:entryDetail ?detailP . ?item ?detailP ?detail0 . ?detail0 sty:tone ?entryTone }
+    BIND(STR(COALESCE(?title0, REPLACE(STR(?item), "^.*[#/]", ""))) AS ?entryName)
+    BIND(ENCODE_FOR_URI(STR(?item)) AS ?itemKey)
+    BIND(IRI(CONCAT(STR($this), "/~h", STR(?startHour), "-", ENCODE_FOR_URI(STR(?itemDay)))) AS ?placeCell)
+    BIND(IRI(CONCAT(STR($this), "/~place-", ?itemKey)) AS ?place)
+    BIND(IRI(CONCAT(STR($this), "/~entry-", ?itemKey)) AS ?placed)
+  } UNION {
+    # Conflicts: two items that overlap while sharing the value of a c:exclusiveBy shape on their class.
+    $this c:entry ?held1 , ?rival FILTER(?held1 != ?rival)
+    ?shape c:exclusiveBy ?ex ; sh:targetClass ?cls .
+    ?held1 a ?cls ; ?ex ?held ; ?dayP ?conflictDay ; ?startP ?start0 .
+    ?rival a ?cls ; ?ex ?held ; ?dayP ?conflictDay ; ?startP ?rivalStart0 .
+    OPTIONAL { $this c:durationProperty ?durP . ?held1 ?durP ?dur0 }
+    OPTIONAL { $this c:durationProperty ?durP3 . ?rival ?durP3 ?rivalDur0 }
+    BIND(xsd:integer(ROUND(xsd:decimal(?start0) * 60)) AS ?sm)
+    BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?dur0), 1) * 60)) AS ?dm)
+    BIND(xsd:integer(ROUND(xsd:decimal(?rivalStart0) * 60)) AS ?rsm)
+    BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?rivalDur0), 1) * 60)) AS ?rdm)
+    FILTER(?rsm < ?sm + ?dm && ?sm < ?rsm + ?rdm)
+    BIND(IRI(CONCAT(STR($this), "/~entry-", ENCODE_FOR_URI(STR(?held1)))) AS ?entry)
+  }
+  # The hours shown (outside the branches, which do not see ?from and ?to).
+  FILTER(!BOUND(?h) || (?h >= ?from && ?h < ?to))
+  FILTER(!BOUND(?startHour) || (?startHour >= ?from && ?startHour < ?to))
+}""" .
+# As text: a heading per day, its items in order of their start.
+c:CalendarRendering-sparql-text a sem:Rule ;
+    sem:implements c:CalendarRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?dayEl .
+  ?dayEl a rdfhtml:Div ; sem:orderKey ?dayKey ; rdfhtml:hasChild ?line .
+  ?line a rdfhtml:Text ; rdfhtml:data ?heading ; sem:orderKey "-1" .
+  ?entryDay rdfhtml:hasChild ?placed .
+  ?placed a c:CalendarEntry ; c:of ?item ; c:onCalendar $this ; sem:orderKey ?entryKey .
+  ?entry c:conflictsWith ?rival .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Calendar ; c:dayProperty ?dayP ; c:startProperty ?startP .
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  {
+    ?dayP rdfs:range ?range . ?day a ?range FILTER(isIRI(?day))
+    OPTIONAL { ?day sem:order ?dayOrder0 }
+    OPTIONAL { ?dayPlainAt l10n:of ?day ; l10n:name ?dayPlain }
+  OPTIONAL { ?day rdfs:label ?dayPlain FILTER(lang(?dayPlain) = "") }
+    BIND(STR(COALESCE(xsd:double(?dayOrder0), 0)) AS ?dayKey)
+    BIND(CONCAT("## ", STR(COALESCE(?dayPlain, REPLACE(STR(?day), "^.*[#/]", "")))) AS ?heading)
+    BIND(IRI(CONCAT(STR($this), "/~day-", ENCODE_FOR_URI(STR(?day)))) AS ?dayEl)
+    BIND(IRI(CONCAT(STR($this), "/~day-", ENCODE_FOR_URI(STR(?day)), "-line")) AS ?line)
+  } UNION {
+    $this c:entry ?item . ?item ?dayP ?itemDay ; ?startP ?start0 .
+    ?dayP rdfs:range ?range . ?itemDay a ?range
+    BIND(STR(xsd:integer(ROUND(xsd:decimal(?start0) * 60))) AS ?entryKey)
+    BIND(IRI(CONCAT(STR($this), "/~day-", ENCODE_FOR_URI(STR(?itemDay)))) AS ?entryDay)
+    BIND(IRI(CONCAT(STR($this), "/~entry-", ENCODE_FOR_URI(STR(?item)))) AS ?placed)
+  } UNION {
+    $this c:entry ?held1 , ?rival FILTER(?held1 != ?rival)
+    ?shape c:exclusiveBy ?ex ; sh:targetClass ?cls .
+    ?held1 a ?cls ; ?ex ?held ; ?dayP ?conflictDay ; ?startP ?start0 .
+    ?rival a ?cls ; ?ex ?held ; ?dayP ?conflictDay ; ?startP ?rivalStart0 .
+    OPTIONAL { $this c:durationProperty ?durP . ?held1 ?durP ?dur0 }
+    OPTIONAL { $this c:durationProperty ?durP3 . ?rival ?durP3 ?rivalDur0 }
+    BIND(xsd:integer(ROUND(xsd:decimal(?start0) * 60)) AS ?sm)
+    BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?dur0), 1) * 60)) AS ?dm)
+    BIND(xsd:integer(ROUND(xsd:decimal(?rivalStart0) * 60)) AS ?rsm)
+    BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?rivalDur0), 1) * 60)) AS ?rdm)
+    FILTER(?rsm < ?sm + ?dm && ?sm < ?rsm + ?rdm)
+    BIND(IRI(CONCAT(STR($this), "/~entry-", ENCODE_FOR_URI(STR(?held1)))) AS ?entry)
+  }
+}""" .
+
+# --- an item --------------------------------------------------------------------------------------
+# Its title (its accessible name), its time (09:00–10:30) and its detail (the room); a conflict
+# is marked and says what it overlaps (the first by title, and how many more).
+
+c:CalendarEntryRendering a sem:Rendering ;
+    sem:targets c:CalendarEntry ;
+    sem:stratum 0 ;
+    sem:follows c:of , c:conflictsWith .
+c:CalendarEntryRendering-fn a sem:Rule ; sem:implements c:CalendarEntryRendering ; sem:function "calendar:entry" .
+c:CalendarEntryRendering-sparql-screen a sem:Rule ;
+    sem:implements c:CalendarEntryRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:class ?rootClass ; rdfhtml:hasChild ?title , ?when , ?detail , ?note ;
+        rdfhtml:attribute ?labelledBy , ?describedBy .
+  ?labelledBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-labelledby" ; rdfhtml:attributeValue ?titleId .
+  ?describedBy a rdfhtml:Attribute ; rdfhtml:attributeName "aria-describedby" ; rdfhtml:attributeValue ?described .
+  ?title a rdfhtml:Span ; rdfhtml:class "sem-title" ; rdfhtml:id ?titleId ; rdfhtml:hasChild ?titleText ; ord:immediatelyPrecedes ?when .
+  ?titleText a rdfhtml:Text ; rdfhtml:data ?titleData .
+  ?when a rdfhtml:Span ; rdfhtml:class "sem-when" ; rdfhtml:id ?whenId ; rdfhtml:hasChild ?whenText ; ord:precedes ?detail , ?note .
+  ?whenText a rdfhtml:Text ; rdfhtml:data ?whenData .
+  ?detail a rdfhtml:Span ; rdfhtml:class "sem-detail" ; rdfhtml:id ?detailId ; rdfhtml:hasChild ?detailText ; ord:precedes ?note .
+  ?detailText a rdfhtml:Text ; rdfhtml:data ?detailData .
+  ?note a rdfhtml:Span ; rdfhtml:class "sem-conflict-note" ; rdfhtml:id ?noteId ; rdfhtml:hasChild ?noteText .
+  ?noteText a rdfhtml:Text ; rdfhtml:data ?noteData .
+}
+WHERE {
+  $this a c:CalendarEntry ; c:of ?item ; c:onCalendar ?cal .
+  ?cal c:startProperty ?startP . ?item ?startP ?start0 .
+  OPTIONAL { ?cal c:durationProperty ?durP . ?item ?durP ?dur0 }
+  OPTIONAL { ?cal c:entryTitle ?titleP . ?item ?titleP ?title0 }
+  OPTIONAL { ?cal c:entryDetail ?detailP . ?item ?detailP ?detailValue . OPTIONAL { ?detailPlainAt l10n:of ?detailValue ; l10n:name ?detailPlain }
+  OPTIONAL { ?detailValue rdfs:label ?detailPlain FILTER(lang(?detailPlain) = "") } }
+  LATERAL { OPTIONAL { SELECT ?this ?cal (MIN(?rivalTitle) AS ?firstRival) (COUNT(DISTINCT ?rival) AS ?rivals) WHERE {
+    $this c:conflictsWith ?rival . OPTIONAL { ?cal c:entryTitle ?titleP2 . ?rival ?titleP2 ?rivalTitle0 }
+    BIND(STR(COALESCE(?rivalTitle0, REPLACE(STR(?rival), "^.*[#/]", ""))) AS ?rivalTitle)
+  } GROUP BY ?this ?cal } }
+  OPTIONAL { ?overlapsPhraseAt l10n:of c:OverlapsPhrase ; l10n:name ?overlapsPhrase }
+  OPTIONAL { c:OverlapsPhrase rdfs:label ?overlapsPhrase FILTER(langMatches(lang(?overlapsPhrase), "en")) }
+  BIND(xsd:integer(ROUND(xsd:decimal(?start0) * 60)) AS ?sm)
+  BIND(?sm + xsd:integer(ROUND(COALESCE(xsd:decimal(?dur0), 1) * 60)) AS ?em)
+  BIND(xsd:integer(FLOOR(?sm / 60)) AS ?sh) BIND(?sm - ?sh * 60 AS ?smin)
+  BIND(xsd:integer(FLOOR(?em / 60)) AS ?eh) BIND(?em - ?eh * 60 AS ?emin)
+  BIND(CONCAT(IF(?sh < 10, "0", ""), STR(?sh), ":", IF(?smin < 10, "0", ""), STR(?smin), "–",
+              IF(?eh < 10, "0", ""), STR(?eh), ":", IF(?emin < 10, "0", ""), STR(?emin)) AS ?whenData)
+  BIND(STR(COALESCE(?title0, REPLACE(STR(?item), "^.*[#/]", ""))) AS ?titleData)
+  BIND(IF(isLiteral(?detailValue), STR(?detailValue), STR(COALESCE(?detailPlain, REPLACE(STR(?detailValue), "^.*[#/]", "")))) AS ?detailData)
+  BIND(COALESCE(?rivals, 0) > 0 AS ?conflict)
+  BIND(IF(?conflict, CONCAT(STR(?overlapsPhrase), " ", ?firstRival, IF(?rivals > 1, CONCAT(" +", STR(?rivals - 1)), "")), ?none) AS ?noteData)
+  BIND(IF(?conflict, "sem-entry sem-conflict", "sem-entry") AS ?rootClass)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-labelledby")) AS ?labelledBy)
+  BIND(IRI(CONCAT(STR($this), "/~root-aria-describedby")) AS ?describedBy)
+  BIND(IRI(CONCAT(STR($this), "/~title")) AS ?title)
+  BIND(STR(?title) AS ?titleId)
+  BIND(IRI(CONCAT(STR($this), "/~title-text")) AS ?titleText)
+  BIND(IRI(CONCAT(STR($this), "/~when")) AS ?when)
+  BIND(STR(?when) AS ?whenId)
+  BIND(IRI(CONCAT(STR($this), "/~when-text")) AS ?whenText)
+  BIND(IF(BOUND(?detailValue), IRI(CONCAT(STR($this), "/~detail")), ?none) AS ?detail)
+  BIND(IF(BOUND(?detail), STR(?detail), ?none) AS ?detailId)
+  BIND(IF(BOUND(?detail), IRI(CONCAT(STR($this), "/~detail-text")), ?none) AS ?detailText)
+  BIND(IF(?conflict, IRI(CONCAT(STR($this), "/~note")), ?none) AS ?note)
+  BIND(IF(?conflict, STR(?note), ?none) AS ?noteId)
+  BIND(IF(?conflict, IRI(CONCAT(STR($this), "/~note-text")), ?none) AS ?noteText)
+  BIND(CONCAT(?whenId, IF(BOUND(?detailId), CONCAT(" ", ?detailId), ""), IF(BOUND(?noteId), CONCAT(" ", ?noteId), "")) AS ?described)
+}""" .
+c:CalendarEntryRendering-sparql-text a sem:Rule ;
+    sem:implements c:CalendarEntryRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Div ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?line .
+}
+WHERE {
+  $this a c:CalendarEntry ; c:of ?item ; c:onCalendar ?cal .
+  ?cal c:startProperty ?startP . ?item ?startP ?start0 .
+  OPTIONAL { ?cal c:durationProperty ?durP . ?item ?durP ?dur0 }
+  OPTIONAL { ?cal c:entryTitle ?titleP . ?item ?titleP ?title0 }
+  OPTIONAL { ?cal c:entryDetail ?detailP . ?item ?detailP ?detailValue . OPTIONAL { ?detailPlainAt l10n:of ?detailValue ; l10n:name ?detailPlain }
+  OPTIONAL { ?detailValue rdfs:label ?detailPlain FILTER(lang(?detailPlain) = "") } }
+  LATERAL { OPTIONAL { SELECT ?this ?cal (MIN(?rivalTitle) AS ?firstRival) (COUNT(DISTINCT ?rival) AS ?rivals) WHERE {
+    $this c:conflictsWith ?rival . OPTIONAL { ?cal c:entryTitle ?titleP2 . ?rival ?titleP2 ?rivalTitle0 }
+    BIND(STR(COALESCE(?rivalTitle0, REPLACE(STR(?rival), "^.*[#/]", ""))) AS ?rivalTitle)
+  } GROUP BY ?this ?cal } }
+  OPTIONAL { ?overlapsPhraseAt l10n:of c:OverlapsPhrase ; l10n:name ?overlapsPhrase }
+  OPTIONAL { c:OverlapsPhrase rdfs:label ?overlapsPhrase FILTER(langMatches(lang(?overlapsPhrase), "en")) }
+  BIND(xsd:integer(ROUND(xsd:decimal(?start0) * 60)) AS ?sm)
+  BIND(?sm + xsd:integer(ROUND(COALESCE(xsd:decimal(?dur0), 1) * 60)) AS ?em)
+  BIND(xsd:integer(FLOOR(?sm / 60)) AS ?sh) BIND(?sm - ?sh * 60 AS ?smin)
+  BIND(xsd:integer(FLOOR(?em / 60)) AS ?eh) BIND(?em - ?eh * 60 AS ?emin)
+  BIND(CONCAT(IF(?sh < 10, "0", ""), STR(?sh), ":", IF(?smin < 10, "0", ""), STR(?smin), "–",
+              IF(?eh < 10, "0", ""), STR(?eh), ":", IF(?emin < 10, "0", ""), STR(?emin)) AS ?whenData)
+  BIND(STR(COALESCE(?title0, REPLACE(STR(?item), "^.*[#/]", ""))) AS ?titleData)
+  BIND(IF(isLiteral(?detailValue), STR(?detailValue), STR(COALESCE(?detailPlain, REPLACE(STR(?detailValue), "^.*[#/]", "")))) AS ?detailData)
+  BIND(CONCAT("  ", ?whenData, " ", ?titleData, IF(BOUND(?detailData), CONCAT(" · ", ?detailData), ""),
+              IF(COALESCE(?rivals, 0) > 0, CONCAT(" (", LCASE(STR(?overlapsPhrase)), " ", ?firstRival, IF(?rivals > 1, CONCAT(" +", STR(?rivals - 1)), ""), ")"), "")) AS ?line)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
+
+# --- objections while an item is carried ---------------------------------------------------------------
+# For the item picked up: every slot where it would overlap an item sharing its value of a
+# c:exclusiveBy shape (moved there: the slot's hour, its own minutes, its length), and every other value of
+# that property it would overlap one in where it is now (another room, booked then), object to it
+# with the shape's message. The drag and drop layer refuses a drop on what objects.
+
+# Why a slot objects when the c:exclusiveBy shape gives no message.
+c:OverlapPhrase a c:Phrase ;
+    rdfs:label "It would overlap another booking."@en , "Це перетнеться з іншим бронюванням."@uk ,
+               "Das würde sich mit einer anderen Buchung überschneiden."@de , "سيتداخل مع حجز آخر."@ar .
+
+c:CalendarObjections a sem:Rendering ;
+    sem:targets c:Calendar ;
+    sem:modality mod:Screen ;
+    sem:stratum 5 ;
+    sem:requires dnd:offered ;
+    sem:follows dnd:offered ;
+    sem:watches dnd:offered , dnd:carrying .
+c:CalendarObjections-fn a sem:Rule ; sem:implements c:CalendarObjections ; sem:function "calendar:objections" .
+c:CalendarObjections-sparql a sem:Rule ;
+    sem:implements c:CalendarObjections ;
+    sem:construct """
+CONSTRUCT { ?objection a dnd:Objection ; dnd:receptacle ?r ; dnd:against ?drag ; dnd:reason ?reason . }
+WHERE {
+  $this dnd:offered ?drag . ?drag dnd:carrying ?x .
+  $this c:entry ?x ; c:dayProperty ?dayP ; c:startProperty ?startP .
+  OPTIONAL { $this c:fromHour ?from0 }
+  OPTIONAL { $this c:toHour ?to0 }
+  BIND(COALESCE(xsd:integer(?from0), 8) AS ?from)
+  BIND(COALESCE(xsd:integer(?to0), 18) AS ?to)
+  ?shape c:exclusiveBy ?ex ; sh:targetClass ?cls .
+  ?x a ?cls ; ?ex ?held ; ?dayP ?xDay ; ?startP ?xStart0 .
+  OPTIONAL { ?message0At l10n:of ?shape ; l10n:message ?message0 }
+  OPTIONAL { ?messageAt l10n:of ?shape ; l10n:message ?message0 }
+  OPTIONAL { ?shape sh:message ?message0 FILTER(lang(?message0) = "") }
+  OPTIONAL { ?overlapAt l10n:of c:OverlapPhrase ; l10n:name ?overlap0 }
+  BIND(STR(COALESCE(?message0, ?overlap0, "It would overlap another booking.")) AS ?reason)
+  OPTIONAL { $this c:durationProperty ?durP . ?x ?durP ?xDur0 }
+  BIND(xsd:integer(ROUND(xsd:decimal(?xStart0) * 60)) AS ?xsm)
+  BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?xDur0), 1) * 60)) AS ?xdm)
+  $this c:entry ?o FILTER(?o != ?x)
+  ?o a ?cls ; ?ex ?oHeld ; ?dayP ?oDay ; ?startP ?oStart0 .
+  OPTIONAL { $this c:durationProperty ?durP2 . ?o ?durP2 ?oDur0 }
+  BIND(xsd:integer(ROUND(xsd:decimal(?oStart0) * 60)) AS ?osm)
+  BIND(xsd:integer(ROUND(COALESCE(xsd:decimal(?oDur0), 1) * 60)) AS ?odm)
+  # Its cells: moved to the other's day at an hour where it would overlap it, in the same room;
+  # and another room, booked while it is on (?h unbound).
+  { VALUES ?h { 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 } } UNION { BIND("room" AS ?other) }
+  BIND(?xsm - xsd:integer(FLOOR(?xsm / 60)) * 60 AS ?xMinutes)
+  FILTER(IF(BOUND(?h), ?oHeld = ?held && ?h >= ?from && ?h < ?to && ?osm < ?h * 60 + ?xMinutes + ?xdm && ?h * 60 + ?xMinutes < ?osm + ?odm,
+            ?oHeld != ?held && ?oDay = ?xDay && ?osm < ?xsm + ?xdm && ?xsm < ?osm + ?odm))
+  BIND(IF(BOUND(?h), IRI(CONCAT(STR($this), "/~slot-", ENCODE_FOR_URI(STR(?oDay)), "-", STR(?h))), ?oHeld) AS ?r)
+  BIND(IRI(CONCAT(STR($this), "/~objection-", ENCODE_FOR_URI(STR(?r)))) AS ?objection)
+}""" .
+
+# --- behaviour: a drop moves the item to the slot's day and hour ---------------------------------------
+# A drop the layer accepted (a slot where it overlaps nothing it must not) sets the carried item's
+# day to the slot's, and its start to the slot's hour - keeping its minutes, so a half-past
+# meeting carried a day later is still at half past. Refused drops never get here (dnd:Refusal,
+# announced with the shape's message).
+
+c:CalendarMove a beh:Reaction ;
+    beh:when dnd:Drop ;
+    beh:sourceClass c:Calendar ;
+    beh:deletes """
+CONSTRUCT { ?x ?dayP ?oldDay ; ?startP ?oldStart }
+WHERE {
+  $event dnd:carrying ?x ; dnd:into ?slot . ?slot c:onDay ?day ; c:atHour ?h .
+  $this c:entry ?x ; c:dayProperty ?dayP ; c:startProperty ?startP .
+  ?x ?dayP ?oldDay ; ?startP ?oldStart .
+}""" ;
+    beh:inserts """
+CONSTRUCT { ?x ?dayP ?day ; ?startP ?start }
+WHERE {
+  $event dnd:carrying ?x ; dnd:into ?slot . ?slot c:onDay ?day ; c:atHour ?h .
+  $this c:entry ?x ; c:dayProperty ?dayP ; c:startProperty ?startP .
+  ?x ?startP ?oldStart .
+  BIND(xsd:integer(ROUND(xsd:decimal(?oldStart) * 60)) AS ?om)
+  BIND(?om - xsd:integer(FLOOR(?om / 60)) * 60 AS ?minutes)
+  BIND(IF(?minutes = 0, ?h, ?h + ?minutes / 60) AS ?start)
+}""" ;
+    sem:function "calendar:move" ;
+    ann:announces "Moved" , "Переміщено"@uk , "Verschoben"@de , "تم النقل"@ar ;
+    ann:tone sty:Success .

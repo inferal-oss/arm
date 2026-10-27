@@ -10,3 +10,8 @@ dist/
 
 # Local TLA+ tools, model-checker states, traces and proof caches.
 /.tla/
+
+# Product UI development dependencies and test caches.
+/web/node_modules
+/web/.vite/
+/web/third_party/semblance/node_modules

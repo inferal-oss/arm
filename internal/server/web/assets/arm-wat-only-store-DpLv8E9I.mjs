@@ -1,0 +1,1 @@
+async function e(){throw Error(`The ARM dashboard supports the pinned WAT store only; Oxigraph and Hybrid stores are not included.`)}export{e as default};

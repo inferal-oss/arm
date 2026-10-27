@@ -1,0 +1,161 @@
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+
+# Foundations of the default theme (see DESIGN.md §1): color ramps, status
+# colors, type, radius, control sizes, elevation and motion. Components use
+# the role tokens (theme/default.ttl) and the variant axes (theme/variants.ttl),
+# not these directly; a theme re-values the ramps and everything follows.
+#
+# Ramps follow the 12-step role convention: 1-2 app backgrounds, 3-5 component
+# fills (3 rest, 4 hover, 5 pressed), 6-8 borders, 9-10 solid (rest, hover),
+# 11-12 text (low, high contrast). Every value is a light-dark() pair.
+
+sty:Ramp a sty:Scale .
+sty:Type a sty:Scale .
+sty:Size a sty:Scale .
+sty:Shadow a sty:Scale .
+sty:Motion a sty:Scale .
+
+# --- gray ramp ---
+tok:gray-1 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-1" ; sty:value "light-dark(#fcfcfd, #111116)" .
+tok:gray-2 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-2" ; sty:value "light-dark(#f8f8fb, #17171d)" .
+tok:gray-3 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-3" ; sty:value "light-dark(#f0f0f5, #1f1f27)" .
+tok:gray-4 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-4" ; sty:value "light-dark(#e8e8ef, #26262f)" .
+tok:gray-5 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-5" ; sty:value "light-dark(#e0e0e9, #2d2d37)" .
+tok:gray-6 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-6" ; sty:value "light-dark(#d6d6e1, #353541)" .
+tok:gray-7 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-7" ; sty:value "light-dark(#c8c8d5, #43434f)" .
+tok:gray-8 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-8" ; sty:value "light-dark(#aeaec0, #5a5a69)" .
+tok:gray-9 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-9" ; sty:value "light-dark(#8a8a9e, #6b6b7c)" .
+tok:gray-10 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-10" ; sty:value "light-dark(#7d7d91, #7a7a8b)" .
+tok:gray-11 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-11" ; sty:value "light-dark(#5f5f72, #a8a8b8)" .
+tok:gray-12 a sty:Token ; sty:scale sty:Ramp ; sem:slug "gray-12" ; sty:value "light-dark(#1b1b26, #ededf3)" .
+
+# --- accent ramp ---
+tok:accent-1 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-1" ; sty:value "light-dark(#fdfcff, #14121f)" .
+tok:accent-2 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-2" ; sty:value "light-dark(#f8f6ff, #1a1729)" .
+tok:accent-3 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-3" ; sty:value "light-dark(#f0edff, #251f45)" .
+tok:accent-4 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-4" ; sty:value "light-dark(#e5e0ff, #2c235a)" .
+tok:accent-5 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-5" ; sty:value "light-dark(#d9d2ff, #342a69)" .
+tok:accent-6 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-6" ; sty:value "light-dark(#c9bfff, #3e3379)" .
+tok:accent-7 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-7" ; sty:value "light-dark(#b3a6fb, #4b3f92)" .
+tok:accent-8 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-8" ; sty:value "light-dark(#9787f5, #5d4fb5)" .
+tok:accent-9 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-9" ; sty:value "light-dark(#5b4cf0, #7c6cf6)" .
+tok:accent-10 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-10" ; sty:value "light-dark(#4f40e0, #8b7dff)" .
+tok:accent-11 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-11" ; sty:value "light-dark(#4b3cc9, #b2a8ff)" .
+tok:accent-12 a sty:Token ; sty:scale sty:Ramp ; sem:slug "accent-12" ; sty:value "light-dark(#231a63, #e2ddff)" .
+
+# --- status (steps 3, 4, 6, 9, 10, 11 only: state, never series colors) ---
+tok:info-3 a sty:Token ; sty:scale sty:Ramp ; sem:slug "info-3" ; sty:value "light-dark(#e6f1ff, #10233d)" .
+tok:info-4 a sty:Token ; sty:scale sty:Ramp ; sem:slug "info-4" ; sty:value "light-dark(#d6e8ff, #142c4d)" .
+tok:info-6 a sty:Token ; sty:scale sty:Ramp ; sem:slug "info-6" ; sty:value "light-dark(#a9cdfb, #1d4a7a)" .
+tok:info-9 a sty:Token ; sty:scale sty:Ramp ; sem:slug "info-9" ; sty:value "light-dark(#0b74de, #3b8ef0)" .
+tok:info-10 a sty:Token ; sty:scale sty:Ramp ; sem:slug "info-10" ; sty:value "light-dark(#0a66c4, #5aa0f5)" .
+tok:info-11 a sty:Token ; sty:scale sty:Ramp ; sem:slug "info-11" ; sty:value "light-dark(#0b5cad, #8ec2ff)" .
+
+tok:success-3 a sty:Token ; sty:scale sty:Ramp ; sem:slug "success-3" ; sty:value "light-dark(#e3f7ee, #0f2a20)" .
+tok:success-4 a sty:Token ; sty:scale sty:Ramp ; sem:slug "success-4" ; sty:value "light-dark(#d0f0e2, #123427)" .
+tok:success-6 a sty:Token ; sty:scale sty:Ramp ; sem:slug "success-6" ; sty:value "light-dark(#9edfc2, #1d5a43)" .
+tok:success-9 a sty:Token ; sty:scale sty:Ramp ; sem:slug "success-9" ; sty:value "light-dark(#12a37a, #2bbf8f)" .
+tok:success-10 a sty:Token ; sty:scale sty:Ramp ; sem:slug "success-10" ; sty:value "light-dark(#0f916c, #4fd8a8)" .
+tok:success-11 a sty:Token ; sty:scale sty:Ramp ; sem:slug "success-11" ; sty:value "light-dark(#0a7a59, #7fe8c1)" .
+
+tok:warning-3 a sty:Token ; sty:scale sty:Ramp ; sem:slug "warning-3" ; sty:value "light-dark(#fff4d6, #2e2310)" .
+tok:warning-4 a sty:Token ; sty:scale sty:Ramp ; sem:slug "warning-4" ; sty:value "light-dark(#ffecbd, #3a2c12)" .
+tok:warning-6 a sty:Token ; sty:scale sty:Ramp ; sem:slug "warning-6" ; sty:value "light-dark(#f5d27a, #6b4d14)" .
+tok:warning-9 a sty:Token ; sty:scale sty:Ramp ; sem:slug "warning-9" ; sty:value "light-dark(#f5a524, #f5a524)" .
+tok:warning-10 a sty:Token ; sty:scale sty:Ramp ; sem:slug "warning-10" ; sty:value "light-dark(#e29512, #ffb84d)" .
+tok:warning-11 a sty:Token ; sty:scale sty:Ramp ; sem:slug "warning-11" ; sty:value "light-dark(#a35c00, #ffcf7a)" .
+
+tok:danger-3 a sty:Token ; sty:scale sty:Ramp ; sem:slug "danger-3" ; sty:value "light-dark(#ffe8eb, #3a1419)" .
+tok:danger-4 a sty:Token ; sty:scale sty:Ramp ; sem:slug "danger-4" ; sty:value "light-dark(#ffd9de, #47181f)" .
+tok:danger-6 a sty:Token ; sty:scale sty:Ramp ; sem:slug "danger-6" ; sty:value "light-dark(#f5b0b9, #7a2a36)" .
+tok:danger-9 a sty:Token ; sty:scale sty:Ramp ; sem:slug "danger-9" ; sty:value "light-dark(#e0344a, #ec4f63)" .
+tok:danger-10 a sty:Token ; sty:scale sty:Ramp ; sem:slug "danger-10" ; sty:value "light-dark(#c92a3f, #ff7a8a)" .
+tok:danger-11 a sty:Token ; sty:scale sty:Ramp ; sem:slug "danger-11" ; sty:value "light-dark(#c0263a, #ffa3ae)" .
+
+# --- type ---
+tok:font-mono a sty:Token ; sty:scale sty:Font ; sem:slug "font-mono" ;
+    sty:value "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" .
+tok:text-xs a sty:Token ; sty:scale sty:Type ; sem:slug "text-xs" ; sty:value "11px" .
+tok:text-sm a sty:Token ; sty:scale sty:Type ; sem:slug "text-sm" ; sty:value "13px" .
+tok:text-md a sty:Token ; sty:scale sty:Type ; sem:slug "text-md" ; sty:value "15px" .
+tok:text-lg a sty:Token ; sty:scale sty:Type ; sem:slug "text-lg" ; sty:value "17px" .
+tok:text-xl a sty:Token ; sty:scale sty:Type ; sem:slug "text-xl" ; sty:value "20px" .
+tok:text-2xl a sty:Token ; sty:scale sty:Type ; sem:slug "text-2xl" ; sty:value "24px" .
+tok:text-3xl a sty:Token ; sty:scale sty:Type ; sem:slug "text-3xl" ; sty:value "30px" .
+tok:leading-tight a sty:Token ; sty:scale sty:Type ; sem:slug "leading-tight" ; sty:value "1.2" .
+tok:leading-normal a sty:Token ; sty:scale sty:Type ; sem:slug "leading-normal" ; sty:value "1.55" .
+
+# --- space (extends space-1..6) ---
+tok:space-7 a sty:Token ; sty:scale sty:Space ; sem:slug "space-7" ; sty:value "40px" .
+tok:space-8 a sty:Token ; sty:scale sty:Space ; sem:slug "space-8" ; sty:value "48px" .
+
+# --- radius ---
+tok:radius-sm a sty:Token ; sty:scale sty:Radius ; sem:slug "radius-sm" ; sty:value "6px" .
+tok:radius-md a sty:Token ; sty:scale sty:Radius ; sem:slug "radius-md" ; sty:value "10px" .
+tok:radius-lg a sty:Token ; sty:scale sty:Radius ; sem:slug "radius-lg" ; sty:value "14px" .
+tok:radius-xl a sty:Token ; sty:scale sty:Radius ; sem:slug "radius-xl" ; sty:value "20px" .
+tok:radius-full a sty:Token ; sty:scale sty:Radius ; sem:slug "radius-full" ; sty:value "999px" .
+
+# --- control sizes (height of every control at each sty:size) ---
+tok:control-sm a sty:Token ; sty:scale sty:Size ; sem:slug "control-sm" ; sty:value "28px" .
+tok:control-md a sty:Token ; sty:scale sty:Size ; sem:slug "control-md" ; sty:value "36px" .
+tok:control-lg a sty:Token ; sty:scale sty:Size ; sem:slug "control-lg" ; sty:value "44px" .
+# The block size of a single-line control (a text field, a select, a date or number input, a button)
+# where no sty:size says otherwise (--control-h): one value, so the controls in a row or a form line
+# up whatever their kind, theme or engine. Their padding is inline only; the box centres the line.
+tok:control-height a sty:Token ; sty:scale sty:Size ; sem:slug "control-height" ; sty:value "38px" .
+# A select's own chevron, drawn in the text colour (so in every theme's), and the room it takes at
+# the end of the line.
+tok:chevron a sty:Token ; sty:scale sty:Size ; sem:slug "chevron" ;
+    sty:value "linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)" .
+tok:chevron-space a sty:Token ; sty:scale sty:Size ; sem:slug "chevron-space" ; sty:value "32px" .
+
+# --- elevation ---
+tok:shadow-1 a sty:Token ; sty:scale sty:Shadow ; sem:slug "shadow-1" ;
+    sty:value "0 1px 2px light-dark(rgb(17 17 34 / 0.06), rgb(0 0 0 / 0.5))" .
+tok:shadow-2 a sty:Token ; sty:scale sty:Shadow ; sem:slug "shadow-2" ;
+    sty:value "0 1px 1px light-dark(rgb(17 17 34 / 0.04), rgb(0 0 0 / 0.4)), 0 12px 32px -12px light-dark(rgb(30 27 75 / 0.18), rgb(0 0 0 / 0.65))" .
+tok:shadow-3 a sty:Token ; sty:scale sty:Shadow ; sem:slug "shadow-3" ;
+    sty:value "0 0 0 1px light-dark(rgb(17 17 34 / 0.06), rgb(255 255 255 / 0.06)), 0 18px 48px -12px light-dark(rgb(30 27 75 / 0.28), rgb(0 0 0 / 0.75))" .
+tok:shadow-4 a sty:Token ; sty:scale sty:Shadow ; sem:slug "shadow-4" ;
+    sty:value "0 0 0 1px light-dark(rgb(17 17 34 / 0.08), rgb(255 255 255 / 0.08)), 0 32px 80px -16px light-dark(rgb(30 27 75 / 0.38), rgb(0 0 0 / 0.85))" .
+
+# --- surfaces (roles beyond theme/default.ttl) ---
+tok:canvas a sty:Token ; sty:scale sty:Color ; sem:slug "canvas" ; sty:value "var(--sem-gray-2)" .
+tok:surface-overlay a sty:Token ; sty:scale sty:Color ; sem:slug "surface-overlay" ; sty:value "light-dark(#ffffff, #1c1c23)" .
+tok:scrim a sty:Token ; sty:scale sty:Color ; sem:slug "scrim" ; sty:value "light-dark(rgb(20 18 40 / 0.32), rgb(0 0 0 / 0.6))" .
+
+# --- motion (the motion layer re-values these) ---
+tok:duration-fast a sty:Token ; sty:scale sty:Motion ; sem:slug "duration-fast" ; sty:value "120ms" .
+tok:duration a sty:Token ; sty:scale sty:Motion ; sem:slug "duration" ; sty:value "180ms" .
+tok:duration-slow a sty:Token ; sty:scale sty:Motion ; sem:slug "duration-slow" ; sty:value "320ms" .
+# A long movement through space (a card's 3D turn): reduced or no motion makes it instant, and
+# move-fade (none here) is what replaces it, a short fade-in of what it brings into view.
+tok:duration-move a sty:Token ; sty:scale sty:Motion ; sem:slug "duration-move" ; sty:value "700ms" .
+tok:ease-move a sty:Token ; sty:scale sty:Motion ; sem:slug "ease-move" ; sty:value "cubic-bezier(0.3, 0.7, 0.1, 1)" .
+tok:move-fade a sty:Token ; sty:scale sty:Motion ; sem:slug "move-fade" ; sty:value "none" .
+# The beat of a repeating animation (a spinner, a shimmer, a blinking caret): reduced motion slows
+# it rather than speeding it up with the shorter durations, no motion stills it.
+tok:duration-loop a sty:Token ; sty:scale sty:Motion ; sem:slug "duration-loop" ; sty:value "320ms" .
+tok:ease a sty:Token ; sty:scale sty:Motion ; sem:slug "ease" ; sty:value "cubic-bezier(0.2, 0, 0, 1)" .
+tok:ease-out a sty:Token ; sty:scale sty:Motion ; sem:slug "ease-out" ; sty:value "cubic-bezier(0, 0, 0.2, 1)" .
+tok:spring a sty:Token ; sty:scale sty:Motion ; sem:slug "spring" ; sty:value "cubic-bezier(0.34, 1.4, 0.64, 1)" .
+
+# --- animations (use with the motion tokens, so the motion layer can calm them) ---
+[] a sty:Keyframes ; sty:name "sem-spin" ;
+    sty:step [ sty:at "to" ; sty:declares [ sty:property "transform" ; sty:raw "rotate(360deg)" ] ] .
+[] a sty:Keyframes ; sty:name "sem-shimmer" ;
+    sty:step [ sty:at "from" ; sty:declares [ sty:property "background-position" ; sty:raw "120% 0" ] ] ,
+             [ sty:at "to" ; sty:declares [ sty:property "background-position" ; sty:raw "-120% 0" ] ] .
+[] a sty:Keyframes ; sty:name "sem-fade-in" ;
+    sty:step [ sty:at "from" ; sty:declares [ sty:property "opacity" ; sty:raw "0" ] ] .
+[] a sty:Keyframes ; sty:name "sem-rise-in" ;
+    sty:step [ sty:at "from" ; sty:declares [ sty:property "opacity" ; sty:raw "0" ] , [ sty:property "transform" ; sty:raw "translateY(8px)" ] ] .
+[] a sty:Keyframes ; sty:name "sem-scale-in" ;
+    sty:step [ sty:at "from" ; sty:declares [ sty:property "opacity" ; sty:raw "0" ] , [ sty:property "transform" ; sty:raw "scale(0.96)" ] ] .
+[] a sty:Keyframes ; sty:name "sem-slide-in-end" ;
+    sty:step [ sty:at "from" ; sty:declares [ sty:property "transform" ; sty:raw "translateX(100%)" ] ] .
+[] a sty:Keyframes ; sty:name "sem-slide-in-start" ;
+    sty:step [ sty:at "from" ; sty:declares [ sty:property "transform" ; sty:raw "translateX(-100%)" ] ] .

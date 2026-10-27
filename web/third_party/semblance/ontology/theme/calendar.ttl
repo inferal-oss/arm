@@ -1,0 +1,135 @@
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix sty: <https://semblance.dev/ns/style#> .
+@prefix tok: <https://semblance.dev/ns/token#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Default theme for the calendar (ontology/components/calendar.ttl): a ruled week on a surface,
+# the hours down the inline-start side, items as tinted tiles in their tone. The grid keeps its
+# days readable (a minimum width each) and scrolls sideways inside the calendar on a narrow
+# screen. Logical properties throughout, so right to left mirrors it.
+
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ;
+    sty:declares [ sty:property "--sem-cal-hour" ; sty:raw "3.5rem" ] ,
+                 [ sty:property "overflow-x" ; sty:raw "auto" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-card ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part "> .sem-cal-grid" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "3.25rem repeat(var(--sem-cal-days, 5), minmax(6.5rem, 1fr))" ] ,
+                 [ sty:property "min-width" ; sty:raw "max-content" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-head, .sem-cal-row" ;
+    sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+                 [ sty:property "grid-column" ; sty:raw "1 / -1" ] ,
+                 [ sty:property "grid-template-columns" ; sty:raw "subgrid" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-head" ;
+    sty:declares [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "top" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "3" ] ,
+                 [ sty:property "background" ; sty:token tok:surface-sunken ] ,
+                 [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-day" ;
+    sty:declares [ sty:property "padding" ; sty:raw "8px 6px" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+                 [ sty:property "letter-spacing" ; sty:raw "0.04em" ] ,
+                 [ sty:property "text-align" ; sty:raw "center" ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-hour" ;
+    sty:declares [ sty:property "padding" ; sty:raw "2px 6px" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "color" ; sty:token tok:muted ] ,
+                 [ sty:property "text-align" ; sty:raw "end" ] ,
+                 [ sty:property "translate" ; sty:raw "0 -0.6em" ] .
+# The hours stay in view while the days scroll sideways.
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-hour, .sem-cal-corner" ;
+    sty:declares [ sty:property "position" ; sty:raw "sticky" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "0" ] ,
+                 [ sty:property "z-index" ; sty:raw "2" ] ,
+                 [ sty:property "background" ; sty:token tok:surface ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-corner" ;
+    sty:declares [ sty:property "background" ; sty:token tok:surface-sunken ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-row:first-of-type .sem-cal-hour" ;
+    sty:declares [ sty:property "translate" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-cell" ;
+    sty:declares [ sty:property "position" ; sty:raw "relative" ] ,
+                 [ sty:property "height" ; sty:raw "var(--sem-cal-hour)" ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "1px solid var(--sem-border)" ] ,
+                 [ sty:property "border-top" ; sty:raw "1px solid color-mix(in oklab, var(--sem-border) 60%, transparent)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-row:first-of-type .sem-cal-cell" ;
+    sty:declares [ sty:property "border-top" ; sty:raw "none" ] .
+# Where an item is: from its start minute, as long as it lasts, in its lane of the day's width.
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-place" ;
+    sty:declares [ sty:property "position" ; sty:raw "absolute" ] ,
+                 [ sty:property "z-index" ; sty:raw "1" ] ,
+                 [ sty:property "top" ; sty:raw "calc(var(--sem-start) / 60 * 100% + 1px)" ] ,
+                 [ sty:property "height" ; sty:raw "calc(var(--sem-span) / 60 * 100% - 3px)" ] ,
+                 [ sty:property "inset-inline-start" ; sty:raw "calc(var(--sem-lane) / var(--sem-lanes) * 100% + 2px)" ] ,
+                 [ sty:property "width" ; sty:raw "calc(100% / var(--sem-lanes) - 4px)" ] .
+# While something is carried the cells, not the items in them, are under the pointer.
+[] a sty:StyleRule ; sty:part ":root[data-sem-dragging] [data-sem-c=calendar] .sem-cal-place:not(:has([data-sem-lifted]))" ;
+    sty:declares [ sty:property "pointer-events" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-place:has([data-sem-lifted])" ;
+    sty:declares [ sty:property "z-index" ; sty:raw "30" ] .
+
+# --- an item ---
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ;
+    sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+                 [ sty:property "height" ; sty:raw "100%" ] ,
+                 [ sty:property "display" ; sty:raw "flex" ] ,
+                 [ sty:property "flex-direction" ; sty:raw "column" ] ,
+                 [ sty:property "gap" ; sty:raw "1px" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "padding" ; sty:raw "3px 6px" ] ,
+                 [ sty:property "font-size" ; sty:token tok:text-xs ] ,
+                 [ sty:property "line-height" ; sty:token tok:leading-tight ] ,
+                 [ sty:property "color" ; sty:raw "var(--tone-text)" ] ,
+                 [ sty:property "background" ; sty:raw "color-mix(in oklab, var(--tone-soft) 85%, var(--sem-surface))" ] ,
+                 [ sty:property "border" ; sty:raw "1px solid var(--tone-border)" ] ,
+                 [ sty:property "border-inline-start" ; sty:raw "3px solid var(--tone-solid)" ] ,
+                 [ sty:property "border-radius" ; sty:token tok:radius-sm ] .
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ".sem-title" ;
+    sty:declares [ sty:property "font-weight" ; sty:raw "650" ] ,
+                 [ sty:property "overflow-wrap" ; sty:raw "break-word" ] ,
+                 [ sty:property "hyphens" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ":is(.sem-when, .sem-detail)" ;
+    sty:declares [ sty:property "opacity" ; sty:raw "0.8" ] ,
+                 [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+                 [ sty:property "overflow" ; sty:raw "hidden" ] ,
+                 [ sty:property "text-overflow" ; sty:raw "ellipsis" ] .
+# A time range reads left to right in every language (it is a clock's), kept to the item's start
+# side; a title takes the direction of its own first letters.
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ".sem-when" ;
+    sty:declares [ sty:property "font-variant-numeric" ; sty:raw "tabular-nums" ] ,
+                 [ sty:property "direction" ; sty:raw "ltr" ] ,
+                 [ sty:property "unicode-bidi" ; sty:raw "isolate" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ".sem-title" ;
+    sty:declares [ sty:property "unicode-bidi" ; sty:raw "plaintext" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ":is(.sem-title, .sem-when)" ;
+    sty:declares [ sty:property "align-self" ; sty:raw "flex-start" ] ,
+                 [ sty:property "max-width" ; sty:raw "100%" ] .
+# A conflict: outlined in danger, striped, and it says what it overlaps.
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:state ".sem-conflict" ;
+    sty:declares [ sty:property "outline" ; sty:raw "2px solid var(--sem-danger-9)" ] ,
+                 [ sty:property "outline-offset" ; sty:raw "-1px" ] ,
+                 [ sty:property "background-image" ; sty:raw "repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in oklab, var(--sem-danger-9) 12%, transparent) 6px 12px)" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ".sem-conflict-note" ;
+    sty:declares [ sty:property "color" ; sty:token tok:danger-11 ] ,
+                 [ sty:property "font-weight" ; sty:raw "600" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CalendarEntry ; sty:part ".sem-conflict-note::before" ;
+    sty:declares [ sty:property "content" ; sty:raw "\"⚠ \"" ] .
+
+# --- while a meeting is carried ---
+# The cells are many and side by side: they are outlined inside, only the one under the drag
+# when it takes it, and those that refuse are dimmed (the drag and drop theme says why over them).
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-cell[data-sem-drop]" ;
+    sty:declares [ sty:property "outline-offset" ; sty:raw "-2px" ] ,
+                 [ sty:property "border-radius" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-cell[data-sem-drop=accepts]:not([data-sem-drop-over])" ;
+    sty:declares [ sty:property "outline" ; sty:raw "none" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Calendar ; sty:part ".sem-cal-cell[data-sem-drop=refuses]" ;
+    sty:declares [ sty:property "background-color" ; sty:raw "color-mix(in oklab, var(--sem-danger-9) 7%, transparent)" ] .

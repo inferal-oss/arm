@@ -1,0 +1,79 @@
+@prefix sx: <https://semblance.dev/ns/sparql#> .
+@prefix sem: <https://semblance.dev/ns/core#> .
+@prefix c: <https://semblance.dev/ns/component#> .
+@prefix mod: <https://semblance.dev/ns/modality#> .
+@prefix l10n: <https://semblance.dev/ns/l10n#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Money: an amount in a currency, written the way the viewer's locale writes it - "€1,249.00"
+# in English, "1.249,00 €" in German, "1 249,00 €" in Ukrainian, right to left in Arabic. The currency is
+# written as its narrow symbol (€, ₴, $). The
+# amount and the currency are data; the formatting is the viewer's.
+#
+# The viewer's language is a projection setting that SPARQL rules cannot see. As with labels
+# (l10n:label) and option texts, a function rule before the components (c:MoneyTexts, stratum
+# -20) writes the formatted amount, in the viewer's language, on a node minted under the
+# instance (<money>/~l10n-amount l10n:label "…"); both renderings show that. Without it (an
+# instance another rule minted) they fall back to the currency code and the plain amount.
+
+c:Money a owl:Class ;
+    rdfs:subClassOf sem:Component ;
+    rdfs:label "Money"@en , "Сума"@uk , "Betrag"@de , "مبلغ"@ar ;
+    rdfs:comment """An amount (c:value, an xsd:decimal) in a currency (c:currency, an ISO 4217 code such as
+"EUR"), formatted for the viewer's locale (Intl.NumberFormat, currency style, narrow symbol) as a <data> element
+whose value attribute keeps the machine-readable amount. Sized and toned like text (sty:textStyle,
+sty:tone)."""@en ;
+    sem:slug "money" .
+c:currency a owl:DatatypeProperty ; rdfs:domain c:Money ;
+    rdfs:comment "An ISO 4217 currency code (\"EUR\", \"UAH\", \"USD\")."@en .
+
+# The formatted text, in the viewer's language (for both renderings).
+c:MoneyTexts a sem:Rendering ;
+    sem:targets c:Money ;
+    sem:stratum -20 ;
+    sem:inputOnly true ;
+    sem:watches c:value , c:currency ;
+    sem:functionOnly "awaits sx:Locale (sx:formatNumber): amounts in the viewer's locale and the currency's format (Intl.NumberFormat)." ;
+    sem:needsExtension sx:Locale .
+c:MoneyTexts-fn a sem:Rule ; sem:implements c:MoneyTexts ; sem:function "money:texts" .
+
+# It reads the formatted text minted under the instance, so it re-runs when that changes.
+c:MoneyRendering a sem:Rendering ; sem:targets c:Money ; sem:stratum 0 ; sem:readsMinted true .
+c:MoneyRendering-fn a sem:Rule ; sem:implements c:MoneyRendering ; sem:function "money" .
+c:MoneyRendering-sparql-screen a sem:Rule ;
+    sem:implements c:MoneyRendering ;
+    sem:modality mod:Screen ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Data ; sem:renders $this ; rdfhtml:value ?amount ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?shown .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Money ; c:value ?value .
+  OPTIONAL { $this c:currency ?code }
+  BIND(IRI(CONCAT(STR($this), "/~l10n-amount")) AS ?local)
+  LATERAL { OPTIONAL { ?local l10n:label ?formatted } }
+  BIND(STR(?value) AS ?amount)
+  BIND(COALESCE(STR(?formatted), CONCAT(IF(BOUND(?code), CONCAT(STR(?code), " "), ""), ?amount)) AS ?shown)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
+c:MoneyRendering-sparql-text a sem:Rule ;
+    sem:implements c:MoneyRendering ;
+    sem:modality mod:Text ;
+    sem:construct """
+CONSTRUCT {
+  ?root a rdfhtml:Span ; sem:renders $this ; rdfhtml:hasChild ?text .
+  ?text a rdfhtml:Text ; rdfhtml:data ?shown .
+}
+WHERE {
+  $this a/rdfs:subClassOf* c:Money ; c:value ?value .
+  OPTIONAL { $this c:currency ?code }
+  BIND(IRI(CONCAT(STR($this), "/~l10n-amount")) AS ?local)
+  LATERAL { OPTIONAL { ?local l10n:label ?formatted } }
+  BIND(COALESCE(STR(?formatted), CONCAT(IF(BOUND(?code), CONCAT(STR(?code), " "), ""), STR(?value))) AS ?shown)
+  BIND(IRI(CONCAT(STR($this), "/~root")) AS ?root)
+  BIND(IRI(CONCAT(STR($this), "/~text")) AS ?text)
+}""" .
