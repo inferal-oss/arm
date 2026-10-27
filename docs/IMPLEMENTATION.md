@@ -166,20 +166,21 @@ Semblance website with actual dashboard/PTY captures. The exact 53-path
 composition preserves other integrated features. The website packages one WAT
 engine, the generic reviewed option-property correction and complete notices.
 
-Automatic main run `40485808949` builds and deploys source `16818ad` to
+Automatic main run `40498511553` builds and deploys source `de5851c` to
 [getarm.org](https://getarm.org/). Its 15 files match the deployed bytes over
 normal certificate-verifying HTTPS; HTTP root redirects to HTTPS and enforcement
 is enabled. The three fresh dashboard images come from a disposable CI backend;
 their sequential measurements are not simultaneous snapshots. The prior frozen
 site's eight-view and six-phase picker results retain their original source
-scope, with all ten static files unchanged in this main deployment.
+scope, with all ten static files unchanged from the earlier `16818ad` deployment.
+This observation adds no settings, DNS or proxy changes.
 
 The second domain still requires a separately approved redirect arrangement.
 No additional Cloudflare proxying is enabled. Source-bound carrier inspection
 at `70c77cd` verifies all 16 compressed payload occurrences and four unique raw
 images, actual Go metadata and private matching-platform version execution.
 It does not publish a tag/release or accept a carrier built from later main.
-See the [deployment record](validation/website-deployment-16818ad-2026-10-27.json)
+See the [deployment record](validation/website-deployment-de5851c-2026-10-27.json)
 and [carrier record](validation/release-payload-inspection-70c77cd-2026-10-27.json).
 
 ## Earlier frozen release payload integrity

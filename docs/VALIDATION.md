@@ -229,6 +229,15 @@ to the canonical HTTPS URL, and all 15 HTTPS files match the artifact. The
 preserves the initial TLS mismatch and cached HTTP metadata response. Secondary
 domain HTTPS/redirect behavior remains unaccepted.
 
+The later single automatic run `40498511553` builds and deploys `de5851c`.
+Root independently reviews all three fresh actual images, the 15 local files,
+their normal-HTTPS byte receipts and connected CI job statuses. Ten static files
+remain identical to `16818ad`; only source integrity, capture metadata and three
+PNGs change. The [new record](validation/website-deployment-de5851c-2026-10-27.json),
+integrated as `a5b8c38`, preserves both earlier records and makes no new picker,
+carrier or full-feature acceptance claim. No settings, DNS or proxy writes
+occur for this observation.
+
 Carrier run `40470874515` and its independently inspected artifact remain scoped
 to `70c77cd`: all 16 compressed occurrences, four unique raw images and actual
 Go metadata match; private matching-platform version execution exits zero with
