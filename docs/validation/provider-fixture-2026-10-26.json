@@ -145,7 +145,6 @@
     }
   ],
   "remaining_gates": [
-    "independent review and composed-current-main validation",
     "typed current worker/scratch retention",
     "elapsed-clock adapter after finalized clock contract",
     "explicit authorized registration and strict reset proof",
@@ -159,5 +158,240 @@
     "executable pinning and missing/replaced executable recovery",
     "suspend/rollback-safe fixture wall-clock schedule",
     "production mutation replay, compensation or distributed fencing"
-  ]
+  ],
+  "independent_review": {
+    "result": "accepted for the opt-in fixture only",
+    "reviewed_author_commit": "1c6aa9ad71e122053b927696080a2e32b8c2c275",
+    "composed_candidate_commit": "e701117b283e6fd2e911e47a5a3dc30226fc6088",
+    "current_main_input_binding": "81fdccddaa9450e7612dec9cfa1c05e5cf3268f8",
+    "material_source_findings": [],
+    "fixture_code_and_tests_changed": false,
+    "native_validation_repeated": false,
+    "evidence_basis": "Retained native source manifests, five exact images, image build information, complete named test rosters, four original killed-child joins per cohort, and exact owned Linux container exit/removal/absence were independently checked. The existing macOS standalone, macOS race and Linux ARM64 cohorts apply through unchanged selected inputs; this is not a new compilation or native execution.",
+    "selected_input_closure": {
+      "manifest_sha256": "7263e01b12c3d434275f4e40469c21e2273c26d60180b4dc56cad6baae2c6349",
+      "profiles": {
+        "darwin-arm64-cgo0": {
+          "package_count": 192,
+          "selected_file_entries": 1359,
+          "unique_selected_files": 1357,
+          "repository_go_and_test_sources": 9,
+          "author_and_composed_inputs_identical": true,
+          "build_environment": {
+            "CC": "clang",
+            "CGO_CFLAGS": "-O2 -g",
+            "CGO_CPPFLAGS": "",
+            "CGO_CXXFLAGS": "-O2 -g",
+            "CGO_ENABLED": "0",
+            "CGO_LDFLAGS": "-O2 -g",
+            "CXX": "clang++",
+            "GOARCH": "arm64",
+            "GOARM64": "v8.0",
+            "GOEXPERIMENT": "",
+            "GOOS": "darwin"
+          },
+          "module_pins": {
+            "github.com/dustin/go-humanize": {
+              "version": "v1.0.1",
+              "sum": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY="
+            },
+            "github.com/google/uuid": {
+              "version": "v1.6.0",
+              "sum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0="
+            },
+            "github.com/mattn/go-isatty": {
+              "version": "v0.0.24",
+              "sum": "h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI="
+            },
+            "github.com/ncruces/go-strftime": {
+              "version": "v1.0.0",
+              "sum": "h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOFAw7w="
+            },
+            "github.com/remyoudompheng/bigfft": {
+              "version": "v0.0.0-20230129092748-24d4a6f8daec",
+              "sum": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE="
+            },
+            "golang.org/x/sys": {
+              "version": "v0.49.0",
+              "sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA="
+            },
+            "modernc.org/libc": {
+              "version": "v1.77.1",
+              "sum": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs="
+            },
+            "modernc.org/mathutil": {
+              "version": "v1.7.1",
+              "sum": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU="
+            },
+            "modernc.org/memory": {
+              "version": "v1.12.1",
+              "sum": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g="
+            },
+            "modernc.org/sqlite": {
+              "version": "v1.60.1",
+              "sum": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw="
+            }
+          }
+        },
+        "darwin-arm64-race-cgo1": {
+          "package_count": 193,
+          "selected_file_entries": 1363,
+          "unique_selected_files": 1361,
+          "repository_go_and_test_sources": 9,
+          "author_and_composed_inputs_identical": true,
+          "build_environment": {
+            "CC": "clang",
+            "CGO_CFLAGS": "-O2 -g",
+            "CGO_CPPFLAGS": "",
+            "CGO_CXXFLAGS": "-O2 -g",
+            "CGO_ENABLED": "1",
+            "CGO_LDFLAGS": "-O2 -g",
+            "CXX": "clang++",
+            "GOARCH": "arm64",
+            "GOARM64": "v8.0",
+            "GOEXPERIMENT": "",
+            "GOOS": "darwin"
+          },
+          "module_pins": {
+            "github.com/dustin/go-humanize": {
+              "version": "v1.0.1",
+              "sum": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY="
+            },
+            "github.com/google/uuid": {
+              "version": "v1.6.0",
+              "sum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0="
+            },
+            "github.com/mattn/go-isatty": {
+              "version": "v0.0.24",
+              "sum": "h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI="
+            },
+            "github.com/ncruces/go-strftime": {
+              "version": "v1.0.0",
+              "sum": "h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOFAw7w="
+            },
+            "github.com/remyoudompheng/bigfft": {
+              "version": "v0.0.0-20230129092748-24d4a6f8daec",
+              "sum": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE="
+            },
+            "golang.org/x/sys": {
+              "version": "v0.49.0",
+              "sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA="
+            },
+            "modernc.org/libc": {
+              "version": "v1.77.1",
+              "sum": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs="
+            },
+            "modernc.org/mathutil": {
+              "version": "v1.7.1",
+              "sum": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU="
+            },
+            "modernc.org/memory": {
+              "version": "v1.12.1",
+              "sum": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g="
+            },
+            "modernc.org/sqlite": {
+              "version": "v1.60.1",
+              "sum": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw="
+            }
+          }
+        },
+        "linux-arm64-cgo0": {
+          "package_count": 167,
+          "selected_file_entries": 1321,
+          "unique_selected_files": 1319,
+          "repository_go_and_test_sources": 9,
+          "author_and_composed_inputs_identical": true,
+          "build_environment": {
+            "CC": "gcc",
+            "CGO_CFLAGS": "-O2 -g",
+            "CGO_CPPFLAGS": "",
+            "CGO_CXXFLAGS": "-O2 -g",
+            "CGO_ENABLED": "0",
+            "CGO_LDFLAGS": "-O2 -g",
+            "CXX": "g++",
+            "GOARCH": "arm64",
+            "GOARM64": "v8.0",
+            "GOEXPERIMENT": "",
+            "GOOS": "linux"
+          },
+          "module_pins": {
+            "github.com/dustin/go-humanize": {
+              "version": "v1.0.1",
+              "sum": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY="
+            },
+            "github.com/google/uuid": {
+              "version": "v1.6.0",
+              "sum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0="
+            },
+            "github.com/remyoudompheng/bigfft": {
+              "version": "v0.0.0-20230129092748-24d4a6f8daec",
+              "sum": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE="
+            },
+            "golang.org/x/sys": {
+              "version": "v0.49.0",
+              "sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA="
+            },
+            "modernc.org/libc": {
+              "version": "v1.77.1",
+              "sum": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs="
+            },
+            "modernc.org/mathutil": {
+              "version": "v1.7.1",
+              "sum": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU="
+            },
+            "modernc.org/memory": {
+              "version": "v1.12.1",
+              "sum": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g="
+            },
+            "modernc.org/sqlite": {
+              "version": "v1.60.1",
+              "sum": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw="
+            }
+          }
+        }
+      },
+      "repository_source_hashes": {
+        "internal/providerproto/decode.go": "5e113d8d51059f264728e10cf4aa66c967a05a23f0b390cef6c1c3b6a5458a75",
+        "internal/providerproto/frame.go": "368ec72ceac043eab2c299070b702e4e8c98fbded17b86193a312ed2cd0eef8b",
+        "internal/providerproto/json.go": "ad4c7c53e275f6961e7a95168a5d0a25377acd545f7b3854111091c62150b5e0",
+        "internal/providerproto/match.go": "5d6626f5fdaa3be7c412b7641c6109f6ae721021ec1d1b66bb6b03e7bdd37d1f",
+        "internal/providerproto/types.go": "0333aa0c93b798aee14755d4fbcbcbc188d47ca0f136845495567fc739e3d85f",
+        "internal/providerfixture/fixture.go": "1fdba84e98fb0cbbc76149daa535906da7378d8a6d96c34ce71132f2f75ff881",
+        "internal/providerfixture/main.go": "1ae9c792d37e0fd594111b6a89a859d04a08e2f3995feb23d2339fec88482f5f",
+        "internal/providerfixture/cmd/providerfixture/main.go": "d4fa6e014401ac908c45bc8969a59a7ee7de9d213bbc86c62c5047165896efff",
+        "internal/providerfixture/fixture_test.go": "e1036278f11574ca34bbf77581f1c668809556dac818fdcff975b9abd2199aed"
+      },
+      "go_tool_and_header_hashes": {
+        "goroot/bin/go": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+        "goroot/VERSION": "49b1651ee92b70282766993b556905e9464050a811572e047a74f95534ee9ce6",
+        "goroot/go.env": "98fcab78e155e9fa0c36b18874add30724d04c2452078117c78618107ebfbc9e",
+        "goroot/pkg/tool/darwin_arm64/preprofile": "16d53ec08b996bbe7744e6085e765c6e773e65afdb6dcf208fd7ae553f3f0b8a",
+        "goroot/pkg/tool/darwin_arm64/vet": "505e339103e7bb0d2514ff39decee8647664dc593fcb8bb052e33d39b6a03cf3",
+        "goroot/pkg/tool/darwin_arm64/asm": "4165876f4b0a389293cd05392c09ef197f36111edf5b6146e870a05dd3c26a90",
+        "goroot/pkg/tool/darwin_arm64/compile": "4d0bd4c1880e3d575827a72ac66b0f117b31da0aff1fe44f03a54c7ffb3c8ae3",
+        "goroot/pkg/tool/darwin_arm64/link": "9674eaf9854e44afd7331046d14429f914bf9838f48e9ed77793e0686e45d4b2",
+        "goroot/pkg/tool/darwin_arm64/cgo": "760acaf7db58f40a72482017209148a55636e62e95bc40f5df446382adf44513",
+        "goroot/pkg/tool/darwin_arm64/fix": "9d4be7410db959769d80ce8ab973b0fd6d64245312d28ee439f20ce51acbadaf",
+        "goroot/pkg/tool/darwin_arm64/cover": "0ebf757bd94a933dd64a04612726d3cb2aae28ff3c6f97f9cb61537a404b5fda",
+        "goroot/pkg/include/asm_riscv64.h": "25631f053993036af2a03634699de446120671b17c197976fc66b74afb18fb34",
+        "goroot/pkg/include/asm_ppc64x.h": "8396b3e0d10ddfa90ee7bd1fa3c6b201416844e2be2ef44e71918305bc4bbf54",
+        "goroot/pkg/include/funcdata.h": "bd73b7c27a4d3f8560a5a9dd1a5da54e0e48572311a744cf7843e709b7f2a015",
+        "goroot/pkg/include/textflag.h": "a9d761d03aecdcc117691b6a55eacd43eb7d47d9ad9ca7510b8669ac403b380e",
+        "goroot/pkg/include/asm_amd64.h": "85fc2d5bb80e6db36cef4da5e5c02278d0dcaa6103e5660629b4b713cff15d54"
+      },
+      "selection_binding": "All actual selected repository files agree with current main or the reviewed fixture overlay. Entire providerproto/providerexec directories and go.mod/go.sum have no intervening difference, including added or removed files. Actual standard-library, module, assembly, cgo, embed and syso selections agree after mapping only the repository roots.",
+      "trusted_native_boundary": [
+        "Operating-system SDK headers and libraries, loader, kernel and container engine are trusted native boundaries; this receipt does not claim a complete host, SDK or kernel source proof.",
+        "Image hashes pin the complete native executables actually tested. Build information agrees with Go 1.27.3 and the OS-specific actual module graph: ten module pins for macOS and eight for Linux ARM64.",
+        "Raw dependency manifests and original process/container receipts are retained privately."
+      ]
+    },
+    "scope_limits": [
+      "The fixture stores SQLite objects as its external resources and creates no Manager capacity or production provider registration.",
+      "The fixture authenticates no claimed UID, executable identity or external account.",
+      "Its wall-clock schedule provides no suspend/rollback-safe elapsed entitlement.",
+      "Blocking protocol/storage I/O and killed workers are not general proofs of no effect or external reclamation.",
+      "Production worker/scratch holds, reset proof, parent/concurrency/cost accounting, missing/replaced image recovery and lifecycle/formal integration remain separate gates."
+    ]
+  }
 }
