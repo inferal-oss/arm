@@ -27,6 +27,17 @@ func TestLinuxStatIdentityAndMemoryCounters(t *testing.T) {
 	if v, err := privateResident([]byte("Rss: 100 kB\nPrivate_Clean: 2 kB\nPrivate_Dirty: 3 kB\nShared_Clean: 95 kB\n")); err != nil || v != 5120 {
 		t.Fatalf("private/shared memory semantics: %d %v", v, err)
 	}
+	if v, err := proportionalResident([]byte("Rss: 100 kB\nPss: 27 kB\nPss_Anon: 25 kB\nPrivate_Clean: 2 kB\nPrivate_Dirty: 3 kB\n")); err != nil || v != 27*1024 {
+		t.Fatalf("proportional resident counter: %d %v", v, err)
+	}
+	for _, bad := range []string{"Rss: 1 kB", "Pss: -1 kB", "Pss: 1 bytes", "Pss: 1", "Pss: 1 kB\nPss: 2 kB", fmt.Sprintf("Pss: %d kB", uint64(math.MaxUint64))} {
+		if _, err := proportionalResident([]byte(bad)); err == nil {
+			t.Fatalf("unknown/malformed PSS accepted: %q", bad)
+		}
+	}
+	if v, err := privateResident([]byte("Pss: malformed\nPrivate_Clean: 2 kB\nPrivate_Dirty: 3 kB\n")); err != nil || v != 5120 {
+		t.Fatalf("malformed optional PSS changed private memory accounting: %d %v", v, err)
+	}
 	for _, bad := range []string{"Private_Clean: 0 kB", "Private_Clean: 1 kB\nPrivate_Dirty: -1 kB", "Private_Clean: 1 kB\nPrivate_Dirty: 1 bytes", "Private_Clean: 1 kB\nPrivate_Clean: 2 kB\nPrivate_Dirty: 1 kB", fmt.Sprintf("Private_Clean: %d kB\nPrivate_Dirty: 1 kB", uint64(math.MaxUint64))} {
 		if _, err := privateResident([]byte(bad)); err == nil {
 			t.Fatalf("unknown/malformed memory treated as zero: %q", bad)
