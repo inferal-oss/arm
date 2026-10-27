@@ -89,7 +89,7 @@ func TestHeldRelayAbortKeepsTransitResourcesCharged(t *testing.T) {
 			return TransitReservation{}, e
 		}
 		leaseID <- lease.ID
-		return TransitReservation{Context: hold.Context(), End: func() { _, _ = m.End(lease.ID, "relay_closed") },
+		return TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() { _, _ = m.End(lease.ID, "relay_closed") },
 			Finish: func() { _, _ = hold.FinishAfterJoin() }}, nil
 	}
 	entered, release := make(chan struct{}), make(chan struct{})
@@ -158,7 +158,7 @@ func TestFailedTransitAdmissionJoinsHeldAbortBeforeChargeSettlement(t *testing.T
 		}
 		leaseID <- lease.ID
 		<-admission.Done()
-		return TransitReservation{Context: hold.Context(), End: func() { _, _ = m.End(lease.ID, "relay_closed") },
+		return TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() { _, _ = m.End(lease.ID, "relay_closed") },
 			Finish: func() { _, _ = hold.FinishAfterJoin() }}, admission.Err()
 	}
 	entered, release := make(chan struct{}), make(chan struct{})

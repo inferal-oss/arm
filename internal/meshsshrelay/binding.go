@@ -117,6 +117,9 @@ func Dial(ctx context.Context, address string, outer, inner *tls.Config, o Open,
 	}
 	conn := tls.Client(raw, inner)
 	closeOnError := func(e error) (*tls.Conn, error) { _ = raw.Close(); return nil, e }
+	if err = revalidate(ctx); err != nil {
+		return closeOnError(err)
+	}
 	handshake, stop := context.WithTimeout(ctx, 5*time.Second)
 	err = conn.HandshakeContext(handshake)
 	stop()
@@ -134,6 +137,9 @@ func Dial(ctx context.Context, address string, outer, inner *tls.Config, o Open,
 	if err != nil {
 		return closeOnError(err)
 	}
+	if err = revalidate(ctx); err != nil {
+		return closeOnError(err)
+	}
 	if err = writeBinding(conn, want); err != nil {
 		return closeOnError(err)
 	}
@@ -143,6 +149,9 @@ func Dial(ctx context.Context, address string, outer, inner *tls.Config, o Open,
 	}
 	if got != want {
 		return closeOnError(errors.New("SSH relay destination binding differs"))
+	}
+	if err = revalidate(ctx); err != nil {
+		return closeOnError(err)
 	}
 	return conn, nil
 }

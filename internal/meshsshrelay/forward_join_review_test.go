@@ -46,7 +46,7 @@ func TestReviewForwardFinalHoldRetainsOriginalAbortCallback(t *testing.T) {
 					return TransitReservation{}, err
 				}
 				leased <- lease.ID
-				reservation := TransitReservation{Context: hold.Context(), End: func() { _, _ = m.End(lease.ID, "relay_closed") }, Finish: func() { l, _ := hold.FinishAfterJoin(); settled <- l }}
+				reservation := TransitReservation{Context: hold.Context(), CheckActive: hold.CheckActive, End: func() { _, _ = m.End(lease.ID, "relay_closed") }, Finish: func() { l, _ := hold.FinishAfterJoin(); settled <- l }}
 				if failAdmission {
 					<-life.Done()
 					return reservation, errors.New("retained final admission failure")

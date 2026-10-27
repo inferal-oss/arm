@@ -154,7 +154,7 @@ func TestStorageExportFailedCopyRequiresExplicitHandoffAndExpiryStaysEnded(t *te
 	m.mu.Lock()
 	source, _ = m.get(source.ID)
 	expired := time.Now().Add(-time.Second)
-	source.Expires = &expired
+	expireLeaseClockForTest(t, &source, expired)
 	err = m.put(source, "fixture.expired")
 	m.mu.Unlock()
 	if err != nil {

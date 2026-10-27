@@ -68,7 +68,7 @@ func (m *Manager) gradleParent(r model.Request, consumer string) (model.Lease, e
 		return parent, err
 	}
 	j := m.jobs[parent.ID]
-	if parent.Request.Profile != "gradle-service" || parent.Owner != m.owner || parent.Host != m.host || parent.State != "active" || parent.Workload == nil || parent.Workload.State != "ready" || j == nil || j.identity == nil || parent.Expires == nil || time.Now().Add(r.TTL).After(*parent.Expires) {
+	if parent.Request.Profile != "gradle-service" || parent.Owner != m.owner || parent.Host != m.host || parent.State != "active" || parent.Workload == nil || parent.Workload.State != "ready" || j == nil || j.identity == nil || parent.Expires == nil || !m.leaseCovers(parent, r.TTL) {
 		return parent, model.Err("service_unavailable", "Gradle service must be verified ready, currently ARM-supervised on this host/user, and outlast the consumer")
 	}
 	current, err := usage.Capture(j.identity.PID)
@@ -92,7 +92,10 @@ func (m *Manager) gradleParent(r model.Request, consumer string) (model.Lease, e
 		}
 	}
 	storageRequest := parent.Request
-	storageRequest.TTL = time.Until(*parent.Expires)
+	storageRequest.TTL, err = m.leaseRemaining(parent)
+	if err != nil {
+		return model.Lease{}, err
+	}
 	if _, err := m.storageForRun(storageRequest); err != nil {
 		return parent, err
 	}

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/yrashk/arm/internal/cargoprofile"
+	"github.com/yrashk/arm/internal/leaseclock"
 	"github.com/yrashk/arm/internal/local"
 	"github.com/yrashk/arm/internal/model"
 )
@@ -262,16 +263,16 @@ func (m *Manager) putCargo(l model.Lease, rec cargoRecord, eventKind string) err
 
 // DB-only guard under Manager.mu. Native birth/namespace/provider checks belong
 // in the admitted helper, never in the global admission critical section.
-func (m *Manager) cargoStorageParent(r model.Request, expires *time.Time) (model.Lease, error) {
+func (m *Manager) cargoStorageParent(r model.Request, expires *leaseclock.Deadline) (model.Lease, error) {
 	parent, e := m.get(r.StorageLease)
 	if e != nil {
 		return parent, e
 	}
-	end := time.Now().Add(r.TTL)
+	covered := m.leaseCovers(parent, r.TTL)
 	if expires != nil {
-		end = *expires
+		covered = m.leaseLive(parent) && parent.Clock != nil && expires.Boot == parent.Clock.Boot && expires.End <= parent.Clock.End
 	}
-	if parent.Request.Kind != "storage" || parent.Owner != m.owner || parent.Host != m.host || parent.State != "active" || parent.Expires == nil || end.After(*parent.Expires) || parent.Artifact == nil || parent.Artifact.Phase != "owned" || parent.Artifact.Identity == nil || !parent.Artifact.Identity.BirthKnown || parent.Artifact.Identity.Inode == 0 || !filepath.IsAbs(parent.ManagedDir) {
+	if parent.Request.Kind != "storage" || parent.Owner != m.owner || parent.Host != m.host || parent.State != "active" || parent.Expires == nil || !covered || parent.Artifact == nil || parent.Artifact.Phase != "owned" || parent.Artifact.Identity == nil || !parent.Artifact.Identity.BirthKnown || parent.Artifact.Identity.Inode == 0 || !filepath.IsAbs(parent.ManagedDir) {
 		return parent, model.Err("storage_unavailable", "managed Cargo storage must be active/owned and outlast the command's TTL")
 	}
 	if m.storage == nil || m.storageErr != nil {
@@ -307,7 +308,7 @@ func cargoFailure(code, message string) error {
 	return model.Err(code, fmt.Sprintf("Cargo: %s", message))
 }
 
-func (m *Manager) storageParentForProfile(r model.Request, expires *time.Time) (model.Lease, error) {
+func (m *Manager) storageParentForProfile(r model.Request, expires *leaseclock.Deadline) (model.Lease, error) {
 	if r.Profile == "rust-build" {
 		return m.cargoStorageParent(r, expires)
 	}

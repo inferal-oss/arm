@@ -88,7 +88,11 @@ func (m *Manager) startGradleProbe(l model.Lease, r gradleRecord, j *job) error 
 	if err != nil {
 		return m.blockGradleService(&l, r, err.Error())
 	}
-	timeout := min(30*time.Second, time.Until(*l.Expires))
+	remaining, clockErr := m.leaseRemaining(l)
+	if clockErr != nil || remaining <= 0 {
+		return model.Err("lease_inactive", "elapsed entitlement unavailable")
+	}
+	timeout := min(30*time.Second, remaining)
 	if timeout <= 0 {
 		return model.Err("lease_inactive", "Gradle service expired before its readiness probe")
 	}
@@ -131,7 +135,7 @@ func (m *Manager) startGradleProbe(l model.Lease, r gradleRecord, j *job) error 
 		return err
 	}
 	current, err = usage.Capture(j.identity.PID)
-	if err != nil || current != *j.identity || m.jobs[l.ID] != j || time.Now().After(*l.Expires) {
+	if err != nil || current != *j.identity || m.jobs[l.ID] != j || !m.leaseLive(l) {
 		_ = cmd.Process.Kill()
 		_ = cmd.Wait()
 		cancel()
@@ -172,7 +176,7 @@ func (m *Manager) finishGradleProbe(id string, j *job, waitErr, gateErr error) {
 		return
 	}
 	current, err := usage.Capture(j.identity.PID)
-	if err != nil || current != *j.identity || m.jobs[id] != j || latest.State != "active" || latest.Expires == nil || !time.Now().Before(*latest.Expires) {
+	if err != nil || current != *j.identity || m.jobs[id] != j || latest.State != "active" || latest.Expires == nil || !m.leaseLive(latest) {
 		return
 	}
 	record.Binding.ServiceStartMillis = evidence.StartMillis

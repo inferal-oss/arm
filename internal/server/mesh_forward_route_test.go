@@ -239,7 +239,7 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	// when stable host IDs, service name and numeric grant revision still match.
 	staleAuthority := sourceAuthority(access)
 	staleAuthority.Destination.Fingerprint = strings.Repeat("f", 64)
-	if conn, _, e := srcService.forwardSourceDial(t.Context(), id, dstID.Host, "web", staleAuthority); e == nil {
+	if conn, _, e := srcService.forwardSourceDial(t.Context(), id, dstID.Host, "web", staleAuthority, func(context.Context) error { return nil }); e == nil {
 		conn.Close()
 		t.Fatal("old listener followed replacement endpoint identity")
 	} else if !strings.Contains(e.Error(), "original TCP listener endpoint membership changed") {

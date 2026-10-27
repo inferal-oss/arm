@@ -122,7 +122,7 @@ func TestLeaseReviewUnavailableStartupPreservesOrdinaryLifecycle(t *testing.T) {
 			// Make an existing ordinary lease overdue while stopped. Opening must
 			// still recover it and run ordinary expiry despite the unavailable feature.
 			past := time.Now().Add(-time.Minute).UTC()
-			expires.Expires = &past
+			expireLeaseClockForTest(t, &expires, past)
 			raw, err := json.Marshal(expires)
 			if err == nil {
 				_, err = db.Exec(`UPDATE leases SET data=? WHERE id=?`, string(raw), expires.ID)

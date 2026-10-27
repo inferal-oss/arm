@@ -342,6 +342,20 @@ func (p *proofReader) metadata() error {
 				return err
 			}
 			p.resetMetadata = &applied
+		case "lease_clock":
+			// This independently declared audit shape is not native time authority.
+			// Terminal/retained lease accounting is proved separately below.
+			var sample struct {
+				Boot string    `json:"boot"`
+				Tick int64     `json:"tick_ns"`
+				Wall time.Time `json:"wall"`
+			}
+			if err = strictEvidence(raw, &sample, "boot", "tick_ns", "wall"); err != nil {
+				return err
+			}
+			if sample.Boot == "" || len(sample.Boot) > 256 || sample.Tick < 0 || sample.Wall.IsZero() {
+				return fmt.Errorf("invalid persisted active lease clock")
+			}
 		case "scheduler_clock":
 			at, e := time.Parse(time.RFC3339Nano, raw)
 			if e != nil || at.IsZero() {
@@ -415,6 +429,12 @@ func (p *proofReader) readLeases() error {
 		leaseRaw, _ := r.text("data")
 		var leaseFields map[string]json.RawMessage
 		_ = json.Unmarshal([]byte(leaseRaw), &leaseFields)
+		if clockRaw, ok := leaseFields["elapsed_deadline"]; ok {
+			d := l.Clock
+			if string(clockRaw) == "null" || d == nil || d.Version != 1 || d.Wall.IsZero() || d.Boot == "" || len(d.Boot) > 256 || d.Anchor < 0 || d.End <= d.Anchor || d.End-d.Anchor > int64(7*24*time.Hour) || l.Expires == nil || !d.Wall.Equal(*l.Expires) {
+				return fmt.Errorf("invalid elapsed lease deadline audit evidence")
+			}
+		}
 		if cargoRaw, ok := leaseFields["cargo"]; ok {
 			if string(cargoRaw) == "null" {
 				return fmt.Errorf("explicit null Cargo binding is unsupported")

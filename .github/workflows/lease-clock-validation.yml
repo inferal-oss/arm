@@ -1,0 +1,83 @@
+name: Lease clock validation
+on:
+  push:
+    branches: [codex/lease-clock-validation]
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-24.04-arm, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      GOMAXPROCS: '1'
+      GOTOOLCHAIN: local
+      GOENV: 'off'
+      GOWORK: 'off'
+      GOFLAGS: ''
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Fetch declared public dependencies
+        run: go mod download
+      - name: Run source-bound native gates
+        run: python3 scripts/test-lease-clock-ci.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lease-clock-${{ matrix.os }}-${{ github.sha }}
+          path: .tla/clock-native
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+  formal:
+    needs: native
+    if: always()
+    runs-on: macos-15
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      GOMAXPROCS: '1'
+      GOTOOLCHAIN: local
+      GOENV: 'off'
+      GOWORK: 'off'
+      GOFLAGS: ''
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Require actual Darwin ARM64
+        run: python3 -c "import platform; print(platform.uname()); assert platform.system() == 'Darwin' and platform.machine() == 'arm64'"
+      - name: Materialize declared public dependencies
+        run: go mod download
+      - name: Provision checksum-locked repository tools
+        run: python3 scripts/provision-tla.py --component all
+      - name: Run source-bound formal component gate
+        run: python3 scripts/test-lease-clock-formal-ci.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lease-clock-formal-macos-15-${{ github.sha }}
+          path: |
+            .tla/lease-clock
+            .tla/clock-formal-wrapper
+            .tla/tools/tlc/.arm-tool.json
+            .tla/tools/tlapm/.arm-tool.json
+            formal/tools.lock.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

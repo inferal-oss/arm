@@ -325,6 +325,12 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 		case <-runtime.ctx.Done():
 			m.mu.Lock()
 			if m.jobs[l.ID] == process.job {
+				select {
+				case <-process.job.nativeDone:
+					m.mu.Unlock()
+					return
+				default:
+				}
 				outcome := "interrupted"
 				if errors.Is(runtime.ctx.Err(), context.DeadlineExceeded) {
 					outcome = "expired"
@@ -332,7 +338,7 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 				_, _ = m.end(l.ID, outcome)
 			}
 			m.mu.Unlock()
-		case <-process.job.done:
+		case <-process.job.nativeDone:
 		}
 	})
 	return l, process, nil

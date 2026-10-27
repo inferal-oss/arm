@@ -246,6 +246,10 @@ func (r *forwardSource) run() {
 		if err != nil {
 			break
 		}
+		if _, err := h.Remaining(h.Context()); err != nil {
+			_ = c.Close()
+			break
+		}
 		r.mu.Lock()
 		if r.closed || len(r.active) >= meshforward.MaxConnections {
 			r.mu.Unlock()
@@ -265,6 +269,7 @@ func (r *forwardSource) run() {
 			r.mu.Unlock()
 		}(c)
 	}
+	h.CloseOriginal()
 	_, _ = r.owner.owner.Manager.End(h.LeaseID(), "listener_closed")
 	r.closeActive()
 	r.wg.Wait()
@@ -277,8 +282,16 @@ func (r *forwardSource) run() {
 }
 
 func (r *forwardSource) open(ctx context.Context) (*tls.Conn, error) {
-	remote, o, err := r.owner.forwardSourceDial(ctx, r.binding.Workspace, r.binding.Target, r.binding.Service, r.authority)
+	if _, err := r.handle.Remaining(ctx); err != nil {
+		return nil, err
+	}
+	remote, o, err := r.owner.forwardSourceDial(ctx, r.binding.Workspace, r.binding.Target, r.binding.Service, r.authority, func(check context.Context) error { _, err := r.handle.Remaining(check); return err })
 	if err != nil {
+		return nil, err
+	}
+	remaining, err := r.handle.Remaining(ctx)
+	if err != nil {
+		_ = remote.Close()
 		return nil, err
 	}
 	binding, err := o.BindingDigest(time.Now())
@@ -287,8 +300,8 @@ func (r *forwardSource) open(ctx context.Context) (*tls.Conn, error) {
 		return nil, err
 	}
 	ttl := time.Until(o.Expires)
-	if deadline, ok := r.handle.Context().Deadline(); ok && time.Until(deadline) < ttl {
-		ttl = time.Until(deadline)
+	if remaining < ttl {
+		ttl = remaining
 	}
 	if ttl > meshforward.MaxLifetime {
 		ttl = meshforward.MaxLifetime
@@ -303,6 +316,10 @@ func (r *forwardSource) open(ctx context.Context) (*tls.Conn, error) {
 		err = meshforward.ReadAccepted(remote, q)
 	}
 	if err != nil {
+		_ = remote.Close()
+		return nil, err
+	}
+	if _, err = r.handle.Remaining(ctx); err != nil {
 		_ = remote.Close()
 		return nil, err
 	}

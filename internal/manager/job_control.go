@@ -49,7 +49,14 @@ func (m *Manager) joinUnstarted(l model.Lease, j *job, reader, writer *os.File, 
 	defer cancel()
 	result := j.childOwner.Wait(ctx)
 	closeErr := files.Close()
-	close(j.done)
+	if j.sshRuntime == nil {
+		close(j.done)
+	} else {
+		close(j.nativeDone)
+		h := j.sshRuntime.leaseHold
+		h.nativeReaped = result.Reaped
+		h.nativeSafe = result.Reaped && result.CleanupError == nil && closeErr == nil
+	}
 	if !result.Reaped || result.CleanupError != nil || closeErr != nil {
 		l.PID = j.cmd.Process.Pid
 		l.Process = j.identity
@@ -58,9 +65,17 @@ func (m *Manager) joinUnstarted(l model.Lease, j *job, reader, writer *os.File, 
 		l.Ended = nil
 		l.Revision++
 		l.Failure = "Original gated child cleanup is uncertain: " + errors.Join(result.CleanupError, result.WaitError, closeErr).Error()
+		if j.sshRuntime != nil {
+			current, err := m.stageSSHResult(l)
+			return current, false, err
+		}
 		return l, false, m.put(l, "lease.supervision_unknown")
 	}
-	delete(m.jobs, l.ID)
+	if j.sshRuntime == nil {
+		delete(m.jobs, l.ID)
+	} else {
+		m.jobs[l.ID] = j
+	}
 	l.PID = 0
 	l.Process = nil
 	return l, true, nil

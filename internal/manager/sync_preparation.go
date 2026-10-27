@@ -52,7 +52,7 @@ func (p *syncPreparation) CheckActive(ctx context.Context) error {
 		return model.Err("sync_preparation_unavailable", "original preparation owner changed")
 	}
 	l, err := m.get(p.owner.id)
-	if err != nil || l.State != "active" || l.Expires == nil || !time.Now().Before(*l.Expires) || !reflect.DeepEqual(l, p.owner.result) {
+	if err != nil || l.State != "active" || l.Expires == nil || !m.leaseLive(l) || !reflect.DeepEqual(l, p.owner.result) {
 		return model.Err("sync_preparation_unavailable", "charged preparation lease changed")
 	}
 	return nil
@@ -210,7 +210,7 @@ func (s *syncAdmission) withoutPreparation(leases []model.Lease) ([]model.Lease,
 	found := false
 	for _, l := range leases {
 		if l.ID == h.id {
-			if l.State != "active" || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Request, h.result.Request) || l.Owner != h.result.Owner || l.Host != h.result.Host {
+			if l.State != "active" || !s.manager.leaseLive(l) || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Request, h.result.Request) || l.Owner != h.result.Owner || l.Host != h.result.Host {
 				return nil, model.Err("sync_preparation_unavailable", "preparation allocation changed")
 			}
 			found = true
@@ -236,6 +236,16 @@ func (s *syncAdmission) handoffTx(tx *sql.Tx, final model.Lease) error {
 	}
 	if !reflect.DeepEqual(previous, h.result) || previous.State != "active" || h.ctx.Err() != nil || h.recoveryReason != "" {
 		return model.Err("sync_preparation_unavailable", "exact preparation predecessor changed before handoff")
+	}
+	sample, err := s.manager.readLeaseClock()
+	if err != nil {
+		return err
+	}
+	for _, lease := range []model.Lease{previous, final} {
+		remaining, err := lease.Clock.Remaining(sample, lease.Expires)
+		if err != nil || remaining <= 0 {
+			return model.Err("sync_preparation_unavailable", "elapsed handoff entitlement unavailable")
+		}
 	}
 	joined := previous
 	now := time.Now().UTC()

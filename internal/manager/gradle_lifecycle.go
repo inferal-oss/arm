@@ -59,10 +59,18 @@ func (m *Manager) gradleRenew(l model.Lease, ttl time.Duration) error {
 		if err != nil {
 			return err
 		}
-		until := time.Now().Add(ttl)
+		sample, err := m.readLeaseClock()
+		if err != nil {
+			return err
+		}
+		until := sample.Tick + int64(ttl)
 		for _, child := range leases {
-			if child.Request.ServiceLease == l.ID && consuming(child.State) && (child.Expires == nil || child.Expires.After(until)) {
-				return model.Err("service_in_use", "service renewal cannot shorten its lifetime across a consuming lease's deadline")
+			if child.Request.ServiceLease != l.ID || !consuming(child.State) {
+				continue
+			}
+			_, childClockErr := child.Clock.Remaining(sample, child.Expires)
+			if childClockErr != nil || child.Clock.End > until {
+				return model.Err("service_in_use", "service renewal cannot shorten its lifetime across a consuming lease's deadline or uncertain clock")
 			}
 		}
 	}

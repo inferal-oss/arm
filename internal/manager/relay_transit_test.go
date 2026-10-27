@@ -101,7 +101,7 @@ func TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged(t *testing.T) {
 			if mode == "expiry" {
 				m.mu.Lock()
 				expired := time.Now().Add(-time.Second)
-				l.Expires = &expired
+				expireLeaseClockForTest(t, &l, expired)
 				err = m.put(l, "test.expired_clock")
 				m.mu.Unlock()
 				if err != nil {
