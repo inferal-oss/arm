@@ -409,19 +409,18 @@ CLI operations include `arm agent send`, `arm agent reply`, `arm agent message-l
 
 ## Web panel and terminal UI
 
-The October 26 operator instruction replaces the browser implementation with
-Semblance (semblance.dev) completely, using stock components/themes and the stock
-Terminal theme by default. Replicating ARM's current custom theme is not required.
+Replace the browser implementation with Semblance (semblance.dev) completely,
+using stock components and the stock Semblance theme by default. Replicating
+ARM's current custom theme is not required.
 Search the framework's catalog, layers, examples and current upstream thoroughly;
 prepare focused upstream PRs for genuinely missing reusable components. Preserve
 all operational, authorization, freshness and recovery semantics during migration.
-Coordinate heavy work with the shared script in ~/Projects/semblance and share
+Coordinate heavy work with the Semblance repository's shared test-queue script and share
 actual rendered screenshots regularly. This browser migration does not replace
 the native Charm terminal dashboard. The separately requested public project site
 also uses Semblance and lives on main alongside the ARM source.
-For that public site, the later operator instruction selects stock Semblance
-with the system color scheme by default. This supersedes its initial Terminal
-theme choice; the product dashboard's Terminal default remains unchanged.
+The public site also uses stock Semblance, with the system color scheme by
+default. The native terminal dashboard retains its own terminal presentation.
 
 Both interfaces are first-class local clients with the same operational scope. The TUI is inspired by btop's dense, responsive resource view, adapted to ARM's leases, ownership, and policy. Terminal layout can differ from the browser, but viewing or changing a lease must not require switching interfaces.
 
