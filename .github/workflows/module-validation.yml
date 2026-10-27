@@ -1,0 +1,106 @@
+name: Canonical module candidate validation
+
+on:
+  push:
+    branches: [codex/canonical-module-ci]
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Source validation scope; full repeats all portable gates'
+        type: choice
+        options: [full, assets]
+        default: full
+      public_query:
+        description: 'Public installation query; latest requires a manual main run'
+        type: choice
+        options: [commit, latest]
+        default: commit
+
+permissions:
+  contents: read
+
+concurrency:
+  group: module-validation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Install modern rsync for actual interoperability
+        if: github.event_name == 'workflow_dispatch' && inputs.scope == 'full'
+        shell: bash
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          set -euo pipefail
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y rsync
+          else
+            brew install rsync
+            echo "$(brew --prefix rsync)/bin" >> "$GITHUB_PATH"
+          fi
+      # This final candidate changes browser assets only; unchanged portable
+      # source gates are input-hash bound to successful run 40424167014.
+      # Manual runs default to the complete validation scope.
+      - name: Validate selected source scope and collect original command receipts
+        env:
+          MODULE_SOURCE_SCOPE: ${{ inputs.scope || 'assets' }}
+        run: python3 -B scripts/validate-module.py --scope "$MODULE_SOURCE_SCOPE" --output .cache/module-ci
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: module-source-${{ matrix.os }}
+          path: .cache/module-ci/
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
+
+  public-install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GOMAXPROCS: '1'
+      GOFLAGS: '-p=1'
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Guard latest verification until manual main publication
+        env:
+          REQUESTED_QUERY: ${{ inputs.public_query || 'commit' }}
+        run: test "$REQUESTED_QUERY" != latest || test "$GITHUB_REF" = refs/heads/main
+      - name: Install selected public query with empty disposable caches
+        env:
+          MODULE_QUERY: ${{ inputs.public_query == 'latest' && 'latest' || github.sha }}
+        run: python3 -B scripts/validate-module.py --public-install "$MODULE_QUERY" --output .cache/module-public-install
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: module-public-install
+          path: .cache/module-public-install/
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true

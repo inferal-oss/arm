@@ -4432,3 +4432,20 @@ source identities, named pass rosters, log/artifact hashes and native results.
 Current Manager, model and observation inputs match the tested composition.
 No Linux arm64 execution, full pressure policy, pause/resume, elapsed lease-clock
 adaptation or broader formal acceptance is inferred.
+
+
+### Module harness cancellation and source-identity correction
+
+Root independently reads the entire corrected harness/workflow and runs all
+seven cheap tests at source `083488d`: an already-reaped child receives no PID
+or group signal, a live original child receives one kill and is joined, a
+failed wait retains uncertainty, current/stale/missing public source identities
+are distinguished. Tests pass with no Go build or network. Timeout/interruption
+aborts further commands and reports descendants as unproven. This scope accepts
+the bounded helper, not descendant cleanup or public latest installation.
+
+The workflow uses pinned official actions, read-only repository permissions,
+normal public proxy/SumDB settings, empty disposable caches and a main-only
+literal-latest guard. Positive public acceptance additionally requires exact
+Origin.Hash equality with the checked-out source, original install exit 0,
+buildinfo/sums, source closure, smoke probes and disposable cleanup.

@@ -942,3 +942,22 @@ files are preserved. Its helper is a local working-copy modification, with the
 focused commit in an isolated branch; upstream issue/plan link/PR tracking is
 assigned to the Semblance migration owner. No upstream merge/deployment is
 authorized by preparing that PR.
+
+
+### Corrected public module validation harness accepted
+
+The separate harness/workflow successor `7e3be31` + `083488d` is now reviewed
+and integrated after production `77b962f`. Cleanup signals only the original
+Popen-owned child, waits at most five seconds and never signals a numeric
+process group after a wait. Timeout/interruption aborts the runner; descendants
+remain unproven and the hosted job must dispose of them. No aborted run can
+establish successful cleanup. Seven cheap ownership/source-identity regressions
+pass independently at the coordinator.
+
+Both immutable and literal-latest public queries must bind Origin.Hash to the
+exact checked-out source commit; a stale response cannot pass merely because
+26 selected ZIP inputs match. Manual latest validation is restricted to main
+with contents-read permission. Actual literal latest remains unperformed until
+the corrected workflow is published, dispatched and its original receipts
+independently verified. The module owner owns that bounded validation run,
+without modifying installed user binaries, backend state, tags or releases.
