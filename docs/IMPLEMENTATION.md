@@ -1,5 +1,21 @@
 # Backend and CLI implementation
 
+## Original-child control and SSH settlement
+
+Supervised commands and Cargo helpers retain their original process identity,
+observe without reaping, retire signal authority and then perform the sole
+native wait. Saved PIDs do not reconstruct control authority. Darwin's bounded
+terminal-singleton witness handles zombie-only groups without treating a real
+signal denial as success. Unknown native control or cleanup retains charges.
+
+SSH native exit and resource settlement are separate: original connection, I/O
+and cancellation joins plus exact current/staged bindings are required before
+settlement. Restarted descriptors do not prove those joins. End and Close still
+cancel the original job when the ending transaction is refused; the previous
+durable charge remains. See [the contract](original-child-supervision.md).
+This is group supervision, not escaped-descendant containment or completed
+suspend-inclusive lease policy.
+
 ## Semblance operator browser
 
 The served browser now uses stock Semblance components and themes, defaulting to

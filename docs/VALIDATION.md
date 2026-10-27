@@ -1,5 +1,26 @@
 # Validation record
 
+## Current original-child compatibility
+
+The reviewed prerequisite composition passes 35 selected roots and 109 named
+cases on both hosted Linux arm64 (`5eae5c3`) and local native macOS arm64
+(`b997853`), plus vet and the exact pre-fix ending-journal negative. Root checked
+the original Linux ZIP and retained local output: 1,926 tracked Git blob hashes,
+four identical positive/negative source snapshots and equal before/after tool
+closures. Nine commands per platform have the expected native exit, sole wait,
+retired authority, no cleanup error or signal, and absent original PID/group.
+The 22 integrated owned Go files match the actual local-tested source exactly.
+
+The [current compatibility record](validation/original-child-current.json)
+preserves both failed hosted macOS runs. The accepted macOS run uses the normal
+local FIFO and is explicitly not a GitHub macOS pass. Database proof fixtures
+assert a real counted permit; native CPU variants keep their requirements. Sync
+retains its actual one-core/768MiB preparation admission with bounded readiness
+inside the start/parent deadlines. The earlier standalone ownership record
+remains scoped to its own source. These checks accept the original-child/SSH/End
+prerequisite, not later clock source, physical suspend, complete OS closure or
+escaped-descendant containment.
+
 ## Major Semblance browser milestone
 
 The reviewed source `0ae14ef`, integrated as `412e35a`, passes the original normal
