@@ -1,0 +1,188 @@
+{
+  "actual_assertion_summary": {
+    "actual_failed_file_count": 1,
+    "failed": 1,
+    "passed": 509,
+    "qualification": "Raw failed suite count is retained separately; actual file/assertion roster contains one failed file and one failed assertion.",
+    "raw_numFailedTestSuites": 2,
+    "skipped_pending_todo": 0,
+    "total": 510
+  },
+  "actual_file_roster": {
+    "test/layers.test.ts": {
+      "cases": 12,
+      "status": "passed"
+    },
+    "test/numeric-input.test.ts": {
+      "cases": 72,
+      "status": "passed"
+    },
+    "test/numeric-layer-parity.test.ts": {
+      "cases": 6,
+      "status": "passed"
+    },
+    "test/rdf-engine-budget.test.ts": {
+      "cases": 12,
+      "status": "passed"
+    },
+    "test/rdf-engine-compiled.test.ts": {
+      "cases": 62,
+      "status": "passed"
+    },
+    "test/rdf-engine-numbers.test.ts": {
+      "cases": 56,
+      "status": "passed"
+    },
+    "test/rdf-engine-numeric-compiled-comparison.test.ts": {
+      "cases": 4,
+      "status": "passed"
+    },
+    "test/rdf-engine-numeric.test.ts": {
+      "cases": 50,
+      "status": "passed"
+    },
+    "test/rdf-engine-parity.test.ts": {
+      "cases": 5,
+      "status": "failed"
+    },
+    "test/rdf-engine-temporal.test.ts": {
+      "cases": 200,
+      "status": "passed"
+    },
+    "test/shapes.test.ts": {
+      "cases": 8,
+      "status": "passed"
+    },
+    "test/view-charts.test.ts": {
+      "cases": 1,
+      "status": "passed"
+    },
+    "test/view-cost.test.ts": {
+      "cases": 1,
+      "status": "passed"
+    },
+    "test/view-laws.test.ts": {
+      "cases": 10,
+      "status": "passed"
+    },
+    "test/view-measure.test.ts": {
+      "cases": 3,
+      "status": "passed"
+    },
+    "test/views.test.ts": {
+      "cases": 8,
+      "status": "passed"
+    }
+  },
+  "all_owned_cleanup_paths_absent": true,
+  "comparison_modes": {
+    "rust": {
+      "compiled": 1,
+      "interpreted": 1
+    },
+    "wat": {
+      "compiled": 1,
+      "interpreted": 1
+    }
+  },
+  "disposition": "N1 remains FAILED. Full16/510 executed on current1d9 composition with509 passed and the one Calendar corpus assertion failed. Historical captured-protocol baseline evidence supports a preexisting failure classification only for that recorded protocol; it does not automatically waive this new-base gate.",
+  "foreign35": {
+    "actual_sha256": "55bbff6d768c7085151e3702b4765e759f3af02bee73758a2d32b2ae775127a6",
+    "observations_and_package_pins_exact": true,
+    "retained_sha256": "d73e7fe5264f8df9f6ecd7c8e41d6dce30efa637c9736ccb191c9b2680d794c2"
+  },
+  "independent_audit_sha256": "b38d266d4c8ced2747958bd9f4a09f388acc930ef39aa6d44eb2d4166cfffdf8",
+  "input_closure": {
+    "actual_selected_contents_and_identities_still_match": true,
+    "all_before_after_final_maps_equal": true,
+    "directory_bindings": 351,
+    "files": 16920,
+    "harness_files": 25,
+    "inventories": 169,
+    "memberships_match": true
+  },
+  "limitations": [
+    "No feature acceptance, Calendar correction, whole-suite or Sparkline32 acceptance inferred.",
+    "Native exception unreachable/frames were captured in separate causal replay, not directly in N1 raw report.",
+    "Original direct-child waits and owned cache cleanup only; no all-descendant/OS-wide cleanup claim.",
+    "Independent audit was read/hash/JSON only; no helpers, tests, build, native execution, queue, network or source mutation."
+  ],
+  "loader_image_hashes": {
+    "rust": "73c04c43f8dd64c0a6b5a1a1cb892e36b8ee019f035e30358cb2d578f46a85a6",
+    "wat": "3d9b6e3e1aab0db5e786b250d2fb24c04db5189505f73d215bf3b71fb5b59031"
+  },
+  "loader_source_sha256": "850bdd20235dff17ecc368b8ce5cfac806b57c46a663f8e89e7f00a214f18aba",
+  "manifest_sha256": "71ab5515389f3f68f691788be016782e22cd2d8cf6e6e7de605365189482d6f9",
+  "native_backend_counts": {
+    "rust": 25,
+    "wat": 25
+  },
+  "native_modes": {
+    "rust": {
+      "bridge": 1,
+      "compiled": 12,
+      "interpreted": 12
+    },
+    "wat": {
+      "bridge": 1,
+      "compiled": 12,
+      "interpreted": 12
+    }
+  },
+  "original_children": [
+    {
+      "original_exit": 0,
+      "stage": "images-before",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "typecheck",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "foreign-ingestion",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "foreign-control",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 1,
+      "stage": "vitest",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "observe-report",
+      "wait_calls": 1
+    },
+    {
+      "original_exit": 0,
+      "stage": "images-after",
+      "wait_calls": 1
+    }
+  ],
+  "outer_sha256": "113a6320fd4edf6b846c451053b1280f573f128535950a0b902ab4a7efc5c39d",
+  "required_new_rosters": {
+    "test/numeric-input.test.ts": 72,
+    "test/numeric-layer-parity.test.ts": 6,
+    "test/rdf-engine-numeric-compiled-comparison.test.ts": 4,
+    "test/rdf-engine-numeric.test.ts": 50
+  },
+  "semantic_feature_acceptance": false,
+  "snapshot_index_tree": "4fa3adca82b2216410f7577fa9a28004d9560d28",
+  "sole_failed_assertion": {
+    "actual_log_witness": "One compiled Calendar sem-cal-grid mismatch: Rust error, WAT empty. N1 does not preserve underlying native exception frames.",
+    "failure_class": "AssertionError: expected mismatch array to equal empty",
+    "name": "Semblance queries on both builds prepare the same corpus queries, and give the same results for them run on their own",
+    "path": "test/rdf-engine-parity.test.ts"
+  },
+  "source_base": "1d9ec6be12f883d4bb0f0e57f6c00053b43522c1",
+  "source_review_sha256": "002b41e261a241244a2c326fa8df76700b2ae24d2a2561473fbd449e5a1c7025",
+  "status": "FAILED",
+  "strict_report_started": false
+}
