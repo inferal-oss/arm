@@ -1,0 +1,553 @@
+{
+  "acceptance": "Final source-bound public gate remains unaccepted.",
+  "actual_selected_source_commit": "4f359b62765c160a25ef20b928770c011c1fffeb",
+  "actual_selection": {
+    "GoModSum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+    "Path": "github.com/inferal-oss/arm",
+    "Sum": "h1:YRTCoUegHoKtOo/TfkYaXZfoOknELg9RCm6NF37pcCw=",
+    "Version": "v0.0.0-20261027115325-4f359b62765c"
+  },
+  "artifact_retention_days": 7,
+  "boundary": "Both literal queries and installed buildinfo identify 4f359b6. This is not installation evidence for 23e466a, compact Monitor, or its 611-file ZIP closure.",
+  "conclusion": "failure",
+  "expected_source_commit": "23e466ab9063a02effe311be0f331f9673704288",
+  "expected_source_tree": "9fdfd35652f8f09bd483cd0d00b0af981a162209",
+  "harness_commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+  "harness_script_sha256": {
+    "scripts/module-zip-supplement.py": "6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d",
+    "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+    "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+  },
+  "harness_tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9",
+  "limitations": [
+    "No source-bound installation acceptance for 23e466a is established.",
+    "The 611-file manifest generation, raw public ZIP fetch and checksum/closure supplement were skipped in both jobs.",
+    "No raw public module ZIP exists in these artifacts; the original helper temporary cache was removed. The preserved artifact ZIPs contain the original generated receipts.",
+    "All 12 original recorded commands exiting0 does not override the failed full-Origin assertion.",
+    "No whole-project or browser interaction acceptance is claimed.",
+    "Interrupted descendant cleanup remains unproven.",
+    "No retry, second dispatch, helper relaxation or source substitution was performed.",
+    "Historical failed runs and accepted 81fdccd evidence retain their original scopes."
+  ],
+  "observed_failure": "public query origin differs from the checked-out source commit",
+  "original_artifacts": [
+    {
+      "bytes": 268685,
+      "id": 12737060956,
+      "name": "module-latest-two-checkout-ubuntu-24.04",
+      "sha256": "cb03430349d075a77c2d4890348522357351acef73c61229840b4e82884c30c2",
+      "verified_receipt_files": 38
+    },
+    {
+      "bytes": 269058,
+      "id": 12736856482,
+      "name": "module-latest-two-checkout-macos-15",
+      "sha256": "c8a88de0b8fe174f353b59d1114c9b944c98141af713d0eef188f2c2f131c964",
+      "verified_receipt_files": 38
+    }
+  ],
+  "original_log_archive": {
+    "bytes": 54854,
+    "entries": 30,
+    "sha256": "5ff218991021359408842778a0f64f37302bd51b639653846526d1e8c94b9c55"
+  },
+  "planned_complete_root_manifest": {
+    "execution": "skipped after original helper failure",
+    "files": 611,
+    "public_paths_verified_by_supplement": 0,
+    "sha256": "6ea714df61ad2d39ad34737c11d34086944266caf2ea188cafe44efe46422e64",
+    "source_commit": "23e466ab9063a02effe311be0f331f9673704288"
+  },
+  "platforms": {
+    "macos-15": {
+      "actual_literal_install": {
+        "argv": [
+          "install",
+          "github.com/inferal-oss/arm/cmd/arm@latest"
+        ],
+        "exit": 0
+      },
+      "actual_literal_query": {
+        "argv": [
+          "mod",
+          "download",
+          "-json",
+          "github.com/inferal-oss/arm@latest"
+        ],
+        "exit": 0,
+        "selection": {
+          "GoModSum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+          "Origin": null,
+          "Path": "github.com/inferal-oss/arm",
+          "Sum": "h1:YRTCoUegHoKtOo/TfkYaXZfoOknELg9RCm6NF37pcCw=",
+          "Version": "v0.0.0-20261027115325-4f359b62765c"
+        }
+      },
+      "actual_selected_version_provenance": {
+        "argv": [
+          "mod",
+          "download",
+          "-json",
+          "github.com/inferal-oss/arm@v0.0.0-20261027115325-4f359b62765c"
+        ],
+        "exit": 0,
+        "selection": {
+          "GoModSum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+          "Origin": {
+            "Hash": "4f359b62765c160a25ef20b928770c011c1fffeb",
+            "URL": "https://github.com/inferal-oss/arm",
+            "VCS": "git"
+          },
+          "Path": "github.com/inferal-oss/arm",
+          "Sum": "h1:YRTCoUegHoKtOo/TfkYaXZfoOknELg9RCm6NF37pcCw=",
+          "Version": "v0.0.0-20261027115325-4f359b62765c"
+        }
+      },
+      "checksumdb": "sum.golang.org",
+      "ci_identity_after": {
+        "failures": [],
+        "harness": {
+          "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+          "status": "",
+          "tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9"
+        },
+        "helper_files_sha256": {
+          "scripts/module-zip-supplement.py": "6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d",
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "reviewed_helper_commit": "9ccd7daef5b4a7b9b220a942e95bb9724d123860",
+        "source": {
+          "commit": "23e466ab9063a02effe311be0f331f9673704288",
+          "status": "",
+          "tree": "9fdfd35652f8f09bd483cd0d00b0af981a162209"
+        },
+        "workflow_commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42"
+      },
+      "ci_identity_before": {
+        "failures": [],
+        "harness": {
+          "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+          "status": "",
+          "tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9"
+        },
+        "helper_files_sha256": {
+          "scripts/module-zip-supplement.py": "6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d",
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "reviewed_helper_commit": "9ccd7daef5b4a7b9b220a942e95bb9724d123860",
+        "source": {
+          "commit": "23e466ab9063a02effe311be0f331f9673704288",
+          "status": "",
+          "tree": "9fdfd35652f8f09bd483cd0d00b0af981a162209"
+        },
+        "workflow_commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42"
+      },
+      "cleanup": {
+        "disposable_root_removed": true,
+        "user_install_or_backend_modified": false
+      },
+      "command_exits": [
+        {
+          "exit": 0,
+          "name": "source-commit",
+          "seconds": 0.01
+        },
+        {
+          "exit": 0,
+          "name": "source-tree",
+          "seconds": 0.014
+        },
+        {
+          "exit": 0,
+          "name": "source-status",
+          "seconds": 0.074
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.033
+        },
+        {
+          "exit": 0,
+          "name": "public-environment",
+          "seconds": 0.017
+        },
+        {
+          "exit": 0,
+          "name": "public-query",
+          "seconds": 3.156
+        },
+        {
+          "exit": 0,
+          "name": "public-selected-version-origin",
+          "seconds": 2.349
+        },
+        {
+          "exit": 0,
+          "name": "public-install",
+          "seconds": 213.491
+        },
+        {
+          "exit": 0,
+          "name": "installed-buildinfo",
+          "seconds": 0.058
+        },
+        {
+          "exit": 0,
+          "name": "installed-version",
+          "seconds": 0.073
+        },
+        {
+          "exit": 0,
+          "name": "installed-help",
+          "seconds": 0.08
+        },
+        {
+          "exit": 0,
+          "name": "installed-empty-catalog",
+          "seconds": 0.039
+        }
+      ],
+      "expected_actual_binding": {
+        "expected_source_commit": "23e466ab9063a02effe311be0f331f9673704288",
+        "matches": false,
+        "origin_version": "v0.0.0-20261027115325-4f359b62765c",
+        "query": "latest",
+        "query_origin_consistent": true,
+        "resolved_source_commit": "4f359b62765c160a25ef20b928770c011c1fffeb",
+        "selected_version": "v0.0.0-20261027115325-4f359b62765c",
+        "selection_checksums_match": true
+      },
+      "go_test_rosters": {},
+      "go_tests_executed": false,
+      "helper_regressions": {
+        "failed": 0,
+        "passed": 13
+      },
+      "installed_binary": {
+        "bytes": 70414114,
+        "sha256": "0bec398b4760d249892a233c437aecabbda24fca206a1a0e5173a3cc36f72353"
+      },
+      "installed_buildinfo_matches_actual_selection": true,
+      "installed_buildinfo_sha256": "ce69836ed75986b94bf191d7ceeef4cd39d718e4719ffb1fa4570497240a8d8e",
+      "installed_catalog": [],
+      "installed_version": {
+        "arch": "arm64",
+        "go": "go1.27.3",
+        "os": "darwin",
+        "version": "0.1.0-dev"
+      },
+      "job": {
+        "conclusion": "failure",
+        "databaseId": 122208929329,
+        "name": "native-public-latest (macos-15)",
+        "status": "completed",
+        "url": "https://github.com/inferal-oss/arm/actions/runs/40509956588/job/122208929329"
+      },
+      "legacy_critical_zip_subset": {
+        "all_hashes_match_expected_source_subset": true,
+        "files": 26,
+        "limitation": "The unchanged 26-file subset does not establish the new 611-file source closure."
+      },
+      "normal_cgo": "1",
+      "ordinary_proxy": "https://proxy.golang.org",
+      "original_helper_identity": {
+        "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+        "files": {
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "status": "",
+        "tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9"
+      },
+      "original_receipt_artifact": {
+        "bytes": 269058,
+        "id": 12736856482,
+        "name": "module-latest-two-checkout-macos-15",
+        "sha256": "c8a88de0b8fe174f353b59d1114c9b944c98141af713d0eef188f2c2f131c964",
+        "verified_receipt_files": 38
+      },
+      "raw_public_module_zip_retained": false,
+      "result": {
+        "command_count": 12,
+        "failures": [
+          "public query origin differs from the checked-out source commit"
+        ],
+        "public_query": "latest",
+        "scope": "public-install"
+      },
+      "source_full_manifest": {
+        "before_after_equal": true,
+        "entries": 2498,
+        "matches_expected_source_git_blobs": true,
+        "sha256": "fdb08741fb2097a0417aecdcd3623de8a4e0fa9c926fda0cb6609a2585eae1a5"
+      },
+      "source_harness_closure": {
+        "harness_unchanged": true,
+        "source_unchanged": true
+      },
+      "supplemental_steps": {
+        "Fetch the public ZIP for the actual original selection once": "skipped",
+        "Generate the complete-root public ZIP manifest": "skipped",
+        "Verify actual selected ZIP checksum and complete source closure": "skipped"
+      },
+      "toolchain": "go version go1.27.3 darwin/arm64"
+    },
+    "ubuntu-24.04": {
+      "actual_literal_install": {
+        "argv": [
+          "install",
+          "github.com/inferal-oss/arm/cmd/arm@latest"
+        ],
+        "exit": 0
+      },
+      "actual_literal_query": {
+        "argv": [
+          "mod",
+          "download",
+          "-json",
+          "github.com/inferal-oss/arm@latest"
+        ],
+        "exit": 0,
+        "selection": {
+          "GoModSum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+          "Origin": null,
+          "Path": "github.com/inferal-oss/arm",
+          "Sum": "h1:YRTCoUegHoKtOo/TfkYaXZfoOknELg9RCm6NF37pcCw=",
+          "Version": "v0.0.0-20261027115325-4f359b62765c"
+        }
+      },
+      "actual_selected_version_provenance": {
+        "argv": [
+          "mod",
+          "download",
+          "-json",
+          "github.com/inferal-oss/arm@v0.0.0-20261027115325-4f359b62765c"
+        ],
+        "exit": 0,
+        "selection": {
+          "GoModSum": "h1:1Kj9ie6jCMQfrYGNDx7CTPEBNslXERB14PPyoJ+murg=",
+          "Origin": {
+            "Hash": "4f359b62765c160a25ef20b928770c011c1fffeb",
+            "URL": "https://github.com/inferal-oss/arm",
+            "VCS": "git"
+          },
+          "Path": "github.com/inferal-oss/arm",
+          "Sum": "h1:YRTCoUegHoKtOo/TfkYaXZfoOknELg9RCm6NF37pcCw=",
+          "Version": "v0.0.0-20261027115325-4f359b62765c"
+        }
+      },
+      "checksumdb": "sum.golang.org",
+      "ci_identity_after": {
+        "failures": [],
+        "harness": {
+          "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+          "status": "",
+          "tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9"
+        },
+        "helper_files_sha256": {
+          "scripts/module-zip-supplement.py": "6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d",
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "reviewed_helper_commit": "9ccd7daef5b4a7b9b220a942e95bb9724d123860",
+        "source": {
+          "commit": "23e466ab9063a02effe311be0f331f9673704288",
+          "status": "",
+          "tree": "9fdfd35652f8f09bd483cd0d00b0af981a162209"
+        },
+        "workflow_commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42"
+      },
+      "ci_identity_before": {
+        "failures": [],
+        "harness": {
+          "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+          "status": "",
+          "tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9"
+        },
+        "helper_files_sha256": {
+          "scripts/module-zip-supplement.py": "6f859bc9676bfafcdea5c32b7e517ee5c8cdc3b1dedbe61a74418f0c802b1f0d",
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "reviewed_helper_commit": "9ccd7daef5b4a7b9b220a942e95bb9724d123860",
+        "source": {
+          "commit": "23e466ab9063a02effe311be0f331f9673704288",
+          "status": "",
+          "tree": "9fdfd35652f8f09bd483cd0d00b0af981a162209"
+        },
+        "workflow_commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42"
+      },
+      "cleanup": {
+        "disposable_root_removed": true,
+        "user_install_or_backend_modified": false
+      },
+      "command_exits": [
+        {
+          "exit": 0,
+          "name": "source-commit",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "source-tree",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "source-status",
+          "seconds": 0.115
+        },
+        {
+          "exit": 0,
+          "name": "toolchain",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "public-environment",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "public-query",
+          "seconds": 1.27
+        },
+        {
+          "exit": 0,
+          "name": "public-selected-version-origin",
+          "seconds": 1.468
+        },
+        {
+          "exit": 0,
+          "name": "public-install",
+          "seconds": 208.883
+        },
+        {
+          "exit": 0,
+          "name": "installed-buildinfo",
+          "seconds": 0.004
+        },
+        {
+          "exit": 0,
+          "name": "installed-version",
+          "seconds": 0.016
+        },
+        {
+          "exit": 0,
+          "name": "installed-help",
+          "seconds": 0.016
+        },
+        {
+          "exit": 0,
+          "name": "installed-empty-catalog",
+          "seconds": 0.016
+        }
+      ],
+      "expected_actual_binding": {
+        "expected_source_commit": "23e466ab9063a02effe311be0f331f9673704288",
+        "matches": false,
+        "origin_version": "v0.0.0-20261027115325-4f359b62765c",
+        "query": "latest",
+        "query_origin_consistent": true,
+        "resolved_source_commit": "4f359b62765c160a25ef20b928770c011c1fffeb",
+        "selected_version": "v0.0.0-20261027115325-4f359b62765c",
+        "selection_checksums_match": true
+      },
+      "go_test_rosters": {},
+      "go_tests_executed": false,
+      "helper_regressions": {
+        "failed": 0,
+        "passed": 13
+      },
+      "installed_binary": {
+        "bytes": 72969452,
+        "sha256": "81c37bbd57165d06a0a2a38dfd4612c9eabd10dc71897c42b17bdf0f59d7a459"
+      },
+      "installed_buildinfo_matches_actual_selection": true,
+      "installed_buildinfo_sha256": "42f3bc6f0711626ee76f669836a5981fa341f1270f21900135acc04116dc25b4",
+      "installed_catalog": [],
+      "installed_version": {
+        "arch": "amd64",
+        "go": "go1.27.3",
+        "os": "linux",
+        "version": "0.1.0-dev"
+      },
+      "job": {
+        "conclusion": "failure",
+        "databaseId": 122208929069,
+        "name": "native-public-latest (ubuntu-24.04)",
+        "status": "completed",
+        "url": "https://github.com/inferal-oss/arm/actions/runs/40509956588/job/122208929069"
+      },
+      "legacy_critical_zip_subset": {
+        "all_hashes_match_expected_source_subset": true,
+        "files": 26,
+        "limitation": "The unchanged 26-file subset does not establish the new 611-file source closure."
+      },
+      "normal_cgo": "1",
+      "ordinary_proxy": "https://proxy.golang.org",
+      "original_helper_identity": {
+        "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+        "files": {
+          "scripts/test-validate-module.py": "355796e2fcd5820cbcd5c39011e42dc8d5d9d5d6c8eb587fa00fea1d1dd11cbc",
+          "scripts/validate-module.py": "a3937fc45cd4a9bcb9d078762fac3b75ce97f90045d558cb978ecc5d4a09886b"
+        },
+        "status": "",
+        "tree": "3624c4407f2f78b85233fd514aa3c13f4a323fd9"
+      },
+      "original_receipt_artifact": {
+        "bytes": 268685,
+        "id": 12737060956,
+        "name": "module-latest-two-checkout-ubuntu-24.04",
+        "sha256": "cb03430349d075a77c2d4890348522357351acef73c61229840b4e82884c30c2",
+        "verified_receipt_files": 38
+      },
+      "raw_public_module_zip_retained": false,
+      "result": {
+        "command_count": 12,
+        "failures": [
+          "public query origin differs from the checked-out source commit"
+        ],
+        "public_query": "latest",
+        "scope": "public-install"
+      },
+      "source_full_manifest": {
+        "before_after_equal": true,
+        "entries": 2498,
+        "matches_expected_source_git_blobs": true,
+        "sha256": "fdb08741fb2097a0417aecdcd3623de8a4e0fa9c926fda0cb6609a2585eae1a5"
+      },
+      "source_harness_closure": {
+        "harness_unchanged": true,
+        "source_unchanged": true
+      },
+      "supplemental_steps": {
+        "Fetch the public ZIP for the actual original selection once": "skipped",
+        "Generate the complete-root public ZIP manifest": "skipped",
+        "Verify actual selected ZIP checksum and complete source closure": "skipped"
+      },
+      "toolchain": "go version go1.27.3 linux/amd64"
+    }
+  },
+  "push": {
+    "attempts": 1,
+    "branch": "codex/module-latest-final-ci",
+    "commit": "5539007ca4b30edd124d812e979c7b78fe1a4d42",
+    "exit": 0,
+    "manual_dispatch": false,
+    "trigger": "push"
+  },
+  "review_status": {
+    "actual_receipt_verification": "Independent result review accepts this failed-run record only; no final-source installation acceptance.",
+    "independent_audit_sha256": "863159b42d2b5cc3ede292d40dae27e80f0fcaa39aed477893029445f4ff74d1",
+    "source_review": "accepted before original push"
+  },
+  "run_id": 40509956588,
+  "run_url": "https://github.com/inferal-oss/arm/actions/runs/40509956588",
+  "schema_version": 1,
+  "status": "completed",
+  "workflow_sha256": "e2df6197040040fab4e32e1b73026d87ee9e024c15e8b41d35b1765f61c61132"
+}
