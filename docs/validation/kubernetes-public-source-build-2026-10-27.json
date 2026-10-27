@@ -1,0 +1,65 @@
+{
+  "scope": "One disposable Kubernetes public-source carrier build attempt",
+  "result": "failed",
+  "actual_native_attempt": {
+    "source": {
+      "public_repository": "https://github.com/inferal-oss/arm",
+      "commit": "7db0e1058fc0d9e1f23ed65698257814ee659c35",
+      "tree": "8938929b8328790d589f4327e4ab6597f850b425",
+      "full_tree_manifest_sha256": "749ee9ddb186a890c65dd3492064e87ef5c5013fd6c401487a368192411459c7",
+      "verification_marker_observed": true
+    },
+    "build": {
+      "payload_builds_logged": [
+        "linux/arm64",
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64"
+      ],
+      "carrier": {
+        "go_version": "go1.27.3",
+        "goos": "linux",
+        "goarch": "arm64",
+        "cgo_enabled": false,
+        "version": "0.1.0-dev",
+        "sha256": "6d45a09796b147a4cb6479daf17b7700d6ba4cd11b9e9d2a9e62e7fa8995deae"
+      },
+      "catalog_sha256": "8aaf67cbe58800c90cc19a905484674aaa8b488fcc3e4d1723bac4a5bf07a4ad",
+      "carrier_build_marker_observed": true,
+      "captured_log_passes_all_four_wrapper_log_predicates": true
+    },
+    "wrapper_exit_code": 1,
+    "wrapper_success_marker_observed": false,
+    "failure_command": "undetermined",
+    "final_pod_uid_phase_and_container_status_retained": false,
+    "cleanup": {
+      "exact_pod_uid_deletion_reported": true,
+      "exact_namespace_uid_deletion_reported": true,
+      "later_read_only_namespace_absence_observed": true
+    }
+  },
+  "interpretation": [
+    "The public source, native carrier and catalog evidence is scoped to the captured build log; the overall wrapper exited unsuccessfully.",
+    "The cause after log capture is undetermined. Log-follow exit, final identity read and final phase read cannot be distinguished from retained evidence.",
+    "The Pod's final phase and container exit code were not retained, so the build attempt does not establish end-to-end Kubernetes acceptance.",
+    "The verified public commit is an earlier source snapshot, not acceptance of the latest main branch.",
+    "No enrollment, pinned SSH connection or private carrier export was verified."
+  ],
+  "diagnostic_successor": {
+    "status": "source_review_and_fake_read_fixtures_only",
+    "kubernetes_attempts": 0,
+    "fake_status_cases": {
+      "accepted": [
+        "Running to Succeeded with exit code 0",
+        "Succeeded with exit code 0 before Ready was observed"
+      ],
+      "rejected": [
+        "Failed with nonzero exit code",
+        "replacement Pod UID",
+        "status read failure after a retained Running observation",
+        "bounded timeout after a retained Running observation"
+      ]
+    },
+    "limitation": "Fixture results do not establish a second native run or repair the failed actual attempt."
+  }
+}
