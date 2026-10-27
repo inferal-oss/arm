@@ -73,6 +73,10 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 			t.Error(err)
 		}
 	})
+	// Use the normal daemon lifecycle so fresh periodic observations continue
+	// beyond Open's initial snapshot. Existing cleanup closes and joins both.
+	source.Start()
+	destination.Start()
 	sourceState, err := source.Status()
 	if err != nil {
 		t.Fatal(err)
@@ -382,6 +386,13 @@ func TestManagerPairTeardownRequiresCompleteJoinedProtocol(t *testing.T) {
 func waitManagerPairReadiness(parent context.Context, m *manager.Manager, need model.Resources) error {
 	ctx, cancel := context.WithTimeout(parent, 4*time.Second)
 	defer cancel()
+	// Admission first charges the reviewed fixed preparation policy declared
+	// in manager/sync_preparation.go, then hands off to the worker promise.
+	// This only raises readiness observations; the real admission still checks
+	// its own current policy once, and the worker request remains unchanged.
+	need.CPU = max(need.CPU, 1)
+	need.Memory = max(need.Memory, int64(768<<20))
+	need.Disk = max(need.Disk, int64(1<<20))
 	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 	for {
