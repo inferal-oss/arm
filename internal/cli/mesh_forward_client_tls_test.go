@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"net"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -16,8 +17,13 @@ import (
 	"github.com/inferal-oss/arm/internal/meshforward"
 )
 
+func forwardTLSHome(t *testing.T) string {
+	t.Helper()
+	return filepath.Join(t.TempDir(), "state")
+}
+
 func TestForwardLocalTLSPreservesPrefetchedReadyBytes(t *testing.T) {
-	home := t.TempDir()
+	home := forwardTLSHome(t)
 	store, err := mesh.Init(home, strings.Repeat("d", 32), "source", "127.0.0.1:1", "127.0.0.1:1")
 	if err != nil {
 		t.Fatal(err)
@@ -78,7 +84,7 @@ func TestForwardLocalTLSPreservesPrefetchedReadyBytes(t *testing.T) {
 }
 
 func TestForwardLocalTLSHandshakeCancellation(t *testing.T) {
-	home := t.TempDir()
+	home := forwardTLSHome(t)
 	store, err := mesh.Init(home, strings.Repeat("f", 32), "source", "127.0.0.1:1", "127.0.0.1:1")
 	if err != nil {
 		t.Fatal(err)
@@ -128,7 +134,7 @@ func TestForwardLocalPortHandoffNeverExposesBearer(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	home := t.TempDir()
+	home := forwardTLSHome(t)
 	store, err := mesh.Init(home, strings.Repeat("b", 32), "source", "127.0.0.1:1", "127.0.0.1:1")
 	if err != nil {
 		t.Fatal(err)
@@ -222,13 +228,13 @@ func TestForwardLocalPortHandoffNeverExposesBearer(t *testing.T) {
 
 func TestForwardLocalRejectsDifferentCertificateForSameHost(t *testing.T) {
 	host := strings.Repeat("c", 32)
-	home := t.TempDir()
+	home := forwardTLSHome(t)
 	owned, err := mesh.Init(home, host, "owned", "127.0.0.1:1", "127.0.0.1:1")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = owned.Close() })
-	other, err := mesh.Init(t.TempDir(), host, "other", "127.0.0.1:1", "127.0.0.1:1")
+	other, err := mesh.Init(forwardTLSHome(t), host, "other", "127.0.0.1:1", "127.0.0.1:1")
 	if err != nil {
 		t.Fatal(err)
 	}
