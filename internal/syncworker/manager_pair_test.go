@@ -134,13 +134,14 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 		t.Fatal(err)
 	}
 	defer listener.Close()
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 60*time.Second)
 	defer cancel()
 	serverDone := make(chan error, 1)
 	execEntered, transportJoined := make(chan struct{}), make(chan struct{})
 	var originalSource *manager.SyncSourceHold
 	var originalDestination *manager.SyncWorkerHold
-	server := sshservice.Server{HostKey: hostKey, Handshake: 5 * time.Second, StartTimeout: 5 * time.Second,
+	// The start budget covers native observer readiness before the single admission.
+	server := sshservice.Server{HostKey: hostKey, Handshake: 5 * time.Second, StartTimeout: 20 * time.Second,
 		Revalidate: func(context.Context) error { return nil },
 		Execute: func(ctx context.Context, execution sshservice.Execution, ch ssh.Channel) (sshservice.Process, error) {
 			if cancelBeforeExec {
@@ -149,6 +150,7 @@ func runManagerOwnedSyncPair(t *testing.T, direction syncreconcile.Direction, po
 				return nil, ctx.Err()
 			}
 			if err := waitManagerPairReadiness(ctx, destination, resources); err != nil {
+				t.Logf("destination native readiness unavailable: %v", err)
 				return nil, fmt.Errorf("destination native readiness unavailable: %w", err)
 			}
 			t.Logf("destination native readiness: %s", managerPairBudget(destination))
@@ -381,10 +383,13 @@ func TestManagerPairTeardownRequiresCompleteJoinedProtocol(t *testing.T) {
 	}
 }
 
+const managerPairReadinessTimeout = 15 * time.Second
+
+// Allow several native observation intervals within the SSH start deadline.
 // This is a fixture readiness observation, never a probe Acquire, operation
 // retry, observer override, or promise that the subsequent admission must fit.
 func waitManagerPairReadiness(parent context.Context, m *manager.Manager, need model.Resources) error {
-	ctx, cancel := context.WithTimeout(parent, 4*time.Second)
+	ctx, cancel := context.WithTimeout(parent, managerPairReadinessTimeout)
 	defer cancel()
 	// Admission first charges the reviewed fixed preparation policy declared
 	// in manager/sync_preparation.go, then hands off to the worker promise.

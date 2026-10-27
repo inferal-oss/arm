@@ -1,7 +1,7 @@
-name: Lease clock current integration
+name: Lease clock policy-read integration
 on:
   push:
-    branches: [codex/lease-clock-current-integration]
+    branches: [codex/lease-clock-policy-cut]
 permissions:
   contents: read
 jobs:
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: lease-clock-integration-${{ matrix.os }}-${{ github.sha }}
+          name: lease-clock-policy-${{ matrix.os }}-${{ github.sha }}
           path: .tla/clock-native
           include-hidden-files: true
           if-no-files-found: error
