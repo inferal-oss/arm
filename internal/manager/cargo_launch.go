@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -28,6 +29,24 @@ type cargoWorker struct {
 	cancel                context.CancelFunc
 	done                  chan struct{}
 	id                    string
+}
+
+// Cancel the original child before IPC EOF can make the helper's parent-loss
+// path kill its own group. Preserve the signal result for sticky recording;
+// closing these original IPC handles then unblocks the parent's protocol read.
+func cancelCargoOriginal(owner *childowner.Owner, ipc ...io.Closer) error {
+	var signalErr error
+	if owner != nil {
+		signalErr = owner.Signal(syscall.SIGKILL)
+	} else {
+		signalErr = model.Err("observation_unavailable", "original Cargo helper binding unavailable; no signal authority")
+	}
+	for _, closer := range ipc {
+		if closer != nil {
+			_ = closer.Close()
+		}
+	}
+	return signalErr
 }
 
 func (m *Manager) ConfigureCargoHelper(source CargoHelperSource) error {
@@ -139,14 +158,9 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 	defer func() {
 		stopWatch()
 		if cmd != nil && childStarted && !childWaited {
-			if parentWrite != nil {
-				parentWrite.Close()
-			}
-			if childRead != nil {
-				childRead.Close()
-			}
+			// Both IPC handles were created before this original child started.
+			recordSignal(cancelCargoOriginal(originalOwner, parentWrite, childRead))
 			if originalOwner != nil {
-				recordSignal(originalOwner.Signal(syscall.SIGKILL))
 				if j != nil {
 					j.retireControls()
 				}
@@ -363,9 +377,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		defer close(stopped)
 		select {
 		case <-ctx.Done():
-			parentWrite.Close()
-			childRead.Close()
-			recordSignal(originalOwner.Signal(syscall.SIGKILL))
+			recordSignal(cancelCargoOriginal(originalOwner, parentWrite, childRead))
 		case <-stopper:
 		}
 	}()

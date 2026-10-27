@@ -144,7 +144,8 @@ func (m *dashboardModel) startReview(action string) tea.Cmd {
 		return nil
 	}
 	if action == "renew" {
-		if l.Expires == nil || !l.Expires.After(time.Now()) {
+		// Clock-backed entitlement is checked by Manager; calendar expiry is audit data.
+		if l.Clock == nil && (l.Expires == nil || !l.Expires.After(time.Now())) {
 			m.notice = "Lease is expired; refresh it."
 			return nil
 		}
@@ -166,7 +167,7 @@ func (m *dashboardModel) reviewTTL(text string) tea.Cmd {
 		return nil
 	}
 	expires := time.Now().Add(ttl)
-	if m.detail.Expires == nil || !expires.After(*m.detail.Expires) {
+	if m.detail.Clock == nil && (m.detail.Expires == nil || !expires.After(*m.detail.Expires)) {
 		m.notice = "Choose a duration from now that extends the current expiry."
 		return nil
 	}
@@ -213,7 +214,7 @@ func (m *dashboardModel) reviewKey(key string) tea.Cmd {
 		return nil
 	}
 	request := m.review.request
-	if request.Action == "renew" && (m.review.lease.Expires == nil || !m.review.lease.Expires.After(time.Now())) {
+	if request.Action == "renew" && m.review.lease.Clock == nil && (m.review.lease.Expires == nil || !m.review.lease.Expires.After(time.Now())) {
 		m.review = nil
 		m.notice = "Lease expired while reviewing; refresh it."
 		return nil
