@@ -45,7 +45,7 @@ func TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal(t *testing.T) {
 		}
 	}
 	t.Logf("private namespace=%s original=%s initial=%s; all propagation private", current, outer, initial)
-	for _, kind := range []string{"nested-directory", "nested-file"} {
+	for _, kind := range []string{"nested-directory", "nested-file", "nested-symlink"} {
 		t.Run(kind, func(t *testing.T) {
 			source, selected, parent, w, reservation := testWorkspaceEvidence(t)
 			external := filepath.Join(source.Path(), "external")
@@ -59,9 +59,20 @@ func TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal(t *testing.T) {
 				}
 				allocationReviewWrite(t, filepath.Join(external, "external-data"), []byte("private outside allocation"))
 				allocationReviewWrite(t, filepath.Join(target, "covered-data"), []byte("covered allocation"))
-			} else {
+			} else if kind == "nested-file" {
 				allocationReviewWrite(t, external, []byte("private outside allocation"))
 				allocationReviewWrite(t, target, []byte("covered allocation"))
+			} else {
+				a := filepath.Join(source.Path(), "external-target")
+				b := filepath.Join(source.Path(), "covered-target")
+				allocationReviewWrite(t, a, []byte("private external link payload"))
+				allocationReviewWrite(t, b, []byte("private covered link payload"))
+				if err := os.Symlink(a, external); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.Symlink(b, target); err != nil {
+					t.Fatal(err)
+				}
 			}
 			allocationReviewWrite(t, filepath.Join(source.Path(), "sentinel"), []byte("retained outside sentinel"))
 			// Both trees originate in the same disposable t.TempDir filesystem.
@@ -82,21 +93,40 @@ func TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal(t *testing.T) {
 			if err := unix.Fstat(parent.FD(), &parentStat); err != nil {
 				t.Fatal(err)
 			}
-			if err := unix.Stat(external, &sourceStat); err != nil || sourceStat.Dev != parentStat.Dev {
+			if err := unix.Lstat(external, &sourceStat); err != nil || sourceStat.Dev != parentStat.Dev {
 				t.Fatal("fixture is not same-device", err)
 			}
-			if err := unix.Mount(external, target, "", unix.MS_BIND, ""); err != nil {
+			if kind == "nested-symlink" {
+				// open_tree clones the link inode itself; move_mount defaults
+				// to not following the target link. No linked payload is mounted.
+				fd, err := unix.OpenTree(unix.AT_FDCWD, external, uint(unix.OPEN_TREE_CLONE|unix.OPEN_TREE_CLOEXEC|unix.AT_SYMLINK_NOFOLLOW|unix.AT_NO_AUTOMOUNT))
+				if err != nil {
+					t.Fatal(err)
+				}
+				err = unix.MoveMount(fd, "", unix.AT_FDCWD, target, unix.MOVE_MOUNT_F_EMPTY_PATH)
+				unix.Close(fd)
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if err := unix.Mount(external, target, "", unix.MS_BIND, ""); err != nil {
 				t.Fatal(err)
 			}
 			mounted := true
 			defer func() {
 				if mounted {
-					if err := unix.Unmount(target, 0); err != nil {
+					if err := unix.Unmount(target, unix.UMOUNT_NOFOLLOW); err != nil {
 						t.Error("original private mount cleanup failed", err)
+						return
 					}
+					mounted = false
 				}
+				if !reflect.DeepEqual(covered, allocationReviewSnapshot(t, w.Path())) || !reflect.DeepEqual(outside, allocationReviewSnapshot(t, source.Path())) {
+					t.Error("deferred cleanup changed covered/outside native evidence")
+					return
+				}
+				t.Log("original private mount removed before exit; covered/outside snapshots unchanged")
 			}()
-			fd, err := unix.Open(target, unix.O_RDONLY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
+			fd, err := unix.Open(target, unix.O_PATH|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -124,7 +154,7 @@ func TestWorkspaceAllocationNativeLinuxPrivateBindMountRefusal(t *testing.T) {
 			if !reflect.DeepEqual(visible, allocationReviewSnapshot(t, w.Path())) || !reflect.DeepEqual(outside, allocationReviewSnapshot(t, source.Path())) {
 				t.Fatal("refusal changed visible/outside native evidence")
 			}
-			if err := unix.Unmount(target, 0); err != nil {
+			if err := unix.Unmount(target, unix.UMOUNT_NOFOLLOW); err != nil {
 				t.Fatal(err)
 			}
 			mounted = false

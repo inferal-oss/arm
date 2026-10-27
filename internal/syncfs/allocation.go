@@ -127,11 +127,9 @@ func surveyWorkspaceDirectory(ctx context.Context, dir *os.File, depth int, devi
 			if kind != unix.S_IFDIR && kind != unix.S_IFREG && kind != unix.S_IFLNK {
 				return ErrChanged
 			}
-			if kind != unix.S_IFLNK {
-				childMount, err := surveyMountAt(int(dir.Fd()), name)
-				if err != nil || childMount != mount {
-					return ErrChanged
-				}
+			childMount, err := surveyMountAt(int(dir.Fd()), name)
+			if err != nil || childMount != mount {
+				return ErrChanged
 			}
 			if err := out.add(before); err != nil {
 				return err
@@ -161,11 +159,9 @@ func surveyWorkspaceDirectory(ctx context.Context, dir *os.File, depth int, devi
 			if err != nil || !surveyStable(before, after) {
 				return ErrChanged
 			}
-			if kind != unix.S_IFLNK {
-				childMount, err := surveyMountAt(int(dir.Fd()), name)
-				if err != nil || childMount != mount {
-					return ErrChanged
-				}
+			childMount, err = surveyMountAt(int(dir.Fd()), name)
+			if err != nil || childMount != mount {
+				return ErrChanged
 			}
 		}
 		if readErr == io.EOF {

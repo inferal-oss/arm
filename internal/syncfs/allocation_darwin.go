@@ -26,7 +26,7 @@ func surveyDarwinMountIdentity(s unix.Statfs_t) (string, error) {
 }
 
 func surveyMountAt(fd int, name string) (string, error) {
-	child, err := unix.Openat(fd, name, unix.O_EVTONLY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
+	child, err := unix.Openat(fd, name, unix.O_EVTONLY|unix.O_SYMLINK|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
 	if err != nil {
 		return "", err
 	}

@@ -2,7 +2,8 @@
 
 `SurveyWorkspace` provides a bounded read-only `st_blocks` observation for one
 exact marked private workspace. It reopens the original reservation and roots,
-refuses child mounts and special files, never follows symlinks, and checks
+refuses child mounts and special files, checks symlink inodes without following
+their targets, and checks
 entry identities and block counts around traversal. It does not reserve space,
 cap writes, prove that cloned/shared blocks are exclusive, authorize cleanup,
 or release a disk lease. Concurrent same-account changes are not an atomic
