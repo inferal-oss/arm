@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/inferal-oss/arm/internal/manager"
+	"github.com/inferal-oss/arm/internal/sshservice"
 	"github.com/inferal-oss/arm/internal/syncfs"
 	"github.com/inferal-oss/arm/internal/syncreconcile"
 	"golang.org/x/crypto/ssh"
@@ -19,6 +20,10 @@ func RunDestination(hold *manager.SyncWorkerHold) error {
 		return errors.New("admitted destination worker and SSH channel required")
 	}
 	return hold.Start(func(ctx context.Context, stream ssh.Channel) error {
+		closeOriginal, err := sshservice.OriginalTransportCloser(ctx, stream)
+		if err != nil {
+			return err
+		}
 		if err := hold.CheckActive(ctx); err != nil {
 			return err
 		}
@@ -34,7 +39,7 @@ func RunDestination(hold *manager.SyncWorkerHold) error {
 		if err != nil {
 			return err
 		}
-		session, err := newSingleStreamSession(stream, func() error { return nil })
+		session, err := newOwnedSingleStreamSession(stream, func() error { return nil }, closeOriginal)
 		if err != nil {
 			return err
 		}

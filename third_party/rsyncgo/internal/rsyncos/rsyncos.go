@@ -13,7 +13,8 @@ type Env struct {
 	Stdout io.WriteCloser
 	Stderr io.WriteCloser
 
-	DontRestrict bool
+	DontRestrict       bool
+	ReceiverWriteLimit *int64
 
 	DialContext func(ctx context.Context, network, addr string) (net.Conn, error)
 

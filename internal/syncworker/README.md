@@ -24,6 +24,16 @@ closes and joins its transport before local baseline confirmation. A failed
 cut, channel, join or receipt leaves the original key for lookup; no worker
 replay is attempted.
 
+Each receiver batch caps cumulative reconstructed regular-file writes at the
+sum of reviewed `After` file sizes for that source and receiver. The cap is
+snapshotted locally before the handshake. It includes basis bytes reconstructed
+into rsync temporary files. Receiver-basis preseed and source-manifest copies
+are separate operations covered by their existing forecasts and preflight
+limits, rather than this exchange counter. An overrun aborts the original transfer carrier and joins its protocol workers
+before native publication; ordinary successful batches keep the control carrier. This is a logical write guard; directories, symlinks,
+filesystem metadata, allocation granularity, snapshots, and other holders of
+the volume still require physical allocation enforcement and settlement.
+
 The package remains an internal integration seam. Manager mints one-use source
 and destination holds; `RunSource` and `RunDestination` consume their exact
 roots, ledgers, contexts and original authenticated SSH channels. Source

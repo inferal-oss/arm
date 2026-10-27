@@ -83,7 +83,7 @@ func Main(ctx context.Context, osenv *rsyncos.Env, args []string, cfg *rsyncdcon
 	// Example: --server --sender -vvvvlogDtpre.iLsfxCIvu . .
 	if opts.Server() {
 		// start_server()
-		srv, err := rsyncd.NewServer(nil, rsyncd.WithStderr(osenv.Stderr))
+		srv, err := rsyncd.NewServer(nil, rsyncd.WithStderr(osenv.Stderr), rsyncd.WithReceiverWriteLimit(osenv.ReceiverWriteLimit))
 		if err != nil {
 			return nil, err
 		}

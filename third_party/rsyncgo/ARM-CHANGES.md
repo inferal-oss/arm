@@ -14,6 +14,14 @@ README, license and author identifiers remain historical upstream material.
 
 ARM changes:
 
+* Add an optional local per-exchange regular-file write ceiling. Snapshot
+  caller policy before handshakes/server setup; account actual pending-file
+  writes across files/phases, including reconstructed basis bytes, and refuse
+  excess before a write or temporary-file publication. Nil preserves the
+  standalone default. This is not a physical allocation quota or cleanup
+  proof; metadata, basis preseed, source preparation and shared blocks are
+  outside this reconstruction counter.
+
 * Packaging validation exposed an existing sender debug-log format error:
   supply its already-computed `strip` value for the third `%q` verb. This
   removes `%!q(MISSING)` from debug output and permits `go vet`/default tests.

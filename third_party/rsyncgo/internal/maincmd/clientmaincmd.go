@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/shlex"
 	"github.com/inferal-oss/arm/third_party/rsyncgo"
 	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/progress"
 	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/receiver"
@@ -21,7 +22,6 @@ import (
 	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncstats"
 	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/rsyncwire"
 	"github.com/inferal-oss/arm/third_party/rsyncgo/internal/sender"
-	"github.com/google/shlex"
 )
 
 // rsync/main.c:start_client
@@ -370,6 +370,8 @@ func ClientRun(osenv *rsyncos.Env, opts *rsyncopts.Options, conn io.ReadWriteClo
 			AlwaysChecksum:    opts.AlwaysChecksum(),
 			DoFsync:           opts.DoFsync(),
 			KeepPartial:       opts.KeepPartial(),
+
+			ReceiverWriteLimit: osenv.ReceiverWriteLimit,
 
 			InfoGTE:  opts.InfoGTE,
 			DebugGTE: opts.DebugGTE,

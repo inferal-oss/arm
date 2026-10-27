@@ -25,6 +25,10 @@ type Metadata struct {
 	Symlinks    bool
 	Permissions bool
 	ModTimes    bool
+	// ReceiverWriteLimit bounds cumulative regular-file bytes written during
+	// this exchange. Policy is captured before the handshake; nil leaves
+	// standalone engine callers unbounded.
+	ReceiverWriteLimit *int64
 }
 
 // Stats are protocol progress reports and can contain peer-supplied values.
@@ -47,7 +51,7 @@ func Run(ctx context.Context, stream io.ReadWriteCloser, role Role, root string,
 	if ctx == nil || stream == nil {
 		return Stats{}, errors.New("nil rsync context or stream")
 	}
-	opts := rsyncstream.Options{PreserveLinks: metadata.Symlinks, PreservePerms: metadata.Permissions, PreserveTimes: metadata.ModTimes}
+	opts := rsyncstream.Options{PreserveLinks: metadata.Symlinks, PreservePerms: metadata.Permissions, PreserveTimes: metadata.ModTimes, ReceiverWriteLimit: metadata.ReceiverWriteLimit}
 	var result struct{ Read, Written, Size int64 }
 	var err error
 	switch role {

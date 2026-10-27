@@ -89,7 +89,7 @@ func TestFixedSyncWorkerOverARMSSHSession(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 	serverDone := make(chan error, 1)
-	server := sshservice.Server{HostKey: hostKey, Handshake: time.Second, StartTimeout: time.Second, Revalidate: func(context.Context) error { return nil }, Execute: func(_ context.Context, q sshservice.Execution, ch ssh.Channel) (sshservice.Process, error) {
+	server := sshservice.Server{HostKey: hostKey, Handshake: time.Second, StartTimeout: time.Second, Revalidate: func(context.Context) error { return nil }, Execute: func(executionCtx context.Context, q sshservice.Execution, ch ssh.Channel) (sshservice.Process, error) {
 		if q.Kind != "exec" || q.Command != FixedCommand || q.Terminal != nil {
 			return nil, errors.New("unexpected SSH execution")
 		}
@@ -98,7 +98,11 @@ func TestFixedSyncWorkerOverARMSSHSession(t *testing.T) {
 			return nil, e
 		}
 		re.Prepared = &prepared
-		remoteSession, e := newSingleStreamSession(ch, func() error { return nil })
+		closeOriginal, e := sshservice.OriginalTransportCloser(executionCtx, ch)
+		if e != nil {
+			return nil, e
+		}
+		remoteSession, e := newOwnedSingleStreamSession(ch, func() error { return nil }, closeOriginal)
 		if e != nil {
 			return nil, e
 		}
@@ -152,7 +156,7 @@ func TestFixedSyncWorkerOverARMSSHSession(t *testing.T) {
 		}
 		return errors.New("missing SSH exit status")
 	}
-	ls, err := newSingleStreamSession(ch, waitExit)
+	ls, err := newOwnedSingleStreamSession(ch, waitExit, clientSide.Close)
 	if err != nil {
 		t.Fatal(err)
 	}

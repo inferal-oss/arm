@@ -60,6 +60,18 @@ func WithStderr(stderr io.WriteCloser) Option {
 	})
 }
 
+// WithReceiverWriteLimit sets a local per-exchange regular-file write cap.
+// It captures the supplied value when constructed, rather than borrowing mutable
+// caller storage. It is not sent to the peer or accepted from protocol arguments.
+func WithReceiverWriteLimit(limit *int64) Option {
+	var snapshot *int64
+	if limit != nil {
+		value := *limit
+		snapshot = &value
+	}
+	return serverOptionFunc(func(s *Server) { s.receiverWriteLimit = snapshot })
+}
+
 func DontRestrict() Option {
 	return serverOptionFunc(func(s *Server) {
 		s.dontRestrict = true
@@ -79,6 +91,9 @@ func NewServer(modules []Module, opts ...Option) (*Server, error) {
 
 	for _, opt := range opts {
 		opt.applyServer(server)
+	}
+	if server.receiverWriteLimit != nil && *server.receiverWriteLimit < 0 {
+		return nil, fmt.Errorf("negative receiver write limit")
 	}
 
 	// Default to os.Stderr if no stderr was specified.
@@ -106,9 +121,10 @@ func NewServer(modules []Module, opts ...Option) (*Server, error) {
 }
 
 type Server struct {
-	stderr       io.WriteCloser
-	logger       log.Logger
-	dontRestrict bool
+	stderr             io.WriteCloser
+	logger             log.Logger
+	dontRestrict       bool
+	receiverWriteLimit *int64
 
 	modules []Module
 }
@@ -457,6 +473,8 @@ func (s *Server) handleConnReceiver(module *Module, crd *rsyncwire.CountingReade
 			AlwaysChecksum: opts.AlwaysChecksum(),
 			DoFsync:        opts.DoFsync(),
 			KeepPartial:    opts.KeepPartial(),
+
+			ReceiverWriteLimit: s.receiverWriteLimit,
 
 			InfoGTE:  opts.InfoGTE,
 			DebugGTE: opts.DebugGTE,

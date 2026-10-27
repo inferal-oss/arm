@@ -1,6 +1,7 @@
 package receiver
 
 import (
+	"errors"
 	"math/rand/v2"
 	"os"
 	"path/filepath"
@@ -41,9 +42,12 @@ type pendingFile struct {
 	f       *os.File
 	sync    bool
 	renamed bool
+	budget  *int64
 }
 
-func newPendingFile(root *os.Root, fn string, sync bool) (*pendingFile, error) {
+var errReceiverWriteLimit = errors.New("receiver write limit exceeded")
+
+func newPendingFile(root *os.Root, fn string, sync bool, budget *int64) (*pendingFile, error) {
 	// Keep the temporary file beside its final name. This preserves same-
 	// directory rename behavior for nested files in a staging tree.
 	tmpname, f, err := openTempFileRoot(root, filepath.Join(filepath.Dir(fn), "."+filepath.Base(fn)), 0o600)
@@ -56,6 +60,7 @@ func newPendingFile(root *os.Root, fn string, sync bool) (*pendingFile, error) {
 		fn:      fn,
 		f:       f,
 		sync:    sync,
+		budget:  budget,
 	}, nil
 }
 
@@ -64,7 +69,14 @@ func (p *pendingFile) Name() string {
 }
 
 func (p *pendingFile) Write(buf []byte) (n int, _ error) {
-	return p.f.Write(buf)
+	if p.budget != nil && int64(len(buf)) > *p.budget {
+		return 0, errReceiverWriteLimit
+	}
+	n, err := p.f.Write(buf)
+	if p.budget != nil {
+		*p.budget -= int64(n)
+	}
+	return n, err
 }
 
 func (p *pendingFile) CloseAtomicallyReplace() error {

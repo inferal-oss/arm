@@ -14,26 +14,37 @@ import (
 // A batch handle does not close the stream on normal completion; the
 // control protocol resumes at the next byte after that rsync exchange.
 type singleStreamSession struct {
-	stream    io.ReadWriteCloser
-	wait      func() error
-	mu        sync.Mutex
-	busy      bool
-	closed    bool
-	joined    bool
-	closeOnce sync.Once
-	closeErr  error
-	abortOnce sync.Once
-	abortErr  error
-	joinOnce  sync.Once
-	joinErr   error
+	stream         io.ReadWriteCloser
+	wait           func() error
+	abortTransport func() error
+	mu             sync.Mutex
+	busy           bool
+	closed         bool
+	joined         bool
+	closeOnce      sync.Once
+	closeErr       error
+	abortOnce      sync.Once
+	abortErr       error
+	joinOnce       sync.Once
+	joinErr        error
 }
 
 func newSingleStreamSession(stream io.ReadWriteCloser, wait func() error) (*singleStreamSession, error) {
 	if stream == nil || wait == nil {
 		return nil, errors.New("owned SSH exec stream and waiter required")
 	}
-	return &singleStreamSession{stream: stream, wait: wait}, nil
+	return newOwnedSingleStreamSession(stream, wait, stream.Close)
 }
+
+// Production bridges provide the captured original SSH carrier closer. A raw
+// Channel.Close alone can block and cannot establish transport termination.
+func newOwnedSingleStreamSession(stream io.ReadWriteCloser, wait, abort func() error) (*singleStreamSession, error) {
+	if stream == nil || wait == nil || abort == nil {
+		return nil, errors.New("original SSH stream, waiter and transport closer required")
+	}
+	return &singleStreamSession{stream: stream, wait: wait, abortTransport: abort}, nil
+}
+
 func (s *singleStreamSession) Control() io.ReadWriteCloser { return s.stream }
 func (s *singleStreamSession) OpenTransfer(ctx context.Context, _ batch) (transferHandle, error) {
 	if ctx == nil {
@@ -61,7 +72,7 @@ func (s *singleStreamSession) Close() error {
 	return s.closeErr
 }
 func (s *singleStreamSession) Abort() error {
-	s.abortOnce.Do(func() { s.mu.Lock(); s.closed = true; s.mu.Unlock(); s.abortErr = s.stream.Close() })
+	s.abortOnce.Do(func() { s.mu.Lock(); s.closed = true; s.mu.Unlock(); s.abortErr = s.abortTransport() })
 	return s.abortErr
 }
 func (s *singleStreamSession) Join() error {
@@ -95,6 +106,9 @@ func (h *singleStreamHandle) Close() error {
 	}
 	return nil
 }
+
+// Abort is the exact session capability minted with this original handle.
+func (h *singleStreamHandle) Abort() error { return h.session.Abort() }
 func (h *singleStreamHandle) Join() error {
 	h.once.Do(func() { h.session.mu.Lock(); h.session.busy = false; h.session.mu.Unlock() })
 	return nil

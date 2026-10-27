@@ -32,6 +32,8 @@ type TransferOpts struct {
 	DoFsync           bool
 	KeepPartial       bool
 
+	ReceiverWriteLimit *int64
+
 	InfoGTE  func(rsyncopts.InfoLevel, uint16) bool
 	DebugGTE func(rsyncopts.DebugLevel, uint16) bool
 }
