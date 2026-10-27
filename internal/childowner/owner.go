@@ -30,16 +30,18 @@ type Result struct {
 // Owner is process-local, never serialized or reconstructed after recovery.
 // Its mutex serializes signals and the irreversible retirement before Wait.
 type Owner struct {
-	mu         sync.Mutex
-	cmd        *exec.Cmd
-	pid        int
-	retired    bool
-	waiting    bool
-	failure    error
-	killSentAt time.Time
-	observe    func(int) (terminal, error)
-	signal     func(int, syscall.Signal) error
-	wait       func() error
+	mu                sync.Mutex
+	cmd               *exec.Cmd
+	pid               int
+	retired           bool
+	waiting           bool
+	failure           error
+	killSentAt        time.Time
+	killSucceeded     bool
+	terminalOnlyGroup func(int) (bool, error)
+	observe           func(int) (terminal, error)
+	signal            func(int, syscall.Signal) error
+	wait              func() error
 }
 
 // Available checks the native observer before any child is started. The
@@ -68,7 +70,7 @@ func New(cmd *exec.Cmd) (*Owner, error) {
 	if _, err := observeTerminal(cmd.Process.Pid); err != nil {
 		return nil, fmt.Errorf("original non-reaping observation unavailable before gate: %w", err)
 	}
-	return &Owner{cmd: cmd, pid: cmd.Process.Pid, observe: observeTerminal, signal: func(pid int, sig syscall.Signal) error { return syscall.Kill(-pid, sig) }, wait: cmd.Wait}, nil
+	return &Owner{cmd: cmd, pid: cmd.Process.Pid, observe: observeTerminal, terminalOnlyGroup: terminalOnlyGroup, signal: func(pid int, sig syscall.Signal) error { return syscall.Kill(-pid, sig) }, wait: cmd.Wait}, nil
 }
 
 func (o *Owner) Signal(sig syscall.Signal) error {
@@ -80,10 +82,18 @@ func (o *Owner) Signal(sig syscall.Signal) error {
 	return o.signalLocked(sig)
 }
 func (o *Owner) signalLocked(sig syscall.Signal) error {
+	// An actual successful group KILL is irreversible. Repeating it can yield
+	// EPERM for Darwin's remaining zombie-only group, without adding cleanup.
+	if sig == syscall.SIGKILL && o.killSucceeded {
+		return nil
+	}
 	if sig == syscall.SIGKILL && o.killSentAt.IsZero() {
 		o.killSentAt = time.Now()
 	}
 	err := o.signal(o.pid, sig)
+	if sig == syscall.SIGKILL && err == nil {
+		o.killSucceeded = true
+	}
 	// ESRCH is an observation only, never a positive exit or a join witness.
 	if err != nil && !errors.Is(err, syscall.ESRCH) {
 		o.failure = errors.Join(o.failure, fmt.Errorf("original group signal %d denied or unknown: %w", sig, err))
@@ -134,7 +144,18 @@ func (o *Owner) Wait(ctx context.Context) Result {
 			time.Sleep(20 * time.Millisecond)
 			continue
 		}
-		_ = o.signalLocked(syscall.SIGKILL)
+		terminalOnly := false
+		if !o.killSucceeded && o.terminalOnlyGroup != nil {
+			var groupErr error
+			terminalOnly, groupErr = o.terminalOnlyGroup(o.pid)
+			if groupErr != nil {
+				o.failure = errors.Join(o.failure, fmt.Errorf("original terminal group membership is unknown: %w", groupErr))
+				terminalOnly = false
+			}
+		}
+		if !terminalOnly {
+			_ = o.signalLocked(syscall.SIGKILL)
+		}
 		o.retired = true
 		cleanupErr := o.failure
 		o.mu.Unlock()

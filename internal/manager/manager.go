@@ -269,23 +269,7 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 			db.Close()
 			return nil, e
 		}
-		if run.Valid && consuming(l.State) {
-			sshSaved, err := recordedSSHRun(run.String)
-			if err != nil {
-				db.Close()
-				return nil, err
-			}
-			if sshSaved {
-				l.State, l.Outcome, l.Ended = "needs_attention", "ssh_supervision_lost", nil
-				l.Failure = "Original SSH transport join was not recorded; saved process descriptors cannot settle its obligations"
-				l.Revision++
-				if e = m.put(l, "lease.ssh_recovery_required"); e != nil {
-					db.Close()
-					return nil, e
-				}
-				continue
-			}
-		}
+
 		if (l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind) && l.State != "terminal" {
 			// A recorded in-process allocation is not a positive join witness.
 			// In particular, PID0 must never settle a lost transport owner.
@@ -316,6 +300,23 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 				return nil, e
 			}
 			continue
+		}
+		if run.Valid && consuming(l.State) {
+			sshSaved, err := recordedSSHRun(run.String)
+			if err != nil {
+				db.Close()
+				return nil, err
+			}
+			if sshSaved {
+				l.State, l.Outcome, l.Ended = "needs_attention", "ssh_supervision_lost", nil
+				l.Failure = "Original SSH transport join was not recorded; saved process descriptors cannot settle its obligations"
+				l.Revision++
+				if e = m.put(l, "lease.ssh_recovery_required"); e != nil {
+					db.Close()
+					return nil, e
+				}
+				continue
+			}
 		}
 		if l.Cargo != nil {
 			if e = m.recoverCargo(l); e != nil {
@@ -1907,7 +1908,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			h := r.sshRuntime.leaseHold
 			h.nativeReaped = waited.Reaped
 			h.nativeSafe = groupGone
-			_, _ = m.stageSSHResult(current)
+			_, _ = m.stageSSHResultFor(l.ID, current)
 		} else {
 			_ = m.put(current, "lease."+current.Outcome)
 		}

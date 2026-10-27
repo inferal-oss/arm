@@ -265,7 +265,7 @@ func TestSSHReconcileCannotBypassHeldOrFailedSettlement(t *testing.T) {
 	}
 }
 func TestSSHStagingRejectsChangedNativeBinding(t *testing.T) {
-	for _, field := range []string{"pid", "identity"} {
+	for _, field := range []string{"pid", "identity", "id"} {
 		t.Run(field, func(t *testing.T) {
 			m := sshRetainedSettlementManager(t)
 			f, actual, inputs, release := sshSettlementFixtureWithManager(t, m, false)
@@ -293,8 +293,11 @@ func TestSSHStagingRejectsChangedNativeBinding(t *testing.T) {
 			held := awaitSSHInput(t, inputs)
 			m.mu.Lock()
 			l, err := m.get(r.leaseHold.original.ID)
+			rowID := r.leaseHold.original.ID
 			if err == nil {
-				if field == "pid" {
+				if field == "id" {
+					l.ID += "-replaced"
+				} else if field == "pid" {
 					l.PID++
 				} else if l.Process != nil {
 					identity := *l.Process
@@ -305,7 +308,16 @@ func TestSSHStagingRejectsChangedNativeBinding(t *testing.T) {
 				}
 				if err == nil {
 					l.Revision++
-					err = m.put(l, "test.ssh_native_binding_changed")
+					// Corrupt only the JSON row identity, preserving its original SQL key.
+					if field == "id" {
+						var raw []byte
+						raw, err = json.Marshal(l)
+						if err == nil {
+							_, err = m.db.Exec(`UPDATE leases SET data=? WHERE id=?`, string(raw), rowID)
+						}
+					} else {
+						err = m.put(l, "test.ssh_native_binding_changed")
+					}
 				}
 			}
 			m.mu.Unlock()
@@ -325,11 +337,11 @@ func TestSSHStagingRejectsChangedNativeBinding(t *testing.T) {
 			}
 			release()
 			awaitTransportSignal(t, r.leaseHold.done, "changed binding cleanup did not return")
-			stored, err := m.Inspect(l.ID)
-			if err != nil || stored.PID != l.PID || !reflect.DeepEqual(stored.Process, l.Process) || stored.State == "terminal" || stored.Ended != nil {
+			stored, err := m.Inspect(rowID)
+			if err != nil || stored.ID != l.ID || stored.PID != l.PID || !reflect.DeepEqual(stored.Process, l.Process) || stored.State == "terminal" || stored.Ended != nil {
 				t.Fatal("original waiter overwrote changed native binding", stored, err)
 			}
-			assertSSHReconcileRefused(t, m, l.ID)
+			assertSSHReconcileRefused(t, m, rowID)
 		})
 	}
 }

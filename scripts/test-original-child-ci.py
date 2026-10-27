@@ -47,6 +47,10 @@ before=sources();assert_committed(before);(run/'sources-before.json').write_text
 expected={
  'github.com/yrashk/arm/internal/childowner':{'TestUnknownObservationRetiresWithoutSignalsOrWait','TestRetirementPrecedesSoleWaitAndDeniedSignalStaysFailure','TestNativeOriginalExitAndDescendantTeardown','TestNativeConcurrentCancellationCannotSignalAfterWait','TestRepeatedEINTRCannotBypassCancellationBound','TestNativeDeniedSignalCannotBecomeSuccessfulCleanupAfterReap'},
  'github.com/yrashk/arm/internal/manager':{'TestOriginalWaiterNativeAdmissionAndExpiry','TestSupervisedExpiryAndDescendants','TestExpiryQueueAndRenewal','TestSchedulingDeadlineJournalFailureCannotGrant'}}
+for file in (root/'internal/childowner').glob('*test.go'):
+ if file.name.endswith('_darwin_test.go') and sys.platform!='darwin':continue
+ if file.name.endswith('_linux_test.go') and not sys.platform.startswith('linux'):continue
+ expected['github.com/yrashk/arm/internal/childowner'].update(re.findall(r'^func (Test[A-Za-z0-9_]+)\(t \*testing.T\)',file.read_text(),re.M))
 for file in (root/'internal/manager').glob('ssh*test.go'):
  expected['github.com/yrashk/arm/internal/manager'].update(re.findall(r'^func (Test[A-Za-z0-9_]+)\(t \*testing.T\)',file.read_text(),re.M))
 

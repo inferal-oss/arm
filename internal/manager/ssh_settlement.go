@@ -102,7 +102,13 @@ func (m *Manager) bindSSHTransport(l model.Lease, r *sshRuntime) error {
 // stageSSHResult never stores terminal while the original transport is live.
 // The exact charged intermediate row fences later join settlement.
 func (m *Manager) stageSSHResult(l model.Lease) (model.Lease, error) {
-	h := m.sshTransports[l.ID]
+	return m.stageSSHResultFor(l.ID, l)
+}
+
+// The original map key is captured before native waiting. Never select the
+// obligation to release from a subsequently decoded candidate's JSON identity.
+func (m *Manager) stageSSHResultFor(originalID string, l model.Lease) (model.Lease, error) {
+	h := m.sshTransports[originalID]
 	if h == nil {
 		return l, model.Err("ssh_owner_changed", "original SSH transport hold is absent")
 	}
@@ -116,7 +122,7 @@ func (m *Manager) stageSSHResult(l model.Lease) (model.Lease, error) {
 		return l, h.err
 	}
 	var rawCurrent string
-	if err := m.db.QueryRow(`SELECT data FROM leases WHERE id=?`, l.ID).Scan(&rawCurrent); err != nil {
+	if err := m.db.QueryRow(`SELECT data FROM leases WHERE id=?`, originalID).Scan(&rawCurrent); err != nil {
 		h.err = err
 		return l, err
 	}
@@ -125,7 +131,7 @@ func (m *Manager) stageSSHResult(l model.Lease) (model.Lease, error) {
 		h.err = err
 		return l, err
 	}
-	if stored.PID != h.expectedPID || !reflect.DeepEqual(stored.Process, h.expectedProcess) || stored.Host != h.original.Host || stored.Owner != h.original.Owner || !reflect.DeepEqual(stored.Request, h.original.Request) {
+	if stored.ID != h.original.ID || stored.PID != h.expectedPID || !reflect.DeepEqual(stored.Process, h.expectedProcess) || stored.Host != h.original.Host || stored.Owner != h.original.Owner || !reflect.DeepEqual(stored.Request, h.original.Request) {
 		h.err = model.Err("ssh_owner_changed", "SSH native row binding changed before staging")
 		return l, h.err
 	}
