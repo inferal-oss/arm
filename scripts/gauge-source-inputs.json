@@ -533,8 +533,10 @@
     {
       "path": "scripts/test-terminal-gauge-refresh.py",
       "reviewed_sha256": "5c5b378d25a26d93cf11021a4405d58851e026d12d87f69305f13fa0a7168d1f",
-      "canonical_sha256": "5c5b378d25a26d93cf11021a4405d58851e026d12d87f69305f13fa0a7168d1f",
-      "normalized_equal": true
+      "canonical_sha256": "87b536c835418c0550e484d700074613e5220bbfb38d9b0afb9818a04ed16969",
+      "normalized_equal": false,
+      "fixture_oracle_adjustment": true,
+      "adjustment": "Complete child wait, descriptor closure and disposable backend cleanup before receipt writes, including injected artifact I/O failure."
     },
     {
       "path": "internal/tui/memory_projection_review_test.go",

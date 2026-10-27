@@ -113,16 +113,18 @@ def main():
                           'space_measured': sum(row['space_measured'] for row in observations),
                           'disconnect_unavailable': True, 'reconnect_measured': True, 'terminal_restored': True}))
     finally:
-        (output / 'terminal.ansi').write_bytes(transcript)
-        (output / 'observations.json').write_text(json.dumps(observations, indent=2) + '\n')
-        if process is not None and process.poll() is None:
-            process.kill()
-            process.wait(timeout=5)
-        for fd in (master, slave):
-            if fd is not None:
-                os.close(fd)
-        subprocess.run(prefix + ['stop', '--force'], capture_output=True, timeout=15)
-        shutil.rmtree(root)
+        try:
+            if process is not None and process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+            for fd in (master, slave):
+                if fd is not None:
+                    os.close(fd)
+            subprocess.run(prefix + ['stop', '--force'], capture_output=True, timeout=15)
+            shutil.rmtree(root)
+        finally:
+            (output / 'terminal.ansi').write_bytes(transcript)
+            (output / 'observations.json').write_text(json.dumps(observations, indent=2) + '\n')
 
 
 if __name__ == '__main__':
