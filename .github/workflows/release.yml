@@ -1,0 +1,100 @@
+name: Tagged carrier releases
+
+on:
+  push:
+    tags: ['v*']
+    paths:
+      - '.github/workflows/release.yml'
+      - 'scripts/release/**'
+      - 'scripts/owned_process.py'
+      - 'scripts/test_owned_process.py'
+      - 'scripts/release-build/**'
+      - 'scripts/build-bundle/**'
+      - 'internal/buildinfo/**'
+      - 'internal/distribution/**'
+      - 'internal/cli/cli.go'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Validation version only; manual runs never publish'
+        type: string
+        required: true
+        default: v0.0.0-ci
+
+permissions:
+  contents: read
+
+concurrency:
+  group: carrier-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GOMAXPROCS: '1'
+      CGO_ENABLED: '0'
+      RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || inputs.version || 'v0.0.0-ci' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Validate version tag before compilation
+        env:
+          TAG_PUSH: ${{ github.ref_type == 'tag' && github.event_name == 'push' }}
+        run: |
+          python3 -B -c 'import os,sys; sys.path.insert(0,"scripts/release"); from common import version; version(os.environ["RELEASE_TAG"])'
+          if [ "$TAG_PUSH" = true ]; then
+            test "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" = "$GITHUB_SHA"
+            git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          fi
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Test carrier identity and release reconciliation
+        run: |
+          timeout 600s go test -p=1 -timeout=8m ./internal/buildinfo ./internal/distribution ./scripts/build-bundle
+          python3 -B scripts/test_owned_process.py
+          python3 -B -m unittest discover -s scripts/release -p 'test_*.py'
+      - name: Build and verify all four carrier packages
+        env:
+          TAG_PUSH: ${{ github.ref_type == 'tag' && github.event_name == 'push' }}
+        run: |
+          args=()
+          if [ "$TAG_PUSH" = true ]; then args+=(--tagged); fi
+          python3 -B scripts/release/build.py --tag "$RELEASE_TAG" --output "$RUNNER_TEMP/arm-release-assets" "${args[@]}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-carriers
+          path: ${{ runner.temp }}/arm-release-assets
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  publish:
+    # A validation branch or manual dispatch can never publish a release.
+    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'inferal-oss/arm'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-carriers
+          path: ${{ runner.temp }}/arm-release-assets
+      - name: Reconcile assets and publish complete release
+        run: python3 -B scripts/release/publish.py --tag "$RELEASE_TAG" --directory "$RUNNER_TEMP/arm-release-assets"
