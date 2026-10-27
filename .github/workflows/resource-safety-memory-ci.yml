@@ -37,6 +37,10 @@ jobs:
           set -euo pipefail
           mkdir -p .cache/resource-safety-ci
           git rev-parse HEAD > .cache/resource-safety-ci/source-commit.txt
+          uname -sm > .cache/resource-safety-ci/platform.txt
+          go version > .cache/resource-safety-ci/go-version.txt
+          git status --porcelain > .cache/resource-safety-ci/source-status.txt
+          test ! -s .cache/resource-safety-ci/source-status.txt
           git diff HEAD --check > .cache/resource-safety-ci/diff-check.log
           shasum -a 256 internal/model/memory.go internal/observe/availability_linux.go internal/observe/availability_linux_test.go internal/observe/observe.go > .cache/resource-safety-ci/source-sha256.txt
           failed=0
