@@ -1904,3 +1904,20 @@ PSS is a proportional share of resident pages, not exclusive ownership,
 reclaimable allocation, admission credit or pressure/compliance authority. Strict
 producer declarations accept the optional usage fields while preserving older
 receipts without them. Unrelated lease/clock declarations are unchanged.
+
+
+## Native picker and keyboard hint correction
+
+The stock compact view picker now reflects `option.selected` when its live
+property differs from the graph's selected attribute, including removal. This
+preserves browser dirty-selection state through desktop navigation, narrowing
+and Back/Forward without replacing option nodes. An Apple host marker is set
+before mounting so stock Command+K hints agree with the native shortcut.
+
+The focused correction `fc1ba11` preserves the original upstream reference
+hash maps and records one exact renderer overlay. The post-gate issue link and
+[normalized evidence](validation/semblance-renderer-review-2026-10-27.json)
+are integrated as `d58433a`; metadata changes do not alter tested assets.
+Upstream issue #181 is tracking only: the generic PR and full upstream suite
+remain separate requirements. Private-input, authentication, backend accounting
+and production sync/forwarding authority retain their existing boundaries.

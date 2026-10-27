@@ -4979,3 +4979,33 @@ capture runner before/after source manifests, executable hashes/buildinfo or
 separate native-owner receipts; after-the-fact source/log hashes do not replace
 those missing facts. These are narrow ordinary CI fault checks, not production,
 physical network partition, alternate-path, cross-host or full-client acceptance.
+
+
+### Corrected native picker and keyboard hints
+
+The exact follow-up runtime cut `1885243`, integrated as `fc1ba11`, completes
+one original normal-FIFO gate with all 12 commands exiting zero and positively
+waited. Root independently compares all 2,349 recorded inputs with Git blobs,
+checks before/after equality and all eight unchanged harness files, and verifies
+the two byte-identical five-asset builds and retained compiled binary hash.
+The gate passes 328 policy cases, 25 overlapping platform/session/privacy
+checks, 21 unique RDF cases, six native server roots/17 named race cases,
+compiled CLI/bootstrap/PTY behavior and 2,355 required Go ZIP paths.
+
+Root checks the actual native browser witnesses: mobile Screen, desktop Monitor
+then narrow, Back to Screen and Forward to Monitor agree in selected attributes,
+live properties, native value, heading and route. All 16 new desktop/narrow
+views have zero shape-invalid nodes or horizontal overflow; screenshot bytes
+match their recorded hashes. Stock default theme, Apple Command hint/Meta+K,
+auth-fragment removal and private username eviction pass. All four disposable
+CLI steps exit zero; endpoint absence, an exclusive native lock and fixture
+removal are required before success. No application or unknown console errors
+are recorded in this cut.
+
+[Normalized evidence](validation/semblance-renderer-review-2026-10-27.json)
+preserves the earlier native-picker failure and failed RDF-fixture cut. The
+single post-terminal #181 issue-link edit passes the cheap provenance check
+with every runtime asset unchanged. It is not an upstream PR. This evidence
+belongs to the exact recorded review source; it does not claim physical mobile
+input, macOS framebuffer/OS clipboard, full remote mutation workflows, later
+composed backend validation or public installation of a later source.
