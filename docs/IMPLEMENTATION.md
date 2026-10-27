@@ -1781,6 +1781,13 @@ Ordinary builds remain disabled. The milestone does not supply native elapsed
 authority, complete cross-host failure handling, browser/unmodified-client breadth,
 formal completion or performance acceptance.
 
+The compiled CLI fault fixture exercises one destination effect before abrupt
+death of its original intermediate relay process. It requires an unknown client
+outcome, no second effect observed at client exit, and retained lost relay charge
+after restart. Its controller retains foreground child handles rather than
+reconstructing signalling authority from endpoint PIDs. This validates a bounded
+existing development behavior, not physical network partition or full delivery.
+
 ## Durable external provider fixture
 
 The opt-in `internal/providerfixture` executable exercises the existing provider

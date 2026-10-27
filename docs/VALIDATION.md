@@ -4809,3 +4809,23 @@ cohort. No additional native run, VM or hosted job was started for this review.
 This accepts advisory observation only, with no admission/pressure credit,
 exclusive allocation/reclamation, complete platform or formal claim. Future
 clock fields require their separately reviewed fieldwise composition.
+
+### Owned relay process death after a destination effect
+
+Reviewed `35fd1e0` adds the exact two Python fixtures from `56553bc`, excluding
+its Unix prototype and branch-only workflow. [Run 40452672550](https://github.com/inferal-oss/arm/actions/runs/40452672550)
+passes native Ubuntu amd64 and macOS arm64 bounded diagnostic controls, review
+build and actual compiled CLI B-to-A-to-C relay-death case. Two cheap diagnostic
+controls pass again on integration. Root verifies exact run/job/step metadata,
+decoded original log hashes and the final PASS output. Thirty-three selected
+core forward inputs match both successful native cuts and integration; this is
+not a complete Go dependency closure or a fresh run of subsequent main source.
+
+[Technical receipt](MESH-FORWARD-LOSS-EVIDENCE.md) records the one-effect,
+SIGKILL/positive original wait, unknown outcome, no observed second effect at
+client exit, joined-or-retained endpoint holds and restarted relay charge
+assertions. It preserves the earlier failed fixture runs. The CI jobs did not
+capture runner before/after source manifests, executable hashes/buildinfo or
+separate native-owner receipts; after-the-fact source/log hashes do not replace
+those missing facts. These are narrow ordinary CI fault checks, not production,
+physical network partition, alternate-path, cross-host or full-client acceptance.
