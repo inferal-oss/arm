@@ -1,0 +1,357 @@
+{
+  "component": "Original-child ownership, generic End cancellation and current native compatibility",
+  "fixture_corrections": [
+    "Database schema/history helpers acquire and assert one real counted permit; explicit native CPU variants retain their own requirements.",
+    "Sync observes actual preparation headroom for at most 15 seconds, within a 20-second start and 60-second parent budget; the real one-core/768MiB preparation admission, worker request, protocol and original joins remain unchanged."
+  ],
+  "focused_commits": [
+    "6b196e833cce934d1f82de84429a82139e6b2abe",
+    "9beaada3fda6b5f975d394d661645798533e4c50",
+    "d542bb09a61270852797edb5b2a51b0a67d756f2"
+  ],
+  "limitations": [
+    "The accepted macOS execution was local native through the ordinary shared FIFO, not hosted GitHub Actions.",
+    "Hardware inventory does not prove admission; actual native headroom and the original successful protocol/joins provide the scoped evidence.",
+    "Hosted failures remain failures. No retry changes native admission or cleanup authority.",
+    "Sleep/wake and the later elapsed-policy loader are separate feature gates."
+  ],
+  "linux": {
+    "all_tracked_source_hashes_match_commit": true,
+    "command_receipts": {
+      "ending-negative": {
+        "cleanup_error": null,
+        "elapsed_seconds": 98.023450895,
+        "exit": 1,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "signals": []
+      },
+      "native-race": {
+        "cleanup_error": null,
+        "elapsed_seconds": 194.59960403599996,
+        "exit": 0,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "signals": []
+      },
+      "vet": {
+        "cleanup_error": null,
+        "elapsed_seconds": 192.55672506600013,
+        "exit": 0,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "signals": []
+      }
+    },
+    "commit": "5eae5c3a5c602a407bdd3d45476104bd8d32480a",
+    "counts": {
+      "github.com/inferal-oss/arm/internal/database": {
+        "pass": 9,
+        "run": 9
+      },
+      "github.com/inferal-oss/arm/internal/manager": {
+        "pass": 19,
+        "run": 19
+      },
+      "github.com/inferal-oss/arm/internal/sshservice": {
+        "pass": 3,
+        "run": 3
+      },
+      "github.com/inferal-oss/arm/internal/syncworker": {
+        "pass": 4,
+        "run": 4
+      }
+    },
+    "exact_roots": {
+      "github.com/inferal-oss/arm/internal/database": 9,
+      "github.com/inferal-oss/arm/internal/manager": 19,
+      "github.com/inferal-oss/arm/internal/sshservice": 3,
+      "github.com/inferal-oss/arm/internal/syncworker": 4
+    },
+    "failures": [],
+    "go_env": {
+      "GOARCH": "arm64",
+      "GOOS": "linux",
+      "GOVERSION": "go1.27.3"
+    },
+    "limitation": "Hosted image/native capability scope; does not establish sleep/wake milestone acceptance.",
+    "negative_phase": {
+      "expected_go_exit": 1,
+      "generated_manager_sha256": "8aee5059451fbbe50b6fcb6fa578952044fb156d453ee504da0ac7275f79406b",
+      "native_wait_calls": 1,
+      "only_change": "exact pre-fix Manager.end job cancellation hunk",
+      "original_manager_sha256": "7a215a066ff8e5b233825607dfb8fd125ed41084c490297bb9333df188f18ec1",
+      "overlay_sha256": "0ee89e43a599c744002c0d50ad0a78a5d491c8bf21d149b93d910f6e648e833c",
+      "post_wait_absence": {
+        "group": "absent",
+        "pid": "absent"
+      },
+      "sole_failure": "ending refusal did not cancel original SSH IO",
+      "status": "passed_expected_causal_failure",
+      "tracked_sources_unchanged": true
+    },
+    "platform": "linux-arm64",
+    "run_id": 40453444401,
+    "selected_tool_dependency_closure_before_after_equal": true,
+    "skips": [],
+    "status": "passed_focused_current_compatibility_and_vet",
+    "tracked_sources_before_after_negative_and_positive_equal": true,
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40453444401"
+  },
+  "local_native_macos": {
+    "all_four_source_manifests_equal": true,
+    "all_tracked_source_hashes_match_commit": true,
+    "audit_script_sha256": "33a7e2cefd3e44ab1ec2f1c4b49d2cf746cef2719b76830a3729ac55eca563fe",
+    "commands": {
+      "cc-linker": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "83b2a256356bb337f057ffb453b4e32c9d5f5f96737855843feb966c59816c88",
+        "elapsed_seconds": 0.029566792000000675,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "cc-resource": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "22f1c7b7c5fcf82e1d69fbca0850e97fa884c299d215c90d4b33dc1f6afd43e9",
+        "elapsed_seconds": 0.025161791999998684,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "ending-negative": {
+        "actual_exit": 1,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "ddab5a8136936a124632e02f0a6e2972c9cc492f3b7db7c840be673919fd34db",
+        "elapsed_seconds": 61.49317570799998,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "native-cargo-path": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "03b6f698e7c05550bbeea69f1682d8045700b71a9a9b5e238133b70a228e2220",
+        "elapsed_seconds": 0.028892916000000213,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "native-race": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "35baca29188798f495ba26061d9f45c211822afc3c21dc6af1ad44fb5b2f9bda",
+        "elapsed_seconds": 178.87328358300002,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "native-rustc-path": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "a934f31e6a9ce42aec3aa362143301a99990ff73ce66f9afdf01196e42816bea",
+        "elapsed_seconds": 0.0260785410000004,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "native-rustdoc-path": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "2fa3124b49c8af76dd70969f79df8ae91ec2ce7323b3ce6a5479c9d42dc2b250",
+        "elapsed_seconds": 0.02678987499999863,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "resolved-go-env": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "8af80fa2e1531c9667da1da5e74ff222b4d78253a930789ee466e3d0c46652d6",
+        "elapsed_seconds": 0.028241042000001215,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      },
+      "vet": {
+        "actual_exit": 0,
+        "capture_matches_retained_original_inode": true,
+        "capture_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 119.41609925,
+        "native_wait_calls": 1,
+        "post_wait_absence": {
+          "group": "absent",
+          "pid": "absent"
+        },
+        "reaped": true,
+        "retired": true,
+        "signals": [],
+        "unknown": null
+      }
+    },
+    "exact_top_roots": {
+      "github.com/inferal-oss/arm/internal/database": 9,
+      "github.com/inferal-oss/arm/internal/manager": 19,
+      "github.com/inferal-oss/arm/internal/sshservice": 3,
+      "github.com/inferal-oss/arm/internal/syncworker": 4
+    },
+    "execution_origin": "local macOS ordinary Semblance FIFO",
+    "failure_count": 0,
+    "formal_native_owner_source_sha256": "221acd10f39f979c0ece89055361fcd860ab1cdd7e4ddeb816c36abbfc758b76",
+    "github_actions_execution": false,
+    "go_env": {
+      "GOARCH": "arm64",
+      "GOOS": "darwin",
+      "GOVERSION": "go1.27.3"
+    },
+    "limitations": [
+      "Local native evidence; does not claim a hosted GitHub macOS pass.",
+      "Hosted macOS failures40453444401 and40455702482 remain retained.",
+      "Sleep/wake milestone acceptance is separate."
+    ],
+    "local_wrapper_sha256": "ef274a119006b8d75a74286f5515bc33e5098079abc00fa985d9c01b81da28df",
+    "negative_phase": {
+      "expected_go_exit": 1,
+      "generated_manager_sha256": "8aee5059451fbbe50b6fcb6fa578952044fb156d453ee504da0ac7275f79406b",
+      "native_wait_calls": 1,
+      "only_change": "exact pre-fix Manager.end job cancellation hunk",
+      "original_manager_sha256": "7a215a066ff8e5b233825607dfb8fd125ed41084c490297bb9333df188f18ec1",
+      "overlay_sha256": "132687f008d17e4e97df88f3d8f3ef5e27e1433a0416930ff4d9759948a24f26",
+      "post_wait_absence": {
+        "group": "absent",
+        "pid": "absent"
+      },
+      "sole_failure": "ending refusal did not cancel original SSH IO",
+      "status": "passed_expected_causal_failure",
+      "tracked_sources_unchanged": true
+    },
+    "normal_queue_exit": 0,
+    "original_ticket_removed": true,
+    "platform": "darwin-arm64",
+    "positive_race_exit": 0,
+    "positive_subtests_observed": 74,
+    "skip_count": 0,
+    "source_commit": "b99785323895a0de3eb356debce8e121515cc9a9",
+    "status": "passed_focused_current_compatibility_and_vet",
+    "tool_dependency_closure_before_after_equal": true,
+    "vet_exit": 0
+  },
+  "original_linux_artifact": {
+    "id": 12711867493,
+    "zip_sha256": "04bdd48a84bf7cedce106606691af63982bc9782cd6436fbfecdedd09b118988"
+  },
+  "owned_go_source_sha256": {
+    "internal/childowner/observe_darwin.go": "f792a414cfb520fad53c0aa814d8589fe51b332fe5ad054bbd3afb2995cf542c",
+    "internal/childowner/observe_linux.go": "799b2f3d6768228409c3731b574b874ab8b3f67c5f21586bd694938e46d71cc0",
+    "internal/childowner/owner.go": "580f98a6b87e060803e251b4e8dd7f64af9b90f151c0b6e3bd938dcd18d04e5e",
+    "internal/childowner/owner_darwin_test.go": "74292346cb941af8f7213b440a08b290ba29635b7876311d51bcec054e0fd1a8",
+    "internal/childowner/owner_test.go": "67deaeb79c90e1ac85a088dfd0b2dcf172da827782a1633e63efd648cba3b9d7",
+    "internal/database/proof_integration_test.go": "34c79c7aa047332789959a4b6a140216587c9492dc4a9949a172c5f345cb25a7",
+    "internal/manager/cargo_cancel_native_test.go": "61c4cd9ebe6deb4564a9dfdafa569072ea57ad764327eca7fb07fc380289d9fa",
+    "internal/manager/cargo_launch.go": "16d0f2190a38f09f31199eed73ada06442e9403b2090f6401332630333fa3d7f",
+    "internal/manager/cargo_lifecycle.go": "0c922fa93bc628383dc0eb720518872eed975abd8e006d7ba3b3bb835f2c0ae1",
+    "internal/manager/cargo_lifecycle_test.go": "227404448abdb15caf5f66064548f7ed1f5c8e08639e095bec1b55e8bb37d814",
+    "internal/manager/job_control.go": "f6fb087db1fa8db0920ebaeb472af18b997521fe1ed3c1c5fbe27590035f2127",
+    "internal/manager/job_control_native_test.go": "8c4f7e6eaccecee9c9a1deec9ba110b4fa10c432184b74b8caf0b607e40d4d8e",
+    "internal/manager/job_end_failure_native_test.go": "f5f94e3ae389ffb754efe2dbe7dbbde836f7913ec2031a6e08da3722912e367e",
+    "internal/manager/manager.go": "7a215a066ff8e5b233825607dfb8fd125ed41084c490297bb9333df188f18ec1",
+    "internal/manager/native_fixture_headroom_test.go": "8a065ab6142681cd6dca35e2bba8242758bbdf8a1697dc8dc31219c5aa372aea",
+    "internal/manager/scheduling.go": "45b4e93b6c703b2cf2b01e0451172ee9a04b45657bc85e4b624476e508d9cbfe",
+    "internal/manager/ssh_integration_test.go": "f8b4613a59e8069d8454eb5989daf2681bbdbb61af472f66f505df7443ed18c1",
+    "internal/manager/ssh_records.go": "c90a4f260d88b0d013a20dea847892e65a3b8290fbd209d3d657e82b6273d4cc",
+    "internal/manager/ssh_runtime.go": "b63564a1b5f90f098a4b0960d45d2bc0d97f141b5d57de2b24bc43349b9eda8d",
+    "internal/manager/ssh_settlement.go": "c1c2731cf0e2ad506556561a7ad4c7e9282f7d06a180534b620f76d10fe5b33d",
+    "internal/manager/ssh_settlement_test.go": "770a3bf85872c5d79f20e73eadb096e8349913229ddb01ff8496e47731c047e7",
+    "internal/syncworker/manager_pair_test.go": "f1ff9a70402b3c9fb8bdac7aa76edaab66c793af9c08fceef6fe1a2eb251be6c"
+  },
+  "retained_hosted_macos_failures": [
+    {
+      "artifact_id": 12711348601,
+      "cause": "Database schema/history fixtures requested unrelated native CPU; actual sync preparation also lacked required headroom within its readiness/start windows.",
+      "missing_gates": [
+        "vet",
+        "final positive source and tool snapshots"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40453444401",
+      "result": "failed",
+      "source_commit": "5eae5c3a5c602a407bdd3d45476104bd8d32480a",
+      "zip_sha256": "8bbc4d9c5ed49234de3684c2281c328f415a7c350d1da75ce7cd8a264e2d6b35"
+    },
+    {
+      "artifact_id": 12713355122,
+      "cause": "All five actual sync pair attempts lacked one core of fresh source preparation headroom within the unchanged 15-second observation window; no admission or dial occurred. All 31 non-sync roots, the protocol teardown control and the exact causal negative passed.",
+      "missing_gates": [
+        "vet",
+        "final positive source and tool snapshots"
+      ],
+      "public_ci": "https://github.com/inferal-oss/arm/actions/runs/40455702482",
+      "result": "failed",
+      "source_commit": "b99785323895a0de3eb356debce8e121515cc9a9",
+      "zip_sha256": "36c988d45c003184e6bcfa89452cf5ec3de1776a7c758c255774b94cab37e2ac"
+    }
+  ],
+  "schema": 1,
+  "source_equivalence": "At the prerequisite composition, all 22 owned Go files match b997853. The earlier Linux checkpoint has the same production Go sources; the macOS successor adds only the two reviewed fixture corrections and its CI matrix selection. Newer main UI and diagnostic files remain separately reviewed work."
+}

@@ -27,6 +27,11 @@ its ending state fails. The prior durable row stays charged until the original
 callback and any native process have positively joined; a refused journal write
 cannot make backend shutdown wait on an uncancelled callback.
 
+Generic job End and Close also cancel the original execution when writing its
+ending state fails. Termination remains bound to that original job and precedes
+SSH I/O cancellation; a bounded follow-up cannot target a replacement job. The
+prior durable charge remains until native and transport joins are proven.
+
 Cargo cancellation invokes the original signal owner **before closing IPC**.
 Closing IPC first can trigger the helper's parent-loss action and let its own
 group kill precede the parent's cancellation attempt. Both the cancellation
@@ -53,3 +58,10 @@ This is process-group supervision, not a sandbox or proof about descendants
 that deliberately escape the original group. Unknown cleanup remains charged.
 The implementation does not claim uninterruptible kernel calls make bounded
 progress. Suspend-inclusive lease entitlement is a separate clock component.
+
+The [compatibility checkpoint record](validation/original-child-current.json)
+separates the passing hosted Linux checkpoint from the passing local native
+macOS execution. Both run the selected 35 roots and the specific ending-journal
+negative control. Hosted macOS capacity/readiness failures remain recorded;
+the local result does not relabel them. The original standalone supervision
+record remains evidence for its own source and broader ownership cohort.
