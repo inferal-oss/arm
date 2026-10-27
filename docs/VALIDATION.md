@@ -1542,7 +1542,7 @@ The full macOS race suite, `go vet ./...`, the expanded Linux acceptance harness
 
 ## October 21, 2026: user installation target
 
-`make install` now builds with CGo disabled and installs the executable under `~/.local/bin` by default. Verification used an isolated prefix with spaces, checked the installed binary's mode (0755), compared its content with the build output, invoked its version command, repeated installation, and checked package staging with `DESTDIR` and `/usr/local` as the prefix. These checks did not install ARM into live agent configuration or start a persistent user service. `PREFIX` and `BINDIR` are configurable; agent instructions remain a separate `arm install` operation.
+`make install` now builds with CGo disabled and installs the executable in the per-user binary directory by default. Verification used an isolated prefix with spaces, checked the installed binary's mode (0755), compared its content with the build output, invoked its version command, repeated installation, and checked package staging with `DESTDIR` and `/usr/local` as the prefix. These checks did not install ARM into live agent configuration or start a persistent user service. `PREFIX` and `BINDIR` are configurable; agent instructions remain a separate `arm install` operation.
 
 ## October 21, 2026: managed storage lifecycle
 
@@ -1554,7 +1554,7 @@ Actual offline Cargo builds passed on macOS and Linux arm64, retaining the execu
 
 The expanded compiled CLI smoke test passed on both platforms, covering storage creation, retained output, read-only cleanup preview, uninstall refusal for retained storage, explicit handoff with preserved files, conservative cleanup accounting, and the earlier admission/cancellation checks. The full macOS race suite passed after correcting an overly short combined deadline for consecutive healthy native activity queries. Each activity query remains bounded independently; ambiguous or timed-out checks refuse deletion. Linux tests run as the unprivileged, isolated container described below, with creation-time and mount identity checks enabled.
 
-The development toolchain was also installed independently at `~/.local/share/go/1.27.3` and added to Fish's persistent user paths. A fresh Fish login shell resolved Go 1.27.3 and built the project using plain `make build`, with default user Go module/build caches and no project-specific environment overrides.
+A fresh shell resolved Go 1.27.3 and built the project using plain `make build`, with default module/build caches and no project-specific environment overrides.
 
 ## October 21, 2026: host observations and Linux runtime
 
@@ -4556,3 +4556,28 @@ failures, rosters, reuse boundaries and limits. This is a diagnostic observation
 physical enforcement, cleanup/settlement, public dispatch and formal acceptance
 remain open. Gauge changes affect a separate package and do not alter these
 filesystem inputs.
+
+
+### Pinned local forwarding TLS integration
+
+Reviewed source `6441136` composes exact source-listener authentication with the
+development HTTP/raw clients. [Native run 40438316777](https://github.com/inferal-oss/arm/actions/runs/40438316777)
+passes on macOS arm64 and Ubuntu amd64: 25 default race roots/41 named outcomes,
+four tagged route roots/six named outcomes, affected vet, default/review builds
+and exact buildinfo on each. Actual compiled B-through-A-to-C TLS-backed clients
+pass without direct B-C enrollment, including denial, live revocation, source
+Stop/retained-charge recovery and once-only truncated HTTP unknown outcomes.
+
+[Protocol successor 40439845400](https://github.com/inferal-oss/arm/actions/runs/40439845400)
+passes one root/five named outcomes on each platform for valid omitted ALPN and
+same-key certificate renewal in both pin directions. Only that test and two CI
+helpers changed; runtime, build and three-node acceptance is inherited through
+exact unchanged inputs, not claimed as rerun. All selected cases pass without
+skips. Root independently verifies ten composed input hashes, all four ZIP
+digests, every manifest digest, original command/Wait exits and source closure.
+
+[Normalized evidence](validation/forward-local-tls-review-2026-10-26.json) includes
+rosters, source/image hashes, original findings and limits. The allocation survey
+affects a separate package and does not change the TLS execution inputs. No
+production enablement, operating-system process identity, safe legacy plaintext
+port handoff, native elapsed-clock or full forwarding acceptance is inferred.

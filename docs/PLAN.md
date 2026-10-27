@@ -38,9 +38,10 @@ Production fences remain until their explicit acceptance gates pass.
 | Kubernetes admission | `1a75e10` | Exact standard tolerations, incomplete-affinity refusal and rejection of injected image credentials. |
 | Cgroup memory | `128d08e` | Complete visible Linux cgroup-v2 ancestry caps memory headroom; uncertain scopes provide no admission credit. |
 | Development forwarding clients | `4e8bdb4` | Bounded HTTP/raw clients with admission cancellation fixes; production remains disabled. |
+| Forwarding local TLS | Reviewed `6441136` | Exact local mesh certificate pin before bearer/application data; production remains disabled. |
 | Workspace ledger | `951051a` | Durable locators before staging, strict schema version 2 and read-only legacy/current reset proof. |
 | Terminal gauges | `0ec2b57` | Coherent receipt clocks, stale-click protection and native gauge/PTY evidence. |
-| Workspace block survey | Reviewed `a4315fb` / `1aeb712` / `616211b` | Bounded read-only reported blocks; no reservation or reclamation authority. |
+| Workspace block survey | `64ceec0` | Bounded read-only reported blocks; no reservation or reclamation authority. |
 | Public module validation | `ef6c637` | Source-bound public query/install checks and bounded original-child cleanup; descendant cleanup on interruption remains unproven. |
 
 Earlier reviewed backend, policy, agent messaging, storage, native lifecycle,
@@ -54,7 +55,7 @@ history merely because it contains an earlier ready report.
 | --- | --- | --- |
 | Resource safety — `codex/resource-safety-cgroup-memory` | Memory milestone integrated. | Broaden sound CPU/resident/shared attribution and Linux arm64 evidence; supervised pressure pause/resume must retain RAM/disk obligations and never signal unrelated processes. Complete elapsed-clock adapters and pressure-specific formal gates. |
 | Public sync — `codex/public-sync-delivery` | Planner, private worker, workspace markers and read-only recovery integrated. Workspace ledger and bounded read-only block survey are reviewed and integrated with native Linux/macOS evidence. | Fresh schema version 2, exact legacy/current read-only reset proof, bounded locators and write-before-staging records are supported. Schema version 1 startup is incompatible and is never repaired or migrated. Physical reservations, public/relayed dispatch, conflict/deletion policy, cleanup/settlement, performance and formal acceptance remain. |
-| TCP forwarding — `codex/forward-usable-clients` | Reviewed development-client composition `2f07eb0` + `3086f33` is integrated with technical evidence from Linux CI; ordinary builds stay disabled. | Preserve default-off fence. Close local source-server provenance binding, suspend-aware lease checks, aggregate byte-credit support, route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
+| TCP forwarding — `codex/forward-usable-clients` | Development clients and source-listener TLS binding are integrated with actual Linux/macOS three-node evidence; ordinary builds stay disabled. | Preserve default-off fence. Complete suspend-aware lease checks, aggregate byte-credit support, route-loss/platform/browser/unmodified-client/formal gates. Cancellation and interim-response fixes do not establish full forwarding delivery. |
 | Kubernetes — `codex/kubernetes-pod-workflow` | Admission milestone integrated; separate live Pod Ready and exact-UID cleanup evidence. | Carrier export/execution remains blocked by an authorization gate. In-Pod catalog/identity proof, enrollment and pinned SSH remain unverified. Hidden native CPU/quota authority stays fail closed. |
 | Mac screen — `codex/mac-screen-standard-gates` | Manager resource-hold draft under broader native/transport validation. | Final original command exits and composed closure before integration; Standard live/control/clipboard/other-user/revocation/multihop and High Performance breadth remain. |
 | Sleep/wake and operations — `codex/lease-suspend-clock-runtime` | Native elapsed-clock and original-child ownership drafts under review. | Fix post-reap group signaling, require positive transport/I/O joins before settlement, validate exact reset shapes and all held-operation start/revalidation paths. Complete native/formal evidence, then configuration/services/degraded persistence/retention/restore/overhead. |
@@ -131,6 +132,8 @@ not reactivated by retaining their technical records.
   persistence/schema/reset evidence and explicit no-migration/cleanup limits.
 - [Kubernetes admission](validation/kubernetes-admission-2026-10-26.json): focused
   source/log hashes and provider/component rosters; no carrier-shipment claim.
+- [Forwarding local TLS](validation/forward-local-tls-review-2026-10-26.json):
+  exact source pinning and native three-node/renewal/ALPN evidence.
 - [Forwarding development clients](validation/forward-client-review-2026-10-26.json):
   exact Linux race/three-node evidence and explicit production/lifecycle limits.
 - [Cgroup memory](validation/cgroup-memory-2026-10-26.json): native finite/hidden

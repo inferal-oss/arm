@@ -37,10 +37,20 @@ class Node(route.Node):
 
 class Service(http.server.BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
+    partial_calls = 0
 
     def do_GET(self):
-        assert self.path == '/exact-service', self.path
+        assert self.path in ('/exact-service', '/partial'), self.path
         assert self.headers.get('Proxy-Authorization') is None, 'local bearer reached destination service'
+        if self.path == '/partial':
+            type(self).partial_calls += 1
+            self.send_response(200)
+            self.send_header('Content-Length', '100')
+            self.end_headers()
+            self.wfile.write(b'partial-service-result')
+            self.wfile.flush()
+            self.close_connection = True
+            return
         body = b'forwarded-b-to-c'
         self.send_response(200)
         self.send_header('Content-Length', str(len(body)))
@@ -236,6 +246,15 @@ def main():
                                                  '--path', '/exact-service'],
                                      capture_output=True, timeout=20)
         assert (http_client.returncode, http_client.stdout, http_client.stderr) == (0, b'forwarded-b-to-c', b''), http_client
+        # A service that performs work and then truncates its response has an
+        # unknown application result. The TLS client must not replay it.
+        time.sleep(1.1)
+        partial = subprocess.run(b.prefix + ['mesh', 'forward', 'http', '--key', key,
+                                             '--token-file', str(token_file),
+                                             '--path', '/partial'],
+                                 capture_output=True, timeout=20)
+        assert partial.returncode != 0 and partial.stdout == b'partial-service-result', partial
+        assert b'remote_outcome_unknown' in partial.stderr and Service.partial_calls == 1, partial
         # The carrier admits at most two new neighbor streams per second.
         time.sleep(1.1)
         raw_key = uuid.uuid4().hex
@@ -299,7 +318,7 @@ def main():
             print('Retained routed forwarding CLI fixture:', root, failures, file=sys.stderr)
         if not original_error and failures:
             raise RuntimeError('forwarding CLI acceptance cleanup unconfirmed')
-    print('PASS public CLI B→A→C authenticated HTTP and raw duplex TCP, private-token HTTP and stdio clients, no B–C enrollment, source lifecycle and destination revocation')
+    print('PASS public CLI B→A→C authenticated HTTP and raw duplex TCP, private-token HTTP and stdio clients, no B–C enrollment, source lifecycle, once-only unknown service outcome and destination revocation')
 
 
 if __name__ == '__main__':

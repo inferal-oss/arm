@@ -1591,10 +1591,10 @@ budget and bounded interim count, refuses protocol upgrades and follows no
 redirects. Stdout carries service data; terminal output requires explicit opt-in.
 Interrupted application exchanges retain typed unknown-outcome errors.
 
-Ordinary builds still refuse forwarding grant/start/stream/http. The current
-loopback token/READY exchange authenticates the client to the listener, but does
-not mutually authenticate the local server after a port handoff. Native source
-TLS binding and suspend-aware lease guards are separate required compositions.
+Ordinary builds still refuse forwarding grant/start/stream/http. Updated HTTP/raw clients authenticate the local source through the exact current
+mesh certificate before sending the bearer or application data. Legacy plaintext
+callers retain their existing port-handoff risk. Suspend-aware lease guards
+remain a separate required composition.
 Total grant byte-credit, arbitrary blocking application I/O, browser/unmodified
 clients, native macOS and broader formal/platform acceptance remain incomplete.
 No production enablement follows from this development milestone.
@@ -1654,3 +1654,23 @@ reservation, write cap, kernel quota, exclusive-allocation or reclamation proof.
 It adds no cleanup, settlement or public sync dispatch. Concurrent same-account
 writers prevent an atomic snapshot, and a cancellation check cannot force stalled
 kernel I/O to return. Broader allocation enforcement remains required.
+
+
+## Pinned local source TLS for development forwarding
+
+The original source listener validates its private mesh Store identity before
+acquiring its port/resource lease and retains that certificate snapshot. Updated
+CLI HTTP/raw clients validate the current private registry identity, use ordinary
+x509 verification against that exact certificate/SAN and require TLS 1.3, the
+local-forward ALPN and no resumed session. They send no bearer or application
+data before authentication, with no plaintext retry or alternate trust root.
+A renewed certificate makes current clients refuse an older listener snapshot
+until it restarts. This proves possession of the mesh signing identity, not an
+operating-system process identity.
+
+The fenced compatible listener retains existing plaintext modes and their bearer
+risk. Original admission, active connection limits, Stop/revocation and retained
+charge recovery remain authoritative. Application truncation returns the partial
+result with an unknown-outcome error and performs no replay. Production forwarding
+remains disabled; native elapsed-time guards, aggregate credit, broader platform,
+browser/UI and formal acceptance remain separate.
