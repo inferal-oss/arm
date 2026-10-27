@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-27",
+  "scope": "Independent native keyboard hint and live option selectedness integration correction",
+  "runtime_commit": "18852436f09fd8e9e6021adccf7ddb458ed24963",
+  "review_checkout_native_base": "343b1b3212b36d198bd6c906f5d31a7bad009b1d",
+  "historical_major_milestone": {
+    "review_commit": "0ae14ef0f619c299873650421163c469865e651d",
+    "integrated_as": "412e35a",
+    "full_major_receipt": "semblance-major-review-2026-10-26.json",
+    "remains_separate_evidence": true
+  },
+  "fixes": [
+    "Initialize the stock Apple host platform marker before mounting; native Command+K and displayed hint agree.",
+    "Reflect option.selected presence and removal when actual live state differs, preserving native selection after user interaction and graph/desktop/history changes.",
+    "Use a single target selection in the DOM emulator regression and assert strict option-node identity, both SPARQL/function paths and no extra handled event from graph-only changes.",
+    "Preserve frozen provenance reference maps while identifying the single reviewed renderer hash override; document the actual third_party WAT rebuild command."
+  ],
+  "historical_failed_cuts": [
+    {
+      "scope": "Keyboard marker native browser cut",
+      "original_terminal_exit": 1,
+      "source_manifest_sha256": "9bedf85079dc0d41e006386c45aa0ea420546e637fd09033acc0cb64c91e1890",
+      "source_harness_unchanged": true,
+      "all_prefix_steps_passed": true,
+      "actual_native_finding": "Compact picker showed prior Screen value while Monitor heading, route and selected attribute had changed.",
+      "positive_fixture_cleanup": true
+    },
+    {
+      "scope": "Initial option reflection and new RDF fixture cut",
+      "original_terminal_exit": 1,
+      "source_manifest_sha256": "b415f8c73addfe12afaaaba1abcfb669d9e82c778d069d08d6c48069bac9cf33",
+      "source_harness_unchanged": true,
+      "rdf_passed": 19,
+      "rdf_total": 21,
+      "all_other_steps_passed": true,
+      "browser_fixture_launched": false,
+      "finding": "The new fixture selected middle option B then set later option C false; the pinned DOM emulator cleared the selected sibling. The successor selects the target once and avoids redundant live-property writes."
+    }
+  ],
+  "corrected_gate": {
+    "original_terminal_exit": 0,
+    "native_platform": "darwin/arm64",
+    "go": "go1.27.3",
+    "node": "v26.10.0",
+    "normal_shared_fifo": true,
+    "source_inputs": 2349,
+    "source_manifest_sha256": "875a829a894ee287ac7b0d7e8da9d0b1ef652d1fc8ed1f517550517f7dda491e",
+    "source_after_manifest_sha256": "875a829a894ee287ac7b0d7e8da9d0b1ef652d1fc8ed1f517550517f7dda491e",
+    "harness_manifest_sha256": "fc691df1ba8069dd29996013ffb0152c5b820d648f46ecd5f2ab5a56b6b18edb",
+    "source_and_harness_unchanged": true,
+    "all_steps": [
+      {
+        "name": "build-first",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "build-second",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "stage-built-assets",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "provenance",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "platform-session-privacy",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "effect-policy",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "real-rdf",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "embedded-session-race",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "build-arm",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "compiled-dashboard",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "go-module-zip",
+        "exit": 0,
+        "original_child_waited": true
+      },
+      {
+        "name": "browser-fixture",
+        "exit": 0,
+        "original_child_waited": true
+      }
+    ],
+    "reproducible_builds": 2,
+    "identical_asset_maps": true,
+    "assets": {
+      "internal/server/web/assets/LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "internal/server/web/assets/arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+      "internal/server/web/assets/arm.mjs": "f89582fa3376c41fe460f200b1be9d8592447a4f5ee02342f04a96928c7c0bf6",
+      "internal/server/web/assets/assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "internal/server/web/assets/wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+    },
+    "binary_sha256": "2549c652adcc5cea590ed76cefee31e4d9d250c4e34a57cae7e471752553f3dc",
+    "effect_policy_tests": 328,
+    "overlapping_platform_session_privacy_tests": 25,
+    "provenance_tests": 3,
+    "real_rdf_unique_tests": 21,
+    "real_rdf_roster": [
+      {
+        "name": "renders the stock Semblance default and runs button effects only after a graph event",
+        "outcome": "passed"
+      },
+      {
+        "name": "field, choice and checkbox changes live in the graph before their host callback",
+        "outcome": "passed"
+      },
+      {
+        "name": "uses stock Dialog graph open/close and notifies the effect on stock close",
+        "outcome": "passed"
+      },
+      {
+        "name": "preserves exact review strings, BigInt JSON and reused disclosure identity",
+        "outcome": "passed"
+      },
+      {
+        "name": "MessageList renders rich component bodies with stock conversation semantics",
+        "outcome": "passed"
+      },
+      {
+        "name": "stock palette filters graph options and delivers a raised Button effect exactly once",
+        "outcome": "passed"
+      },
+      {
+        "name": "optional variants are absent and stock grid parameters remain valid graph data",
+        "outcome": "passed"
+      },
+      {
+        "name": "effect markers are consumed before native focus reentry and close is delivered once",
+        "outcome": "passed"
+      },
+      {
+        "name": "messages preserve exact instants in the viewer clock and evict retired author data",
+        "outcome": "passed"
+      },
+      {
+        "name": "palette keywords find full identifiers while labels remain concise",
+        "outcome": "passed"
+      },
+      {
+        "name": "programmatic reading focus does not remove native controls from the Tab order",
+        "outcome": "passed"
+      },
+      {
+        "name": "a pointer-opened overlay remembers its invoking control even when the browser did not focus it",
+        "outcome": "passed"
+      },
+      {
+        "name": "real RDF/event bus excludes private native values from every graph and LDES through submit and destroy",
+        "outcome": "passed"
+      },
+      {
+        "name": "missing private island ontology refuses clearly instead of inserting an unrenderable late class",
+        "outcome": "passed"
+      },
+      {
+        "name": "native choice and compact picker follow graph, sibling events and selected removal (sparql)",
+        "outcome": "passed"
+      },
+      {
+        "name": "native choice and compact picker follow graph, sibling events and selected removal (function)",
+        "outcome": "passed"
+      },
+      {
+        "name": "replaces a visible graph collection repeatedly without disappearing or retaining old cards",
+        "outcome": "passed"
+      },
+      {
+        "name": "reparented persistent fields preserve graph state and their exact rendered node",
+        "outcome": "passed"
+      },
+      {
+        "name": "a dialog append preserves initial body contents and disposes both content and actions",
+        "outcome": "passed"
+      },
+      {
+        "name": "replacing a static Turtle list removes blank-node cells and uses a new head per update",
+        "outcome": "passed"
+      },
+      {
+        "name": "Choice changes retire removed option data rather than retaining stale registrations",
+        "outcome": "passed"
+      }
+    ],
+    "native_root_tests": 6,
+    "native_named_tests": 17,
+    "native_roster": [
+      {
+        "name": "TestDashboardLoginLinkAuthenticatedRoundTrip",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkAuthenticationAndClosedParameters",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkPreservesCredentialCaps",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority/local=false",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority/local=true",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/exact_native_JSON_integers",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/one_use_preserved",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/wrong_nonce_refused_without_consuming_ticket",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST/changed_authority_refused",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestDashboardSessionWideIntegerREST",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/LICENSES.txt",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/arm-wat-only-store-DpLv8E9I.mjs",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/arm.mjs",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/assets/wat-C2A9nalw.wasm",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets/wat-2wrDwrzy.mjs",
+        "outcome": "pass"
+      },
+      {
+        "name": "TestSemblanceEmbeddedAssets",
+        "outcome": "pass"
+      }
+    ],
+    "failed_tests": 0,
+    "skipped_tests": 0,
+    "compiled_cli": "One-use link, embedded HTTP/CSP/origin/authority/bootstrap/replay, real PTY launch and JSON/piped no-launch behavior passed.",
+    "go_module_zip": {
+      "standard_x_mod_retention_check": true,
+      "required_paths": 2355,
+      "present_paths": 2355,
+      "actual_public_latest_install_claimed": false
+    },
+    "rendered_browser": {
+      "desktop_views": 8,
+      "narrow_views": 8,
+      "narrow_width": 390,
+      "views": [
+        {
+          "size": "desktop",
+          "view": "monitor",
+          "heading": "Host monitor",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "2c55a7513d3dbb6fd78f0635a95520369d9362d19257d538fed2cc6bf5c30e6c"
+        },
+        {
+          "size": "desktop",
+          "view": "resources",
+          "heading": "Resource budgets",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "5f88572d9a662ca66475317161aedd514bf43012140e4c500394159c9540adfc"
+        },
+        {
+          "size": "desktop",
+          "view": "leases",
+          "heading": "Leases",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "9830ce0e8ccf7e937c85aada2bbfda97c44829aa19d8a24c12de20cdbdc0d2c6"
+        },
+        {
+          "size": "desktop",
+          "view": "messages",
+          "heading": "Operator messages",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "02e22b2af1383d25aa10b28f1652251aeef7b12cbe9b6cda2b3b249c0dd75c07"
+        },
+        {
+          "size": "desktop",
+          "view": "activity",
+          "heading": "Activity",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "6364c810b68d7a55e4adc9dbe986284cb998f0d469029107d63cb9c0ba852bb4"
+        },
+        {
+          "size": "desktop",
+          "view": "host",
+          "heading": "Host & capabilities",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "17d65ed563250b5148cdda11003c508511b3bcf6479785c456f0d4dd0a823881"
+        },
+        {
+          "size": "desktop",
+          "view": "mesh",
+          "heading": "Mesh",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "7bd14d4743309a1fa6ea6b644250ffef695342da194246653841aa18b38fd91d"
+        },
+        {
+          "size": "desktop",
+          "view": "screen",
+          "heading": "Screen Sharing",
+          "width": 1280,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "33bd0ddce8631c5e381ef472185d3feba469e8fa9b7ba5545c43bf8c7d9badd9"
+        },
+        {
+          "size": "mobile",
+          "view": "monitor",
+          "heading": "Host monitor",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "f177947263a9a8c6103ee5864b095d98b1d6bf42aa6d8e57048209c75d3d8c3b"
+        },
+        {
+          "size": "mobile",
+          "view": "resources",
+          "heading": "Resource budgets",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "175dd5d2fd9cdad43ef7c06eb545357c00e024253d1aee0eea95da107893735c"
+        },
+        {
+          "size": "mobile",
+          "view": "leases",
+          "heading": "Leases",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "8f064da7bab13f3c62d25d3bb41152e883e4b2cfb42732878c078e7d6981f8d5"
+        },
+        {
+          "size": "mobile",
+          "view": "messages",
+          "heading": "Operator messages",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "310313488d2eb5f66a300984bb16b932eaf9fd069fae1984fba28cd96d98248f"
+        },
+        {
+          "size": "mobile",
+          "view": "activity",
+          "heading": "Activity",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "cabefa9ace28db587e8479996ae18a391b512fe1fca7464303114e0bead738e6"
+        },
+        {
+          "size": "mobile",
+          "view": "host",
+          "heading": "Host & capabilities",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "4686a5f4d2f11f51b6aadc0aaa7a1fd3db3cff61df5f12197c81086859ab15de"
+        },
+        {
+          "size": "mobile",
+          "view": "mesh",
+          "heading": "Mesh",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "6ca9ea7ed4e2c2a12c423adc5c2f65c327f1034244c54cbf5b863418341575af"
+        },
+        {
+          "size": "mobile",
+          "view": "screen",
+          "heading": "Screen Sharing",
+          "width": 390,
+          "shape_invalid": 0,
+          "horizontal_overflow": false,
+          "screenshot_sha256": "8a1879b360aab1199085219d3c9f3aa368f10cac18e63f74fe7e620f09a0d0f6"
+        }
+      ],
+      "native_picker_witnesses": [
+        {
+          "phase": "native-mobile-screen",
+          "heading": "Screen Sharing",
+          "route_view": "screen",
+          "native_value": "screen",
+          "selected_attributes": [
+            "screen"
+          ],
+          "selected_properties": [
+            "screen"
+          ]
+        },
+        {
+          "phase": "desktop-monitor-then-narrow",
+          "heading": "Host monitor",
+          "route_view": "monitor",
+          "native_value": "monitor",
+          "selected_attributes": [
+            "monitor"
+          ],
+          "selected_properties": [
+            "monitor"
+          ]
+        },
+        {
+          "phase": "history-back-screen",
+          "heading": "Screen Sharing",
+          "route_view": "screen",
+          "native_value": "screen",
+          "selected_attributes": [
+            "screen"
+          ],
+          "selected_properties": [
+            "screen"
+          ]
+        },
+        {
+          "phase": "history-forward-monitor",
+          "heading": "Host monitor",
+          "route_view": "monitor",
+          "native_value": "monitor",
+          "selected_attributes": [
+            "monitor"
+          ],
+          "selected_properties": [
+            "monitor"
+          ]
+        }
+      ],
+      "apple_marker": true,
+      "command_hint_visible": true,
+      "real_meta_k_opens_palette": true,
+      "auth_fragment_removed": true,
+      "screen_private_username_cleared": true,
+      "default_stock_semblance": true,
+      "light_narrow_shape_and_overflow_pass": true,
+      "responsive_selection_pass": true,
+      "history_back_forward_selection_pass": true,
+      "unexpected_console_errors": 0,
+      "precisely_classified_new_extension_errors": 0
+    },
+    "disposable_cleanup": {
+      "all_four_cli_steps_exit_zero": true,
+      "endpoint_absent": true,
+      "exclusive_native_lock_obtained": true,
+      "fixture_removed": true,
+      "errors": []
+    }
+  },
+  "post_gate_metadata": {
+    "changed_paths": [
+      "web/semblance-provenance.json"
+    ],
+    "only_changed_json_field": "review_overlays[0].upstream_tracking",
+    "from": null,
+    "to": "https://github.com/inferal-oss/semblance/issues/181",
+    "upstream_submitted": false,
+    "issue_is_not_pull_request": true,
+    "all_other_source_hashes_unchanged": true,
+    "runtime_assets_unchanged": true,
+    "frozen369_base_and373_combined_reference_maps_unchanged": true,
+    "shipped_hashes_unchanged": true,
+    "provenance_child_exit": 0,
+    "original_child_waited": true,
+    "manifest_before_sha256": "458176e6053e40d91b7056087af005068b5a2bca28c21b29fdaba0600acc25a6",
+    "manifest_after_sha256": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "source_and_dependency_closure": {
+    "upstream_base": "0db58805c6f70e4ef281c17ecf2b53ad947dd984",
+    "original_base_reference_files": 369,
+    "original_combined_reference_files": 373,
+    "shipped_reference_files": 368,
+    "excluded_unused_agent_files": 5,
+    "only_reviewed_renderer_path": "src/render/dom.ts",
+    "reviewed_renderer_sha256": "f02fc19905dd3757f4cd275c01370cfc3987ed28882e10e6c2abb5146ff19f80",
+    "wat_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+    "optional_rust_engine_binary_shipped": false,
+    "runtime_notice_packages": 12,
+    "runtime_notice_manifest_sha256": "4f8949211b4faa6c0bd7de287f05f7fa866bc41ab72ed878ed546b9a236dff43",
+    "package_lock_sha256": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "current_provenance_manifest_sha256": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "upstream_status": {
+    "native_option_issue": "https://github.com/inferal-oss/semblance/issues/181",
+    "native_option_upstream_submitted": false,
+    "issue_is_not_a_pull_request": true,
+    "unaccepted_provisional_overlays": [
+      154,
+      155,
+      157,
+      166,
+      181
+    ],
+    "actual_draft_pr_and_upstream_full_suite_gates": "Owned separately; not established by this ARM review."
+  },
+  "limits": [
+    "The original accepted major UI receipt and failed successor cuts remain distinct; passing narrower tests does not rewrite historical failures.",
+    "DOM-emulator tests establish graph/event state parity and identity, not native browser dirty flags; the separate actual browser witnesses establish those flags.",
+    "390px desktop-browser viewport evidence is not a physical mobile-device input claim.",
+    "No real macOS framebuffer, OS credentials, system clipboard or fullscreen session was used; private-input islands and the disconnected viewer were exercised.",
+    "No real remote/SSH/Kubernetes mutation walkthrough or current public latest install was performed by this correction gate.",
+    "Native backend authority, resource accounting and elapsed deadline producers remain owned by their reviewed backend changes; browser rendering is not new authority."
+  ]
+}

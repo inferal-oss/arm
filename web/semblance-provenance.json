@@ -1197,7 +1197,7 @@
       "base_sha256": "31ba2891f94d0e5be1407b09ec6bb62260609a6a43d7a681a2017567f104de31",
       "sha256": "f02fc19905dd3757f4cd275c01370cfc3987ed28882e10e6c2abb5146ff19f80",
       "behavior": "Reflect native option.selected from selected attributes, including removal, only when live state differs after browser input dirties selection state.",
-      "upstream_tracking": null,
+      "upstream_tracking": "https://github.com/inferal-oss/semblance/issues/181",
       "status": "Provisional generic renderer correction; upstream submission pending. Original base_files and frozen combined files maps remain unchanged.",
       "upstream_submitted": false
     }
