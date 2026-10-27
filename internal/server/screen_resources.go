@@ -1,8 +1,12 @@
 package server
 
 import (
+	"bufio"
 	"context"
+	"crypto/tls"
 	"log"
+	"net"
+	"net/http"
 	"sync"
 	"time"
 
@@ -51,9 +55,18 @@ func (s *Server) reserveScreenTransport(ctx context.Context) (context.Context, f
 	if err != nil {
 		return nil, nil, err
 	}
+	frame := &screenTransportFrame{}
 	var once sync.Once
 	finish := func() {
 		once.Do(func() {
+			// Cleanup owns these exact original sockets. Close-once joins any
+			// already-running native close, retaining its first result even if
+			// a protocol adapter discarded that error or calls Close again.
+			if !frame.closeOriginals() {
+				if err := hold.MarkCleanupUncertain("screen transport native close result is unconfirmed"); err != nil {
+					log.Printf("ARM screen: cannot confirm retained cleanup state: %v", err)
+				}
+			}
 			close(joined)
 			if _, err := hold.FinishAfterJoin(); err != nil {
 				log.Printf("ARM screen: transport allocation remains unconfirmed after original join: %v", err)
@@ -71,5 +84,87 @@ func (s *Server) reserveScreenTransport(ctx context.Context) (context.Context, f
 		}
 		return nil, nil, err
 	}
-	return hold.Context(), finish, nil
+	return context.WithValue(hold.Context(), screenTransportFrameKey{}, frame), finish, nil
+}
+
+// Each handler can own its target and one hijacked viewer. Upgrades that
+// hand over no connection register no viewer socket.
+type screenTransportFrameKey struct{}
+type screenTransportFrame struct {
+	mu      sync.Mutex
+	sockets []*screenOriginalSocket
+}
+
+type screenOriginalSocket struct {
+	net.Conn
+	once        sync.Once
+	closeNative func() error
+	closeErr    error
+}
+
+func (s *screenOriginalSocket) Close() error {
+	s.once.Do(func() {
+		// A panic or other missing return is never a successful close result.
+		s.closeErr = model.Err("screen_close_unconfirmed", "original native close did not return a confirmed result")
+		s.closeErr = s.closeNative()
+	})
+	return s.closeErr
+}
+
+func screenOwnTransportConn(ctx context.Context, conn net.Conn) net.Conn {
+	frame, _ := ctx.Value(screenTransportFrameKey{}).(*screenTransportFrame)
+	if frame == nil {
+		return conn
+	}
+	closeNative := conn.Close
+	if secured, ok := conn.(*tls.Conn); ok {
+		// CloseNow is an abort, not a TLS delivery acknowledgement. Observe the
+		// original TCP close before TLS alert/adapter cleanup can obscure its result.
+		native := secured.NetConn()
+		closeNative = func() error {
+			err := native.Close()
+			_ = secured.Close()
+			return err
+		}
+	}
+	original := &screenOriginalSocket{Conn: conn, closeNative: closeNative}
+	frame.mu.Lock()
+	frame.sockets = append(frame.sockets, original)
+	frame.mu.Unlock()
+	return original
+}
+
+func (f *screenTransportFrame) closeOriginals() bool {
+	f.mu.Lock()
+	sockets := append([]*screenOriginalSocket(nil), f.sockets...)
+	f.mu.Unlock()
+	confirmed := true
+	for _, s := range sockets {
+		// A first already-closed error is not a captured successful original close.
+		// The exact first result stays sticky; no second Close is a reclamation proof.
+		if err := s.Close(); err != nil {
+			confirmed = false
+		}
+	}
+	return confirmed
+}
+
+type screenTransportWriter struct {
+	http.ResponseWriter
+	ctx context.Context
+}
+
+func (w screenTransportWriter) Unwrap() http.ResponseWriter { return w.ResponseWriter }
+func (w screenTransportWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	conn, rw, err := http.NewResponseController(w.ResponseWriter).Hijack()
+	if conn != nil {
+		conn = screenOwnTransportConn(w.ctx, conn)
+	}
+	return conn, rw, err
+}
+func screenOwnedUpgradeWriter(ctx context.Context, w http.ResponseWriter) http.ResponseWriter {
+	if frame, _ := ctx.Value(screenTransportFrameKey{}).(*screenTransportFrame); frame != nil {
+		return screenTransportWriter{ResponseWriter: w, ctx: ctx}
+	}
+	return w
 }
