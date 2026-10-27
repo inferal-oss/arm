@@ -195,6 +195,35 @@ func (e *endpoint) materialize(ctx context.Context, plan syncreconcile.Plan, b b
 	return w, dirs, err
 }
 
+// checkWorkspaceAllocation fails closed when the reported allocation of all
+// operation-owned workspaces exceeds the charged disk promise. The survey is
+// bounded and mount-aware, but it is a checkpoint, not an atomic snapshot or
+// a filesystem-enforced write quota. Unknown observations also stop the cut.
+func (e *endpoint) checkWorkspaceAllocation(ctx context.Context, workspaces []*syncfs.Workspace) error {
+	if err := e.Hold.CheckActive(ctx); err != nil {
+		return err
+	}
+	limit := e.Hold.DiskBytes()
+	if limit <= 0 {
+		return errors.New("missing admitted sync disk promise")
+	}
+	var used int64
+	for _, work := range workspaces {
+		if work == nil {
+			return errors.New("missing marked sync workspace")
+		}
+		observed, err := syncfs.SurveyWorkspace(ctx, e.Root, e.WorkParent, work.Path(), work.Reservation)
+		if err != nil {
+			return err
+		}
+		if observed.AllocatedBytes > limit-used {
+			return errors.New("sync workspace reported allocation exceeds admitted disk promise")
+		}
+		used += observed.AllocatedBytes
+	}
+	return e.Hold.CheckActive(ctx)
+}
+
 func ownActions(plan syncreconcile.Plan, side syncreconcile.Side) int {
 	n := 0
 	for _, a := range plan.Actions() {

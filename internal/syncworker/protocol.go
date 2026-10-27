@@ -408,7 +408,14 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 		return err
 	}
 	defer work.Close()
+	workspaces := []*syncfs.Workspace{work}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+		return err
+	}
 	if _, err = syncfs.SeedReceiverBasis(ctx, e.Root, work.Stage, plan, e.Side, e.Names, e.Metadata, need); err != nil {
+		return err
+	}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 		return err
 	}
 	var dirs []syncfs.DirectoryMetadata
@@ -426,6 +433,10 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 			if matErr != nil {
 				return matErr
 			}
+			workspaces = append(workspaces, sourceWork)
+			if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+				return err
+			}
 			ready := frame(intent, "ready", id)
 			ready.Dirs = ownDirs
 			if err = writeFrame(control, ready, e.Hold); err != nil {
@@ -442,6 +453,9 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 				}
 			}
 			if err != nil {
+				return err
+			}
+			if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 				return err
 			}
 			if err = writeFrame(control, frame(intent, "done", id), e.Hold); err != nil {
@@ -465,6 +479,9 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 				if err != nil {
 					return err
 				}
+				if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+					return err
+				}
 			}
 			if _, err = readFrame(ctx, control, e.Hold, intent, "done", id); err != nil {
 				return err
@@ -474,7 +491,13 @@ func runEndpoint(ctx context.Context, e *endpoint) (retErr error) {
 			}
 		}
 	}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
+		return err
+	}
 	if err = e.publish(ctx, plan, work, sortedDirs(dirs)); err != nil {
+		return err
+	}
+	if err = e.checkWorkspaceAllocation(ctx, workspaces); err != nil {
 		return err
 	}
 	if err = e.Hold.CheckActive(ctx); err != nil {

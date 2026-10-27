@@ -61,3 +61,12 @@ join failure, cancellation, and one authenticated `sshservice.Server` session.
 The original SSH protocol test uses a test admission hold. A separate real
 Manager pair test requires live host capacity and may skip; a skip does not
 prove complete private pair acceptance or cross-host/relay operation.
+
+After workspace creation, basis and manifest copies, each completed rsync
+batch, and native publication, the worker surveys all of its marked
+workspaces. It stops when the sum of reported `st_blocks` exceeds the admitted
+disk promise or any survey is unknown. This detects overrun at those
+checkpoints and retains the charged workspaces for inspection. It does not
+prevent an in-flight write from exceeding the promise, prove that shared
+blocks are unique, or authorize cleanup. Public dispatch still requires an
+enforced allocation mechanism and exact settlement.
