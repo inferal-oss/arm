@@ -45,3 +45,5 @@ func observeTerminal(pid int) (terminal, error) {
 // Linux retains the existing terminal group KILL; only Darwin needs the
 // positive sole-terminal-member witness to avoid zombie-only killpg EPERM.
 func terminalOnlyGroup(int) (bool, error) { return false, nil }
+
+const nativeTerminalGroupGrace = 0

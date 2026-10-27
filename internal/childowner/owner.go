@@ -30,18 +30,19 @@ type Result struct {
 // Owner is process-local, never serialized or reconstructed after recovery.
 // Its mutex serializes signals and the irreversible retirement before Wait.
 type Owner struct {
-	mu                sync.Mutex
-	cmd               *exec.Cmd
-	pid               int
-	retired           bool
-	waiting           bool
-	failure           error
-	killSentAt        time.Time
-	killSucceeded     bool
-	terminalOnlyGroup func(int) (bool, error)
-	observe           func(int) (terminal, error)
-	signal            func(int, syscall.Signal) error
-	wait              func() error
+	mu                 sync.Mutex
+	cmd                *exec.Cmd
+	pid                int
+	retired            bool
+	waiting            bool
+	failure            error
+	killSentAt         time.Time
+	killSucceeded      bool
+	terminalOnlyGroup  func(int) (bool, error)
+	terminalGroupGrace time.Duration
+	observe            func(int) (terminal, error)
+	signal             func(int, syscall.Signal) error
+	wait               func() error
 }
 
 // Available checks the native observer before any child is started. The
@@ -70,7 +71,7 @@ func New(cmd *exec.Cmd) (*Owner, error) {
 	if _, err := observeTerminal(cmd.Process.Pid); err != nil {
 		return nil, fmt.Errorf("original non-reaping observation unavailable before gate: %w", err)
 	}
-	return &Owner{cmd: cmd, pid: cmd.Process.Pid, observe: observeTerminal, terminalOnlyGroup: terminalOnlyGroup, signal: func(pid int, sig syscall.Signal) error { return syscall.Kill(-pid, sig) }, wait: cmd.Wait}, nil
+	return &Owner{cmd: cmd, pid: cmd.Process.Pid, observe: observeTerminal, terminalOnlyGroup: terminalOnlyGroup, terminalGroupGrace: nativeTerminalGroupGrace, signal: func(pid int, sig syscall.Signal) error { return syscall.Kill(-pid, sig) }, wait: cmd.Wait}, nil
 }
 
 func (o *Owner) Signal(sig syscall.Signal) error {
@@ -146,11 +147,22 @@ func (o *Owner) Wait(ctx context.Context) Result {
 		}
 		terminalOnly := false
 		if !o.killSucceeded && o.terminalOnlyGroup != nil {
-			var groupErr error
-			terminalOnly, groupErr = o.terminalOnlyGroup(o.pid)
-			if groupErr != nil {
-				o.failure = errors.Join(o.failure, fmt.Errorf("original terminal group membership is unknown: %w", groupErr))
-				terminalOnly = false
+			// Keep the original terminal PID unreaped during a short bounded
+			// grace for already-exited descendants to leave Darwin's group.
+			// Only the exact singleton witness permits skipping the real KILL.
+			deadline := time.Now().Add(o.terminalGroupGrace)
+			for {
+				var groupErr error
+				terminalOnly, groupErr = o.terminalOnlyGroup(o.pid)
+				if groupErr != nil {
+					o.failure = errors.Join(o.failure, fmt.Errorf("original terminal group membership is unknown: %w", groupErr))
+					terminalOnly = false
+					break
+				}
+				if terminalOnly || !time.Now().Before(deadline) {
+					break
+				}
+				time.Sleep(min(10*time.Millisecond, time.Until(deadline)))
 			}
 		}
 		if !terminalOnly {
