@@ -6430,3 +6430,29 @@ The configuration database-proof root belongs to this two-root successor; it
 is absent from the broader Kubernetes roster. Linux configuration execution,
 services, live reload, full degraded-database recovery, retention/restore and
 whole-suite acceptance remain unestablished.
+
+
+### Current-base numeric build and 519-case gate
+
+[Fresh build evidence](validation/semblance-numeric-current-build-2026-10-27.json)
+accepts five original child returns: Rust and WAT builds, ten ABI checks for
+each image and typecheck. All 1,277 selected files and 185 links remain unchanged.
+[Independent numeric evidence](validation/semblance-numeric-current-519-2026-10-27.json)
+reconstructs the exact 519 path/name identities in sixteen files, with zero
+failures, skips or todo cases. Required coverage includes 72 reader, fifty
+native, six layer and four comparison cases. Rust and WAT each run twelve
+compiled, twelve interpreted and one bridge case. All four comparison modes,
+current Calendar cases and the retained corpus case pass.
+
+Seven original child returns, all selected argument bindings/log hashes and
+the retained 35-observation foreign-store control are verified. Oxigraph
+0.5.13 and N3 2.13.12 pins match. All 1,537 file pins and 185 links agree before,
+after and at final verification; fresh build images are unchanged and the
+four owned temporary/cache paths are absent. The expected view-recomputation
+notice and cost metrics remain in stderr; this is no warning-free claim.
+
+The earlier 509/510 source cuts retain their original failed status. This
+current targeted success does not establish the separate 52-case component,
+rendered UI, production-build, full-suite, upstream publication or ARM dependency
+promotion gates. Original child return/pipe-join evidence is not a universal
+transitive-descendant or hermetic-toolchain claim.

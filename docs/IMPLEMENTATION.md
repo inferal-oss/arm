@@ -2513,3 +2513,19 @@ a separate `47bafbd7` check passes eight affected roots/ten named cases and
 Manager/CLI/database vet, including retained lease terms, refused journal
 writes, actual startup and settled-proof compatibility. This is a scoped
 configuration milestone; it does not complete the broader operations portfolio.
+
+
+## Current-base numeric dependency validation
+
+The recovered numeric/Sparkline composition on upstream `517df976` preserves
+its reviewed thirty numeric and nineteen component paths and current overlapping
+framework changes. Fresh Rust/WAT images pass ten ABI checks each and typecheck.
+The exact current sixteen-file numeric gate passes all 519 named cases,
+including the Calendar and corpus cases that failed on earlier source. All
+required reader, native-backend, layer and comparison cases execute in their
+selected modes; the retained foreign-store control also matches.
+
+This accepts the recorded current-source numeric test gate. Sparkline's
+component/browser checks, production build, separate upstream draft submissions
+and ARM dependency promotion remain pending. Earlier failed source cuts remain
+failed; ARM's vendored engine is unchanged.

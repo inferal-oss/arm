@@ -454,6 +454,8 @@ these assignments.
 
 Current-base numeric/Sparkline source review accepts the 49-path composition
 without a dependency on PR #218. Its fresh Rust/WAT build, twenty ABI checks
-and typecheck pass with unchanged selected inputs. The 519-case numeric gate,
-component/native UI gates and production build remain separate pending steps;
+and typecheck pass with unchanged selected inputs. The exact 519-case numeric gate also passes, including all current Calendar
+and corpus cases with genuine Rust/WAT compiled/interpreted coverage and the
+retained foreign-store control. Component/native UI gates and production build
+remain separate pending steps;
 ARM's vendored engine is unchanged.

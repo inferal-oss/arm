@@ -1,0 +1,94 @@
+{
+  "ABI": {
+    "rust": {
+      "expected": 10,
+      "passed": 10
+    },
+    "wat": {
+      "expected": 10,
+      "passed": 10
+    }
+  },
+  "actual_children_receipt_sha256": "1739e1b2dcda8e35a05fad71e8975ea57d16baa316cb3d075a57d736299e16a6",
+  "actual_images_receipt_sha256": "05ecd8dff0d5fe4801a9fc3e0524a4bfaa3204ad1c3be3abb6ac8423839c4cca",
+  "actual_owner_receipt_sha256": "855060700538d32083084d152cf935ce29cfb20db7d35c1a553b513ee2e18f93",
+  "actual_steps": [
+    {
+      "exit": 0,
+      "name": "rust-build",
+      "original_returned_wait_confirmed": true,
+      "stderr_sha256": "fef9d77a521533f4c5e3314b66b6aab6bb432ce2a46e27a7a8f73835655aa7db",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit": 0,
+      "name": "wat-build",
+      "original_returned_wait_confirmed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit": 0,
+      "name": "abi-rust",
+      "original_returned_wait_confirmed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e5d66379c1d5dedb9acb8f4cde7cac13fd9f3b6ecd0fbbcaffd66d9aeb9bc201"
+    },
+    {
+      "exit": 0,
+      "name": "abi-wat",
+      "original_returned_wait_confirmed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5ec933f9c8cda9756bb62d3f2b08cb68dc6c6b0d22c9d0e235c353dcbc964ed9"
+    },
+    {
+      "exit": 0,
+      "name": "typecheck",
+      "original_returned_wait_confirmed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "all_five_children_exit_zero": true,
+  "binding_source_review_sha256": "6ac5069df8ee2d0a9039ed4e4474b45b3b5098992567ca2c3f9687226fc2c48f",
+  "dependency_links_rechecked": 185,
+  "findings": [],
+  "fresh_images": {
+    "rust": {
+      "bytes": 375005,
+      "origin": "fresh cargo child exit0 from pinned source/config/tool entrypoints",
+      "sha256": "feb5b24d153c756f2a04f4436167f308a57ecfa85b7dbcaa06f4371a0a0119d2"
+    },
+    "wat": {
+      "bytes": 115759,
+      "origin": "fresh WAT build child exit0 from pinned source/tools",
+      "sha256": "ef25d706eaf3c0c24b7417a7dc3be274fb6cda5e0b0fe484c5931de346da51e3"
+    }
+  },
+  "image_errors": [],
+  "limits": [
+    "This accepts only fresh current Rust/WAT build outputs,20ABIchecks and current typecheck, not numeric519/component52/Calendar corpus/browser/production-build/PR/integration acceptance.",
+    "No reviewer candidate execution, helper import, build, tests, queue, browser or network occurred.",
+    "Original child return/wait/pipe-join scope is inherited from exact reviewed helper and retained results; no blanket escaped/transitive descendant,OS loader or hermetic compiler claim.",
+    "Outer tool terminal metadata was not supplied to this independent audit; no separately recovered outer terminal claim is made.",
+    "All historical failed gates retain their original status."
+  ],
+  "original_child_argv_and_cwd_exactly_match_accepted_seal": true,
+  "original_helper": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+  "owned_source_manifest_sha256": "214061b8fc3ca75820438a6ca6f19a30b0d844dd96e626d93f06b4efe879aed5",
+  "owner_record_elapsed_seconds": 6.066283941268921,
+  "owner_record_exit": 0,
+  "owner_record_inputs_unchanged": true,
+  "rust_image_equals_actual_fresh_cargo_target_bytes": true,
+  "seal_sha256": "81f4937ba54677d74f29c446fab4141a53c46ddebd6d9de594eb220d1e92a6d3",
+  "selected_file_pins_rechecked": 1277,
+  "selected_input_mismatches": [],
+  "source_base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "source_plan_review_sha256": "48f19efdb1094a402b3dca00eca193f07947e3504cdce384bb4c2e0d43276244",
+  "status": "ACCEPTED_SCOPED_CURRENT_BUILD_ABI_TYPECHECK",
+  "typecheck": {
+    "exit": 0,
+    "stderr_bytes": 0,
+    "stdout_bytes": 0
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "N1_source_review_sha256": "bdcefc819827629c0d4c5cf729b03ba7cb7d3543efce44d0741e74362815eefe",
+  "accepted_B_review_sha256": "650c7520675953057de3475355d26bc6dd8f8e99907dd7c569cb39740525951c",
+  "actual_report": {
+    "all_Calendar_and_corpus_selected_and_passed": true,
+    "all_nested_suites_passed": true,
+    "comparison_backend_modes": {
+      "rust": {
+        "compiled": 1,
+        "interpreted": 1
+      },
+      "wat": {
+        "compiled": 1,
+        "interpreted": 1
+      }
+    },
+    "exact_path_and_full_name_multiset_matches_current_reference": true,
+    "failed": 0,
+    "files": 16,
+    "named_cases": 519,
+    "native_backend_cases": {
+      "rust": 25,
+      "wat": 25
+    },
+    "native_modes": {
+      "rust": {
+        "bridge": 1,
+        "compiled": 12,
+        "interpreted": 12
+      },
+      "wat": {
+        "bridge": 1,
+        "compiled": 12,
+        "interpreted": 12
+      }
+    },
+    "nested_suite_count": 59,
+    "passed": 519,
+    "per_file_case_counts": {
+      "test/layers.test.ts": 12,
+      "test/numeric-input.test.ts": 72,
+      "test/numeric-layer-parity.test.ts": 6,
+      "test/rdf-engine-budget.test.ts": 12,
+      "test/rdf-engine-compiled.test.ts": 70,
+      "test/rdf-engine-numbers.test.ts": 56,
+      "test/rdf-engine-numeric-compiled-comparison.test.ts": 4,
+      "test/rdf-engine-numeric.test.ts": 50,
+      "test/rdf-engine-parity.test.ts": 6,
+      "test/rdf-engine-temporal.test.ts": 200,
+      "test/shapes.test.ts": 8,
+      "test/view-charts.test.ts": 1,
+      "test/view-cost.test.ts": 1,
+      "test/view-laws.test.ts": 10,
+      "test/view-measure.test.ts": 3,
+      "test/views.test.ts": 8
+    },
+    "required_new_test_counts": {
+      "test/numeric-input.test.ts": 72,
+      "test/numeric-layer-parity.test.ts": 6,
+      "test/rdf-engine-numeric-compiled-comparison.test.ts": 4,
+      "test/rdf-engine-numeric.test.ts": 50
+    },
+    "skipped_pending_todo": 0
+  },
+  "all7_finished_wait_and_raw_log_hashes_verified": true,
+  "all7_started_argv_cwd_match_accepted_binding": true,
+  "cleanup": {
+    "all4_owned_cache_temp_paths_absent": true,
+    "child_receipt_errors": [],
+    "cleanup_or_pin_errors": [],
+    "errors": [],
+    "image_hashes_before_after_equal": true
+  },
+  "diagnostics": {
+    "classification": "One expected maintained-view recomputation notice from its explicit fallback test plus view cost/measure diagnostics retained; no stderr-free claim.",
+    "raw_stderr_bytes": 1556,
+    "raw_stderr_sha256": "5c44391a7cf3f55228a065175661adc271abe6aca91ba7420066746c16f9301d"
+  },
+  "findings": [],
+  "foreign_control": {
+    "actual_observations_equal_retained": true,
+    "actual_packages_equal_retained_and_frozen_pins": true,
+    "distinct_tuples": 35,
+    "qualification": "Actual ingestion control, not an independent manufactured numeric oracle.",
+    "raw_diagnostic_sha256": "5972d3612c80392a34160f1752cc674d41365093ef6d7546124708735bd70f7c",
+    "retained_diagnostic_sha256": "d73e7fe5264f8df9f6ecd7c8e41d6dce30efa637c9736ccb191c9b2680d794c2",
+    "versions": {
+      "n3": "2.13.12",
+      "oxigraph": "0.5.13"
+    }
+  },
+  "fresh_B_images_unchanged": {
+    "rust": {
+      "bytes": 375005,
+      "origin": "fresh cargo child exit0 from pinned source/config/tool entrypoints",
+      "sha256": "feb5b24d153c756f2a04f4436167f308a57ecfa85b7dbcaa06f4371a0a0119d2"
+    },
+    "wat": {
+      "bytes": 115759,
+      "origin": "fresh WAT build child exit0 from pinned source/tools",
+      "sha256": "ef25d706eaf3c0c24b7417a7dc3be274fb6cda5e0b0fe484c5931de346da51e3"
+    }
+  },
+  "limits": [
+    "This accepts current targeted N1 numeric16-file519-case gate only. S52 component, current mounted UI and normal production build remain pending; no full feature/whole-suite/PR/integration acceptance.",
+    "Prior failed numeric/component/native attempts keep original status; current pass does not rewrite them or use a Calendar waiver.",
+    "Original returned Wait/pipe-join scope relies on unchanged accepted a107helper and retained exact seven results; no all-descendant,escaped-process,OS-loader or hermetic-toolchain claim.",
+    "No independently recovered outer tool terminal metadata supplied in this audit; wrapper0 here is retained outcome, not a separately recovered outer terminal claim.",
+    "Independent audit performed read-only source/artifact/JSON/hash operations; no runner/helper/candidate execution, rerun, build, queue, browser or network."
+  ],
+  "observation_sha256": "ce33be7c145cc484d56e95c85debbbfe9780043add6a6f1516f9ce3fb6313afe",
+  "original_children": [
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "images-before"
+    },
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "foreign-ingestion"
+    },
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "foreign-control"
+    },
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "vitest"
+    },
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "observe-report"
+    },
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "strict-report"
+    },
+    {
+      "exit": 0,
+      "returned_original_wait_confirmed": true,
+      "stage": "images-after"
+    }
+  ],
+  "outcome_sha256": "36b0d3ef6db298c2d6429ae4461512bc060de0dbbf3972c2aeb86b3697fc38e9",
+  "owned49_manifest_sha256": "214061b8fc3ca75820438a6ca6f19a30b0d844dd96e626d93f06b4efe879aed5",
+  "raw_report_sha256": "7da69a3746996e4e278bef2cafee879ccb5c676a0fe316e0f068464a4a3d5add",
+  "runner_sha256": "de9b1acb54b94aee8e7615a0ba0e948c9f7a0f720f0d49be45bf61f1b0a391dc",
+  "seal_sha256": "5723a0a20fabaf92fe48412c0612e973767d0cfcf4eaacd92ccd6e0ed6d652a5",
+  "selected_inputs": {
+    "before_after_final_records_match": true,
+    "files": 1537,
+    "independent_current_recheck_all_match": true,
+    "links": 185,
+    "source_and_B_evidence_preserved": true
+  },
+  "source_base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "status": "ACCEPTED_SCOPED_CURRENT_NUMERIC_N1_GATE",
+  "strict_acceptance_sha256": "52f5c1f4cecd4e87cafa89e3b91472206d66179035b3a1e1f24cc3828ad4491a",
+  "wrapper_record_exit": 0
+}
