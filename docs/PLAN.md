@@ -434,9 +434,10 @@ current-base composition.
 ### Current source continuations
 
 The unified-onboarding owner continues on `codex/unified-kubernetes-core-workflow`
-from `47bafbd7`, reusing only its owned selectors and tests. Additional start,
-bootstrap and connector profiles are proposals awaiting shared tuple/proof and
-original-owner review; none is active. Current unavailable-cluster rendering
+from `47bafbd7`, reusing only its owned selectors and tests. The closed start,
+bootstrap and connector contracts are reviewed for bounded implementation;
+code, proof and runtime acceptance remain unfinished and none is active.
+Current unavailable-cluster rendering
 and fixture correction do not establish live Node discovery or enrollment.
 
 The scan-wide original hold is reviewed and integrated as `3d331e0e`. The
@@ -460,3 +461,13 @@ Rust/WAT compiled/interpreted coverage and the retained foreign-store control.
 The separate 33/16/3 component, shared-chart/gallery and cost cohorts also pass
 all 52 exact named cases. Native UI and production build remain pending.
 ARM's vendored engine is unchanged.
+
+
+| Active source owner | Isolated branch | Reviewed dependency / remaining gate |
+| --- | --- | --- |
+| Unified onboarding | `codex/unified-kubernetes-core-workflow` | `47bafbd7` core plus reviewed closed stage/connector contract; implement and validate complete workflow before activation. Prototype discovery and screenshots establish no installation or enrollment. |
+| Sync ownership | `codex/sync-manager-scope-gate-design` | Integrated hold `3d331e0e`; complete charged original scope, bounded transaction/gate, fresh-schema proof and native enforcement. |
+| Provider lifecycle | `codex/provider-pair-core` | Base `d8a324fb`; reviewed V0 guard and entitlement consumer, with unused raw-row/clock helpers under development. Rebase the central proof delta before coupled admission/lifecycle activation. |
+| Native pressure | `codex/pressure-native-pause` | Base `d8a324fb`; original-owned policy and durable action cuts plus causal STOP/CONT validation remain under development. Production policy stays warning-only. |
+| Degraded persistence | `codex/degraded-holder-cancellation` | Base `07f2fb02`; review cancellation before failed persistence for Cargo, Gradle and storage exports without settlement credit. Generic/SSH evidence does not cover these holders. |
+| Numeric/component dependency | `codex/numeric-sparkline-517-composition` | Current upstream source, build, 519 numeric and 52 component cases accepted. Current rendered UI and production build precede separate upstream drafts and ARM dependency promotion. |
