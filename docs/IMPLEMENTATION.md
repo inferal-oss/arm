@@ -2311,7 +2311,8 @@ scrollend after child re-keying now preserves the graph-selected image; ordinary
 swipe reporting remains covered, and disposal cancels pending timers/frames.
 Publication is verified at the exact head and two-file scope. It does not change
 ARM's vendored dependency, merge upstream main or accept later composed inputs.
-The separate Lightbox containment correction remains under validation.
+The separate Lightbox containment correction is published as draft PR #216;
+its scoped evidence and remaining paint/header limits are recorded below.
 
 
 ## Local custom resource names
@@ -2345,3 +2346,17 @@ The mobile-node candidate retains whole native obligations across the recorded
 outage/restart. The failed native comparison mixed gateway and authority
 projections; a fixture-only correction uses the original native baselines.
 Terminal restoration and successful rejoin/revocation remain acceptance gates.
+
+
+## Upstream Lightbox containment submission
+
+Draft [Semblance PR #216](https://github.com/inferal-oss/semblance/pull/216)
+uses zero-minimum grid tracks and available-size panel bounds. At compact
+widths it reserves cross-axis space for the retained Doodle sheet rotation.
+Focused commit `ef0fc434` is replayed as `fe0ffc77` onto `517df976` with the exact
+same two-file patch; refreshed parity CI passes. ARM dependencies are unchanged.
+
+The new native window establishes 16 numerical border-box cases and 15 matching
+viewport paints. The 639px screenshot-size mismatch stays unverified. Narrow
+header and Close-control clipping remain issue #143; no complete accessibility,
+keyboard, zoom or fullscreen acceptance is claimed.

@@ -1,0 +1,81 @@
+{
+  "status": "ACCEPT_SCOPED_TWO_FILE_SOURCE_COMMIT_AND_NATIVE_NUMERIC_EVIDENCE",
+  "commit": "ef0fc4347f3f9da0126b81fe83507c16281a4add",
+  "base": "db8933d045ef1bfa8942508ae9764ad56ab0fc39",
+  "source": {
+    "paths": [
+      "ontology/theme/gallery.ttl",
+      "ontology/theme/themes-structural.ttl"
+    ],
+    "insertions": 14,
+    "deletions": 2,
+    "patch_sha256": "44ab59162300a128d9aaaf13d7ef07aa07a2d81e65c8f0ebb1ac00eea6a0059d",
+    "same_committed_bytes_and_modes_as_validated_build": true,
+    "variant": "stockSnapfc699 +gallerya0b1573 +Doodle4d02208",
+    "build_qualification_sha256": "93ed7fb1e77a21f48d185b0da504db8b0f74f8a67cf2fae9bd3d4b5c06fd559f"
+  },
+  "native": {
+    "exact_roster_cases": 16,
+    "seven_numeric_borderbox_checks_each": true,
+    "actual_rasters_independently_viewed": 16,
+    "raster_matches_same_case_DPR1_viewport": 15,
+    "paint_unverified": {
+      "case": "doodle-compact-boundary-639",
+      "sampled_css": [
+        639,
+        900
+      ],
+      "actual_raster": [
+        507,
+        900
+      ],
+      "cause": "Unknown; no attribution or rerun demanded."
+    },
+    "readiness_max_ms": 416.66824999824166,
+    "pair_gap_min_ms": 151.92370799928904,
+    "tolerance_css_px": 1,
+    "scope": "Sampled root/panel/stage/current-image border-box containment and matching-viewport raster inspection only; excludes shadows/tape paint, full header/control usability and continuous stability."
+  },
+  "known_unfixed": {
+    "issue": 143,
+    "narrow_header": "Title/counter compression remains.",
+    "width320_close": "Actual Close right bound343.427 exceeds320 viewport; center hit false. Visible native clipping retained.",
+    "width639": "Raster mismatch prevents paint attribution to the sampled639 width."
+  },
+  "retained_history": {
+    "old_requested": 41,
+    "old_baseline_observations": 7,
+    "old_candidate_numeric_good": 25,
+    "old_Doodle_numeric_overflow": 1,
+    "old_unrun": 8,
+    "old_failure_preserved": true,
+    "new_source_results_separate": true
+  },
+  "cleanup": {
+    "original_server_exit": 0,
+    "operator_SIGINT": true,
+    "server_closed": true,
+    "server_requests": 69,
+    "successful_server_bodies_match_frozen_manifest": 69,
+    "original_command_completion_verified": true,
+    "original_tab_reset_close_call_completed": true,
+    "persisted_tab_reset_close_flags": true,
+    "original_listener_probe_command_completed": true,
+    "retained_listener_probe_result": "ECONNREFUSED",
+    "no_new_probe": true,
+    "limits": "Original metadata and retained source-produced receipts; no fresh browser inventory, all escaped descendant or ambient process absence claim."
+  },
+  "draft_review": {
+    "original_literal_backslash_n": 0,
+    "original_actual_newlines": 9,
+    "privacy_scan_passed": true,
+    "corrections": "Clarify earlier41cases as automated test aggregate, explicitly retain old incomplete native roster, and make remaining approval wording current. No newline fix required."
+  },
+  "limitations": [
+    "No full41native-matrix, keyboard, zoom, fullscreen, combined newerSnap or currentupstreammain composition acceptance.",
+    "Optional font/decode/animation completion APIs unavailable; no completion/maxsettle/continuous claim.",
+    "Prior failed wrappers and native failures remain unchanged.",
+    "No test/build/native/browser/server/queue/publication execution or implementation edits by this audit.",
+    "Focused source/evidence acceptance does not itself publish a PR or merge upstream."
+  ]
+}

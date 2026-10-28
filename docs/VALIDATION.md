@@ -6052,3 +6052,25 @@ not establish successful rejoin, revocation or pixel-clean dialogs.
 independently verifies head `3032f88`, one commit/two unchanged source files,
 reviewed body and successful parity CI. Original native observations remain
 bound to their earlier base; no upstream merge or new ARM dependency is claimed.
+
+
+### Doodle containment and upstream submission
+
+[Independent final review](validation/gallery-doodle-containment-2026-10-27.json)
+accepts commit `ef0fc434`: two exact validated files, 14 additions and two
+deletions. All 123 retained artifact hashes match. Sixteen actual cases each
+satisfy seven numerical border-box checks; all 16 rasters are inspected, and
+15 match their sampled viewport. The 639px DOM observation has a 507px raster
+and therefore no qualified paint result. At 320px, Close remains beyond the
+right edge; header issue #143 is explicitly outside this correction.
+
+The original server exits zero after operator cancellation, serves 69 matching
+frozen bodies and closes. Original tab reset/close and retained listener refusal
+support scoped cleanup. The prior native matrix remains seven baseline, 25 good
+candidate, one Doodle overflow and eight unrun cases; no retrospective 41-case
+native pass is inferred from the separate automated aggregate.
+
+[Publication verification](validation/gallery-containment-draft-2026-10-27.json)
+confirms draft PR #216 at `fe0ffc77`, one commit/two exact file blobs, reviewed
+body and successful parity CI. Original native evidence stays on its recorded
+base. This does not merge upstream or update ARM's vendored framework.

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "status": "VERIFIED_DRAFT_PUBLICATION_AND_PARITY_CI",
+  "url": "https://github.com/inferal-oss/semblance/pull/216",
+  "head": "fe0ffc77568fc67937f199714175d534e1054449",
+  "base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "draft": true,
+  "commits": 1,
+  "changed_files": 2,
+  "additions": 14,
+  "deletions": 2,
+  "source_git_blobs": {
+    "ontology/theme/gallery.ttl": "0c0504ad48753380a519c05dc8371a4ecf088cf7",
+    "ontology/theme/themes-structural.ttl": "52450e9635d485a8d62ea58766ab5c4fe1a43e8f"
+  },
+  "source_bytes_match_reviewed_commit": true,
+  "body_sha256": "245d5be4a572dcd14bb54f4aaf41460709282c1759b7fd21040b6ff5c5eaba00",
+  "parity": {
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/semblance/actions/runs/40606124434/job/122545936981"
+  },
+  "limits": [
+    "Original local/native evidence retains db8933d045ef1bfa8942508ae9764ad56ab0fc39 scope.",
+    "One known-base refresh preserves exact two-file patch; current PR CI is separate evidence.",
+    "No upstream merge, reviewer request, approval or ARM vendored dependency replacement.",
+    "639px paint mismatch and narrow-header/control issue143 remain explicitly disclosed."
+  ]
+}
