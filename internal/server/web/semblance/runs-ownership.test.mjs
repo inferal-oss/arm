@@ -44,10 +44,11 @@ test('detachable wrapper owns its exact content and retires native geometry with
 
 test('floating log window is kept reachable after resize and retires its viewport listener',()=>{
  const listeners=new Set(),viewport={innerWidth:390,innerHeight:640,addEventListener(name,fn){assert.equal(name,'resize');listeners.add(fn);},removeEventListener(name,fn){assert.equal(name,'resize');listeners.delete(fn);}};
- const {ui,store,root}=graphFixture({viewport,node:{getBoundingClientRect:()=>({left:440,top:800,width:358,height:440})}}),content=ui.code('output'),window=ui.detachable('Log',content),C='https://semblance.dev/ns/component#',f=store.factory;
+ const box={left:440,top:800,width:358,height:440}, {ui,store,root}=graphFixture({viewport,node:{getBoundingClientRect:()=>box}}),content=ui.code('output'),window=ui.detachable('Log',content),C='https://semblance.dev/ns/component#',f=store.factory;
  root.replace(window);window.popOut();assert.equal(listeners.size,1);for(const fn of listeners)fn();
  const iri=window.iri+'/~window-'+encodeURIComponent(window.tab.iri),value=p=>store.match(f.namedNode(iri),f.namedNode(C+p),null,f.defaultGraph())[0]?.object.value;
  assert.equal(value('x'),'32');assert.equal(value('y'),'200');
+ box.width=522;for(const fn of listeners)fn();assert.equal(value('width'),'356','oversized frame must fit the narrowed viewport');box.width=358;for(const fn of listeners)fn();
  ui.put(iri,C+'windowState',C+'Maximized',true);ui.put(iri,C+'x',100);for(const fn of listeners)fn();assert.equal(value('x'),'100','maximizing must preserve floating geometry');
  ui.put(iri,C+'windowState',C+'Normal',true);for(const fn of listeners)fn();assert.equal(value('x'),'32');
  root.dispose();assert.equal(listeners.size,0);ui.windowDesktop.dispose();

@@ -221,8 +221,12 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
         if(h.disposed||!h.detached||!viewport)return;
         const state=object(window,C.windowState)?.value,edge=object(window,C.attachedTo)?.value;
         if(state&&state!==C.Normal||edge&&edge!==C.NoEdge)return;
-        const node=nodeOf(window),box=node?.getBoundingClientRect?.();
+        const node=nodeOf(window);let box=node?.getBoundingClientRect?.();
         if(!box?.width||!box.height)return;
+        // Stock frame dimensions are content-box values; leave room for its
+        // border and a viewport margin before clamping its position.
+        batch(()=>{if(box.width>viewport.innerWidth-32)put(window,C.width,Math.max(1,viewport.innerWidth-34));if(box.height>viewport.innerHeight-32)put(window,C.height,Math.max(1,viewport.innerHeight-34));});
+        box=node.getBoundingClientRect();
         const x=Math.max(0,Math.min(box.left,viewport.innerWidth-box.width)),y=Math.max(0,Math.min(box.top,viewport.innerHeight-box.height));
         if(Math.abs(x-box.left)>1||Math.abs(y-box.top)>1)batch(()=>{put(window,C.x,Math.round(x));put(window,C.y,Math.round(y));});
       }
