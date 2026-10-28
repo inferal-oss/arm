@@ -181,3 +181,42 @@ func TestRunsRosterAnchorsExcludeAssociatedLeaseAndOverlays(t *testing.T) {
 		t.Fatal(got)
 	}
 }
+
+func TestRunsEscapeRestoresOpenedIdentityAfterCompletionReordersRoster(t *testing.T) {
+	m, s, first := runFixture(t, nil)
+	first.ID = "opened"
+	first.State = "active"
+	first.Created = m.timeNow
+	second := first
+	second.ID = "other-active"
+	second.Created = m.timeNow.Add(-time.Minute)
+	records := []model.Run{first, second}
+	s.reply = func(operation string, params, result any) error {
+		if operation == "runs" {
+			*result.(*[]model.Run) = records
+		}
+		if operation == "run_output" {
+			*result.(*model.RunLog) = model.RunLog{Run: first, Done: false}
+		}
+		return nil
+	}
+	runRead(t, m, press(m, "8"))
+	runRead(t, m, press(m, "enter"))
+	if m.runsUI.selected == nil || m.runsUI.selected.ID != "opened" {
+		t.Fatal("wrong run opened")
+	}
+	records[0].State = "terminal"
+	records[0].Outcome = "completed"
+	m.acceptRunsRead(runsReadMsg{ui: m.runsUI, session: s, generation: m.runsUI.generation, hasInventory: true, records: records})
+	if m.filteredRuns()[0].ID != "other-active" || m.runsUI.selected.ID != "opened" {
+		t.Fatal("completion did not move opened run into history")
+	}
+	cmd := press(m, "esc")
+	if m.runsUI.selected != nil || m.selectionID() != "opened" {
+		t.Fatal("Esc returned to another run", m.selectionID())
+	}
+	runRead(t, m, cmd)
+	if m.selectionID() != "opened" {
+		t.Fatal("successor roster refresh lost restored identity", m.selectionID())
+	}
+}

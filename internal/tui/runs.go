@@ -295,9 +295,12 @@ func (m *dashboardModel) runKey(k string) tea.Cmd {
 			m.setRunFullscreen(false)
 			return nil
 		}
+		id, previous := ui.selected.ID, m.selected
 		m.retireRuns()
 		ui.selected = nil
+		m.restoreSelection(id, previous)
 		m.viewport.GotoTop()
+		m.keepSelectionVisible()
 		return m.readRuns(false)
 	case "z":
 		m.setRunFullscreen(!ui.full)
