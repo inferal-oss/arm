@@ -6493,3 +6493,23 @@ no corresponding provenance claim is made. No Linux execution, positive
 native XFS proof, Manager charged-scope bridge or public sync activation is
 established. The fake hold fixtures exercise exclusion/refusal/cancellation
 lifecycle, and do not substitute for native allocation enforcement.
+
+
+### Provider C0 recovery and current-base validation
+
+[Independent C0 evidence](validation/provider-pair-c0-2026-10-28.json) binds
+all fourteen committed paths and modes at `45dab133` to reviewed source.
+Normal and race runs each pass nine roots/94 exact named RUN=PASS cases with
+no failures or skips; targeted Manager/provider-preparation vet exits zero.
+All three original child waits, retained outer completion and raw log hashes
+are checked. Eight Go files match the executed source; two later prose edits
+only clarify evidence status. Eleven protected product/dependency boundaries
+are unchanged, and the eight-file central patch remains unapplied.
+
+Controlled clock samples and private SQLite fixtures establish only the
+recorded C0 cases. Returned projection limits do not bound all SQLite internal
+memory/CPU; retaining floors do not implement global accounting. This is no
+physical-clock, image, real provider, format activation, Linux execution or
+full lifecycle acceptance. The optional mutation overlay was not run. Literal
+unified-patch context whitespace is retained; other owned code/docs pass the
+scoped whitespace check and the patch passes its applicability check.

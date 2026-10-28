@@ -467,7 +467,21 @@ ARM's vendored engine is unchanged.
 | --- | --- | --- |
 | Unified onboarding | `codex/unified-kubernetes-core-workflow` | `47bafbd7` core plus reviewed closed stage/connector contract; implement and validate complete workflow before activation. Prototype discovery and screenshots establish no installation or enrollment. |
 | Sync ownership | `codex/sync-manager-scope-gate-design` | Integrated hold `3d331e0e`; complete charged original scope, bounded transaction/gate, fresh-schema proof and native enforcement. |
-| Provider lifecycle | `codex/provider-pair-core` | Base `d8a324fb`; reviewed V0 guard and entitlement consumer, with unused raw-row/clock helpers under development. Rebase the central proof delta before coupled admission/lifecycle activation. |
+| Provider lifecycle | `codex/provider-pair-core-recovery` | Recovered unused helpers are integrated as `45dab133`: bounded raw reads, original membership/native-clock observations and retaining floors. Nine roots/94 named cases pass in normal and race runs; the regenerated current central proposal remains unapplied. Coupled reservation/accounting/lifecycle activation is unfinished. |
 | Native pressure | `codex/pressure-native-pause` | Base `d8a324fb`; original-owned policy and durable action cuts plus causal STOP/CONT validation remain under development. Production policy stays warning-only. |
 | Degraded persistence | `codex/degraded-holder-cancellation` | Base `07f2fb02`; review cancellation before failed persistence for Cargo, Gradle and storage exports without settlement credit. Generic/SSH evidence does not cover these holders. |
 | Numeric/component dependency | `codex/numeric-sparkline-517-composition` | Current upstream source, build, 519 numeric and 52 component cases accepted. Current rendered UI and production build precede separate upstream drafts and ARM dependency promotion. |
+
+
+The provider recovery preserves the original unfinished checkout and integrates
+only its reviewed owned cut. `45dab133` supplies unused C0 observation and
+retention helpers; it does not supply the journal, global accounting, complete
+lifecycle guards or the transactional publisher needed before image work. The
+current eight-path model/proof proposal is retained as an unapplied artifact,
+with no schema installer or format activation.
+
+The operations owner continues through `codex/degraded-holder-recovery` after
+its preserved source draft. General forwarding continues on
+`codex/forward-manager-bridge`: original child authority is pending review;
+actual Unix bind still requires positive disk custody and recovery proof. The
+approved forwarding security scheme remains unchanged.

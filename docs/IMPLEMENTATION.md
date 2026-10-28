@@ -2546,3 +2546,20 @@ Manager row, complete writer exclusion, bootstrap accounting, schema/recovery
 proof and native positive XFS acceptance remain prerequisites for public sync.
 The separate [source contract](SYNC-XFS-OWNER-FENCE-CUT.md) records those
 boundaries. This change does not enable push, pull or bidirectional dispatch.
+
+
+## Provider pair C0 helpers
+
+Integrated `45dab133` adds unused bounded raw-SQL tuple readers, current
+original-registry and sticky-clock observations, and pure retaining-progress
+and floor calculations. Exact typed bytes and snapshot reads reject malformed
+or substituted lease/budget rows; damage and partial membership retain a
+conservative floor or return accounting unknown. These helpers return facts,
+not executable entitlement capabilities.
+
+The separately regenerated model/proof proposal applies to its recorded
+current base as text only. Product model/proof source and eleven protected
+boundaries remain unchanged. Complete journal checks, global accounting,
+coupled cancellation/recovery, atomic reservation before image work, native
+producer/finalizer and public factory remain unfinished. Ordinary workspace
+format and activation policy are unchanged.

@@ -1,0 +1,1186 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED_SCOPED_C0_INDEPENDENT_AUDIT",
+  "source_base": "1e7a6ffcc08a9faf9d19017b0276e06de9750b25",
+  "tested_source_manifest_sha256": "79387420e22b4997fdfd2271ac38070b0905ce265ef10e06542a7b8bff5a8043",
+  "tested_owned_files": {
+    "docs/design/PROVIDER-PREPARATION-DEPENDENCIES.md": {
+      "sha256": "dd3511df823a28bfbd87766512972ff31a418876bbceeb798404ee76d824c8ec",
+      "bytes": 7409
+    },
+    "docs/design/PROVIDER-PREPARATION-V1.md": {
+      "sha256": "02e072e5dee5ca0750856ae368a9a80237649fa0935583f91668e734d0c7c9fc",
+      "bytes": 15468
+    },
+    "internal/providerpreparation/doc.go": {
+      "sha256": "09db36fb8ab8ebd1b200173e517b60d7ba1b9a6abbdf4542a7f73f4611416ea6",
+      "bytes": 623
+    },
+    "internal/providerpreparation/queries.go": {
+      "sha256": "f714da179b9d4159624a251800a68398a2fa5e2108091fb212c321dcdd242930",
+      "bytes": 3817
+    },
+    "docs/design/PROVIDER-PAIR-CORE-NEXT.md": {
+      "sha256": "313ca8ca99e0580da26f10b49114d45f69a9613fb96f54e074afa9de61f42a41",
+      "bytes": 12258
+    },
+    "docs/design/PROVIDER-PAIR-CORE-ROSTER.md": {
+      "sha256": "a50637f1aa8f9f6f6bb1a9c8ddc7c4af283f50e0a5d813cf531cc64541dc94b9",
+      "bytes": 3507
+    },
+    "internal/manager/provider_pair_members.go": {
+      "sha256": "9db0fac0ff272255951e4c6b73faabfafa81e4647ca87d45a49c53fbf02297dd",
+      "bytes": 5306
+    },
+    "internal/manager/provider_pair_raw.go": {
+      "sha256": "a98792547dae8ca52fcbf0890b30cd936d3919ed7b9f6200b4554b2810d1e1cd",
+      "bytes": 3628
+    },
+    "internal/manager/provider_pair_retention.go": {
+      "sha256": "0b9982bb50278e61b520c2ba9fd3d821a4ea1ff7fbe25245742f0e5e089710e8",
+      "bytes": 6258
+    },
+    "internal/manager/provider_pair_raw_test.go": {
+      "sha256": "09afc96230f2bede602622c59cf02b6e48dd3a03fe79c3beae7d37d1b0ec334e",
+      "bytes": 5363
+    },
+    "internal/manager/provider_pair_members_test.go": {
+      "sha256": "397f47340cc0630aa7e5b19882d88781930f302b149add74c8f815d879fd478e",
+      "bytes": 10495
+    },
+    "internal/manager/provider_pair_retention_test.go": {
+      "sha256": "4999a0eea29fcd8b9483b8ef81cb69ce3f2f5ec5cbacc545430d6f22eae70a84",
+      "bytes": 6778
+    },
+    "docs/design/provider-preparation-current-central.patch": {
+      "sha256": "d3168a704b5052c03618d8f7999f7b7e325510e037b9b00658aecd17420e5a97",
+      "bytes": 47856
+    },
+    "docs/design/provider-preparation-current-central-manifest.json": {
+      "sha256": "b19627471cfcf626c7143d543796ae0e642d2a5e7ba78d9bcb58361de608f3de",
+      "bytes": 2403
+    }
+  },
+  "committed_owned_files": {
+    "docs/design/PROVIDER-PREPARATION-DEPENDENCIES.md": {
+      "sha256": "dd3511df823a28bfbd87766512972ff31a418876bbceeb798404ee76d824c8ec",
+      "bytes": 7409
+    },
+    "docs/design/PROVIDER-PREPARATION-V1.md": {
+      "sha256": "02e072e5dee5ca0750856ae368a9a80237649fa0935583f91668e734d0c7c9fc",
+      "bytes": 15468
+    },
+    "internal/providerpreparation/doc.go": {
+      "sha256": "09db36fb8ab8ebd1b200173e517b60d7ba1b9a6abbdf4542a7f73f4611416ea6",
+      "bytes": 623
+    },
+    "internal/providerpreparation/queries.go": {
+      "sha256": "f714da179b9d4159624a251800a68398a2fa5e2108091fb212c321dcdd242930",
+      "bytes": 3817
+    },
+    "docs/design/PROVIDER-PAIR-CORE-NEXT.md": {
+      "sha256": "50c990df4ced502e4d9f54e950d453c69f0d735e54af256b7fb0702a264288cc",
+      "bytes": 12334
+    },
+    "docs/design/PROVIDER-PAIR-CORE-ROSTER.md": {
+      "sha256": "0cd06fafef449fc62978b6938a64df6f972ebdff1b4c1bdc7e68ba4fda5ccd7d",
+      "bytes": 3595
+    },
+    "internal/manager/provider_pair_members.go": {
+      "sha256": "9db0fac0ff272255951e4c6b73faabfafa81e4647ca87d45a49c53fbf02297dd",
+      "bytes": 5306
+    },
+    "internal/manager/provider_pair_raw.go": {
+      "sha256": "a98792547dae8ca52fcbf0890b30cd936d3919ed7b9f6200b4554b2810d1e1cd",
+      "bytes": 3628
+    },
+    "internal/manager/provider_pair_retention.go": {
+      "sha256": "0b9982bb50278e61b520c2ba9fd3d821a4ea1ff7fbe25245742f0e5e089710e8",
+      "bytes": 6258
+    },
+    "internal/manager/provider_pair_raw_test.go": {
+      "sha256": "09afc96230f2bede602622c59cf02b6e48dd3a03fe79c3beae7d37d1b0ec334e",
+      "bytes": 5363
+    },
+    "internal/manager/provider_pair_members_test.go": {
+      "sha256": "397f47340cc0630aa7e5b19882d88781930f302b149add74c8f815d879fd478e",
+      "bytes": 10495
+    },
+    "internal/manager/provider_pair_retention_test.go": {
+      "sha256": "4999a0eea29fcd8b9483b8ef81cb69ce3f2f5ec5cbacc545430d6f22eae70a84",
+      "bytes": 6778
+    },
+    "docs/design/provider-preparation-current-central.patch": {
+      "sha256": "d3168a704b5052c03618d8f7999f7b7e325510e037b9b00658aecd17420e5a97",
+      "bytes": 47856
+    },
+    "docs/design/provider-preparation-current-central-manifest.json": {
+      "sha256": "b19627471cfcf626c7143d543796ae0e642d2a5e7ba78d9bcb58361de608f3de",
+      "bytes": 2403
+    }
+  },
+  "all_eight_Go_files_equal_tested_source": true,
+  "post_gate_change": "Only two owned documentation paragraphs clarify that actual execution/acceptance are recorded separately; no code,queries,test,central proposal,dependency or format change.",
+  "gate_seal_sha256": "278b13425649fa344d14a57f3b99db090181605ccfd988d62071d1caf2f24fb9",
+  "result_sha256": "50933d306154da29f668ab0c19fd3095f5a303821f2666cf256c25cd7e2e1ffd",
+  "original_outer_exit": 0,
+  "original_child_phases": [
+    {
+      "name": "normal",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "c152cb5352e631f81007b64cc96a6905ea95a3d4adebf5229059fe922ed5e93f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "race",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "183a985c91ee3fa15c26c37fc46ef667370cf31fd00041d3ebc83d4c00c2e1a1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "vet",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cohorts": {
+    "normal": {
+      "roots": 9,
+      "nodes": 94,
+      "pass": 94,
+      "fail": 0,
+      "skip": 0,
+      "roster": [
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/aliased_identity",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/count_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/invalid_identity",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/negative",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/saturation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/audit_mismatch",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/boot_change",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/clock_failure_is_sticky",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/expiry",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/invalid_duration",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/invalid_version",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/negative_anchor",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/regression",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/wall_jumps_do_not_grant_time",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/aliased_ids",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/aliased_keys",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/cancelled_lifetime",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/closing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/current",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/draining",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/epoch",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/foreign_core",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/foreign_manager",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/host",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/malformed_epoch",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/nil_lifetime",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/owner",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/replaced_original",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/sticky_core_fault",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/unregistered",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/zero",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTuple",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_empty",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_id_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/cancelled",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/exact_maxima",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/id_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/id_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/id_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_control",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_empty",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/run_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/run_empty",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/run_json_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/caller",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/original",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation/held_manager_fence",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/both",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/both_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/duplicate_identity_maxima",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/larger_readable",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/temp_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/terminal_hints_still_consume",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/unrelated",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/worker_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/binding",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/cancelled",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/clock",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/close",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/generation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/pair",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/phase",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/reason",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/revision",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/schema",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/stamp",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/expired",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/persistence",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/budget_raw",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/temp_raw",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/worker_raw",
+          "status": "pass"
+        }
+      ],
+      "issues": []
+    },
+    "race": {
+      "roots": 9,
+      "nodes": 94,
+      "pass": 94,
+      "fail": 0,
+      "skip": 0,
+      "roster": [
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/aliased_identity",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/count_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/invalid_identity",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/negative",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairFloorDamage/saturation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/audit_mismatch",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/boot_change",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/clock_failure_is_sticky",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/expiry",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/invalid_duration",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/invalid_version",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/negative_anchor",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/regression",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairMemberClock/wall_jumps_do_not_grant_time",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/aliased_ids",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/aliased_keys",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/cancelled_lifetime",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/closing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/current",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/draining",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/epoch",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/foreign_core",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/foreign_manager",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/host",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/malformed_epoch",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/nil_lifetime",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/owner",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/replaced_original",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/sticky_core_fault",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/unregistered",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairOriginalRegistry/zero",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTuple",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_empty",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_id_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/budget_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/cancelled",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/exact_maxima",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/id_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/id_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/id_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_control",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/key_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_empty",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_integer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/lease_sentinel",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/run_blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/run_empty",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRawTypesAndBounds/run_json_null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/caller",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/original",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairReadCancellation/held_manager_fence",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/both",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/both_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/duplicate_identity_maxima",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/larger_readable",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/temp_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/terminal_hints_still_consume",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/unrelated",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainedFloor/worker_missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/binding",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/cancelled",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/clock",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/close",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/generation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/pair",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/phase",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/reason",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/revision",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/schema",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/damaged/stamp",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/expired",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRetainingProgress/persistence",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/budget_raw",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/temp_raw",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestProviderPairRowReplacement/worker_raw",
+          "status": "pass"
+        }
+      ],
+      "issues": []
+    }
+  },
+  "elapsed_seconds": 49.432449082999995,
+  "frozen_selected_inputs_during_run": {
+    "files": 33,
+    "before_after_equal": true
+  },
+  "protected_current_files": {
+    "internal/manager/manager.go": "978d81b2f0f4820ff02c5f9475855dd6e198cdb6fe66c5e42e345a546c8473c4",
+    "internal/database/proof.go": "e62e78bc797df18702ddf84bfaee5772f30884be604132cdbdb7e7dadc3f62dc",
+    "internal/database/proof_json.go": "df6bdb0d6372782efe5e055e19f24ae56d5705d42aa53942161a5ef4dcea832d",
+    "internal/database/proof_schema.go": "bf686c4578c408f773ae0360a1e97b644a09c981c59a3448a461b640203dbb2a",
+    "internal/database/proof_ssh_shapes.go": "24c6c9cd4627d5d5c98055fdb92dc08a56c3bb77e30c6dd13334c2fcd355e223",
+    "internal/model/model.go": "89b721676a87861d6d1a4f859ca6d56a676dcb23915cad44abf1bba4d51d23b4",
+    "internal/sshservice/receipt.go": "b899df9df6d5aafcbc8d5fdc521e62e88cf268b9a68389f6165f07e9ee8f8aa9",
+    "internal/providerpreparation/types.go": "318b3e349871351fe36a583454a236014260f79b4961e78c0afc07b8f0ae2a15",
+    "internal/providerpreparation/schema.go": "a7f8552fbaefc54e79eba10b7cbf80869e29cc472a50346c81fc4bf5fab49967",
+    "go.mod": "9b84c88d83cfffd848c3c156820e74646f444a388f18f1803ab2b1d31f1ca937",
+    "go.sum": "a45e834d977cd2eabc397e674c446a7e1ff856f9f0ca3b1b1f57ac4cf97aa4b8"
+  },
+  "central_proposal": {
+    "status": "UNAPPLIED_UNACCEPTED_ARTIFACT_ONLY",
+    "sha256": "d3168a704b5052c03618d8f7999f7b7e325510e037b9b00658aecd17420e5a97",
+    "current_baseline_applicability_check": true,
+    "no_installer_or_DDL_execution": true
+  },
+  "resource_controls": {
+    "canonical_FIFO_queue_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "five_queue_overrides_unset_at_dispatch": true,
+    "GOMAXPROCS": "1",
+    "p": 1,
+    "parallel": 1,
+    "owner_cap_seconds": 480,
+    "phase_caps_seconds": [
+      150,
+      180,
+      90
+    ],
+    "ordinary_existing_cache_reused": true,
+    "downloads_or_cache_copies": false
+  },
+  "Go_executable_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+  "limits": [
+    "This is only unused C0 raw-row/original-membership/clock observation and pure retention/floor behavior. Full journal validation, complete accounting, lifecycle guards and admission publisher remain unimplemented.",
+    "Clock tests use controlled boot-scoped samples through the real Manager reader; no physical native clock/suspend or external provider runtime claim.",
+    "SQLite fixtures are private temporary test data, not pair schema installation or production admission.",
+    "No image open/hash, native provider producer, sealed finalizer/settlement, public registration/factory, workspace format2 activation or current Linux execution accepted.",
+    "The optional exact-byte negative overlay was not executed.",
+    "Original Go child returned waits and a107 pipe cleanup contract do not establish arbitrary escaped/transitive descendant closure or hermetic toolchain identity.",
+    "Configured Go1.27.3 executable was pinned; no extra Go-version/buildinfo phase was added."
+  ],
+  "commit": "45dab13327e59371f8a1e7c8d3d4b33223e4453f",
+  "tree": "8dbd4d7a4c67c1b57378eaefd6fc027e342311d8",
+  "commit_path_count": 14,
+  "working_tree_clean": true,
+  "artifact_whitespace_qualification": "The unapplied unified-patch artifact retains required context whitespace. All other14-path content passes the scoped whitespace check; the artifact passes git apply --check. No repository attributes or policy changed.",
+  "independent_actual_review": {
+    "raw_rosters_reconstructed": true,
+    "normal_and_race_each": {
+      "roots": 9,
+      "named_RUN_PASS": 94,
+      "fail": 0,
+      "skip": 0
+    },
+    "all_committed_blobs_and_modes_verified": 14,
+    "all_eight_Go_blobs_equal_reviewed_and_executed_source": true,
+    "protected_boundaries_unchanged": 11,
+    "retained_original_outer_reply_exit": 0,
+    "original_child_waits_and_log_hashes_verified": 3,
+    "post_gate_prose_edits_only": [
+      "docs/design/PROVIDER-PAIR-CORE-NEXT.md",
+      "docs/design/PROVIDER-PAIR-CORE-ROSTER.md"
+    ],
+    "source_review_sha256": "b37473f96345bfbcf3577c098b58c965af5f7627255323a5ab2140da7ef6b749",
+    "unapplied_proposal_is_not_runtime_acceptance": true
+  }
+}
