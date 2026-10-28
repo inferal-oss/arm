@@ -522,7 +522,7 @@ Instructions explain which operations need leases, how to register contact infor
 
 Installation is scoped, idempotent, and available in dry-run form. Record a manifest of files, managed blocks, registrations, service identities, versions, and relevant pre-change state. Preserve unrelated instructions. Existing conflicting or edited content must be explained rather than overwritten. Do not recursively modify arbitrary projects merely because the installer can discover them.
 
-Install and uninstall previews must describe exact instruction-file effects: creation, modification or deletion, byte/line changes and before/after content hashes. Offer `--diff` for a unified patch with additions, deletions and context, colorized only in a suitable terminal. Structured output includes the same diff without ANSI. Preserve missing-final-newline distinctions; explicitly identify non-UTF-8 content when textual hunks cannot represent it faithfully. Bind confirmed content to the actual applied transformation.
+Install and uninstall previews must describe exact instruction-file effects: creation, modification or deletion, byte/line changes and before/after content hashes. Offer `--diff` for a unified patch with additions, deletions and context, colorized only in a suitable terminal. Interactive approval also offers `d`/`diff`, which shows the bound patch and returns to the default-no question without applying or creating backups. Structured output includes the same diff without ANSI. Preserve missing-final-newline distinctions; explicitly identify non-UTF-8 content when textual hunks cannot represent it faithfully. Bind confirmed content to the actual applied transformation.
 
 Before changing any instruction file or the installation manifest, save verified originals and metadata in a private per-operation backup directory under ARM state. Record absent files rather than inventing empty originals. Include original path, mode, size, identity, timestamps, ownership and content digest; retain byte-exact originals with private permissions. Sync and validate the backups before edits, stop if they cannot be saved, and report their concrete locations and completion state. Dry runs and declined prompts must create no backups. Uninstall preserves earlier backups; retention/purge is separate explicit scope. A backup does not authorize silently restoring over later user edits.
 
@@ -531,6 +531,11 @@ Use native service management where supported, with recovery after daemon failur
 ### Gradual agent adoption
 
 Installing or upgrading agent instructions does not authorize protocol adoption.
+Successful installation prints a concrete rollout next command. Status displays
+instruction readiness separately from policy, using human-oriented terminal
+output and JSON for pipes/explicit machine requests. Missing or changed managed
+instructions remain visible without resetting policy or claiming sessions loaded
+them. Suggested commands omit default state directories and quote custom ones.
 Unconfigured projects default to fully disabled. Setup should suggest gradual
 new-session enrollment while requiring an explicit user choice of disabled,
 observation/manual pilots, new sessions only, or all sessions within a reviewed

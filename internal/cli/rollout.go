@@ -7,8 +7,19 @@ import (
 	"strings"
 	"time"
 
+	"getarm.org/internal/install"
 	"getarm.org/internal/rollout"
 )
+
+type rolloutStatus struct {
+	Default      string                       `json:"default"`
+	Revision     int                          `json:"revision"`
+	Instructions install.InstructionReadiness `json:"instructions"`
+	Projects     []rollout.Project            `json:"projects"`
+	Sessions     []rollout.Participation      `json:"sessions"`
+	Suggestion   string                       `json:"suggestion"`
+	NextCommand  string                       `json:"next_command"`
+}
 
 func (a *app) rollout(args []string) error {
 	if len(args) == 0 {
@@ -113,13 +124,14 @@ func (a *app) rollout(args []string) error {
 			}
 		}
 		sessions := store.Roster(st, project)
-		return a.printRollout(struct {
-			Default    string            `json:"default"`
-			Revision   int               `json:"revision"`
-			Projects   []rollout.Project `json:"projects"`
-			Sessions   any               `json:"sessions"`
-			Suggestion string            `json:"suggestion"`
-		}{"disabled", st.Revision, projects, sessions, "Create a project boundary, then choose new-sessions (suggested), all, or observe for a manual pilot. Installation never enrolls sessions."})
+		status := rolloutStatus{Default: "disabled", Revision: st.Revision, Instructions: install.InspectInstructions(a.home), Projects: projects, Sessions: sessions, Suggestion: "Create a project boundary, then choose new-sessions (suggested), all, or observe for a manual pilot. Installation never enrolls sessions.", NextCommand: installNextCommand(a.home, "rollout project --help")}
+		if !status.Instructions.Ready {
+			status.Suggestion = "Review or install managed instructions before starting a rollout. Saved policy and existing resource obligations are unchanged."
+			status.NextCommand = installNextCommand(a.home, "install")
+		} else if len(projects) > 0 {
+			status.NextCommand = installNextCommand(a.home, "rollout policy --help")
+		}
+		return a.printRollout(status)
 	}
 	if action != "check" && action != "identify" && action != "ack" {
 		return fmt.Errorf("unknown rollout action %q", action)
@@ -171,10 +183,86 @@ func (a *app) printRollout(value any) error {
 	if a.machine() {
 		return a.print(value)
 	}
+	if status, ok := value.(rolloutStatus); ok {
+		return a.rolloutStatusHuman(status)
+	}
 	b, e := json.MarshalIndent(value, "", "  ")
 	if e != nil {
 		return e
 	}
 	_, e = fmt.Fprintln(a.out, string(b))
+	return e
+}
+
+func (a *app) rolloutStatusHuman(status rolloutStatus) error {
+	var b strings.Builder
+	fmt.Fprintln(&b, a.paint("1;36", "ARM · Agent rollout"))
+	readiness := "Not ready"
+	color := "33"
+	if status.Instructions.Ready {
+		readiness = "Ready"
+		color = "32"
+	} else if status.Instructions.State == "partial" {
+		readiness = "Partially ready"
+	} else if status.Instructions.State == "unknown" {
+		readiness = "Unknown"
+	}
+	fmt.Fprintln(&b, "\nInstructions: "+a.paint(color, readiness))
+	fmt.Fprintln(&b, "  "+terminalSafe(status.Instructions.Summary))
+	for _, target := range status.Instructions.Targets {
+		fmt.Fprintln(&b, "  "+label(target.Adapter)+": "+label(target.State)+" · "+terminalSafe(target.Path))
+		fmt.Fprintln(&b, "    "+terminalSafe(target.Detail))
+	}
+	fmt.Fprintln(&b, "\nUnconfigured projects: Disabled")
+	fmt.Fprintln(&b, "\nProjects")
+	if len(status.Projects) == 0 {
+		fmt.Fprintln(&b, "  None configured.")
+	}
+	modes := map[string]string{"disabled": "Disabled", "observe": "Discovery only (manual enrollment)", "new-sessions": "New sessions only", "all": "All sessions in project"}
+	for _, project := range status.Projects {
+		state := "enrollment open"
+		if project.Mode == "disabled" {
+			state = "enrollment disabled"
+		} else if project.Paused {
+			state = "enrollment paused"
+		}
+		fmt.Fprintf(&b, "  %s · %s · %s\n", terminalSafe(project.ID), modes[project.Mode], state)
+		fmt.Fprintf(&b, "    Policy revision: %d\n", project.Revision)
+		if project.Mode == "new-sessions" {
+			fmt.Fprintln(&b, "    Sessions started after: "+project.NewAfter.Format(time.RFC3339))
+		}
+		for _, binding := range project.Bindings {
+			kind := "Directory"
+			if binding.Kind == "git" {
+				kind = "Git checkout"
+			}
+			fmt.Fprintln(&b, "    "+kind+": "+terminalSafe(binding.Root))
+		}
+		for _, client := range project.Clients {
+			fmt.Fprintln(&b, "    "+label(client.Adapter)+" project: "+terminalSafe(client.ID))
+		}
+	}
+	fmt.Fprintln(&b, "\nSessions")
+	if len(status.Sessions) == 0 {
+		fmt.Fprintln(&b, "  None reported.")
+	}
+	for _, session := range status.Sessions {
+		report := "report stale or uncertain"
+		if session.Live {
+			report = "recent report"
+		}
+		coordination := "not coordinating"
+		if session.Coordinate {
+			coordination = "coordinating"
+		}
+		fmt.Fprintln(&b, "  "+terminalSafe(session.Project)+" · "+label(session.Adapter)+" · "+terminalSafe(session.Session.Session))
+		fmt.Fprintln(&b, "    "+label(session.State)+" · "+report+" · "+coordination)
+		fmt.Fprintln(&b, "    Needs: "+terminalSafe(session.Needs))
+		fmt.Fprintln(&b, "    Eligibility: "+terminalSafe(session.Why))
+		fmt.Fprintln(&b, "    Invite/revoke identity: "+terminalSafe(session.Identity))
+	}
+	fmt.Fprintln(&b, "\n"+terminalSafe(status.Suggestion))
+	fmt.Fprintln(&b, "Next: `"+terminalSafe(status.NextCommand)+"`")
+	_, e := fmt.Fprint(a.out, b.String())
 	return e
 }

@@ -84,6 +84,20 @@ not an inventory of running processes or permissions to execute.
 
 ## CLI-first workflow
 
+Begin with `arm install`, which previews the agent instruction changes and asks
+`Apply these changes? [y/N/diff]`. Enter `d` or `diff` to view the exact patch
+and return to the approval question. Empty input, EOF and interruption decline.
+Successful installation gives a separate `arm rollout status` next command;
+custom state directories are quoted explicitly, while effective defaults omit
+the `--home` option. Installation messages format `arm rollout` with backticks.
+
+In a terminal, status shows a human-readable readiness summary, project scope
+and participation roster. Without recorded instructions, or after uninstall,
+it reports instructions not ready and suggests `arm install`. Missing, modified,
+outdated and unfinished targets are distinguished. This inspection stays
+read-only and preserves policy and resource obligations. Matching files are not
+proof that a session loaded them. `--json` and redirected output remain JSON.
+
 All paths and identifiers below are generic placeholders. Reads work offline
 without creating state or starting a backend:
 

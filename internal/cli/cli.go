@@ -1249,6 +1249,9 @@ func (a *app) integration(action string, args []string) error {
 			}
 			return e
 		}
+		if report.Complete {
+			report.NextCommand = installNextCommand(a.home, "rollout status")
+		}
 		return a.print(report)
 	}
 	if e := a.uninstallGuard(true); e != nil {

@@ -1,5 +1,28 @@
 # Validation record
 
+## Installation review and rollout status — scoped owner validation
+
+Complete installation/readiness race tests pass. Scoped CLI race tests cover
+diff/accept/refuse/EOF/oversized-input cycles, cancellation after diff, changed
+targets after review, uninstall preservation, post-install next commands,
+default/custom/symlinked home selection, readiness lifecycle, preserved rollout
+policy, terminal control escaping, machine output and shared help/completion.
+Affected installation/CLI vet, a native CLI build and a CGo-free Linux amd64
+cross-build pass.
+
+A real terminal with disposable state and explicit synthetic client roots
+verifies: absent instructions report not ready; install offers `[y/N/diff]`;
+`d` prints the patch and re-prompts; `y` installs; completion prints a rollout
+command; status reports ready; uninstall removes only those owned instructions;
+status returns to not ready. Effective-default suggestions omit `--home`.
+No native user integration, agent registration or enrollment is exercised.
+
+Readiness bounds are 128 recorded targets, 8 MiB aggregate reads including the
+manifest, 1 MiB per instruction file, regular no-follow/nonblocking file opens,
+and held/named path identity checks. Unknown formats, unfinished updates and
+changed roots remain unverified. Readiness observes files, not session loading.
+Full Go suite, independent integration review and Linux runtime remain open.
+
 ## Project-scoped gradual agent adoption — scoped owner validation
 
 Validated source: focused feature commit `0916d4a`. Owner self-review is complete;

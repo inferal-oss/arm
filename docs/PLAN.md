@@ -8,6 +8,14 @@ A completed milestone does not establish full specification coverage.
 
 ## Project-scoped gradual agent adoption
 
+Installation/status UX continuation implements interactive diff review, a
+formatted post-install next command, omission of default-home overrides and a
+human terminal roster with independent managed-instruction readiness. Owner
+self-review, complete installation race tests, scoped CLI race regressions,
+affected-package vet and native compilation pass. Synthetic real-terminal
+install/diff/accept/status/uninstall/status behavior is verified. Integration
+review remains separate.
+
 Owner: `codex/gradual-agent-rollout`. Focused source commit: `0916d4a`.
 Implementation adds a separate cooperative
 adoption ledger and CLI, disabled-by-default installed guidance, explicit

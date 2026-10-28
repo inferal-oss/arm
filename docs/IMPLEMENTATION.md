@@ -2,6 +2,21 @@
 
 ## Project-scoped gradual agent adoption — CLI milestone
 
+Interactive install/uninstall confirmation offers `[y/N/diff]`. `d`/`diff`
+displays the bound patch and returns to the same default-no question; checking
+the diff never applies changes or creates backups. Acceptance rechecks the
+reviewed files. Successful CLI installation prints a separate rollout status
+command. Suggestions omit `--home` when it resolves to the effective CLI default
+and quote explicit custom homes.
+
+`rollout status` renders instruction readiness, project policies, scope and
+session participation as human-readable terminal text. Pipes and `--json` keep
+structured output. Readiness inspects only bounded, recorded installation
+targets: missing, modified, outdated, unfinished and unverified instructions
+remain visible. Missing/uninstalled instructions report not ready and suggest
+installation. Existing rollout policy and obligations remain intact. Matching
+files do not prove that an ongoing session loaded them.
+
 The CLI has a separate local rollout ledger, independent of the resource/backend
 schema. New projects are disabled. Explicit directory/Git bindings contain
 observation, new-session or all-session policy; optional client-project aliases
