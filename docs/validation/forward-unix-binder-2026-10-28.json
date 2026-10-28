@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-28",
+  "feature": "private original Unix forwarding binder",
+  "source_commit": "48d21fc1f7202ab347439351d5223d52b35d5499",
+  "platform": "macOS arm64",
+  "go_version": "1.27.3",
+  "gate": {
+    "seal_sha256": "0047ae44e5a002b2c17959d2723623f65c3e86d621dfee8c525f0fc68ae9129d",
+    "result_sha256": "a8935cf4da28d539ba7698059519dbb14c6d759c6bcd0f30998266c3ea2962c9",
+    "normal": {
+      "roots": 33,
+      "named_cases": 63,
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0
+    },
+    "race": {
+      "roots": 33,
+      "named_cases": 63,
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0
+    },
+    "roster_sha256": "d39d26b9da92f2146ff266a1637c06c93c42501b7724f12c1b32f2cfcea98fc0",
+    "test_packages": ["internal/manager", "internal/database"],
+    "vet_packages": ["internal/manager", "internal/storage", "internal/database"],
+    "original_process_waits": 3,
+    "original_process_exits": [0, 0, 0],
+    "inputs_unchanged": true
+  },
+  "independent_actual_review_sha256": "6de1de76cfb0841e8b809571410a4af76c89fe341f00b1f16e46ce3c1b3d750e",
+  "scope": "Private socket custody, bind intent, bound acknowledgement, checked original close and unlink, and native terminal proof. No accept worker or public TCP route is enabled.",
+  "open_work": [
+    "current-main composition",
+    "Linux runtime validation",
+    "bind-intent and bound crash cleanup",
+    "public TCP forwarding and application acceptance"
+  ]
+}

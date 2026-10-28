@@ -2676,3 +2676,37 @@ The reader returns facts only. It neither installs a schema nor constructs an
 original owner, entitlement, factory or complete accounting projection. Ordinary
 orphan LeaseRef rows lie outside C1; an empty indexed namespace is not proof of
 free resources. The schema/model proposal remains unapplied.
+
+### Reviewed private Unix forwarding binder
+
+`codex/forward-unix-binder` adds a private `ForwardUnixPair.BindOriginal` path.
+It checks the original source/storage tuple and held directory, writes and
+acknowledges `bind_intent` before `net.ListenUnix`, retains the original listener
+and directory, disables implicit socket unlink, then records a checked socket
+identity, allocation observation and `bound` acknowledgement. Only after this
+acknowledgement does it return the private owner. The owner has no exported
+listener or pathname and installs no accept loop or public TCP route.
+
+`CloseAfterJoin` closes the original listener, waits for the supplied actual
+worker join, checks the socket identity, unlinks through the held directory,
+closes that directory and records a distinct native terminal proof before
+ordinary storage settlement. Uncertain operations mark the source for attention
+and retain both charges. Strict readers recognize old `forward-` and new `f-`
+socket names, while startup refuses bind intent and bound rows; no crash-time
+adoption or native cleanup is implemented. The shorter name fits more absolute
+paths, but paths over 100 bytes refuse before bind intent. This is a private
+development cut, not complete forwarding from the specification.
+
+The corrected candidate rechecks the exact source/storage/pair tuple and native
+elapsed lease clock after the intent acknowledgement and directory work, just
+before the bind syscall and again after the bound acknowledgement before a
+capability is returned. Already joined child or supplied workers refuse at
+entry and at both final gates. Fresh reads use bounded canonical physical
+lease and pair rows, including the protected run and header columns, before
+sampling native time. The entire admitted constructor is tracked through
+Manager shutdown, and cleanup/retirement of original descriptors is serialized.
+Constructor failures and shutdown attempt checked, cached closes of the
+original listener and held directory outside the binder's Manager lock while
+retaining uncertain charges. Focused source commit `48d21fc` matches the
+independently accepted native and race-tested source. The current main
+composition and public forwarding route remain separate work.

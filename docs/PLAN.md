@@ -611,3 +611,17 @@ byte-for-byte unchanged; all eight recorded web/TUI source/asset hashes still
 match the captured feature. The merge preserves reviewed feature commit IDs and
 uses normal fast-forward push checks. Earlier headless videos remain bound to
 `47f9031`; they are not reattributed to this later source composition.
+
+### Reviewed private Unix forwarding binder
+
+The separate `codex/forward-unix-binder` branch extends the reviewed prebind
+pair with one original, private Unix socket lifecycle in focused source commit
+`48d21fc`. Independent source review and the native macOS gate accept 33 exact
+roots and 63 named cases in both normal and race modes, plus Manager, storage
+and database vet. The [normalized evidence](validation/forward-unix-binder-2026-10-28.json)
+records the exact scope. Current-main composition and its combined validation
+remain open. This cut does not enable a public TCP forwarding route or accept
+loop. Bind intent and bound states refuse restart recovery; a future
+original-owner recovery design is required before either can settle after a
+crash. Destination-local service grants remain the authority for eventual
+forwarding; relays carry transport without a separate service decision.

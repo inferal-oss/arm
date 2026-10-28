@@ -6714,3 +6714,39 @@ they do not establish physical headroom, suspend, image work, schema activation,
 Linux runtime, provider lifecycle or complete accounting. Empty indexed results
 remain observations with ordinary-row/orphan coverage left to C2. Later current
 run-reporting/recovery/forwarding composition is not accepted by this leaf gate.
+
+### Reviewed private Unix forwarding binder
+
+An earlier v1 pilot on Darwin passed three named cases:
+`TestForwardUnixOriginalBindAndNativeTerminal`,
+`TestForwardUnixOverlongPathRefusesBeforeIntent`, and
+`TestForwardUnixBoundRestartRefusesNoBindRecovery`. The first binds an actual
+Unix socket in a short private directory, checks the durable bound phase,
+closes the original listener, unlinks through the held directory, settles the
+storage lease and passes offline settled-database proof. The second refuses an
+overlong socket path before any bind-intent event and retains no-bind abort.
+The third refuses restart recovery of an unfinished bound socket. Manager,
+database and storage packages compiled at that earlier v1 source cut. These
+pilot results are historical and are not attributed to the corrected source.
+
+Independent v2 source review returned three concrete binder findings: the
+native clock needed a fresh post-intent check, child and supplied worker joins
+needed final pre-bind checks, and constructor/shutdown failure paths needed to
+close the retained original directory. A later review found that fresh checks
+needed strict physical row reads and shutdown needed to join an in-flight
+constructor. Those findings and a shutdown-race test finding were fixed before
+the accepted gate.
+
+The corrected v8 source passed the native macOS Go 1.27.3 finite gate. Normal
+and race runs each recorded all 33 reviewed roots and 63 named passes, with no
+failures, skips or roster issues; Manager and database packages both passed.
+Focused vet passed Manager, storage and database packages. All three original
+process waits returned zero and every source/tool pin remained unchanged.
+Independent review of the raw results accepted this private cut, and the 12
+source/contract files in `48d21fc` match the tested bytes. The
+[normalized evidence](validation/forward-unix-binder-2026-10-28.json) records
+the receipt hashes and exact limits.
+
+Current-main composition, Linux runtime, bind-intent/bound crash cleanup and
+actual public TCP forwarding acceptance remain open. Relay transport does not
+independently authorize a service.
