@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "overall": "FAILED_FINAL_HOST_DISCLOSURE_ASSERTION",
+  "source": {
+    "binary_sha256": "061133722feb58189bfa352da661c3ffd380ab183e522742bde4e913e3f634f0",
+    "entry_sha256": "f3c577134f219e8cf3ee9984b6bccd50e9c70987ef0b0605e2922d4e1c5ac237",
+    "source_manifest_sha256": "e3ce543084969c001b8b76e855145fdff6922a20848d54289ada7ac3bb09b073"
+  },
+  "failed_conjunct": "Final explicit Host exact-identity disclosure was not observed expanded. Generated host fallback and canonical identity remained; do not qualify the raw host-clear case as a rendered exact-ID pass.",
+  "product_finding": {
+    "priority": "P2",
+    "summary": "Host refresh replaces opened disclosures with newly closed controls.",
+    "causal_evidence": "A retained read-only capture block observed an open exact-identity card at height328, then a different focused disclosure control and height240 roughly188ms later. The accepted capture pair was the two later collapsed samples. Earlier expanded AX and later collapsed AX agree.",
+    "source": "refresh renders the current non-Monitor view; renderHost creates a new disclosure; graph-ui disclosure defaults open:false; owned replacement disposes previous controls.",
+    "qualification": "This establishes an observed disclosure replacement/state-loss problem. It does not establish which exact event or input closed the final click attempt; no missing identity or failed naming clear is established."
+  },
+  "authoritative_positive_scope": {
+    "ordered_snapshots": 14,
+    "exact_complete_naming_maps_verified": true,
+    "revision_sequence": [
+      0,
+      0,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "successful_mutations": 10,
+    "unsaved_cancellations_without_map_change": 2,
+    "definitive_collision_without_map_change": 1,
+    "selected_canonical_request_identity_ownership_and_full_port_binding_equal_all14": true,
+    "scope_not_all_status_fields": true,
+    "actual_UI_callbacks_and_other_case_observations_retained_not_replayed": true
+  },
+  "cleanup": {
+    "original_outer_exit": 1,
+    "original_handle_closed_receipt": true,
+    "original_children": 44,
+    "all_joined_retired_pipes_closed": true,
+    "ordinary_zero_exit_commands": 43,
+    "backend_bound_cancel130": true,
+    "ordinary_tracked_lease_releases": 2,
+    "remaining_owned_leases": 0,
+    "listeners_refused": 2,
+    "state_clear": true,
+    "final_pins_unchanged": true,
+    "owner_errors": [],
+    "own_tab_reset_close_window_return_record_retained": true
+  },
+  "retained_hash_audit": {
+    "manifest_files": 210,
+    "all_sizes_and_hashes_match": true
+  },
+  "minimal_next_action": "Preserve Host disclosure state/identity across ordinary status rerender in the owned UI source; review that small correction and target only refresh/open/rendered exact-ID behavior. No naming writer change or replay of ten successful map mutations is justified by this failure. No new run or source edit authorized by this record.",
+  "limits": [
+    "Original overall FAIL remains FAIL; partial positives do not promote native naming gate.",
+    "AX text in a collapsed region is not visible exact-ID paint proof.",
+    "Post-stop Disconnected raster does not diagnose pre-stop final click timing.",
+    "No complete pixel-clean, physical-node permanence, full suite, public install or current/later-source acceptance."
+  ]
+}

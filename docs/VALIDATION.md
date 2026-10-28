@@ -6263,3 +6263,29 @@ Original job indexes and artifact hashes verify directly despite two absent
 convenience copies in the combined index. Historical R4's unretained original
 graph/tape is not reconstructed. Current-upstream/full-suite/publication gates
 remain open, and ARM's vendored engine is unchanged.
+
+
+### Naming browser run and current engine follow-up
+
+The [composed naming browser run](validation/custom-names-browser-partial-2026-10-27.json)
+completes ten successful name-map mutations,
+two unsaved cancellations, one collision refusal and fourteen authoritative
+snapshots with unchanged selected identity, ownership, request and full port-binding
+projections; dynamic status fields are outside that equality claim. It exits one at the final
+Host expanded-disclosure assertion. Earlier retained samples also show the open
+Host disclosure replaced and collapsed across a live refresh. This is positive
+mutation evidence within a failed overall run; final Host display acceptance
+is not claimed. All 44 original command owners close, both ordinary leases
+release, both listeners refuse connections, selected pins remain unchanged and
+the retained positive browser receipt records the owned tab closed and returned.
+
+For the current-upstream Semblance composition, fresh baseline and candidate
+Rust/WAT builds, both ten-check ABI cohorts and typecheck pass. The first
+67-case regression run passes 66 and fails the new test's EVAL-count expectation:
+five UNION rows each run two nested values. Output/order, restored frame and
+packed-mode assertions precede the failure; the final scan-sequence assertion
+is not reached. A test-only expected-count correction is authorized, with
+targeted integration, production/SSR builds and retained corpus/query checks
+still pending. Earlier failed runs are not promoted, and ARM's vendored engine
+is unchanged. Current upstream branch policy requires targeted tests; its main
+full-suite gate follows a batch of merges.

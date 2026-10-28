@@ -91,7 +91,7 @@ history merely because it contains an earlier ready report.
 | --- | --- | --- |
 | Compact Resources and web alignment | Resources UI role | Integrated as `5130242`, with backend availability in `ff412e9`. The 280px stock grid, contained pool manager, compact accounting, readable/exact IDs and refreshed peer disconnect label are source-bound accepted. Qualified native v11 covers widths/30 Stats and real consumer actions; v12 covers corrected nested Close/Escape plus nine modes; v14 covers the final peer label with retained commitments and disabled controls. Earlier overall failures remain failed. Actual naming-form mutations and complete pixel/platform breadth remain separate. |
 | Unified mesh onboarding | `codex/unified-mesh-kubernetes` | Put SSH and Kubernetes in the existing Connect/Install flow and remove the separate Kubernetes inventory area. Reproduce and fix context-visible but missing-Node discovery using actual read-only configured-cluster evidence, including explicit empty/forbidden/unavailable/filtered states. Reuse integrated CLI/provider inventory, reviewed Pod planning, shipment and original-key recovery. Redacted inventory diagnostics/counts are integrated as `a15c54a`; corrected original-source journaling and concurrency guards are integrated as `5e5e7f1` with current composition checks. Complete typed dashboard plan/review/recovery, bootstrap/readiness and pinned mesh enrollment without treating scheduler figures as live resource authority. Preserve credential/transport/accounting fences and the original failed cluster attempt; later cluster effects need a concrete reviewed plan and scoped identity/readiness/enrollment/cleanup evidence. |
-| Shell completion and readable identities | `codex/cli-completion-readable-names` | Default labels and Cobra Bash/Zsh/Fish completion (`4d13dd9`, `ac861e3`) are integrated. Custom local names are reviewed and integrated as `0f34023`: bounded CAS metadata, scoped reservations, exact identity bindings, fail-closed joint lookup, CLI/web/terminal forms and completion. Final custom source passes 195 roots/650 named nodes in each normal and race cohort, including all 169 required cases per cohort; vet, CLI build and shell protocols pass. All 72 owned paths and modes match the validated source. Qualified frontend build and 79 JavaScript cases remain separate from the failed overall frontend wrapper. Naming-form browser mutations, Linux custom-name runtime and later public installation remain open. The shared Resource/mobile source composition is integrated as `5130242`. No schema migration, signed identity rewrite or format-2 activation. |
+| Shell completion and readable identities | `codex/cli-completion-readable-names` | Default labels and Cobra Bash/Zsh/Fish completion (`4d13dd9`, `ac861e3`) are integrated. Custom local names are reviewed and integrated as `0f34023`: bounded CAS metadata, scoped reservations, exact identity bindings, fail-closed joint lookup, CLI/web/terminal forms and completion. Final custom source passes 195 roots/650 named nodes in each normal and race cohort, including all 169 required cases per cohort; vet, CLI build and shell protocols pass. All 72 owned paths and modes match the validated source. Qualified frontend build and 79 JavaScript cases remain separate from the failed overall frontend wrapper. A later browser run completes ten naming mutations, two unsaved cancellations, collision refusal and fourteen authoritative snapshots, then fails its final Host disclosure assertion. Live refresh replaces the disclosure and loses its open state; a focused UI correction and host-only acceptance remain open, alongside Linux custom-name runtime and later public installation. The shared Resource/mobile source composition is integrated as `5130242`. No schema migration, signed identity rewrite or format-2 activation. |
 
 ## Canonical module source integration
 
@@ -330,14 +330,15 @@ interaction and integration remain separate from the accepted leaf milestone.
 
 ## Unfinished-work survey
 
-This read-only survey targets `c33b05d` and the current accepted handoff. A
-completed component milestone does not complete its user-facing portfolio.
+The original read-only survey targeted `c33b05d`; the refresh at `f474d1b`
+also checks current and historical delivery records against the integrated handoffs.
+A completed component milestone does not complete its user-facing portfolio.
 Existing accepted checks retain their source/platform scope; this survey adds
 no runtime acceptance.
 
 | Priority | Area | Concrete unfinished work | Next action and boundary |
 | --- | --- | --- | --- |
-| Integrated | Compact Resources and mobile composition | Backend/CLI/terminal `ff412e9` and browser source/assets `5130242` match the reviewed composition. Final disconnect label and cleanup pass; earlier qualified positive cohorts keep their recorded source scope. | Continue only actual naming-form acceptance and separately scoped unsupported platform/roaming/layout work. Preserve old failures; do not replay unchanged Resource cohorts. |
+| Integrated | Compact Resources and mobile composition | Backend/CLI/terminal `ff412e9` and browser source/assets `5130242` match the reviewed composition. Final disconnect label and cleanup pass; earlier qualified positive cohorts keep their recorded source scope. | Naming mutations now have scoped positive evidence within an overall failed run. Fix refresh-driven Host disclosure state loss, then test that affected behavior; retain separate unsupported platform/roaming/layout work and prior failures. Do not replay unchanged Resource cohorts. |
 | Now | Kubernetes unified install/connect | Diagnostics `a15c54a` and corrected source ownership `5e5e7f1` are integrated; the actual missing-Node symptom is not reproduced. A working Kubernetes choice in both dialogs, admitted source preparation, backend effects, verified readiness/catalog and pinned mesh enrollment remain unfinished. | Continue the already assigned unified workflow using existing typed provider and original-key contracts. Diagnose context/identity/namespace/Node/query stages separately; scheduler allocatable figures do not supply live ARM CPU authority. |
 | Next | Public sync | Planner, rsync worker, ledger and recovery foundations are integrated, but public push/pull/both and typed multi-hop sync are not wired. The complete-scope owner type cannot currently mint a positive capability. | Complete enforced native scope/charged Manager ownership and settlement first, then endpoint dispatch, reviewed conflicts/deletions/baselines, progress/recovery and web/Charm controls. Keep one coordinated sync continuation across planner, worker and relay work. |
 | Next | Provider lifecycle | Codec, durable fixture, entitlement component and V0 writer guard do not implement production registration or the real Manager/native-clock/retained worker-and-scratch bridge. | Finish reservations before image work, current held authority and every End/expiry/Close/restart/reset boundary before a startable factory. Uniform writer rollout and format activation remain explicit gates; a published guard is not proof that all writers upgraded. |
@@ -347,8 +348,8 @@ no runtime acceptance.
 | Later | Remote operational parity | Selected remote web/TUI windows deliberately allow scoped inspection only; live monitoring/events, contacts/messages, administration and lease mutations are unavailable there. | Add each supported destination-granted workflow through typed host-bound APIs and original-key recovery, with matching UI behavior. Never substitute localhost or treat inspection as parity. |
 | Later | Screen access | Direct-peer Standard VNC and resource retention are integrated. Sustained independent input, live clipboard, separate-user/headless cases, revocation, multi-hop and High Performance breadth remain open. | Keep the accepted direct Standard boundary; separately review routed view/control grants, held resources and disposable live-desktop evidence. Socket/noVNC tests do not establish OS interaction. |
 | Later | Workload and resource breadth | Cargo/Gradle support is intentionally constrained; broader configuration/wrappers/shared services, dedicated uv adapters, GPU/unified-memory, network budgets and distributed pools remain unfinished. | Deliver capability-specific adapters with real tools/hardware and explicit ownership/accounting. Shared local counts and observation are not distributed allocation or kernel enforcement. |
-| Held dependency | Semblance numeric/Sparkline | Packed-row engine builds, ABI/typecheck, 66 storage/guard/streaming cases and 112 integration cases now have scoped acceptance, including populated Calendar in four genuine modes. Fixed retained replay and the exact populated query now pass in scope; complete current-upstream validation remains pending. ARM's vendored engine is unchanged. | Finish current-upstream composition and required full gates before a focused PR and numeric promotion. Keep Sparkline dependency #182 and prior failed runs explicit. |
-| Scoped future | Installation and releases | Canonical literal `@latest` is accepted for `5b80ab9`, not all later source. Per-user service lifecycle and a later tagged four-platform carrier release are distinct incomplete boundaries. | Retain source-specific public-install evidence. Perform later release/artifact work only for an authorized concrete cut; no tag, merge or deployment follows from this survey. |
+| Held dependency | Semblance numeric/Sparkline | Packed-row engine builds, ABI/typecheck, 66 storage/guard/streaming cases and 112 integration cases now have scoped acceptance, including populated Calendar in four genuine modes. Fixed retained replay and the exact populated query now pass in scope; complete current-upstream validation remains pending. ARM's vendored engine is unchanged. | Finish current-upstream targeted tests, production/SSR builds and retained replay before a focused PR and numeric promotion. Current upstream requires targeted tests on branches; its full suite runs on main after a merge batch. Keep Sparkline dependency #182 and prior failed runs explicit. |
+| Scoped future | Installation and releases | Canonical literal `@latest` is accepted for published `81fdccd`, not all later source. Per-user service lifecycle and a later tagged four-platform carrier release are distinct incomplete boundaries. | Retain source-specific public-install evidence. Perform later release/artifact work only for an authorized concrete cut; no tag, merge or deployment follows from this survey. |
 | Scoped future | Cross-user cooperation | Advisory peer summaries and Charm views are integrated; actual different-UID/formal breadth and stronger shared admission/fairness remain unsupported. | Keep advisory reports outside admission/process authority. Stronger cooperation requires its own trusted authority design, not a reinterpretation of peer totals. |
 
 Already integrated narrow tasks—default/completion/custom names, terminal gauges,
@@ -359,3 +360,23 @@ ready source. Their later compositions and explicit limitations remain separate.
 QUIC `d115a84` remains parked. Mounted-share/publication/consumer experiments are
 superseded by explicit sync and are historical, not tasks to resume. Existing
 upstream draft submissions do not authorize merges or a new main full-suite run.
+
+
+### Survey refresh and active follow-through
+
+The refreshed inventory finds no additional ready implementation hidden in the
+older gauge, remaining-capacity, database, module, routed-SSH or website tasks.
+Their accepted focused commits are integrated; divergent historical branches
+are not integration candidates merely because Git lists them as unmerged. The
+earlier Kubernetes prototype is superseded by the unified onboarding continuation;
+its unfinished owned UI work remains preserved.
+
+Three bounded continuations are active: unified Kubernetes source preparation
+and onboarding, the Host disclosure refresh correction, and current-upstream
+Semblance engine validation. The latter has fresh Rust/WAT baseline and candidate
+builds, ABI checks and typecheck; its first regression run passes 66 cases and
+fails the added boundary test's expected EVAL count. The test-only correction
+accounts for both nested values. That failed run remains failed, and final
+probe-sequence, integration, build and replay gates remain open. No public
+sync, provider factory, native pressure pause or ordinary TCP fence is enabled
+by this survey.

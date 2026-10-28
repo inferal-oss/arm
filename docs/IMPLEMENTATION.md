@@ -2411,3 +2411,19 @@ build cache cleanup. These foundations do not supply source storage admission,
 a unified installer, runtime readiness or a pinned Kubernetes mesh connector.
 Those workflows remain withheld pending their own complete ownership/proof and
 actual runtime/browser acceptance.
+
+
+## Unfinished-work follow-through
+
+The refreshed delivery inventory retains the unfinished public workflows in
+[the plan](PLAN.md#unfinished-work-survey). Integrated diagnostic and ownership
+foundations do not yet provide unified Kubernetes installation. The native
+source capability is being implemented separately from the preserved dashboard
+prototype and remains unconnected to public provider operations.
+
+Actual custom-name browser mutations expose a Host presentation defect: status
+refresh reconstructs its exact-ID disclosure with the default closed state.
+The canonical identity and local name mutations are retained correctly, but
+that does not establish stable rendered disclosure behavior. A focused control
+lifecycle correction remains pending; naming storage and resolution semantics
+are unchanged.
