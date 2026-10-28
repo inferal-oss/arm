@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "status": "INTEGRATED_SCOPED_KUBERNETES_FOUNDATIONS",
+  "inventory_commit": "a15c54aaa8d8467bbabd0ec97a78cdafcaf69048",
+  "inventory_tree": "149f9a61d779c694c9cea222b257d7cf4e57919b",
+  "source_guard_commit": "5e5e7f17602f2e6cf5599f4c41dd3ab8372f6962",
+  "source_guard_tree": "83996f27fc0706e0184c3f1b36885c4cde4b5c35",
+  "source_payload": "f9a0867",
+  "provider_files_sha256": {
+    "internal/kubeprovision/catalog.go": "25015e8860f9454aaf67e2cabcb1997aa407154cbaec8b75dc86a49c868a4de3",
+    "internal/kubeprovision/journal.go": "f7322c4c4943446f3bce46b82e910f35ff2b4bea4d00c6a510b8448c0dd10ada",
+    "internal/kubeprovision/owned_exec.go": "7f53d3c9d8785eb127c1a268f8ad3ec2a3a4d8a95486d133783312170979102d",
+    "internal/kubeprovision/provider.go": "b585a7e3daeb2a411e5b7dbe1805f9476922ce8354275b4f310369896bf603e6",
+    "internal/kubeprovision/runtime.go": "d8223731edc5568f9f1cdf167d80bedc598dc294e5af3353cc7086b6cb59518a",
+    "internal/kubeprovision/ship.go": "f97a6810b6be908a4b28206919684e33f95eadb1cfc70f36d61d574bb193a653",
+    "internal/kubeprovision/source_journal.go": "da0958ec6965b5df1c12d3ad212b2b897e4013d18bfd79fae449bb8dd73b1bf2",
+    "internal/kubeprovision/source_journal_test.go": "c40f8a5f2af99cda01a20ad577d3ce4071e30499e23c018c5edc5f0ac924858e",
+    "internal/kubeprovision/source_concurrency_test.go": "d6b90b29c25914aa418f8bd37b1ba8842fa3214282558cfa3253724250bae041",
+    "internal/kubeprovision/start.go": "6383abb21e2ebe8a2dcc4f4b0a8efe1f54fb9f58f425dda86231408e1f17c4d5"
+  },
+  "all_ten_git_objects_and_modes_exact": true,
+  "validated_composition_tree_exact": true,
+  "scope": "Redacted inventory diagnostics/counts and durable original exec source ownership; not unified installation or mesh enrollment",
+  "evidence": [
+    "kubernetes-inventory-current-2026-10-27.json",
+    "kubernetes-source-journal-corrected-native-2026-10-27.json",
+    "kubernetes-source-current-failed-2026-10-27.json",
+    "kubernetes-source-current-composed-2026-10-27.json"
+  ],
+  "remaining": [
+    "Bounded admitted source CPU/memory/storage and proof/cleanup contract",
+    "Unified browser plan/review/install/connect and pinned connector",
+    "Actual reported missing-Node dashboard symptom and disposable-cluster runtime acceptance"
+  ],
+  "limits": [
+    "Existing target facts cannot settle an unknown original source helper",
+    "Original ENOSPC vet run remains failed; only vet was repeated",
+    "No new workspace schema or migration, CPU exception, public installation or later-source public install acceptance"
+  ]
+}

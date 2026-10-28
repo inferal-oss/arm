@@ -2386,3 +2386,28 @@ integrates the exact reviewed source/assets after qualified native focus, modes
 and final disconnect acceptance. Naming-form mutations remain separate. The
 [unfinished-work survey](PLAN.md#unfinished-work-survey) distinguishes complete
 components from missing public workflows; it grants no production authority.
+
+
+## Kubernetes inventory and original source ownership
+
+Integrated `a15c54a` distinguishes fixed forbidden, unauthorized, missing,
+timeout/cancelled and unavailable inventory errors without exposing server or
+credential diagnostics. Counts distinguish the complete bounded Node read,
+query matches and truncation; Namespace remains an installation prerequisite,
+not a Node selector. This does not establish the reported dashboard symptom fixed.
+
+Integrated `5e5e7f1` durably records a private original exec nonce before each
+fixed helper stream. Pending/uncertain source ownership uses a closed on-disk
+phase that older readers refuse. The current reader may retain target evidence;
+only the original guard can clear positively joined source ownership. Public
+journal updates cannot remove it. Ship/start/reconciliation commits check the
+source fence atomically, so competing calls cannot poison a clean original
+closure. Fresh catalog uncertainty survives projection, and checked original
+input/request descriptor close failures retain a fixed cleanup class.
+
+Exact composed helper, provider/inventory race and targeted vet checks pass.
+The ENOSPC predecessor remains failed; only vet was repeated after closed-run
+build cache cleanup. These foundations do not supply source storage admission,
+a unified installer, runtime readiness or a pinned Kubernetes mesh connector.
+Those workflows remain withheld pending their own complete ownership/proof and
+actual runtime/browser acceptance.

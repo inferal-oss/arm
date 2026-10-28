@@ -6218,3 +6218,48 @@ and no fallback. Per-mode values/counter snapshots were not separately emitted;
 this is source-inspected assertion evidence. Fixed retained replay, upstream
 publication gates and numeric promotion remain pending. ARM's vendored engine
 is not changed by these dependency records.
+
+
+### Current Kubernetes diagnostics and source ownership integration
+
+[Inventory composition](validation/kubernetes-inventory-current-2026-10-27.json)
+passes four roots/eleven named cases in each normal/race cohort plus targeted
+server vet on the current UI base. `a15c54a` has the exact tested tree. These are
+bounded diagnostic/error/count checks; they neither reproduce missing Nodes nor
+validate the complete installer or actual configured cluster.
+
+[Corrected provider evidence](validation/kubernetes-source-journal-corrected-native-2026-10-27.json)
+accepts the exact isolated correction source and fresh helper: 67 roots/106 named
+race cases, with nine roots/24 named focused causal cases, no skips and vet.
+It preserves the earlier unsafe revision interleave and cleanup-class findings
+as corrected-source history; old-source results are not promoted.
+
+[The current composed attempt](validation/kubernetes-source-current-failed-2026-10-27.json)
+builds a fresh CGo-free helper, passes all 67/106 provider race cases and 4/11
+inventory race cases, then fails targeted vet solely with ENOSPC. All original
+commands join and source/module pins remain unchanged. The failed run is retained.
+
+[The vet-only successor](validation/kubernetes-source-current-composed-2026-10-27.json)
+passes provider/server vet after seven closed-run mutable build caches were
+removed. Source, helper bytes and earlier passing commands are unchanged; no
+build or race cohort is repeated. [Integration](validation/kubernetes-current-integration-2026-10-27.json)
+checks all ten provider Git objects/modes and the exact tested tree in `5e5e7f1`.
+No source admission, installer, connector, real-cluster or later public-install
+acceptance follows. Written-storage debt and the proposed native source factory
+remain separate reviewed design work.
+
+### Retained Semblance corpus and populated query
+
+[Stage four](validation/semblance-packed-rows-stage4-2026-10-27.json) replays 892
+steps/3,568 cells without new backend differences. The 3,564 non-target result,
+branch and error comparisons match retained expectations; one unchanged WAT
+compiled interruption remains, so this is not 3,568 successful queries. All four
+Calendar target cells succeed. The exact retained populated query independently
+returns 986 identical normalized triples in all four genuine modes, without
+fallback; releases, fuel resets and engine disposal complete. Both queued jobs
+and original children exit zero, with unchanged selected source/images/inputs.
+
+Original job indexes and artifact hashes verify directly despite two absent
+convenience copies in the combined index. Historical R4's unretained original
+graph/tape is not reconstructed. Current-upstream/full-suite/publication gates
+remain open, and ARM's vendored engine is unchanged.

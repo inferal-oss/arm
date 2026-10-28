@@ -1,0 +1,122 @@
+{
+  "classification": "SCOPED_ACCEPT: packed-row stage4 retained-input diagnostics",
+  "source": {
+    "parent": "8220b76af20fbdac214325ad6f7b978900af4033",
+    "owned_source_files": 16,
+    "owned_source_manifest_sha256": "e49423b173f6ccbf8d50e76f33187f35f75f375c4c03d352d2ffc19860944733",
+    "source_changes_during_stage4": false,
+    "rust_image_sha256": "01b5be6a209b95a271be119502daab253c924fbacad7a717b8e05ccffa2fe879",
+    "wat_image_sha256": "0d5c5fb7c1293d7b78689ef1299cc104eb3f1c4260536ccaa15e85cdc4360753",
+    "prior_stage1_qualified_record_sha256": "b84e64b4d179b49ee793de43281ed1db9dff155406993ebcfc115c8d4005f32f",
+    "prior_stage2_qualified_record_sha256": "b66a1b69bec72054396b130c0e84cfc39092b2114155e4fec2d249a674a04290",
+    "prior_stage3_qualified_record_sha256": "8d9bf578efda833d634351ddbcb28d09f424910915ad8eacb2aeee88894b53e0"
+  },
+  "actual_execution": {
+    "outer_metadata_basis": "Independently recovered original command metadata supplied by coordinator",
+    "outer_exits": [
+      0,
+      0
+    ],
+    "outer_durations_ms": [
+      2578,
+      3241
+    ],
+    "original_child_exits": [
+      0,
+      0
+    ],
+    "original_owner_exits": [
+      0,
+      0
+    ],
+    "original_helper_wait_and_pipe_join_receipts": 2,
+    "separate_sequential_normal_FIFO_admissions": true,
+    "queue_overrides_unset": 5,
+    "canonical_queue_seconds": 1800,
+    "replay_child_owner_budgets_seconds": [
+      1500,
+      1650
+    ],
+    "populated_child_owner_budgets_seconds": [
+      120,
+      300
+    ],
+    "selected_inputs_before_after_unchanged": true,
+    "selected_files": [
+      1371,
+      1374
+    ],
+    "dependency_links_each": 179,
+    "stdout_and_stderr_empty": true
+  },
+  "replay": {
+    "retained_input_sha256": "6dbe219357b6e255c433ded3f7afcbc334e82483ae805749b316065d3a17f233",
+    "source_quads": 132822,
+    "source_terms": 57753,
+    "steps": 892,
+    "cells": 3568,
+    "retained_non_target_cells_independently_compared": 3564,
+    "new_prior_result_branch_or_error_differences": 0,
+    "backend_mismatches_under_original_comparison_mapping": 0,
+    "returned_cells": 3567,
+    "unchanged_nonpositive_cell": {
+      "step": 57,
+      "query_index": 42,
+      "backend": "wat",
+      "compiled": true,
+      "outcome": "QueryInterrupted",
+      "matches_original_result_branch_and_error": true,
+      "release_and_fuel_reset": true
+    },
+    "calendar_target_cells": 4,
+    "calendar_target_empty_normalized_outputs": 4,
+    "calendar_target_genuine_modes": true,
+    "calendar_target_fallbacks": 0,
+    "original_replay_payload_sha256": "055a51b28a895b6062baffe418667fa08c2ec6b81bd42ccce2be0a2f442cc1c3",
+    "current_replay_payload_sha256": "72f35d0f5b66ff6e118da362838ebf971cb08e0235542d727aef3e8cf2d0445c",
+    "payload_delta": "Only packet path; candidate configuration retargets host and image paths. Original query order, transfer, bindings, graphs, fuel and comparison mapping retained.",
+    "raw_report_sha256": "c30acb57c423ac8d64eedf44212d4b4148c6a3a971389d5d9d7d663164224208",
+    "owner_receipt_sha256": "c47cca23800719f5cf733eee6e068cc9d67bb3619f0b46fa40b51049a5941838"
+  },
+  "populated": {
+    "query_sha256": "4648b9b9af94a6dfeb78e57661649f0bd04ac87509ecdee8c866d9e63c462ee6",
+    "binding": "https://semblance.dev/demo#ex-calendar-week",
+    "fuel": 20000000,
+    "cells": 4,
+    "triples_each": 986,
+    "native_ids_each": 2958,
+    "normalized_rows_each": 986,
+    "normalized_result": {
+      "sha256": "4a5dd4c7017b35b93f2057e549d9c70a934bd6837df16a0f73c712bbbbd188f3",
+      "utf8Bytes": 191533
+    },
+    "four_modes_equal": true,
+    "fallbacks": 0,
+    "genuine_modes": [
+      "rust interpreted",
+      "rust compiled",
+      "wat interpreted",
+      "wat compiled"
+    ],
+    "raw_report_sha256": "fe577eb2106511743c97128070b4db84ee197d7fd1ba4c95b098ef4ea3236af5",
+    "owner_receipt_sha256": "3cc1dbaf5ab2f0b98cebcaa34596c5446d29784530ab57d694709b5e58803443"
+  },
+  "observed_cleanup": {
+    "query_releases": 3572,
+    "fuel_resets": 3572,
+    "engine_disposals": 4,
+    "original_child_wait_pipe_join_receipts": 2,
+    "errors": []
+  },
+  "qualifications": [
+    "The 3568-cell roster includes one unchanged WAT compiled interruption. It is not 3568 positive query successes.",
+    "Earlier outputs captured only as digest and UTF-8 length were compared in that form.",
+    "Existing Construct normalization deduplicates sorted rows and collapses blank-node labels; equality does not prove complete RDF blank-node identity or isomorphism.",
+    "Replay final term counts differ between engines; both retain 132822 quads. No exact term-allocation parity is claimed.",
+    "The exact available older captured graph, query and call sequence were used on current accepted images. The historical R4 graph and tape were not retained; no historical snapshot reconstruction is claimed.",
+    "Selected source, tool, dependency and image inputs match. This is not a complete operating-system, transitive dependency, escaped-descendant or native-GC closure claim.",
+    "Both observed jobs completed normally. Signal and timeout behavior were not validated here.",
+    "The combined convenience index lacks two local copies; both original job indexes are retained, match its referenced hashes and were verified directly.",
+    "Prior failed attempts remain unchanged. Full upstream suite, current composition review, PR preparation and publication are separate remaining gates."
+  ]
+}

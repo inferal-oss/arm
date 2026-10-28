@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "status": "PASS_SCOPED_CURRENT_COMPOSITION",
+  "source": {
+    "base": "1d18eaf3c23c5fa156914b81f46f2c03d5e2ef22",
+    "reviewed_feature_commit": "9ce4f7a043e18dd425182354b0402e5725bfdcce",
+    "composition_commit": "4557dde868d8328bd44bd908d364e2e37ecc29e5",
+    "composition_tree": "149f9a61d779c694c9cea222b257d7cf4e57919b",
+    "payload_files": {
+      "internal/server/kubernetes_inventory.go": {
+        "git_blob": "99c6b067f2bae04f1e2810282de427b37619298a",
+        "sha256": "55a6743e18fec0749c7b649c8b7439ce14fcf2a73f44242f8f21013a5c8482f4"
+      },
+      "internal/server/kubernetes_inventory_test.go": {
+        "git_blob": "1bb4f1808f4c0280a0c873b9713266df4fbf60a1",
+        "sha256": "2f9acb3abafb4af3da5a3f9f99053932da13fbee8ff40ee8f1b128a05d338abd"
+      }
+    },
+    "only_two_file_payload_over_base": true,
+    "payload_and_modules_identical_to_reviewed_feature": true,
+    "clean_before_after": true
+  },
+  "environment": {
+    "go": "go1.27.3",
+    "GOOS": "darwin",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "1",
+    "offline": true,
+    "GOMAXPROCS": 1,
+    "p": 1,
+    "parallel": 1,
+    "count": 1,
+    "private_home_temp_build_cache": true,
+    "canonical_shared_queue_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "five_queue_overrides_unset": true
+  },
+  "actual_tests": {
+    "normal": {
+      "roots": 4,
+      "named_run": 11,
+      "named_pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "package_pass": 1,
+      "exit": 0
+    },
+    "race": {
+      "roots": 4,
+      "named_run": 11,
+      "named_pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "package_pass": 1,
+      "exit": 0
+    },
+    "actual_unique_named_roster": [
+      "TestKubernetesInventoryTypeaheadReturnsCurrentResources",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/forbidden",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/unauthorized",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/missing",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/deadline",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/server-timeout",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/cancelled",
+      "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/transport-or-decode",
+      "TestKubernetesInventoryIsNotAdmittedDuringBackendStop",
+      "TestKubernetesInventoryEmbeddedAndBrowserScope"
+    ],
+    "race_diagnostic_observed": false,
+    "both_stderr_bytes": 0
+  },
+  "targeted_vet": {
+    "package": "getarm.org/internal/server",
+    "exit": 0,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "custody": {
+    "original_outer_tool_exit": 0,
+    "original_outer_terminal_consumed": true,
+    "original_children": 8,
+    "all_original_waits_zero_joined_retired_pipes_closed": true,
+    "ownership_or_signal_errors": [],
+    "before_after_selected_hash_modes_and_module_memberships_match": true,
+    "source_files": 2659,
+    "selected_tools": 17478,
+    "module_files": 20484,
+    "module_roots": 91,
+    "mutable_private_build_cache_excluded_from_immutable_inputs": true
+  },
+  "evidence_sha256": {
+    "result.json": "b9cfd8f05ed311ff901f1eebca6f4733ba236d89dfc95a5992b49d525af175d9",
+    "owners.json": "20de47c63ea09c02c74d77236baec0f7ed22be3ebbde120a87f5f1cff891bca0",
+    "inputs-before.json": "88ecf349269374eb90ee604b3c89200d8a97e694f15506e32ade97b5a673de1e",
+    "inputs-after.json": "88ecf349269374eb90ee604b3c89200d8a97e694f15506e32ade97b5a673de1e",
+    "normal.stdout": "a9a539a0a588f4c6c11b0b98a67fa1d578e350d9e4e0bb2442bc0e7b66cc4b6f",
+    "normal.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "race.stdout": "14673e74bebbeb64676d3be79c0af1fb27952db3ff1744de84709b777d97258e",
+    "race.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Isolated diagnostic API acceptance on this exact composed source; missing-Node user symptom is not established fixed.",
+    "No actual cluster, enrollment, connector, browser/native UI, full server test suite or full module suite acceptance.",
+    "No current/later-main runtime, public installation, hermetic compiler/OS or escaped-descendant absence claim."
+  ]
+}
