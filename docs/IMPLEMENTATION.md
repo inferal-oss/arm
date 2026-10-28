@@ -2992,3 +2992,13 @@ check after the lifecycle-revocation correction. Its private original-owner
 bridge still requires final composed execution audit and production
 prerequisites; retrospective guest evidence does not establish current-source
 or public sync acceptance.
+
+### Current native composition review boundary
+
+The pending composed native source includes the original-owner cancellation
+corrections, private Unix binder, charged sync readers and unused provider C3
+primitives. Normal affected execution passes, but a pressure reservation race
+case fails; composition acceptance and focused feature integration remain open.
+The separate full private forwarding worker also retains a failed three-node
+SSH relay admission race case. Public forwarding and paired-provider activation
+remain gated. See [current execution boundary](validation/native-composition-failures-2026-10-28.json).

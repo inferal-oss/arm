@@ -7420,3 +7420,17 @@ localized digits while the documented component preserves stored lexical
 numeric text. Arabic keyboard and 512/513-sample witnesses remain unrun. Both
 active mount disposals returned and the owned server closed; server exit zero
 does not establish UI success. [Qualified partial evidence](validation/semblance-sparkline-ui-partial-2026-10-28.json).
+
+### Current native composition and private worker failures
+
+The current composed candidate executes 193 roots / 764 named cases per cohort:
+normal passes all cases; race passes 763 and fails the pressure-effect reservation
+fixture, with no skips. The separate private forwarding worker executes its
+tagged 44-root / 82-name roster: normal passes all cases; race passes 81 and
+fails the three-node HTTP case at SSH relay admission. Both original race
+children return exit 1, and both final input comparisons are unchanged.
+
+Both aggregates remain failed. Later vet/build or Linux compile stages are
+unrun. Neither earlier baseline symptoms nor passing sibling cases establish
+acceptance; source diagnosis and reviewed successor validation remain required.
+[Normalized evidence](validation/native-composition-failures-2026-10-28.json).

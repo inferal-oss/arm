@@ -786,3 +786,19 @@ still needs to preserve a known positively acknowledged lifecycle predecessor
 when End or Close wins the finalizer lock. Reviewed correction, affected
 validation and the actual current-source union remain prerequisites to feature
 integration. See [normalized evidence](validation/retained-settlement-recovery-2026-10-28.json).
+
+### Current composition and private forwarding worker gates
+
+The composed native candidate passes all 193 roots / 764 named cases in the
+normal run. Its race run executes the same roster with 763 passes, one failure
+and no skips: `TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue`
+cannot reserve its expected pressure effect. Source diagnosis is in progress;
+vet and build were not run after the failure. Feature integration remains open.
+
+The separate private forwarding worker passes all 44 roots / 82 named cases
+normally. Its tagged race run has 81 passes, one failure and no skips:
+`TestForwardThreeNodesHTTPExactOriginalAndRevocation` loses SSH relay admission
+before the Unix worker path. Independent diagnosis is pending; subsequent vet
+and Linux compile stages are unrun. The accepted binder remains a separate
+review boundary; these results do not enable the public forwarding factory.
+See [normalized evidence](validation/native-composition-failures-2026-10-28.json).

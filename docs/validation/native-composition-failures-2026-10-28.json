@@ -1,0 +1,117 @@
+{
+  "platform": "Darwin ARM64",
+  "status": "partial evidence; both aggregates failed",
+  "results": [
+    {
+      "scope": "native composition",
+      "source_tree": "099ce84d37d757dc2ac8a422efaa216ee028a894",
+      "aggregate": "failed",
+      "exit": 1,
+      "aborted": false,
+      "inputs_unchanged": true,
+      "cohorts": [
+        {
+          "roots": 193,
+          "nodes": 764,
+          "pass": 764,
+          "fail": 0,
+          "skip": 0,
+          "packages": {
+            "getarm.org/internal/database": "pass",
+            "getarm.org/internal/manager": "pass",
+            "getarm.org/internal/server": "pass",
+            "getarm.org/internal/syncfs": "pass",
+            "getarm.org/internal/syncscope": "pass"
+          },
+          "mode": "normal",
+          "original_exit": 0,
+          "original_wait_returned": true,
+          "stdout_sha256": "5bcbb094b2589aad89dacc5f3c69fba0dd8aa686f7527bf4110743eced21ab01",
+          "failed_cases": []
+        },
+        {
+          "roots": 193,
+          "nodes": 764,
+          "pass": 763,
+          "fail": 1,
+          "skip": 0,
+          "packages": {
+            "getarm.org/internal/database": "pass",
+            "getarm.org/internal/manager": "fail",
+            "getarm.org/internal/server": "pass",
+            "getarm.org/internal/syncfs": "pass",
+            "getarm.org/internal/syncscope": "pass"
+          },
+          "mode": "race",
+          "original_exit": 1,
+          "original_wait_returned": true,
+          "stdout_sha256": "fb0f4e0649e9e7c1c9736a1eb92bcdca04b754ef6112c8158ee1ee0c91cec41d",
+          "failed_cases": [
+            {
+              "package": "getarm.org/internal/manager",
+              "name": "TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue",
+              "status": "fail"
+            }
+          ]
+        }
+      ],
+      "later_stages": "unrun after race failure"
+    },
+    {
+      "scope": "private forwarding worker",
+      "source_tree": "33bc52d8b6e3d1e6e999a365221bbbe19e7b0ba5",
+      "aggregate": "failed",
+      "exit": 1,
+      "aborted": false,
+      "inputs_unchanged": true,
+      "cohorts": [
+        {
+          "roots": 44,
+          "nodes": 82,
+          "pass": 82,
+          "fail": 0,
+          "skip": 0,
+          "packages": {
+            "getarm.org/internal/manager": "pass",
+            "getarm.org/internal/server": "pass",
+            "getarm.org/internal/meshsshrelay": "pass"
+          },
+          "mode": "normal",
+          "original_exit": 0,
+          "original_wait_returned": true,
+          "stdout_sha256": "7ad7318fbf1f82566cb0b2b1c96f38bcd048765d4dd1ab54f47b5f14efb5c78a",
+          "failed_cases": []
+        },
+        {
+          "roots": 44,
+          "nodes": 82,
+          "pass": 81,
+          "fail": 1,
+          "skip": 0,
+          "packages": {
+            "getarm.org/internal/manager": "pass",
+            "getarm.org/internal/server": "fail",
+            "getarm.org/internal/meshsshrelay": "pass"
+          },
+          "mode": "race",
+          "original_exit": 1,
+          "original_wait_returned": true,
+          "stdout_sha256": "28122f21bf1f763742044d753544e5ef394e5bb42e7d53ad119595939d92a161",
+          "failed_cases": [
+            {
+              "package": "getarm.org/internal/server",
+              "name": "TestForwardThreeNodesHTTPExactOriginalAndRevocation",
+              "status": "fail"
+            }
+          ]
+        }
+      ],
+      "later_stages": "unrun after race failure"
+    }
+  ],
+  "limits": [
+    "Source diagnosis is pending; neither failed case is waived as a timing flake.",
+    "No full-suite, Linux runtime, physical suspend, public factory or live installation acceptance.",
+    "Earlier failed attempts remain failed."
+  ]
+}
