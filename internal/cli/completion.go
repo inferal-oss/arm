@@ -96,6 +96,8 @@ func (a *app) completeArguments(cmd *cobra.Command, args []string, prefix string
 	}
 	if len(args) == 0 {
 		switch path {
+		case "log":
+			return a.completeRuns(cmd, prefix), cobra.ShellCompDirectiveNoFileComp
 		case "inspect", "release", "cancel", "reconcile", "renew", "usage", "storage cleanup", "storage handoff", "storage export", "storage retain", "reviews policy", "reviews configure":
 			kind = "lease"
 		case "pool inspect", "pool history", "pool set", "pool adjust", "pool rename", "pool describe", "pool drain", "pool resume", "pool delete", "pool children", "pool consumers":

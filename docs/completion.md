@@ -53,7 +53,7 @@ These are explicit user provisioning instructions. ARM does not edit shell
 profiles or install scripts as a side effect of completion. Regenerate the
 script after upgrading ARM.
 
-Commands and flags complete offline. Host, pool and lease suggestions use the
+Commands and flags complete offline. Host, pool, lease and run suggestions use the
 existing authenticated backend through read-only requests, with a shared
 250 ms deadline per completion. They never start a backend or initialize an
 ARM state directory. Missing, disconnected, slow or unauthorized backends return
@@ -69,8 +69,15 @@ Ambiguous names are omitted. A suggestion is a discovery aid, never an access
 grant. Execution performs its normal authorization and concurrency checks.
 
 The supported dynamic selectors include `--host`, pool selectors and lease
-selectors on the public resource commands. IDs remain valid. Arguments after
-`run`'s command boundary belong to the executed program; ARM does not discover
+selectors on the public resource commands, and the first `RUN` argument of
+`arm log` (including with `-f`, `--follow` or `--offset`). Run suggestions include
+proxy and leased runs from the local run inventory, using run IDs and readable
+run names. They do not read logs or command output. Inventory errors or more
+than 4,096 runs produce no suggestions; at most 256 sorted suggestions are
+returned after checking the complete inventory for ambiguous names.
+
+IDs remain valid. Arguments after
+`run`'s or `proxy`'s command boundary belong to the executed program; ARM does not discover
 or run external plugins to obtain their completion candidates.
 
 The implementation uses [Cobra's shell completion protocol](https://github.com/spf13/cobra/blob/main/site/content/completions/_index.md)
