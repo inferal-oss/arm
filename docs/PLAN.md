@@ -881,3 +881,18 @@ is merged. ARM dependency promotion remains open. Current public HTTPS checks
 confirm both domains reach the ARM page, with the cloud-domain redirect retaining
 a known asset path and query string. See the
 [normalized survey](validation/integration-survey-2026-10-28.json).
+
+### Shared-main rebase checkpoint
+
+Local native changes are rebased onto published storage main `5f75cae6`.
+Conflict resolution preserves configured storage/native constructors, original
+cancellation and End/expiry separation, multi-pool disk collection and its
+observation lock. The newer generated asset is retained: complete embedded
+web, web harness and website trees equal upstream. Four focused normal roots /
+eight named cases pass without skips, and the private CLI build passes.
+
+This is the requested shared-branch synchronization checkpoint, not new broad
+storage/native acceptance. Separate reviewed C2 namespace, benchmark original
+binding and retained StorageBinding follow-ups remain pending. Earlier evidence
+keeps its source scope; paired providers and public sync/forward remain gated.
+See [normalized check record](validation/shared-main-rebase-2026-10-28.json).

@@ -1,0 +1,30 @@
+{
+  "kind": "Shared-main rebase checkpoint",
+  "source_commit": "26dc28c4beedcfbbc0739470c8298ce8f14b196d",
+  "rebased_on": "5f75cae647f39fe91fb8e8a524269a5663861ac4",
+  "conflict_resolution": {
+    "daemon_config": "Preserved os and reflect imports and both configured/native constructors.",
+    "manager": "Preserved storage benchmark registration/Close handling plus explicit End/endLease split and original cancellation ordering.",
+    "disk": "Preserved multi-pool sample collection plus observation read lock.",
+    "generated_web": "Preserved newer remote generated asset; complete embedded web, web harness and website Git trees equal upstream."
+  },
+  "normal_checks": {
+    "roots": 4,
+    "named_pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "stdout_sha256": "16d7cb2940191c306ba3e7d935eebf175460da4f676625b73f398bd8af63fd51"
+  },
+  "cli_build": {
+    "exit": 0,
+    "sha256": "dcc011137e842fe7a3f354e8c05f408fb8db7df5f4b344bb80b45d3baec2818e",
+    "bytes": 72210306,
+    "executed": false
+  },
+  "limits": [
+    "Focused normal conflict checks and CLI build only, no fresh race/full-suite or composed storage acceptance.",
+    "Prior native and storage evidence retains its original source scope.",
+    "Resume separate reviewed follow-ups for strict C2 named-storage namespace refusal, benchmark original binding and retained StorageBinding identity; paired/public sync/forward activation remains gated.",
+    "Local work was preserved before rebase; no force push is needed."
+  ]
+}
