@@ -34,9 +34,16 @@ it('stock pop-out, keyboard detach and window close move the exact log node and 
   expect(node()).toBe(original);expect(original.isConnected).toBe(true);expect(output.value).toBe('xx');expect(calls.at(-1)[1].offset).toBe(1);
   const pause=handles().find(h=>h.kind==='Button'&&h.label==='Pause following');click(x.renderer.nodeOf(x.projection.index.rootOf(pause.iri)));await tick();
   const reads=bytes;await panel.refresh();expect(bytes).toBe(reads);
-  click(x.document.querySelector('.sem-window-control[data-sem-control="close"]'));await tick();expect(tabs.detached).toBe(false);
+  // A real pointer tear commits geometry and stacking before native controls run.
+  const stateWin=tabs.iri+'/~window-'+encodeURIComponent(tabs.tab.iri);
+  x.ui.put(stateWin,C+'x',440);x.ui.put(stateWin,C+'y',220);x.ui.put(x.ui.windowDesktop.iri,C+'topmost',stateWin,true);
+  click(x.document.querySelector('.sem-window-control[data-sem-control="maximize"]'));await tick();
+  click(x.document.querySelector('.sem-window-control[data-sem-control="restore"]'));await tick();
+  click(x.document.querySelector('.sem-window-control[data-sem-control="minimize"]'));await tick();
+  click(x.document.querySelector('[data-sem-c="taskbar"] button'));await tick();
+  click(x.document.querySelector('.sem-window-control[data-sem-control="close"]'));await tick();expect(tabs.detached).toBe(false);expect(x.document.querySelector('[data-sem-c="window"]:not([hidden])')).toBeNull();
   const stopped=calls.length;await panel.refresh();expect(calls.length).toBe(stopped);
-  x.ui.put(ARM+'shell',ARM+'view',ARM+'monitor',true);panel.setActive(true);await tick();expect(node()).toBe(original);expect(output.value).toBe('xx');
+  x.ui.put(ARM+'shell',ARM+'view',ARM+'monitor',true);panel.setActive(true);await tick();expect(node()).toBe(original);expect(output.value).toBe('xx');expect(original.closest('[data-sem-c="window"]')).toBeNull();
   const tab=x.document.querySelector('[role="tab"]');expect(tab).toBeTruthy();tab.dispatchEvent(Object.assign(new x.window.Event('keydown',{bubbles:true}),{key:'Enter',code:'Enter',shiftKey:true}));await tick();expect(tabs.detached).toBe(true);
   expect(node()).toBe(original);expect(handles().find(h=>h.kind==='Button'&&h.label==='Follow output')).toBe(pause);
   const win=tabs.iri+'/~window-'+encodeURIComponent(tabs.tab.iri);x.ui.put(win,C+'x',120);x.ui.put(win,C+'y',90);x.ui.put(x.ui.windowDesktop.iri,C+'topmost',win,true);

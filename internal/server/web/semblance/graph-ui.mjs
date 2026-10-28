@@ -218,7 +218,11 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       let detached=false;
       const unwatch=runtime.onInput((graph,delta)=>{
         if(graph!==undefined||![...delta.add,...delta.remove].some(q=>q.subject.value===tab.iri&&q.predicate.value===C.detached))return;
-        queueMicrotask(()=>{if(h.disposed||detached===h.detached)return;detached=h.detached;h.emit('detach',{detached});});
+        queueMicrotask(()=>{if(h.disposed||detached===h.detached)return;detached=h.detached;
+          // A frame with saved geometry can remain a projected component after
+          // its tab docks. Explicit open state parks that frame and its body,
+          // while preserving its geometry for the next native detach.
+          put(window,C.open,detached);h.emit('detach',{detached});});
       });
       const dispose=h.dispose.bind(h),window=h.iri+'/~window-'+encodeURIComponent(tab.iri);
       h.dispose=()=>{if(h.disposed)return;unwatch();batch(()=>{
