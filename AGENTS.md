@@ -44,11 +44,13 @@ Commands, working directories and logs are visible to authorized local readers;
 avoid secrets in arguments/output. Retention truncation is explicit, and lost
 reporting does not prove process exit.
 
-## Repository documentation privacy
+## Repository and publication privacy
 
-Never include chat IDs, discussion minutiae, or personal information in documents committed to the repository. Describe project requirements, technical decisions, behavior, validation and limitations. Identify ownership by role, branch or commit, never by an internal conversation identifier.
+Never record non-project-specific information about local environments, remote hosts, Kubernetes infrastructure used during work, or internal company operations. This rule applies to all repository files, commit messages, issues and pull requests, including their descriptions, comments and attachments. Use generic examples and placeholders instead of details of the actual development, testing or deployment environment.
 
-Keep private coordination records, tool/session handles, personal filesystem paths, native hostnames, account/payment details and raw private execution receipts outside version control. Committed evidence may contain normalized technical results, test rosters, source hashes and public CI references. Review documentation and generated evidence before committing. Preserve required license attribution and public technical citations.
+Never include chat IDs, discussion minutiae, or personal information in those publications. Describe project requirements, technical decisions, behavior, validation and limitations. Identify ownership by role, branch or commit, never by an internal conversation identifier.
+
+Keep private coordination records, tool/session handles, personal filesystem paths, native hostnames, addresses, cluster/context/namespace identifiers, account/payment details and raw private execution receipts outside version control and public discussions. Normalized technical results, test rosters, source hashes and public CI references are allowed only when they disclose none of those operational details. Review files and generated evidence before committing, and review issue/PR content before publishing. Preserve required license attribution and public technical citations.
 
 ## Implementation isolation and completion
 
