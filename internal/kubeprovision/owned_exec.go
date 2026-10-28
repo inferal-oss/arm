@@ -16,8 +16,9 @@ import (
 // OwnedExec routes only the provider's fixed scripts through one self-helper
 // per stream. The provider remains the owner of durable intent and lookup.
 type OwnedExec struct {
-	Plan  Plan
-	image string
+	sourceCall *NativeExecCall // unused sealed factory bridge; never a wire field
+	Plan       Plan
+	image      string
 }
 
 // ErrHelperCleanupUnknown distinguishes unresolved original source ownership
@@ -100,6 +101,9 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 		return err
 	}
 	nonce := hex.EncodeToString(random[:])
+	if o.sourceCall != nil {
+		nonce = o.sourceCall.nonce
+	}
 	// Own each original descriptor exactly once. A native close error must
 	// survive successful helper/target evidence; retrying Close could target a
 	// reused descriptor, while ignoring it would falsely settle the source.
@@ -111,7 +115,11 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 			return
 		}
 		closed[f] = true
-		closeErr = errors.Join(closeErr, f.Close())
+		nativeErr := f.Close()
+		closeErr = errors.Join(closeErr, nativeErr)
+		if o.sourceCall != nil {
+			o.sourceCall.recordClose(f, nativeErr)
+		}
 	}
 	defer func() {
 		for _, f := range files {
@@ -121,7 +129,15 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 			resultErr = ErrHelperCleanupUnknown
 		}
 	}()
-	requestFile, err := heldExecRequest(reviewedExecRequest{Plan: o.Plan, Pod: pod, Kind: kind}, nonce)
+	var requestFile *os.File
+	if o.sourceCall != nil {
+		requestFile = o.sourceCall.request
+		if requestFile == nil {
+			return errors.New("original request loan unavailable")
+		}
+	} else {
+		requestFile, err = heldExecRequest(reviewedExecRequest{Plan: o.Plan, Pod: pod, Kind: kind}, nonce)
+	}
 	if err != nil {
 		return err
 	}
@@ -145,6 +161,14 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 		cmd.ExtraFiles = append(cmd.ExtraFiles, payload)
 	}
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	if o.sourceCall != nil {
+		o.sourceCall.recordCmd(cmd)
+	}
+	if o.sourceCall != nil {
+		if err := o.sourceCall.checkCurrent(ctx); err != nil {
+			return err
+		}
+	}
 	if err := cmd.Start(); err != nil {
 		closeFile(controlR)
 		closeFile(replyW)
@@ -171,6 +195,9 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 		if err == nil && (hello.Version != 1 || hello.Nonce != nonce || hello.PID != cmd.Process.Pid || hello.PGID != cmd.Process.Pid) {
 			err = errors.New("foreign Kubernetes exec helper hello")
 		}
+		if err == nil && o.sourceCall != nil {
+			err = o.sourceCall.checkCurrent(ctx)
+		}
 		if err == nil {
 			err = writeHelperBytes(controlW, []byte{'G'})
 		}
@@ -180,6 +207,9 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 		}
 		replied <- reply{result, err}
 	}()
+	if o.sourceCall != nil {
+		o.sourceCall.recordWorker(workerDone)
+	}
 	var observed reply
 	select {
 	case observed = <-replied:
@@ -194,9 +224,18 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 	}
 	closeFile(controlW)
 	closeFile(replyR)
+	if o.sourceCall != nil {
+		o.sourceCall.retireBeforeWait()
+	}
 	waitErr := cmd.Wait()
+	if o.sourceCall != nil && o.sourceCall.afterWait != nil {
+		o.sourceCall.afterWait()
+	}
 	<-workerDone
 	groupGone := observeKubeGroupAbsence(cmd.Process.Pid)
+	if o.sourceCall != nil {
+		o.sourceCall.recordWait(groupGone)
+	}
 	if signalErr != nil || !groupGone {
 		return fmt.Errorf("%w: signal=%v absent=%t", ErrHelperCleanupUnknown, signalErr, groupGone)
 	}

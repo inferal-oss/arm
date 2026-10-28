@@ -20,6 +20,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"getarm.org/internal/kubesource"
 	"getarm.org/internal/model"
 	"getarm.org/internal/published"
 )
@@ -507,7 +508,16 @@ func (p *proofReader) readLeases() error {
 		if l.Request.Kind == "sync-preparation" && (r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources != (model.Resources{CPU: 1, Memory: 768 << 20, Disk: 1 << 20}) || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 0 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || (l.Request.Peer == "" && (l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0) || l.Request.Peer != "" && (!validHost(l.Request.Peer) || !validDigest(l.Request.PeerCertificate) || l.Request.PeerGrantRevision < 1)) || l.Request.OriginKey != "" || !oneOf(l.State, "active", "ending", "needs_attention", "terminal")) {
 			return fmt.Errorf("invalid in-process sync preparation obligation")
 		}
-		if l.Request.Kind == "relay-transit" && (r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources.CPU <= 0 || l.Request.Resources.Memory <= 0 || l.Request.Resources.Disk != 0 || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 0 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || l.Request.Peer != "" || l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0 || l.Request.OriginKey != "") {
+		sourcePairPurpose := kubesource.IsReserved(l.Request)
+		if sourcePairPurpose {
+			if r["run"] != nil {
+				return fmt.Errorf("source pair carries a run descriptor")
+			}
+			if _, _, err := kubesource.ValidateRole(l); err != nil {
+				return err
+			}
+		}
+		if l.Request.Kind == "relay-transit" && !sourcePairPurpose && (r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources.CPU <= 0 || l.Request.Resources.Memory <= 0 || l.Request.Resources.Disk != 0 || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 0 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || l.Request.Peer != "" || l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0 || l.Request.OriginKey != "") {
 			return fmt.Errorf("invalid in-process relay transit obligation")
 		}
 		if l.Request.Kind == "relay-transit" && !oneOf(l.State, "active", "ending", "needs_attention", "terminal") {
@@ -604,6 +614,9 @@ func (p *proofReader) relationships() error {
 		if _, ok := p.leases[id]; !ok {
 			return fmt.Errorf("bulk intent references a missing lease")
 		}
+	}
+	if err := validateKubernetesSourcePairs(p.leases); err != nil {
+		return err
 	}
 	for _, l := range p.leases {
 		for _, target := range []string{l.Request.StorageLease, l.Request.PortLease, l.Request.ServiceLease} {

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"getarm.org/internal/kubesource"
 	"getarm.org/internal/model"
 )
 
@@ -109,6 +110,9 @@ func (h *RelayTransit) CheckActive(ctx context.Context) error {
 // same live CPU/memory and policy checks as ordinary requests. Wire callers
 // cannot select its internal kind, attach an existing lease or replay a key.
 func (m *Manager) AcquireRelayTransit(ctx context.Context, request model.Request, joined <-chan struct{}) (*RelayTransit, error) {
+	if kubesource.IsReserved(request) {
+		return nil, model.Err("invalid_request", "reserved source admission requires original native permit")
+	}
 	return m.acquireOwnedTransit(ctx, request, joined, relayTransitKind, nil)
 }
 
@@ -172,8 +176,12 @@ func (m *Manager) acquireOwnedTransit(ctx context.Context, request model.Request
 	if err != nil {
 		return nil, err
 	}
+	return m.registerOwnedTransitLocked(ctx, lease, request.Key, joined), nil
+}
+
+func (m *Manager) registerOwnedTransitLocked(ctx context.Context, lease model.Lease, key string, joined <-chan struct{}) *RelayTransit {
 	ctx, cancel := context.WithCancel(ctx)
-	h := &RelayTransit{manager: m, id: lease.ID, key: request.Key, ctx: ctx, cancel: cancel, joined: joined, workerDone: make(chan struct{}), result: lease}
+	h := &RelayTransit{manager: m, id: lease.ID, key: key, ctx: ctx, cancel: cancel, joined: joined, workerDone: make(chan struct{}), result: lease}
 	if m.relayTransits == nil {
 		m.relayTransits = map[string]*RelayTransit{}
 	}
@@ -185,7 +193,7 @@ func (m *Manager) acquireOwnedTransit(ctx context.Context, request model.Request
 		<-joined
 		_, _ = h.FinishAfterJoin()
 	})
-	return h, nil
+	return h
 }
 
 func (m *Manager) endRelayTransit(l model.Lease, outcome string) (model.Lease, error) {

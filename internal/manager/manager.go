@@ -22,6 +22,7 @@ import (
 	"getarm.org/internal/childowner"
 	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/database"
+	"getarm.org/internal/kubesource"
 	"getarm.org/internal/leaseclock"
 	"getarm.org/internal/local"
 	"getarm.org/internal/model"
@@ -64,6 +65,10 @@ type job struct {
 }
 
 type Manager struct {
+	kubernetesSourceAdmissions map[string]bool
+	sourceBeforeAdmission      func()                                  // private disposable causal fixture; runs outside locks
+	kubernetesSources          map[string]*KubernetesSourcePreparation // original native source/parent cancellation only
+
 	leaseClockCheckpoint    leaseclock.Sample
 	storageExportCancels    map[string]context.CancelFunc
 	leaseClockRead          func() (leaseclock.Sample, error)
@@ -222,7 +227,7 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 		db.Close()
 		return nil, e
 	}
-	m := &Manager{db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, syncSourceWorkers: map[string]*SyncSourceHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m := &Manager{kubernetesSourceAdmissions: map[string]bool{}, kubernetesSources: map[string]*KubernetesSourcePreparation{}, relayTransits: map[string]*RelayTransit{}, db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, syncSourceWorkers: map[string]*SyncSourceHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
 	m.leaseClockRead = clockRead
 	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
@@ -847,7 +852,14 @@ func (m *Manager) acquireWithRelay(r model.Request, run *RunRequest, relay bool)
 // A sync admission is an internal typed transaction participant. It cannot be
 // supplied by a wire Request or by the ordinary Acquire/AcquireSSH paths.
 func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay bool, sync *syncAdmission) (model.Lease, error) {
+	return m.acquireWithSourcePermit(r, run, relay, sync, nil)
+}
+
+func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, relay bool, sync *syncAdmission, source *kubernetesSourcePermit) (model.Lease, error) {
 	var empty model.Lease
+	if err := validateSourcePermit(m, r, source); err != nil {
+		return empty, err
+	}
 	if sync != nil && (relay || r.Queue || r.StartDeadline != nil) {
 		return empty, model.Err("invalid_request", "sync admission must start immediately")
 	}
@@ -918,6 +930,15 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 	}
 	if r.PortLease != "" && (run == nil || len(r.Ports) > 0) {
 		return empty, model.Err("invalid_request", "a supervised run can attach one port lease or request its own ports")
+	}
+	if r.StorageLease != "" {
+		parent, err := m.get(r.StorageLease)
+		if err != nil {
+			return empty, err
+		}
+		if kubesource.IsReserved(parent.Request) {
+			return empty, model.Err("storage_unavailable", "native source storage cannot be attached by ordinary work")
+		}
 	}
 	if r.StorageLease != "" && run == nil {
 		return empty, model.Err("invalid_request", "only supervised commands can attach storage")
@@ -1128,6 +1149,11 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 	if r.Key != "" {
 		key = r.Key
 	}
+	if source != nil && !source.parent {
+		if e = excludeSourceOperationTx(tx, source.scope); e != nil {
+			return empty, e
+		}
+	}
 	if _, e = tx.Exec(`INSERT INTO leases VALUES(?,?,?,?)`, l.ID, key, string(b), rb); e != nil {
 		return empty, e
 	}
@@ -1259,6 +1285,9 @@ func (m *Manager) CancelRequest(key string) error {
 }
 func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	defer m.traceNodeStop("end-return")
+	if source := m.kubernetesSources[id]; source != nil {
+		source.Cancel()
+	} // BEFORE any failing ledger read
 	if hold := m.syncWorkers[id]; hold != nil {
 		hold.cancel()
 	}
@@ -1375,6 +1404,9 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
+	}
+	if kubesource.IsReserved(l.Request) {
+		return l, model.Err("invalid_request", "source attempts have fixed entitlement and cannot be renewed")
 	}
 	if l.Request.Kind == relayTransitKind || l.Request.Kind == syncPreparationKind || l.Request.Kind == forwardListenerKind {
 		return l, model.Err("invalid_request", "in-process owned work has a fixed reviewed lifetime and cannot be renewed")
