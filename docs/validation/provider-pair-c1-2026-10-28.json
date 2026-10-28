@@ -1,0 +1,1542 @@
+{
+  "actual_cohorts": {
+    "normal": {
+      "exit": 0,
+      "failures": 0,
+      "named_cases": 173,
+      "package": "getarm.org/internal/manager",
+      "package_elapsed_seconds": 1.146,
+      "passes": 173,
+      "roots": 17,
+      "roster": [
+        {
+          "name": "TestProviderPairC1CensusBeforeBodies",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/ancestor_golden_framing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/clock_digest",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/clock_golden_raw_values",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/parent_revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/swapped_sides",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/base64_CRLF",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/base64_decoded_byte_boundary",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/case_alias",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/depth",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/duplicate",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/empty_members",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/escaped_key",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/invalid_UTF8",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/member_count/1",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/member_count/3",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/null_scalar",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/paired_surrogate",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/parents_fixed_length",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/surrogate",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/trailing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections/empty_declared_namespace_is_observation_only",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections/seventeenth_ancestor_before_decode",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections/sixteen_ancestors",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/foreign_member",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_NULL",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_numeric_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_numeric_text",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_owner_spelling",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_real",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/initial_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/initial_hash",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_binding/foreign_pair",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_binding/valid_revoked_marker_under_preparing_header",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_version",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_foreign_pair",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_generation_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_role_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/progress_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/progress_oversized",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/raw_budget_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/capabilities",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/clock_boot",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/deadline_audit",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/deadline_lifetime",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/artifact",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/cargo",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/managed_dir",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/pid",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/process_identity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/started_at",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/usage",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/generation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/null_capabilities",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/old_budget_revision_remains_inspectable",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/policy_limit",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/policy_revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/quantity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/request_host",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/request_key",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/role",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/rounded_CPU_lexical",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/same_revision_original_bytes",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/sidecar_ancestry",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/sidecar_authority",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/state",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ReadSnapshotAndCancellation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ReadSnapshotAndCancellation/blocked_connection",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ReadSnapshotAndCancellation/single_snapshot",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1SnapshotAndOrderedBudgets",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/aliased_identity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/count_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/invalid_identity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/negative",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/saturation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/audit_mismatch",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/boot_change",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/clock_failure_is_sticky",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/expiry",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/invalid_duration",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/invalid_version",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/negative_anchor",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/regression",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/wall_jumps_do_not_grant_time",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/aliased_ids",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/aliased_keys",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/cancelled_lifetime",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/closing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/current",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/draining",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/epoch",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/foreign_core",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/foreign_manager",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/host",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/malformed_epoch",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/nil_lifetime",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/owner",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/replaced_original",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/sticky_core_fault",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/unregistered",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/zero",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTuple",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_empty",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_id_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/cancelled",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/exact_maxima",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/id_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/id_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/id_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_control",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_empty",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/run_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/run_empty",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/run_json_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/caller",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/original",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation/held_manager_fence",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/both",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/both_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/duplicate_identity_maxima",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/larger_readable",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/temp_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/terminal_hints_still_consume",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/unrelated",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/worker_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/binding",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/cancelled",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/clock",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/close",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/generation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/pair",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/phase",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/reason",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/schema",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/stamp",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/expired",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/persistence",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/budget_raw",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/key",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/temp_raw",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/worker_raw",
+          "status": "pass"
+        }
+      ],
+      "skips": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a77d8a14e887b79e45258d885b7520bba6b007ca521dd7008e7e3c62a9be9f43"
+    },
+    "race": {
+      "exit": 0,
+      "failures": 0,
+      "named_cases": 173,
+      "package": "getarm.org/internal/manager",
+      "package_elapsed_seconds": 3.714,
+      "passes": 173,
+      "roots": 17,
+      "roster": [
+        {
+          "name": "TestProviderPairC1CensusBeforeBodies",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/ancestor_golden_framing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/clock_digest",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/clock_golden_raw_values",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/parent_revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ClockAndAncestorPreimages/swapped_sides",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/base64_CRLF",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/base64_decoded_byte_boundary",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/case_alias",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/depth",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/duplicate",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/empty_members",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/escaped_key",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/invalid_UTF8",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/member_count/1",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/member_count/3",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/null_scalar",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/paired_surrogate",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/parents_fixed_length",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/surrogate",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1EnvelopeStrictness/trailing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections/empty_declared_namespace_is_observation_only",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections/seventeenth_ancestor_before_decode",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1FixedCollections/sixteen_ancestors",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/foreign_member",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_NULL",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_numeric_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_numeric_text",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_owner_spelling",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/header_real",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/initial_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/initial_hash",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_binding/foreign_pair",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_binding/valid_revoked_marker_under_preparing_header",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/marker_version",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_foreign_pair",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_generation_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/member_role_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/progress_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/progress_oversized",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1HeaderAndReciprocalTypes/raw_budget_BLOB",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/capabilities",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/clock_boot",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/deadline_audit",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/deadline_lifetime",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/artifact",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/cargo",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/managed_dir",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/pid",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/process_identity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/started_at",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/forbidden_presence/usage",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/generation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/null_capabilities",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/old_budget_revision_remains_inspectable",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/policy_limit",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/policy_revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/quantity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/request_host",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/request_key",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/role",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/rounded_CPU_lexical",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/same_revision_original_bytes",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/sidecar_ancestry",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/sidecar_authority",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1LeaseBindings/state",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ReadSnapshotAndCancellation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ReadSnapshotAndCancellation/blocked_connection",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1ReadSnapshotAndCancellation/single_snapshot",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairC1SnapshotAndOrderedBudgets",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/aliased_identity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/count_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/invalid_identity",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/negative",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairFloorDamage/saturation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/audit_mismatch",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/boot_change",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/clock_failure_is_sticky",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/expiry",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/invalid_duration",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/invalid_version",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/negative_anchor",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/regression",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairMemberClock/wall_jumps_do_not_grant_time",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/aliased_ids",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/aliased_keys",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/cancelled_lifetime",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/closing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/current",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/draining",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/epoch",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/foreign_core",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/foreign_manager",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/host",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/malformed_epoch",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/nil_lifetime",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/owner",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/replaced_original",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/sticky_core_fault",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/unregistered",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairOriginalRegistry/zero",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTuple",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_empty",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_id_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/budget_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/cancelled",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/exact_maxima",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/id_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/id_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/id_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_control",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/key_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_empty",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_integer",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/lease_sentinel",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/run_blob",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/run_empty",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRawTypesAndBounds/run_json_null",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/caller",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation/held_SQL_connection/original",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairReadCancellation/held_manager_fence",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/both",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/both_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/duplicate_identity_maxima",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/larger_readable",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/temp_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/terminal_hints_still_consume",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/unrelated",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainedFloor/worker_missing",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/binding",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/cancelled",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/clock",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/close",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/generation",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/pair",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/phase",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/reason",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/revision",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/schema",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/damaged/stamp",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/expired",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRetainingProgress/persistence",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/budget_raw",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/key",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/temp_raw",
+          "status": "pass"
+        },
+        {
+          "name": "TestProviderPairRowReplacement/worker_raw",
+          "status": "pass"
+        }
+      ],
+      "skips": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2c898a84c3f6ccf20272e178cb456baf4b60a739b8bda6920cfd9f891861e3c8"
+    }
+  },
+  "central_proposal": {
+    "accepted": false,
+    "applied": false,
+    "sha256": "d3168a704b5052c03618d8f7999f7b7e325510e037b9b00658aecd17420e5a97"
+  },
+  "elapsed_seconds": 45.414181041,
+  "limits": [
+    "Data-only reader returns no native owner, entitlement, Complete or AvailabilityKnown capability.",
+    "An empty indexed namespace is an empty observation; C2 ordinary LeaseRef orphans and accounting completeness remain unknown.",
+    "SQLite optional table fixtures are private temporary test data, not a production installer or schema activation.",
+    "Clock cases use controlled structural boot-scoped samples, not physical suspend or native capacity admission.",
+    "No provider image/payload verification, producer/native namespace work, factory, C2-C5 lifecycle/admission/settlement, public activation or Linux runtime accepted.",
+    "Successful a107 returns establish original phase Wait and its pipe cleanup contract; arbitrary escaped descendants are not proven.",
+    "Current-base composition remains required; this gate uses the independently reviewed source based on1ab8578f.",
+    "Later composition with run reporting, cancellation recovery, new forwarding guards and Kubernetes work requires its own affected-source evidence."
+  ],
+  "original_outer_exit": 0,
+  "original_phase_results": [
+    {
+      "exit": 0,
+      "original_wait_returned": true,
+      "phase": "normal",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a77d8a14e887b79e45258d885b7520bba6b007ca521dd7008e7e3c62a9be9f43"
+    },
+    {
+      "exit": 0,
+      "original_wait_returned": true,
+      "phase": "race",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2c898a84c3f6ccf20272e178cb456baf4b60a739b8bda6920cfd9f891861e3c8"
+    },
+    {
+      "exit": 0,
+      "original_wait_returned": true,
+      "phase": "vet",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "owned_source": [
+    {
+      "bytes": 11639,
+      "mode": "100644",
+      "path": "internal/manager/provider_pair_decode.go",
+      "sha256": "fda881e5e2adfed2160129c3a4efe8cf5ac0569b238728fd154a36c827ad4b13",
+      "git_blob": "e19af857643454227b49400423e4ed258317a4df"
+    },
+    {
+      "bytes": 8704,
+      "mode": "100644",
+      "path": "internal/manager/provider_pair_validate.go",
+      "sha256": "e77e28a288e9eecd235d8c823926ecc08a921213cd4a680fceb472de70c8409b",
+      "git_blob": "6c957d310cba145e9a377d7acc58826f82020f6d"
+    },
+    {
+      "bytes": 10097,
+      "mode": "100644",
+      "path": "internal/manager/provider_pair_snapshot.go",
+      "sha256": "6f067662004886a6f52f054830443b02747f840e2d84759725e72a00a4d4a3bb",
+      "git_blob": "289a06037738c5e222f7e9b873f5505fa5325453"
+    },
+    {
+      "bytes": 27877,
+      "mode": "100644",
+      "path": "internal/manager/provider_pair_c1_test.go",
+      "sha256": "3cf721f5ee6891bca5aef99669219b0c79bf6a19c9b57d2c7b21d6162802c343",
+      "git_blob": "edd92a1166ffe200770ddf675e7c28732216490d"
+    },
+    {
+      "bytes": 6940,
+      "mode": "100644",
+      "path": "docs/design/PROVIDER-PAIR-C1-STRICT-READER.md",
+      "sha256": "7214cbf81366614f6a428edff57c1434292dac6490382857988e187498a9b007",
+      "git_blob": "7627f298fc7c7d21e9f5ae159f3840838c32b076"
+    }
+  ],
+  "resource_controls": {
+    "GOMAXPROCS": 1,
+    "all_five_queue_overrides_unset_at_dispatch": true,
+    "cache_copies_or_downloads": false,
+    "canonical_queue_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "existing_cache_reused": true,
+    "finalization_reserve_seconds": 45,
+    "owner_cap_seconds": 600,
+    "p": 1,
+    "parallel": 1,
+    "phase_caps_seconds": [
+      240,
+      240,
+      120
+    ],
+    "test_timeout_seconds": 180
+  },
+  "schema": 1,
+  "scope": "Unused provider-pair C0+C1 indexed namespace snapshot and strict raw reader only",
+  "selected_inputs": {
+    "before_after_unchanged": true,
+    "count": 46,
+    "owned_paths": 5,
+    "protected_paths": 25
+  },
+  "source_base": "1ab8578f3b1a832834a951f39e1c4d49a5ca6737",
+  "source_manifest_sha256": "6525444fd3496e1a2a5b42e04e88e363dd0c0b6c5272a206485a6b441d041b63",
+  "source_review_sha256": "b42b78460ac220cee582b91533b45cbb1009315cff5aaf1bb8aa2010cf5bb007",
+  "status": "INDEPENDENTLY_ACCEPTED_SCOPED_C1_INTEGRATION",
+  "targeted_vet": {
+    "exit": 0,
+    "packages": [
+      "internal/manager",
+      "internal/providerpreparation"
+    ],
+    "stderr_empty": true,
+    "stdout_empty": true
+  },
+  "tool_scope": {
+    "Go_VERSION": "go1.27.3",
+    "Go_executable_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+    "owner_helper_sha256": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+    "qualification": "Selected executable, VERSION and compile/link/asm/cgo binaries pinned; no additional go-version/buildinfo phase or hermetic OS/transitive toolchain claim."
+  },
+  "source_commit": "0db000bc79e04113f21128be24f167d1620eba25",
+  "original_commit": "8755441103b731986ad4370f12628b26f0b8b517",
+  "independent_actual_review_sha256": "2a8c445583098d823a315fac5afb677d2c01b891b0026e0291798850947c62cf",
+  "primary_runtime_source_equal_tested_base_before_owned_files": true,
+  "original_outer_provenance": "Producer-retained original tool replies; coordinator independently checked child-phase raw logs, returned-result records and selected pins. No extra OS Wait or universal descendant claim."
+}

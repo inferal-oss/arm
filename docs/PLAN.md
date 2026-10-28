@@ -690,3 +690,20 @@ foundations do not complete their public workflows. The current Semblance
 publication composition is source-ready on frozen `d879c3a0` for bounded
 affected checks, preserving the accepted earlier numeric evidence. Its new
 runtime checks, draft submissions and ARM dependency promotion remain open.
+
+
+### Strict provider-pair C1 reader integration
+
+Reviewed C1 readers are integrated as `0db000bc` (original focused source
+`8755441`). Both normal and race runs pass 17 roots/173 exact named cases with
+no failures/skips; targeted vet passes. The primary runtime source before these
+five additions equals the tested `1ab8578f` base; intervening changes are
+documentation only. Indexed pair headers, members, journals, protected raw
+lease/budget bytes, clock bindings and ordered ancestor digests are checked
+in one snapshot. These are unused observations, not executable authority.
+
+C2 still must census ordinary LeaseRef rows and establish complete global
+accounting; an empty C1 index does not establish availability. Coupled lifecycle
+guards, atomic reservation/publisher before image work, native finalization and
+public provider activation remain unfinished. The central model/proof proposal
+remains unapplied; later combined-source validation is separate.

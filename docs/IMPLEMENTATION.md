@@ -2858,3 +2858,18 @@ Successful STOP/CONT and local transition state do not establish independently
 observed stopped state or resource credit. There is no production action caller,
 permit writer, transactional outbox or crash-surviving original-owner recovery.
 The runtime stays warning-only with native pressure action disabled.
+
+
+## Strict provider-pair indexed snapshots
+
+Integrated `0db000bc` adds bounded strict decoding of pair envelopes and protected
+raw member/budget bytes, an indexed header/member census before body reads, and
+reciprocal checks in one SQL snapshot. Duplicate or aliased keys, invalid Unicode,
+unsupported null/types, malformed fixed collections, clock/hash mismatch and
+changed ancestry are refused. Ancestor digests frame the parent identity and
+recorded revision plus ordered worker/temp sidecar bytes.
+
+The reader returns facts only. It neither installs a schema nor constructs an
+original owner, entitlement, factory or complete accounting projection. Ordinary
+orphan LeaseRef rows lie outside C1; an empty indexed namespace is not proof of
+free resources. The schema/model proposal remains unapplied.
