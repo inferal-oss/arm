@@ -113,6 +113,7 @@ var resetAutoIndexes = map[string]int{
 	"published_agents": 2, "published_agent_changes": 1, "routed_agent_links": 2,
 	"routing_roots": 1, "routing_outbox": 2, "routing_inbox": 2,
 	"routing_graph_issuance": 1, "routing_graph_reports": 1, "routing_graph_observations": 1,
+	"proxy_runs": 2, "proxy_run_chunks": 1,
 	"cargo_workloads": 1, "lease_reviews": 1, "lease_review_policies": 1,
 	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
@@ -152,7 +153,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		syncObjects[normalizedSchema(object.ddl)] = struct{ name, kind, table string }{name, object.kind, object.table}
 	}
 	syncSeen := map[string]bool{}
-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 148`)
+	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 153`)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +168,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if err := rows.Scan(&kind, &name, &table, &raw); err != nil {
 			return nil, err
 		}
-		if count > 147 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+		if count > 152 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
 			return nil, resetSchemaError("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
@@ -232,6 +233,21 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			}
 			continue
 		}
+
+		proxyObject := false
+		for object, ddl := range proxyRunResetSchema {
+			if normal == normalizedSchema(ddl) {
+				if kind != "table" || name != object || table != object {
+					return nil, resetSchemaError("proxy run schema object identity differs")
+				}
+				catalog[table] = nil
+				proxyObject = true
+				break
+			}
+		}
+		if proxyObject {
+			continue
+		}
 		if normal == normalizedSchema(cargoResetSchema) {
 			if kind != "table" || name != "cargo_workloads" || table != "cargo_workloads" {
 				return nil, resetSchemaError("Cargo optional schema identity differs")
@@ -276,6 +292,11 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	legacySync := len(syncSeen) == len(syncResetSchema)-1 && !syncSeen["sync_workspaces"]
 	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) && !legacySync {
 		return nil, resetSchemaError("partial sync reset schema group")
+	}
+	_, proxyRuns := catalog["proxy_runs"]
+	_, proxyChunks := catalog["proxy_run_chunks"]
+	if proxyRuns != proxyChunks {
+		return nil, resetSchemaError("partial proxy run schema group")
 	}
 	workspaceCount := 0
 	for _, table := range workspaceResetTables {
