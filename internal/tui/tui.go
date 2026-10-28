@@ -423,6 +423,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	if m.nameUI != nil {
 		return m.nameKey(key)
 	}
+	if m.runFullscreen() && (k < "1" || k > "8") && k != "q" {
+		return m.runKey(k)
+	}
 	if k == "ctrl+n" && m.inputMode == "" {
 		return m.openNameEditor()
 	}
@@ -508,6 +511,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	}
 	if m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil {
 		if k >= "1" && k <= "8" {
+			if m.runsUI.full {
+				m.setRunFullscreen(false)
+			}
 			m.retireRuns()
 			m.runsUI.selected = nil
 		} else {

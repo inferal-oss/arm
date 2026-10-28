@@ -39,6 +39,9 @@ func scrollReview(view *viewport.Model, key string) bool {
 }
 
 func (m *dashboardModel) mainWidth() int {
+	if m.runFullscreen() {
+		return m.width
+	}
 	if m.width >= 110 {
 		return m.width - 35
 	}
@@ -62,6 +65,9 @@ func (m *dashboardModel) viewportContent() string {
 	return content
 }
 func (m *dashboardModel) displayContent() string {
+	if m.runFullscreen() {
+		return m.runFullscreenText()
+	}
 	if m.nameUI != nil {
 		return fieldLabels(m.nameText())
 	}

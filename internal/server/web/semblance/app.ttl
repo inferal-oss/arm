@@ -111,3 +111,10 @@ arm:RunOutput a owl:Class ; rdfs:subClassOf c:Code .
 [] a sty:StyleRule ; sty:appliesTo arm:RunOutput ;
  sty:declares [ sty:property "max-height" ; sty:raw "55vh" ] ,
               [ sty:property "overflow-y" ; sty:raw "auto" ] .
+
+# The stock Fullscreen layer owns presentation and Escape; ARM supplies only
+# its transcript component and viewport-relative height for stock Code.
+arm:RunTranscript a owl:Class ; rdfs:subClassOf c:Stack .
+arm:RunOutputFull a owl:Class ; rdfs:subClassOf arm:RunOutput .
+[] a sty:StyleRule ; sty:appliesTo arm:RunOutputFull ;
+ sty:declares [ sty:property "max-height" ; sty:raw "calc(100dvh - 14rem)" ] .

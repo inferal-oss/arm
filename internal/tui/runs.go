@@ -19,6 +19,8 @@ type runsDashboard struct {
 	data                              []byte
 	offset                            int64
 	following, done, displayCut, busy bool
+	folded, full, foldedBeforeFull    bool
+	viewBeforeFull                    int
 	generation                        uint64
 	err                               string
 	cancel                            context.CancelFunc
@@ -169,6 +171,8 @@ func (m *dashboardModel) openRun() tea.Cmd {
 	run := records[m.selected]
 	ui.selected = &run
 	ui.following = true
+	ui.folded = false
+	ui.full = false
 	ui.offset = 0
 	ui.data = nil
 	ui.done = false
@@ -241,7 +245,7 @@ func (m *dashboardModel) runsText() string {
 		if ui.done {
 			out.WriteString(" · end of saved log")
 		}
-		out.WriteString("\n[f] Follow/pause · [Home] Read from start · [n] Next page · [l] Lease · [Esc] Runs\n")
+		out.WriteString("\n[f] Follow/pause · [o] Fold/unfold · [z] Fullscreen\n[Home] Read from start · [n] Next page · [l] Lease · [Esc] Runs\n")
 		if ui.displayCut {
 			out.WriteString("Display holds latest 256 KiB; Home reads earlier output.\n")
 		}
@@ -249,6 +253,10 @@ func (m *dashboardModel) runsText() string {
 			out.WriteString("Saved log reached its retention limit.\n")
 		}
 		out.WriteString("Long lines wrap in this view.\n\n")
+		if ui.folded {
+			out.WriteString("Output folded; capture and following continue.\n[o] Show output")
+			return out.String()
+		}
 		out.WriteString(safeRunOutput(ui.data, ui.done))
 		if len(ui.data) == 0 {
 			out.WriteString("(No output yet)")
@@ -271,10 +279,22 @@ func (m *dashboardModel) runKey(k string) tea.Cmd {
 	}
 	switch k {
 	case "esc":
+		if ui.full {
+			m.setRunFullscreen(false)
+			return nil
+		}
 		m.retireRuns()
 		ui.selected = nil
 		m.viewport.GotoTop()
 		return m.readRuns(false)
+	case "z":
+		m.setRunFullscreen(!ui.full)
+	case "o":
+		ui.folded = !ui.folded
+		m.syncViewport()
+		if ui.following && !ui.folded {
+			m.viewport.GotoBottom()
+		}
 	case "f", "end":
 		m.retireRuns()
 		ui.following = !ui.following
@@ -302,6 +322,9 @@ func (m *dashboardModel) runKey(k string) tea.Cmd {
 	case "r":
 		return m.readRuns(!ui.following)
 	case "l":
+		if ui.full {
+			m.setRunFullscreen(false)
+		}
 		if ui.selected.LeaseID != "" {
 			id := ui.selected.LeaseID
 			m.retireRuns()
@@ -309,6 +332,9 @@ func (m *dashboardModel) runKey(k string) tea.Cmd {
 			return m.loadDetail(id)
 		}
 	case "i":
+		if ui.full {
+			m.setRunFullscreen(false)
+		}
 		m.record, _ = newRecord(*ui.selected, "Run")
 		m.viewport.GotoTop()
 	default:
@@ -317,4 +343,60 @@ func (m *dashboardModel) runKey(k string) tea.Cmd {
 		}
 	}
 	return nil
+}
+
+func (m *dashboardModel) runFullscreen() bool {
+	return m.view == 7 && m.nodeUI == nil && m.record == nil && m.runsUI != nil && m.runsUI.selected != nil && m.runsUI.full
+}
+func (m *dashboardModel) setRunFullscreen(enabled bool) {
+	ui := m.runsUI
+	if ui == nil || ui.selected == nil || ui.full == enabled {
+		return
+	}
+	if enabled {
+		ui.viewBeforeFull = m.viewport.YOffset()
+		ui.foldedBeforeFull = ui.folded
+		ui.folded = false
+	}
+	ui.full = enabled
+	if !enabled {
+		ui.folded = ui.foldedBeforeFull
+	}
+	m.syncViewport()
+	if ui.following && !ui.folded {
+		m.viewport.GotoBottom()
+	} else if !enabled {
+		m.viewport.SetYOffset(ui.viewBeforeFull)
+	}
+}
+func (m *dashboardModel) runFullscreenText() string {
+	ui := m.runsUI
+	if ui == nil {
+		return ""
+	}
+	var out strings.Builder
+	if !m.connected {
+		out.WriteString("DISCONNECTED · cached output is stale\n")
+	}
+	if ui.err != "" {
+		fmt.Fprintf(&out, "Output unavailable: %s\n", safe(ui.err))
+	}
+	if ui.selected.Outcome == "reporter_lost" {
+		out.WriteString("Reporter lost; process completion is unknown.\n")
+	}
+	if ui.selected.Truncated {
+		out.WriteString("Saved log reached its retention limit.\n")
+	}
+	if ui.displayCut {
+		out.WriteString("Latest 256 KiB shown; Home reads earlier output.\n")
+	}
+	if ui.folded {
+		out.WriteString("Output folded; capture and following continue.\n[o] Show output")
+	} else {
+		out.WriteString(safeRunOutput(ui.data, ui.done))
+		if len(ui.data) == 0 {
+			out.WriteString("(No output yet)")
+		}
+	}
+	return out.String()
 }

@@ -204,3 +204,97 @@ func TestRunsImmediateDrainReusesInventoryAndTickRefreshesIt(t *testing.T) {
 		t.Fatal("ordinary refresh skipped inventory")
 	}
 }
+
+func TestRunsFoldAndFullscreenPreserveOutputAndRestorePriorView(t *testing.T) {
+	m, s, _ := runFixture(t, []byte("paged-output"))
+	runRead(t, m, press(m, "8"))
+	next := runRead(t, m, press(m, "enter"))
+	for next != nil {
+		next = runRead(t, m, next)
+	}
+	ui := m.runsUI
+	ui.following = false
+	m.syncViewport()
+	m.viewport.SetYOffset(2)
+	data, offset := string(ui.data), ui.offset
+	operations := len(s.operations)
+	press(m, "o")
+	if !ui.folded || !strings.Contains(m.runsText(), "Output folded") {
+		t.Fatal("output did not fold")
+	}
+	prior := m.viewport.YOffset()
+	press(m, "z")
+	if !m.runFullscreen() || ui.folded || len(s.operations) != operations {
+		t.Fatal("fullscreen lost expansion or started another reader")
+	}
+	if !strings.Contains(m.runFullscreenText(), data) || strings.Contains(m.runFullscreenText(), "Agent:") {
+		t.Fatal("fullscreen did not isolate transcript")
+	}
+	press(m, "esc")
+	if ui.full || ui.selected == nil || !ui.folded || ui.offset != offset || string(ui.data) != data || ui.following || m.viewport.YOffset() != prior {
+		t.Fatal("fullscreen exit lost prior view or output state")
+	}
+	press(m, "o")
+	if ui.folded || string(ui.data) != data {
+		t.Fatal("unfold lost output")
+	}
+	press(m, "z")
+	press(m, "1")
+	if m.view != 0 || ui.full || ui.selected != nil {
+		t.Fatal("fullscreen swallowed navigation")
+	}
+}
+func TestRunsFullscreenKeepsPendingReadAndRejectsStaleExitReceipt(t *testing.T) {
+	m, _, run := runFixture(t, []byte("abcdef"))
+	m.view = 7
+	m.runsUI = &runsDashboard{records: []model.Run{run}, selected: &run, following: true}
+	cmd := m.readRuns(false)
+	press(m, "z")
+	next := runRead(t, m, cmd)
+	if string(m.runsUI.data) != "abc" || m.runsUI.offset != 3 || !m.runFullscreen() {
+		t.Fatal("mode switch dropped in-flight bytes")
+	}
+	msg := next().(runsReadMsg)
+	press(m, "1")
+	m.acceptRunsRead(msg)
+	if string(m.runsUI.data) != "abc" || m.runsUI.offset != 3 {
+		t.Fatal("late receipt crossed exit/navigation boundary")
+	}
+}
+func TestRunsFullscreenNativeFramesFitAndExposeMouseExit(t *testing.T) {
+	for _, size := range [][2]int{{45, 14}, {70, 24}, {140, 42}} {
+		m, _, run := runFixture(t, nil)
+		m.width, m.height = size[0], size[1]
+		m.view = 7
+		m.runsUI = &runsDashboard{selected: &run, following: true, data: []byte(strings.Repeat("compiling\n", 100) + "FULLSCREEN FINAL\n")}
+		m.setRunFullscreen(true)
+		frame := ansi.Strip(m.View().Content)
+		lines := strings.Split(frame, "\n")
+		if len(lines) != m.height {
+			t.Fatalf("%v fullscreen height %d", size, len(lines))
+		}
+		for _, line := range lines {
+			if ansi.StringWidth(line) != m.width {
+				t.Fatalf("%v fullscreen width %d", size, ansi.StringWidth(line))
+			}
+		}
+		if !strings.Contains(frame, "FULLSCREEN FINAL") || !strings.Contains(frame, "[z/Esc] Back") || strings.Contains(frame, "LIVE FEED") || strings.Contains(frame, "Agent:") {
+			t.Fatal("fullscreen lost transcript/exit or retained dashboard chrome", size)
+		}
+		found := false
+		for _, region := range m.mouseRegions() {
+			if region.key == "z" {
+				found = true
+				if region.y != m.height-1 {
+					t.Fatal("fullscreen exit mouse region misplaced")
+				}
+			}
+		}
+		if !found {
+			t.Fatal("fullscreen mouse exit absent")
+		}
+		if cmd := press(m, "q"); cmd == nil {
+			t.Fatal("fullscreen swallowed quit")
+		}
+	}
+}

@@ -4,7 +4,7 @@ import {controlUI} from './control-test-ui.mjs';
 import {createRunsConsole,cleanRunText} from './runs.mjs';
 const id='a'.repeat(32),other='b'.repeat(32),run={id,name:'readable-run',command:['test','--all'],agent:'agent',reason:'Verification',state:'active',log_bytes:0};
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function fixture(t,handler){const ui=controlUI();ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
+function fixture(t,handler,fullscreen=false){const ui=controlUI();ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
 const encoded=text=>Buffer.from(text).toString('base64');
 test('Runs loads only while visible and opens output following by default',async t=>{const f=fixture(t);await f.panel.refresh();assert.equal(f.calls.length,0);f.panel.setActive(true);await tick();assert.equal(f.calls[0][0],'runs');await f.ui.get('Open readable-run').emit('activate');assert.equal(f.calls.at(-1)[0],'run_output');assert.ok(f.ui.get('Pause following'));assert.equal(f.ui.get('Next output page').disabled,true);});
 test('terminal output drains pages and byte cursor preserves split UTF-8',async t=>{
@@ -56,4 +56,30 @@ test('closing a run whose opener was filtered out focuses the surviving filter',
  const f=fixture(t);f.panel.setActive(true);await tick();await f.ui.get('Open readable-run').emit('activate');
  const filter=f.ui.get('Filter runs, commands or agents');filter.value='no matching run';await filter.emit('input');
  await f.ui.get('Close output').emit('activate');assert.equal(f.ui.activeComponent,filter);
+});
+
+function installFullscreen(ui){
+ const facts=new Map(),listeners=new Set(),FS='https://semblance.dev/ns/fullscreen#fullViewport';
+ const term=value=>({value}),triple=(s,p,value)=>({subject:term(s),predicate:term(p),object:term(String(value))});
+ ui.put=(subject,predicate,value)=>{const key=subject+'|'+predicate,old=facts.get(key);facts.set(key,value);if(old===value)return;const delta={add:[triple(subject,predicate,value)],remove:old===undefined?[]:[triple(subject,predicate,old)]};for(const fn of listeners)fn(undefined,delta);};
+ ui.app={runtime:{onInput(fn){listeners.add(fn);return ()=>listeners.delete(fn);}},store:{factory:{namedNode:term,defaultGraph:()=>({})},match(subject,predicate){const value=facts.get(subject.value+'|'+predicate.value);return value===undefined?[]:[triple(subject.value,predicate.value,value)];}}};
+ const stack=ui.stack;ui.stack=(...args)=>{const h=stack(...args);h.iri='urn:run-test:'+h.id;const set=h.set.bind(h);h.set=props=>{set(props);if('fullViewport'in props)ui.put(h.iri,FS,props.fullViewport);return h;};return h;};
+ ui.exitFullscreen=()=>{const surface=ui.all.find(x=>x.fullViewport===true&&!x.disposed);assert.ok(surface);ui.put(surface.iri,FS,false);};
+ ui.fullscreenListeners=listeners;
+}
+test('folded output retains capture, cursor and following across updates',async t=>{
+ let bytes=0;const f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,log_bytes:++bytes},offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(run);const fold=f.ui.get('Saved log output');assert.equal(fold.open,true);fold.open=false;const code=f.ui.all.filter(x=>x.kind==='Code'&&!x.disposed).at(-1),scrolls=code.scrolls;
+ await f.panel.refresh();assert.equal(fold.open,false);assert.equal(code.value,'xx');assert.equal(code.scrolls,scrolls,'hidden output must not scroll');assert.equal(f.calls.at(-1)[1].offset,1);fold.open=true;await f.panel.refresh();assert.equal(code.value,'xxx');assert.ok(f.ui.get('Pause following'));
+});
+test('fullscreen shares the transcript and restores focus/folding through button or stock Escape',async t=>{
+ const f=fixture(t,undefined,true);f.panel.setActive(true);await tick();await f.panel.open(run);const fold=f.ui.get('Saved log output'),code=f.ui.all.filter(x=>x.kind==='Code'&&!x.disposed).at(-1);fold.open=false;
+ const expand=f.ui.get('Fullscreen log'),calls=f.calls.length;await expand.emit('activate');const surface=f.ui.all.find(x=>x.fullViewport===true&&!x.disposed);assert.ok(surface);assert.equal(fold.open,true);assert.equal(f.ui.activeComponent,expand);assert.equal(f.calls.length,calls,'fullscreen must not start another poller');
+ await f.panel.refresh();assert.equal(f.ui.all.filter(x=>x.kind==='Code'&&!x.disposed).at(-1),code);assert.equal(f.ui.activeComponent,expand);
+ f.ui.exitFullscreen();await tick();assert.equal(surface.fullViewport,false);assert.equal(expand.label,'Fullscreen log');assert.equal(fold.open,false);assert.equal(f.ui.activeComponent,expand);
+ await expand.emit('activate');await f.ui.get('Exit fullscreen').emit('activate');assert.equal(surface.fullViewport,false);assert.equal(fold.open,false);assert.equal(f.ui.activeComponent,expand);
+});
+for(const mode of ['hide','reset','dispose'])test(`fullscreen retracts its graph fact before ${mode}`,async t=>{
+ const f=fixture(t,undefined,true);f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Fullscreen log').emit('activate');const surface=f.ui.all.find(x=>x.fullViewport===true&&!x.disposed);
+ if(mode==='hide')f.panel.setActive(false);else f.panel[mode]();assert.equal(surface.fullViewport,false);await tick();assert.ok(!f.ui.all.some(x=>x.fullViewport===true&&!x.disposed));if(mode==='dispose')assert.equal(f.ui.fullscreenListeners.size,0);
 });
