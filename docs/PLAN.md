@@ -471,3 +471,31 @@ ARM's vendored engine is unchanged.
 | Native pressure | `codex/pressure-native-pause` | Base `d8a324fb`; original-owned policy and durable action cuts plus causal STOP/CONT validation remain under development. Production policy stays warning-only. |
 | Degraded persistence | `codex/degraded-holder-cancellation` | Base `07f2fb02`; review cancellation before failed persistence for Cargo, Gradle and storage exports without settlement credit. Generic/SSH evidence does not cover these holders. |
 | Numeric/component dependency | `codex/numeric-sparkline-517-composition` | Current upstream source, build, 519 numeric and 52 component cases accepted. Current rendered UI and production build precede separate upstream drafts and ARM dependency promotion. |
+
+## Run transparency
+
+Owner branches: `codex/run-transparency` (CLI, agent guidance, integration),
+`codex/run-records` (backend and persistence), and `codex/run-dashboards`
+(web and terminal views). The implementation starts from `1e7a6ff`.
+Existing work is preserved; no unrelated source histories are imported.
+
+Reviewed and integrated feature commits:
+
+| Area | Integrated commits | Accepted scope |
+| --- | --- | --- |
+| Shared model/backend | `d21fdbd`, `32b7aa8` | Local inventory, readable names, lease associations, durable proxy capture, browser read-only boundaries and reporter-loss uncertainty. |
+| CLI/instructions | `8ed42d3` | Quiet runs, no-lease proxy, run discovery, snapshot/follow/byte-offset logs and installed agent guidance. |
+| Log packing | `a57fbfb` | Atomic packed small appends, exact retry receipts and explicit retention limits. |
+| Dashboards | `4378c3a`, `7310f3a` | Web/TUI Runs views, default following, pause/manual reads, bounded catch-up and command-palette integration. |
+
+Independent final-source review has no unresolved blocking findings. Final
+composed focused macOS race tests, vet, native build, 393 JavaScript tests and
+Linux amd64 cross-compilation pass. Native proxy cancellation separately verifies
+the original child join and retained log. Go 1.27.3 is installed and verified.
+
+Remaining gates/limits: live browser rendering is unverified because the browser
+executor rejects the configured symlinked writable roots. Full-suite and Linux
+runtime acceptance are unestablished. Remote runs, SSH capture, history
+pagination/archival and retention deletion remain unsupported. Inventory and
+proxy storage bounds, reporter uncertainty and reset-proof evidence limits are
+recorded in IMPLEMENTATION and VALIDATION; none broadens resource authority.

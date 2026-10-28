@@ -1,5 +1,59 @@
 # Backend and CLI implementation
 
+## Execution runs and durable logs
+
+Ordinary recorded command leases project into runs using the lease ID and a
+separate deterministic `run` readable-name domain. The inventory exposes command,
+working directory, agent contact, reason, host, state, timestamps, result and lease
+association. Existing leased output files and lifecycle/accounting are preserved.
+Native SSH transport commands/output remain excluded under their existing privacy
+boundary. Run reads are local; scoped peer sessions gain no new permission.
+
+`arm proxy` starts a noninteractive command locally through the original-child
+launch gate and ownership/join contract. It captures merged stdout/stderr into a
+persistent observation without acquiring a lease. Resource admission policy still
+applies independently. Appends use acknowledged byte offsets, exact last-input
+retry receipts and atomic chunk/record writes. Small writes pack into 64KiB
+chunks. Proxy retention is a prefix capped at 64MiB per run and 256MiB aggregate
+with 4,096/16,384 per-run/aggregate chunk bounds; later accepted bytes are counted
+and truncation is explicit. These are decoded-byte bounds, not physical disk
+quotas. Existing leased output files retain their prior unbounded behavior.
+
+The CLI reporter sends heartbeats every five seconds. Thirty seconds without
+reporting or a daemon restart marks an unfinished proxy as interrupted with
+`reporter_lost`, without an exit code, end timestamp, signal or cleanup claim.
+The CLI reports process completion only after its original child is positively
+reaped and cleanup checks pass; launch refusals have a separate outcome. Native
+wire reports remain observations within the existing same-user trust boundary.
+Browser sessions can list/inspect/read runs but cannot create, append or finish them.
+
+`arm run --quiet` saves output while waiting and preserving status; the proxy has
+the same quiet option. `arm runs` lists observations and `arm log [-f] RUN` reads
+or follows raw saved bytes by ID or unique readable run name. `--offset` counts
+bytes. A snapshot read fixes its initial retained end; followers drain the final
+page before finishing. Offline help, the operating guide, installed Codex/Claude
+instruction templates and project instructions explain capture and log recovery.
+
+Web and terminal Runs views append to existing navigation, preserving earlier
+shortcuts. They filter active/past records, show command/agent/reason/host/lease
+metadata, follow output by default, support pause/restart/manual paging and
+expose saved-log truncation and reporting uncertainty. Displays keep a bounded
+transcript window; the CLI can read the full retained log. UTF-8 boundaries and
+terminal/HTML escaping preserve safe presentation. Backlog reads yield bounded
+pages, suppress stale session/selection responses, and avoid fetching the full
+inventory per page. Paused output still refreshes metadata. Web command-palette
+navigation includes Runs. Browser visual rendering remains unverified.
+
+The inventory and name resolution explicitly refuse more than 4,096 combined
+runs or 2MiB of response metadata. Exact canonical IDs remain inspectable/readable
+independently of that inventory bound; new proxy creation is capped at 4,096
+records. Retention deletion, archival/pagination and full remote run visibility
+remain unsupported. Stopped-database proof recognizes the paired observational
+tables, validates contiguous retained bytes, and blocks unfinished/lost reports.
+Its existing 64MiB evidence budget can refuse large otherwise-settled proxy logs
+(base64 and other evidence count toward it); the ordinary reset policy is not
+relaxed. Explicit database forgetting retains its separate existing semantics.
+
 ## Native elapsed lease entitlement
 
 Resource TTLs now use versioned boot-scoped native deadlines. Linux requires a

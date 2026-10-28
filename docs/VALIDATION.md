@@ -1,5 +1,62 @@
 # Validation record
 
+## Execution transparency — 2026-10-28
+
+The final composed feature source is `7310f3a`, following shared/backend
+`d21fdbd`/`32b7aa8`, CLI `8ed42d3`, packing `a57fbfb`, and dashboard `4378c3a`.
+Independent review of the actual final source and dependencies has no unresolved
+blocking finding. Review fixes cover help/palette discovery, paused metadata
+polling and prompt bounded backlog draining. Go 1.27.3 on macOS arm64 is installed
+and verified; the module already required this release.
+
+Final integration checks pass:
+
+- `go test -race -p 2` across CLI, Manager, server, database, installer and TUI,
+  with `-run '^TestRun|TestAgentGuideExplainsProxyQuietRunsAndLogRecovery|TestCurrentInstructionsRoundTripBothAdaptersWithBoundState|TestInstructionCommandsAreMarkdownCode|TestCLIExecutionExpiryAndUninstallGuard|TestDetachCannotChangeOrdinaryRunFollowing'`,
+  `-count=1 -timeout=90s` and `GOMAXPROCS=2`.
+- `go vet -p 2` for those six packages and a native `go build -p 2 ./cmd/arm`.
+- `node --test internal/server/web/*.test.mjs internal/server/web/semblance/*.test.mjs`:
+  393 pass, zero failures, cancellations, skips or todo cases.
+- Linux amd64 CGo-free compilation of those six test packages through
+  `go test -p 2 -exec /usr/bin/true -run '^TestRun' -count=1`; this executes no
+  Linux test code and establishes compilation only.
+
+The focused checks cover actual quiet proxy and leased commands/exit statuses,
+no proxy lease creation, live log bytes observed before producer completion,
+final-page drain, byte-offset/multi-page reads and readable-name selectors.
+Backend fixtures cover atomic acknowledgements, exact last-input retries across
+heartbeats, restart/no-replay, reporter loss, log-path refusal, canonical lookup
+past the inventory bound, strict browser read-only operations and stopped-ledger
+proof refusal/recognition. An actual 4,097-small-append test reconstructs exact
+output in one packed chunk without truncation, and split-tail/partial-page reads
+preserve bytes. The 64MiB retention-boundary test seeds explicit metadata and its
+final retained byte; it is not a physical 64MiB allocation or quota test.
+
+UI fixtures exercise default follow/pause/manual reads, split UTF-8, bounded
+output, huge-line presentation, old session/selection rejection, responsive
+backlog catch-up, continued paused metadata polling, palette navigation and
+terminal frames at 45/70/140 columns. A separate composed TUI navigation/compact/
+lease-table race cohort passed before the final polling-only follow-up. The
+owner's full TUI race suite passed before the long-line/polling follow-ups; it is
+not claimed as a full-suite final-source run. The final embedded web bundle was
+rebuilt successfully; its expected large-chunk warning remains.
+
+A disposable native CLI/backend smoke separately passes proxy SIGTERM handling:
+CLI exit 130, a persisted cancelled result with original-child exit 137, absence
+of that positively joined child, retained output and joined daemon. Process-control
+source inputs are unchanged in the final UI composition. Two earlier harness
+attempts remain failed: a symlinked temporary-home refusal before daemon startup,
+and a mistaken expected daemon signal-exit status. The corrected run passes; no
+arbitrary descendant-tree or interactive-terminal coverage is claimed.
+
+Live browser visual verification remains blocked: its executor rejects symlinked
+writable roots despite the existing opt-in, and cannot use the shell's approval
+path. There is no successful browser rendering claim. Full Go suite, Linux
+runtime, remote Runs and SSH capture remain unestablished. Proxy storage bounds
+are decoded bytes/chunk counts, not physical quotas. The ordinary reset proof's
+existing 64MiB evidence budget counts base64 chunks and other records, so it may
+refuse large otherwise-settled histories safely; no reset authority was relaxed.
+
 ## Pressure warnings with checkpoint-refusal cancellation
 
 Source `b7a208f`, integrated as `d32bca2`, preserves all nine accepted warning

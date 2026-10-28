@@ -21,6 +21,27 @@ Review each completed step before integration, fix the findings and run relevant
 
 Commit each major completed feature separately after review, fixes and validation. Update `docs/PLAN.md`, `docs/IMPLEMENTATION.md` and `docs/VALIDATION.md` to distinguish implemented behavior, scoped evidence, unsupported behavior and remaining work. Report integrated commit IDs and unresolved gates truthfully. Continue authorized work without repeatedly asking for permission; honor explicit user-review requirements and explain concrete blockers when they apply.
 
+## Keep long-running commands visible
+
+Use `arm run --quiet --cpu N --ttl DURATION --reason "purpose" -- COMMAND`
+when requesting a new supervised resource lease. Add `--agent CONTACT` for the
+actual registered agent and any required resource claims. `--quiet` saves output
+without printing it into the agent context; it still waits and preserves exit
+status. Follow the coordinator's existing authorization and resource windows.
+
+For likely long-running noninteractive work that needs no new lease, use
+`arm proxy --quiet --agent CONTACT --reason "purpose" -- COMMAND`.
+Proxy saves a run and its output without reserving resources; it cannot bypass
+required admission or a refused lease. It provides no terminal emulation.
+
+Keep the returned run ID; for leased runs it is also the lease ID. Find active
+and past executions with `arm runs --json`. Inspect quiet failures with
+`arm log RUN_ID`, follow with `arm log -f RUN_ID`, and read only later bytes with
+`arm log RUN_ID --offset BYTE_OFFSET`. Both dashboards also follow selected runs.
+Commands, working directories and logs are visible to authorized local readers;
+avoid secrets in arguments/output. Retention truncation is explicit, and lost
+reporting does not prove process exit.
+
 ## Repository documentation privacy
 
 Never include chat IDs, discussion minutiae, or personal information in documents committed to the repository. Describe project requirements, technical decisions, behavior, validation and limitations. Identify ownership by role, branch or commit, never by an internal conversation identifier.
