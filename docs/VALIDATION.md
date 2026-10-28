@@ -6473,3 +6473,23 @@ rendered observations and failed source cuts. The current 80-configuration
 browser matrix, regional locales, 512/513 boundaries, production build,
 upstream drafts and ARM dependency promotion remain pending. No build or
 numeric cohort was repeated in this component run.
+
+
+### Scan-wide sync original-owner hold
+
+[Qualified held-scan evidence](validation/sync-held-scan-guard-2026-10-27.json)
+binds the five final source/document hashes to the reviewed commit. The first
+command fails before tests because its default build cache is inaccessible.
+The next combined command also remains failed: its Darwin syncfs package race
+run passes in 41.937 seconds, then vet finds an unreachable trailing return.
+Removing only that unreachable line changes no reachable path. A separate
+final-source vet command exits zero. The other four source/document inputs
+match the final committed bytes, and relevant dependencies match the current
+integration baseline.
+
+These nonverbose results establish no exact named roster or zero-skip count.
+Resolved Go executable identity and unset queue overrides were not captured;
+no corresponding provenance claim is made. No Linux execution, positive
+native XFS proof, Manager charged-scope bridge or public sync activation is
+established. The fake hold fixtures exercise exclusion/refusal/cancellation
+lifecycle, and do not substitute for native allocation enforcement.

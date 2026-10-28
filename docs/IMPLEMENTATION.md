@@ -2531,3 +2531,18 @@ named cases on unchanged images and inputs. Current browser checks, production
 build, separate upstream draft submissions and ARM dependency promotion remain
 pending. Earlier failed source cuts remain
 failed; ARM's vendored engine is unchanged.
+
+
+## Original sync scope hold
+
+Integrated `3d331e0e` requires a sealed original-owner hold throughout native
+quota verification and the complete-tree scan, followed by an original-owner
+recheck before returning proof. Entry and rechecks take the caller's context.
+Every refusal and cancellation releases an acquired hold; cached binding
+inspection acquires a fresh short hold and conveys no execution authority.
+
+The package-private constructor supplies no production fence. The charged
+Manager row, complete writer exclusion, bootstrap accounting, schema/recovery
+proof and native positive XFS acceptance remain prerequisites for public sync.
+The separate [source contract](SYNC-XFS-OWNER-FENCE-CUT.md) records those
+boundaries. This change does not enable push, pull or bidirectional dispatch.

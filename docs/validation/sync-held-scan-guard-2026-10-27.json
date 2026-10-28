@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED_SCOPED_HELD_GUARD_SOURCE_AND_QUALIFIED_PACKAGE_EVIDENCE",
+  "commit": "2c28d24ab1024b780607094cd90f2bf93b24f8c7",
+  "baseline": "cef65cd411cd483f5a367c8444a3fcfe1d88641b",
+  "source_review_sha256": "42c6ee4ac14b7f6952022a4d51fac094221c1ab381a024045f956175566d597b",
+  "author_record_sha256": "5bb89b718e67b0eb04a4b169c481521189f4c051b1cafd0077757d38e995dc88",
+  "source_sha256": {
+    "internal/syncfs/enforced_scope.go": "5bee2788a9db49c04833dfe5465a3d8361e8c10935f0f0e3fd2d210ad8cc07de",
+    "internal/syncfs/enforced_scope_owner_test.go": "6dc9f6f392159bda9a048ca2ad3813b7170e080517e89beae9442885d18dd334",
+    "internal/syncfs/enforced_scope_test.go": "944a597a6fafd46289233a7370fbb4e60a80a37bc058565c26d382b5cb586eac",
+    "internal/syncfs/quota_probe_darwin.go": "b6add0e8ee9062ec3418e0f7d86138d3d44518404e735b62cad77d07ffebd888",
+    "docs/SYNC-XFS-OWNER-FENCE-CUT.md": "0d0623067647ed71c0662ad249816f1efdd883db33c2e95bfda27c3b0d2ecde5"
+  },
+  "actual_outcomes": [
+    {
+      "phase": "initial-default-cache-attempt",
+      "exit": 1,
+      "duration_ms": 132140,
+      "scope": "Setup failed on cache access before tests executed; preserved as failed."
+    },
+    {
+      "phase": "race-then-vet",
+      "aggregate_exit": 1,
+      "duration_ms": 102878,
+      "package_race_result": "PASS",
+      "package_race_seconds": 41.937,
+      "vet_result": "FAIL: unreachable trailing return in Darwin source",
+      "race_quota_source_sha256": "08d21eae470a46b401bcb7b7c80389c8daa55c543d565e1e9f3e137a4395f9b1",
+      "all_other_four_owned_files_match_final": true
+    },
+    {
+      "phase": "final-vet",
+      "exit": 0,
+      "duration_ms": 931,
+      "stdout_stderr_empty": true,
+      "source": "Final committed source"
+    }
+  ],
+  "source_equivalence_qualification": "Final Darwin source differs from the race-tested source only by deleting the unreachable trailing return after an exhaustive returning switch. Reachable behavior is unchanged. No post-fix package race rerun is claimed.",
+  "current_composition_intersection": {
+    "main": "bc57f17",
+    "unchanged_from_baseline": [
+      "internal/syncfs",
+      "internal/syncreconcile",
+      "internal/rsyncengine",
+      "go.mod",
+      "go.sum"
+    ]
+  },
+  "provenance_scope": "Coordinator recovered and confirmed exact original app command status/output metadata; independent audit checks the frozen retained record and source blobs, without reexecution.",
+  "limitations": [
+    "Combined race/vet command remains exit1; initial setup failure remains exit1. Final vet0 is separate.",
+    "Package-level nonverbose output does not establish exact named roster, test count, zero skips or a positive native XFS enforcement case.",
+    "The resolved Go executable/version and all queue override environment values were not retained; no exact tool identity or unset-overrides claim.",
+    "No separate cross-platform compilation or Linux runtime claim.",
+    "No production owner fence, Manager charged-scope bridge, quota change, public sync dispatch, privileged fixture or full sync workflow acceptance.",
+    "Future Manager-backed waits still require the bounded original capability/gate/schema contracts; the added context parameters merely enable them."
+  ]
+}
