@@ -6798,3 +6798,53 @@ Go source/module entries and four owned paths match the reviewed feature
 exactly; no new runtime run is claimed for this composition. Website validation
 and later native-foundation integration remain separate. Normalized evidence:
 [log-run-completion-2026-10-28.json](validation/log-run-completion-2026-10-28.json).
+### Detachable run-log windows
+
+The focused continuation on `codex/run-log-windows` adds stock Semblance
+detachable tabs, a floating desktop and a taskbar without changing the pinned
+engine or backend protocol. Final source is `cae0870`, following `1fea100`,
+`d620338`, `62b8cff`, `b208ebd`, `a67be25`, `35faf04` and `97e680c`.
+Source/input and retained artifact hashes are
+recorded in `validation/run-log-windows-headless-2026-10-28.json`.
+
+The normal shared FIFO queue runs the final affected Node test roster: 418 pass,
+zero failures, cancellations, skips or todos. The real WAT/Semblance runtime
+regression passes with native pop-out, Shift+Enter, geometry, maximize/restore,
+minimize/taskbar restore, closing off-page, return-to-tab and reset. It asserts
+that the exact output node and byte cursor survive; docking removes the visible
+frame, and reset removes native input geometry and stacking references. The
+production-adapter regression additionally covers viewport fitting without
+animation offsets, preserved maximized geometry and resize-listener retirement.
+The web asset rebuild and native command build pass with Go 1.27.3 darwin/arm64;
+the existing large JavaScript chunk warning remains.
+
+Headless Chromium checks use real proxy output and the embedded dashboard.
+Pointer tear-off and cancel, pop-out control, Shift+Enter, navigation while
+following, pause while capture continues, maximize, fullscreen/Escape, taskbar
+restore and closing/docking pass without page errors. The 390px viewport check
+asserts the actual frame is visible within horizontal viewport bounds, in
+addition to no page overflow. A real 120-line saved backlog plus continuing
+output verifies
+that the log itself scrolls to its visible tail while controls stay in view on
+both desktop and mobile. Floating and docked fullscreen views also assert a
+visible following tail. Retained desktop/mobile images and a decoded frame
+from the final video are visually inspected. The recording uses an explicit
+bounded one-core lease inside the normal shared queue. Original recorder and
+proxy complete with exit 0; the private backend is joined and browser/context
+closed, with no scoped capture/backend process remaining.
+
+Review fixes explicitly synchronize a docked frame's open state after native
+geometry/state changes, and fit/reposition floating frames after viewport shrink
+using layout geometry rather than animation-scaled rectangles. The final layout
+also gives the transcript the remaining frame height and declares its native
+style hooks, so following scrolls the log rather than clipping it below the
+frame, including fullscreen. The final retained recording is 00:00:12.24 long.
+Earlier failed
+or visually rejected captures and temporary diagnostic instrumentation are not
+acceptance evidence; the final recording uses the unmodified built asset.
+
+Evidence is local to the pinned native platform/browser and illustrative shell
+producers. This continuation supports one selected run and floating dashboard
+windows. It does not claim separate OS/browser windows, simultaneous readers,
+a full Go suite, Linux runtime, new TUI behavior or coordinator integration.
+Raw private fixtures, execution receipts and media remain outside version control.

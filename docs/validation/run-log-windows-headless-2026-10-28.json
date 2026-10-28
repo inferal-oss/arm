@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-28",
+  "source": "cae0870f8fb2ce64bd0aecfcb10f63e4dbe9fe2d",
+  "base": "f131f76",
+  "focused_commits": [
+    "1fea100",
+    "d620338",
+    "62b8cff",
+    "b208ebd",
+    "a67be25",
+    "35faf04",
+    "97e680c",
+    "cae0870"
+  ],
+  "scope": "One selected run log in native detachable dashboard windows",
+  "checks": [
+    "pointer tear cancelled over origin",
+    "pointer drag-out moves original output node",
+    "same log follows its visible tail across view navigation",
+    "paused window remains stable while capture continues",
+    "window maximize and transcript fullscreen/Escape preserved",
+    "taskbar restores minimized log",
+    "closing window docks to original run tab",
+    "native pop-out control and Shift+Enter detach",
+    "390px window stays visible and within horizontal viewport bounds",
+    "docked fullscreen retains a visible following tail"
+  ],
+  "page_errors": [],
+  "viewports": [
+    1440,
+    390
+  ],
+  "feature_inputs": {
+    "internal/server/web/semblance/graph-ui.mjs": "725f29567b9dc285ea1c8486a2295eae36247c8925b006efef578381c4f40392",
+    "internal/server/web/semblance/runs.mjs": "a69936252d974b98d4140e1b00eb3a16d3d90cf483e7c3dcbae9929e22bac439",
+    "internal/server/web/semblance/app.ttl": "0c573d4d17765aeff63737337920e23b0aa7e7d6f4ff3f6d04c33ffa48d48b4e",
+    "internal/server/web/assets/arm.mjs": "e1ee8ac69ab12ac704a44991648493e86c3c004012f78162e1da928fd7b954c6",
+    "internal/server/web/semblance/runs.test.mjs": "e70db9cf8903e1febb5bd58e5f045c13e641111f6f6a041ff05b52c6ed798d9b",
+    "internal/server/web/semblance/runs-ownership.test.mjs": "e0b952c92aea9b4809f75f3773cda45c7ad32005914c28437647ead1beabc8d2",
+    "web/test/run-log-windows.test.mjs": "de1a879b39f79faca9be1d3fe421968bc5ec76ce882be7b724c604fab1f2ba4b",
+    "web/package-lock.json": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "web/semblance-provenance.json": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "binary_sha256": "1385fbf168c717b89ba0db0ea85c2ca4c563a9972484cd8e31f8da756765b0ca",
+  "tools": {
+    "go": "go version go1.27.3 darwin/arm64",
+    "node": "v26.12.1",
+    "playwright": "1.64.1",
+    "chromium": "156.0.8078.4",
+    "ffmpeg": "7.0.1 playwright-build-1013"
+  },
+  "validation": {
+    "javascript_passed": 418,
+    "javascript_failed": 0,
+    "javascript_skipped": 0,
+    "web_asset_build": "passed",
+    "native_command_build": "passed",
+    "final_video_fully_decoded": true,
+    "desktop_mobile_and_decoded_frame_visually_inspected": true,
+    "native_semblance_runtime_tests_passed": 1
+  },
+  "video": {
+    "file": "run-log-windows.webm",
+    "duration": "00:00:12.24",
+    "codec": "VP9",
+    "width": 1440,
+    "height": 1000,
+    "fps": 25
+  },
+  "artifacts": [
+    {
+      "file": "attached.png",
+      "bytes": 148777,
+      "sha256": "064640761e076f4d12e6f5e9e1f276930ab1bae3a06fde3fde4452535696ff01"
+    },
+    {
+      "file": "dragged-window.png",
+      "bytes": 141516,
+      "sha256": "655dfdc8fa13aae2b83a1fd1a25680f3a5637886f7ac42a0797e94d990fbfaab"
+    },
+    {
+      "file": "following-away.png",
+      "bytes": 195430,
+      "sha256": "a5eef68270af8b6e7140338108e4c4d194b11a45034de17a8006d11de41ee13f"
+    },
+    {
+      "file": "maximized.png",
+      "bytes": 124225,
+      "sha256": "50ac3bc7a2c1437a0d7c42340df6849238689bea0ea80fbf2935fd4bd5148365"
+    },
+    {
+      "file": "fullscreen.png",
+      "bytes": 122351,
+      "sha256": "446681a636d96808777cddceae78ef625007ac3c8dfec7470f5e476c8821d313"
+    },
+    {
+      "file": "pop-out-control.png",
+      "bytes": 142915,
+      "sha256": "7c3d04df098cb794118d6bc5fb0d94e4e11fc28053d8b0927ce286b91fd46c8c"
+    },
+    {
+      "file": "mobile-window.png",
+      "bytes": 83286,
+      "sha256": "47ed3dc34e1db5370e232f6bcd6ce14559ea532d2afb53e3dec79459243493c3"
+    },
+    {
+      "file": "docked.png",
+      "bytes": 149746,
+      "sha256": "8587df3c63546b8cd79a74fe6cc31fa5d031c0626cde330ec4e3570a1892cb70"
+    },
+    {
+      "file": "run-log-windows.webm",
+      "bytes": 2798262,
+      "sha256": "e0937027d9b42693462a261e1135fc5d6e65c84e6db8a7e58fb1d7382bfe4cb5"
+    },
+    {
+      "file": "video-frame.png",
+      "bytes": 307537,
+      "sha256": "d0c4fd5884e925b3014bb71f8c28236a8ba884eb791b83a6c0ef8f0cfd87c20d"
+    }
+  ],
+  "cleanup": {
+    "outer_proxy_state": "terminal",
+    "outer_proxy_outcome": "completed",
+    "outer_proxy_exit_code": 0,
+    "recorder_state": "terminal",
+    "recorder_outcome": "completed",
+    "recorder_exit_code": 0,
+    "original_backend_joined": true,
+    "browser_and_context_closed": true,
+    "scoped_capture_backend_process_matches": 0,
+    "active_fixture_leases": 0
+  },
+  "limitations": [
+    "Single selected run; no simultaneous readers or OS/browser popup windows",
+    "Local pinned browser/native platform only; no full Go suite or Linux runtime claim",
+    "Earlier failed, diagnostic and superseded captures are excluded from acceptance",
+    "Coordinator composition review and integration are separate gates",
+    "Private fixtures, raw receipts and media remain outside version control"
+  ]
+}

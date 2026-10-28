@@ -2690,3 +2690,28 @@ bounded inventory before the output cap. Suggestions contain only safe tokens
 and fixed descriptions; completion reads neither logs nor command metadata.
 The existing 250 ms deadline, no-start behavior and normal execution
 authorization remain in force. Follow and offset flags retain their semantics.
+
+### Detachable run-log presentation
+
+The selected web run log uses the pinned Semblance detachable tab. Its native
+pop-out button, Shift+Enter and pointer tear-off move the same transcript into
+a floating in-dashboard window with resize, minimize, maximize and return-to-tab
+controls. A stock taskbar restores minimized windows. Window close returns the
+log to its tab rather than stopping the execution. The existing single reader,
+byte cursor, following/paused state and folded transcript are retained.
+
+A detached log continues polling across dashboard view navigation. Returning it
+to its tab while that view is hidden stops polling until the Runs view resumes.
+Back to runs, replacement selection, authentication reset and disposal retire
+the selected log window; reset/disposal invalidate late output and remove its
+input geometry. This presentation supports one selected run at a time and does
+not create an OS window or a separate browser tab. Floating dimensions and position
+are fitted to viewport bounds after resize or restore, using layout measurements
+that exclude opening animations. Explicit open state parks a docked native frame
+while retaining its geometry for the next detach. Local native runtime and
+responsive browser acceptance are recorded in `docs/VALIDATION.md`; coordinator
+composition review and integration remain separate gates.
+
+Floating logs hide duplicate headings/help and reserve the remaining frame height
+for the output disclosure. Native style hooks keep the transcript scrollable,
+with following showing its latest lines while the controls remain visible.
