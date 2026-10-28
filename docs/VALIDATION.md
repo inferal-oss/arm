@@ -1,5 +1,49 @@
 # Validation record
 
+## Compact run listing and corrected native capture — 2026-10-28
+
+Final isolated source `02300f2` composes compact listing `13b2683` with fixes
+`ccc649e` and canonical Escape selection restoration `02300f2`, based on
+`02c7a1d`. Independent exact-source review closes all findings: direct stock
+Button/Effect rendering, reusable heading ownership, visible selected/fullscreen
+errors, Rejected status, associated-pane roster guards, and selection after an
+active run completes. Log-failure and reporter-loss states remain explicit.
+
+All 413 JavaScript tests pass with no failures or skips using
+`node --test --test-concurrency=2 internal/server/web/*.test.mjs internal/server/web/semblance/*.test.mjs`.
+On final Go source, `GOMAXPROCS=2 go test -p 2 -race ./internal/tui -run TestRuns -count=1 -timeout=90s`
+passes in 2.070 seconds. TUI vet and a native CLI build pass. The new production
+GraphUI regression uses the actual ownership implementation and checks direct
+Button and Effect types; it is distinct from browser acceptance. Error recovery,
+lease-detail/overlay scroll and mouse exclusion, and completion/Escape identity
+are covered by focused fixtures. The final web bundle is rebuilt with its
+existing large-chunk warning. No full Go suite or Linux runtime claim is made.
+
+[Normalized native evidence](validation/run-list-polish-headless-2026-10-28.json)
+binds `02300f2` to the built binary, nine feature inputs, screenshots and two
+videos. Actual headless Chromium observes no page overflow at 1440, 800 or 390px
+and no overflow from opened metadata at 390px. Purpose controls open real output;
+full-ID search works, and Current/History headings recover after filtering and
+no results. Polling and completion regrouping preserve the focused opener.
+Following, pause while stored output grows, fullscreen and native Escape remain
+functional. The actual 140×48 PTY session records fold/fullscreen use, completion
+while reading, Escape returning to that same run, successful quit and terminal
+mode restoration. Both video streams decode at 1440×1000/25fps VP9/WebM:
+9.76 seconds web and 8.72 seconds TUI. Screenshots and decoded frames were
+visually inspected. This is local presentation acceptance, not a performance
+benchmark or a claim that illustrative fixture labels execute real build suites.
+
+Two earlier candidate captures fail before acceptance because the purpose
+buttons do not render. A private producer encoding issue is also corrected
+before final log acceptance. The accepted run uses new private state with peer
+publication disabled; the recorder executes under an ARM lease, producers exit,
+the controller is terminal/completed with exit zero, the original backend is
+joined, and the scoped process survey finds no remaining capture process.
+No native error-injection browser claim is added; those recovery cases retain
+their source/fixture scope. Recordings and raw private receipts remain outside
+version control. Main integration and composed-source validation remain with
+the coordinator; existing remote, inventory and retention limits are unchanged.
+
 ## Main composition with provider C0 — 2026-10-28
 
 Main advances from `1e7a6ff` to origin `eb4a1e5` with no local commits to replay,

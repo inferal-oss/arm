@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-28",
+  "source": "02300f2b140c2d7bb84fd364839c5f01f598da73",
+  "base": "02c7a1d",
+  "focused_commits": [
+    "13b2683",
+    "ccc649e",
+    "02300f2"
+  ],
+  "scope": "Compact run listing and preserved log controls in local headless web and actual PTY",
+  "checks": [
+    "web: no page overflow at 1440px",
+    "web: no page overflow at 800px",
+    "web: no page overflow at 390px",
+    "web: full canonical ID remains searchable",
+    "web: group headings recover after filtered and empty views",
+    "web: follow/pause/fullscreen/Escape preserved",
+    "web: full metadata available on demand",
+    "web: close restores stable purpose opener",
+    "web: live polling preserves row focus",
+    "web: completion regrouping preserves focused opener",
+    "tui: completion while reading preserves original selected run on Escape",
+    "tui: quit and terminal mode restoration"
+  ],
+  "viewports": [
+    1440,
+    800,
+    390
+  ],
+  "terminal_grid": {
+    "cols": 140,
+    "rows": 48
+  },
+  "tools": {
+    "go": "1.27.3 darwin/arm64",
+    "playwright": "1.64.1",
+    "chromium": "156.0.8078.4",
+    "xterm": "6.0.0"
+  },
+  "artifacts": [
+    {
+      "file": "web-list-desktop.png",
+      "bytes": 137969,
+      "sha256": "d022c0ee6401e8d2c0dd4ec210cb909734e3780c191e421b545999a1f0aa41d8"
+    },
+    {
+      "file": "web-list-tablet.png",
+      "bytes": 129341,
+      "sha256": "9107ac158661a11ae4433c7d02d8b5d752fcc6b35079f589054bdf49afbf6896"
+    },
+    {
+      "file": "web-list-mobile.png",
+      "bytes": 99059,
+      "sha256": "5e0bc6e78baa6a77d716bf3776c06846cde4fd2ac2e0ee7d665c75dca318bd8f"
+    },
+    {
+      "file": "web-list-search.png",
+      "bytes": 96941,
+      "sha256": "1ea53e58b222c71cc3754cd944398c810afe59d80290c51b0d536fb7459aea33"
+    },
+    {
+      "file": "web-detail.png",
+      "bytes": 142312,
+      "sha256": "fa416690b46cdf40a2b359349bbf07d323185d9d5c9327006681b1c9e7be59ac"
+    },
+    {
+      "file": "web-fullscreen.png",
+      "bytes": 70265,
+      "sha256": "184fab105bb654c955adb6c1ac51a49c29d6ffd1ea5c04cd919bd5269ec1b4e0"
+    },
+    {
+      "file": "web-metadata.png",
+      "bytes": 142113,
+      "sha256": "a206872fbff54a0f9891d1acb20f4630b497dfcf9acfc016ac539b2a4143fa49"
+    },
+    {
+      "file": "web-detail-mobile.png",
+      "bytes": 118469,
+      "sha256": "99753e57d22d36673517e66ba20d21f2a635b07f1d79ae5f04ebf941734dd6bc"
+    },
+    {
+      "file": "web-list-completed.png",
+      "bytes": 137109,
+      "sha256": "2a75dacef52429dd3ad0b8372e9239ae25d405644a71ad7b3d84eaf21d3154e1"
+    },
+    {
+      "file": "tui-list.png",
+      "bytes": 303997,
+      "sha256": "de6ea19e0bdd8952db691a85339ef50885ec06e0e170a50e70c92c5f9001666e"
+    },
+    {
+      "file": "tui-fullscreen.png",
+      "bytes": 38205,
+      "sha256": "d6f9f7b1f0b23188e5bab1a96509e63b51f0e1df69c1296e088c98af3361c545"
+    },
+    {
+      "file": "tui-completed.png",
+      "bytes": 254650,
+      "sha256": "67a283a6a246cadff80dd4e42102d7a4e836eb3d3ced56640001c71704787203"
+    },
+    {
+      "file": "tui-return.png",
+      "bytes": 304386,
+      "sha256": "fa40af8d446c4244485bcefb19417cd0e121137523c19a1c8f5f4b02c9f2ee0b"
+    },
+    {
+      "file": "run-list-web.webm",
+      "bytes": 1493765,
+      "sha256": "98132bb6828d0bfbeaedceb1e8e24824ca4eabd95a93c430599e8100b21cdd93"
+    },
+    {
+      "file": "run-list-tui.webm",
+      "bytes": 1669050,
+      "sha256": "b9d4ddc68c4772aac51606c48195276eba1a58964fa4c0535fd3e32c9ba8e574"
+    }
+  ],
+  "video_metadata": {
+    "web": {
+      "duration": "00:00:09.76",
+      "stream": "vp9 (libvpx-vp9) (Profile 0), yuv420p(tv, progressive), 1440x1000, SAR 1:1 DAR 36:25, 25 fps, 25 tbr, 1k tbn (default)"
+    },
+    "tui": {
+      "duration": "00:00:08.72",
+      "stream": "vp9 (libvpx-vp9) (Profile 0), yuv420p(tv, progressive), 1440x1000, SAR 1:1 DAR 36:25, 25 fps, 25 tbr, 1k tbn (default)"
+    }
+  },
+  "feature_inputs": {
+    "internal/server/web/semblance/run-list.mjs": "ffeeb7bcd961952741bdf81219b48e6db196fbcf4b7b7681259b1d0a5fd4cafe",
+    "internal/server/web/semblance/runs.mjs": "223c7c463c038f4da6795c72f826c270710251f028ae9b3ec9c00cc1dd96519c",
+    "internal/server/web/semblance/app.ttl": "73194e506099bb8d0b0226eb4dec91acee15612dd9a2dbea2db1d342825154ab",
+    "internal/server/web/assets/arm.mjs": "2ae7aa5eccb1b27f6491555ec8f0acb37c2af1671a42d438da01eddef1503e37",
+    "internal/tui/run_list.go": "e63747456f0484cb1f65691aab210b328d2c22994f57bd5e6c933191953f41cc",
+    "internal/tui/runs.go": "cfb05e76cd625947f599f3649bf6781ff2990140e73f5ba0b6cc9b15e91b44ea",
+    "internal/tui/layout.go": "f44d67ae44fcd12d306fbda9ca96a2a543ea3a97d89fda9d8e1602c4e20a2cfc",
+    "internal/tui/mouse.go": "d6d7c218d2b9099cd3f5ae00ad95fa165500035f51fc86711d41d70c9e312d88",
+    "internal/tui/tui.go": "58cbf0412c42b0c0870bc19e434729297cecda6e25e48b0ed782617e2371cb75"
+  },
+  "binary_sha256": "a8d897b2e3b4944704a2e178b209896b2ad3a2b41fec0cf383e1e8524a307d17",
+  "validation": {
+    "javascript_passed": 413,
+    "javascript_failed": 0,
+    "javascript_skipped": 0,
+    "tui_focused_race": "passed at final source",
+    "tui_vet": "passed",
+    "native_build": "passed"
+  },
+  "cleanup": {
+    "recorder_state": "terminal",
+    "recorder_outcome": "completed",
+    "recorder_exit_code": 0,
+    "original_backend_joined": true,
+    "terminal_mode_restored": true,
+    "scoped_capture_process_matches": 0
+  },
+  "limitations": [
+    "Single local native platform and pinned browser only",
+    "No whole-suite or Linux runtime claim",
+    "Candidate 13b2683 captures failed before acceptance; corrected source is bound above",
+    "Raw captures, private fixture state and execution receipts remain outside version control"
+  ]
+}

@@ -55,6 +55,21 @@ the prior fold/scroll state and normal dashboard chrome. Capture/following conti
 while folded, and explicit pause remains independent. Numeric navigation,
 quit/cancellation and bounded safe output retain their previous behavior.
 
+The run roster uses a centered 72rem web column with compact purpose-led rows,
+short monospace commands, status badges and friendly agent/time labels. Current
+work and uncertain reporter-loss records precede history. Full identifiers and
+arguments remain searchable; raw command, identity, state/outcome/exit and exact
+timestamps live under the closed Details disclosure. Opening a run replaces the
+roster with its detail view, and Back to runs restores its stable opener.
+
+Terminal rosters use two aligned source lines per run and derive keyboard scroll,
+mouse hit regions and reorder anchoring from the rendered row map. Roster-only
+behavior excludes associated lease details and other overlays. Returning from a
+completed run's log restores that run's canonical ID after history reordering.
+Log read/list failures remain visible inside selected/fullscreen output even
+when the transcript is folded; the two error sources clear independently.
+Rejected commands and capture failures retain explicit labels and raw details.
+
 The inventory and name resolution explicitly refuse more than 4,096 combined
 runs or 2MiB of response metadata. Exact canonical IDs remain inspectable/readable
 independently of that inventory bound; new proxy creation is capped at 4,096
