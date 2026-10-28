@@ -151,7 +151,7 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	if e = database.InstallResetSeed(ctx, home, lock); e != nil {
 		return e
 	}
-	m, e := manager.OpenConfigured(home, settings)
+	m, e := manager.OpenConfiguredWithUnixRecovery(home, settings, lock)
 	if e != nil {
 		return e
 	}
