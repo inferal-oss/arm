@@ -108,6 +108,24 @@ func TestSettledProofActualWriterHistoryAndActiveBlock(t *testing.T) {
 	}
 }
 
+func TestSettledProofRetainsForwardUnixPairRow(t *testing.T) {
+	home := proofFixture(t, false)
+	edit(t, home, `INSERT INTO forward_unix_pairs(source_id,storage_id,phase,source_key,storage_key,socket_name,disk_bytes,data) VALUES(?,?,?,?,?,?,?,?)`, strings.Repeat("a", 32), strings.Repeat("b", 32), "planned", "forward-source", "forward-storage", "forward-"+strings.Repeat("c", 32)+".sock", 1<<20, `{}`)
+	proof, err := prove(t, home)
+	if err != nil || !proof.Complete || proof.Settled {
+		t.Fatalf("unfinished forward Unix pair was not retained: %+v %v", proof, err)
+	}
+	found := false
+	for _, blocker := range proof.Blockers {
+		if blocker.Kind == "forward_unix_pair" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("forward Unix pair missing from reset blockers: %+v", proof.Blockers)
+	}
+}
+
 func TestSettledProofRefusesHostPressureControlState(t *testing.T) {
 	home, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
