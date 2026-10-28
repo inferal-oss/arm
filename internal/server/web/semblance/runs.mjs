@@ -40,8 +40,12 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     display.output.set({value:text||'(No output yet)'});
   });}
   function retire(){generation++;busy=false;logBusy=false;if(timer!==null)clearTimeout(timer);timer=null;if(logTimer!==null)clearTimeout(logTimer);logTimer=null;}
-  function close(){retire();selected=null;renderDetail();schedule();}
-  function open(run){retire();selected=run;offset=0;text='';done=false;following=true;displayCut=false;decoder=new TextDecoder();renderDetail();return refresh();}
+  function close(){
+    const id=selected?.id;retire();selected=null;renderDetail();
+    const opener=listRows.get(id)?.button;
+    (opener&&!opener.disposed&&opener.isConnected!==false?opener:filter).focus();schedule();
+  }
+  function open(run){retire();selected=run;offset=0;text='';done=false;following=true;displayCut=false;decoder=new TextDecoder();renderDetail();display.heading.focus();return refresh();}
   function toggleFollow(){retire();following=!following;renderDetail();schedule();if(following)return refresh();}
   function readStart(){retire();offset=0;text='';done=false;following=false;displayCut=false;decoder=new TextDecoder();const pending=readLog(true);schedule();return pending;}
   function schedule(){if(active&&!disposed&&timer===null)timer=setTimeout(()=>{timer=null;refresh();},1000);}

@@ -45,3 +45,15 @@ test('pause cancels an already scheduled rapid catch-up page',async t=>{
  const f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,log_bytes:100},offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
  f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Pause following').emit('activate');await new Promise(resolve=>setTimeout(resolve,20));assert.equal(f.calls.filter(([op])=>op==='run_output').length,1);
 });
+test('explicit open brings run details into focus once and close restores the current opener',async t=>{
+ const f=fixture(t);f.panel.setActive(true);await tick();const opener=f.ui.get('Open readable-run');opener.focus();
+ await opener.emit('activate');const heading=f.ui.activeComponent;assert.equal(heading.kind,'Heading');assert.equal(heading.label,'readable-run');
+ await f.panel.refresh();assert.equal(f.ui.activeComponent,heading,'polling must preserve reading focus');
+ const pause=f.ui.get('Pause following');pause.focus();await f.panel.refresh();assert.equal(f.ui.activeComponent,pause,'output updates must not steal control focus');
+ await f.ui.get('Close output').emit('activate');assert.equal(f.ui.activeComponent,f.ui.get('Open readable-run'));assert.equal(f.ui.activeComponent,opener);
+});
+test('closing a run whose opener was filtered out focuses the surviving filter',async t=>{
+ const f=fixture(t);f.panel.setActive(true);await tick();await f.ui.get('Open readable-run').emit('activate');
+ const filter=f.ui.get('Filter runs, commands or agents');filter.value='no matching run';await filter.emit('input');
+ await f.ui.get('Close output').emit('activate');assert.equal(f.ui.activeComponent,filter);
+});
