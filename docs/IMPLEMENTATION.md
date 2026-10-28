@@ -2631,3 +2631,15 @@ V0 source `824d3012` remains integrated as `e1891698`, with delivery record
 subsequent import-path update is not a format change. Writable format remains
 `1`. The two-stage baseline rollout, future-format pre-write refusal and
 disabled paired factory remain in force alongside the unused C1/C2 readers.
+
+### Retained native settlement review state
+
+The reviewed recovery candidate retains the original completion owner across
+fallible terminal persistence, bounds exact physical lease and event reads,
+and continues independently expired original siblings. Its affected native
+Darwin gate passes; this candidate is not yet integrated into the current
+whole-source composition. SSH pre-effect binding is a separate correction:
+the first gate exposed a valid never-granted PID-zero settlement case, and
+review of its successor found an acknowledged End/Close predecessor ordering
+case. Both must be resolved without adopting arbitrary saved process identity
+or a changed row. Public activation and current composition remain open.

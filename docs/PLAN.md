@@ -557,7 +557,7 @@ remains unapplied; later combined-source validation is separate.
 | --- | --- | --- |
 | `codex/log-run-completion` | Original `a6dd82e1` passes independent source and actual-evidence review: eight race roots / 33 named cases, no skips, CLI vet. Published as `dd47bb6e` with normalized record `34ea83a8`, preserving website SSR baseline `ef18a22a`. All 1,608 Go source/module entries and four owned paths match the tested feature exactly. | This primary checkout's native-foundation history still requires composed integration. No new full-suite, Linux runtime or carrier installation claim. |
 | `codex/provider-pair-c2-census-v2` | Five-file census successor closes all four source findings: exact CPU values, recorded policy revision floors, known-header floors despite marker damage and terminal storage custody. Independent review and the normal/race gate accept 30 roots / 265 named cases per cohort, with targeted vet passing. Source is integrated as `1ca37afe` (original `55afc758`). | C3–C5 and public admission remain open; the central proposal is unapplied. Current remote/native composition is separate. |
-| `codex/retained-settlement-recovery` | The failed 48-root composition has an identified original-completion retention gap. Final v3 closes exact physical tuple, bounded atomic-event, initial-finalizer, sibling-progress and Close error-ordering findings in independent source review. | The 11-root affected race/vet gate and current composition remain unrun. The failed aggregate remains failed; no saved PID adoption or weakened expiry guard. |
+| `codex/retained-settlement-recovery` | Independent source and actual review accept the recovery v3 affected Darwin race cohort: 11 roots / 84 named cases, zero failures/skips, plus Manager vet. Exact predecessor/event bounds, pre-effect binding, expired-sibling progress and Close ordering are covered on that frozen source. | The separate SSH v1 gate fails one of 94 named cases; vet was not run. Its successor has a legitimate lifecycle-ACK predecessor ordering finding under correction. Focused extraction on `642b06a9` is structurally reviewed; final current composition and feature commits remain pending. The old failed 48-root aggregate stays failed. |
 | `codex/forward-unix-issuer-merge` | Focused `642b06a9` closes startup ordering, typed bounded physical rows, child custody and fixture cleanup findings. Independent actual review accepts the same 24 roots / 40 names in normal and race modes, plus four-package vet. Dependency merge `871d1052` preserves the reviewed guard ancestry. | Composed primary integration remains pending. The next original Unix binder cut is in progress; no binder or public TCP enablement follows from prebind acceptance. |
 | `codex/unified-kubernetes-core-workflow` | `957cef67` profiles and `0931784` bounded contract reads are source-reviewed. `1012c4f9` journal and `180e56a8` socket review found two defects: acknowledged journal writes can exceed their reader bounds, and raw socket creation has an exec-inheritance window. | Fix final strict writer validation and atomic close-on-exec/fork exclusion, then review and validate. Complete helper, connector and UI workflow; separately reviewed live installation plan. |
 | `codex/sync-charged-reader-bounds` and `codex/sync-native-owner-bridge` | `6fbdb26c` supplies a reader correction; the separate `acc92277` bridge has author-reported disposable-XFS evidence. | Compose the fixes, remove private execution paths from normalized evidence, review exact physical row bindings and audit the actual guest/source. Production enrollment, backing accounting, writer exclusion and public sync remain open. |
@@ -588,3 +588,15 @@ documentation `c2f2d986` remains in the current ancestry. No duplicate feature
 integration is needed. The current writable format remains `1`; later unused
 C1/C2 readers do not activate format 2 or a paired factory. Baseline distribution
 and the separately reviewed second activation stage remain rollout gates.
+
+### Retained settlement and SSH review boundary
+
+Recovery v3 passes its affected 11-root / 84-name race cohort and targeted vet.
+This closes the scoped recovery gate, including the two checkpoint/settlement
+subcases that failed in the earlier composition. The separate SSH pre-effect
+binding gate fails `TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin`;
+its 93 passing names do not establish an aggregate pass. The source successor
+still needs to preserve a known positively acknowledged lifecycle predecessor
+when End or Close wins the finalizer lock. Reviewed correction, affected
+validation and the actual current-source union remain prerequisites to feature
+integration. See [normalized evidence](validation/retained-settlement-recovery-2026-10-28.json).
