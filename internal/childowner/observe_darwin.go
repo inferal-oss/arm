@@ -71,6 +71,11 @@ func observeTerminal(pid int) (terminal, error) {
 		if info.Status > 0 && info.Status < 32 {
 			return terminal{ready: true, signal: syscall.Signal(info.Status)}, nil
 		}
+	case 4, 5, 6:
+		// Darwin can report a stopped or continued child here even with
+		// WEXITED. These are observations of a live original, never a Wait
+		// witness or grounds to retire its process-local control handle.
+		return terminal{}, nil
 	}
 	return terminal{}, fmt.Errorf("unsupported Darwin terminal observation code=%d status=%d", info.Code, info.Status)
 }

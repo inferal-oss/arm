@@ -38,6 +38,10 @@ func observeTerminal(pid int) (terminal, error) {
 		if info.Status > 0 && info.Status < 65 {
 			return terminal{ready: true, signal: syscall.Signal(info.Status)}, nil
 		}
+	case 4, 5, 6:
+		// Nonterminal trap/stop/continue reports cannot settle the original
+		// child, even if a platform returns one under WEXITED.
+		return terminal{}, nil
 	}
 	return terminal{}, fmt.Errorf("unsupported Linux terminal observation code=%d status=%d", info.Code, info.Status)
 }

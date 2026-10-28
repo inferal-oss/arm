@@ -14,6 +14,7 @@ import (
 )
 
 var ErrRetired = errors.New("original child control authority is retired")
+var ErrPauseState = errors.New("original child pause state differs")
 
 type terminal struct {
 	ready  bool
@@ -35,6 +36,7 @@ type Owner struct {
 	pid                 int
 	retired             bool
 	signalsRetired      bool
+	paused              bool
 	terminalGroupProven bool
 	terminalGroupExit   terminal
 	preflightSignals    bool
@@ -108,6 +110,68 @@ func (o *Owner) Signal(sig syscall.Signal) error {
 	}
 	return o.signalLocked(sig)
 }
+
+// Pause and Resume control only this process-local original owner. They are
+// separate from Signal so an already terminal leader cannot receive a late
+// STOP or CONT through a reused numeric process group. The Manager must still
+// hold its lease/action/clock fence while calling either method.
+func (o *Owner) Pause() error  { return o.setPaused(true) }
+func (o *Owner) Resume() error { return o.setPaused(false) }
+
+func (o *Owner) setPaused(want bool) error {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	if o.retired || o.signalsRetired {
+		return ErrRetired
+	}
+	if o.failure != nil {
+		return o.failure
+	}
+	if o.paused == want {
+		return ErrPauseState
+	}
+	var ended terminal
+	var err error
+	for attempt := 0; attempt < 3; attempt++ {
+		ended, err = o.observe(o.pid)
+		if !errors.Is(err, syscall.EINTR) {
+			break
+		}
+	}
+	if err != nil {
+		o.failure = errors.Join(o.failure, fmt.Errorf("original child pause preflight is unknown: %w", err))
+		return o.failure
+	}
+	if ended.ready {
+		return ErrRetired // The sole original Wait must settle any descendants.
+	}
+	sig := syscall.SIGCONT
+	if want {
+		sig = syscall.SIGSTOP
+	}
+	if err := o.signalLocked(sig); err != nil {
+		return err
+	}
+	o.paused = want
+	return nil
+}
+
+// OwnsUnreaped confirms the exact original command handle without exposing a
+// PID as a reusable capability. It cannot restore ownership after Wait begins
+// retiring signals, even if a stored row still contains the old number.
+func (o *Owner) OwnsUnreaped(cmd *exec.Cmd) bool {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	return !o.retired && !o.signalsRetired && o.failure == nil && o.cmd == cmd && cmd != nil && cmd.Process != nil &&
+		cmd.Process.Pid == o.pid && cmd.ProcessState == nil
+}
+
+func (o *Owner) Paused() bool {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	return !o.retired && o.paused
+}
+
 func (o *Owner) signalLocked(sig syscall.Signal) error {
 	// An actual successful group KILL is irreversible. Repeating it can yield
 	// EPERM for Darwin's remaining zombie-only group, without adding cleanup.
@@ -120,6 +184,7 @@ func (o *Owner) signalLocked(sig syscall.Signal) error {
 	err := o.signal(o.pid, sig)
 	if sig == syscall.SIGKILL && err == nil {
 		o.killSucceeded = true
+		o.paused = false
 	}
 	// ESRCH is an observation only, never a positive exit or a join witness.
 	if err != nil && !errors.Is(err, syscall.ESRCH) {
