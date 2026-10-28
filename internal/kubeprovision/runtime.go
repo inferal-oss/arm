@@ -51,8 +51,8 @@ func (p Provider) LookupRuntime(ctx context.Context, key string, transport ExecA
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", runtimeProofScript, "arm-runtime-proof", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
-	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.Overflow() || stderr.Overflow() || stderr.Len() != 0 {
-		return RuntimeProof{}, ErrUnknown
+	if err := p.execWithSource(ctx, key, transport, pod, args, nil, output, stderr); err != nil || output.Overflow() || stderr.Overflow() || stderr.Len() != 0 {
+		return RuntimeProof{}, unknownExecResult(err)
 	}
 	parts := runtimeProofPattern.FindStringSubmatch(output.String())
 	if len(parts) != 6 {

@@ -46,8 +46,8 @@ func (p Provider) LookupCatalog(ctx context.Context, key string, transport ExecA
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", catalogProofScript, "arm-catalog-proof", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
 	want := "ARM_CATALOG_VERIFIED " + r.Plan.Review.CatalogSHA256 + "\n"
-	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.String() != want || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
-		return r, ErrUnknown
+	if err := p.execWithSource(ctx, key, transport, pod, args, nil, output, stderr); err != nil || output.String() != want || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
+		return unknownExecRecord(r, err)
 	}
 	return r, nil
 }

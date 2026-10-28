@@ -27,7 +27,7 @@ func validRecord(r Record, key string) bool {
 		return false
 	}
 	if r.Phase != PhaseCreated {
-		return r.Pod == nil && r.BinaryPhase == "" && r.StartPhase == "" && (r.Phase == PhasePreflight && r.Revision == 1 || r.Phase == PhaseCreateAttempted || r.Phase == PhaseUnknown || r.Phase == PhaseConflict)
+		return !r.SourceCleanupUnknown && r.Pod == nil && r.BinaryPhase == "" && r.StartPhase == "" && (r.Phase == PhasePreflight && r.Revision == 1 || r.Phase == PhaseCreateAttempted || r.Phase == PhaseUnknown || r.Phase == PhaseConflict)
 	}
 	if r.Pod == nil || checkPod(r.Plan, *r.Pod) != nil {
 		return false
@@ -108,8 +108,8 @@ func (j FileJournal) path(key string) (string, error) {
 	return filepath.Join(j.Root, key+".json"), nil
 }
 
-func (j FileJournal) readLocked(dirfd int, key string) (Record, bool, error) {
-	var r Record
+func (j FileJournal) readDiskLocked(dirfd int, key string) (sourceDiskRecord, bool, error) {
+	var r sourceDiskRecord
 	path, err := j.path(key)
 	if err != nil {
 		return r, false, err
@@ -140,18 +140,52 @@ func (j FileJournal) readLocked(dirfd int, key string) (Record, bool, error) {
 	if err := json.Unmarshal(raw, &r); err != nil {
 		return r, false, err
 	}
-	if !validRecord(r, key) {
+	if r.Phase == sourceExecPhase {
+		if !r.SourceCleanupUnknown || r.TargetPhase != PhaseCreated || !digestPattern.MatchString(r.SourceOwner) {
+			return r, false, errors.New("invalid original Kubernetes source owner")
+		}
+		r.Phase = r.TargetPhase
+	} else if r.SourceCleanupUnknown || r.SourceOwner != "" || r.TargetPhase != "" {
+		return r, false, errors.New("invalid Kubernetes source envelope")
+	}
+	if !validRecord(r.Record, key) {
 		return r, false, errors.New("invalid Kubernetes journal intent")
 	}
 	return r, true, nil
 }
 
+func (j FileJournal) readLocked(dirfd int, key string) (Record, bool, error) {
+	r, ok, err := j.readDiskLocked(dirfd, key)
+	return r.Record, ok, err
+}
+
 func (j FileJournal) writeLocked(dirfd int, r Record) error {
+	disk := sourceDiskRecord{Record: r}
+	prior, ok, err := j.readDiskLocked(dirfd, r.Plan.Review.Key)
+	if err != nil {
+		return err
+	}
+	if ok && prior.SourceCleanupUnknown {
+		disk.SourceOwner = prior.SourceOwner
+		disk.TargetPhase = r.Phase
+	}
+	return j.writeDiskLocked(dirfd, disk)
+}
+
+func (j FileJournal) writeDiskLocked(dirfd int, disk sourceDiskRecord) error {
+	r := disk.Record
+	if !validRecord(r, r.Plan.Review.Key) || r.SourceCleanupUnknown != (disk.SourceOwner != "") || disk.SourceOwner != "" && !digestPattern.MatchString(disk.SourceOwner) {
+		return errors.New("invalid Kubernetes source journal write")
+	}
 	path, err := j.path(r.Plan.Review.Key)
 	if err != nil {
 		return err
 	}
-	raw, err := json.Marshal(r)
+	if disk.SourceOwner != "" {
+		disk.TargetPhase = r.Phase
+		disk.Phase = sourceExecPhase
+	}
+	raw, err := json.Marshal(disk)
 	if err != nil || len(raw) > 65536 {
 		return errors.New("Kubernetes journal record exceeds bound")
 	}
@@ -225,10 +259,11 @@ func (j FileJournal) Update(ctx context.Context, key string, revision uint64, ch
 			return ErrJournalConflict
 		}
 		before := r.Plan.SHA256
+		sourceBefore := r.SourceCleanupUnknown
 		if err := change(&r); err != nil {
 			return err
 		}
-		if r.Plan.SHA256 != before || !validRecord(r, key) || r.Revision == ^uint64(0) {
+		if r.Plan.SHA256 != before || r.SourceCleanupUnknown != sourceBefore || !validRecord(r, key) || r.Revision == ^uint64(0) {
 			return errors.New("Kubernetes journal intent changed or full")
 		}
 		r.Revision++

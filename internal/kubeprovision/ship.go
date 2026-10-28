@@ -108,8 +108,8 @@ func (p Provider) LookupBinary(ctx context.Context, key string, transport ExecAP
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", lookupBinaryScript, "arm-lookup", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
-	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.String() != "ARM_BINARY_VERIFIED\n" || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
-		return r, ErrUnknown
+	if err := p.execWithSource(ctx, key, transport, pod, args, nil, output, stderr); err != nil || output.String() != "ARM_BINARY_VERIFIED\n" || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
+		return unknownExecRecord(r, err)
 	}
 	return r, nil
 }
@@ -135,6 +135,9 @@ func (p Provider) ShipBinary(ctx context.Context, key string, payload io.Reader,
 	if !ok || r.Phase != PhaseCreated || r.Pod == nil {
 		return r, ErrUnknown
 	}
+	if r.SourceCleanupUnknown {
+		return r, ErrSourceOwnerUnavailable
+	}
 	if r.BinaryPhase != "" {
 		return p.ReconcileBinary(ctx, key, transport)
 	}
@@ -149,20 +152,20 @@ func (p Provider) ShipBinary(ctx context.Context, key string, payload io.Reader,
 		}
 		return r, ErrIdentity
 	}
-	r, err = p.Journal.Update(ctx, key, r.Revision, func(next *Record) error { next.BinaryPhase = "ship_attempted"; return nil })
+	r, err = p.updateSourceStage(ctx, key, r, func(next *Record) error { next.BinaryPhase = "ship_attempted"; return nil })
 	if err != nil {
 		return r, err
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", shipScript, "arm-ship", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
-	streamErr := transport.Exec(ctx, pod, args, spooled, output, stderr)
+	streamErr := p.execWithSourceCleanup(ctx, key, transport, pod, args, spooled, output, stderr, spooled.Close)
 	if streamErr != nil || output.Len() != 0 || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
-		return r, ErrUnknown
+		return unknownExecRecord(r, streamErr)
 	}
 	if _, err := p.LookupBinary(ctx, key, transport); err != nil {
-		return r, ErrUnknown
+		return unknownExecRecord(r, err)
 	}
-	return p.Journal.Update(ctx, key, r.Revision, func(next *Record) error {
+	return p.updateSourceStage(ctx, key, r, func(next *Record) error {
 		if next.BinaryPhase != "ship_attempted" {
 			return ErrJournalConflict
 		}
@@ -184,7 +187,7 @@ func (p Provider) ReconcileBinary(ctx context.Context, key string, transport Exe
 	if r.BinaryPhase != "ship_attempted" {
 		return r, ErrIdentity
 	}
-	return p.Journal.Update(ctx, key, r.Revision, func(next *Record) error {
+	return p.updateSourceStage(ctx, key, r, func(next *Record) error {
 		if next.BinaryPhase != "ship_attempted" {
 			return ErrJournalConflict
 		}

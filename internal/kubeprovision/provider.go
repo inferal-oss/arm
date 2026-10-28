@@ -53,13 +53,14 @@ const (
 )
 
 type Record struct {
-	Plan        Plan      `json:"plan"`
-	Phase       Phase     `json:"phase"`
-	Pod         *Pod      `json:"pod,omitempty"`
-	BinaryPhase string    `json:"binary_phase,omitempty"`
-	StartPhase  string    `json:"start_phase,omitempty"`
-	Revision    uint64    `json:"revision"`
-	Updated     time.Time `json:"updated_at"`
+	SourceCleanupUnknown bool      `json:"source_cleanup_unknown,omitempty"`
+	Plan                 Plan      `json:"plan"`
+	Phase                Phase     `json:"phase"`
+	Pod                  *Pod      `json:"pod,omitempty"`
+	BinaryPhase          string    `json:"binary_phase,omitempty"`
+	StartPhase           string    `json:"start_phase,omitempty"`
+	Revision             uint64    `json:"revision"`
+	Updated              time.Time `json:"updated_at"`
 }
 
 // Journal serializes an exact key's intent and observations. Insert is durable
@@ -263,7 +264,7 @@ func (p Provider) Reconcile(ctx context.Context, key string) (Record, error) {
 	if r.Phase == PhaseCreated {
 		return r, nil
 	}
-	return p.Journal.Update(ctx, key, r.Revision, func(next *Record) error {
+	return p.updateSourceStage(ctx, key, r, func(next *Record) error {
 		if next.Phase == PhaseConflict || next.Pod != nil {
 			return ErrIdentity
 		}

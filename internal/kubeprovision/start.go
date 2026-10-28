@@ -53,8 +53,8 @@ func (p Provider) LookupStartMarker(ctx context.Context, key string, transport E
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", lookupStartScript, "arm-start-lookup", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
-	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.String() != "ARM_START_MARKER_VERIFIED\n" || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
-		return r, ErrUnknown
+	if err := p.execWithSource(ctx, key, transport, pod, args, nil, output, stderr); err != nil || output.String() != "ARM_START_MARKER_VERIFIED\n" || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
+		return unknownExecRecord(r, err)
 	}
 	return r, nil
 }
@@ -79,20 +79,24 @@ func (p Provider) RequestStart(ctx context.Context, key string, transport ExecAP
 	if !ok || r.BinaryPhase != "binary_verified" {
 		return r, ErrUnknown
 	}
-	if _, err := p.LookupCatalog(ctx, key, transport); err != nil {
+	if r.SourceCleanupUnknown {
+		return r, ErrSourceOwnerUnavailable
+	}
+	r, err = p.LookupCatalog(ctx, key, transport)
+	if err != nil {
 		return r, err
 	}
 	if r.StartPhase != "" {
 		return p.ReconcileStartMarker(ctx, key, transport)
 	}
-	r, err = p.Journal.Update(ctx, key, r.Revision, func(next *Record) error { next.StartPhase = "start_attempted"; return nil })
+	r, err = p.updateSourceStage(ctx, key, r, func(next *Record) error { next.StartPhase = "start_attempted"; return nil })
 	if err != nil {
 		return r, err
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", startMarkerScript, "arm-start", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID, r.Plan.Review.CatalogSHA256}
-	if err := transport.Exec(ctx, pod, args, nil, output, stderr); err != nil || output.Len() != 0 || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
-		return r, ErrUnknown
+	if err := p.execWithSource(ctx, key, transport, pod, args, nil, output, stderr); err != nil || output.Len() != 0 || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
+		return unknownExecRecord(r, err)
 	}
 	return p.ReconcileStartMarker(ctx, key, transport)
 }
@@ -108,7 +112,7 @@ func (p Provider) ReconcileStartMarker(ctx context.Context, key string, transpor
 	if r.StartPhase != "start_attempted" {
 		return r, ErrIdentity
 	}
-	return p.Journal.Update(ctx, key, r.Revision, func(next *Record) error {
+	return p.updateSourceStage(ctx, key, r, func(next *Record) error {
 		if next.StartPhase != "start_attempted" {
 			return ErrJournalConflict
 		}

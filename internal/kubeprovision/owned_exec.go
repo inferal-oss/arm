@@ -20,6 +20,10 @@ type OwnedExec struct {
 	image string
 }
 
+// ErrHelperCleanupUnknown distinguishes unresolved original source ownership
+// from an unknown remote effect. Positive target lookup cannot settle it.
+var ErrHelperCleanupUnknown = errors.New("original Kubernetes helper cleanup unresolved")
+
 func NewOwnedExec(plan Plan) (*OwnedExec, error) {
 	if err := plan.Validate(); err != nil {
 		return nil, err
@@ -47,7 +51,7 @@ func heldOperationRequest(request any, nonce string) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	failed := func(err error) (*os.File, error) { file.Close(); return nil, err }
+	failed := func(err error) (*os.File, error) { return failHeldOperationRequest(file, err) }
 	if err := os.Remove(file.Name()); err != nil {
 		return failed(err)
 	}
@@ -60,10 +64,19 @@ func heldOperationRequest(request any, nonce string) (*os.File, error) {
 	return file, nil
 }
 
+// File construction can fail before OwnedExec registers its descriptors.
+// Even these early paths retain a failed original close as source uncertainty.
+func failHeldOperationRequest(file io.Closer, cause error) (*os.File, error) {
+	if err := file.Close(); err != nil {
+		return nil, ErrHelperCleanupUnknown
+	}
+	return nil, cause
+}
+
 // Exec accepts only a command byte-for-byte equal to one of the fixed scripts
 // derived from this reviewed plan and exact Pod. Binary input must already be
 // the provider's private unlinked regular spool; the child rehashes it.
-func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input io.Reader, output, stderr io.Writer) error {
+func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input io.Reader, output, stderr io.Writer) (resultErr error) {
 	if o == nil || o.image == "" {
 		return errors.New("owned Kubernetes exec helper unavailable")
 	}
@@ -87,21 +100,44 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 		return err
 	}
 	nonce := hex.EncodeToString(random[:])
+	// Own each original descriptor exactly once. A native close error must
+	// survive successful helper/target evidence; retrying Close could target a
+	// reused descriptor, while ignoring it would falsely settle the source.
+	files := []*os.File{}
+	closed := map[*os.File]bool{}
+	var closeErr error
+	closeFile := func(f *os.File) {
+		if f == nil || closed[f] {
+			return
+		}
+		closed[f] = true
+		closeErr = errors.Join(closeErr, f.Close())
+	}
+	defer func() {
+		for _, f := range files {
+			closeFile(f)
+		}
+		if closeErr != nil {
+			resultErr = ErrHelperCleanupUnknown
+		}
+	}()
 	requestFile, err := heldExecRequest(reviewedExecRequest{Plan: o.Plan, Pod: pod, Kind: kind}, nonce)
 	if err != nil {
 		return err
 	}
-	defer requestFile.Close()
+	files = append(files, requestFile)
 	controlR, controlW, err := os.Pipe()
 	if err != nil {
 		return err
 	}
+	files = append(files, controlR, controlW)
 	replyR, replyW, err := os.Pipe()
 	if err != nil {
-		controlR.Close()
-		controlW.Close()
+		closeFile(controlR)
+		closeFile(controlW)
 		return err
 	}
+	files = append(files, replyR, replyW)
 	cmd := exec.Command(o.image, ExecHelperArgument)
 	cmd.Env = os.Environ()
 	cmd.ExtraFiles = []*os.File{requestFile, controlR, replyW}
@@ -110,16 +146,16 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 	}
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	if err := cmd.Start(); err != nil {
-		controlR.Close()
-		replyW.Close()
-		controlW.Close()
-		replyR.Close()
+		closeFile(controlR)
+		closeFile(replyW)
+		closeFile(controlW)
+		closeFile(replyR)
 		return err
 	}
 	// These ends belong only to the child. Keeping replyW open in the parent
 	// would hide an early child exit from the bounded IPC reader.
-	controlR.Close()
-	replyW.Close()
+	closeFile(controlR)
+	closeFile(replyW)
 	// Parent owns one bounded IPC worker. Closing both pipes after signaling
 	// unblocks it, and the worker is joined before returning.
 	type reply struct {
@@ -156,13 +192,13 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 	if signalErr != nil {
 		_ = cmd.Process.Kill() // still the original unreaped child
 	}
-	controlW.Close()
-	replyR.Close()
+	closeFile(controlW)
+	closeFile(replyR)
 	waitErr := cmd.Wait()
 	<-workerDone
 	groupGone := observeKubeGroupAbsence(cmd.Process.Pid)
 	if signalErr != nil || !groupGone {
-		return fmt.Errorf("Kubernetes exec helper group closure unresolved: signal=%v absent=%t", signalErr, groupGone)
+		return fmt.Errorf("%w: signal=%v absent=%t", ErrHelperCleanupUnknown, signalErr, groupGone)
 	}
 	if err := ctx.Err(); err != nil {
 		return err
