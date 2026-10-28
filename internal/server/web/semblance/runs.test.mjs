@@ -4,7 +4,7 @@ import {controlUI} from './control-test-ui.mjs';
 import {createRunsConsole,cleanRunText} from './runs.mjs';
 const id='a'.repeat(32),other='b'.repeat(32),run={id,name:'readable-run',command:['test','--all'],agent:'agent',reason:'Verification',state:'active',log_bytes:0};
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function fixture(t,handler,fullscreen=false){const ui=controlUI();ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.detachable=(label,content)=>{const h=ui.stack([content],{kind:'Tabs',label,detached:false});h.popOut=async()=>{h.detached=true;await h.emit('detach');};h.dock=async()=>{h.detached=false;await h.emit('detach');};return h;};ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
+function fixture(t,handler,fullscreen=false){const ui=controlUI();const stack=ui.stack;ui.stack=(...args)=>{const h=stack(...args),dispose=h.dispose.bind(h);h.dispose=()=>{if(h.disposed)return;for(const child of h.children)child.dispose();dispose();};return h;};ui.iconButton=(label,icon,fn,props)=>ui.button(label,fn,props);ui.tileWindows=value=>{ui.tiled=value;};ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.detachable=(label,content)=>{const h=ui.stack([content],{kind:'Tabs',label,detached:false});h.popOut=async()=>{h.detached=true;await h.emit('detach');};h.dock=async()=>{h.detached=false;await h.emit('detach');};return h;};ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
 const encoded=text=>Buffer.from(text).toString('base64');
 test('Runs loads only while visible and opens output following by default',async t=>{const f=fixture(t);await f.panel.refresh();assert.equal(f.calls.length,0);f.panel.setActive(true);await tick();assert.equal(f.calls[0][0],'runs');await f.ui.get('Verification').emit('activate');assert.equal(f.calls.at(-1)[0],'run_output');assert.ok(f.ui.get('Pause following'));assert.equal(f.ui.get('Next output page').disabled,true);});
 test('terminal output drains pages and byte cursor preserves split UTF-8',async t=>{
@@ -134,4 +134,76 @@ for(const mode of ['reset','dispose'])test(`detached log retires and rejects lat
  pending=true;const read=f.panel.refresh();await tick();f.panel[mode]();assert.equal(window.disposed,true);
  resolve({run:{...run,log_bytes:6},offset:0,next_offset:6,data:encoded('STALE!'),done:false});await read;
  assert.ok(!f.ui.all.some(x=>String(x.value).includes('STALE!')));const count=f.calls.length;await f.panel.refresh();assert.equal(f.calls.length,count);
+});
+
+function logUI(f,purpose){
+ const window=f.ui.all.find(h=>h.kind==='Tabs'&&!h.disposed&&h.label.includes(purpose));assert.ok(window,purpose);
+ const walk=h=>[h,...h.children.flatMap(walk)],nodes=walk(window);
+ return {window,output:nodes.find(h=>h.kind==='Code'),button:label=>{const button=nodes.find(h=>h.label===label&&!h.disposed);assert.ok(button,label);return button;}};
+}
+const multipleRuns=n=>Array.from({length:n},(_,i)=>({...run,id:String(i+1).padStart(32,'0'),reason:'Watch agent '+i,agent:'agent-'+i}));
+test('multiple windows keep independent cursors, pause, restart, completion and close state',async t=>{
+ const records=multipleRuns(2);let completed=false;
+ const f=fixture(t,(op,args)=>op==='runs'?records:{run:{...records.find(r=>r.id===args.id),state:completed&&args.id===records[1].id?'terminal':'active',outcome:completed?'completed':'',log_bytes:args.offset+1},offset:args.offset,next_offset:args.offset+1,data:encoded(args.id===records[0].id?'A':'B'),done:completed&&args.id===records[1].id});
+ f.panel.setActive(true);await tick();await f.panel.open(records[0]);const a=logUI(f,records[0].reason);await a.window.popOut();
+ const history=f.ui.all.find(h=>h.children.includes(f.ui.get('Search runs')));assert.equal(history.hidden,false,'detaching must expose the roster for opening more');
+ await f.panel.open(records[1]);const b=logUI(f,records[1].reason);await b.window.popOut();assert.equal(f.panel.openRuns.length,2);
+ await a.button('Pause following').emit('activate');const aText=a.output.value,bText=b.output.value;await f.panel.refresh();assert.equal(a.output.value,aText);assert.equal(b.output.value,bText+'B');
+ await a.button('Read from start').emit('activate');assert.equal(f.calls.at(-1)[1].id,records[0].id);assert.equal(f.calls.at(-1)[1].offset,0);assert.equal(a.output.value,'A');
+ completed=true;await f.panel.refresh();const bReads=f.calls.filter(([op,args])=>op==='run_output'&&args.id===records[1].id).length;
+ await f.panel.refresh();assert.equal(f.calls.filter(([op,args])=>op==='run_output'&&args.id===records[1].id).length,bReads,'completed reader must drain and stop independently');
+ f.panel.closeLog(records[0].id);assert.equal(a.output.disposed,true);assert.equal(b.output.disposed,undefined);assert.equal(logUI(f,records[1].reason).output,b.output);assert.deepEqual(f.panel.openRuns.map(r=>r.id),[records[1].id]);
+ assert.ok(f.calls.every(([op])=>['runs','run_output'].includes(op)),'closing a log must never stop its execution');
+});
+test('reopening a watched run deduplicates its reader and the open-log limit never evicts peers',async t=>{
+ const records=multipleRuns(9),f=fixture(t,(op,args)=>op==='runs'?records:{run:records.find(r=>r.id===args.id),offset:args.offset,next_offset:args.offset,data:'',done:false});
+ f.panel.setActive(true);await tick();for(const run of records.slice(0,8)){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ const first=logUI(f,records[0].reason),calls=f.calls.length;await f.panel.open(records[0]);assert.equal(f.calls.length,calls);assert.equal(logUI(f,records[0].reason).output,first.output);assert.equal(f.panel.openRuns.length,8);
+ await f.panel.open(records[8]);assert.equal(f.panel.openRuns.length,8);assert.equal(first.output.disposed,undefined);assert.ok(f.ui.all.some(h=>!h.hidden&&String(h.label).startsWith('Eight logs are open')));
+ f.panel.closeLog(records[7].id);await f.panel.open(records[8]);assert.equal(f.panel.openRuns.length,8);assert.equal(first.output.disposed,undefined);
+});
+test('shared inventory and log requests keep two real in-flight slots and cancel queued readers',async t=>{
+ const records=multipleRuns(5);let hold=false,live=0,peak=0;const pending=[];
+ const handler=async(op,args)=>{live++;peak=Math.max(peak,live);try{
+  if(op==='runs')return records;
+  if(hold)await new Promise(resolve=>pending.push({id:args.id,resolve}));
+  return {run:records.find(r=>r.id===args.id),offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false};
+ }finally{live--;}};
+ const f=fixture(t,handler);f.panel.setActive(true);await tick();for(const run of records){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ hold=true;const before=f.calls.length,refresh=f.panel.refresh();await tick();assert.equal(pending.length,2);assert.ok(live<=2);
+ await logUI(f,records[2].reason).button('Pause following').emit('activate');f.panel.closeLog(records[3].id);
+ for(let i=0;i<10;i++){const batch=pending.splice(0);for(const item of batch)item.resolve();await tick();if(!live&&!pending.length)break;}
+ await refresh;hold=false;assert.ok(peak<=2);const calls=f.calls.slice(before);assert.equal(calls.filter(([op])=>op==='runs').length,1,'inventory is shared across windows');
+ assert.deepEqual(calls.filter(([op])=>op==='run_output').map(([,args])=>args.id).sort(),[records[0].id,records[1].id,records[4].id].sort());
+});
+for(const mode of ['reset','dispose'])test(`all windows and queued reads retire on ${mode} without accepting stale output`,async t=>{
+ const records=multipleRuns(3);let hold=false;const pending=[];
+ const f=fixture(t,async(op,args)=>{if(op==='runs')return records;if(hold)await new Promise(resolve=>pending.push(resolve));return {run:records.find(r=>r.id===args.id),offset:args.offset,next_offset:args.offset+6,data:encoded(hold?'STALE!':'fresh!'),done:false};});
+ f.panel.setActive(true);await tick();for(const run of records){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ const outputs=records.map(r=>logUI(f,r.reason).output);hold=true;const refresh=f.panel.refresh();await tick();assert.equal(pending.length,2);const count=f.calls.length;
+ f.panel[mode]();f.panel.setActive(false);for(const resolve of pending)resolve();await refresh;await tick();assert.equal(f.calls.length,count);assert.equal(f.panel.openRuns.length,0);assert.ok(outputs.every(h=>h.disposed));assert.ok(!f.ui.all.some(h=>String(h.value).includes('STALE!')));
+});
+test('catch-up pages yield fairly and decode split UTF-8 independently for each run',async t=>{
+ const records=multipleRuns(2),buffers=[Buffer.from('A🙂BC🙂D'),Buffer.from('B🙂CD🙂E')];let ready=false;
+ const f=fixture(t,(op,args)=>{if(op==='runs')return records;const i=records.findIndex(r=>r.id===args.id),data=ready?buffers[i]:Buffer.alloc(0);return {run:{...records[i],state:'terminal',log_bytes:data.length},offset:args.offset,next_offset:Math.min(data.length,args.offset+3),data:data.subarray(args.offset,args.offset+3).toString('base64'),done:ready};});
+ f.panel.setActive(true);await tick();for(const run of records){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ ready=true;const start=f.calls.length;await f.panel.refresh();for(let i=0;i<50&&records.some((r,j)=>logUI(f,r.reason).output.value!==buffers[j].toString());i++)await new Promise(r=>setTimeout(r,5));
+ for(const [i,run]of records.entries()){assert.equal(logUI(f,run.reason).output.value,buffers[i].toString());assert.deepEqual(f.calls.slice(start).filter(([op,args])=>op==='run_output'&&args.id===run.id).map(([,args])=>args.offset),[0,3,6,9]);}
+});
+test('fullscreen and output failures in one window do not change another window',async t=>{
+ const records=multipleRuns(2);let failure=false;
+ const f=fixture(t,(op,args)=>{if(op==='runs')return records;if(failure&&args.id===records[0].id)throw Error('first log refused');return {run:records.find(r=>r.id===args.id),offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false};},true);
+ f.panel.setActive(true);await tick();for(const run of records){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ const a=logUI(f,records[0].reason),b=logUI(f,records[1].reason);a.button('Saved log output').open=false;
+ await a.button('Fullscreen log').emit('activate');const aSurface=a.window.children[0];assert.equal(aSurface.fullViewport,true);await b.button('Fullscreen log').emit('activate');const bSurface=b.window.children[0];assert.equal(aSurface.fullViewport,false);assert.equal(a.button('Saved log output').open,false);assert.equal(bSurface.fullViewport,true);
+ failure=true;const before=b.output.value;await f.panel.refresh();assert.equal(b.output.value,before+'x');assert.ok(a.window.children[0].children.some(h=>String(h.label).includes('first log refused')));assert.ok(!b.window.children[0].children.some(h=>String(h.label).includes('first log refused')));
+ f.panel.closeLog(records[0].id);assert.equal(bSurface.fullViewport,true);assert.equal(b.output.disposed,undefined);
+ await b.button('Tile log windows').emit('activate');assert.equal(bSurface.fullViewport,false);assert.equal(f.ui.tiled,true);await b.window.dock();assert.equal(f.ui.tiled,false);assert.equal(f.panel.selected.id,records[1].id);
+});
+
+test('a slow output reply does not freeze the shared polling clock for another log',async t=>{
+ const records=multipleRuns(2);let hold=false,release,started;const began=new Promise(resolve=>started=resolve);let peerReads=0;
+ const f=fixture(t,async(op,args)=>{if(op==='runs')return records;if(hold&&args.id===records[0].id)await new Promise(resolve=>{release=resolve;started();});if(args.id===records[1].id)peerReads++;return {run:records.find(r=>r.id===args.id),offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false};});
+ t.after(()=>release?.());f.panel.setActive(true);await tick();for(const run of records){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ hold=true;await began;await tick();const before=peerReads;await new Promise(resolve=>setTimeout(resolve,1150));assert.ok(peerReads>before,'healthy peer must continue polling while the first reply remains outstanding');
 });

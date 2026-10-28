@@ -1,20 +1,25 @@
 import {currentRun,runStatus,compactRunText,runCommand,runPurpose,orderRuns,runWhen} from './run-list.mjs';
-// Run output is data. Stock Code renders escaped text; no terminal or HTML interpretation.
-const WINDOW = 256 * 1024;
-const FS='https://semblance.dev/ns/fullscreen#fullViewport',RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#';
-export function cleanRunText(value) {
-  return value.replace(/\r\n/g, '\n').replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f\u2028\u2029\u202a-\u202e\u2066-\u2069]/g, c => `\\u${c.charCodeAt(0).toString(16).padStart(4,'0')}`);
-}
-export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{}}) {
-  let visible=false,active=false,disposed=false,generation=0,busy=false,logBusy=false,timer=null,logTimer=null,selected=null,offset=0,text='',done=false,following=true,decoder=new TextDecoder(),displayCut=false,listError='',logError='';
-  const filter=ui.field('Search runs',{type:'search',placeholder:'Purpose, command or agent…'},renderList),status=ui.text(''),historyError=ui.text('',{role:'status',tone:'warning',hidden:true}),list=ui.stack(),detail=ui.stack(),history=ui.stack([filter,status,historyError,list]);
-  ui.put?.(root.iri,RDF_TYPE,ARM+'RunSurface',true);root.replace(history,detail);let runs=[],detailID=null,display=null,full=false,foldBeforeFull=true;const listRows=new Map();
-  function replace(parent,children){const old=[...parent.children];parent.replace(...children);for(const child of old)if(!parent.children.includes(child))child.dispose();}
-  const label=r=>r.name||r.id;
-  list.set({role:'list'});
-  const activeHeading=ui.heading('Current',3),pastHeading=ui.heading('History',3);
-  activeHeading.hidden=pastHeading.hidden=true;list.replace(activeHeading,pastHeading);
+import {createRunLogView} from './run-log.mjs';
+export {cleanRunText} from './run-log.mjs';
+const RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#',MAX_OPEN_LOGS=8;
+export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{}}){
+  let visible=false,disposed=false,epoch=0,timer=null,inventoryBusy=false,selected=null,runs=[],listError='',openError='',tiled=false,inFlight=0;
+  const views=new Map(),waiting=[],listRows=new Map();
+  const filter=ui.field('Search runs',{type:'search',placeholder:'Purpose, command or agent…'},renderList),status=ui.text(''),historyError=ui.text('',{role:'status',tone:'warning',hidden:true}),list=ui.stack(),detail=ui.stack();
+  const watchCount=ui.text(''),layout=ui.button('Tile log windows',toggleLayout),controls=ui.toolbar('Open run logs',[watchCount,layout]),history=ui.stack([controls,filter,status,historyError,list]);
+  ui.put?.(root.iri,RDF_TYPE,ARM+'RunSurface',true);root.replace(history,detail);list.set({role:'list'});
+  const activeHeading=ui.heading('Current',3),pastHeading=ui.heading('History',3);activeHeading.hidden=pastHeading.hidden=true;list.replace(activeHeading,pastHeading);
   const typed=(component,name)=>{ui.put?.(component.iri,RDF_TYPE,ARM+name,true);return component;};
+  const active=()=>visible||[...views.values()].some(view=>view.detached);
+  // Share two real in-flight requests across inventory and every log. Retired
+  // queued work is removed, while outstanding calls keep their slots until settled.
+  function request(op,args,valid){return new Promise((resolve,reject)=>{waiting.push({op,args,valid,resolve,reject});drain();});}
+  function drain(){
+    for(let i=waiting.length-1;i>=0;i--)if(!waiting[i].valid()){waiting.splice(i,1)[0].resolve(undefined);}
+    while(inFlight<2&&waiting.length){const task=waiting.shift();inFlight++;
+      Promise.resolve().then(()=>task.valid()?call(task.op,task.args):undefined).then(task.resolve,task.reject).finally(()=>{inFlight--;drain();});
+    }
+  }
   function renderList(){
     const focused=ui.activeComponent,focusRow=focused?[...listRows].find(([,row])=>row.button===focused||row.element.contains?.(focused))?.[0]:null;
     ui.batch(()=>{
@@ -37,106 +42,56 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     });
     // Native moves within the same list can blur a focused button. Restore only
     // a still-visible control that owned focus before this synchronous update.
-    renderErrors();
+    historyError.set({label:openError|| (listError?'Run list unavailable: '+listError:''),hidden:!openError&&!listError});
     if(focusRow&&listRows.has(focusRow)&&!ui.activeComponent&&!focused.disposed&&focused.isConnected!==false)focused.focus();
   }
-  function renderErrors(){
-    historyError.set({label:listError?'Run list unavailable: '+listError:'',hidden:!listError});
-    if(display){const errors=[!connected()?'Disconnected; cached output is stale':'',listError?'Run list unavailable: '+listError:'',logError?'Output unavailable: '+logError:''].filter(Boolean);display.error.set({label:errors.join(' · '),hidden:!errors.length});}
-  }
-  function renderDetail(){history.hidden=Boolean(selected);detail.hidden=!selected;if(!selected){display?.window.dispose();replace(detail,[]);detailID=null;display=null;renderErrors();return;}ui.batch(()=>{
-    const run=selected;
-    if(detailID!==run.id){
-      display?.window.dispose();
-      full=false;detailID=run.id;
-      display={heading:ui.heading(runPurpose(run),3),command:typed(ui.code(''),'RunDetailCommand'),fullCommand:ui.code(''),metadata:typed(ui.text(''),'RunTechnical'),state:ui.badge(''),times:ui.text(''),cursor:ui.text(''),error:ui.text('',{role:'status',tone:'warning',hidden:true}),output:ui.code(''),follow:ui.button('Pause following',toggleFollow),next:ui.button('Next output page',()=>readLog(true)),lost:ui.text('Reporter lost; process completion is unknown',{tone:'warning',hidden:true})};
-      display.output.set({language:''});display.command.set({language:''});display.fullCommand.set({language:''});
-      display.expand=ui.button('Fullscreen log',()=>setFull(!full));
-      display.exitHint=ui.text('Escape returns to the run details',{hidden:true});
-      display.fold=ui.disclosure('Saved log output',[display.cursor,display.lost,display.output],{open:true});
-      display.transcriptHeading=ui.heading(runPurpose(run)+' · Log output',3);display.foldHint=ui.text('Folding hides the transcript; capture and following continue.');
-      display.transcript=ui.stack([display.transcriptHeading,ui.toolbar('Run log controls',[display.follow,display.expand,ui.button('Read from start',readStart),display.next]),display.exitHint,display.error,display.foldHint,display.fold]);
-      ui.put?.(display.transcript.iri,RDF_TYPE,ARM+'RunTranscript',true);
-      ui.put?.(display.output.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#RunOutput',true);
-      ui.put?.(display.output.iri,'https://semblance.dev/ns/component#block',true);
-      display.technical=ui.disclosure('Details',[ui.text('Run: '+label(run)+' · ID: '+run.id),display.fullCommand,display.metadata,display.times,...(run.lease_id?[ui.text('Lease ID: '+run.lease_id),ui.button('Inspect associated lease',()=>onLease(run.lease_id))]:[ui.text('Observation only · no resource lease')])],{open:false});
-      display.window=ui.detachable(runPurpose(run)+' · Log output',display.transcript);
-      display.window.on('detach',()=>{setFull(false,false);renderPresentation();updateActivity();if(following&&display.fold.open)display.output.scrollEnd?.();});
-      replace(detail,[ui.button('Back to runs',close,{emphasis:'Quiet'}),display.heading,display.command,display.state,display.technical,ui.text('Drag the log tab out, use its pop-out control, or press Shift+Enter. Closing its window returns the log here.'),display.window]);
-    }
-    display.command.set({value:runCommand(run,150)});display.fullCommand.set({value:JSON.stringify(run.command??[])});
-    display.metadata.set({label:`Agent: ${run.agent||'—'} · Reason: ${run.reason||'—'} · Host: ${run.host||'—'} · Directory: ${run.cwd||'—'} · State: ${run.state||'—'} · Outcome: ${run.outcome||'—'} · Exit code: ${run.exit_code??'—'}`});
-    display.state.set({label:runStatus(run).label,tone:runStatus(run).tone});
-    display.times.set({label:`Created: ${run.created_at||'—'} · Started: ${run.started_at||'—'} · Ended: ${run.ended_at||'—'} · Last report: ${run.last_reported_at||'—'}`});
-    display.follow.set({label:following?'Pause following':'Follow output'});
-    display.next.disabled=following||done||!connected();
-    display.cursor.set({label:`${!connected()?'Disconnected · cached output · ':listError||logError?'Stale output · ':''}${following?'Following':'Paused'} · read through byte ${offset}${done?' · end of saved log':''}${displayCut?' · display shows latest 256 KiB; read from start to inspect earlier output':''}${run.truncated?' · saved log reached its retention limit':''}`});
-    display.lost.set({hidden:run.outcome!=='reporter_lost'});
-    display.output.set({value:text||'(No output yet)'});renderErrors();
-  });}
-  function renderPresentation(){
-    if(!display)return;const detached=Boolean(display.window?.detached);
-    ui.batch(()=>{ui.put?.(display.transcript.iri,RDF_TYPE,ARM+(detached?'RunTranscriptWindow':'RunTranscript'),true);display.transcriptHeading.hidden=display.foldHint.hidden=detached&&!full;});
-  }
-  function setFull(enabled,restoreFocus=true){
-    if(!display||full===Boolean(enabled))return;
-    if(enabled){foldBeforeFull=display.fold.open;display.fold.open=true;}
-    full=Boolean(enabled);
-    display.transcript.set({fullViewport:full});
-    ui.put?.(display.output.iri,RDF_TYPE,ARM+(full?'RunOutputFull':'RunOutput'),true);
-    display.expand.set({label:full?'Exit fullscreen':'Fullscreen log'});display.exitHint.hidden=!full;renderPresentation();
-    if(!full)display.fold.open=foldBeforeFull;
-    if(restoreFocus)display.expand.focus();
-    if(full&&following)display.output.scrollEnd?.();
-  }
-  // Native Escape retracts the stock Fullscreen graph fact. Reflect that same
-  // transition in controls and focus, without creating another log reader.
-  const unwatch=ui.app?.runtime?.onInput((graph,delta)=>{
-    const current=display;
-    if(graph!==undefined||!current||![...delta.add,...delta.remove].some(q=>q.subject.value===current.transcript.iri&&q.predicate.value===FS))return;
-    queueMicrotask(()=>{
-      if(disposed||display!==current||!full)return;
-      const store=ui.app.store,f=store.factory;
-      const enabled=store.match(f.namedNode(current.transcript.iri),f.namedNode(FS),null,f.defaultGraph()).some(q=>q.object.value==='true');
-      if(!enabled)setFull(false);
+  function workspace(){
+    ui.batch(()=>{history.hidden=Boolean(selected);detail.hidden=!views.size;detail.replace(...[...views.values()].map(view=>view.root));
+      for(const view of views.values()){view.root.hidden=view!==selected;view.setActive(view.detached||visible&&view===selected);view.setLayout(tiled);}
+      controls.hidden=!views.size;watchCount.set({label:`${views.size} log${views.size===1?'':'s'} open`});layout.hidden=[...views.values()].filter(v=>v.detached).length<2;layout.set({label:tiled?'Float log windows':'Tile log windows'});
     });
-  });
-  function updateActivity(){
-    const next=visible||Boolean(display?.window.detached);
-    if(active===next)return;active=next;retire();if(active)refresh();
+    drain();if(active())schedule();else if(timer!==null){clearTimeout(timer);timer=null;}
   }
-  function retire(){generation++;busy=false;logBusy=false;if(timer!==null)clearTimeout(timer);timer=null;if(logTimer!==null)clearTimeout(logTimer);logTimer=null;}
-  function close(){
-    const id=selected?.id;setFull(false,false);retire();selected=null;logError='';renderDetail();updateActivity();
-    const opener=listRows.get(id)?.button;
-    (opener&&!opener.disposed&&opener.isConnected!==false?opener:filter).focus();schedule();
+  function remove(view,restoreFocus=false){
+    if(!view||!views.has(view.run.id))return;const id=view.run.id;views.delete(id);if(selected===view)selected=null;view.dispose();openError='';
+    if(!views.size){tiled=false;ui.tileWindows?.(false);}workspace();renderList();if(restoreFocus){if(selected)selected.focusDetails();else(listRows.get(id)?.button??filter).focus();}
   }
-  function open(run){setFull(false,false);retire();selected=run;logError='';offset=0;text='';done=false;following=true;displayCut=false;decoder=new TextDecoder();renderDetail();display.heading.focus();return refresh();}
-  function toggleFollow(){retire();following=!following;renderDetail();schedule();if(following)return refresh();}
-  function readStart(){retire();offset=0;text='';done=false;following=false;displayCut=false;decoder=new TextDecoder();const pending=readLog(true);schedule();return pending;}
-  function schedule(){if(active&&!disposed&&timer===null)timer=setTimeout(()=>{timer=null;refresh();},1000);}
-  function scheduleLog(){
-    if(!active||disposed||!connected()||!following||done||logTimer!==null)return;
-    const cut=generation,source=context();
-    logTimer=setTimeout(()=>{logTimer=null;if(cut===generation&&source===context())readLog();},0);
+  function detached(view){
+    if(!views.has(view.run.id))return;
+    if(view.detached){if(selected===view)selected=null;}
+    else {if(tiled){tiled=false;ui.tileWindows(false);}if(selected&&selected!==view)remove(selected);selected=view;}
+    workspace();if(view.detached)view.focus();else if(visible)view.focusDetails();
   }
-  async function readLog(manual=false){
-    if(disposed||!active||!selected||!connected()||(!manual&&(!following||done))||logBusy)return;
-    logBusy=true;let catchup=false;
-    const id=selected.id,cut=generation,source=context(),start=offset;
-    try{const page=await call('run_output',{id,offset:start});if(disposed||cut!==generation||source!==context()||!active||selected?.id!==id)return;
-      if(page.run?.id!==id||Number(page.offset)!==start)throw Error('Run output identity or cursor changed');
-      const bytes=Uint8Array.from(atob(page.data??''),c=>c.charCodeAt(0)),next=Number(page.next_offset);
-      if(!Number.isSafeInteger(next)||next!==start+bytes.length)throw Error('Invalid run output cursor');
-      const drained=Boolean(page.done)&&next>=Number(page.run.log_bytes);
-      text+=cleanRunText(decoder.decode(bytes,{stream:!drained}));if(text.length>WINDOW){text=text.slice(-WINDOW);if(/[\udc00-\udfff]/.test(text[0]))text=text.slice(1);displayCut=true;}
-      logError='';offset=next;selected=page.run;done=drained;renderDetail();if(following&&bytes.length&&display.fold.open)display.output.scrollEnd?.();
-      // One bounded page per task keeps rendering and pause controls responsive.
-      catchup=bytes.length>0&&following&&!done&&offset<Number(page.run.log_bytes);
-    }catch(error){if(cut===generation&&source===context()){logError=error.message;renderDetail();}}finally{if(cut===generation){logBusy=false;if(catchup)scheduleLog();}}
+  function toggleLayout(){for(const view of views.values())view.exitFullscreen();tiled=!tiled;ui.tileWindows(tiled);workspace();}
+  function read(view,manual=false){drain();return view.read(manual);}
+  function open(run){
+    if(disposed)return Promise.resolve();let view=views.get(run.id);
+    if(view){if(view.detached)view.focus();else{selected=view;workspace();view.focusDetails();}return Promise.resolve();}
+    if(selected)remove(selected);
+    if(views.size>=MAX_OPEN_LOGS){openError='Eight logs are open. Close a log before opening another.';renderList();historyError.focus();return Promise.resolve();}
+    view=createRunLogView({ui,record:run,request,connected,context,onRead:read,onDetach:detached,onClose:v=>remove(v,true),onFullscreen:v=>{for(const other of views.values())if(other!==v)other.exitFullscreen();},onLayout:toggleLayout,onLease});
+    views.set(run.id,view);selected=view;openError='';workspace();view.focusDetails();return refresh();
   }
-  async function refresh(){if(disposed||!active||busy){schedule();return;}if(!connected()){status.set({label:'Disconnected · cached runs and output are stale'});renderDetail();schedule();return;}busy=true;const cut=generation,source=context();try{
-    const inventory=await call('runs');if(disposed||cut!==generation||source!==context()||!active)return;listError='';runs=inventory??[];renderList();if(selected){const current=runs.find(r=>r.id===selected.id);if(current){selected=current;renderDetail();}}await readLog();
-  }catch(error){if(cut===generation&&source===context()){listError=error.message;renderDetail();}}finally{if(cut===generation)busy=false;schedule();}}
-  return {refresh,open,get selected(){return selected;},setActive(value){if(visible===Boolean(value))return;visible=Boolean(value);if(!visible)setFull(false,false);updateActivity();},updateConnection(){retire();renderList();renderDetail();if(active)refresh();},reset(){setFull(false,false);retire();listError=logError='';runs=[];selected=null;renderList();renderDetail();updateActivity();},dispose(){setFull(false,false);disposed=true;active=false;retire();display?.window.dispose();unwatch?.();}};
+  function schedule(){if(active()&&!disposed&&timer===null)timer=setTimeout(()=>{timer=null;refresh();},1000);}
+  async function refresh(){
+    if(disposed||!active())return;
+    // A slow inventory or output reply must not stop the other readers' clock.
+    schedule();
+    if(!connected()){for(const view of views.values())view.update(null,listError);renderList();schedule();return;}
+    const cut=epoch,source=context();
+    if(!inventoryBusy){inventoryBusy=true;try{
+      const inventory=await request('runs',undefined,()=>!disposed&&cut===epoch&&source===context()&&active());
+      if(disposed||cut!==epoch||source!==context()||!active())return;
+      runs=inventory??[];listError='';renderList();
+      for(const view of views.values())view.update(runs.find(run=>run.id===view.run.id),listError);
+    }catch(error){if(cut===epoch&&source===context()){listError=error.message;renderList();for(const view of views.values())view.update(null,listError);}}
+    finally{inventoryBusy=false;}}
+    try{await Promise.all([...views.values()].filter(view=>view.active).map(view=>read(view)));}finally{schedule();}
+  }
+  function reset(){epoch++;if(timer!==null)clearTimeout(timer);timer=null;selected=null;for(const view of views.values())view.dispose();views.clear();runs=[];listError=openError='';tiled=false;ui.tileWindows?.(false);workspace();renderList();}
+  return {refresh,open,closeLog:id=>remove(views.get(id)),get selected(){return selected?.run??null;},get openRuns(){return [...views.values()].map(view=>view.run);},
+    setActive(value){const next=Boolean(value);if(visible===next)return;visible=next;if(!visible)for(const view of views.values())view.exitFullscreen();workspace();if(visible)refresh();},
+    updateConnection(){epoch++;for(const view of views.values())view.invalidate();drain();renderList();for(const view of views.values())view.update(null,listError);if(active())refresh();},
+    reset,dispose(){if(disposed)return;disposed=true;reset();}
+  };
 }

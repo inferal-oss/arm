@@ -51,3 +51,27 @@ it('stock pop-out, keyboard detach and window close move the exact log node and 
   const f=x.store.factory;expect(x.store.match(f.namedNode(win),null,null,f.defaultGraph())).toHaveLength(0);expect(x.store.match(f.namedNode(x.ui.windowDesktop.iri),f.namedNode(C+'topmost'),null,f.defaultGraph())).toHaveLength(0);
  }finally{panel.dispose();x.close();}
 });
+
+it('multiple native windows retain independent nodes, tile, reveal existing logs and close independently',async()=>{
+ const x=fixture(),records=[{...run,id:'1'.repeat(32),reason:'Agent one work',agent:'agent-one'},{...run,id:'2'.repeat(32),reason:'Agent two work',agent:'agent-two'}];
+ const calls=[];const panel=createRunsConsole({ui:x.ui,root:x.root,connected:()=>true,call:async(op,args)=>{calls.push([op,args]);if(op==='runs')return records;const record=records.find(r=>r.id===args.id),data=Buffer.from(record.agent+'\n');return {run:{...record,log_bytes:args.offset+data.length},offset:args.offset,next_offset:args.offset+data.length,data:data.toString('base64'),done:record.state==='terminal'};}});
+ try{
+  const click=node=>{expect(node).toBeTruthy();node.dispatchEvent(new x.window.Event('click',{bubbles:true}));},nodeOf=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));
+  panel.setActive(true);await tick();const outputs=[];
+  for(const record of records){await panel.open(record);const output=[...x.ui.handles.values()].find(h=>h.kind==='Code'&&h.value.includes(record.agent));outputs.push({handle:output,node:nodeOf(output)});click(x.document.querySelector('.sem-detach'));await tick();}
+  expect(x.document.querySelectorAll('[data-sem-c="window"]:not([hidden])')).toHaveLength(2);expect(x.ui.windowFrames.size).toBe(2);const f=x.store.factory;expect(x.store.match(f.namedNode(x.ui.windowDesktop.iri),f.namedNode(C+'topmost'),null,f.defaultGraph())[0].object.value).toBe([...x.ui.windowFrames][1].frameIRI);
+  const windows=()=>outputs.map(o=>o.node.closest('[data-sem-c="window"]'));
+  const control=(frame,label)=>[...frame.querySelectorAll('button')].find(n=>n.getAttribute('aria-label')===label||n.textContent.trim()===label);
+  click(control(windows()[0],'Tile log windows'));await tick();expect(x.ui.windowsTiled).toBe(true);expect(x.document.querySelectorAll('[data-sem-tiled]')).toHaveLength(2);expect(x.document.querySelector('[data-sem-c="taskbar"][data-sem-edge="bottom"]')).toBeTruthy();
+  for(const output of outputs)expect(nodeOf(output.handle)).toBe(output.node);
+  click(control(windows()[0],'Pause following'));await tick();const paused=outputs[0].handle.value,before=outputs[1].handle.value;await panel.refresh();expect(outputs[0].handle.value).toBe(paused);expect(outputs[1].handle.value.length).toBeGreaterThan(before.length);
+  click(control(windows()[1],'Float log windows'));await tick();expect(x.ui.windowsTiled).toBe(false);expect(x.document.querySelectorAll('[data-sem-tiled]')).toHaveLength(0);expect(x.document.querySelector('[data-sem-c="taskbar"][data-sem-edge]')).toBeNull();
+  click(windows()[0].querySelector('[data-sem-control="minimize"]'));await tick();const count=calls.length;await panel.open(records[0]);await tick();expect(calls.length).toBe(count);expect(x.document.querySelectorAll('[data-sem-c="window"]:not([hidden])')).toHaveLength(2);expect(nodeOf(outputs[0].handle)).toBe(outputs[0].node);expect(control(windows()[0],'Follow output')).toBeTruthy();
+  click(control(windows()[0],'Close log'));await tick();expect(x.ui.windowFrames.size).toBe(1);expect(outputs[0].handle.disposed).toBe(true);expect(nodeOf(outputs[1].handle)).toBe(outputs[1].node);expect(outputs[1].node.isConnected).toBe(true);
+  const tail=outputs[1].handle.value;await panel.refresh();expect(outputs[1].handle.value.length).toBeGreaterThan(tail.length);
+  click(outputs[1].node.closest('[data-sem-c="window"]').querySelector('[data-sem-control="minimize"]'));await tick();records[1].state='terminal';records[1].outcome='completed';await panel.refresh();
+  let restoredTail=0;outputs[1].handle.scrollEnd=()=>restoredTail++;const reads=calls.filter(([op,args])=>op==='run_output'&&args.id===records[1].id).length;
+  click(x.document.querySelector('[data-sem-c="taskbar"] button'));await tick();expect(restoredTail).toBeGreaterThan(0);expect(calls.filter(([op,args])=>op==='run_output'&&args.id===records[1].id)).toHaveLength(reads);expect(nodeOf(outputs[1].handle)).toBe(outputs[1].node);
+  panel.reset();await tick();expect(x.ui.windowFrames.size).toBe(0);expect(x.document.querySelector('[data-sem-c="window"]')).toBeNull();
+ }finally{panel.dispose();x.close();}
+});

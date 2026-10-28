@@ -207,7 +207,7 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
         const desktop=component('Desktop'),taskbar=component('Taskbar',{label:'Log windows'});
         put(taskbar.iri,C.of,desktop.iri,true);put(desktop.iri,C.hosts,taskbar.iri,true);
         replaceOwnership(desktop,[taskbar]);desktop.children=[taskbar];
-        ui.windowDesktop=desktop;ui.desktopHosts.add(desktop.iri);ui.syncDesktop();
+        ui.windowDesktop=desktop;ui.windowFrames=new Set();ui.windowSequence=0;ui.desktopHosts.add(desktop.iri);ui.syncDesktop();
       }
       const h=component('Tabs'),tab=component('Tab',{label}),desktop=ui.windowDesktop;
       put(tab.iri,C.content,content.iri,true);replaceOwnership(tab,[content]);tab.children=[content];
@@ -216,9 +216,15 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       Object.defineProperty(h,'detached',{get:()=>object(tab.iri,C.detached)?.value==='true'});
       h.popOut=()=>put(tab.iri,C.detached,true);h.dock=()=>put(tab.iri,C.detached,null);
       let detached=false;
-      const dispose=h.dispose.bind(h),window=h.iri+'/~window-'+encodeURIComponent(tab.iri),viewport=globalThis.window;
+      const dispose=h.dispose.bind(h),window=h.iri+'/~window-'+encodeURIComponent(tab.iri),viewport=globalThis.window,index=ui.windowSequence++;
+      h.frameIRI=window;ui.windowFrames.add(h);
+      h.reveal=()=>{if(h.disposed||!h.detached)return;batch(()=>{
+        if(object(window,C.windowState)?.value===C.Minimized)put(window,C.windowState,C.Normal,true);
+        const top=Math.max(0,...[...ui.windowFrames].map(frame=>Number(object(frame.frameIRI,C.z)?.value)||0));
+        put(window,C.z,top+1);put(desktop.iri,C.topmost,window,true);put(window,C.open,true);
+      });keepVisible();content.focus();};
       function keepVisible(){
-        if(h.disposed||!h.detached||!viewport)return;
+        if(h.disposed||!h.detached||!viewport||ui.windowsTiled)return;
         const state=object(window,C.windowState)?.value,edge=object(window,C.attachedTo)?.value;
         if(state&&state!==C.Normal||edge&&edge!==C.NoEdge)return;
         const node=nodeOf(window);if(!node?.getBoundingClientRect)return;
@@ -232,20 +238,24 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
         const x=Math.max(0,Math.min(box.left,viewport.innerWidth-box.width)),y=Math.max(0,Math.min(box.top,viewport.innerHeight-box.height));
         if(Math.abs(x-box.left)>1||Math.abs(y-box.top)>1)batch(()=>{put(window,C.x,Math.round(x));put(window,C.y,Math.round(y));});
       }
-      viewport?.addEventListener('resize',keepVisible);
+      function settleLayout(){keepVisible();if(!h.disposed&&h.detached)h.emit('layout');}
+      viewport?.addEventListener('resize',settleLayout);
       const unwatch=runtime.onInput((graph,delta)=>{
-        if(graph!==undefined||![...delta.add,...delta.remove].some(q=>q.subject.value===tab.iri&&q.predicate.value===C.detached||q.subject.value===window&&q.predicate.value===C.windowState))return;
+        if(graph!==undefined||![...delta.add,...delta.remove].some(q=>q.subject.value===tab.iri&&q.predicate.value===C.detached||q.subject.value===window&&[C.windowState,C.width,C.height].includes(q.predicate.value)))return;
         queueMicrotask(()=>{
           if(h.disposed)return;
           if(detached!==h.detached){detached=h.detached;
             // A frame with saved geometry can remain projected after its tab
             // docks. Park it explicitly, retaining geometry for the next detach.
-            put(window,C.open,detached);h.emit('detach',{detached});
+            put(window,C.open,detached);
+            if(detached&&!object(window,C.x)&&!object(window,C.y))batch(()=>{put(window,C.x,96+(index%8)*28);put(window,C.y,120+(index%8)*28);});
+            h.emit('detach',{detached});
           }
-          keepVisible();
+          settleLayout();
         });
       });
-      h.dispose=()=>{if(h.disposed)return;unwatch();viewport?.removeEventListener('resize',keepVisible);batch(()=>{
+      h.fit=settleLayout;
+      h.dispose=()=>{if(h.disposed)return;ui.windowFrames.delete(h);unwatch();viewport?.removeEventListener('resize',settleLayout);batch(()=>{
         // Native gestures write geometry directly to the deterministic window.
         // Retire it with the tab so closed sessions leave no private state behind.
         apply({remove:store.match(nn(window),null,null,g),add:[]});
@@ -254,6 +264,13 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       });};
       return h;
     });},
+    get windowsTiled(){return Boolean(ui.windowDesktop&&object(ui.windowDesktop.iri,C.tileLayout)?.value===C.DesktopGridLayout);},
+    tileWindows(enabled=true){if(!ui.windowDesktop)return;batch(()=>{
+      put(ui.windowDesktop.iri,C.tileLayout,enabled?C.DesktopGridLayout:C.DesktopFloatingLayout,true);
+      put(ui.windowDesktop.iri,C.columns,3);put(ui.windowDesktop.iri,C.minWidth,'320px');
+      const taskbar=ui.windowDesktop.children.find(child=>child.kind==='Taskbar');if(taskbar)put(taskbar.iri,C.attachedTo,enabled?C.BottomEdge:null,true);
+      if(enabled)for(const frame of ui.windowFrames)if(frame.detached){put(frame.frameIRI,C.windowState,C.Normal,true);put(frame.frameIRI,C.attachedTo,null);}
+    });for(const frame of ui.windowFrames)frame.fit();},
     disclosure(label,children=[],props={}){return batch(()=>{const h=component('AccordionItem',{label,open:false,...props});h.body=ui.stack(children);put(h.iri,C.content,h.body.iri,true);h.children=h.body.children;replaceOwnership(h,[h.body]);return h;});},
     json(value,label='JSON'){const raw=stringifyJSON(value);return ui.disclosure(label,[ui.code(raw.length>256000?raw.slice(0,256000)+'\n[display truncated]':raw)]);},
     // Review cells are already formatted; stock code format preserves their

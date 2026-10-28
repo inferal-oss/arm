@@ -7520,3 +7520,72 @@ ordering, not benchmark performance or quota enforcement. This is selected
 component evidence, with no new full-suite, multi-platform, UI, installed-module
 or factory/format activation acceptance.
 [Normalized evidence](validation/storage-native-compatibility-2026-10-28.json).
+
+### Multiple simultaneous run logs
+
+The continuation on `codex/multiple-run-logs` follows the accepted detachable-log
+source without reimporting that history. Each run has an independent view and
+reader; shared inventory/output IO retains at most two actual request slots.
+The final affected Node roster passes 426 cases, zero failures, cancellations,
+skips or todos, through the normal shared FIFO queue. Two real Semblance/WAT
+native lifecycle cases pass, followed by asset rebuild and native command build.
+The existing large-chunk warning remains. The final-source and media bindings are
+in `validation/multiple-run-logs-headless-2026-10-28.json`.
+
+Regressions cover independent pause/restart/completion/close, duplicate prevention
+by run ID, eight-log refusal without eviction, shared inventory, actual concurrent
+request bounds, queued cancellation, late replies after reset/disposal, fair
+backlog pages with independently split UTF-8, and per-log errors/fullscreen.
+A deliberately held reply reproduces the polling-clock coupling; scheduling
+the next tick before awaiting replies lets a healthy peer continue polling.
+Native lifecycle checks additionally verify original output nodes, native grid
+and bottom-docked taskbar state, raising/restoring an existing window, peer
+survival on close, and cached-tail restoration after completion without rereads.
+
+Headless Chromium uses three real proxy shell producers with illustrative agent
+labels and saved backlogs. Native pointer/control/keyboard pop-out exposes the
+roster for opening more. Three logs tile side by side without overlap or page
+overflow, with their original nodes and visible tails clear of the taskbar.
+Pausing one retains its text while two peers and backend capture continue.
+Closing one leaves the others live; docking/navigation pauses only the hidden
+inline reader; reopening a minimized watched run restores its existing node.
+A completed minimized log restores its cached last lines without another output
+request while its peer keeps following. Closing views does not stop producers.
+
+The capture uses a bounded one-core/2 GiB lease inside the normal shared queue;
+validation uses CPU 2/2 GiB/TTL 5m. Original run completion, joined private backend,
+closed browser/context and producer exits are checked before handoff. Raw private
+fixtures, receipts, execution handles, rejected/superseded candidates and media
+remain outside version control. Only the final source-bound recording is accepted.
+
+Scope remains the pinned local native platform/browser, up to eight dashboard
+logs, and unchanged backend/completion interfaces. This does not claim separate
+OS/browser popup windows, a full Go suite, Linux runtime, new TUI behavior,
+independent source acceptance or integration into the current main composition.
+
+The final multiple-log recording is 00:00:14.28 long, VP9/WebM at 1440×1000
+and 25 fps. The full stream decodes successfully; desktop three-/two-agent,
+completed/live-peer images and a decoded video frame are visually reviewed.
+Final runtime source is `31bf681`, after `ea4a005`, `43b03ed`, `7d5ec16` and
+`d3f014b`; documentation-only evidence follows it. Ten feature inputs and ten
+retained artifacts are hashed. The earlier accepted window branch, binary,
+media and pre-continuation uncommitted plan content remain preserved.
+
+### Reviewed simultaneous-log integration
+
+On source-equivalent composed input `32bc2a9`, all 428 affected JavaScript tests
+and both real Semblance lifecycle cases pass without failures/skips. The rebuilt
+web asset and native command build pass. All ten owner feature-input hashes and
+ten retained media hashes match; tiled live/paused/completed output and decoded
+video frames were visually inspected. Full video decoding passes after correcting
+the decoder output mode; its original command failure remains recorded separately
+from the successful component checks. Both original validation backends are joined
+and all recorded leases are terminal.
+
+[Nondeploy hosted validation](https://github.com/inferal-oss/arm/actions/runs/40729857322)
+passes on the exact composed source, including current-source dashboard capture,
+SSR integrity and browser checks. The uploaded artifact matches all 612 dashboard
+inputs/assets, four HTML pages and CSS. Eight PNGs pass hashes, CRCs and complete
+zlib/scanline decoding. Owner multi-log recording remains bound to `31bf681`;
+no new narrow multi-window recording, full Go suite or Linux workload/performance
+acceptance is inferred. [Normalized integration evidence](validation/multiple-run-logs-integration-2026-10-28.json).
