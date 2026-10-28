@@ -4,12 +4,34 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"time"
 
 	"getarm.org/internal/kubeprovision"
 	"getarm.org/internal/model"
+
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
+
+// Only fixed diagnostics cross the browser boundary. API errors can contain
+// credential helper output, private endpoints, names and admission messages.
+func kubernetesInventoryError(stage string, err error) error {
+	switch {
+	case apierrors.IsForbidden(err):
+		return model.Err("kubernetes_forbidden", "Kubernetes access denied while reading "+stage+"; check the selected identity's RBAC")
+	case apierrors.IsUnauthorized(err):
+		return model.Err("kubernetes_unauthorized", "Kubernetes credentials were not accepted while reading "+stage)
+	case apierrors.IsNotFound(err):
+		return model.Err("kubernetes_not_found", "Selected Kubernetes "+stage+" no longer exists; refresh the selection")
+	case errors.Is(err, context.DeadlineExceeded), apierrors.IsTimeout(err), apierrors.IsServerTimeout(err):
+		return model.Err("kubernetes_timeout", "Kubernetes timed out while reading "+stage+"; no empty inventory was established")
+	case errors.Is(err, context.Canceled):
+		return model.Err("kubernetes_cancelled", "Kubernetes inventory read cancelled; refresh before selecting")
+	default:
+		return model.Err("kubernetes_unavailable", "Kubernetes "+stage+" unavailable; no empty inventory was established")
+	}
+}
 
 // Kubernetes inventory is local to this backend. It does not route through
 // mesh peers or grant a Pod/CPU entitlement.
@@ -68,27 +90,45 @@ func (s *Server) kubernetesInventory(ctx context.Context, operation string, raw 
 	}
 	api, err := kubeprovision.OpenInventoryContext(q.Context)
 	if err != nil {
-		return nil, model.Err("kubernetes_unavailable", "Kubernetes inventory transport unavailable")
+		return nil, model.Err("kubernetes_transport_unavailable", "Kubernetes inventory transport or credentials are unsupported or unavailable; context discovery alone does not establish API access")
 	}
 	readCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	cluster, err := api.Cluster(readCtx)
 	if err != nil {
-		return nil, model.Err("kubernetes_unavailable", "Kubernetes identity unavailable")
+		return nil, kubernetesInventoryError("effective identity", err)
 	}
 	namespace, err := api.Namespace(readCtx, q.Namespace)
 	if err != nil {
-		return nil, model.Err("kubernetes_unavailable", "Kubernetes namespace unavailable")
+		return nil, kubernetesInventoryError("Namespace", err)
 	}
-	nodes, err := (kubeprovision.Provider{API: api}).Candidates(readCtx, q.Query, q.Limit)
+	all, err := api.Nodes(readCtx)
 	if err != nil {
-		return nil, model.Err("kubernetes_unavailable", "Kubernetes Nodes unavailable")
+		return nil, kubernetesInventoryError("Nodes", err)
+	}
+	nodes := kubeprovision.FilterNodes(all, q.Query, q.Limit)
+	// Counts describe a complete bounded cluster-scoped Node read, before
+	// typeahead filtering. Namespace is a separate installation prerequisite;
+	// it never becomes a Node label selector.
+	matched := 0
+	for _, node := range all {
+		if len(kubeprovision.FilterNodes([]kubeprovision.Node{node}, q.Query, 1)) != 0 {
+			matched++
+		}
 	}
 	result := struct {
 		Cluster   kubeprovision.Cluster   `json:"cluster"`
 		Namespace kubeprovision.Namespace `json:"namespace"`
 		Nodes     []kubeprovision.Node    `json:"nodes"`
-	}{cluster, namespace, nodes}
+		Inventory struct {
+			Total     int  `json:"total"`
+			Matched   int  `json:"matched"`
+			Truncated bool `json:"truncated"`
+		} `json:"inventory"`
+	}{Cluster: cluster, Namespace: namespace, Nodes: nodes}
+	result.Inventory.Total = len(all)
+	result.Inventory.Matched = matched
+	result.Inventory.Truncated = matched > len(nodes)
 	encoded, err := json.Marshal(result)
 	if err != nil || len(encoded) > 1<<20 {
 		return nil, model.Err("kubernetes_unavailable", "Kubernetes Node inventory exceeds the dashboard limit")
