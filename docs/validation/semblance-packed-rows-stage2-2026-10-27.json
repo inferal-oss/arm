@@ -1,0 +1,180 @@
+{
+  "state": "QUALIFIED_SELECTED66_QUERY_RESULTS_OUTER_GATE_FAILED2",
+  "overall_gate": "FAILED",
+  "outer_exit": 2,
+  "owner_exit": 2,
+  "outer_duration_ms": 68568,
+  "outer_provenance": "Coordinator recovered actual original canonical-queue commandExecution for the exact runner and seal; independent audit checked actual phase-owner receipts and raw reports.",
+  "seal_sha256": "7c0b938808050191c0b58306510d5cebcfcf8d0a25ca7950a8ee9e5b7c78ef47",
+  "owner_receipt_sha256": "4a5b9830c28baeca37bc0ca448e4e964879a0bae68c0d145cac02c1fa07aec1b",
+  "accepted_stage1_record_sha256": "b84e64b4d179b49ee793de43281ed1db9dff155406993ebcfc115c8d4005f32f",
+  "inputs": {
+    "selected_files": 2141,
+    "dependency_links": 358,
+    "unchanged_recorded_and_currently_verified": true,
+    "same16_reviewed_owned_source_as_stage1": true
+  },
+  "original_phases": [
+    {
+      "name": "baseline-causal",
+      "exit": 1,
+      "original_wait_confirmed": true
+    },
+    {
+      "name": "candidate-regressions",
+      "exit": 0,
+      "original_wait_confirmed": true
+    }
+  ],
+  "baseline": {
+    "status": "EXPECTED_FAILURE_REPRODUCED",
+    "positive_acceptance": false,
+    "selected_failed": 1,
+    "explicitly_unselected": 9,
+    "error": "RuntimeError: unreachable",
+    "native_guard": "wasm-function[750]:0x47825",
+    "generated_caller": "wasm-function[30]:0xf73",
+    "exact_test_host_config_bytes_match_candidate": true,
+    "image_sha256": "0081eaa82455c1c5aebc3a1db1823bb7b0ae337b7f41bb80b61d031af9a8e56b",
+    "scope": "Actual failed positive compiled execution at the retained dense cq_group guard; not a setup failure or a passing baseline."
+  },
+  "candidate": {
+    "qualified_passed": 66,
+    "failed": 0,
+    "skipped_or_pending": 0,
+    "todo": 0,
+    "per_file_counts": {
+      "test/rdf-engine-compiled-packed-rows.test.ts": 10,
+      "test/rdf-engine-compiled-empty-left.test.ts": 12,
+      "test/rdf-engine-required-triple-guard.test.ts": 40,
+      "test/rdf-engine-compiled-streaming-join.test.ts": 4
+    },
+    "actual_names_by_file": {
+      "test/rdf-engine-compiled-empty-left.test.ts": [
+        "rust compiled empty-left joins does not spend the right-side budget for an empty inner left side",
+        "rust compiled empty-left joins does not spend the right-side budget for an empty optional condition left side",
+        "rust compiled empty-left joins preserves nonempty rows, bindings and selected graphs for inner",
+        "rust compiled empty-left joins preserves nonempty rows, bindings and selected graphs for optional condition",
+        "rust compiled empty-left joins still interrupts a live expensive inner join",
+        "rust compiled empty-left joins still interrupts a live expensive optional condition join",
+        "wat compiled empty-left joins does not spend the right-side budget for an empty inner left side",
+        "wat compiled empty-left joins does not spend the right-side budget for an empty optional condition left side",
+        "wat compiled empty-left joins preserves nonempty rows, bindings and selected graphs for inner",
+        "wat compiled empty-left joins preserves nonempty rows, bindings and selected graphs for optional condition",
+        "wat compiled empty-left joins still interrupts a live expensive inner join",
+        "wat compiled empty-left joins still interrupts a live expensive optional condition join"
+      ],
+      "test/rdf-engine-compiled-packed-rows.test.ts": [
+        "Rust ordinary compiled row storage runs a sparse RHS beyond the old full-frame word limit without collecting the join product",
+        "Rust ordinary compiled row storage restores MAYBE bindings and OPTIONAL misses with a dense table",
+        "Rust ordinary compiled row storage restores MAYBE bindings and OPTIONAL misses with a sparse table",
+        "Rust ordinary compiled row storage restores MAYBE bindings and OPTIONAL misses with a sparse table above a live native LHS ta\u2026",
+        "Rust ordinary compiled row storage retains row order and duplicates through sparse and nested live tables",
+        "Rust ordinary compiled row storage keeps cq_group(-1) returning a count and dense rows for legacy consumers",
+        "Rust ordinary compiled row storage keeps numeric term identity, including wide integers, noncanonical spelling and zero",
+        "Rust ordinary compiled row storage evaluates each RHS and LHS volatile expression once in the retained plan",
+        "Rust ordinary compiled row storage retains SELECT expressions and ORDER/LIMIT inside a nested subquery",
+        "Rust ordinary compiled row storage preserves duplicate zero-width solutions without a stored row header"
+      ],
+      "test/rdf-engine-compiled-streaming-join.test.ts": [
+        "rust compiled selective join continuation does not materialize the product before its selective continuation",
+        "rust compiled selective join continuation retains the selective compiled plan under a bounded fuel budget",
+        "wat compiled selective join continuation does not materialize the product before its selective continuation",
+        "wat compiled selective join continuation retains the selective compiled plan under a bounded fuel budget"
+      ],
+      "test/rdf-engine-required-triple-guard.test.ts": [
+        "rust bounded required-triple primitive proves absence, accepts a positive match, and resets only diagnostic counts per run",
+        "rust bounded required-triple primitive compares term identity without narrowing or canonicalizing numeric literals",
+        "rust bounded required-triple primitive returns unknown at the shared candidate cap, including a later real match",
+        "rust bounded required-triple primitive bounds graph visits even when all early selected graph indices are empty",
+        "rust bounded required-triple primitive uses exactly the selected graph union rather than another graph or global store",
+        "rust bounded required-triple primitive polls the existing deadline and never returns false for a stopped query",
+        "rust bounded required-triple primitive does not publish an absence proof after a nonfinite clock return",
+        "rust bounded required-triple primitive does not restart consumed fuel while proving an absent triple",
+        "wat bounded required-triple primitive proves absence, accepts a positive match, and resets only diagnostic counts per run",
+        "wat bounded required-triple primitive compares term identity without narrowing or canonicalizing numeric literals",
+        "wat bounded required-triple primitive returns unknown at the shared candidate cap, including a later real match",
+        "wat bounded required-triple primitive bounds graph visits even when all early selected graph indices are empty",
+        "wat bounded required-triple primitive uses exactly the selected graph union rather than another graph or global store",
+        "wat bounded required-triple primitive polls the existing deadline and never returns false for a stopped query",
+        "wat bounded required-triple primitive does not publish an absence proof after a nonfinite clock return",
+        "wat bounded required-triple primitive does not restart consumed fuel while proving an absent triple",
+        "rust compiled guard scope and incoming row does not infer absence across OPTIONAL-only absent triple",
+        "rust compiled guard scope and incoming row does not infer absence across UNION branch scope",
+        "rust compiled guard scope and incoming row does not infer absence across subquery scope",
+        "rust compiled guard scope and incoming row does not infer absence across named graph scope",
+        "rust compiled guard scope and incoming row does not infer absence across zero-length path",
+        "rust compiled guard scope and incoming row does not infer absence across MINUS-right absent triple",
+        "rust compiled guard scope and incoming row reads current MAYBE and unbound incoming slots without leaking a previous row",
+        "rust compiled guard scope and incoming row limits each join guard to four plain required triples",
+        "rust compiled guard scope and incoming row continues the streamed plan on unknown and sees a later store update",
+        "rust compiled guard scope and incoming row does not evaluate an impure left expression twice",
+        "rust compiled guard scope and incoming row keeps live-work interruption and deadline recovery through the ordinary compiled path",
+        "rust compiled guard scope and incoming row pairs the generated guard import with its emitting engine image",
+        "wat compiled guard scope and incoming row does not infer absence across OPTIONAL-only absent triple",
+        "wat compiled guard scope and incoming row does not infer absence across UNION branch scope",
+        "wat compiled guard scope and incoming row does not infer absence across subquery scope",
+        "wat compiled guard scope and incoming row does not infer absence across named graph scope",
+        "wat compiled guard scope and incoming row does not infer absence across zero-length path",
+        "wat compiled guard scope and incoming row does not infer absence across MINUS-right absent triple",
+        "wat compiled guard scope and incoming row reads current MAYBE and unbound incoming slots without leaking a previous row",
+        "wat compiled guard scope and incoming row limits each join guard to four plain required triples",
+        "wat compiled guard scope and incoming row continues the streamed plan on unknown and sees a later store update",
+        "wat compiled guard scope and incoming row does not evaluate an impure left expression twice",
+        "wat compiled guard scope and incoming row keeps live-work interruption and deadline recovery through the ordinary compiled path",
+        "wat compiled guard scope and incoming row pairs the generated guard import with its emitting engine image"
+      ]
+    },
+    "original_raw_name_roster_match": false,
+    "qualified_unique_name_roster_match": true
+  },
+  "formatter_qualification": {
+    "reason": "Exactly one42-character ASCII it.each $name is formatted using the frozen default40-character rule.",
+    "rule": "For this ASCII value, slice first39 UTF-16 code units and append U+2026. No surrogate ambiguity.",
+    "full_required_name": "Rust ordinary compiled row storage restores MAYBE bindings and OPTIONAL misses with a sparse table above a live native LHS table",
+    "actual_reported_name": "Rust ordinary compiled row storage restores MAYBE bindings and OPTIONAL misses with a sparse table above a live native LHS ta\u2026",
+    "source_parameter": "sparse table above a live native LHS table",
+    "formatted_parameter": "sparse table above a live native LHS ta\u2026",
+    "required_roster_sha256": "3e519ad7a88f3d93515a1ade79c8941d7651c0e19310525a3bf621b2267b451f",
+    "all66_names_unique_after_single_mapping": true,
+    "frozen_rule_sha256": [
+      "6353810fdd2b6370386dfb80ec4d1415b2a12d83e00f3ebee83cc0304d6e4c6b",
+      "ffb73158b5f09d4896ee5a11f4ec847b27c8651b67872f02edd30c78d4700180",
+      "883fd30d743aee3afe87f099f957d2239d1b81a3151be886558218263d2a05ac"
+    ],
+    "source_argument_and_formatter_and_config_pins_verified": true,
+    "original_gate_reports_or_roster_rewritten": false,
+    "retry_or_mutation": false
+  },
+  "images": {
+    "baseline_rust": {
+      "sha256": "0081eaa82455c1c5aebc3a1db1823bb7b0ae337b7f41bb80b61d031af9a8e56b",
+      "bytes": 362499
+    },
+    "candidate_rust": {
+      "sha256": "01b5be6a209b95a271be119502daab253c924fbacad7a717b8e05ccffa2fe879",
+      "bytes": 364437
+    },
+    "candidate_wat": {
+      "sha256": "0d5c5fb7c1293d7b78689ef1299cc104eb3f1c4260536ccaa15e85cdc4360753",
+      "bytes": 111344
+    }
+  },
+  "owner_scope": "Both helper calls returned actual CompletedProcess with original wait/pipe joins. No new cancellation, escaped-descendant or full-process-tree claim.",
+  "aggregate_owner_budget_seconds": 1500,
+  "canonical_queue_bound_seconds": 1800,
+  "unstarted": [
+    "stage3 Calendar/integration112 scope",
+    "fixed-input replay",
+    "retained populated Calendar four-mode run",
+    "browser",
+    "commit/push/PR"
+  ],
+  "limits": [
+    "OuterFAILED2 remains unchanged; this record supports only exact selected66 candidate results via independently verified unambiguous formatter qualification.",
+    "No Calendar integration112, fixed-input replay, retained populated four-mode, browser, commit or PR acceptance.",
+    "Stage1 first101/E0503 failure remains unchanged at its own source.",
+    "Selected source/image/tool/dependency pins only; no whole OS/transitive-tool/native-GC/escaped-descendant closure.",
+    "No candidate/helper/formatter imports, builds, test reruns, parser framework or historical reconstruction during this audit."
+  ]
+}

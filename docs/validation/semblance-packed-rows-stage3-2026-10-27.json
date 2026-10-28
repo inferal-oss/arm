@@ -1,0 +1,75 @@
+{
+  "classification": "ACCEPTED Stage3 scoped affected integration result; no full Calendar delivery/replay/publication acceptance",
+  "source_parent": "8220b76af20fbdac214325ad6f7b978900af4033",
+  "owned_source_manifest_sha256": "e49423b173f6ccbf8d50e76f33187f35f75f375c4c03d352d2ffc19860944733",
+  "owned_source_count": 16,
+  "source_review_predecessor_sha256": "a8ed8f1a0316965172a1e38c198fbf653bcdd570c7df50874e0555e8c56ccca7",
+  "mechanical_delta_sha256": "1d14c0f901fe5c158558411934fba67fa9c8a0e46474050899d0349dc24f1084",
+  "mechanical_delta_review": "Only hoist self.width scalar before borrowing self.f; reversal recovers exact independently reviewed compiler bytes. Other15owned hashes unchanged.",
+  "counts": {
+    "test/cost.test.ts": 3,
+    "test/ex-calendar.test.ts": 15,
+    "test/rdf-engine-budget.test.ts": 12,
+    "test/rdf-engine-compiled.test.ts": 62,
+    "test/rdf-engine-parity.test.ts": 6,
+    "test/rdf-engine.test.ts": 12,
+    "test/tab-list-names.test.ts": 2
+  },
+  "actual_total": 112,
+  "actual_passed": 112,
+  "actual_failures": 0,
+  "actual_selected_skips_pending_todo": 0,
+  "formatter_mapping": "Independently checked112pairs: unique(file,logical) and(file,rendered); all identity; exact raw named inventories equal both frozen rosters. No formatter truncation waiver used.",
+  "calendar": {
+    "name": "Semblance queries on both builds renders a populated Calendar through both genuine compiled paths",
+    "actual_status": "passed",
+    "source_sha256": "ac6150d0977dc613232ae2d615f5f379471ae9a744ef5f503a5689582ff1f29e",
+    "interpretation": "Pinned positive source creates fresh queries against loaded graph, binds ex-calendar-week, applies20Mfuel, compares nonempty normalized term outputs across Rust/WAT interpreted/compiled. autoCompile=0 and fresh query compiled map ensure interpreted path. Both compiled assertions require isCompiled, compiledRuns+1 and fallback delta0; exceptions propagate with cause/mode.",
+    "limits": "Per-cell output strings/counts/counter snapshots are not emitted separately; assertions establish scoped result. No invented individual counts or exact retained historical graph/query replay."
+  },
+  "images": {
+    "rust": "01b5be6a209b95a271be119502daab253c924fbacad7a717b8e05ccffa2fe879",
+    "wat": "0d5c5fb7c1293d7b78689ef1299cc104eb3f1c4260536ccaa15e85cdc4360753"
+  },
+  "images_match_previously_accepted_stage1_and_stage2": true,
+  "input_checks": {
+    "current_hash_pins_verified": 1367,
+    "current_dependency_symlink_targets_verified": 179,
+    "root_paths_within_selected_pins": 698,
+    "original_before_after_basis": "Frozen dispatcher verify before and finally; actual original receipt inputs_unchanged=true. Independent audit rehashed all selected current pins and links, not a reconstruction of unrecorded transitive inputs.",
+    "artifact_hashes_verified": 13
+  },
+  "budgets": {
+    "child_seconds": 1500,
+    "owner_seconds": 1650,
+    "queue_seconds": 1800,
+    "actual_child_seconds": 459.7302258014679,
+    "actual_owner_seconds": 460.40637588500977
+  },
+  "prior_failures_preserved": [
+    "Rust compiler E0503 exit101 on pre-mechanical source",
+    "Stage2 owner exit2 formatter mismatch despite separately qualified candidate66pass",
+    "Old image actual dense-stack trap exit1"
+  ],
+  "remaining_gates": [
+    "fixed892-step/3568-cell replay on final images",
+    "exact retained earlier populated query four-mode rerun",
+    "final source/composition/privacy review and separately authorized publication",
+    "full-suite/broader browser/platform scope not established"
+  ],
+  "limits": [
+    "No new query, image import, engine/helper execution, build, test, browser, queue or network by independent reviewer.",
+    "Original owner proof is exact a107 helper returned CompletedProcess and wait/pipe-join contract, not independently observed kernel Wait or blanket descendant closure.",
+    "Selected inputs and dependency links checked; no complete transitive tools/OS/native-GC hermeticity claim.",
+    "Historical R4 populated snapshot not retained and remains unrun/unreconstructed."
+  ],
+  "stage3_seal_sha256": "882964a2b44b71e9f6e004c6f1c4de54d195c77b43fc69c5e4cb33ac1b4b4970",
+  "raw_vitest_sha256": "192152c27d4bd64bd18953d796bd19af9ae22ee0419efa80ea62c70e6be73331",
+  "owner_receipt_sha256": "8965a7bb08aafa7179d07d5ff38779d0b17826dc8e5c3ad095a4549d674e6273",
+  "original_child_exit": 0,
+  "original_owner_exit": 0,
+  "original_wait_pipe_join_confirmed": true,
+  "original_outer_exit": 0,
+  "original_outer_basis": "Coordinator authoritative original tool-command readback; no new OS Wait",
+  "independent_audit_sha256": "ee47d2dd9dec3d0bd96ed6cc728cd877afe1bb93df166e9ddef8f69ea6f78301"
+}

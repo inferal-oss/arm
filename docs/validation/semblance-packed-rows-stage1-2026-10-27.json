@@ -1,0 +1,137 @@
+{
+  "state": "ACCEPTED_STAGE1_BUILD_ABI_TYPECHECK_ONLY",
+  "seal_sha256": "bd17769c189775f71e5d4a87c6eba88f5446dd821955ac08a4da8230207af353",
+  "source_parent": "8220b76af20fbdac214325ad6f7b978900af4033",
+  "owned_source_manifest_sha256": "e49423b173f6ccbf8d50e76f33187f35f75f375c4c03d352d2ffc19860944733",
+  "complete_source_patch_sha256": "420b808e8660a28e18800e43b8279b61d3f143935c5c4012e36300e507f39e3a",
+  "source_review_sha256": "a8ed8f1a0316965172a1e38c198fbf653bcdd570c7df50874e0555e8c56ccca7",
+  "mechanical_borrow_fix": {
+    "path": "rdf-engine/rust/src/sparql/compile.rs",
+    "patch_sha256": "1d14c0f901fe5c158558411934fba67fa9c8a0e46474050899d0349dc24f1084",
+    "before_sha256": "58d4fd419d34b66c2a6bed3a8f05176b9d925137faf904fd42543b672875470f",
+    "after_sha256": "f05553ef801dcee453fdfc449346b73ac70c720e2383edca01e67e642b66b6ef",
+    "scope": "Capture unchanged width scalar before fluent mutable builder use; only owned-source delta after the prior16-file source review."
+  },
+  "owned_source_sha256": {
+    "rdf-engine/ABI.md": "bb54eedf5f3185774420e4ac9b6a01875888deba303819e6a5698b6a2bc22620",
+    "rdf-engine/rust/src/abi.rs": "ebe94c29fe0fe5b51dacb4aadc56175f6e6a84f9a0e80f31d33b1f7e47f41c6d",
+    "rdf-engine/rust/src/budget.rs": "b470f635606c6378b772c129d2ebad3bb33427398a96d8ef657771569e882bd1",
+    "rdf-engine/rust/src/guard.rs": "071ccb4bb8ee92ba11392006b159494eb57dcaff7f786bd864004778fec55d7e",
+    "rdf-engine/rust/src/lib.rs": "ba04409dfa3910ee1b3179b414adf6721bc40232a106789f85681afa2f7d5915",
+    "rdf-engine/rust/src/sparql/compile.rs": "f05553ef801dcee453fdfc449346b73ac70c720e2383edca01e67e642b66b6ef",
+    "rdf-engine/rust/src/store.rs": "5df9ece1631a3fa8251924e7e737f87e0ae002eac8bb2b639b5eb4a1392ae08b",
+    "rdf-engine/wat/build.ts": "f1a8dd8180b5880c615c8255447ce9bfbbd7b2a62f7634876fdfda1dc788fefb",
+    "rdf-engine/wat/compile.wat": "1264111b4ff973353ce5f69d0d7870fbefc0a359452d13c9f728d32b457b3217",
+    "rdf-engine/wat/cx-header.ts": "623d3287e7295eb0e873eabc91ae3fb10d5db84a5e1b833ccb906d07b192a05d",
+    "rdf-engine/wat/guard.wat": "574684c899b88f64899cb3e1cd151203a0cd94a7f69d1d1f0ca4bfb6a357cd52",
+    "test/rdf-engine-compiled-empty-left.test.ts": "b91e4c2409b676f8d0e1c2add9a8af08b800dda9e3005f676eee861d117c6674",
+    "test/rdf-engine-compiled-packed-rows.test.ts": "5977255aa4ebe9ac9633d768b9e4a2c936a21ca4b2e29e1f78446e6594044a95",
+    "test/rdf-engine-compiled-streaming-join.test.ts": "c7c6258b352772f90f13f32c796127638e8562ba7b5a58022c6343a364826e0d",
+    "test/rdf-engine-parity.test.ts": "ac6150d0977dc613232ae2d615f5f379471ae9a744ef5f503a5689582ff1f29e",
+    "test/rdf-engine-required-triple-guard.test.ts": "25e71aca85c678e39110424f118566116326ce671b294b1fad68a08425207761"
+  },
+  "selected_inputs": {
+    "files": 1254,
+    "dependency_links": 179,
+    "source_and_required_selected_pins_match": true,
+    "original_final_check_unchanged": true
+  },
+  "actual_original_phases": [
+    {
+      "name": "rust-build",
+      "exit": 0,
+      "original_wait_confirmed": true
+    },
+    {
+      "name": "wat-build",
+      "exit": 0,
+      "original_wait_confirmed": true
+    },
+    {
+      "name": "abi-rust",
+      "exit": 0,
+      "original_wait_confirmed": true
+    },
+    {
+      "name": "abi-wat",
+      "exit": 0,
+      "original_wait_confirmed": true
+    },
+    {
+      "name": "typecheck",
+      "exit": 0,
+      "original_wait_confirmed": true
+    }
+  ],
+  "outer_command": {
+    "exit": 0,
+    "duration_ms": 5260,
+    "provenance": "Coordinator recovered the original commandExecution metadata for the exact retry runner and seal; independent audit inspected the five actual helper-return phase receipts and raw logs."
+  },
+  "term_store_ABI": {
+    "rust": {
+      "passed": 10,
+      "total": 10
+    },
+    "wat": {
+      "passed": 10,
+      "total": 10
+    },
+    "exact_case_roster": [
+      "terms intern to stable ids",
+      "kinds are distinct namespaces",
+      "literals",
+      "blank nodes",
+      "triple terms",
+      "add, has, remove",
+      "match agrees with a brute-force scan",
+      "apply removes, then adds",
+      "load scopes blank nodes per document and is all or nothing",
+      "collect frees unused terms and keeps the rest"
+    ],
+    "scope": "Checks actual selected fresh engine images through the retained ABI checker. Does not exercise the compiled packed-row/Calendar/streaming query paths."
+  },
+  "images": {
+    "rust": {
+      "sha256": "01b5be6a209b95a271be119502daab253c924fbacad7a717b8e05ccffa2fe879",
+      "bytes": 364437,
+      "build": "Fresh successful build-child output from selected pinned source/config/tool entrypoints",
+      "matches_prior_V4": false
+    },
+    "wat": {
+      "sha256": "0d5c5fb7c1293d7b78689ef1299cc104eb3f1c4260536ccaa15e85cdc4360753",
+      "bytes": 111344,
+      "build": "Fresh successful build-child output from selected pinned source/config/tool entrypoints",
+      "matches_prior_V4": true
+    }
+  },
+  "typecheck": "tsc --noEmit original exit0; empty stdout/stderr.",
+  "original_owner_budget_seconds": 1650,
+  "canonical_queue_bound_seconds": 1800,
+  "actual_aggregate_elapsed_seconds": 5.260342121124268,
+  "original_helper_sha256": "a107b8028ab892f9e877cfe7355542ef5bc065766374d613258c5555e7cd3abd",
+  "first_attempt": {
+    "overall": "FAILED",
+    "original_exit": 101,
+    "error": "Rust E0503",
+    "only_rust_build_started": true,
+    "owner_receipt_sha256": "4309e4a849b8c71dc764831dad3573466f6ec72e00b40864e48768cb16812e04",
+    "remains_unchanged": true
+  },
+  "unstarted": [
+    "Old-image causal regression witness",
+    "Candidate packed-row/guard/streaming66-case cohort",
+    "Affected Calendar/integration112-case cohort",
+    "Fixed-input replay",
+    "Exact retained populated Calendar four-mode check",
+    "Browser",
+    "Commit or PR publication"
+  ],
+  "limits": [
+    "Build/term-store ABI/typecheck scope only; no Calendar or compiled packed-row storage/streaming runtime acceptance.",
+    "Fresh child-produced images are not a cold-cache or hermetic compiler build claim.",
+    "Selected inputs and dependency links checked; no whole OS/transitive-tool/native-GC/escaped-descendant closure claim.",
+    "Original helper-return wait/pipe-join contract only; no new cancellation or full-process-tree acceptance.",
+    "No candidate/helper/test/build execution by the independent auditor."
+  ]
+}

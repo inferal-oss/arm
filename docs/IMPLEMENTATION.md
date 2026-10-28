@@ -2274,8 +2274,8 @@ persistence is integrated separately below.
 ## Intermittent-node component milestone
 
 Integrated backend/CLI/terminal commit `ff412e9` keeps declaration separate
-from reachability and current capacity; the reviewed browser controls and fresh
-bundle remain in the pending UI integration. Optional owner-local profile metadata
+from reachability and current capacity. Browser controls and the exact fresh
+bundle are integrated as `5130242`. Optional owner-local profile metadata
 uses bounded CAS writes; remote observations expose a limited public projection.
 A bounded read-only observer retries approved endpoints with backoff and uses
 suspend-inclusive native freshness. Startup retries preserve the original
@@ -2285,29 +2285,31 @@ Unknown operations retain their original keys and obligations.
 The exact frozen slice passes its native race, frontend-policy and causal-control
 gates. A separate standalone native gate now accepts two-node outage/restart,
 browser state changes and actual PTY restoration. The composed component/build
-gate also passes; final rendered composition and browser integration remain open.
+gate also passes. The reviewed shared browser source/assets are integrated as
+`5130242`; actual naming-form mutations and later source/platform breadth remain
+separate gates.
 No scheduler, roaming endpoint discovery,
 automatic certificate renewal or OS service installation is implemented here.
 
 
-## Compact Resources candidate
+## Compact Resources
 
-The reviewed browser candidate uses stock Semblance cards and disclosure for
-accounting, with a contained pool manager and compact stat rows. Retained binary
-and bundle identities are independently qualified despite the failed overall
-build wrapper's generated-cache assertion. Actual matched desktop/phone captures
-show the shorter Resources page and rebuilt Monitor badge presentation.
+Integrated `5130242` uses stock Semblance cards and collapsed accounting, with a
+contained pool manager. A four-column maximum and 280px minimum keep the qualified
+primary Stats inside their cards at desktop, medium and phone widths. Root pools
+omit parent-held warnings; children retain commitments, deficit and pending
+return information. Readable primary labels keep canonical IDs and callbacks.
 
-The historical first interaction attempt stops at a dialog readiness guard.
-Later scoped manager checks pass, and the composed candidate verifies responsive
-Stat containment, pool warnings and real renewal/add/remove consumer focus.
-The corrected generic restoration now passes actual Close/Escape after distinct
-opener replacements, plus ordinary opener/page fallback. Nine controlled modes
-also pass. That later native run remains failed because the nearby-peer summary
-keeps its previous label on disconnect while global uncertainty and commitments
-remain visible. A focused status-label correction awaits its build/native check.
-No new product bundle is integrated by these records; original failures remain
-failed.
+Generic modal restoration keeps Close/Escape focus inside a surviving manager
+when live renewal replaces the original opener. Closing the last modal restores
+a live opener or the page heading. Stale, unknown and zero values remain distinct.
+Connection changes refresh nearby-peer status without rebuilding reported claims
+or moving focus; disconnect preserves commitments and disables pool controls.
+
+Accepted native observations retain their separate source-specific scopes. The
+final one-case disconnect run passes with clean ownership and ordinary release.
+Earlier failures remain failed; actual naming-form mutations and complete
+pixel/platform breadth are separate acceptance gates.
 
 
 ## Upstream Gallery image-selection submission
@@ -2338,9 +2340,9 @@ preserve invalid naming bytes; strict reset grants names no settlement credit.
 See [custom names](custom-names.md) for limits and recovery behavior.
 
 The integrated 72-path payload matches the independently accepted final source.
-Browser interaction and composition with the compact Resources and mobile-node
-slices remain open; later public installation and cross-platform runtime are
-not established by the native feature gate.
+The shared compact Resources/mobile source composition is integrated as
+`5130242`. Actual naming-form mutations remain open; later public installation
+and cross-platform runtime are not established by the native feature gate.
 
 
 ## UI composition boundary
@@ -2348,8 +2350,8 @@ not established by the native feature gate.
 Root pools omit the parent-held warning while child commitments and deficits
 remain visible. The corrected 280px resource-card floor has qualified native
 1280/1060/390 containment evidence. Generic nested focus restoration and nine
-controlled states have later scoped acceptance; the peer disconnect label still
-requires its focused correction and final integration.
+controlled states have later scoped acceptance. The peer disconnect correction
+and exact browser payload are integrated as `5130242`.
 
 The mobile standalone milestone accepts whole native obligations through
 outage/restart and revocation, plus PTY restoration. Those checks retain their
@@ -2370,7 +2372,7 @@ header and Close-control clipping remain issue #143; no complete accessibility,
 keyboard, zoom or fullscreen acceptance is claimed.
 
 
-## Current composed node and Resources candidate
+## Integrated node and Resources composition
 
 The reviewed candidate combines custom names, intermittent-node controls and
 compact resource views. It prefers valid server display names while retaining
@@ -2379,7 +2381,8 @@ reads through existing host aliases and bounded dynamic completion. A resource-o
 stock grid keeps a four-column maximum with a 280px minimum after an actual
 medium-width Stat overflow at the earlier 240px floor.
 
-Component checks and the fresh embedded bundle/binary are accepted. The final
-Resources interaction gate and product integration remain pending. The
+Component checks and the fresh embedded bundle/binary are accepted. `5130242`
+integrates the exact reviewed source/assets after qualified native focus, modes
+and final disconnect acceptance. Naming-form mutations remain separate. The
 [unfinished-work survey](PLAN.md#unfinished-work-survey) distinguishes complete
 components from missing public workflows; it grants no production authority.

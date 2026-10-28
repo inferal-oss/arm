@@ -1,0 +1,41 @@
+{
+  "state": "FAILED_NATIVE_V13_BOOTSTRAP_TICKET_REJECTED_DISCONNECT_UNRUN",
+  "overall": "FAILED",
+  "infrastructure_passed": true,
+  "native_report_passed": false,
+  "source_manifest_sha256": "e3ce543084969c001b8b76e855145fdff6922a20848d54289ada7ac3bb09b073",
+  "binary_sha256": "061133722feb58189bfa352da661c3ffd380ab183e522742bde4e913e3f634f0",
+  "bundle_sha256": "f3c577134f219e8cf3ee9984b6bccd50e9c70987ef0b0605e2922d4e1c5ac237",
+  "actual_completed_disconnect_cases": 0,
+  "observed_error": "Connection link expired or already used.",
+  "ticket_lifetime_seconds": 119.998,
+  "ticket_age_at_recorded_failure_seconds": 218.241,
+  "past_expiry_at_recorded_failure_seconds": 98.243,
+  "timing_limit": "Exact redemption call start was not separately recorded; recorded failure was after expiry.",
+  "capture": {
+    "format": "jpeg",
+    "width": 1280,
+    "height": 900,
+    "sha256": "923e9706b208c910d459c404e544cd0bb38cdb18f8a16a7dded7f443f4b0cec0",
+    "bytes": 41099
+  },
+  "cleanup": {
+    "originals_joined_retired_pipes_closed": 15,
+    "zero_exits": 13,
+    "narrow_expected_owned_cancel_130_roles": [
+      "before",
+      "after"
+    ],
+    "owner_errors": [],
+    "three_listener_refusals": true,
+    "state_clear": true,
+    "no_lease_seeded_or_remaining": true,
+    "final_pins_verified": 14819,
+    "own_tab_closed_viewport_reset_window_returned": true
+  },
+  "limitations": [
+    "No connected baseline, seed, disconnect mode or peer-label observation occurred.",
+    "No credentialrefresh, ticketremint, native retry, product source change or oldcohort replay.",
+    "All previously qualified component/build/native scoped positives retain original scope; this failed setup adds no native UI acceptance."
+  ]
+}

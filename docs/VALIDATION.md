@@ -6163,3 +6163,58 @@ no owned leases remain, three listeners refuse after Wait, and the owned browser
 tab is reset/closed. Earlier width/Stat/accounting/resource-focus cohorts keep
 their separate source scope. No all-pass, full-layout or product integration
 claim follows from this failed run.
+
+
+### Integrated Resource and availability UI
+
+[Integration projection](validation/resources-mobile-ui-integration-2026-10-27.json)
+verifies all 55 owned code/asset Git objects and modes against the built source:
+36 Go paths in `ff412e9` and 19 browser/test/asset paths in `5130242`. All 2,455
+non-documentation build-source members matched before commit. The separately
+reviewed feature document is a documentation-only delta. The exact generated
+entry is retained, including embedded string whitespace; source diff whitespace
+checks exclude that generated file. No new runtime is claimed from copying.
+
+[Peer-label component evidence](validation/peer-disconnect-component-build-2026-10-27.json)
+qualifies nine actual lifecycle Node passes despite the preserved reporter-parser
+failure, followed by three passing fresh build phases. Go/RDF/full Node scopes
+are not rerun for this label-only change.
+
+[The v13 bootstrap failure](validation/resources-native-v13-bootstrap-failure-2026-10-27.json)
+contains no UI case: rejection was recorded after the original link expiry.
+Exact first-navigation/server-exchange timing was not retained, so no product
+authentication defect is inferred. Its failed outcome and cleanup remain intact.
+
+[The final native disconnect](validation/resources-native-v14-disconnect-2026-10-27.json)
+uses the same reviewed binary/bundle. Prelaunch controller setup permits initial
+redemption with 119,958ms remaining; actual first navigation starts 1ms after
+Ready observation. The peer label changes from Partial to Stale before closing
+the manager. All nine post-disconnect facts pass: global disconnection, peer
+staleness, commitments, stale pool inventory, unavailable CPU/memory/disk and
+disabled Create/Refresh. All 25 original owners join with closed pipes and
+retired authority; 23 exit zero and two have narrowly bound cancellation. The
+tracked lease is released, none remain, three listeners refuse, and the owned
+tab is reset/closed. Actual outer exit zero is independently recovered.
+
+One 1280-by-1812 raster corroborates the selected state at a 1280-by-900 viewport.
+Its fixed navigation overlays part of the full-document capture; no new card
+containment or complete pixel-layout claim follows. V11 widths/Stats/consumer
+observations and thirteen v12 focus/mode positives retain their own unchanged
+functional boundaries. Naming-form mutations and later compositions stay open.
+
+### Semblance packed-row dependency progress
+
+[Stage one](validation/semblance-packed-rows-stage1-2026-10-27.json) accepts fresh
+Rust/WAT images, ten term/store ABI checks each and typecheck. The earlier Rust
+borrow-check failure remains failed. [Stage two](validation/semblance-packed-rows-stage2-2026-10-27.json)
+qualifies all 66 candidate storage/guard/streaming passes and the exact expected
+old dense-guard failure. Its outer formatter-name failure remains failed; one
+uniquely mapped truncation is independently proved without rerunning tests.
+
+[Stage three](validation/semblance-packed-rows-stage3-2026-10-27.json) accepts all
+112 cases across seven files, including nonempty identical populated Calendar
+output assertions in Rust/WAT interpreted/compiled modes with genuine compilation
+and no fallback. Per-mode values/counter snapshots were not separately emitted;
+this is source-inspected assertion evidence. Fixed retained replay, upstream
+publication gates and numeric promotion remain pending. ARM's vendored engine
+is not changed by these dependency records.
