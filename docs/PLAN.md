@@ -16,7 +16,7 @@ affected-package vet and native compilation pass. Synthetic real-terminal
 install/diff/accept/status/uninstall/status behavior is verified. Integration
 review remains separate.
 
-Guided onboarding adds generic bounded Codex/Claude directory adapters and a
+Guided onboarding `74ab24d` adds generic bounded Codex/Claude directory adapters and a
 Charm terminal selection/review flow. Binding plus policy apply atomically;
 unchanged existing choices preserve invitations and revision. Read-only discovery,
 manual fallback, instruction readiness, stale reviews, cancellation, directory

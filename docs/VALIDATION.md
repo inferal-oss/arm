@@ -2,6 +2,9 @@
 
 ## Guided project onboarding — scoped owner validation
 
+Validated feature source: `74ab24d`. This source-bound evidence does not establish
+coordinator review or integration acceptance.
+
 Owner self-review and fixes cover metadata bounds/privacy, canonical suggestions,
 name collisions, asynchronous cancellation, immutable apply snapshots, preserved
 pause/cutoff, unchanged-policy invitations, stale reviews and replaced roots.
