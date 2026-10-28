@@ -30,6 +30,9 @@ type ForwardListener struct {
 	request    model.Request
 	result     model.Lease // protected by manager.mu
 	settled    bool
+	unixChild  *ForwardUnixChild // one original child, protected by manager.mu
+	unixIssued bool              // never reuse a child under this source
+	unixFault  string            // sticky native cleanup uncertainty
 }
 
 func (h *ForwardListener) Context() context.Context { return h.ctx }
@@ -60,8 +63,15 @@ func (h *ForwardListener) Remaining(ctx context.Context) (time.Duration, error) 
 	m := h.manager
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return h.remainingLocked(ctx)
+}
+
+// Caller holds Manager.mu. An original child uses this same exact-owner and
+// suspend-inclusive clock check; a database row never mints a new handle.
+func (h *ForwardListener) remainingLocked(ctx context.Context) (time.Duration, error) {
+	m := h.manager
 	l, err := m.get(h.id)
-	if err != nil || m.closing || h.ctx.Err() != nil || h.settled || m.forwardListeners[h.id] != h || l.ID != h.id || l.PID != 0 || l.Process != nil || l.State != "active" || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Clock, h.result.Clock) || !reflect.DeepEqual(l.Expires, h.result.Expires) || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !reflect.DeepEqual(l.Request, h.request) {
+	if ctx == nil || ctx.Err() != nil || err != nil || m.closing || h.ctx.Err() != nil || h.settled || h.unixFault != "" || m.forwardListeners[h.id] != h || l.ID != h.id || l.PID != 0 || l.Process != nil || l.State != "active" || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Clock, h.result.Clock) || !reflect.DeepEqual(l.Expires, h.result.Expires) || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !reflect.DeepEqual(l.Request, h.request) {
 		return 0, model.Err("lease_inactive", "original listener allocation changed")
 	}
 	remaining, err := m.leaseRemaining(l)
@@ -206,6 +216,19 @@ func (h *ForwardListener) FinishAfterJoin() (model.Lease, error) {
 	if l.Request.Kind != forwardListenerKind || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !consuming(l.State) || !reflect.DeepEqual(l.Request, h.request) {
 		return l, model.Err("listener_owner_changed", "durable forward listener binding differs; charge retained")
 	}
+	if h.unixFault != "" {
+		l.State, l.Ended = "needs_attention", nil
+		l.Outcome, l.Failure = "forward_unix_cleanup_uncertain", h.unixFault
+		l.Revision++
+		if err = m.put(l, "forward.unix_cleanup_uncertain"); err != nil {
+			return l, err
+		}
+		h.result = l
+		return l, model.Err("needs_attention", "original Unix child cleanup remains uncertain; charge retained")
+	}
+	if h.unixChild != nil {
+		return l, model.Err("listener_not_joined", "original Unix child has not proved cleanup")
+	}
 	h.cancel()
 	_ = h.listener.Close()
 	now := time.Now().UTC()
@@ -227,14 +250,21 @@ func (h *ForwardListener) FinishAfterJoin() (model.Lease, error) {
 func (m *Manager) closeForwardListeners() error {
 	m.mu.Lock()
 	owners := make([]*ForwardListener, 0, len(m.forwardListeners))
+	children := make([]*ForwardUnixChild, 0, len(m.forwardListeners))
 	var result error
 	for id, h := range m.forwardListeners {
 		owners = append(owners, h)
+		if h.unixChild != nil {
+			children = append(children, h.unixChild)
+		}
 		_, err := m.end(id, "cancelled")
 		result = errors.Join(result, err)
 		h.CloseOriginal()
 	}
 	m.mu.Unlock()
+	for _, c := range children {
+		<-c.workerDone
+	}
 	for _, h := range owners {
 		<-h.workerDone
 		_, err := h.FinishAfterJoin()
