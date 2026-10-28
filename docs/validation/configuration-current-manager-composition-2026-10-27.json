@@ -1,0 +1,154 @@
+{
+  "configuration_feature": "c74d1fdb79456ce9751188b03b8dcf373b420d71",
+  "documentation_paragraph": "Configuration integration on `47bafbd` now passes eight distinct affected roots and ten named RUN=PASS nodes in two bounded race cohorts: six startup/accounting roots with eight nodes, followed by the configured-source join/storage-debt and configuration settled-proof roots. Targeted Manager/CLI/database vet also passes. The fifteen owned inputs remain unchanged across execution; fourteen match the original guarded feature and only the shared Manager integration differs. This closes the scoped configuration integration gate while preserving the original 117-node and earlier composition evidence. It does not establish Linux configuration runtime, services, live reload, full degraded-database recovery, provider activation, retention/restore or whole-suite acceptance.",
+  "independent_review": {
+    "completion_review": "Independent current-source, raw-result, exact disjoint-roster and normalized-record privacy review accepted both completed cohorts; no remaining material finding.",
+    "original_app_command_completions_verified": true,
+    "primary_raw_audit_sha256": "c1136e05eae03fd896567d60e7a1bfc9b9d3b55b6b23265282d11fa094f07106",
+    "source_review": "Accepted current configuration intersection; no material source finding."
+  },
+  "limits": [
+    "Selected configuration integration only; no full package, full suite, browser replay, Linux configuration execution or later source state acceptance.",
+    "Native fixture children retain original Wait/shutdown assertions. No separate external per-child receipts or universal descendant cleanup proof are claimed.",
+    "The configured-source case uses a controlled admission fixture and actual private files/retained storage debt; it does not establish fresh host headroom, external cluster effects or provider authority.",
+    "SQL insert-abort and malformed-event refusal are tested. Device-full, I/O-loss and unknown-commit fault injection remain untested.",
+    "No service installation, live user home/ledger mutation, host suspend, live reload, schema migration, retention/restore or public release.",
+    "The earlier failed and draft-source cohorts retain their recorded status. Raw execution logs and private coordination data remain outside version control."
+  ],
+  "preserved_related_evidence": {
+    "broader_shared_source_composition_result_sha256": "f5af5df971a0758b84cfd9e45ffe418e8c0e6a14fe1fdcaf7fc65ef93c3e65f7",
+    "broader_shared_source_qualified_audit_sha256": "6c3a18c8fac5491e13d8f8622bed879f57f4f24e5f56d0d8017d64610728b9c3",
+    "broader_shared_source_raw_log_sha256": "1d5e69ad69c1613142404484d49d4523d358c7f70347b8063710a358874ea3ae",
+    "coverage_qualification": "The broader shared-source log includes the configured-source root but not the configuration settled-proof root. The latter is established by the separate two-root cohort recorded here. Results from these runs are not conflated.",
+    "original_composed_nodes": 4,
+    "original_composed_roots": 2,
+    "original_composed_source": "c74d1fdb79456ce9751188b03b8dcf373b420d71",
+    "original_guarded_named_nodes": 117,
+    "original_guarded_roots": 25,
+    "original_guarded_source": "145bbea440625c2f00a6b0aac7a00b237266f9d4"
+  },
+  "prior_central_evidence": "cef65cd411cd483f5a367c8444a3fcfe1d88641b",
+  "schema": "arm.configuration-integration-completion/v1",
+  "source": "47bafbd7e195007c05fa442e0a44a0c91faf829d",
+  "source_intersection": {
+    "before_after_owned_files_equal": true,
+    "changed_boundary": "Configured startup with initialized source maps and the ordinary nil-source acquisition wrapper. Configuration journal still commits before recovery or capacity publication.",
+    "changed_owned_path": "internal/manager/manager.go",
+    "owned_files": 15,
+    "owned_files_sha256": {
+      "docs/configuration.md": "e898961d7ab89af8589cf7d0018f77c1abb7e9701f7410ee62dca0af879519f5",
+      "internal/cli/agents_guide.go": "422e74b98f390da6cc7237f72a43278ddb4390f38d08432ed7a4a4e4e7642c68",
+      "internal/cli/backend_ensure.go": "6418ff3f4ffd96a6e58d7f686c4f9f711960ce2011611e48d5945f4d75cc0797",
+      "internal/cli/cli.go": "548901244c7ce884d970b9347f8595231d05d81989fa02782a7b092b2cf193cc",
+      "internal/cli/config.go": "0d8bb224a8f13de7821578ba8b28116566486403f09992ebef7a68f053729834",
+      "internal/cli/config_mesh_test.go": "3f3baf87a1b6d87ac6377bcd7d5cda089327e0482f136e74c26bfd914b81baa7",
+      "internal/cli/config_test.go": "27b101ab6a2480bf5cbcdd1fc16e0fbbd65a1cb6ec0387d04389d7ca54c94057",
+      "internal/cli/help.go": "87ec669035d15ffd646c6e49b79bdc90127d30b98afe597c1615f3b6108fff2c",
+      "internal/daemonconfig/config.go": "93081ad45c8facad89149b2d6a2bd8087da4f175f234dba83239703eae5ddeed",
+      "internal/daemonconfig/config_test.go": "4cf57a957beb53bcd97980541ff05e084a22543bdfde1f6eb042d4528f04ef18",
+      "internal/database/proof_daemon_config_test.go": "e4252887915460e95541308b08ab4a4a1276ff5793710ddf8c13e2b06b9d0eb8",
+      "internal/manager/daemon_config.go": "dc694bcaf3754e4a31994b2cf48583dce8a2a0b7a86543977345b55d59966198",
+      "internal/manager/daemon_config_test.go": "efb6a8155af43801bc5e35d7ca6d2bd5a8bf61d2b52861e1886de2b17f6a073d",
+      "internal/manager/manager.go": "978d81b2f0f4820ff02c5f9475855dd6e198cdb6fe66c5e42e345a546c8473c4",
+      "internal/server/server.go": "dfe69ea9de1ecc392e9d072d52f6beb1e260049b12ab3fa3c511287d8e1659f6"
+    },
+    "tracked_Git_state_clean_during_both_runs": true,
+    "unchanged_from_original_guarded_feature": 14
+  },
+  "status": "PASS_SCOPED_CURRENT_MANAGER_CONFIGURATION_INTEGRATION",
+  "targeted_vet": {
+    "canonical_shared_queue": true,
+    "exit": 0,
+    "flags": [
+      "-mod=readonly",
+      "-p=1"
+    ],
+    "packages": [
+      "./internal/manager",
+      "./internal/cli",
+      "./internal/database"
+    ],
+    "raw_log_bytes": 0,
+    "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "validation": {
+    "canonical_shared_queue": true,
+    "cohort_count": 2,
+    "cohorts": [
+      {
+        "actual_original_outer_exit": 0,
+        "named_node_count": 8,
+        "package_passes": {
+          "getarm.org/internal/cli": 16.278,
+          "getarm.org/internal/manager": 6.916
+        },
+        "raw_log_sha256": "e0bad837ce41605da33a3cfce4c28da68f4c7858d1e2bbaf0113456f7a55dec5",
+        "root_count": 6,
+        "roster": {
+          "getarm.org/internal/cli": [
+            "TestDaemonMeshEnsureChangedConfigurationRefusesBeforeBackendOpen",
+            "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay",
+            "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay/fresh-config",
+            "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay/recorded-policy"
+          ],
+          "getarm.org/internal/manager": [
+            "TestDaemonConfigurationBlobDiscriminatorCannotSkipLatest",
+            "TestDaemonConfigurationFailedJournalDoesNotPublishCapacity",
+            "TestDaemonConfigurationJournalInitialLegacyAndUnchangedStartup",
+            "TestDaemonConfigurationLowerCeilingPreservesLeaseTermsAndDeficit"
+          ]
+        },
+        "scope": "Configuration startup, existing lease stability, journal refusal and real mesh startup/refusal"
+      },
+      {
+        "actual_original_outer_exit": 0,
+        "named_node_count": 2,
+        "package_passes": {
+          "getarm.org/internal/database": 3.161,
+          "getarm.org/internal/manager": 3.832
+        },
+        "raw_log_sha256": "a58c9fe45416e4254d0e72d05dd8af05404b1a788bd1597424a140efde75bae6",
+        "root_count": 2,
+        "roster": {
+          "getarm.org/internal/database": [
+            "TestSettledProofAcceptsDaemonConfigurationAuditWithoutSchemaChange"
+          ],
+          "getarm.org/internal/manager": [
+            "TestConfiguredKubernetesSourceEndJoinsAndRetainsStorageDebt"
+          ]
+        },
+        "scope": "Configured source join/storage accounting and configuration settled-proof compatibility"
+      }
+    ],
+    "distinct_named_node_count": 10,
+    "distinct_root_count": 8,
+    "environment": {
+      "GOMAXPROCS": "1",
+      "GOPROXY": "off",
+      "GOSUMDB": "off",
+      "GOTOOLCHAIN": "local"
+    },
+    "exact_unique_RUN_PASS_match": true,
+    "failures": 0,
+    "flags": [
+      "-mod=readonly",
+      "-race",
+      "-json",
+      "-count=1",
+      "-p=1",
+      "-parallel=1",
+      "-timeout=120s"
+    ],
+    "native_platform": "Darwin arm64",
+    "queue_overrides_unset": [
+      "SEMBLANCE_QUEUE",
+      "SEMBLANCE_LOCK",
+      "SEMBLANCE_SLOTS",
+      "SEMBLANCE_RUN_LIMIT",
+      "SEMBLANCE_MAX_WORKERS"
+    ],
+    "race_diagnostics": 0,
+    "race_instrumented": true,
+    "skips": 0
+  }
+}
