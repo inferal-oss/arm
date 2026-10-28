@@ -475,8 +475,33 @@ func (m *Manager) AppendRun(q model.RunAppendRequest) (model.Run, error) {
 	}
 	keep := min(int64(len(q.Data)), max(int64(0), proxyLogLimit-rec.LogBytes), max(int64(0), proxyTotalLogLimit-total))
 	// A retained prefix only: once a run drops bytes, never splice later bytes in.
-	if rec.Truncated || chunks >= 16384 || runChunks >= 4096 {
+	if rec.Truncated {
 		keep = 0
+	}
+	var tailOffset int64
+	var tail []byte
+	var tailRoom int64
+	if keep > 0 {
+		var encoded string
+		err = m.db.QueryRow(`SELECT offset,substr(data,1,87385) FROM proxy_run_chunks WHERE run=? ORDER BY offset DESC LIMIT 1`, q.ID).Scan(&tailOffset, &encoded)
+		if err == nil {
+			if len(encoded) > 87384 {
+				return rec.Run, model.Err("invalid_log", "proxy log tail exceeds chunk bound")
+			}
+			tail, err = base64.StdEncoding.Strict().DecodeString(encoded)
+			if err != nil || len(tail) == 0 || len(tail) > runPageBytes || tailOffset < 0 || tailOffset != rec.LogBytes-int64(len(tail)) {
+				return rec.Run, model.Err("invalid_log", "proxy log tail does not match retained bytes")
+			}
+			tailRoom = int64(runPageBytes - len(tail))
+		} else if err != sql.ErrNoRows {
+			return rec.Run, err
+		} else if rec.LogBytes != 0 {
+			return rec.Run, model.Err("invalid_log", "proxy log tail is missing")
+		}
+		// At a row-count bound the existing tail still has usable space.
+		if chunks >= 16384 || runChunks >= 4096 {
+			keep = min(keep, tailRoom)
+		}
 	}
 	rec.Truncated = rec.Truncated || keep < int64(len(q.Data))
 	start := rec.LogBytes
@@ -492,7 +517,16 @@ func (m *Manager) AppendRun(q model.RunAppendRequest) (model.Run, error) {
 	}
 	defer tx.Rollback()
 	if keep > 0 {
-		_, err = tx.Exec(`INSERT INTO proxy_run_chunks(run,offset,data) VALUES(?,?,?)`, q.ID, start, base64.StdEncoding.EncodeToString(q.Data[:keep]))
+		// The append receipt describes the original input independently of this
+		// storage packing. Update the tail and insert any remainder atomically.
+		fill := min(keep, tailRoom)
+		if fill > 0 {
+			tail = append(tail, q.Data[:fill]...)
+			_, err = tx.Exec(`UPDATE proxy_run_chunks SET data=? WHERE run=? AND offset=?`, base64.StdEncoding.EncodeToString(tail), q.ID, tailOffset)
+		}
+		if err == nil && fill < keep {
+			_, err = tx.Exec(`INSERT INTO proxy_run_chunks(run,offset,data) VALUES(?,?,?)`, q.ID, start+fill, base64.StdEncoding.EncodeToString(q.Data[fill:keep]))
+		}
 	}
 	if err == nil {
 		_, err = tx.Exec(`UPDATE proxy_runs SET data=? WHERE id=?`, string(raw), q.ID)

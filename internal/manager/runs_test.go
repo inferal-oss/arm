@@ -171,6 +171,10 @@ func TestRunProxyRetentionBoundaryAcknowledgesDiscardedBytes(t *testing.T) {
 		rec.AcceptedBytes = proxyLogLimit - 1
 		raw, _ := json.Marshal(rec)
 		_, err = m.db.Exec(`UPDATE proxy_runs SET data=? WHERE id=?`, string(raw), r.ID)
+		if err == nil {
+			// Only the final preexisting byte is materialized in this boundary fixture.
+			_, err = m.db.Exec(`INSERT INTO proxy_run_chunks(run,offset,data) VALUES(?,?,?)`, r.ID, proxyLogLimit-2, "cA==")
+		}
 	}
 	m.mu.Unlock()
 	if err != nil {
@@ -185,7 +189,7 @@ func TestRunProxyRetentionBoundaryAcknowledgesDiscardedBytes(t *testing.T) {
 		t.Fatal("spliced after truncation", r, err)
 	}
 	var raw string
-	if err = m.db.QueryRow(`SELECT data FROM proxy_run_chunks WHERE run=?`, r.ID).Scan(&raw); err != nil || raw != "eA==" {
+	if err = m.db.QueryRow(`SELECT data FROM proxy_run_chunks WHERE run=?`, r.ID).Scan(&raw); err != nil || raw != "cHg=" {
 		t.Fatal("retained suffix not exact", raw, err)
 	}
 }
@@ -310,5 +314,75 @@ func TestRunNativeExecutionObservation(t *testing.T) {
 	page, err := m.RunOutput(l.ID, 0)
 	if err != nil || page.Run.LeaseID != l.ID || page.Run.Command[0] != "/bin/sh" || page.Run.Reason != q.Reason || !page.Done || string(page.Data) != "actual output" || page.Run.ExitCode == nil || *page.Run.ExitCode != 3 {
 		t.Fatal("native run observation", page, err)
+	}
+}
+
+func TestRunProxyCompactsMoreThan4096SmallAppends(t *testing.T) {
+	m := newManager(t)
+	r, err := m.CreateRun(proxyRequest(t, "small-appends"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var expected []byte
+	for i := 0; i < 4097; i++ {
+		data := []byte(fmt.Sprintf("line %04d\n", i))
+		r, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Offset: r.AcceptedBytes, Data: data})
+		if err != nil {
+			t.Fatalf("append %d: %v", i, err)
+		}
+		expected = append(expected, data...)
+	}
+	if r.Truncated || r.LogBytes != int64(len(expected)) || r.AcceptedBytes != int64(len(expected)) {
+		t.Fatal("small appends truncated", r)
+	}
+	var chunks int
+	if err = m.db.QueryRow(`SELECT COUNT(*) FROM proxy_run_chunks WHERE run=?`, r.ID).Scan(&chunks); err != nil || chunks != 1 {
+		t.Fatal("small appends were not packed", chunks, err)
+	}
+	page, err := m.RunOutput(r.ID, 0)
+	if err != nil || !bytes.Equal(page.Data, expected) {
+		t.Fatal("packed log differs", len(page.Data), err)
+	}
+	// A heartbeat and exact retry of the last input must not repeat packed bytes.
+	if _, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Offset: r.AcceptedBytes}); err != nil {
+		t.Fatal(err)
+	}
+	last := []byte("line 4096\n")
+	r, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Offset: r.AcceptedBytes - int64(len(last)), Data: last})
+	if err != nil || r.LogBytes != int64(len(expected)) {
+		t.Fatal("packed retry changed log", r, err)
+	}
+}
+
+func TestRunProxyCompactionSplitsTailAtPageBoundary(t *testing.T) {
+	m := newManager(t)
+	r, err := m.CreateRun(proxyRequest(t, "split-tail"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	prefix := bytes.Repeat([]byte{'x'}, runPageBytes-3)
+	r, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Data: prefix})
+	if err != nil {
+		t.Fatal(err)
+	}
+	suffix := []byte("0123456789")
+	r, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Offset: r.AcceptedBytes, Data: suffix})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var chunks int
+	if err = m.db.QueryRow(`SELECT COUNT(*) FROM proxy_run_chunks WHERE run=?`, r.ID).Scan(&chunks); err != nil || chunks != 2 {
+		t.Fatal("tail not split", chunks, err)
+	}
+	page, err := m.RunOutput(r.ID, runPageBytes-6)
+	if err != nil || string(page.Data) != "xxx0123456789" || page.NextOffset != r.LogBytes {
+		t.Fatal("boundary read differs", page, err)
+	}
+	first, err := m.RunOutput(r.ID, 0)
+	if err != nil || len(first.Data) != runPageBytes || !bytes.Equal(first.Data, append(append([]byte{}, prefix...), suffix[:3]...)) {
+		t.Fatal("first page differs", len(first.Data), err)
+	}
+	if _, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Offset: int64(len(prefix)), Data: suffix}); err != nil {
+		t.Fatal("split retry lost receipt", err)
 	}
 }

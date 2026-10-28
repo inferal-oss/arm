@@ -18,7 +18,11 @@ func TestRunProofObservationsAndLostReporterBlock(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Data: []byte("log body not in proof")}); err != nil {
+		r, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Data: []byte("log body")})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err = m.AppendRun(model.RunAppendRequest{ID: r.ID, Offset: r.AcceptedBytes, Data: []byte(" not in proof")}); err != nil {
 			t.Fatal(err)
 		}
 		if finish {
