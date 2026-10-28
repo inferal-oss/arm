@@ -2526,6 +2526,8 @@ required reader, native-backend, layer and comparison cases execute in their
 selected modes; the retained foreign-store control also matches.
 
 This accepts the recorded current-source numeric test gate. Sparkline's
-component/browser checks, production build, separate upstream draft submissions
-and ARM dependency promotion remain pending. Earlier failed source cuts remain
+33/16/3 component, shared-chart/gallery and cost cohorts also pass all 52 exact
+named cases on unchanged images and inputs. Current browser checks, production
+build, separate upstream draft submissions and ARM dependency promotion remain
+pending. Earlier failed source cuts remain
 failed; ARM's vendored engine is unchanged.

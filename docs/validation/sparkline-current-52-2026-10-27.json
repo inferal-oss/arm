@@ -1,0 +1,134 @@
+{
+  "S_source_review_sha256": "761a6f6b4ee6ce9d89b63bc1c9db6b69b09ccb7586ce9f70f63bc7398ef6d6ad",
+  "accepted_B_review_sha256": "650c7520675953057de3475355d26bc6dd8f8e99907dd7c569cb39740525951c",
+  "accepted_N1_review_sha256": "02abdd0c6802bc962dc54fc0330226bc91426092335a835fcc7393fb776b6ee2",
+  "actual_children": [
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "images-before"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "S1"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "S1-observe"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "S2"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "S2-observe"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "S3"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "S3-observe"
+    },
+    {
+      "original_wait_confirmed": true,
+      "returncode": 0,
+      "stage": "images-after"
+    }
+  ],
+  "actual_outcome_sha256": "c07c5e7a889cb1058fca2c94deb8d4833642fdb3f1c7fe6943cd6d6081c18832",
+  "all8_original_child_argv_cwd_match_binding": true,
+  "all8_returned_original_waits_and_log_hashes_verified": true,
+  "binding_sha256": "84098f12810b83c8fa6ae5c70cdd7330bea2f14963cc9fc9cf5e3047fc1905b6",
+  "cleanup": {
+    "child_receipt_errors": [],
+    "errors": [],
+    "four_own_cache_temp_paths_absent": true,
+    "pin_errors": []
+  },
+  "cohorts": {
+    "S1": {
+      "actual_observation_sha256": "4eaf5b6bdf890e36baea137b1102fa65e42980363a83963d815ae32536e838a1",
+      "actual_report_sha256": "6717b57bca5d8b759a1e062d2a3085f35a72727fa4296cdccdf2c6b3623be58c",
+      "exact_path_ancestry_title_fullName_match": true,
+      "failed_skipped_pending_todo": 0,
+      "files": {
+        "test/sparkline.test.ts": 33
+      },
+      "nested_suites_passed": 7,
+      "passed_named_cases": 33
+    },
+    "S2": {
+      "actual_observation_sha256": "d3eab0dbcd17d08d2168cbe9db12d18d89e1de402b5c0aa0b71346db0ced29b5",
+      "actual_report_sha256": "45cd352cd898d99fc5ec4ef6e7f671e31b30dcc4aec7c0d861c772a6c2aac333",
+      "exact_path_ancestry_title_fullName_match": true,
+      "failed_skipped_pending_todo": 0,
+      "files": {
+        "test/charts-sparql.test.ts": 6,
+        "test/gallery.test.ts": 5,
+        "test/gantt.test.ts": 5
+      },
+      "nested_suites_passed": 7,
+      "passed_named_cases": 16
+    },
+    "S3": {
+      "actual_observation_sha256": "a5cafe1bf0db66cb11c91d429cb958bc7d431af1e305287ee88457d94164d219",
+      "actual_report_sha256": "4cc6cf23c4c0110ba635ad7a0cbcf8b284b0786293054e802d66b9f714646ca1",
+      "exact_path_ancestry_title_fullName_match": true,
+      "failed_skipped_pending_todo": 0,
+      "files": {
+        "test/cost.test.ts": 3
+      },
+      "nested_suites_passed": 4,
+      "passed_named_cases": 3
+    }
+  },
+  "diagnostics": {
+    "raw_stdout_retained": true,
+    "three_Vitest_stderr_bytes": 0
+  },
+  "findings": [],
+  "images": {
+    "rust": {
+      "bytes": 375005,
+      "origin": "fresh cargo child exit0 from pinned source/config/tool entrypoints",
+      "sha256": "feb5b24d153c756f2a04f4436167f308a57ecfa85b7dbcaa06f4371a0a0119d2"
+    },
+    "wat": {
+      "bytes": 115759,
+      "origin": "fresh WAT build child exit0 from pinned source/tools",
+      "sha256": "ef25d706eaf3c0c24b7417a7dc3be274fb6cda5e0b0fe484c5931de346da51e3"
+    }
+  },
+  "images_before_after_match": true,
+  "limits": [
+    "S52 targeted component/chart-gallery-Gantt/cost cohorts only; native mounted80matrix/4locales/512/513,normal production build,PR/integration/full-feature acceptance remain separate.",
+    "No reviewer reruns,helper/runner/candidate imports,builds,queue,browser or network.",
+    "Earlier failed numeric/component/native attempts retain their original status; current gates do not rewrite them.",
+    "Eight returned original child waits and pipe joins are exacta107helper scope,not all-descendant/escaped-process/OS/hermetic closure.",
+    "Original outer tool metadata is not independently recovered in this audit; wrapper0 is the retained outcome until parent adds its outer corroboration."
+  ],
+  "owned49_manifest_sha256": "214061b8fc3ca75820438a6ca6f19a30b0d844dd96e626d93f06b4efe879aed5",
+  "passed_named_cases": 52,
+  "raw_hash_manifest_sha256": "d61b5a3b7b6d65058c517a7e63273c170db5ce8ff1963cad1a3706ee84266b4e",
+  "runner_sha256": "26e9ebc48e8f36af18206809105da1080e7c17c33b9fe1dc09fe8105e55271e8",
+  "seal_sha256": "fc011032a62a739977637fc6421b4dd0ec0282c273f7f93833990c516c34a32c",
+  "selected_pins": {
+    "before_each_cohort_after_final_records_match": true,
+    "files": 1594,
+    "independent_current_recheck_match": true,
+    "links": 185
+  },
+  "source_base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "status": "ACCEPTED_SCOPED_CURRENT_S52_GATE",
+  "total_selected_files": 5,
+  "wrapper_record_exit": 0
+}

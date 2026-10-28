@@ -6456,3 +6456,20 @@ current targeted success does not establish the separate 52-case component,
 rendered UI, production-build, full-suite, upstream publication or ARM dependency
 promotion gates. Original child return/pipe-join evidence is not a universal
 transitive-descendant or hermetic-toolchain claim.
+
+
+### Current-base Sparkline and affected cohorts
+
+[Independent current component evidence](validation/sparkline-current-52-2026-10-27.json)
+accepts exact path/ancestry/title identities for 33 Sparkline, sixteen affected
+chart/gallery and three cost cases in five files: 52 pass, with no failures,
+skips or todo cases. All eight original child returns, argument bindings and
+log hashes match the accepted runner. All 1,594 selected files and 185 links
+remain unchanged before, between and after cohorts; the fresh Rust/WAT images
+are unchanged and four owned cache/temporary paths are absent.
+
+This is current-source component acceptance, separate from earlier qualified
+rendered observations and failed source cuts. The current 80-configuration
+browser matrix, regional locales, 512/513 boundaries, production build,
+upstream drafts and ARM dependency promotion remain pending. No build or
+numeric cohort was repeated in this component run.
