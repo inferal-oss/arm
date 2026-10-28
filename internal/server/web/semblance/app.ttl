@@ -107,7 +107,7 @@ arm:runsCase c:when arm:runs ; c:content arm:runsContent .
 arm:runsContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
 
 # The run transcript uses stock Code rendering in a bounded scrolling surface.
-arm:RunOutput a owl:Class ; rdfs:subClassOf c:Code .
+arm:RunOutput a owl:Class ; rdfs:subClassOf c:Code ; sem:slug "arm-run-output" .
 [] a sty:StyleRule ; sty:appliesTo arm:RunOutput ;
  sty:declares [ sty:property "max-height" ; sty:raw "55vh" ] ,
               [ sty:property "overflow-y" ; sty:raw "auto" ] .
@@ -115,7 +115,7 @@ arm:RunOutput a owl:Class ; rdfs:subClassOf c:Code .
 # The stock Fullscreen layer owns presentation and Escape; ARM supplies only
 # its transcript component and viewport-relative height for stock Code.
 arm:RunTranscript a owl:Class ; rdfs:subClassOf c:Stack .
-arm:RunOutputFull a owl:Class ; rdfs:subClassOf arm:RunOutput .
+arm:RunOutputFull a owl:Class ; rdfs:subClassOf arm:RunOutput ; sem:slug "arm-run-output-full" .
 [] a sty:StyleRule ; sty:appliesTo arm:RunOutputFull ;
  sty:declares [ sty:property "max-height" ; sty:raw "calc(100dvh - 14rem)" ] .
 
@@ -201,7 +201,7 @@ arm:RunTechnical a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-techni
 
 # A detached log keeps controls fixed and gives its saved-output disclosure the
 # remaining frame height. Only the transcript scrolls, so following shows its tail.
-arm:RunTranscriptWindow a owl:Class ; rdfs:subClassOf arm:RunTranscript .
+arm:RunTranscriptWindow a owl:Class ; rdfs:subClassOf arm:RunTranscript ; sem:slug "arm-run-transcript-window" .
 [] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ;
  sty:declares [ sty:property "height" ; sty:raw "100%" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "overflow" ; sty:raw "hidden" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part "> :not([data-sem-c=\"accordion-item\"])" ;
