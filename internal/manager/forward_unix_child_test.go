@@ -141,7 +141,7 @@ func TestForwardUnixChildCleanupFaultRetainsChargeAndRecoveryFence(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = c.MarkCleanupUncertain("native unlink unresolved"); err != nil {
+	if err = c.MarkCleanupUncertain("Port reclamation unresolved: native unlink unresolved"); err != nil {
 		t.Fatal(err)
 	}
 	select {
