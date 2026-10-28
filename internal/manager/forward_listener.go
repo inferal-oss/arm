@@ -287,6 +287,11 @@ func (m *Manager) RecoverForwardListener(id, reason string) (model.Lease, error)
 	if strings.TrimSpace(reason) == "" || len(reason) > 4096 || l.Request.Kind != forwardListenerKind || l.Request.ForwardSource == nil {
 		return l, model.Err("invalid_request", "exact recovered source listener required")
 	}
+	// A native child fault is never discharged by the legacy TCP port probe,
+	// even if its reported failure text starts with that probe's old prefix.
+	if l.Outcome == "forward_unix_cleanup_uncertain" {
+		return l, model.Err("needs_attention", "original Unix child cleanup remains uncertain; charge retained")
+	}
 	if l.State == "terminal" {
 		return l, nil
 	}

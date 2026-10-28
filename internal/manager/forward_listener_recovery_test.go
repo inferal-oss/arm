@@ -100,6 +100,17 @@ func TestForwardListenerCrashRecoveryAfterExclusiveProcessFence(t *testing.T) {
 	if err != nil || status.Reserved.CPU < .0001 || status.Reserved.Memory < 1<<20 {
 		t.Fatalf("lost crash charge: %+v %v", status.Reserved, err)
 	}
+	// A legacy TCP-only unresolved-port record remains eligible for the
+	// original port probe once the exclusive process fence has been acquired.
+	m.mu.Lock()
+	l.Outcome = "legacy_port_cleanup_unresolved"
+	l.Failure = "Port reclamation unresolved: prior probe unavailable"
+	l.Revision++
+	err = m.put(l, "forward.legacy_port_probe_fixture")
+	m.mu.Unlock()
+	if err != nil {
+		t.Fatal(err)
+	}
 	l, err = m.RecoverForwardListener(id, "exclusive daemon lock after original process exit")
 	if err != nil || l.State != "terminal" || l.Outcome != "reconciled" || l.RecoveryReason == "" {
 		t.Fatalf("exact source recovery failed: %+v %v", l, err)
