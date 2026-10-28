@@ -6411,3 +6411,22 @@ ownership assertions do not establish universal descendant closure or physical
 reclamation. No public provider/installer/connector, current live cluster,
 browser or GUI acceptance follows. The latest configured-cluster read is
 unavailable; historical Node visibility is not current evidence.
+
+
+### Configuration after source-core composition
+
+[Current configuration evidence](validation/configuration-current-manager-composition-2026-10-27.json)
+passes eight distinct roots/ten named RUN=PASS nodes at `47bafbd7` in two
+separate bounded race cohorts: six startup/accounting roots/eight nodes and
+two source-join/storage-debt and configuration-proof roots/two nodes. Targeted
+Manager/CLI/database vet passes. All fifteen feature inputs remain unchanged
+during execution; fourteen match the original guarded feature and only the
+shared Manager composition differs. The original command completions and
+exact disjoint rosters are independently verified.
+
+This closes the scoped configuration composition gate while retaining the
+original 117-node evidence and the separate Kubernetes 36-root/68-node run.
+The configuration database-proof root belongs to this two-root successor; it
+is absent from the broader Kubernetes roster. Linux configuration execution,
+services, live reload, full degraded-database recovery, retention/restore and
+whole-suite acceptance remain unestablished.

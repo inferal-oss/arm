@@ -407,7 +407,10 @@ vet on its exact fifteen-path source. Two startup/mesh roots/four nodes also
 pass against the composed configuration and prior Host assets. The supported
 settings, precedence and guarded restart behavior are documented in
 [configuration.md](configuration.md). This does not complete the operations
-portfolio or enable live configuration reload.
+portfolio or enable live configuration reload. A separate current-source
+configuration check at `47bafbd7` passes eight distinct roots/ten named cases
+and targeted vet, closing the shared Manager composition gate. Its evidence
+is recorded separately from the Kubernetes cohort.
 
 
 ### Semblance draft and recovered numeric continuation

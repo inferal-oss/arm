@@ -2506,3 +2506,10 @@ This core enables no installer/provider factory, public CLI or dashboard
 effects, connector, bootstrap, readiness or mesh enrollment. Those remain
 separate steps in unified onboarding. The latest read-only configured API was
 unavailable; earlier Node observations establish no current discovery success.
+
+
+The configured-startup boundary remains accepted after source-core composition:
+a separate `47bafbd7` check passes eight affected roots/ten named cases and
+Manager/CLI/database vet, including retained lease terms, refused journal
+writes, actual startup and settled-proof compatibility. This is a scoped
+configuration milestone; it does not complete the broader operations portfolio.
