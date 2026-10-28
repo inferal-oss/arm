@@ -139,3 +139,45 @@ func TestRunsCompactSearchMatchesDisplayedFailure(t *testing.T) {
 		}
 	}
 }
+
+func TestRunsRosterAnchorsExcludeAssociatedLeaseAndOverlays(t *testing.T) {
+	m, s, _ := runFixture(t, nil)
+	m.view = 7
+	m.runsUI = &runsDashboard{records: []model.Run{{ID: "run", State: "active"}}}
+	lease := activeLease("associated")
+	lease.Request.Reason = strings.Repeat("A long lease detail ", 80)
+	m.detail = &lease
+	m.selected = 7
+	m.syncViewport()
+	m.viewport.SetYOffset(3)
+	before := m.viewport.YOffset()
+	if m.runRosterVisible() {
+		t.Fatal("associated lease detail mistaken for run roster")
+	}
+	m.keepSelectionVisible()
+	if m.viewport.YOffset() != before {
+		t.Fatal("roster selection scrolled associated lease")
+	}
+	m.acceptRunsRead(runsReadMsg{ui: m.runsUI, session: s, generation: m.runsUI.generation, hasInventory: true, records: []model.Run{{ID: "other", State: "terminal"}}})
+	if m.selected != 7 || m.viewport.YOffset() != before {
+		t.Fatal("background roster changed lease selection or scroll")
+	}
+	for _, region := range m.mouseRegions() {
+		if region.row >= 0 && !region.feed && !region.record {
+			t.Fatal("run roster mouse row leaked into lease detail", region)
+		}
+	}
+	m.detail = nil
+	m.recovery = &recoveryBrowser{}
+	if m.runRosterVisible() {
+		t.Fatal("recovery mistaken for roster")
+	}
+	m.recovery = nil
+	m.record = &recordTree{}
+	if m.runRosterVisible() {
+		t.Fatal("record mistaken for roster")
+	}
+	if got := runStatusLabel(model.Run{State: "terminal", Outcome: "rejected"}); got != "Rejected" {
+		t.Fatal(got)
+	}
+}

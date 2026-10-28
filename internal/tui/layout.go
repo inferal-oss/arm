@@ -115,7 +115,7 @@ func (m *dashboardModel) displayContent() string {
 }
 func (m *dashboardModel) keepSelectionVisible() {
 	m.syncViewport()
-	if m.view == 7 && m.runsUI != nil && m.runsUI.selected == nil && m.record == nil && !m.feedFocus && !m.modal() {
+	if m.runRosterVisible() {
 		row := m.runListSelectionRow()
 		if row < m.viewport.YOffset() {
 			m.viewport.SetYOffset(row)

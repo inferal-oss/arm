@@ -125,7 +125,6 @@ arm:RunSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-surface
 arm:RunListRow a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-list-row" .
 arm:RunPrimary a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-primary" .
 arm:RunRowMeta a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-row-meta" .
-arm:RunOpen a owl:Class ; rdfs:subClassOf c:Button ; sem:slug "arm-run-open" .
 arm:RunListCommand a owl:Class ; rdfs:subClassOf c:Code ; sem:slug "arm-run-list-command" .
 arm:RunDetailCommand a owl:Class ; rdfs:subClassOf c:Code ; sem:slug "arm-run-detail-command" .
 arm:RunSecondary a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-secondary" .
@@ -153,11 +152,12 @@ arm:RunSecondary a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-second
               [ sty:property "align-items" ; sty:raw "center" ] ,
               [ sty:property "gap" ; sty:raw "0.35rem 0.6rem" ] ,
               [ sty:property "min-width" ; sty:raw "0" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunOpen ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunPrimary ; sty:part "> button" ;
  sty:declares [ sty:property "justify-content" ; sty:raw "flex-start" ] ,
               [ sty:property "text-align" ; sty:raw "left" ] ,
               [ sty:property "font-weight" ; sty:raw "650" ] ,
               [ sty:property "padding" ; sty:raw "0" ] ,
+              [ sty:property "min-height" ; sty:raw "1.75rem" ] ,
               [ sty:property "max-width" ; sty:raw "100%" ] ,
               [ sty:property "white-space" ; sty:raw "normal" ] ,
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
@@ -188,3 +188,12 @@ arm:RunSecondary a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-second
 arm:RunTechnical a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-technical" .
 [] a sty:StyleRule ; sty:appliesTo arm:RunTechnical ;
  sty:declares [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+[] a sty:StyleRule ; sty:appliesTo arm:RunSurface ; sty:part "[role=list] > h3" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "0.875rem" ] ,
+              [ sty:property "line-height" ; sty:raw "1.4" ] ,
+              [ sty:property "font-weight" ; sty:raw "650" ] ,
+              [ sty:property "text-transform" ; sty:raw "uppercase" ] ,
+              [ sty:property "letter-spacing" ; sty:raw "0.04em" ] ,
+              [ sty:property "color" ; sty:token tok:muted ] ,
+              [ sty:property "margin-block" ; sty:raw "0.6rem 0.2rem" ] .

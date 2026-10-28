@@ -38,6 +38,9 @@ type runsReadMsg struct {
 func (m *dashboardModel) runsVisible() bool {
 	return m.view == 7 && m.nodeUI == nil && m.record == nil && !m.feedFocus && m.inputMode == ""
 }
+func (m *dashboardModel) runRosterVisible() bool {
+	return m.runsVisible() && m.runsUI != nil && m.runsUI.selected == nil && m.detail == nil && m.recovery == nil && m.poolUI == nil && m.resourceID == "" && !m.modal()
+}
 func (m *dashboardModel) retireRuns() {
 	if m.runsUI == nil {
 		return
@@ -107,14 +110,20 @@ func (m *dashboardModel) acceptRunsRead(msg runsReadMsg) tea.Cmd {
 		return nil
 	}
 	if msg.hasInventory {
-		id, previous := m.selectionID(), m.selected
-		anchor := ui.selected == nil && len(ui.records) > 0 && m.view == 7 && !m.feedFocus
+		roster := m.runRosterVisible()
+		id, previous := "", m.selected
+		if roster {
+			id = m.selectionID()
+		}
+		anchor := roster && len(ui.records) > 0
 		rowBefore, offsetBefore := 0, m.viewport.YOffset()
 		if anchor {
 			rowBefore = m.runListSelectionRow()
 		}
 		ui.records = msg.records
-		m.restoreSelection(id, previous)
+		if roster {
+			m.restoreSelection(id, previous)
+		}
 		if anchor && id != "" && m.selectionID() == id {
 			m.syncViewport()
 			m.viewport.SetYOffset(offsetBefore + m.runListSelectionRow() - rowBefore)

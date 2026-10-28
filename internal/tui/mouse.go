@@ -271,7 +271,7 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 			starts[row] = i
 			row += 4 + len(item.Deliveries)
 		}
-	case m.view == 7 && m.runsUI != nil && m.runsUI.selected == nil:
+	case m.runRosterVisible():
 		starts = m.runListRender().rows
 	case m.view == 4:
 		for i := range m.events {
@@ -283,7 +283,7 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 		if index, ok := starts[source]; ok {
 			y := 5 + row - m.viewport.YOffset()
 			height := 1
-			if (m.view == 2 || m.view == 7 && m.runsUI != nil && m.runsUI.selected == nil) && m.record == nil && !m.feedFocus && m.resourceID == "" {
+			if (m.view == 2 || m.runRosterVisible()) && m.record == nil && !m.feedFocus && m.resourceID == "" {
 				height = 2
 			}
 			bottom := min(4+m.bodyHeight()-1, y+height)

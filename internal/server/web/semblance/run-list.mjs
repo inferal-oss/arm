@@ -7,6 +7,7 @@ export function runStatus(run) {
   if(run.outcome==='log_failed')return {label:'Log failed',tone:'warning'};
   if(run.outcome==='reporter_lost')return {label:'Reporter lost',tone:'warning'};
   if(run.state==='interrupted')return {label:'Interrupted',tone:'warning'};
+  if(run.outcome==='rejected')return {label:'Rejected',tone:'warning'};
   if(run.outcome==='expired')return {label:'Expired',tone:'neutral'};
   if(['cancelled','revoked','released'].includes(run.outcome))return {label:run.outcome==='cancelled'?'Cancelled':'Stopped',tone:'neutral'};
   if(run.exit_code!=null&&run.exit_code!==0||['failed','launch_failed','admission_failed'].includes(run.outcome))return {label:'Failed',tone:'danger'};

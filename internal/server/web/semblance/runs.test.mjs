@@ -89,7 +89,7 @@ test('compact purpose rows stay stable through active-first reordering and searc
  const opener=f.ui.get('Verification');opener.focus();const roots=f.ui.all.filter(x=>x.kind==='Stack'&&x.children.some(child=>child.label==='Current · 1'));assert.ok(roots.length);const list=roots.at(-1);assert.equal(list.children[1].children[0].children[0].label,'Compile preview');
  assert.equal(f.ui.all.filter(x=>x.kind==='Card').length,0);assert.ok(!list.children.some(x=>String(x.label).includes('four-word')));
  records=[{...records[0],state:'active'},{...records[1],state:'terminal'}];await f.panel.refresh();assert.equal(f.ui.get('Verification'),opener);assert.equal(f.ui.activeComponent,opener);assert.equal(list.children[1].children[0].children[0],opener);
- const filter=f.ui.get('Search runs');filter.value=other;await filter.emit('input');assert.ok(f.ui.get('Compile preview'));assert.equal(list.children.length,2);
+ const filter=f.ui.get('Search runs');filter.value=other;await filter.emit('input');assert.ok(f.ui.get('Compile preview'));assert.equal(list.children.filter(x=>!x.hidden).length,2);
 });
 test('selected run gets its own compact view with full metadata in closed Details',async t=>{
  const f=fixture(t);f.panel.setActive(true);await tick();await f.ui.get('Verification').emit('activate');const technical=f.ui.get('Details');assert.ok(technical);assert.equal(technical.open,false);const heading=f.ui.activeComponent;assert.equal(heading.label,'Verification');
@@ -106,4 +106,14 @@ test('search matches the displayed failure status and outcome',async t=>{
 test('row moves restore a blurred opener and leave unrelated focus alone',async t=>{
  let records=[{...run,created_at:'2026-10-28T12:00:00Z'},{...run,id:other,reason:'Other task',state:'terminal',created_at:'2026-10-28T11:00:00Z'}];const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();const opener=f.ui.get('Verification'),list=f.ui.all.find(x=>x.role==='list');const replace=list.replace.bind(list);list.replace=(...children)=>{replace(...children);if(f.ui.activeComponent===opener)f.ui.activeComponent=null;return list;};opener.focus();records=records.map(r=>({...r,state:r.id===id?'terminal':'active'}));await f.panel.refresh();assert.equal(f.ui.activeComponent,opener);
  const filter=f.ui.get('Search runs');filter.focus();await f.panel.refresh();assert.equal(f.ui.activeComponent,filter);
+});
+
+test('selected and fullscreen log errors remain visible and recover independently of list errors',async t=>{
+ let listFailure=false,outputFailure=true;
+ const f=fixture(t,(op,args)=>{if(op==='runs'){if(listFailure)throw Error('inventory refused');return [run];}if(outputFailure)throw Error('log refused');return {run,offset:args.offset,next_offset:args.offset,data:'',done:false};},true);
+ f.panel.setActive(true);await tick();await f.panel.open(run);let warning=f.ui.all.find(x=>x.role==='status'&&!x.hidden&&String(x.label).includes('Output unavailable: log refused'));assert.ok(warning);
+ await f.ui.get('Fullscreen log').emit('activate');const fold=f.ui.get('Saved log output');fold.open=false;const surface=f.ui.all.find(x=>x.fullViewport===true);assert.ok(surface.children.includes(warning),'error belongs outside folded output');
+ listFailure=true;await f.panel.refresh();assert.match(warning.label,/inventory refused/);assert.match(warning.label,/log refused/);
+ listFailure=false;await f.panel.refresh();assert.doesNotMatch(warning.label,/inventory refused/);assert.match(warning.label,/log refused/);assert.ok(f.ui.all.some(x=>String(x.label).startsWith('Stale output')));
+ outputFailure=false;await f.panel.refresh();assert.equal(warning.hidden,true);assert.ok(!f.ui.all.some(x=>!x.hidden&&String(x.label).startsWith('Stale output')));assert.equal(surface.fullViewport,true);
 });

@@ -23,3 +23,5 @@ test('capture failure is not success and uncertain reporters remain ahead of his
  assert.deepEqual(runStatus({...run,state:'terminal',outcome:'log_failed',exit_code:0}),{label:'Log failed',tone:'warning'});
  const rows=[{...run,id:'finished',state:'terminal',created_at:'2026-10-28T11:59:00Z'},{...run,id:'lost',state:'interrupted',outcome:'reporter_lost',created_at:'2026-10-27T11:59:00Z'}];assert.deepEqual(orderRuns(rows).map(x=>x.id),['lost','finished']);assert.ok(!runWhen(rows[1],now).includes('elapsed'));
 });
+
+test('terminal start deadline rejection remains explicitly Rejected',()=>{assert.equal(runStatus({...run,state:'terminal',outcome:'rejected',exit_code:null}).label,'Rejected');});

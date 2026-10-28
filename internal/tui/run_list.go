@@ -45,6 +45,8 @@ func runStatusLabel(run model.Run) string {
 		return "Interrupted"
 	}
 	switch run.Outcome {
+	case "rejected":
+		return "Rejected"
 	case "expired":
 		return "Expired"
 	case "cancelled":
@@ -187,7 +189,7 @@ func (m *dashboardModel) runListRender() textRows {
 		if activeRunRecord(run) {
 			ink = accent
 		}
-		if state == "Stopping" || state == "Cleaning up" || state == "Needs attention" || state == "Reporter lost" || state == "Log failed" || state == "Unknown" || state == "Interrupted" {
+		if state == "Stopping" || state == "Cleaning up" || state == "Needs attention" || state == "Reporter lost" || state == "Log failed" || state == "Unknown" || state == "Interrupted" || state == "Rejected" {
 			ink = strong.Foreground(colorWarning)
 		}
 		if state == "Failed" {
