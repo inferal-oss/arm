@@ -60,7 +60,7 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     if(!views.has(view.run.id))return;
     if(view.detached){if(selected===view)selected=null;}
     else {if(tiled){tiled=false;ui.tileWindows(false);}if(selected&&selected!==view)remove(selected);selected=view;}
-    workspace();if(!view.detached&&visible)view.focusDetails();
+    workspace();if(view.detached)view.focus();else if(visible)view.focusDetails();
   }
   function toggleLayout(){for(const view of views.values())view.exitFullscreen();tiled=!tiled;ui.tileWindows(tiled);workspace();}
   function read(view,manual=false){drain();return view.read(manual);}
