@@ -422,7 +422,7 @@ current-base composition.
 
 ### Unactivated Kubernetes source profile continuation
 
-The unified-onboarding branch now describes the exact start (`t`), bootstrap
+The `codex/unified-kubernetes-core-workflow` branch now describes the exact start (`t`), bootstrap
 (`e`) and forward (`f`) resource budgets, reserves `kp1` independently of its
 project field, and checks the closed source/storage/port graph. A canonical
 metadata contract is committed before new source-profile insertion. The
@@ -437,3 +437,19 @@ three-row forward constructor, protected stages, remote bootstrap actions,
 pinned connector and composed native/proof/UI gates before activation. The
 compatibility marker makes previous stopped proof refuse; it does not establish
 old startup refusal or uniform runtime-writer exclusion.
+
+### Unused protected Kubernetes stage records
+
+A separate unused record/writer cut builds on `957cef6`. It keeps the closed
+Kubernetes stage record inside the recognized protected coordination file,
+requires the prior database contract acknowledgment at the Manager entrypoint,
+and uses exact per-stage review and record revisions. It preserves earlier
+approvals, attempts, unknown outcomes and independent source/port/storage
+observations across cancellation and lookup. This cut awaits independent review;
+no UI, server operation, source constructor or connector calls it.
+
+It is a bounded evidence foundation, not the full workflow. Serial read-only
+verification and refreshed active-forward attempt types, native effect adapters,
+remote reservation ownership, connector dial/invalidation, complete current and
+previous-reader proof relationships and actual composed UI/runtime gates remain.
+The full unified onboarding owner continues those gates on the same branch.

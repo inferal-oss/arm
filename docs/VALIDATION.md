@@ -6403,3 +6403,30 @@ The first reserved-port fixture failed because it updated a nonexistent row;
 the corrected fixture inserts that owned row and the final cohort passes. The
 failed predecessor remains failed. Targeted vet and Linux ARM64 compile-only
 results are recorded separately; compilation is not Linux runtime execution.
+
+### Unused protected Kubernetes stage record and writer
+
+The [typed stage record](validation/kubernetes-stage-records-2026-10-28.json)
+binds the twelve added/changed Go paths to profile foundation `957cef6`. Its final
+Darwin race cohort passes fifteen roots/forty-one named cases without skips.
+It exercises exact stage approval and source-binding order; unknown reply and
+cancellation retention; cancellation after binding before an attempted effect;
+separate original forward-port retirement before activation; immutable connection
+pins; strict nested and outer JSON; actual private coordination-file writes;
+worker/revision CAS; generic decision refusal; generic cancellation propagation;
+prior-contract refusal before the protected file; and four existing coordinator
+boundaries. Targeted vet and Linux ARM64 compile-only gates pass separately.
+
+The earlier incomplete archive preparation launched no valid Go package; that
+attempt remains failed. Initial protected-file fixtures lacked the repository's
+private-state setup, and the first duplicate-field fixture did not modify its
+indented input. Both failures are retained. The corrected fixtures use the
+existing private-home constructor and assert an actual byte change before
+checking the malformed reader input.
+
+These are typed-state and local persistence tests, not actual remote
+apply/pair/prove/activate execution, cancellation at a Kubernetes POST or native
+bind, current certificate/grant authorization, a forward constructor, complete
+old-reader partial/runtime proof, or enrollment. The new protected records still
+lack complete current stopped-proof relationships and therefore cannot supply
+settled removal authority. Public adapters remain unused.

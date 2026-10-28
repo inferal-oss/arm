@@ -2499,3 +2499,33 @@ Source closure, resource settlement, storage debt and future forward-port
 closure/settlement have distinct result fields. Bootstrap/forward helper and
 connector implementation, protected-stage integration and public activation
 remain unfinished.
+
+## Unused protected Kubernetes stage journal
+
+`kubejournal` provides a bounded closed evidence record and per-stage transitions.
+Its decoder rejects unknown/case-aliased/duplicate/missing fields, explicit null
+records, trailing values and excessive bytes, nesting and collection counts.
+Install and connection records have fixed ordered stage rosters and immutable
+input hashes. Exact review hashes bind expected backend generation, preceding
+stage/result, resource budgets and displayed effects. Each stage decision,
+source intent, cached binding, attempted effect and resulting observation is
+separate; later review, decline, cancellation or lookup cannot erase an earlier
+approval or turn an unknown attempted stage back into replay authority.
+
+The record is a typed `kubernetes_workflow_v1` field in the existing protected
+coordination namespace. It is required for the new kinds and rejected when mixed
+with older coordinator kinds. The Manager entrypoint acknowledges the canonical
+SQL contract before writing the first private coordination file. The existing
+native private-file writer/lock and worker CAS remain in use. Generic all-stage
+decisions refuse these records. Generic cancellation also stops the nested
+journal, while source cleanup observations remain recordable after cancellation.
+Records, IDs, tokens and result booleans provide no original native authority.
+
+Connection observations must match the immutable Pod, backend generation,
+source identity, SSH pin, owner and directional grant draft. Forward proof cannot
+advance to activation while the separate original port closure or settlement is
+unknown. The current API is unused and records one effect-source intent per
+stage. Serial read-only verification, renewed local forward ownership, remote
+native reservations/actions, connector dialing and full namespace/database proof
+relationships remain to be implemented. There is no public projection or full
+installation/connection delivery in this cut.

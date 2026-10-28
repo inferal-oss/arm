@@ -1,0 +1,99 @@
+{
+  "scope": "unused closed stage-evidence model and native private coordination writer; no public adapter",
+  "base": "957cef670782f8b8a2254804723eb5da404d3e29",
+  "source_sha256": {
+    "internal/mesh/coordination.go": "39fa8d9be60950ce6d2170eaf853df4a0a6eeee7ebad5b7f577f7e99cf562125",
+    "internal/kubejournal/codec.go": "3c087825f6ef5639defe41427a83a8fe75df59a9534679fbb20e6604a11779d7",
+    "internal/kubejournal/journal_test.go": "926d750643c459ee91d82756ceda64c769548254bc3a0717230741000306a001",
+    "internal/kubejournal/mesh.go": "90f99ebeaa33ddd543eac044421f6effb6cd2f6d17f0c612b6ae0c6a221fa12c",
+    "internal/kubejournal/persistence.go": "c44602985925b9526a5dd58dda996fbb1c8e8dab4d1ff6e5b94c184d7e425dff",
+    "internal/kubejournal/transitions.go": "43b537ceec6b40699abf28db347705377d95a810b66b2dbce9beb407b1576767",
+    "internal/kubejournal/types.go": "ff64561f27558a8f59da063855f3562441aa8cb7a5d36a75653b60416be0ab4d",
+    "internal/kubejournal/validate.go": "9ca193bf7a4304d36f53c6f764ce1b0ea495ccdf7b920a584153f895e618a70d",
+    "internal/manager/kubernetes_workflow.go": "5e7fa1ebc7fe6c37ee897e1c709d4e6ef6e0669d902b3004af7466ef278216d3",
+    "internal/manager/kubernetes_workflow_test.go": "ce8a9017f29c6e511ac94be213d2acb19c7542a165a28fd1fc1da6ea12ac4b25",
+    "internal/mesh/kubernetes_workflow.go": "187eedb75645ae9f563b5c45e00a3a6adad9badbf297fb3eb3850fb52363b8ba",
+    "internal/mesh/kubernetes_workflow_test.go": "0b91b80d444aae9abc0d8096f68a6e2589fa410f14469fd7d764ab3eb4b43ae5"
+  },
+  "darwin_race": {
+    "exit": 0,
+    "roots": 15,
+    "named_cases": 41,
+    "skips": 0,
+    "roster": [
+      "TestStageAttemptRequiresExactApprovalAndAcknowledgedBinding",
+      "TestStageLostAckAndCancellationPreservePriorAuthorization",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/valid",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/duplicate",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/alias",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/unknown",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/missing",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/null-stages",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/null-review",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/tail",
+      "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/huge",
+      "TestStageReviewHashIncludesGenerationAndDeclineIsFinal",
+      "TestStageProveRequiresIndependentForwardPortRetirement",
+      "TestStageProveRequiresIndependentForwardPortRetirement/unknown-close",
+      "TestStageProveRequiresIndependentForwardPortRetirement/unsettled-port",
+      "TestStageProveRequiresIndependentForwardPortRetirement/positive",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/same",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/pod",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/host",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/generation",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/ssh",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/uid",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/source-pin",
+      "TestStageConnectorCannotSubstituteOriginalDraftPins/grant",
+      "TestStageCancellationAfterBindingRefusesAttemptButRecordsCleanup",
+      "TestCoordinationCrossWorkerTargetAndRevision",
+      "TestCoordinationReviewBoundCASAndSingleDecision",
+      "TestCoordinationDurableWorkerCapAndProspectiveAttemptTarget",
+      "TestCoordinationResumeChildNormalizesToImmutableRoot",
+      "TestKubernetesWorkflowProtectedWriterCASAndGenericDecisionRefusal",
+      "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates",
+      "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates/alias",
+      "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates/duplicate",
+      "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates/missing-stages",
+      "TestKubernetesSourcePortRoleReservedIndependentlyOfProject",
+      "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile",
+      "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile/success",
+      "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile/refused",
+      "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile/unknown-contract"
+    ]
+  },
+  "targeted_vet_exit": 0,
+  "linux_arm64_compile_only": {
+    "exit": 0,
+    "test_execution": false,
+    "packages": [
+      "internal/kubejournal",
+      "internal/mesh",
+      "internal/manager"
+    ]
+  },
+  "preserved_predecessors": [
+    {
+      "result": "archive preparation failed; subsequent attempt lacked go.mod",
+      "disposition": "no Go package validated; corrected source snapshot used for successors"
+    },
+    {
+      "result": "protected file fixtures failed private-state fence",
+      "disposition": "use existing private coordination-home fixture"
+    },
+    {
+      "result": "duplicate-field test failed because replacement did not alter indented JSON",
+      "disposition": "corrected mutation and require byte change before decoding"
+    }
+  ],
+  "limitations": [
+    "One effect-source intent per stage; serial read-only and renewed active-forward attempt types remain",
+    "No public operation or projection uses these records",
+    "No original forward constructor, remote native action/reservation or production connector",
+    "No actual remote mutation, final native-cut or authenticated pin/grant evidence",
+    "Complete current/previous proof and old-runtime retention relationships remain",
+    "No real installation or enrollment performed"
+  ]
+}
