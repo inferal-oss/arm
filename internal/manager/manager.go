@@ -52,6 +52,7 @@ type job struct {
 	controlRetired        bool
 	controlError          error
 	childOwner            *childowner.Owner
+	pressureGrant         *pressureNativeGrant // process-local only; never restored from a lease row
 	cmd                   *exec.Cmd
 	done                  chan struct{}
 	identity              *model.ProcessIdentity
