@@ -52,6 +52,17 @@ func (m *Manager) requestOriginalJobCancellation(id string, j *job) error {
 		return j.originalCancellationError
 	}
 	j.originalCancellationRequested = true
+	if j.childOwner != nil {
+		j.childOwner.RetirePressureControls()
+	}
+	if j.pressureEffectActive {
+		// The pressure effect reserved the original before this End/expiry.
+		// Do not wait for its native observer while holding Manager.mu. Its
+		// completion sends TERM and schedules bounded KILL using that same
+		// original owner; no later pressure STOP/CONT can begin.
+		j.pressureCancelDeferred = true
+		return nil
+	}
 	// Signal the original group before closing SSH IO: EOF/SIGPIPE must not
 	// win the original parent's signal race, even when persistence failed.
 	j.originalCancellationError = j.signalGroup(syscall.SIGTERM)
@@ -71,6 +82,29 @@ func (m *Manager) requestOriginalJobCancellation(id string, j *job) error {
 		}
 	})
 	return j.originalCancellationError
+}
+
+// startDeferredPressureCancellation runs only after the reserved pressure
+// effect has released its original owner. Manager.mu is never held over either
+// native signal; the Owner itself refuses a reused/retired process group.
+func (m *Manager) startDeferredPressureCancellation(id string, j *job) {
+	m.wg.Go(func() {
+		err := j.signalGroup(syscall.SIGTERM)
+		m.mu.Lock()
+		j.originalCancellationError = err
+		m.mu.Unlock()
+		select {
+		case <-j.done:
+			return
+		case <-time.After(2 * time.Second):
+		}
+		m.mu.Lock()
+		stillOriginal := m.jobs[id] == j
+		m.mu.Unlock()
+		if stillOriginal {
+			_ = j.signalGroup(syscall.SIGKILL)
+		}
+	})
 }
 
 // checkpointExpiryJobBinding never reconstructs signal authority from a row or

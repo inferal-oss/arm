@@ -37,7 +37,11 @@ func (m *Manager) pressureNativeControlInput(now time.Time, tick time.Duration, 
 		in.Jobs[i].StillOwned = true
 		in.Jobs[i].PauseCapability = true
 		in.Jobs[i].PauseAllowed = true
-		in.Jobs[i].Paused = candidate.job.childOwner.Paused()
+		paused, available := candidate.job.childOwner.TryPaused()
+		if !available {
+			return in, errPressureControlRefused
+		}
+		in.Jobs[i].Paused = paused
 		in.Jobs[i].Stopping = candidate.job.originalCancellationRequested
 		in.Jobs[i].ExpiresAt = now.Add(current.remaining)
 		if in.Jobs[i].Paused {
@@ -62,43 +66,75 @@ func (m *Manager) pressureNativeControlInput(now time.Time, tick time.Duration, 
 	return in, errPressureControlRefused
 }
 
-// applyPressureNativeControl is deliberately disconnected from the warning
-// loop. A future caller must persist its action before this method and must
-// durably record the exact returned result before feeding it to Advance.
-// Unknown effects cannot be retried automatically. The original owner alone
-// sends STOP/CONT; this method never uses a stored numeric PID.
-func (m *Manager) applyPressureNativeControl(a pressure.Action, policy pressure.Policy) (pressure.ControlResult, error) {
+// reservePressureNativeControl linearizes a valid effect against End/expiry
+// under Manager.mu. End may retire a reserved effect without waiting for its
+// native observer; if the effect already passed its original-owner cut, End
+// queues exact original cancellation after it completes. No second pressure
+// effect can reserve this job concurrently.
+func (m *Manager) reservePressureNativeControl(a pressure.Action, policy pressure.Policy) (pressureNativeCandidate, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	result := pressure.ControlResult{Key: a.Key}
 	if a.Kind != pressure.RequestPause && a.Kind != pressure.RequestResume {
-		return result, errPressureControlRefused
+		return pressureNativeCandidate{}, errPressureControlRefused
+	}
+	// This check must precede every child-owner read below. The reserved
+	// effect may hold Owner.mu across native observation while End needs
+	// Manager.mu to retire it without waiting.
+	if j := m.jobs[a.Job.LeaseID]; j == nil || j.pressureEffectActive {
+		return pressureNativeCandidate{}, errPressureControlRefused
 	}
 	candidate, ok := m.pressureOriginalNativeCandidate(a.Job.LeaseID, policy)
-	if !ok || candidate.id != a.Job {
-		return result, errPressureControlRefused
+	if !ok || candidate.id != a.Job || candidate.job.pressureEffectActive {
+		return pressureNativeCandidate{}, errPressureControlRefused
 	}
 	var durable []byte
 	if err := m.db.QueryRow(`SELECT data FROM host_pressure_state WHERE id='current'`).Scan(&durable); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return result, errPressureControlRefused
+			return pressureNativeCandidate{}, errPressureControlRefused
 		}
-		return result, err
+		return pressureNativeCandidate{}, err
 	}
 	current, err := json.Marshal(m.pressureState)
 	if err != nil || !bytes.Equal(durable, current) {
-		return result, errPressureControlRefused
+		return pressureNativeCandidate{}, errPressureControlRefused
 	}
 	now := time.Now().UTC()
 	tick, err := pressureNativeTick()
 	if err != nil {
-		return result, err
+		return pressureNativeCandidate{}, err
 	}
 	in, err := m.pressureNativeControlInput(now, tick, candidate, policy)
 	if err != nil || !pressure.ControlAllowed(m.pressureState, a, in, policy) ||
 		!m.pressureCandidateStillCurrent(candidate, policy) {
-		return result, errPressureControlRefused
+		return pressureNativeCandidate{}, errPressureControlRefused
 	}
+	candidate.job.pressureEffectActive = true
+	m.wg.Add(1) // Keep Close's Wait alive until the effect and deferred cleanup are registered.
+	return candidate, nil
+}
+
+// applyPressureNativeControl is deliberately disconnected from the warning
+// loop. A future caller must persist its action before this method and must
+// durably record the exact returned result before feeding it to Advance.
+// Unknown effects cannot be retried automatically. The original owner alone
+// sends STOP/CONT, outside Manager.mu; no stored numeric PID is used.
+func (m *Manager) applyPressureNativeControl(a pressure.Action, policy pressure.Policy) (pressure.ControlResult, error) {
+	result := pressure.ControlResult{Key: a.Key}
+	candidate, err := m.reservePressureNativeControl(a, policy)
+	if err != nil {
+		return result, err
+	}
+	defer func() {
+		m.mu.Lock()
+		candidate.job.pressureEffectActive = false
+		deferred := candidate.job.pressureCancelDeferred
+		candidate.job.pressureCancelDeferred = false
+		m.mu.Unlock()
+		if deferred {
+			m.startDeferredPressureCancellation(a.Job.LeaseID, candidate.job)
+		}
+		m.wg.Done()
+	}()
 	if a.Kind == pressure.RequestPause {
 		err = candidate.job.childOwner.Pause()
 	} else {

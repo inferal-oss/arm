@@ -44,22 +44,24 @@ type RunRequest struct {
 	sshRuntime *sshRuntime
 }
 type job struct {
-	leaseHost, leaseOwner string
-	leaseRequest          model.Request
-	nativeDone            chan struct{}
-	sshRuntime            *sshRuntime
-	controlMu             sync.Mutex
-	controlRetired        bool
-	controlError          error
-	childOwner            *childowner.Owner
-	pressureGrant         *pressureNativeGrant // process-local only; never restored from a lease row
-	cmd                   *exec.Cmd
-	done                  chan struct{}
-	identity              *model.ProcessIdentity
-	cpuAnchor             string
-	cpuExited             atomic.Bool
-	observationError      string
-	lastUsage             *model.WorkloadUsage
+	leaseHost, leaseOwner  string
+	leaseRequest           model.Request
+	nativeDone             chan struct{}
+	sshRuntime             *sshRuntime
+	controlMu              sync.Mutex
+	controlRetired         bool
+	controlError           error
+	childOwner             *childowner.Owner
+	pressureGrant          *pressureNativeGrant // process-local only; never restored from a lease row
+	pressureEffectActive   bool                 // Manager.mu protects the one native pressure effect reservation
+	pressureCancelDeferred bool                 // original cancellation waits for that reserved effect, never under Manager.mu
+	cmd                    *exec.Cmd
+	done                   chan struct{}
+	identity               *model.ProcessIdentity
+	cpuAnchor              string
+	cpuExited              atomic.Bool
+	observationError       string
+	lastUsage              *model.WorkloadUsage
 	// Manager.mu protects the one original cancellation/escalation sequence.
 	originalCancellationRequested bool
 	originalCancellationError     error

@@ -96,20 +96,53 @@ func TestOriginalOwnerNativePauseResumeAndRetirement(t *testing.T) {
 	}
 }
 
-func TestPausePreflightUncertaintyStillAllowsOriginalCleanup(t *testing.T) {
-	signals := 0
-	o := &Owner{pid: 123, observe: func(int) (terminal, error) { return terminal{}, syscall.EACCES },
-		signal: func(_ int, sig syscall.Signal) error {
-			if sig != syscall.SIGKILL {
-				t.Fatalf("uncertain pause sent %v", sig)
+func TestPausePreflightUncertaintyPreservesPlatformCleanupFence(t *testing.T) {
+	for _, preflight := range []bool{false, true} {
+		t.Run(fmt.Sprint("signal-preflight=", preflight), func(t *testing.T) {
+			signals := 0
+			o := &Owner{pid: 123, preflightSignals: preflight,
+				observe: func(int) (terminal, error) { return terminal{}, syscall.EACCES },
+				signal: func(_ int, sig syscall.Signal) error {
+					if sig != syscall.SIGKILL {
+						t.Fatalf("uncertain pause sent %v", sig)
+					}
+					signals++
+					return nil
+				}}
+			if err := o.Pause(); !errors.Is(err, syscall.EACCES) || o.Paused() {
+				t.Fatal("uncertain observation did not refuse pause", err)
 			}
-			signals++
-			return nil
-		}}
-	if err := o.Pause(); !errors.Is(err, syscall.EACCES) || o.Paused() {
-		t.Fatal("uncertain observation did not refuse pause", err)
+			err := o.Signal(syscall.SIGKILL)
+			if preflight {
+				if !errors.Is(err, syscall.EACCES) || signals != 0 || !o.signalsRetired || !errors.Is(o.failure, syscall.EACCES) {
+					t.Fatal("native preflight invented successful cleanup after uncertainty", err, signals)
+				}
+			} else if err != nil || signals != 1 || !errors.Is(o.failure, syscall.EACCES) {
+				t.Fatal("platform without signal preflight lost original cleanup or prior uncertainty", err, signals)
+			}
+		})
 	}
-	if err := o.Signal(syscall.SIGKILL); err != nil || signals != 1 {
-		t.Fatal("uncertain pause disabled the original cleanup owner", err, signals)
+}
+
+func TestPressureRetirementCutsOffDelayedOriginalEffect(t *testing.T) {
+	entered, release := make(chan struct{}), make(chan struct{})
+	signals := 0
+	o := &Owner{pid: 123,
+		observe: func(int) (terminal, error) {
+			close(entered)
+			<-release
+			return terminal{}, nil
+		},
+		signal: func(int, syscall.Signal) error { signals++; return nil }}
+	done := make(chan error, 1)
+	go func() { done <- o.Pause() }()
+	<-entered
+	o.RetirePressureControls() // End does not wait for the held native observer.
+	close(release)
+	if err := <-done; !errors.Is(err, ErrRetired) || signals != 0 {
+		t.Fatal("retired action signaled after End won the final original cut", err, signals)
+	}
+	if err := o.Resume(); !errors.Is(err, ErrRetired) {
+		t.Fatal("retired original accepted later CONT", err)
 	}
 }
