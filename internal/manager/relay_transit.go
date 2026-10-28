@@ -10,6 +10,7 @@ import (
 
 	"getarm.org/internal/kubesource"
 	"getarm.org/internal/model"
+	"getarm.org/internal/syncscope"
 )
 
 const relayTransitKind = "relay-transit"
@@ -28,9 +29,10 @@ type RelayTransit struct {
 	joined     <-chan struct{}
 	workerDone chan struct{}
 	// Manager.mu protects result and settled.
-	result         model.Lease
-	settled        bool
-	recoveryReason string
+	result          model.Lease
+	settled         bool
+	recoveryReason  string
+	chargedOriginal *syncscope.Original
 }
 
 func (h *RelayTransit) Context() context.Context { return h.ctx }
@@ -118,7 +120,15 @@ func (m *Manager) AcquireRelayTransit(ctx context.Context, request model.Request
 
 // Only package-owned preparation can select the disk-bearing kind.
 func (m *Manager) acquireOwnedTransit(ctx context.Context, request model.Request, joined <-chan struct{}, kind string, grant *syncPreparationGrant) (*RelayTransit, error) {
-	if kind != relayTransitKind && kind != syncPreparationKind || kind == relayTransitKind && request.Resources.Disk != 0 || kind == syncPreparationKind && request.Resources != syncPreparationResources {
+	return m.acquireOwnedTransitScope(ctx, request, joined, kind, grant, nil)
+}
+
+func (m *Manager) acquireOwnedTransitScope(ctx context.Context, request model.Request, joined <-chan struct{}, kind string, grant *syncPreparationGrant, scope *syncScopeReservation) (*RelayTransit, error) {
+	want := syncPreparationResources
+	if scope != nil {
+		want.Disk = scope.chargedHard
+	}
+	if kind != relayTransitKind && kind != syncPreparationKind || kind == relayTransitKind && (request.Resources.Disk != 0 || scope != nil) || kind == syncPreparationKind && request.Resources != want {
 		return nil, model.Err("invalid_request", "invalid owned resource preparation policy")
 	}
 	if ctx == nil || joined == nil {
@@ -172,7 +182,12 @@ func (m *Manager) acquireOwnedTransit(ctx context.Context, request model.Request
 		}
 	}
 	request.Kind = kind
-	lease, err := m.acquireWithRelay(request, nil, true)
+	var lease model.Lease
+	if scope != nil {
+		lease, err = m.acquireOriginalChargedScope(request, scope)
+	} else {
+		lease, err = m.acquireWithRelay(request, nil, true)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +200,7 @@ func (m *Manager) registerOwnedTransitLocked(ctx context.Context, lease model.Le
 	if m.relayTransits == nil {
 		m.relayTransits = map[string]*RelayTransit{}
 	}
-	m.relayTransits[lease.ID] = h
+	m.replaceRelayTransitLocked(h)
 	// Registered under Manager.mu before admission returns; Close cannot miss
 	// this owner or close the database while its original join is outstanding.
 	m.wg.Go(func() {
@@ -194,6 +209,15 @@ func (m *Manager) registerOwnedTransitLocked(ctx context.Context, lease model.Le
 		_, _ = h.FinishAfterJoin()
 	})
 	return h
+}
+
+// replaceRelayTransitLocked withdraws any old original authority before its
+// registration changes. It never joins a worker or performs native IO.
+func (m *Manager) replaceRelayTransitLocked(next *RelayTransit) {
+	if prior := m.relayTransits[next.id]; prior != nil && prior != next && prior.chargedOriginal != nil {
+		prior.chargedOriginal.Revoke()
+	}
+	m.relayTransits[next.id] = next
 }
 
 func (m *Manager) endRelayTransit(l model.Lease, outcome string) (model.Lease, error) {
@@ -261,6 +285,9 @@ func (h *RelayTransit) FinishAfterJoin() (model.Lease, error) {
 		}
 		h.cancel()
 		h.result, h.settled = l, true
+		if h.chargedOriginal != nil {
+			h.chargedOriginal.Revoke()
+		}
 		delete(m.relayTransits, h.id)
 		return l, model.Err("needs_attention", h.recoveryReason)
 	}
@@ -284,6 +311,9 @@ func (h *RelayTransit) FinishAfterJoin() (model.Lease, error) {
 	}
 	h.cancel()
 	h.result, h.settled = l, true
+	if h.chargedOriginal != nil {
+		h.chargedOriginal.Revoke()
+	}
 	delete(m.relayTransits, h.id)
 	return l, nil
 }

@@ -20,11 +20,19 @@ func (p *proofReader) readSync() error {
 	if p.syncWorkspaceSchema != locators {
 		return fmt.Errorf("sync workspace schema and version marker do not match")
 	}
+	_, charged := p.catalog["sync_charged_scopes"]
+	if p.syncChargedSchema != charged {
+		return fmt.Errorf("charged sync scope schema and version marker do not match")
+	}
 	var operations int64
+	var chargedRows int64
 	anyRows := false
 	tables := []string{"sync_operations", "sync_effects", "sync_baselines", "sync_lease_bindings"}
 	if locators {
 		tables = append(tables, "sync_workspaces")
+	}
+	if charged {
+		tables = append(tables, "sync_charged_scopes")
 	}
 	for _, table := range tables {
 		var count int64
@@ -41,11 +49,14 @@ func (p *proofReader) readSync() error {
 		if table == "sync_operations" {
 			operations = count
 		}
+		if table == "sync_charged_scopes" {
+			chargedRows = count
+		}
 	}
 	if anyRows && !p.syncUsed {
 		return fmt.Errorf("sync records lack permanent use marker")
 	}
-	if p.syncUsed && operations == 0 {
+	if p.syncUsed && operations == 0 && chargedRows == 0 {
 		return fmt.Errorf("used sync namespace lost operation evidence")
 	}
 	if p.syncUsed {

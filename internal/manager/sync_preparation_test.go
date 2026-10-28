@@ -320,7 +320,7 @@ func TestSyncPreparationHandoffRollbackRetainsOriginalCharge(t *testing.T) {
 	defer m.db.Exec(`DROP TRIGGER fail_preparation_handoff`)
 	r := model.Request{Host: m.host, Key: mesh.Key(m.host, "sync-source\x00"+i.Key), Reason: i.Reason, Kind: "execution", TTL: control.TTL, Resources: i.LocalResources, Peer: control.Target, OriginKey: i.Key}
 	m.mu.Lock()
-	_, err = m.acquireWithAdmission(r, nil, false, admission)
+	_, err = m.acquireWithAdmission(r, nil, false, admission, nil)
 	m.mu.Unlock()
 	if err == nil {
 		t.Fatal("failed handoff admitted")

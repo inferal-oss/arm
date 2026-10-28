@@ -32,7 +32,9 @@ func (m *Manager) sampleDisk() {
 	for name, p := range m.storagePools {
 		paths[name] = p.record.Path
 	}
+	m.observationMu.RLock()
 	collect := m.diskCollector
+	m.observationMu.RUnlock()
 	if collect == nil {
 		collect = observe.DiskAvailability
 	}

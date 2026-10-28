@@ -113,12 +113,16 @@ const meshResetSchema = `CREATE TABLE mesh_operations (principal TEXT,key TEXT,o
 const syncLeaseBindingResetSchema = `CREATE TABLE sync_lease_bindings (lease TEXT PRIMARY KEY,key TEXT NOT NULL,side TEXT NOT NULL,volume TEXT NOT NULL,disk_bytes INTEGER NOT NULL)`
 
 var syncResetSchema = map[string]struct{ kind, table, ddl string }{
-	"sync_operations":      {"table", "sync_operations", syncservice.OperationsSchema},
-	"sync_open_generation": {"index", "sync_operations", syncservice.OpenGenerationSchema},
-	"sync_effects":         {"table", "sync_effects", syncservice.EffectsSchema},
-	"sync_baselines":       {"table", "sync_baselines", syncservice.BaselinesSchema},
-	"sync_workspaces":      {"table", "sync_workspaces", syncservice.WorkspacesSchema},
-	"sync_lease_bindings":  {"table", "sync_lease_bindings", syncLeaseBindingResetSchema},
+	"sync_operations":                 {"table", "sync_operations", syncservice.OperationsSchema},
+	"sync_open_generation":            {"index", "sync_operations", syncservice.OpenGenerationSchema},
+	"sync_effects":                    {"table", "sync_effects", syncservice.EffectsSchema},
+	"sync_baselines":                  {"table", "sync_baselines", syncservice.BaselinesSchema},
+	"sync_workspaces":                 {"table", "sync_workspaces", syncservice.WorkspacesSchema},
+	"sync_lease_bindings":             {"table", "sync_lease_bindings", syncLeaseBindingResetSchema},
+	"sync_charged_scopes":             {"table", "sync_charged_scopes", syncservice.ChargedScopeSchema},
+	"sync_charged_scopes_preparation": {"index", "sync_charged_scopes", syncservice.ChargedScopePreparationIndex},
+	"sync_charged_scopes_project":     {"index", "sync_charged_scopes", syncservice.ChargedScopeProjectIndex},
+	"sync_charged_scopes_final":       {"index", "sync_charged_scopes", syncservice.ChargedScopeFinalIndex},
 }
 
 // Retain token boundaries: TEXT UNIQUE is two SQL tokens and must never
@@ -179,7 +183,7 @@ var resetAutoIndexes = map[string]int{
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "host_pressure_state": 1, "host_pressure_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
 	"forward_unix_pairs": 2,
-	"sync_operations":    1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1, "sync_workspaces": 2,
+	"sync_operations":    1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1, "sync_workspaces": 2, "sync_charged_scopes": 1,
 }
 
 func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, error) {
@@ -219,7 +223,8 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		syncObjects[normalizedSchema(object.ddl)] = struct{ name, kind, table string }{name, object.kind, object.table}
 	}
 	syncSeen := map[string]bool{}
-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 160`)
+	// 147 baseline objects + 5 run-log + 7 Unix guard + 5 charged-scope objects.
+	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 165`)
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +239,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if err := rows.Scan(&kind, &name, &table, &raw); err != nil {
 			return nil, err
 		}
-		if count > 159 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+		if count > 164 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
 			return nil, resetSchemaError("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
@@ -368,8 +373,18 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	// Version 1 predates workspace locators. Exact shape/version pairing is
 	// checked by readSync after metadata; neither supported shape is migrated.
-	legacySync := len(syncSeen) == len(syncResetSchema)-1 && !syncSeen["sync_workspaces"]
-	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) && !legacySync {
+	baseSync := []string{"sync_operations", "sync_open_generation", "sync_effects", "sync_baselines", "sync_lease_bindings"}
+	completeBase := true
+	for _, name := range baseSync {
+		completeBase = completeBase && syncSeen[name]
+	}
+	legacySync := len(syncSeen) == len(baseSync) && completeBase
+	version2Sync := len(syncSeen) == len(baseSync)+1 && completeBase && syncSeen["sync_workspaces"]
+	version3Sync := len(syncSeen) == len(syncResetSchema) && completeBase && syncSeen["sync_workspaces"]
+	for _, name := range []string{"sync_charged_scopes", "sync_charged_scopes_preparation", "sync_charged_scopes_project", "sync_charged_scopes_final"} {
+		version3Sync = version3Sync && syncSeen[name]
+	}
+	if len(syncSeen) != 0 && !legacySync && !version2Sync && !version3Sync {
 		return nil, resetSchemaError("partial sync reset schema group")
 	}
 	_, proxyRuns := catalog["proxy_runs"]

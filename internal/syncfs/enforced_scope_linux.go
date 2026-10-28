@@ -53,7 +53,7 @@ func verifyPlatformCompleteScope(ctx context.Context, claim ScopeClaim, project,
 		return zero, ErrChanged
 	}
 	if before.HardBytes() > math.MaxInt64 || before.UsedBytes() > before.HardBytes() ||
-		uint64(f.PromiseBytes) > before.HardBytes()-before.UsedBytes() {
+		before.HardBytes() != uint64(f.ChargedHardBytes) {
 		return zero, ErrQuotaUnsupported
 	}
 	remaining := maxCompleteScopeEntries
@@ -84,7 +84,7 @@ func verifyPlatformCompleteScope(ctx context.Context, claim ScopeClaim, project,
 	if after.UsedBytes() > used {
 		used = after.UsedBytes()
 	}
-	if used > before.HardBytes() || uint64(f.PromiseBytes) > before.HardBytes()-used {
+	if used > before.HardBytes() {
 		return zero, ErrQuotaUnsupported
 	}
 	return ScopeBinding{

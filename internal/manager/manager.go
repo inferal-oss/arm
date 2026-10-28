@@ -114,9 +114,13 @@ type Manager struct {
 	mu                      sync.Mutex
 	// Acquire before mu when both are needed. Held through native CLI Start,
 	// never through Wait, so shutdown has a precise no-new-launch boundary.
-	pressureLaunchMu   sync.Mutex
-	db                 *sql.DB
-	databaseSlot       chan struct{}
+	pressureLaunchMu sync.Mutex
+	db               *sql.DB
+	databaseSlot     chan struct{}
+	// Version 3 is reserved for a future pre-enrolled dedicated scope opener.
+	// Ordinary Open always selects version 2; no runtime caller can opt in.
+	syncSchemaVersion  string
+	syncDedicated      *syncDedicatedScope
 	home, host, owner  string
 	budgetStartupError *model.Error
 	poolStartupError   *model.Error
@@ -199,6 +203,19 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 }
 
 func openWithStartupLock(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error), startup *daemonconfig.Settings, unixLock *os.File) (*Manager, error) {
+	return openWithSyncSchemaAndStartupLock(home, capacity, clockRead, startup, "2", unixLock)
+}
+
+// openWithSyncSchema is private until the dedicated opener proves ownership.
+// Ordinary entry points select version 2 and retain the original startup lock.
+func openWithSyncSchema(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error), startup *daemonconfig.Settings, syncVersion string) (*Manager, error) {
+	return openWithSyncSchemaAndStartupLock(home, capacity, clockRead, startup, syncVersion, nil)
+}
+
+func openWithSyncSchemaAndStartupLock(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error), startup *daemonconfig.Settings, syncVersion string, unixLock *os.File) (*Manager, error) {
+	if syncVersion != "2" && syncVersion != "3" {
+		return nil, model.Err("sync_evidence_unavailable", "unknown sync schema mode")
+	}
 	if !finiteCPU(capacity.CPU) || capacity.CPU < 0 || capacity.CPU > 65536 {
 		return nil, model.Err("invalid_config", "CPU ceiling must be a finite nonnegative logical-core count at most 65536")
 	}
@@ -271,7 +288,7 @@ func openWithStartupLock(home string, capacity model.Resources, clockRead func()
 		db.Close()
 		return nil, e
 	}
-	m := &Manager{kubernetesSourceAdmissions: map[string]bool{}, kubernetesSources: map[string]*KubernetesSourcePreparation{}, relayTransits: map[string]*RelayTransit{}, db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, syncSourceWorkers: map[string]*SyncSourceHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}}
+	m := &Manager{kubernetesSourceAdmissions: map[string]bool{}, kubernetesSources: map[string]*KubernetesSourcePreparation{}, relayTransits: map[string]*RelayTransit{}, db: db, home: home, capacity: capacity, jobs: map[string]*job{}, syncWorkers: map[string]*SyncWorkerHold{}, syncSourceWorkers: map[string]*SyncSourceHold{}, stop: make(chan struct{}), storageJobs: map[string]bool{}, portSockets: map[string][]*ports.Socket{}, syncSchemaVersion: syncVersion}
 	m.leaseClockRead = clockRead
 	m.pressureEpoch = local.ID()
 	m.cpuObserver = observe.NewCPUSampler()
@@ -610,6 +627,11 @@ func (m *Manager) Close() error {
 	m.pressureLaunchMu.Lock()
 	m.mu.Lock()
 	m.closing = true
+	for _, owner := range m.relayTransits {
+		if owner.chargedOriginal != nil {
+			owner.chargedOriginal.Revoke()
+		}
+	}
 	for id := range m.cargoWorkers {
 		m.cancelRegisteredProfileOwners(id)
 	}
@@ -944,23 +966,36 @@ func (m *Manager) Acquire(r model.Request, run *RunRequest) (model.Lease, error)
 }
 
 func (m *Manager) acquire(r model.Request, run *RunRequest) (model.Lease, error) {
-	return m.acquireWithAdmission(r, run, false, nil)
+	return m.acquireWithAdmission(r, run, false, nil, nil)
 }
 
 // relay is an in-process capability, never a field accepted from a wire
 // request. Only AcquireRelayTransit passes it after validating its owner.
 func (m *Manager) acquireWithRelay(r model.Request, run *RunRequest, relay bool) (model.Lease, error) {
-	return m.acquireWithAdmission(r, run, relay, nil)
+	return m.acquireWithAdmission(r, run, relay, nil, nil)
+}
+
+// acquireOriginalChargedScope is reserved for a future pre-enrolled native
+// owner. It commits the original lease and preparing scope row together; no
+// public or production path constructs its private scope argument yet.
+func (m *Manager) acquireOriginalChargedScope(r model.Request, scope *syncScopeReservation) (model.Lease, error) {
+	return m.acquireWithAdmission(r, nil, true, nil, scope)
 }
 
 // A sync admission is an internal typed transaction participant. It cannot be
 // supplied by a wire Request or by the ordinary Acquire/AcquireSSH paths.
-func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay bool, sync *syncAdmission) (model.Lease, error) {
-	return m.acquireWithSourcePermit(r, run, relay, sync, nil)
+func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay bool, sync *syncAdmission, scope *syncScopeReservation) (model.Lease, error) {
+	if scope != nil && (sync != nil || !relay || r.Kind != syncPreparationKind || m.syncSchemaVersion != "3") {
+		return model.Lease{}, model.Err("sync_evidence_unavailable", "charged original scope requires private preparation admission")
+	}
+	return m.acquireWithSourcePermit(r, run, relay, sync, nil, scope)
 }
 
-func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, relay bool, sync *syncAdmission, source *kubernetesSourcePermit) (model.Lease, error) {
+func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, relay bool, sync *syncAdmission, source *kubernetesSourcePermit, scope *syncScopeReservation) (model.Lease, error) {
 	var empty model.Lease
+	if m.syncSchemaVersion == "3" && scope == nil {
+		return empty, model.Err("sync_evidence_unavailable", "dedicated scope rejects unrelated lease admission")
+	}
 	if err := validateSourcePermit(m, r, source); err != nil {
 		return empty, err
 	}
@@ -1271,6 +1306,11 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 	}
 	if _, e = tx.Exec(`INSERT INTO leases VALUES(?,?,?,?)`, l.ID, key, string(b), rb); e != nil {
 		return empty, e
+	}
+	if scope != nil {
+		if e = scope.reserveTx(scope.ctx, tx, l); e != nil {
+			return empty, e
+		}
 	}
 	if e = insertCargoRecord(tx, l, run); e != nil {
 		return empty, e

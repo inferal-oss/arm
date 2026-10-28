@@ -183,7 +183,7 @@ func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.
 		err = model.Err("backend_stopping", "source construction cancelled")
 	} else {
 		request := scope.Request(m.host, budget, true)
-		k.parent, err = m.acquireWithSourcePermit(request, nil, false, nil, &kubernetesSourcePermit{manager: m, scope: scope, parent: true, request: request})
+		k.parent, err = m.acquireWithSourcePermit(request, nil, false, nil, &kubernetesSourcePermit{manager: m, scope: scope, parent: true, request: request}, nil)
 	}
 	if k.parent.ID != "" {
 		m.kubernetesSources[k.parent.ID] = k
@@ -414,7 +414,7 @@ func (m *Manager) acquireKubernetesSourceTransit(ctx context.Context, scope kube
 	}
 	request := scope.Request(m.host, budget, false)
 	request.Kind = relayTransitKind
-	lease, err := m.acquireWithSourcePermit(request, nil, true, nil, &kubernetesSourcePermit{manager: m, scope: scope, request: request})
+	lease, err := m.acquireWithSourcePermit(request, nil, true, nil, &kubernetesSourcePermit{manager: m, scope: scope, request: request}, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -79,7 +79,7 @@ func testScopeBinding(claim ScopeClaim) ScopeBinding {
 		provider: f.Provider, scopeID: f.ScopeID, mountID: f.MountID,
 		projectRootID: f.ProjectRootID, selectedRootID: f.SelectedRootID, parentRootID: f.ParentRootID,
 		ownershipDigest: f.OwnershipDigest, projectID: f.ProjectID, ownerEpoch: f.OwnerEpoch,
-		hardBytes: 8192, usedBytes: 0,
+		hardBytes: uint64(f.ChargedHardBytes), usedBytes: 0,
 	}
 }
 

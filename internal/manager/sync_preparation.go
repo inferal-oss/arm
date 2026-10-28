@@ -16,6 +16,7 @@ import (
 	"getarm.org/internal/model"
 	"getarm.org/internal/syncfs"
 	"getarm.org/internal/syncreconcile"
+	"getarm.org/internal/syncscope"
 	"getarm.org/internal/syncservice"
 )
 
@@ -32,10 +33,20 @@ type syncPreparationGrant struct {
 }
 
 type syncPreparation struct {
-	owner        *RelayTransit
-	joined       chan struct{}
-	cancel       context.CancelFunc
-	nativeJoined chan struct{}
+	owner           *RelayTransit
+	joined          chan struct{}
+	cancel          context.CancelFunc
+	nativeJoined    chan struct{}
+	chargedScope    *syncDedicatedScope
+	chargedOriginal *syncscope.Original
+}
+
+// syncOriginalCurrentLocked is the in-memory part of original authority.
+// The caller holds Manager.mu; the bound SQL reader checks the physical row.
+func (m *Manager) syncOriginalCurrentLocked(owner *RelayTransit) bool {
+	return owner != nil && owner.manager == m && owner.ctx != nil && owner.ctx.Err() == nil &&
+		!m.closing && !m.draining && m.relayTransits[owner.id] == owner &&
+		!owner.settled && owner.recoveryReason == ""
 }
 
 // CheckActive and MemoryBytes make only this current, charged preparation
@@ -48,7 +59,7 @@ func (p *syncPreparation) CheckActive(ctx context.Context) error {
 	m := p.owner.manager
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.closing || m.draining || m.relayTransits[p.owner.id] != p.owner || p.owner.settled || p.owner.recoveryReason != "" {
+	if !m.syncOriginalCurrentLocked(p.owner) {
 		return model.Err("sync_preparation_unavailable", "original preparation owner changed")
 	}
 	l, err := m.get(p.owner.id)
@@ -74,6 +85,38 @@ func (m *Manager) beginSyncPreparation(ctx context.Context, key string, side syn
 			return nil, model.Err("invalid_request", "invalid sync preparation key")
 		}
 	}
+	var scope *syncScopeReservation
+	var writer *syncScopeWriter
+	if m.syncSchemaVersion == "3" {
+		dedicated := m.syncDedicated
+		if dedicated == nil || dedicated.gate == nil || dedicated.project == nil || dedicated.selected == nil || dedicated.home == nil {
+			return nil, model.Err("sync_evidence_unavailable", "pre-enrolled dedicated native scope is unavailable")
+		}
+		// Start is delayed in dedicated mode. Collect ordinary live readings
+		// now; acquireWithAdmission still applies its normal capacity checks.
+		m.sampleCPU()
+		m.sampleMemory()
+		m.sampleDisk()
+		var err error
+		writer, err = dedicated.gate.beginWrite(ctx)
+		if err != nil {
+			return nil, err
+		}
+		defer writer.release()
+		for _, root := range []*syncfs.Root{dedicated.project, dedicated.selected, dedicated.home} {
+			if err := root.Check(); err != nil {
+				return nil, syncfs.ErrChanged
+			}
+		}
+		if dedicated.home.Path() != m.home || dedicated.chargedHard <= 0 || dedicated.initialUsed < 0 || dedicated.initialUsed > dedicated.chargedHard {
+			return nil, model.Err("sync_evidence_unavailable", "dedicated scope binding or hard ceiling differs")
+		}
+		scope = &syncScopeReservation{ctx: ctx, key: key, side: side, host: m.host, owner: m.owner,
+			scopeID: dedicated.scopeID, mountID: dedicated.mountID, projectID: dedicated.projectID,
+			projectRootID: dedicated.projectRootID, selectedRootID: dedicated.selectedRootID, homeRootID: dedicated.homeRootID,
+			ownerEpoch: dedicated.ownerEpoch, enrollmentDigest: dedicated.enrollmentDigest, ownershipDigest: dedicated.ownershipDigest,
+			chargedHard: dedicated.chargedHard, initialUsed: dedicated.initialUsed}
+	}
 	// Old keys are observations only. Even the scratch probe must not precede
 	// this lookup. A prior preparation key cannot be adopted as a new owner.
 	m.mu.Lock()
@@ -86,6 +129,17 @@ func (m *Manager) beginSyncPreparation(ctx context.Context, key string, side syn
 	if n != 0 {
 		return nil, syncservice.ErrKeyExists
 	}
+	if scope != nil {
+		m.mu.Lock()
+		err = m.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM sync_charged_scopes WHERE key=? AND side=?`, key, side).Scan(&n)
+		m.mu.Unlock()
+		if err != nil {
+			return nil, err
+		}
+		if n != 0 {
+			return nil, syncservice.ErrKeyExists
+		}
+	}
 	bounded, cancel := context.WithTimeout(ctx, ttl)
 	if grant != nil {
 		parentCancel := cancel
@@ -93,20 +147,182 @@ func (m *Manager) beginSyncPreparation(ctx context.Context, key string, side syn
 		bounded = deadlineCtx
 		cancel = func() { deadlineCancel(); parentCancel() }
 	}
+	if scope != nil {
+		scope.ctx = bounded
+	}
 	joined := make(chan struct{})
 	request := model.Request{Host: m.host, Key: mesh.Key(m.host, "sync-preparation\x00"+string(side)+"\x00"+key), Reason: "Prepare reviewed sync " + string(side) + " " + key, TTL: ttl, Resources: syncPreparationResources}
+	if scope != nil {
+		request.Resources.Disk = scope.chargedHard
+	}
 	if grant != nil {
 		request.Peer, request.PeerCertificate, request.PeerGrantRevision = grant.source, grant.certificate, grant.revision
 	}
-	owner, err := m.acquireOwnedTransit(bounded, request, joined, syncPreparationKind, grant)
+	owner, err := m.acquireOwnedTransitScope(bounded, request, joined, syncPreparationKind, grant, scope)
 	if err != nil {
 		cancel()
 		return nil, err
 	}
-	return &syncPreparation{owner: owner, joined: joined, cancel: cancel, nativeJoined: make(chan struct{})}, nil
+	var charged *syncDedicatedScope
+	if scope != nil {
+		charged = m.syncDedicated
+	}
+	p := &syncPreparation{owner: owner, joined: joined, cancel: cancel, nativeJoined: make(chan struct{}), chargedScope: charged}
+	if scope != nil {
+		original, bindErr := syncscope.BindOriginal(bounded, m.db, &m.mu, charged.gate.core, owner.ctx, m.readLeaseClock,
+			syncscope.Identity{Key: key, Side: string(side), LeaseID: owner.id, Host: m.host, Owner: m.owner})
+		if bindErr == nil {
+			m.mu.Lock()
+			if !m.syncOriginalCurrentLocked(owner) {
+				original.Revoke()
+				bindErr = syncscope.ErrOriginal
+			} else {
+				owner.chargedOriginal = original
+			}
+			m.mu.Unlock()
+		}
+		if bindErr != nil {
+			m.mu.Lock()
+			owner.recoveryReason = "Charged original binding failed after lease commit; preserve the exact scope for review"
+			m.mu.Unlock()
+			cancel()
+			close(joined)
+			<-owner.workerDone
+			return nil, model.Err("sync_evidence_unavailable", "original charged scope binding failed after commit")
+		}
+		p.chargedOriginal = original
+	}
+	return p, nil
+}
+
+// verifyChargedOriginal is the concrete native bridge prerequisite. It can
+// inspect only the exact in-process original preparation; callers must release
+// their writer before invoking it. Public admission remains fenced until the
+// dedicated pre-enrollment and complete writer inventory are accepted.
+func (p *syncPreparation) verifyChargedOriginal(ctx context.Context, key string, side syncreconcile.Side) (syncfs.CompleteScopeProof, error) {
+	if p == nil || p.chargedOriginal == nil || p.chargedScope == nil || ctx == nil || ctx.Err() != nil {
+		return syncfs.CompleteScopeProof{}, model.Err("sync_evidence_unavailable", "charged original owner unavailable")
+	}
+	if err := p.CheckActive(ctx); err != nil {
+		return syncfs.CompleteScopeProof{}, err
+	}
+	r := p.chargedOriginal.Record()
+	if r.Key != key || r.Side != string(side) || r.LeaseID != p.owner.id {
+		return syncfs.CompleteScopeProof{}, model.Err("sync_evidence_unavailable", "charged original identity differs")
+	}
+	claim, err := syncfs.NewScopeClaim(syncfs.ScopeClaimFields{
+		Key: r.Key, Side: r.Side, PreparationLease: r.LeaseID,
+		Provider: r.Provider, ScopeID: r.ScopeID, MountID: r.MountID,
+		ProjectRootID: r.ProjectRootID, SelectedRootID: r.SelectedRootID, ParentRootID: r.HomeRootID,
+		OwnershipDigest: r.OwnershipDigest, ProjectID: uint32(r.ProjectID),
+		OwnerEpoch: uint64(r.OwnerEpoch), ChargedHardBytes: r.ChargedHard,
+	})
+	if err != nil {
+		return syncfs.CompleteScopeProof{}, err
+	}
+	owner, err := syncfs.NewBoundOriginalScopeOwner(ctx, claim, p.chargedOriginal,
+		p.chargedScope.project, p.chargedScope.selected, p.chargedScope.home)
+	if err != nil {
+		return syncfs.CompleteScopeProof{}, err
+	}
+	return syncfs.VerifyCompleteScope(ctx, claim, owner,
+		p.chargedScope.project, p.chargedScope.selected, p.chargedScope.home)
+}
+
+// beginChargedEffect is the writer-release -> verify -> fresh-writer handoff.
+// It is a private prerequisite; no public workflow calls it yet. The returned
+// hold must cover the native effect and be closed after that effect joins.
+func (p *syncPreparation) beginChargedEffect(ctx context.Context, proof syncfs.CompleteScopeProof) (*syncChargedEffect, error) {
+	if p == nil || p.chargedOriginal == nil || p.chargedScope == nil || ctx == nil || ctx.Err() != nil {
+		return nil, model.Err("sync_evidence_unavailable", "fresh charged writer requires exact prior verification")
+	}
+	if err := p.CheckActive(ctx); err != nil {
+		return nil, err
+	}
+	if proof.VerificationToken() == nil {
+		return nil, model.Err("sync_evidence_unavailable", "fresh charged writer requires exact prior verification")
+	}
+	r := p.chargedOriginal.Record()
+	claim, err := syncfs.NewScopeClaim(syncfs.ScopeClaimFields{
+		Key: r.Key, Side: r.Side, PreparationLease: r.LeaseID,
+		Provider: r.Provider, ScopeID: r.ScopeID, MountID: r.MountID,
+		ProjectRootID: r.ProjectRootID, SelectedRootID: r.SelectedRootID, ParentRootID: r.HomeRootID,
+		OwnershipDigest: r.OwnershipDigest, ProjectID: uint32(r.ProjectID),
+		OwnerEpoch: uint64(r.OwnerEpoch), ChargedHardBytes: r.ChargedHard,
+	})
+	if err != nil {
+		return nil, err
+	}
+	binding, err := proof.BindingFor(ctx, claim)
+	if err != nil || binding.HardBytes() != uint64(r.ChargedHard) {
+		return nil, model.Err("sync_evidence_unavailable", "scope proof differs from charged original")
+	}
+	writer, err := p.chargedScope.gate.beginWrite(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !writer.core.Follows(proof.VerificationToken()) {
+		writer.release()
+		return nil, model.Err("sync_evidence_unavailable", "another native writer followed the scope proof")
+	}
+	hold, err := p.chargedOriginal.HoldWriter(ctx, writer.core)
+	if err != nil {
+		writer.release()
+		return nil, err
+	}
+	closeWithError := func(err error) (*syncChargedEffect, error) {
+		hold.Release()
+		writer.release()
+		return nil, err
+	}
+	for _, root := range []*syncfs.Root{p.chargedScope.project, p.chargedScope.selected, p.chargedScope.home} {
+		if root == nil || root.Check() != nil {
+			return closeWithError(syncfs.ErrChanged)
+		}
+	}
+	projectID, err := p.chargedScope.project.NativeID()
+	if err != nil || projectID != r.ProjectRootID {
+		return closeWithError(syncfs.ErrChanged)
+	}
+	selectedID, err := p.chargedScope.selected.NativeID()
+	if err != nil || selectedID != r.SelectedRootID {
+		return closeWithError(syncfs.ErrChanged)
+	}
+	homeID, err := p.chargedScope.home.NativeID()
+	if err != nil || homeID != r.HomeRootID {
+		return closeWithError(syncfs.ErrChanged)
+	}
+	quota, err := syncfs.ProbeNativeQuota(ctx, p.chargedScope.selected, p.chargedScope.home)
+	if err != nil || quota.Provider() != r.Provider || quota.Scope() != r.ScopeID || quota.Mount() != r.MountID ||
+		quota.HardBytes() != uint64(r.ChargedHard) || quota.UsedBytes() > quota.HardBytes() {
+		return closeWithError(model.Err("sync_evidence_unavailable", "native project quota changed before effect"))
+	}
+	if err := hold.Check(ctx); err != nil {
+		return closeWithError(err)
+	}
+	return &syncChargedEffect{writer: writer, hold: hold}, nil
+}
+
+type syncChargedEffect struct {
+	writer *syncScopeWriter
+	hold   *syncscope.WriterHold
+}
+
+func (e *syncChargedEffect) close() {
+	if e != nil {
+		if e.hold != nil {
+			e.hold.Release()
+		}
+		if e.writer != nil {
+			e.writer.release()
+		}
+	}
 }
 
 func (p *syncPreparation) scratchUncertain() {
+	if p.chargedOriginal != nil {
+		p.chargedOriginal.Revoke()
+	}
 	p.owner.manager.mu.Lock()
 	p.owner.recoveryReason = "Sync preparation scratch cleanup was not positively verified; preserve the charged preparation for exact recovery"
 	p.owner.manager.mu.Unlock()
@@ -123,6 +339,17 @@ func (p *syncPreparation) scratchClean() {
 // Cancellation, expiry and End merely cancel; they cannot release the hold.
 func (p *syncPreparation) finish() error {
 	p.cancel()
+	if p.chargedOriginal != nil {
+		p.chargedOriginal.Revoke()
+	}
+	if p.chargedScope != nil {
+		m := p.owner.manager
+		m.mu.Lock()
+		if !p.owner.settled && p.owner.recoveryReason == "" {
+			p.owner.recoveryReason = "Charged original native scope is unresolved until exact provider and final-lease settlement"
+		}
+		m.mu.Unlock()
+	}
 	close(p.joined)
 	_, err := p.owner.FinishAfterJoin()
 	return err

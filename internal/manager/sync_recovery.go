@@ -42,6 +42,30 @@ func (m *Manager) InspectSyncKey(ctx context.Context, key string, side syncrecon
 	if m.closing {
 		return out, model.Err("sync_evidence_unavailable", "Manager is closing")
 	}
+	if m.syncSchemaVersion == "3" {
+		if len(key) < 16 || len(key) > 128 {
+			return out, model.Err("sync_evidence_unavailable", "charged sync key is invalid")
+		}
+		var present int
+		e := m.db.QueryRowContext(ctx, `SELECT 1 FROM sync_charged_scopes WHERE key=? AND side=?`, key, side).Scan(&present)
+		if e != nil && e != sql.ErrNoRows {
+			return out, e
+		}
+		if e == nil {
+			r, err := m.readChargedScope(ctx, key, side)
+			if err != nil {
+				return out, err
+			}
+			if r.state == "preparing" || r.state == "unresolved" {
+				if (r.current.State != "active" && r.current.State != "needs_attention") ||
+					(r.current.State == "active" && r.currentRaw != r.prepData) || r.final.Valid {
+					return out, model.Err("sync_evidence_unavailable", "preparing charged scope original lease differs")
+				}
+				m.attachUsage(&r.current)
+				return SyncKeyStatus{Key: key, Side: side, Lease: r.current, Volume: r.mount, OperationState: r.state}, nil
+			}
+		}
+	}
 	rows, err := m.db.QueryContext(ctx, `SELECT lease,volume,disk_bytes FROM sync_lease_bindings WHERE key=? AND side=?`, key, side)
 	if err != nil {
 		return out, err

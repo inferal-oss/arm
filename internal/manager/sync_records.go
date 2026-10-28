@@ -32,7 +32,16 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 		"sqlite_autoindex_sync_workspaces_1":     "sync_workspaces",
 		"sqlite_autoindex_sync_workspaces_2":     "sync_workspaces",
 	}
-	rows, err := m.db.QueryContext(ctx, `SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'sync_*' OR name GLOB 'sqlite_autoindex_sync_*' ORDER BY name LIMIT 13`)
+	if m.syncSchemaVersion == "3" {
+		want["sync_charged_scopes"] = struct{ kind, table, ddl string }{"table", "sync_charged_scopes", syncservice.ChargedScopeSchema}
+		want["sync_charged_scopes_preparation"] = struct{ kind, table, ddl string }{"index", "sync_charged_scopes", syncservice.ChargedScopePreparationIndex}
+		want["sync_charged_scopes_project"] = struct{ kind, table, ddl string }{"index", "sync_charged_scopes", syncservice.ChargedScopeProjectIndex}
+		want["sync_charged_scopes_final"] = struct{ kind, table, ddl string }{"index", "sync_charged_scopes", syncservice.ChargedScopeFinalIndex}
+		auto["sqlite_autoindex_sync_charged_scopes_1"] = "sync_charged_scopes"
+	} else if m.syncSchemaVersion != "2" {
+		return model.Err("sync_evidence_unavailable", "unknown sync schema mode")
+	}
+	rows, err := m.db.QueryContext(ctx, `SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'sync_*' OR name GLOB 'sqlite_autoindex_sync_*' ORDER BY name LIMIT 19`)
 	if err != nil {
 		return err
 	}
@@ -94,7 +103,14 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 		if _, e = tx.ExecContext(ctx, syncLeaseBindingSchema); e != nil {
 			return e
 		}
-		if _, e = tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('sync_schema','2')`); e != nil {
+		if m.syncSchemaVersion == "3" {
+			for _, ddl := range []string{syncservice.ChargedScopeSchema, syncservice.ChargedScopePreparationIndex, syncservice.ChargedScopeProjectIndex, syncservice.ChargedScopeFinalIndex} {
+				if _, e = tx.ExecContext(ctx, ddl); e != nil {
+					return e
+				}
+			}
+		}
+		if _, e = tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES('sync_schema',?)`, m.syncSchemaVersion); e != nil {
 			return e
 		}
 		return tx.Commit()
@@ -102,7 +118,7 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 	if markerErr == nil && marker == "1" {
 		return model.Err("sync_evidence_unavailable", "sync schema version 1 is incompatible with workspace ledger version 2; no migration or repair was attempted; preserve the state directory for read-only diagnosis, backup, or explicit database remove --forget review")
 	}
-	if markerErr != nil || marker != "2" || len(seen) != len(want)+len(auto) {
+	if markerErr != nil || marker != m.syncSchemaVersion || len(seen) != len(want)+len(auto) {
 		return model.Err("sync_evidence_unavailable", "sync schema namespace or marker is partial")
 	}
 	for name := range want {
@@ -114,6 +130,9 @@ func (m *Manager) initSyncRecords(ctx context.Context) error {
 		if !seen[name] {
 			return model.Err("sync_evidence_unavailable", "sync constraint index missing")
 		}
+	}
+	if m.syncSchemaVersion == "3" {
+		return m.verifyChargedSyncRecords(ctx, usedErr == nil)
 	}
 	return m.verifySyncRecords(ctx, usedErr == nil)
 }

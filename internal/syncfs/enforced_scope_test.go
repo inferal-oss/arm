@@ -14,7 +14,7 @@ func completeScopeClaimFields() ScopeClaimFields {
 		Key: "scope-operation-12345", Side: "local", PreparationLease: "original-preparation",
 		Provider: "xfs-project-quota", ScopeID: "xfs-project:mount-1:42", MountID: "mount-1",
 		ProjectRootID: "project-1", SelectedRootID: "selected-1", ParentRootID: "parent-1", ProjectID: 42,
-		OwnerEpoch: 1, OwnershipDigest: strings.Repeat("a", 64), PromiseBytes: 4096,
+		OwnerEpoch: 1, OwnershipDigest: strings.Repeat("a", 64), ChargedHardBytes: 4096,
 	}
 }
 
@@ -70,7 +70,7 @@ func TestCompleteScopeClaimRejectsMalformedIdentity(t *testing.T) {
 		"zero project":         func(v *ScopeClaimFields) { v.ProjectID = 0 },
 		"zero epoch":           func(v *ScopeClaimFields) { v.OwnerEpoch = 0 },
 		"overflow epoch":       func(v *ScopeClaimFields) { v.OwnerEpoch = ^uint64(0) },
-		"zero promise":         func(v *ScopeClaimFields) { v.PromiseBytes = 0 },
+		"zero charge":          func(v *ScopeClaimFields) { v.ChargedHardBytes = 0 },
 		"bad owner digest":     func(v *ScopeClaimFields) { v.OwnershipDigest = strings.Repeat("z", 64) },
 		"uppercase digest":     func(v *ScopeClaimFields) { v.OwnershipDigest = strings.Repeat("A", 64) },
 		"short owner digest":   func(v *ScopeClaimFields) { v.OwnershipDigest = "ab" },
@@ -83,6 +83,25 @@ func TestCompleteScopeClaimRejectsMalformedIdentity(t *testing.T) {
 				t.Fatalf("malformed claim accepted: %+v %v", claim, err)
 			}
 		})
+	}
+}
+
+func TestScopeBindingRequiresExactChargedHardCeiling(t *testing.T) {
+	claim, err := NewScopeClaim(completeScopeClaimFields())
+	if err != nil {
+		t.Fatal(err)
+	}
+	binding := testScopeBinding(claim)
+	if !binding.matches(claim) {
+		t.Fatal("matching charged hard ceiling was refused")
+	}
+	binding.hardBytes++
+	if binding.matches(claim) {
+		t.Fatal("larger native hard ceiling escaped charged lease")
+	}
+	binding.hardBytes -= 2
+	if binding.matches(claim) {
+		t.Fatal("smaller native hard ceiling matched charged lease")
 	}
 }
 

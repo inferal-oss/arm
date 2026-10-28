@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"math"
+
+	"getarm.org/internal/syncscope"
 )
 
 // ScopeClaimFields are expected identities copied from a durable original
@@ -15,7 +17,9 @@ type ScopeClaimFields struct {
 	OwnershipDigest                             string
 	ProjectID                                   uint32
 	OwnerEpoch                                  uint64
-	PromiseBytes                                int64
+	// ChargedHardBytes is the entire immutable native project hard ceiling
+	// charged to the original Manager lease, not estimated free headroom.
+	ChargedHardBytes int64
 }
 
 // ScopeClaim is a validated request to inspect one already-enforced native
@@ -32,7 +36,7 @@ func NewScopeClaim(fields ScopeClaimFields) (ScopeClaim, error) {
 		fields.ProjectRootID == "" || fields.SelectedRootID == "" || fields.ParentRootID == "" ||
 		len(fields.ProjectRootID) > 512 || len(fields.SelectedRootID) > 512 || len(fields.ParentRootID) > 512 ||
 		fields.ProjectID == 0 || fields.OwnerEpoch == 0 || fields.OwnerEpoch > math.MaxInt64 ||
-		fields.PromiseBytes <= 0 ||
+		fields.ChargedHardBytes <= 0 ||
 		len(fields.OwnershipDigest) != 64 {
 		return ScopeClaim{}, ErrQuotaUnknown
 	}
@@ -149,12 +153,12 @@ func (b ScopeBinding) UsedBytes() uint64       { return b.usedBytes }
 
 func (b ScopeBinding) matches(claim ScopeClaim) bool {
 	f := claim.fields
-	return f.PromiseBytes > 0 && b.provider == f.Provider && b.scopeID == f.ScopeID &&
+	return f.ChargedHardBytes > 0 && b.provider == f.Provider && b.scopeID == f.ScopeID &&
 		b.mountID == f.MountID && b.projectRootID == f.ProjectRootID &&
 		b.selectedRootID == f.SelectedRootID && b.parentRootID == f.ParentRootID &&
 		b.ownershipDigest == f.OwnershipDigest && b.projectID == f.ProjectID &&
 		b.ownerEpoch == f.OwnerEpoch && b.hardBytes > 0 && b.hardBytes <= math.MaxInt64 &&
-		b.usedBytes <= b.hardBytes && uint64(f.PromiseBytes) <= b.hardBytes-b.usedBytes
+		b.usedBytes <= b.hardBytes && b.hardBytes == uint64(f.ChargedHardBytes)
 }
 
 // CompleteScopeProof can only be built after an original owner exclusion and
@@ -169,7 +173,12 @@ type CompleteScopeProof struct {
 	project  *Root
 	selected *Root
 	parent   *Root
+	verifier *syncscope.Verifier
 }
+
+// VerificationToken is only an ordering witness for a subsequent fresh
+// writer. It supplies no execution or quota authority by itself.
+func (p CompleteScopeProof) VerificationToken() *syncscope.Verifier { return p.verifier }
 
 func (p CompleteScopeProof) BindingFor(ctx context.Context, claim ScopeClaim) (ScopeBinding, error) {
 	if p.claim != claim || !p.binding.matches(claim) {
@@ -228,5 +237,9 @@ func verifyCompleteScopeWith(ctx context.Context, claim ScopeClaim, owner *Exclu
 	if err := ctx.Err(); err != nil {
 		return CompleteScopeProof{}, err
 	}
-	return CompleteScopeProof{claim: claim, binding: binding, owner: owner, project: project, selected: selected, parent: parent}, nil
+	var token *syncscope.Verifier
+	if bound, ok := hold.(interface{ verificationToken() *syncscope.Verifier }); ok {
+		token = bound.verificationToken()
+	}
+	return CompleteScopeProof{claim: claim, binding: binding, owner: owner, project: project, selected: selected, parent: parent, verifier: token}, nil
 }

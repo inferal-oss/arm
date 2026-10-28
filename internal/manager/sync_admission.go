@@ -76,6 +76,11 @@ func (s *syncAdmission) reserveTx(tx *sql.Tx, l model.Lease) error {
 // selected root and private workspace parent must be on Manager's sampled
 // state filesystem; a different volume has no authoritative disk budget yet.
 func (m *Manager) prepareSyncAdmission(ctx context.Context, i syncservice.Intent, rows []syncservice.ManifestRow, root, parent *syncfs.Root, prep *syncPreparation) (*syncAdmission, error) {
+	if m.syncSchemaVersion == "3" {
+		// The charged-row source cut has no native owner bridge yet. Never
+		// reach DetectNamePolicy's scratch write on a copied scope claim.
+		return nil, model.Err("sync_evidence_unavailable", "dedicated native scope proof is unavailable")
+	}
 	if ctx == nil || root == nil || parent == nil || ctx.Err() != nil {
 		return nil, model.Err("invalid_request", "live sync context and held roots required")
 	}
@@ -230,7 +235,7 @@ func (m *Manager) ReserveSyncSource(ctx context.Context, i syncservice.Intent, r
 	if prior != 0 {
 		return empty, model.Err("sync_evidence_unavailable", "source lease exists without its original sync operation")
 	}
-	return m.acquireWithAdmission(r, nil, false, admission)
+	return m.acquireWithAdmission(r, nil, false, admission, nil)
 }
 
 // AcquireSyncSSHCommitted is a private service adapter for an authenticated

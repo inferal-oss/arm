@@ -299,7 +299,7 @@ func (m *Manager) acquireSSH(ctx context.Context, q model.SSHExecutionRequest, e
 	}
 	r := model.Request{Host: m.host, Reason: q.Reason, TTL: q.TTL, Resources: q.Resources, Key: sshLeaseKey(q), Kind: "", Peer: q.Source, OriginKey: q.Key, PeerCertificate: q.Certificate, PeerGrantRevision: q.Revision}
 	run := &RunRequest{Request: r, Command: []string{sshRedactedCommand}, CWD: q.CWD, SSH: sshDescriptor(q), sshRuntime: runtime}
-	l, err := m.acquireWithAdmission(r, run, false, sync)
+	l, err := m.acquireWithAdmission(r, run, false, sync, nil)
 	if err != nil || l.State != "active" {
 		if sync != nil && sync.inline {
 			runtime.closeAll()
