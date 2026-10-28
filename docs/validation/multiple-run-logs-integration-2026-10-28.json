@@ -146,7 +146,6 @@
     "status": "passed",
     "deploy": "skipped; review branch dispatch",
     "artifact_id": 12833428890,
-    "artifact_zip_sha256": "65c0406b18bb807b5b111e82c8a732719d50ee550ef0d03f6b7adea04894a60b",
     "artifact_audit": {
       "source": "32bc2a914f6dea920fc6f19e6ded6f225b5b28c7",
       "metadata_sha256": "9434ea0d25cb48b058c050f7d04e37d87b2b9823daf5ec00326883314318ce99",
@@ -260,7 +259,8 @@
           }
         ]
       }
-    }
+    },
+    "artifact_reported_zip_sha256": "65c0406b18bb807b5b111e82c8a732719d50ee550ef0d03f6b7adea04894a60b"
   },
   "owner_recording": {
     "source": "31bf681f0246733032e5576ca76eea7ba3a041be",
@@ -340,5 +340,11 @@
     "No full Go suite, Linux workload, native performance or new TUI acceptance.",
     "Earlier storage/native evidence retains its exact original source scope.",
     "Raw execution receipts, actual identities, fixture paths and media stay outside version control."
-  ]
+  ],
+  "main_publication": {
+    "source": "827e09f393aec5e7d8c5b8a76597e89069c7b980",
+    "run_url": "https://github.com/inferal-oss/arm/actions/runs/40730599594",
+    "build": "passed",
+    "deploy": "passed"
+  }
 }

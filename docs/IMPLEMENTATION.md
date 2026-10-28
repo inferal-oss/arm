@@ -3075,3 +3075,13 @@ combined source. Independent review covers one reader per run, bounded shared
 I/O, independent polling and errors, native ownership and complete reset/disposal.
 No blocking source findings remain. This extends the earlier single-log milestone
 to eight independent dashboard views; separate OS popups remain outside scope.
+
+### Retained log views and settled native geometry
+
+The focused supplement preserves retained run identities when filtering, inventory
+removal or reconnect changes the roster. The existing eight-display text window
+is documented as 2,097,152 aggregate UTF-16 code units before graph/DOM copies;
+it is not a browser-heap limit. A deferred native layout refit keeps restored
+floating frames in bounds after switching from a narrow tiled layout. The pinned
+engine remains unchanged. Reviewed composed source `a7fb230` includes only these
+focused supplemental source/test/documentation changes.

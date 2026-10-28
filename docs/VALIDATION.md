@@ -7620,3 +7620,23 @@ backends are joined; the recorder, proxy and three producers finish, browser and
 context close, and no owned resource window remains active. Composition against
 current main, including rebuilding its storage-aware embedded asset, remains the
 coordinator's separate review/integration gate. No main merge/push was performed.
+
+### Reviewed retained-log and narrow-layout supplement
+
+Composed supplemental source `a7fb230` passes 430 affected JS tests, both native
+Semblance lifecycle cases, web/native builds and full video decoding with no
+failure or skip. The owner recording is bound separately to `19664fe`; all ten
+inputs and eleven artifact hashes match. Its ten browser checks cover desktop
+peers plus 390px tiled/floating, maximize/fullscreen and restore transitions.
+Narrow tiles have limited reading space; floating/fullscreen offer more room.
+The original failed narrow capture remains excluded. All four original owner
+fixture ledgers and the independent review ledger contain only terminal leases;
+the original review backend is joined.
+
+[Supplemental hosted gate](https://github.com/inferal-oss/arm/actions/runs/40731486579)
+passes current-source captures and SSR/browser checks. The artifact matches 612
+inputs/assets, four pages/CSS and eight fully decoded PNGs. The original main
+build and deployment passed at `827e09f` in
+[the original publication run](https://github.com/inferal-oss/arm/actions/runs/40730599594);
+that evidence is not relabeled as the supplement. See the
+[separate supplemental record](validation/multiple-run-logs-supplement-integration-2026-10-28.json).
