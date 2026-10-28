@@ -40,7 +40,7 @@ func TestRolloutStatusHumanReadinessAndJSONLifecycle(t *testing.T) {
 	}
 	out.Reset()
 	a.colors = false
-	if e := a.rollout([]string{"status"}); e != nil || !strings.Contains(out.String(), "Instructions: Ready") || !strings.Contains(out.String(), "rollout project --help") {
+	if e := a.rollout([]string{"status"}); e != nil || !strings.Contains(out.String(), "Instructions: Ready") || !strings.Contains(out.String(), "rollout project onboard") {
 		t.Fatal(e, out.String())
 	}
 	rolloutApplyCLI(t, home, "rollout", "project", "--project", "demo", "--path", root, "--reason", "Select project")

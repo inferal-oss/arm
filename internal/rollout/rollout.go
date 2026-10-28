@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"syscall"
@@ -562,20 +563,21 @@ type Change struct {
 	Reason   string         `json:"reason"`
 }
 type Plan struct {
-	Review   string    `json:"review_sha256"`
-	Revision int       `json:"revision"`
-	Change   Change    `json:"change"`
-	Before   *Project  `json:"before,omitempty"`
-	After    Project   `json:"after"`
-	Affected []Session `json:"affected_sessions"`
-	Effect   string    `json:"effect"`
+	Unchanged bool      `json:"unchanged,omitempty"`
+	Review    string    `json:"review_sha256"`
+	Revision  int       `json:"revision"`
+	Change    Change    `json:"change"`
+	Before    *Project  `json:"before,omitempty"`
+	After     Project   `json:"after"`
+	Affected  []Session `json:"affected_sessions"`
+	Effect    string    `json:"effect"`
 }
 
 func normalize(c Change) (Change, error) {
 	if !projectID(c.Project) || !short(c.Reason, 512) {
 		return c, fail("project ID and a reason of 1..512 bytes are required")
 	}
-	if c.Binding != nil && c.Action != "project" || c.Client != nil && c.Action != "bind" || c.Mode != "" && c.Action != "policy" || len(c.Sessions) > 0 && c.Action != "invite" && c.Action != "revoke" {
+	if c.Binding != nil && c.Action != "project" && c.Action != "onboard" || c.Client != nil && c.Action != "bind" || c.Mode != "" && c.Action != "policy" && c.Action != "onboard" || len(c.Sessions) > 0 && c.Action != "invite" && c.Action != "revoke" {
 		return c, fail("change contains selectors unrelated to its action")
 	}
 	if c.Binding != nil {
@@ -602,13 +604,13 @@ func digest(st State, c Change) string {
 	return hex.EncodeToString(h[:])
 }
 func transition(st *State, c Change, at time.Time) (Plan, error) {
-	plan := Plan{Revision: st.Revision, Change: c, Affected: []Session{}, Effect: "Adoption only. No jobs, contacts, leases, resource admission or cleanup obligations are changed. New-session cutoff takes effect at apply time."}
+	plan := Plan{Revision: st.Revision, Change: c, Affected: []Session{}, Effect: "Adoption only. No jobs, contacts, leases, resource admission or cleanup obligations are changed. Entering new-sessions establishes a cutoff at apply time; retaining that mode preserves its existing cutoff."}
 	p := find(st, c.Project)
 	if p != nil {
 		b, _ := json.Marshal(p)
 		_ = json.Unmarshal(b, &plan.Before)
 	}
-	if c.Action == "project" {
+	if c.Action == "project" || c.Action == "onboard" {
 		if c.Binding == nil {
 			return plan, fail("project requires a directory or Git binding")
 		}
@@ -623,7 +625,7 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 		for _, other := range st.Projects {
 			for i, b := range other.Bindings {
 				if b.Root == c.Binding.Root {
-					if other.ID != p.ID || b == *c.Binding {
+					if other.ID != p.ID || b == *c.Binding && c.Action != "onboard" {
 						return plan, fail("root already bound to project %s", other.ID)
 					}
 					p.Bindings[i] = *c.Binding
@@ -636,6 +638,17 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 				return plan, fail("project binding capacity reached")
 			}
 			p.Bindings = append(p.Bindings, *c.Binding)
+		}
+		if c.Action == "onboard" {
+			if err := setMode(p, c.Mode, at); err != nil {
+				return plan, err
+			}
+			if plan.Before != nil && reflect.DeepEqual(*p, *plan.Before) {
+				plan.After = *p
+				plan.Unchanged = true
+				plan.Effect = "This project binding and policy are already configured. No policy, invitation, participation or resource obligations will change."
+				return plan, nil
+			}
 		}
 	} else {
 		if p == nil {
@@ -654,13 +667,9 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 			}
 			p.Clients = append(p.Clients, *c.Client)
 		case "policy":
-			if c.Mode != "disabled" && c.Mode != "observe" && c.Mode != "new-sessions" && c.Mode != "all" {
-				return plan, fail("mode must be disabled, observe, new-sessions or all")
+			if err := setMode(p, c.Mode, at); err != nil {
+				return plan, err
 			}
-			if c.Mode == "new-sessions" && p.Mode != "new-sessions" {
-				p.NewAfter = at
-			}
-			p.Mode = c.Mode
 		case "pause":
 			p.Paused = true
 		case "resume":
@@ -716,6 +725,17 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 	}
 	return plan, nil
 }
+
+func setMode(p *Project, mode string, at time.Time) error {
+	if mode != "disabled" && mode != "observe" && mode != "new-sessions" && mode != "all" {
+		return fail("mode must be disabled, observe, new-sessions or all")
+	}
+	if mode == "new-sessions" && p.Mode != "new-sessions" {
+		p.NewAfter = at
+	}
+	p.Mode = mode
+	return nil
+}
 func (s Store) Preview(c Change) (Plan, error) {
 	c, e := normalize(c)
 	if e != nil {
@@ -763,6 +783,9 @@ func (s Store) Apply(c Change, expect string) (Plan, error) {
 	p.Review = expect
 	if e != nil {
 		return p, e
+	}
+	if p.Unchanged {
+		return p, nil
 	}
 	return p, s.save(st)
 }

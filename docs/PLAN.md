@@ -8,13 +8,24 @@ A completed milestone does not establish full specification coverage.
 
 ## Project-scoped gradual agent adoption
 
-Installation/status UX continuation implements interactive diff review, a
+Installation/status UX continuation `379e41d` implements interactive diff review, a
 formatted post-install next command, omission of default-home overrides and a
 human terminal roster with independent managed-instruction readiness. Owner
 self-review, complete installation race tests, scoped CLI race regressions,
 affected-package vet and native compilation pass. Synthetic real-terminal
 install/diff/accept/status/uninstall/status behavior is verified. Integration
 review remains separate.
+
+Guided onboarding adds generic bounded Codex/Claude directory adapters and a
+Charm terminal selection/review flow. Binding plus policy apply atomically;
+unchanged existing choices preserve invitations and revision. Read-only discovery,
+manual fallback, instruction readiness, stale reviews, cancellation, directory
+identity and small-screen gates have focused regression coverage. Metadata
+hints remain unverified activity. Owner self-review, complete discovery/rollout/
+installation race suites, scoped CLI race regressions, affected-package vet and
+native/Linux CLI compilation pass. Disposable real-terminal cancellation and
+confirmed onboarding pass without enrolling sessions. Coordinator review and
+integration remain separate gates.
 
 Owner: `codex/gradual-agent-rollout`. Focused source commit: `0916d4a`.
 Implementation adds a separate cooperative
@@ -28,9 +39,8 @@ inheritance, Git repository replacement, audit-generation gaps and nonregular
 ledger reads. Complete rollout/installation race suites and scoped CLI
 rollout/guide/help/completion regressions, affected-package vet and native/Linux
 CLI compilation pass. The focused feature is ready for coordinator review and
-integration; full-suite and Linux runtime acceptance remain open. Native client
-discovery,
-graphical policy editing, binding removal and compaction are outside this
+integration; full-suite and Linux runtime acceptance remain open. Native project
+identity attestation, web/dashboard policy editors, binding removal and compaction are outside this
 milestone.
 
 ## Integration policy

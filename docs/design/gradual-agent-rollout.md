@@ -46,8 +46,8 @@ so reviewing another binding expands that project's scope visibly.
 Codex/Claude project IDs are optional explicit aliases attached to an ARM
 project. When supplied, the adapter/alias must match a reviewed mapping as well
 as the filesystem boundary. Unknown aliases cannot fall back to an ancestor
-grant. Omitting an alias uses directory/Git scope. Native client-project
-enumeration and attestation are not implemented.
+grant. Omitting an alias uses directory/Git scope. Guided directory discovery is
+implemented below; native logical-project identity attestation remains separate.
 
 ## Observation, enrollment and liveness
 
@@ -87,7 +87,7 @@ not an inventory of running processes or permissions to execute.
 Begin with `arm install`, which previews the agent instruction changes and asks
 `Apply these changes? [y/N/diff]`. Enter `d` or `diff` to view the exact patch
 and return to the approval question. Empty input, EOF and interruption decline.
-Successful installation gives a separate `arm rollout status` next command;
+Successful installation gives a separate `arm rollout project onboard` command;
 custom state directories are quoted explicitly, while effective defaults omit
 the `--home` option. Installation messages format `arm rollout` with backticks.
 
@@ -97,6 +97,66 @@ it reports instructions not ready and suggests `arm install`. Missing, modified,
 outdated and unfinished targets are distinguished. This inspection stays
 read-only and preserves policy and resource obligations. Matching files are not
 proof that a session loaded them. `--json` and redirected output remain JSON.
+
+### Guided project onboarding
+
+```sh
+arm rollout project onboard
+```
+
+The Charm Bubble Tea/Bubbles/Lip Gloss flow offers searchable directory
+suggestions, a manual-directory fallback, Git checkout versus directory scope,
+an editable ARM project name and an explicit policy choice. New sessions are
+recommended; all sessions, observation/manual pilots and disabled are available.
+Existing projects offer their current policy first. Unrelated name collisions
+get a unique suggestion rather than silently grouping directories. Review shows
+retained roots/client mappings, mode, pause state, affected session count and the
+exact digest. Only `y` applies; the final question defaults to no.
+
+Scope/binding and mode commit as one audited operation. Keeping an identical
+binding/mode is a no-op preserving invitations, revision, cutoff and pause state.
+Changed snapshots/replaced directories refuse the original review. Late discovery
+cannot revive cancellation. An in-flight write's uncertain outcome requires
+status/history inspection, not automatic retry. Approval is unavailable below
+40×20 terminal dimensions; review scrolls and wraps as the terminal resizes.
+
+Discovery uses the `agentprojects.Adapter` interface, initially Codex and Claude:
+
+- Codex reads documented user `projects.<path>` entries and optional recognized
+  saved/selected workspace-root arrays in its desktop cache. Cache hints are
+  version-dependent, not a stable public project-list API.
+- Claude reads project-directory keys in global project configuration and
+  recognized working-directory fields in small session markers. Crash leftovers
+  can survive, so marker presence is explicitly unverified activity.
+
+References: [Codex project configuration](https://learn.chatgpt.com/docs/config-file/config-reference)
+and [Claude project state/session markers](https://code.claude.com/docs/en/claude-directory).
+Only directory evidence is returned; unknown formats warn or yield no suggestions.
+Other native config fields are ignored. Transcript, prompt-history and credential
+files are excluded. Clients are not launched/contacted and processes are not
+scanned. Metadata timestamps mean file updates, not session start or eligibility.
+Selected-workspace/session hints take priority over configured history at limits.
+
+```sh
+arm rollout project onboard --adapter codex
+arm rollout project onboard --codex-home /client/codex --claude-home /client/claude
+arm rollout project onboard --claude-config /client/config/.claude.json
+arm rollout project onboard --json
+```
+
+Explicit homes override environment/default roots; a single ready installation
+target can supply a client home. The standard Claude global config location is
+supported; custom layouts can pass the config file explicitly. `--json`, pipes
+and `--dry-run` return discovery only. Enabling adoption in the wizard requires
+verified managed instructions, checked again at confirmation/application. It can
+still inspect suggestions and save an explicitly disabled project without them.
+The direct operator policy commands retain their independent review workflow.
+
+Read bounds: 4 MiB per adapter, 1 MiB per config/cache, 64 KiB per marker, 256
+Claude marker entries and 512 suggestions per adapter/combined. Files must be
+regular, with no-follow/nonblocking opens. Missing, inaccessible, unsupported and
+over-budget sources remain diagnostic. No verified live-session, historical
+completeness, remote-project or folderless-project discovery is promised.
 
 All paths and identifiers below are generic placeholders. Reads work offline
 without creating state or starting a backend:
@@ -181,8 +241,9 @@ session records, 8 capability labels per session, 512 bytes of needs/reason,
 preserves history without eviction. Protocol version 1 is required; unsupported
 versions fail closed. Capability labels do not attest execution support.
 
-Native client-project discovery, UI editing, binding removal/project retirement,
-archival/compaction and automatic pilot expansion are follow-ups. Disable an
+Native logical-project attestation, web/dashboard policy editors, binding
+removal/project retirement, archival/compaction and automatic pilot expansion
+are follow-ups. Disable an
 affected project to stop future adoption. This is cooperative instruction policy,
 not an API firewall or OS enforcement boundary. Explicit operator resource and
 messaging commands remain independent. Nonparticipating agents and sessions

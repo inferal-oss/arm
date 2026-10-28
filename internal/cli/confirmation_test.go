@@ -172,7 +172,7 @@ func TestInstallCompletionOffersStateBoundRolloutCommand(t *testing.T) {
 	if e := a.integration("install", []string{"--codex-home", root}); e != nil {
 		t.Fatal(e, out.String(), errout.String())
 	}
-	command := installNextCommand(home, "rollout status")
+	command := installNextCommand(home, "rollout project onboard")
 	if !strings.Contains(out.String(), "Use `arm rollout`") || !strings.Contains(out.String(), "Next: review project enrollment with:\n  `"+command+"`") || !strings.Contains(command, "'\\''") {
 		t.Fatal(out.String())
 	}

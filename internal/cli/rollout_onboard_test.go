@@ -1,0 +1,250 @@
+package cli
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	tea "charm.land/bubbletea/v2"
+	"getarm.org/internal/agentprojects"
+	"getarm.org/internal/install"
+	"getarm.org/internal/rollout"
+)
+
+func onboardKey(m *rolloutOnboardModel, key string) tea.Cmd {
+	code := rune(0)
+	switch key {
+	case "enter":
+		code = tea.KeyEnter
+	case "esc":
+		code = tea.KeyEscape
+	case "down":
+		code = tea.KeyDown
+	case "up":
+		code = tea.KeyUp
+	default:
+		code = []rune(key)[0]
+	}
+	_, cmd := m.Update(tea.KeyPressMsg{Code: code})
+	return cmd
+}
+func runOnboardCmd(t *testing.T, m *rolloutOnboardModel, cmd tea.Cmd) {
+	t.Helper()
+	if cmd == nil {
+		t.Fatal("expected an asynchronous operation")
+	}
+	m.Update(cmd())
+}
+func onboardReviewFixture(t *testing.T, ready bool) (*rolloutOnboardModel, string) {
+	t.Helper()
+	base := t.TempDir()
+	home := filepath.Join(base, "state")
+	root := filepath.Join(base, "demo")
+	if e := os.Mkdir(root, 0700); e != nil {
+		t.Fatal(e)
+	}
+	if ready {
+		if _, e := install.Install(home, []install.Target{{Adapter: "codex", Root: filepath.Join(base, "codex"), Name: "AGENTS.md"}}, false); e != nil {
+			t.Fatal(e)
+		}
+	}
+	m := newRolloutOnboard(t.Context(), home, "Interactive project pilot", nil)
+	m.Update(onboardCatalogMsg{agentprojects.Catalog{Projects: []agentprojects.Project{{Directory: root}}}})
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	if m.stage != onboardScope {
+		t.Fatal(m.stage, m.notice)
+	}
+	// Directory scope is the last choice, independent of fixture Git parents.
+	m.cursor = len(m.choices) - 1
+	onboardKey(m, "enter")
+	if m.stage != onboardName {
+		t.Fatal(m.stage)
+	}
+	m.input.SetValue("demo")
+	onboardKey(m, "enter")
+	if m.stage != onboardPolicy {
+		t.Fatal(m.stage)
+	}
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	if m.stage != onboardReview {
+		t.Fatal(m.stage, m.notice)
+	}
+	return m, home
+}
+
+func TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy(t *testing.T) {
+	for _, apply := range []bool{false, true} {
+		t.Run(map[bool]string{false: "decline", true: "apply"}[apply], func(t *testing.T) {
+			m, home := onboardReviewFixture(t, true)
+			if _, e := os.Stat(filepath.Join(home, "rollout.json")); !os.IsNotExist(e) {
+				t.Fatal("preview wrote policy", e)
+			}
+			if !strings.Contains(m.View().Content, "Apply these changes? [y/N]") {
+				t.Fatal(m.View().Content)
+			}
+			if !apply {
+				onboardKey(m, "enter")
+				if !m.cancelled {
+					t.Fatal("default accepted onboarding")
+				}
+				if _, e := os.Stat(filepath.Join(home, "rollout.json")); !os.IsNotExist(e) {
+					t.Fatal(e)
+				}
+				return
+			}
+			runOnboardCmd(t, m, onboardKey(m, "y"))
+			st, e := (rollout.Store{Home: home}).Read()
+			if e != nil || m.err != nil || len(st.Projects) != 1 || st.Projects[0].Mode != "new-sessions" || st.Revision != 1 || len(st.History) != 1 || st.History[0].Action != "onboard" {
+				t.Fatal(st, e, m.err)
+			}
+			if len(st.Sessions) != 0 {
+				t.Fatal("onboarding enrolled sessions", st.Sessions)
+			}
+		})
+	}
+}
+
+func TestRolloutOnboardReadinessAndStaleReviewCannotApply(t *testing.T) {
+	m, home := onboardReviewFixture(t, false)
+	onboardKey(m, "y")
+	if m.stage != onboardPolicy || m.applyStarted || !strings.Contains(m.notice, "instructions are not ready") {
+		t.Fatal(m.stage, m.notice)
+	}
+	if _, e := os.Stat(home); !os.IsNotExist(e) {
+		t.Fatal("unready onboarding initialized state", e)
+	}
+	m, home = onboardReviewFixture(t, true)
+	other := t.TempDir()
+	store := rollout.Store{Home: home}
+	change := rollout.Change{Action: "project", Project: "other", Binding: &rollout.Binding{Kind: "directory", Root: other}, Reason: "Concurrent operator choice"}
+	plan, e := store.Preview(change)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = store.Apply(change, plan.Review); e != nil {
+		t.Fatal(e)
+	}
+	runOnboardCmd(t, m, onboardKey(m, "y"))
+	st, e := store.Read()
+	if e != nil || m.err == nil || len(st.Projects) != 1 || st.Projects[0].ID != "other" {
+		t.Fatal(st, e, m.err)
+	}
+}
+
+func TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions(t *testing.T) {
+	m, home := onboardReviewFixture(t, false)
+	onboardKey(m, "b")
+	m.cursor = len(m.choices) - 1
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	if m.mode != "disabled" {
+		t.Fatal(m.mode)
+	}
+	runOnboardCmd(t, m, onboardKey(m, "y"))
+	st, e := (rollout.Store{Home: home}).Read()
+	if e != nil || m.err != nil || len(st.Projects) != 1 || st.Projects[0].Mode != "disabled" || len(st.Sessions) != 0 {
+		t.Fatal(st, e, m.err)
+	}
+}
+
+func TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels(t *testing.T) {
+	m, home := onboardReviewFixture(t, true)
+	onboardKey(m, "b")
+	if m.stage != onboardPolicy {
+		t.Fatal(m.stage)
+	}
+	onboardKey(m, "esc")
+	if m.stage != onboardName {
+		t.Fatal(m.stage)
+	}
+	m.input.SetValue("Invalid Name")
+	onboardKey(m, "enter")
+	if m.stage != onboardName || m.notice == "" {
+		t.Fatal(m.stage, m.notice)
+	}
+	m.input.SetValue("demo")
+	onboardKey(m, "enter")
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	m.Update(tea.WindowSizeMsg{Width: 30, Height: 10})
+	onboardKey(m, "y")
+	if m.applyStarted || !strings.Contains(m.View().Content, "Enlarge the terminal") {
+		t.Fatal(m.View().Content)
+	}
+	if _, e := os.Stat(filepath.Join(home, "rollout.json")); !os.IsNotExist(e) {
+		t.Fatal(e)
+	}
+	item := onboardItem{project: agentprojects.Project{Directory: "/work/\x1b[2Jforged", Evidence: []agentprojects.Evidence{{Adapter: "codex"}}}}
+	if strings.Contains(item.Title()+item.Description(), "\x1b[2J") {
+		t.Fatal("unsafe directory label")
+	}
+}
+
+func TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy(t *testing.T) {
+	base := t.TempDir()
+	home := filepath.Join(base, "state")
+	codex := filepath.Join(base, "codex")
+	claude := filepath.Join(base, "claude")
+	project := filepath.Join(base, "demo")
+	for _, path := range []string{codex, claude, project} {
+		if e := os.Mkdir(path, 0700); e != nil {
+			t.Fatal(e)
+		}
+	}
+	b, _ := json.Marshal(map[string]any{"active-workspace-roots": []string{project}})
+	if e := os.WriteFile(filepath.Join(codex, ".codex-global-state.json"), b, 0600); e != nil {
+		t.Fatal(e)
+	}
+	code, out, stderr := rolloutCLI(t, home, "rollout", "project", "onboard", "--codex-home", codex, "--claude-home", claude, "--json")
+	var result struct {
+		ReadOnly bool                  `json:"read_only"`
+		Catalog  agentprojects.Catalog `json:"catalog"`
+	}
+	if code != 0 || json.Unmarshal(out, &result) != nil || !result.ReadOnly || len(result.Catalog.Projects) != 1 {
+		t.Fatal(code, string(out), stderr)
+	}
+	for _, args := range [][]string{{"rollout", "project", "onboard", "--help"}, {"help", "rollout", "project", "onboard"}} {
+		if code, out, stderr = rolloutCLI(t, home, args...); code != 0 || !strings.Contains(string(out), "--claude-config") {
+			t.Fatal(code, string(out), stderr)
+		}
+	}
+	if _, e := os.Stat(home); !os.IsNotExist(e) {
+		t.Fatal("discovery created policy state", e)
+	}
+}
+
+func TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery(t *testing.T) {
+	base := t.TempDir()
+	home := filepath.Join(base, "state")
+	root := filepath.Join(base, "demo")
+	other := filepath.Join(base, "other")
+	for _, path := range []string{root, other} {
+		if e := os.Mkdir(path, 0700); e != nil {
+			t.Fatal(e)
+		}
+	}
+	store := rollout.Store{Home: home}
+	change := rollout.Change{Action: "project", Project: "demo", Binding: &rollout.Binding{Kind: "directory", Root: other}, Reason: "Existing unrelated project"}
+	plan, e := store.Preview(change)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = store.Apply(change, plan.Review); e != nil {
+		t.Fatal(e)
+	}
+	m := newRolloutOnboard(t.Context(), home, "New project", nil)
+	catalog := onboardCatalogMsg{agentprojects.Catalog{Projects: []agentprojects.Project{{Directory: root}}}}
+	m.Update(catalog)
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	m.cursor = len(m.choices) - 1
+	onboardKey(m, "enter")
+	if m.id != "demo-2" {
+		t.Fatal("unrelated project was suggested for implicit scope expansion", m.id)
+	}
+	m = newRolloutOnboard(t.Context(), home, "Cancelled discovery", nil)
+	onboardKey(m, "esc")
+	m.Update(catalog)
+	if !m.cancelled || m.stage != onboardDone {
+		t.Fatal("late discovery resurrected a cancelled editor", m.stage)
+	}
+}

@@ -1,5 +1,39 @@
 # Validation record
 
+## Guided project onboarding — scoped owner validation
+
+Owner self-review and fixes cover metadata bounds/privacy, canonical suggestions,
+name collisions, asynchronous cancellation, immutable apply snapshots, preserved
+pause/cutoff, unchanged-policy invitations, stale reviews and replaced roots.
+Complete discovery, rollout and installation race suites pass with one worker:
+
+```sh
+GOMAXPROCS=1 go test -p 1 -race ./internal/agentprojects ./internal/rollout ./internal/install -count=1 -timeout=120s
+```
+
+Scoped CLI race tests pass for rollout/onboarding, install confirmation,
+post-install/default-home suggestions, readiness, guide/help/completion and
+terminal/machine rendering. Model cases exercise default-no cancellation,
+atomic confirmed policy, readiness refusal, disabled saves, back navigation,
+small-terminal approval refusal and late discovery after cancellation.
+Affected-package vet, native compilation and a CGo-free Linux amd64 cross-build
+pass. The only new module is the fuzzy-search dependency already pinned by the
+existing Charm list component.
+
+A real terminal with disposable synthetic Codex/Claude metadata verifies the
+searchable directory roster, evidence labels, Git scope, project name, policy
+choices and default-no review. Cancelling creates no rollout ledger. A fresh
+confirmed flow records one project/binding/policy and one audit event, with zero
+session records. No backend starts and no native user integrations, agents,
+contacts or resources are changed.
+
+Native metadata compatibility is fixture-tested, not validated by launching
+clients. Desktop cache/session-marker formats are version-dependent, activity
+hints are unverified, and metadata timestamps do not establish session starts.
+Full Go suite, independent coordinator review/integration and Linux runtime
+acceptance remain open. No web/dashboard editor or native identity attestation
+is claimed.
+
 ## Installation review and rollout status — scoped owner validation
 
 Complete installation/readiness race tests pass. Scoped CLI race tests cover

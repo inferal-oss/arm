@@ -549,6 +549,15 @@ provenance, resource needs, bounded identity metadata and honest liveness/expiry
 Stale identities must not silently inherit grants. Native UI or mesh registration
 must not broaden local adoption policy.
 
+Offer a guided terminal `arm rollout project onboard` flow using supported-client
+directory discovery behind a generic adapter interface. Suggest known/selected
+project directories and report the evidence and limitations of activity hints.
+Discovery must exclude transcripts, prompt-history/credential files, process
+scans and native delivery. Let the operator choose directory/Git scope, project
+identity and policy, then review a default-no atomic change. Read-only machine
+discovery, manual directory entry and preservation of an unchanged policy are
+required. Discovering a directory never enrolls a session or grants resources.
+
 Policy changes support exact previews and durable audit. Pause/rollback stops
 further rollout without canceling jobs, discarding ownership, reclaiming leases
 or erasing cleanup/accounting promises. Revoking adoption and resource admission

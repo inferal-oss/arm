@@ -16,10 +16,11 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"rollout project onboard":           {summary: "Discover Codex/Claude project-directory metadata and interactively select a boundary, name and adoption policy with a default-no review. --json, pipes and --dry-run discover only. No transcripts, native delivery, agent registration or automatic enrollment.", max: 0},
 	"rollout status":                    {summary: "Show managed-instruction readiness, project adoption policies and session observations. Human-readable in a terminal; JSON for pipes or --json. Read-only: no backend, client discovery or enrollment is started.", max: 0},
 	"rollout check":                     {summary: "Resolve the working directory and optional client project to cooperative adoption policy. Read-only; never registers or enrolls a session.", max: 0},
 	"rollout history":                   {summary: "Read retained rollout policy and enrollment audit history locally.", max: 0},
-	"rollout project":                   {summary: "Preview an explicit directory or Git checkout binding to an ARM project. New projects are disabled. Apply requires the exact --expect digest and --yes.", max: 0},
+	"rollout project":                   {summary: "Preview an explicit directory or Git checkout binding to an ARM project. Use rollout project onboard for guided client-project discovery and selection. Direct new bindings are disabled; direct apply requires the exact --expect digest and --yes.", max: 0},
 	"rollout bind":                      {summary: "Explicitly map a Codex/Claude project identity to an existing ARM project boundary. Does not discover sessions or grant resources.", max: 0},
 	"rollout policy":                    {summary: "Review disabled, observe, new-sessions or all adoption within a selected project. Existing resource obligations remain unchanged.", max: 0},
 	"rollout pause":                     {summary: "Pause further enrollment without canceling jobs or removing existing obligations.", max: 0},
@@ -249,7 +250,7 @@ var commandHelps = map[string]commandHelp{
 	"message operator":       {summary: "Send a durable message to the operator inbox.", example: `arm message operator --text "The build needs another five minutes."`},
 	"message send":           {summary: "Send to one exact registered contact snapshot. --key deduplicates exact retries; changed content or recipients conflict. --reply-to links a reply to that contact's operator-inbox message.", example: `arm message send --to builder --text "Please reduce build concurrency." --key OPERATION_ID`},
 	"message broadcast":      {summary: "Send to the exact current contact set. Recipient changes during submission reject the send. --key deduplicates exact retries; verify delivery reports before requesting a different send.", example: `arm message broadcast --text "Please release idle leases." --key OPERATION_ID`},
-	"install":                {summary: "Install verified managed agent instructions. Preview with --dry-run; d/diff at confirmation shows the exact patch and asks again. Completion prints a rollout status command for the selected ARM home. Backend startup is separate."},
+	"install":                {summary: "Install verified managed agent instructions. Preview with --dry-run; d/diff at confirmation shows the exact patch and asks again. Completion prints a guided project-onboarding command for the selected ARM home. Backend startup is separate."},
 	"uninstall":              {summary: "Remove unchanged instructions using the saved installation manifest, preserving edits and resource obligations. d/diff at confirmation shows the exact patch and asks again. The executable and state remain."},
 	"version":                {summary: "Print ARM, Go and platform versions."},
 }

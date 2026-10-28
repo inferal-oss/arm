@@ -1250,7 +1250,7 @@ func (a *app) integration(action string, args []string) error {
 			return e
 		}
 		if report.Complete {
-			report.NextCommand = installNextCommand(a.home, "rollout status")
+			report.NextCommand = installNextCommand(a.home, "rollout project onboard")
 		}
 		return a.print(report)
 	}

@@ -26,6 +26,9 @@ func (a *app) rollout(args []string) error {
 		return fmt.Errorf("rollout requires status, check, history, project, bind, policy, pause, resume, invite, revoke, identify or ack")
 	}
 	action, args := args[0], args[1:]
+	if action == "project" && len(args) > 0 && args[0] == "onboard" {
+		return a.rolloutOnboard(args[1:])
+	}
 	f := a.flags("rollout " + action)
 	var project, path, adapter, clientProject, session string
 	f.StringVar(&project, "project", "", "exact ARM project ID")
@@ -124,12 +127,12 @@ func (a *app) rollout(args []string) error {
 			}
 		}
 		sessions := store.Roster(st, project)
-		status := rolloutStatus{Default: "disabled", Revision: st.Revision, Instructions: install.InspectInstructions(a.home), Projects: projects, Sessions: sessions, Suggestion: "Create a project boundary, then choose new-sessions (suggested), all, or observe for a manual pilot. Installation never enrolls sessions.", NextCommand: installNextCommand(a.home, "rollout project --help")}
+		status := rolloutStatus{Default: "disabled", Revision: st.Revision, Instructions: install.InspectInstructions(a.home), Projects: projects, Sessions: sessions, Suggestion: "Create a project boundary, then choose new-sessions (suggested), all, or observe for a manual pilot. Installation never enrolls sessions.", NextCommand: installNextCommand(a.home, "rollout project onboard")}
 		if !status.Instructions.Ready {
 			status.Suggestion = "Review or install managed instructions before starting a rollout. Saved policy and existing resource obligations are unchanged."
 			status.NextCommand = installNextCommand(a.home, "install")
 		} else if len(projects) > 0 {
-			status.NextCommand = installNextCommand(a.home, "rollout policy --help")
+			status.Suggestion = "Review project boundaries and cohorts before expanding. Installation never enrolls sessions."
 		}
 		return a.printRollout(status)
 	}
