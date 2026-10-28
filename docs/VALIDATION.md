@@ -6572,3 +6572,20 @@ and original returned-command closure are independently checked. This is no
 complete SDK/module-cache or arbitrary-descendant proof. Installed proxy support
 was unavailable; the existing bounded canonical queue protocol was retained.
 The original failure stays failed while a production correction is reviewed.
+
+
+### Strict provider C1 normal and race evidence
+
+[Independently checked C1 evidence](validation/provider-pair-c1-2026-10-28.json)
+records 17 exact roots/173 named RUN=PASS cases in each normal and race run, no
+failures/skips, and successful Manager/provider-preparation vet. All three
+original child returns and raw log hashes are verified; all 46 selected source/
+tool pins remain unchanged, including five owned and 25 protected paths. The
+five committed blobs/modes match the tested bytes. Primary runtime source
+before those additions equals the tested base; only documentation differs.
+
+The fixtures use controlled structural clock samples and private SQLite data;
+they do not establish physical headroom, suspend, image work, schema activation,
+Linux runtime, provider lifecycle or complete accounting. Empty indexed results
+remain observations with ordinary-row/orphan coverage left to C2. Later current
+run-reporting/recovery/forwarding composition is not accepted by this leaf gate.
