@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"reflect"
 	"time"
 	"unicode/utf8"
@@ -38,6 +39,19 @@ func OpenConfigured(home string, settings daemonconfig.Settings) (*Manager, erro
 		return nil, model.Err("invalid_config", err.Error())
 	}
 	return openWithStartup(home, settings.Resources, leaseclock.Read, &settings)
+}
+
+// OpenConfiguredWithUnixRecovery is the daemon's lock-bearing startup path.
+// A planned no-bind pair is examined only after the existing workspace,
+// authority and configuration decision gates, before generic lease recovery.
+func OpenConfiguredWithUnixRecovery(home string, settings daemonconfig.Settings, lock *os.File) (*Manager, error) {
+	if err := settings.Validate(); err != nil {
+		return nil, model.Err("invalid_config", err.Error())
+	}
+	if err := checkForwardUnixRecoveryLock(home, lock); err != nil {
+		return nil, err
+	}
+	return openWithStartupLock(home, settings.Resources, leaseclock.Read, &settings, lock)
 }
 
 func configObject(raw []byte, keys ...string) (map[string]json.RawMessage, error) {

@@ -19,6 +19,8 @@ type ForwardUnixChild struct {
 	joined     <-chan struct{}
 	workerDone chan struct{}
 	released   bool // protected by Manager.mu
+	pairIssued bool // one original pair attempt, even after an uncertain write
+	pair       *ForwardUnixPair
 }
 
 func (c *ForwardUnixChild) Context() context.Context { return c.ctx }
@@ -142,6 +144,10 @@ func (c *ForwardUnixChild) FinishAfterJoin() error {
 	if h.unixFault != "" {
 		m.mu.Unlock()
 		return model.Err("needs_attention", "original Unix child cleanup remains uncertain")
+	}
+	if c.pair != nil {
+		m.mu.Unlock()
+		return model.Err("forward_unix_pair_unavailable", "planned pair requires original no-bind abort before child release")
 	}
 	l, err := m.get(h.id)
 	if err != nil {

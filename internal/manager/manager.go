@@ -174,6 +174,10 @@ func openWithLeaseClock(home string, capacity model.Resources, clockRead func() 
 }
 
 func openWithStartup(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error), startup *daemonconfig.Settings) (*Manager, error) {
+	return openWithStartupLock(home, capacity, clockRead, startup, nil)
+}
+
+func openWithStartupLock(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error), startup *daemonconfig.Settings, unixLock *os.File) (*Manager, error) {
 	if !finiteCPU(capacity.CPU) || capacity.CPU < 0 || capacity.CPU > 65536 {
 		return nil, model.Err("invalid_config", "CPU ceiling must be a finite nonnegative logical-core count at most 65536")
 	}
@@ -232,7 +236,7 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 			return nil, e
 		}
 	}
-	if e = initForwardUnixPairGuard(db); e != nil {
+	if e = initForwardUnixPairGuard(db, unixLock != nil); e != nil {
 		db.Close()
 		return nil, e
 	}
@@ -265,6 +269,12 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 	if startup != nil {
 		m.capacity = model.Resources{} // unpublished until its durable decision
 		if e = m.applyStartupConfiguration(*startup); e != nil {
+			db.Close()
+			return nil, e
+		}
+	}
+	if unixLock != nil {
+		if e = recoverForwardUnixNoBind(context.Background(), home, unixLock, db); e != nil {
 			db.Close()
 			return nil, e
 		}

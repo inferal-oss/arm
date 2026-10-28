@@ -4,13 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-
-	"getarm.org/internal/model"
 )
 
-// Pre-bind retention only: no production path inserts a pair yet. These five
-// objects plus two SQLite constraint indexes are one atomic startup group.
-// A compatible future issuer must validate the complete tuple before bind.
+// These five objects plus two SQLite constraint indexes are one atomic
+// startup group. A future binder must validate the complete tuple before bind.
 const forwardUnixPairTable = `CREATE TABLE forward_unix_pairs (
 	source_id TEXT PRIMARY KEY,
 	storage_id TEXT NOT NULL UNIQUE,
@@ -124,9 +121,10 @@ func validateForwardUnixGuardObjects(actual map[string]forwardUnixGuardObject) e
 
 // initForwardUnixPairGuard installs an entirely absent group in one durable
 // transaction, or validates the exact existing group. It never repairs a
-// partial/no-op group. Any row still refuses startup because this cut has no
-// trusted pair reader, cleanup proof or native bind authority.
-func initForwardUnixPairGuard(db *sql.DB) error {
+// partial/no-op group. A strict reader may atomically abort only an exact
+// planned no-bind tuple before generic recovery. Bind intent and later phases
+// still refuse startup; this cut has no native bind or cleanup authority.
+func initForwardUnixPairGuard(db *sql.DB, allowPlanned bool) error {
 	ctx := context.Background()
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -151,12 +149,8 @@ func initForwardUnixPairGuard(db *sql.DB) error {
 	if err = validateForwardUnixGuardObjects(actual); err != nil {
 		return err
 	}
-	var present int
-	if err = tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM forward_unix_pairs)`).Scan(&present); err != nil {
+	if err = validateForwardUnixPairStartup(ctx, tx, allowPlanned); err != nil {
 		return err
-	}
-	if present != 0 {
-		return model.Err("forward_unix_pair_unavailable", "forward Unix pair record requires a compatible Manager")
 	}
 	return tx.Commit()
 }
