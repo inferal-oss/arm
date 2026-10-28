@@ -206,6 +206,9 @@ Commands:
   budget list|inspect|create|set|history      Manage local owner policy ceilings
   acquire                   Request a resource lease
   run                       Execute a command under a supervised lease
+  proxy                     Record a local command without a new lease
+  runs                      List active and past command executions
+  log                       Read or follow a run log
   inspect|release|cancel ID  Inspect or end a lease
   reconcile ID              Verify a recovered process group has stopped
   renew ID --ttl DURATION    Extend a lease when the queue permits
@@ -290,6 +293,12 @@ func (a *app) command(args []string) (int, error) {
 		return a.configCommand(args)
 	case "acquire", "run":
 		return a.acquire(cmd, args)
+	case "proxy":
+		return a.proxyCommand(args)
+	case "runs":
+		return 0, a.runsCommand(args)
+	case "log":
+		return 0, a.logCommand(args)
 	case "install", "uninstall":
 		return 0, a.integration(cmd, args)
 	case "agents":
@@ -521,8 +530,10 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	agent := f.String("agent", "", "registered agent contact for attribution")
 	storageLease, portLease, cwd := new(string), new(string), new(string)
 	serviceLease, detach := new(string), new(bool)
+	quiet := new(bool)
 	var usagePolicy model.UsagePolicy
 	if command == "run" {
+		f.BoolVar(quiet, "quiet", false, "save output without printing it; still wait and return the command exit status")
 		f.StringVar(&usagePolicy.Mode, "usage-policy", "", "opt-in observed overage policy: warn or revoke (requires --agent)")
 		f.DurationVar(&usagePolicy.Window, "usage-window", 5*time.Second, "sustained observed breach `duration` before warning")
 		f.DurationVar(&usagePolicy.Grace, "usage-grace", 30*time.Second, "remediation `duration` after each warning")
@@ -763,7 +774,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 			}
 			return 130, a.ctx.Err()
 		}
-		if command == "run" {
+		if command == "run" && !*quiet {
 			var b []byte
 			if e = a.hostCall(*host, "output", map[string]any{"id": l.ID, "offset": offset}, &b); e != nil {
 				return 1, e
@@ -790,7 +801,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 			return a.acquired(l)
 		}
 		if l.State == "terminal" {
-			if command == "run" {
+			if command == "run" && !*quiet {
 				var b []byte
 				if e = a.hostCall(*host, "output", map[string]any{"id": l.ID, "offset": offset}, &b); e != nil {
 					return 1, e
