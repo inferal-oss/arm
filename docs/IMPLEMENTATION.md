@@ -2826,3 +2826,19 @@ and native command build checks pass. Existing website CI also passes with fresh
 current-source dashboard captures and SSR/browser checks. This accepts one
 selected transcript in an in-page window; separate OS popups, multiple readers,
 full Go-suite and Linux-runtime acceptance remain outside this milestone.
+
+## Forward listener original Unix child
+
+Integrated `1adb1b23` issues one process-local Unix child from the exact
+current original ForwardListener. Parent identity and suspend-inclusive
+remaining time fence new child work; join/Close retain the parent's resources
+until the original child returns. Cleanup uncertainty is sticky and survives
+startup. Correction `f1678bca` refuses TCP-only recovery of that Unix outcome
+unconditionally, including when the failure text matches a legacy TCP prefix.
+Ordinary fenced TCP crash recovery remains covered separately.
+
+The child carries no path or filesystem authority and has no production
+consumer. There is no Unix bind or storage pair in this increment. The
+[storage custody contract](MESH-FORWARD-UNIX-CUSTODY-CONTRACT.md) remains
+required before namespace mutation; the existing memory promise is not a disk
+reservation. General TCP and broader forwarding activation remain fenced.

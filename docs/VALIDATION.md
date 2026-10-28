@@ -7166,3 +7166,20 @@ both pass on accepted main `2d83ba4`. Its production source remains identical to
 reviewed `ce92760`, with fully synthetic observer fixtures from `3856f9c`. This
 publication receipt adds no positive Linux allocation/workload/performance,
 live-origin, DNS/HTTPS or latency measurement acceptance.
+
+### Forward original-child current composition
+
+[Current composed evidence](validation/forward-unix-child-current-2026-10-28.json)
+binds six paths/five Go files exactly to the reviewed corrected source. The
+Darwin race run passes seven exact roots with no failures/skips, followed by
+Manager vet. Both original phases exit zero; all 1,602 selected inputs remain
+unchanged and all fourteen prior C0 files are retained. The negative restart
+case uses the legacy port-reclamation prefix yet refuses Unix-uncertain
+recovery; the ordinary TCP-prefix recovery remains positive. The joined-port
+reset proof is included.
+
+The initial sandbox-clock failure and later restart-marker failure retain
+their original failed status; earlier five-case success is not attributed to
+the prefix correction. CPU admission observations are controlled fixtures,
+with the native Darwin clock. No Linux execution, Unix socket bind/storage,
+application traffic or production forwarding activation is established.

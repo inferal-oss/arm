@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED_SCOPED_CURRENT_COMPOSITION",
+  "base": "eb4a1e5c625a52a6ad88c352c1d724b7059ffa69",
+  "original_commits": [
+    "a1ef4a5e5cdcef5636ee14a064eb8d80adf0e238",
+    "697af5d4ef3b3614bf5d59541738a37b6211fa56"
+  ],
+  "composed_commits": [
+    "1adb1b23cf670a3dc798aa433048a52154b4c3c1",
+    "f1678bcae939fe7f927ac2bd70294f89bdfe4b97"
+  ],
+  "tree": "e4357605e69206f05a24a4087dd8dc63d9033f65",
+  "owned_files": {
+    "docs/MESH-FORWARD-UNIX-CUSTODY-CONTRACT.md": {
+      "sha256": "8d64ccec6646ecefa717a9c90b188bcf02e8fcbb1c35c9e8cee75bc7e6d38562",
+      "blob": "51eb5a497942017c38303647b0fcbb2f742b0d03",
+      "mode": "100644"
+    },
+    "internal/manager/forward_listener.go": {
+      "sha256": "b3c6a9faa18dd06a58fd11fe27cc06011fe13b88429b0c7d926afec11c671673",
+      "blob": "d338ff219e753f06a95237430d3d82a1de03724b",
+      "mode": "100644"
+    },
+    "internal/manager/forward_listener_recovery_test.go": {
+      "sha256": "38b31e872dfe967259786e0e2c1287b85be8278d81e1b6c5a9d3c45c29c4f54b",
+      "blob": "42f245358ad9f0a1c1c705dc9d0392b3ae0c8f3c",
+      "mode": "100644"
+    },
+    "internal/manager/forward_unix_child.go": {
+      "sha256": "93e5b41e55acdcb4cd1516151db58c26cb4c471cdbe9ebd52667068d399f3a22",
+      "blob": "3a80f4398fa952b5b598643661a7937f534a2272",
+      "mode": "100644"
+    },
+    "internal/manager/forward_unix_child_test.go": {
+      "sha256": "33c1ddf24e17cb7717f68102078682ec0ba64c394058430138e12d5ea5464321",
+      "blob": "f4eef4565ecf90746bf8c161ed3559b4eb4ddca9",
+      "mode": "100644"
+    },
+    "internal/manager/manager.go": {
+      "sha256": "5d440527f1c13e35c854761c94c0a4d0312795d7377214fc41608704127f4cd2",
+      "blob": "b4345ecd57b60f96bd86ec50ebeb1bd9836bda06",
+      "mode": "100644"
+    }
+  },
+  "five_Go_and_contract_byte_exact_reviewed_final_source": true,
+  "all14_prior_C0_files_retained": true,
+  "test_result": {
+    "roots": 7,
+    "nodes": 7,
+    "pass": 7,
+    "fail": 0,
+    "skip": 0,
+    "roster": [
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardListenerCrashRecoveryAfterExclusiveProcessFence",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardListenerJoinedPortAllowsResetProof",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardListenerPortAndResourcesJoinBeforeSettlement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildCleanupFaultRetainsChargeAndRecoveryFence",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildExactOriginalAndJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildManagerCloseWaitsForOriginalJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildNeverReissuedAfterJoin",
+        "status": "pass"
+      }
+    ],
+    "issues": []
+  },
+  "phases": [
+    {
+      "name": "race",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "bd79ddc36f717ee97d2046e890350ddaa2e079605ffa34e75edf44b75cef7974",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "vet",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "outer_exit": 0,
+  "elapsed_seconds": 41.449209666,
+  "gate_seal_sha256": "d956dcfae7c3c7204c8a3ff7de34aa8148608084b0e04a904f59461633007950",
+  "result_sha256": "132d11fa023858cb232894c39ee63e746f53e82e4be6fa1ae62f42a5b07235d8",
+  "source_manifest_sha256": "23df5202bba3cbecedd34bc34437c28657169e7df70b459eeb5e3bf8302effe1",
+  "selected_inputs": {
+    "files": 1602,
+    "scope": "Tracked Go sources,go.mod/go.sum,six owned paths and selected runner/tool entrypoints. Not a complete transitive toolchain/module-cache proof.",
+    "pre_post_equal": true
+  },
+  "resource_controls": {
+    "canonical_FIFO_queue_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "all_five_overrides_unset_at_dispatch": true,
+    "GOMAXPROCS": 1,
+    "p": 1,
+    "parallel": 1,
+    "count": 1,
+    "test_timeout_seconds": 120,
+    "module_readonly": true,
+    "phase_caps_seconds": [
+      180,
+      90
+    ],
+    "owner_cap_seconds": 330,
+    "CGO_ENABLED": "1",
+    "existing_released_cache_reused_no_copy_or_download": true
+  },
+  "Go_executable_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+  "scope": "Process-local original forward child, one-shot issuance, parent/child joins and sticky cleanup recovery fence on current composition; production generic-forward review fence unchanged.",
+  "limitations": [
+    "Darwin native lease-clock paths execute; CPU availability in these tests is controlled. No fresh physical headroom or physical sleep claim.",
+    "Injected cleanup uncertainty exercises retained outcome and recovery denial; no Unix socket, held storage directory, native bind/unlink or application stream is exercised.",
+    "Ordinary loopback listener join/reset/crash cases do not enable public TCP/general forwarding; no browser/transparent-client/multi-hop scope is promoted.",
+    "No Linux compile/runtime or complete forwarding suite ran.",
+    "Historical sandbox/native/generic-forward failures retain their original status; this current scoped pass does not explain or relabel them.",
+    "Original returned Go child waits and a107 pipe cleanup contract do not establish arbitrary escaped/transitive descendant closure or hermetic toolchain state.",
+    "No source changes beyond the two focused cherry-picks; no push, public activation or self-acceptance."
+  ],
+  "coordinator_actual_review": {
+    "seven_exact_RUN_PASS_nodes_reconstructed": true,
+    "two_original_waits_and_all_log_hashes_verified": true,
+    "six_committed_blobs_modes_match_reviewed_successor": true,
+    "fourteen_prior_C0_blobs_retained": true,
+    "prefix_recovery_finding_closed": "Unconditional Unix-cleanup outcome refusal precedes terminal and legacy prefix exceptions; both denial and ordinary TCP positive covered.",
+    "source_review_sha256": "87e2e5186f567435943d35961ed0431ad5687b404d8e26f01ae7e6810bcbdf97",
+    "author_qualified_sha256": "b089d64adc1c84af23af3c9674dfcbf0969e9009c29e36b13e10464040dfb8c1"
+  }
+}

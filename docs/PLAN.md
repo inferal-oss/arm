@@ -567,8 +567,9 @@ with no schema installer or format activation.
 
 The operations owner continues through `codex/degraded-holder-recovery` after
 its preserved source draft. General forwarding continues on
-`codex/forward-manager-bridge`: original child authority is pending review;
-actual Unix bind still requires positive disk custody and recovery proof. The
+`codex/forward-manager-bridge`: original child authority and corrected recovery fencing are integrated as
+`1adb1b23`/`f1678bca`. Seven composed race roots and targeted vet pass; actual
+Unix bind still requires positive disk custody and recovery proof. The
 approved forwarding security scheme remains unchanged.
 
 ## Run transparency
