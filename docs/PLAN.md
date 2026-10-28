@@ -429,3 +429,31 @@ preparation packet. Both patches pass source-only apply checks on `517df976`;
 six overlapping framework files need preserved current behavior. This is a
 source continuation, not acceptance of the old 509/510 numeric run or a new
 current-base composition.
+
+
+### Current source continuations
+
+The unified-onboarding owner continues on `codex/unified-kubernetes-core-workflow`
+from `47bafbd7`, reusing only its owned selectors and tests. Additional start,
+bootstrap and connector profiles are proposals awaiting shared tuple/proof and
+original-owner review; none is active. Current unavailable-cluster rendering
+and fixture correction do not establish live Node discovery or enrollment.
+
+The sync owner continues the scan-wide original hold on
+`codex/sync-xfs-owner-fence` and the charged-scope/mutation-gate design on
+`codex/sync-manager-scope-gate-design`. The next source cut must resolve the
+sealed package bridge, bounded held-connection reads, bootstrap accounting and
+complete writer exclusion before a positive provider or public dispatch.
+
+Provider and pressure owners have resumed bounded source stages from
+`d8a324fb`: the former covers the real typed-pair admission/lifecycle bridge,
+and the latter original-owned policy-selected pause/resume. Shared schema,
+Manager and activation changes remain centrally reviewed. No tests, format
+activation, native pressure action or production factory are accepted from
+these assignments.
+
+Current-base numeric/Sparkline source review accepts the 49-path composition
+without a dependency on PR #218. Its fresh Rust/WAT build, twenty ABI checks
+and typecheck pass with unchanged selected inputs. The 519-case numeric gate,
+component/native UI gates and production build remain separate pending steps;
+ARM's vendored engine is unchanged.
