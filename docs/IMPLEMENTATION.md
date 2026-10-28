@@ -2472,3 +2472,30 @@ conversion/Sparkline work. The latest retained thirty numeric and nineteen
 component paths, including both later lexical-cast corrections, are being
 composed on current upstream. The earlier failed and qualified native evidence
 retain their original source scope.
+
+## Unactivated Kubernetes source profile descriptions
+
+The internal source description accepts `t` for exactly three fixed Start
+requests (196608 content bytes, 262144 disk bytes), and `e`/`f` for one fixed
+request each (65536 content bytes, 131072 disk bytes). Existing `s` and `i`
+budgets remain unchanged. All retain 0.1 CPU, 128 MiB memory, a five-minute source
+term and separate six-minute parent terms. These helper grants authorize no
+carrier or image builds.
+
+Forward descriptions include a separate canonical `kp1` ordinary ports parent:
+one native-namespace TCP4 loopback hold with a kernel-assigned port. Closed graph
+validation rejects missing/mismatched parents, foreign consumers, resource-role
+swaps and attempts to use a source consumer as another lease's parent. Generic
+admission and ordinary port attachment reject reserved source keys even with a
+different project. The existing source-pair constructor refuses `f`; describing
+and validating a triple cannot mint or recover its original socket.
+
+New profile insertion first commits the exact TEXT metadata contract. Current
+stopped proof understands that closed value; the retained previous reader
+refuses it. This is a proof-compatibility fence, with no old runtime/startup or
+uniform-writer claim. `Binding()` returns only cached constructor observations,
+including after closure; it confers no file, helper, socket or renewed entitlement.
+Source closure, resource settlement, storage debt and future forward-port
+closure/settlement have distinct result fields. Bootstrap/forward helper and
+connector implementation, protected-stage integration and public activation
+remain unfinished.

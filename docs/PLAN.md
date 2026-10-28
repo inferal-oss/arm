@@ -419,3 +419,21 @@ preparation packet. Both patches pass source-only apply checks on `517df976`;
 six overlapping framework files need preserved current behavior. This is a
 source continuation, not acceptance of the old 509/510 numeric run or a new
 current-base composition.
+
+### Unactivated Kubernetes source profile continuation
+
+The unified-onboarding branch now describes the exact start (`t`), bootstrap
+(`e`) and forward (`f`) resource budgets, reserves `kp1` independently of its
+project field, and checks the closed source/storage/port graph. A canonical
+metadata contract is committed before new source-profile insertion. The
+constructor's cached binding observation remains available after SQL/native
+closure without renewing authority. The native Start wrapper is checked against
+its exact three-request map.
+
+This is a source foundation awaiting independent integration review. The
+ordinary pair constructor deliberately refuses `f`; no new forward socket,
+bootstrap action or public workflow adapter is supplied. Complete the original
+three-row forward constructor, protected stages, remote bootstrap actions,
+pinned connector and composed native/proof/UI gates before activation. The
+compatibility marker makes previous stopped proof refuse; it does not establish
+old startup refusal or uniform runtime-writer exclusion.

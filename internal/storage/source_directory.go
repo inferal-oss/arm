@@ -120,7 +120,7 @@ var sourceNonce = regexp.MustCompile(`^[a-f0-9]{32}$`)
 
 func SourceFileName(purpose, nonce string) (string, error) {
 	valid := false
-	for _, p := range []string{"payload", "ship", "lookup_binary", "catalog_proof", "lookup_start_marker", "runtime_proof"} {
+	for _, p := range []string{"payload", "ship", "lookup_binary", "catalog_proof", "lookup_start_marker", "runtime_proof", "start_marker", "mesh_bootstrap", "mesh_forward"} {
 		if p == purpose {
 			valid = true
 		}

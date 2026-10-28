@@ -95,6 +95,24 @@ func (o *OwnedExec) NewSourceCall(pod Pod, kind string) (*NativeExecCall, error)
 	}
 	return &NativeExecCall{original: clone, pod: pod, kind: k, command: command, nonce: nonce, encoded: encoded, done: make(chan struct{})}, nil
 }
+
+// NewSourceCallForExec accepts only the exact already-reviewed provider call
+// map. The boolean describes payload presence for classification, not resource
+// admission. The factory still requires its concrete original payload loan.
+func (o *OwnedExec) NewSourceCallForExec(pod Pod, command []string, hasPayload bool) (*NativeExecCall, error) {
+	if o == nil {
+		return nil, fmt.Errorf("original fixed helper unavailable")
+	}
+	var presence io.Reader
+	if hasPayload {
+		presence = bytes.NewReader(nil)
+	}
+	kind, err := classifyReviewedExec(o.Plan, pod, command, presence)
+	if err != nil {
+		return nil, err
+	}
+	return o.NewSourceCall(pod, string(kind))
+}
 func (c *NativeExecCall) Scope() (key string, size int64, kind string, err error) {
 	if c == nil || c.original == nil || c.done == nil {
 		return "", 0, "", fmt.Errorf("original fixed call required")

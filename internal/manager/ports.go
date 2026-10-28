@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"getarm.org/internal/kubesource"
 	"getarm.org/internal/model"
 	"getarm.org/internal/ports"
 )
@@ -104,6 +105,9 @@ func (m *Manager) portParent(r model.Request, consumer string) (model.Lease, err
 	l, err := m.get(r.PortLease)
 	if err != nil {
 		return l, err
+	}
+	if kubesource.IsReserved(l.Request) {
+		return l, model.Err("ports_unavailable", "native source ports cannot be attached by ordinary work")
 	}
 	if l.Request.Kind != "ports" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseCovers(l, r.TTL) || len(l.Ports) == 0 || len(m.portSockets[l.ID]) != len(l.Ports) {
 		return l, model.Err("ports_unavailable", "parent ports must be active on this host/user, still supervised, and outlast the command's TTL")

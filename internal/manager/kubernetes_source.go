@@ -15,15 +15,7 @@ import (
 	"getarm.org/internal/model"
 )
 
-type KubernetesSourceResult struct {
-	SourceLeaseID   string `json:"source_lease_id"`
-	StorageLeaseID  string `json:"storage_lease_id,omitempty"`
-	SourceClosed    bool   `json:"source_closed"`
-	SourceSettled   bool   `json:"source_settled"`
-	StorageState    string `json:"storage_state,omitempty"`
-	StorageRetained bool   `json:"storage_retained"`
-	PromisedDisk    int64  `json:"promised_disk_bytes"`
-}
+type KubernetesSourceResult = kubesource.Result
 
 // KubernetesSourcePreparation is an unused original native pair capability.
 // No row/ID/path/FD or browser request can reconstruct it after admission.
@@ -44,6 +36,20 @@ type KubernetesSourcePreparation struct {
 	published, finished bool
 	result              KubernetesSourceResult
 	err                 error
+}
+
+// Binding reads only the original cached constructor tuple, even when SQL or
+// entitlement is unavailable. It never authorizes work or reconstructs an owner.
+func (k *KubernetesSourcePreparation) Binding() (kubesource.Binding, error) {
+	if k == nil || k.manager == nil || k.transit == nil {
+		return kubesource.Binding{}, model.Err("invalid_request", "original source constructor required")
+	}
+	k.manager.mu.Lock()
+	defer k.manager.mu.Unlock()
+	if k.parent.ID == "" {
+		return kubesource.Binding{}, model.Err("lease_inactive", "source construction did not publish a complete binding")
+	}
+	return kubesource.Binding{Operation: k.scope.Operation, Attempt: k.scope.Attempt, Stage: string(k.scope.Stage), BinaryBytes: k.scope.B, SourceLeaseID: k.transit.id, StorageLeaseID: k.parent.ID}, nil
 }
 
 func (k *KubernetesSourcePreparation) Context() context.Context {
@@ -110,6 +116,9 @@ func (k *KubernetesSourcePreparation) checkPairLocked() error {
 func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (result *KubernetesSourcePreparation, resultErr error) {
 	if ctx == nil || callerJoined == nil || scope.Validate() != nil {
 		return nil, model.Err("invalid_request", "closed native source scope and original caller required")
+	}
+	if scope.Stage == kubesource.Forward {
+		return nil, model.Err("invalid_request", "forward source requires the original three-row port constructor")
 	}
 	if err := ctx.Err(); err != nil {
 		return nil, err

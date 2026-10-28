@@ -1,0 +1,103 @@
+{
+  "scope": "unused source-profile foundation; no public workflow activation",
+  "base": "47bafbd7e195007c05fa442e0a44a0c91faf829d",
+  "source_sha256": {
+    "internal/database/proof.go": "ba8a41c59c0d10619a87981a07cb836e7d4653c54d53184fe03d20def1d97a8c",
+    "internal/database/proof_kubesource.go": "701faa7efb5536a97221b794f2bd7cdc1711d01c91122040351e9cae6fe92b92",
+    "internal/database/proof_kube_forward_test.go": "7ffece854d2e5bc21c0859b36f96413c9d4e4f2493b8eedbbbc5c55ef8d81a60",
+    "internal/database/proof_kube_contract_test.go": "b8a2d83dca5d8ef1df6bac5569fe32df39cb039aded9c9a8ca1afbc0e51b05d1",
+    "internal/database/proof_kube_previous_reader_test.go": "853c518831b84da4cf7624e14968b0a23c2d683083aaf4cb2da45ce299cb34b8",
+    "internal/kubeprovision/source_files.go": "400b1ff93673e7d7198aceb1a1cc3ca93053f22234c8aa37423b5fe7f3312772",
+    "internal/kubeprovision/source_files_test.go": "dbfad55cbeddb473b24391dab1caae89edc3d656153263b9fbe325b6c3247f3c",
+    "internal/kubesource/scope.go": "0456ac4fcc55b29c722977341d8f7245c1c35e8655a8b861d0699b2cf977eac3",
+    "internal/kubesource/contract.go": "f5d74a4fc3ea9165d75c094ca63647e05b3770723eaf099b826d6ae2add63842",
+    "internal/kubesource/profiles_test.go": "630d9478e21ba26cdbb160a6a8f14fefb1461c2b12773be9f8e23c33c2bacc2c",
+    "internal/manager/kubernetes_source.go": "9d175930ec9d50c303234aad54424e6e8170bf9deb875fa0e7163d40f1f30fdb",
+    "internal/manager/manager.go": "b844f30469b19ef07a760b882e11c5cc90d6c88d79b4195b0b62999a0fbe9211",
+    "internal/manager/kubernetes_binding_test.go": "9ffa4e892aef712cc33fedd418d303dc24254a4b9017485775d28b5077dd3204",
+    "internal/manager/kubernetes_contract.go": "bf24ec6aa98ad25d452101f487fa220f87f1e66a9c349dffac9d91e29cf570e4",
+    "internal/manager/ports.go": "7aca3eb10c413ac7ef4dab3284b0c3cef4bf764d3204b9a666c49482e7a7ad65",
+    "internal/storage/source_directory.go": "d20029b00b1bd674097db418253c9d95a4217000d92367d04332ebdab3cff2f7"
+  },
+  "darwin_race": {
+    "exit": 0,
+    "roots": 12,
+    "named_cases": 37,
+    "skips": 0,
+    "roster": [
+      "TestNewProfilesHaveExactBudgetsAndPortRole",
+      "TestClosedScopeAndCumulativeBudgets",
+      "TestPairRejectsSwapsAndScopeDrift",
+      "TestSourceCallStartWrapperUsesThreeNativeRequests",
+      "TestKubernetesSourceBindingIsCachedObservationAfterClose",
+      "TestKubernetesSourceNewContractRefusalPrecedesAdmission",
+      "TestKubernetesSourcePortRoleReservedIndependentlyOfProject",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/complete",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/missing-port",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/foreign-port-consumer",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/storage-as-port",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/port-as-storage",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/source-as-storage",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/source-as-port",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/empty-partial-port",
+      "TestKubernetesForwardProofExactTripleAndForeignReferences/foreign-partial-port",
+      "TestKubernetesSourceProofClosedRelationship",
+      "TestKubernetesSourceProofClosedRelationship/missing-parent",
+      "TestKubernetesSourceProofClosedRelationship/wrong-owner",
+      "TestKubernetesSourceProofClosedRelationship/obsolete-inspect-three",
+      "TestKubernetesSourceProofClosedRelationship/wrong-attempt",
+      "TestKubernetesSourceProofClosedRelationship/duplicate-parent",
+      "TestKubernetesSourceProofClosedRelationship/extra-consumer",
+      "TestKubernetesSourceProofClosedRelationship/unattached-written-parent",
+      "TestKubernetesSourceProofPartialAdmissionIsNotAdoption",
+      "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences",
+      "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/empty-partial-parent",
+      "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/one-foreign-reference",
+      "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/two-foreign-references",
+      "TestKubernetesSourceContractStrictTextAndClosedValue",
+      "TestKubernetesSourceContractStrictTextAndClosedValue/canonical",
+      "TestKubernetesSourceContractStrictTextAndClosedValue/unknown-version",
+      "TestKubernetesSourceContractStrictTextAndClosedValue/duplicate-profile",
+      "TestKubernetesSourceContractStrictTextAndClosedValue/aliased-field",
+      "TestKubernetesSourceContractStrictTextAndClosedValue/extra-field",
+      "TestKubernetesSourceContractStrictTextAndClosedValue/blob"
+    ]
+  },
+  "previous_native_reader": {
+    "proof_source_base": "47bafbd7e195007c05fa442e0a44a0c91faf829d",
+    "executable_sha256": "d467a2e34d3df8e82935570a40c43d251442f41e312485cdb06448c818de9f58",
+    "scope": "read-only removal preview of disposable actual writer history before/after marker; no cluster effects",
+    "exit": 0,
+    "roots": 1,
+    "named_cases": 3,
+    "skips": 0,
+    "before_marker": "accepted",
+    "after_marker": "refused unknown metadata contract"
+  },
+  "targeted_vet_exit": 0,
+  "linux_arm64_compile_only": {
+    "exit": 0,
+    "test_execution": false,
+    "packages": [
+      "internal/kubesource",
+      "internal/kubeprovision",
+      "internal/manager",
+      "internal/database"
+    ]
+  },
+  "preserved_predecessors": [
+    {
+      "run": "initial reserved-port fixture",
+      "result": "failed: attempted UPDATE of nonexistent fixture row",
+      "disposition": "fixture now explicitly inserts its owned row; final exact cohort passes"
+    }
+  ],
+  "limitations": [
+    "No forward constructor: existing pair constructor refuses f",
+    "No e action helper or public adapter",
+    "No old startup/uniform writer exclusion claim",
+    "No pre-core reader or isolated kp1 partial-cut acceptance",
+    "No production connector, real installation or enrollment acceptance"
+  ]
+}

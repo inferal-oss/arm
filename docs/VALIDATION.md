@@ -6382,3 +6382,24 @@ verifies all sixteen committed Git objects/modes at `7d057f24`, current base
 No upstream merge, ARM dependency promotion or current numeric/Sparkline
 acceptance follows. The latest recovered 49-path numeric/component continuation
 is separately awaiting current-base composition and validation.
+
+### Closed Kubernetes source profile foundation
+
+The [source-bound profile record](validation/kubernetes-source-profiles-2026-10-28.json)
+covers the exact sixteen-path candidate on `47bafbd7`. Its focused Darwin race
+cohort passes twelve roots/thirty-seven named cases without skips, including
+actual fixed-helper Start execution against the native TLS/SPDY fixture,
+post-close cached binding, contract refusal before admission, reserved port-key
+refusal, strict TEXT contract decoding and closed graph negatives. These fixtures
+do not establish live host admission, a forward constructor, remote bootstrap,
+installation, enrollment or a complete unified workflow.
+
+The retained previous native executable accepts an unfenced disposable writer
+history and refuses the same history after the contract marker is inserted.
+That explicit cohort passes one root/three named cases without skips. It is a
+stopped-proof compatibility check, not old runtime retention/startup exclusion,
+pre-core-reader acceptance, every partial `kp1` cut or protected-stage proof.
+The first reserved-port fixture failed because it updated a nonexistent row;
+the corrected fixture inserts that owned row and the final cohort passes. The
+failed predecessor remains failed. Targeted vet and Linux ARM64 compile-only
+results are recorded separately; compilation is not Linux runtime execution.

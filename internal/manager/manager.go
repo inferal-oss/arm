@@ -1150,6 +1150,9 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		key = r.Key
 	}
 	if source != nil && !source.parent {
+		if e = ensureKubernetesSourceContractTx(tx, source.scope); e != nil {
+			return empty, e
+		}
 		if e = excludeSourceOperationTx(tx, source.scope); e != nil {
 			return empty, e
 		}
