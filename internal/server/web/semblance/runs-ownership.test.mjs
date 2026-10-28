@@ -15,7 +15,7 @@ function graphFixture(){
  const store={factory,match:(s,p,o,g)=>quads.filter(q=>(!s||q.subject.equals(s))&&(!p||q.predicate.equals(p))&&(!o||q.object.equals(o))&&(!g||q.graph.equals(g))),has:q=>quads.some(old=>equal(old,q))};
  const app={store,projection:{index:{rootOf:iri=>iri}},renderer:{nodeOf:()=>null},flush(){},runtime:{transaction:fn=>fn(),onInput:()=>()=>{},apply({remove=[],add=[]}){quads=quads.filter(q=>!remove.some(old=>equal(old,q)));for(const q of add)if(!store.has(q))quads.push(q);}}};
  const source=readFileSync(new URL('./graph-ui.mjs',import.meta.url),'utf8').replace(/^import .*\n/gm,'').replace(/export /g,'');
- const create=runInNewContext(source+'\ncreateGraphUI',{stockC:{},stockBEH:{},stringifyJSON,replaceOwnership,releaseOwnership});
+ const create=runInNewContext(source+'\ncreateGraphUI',{stockC:{},stockBEH:{},stringifyJSON,replaceOwnership,releaseOwnership,queueMicrotask});
  const ui=create(app);return {ui,store,root:ui.stack()};
 }
 const run={id:'a',name:'generated-name',reason:'Native purpose',state:'active',command:['test']},tick=()=>new Promise(resolve=>setImmediate(resolve));
@@ -29,4 +29,15 @@ test('stock opener retains the direct Button type and Effect while owned heading
  rows=[run];await panel.refresh();assert.equal(current.hidden,false);const filter=handles().find(h=>h.kind==='TextField');filter.value='no match';filter.emit('input');assert.equal(current.hidden,true);assert.ok(!current.disposed);filter.value='';filter.emit('input');assert.equal(current.hidden,false);
  rows=[{...run,state:'terminal',outcome:'completed'}];await panel.refresh();assert.equal(current.hidden,true);assert.equal(history.hidden,false);assert.ok(current.parents.size>0&&history.parents.size>0);
  panel.dispose();root.dispose();assert.equal(current.disposed,true);assert.equal(history.disposed,true);
+});
+
+test('detachable wrapper owns its exact content and retires native geometry with its tab',()=>{
+ const {ui,store,root}=graphFixture(),content=ui.stack([ui.code('private log')]),window=ui.detachable('Run log',content),f=store.factory,C='https://semblance.dev/ns/component#';
+ root.replace(window);assert.equal(content.disposed,undefined);assert.equal(window.detached,false);
+ window.popOut();assert.equal(window.detached,true);assert.ok(content.parents.has(window.tab));
+ window.dock();assert.equal(window.detached,false);assert.equal(content.disposed,undefined);
+ const iri=window.iri+'/~window-'+encodeURIComponent(window.tab.iri);ui.put(iri,C+'x',120);ui.put(iri,C+'y',80);ui.put(ui.windowDesktop.iri,C+'topmost',iri,true);
+ root.replace();assert.equal(window.disposed,true);assert.equal(content.disposed,true);assert.equal(window.tab.disposed,true);
+ assert.equal(store.match(f.namedNode(iri),null,null,f.defaultGraph()).length,0);assert.equal(store.match(f.namedNode(ui.windowDesktop.iri),f.namedNode(C+'topmost'),null,f.defaultGraph()).length,0);
+ ui.windowDesktop.dispose();root.dispose();
 });

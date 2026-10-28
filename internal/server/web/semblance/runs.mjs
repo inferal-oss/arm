@@ -6,7 +6,7 @@ export function cleanRunText(value) {
   return value.replace(/\r\n/g, '\n').replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f\u2028\u2029\u202a-\u202e\u2066-\u2069]/g, c => `\\u${c.charCodeAt(0).toString(16).padStart(4,'0')}`);
 }
 export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{}}) {
-  let active=false,disposed=false,generation=0,busy=false,logBusy=false,timer=null,logTimer=null,selected=null,offset=0,text='',done=false,following=true,decoder=new TextDecoder(),displayCut=false,listError='',logError='';
+  let visible=false,active=false,disposed=false,generation=0,busy=false,logBusy=false,timer=null,logTimer=null,selected=null,offset=0,text='',done=false,following=true,decoder=new TextDecoder(),displayCut=false,listError='',logError='';
   const filter=ui.field('Search runs',{type:'search',placeholder:'Purpose, command or agent…'},renderList),status=ui.text(''),historyError=ui.text('',{role:'status',tone:'warning',hidden:true}),list=ui.stack(),detail=ui.stack(),history=ui.stack([filter,status,historyError,list]);
   ui.put?.(root.iri,RDF_TYPE,ARM+'RunSurface',true);root.replace(history,detail);let runs=[],detailID=null,display=null,full=false,foldBeforeFull=true;const listRows=new Map();
   function replace(parent,children){const old=[...parent.children];parent.replace(...children);for(const child of old)if(!parent.children.includes(child))child.dispose();}
@@ -44,9 +44,10 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     historyError.set({label:listError?'Run list unavailable: '+listError:'',hidden:!listError});
     if(display){const errors=[!connected()?'Disconnected; cached output is stale':'',listError?'Run list unavailable: '+listError:'',logError?'Output unavailable: '+logError:''].filter(Boolean);display.error.set({label:errors.join(' · '),hidden:!errors.length});}
   }
-  function renderDetail(){history.hidden=Boolean(selected);detail.hidden=!selected;if(!selected){replace(detail,[]);detailID=null;display=null;renderErrors();return;}ui.batch(()=>{
+  function renderDetail(){history.hidden=Boolean(selected);detail.hidden=!selected;if(!selected){display?.window.dispose();replace(detail,[]);detailID=null;display=null;renderErrors();return;}ui.batch(()=>{
     const run=selected;
     if(detailID!==run.id){
+      display?.window.dispose();
       full=false;detailID=run.id;
       display={heading:ui.heading(runPurpose(run),3),command:typed(ui.code(''),'RunDetailCommand'),fullCommand:ui.code(''),metadata:typed(ui.text(''),'RunTechnical'),state:ui.badge(''),times:ui.text(''),cursor:ui.text(''),error:ui.text('',{role:'status',tone:'warning',hidden:true}),output:ui.code(''),follow:ui.button('Pause following',toggleFollow),next:ui.button('Next output page',()=>readLog(true)),lost:ui.text('Reporter lost; process completion is unknown',{tone:'warning',hidden:true})};
       display.output.set({language:''});display.command.set({language:''});display.fullCommand.set({language:''});
@@ -58,7 +59,9 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
       ui.put?.(display.output.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#RunOutput',true);
       ui.put?.(display.output.iri,'https://semblance.dev/ns/component#block',true);
       display.technical=ui.disclosure('Details',[ui.text('Run: '+label(run)+' · ID: '+run.id),display.fullCommand,display.metadata,display.times,...(run.lease_id?[ui.text('Lease ID: '+run.lease_id),ui.button('Inspect associated lease',()=>onLease(run.lease_id))]:[ui.text('Observation only · no resource lease')])],{open:false});
-      replace(detail,[ui.button('Back to runs',close,{emphasis:'Quiet'}),display.heading,display.command,display.state,display.technical,display.transcript]);
+      display.window=ui.detachable(runPurpose(run)+' · Log output',display.transcript);
+      display.window.on('detach',()=>{setFull(false,false);updateActivity();});
+      replace(detail,[ui.button('Back to runs',close,{emphasis:'Quiet'}),display.heading,display.command,display.state,display.technical,ui.text('Drag the log tab out, use its pop-out control, or press Shift+Enter. Closing its window returns the log here.'),display.window]);
     }
     display.command.set({value:runCommand(run,150)});display.fullCommand.set({value:JSON.stringify(run.command??[])});
     display.metadata.set({label:`Agent: ${run.agent||'—'} · Reason: ${run.reason||'—'} · Host: ${run.host||'—'} · Directory: ${run.cwd||'—'} · State: ${run.state||'—'} · Outcome: ${run.outcome||'—'} · Exit code: ${run.exit_code??'—'}`});
@@ -93,9 +96,13 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
       if(!enabled)setFull(false);
     });
   });
+  function updateActivity(){
+    const next=visible||Boolean(display?.window.detached);
+    if(active===next)return;active=next;retire();if(active)refresh();
+  }
   function retire(){generation++;busy=false;logBusy=false;if(timer!==null)clearTimeout(timer);timer=null;if(logTimer!==null)clearTimeout(logTimer);logTimer=null;}
   function close(){
-    const id=selected?.id;setFull(false,false);retire();selected=null;logError='';renderDetail();
+    const id=selected?.id;setFull(false,false);retire();selected=null;logError='';renderDetail();updateActivity();
     const opener=listRows.get(id)?.button;
     (opener&&!opener.disposed&&opener.isConnected!==false?opener:filter).focus();schedule();
   }
@@ -126,5 +133,5 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
   async function refresh(){if(disposed||!active||busy){schedule();return;}if(!connected()){status.set({label:'Disconnected · cached runs and output are stale'});renderDetail();schedule();return;}busy=true;const cut=generation,source=context();try{
     const inventory=await call('runs');if(disposed||cut!==generation||source!==context()||!active)return;listError='';runs=inventory??[];renderList();if(selected){const current=runs.find(r=>r.id===selected.id);if(current){selected=current;renderDetail();}}await readLog();
   }catch(error){if(cut===generation&&source===context()){listError=error.message;renderDetail();}}finally{if(cut===generation)busy=false;schedule();}}
-  return {refresh,open,get selected(){return selected;},setActive(value){if(active===value)return;if(!value)setFull(false,false);active=value;retire();if(active)refresh();},updateConnection(){retire();renderList();renderDetail();if(active)refresh();},reset(){setFull(false,false);retire();listError=logError='';runs=[];selected=null;renderList();renderDetail();},dispose(){setFull(false,false);disposed=true;active=false;retire();unwatch?.();}};
+  return {refresh,open,get selected(){return selected;},setActive(value){if(visible===Boolean(value))return;visible=Boolean(value);if(!visible)setFull(false,false);updateActivity();},updateConnection(){retire();renderList();renderDetail();if(active)refresh();},reset(){setFull(false,false);retire();listError=logError='';runs=[];selected=null;renderList();renderDetail();updateActivity();},dispose(){setFull(false,false);disposed=true;active=false;retire();display?.window.dispose();unwatch?.();}};
 }

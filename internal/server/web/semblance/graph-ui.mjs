@@ -200,6 +200,36 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       });h.setSeries(rows,options);return h;});},
     dialog(label,children=[],actions=[]){return batch(()=>{const h=component('Dialog',{label,open:false});h.body=ui.stack(children);h.children=h.body.children;replaceOwnership(h,[h.body,...actions]);put(h.iri,C.content,h.body.iri,true);list(h.iri,C.actions,actions.map(x=>x.iri));ui.desktopHosts.add(h.iri);ui.syncDesktop();return h;});},
     drawer(label,children=[],actions=[]){return batch(()=>{const h=component('Drawer',{label,open:false});h.body=ui.stack(children);h.children=h.body.children;replaceOwnership(h,[h.body,...actions]);put(h.iri,C.content,h.body.iri,true);put(h.iri,C.side,'end');list(h.iri,C.actions,actions.map(x=>x.iri));ui.desktopHosts.add(h.iri);ui.syncDesktop();return h;});},
+    // Stock Tabs owns tear-off, keyboard pop-out and return-by-provenance.
+    // Its content handle stays owned here while the renderer moves the same node.
+    detachable(label,content){return batch(()=>{
+      if(!ui.windowDesktop){
+        const desktop=component('Desktop'),taskbar=component('Taskbar',{label:'Log windows'});
+        put(taskbar.iri,C.of,desktop.iri,true);put(desktop.iri,C.hosts,taskbar.iri,true);
+        replaceOwnership(desktop,[taskbar]);desktop.children=[taskbar];
+        ui.windowDesktop=desktop;ui.desktopHosts.add(desktop.iri);ui.syncDesktop();
+      }
+      const h=component('Tabs'),tab=component('Tab',{label}),desktop=ui.windowDesktop;
+      put(tab.iri,C.content,content.iri,true);replaceOwnership(tab,[content]);tab.children=[content];
+      replaceOwnership(h,[tab]);h.children=[tab];h.tab=tab;
+      list(h.iri,C.tabs,[tab.iri]);put(h.iri,C.selected,tab.iri,true);put(h.iri,C.detachable,true);put(h.iri,C.windowsOn,desktop.iri,true);
+      Object.defineProperty(h,'detached',{get:()=>object(tab.iri,C.detached)?.value==='true'});
+      h.popOut=()=>put(tab.iri,C.detached,true);h.dock=()=>put(tab.iri,C.detached,null);
+      let detached=false;
+      const unwatch=runtime.onInput((graph,delta)=>{
+        if(graph!==undefined||![...delta.add,...delta.remove].some(q=>q.subject.value===tab.iri&&q.predicate.value===C.detached))return;
+        queueMicrotask(()=>{if(h.disposed||detached===h.detached)return;detached=h.detached;h.emit('detach',{detached});});
+      });
+      const dispose=h.dispose.bind(h),window=h.iri+'/~window-'+encodeURIComponent(tab.iri);
+      h.dispose=()=>{if(h.disposed)return;unwatch();batch(()=>{
+        // Native gestures write geometry directly to the deterministic window.
+        // Retire it with the tab so closed sessions leave no private state behind.
+        apply({remove:store.match(nn(window),null,null,g),add:[]});
+        if(object(desktop.iri,C.topmost)?.value===window)put(desktop.iri,C.topmost,null);
+        dispose();
+      });};
+      return h;
+    });},
     disclosure(label,children=[],props={}){return batch(()=>{const h=component('AccordionItem',{label,open:false,...props});h.body=ui.stack(children);put(h.iri,C.content,h.body.iri,true);h.children=h.body.children;replaceOwnership(h,[h.body]);return h;});},
     json(value,label='JSON'){const raw=stringifyJSON(value);return ui.disclosure(label,[ui.code(raw.length>256000?raw.slice(0,256000)+'\n[display truncated]':raw)]);},
     // Review cells are already formatted; stock code format preserves their

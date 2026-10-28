@@ -4,7 +4,7 @@ import {controlUI} from './control-test-ui.mjs';
 import {createRunsConsole,cleanRunText} from './runs.mjs';
 const id='a'.repeat(32),other='b'.repeat(32),run={id,name:'readable-run',command:['test','--all'],agent:'agent',reason:'Verification',state:'active',log_bytes:0};
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function fixture(t,handler,fullscreen=false){const ui=controlUI();ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
+function fixture(t,handler,fullscreen=false){const ui=controlUI();ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.detachable=(label,content)=>{const h=ui.stack([content],{kind:'Tabs',label,detached:false});h.popOut=async()=>{h.detached=true;await h.emit('detach');};h.dock=async()=>{h.detached=false;await h.emit('detach');};return h;};ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
 const encoded=text=>Buffer.from(text).toString('base64');
 test('Runs loads only while visible and opens output following by default',async t=>{const f=fixture(t);await f.panel.refresh();assert.equal(f.calls.length,0);f.panel.setActive(true);await tick();assert.equal(f.calls[0][0],'runs');await f.ui.get('Verification').emit('activate');assert.equal(f.calls.at(-1)[0],'run_output');assert.ok(f.ui.get('Pause following'));assert.equal(f.ui.get('Next output page').disabled,true);});
 test('terminal output drains pages and byte cursor preserves split UTF-8',async t=>{
@@ -116,4 +116,22 @@ test('selected and fullscreen log errors remain visible and recover independentl
  listFailure=true;await f.panel.refresh();assert.match(warning.label,/inventory refused/);assert.match(warning.label,/log refused/);
  listFailure=false;await f.panel.refresh();assert.doesNotMatch(warning.label,/inventory refused/);assert.match(warning.label,/log refused/);assert.ok(f.ui.all.some(x=>String(x.label).startsWith('Stale output')));
  outputFailure=false;await f.panel.refresh();assert.equal(warning.hidden,true);assert.ok(!f.ui.all.some(x=>!x.hidden&&String(x.label).startsWith('Stale output')));assert.equal(surface.fullViewport,true);
+});
+
+test('detached log follows across navigation with the same cursor, controls and reader',async t=>{
+ let n=0;const f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,log_bytes:++n},offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(run);
+ const window=f.ui.all.find(x=>x.kind==='Tabs'),code=f.ui.all.filter(x=>x.kind==='Code').at(-1),pause=f.ui.get('Pause following');
+ const reads=n;await window.popOut();assert.equal(n,reads,'moving the log must not create a second reader');
+ f.panel.setActive(false);await f.panel.refresh();assert.equal(n,reads+1);assert.equal(f.calls.at(-1)[1].offset,1);assert.equal(code.value,'xx');assert.equal(f.ui.get('Pause following'),pause);
+ await pause.emit('activate');await f.panel.refresh();assert.equal(n,reads+1);assert.equal(code.value,'xx');
+ await window.dock();const count=f.calls.length;await f.panel.refresh();assert.equal(f.calls.length,count,'returned log on hidden page must stop polling');
+ f.panel.setActive(true);await tick();assert.equal(f.ui.get('Follow output'),pause);assert.equal(code.value,'xx');
+});
+for(const mode of ['reset','dispose'])test(`detached log retires and rejects late output on ${mode}`,async t=>{
+ let resolve,pending=false;const f=fixture(t,(op,args)=>op==='runs'?[run]:pending?new Promise(done=>resolve=done):{run,offset:args.offset,next_offset:args.offset,data:'',done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(run);const window=f.ui.all.find(x=>x.kind==='Tabs');await window.popOut();f.panel.setActive(false);
+ pending=true;const read=f.panel.refresh();await tick();f.panel[mode]();assert.equal(window.disposed,true);
+ resolve({run:{...run,log_bytes:6},offset:0,next_offset:6,data:encoded('STALE!'),done:false});await read;
+ assert.ok(!f.ui.all.some(x=>String(x.value).includes('STALE!')));const count=f.calls.length;await f.panel.refresh();assert.equal(f.calls.length,count);
 });
