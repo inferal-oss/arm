@@ -232,6 +232,10 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 			return nil, e
 		}
 	}
+	if e = initForwardUnixPairGuard(db); e != nil {
+		db.Close()
+		return nil, e
+	}
 	if fresh {
 		if _, e = db.Exec(`INSERT INTO metadata VALUES ('host',?)`, local.ID()); e != nil {
 			db.Close()

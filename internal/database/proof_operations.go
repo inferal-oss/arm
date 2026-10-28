@@ -198,6 +198,15 @@ func (p *proofReader) readOperations() error {
 	})
 }
 func (p *proofReader) readOther() error {
+	if err := p.walk("forward_unix_pairs", func(r proofRow) error {
+		id, e := r.text("source_id")
+		if e != nil {
+			return e
+		}
+		return p.block("forward_unix_pair", id, "Forward Unix pair requires original socket/storage cleanup proof")
+	}); err != nil {
+		return err
+	}
 	if err := p.walk("host_pressure_state", func(r proofRow) error {
 		id, e := r.text("id")
 		if e != nil {
