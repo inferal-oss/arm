@@ -7,6 +7,7 @@ import (
 
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
+	"getarm.org/internal/nodeavailability"
 )
 
 // A node session is a closed, read-only gateway. It cannot invoke native mesh
@@ -19,7 +20,7 @@ func (s *Server) nodeSessionOperation(ctx context.Context, bound nodeSession, r 
 	if bound.Local {
 		return nil, model.Err("invalid_request", "local node sessions use ordinary local dispatch")
 	}
-	allowed := r.Operation == "node_context" || r.Operation == "node_metadata" || r.Operation == "status" || r.Operation == "resources" || r.Operation == "inspect"
+	allowed := r.Operation == "node_context" || r.Operation == "node_availability_v1" || r.Operation == "node_metadata" || r.Operation == "status" || r.Operation == "resources" || r.Operation == "inspect"
 	if !allowed {
 		return nil, model.Err("forbidden", "this remote node window supports scoped inspection only; local streams, administration and mutations are unavailable")
 	}
@@ -66,6 +67,9 @@ func (s *Server) nodeSessionOperation(ctx context.Context, bound nodeSession, r 
 	}
 	if _, e = s.validateNodeSession(bound); e != nil {
 		return nil, e
+	}
+	if r.Operation == "node_availability_v1" {
+		return nodeavailability.DecodeReport(result, bound.Host)
 	}
 	if r.Operation == "node_metadata" || r.Operation == "status" {
 		var target struct {

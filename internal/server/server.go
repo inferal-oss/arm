@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -22,6 +23,7 @@ import (
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/meshops"
 	"getarm.org/internal/model"
+	"getarm.org/internal/nodeavailability"
 	"getarm.org/internal/nodestop"
 	"getarm.org/internal/observe"
 	"getarm.org/internal/presence"
@@ -75,6 +77,7 @@ type Server struct {
 	meshCloseEvidenceMu   sync.Mutex
 	meshClosers           map[*meshService]*meshClose
 	meshAdminMu           sync.Mutex
+	meshAvailability      atomic.Pointer[meshAvailability]
 	mesh                  *meshService
 	meshPending           *preparedMeshSetup
 	Manager               *manager.Manager
@@ -166,6 +169,9 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 		}
 		if cancel != nil {
 			cancel()
+		}
+		if s != nil {
+			s.meshAvailability.Load().Close()
 		}
 		if httpServer != nil {
 			httpClosed = errors.Join(httpClosed, httpServer.Close())
@@ -288,9 +294,13 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	}
 	s = &Server{nodeStopAdminEnabled: true, Manager: m, home: home, generation: local.ID(), nodeStopDirectory: directory, nodeStopLock: lock, token: local.ID() + local.ID(), stop: cancel, runtimeExecutable: runtimeExecutable, peerSlots: make(chan struct{}, 8), peerSurveySlots: make(chan struct{}, 2)}
 	s.lifecycleContext = ctx
-	// A mesh configuration failure never disables the authenticated local authority.
-	if meshErr := s.loadMesh(); meshErr != nil {
-		fmt.Fprintln(os.Stderr, "ARM mesh unavailable:", meshErr)
+	// Capture exact original approval under administration exclusion.
+	s.meshAdminMu.Lock()
+	meshStartup := s.loadMeshAttempt()
+	s.meshAvailability.Store(newMeshAvailability(ctx, s, meshStartup))
+	s.meshAdminMu.Unlock()
+	if meshStartup.Err != nil {
+		fmt.Fprintln(os.Stderr, "ARM mesh unavailable:", meshStartup.Err)
 	}
 	if e = s.configureNodeStop(); e != nil {
 		fmt.Fprintln(os.Stderr, "ARM node-stop unavailable:", e)
@@ -820,6 +830,22 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, err
 		}
 		return s.nodeInspect(ctx, q.Host)
+	case "node_availability_v1":
+		return s.nodeAvailabilityRead(r.Params)
+	case "node_availability_read_v1":
+		return s.nodeAvailabilityChosenRead(ctx, r.Params)
+	case "node_availability_set_v1":
+		return s.nodeAvailabilitySet(r.Params)
+	case "node_availability_inspect_v1":
+		host, err := nodeavailability.DecodeHost(r.Params)
+		if err != nil {
+			return nil, model.Err("invalid_request", err.Error())
+		}
+		observer := s.meshAvailability.Load()
+		if observer == nil {
+			return nil, model.Err("mesh_unavailable", "availability observer unavailable")
+		}
+		return observer.Inspect(host)
 	case "node_metadata":
 		if err := nodeMetadataParams(r.Params); err != nil {
 			return nil, err

@@ -17,6 +17,22 @@ import (
 const completionDeadline = 250 * time.Millisecond
 
 func (a *app) registerCompletion(cmd *cobra.Command, name string) {
+	if cmd.CommandPath() == "arm node availability set" && (name == "profile" || name == "host") {
+		values := []string{"localhost"}
+		if name == "profile" {
+			values = []string{"unspecified", "stable", "intermittent"}
+		}
+		_ = cmd.RegisterFlagCompletionFunc(name, func(_ *cobra.Command, _ []string, prefix string) ([]string, cobra.ShellCompDirective) {
+			var matches []string
+			for _, value := range values {
+				if strings.HasPrefix(value, prefix) {
+					matches = append(matches, value)
+				}
+			}
+			return matches, cobra.ShellCompDirectiveNoFileComp
+		})
+		return
+	}
 	kind := ""
 	if strings.HasPrefix(cmd.CommandPath(), "arm name ") && name == "kind" {
 		_ = cmd.RegisterFlagCompletionFunc(name, func(_ *cobra.Command, _ []string, prefix string) ([]string, cobra.ShellCompDirective) {

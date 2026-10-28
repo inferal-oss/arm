@@ -244,7 +244,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		} else {
 			ui.mode = "nodes"
 		}
+		ui.nodeSelection++
 		ui.node = nil
+		ui.availabilityReport, ui.availabilityInspection = nil, nil
 		ui.operation = nil
 		ui.selected = 0
 		m.viewport.GotoTop()
@@ -254,7 +256,9 @@ func (m *dashboardModel) meshKey(key string) tea.Cmd {
 		} else {
 			ui.mode = "operations"
 		}
+		ui.nodeSelection++
 		ui.node = nil
+		ui.availabilityReport, ui.availabilityInspection = nil, nil
 		ui.operation = nil
 		ui.selected = 0
 		m.viewport.GotoTop()

@@ -164,7 +164,7 @@ func browserAllowedOperation(op string) bool {
 		return true
 	case "mesh_forward_start", "mesh_forward_status", "mesh_forward_list", "mesh_forward_stop", "mesh_forward_recover":
 		return true // Local source controls; no forwarded-service browser access.
-	case "kube_contexts", "kube_nodes", "peers_status", "node_open", "node_list", "node_inspect", "node_metadata", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_children", "pool_consumers", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
+	case "kube_contexts", "kube_nodes", "peers_status", "node_open", "node_list", "node_inspect", "node_metadata", "node_availability_v1", "node_availability_read_v1", "node_availability_inspect_v1", "node_availability_set_v1", "status", "resources", "monitor", "inspect", "events", "messages", "agents", "incidents", "usage", "pool_list", "pool_inspect", "pool_children", "pool_consumers", "pool_history", "pool_history_page", "pool_lookup", "storage_list", "message_lookup", "message_send":
 		return true
 	case "pool_mutate":
 		return true // Restricted to reviewed local pool operations in dispatch.

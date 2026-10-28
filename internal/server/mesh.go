@@ -60,23 +60,26 @@ type meshService struct {
 	screenSlots          chan struct{}
 }
 
-func (s *Server) loadMesh() error {
-	store, e := mesh.Open(s.home)
-	if os.IsNotExist(e) {
-		return nil
+func (s *Server) loadMesh() error { return s.loadMeshAttempt().Err }
+
+func (s *Server) loadMeshAttempt() meshStartupAttempt {
+	store, err := mesh.Open(s.home)
+	if os.IsNotExist(err) {
+		return meshStartupAttempt{}
 	}
-	if e != nil {
-		return e
+	if err != nil {
+		return meshStartupAttempt{Err: err}
 	}
-	if !store.Config().ListenerEnabled() {
+	attempt := meshStartupAttempt{Approval: store.Config()}
+	if !attempt.Approval.ListenerEnabled() {
 		store.Close()
-		return nil
+		return attempt
 	}
-	if e := s.startMesh(store); e != nil {
+	if err := s.startMesh(store); err != nil {
 		store.Close()
-		return e
+		attempt.Err = err
 	}
-	return nil
+	return attempt
 }
 func (s *Server) startMesh(store *mesh.Store) error {
 	return s.startMeshListener(store, nil)
@@ -156,6 +159,9 @@ func (s *Server) startMeshListener(store *mesh.Store, provided *mesh.PreparedLis
 	return nil
 }
 func (m *meshService) revoke(host string) {
+	if m.owner != nil {
+		m.owner.meshAvailability.Load().CancelPeer(host)
+	}
 	// Hijacked streams are absent from HTTP ConnState. Cancel them outside
 	// service.mu; cancellation never waits for manager lease cleanup.
 	if m.ssh != nil {
@@ -401,6 +407,11 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 			return nil, e
 		}
 		return model.NodeAccessScope{NodeStop: m.owner.stopAvailability(peer), Source: peer.Identity.Host, Target: request.Host, Pair: peer.Pair, Revision: peer.Revision, Grant: nodeGrant(peer.Grant), Observed: time.Now().UTC()}, nil
+	case "node_availability_v1":
+		if err := require("observe-host"); err != nil {
+			return nil, err
+		}
+		return m.owner.nodeAvailabilityRead(request.Params)
 	case "node_metadata":
 		if e := require("observe-host"); e != nil {
 			return nil, e
@@ -417,6 +428,7 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		if e != nil {
 			return nil, e
 		}
+		status = m.owner.withServerCapabilities(status)
 		resources := make([]map[string]any, 0, len(status.Resources))
 		for _, resource := range status.Resources {
 			summary := map[string]any{"id": resource.ID, "host": resource.Host, "kind": resource.Kind, "unit": resource.Unit, "budget_total": resource.BudgetTotal, "reserved": resource.Reserved, "available": resource.Available}
@@ -620,10 +632,23 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		return nil, model.Err("forbidden", "operation is outside the mesh allowlist")
 	}
 }
-func (s *Server) meshOperation(ctx context.Context, operation string, raw json.RawMessage) (any, error) {
+func (s *Server) meshOperation(ctx context.Context, operation string, raw json.RawMessage) (value any, callErr error) {
+	availabilityGlobalChange := false
 	if operation != "mesh_dispatch" {
 		s.meshAdminMu.Lock()
-		defer s.meshAdminMu.Unlock()
+		defer func() {
+			s.meshAdminMu.Unlock()
+			if operation == "mesh_setup_apply" && callErr == nil {
+				availabilityGlobalChange = true
+			}
+			if receipt, ok := value.(map[string]any); ok && receipt["listener_disabled"] == true {
+				availabilityGlobalChange = true
+			}
+			if availabilityGlobalChange {
+				s.meshAvailability.Load().Invalidate("")
+			}
+			s.meshAvailability.Load().JoinCancelled()
+		}()
 	}
 	if strings.HasPrefix(operation, "mesh_setup_") {
 		return s.meshSetupOperation(ctx, operation, raw)
@@ -659,6 +684,7 @@ func (s *Server) meshOperation(ctx context.Context, operation string, raw json.R
 		if q.Reason == "" || len(q.Reason) > 4096 {
 			return nil, model.Err("invalid_request", "renewal reason required")
 		}
+		availabilityGlobalChange = true
 		s.closeMesh()
 		store, e := mesh.OpenRecovery(s.home)
 		if e != nil {

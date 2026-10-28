@@ -154,6 +154,7 @@ func (m *dashboardModel) meshText() string {
 			fmt.Fprintf(&out, "Logical CPUs: %d\n", n.Metadata.Inventory.LogicalCPUs)
 		}
 		out.WriteString(meshFreshnessText(n.MetadataFreshness) + "\n")
+		out.WriteString("\n" + meshAvailabilityDetails(n.Host, ui.availabilityReport, ui.availabilityInspection) + "\n")
 		if !n.Local {
 			fmt.Fprintf(&out, "\nPEER MAY DO HERE · inbound rights on this source\n%s\n\nWE MAY DO THERE · destination-reported observation\n", meshGrantText(n.Trust.Inbound))
 			if n.Outbound == nil {

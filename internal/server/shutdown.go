@@ -41,6 +41,7 @@ func (s *Server) startShutdownWorkerLocked() {
 			if traceStopWorkerPause(s, ctx) {
 				return
 			}
+			s.closeStartupMeshAvailability() // original observer joins before Stop completion facts
 			for {
 				report, err := s.Manager.AdvanceShutdown()
 				if err == nil && report.Phase == "ready" && s.nodeStopDrainReady(report) == nil {

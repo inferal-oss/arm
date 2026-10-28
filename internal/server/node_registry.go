@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"getarm.org/internal/leaseclock"
 	"getarm.org/internal/local"
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
@@ -19,6 +20,7 @@ const nodeReadTTL = 30 * time.Second
 const nodeReadTimeout = 3 * time.Second
 
 type cachedNodeRead struct {
+	metadataClock, scopeClock   leaseclock.Sample // private; never projected as wire metadata
 	MetadataFailed, ScopeFailed bool
 	Fingerprint, Pair           string
 	Revision                    int
@@ -116,6 +118,14 @@ func nodeFreshness(at time.Time, failed bool) model.NodeReadFreshness {
 	return f
 }
 func (s *Server) applyNodeCache(entry *model.NodeEntry, peer mesh.Peer) {
+	now, err := leaseclock.Read()
+	if err != nil {
+		now = leaseclock.Sample{}
+	}
+	s.applyNodeCacheAt(entry, peer, now)
+}
+
+func (s *Server) applyNodeCacheAt(entry *model.NodeEntry, peer mesh.Peer, now leaseclock.Sample) {
 	s.nodeMu.Lock()
 	defer s.nodeMu.Unlock()
 	cached, ok := s.nodeCache[peer.Identity.Host]
@@ -131,15 +141,15 @@ func (s *Server) applyNodeCache(entry *model.NodeEntry, peer mesh.Peer) {
 	var copy cachedNodeRead
 	_ = json.Unmarshal(raw, &copy)
 	entry.Metadata = copy.Metadata
+	failed := cached.Failed || entry.Health == "mesh_unavailable" || entry.Health == "identity_unavailable"
+	var elapsed time.Duration
+	entry.MetadataFreshness, elapsed = nodeCachedFreshness(cached.MetadataAt, cached.metadataClock, now, failed && (cached.MetadataFailed || entry.Health == "mesh_unavailable" || entry.Health == "identity_unavailable"))
+	entry.ScopeFreshness, _ = nodeCachedFreshness(cached.ScopeAt, cached.scopeClock, now, failed && (cached.ScopeFailed || entry.Health == "mesh_unavailable" || entry.Health == "identity_unavailable"))
 	if entry.Metadata != nil {
-		elapsed := time.Since(cached.MetadataAt)
 		advanceNodeSize(&entry.Metadata.Inventory.Memory, elapsed)
 		advanceNodeSize(&entry.Metadata.Inventory.StateFilesystem, elapsed)
 	}
 	entry.Outbound = copy.Scope
-	failed := cached.Failed || entry.Health == "mesh_unavailable" || entry.Health == "identity_unavailable"
-	entry.MetadataFreshness = nodeFreshness(cached.MetadataAt, failed && (cached.MetadataFailed || entry.Health == "mesh_unavailable" || entry.Health == "identity_unavailable"))
-	entry.ScopeFreshness = nodeFreshness(cached.ScopeAt, failed && (cached.ScopeFailed || entry.Health == "mesh_unavailable" || entry.Health == "identity_unavailable"))
 	if failed {
 		entry.Health = "unavailable"
 		entry.Error = &model.Error{Code: "node_read_unavailable", Message: "Current destination information is unavailable; cached observations do not authorize actions."}
@@ -227,7 +237,9 @@ func (s *Server) nodeInspect(ctx context.Context, host string) (model.NodeEntry,
 	}
 	s.nodeMu.Unlock()
 	var scope model.NodeAccessScope
-	raw, scopeErr := service.store.Call(ctx, host, mesh.Request{Operation: "access_scope", Params: json.RawMessage(`{}`)})
+	raw, scopeAt, scopeClock, scopeErr := readNodeObservation(leaseclock.Read, func() (json.RawMessage, error) {
+		return service.store.Call(ctx, host, mesh.Request{Operation: "access_scope", Params: json.RawMessage(`{}`)})
+	})
 	if scopeErr == nil {
 		scopeErr = decodeNodeRead(raw, &scope)
 	}
@@ -239,12 +251,16 @@ func (s *Server) nodeInspect(ctx context.Context, host string) (model.NodeEntry,
 	}
 	if scopeErr == nil {
 		cached.Scope = &scope
-		cached.ScopeAt = time.Now()
+		cached.ScopeAt, cached.scopeClock = scopeAt, scopeClock
 	}
 	var metadata model.NodeMetadata
 	var metadataErr error
 	if scopeErr == nil && scopeGrant(scope.Grant).Has("observe-host") {
-		raw, metadataErr = service.store.Call(ctx, host, mesh.Request{Operation: "node_metadata", Params: json.RawMessage(`{}`)})
+		var metadataAt time.Time
+		var metadataClock leaseclock.Sample
+		raw, metadataAt, metadataClock, metadataErr = readNodeObservation(leaseclock.Read, func() (json.RawMessage, error) {
+			return service.store.Call(ctx, host, mesh.Request{Operation: "node_metadata", Params: json.RawMessage(`{}`)})
+		})
 		if metadataErr == nil {
 			metadataErr = decodeNodeRead(raw, &metadata)
 		}
@@ -253,13 +269,14 @@ func (s *Server) nodeInspect(ctx context.Context, host string) (model.NodeEntry,
 		}
 		if metadataErr == nil {
 			cached.Metadata = &metadata
-			cached.MetadataAt = time.Now()
+			cached.MetadataAt, cached.metadataClock = metadataAt, metadataClock
 		}
 	} else if scopeErr == nil {
 		// A grant reduction cannot leave formerly readable reported metadata as
 		// apparently current. Preserve no private observation under removed scope.
 		cached.Metadata = nil
 		cached.MetadataAt = time.Time{}
+		cached.metadataClock = leaseclock.Sample{}
 	}
 	cached.ScopeFailed = scopeErr != nil
 	cached.MetadataFailed = scopeErr != nil || metadataErr != nil

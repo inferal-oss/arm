@@ -43,9 +43,13 @@ func TestCustomNameAPIClosedRequestsLocalOwnerAndNoTrustMutation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	status = s.withServerCapabilities(status)
 	view, diagnostic := s.customNamedView(t.Context(), "status", s.namedView("status", status))
 	if diagnostic != nil || view.(namedStatus).DisplayName != "workstation" || view.(namedStatus).Host != host {
 		t.Fatal("custom host view lost canonical identity", view, diagnostic)
+	}
+	if !reflect.DeepEqual(view.(namedStatus).Capabilities, status.Capabilities) || !strings.Contains(strings.Join(view.(namedStatus).Capabilities, " "), "node-availability-v1") {
+		t.Fatal("typed custom status lost availability capabilities", view)
 	}
 	service := &meshService{owner: s}
 	peer := mesh.Peer{Identity: mesh.Identity{Host: strings.Repeat("a", 32)}, State: "active", Proven: true, Grant: mesh.Grant{Permissions: []string{"observe-host", "observe-all", "lease-own"}}}

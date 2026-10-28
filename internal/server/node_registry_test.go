@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"getarm.org/internal/leaseclock"
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
 )
@@ -200,7 +201,12 @@ func TestNodeRegistryCachedInventoryAgesWithoutRewritingObservationTimes(t *test
 	entry := model.NodeEntry{Health: "unobserved"}
 	peer := mesh.Peer{Identity: mesh.Identity{Host: strings.Repeat("f", 32), Fingerprint: "pin"}, Pair: "pair", Revision: 2, State: "active"}
 	s := &Server{nodeCache: map[string]cachedNodeRead{peer.Identity.Host: {Fingerprint: "pin", Pair: "pair", Revision: 2, MetadataAt: time.Now().Add(-5 * time.Second), ScopeAt: time.Now(), Scope: &model.NodeAccessScope{Grant: model.NodeGrant{Permissions: []string{"observe-host"}}}, Metadata: &model.NodeMetadata{ReportedAt: observed, Inventory: model.NodeInventory{Memory: model.NodeInventorySize{Total: &total, ObservedAt: &observed, Known: true, StaleAfter: 3 * time.Second}}}}}}
-	s.applyNodeCache(&entry, peer)
+	now := leaseclock.Sample{Boot: "fixture-boot", Tick: int64(10 * time.Second), Wall: time.Now().UTC()}
+	cached := s.nodeCache[peer.Identity.Host]
+	cached.metadataClock, cached.scopeClock = now, now
+	cached.metadataClock.Tick -= int64(5 * time.Second)
+	s.nodeCache[peer.Identity.Host] = cached
+	s.applyNodeCacheAt(&entry, peer, now)
 	if entry.Metadata.Inventory.Memory.Known || !entry.Metadata.Inventory.Memory.Stale || entry.Metadata.Inventory.Memory.Age < 5*time.Second || !entry.Metadata.ReportedAt.Equal(observed) || !entry.Metadata.Inventory.Memory.ObservedAt.Equal(observed) || entry.ScopeFreshness.Stale {
 		t.Fatal(entry)
 	}

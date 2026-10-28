@@ -219,6 +219,7 @@ Commands:
   database stats|check|backup|remove  Inspect, back up or review a safe local reset
   node                      Read reported local/remote node metadata
   name list|set|clear       Manage local custom labels with revision guards
+  node availability         Read owner-declared availability; set changes this owner only
   plugins [list|inspect]    Discover external CLI commands without running them
   completion bash|zsh|fish  Generate shell completion scripts
   version                   Print build and Go versions
@@ -269,6 +270,9 @@ func (a *app) command(args []string) (int, error) {
 	case "plugins":
 		return a.plugins(args)
 	case "node":
+		if len(args) > 0 && args[0] == "availability" {
+			return a.nodeAvailability(args[1:])
+		}
 		return a.nodeMetadata(args)
 	case "peers":
 		return a.peers(args)

@@ -195,9 +195,9 @@ func (p *proofReader) walk(table string, visit func(proofRow) error) error {
 	parts := make([]string, 0, len(columns)*3)
 	for _, name := range columns {
 		q := `"` + name + `"`
-		bound := "1048576"
+		bound := nodeAvailabilityProofReadBound(table, name)
 		if table == "metadata" && name == "value" {
-			bound = "CASE WHEN CAST(\"key\" AS BLOB)=CAST('custom_names_v1' AS BLOB) THEN 524288 ELSE 1048576 END"
+			bound = "CASE WHEN CAST(\"key\" AS BLOB)=CAST('custom_names_v1' AS BLOB) THEN 524288 ELSE " + bound + " END"
 		}
 		parts = append(parts, `typeof(`+q+`)`, `length(CAST(`+q+` AS BLOB))`, `CASE WHEN length(CAST(`+q+` AS BLOB))<=`+bound+` THEN `+q+` END`)
 	}
@@ -220,6 +220,9 @@ func (p *proofReader) walk(table string, visit func(proofRow) error) error {
 			targets[i] = &values[i]
 		}
 		if err = rows.Scan(targets...); err != nil {
+			return err
+		}
+		if err := guardNodeAvailabilityMetadataRow(table, columns, values); err != nil {
 			return err
 		}
 		r := proofRow{}
@@ -286,6 +289,8 @@ func (p *proofReader) metadata() error {
 			if raw != WritableWorkspaceFormat {
 				return unsupportedWorkspaceFormat()
 			}
+		case "node_availability_v1":
+			return p.nodeAvailabilityMetadata(raw)
 		case "host":
 			if !validHost(raw) {
 				return fmt.Errorf("invalid host authority")

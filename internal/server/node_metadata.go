@@ -42,7 +42,7 @@ func nodeMetadataParams(raw json.RawMessage) error {
 // Feature inventory is shared by status and metadata. These software declarations
 // do not confer grants or authenticate a peer; destination policy still applies.
 func (s *Server) withServerCapabilities(status model.Status) model.Status {
-	status.Capabilities = append(status.Capabilities, "pool-journal-pages", "automatic-mesh-lifecycle", "database-inspection-backup", "reported-node-metadata")
+	status.Capabilities = append(status.Capabilities, "pool-journal-pages", "automatic-mesh-lifecycle", "database-inspection-backup", "reported-node-metadata", "node-availability-v1")
 	if s.authority != "" {
 		status.Capabilities = append(status.Capabilities, "browser-dashboard-observation", "browser-reviewed-lease-controls", "browser-reviewed-messaging", "browser-reviewed-pool-controls")
 	}

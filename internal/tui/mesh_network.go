@@ -11,9 +11,13 @@ import (
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/meshops"
 	"getarm.org/internal/model"
+	"getarm.org/internal/nodeavailability"
 )
 
 type meshDashboard struct {
+	nodeSelection            uint64
+	availabilityReport       *nodeavailability.Report
+	availabilityInspection   *nodeavailability.Inspection
 	kube                     *kubeInventoryUI
 	uninstallCheckedKey      string
 	uninstallCheckedRevision int64
@@ -45,21 +49,24 @@ type meshReconnectContext struct {
 }
 
 type meshReadMsg struct {
-	provisionSource    string
-	uninstall          *meshops.UninstallContext
-	stopLease          *meshops.StopLeaseDetail
-	stopLeaseRequest   *meshops.StopLeaseRequest
-	stopLeaseSelection uint64
-	ui                 *meshDashboard
-	session            transport
-	sequence           uint64
-	mode               string
-	registry           model.NodeRegistry
-	operations         []meshops.Operation
-	node               *model.NodeEntry
-	operation          *meshops.Operation
-	reconnect          *meshReconnectContext
-	err                error
+	nodeSelection          uint64
+	availabilityReport     *nodeavailability.Report
+	availabilityInspection *nodeavailability.Inspection
+	provisionSource        string
+	uninstall              *meshops.UninstallContext
+	stopLease              *meshops.StopLeaseDetail
+	stopLeaseRequest       *meshops.StopLeaseRequest
+	stopLeaseSelection     uint64
+	ui                     *meshDashboard
+	session                transport
+	sequence               uint64
+	mode                   string
+	registry               model.NodeRegistry
+	operations             []meshops.Operation
+	node                   *model.NodeEntry
+	operation              *meshops.Operation
+	reconnect              *meshReconnectContext
+	err                    error
 }
 
 type meshSendMsg struct {
@@ -274,13 +281,17 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 		leaseOperation = &copy
 		ui.stopLease = nil
 	}
+	if mode == "node" {
+		ui.nodeSelection++
+	}
+	nodeSelection := ui.nodeSelection
 	ui.loading = true
 	ui.dirty = false
 	ui.sequence++
 	sequence := ui.sequence
 	ctx := m.ctx
 	return func() tea.Msg {
-		msg := meshReadMsg{ui: ui, session: session, sequence: sequence, mode: mode}
+		msg := meshReadMsg{ui: ui, session: session, sequence: sequence, mode: mode, nodeSelection: nodeSelection}
 		switch mode {
 		case "list":
 			msg.err = session.Call(ctx, "node_list", nil, &msg.registry)
@@ -315,8 +326,22 @@ func (m *dashboardModel) readMesh(mode, id string) tea.Cmd {
 		case "node", "stop":
 			msg.node = &model.NodeEntry{}
 			msg.err = session.Call(ctx, "node_inspect", map[string]string{"host": id}, msg.node)
-			if mode == "stop" && msg.err == nil && msg.node.Host != id {
-				msg.err = fmt.Errorf("exact Stop host changed during refresh")
+			if msg.err == nil && msg.node.Host != id {
+				msg.err = fmt.Errorf("exact node host changed during refresh")
+			}
+			if mode == "node" && msg.err == nil {
+				// Optional capabilities never hide the selected node when an
+				// older peer/gateway cannot report its owner declaration.
+				var raw json.RawMessage
+				if err := session.Call(ctx, "node_availability_read_v1", map[string]string{"host": id}, &raw); err == nil {
+					if report, err := nodeavailability.DecodeReport(raw, id); err == nil {
+						msg.availabilityReport = &report
+					}
+				}
+				var observation nodeavailability.Inspection
+				if err := session.Call(ctx, "node_availability_inspect_v1", map[string]string{"host": id}, &observation); err == nil && observation.Schema == 1 && observation.Host == id {
+					msg.availabilityInspection = &observation
+				}
 			}
 		case "stop-lease":
 			msg.stopLease = &meshops.StopLeaseDetail{}
@@ -365,6 +390,9 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 		return nil
 	}
 	ui.loading = false
+	if msg.mode == "node" && msg.nodeSelection != ui.nodeSelection {
+		return nil
+	}
 	if msg.mode == "provision-connection" && (ui.operation == nil || ui.operation.Kind != "provision" || ui.operation.Key != msg.provisionSource) {
 		return nil
 	}
@@ -465,6 +493,7 @@ func (m *dashboardModel) acceptMeshRead(msg meshReadMsg) tea.Cmd {
 		ui.form = newMeshStopForm(msg.node.Host)
 		m.viewport.GotoTop()
 	case "node":
+		ui.availabilityReport, ui.availabilityInspection = msg.availabilityReport, msg.availabilityInspection
 		changed := ui.node == nil || msg.node == nil || ui.node.Host != msg.node.Host
 		ui.node = msg.node
 		ui.mode = "node"
