@@ -2580,3 +2580,19 @@ consumer. There is no Unix bind or storage pair in this increment. The
 [storage custody contract](MESH-FORWARD-UNIX-CUSTODY-CONTRACT.md) remains
 required before namespace mutation; the existing memory promise is not a disk
 reservation. General TCP and broader forwarding activation remain fenced.
+
+
+## Disconnected original-owned pressure controls
+
+Integrated `2a360513`/`b89280f6`/`1ab8578f` add original ChildOwner pause, resume
+and retirement cuts, plus unused Manager candidate/action validation. Native
+effects run outside the Manager lock while an exact reservation fences renewal
+and records cancellation work. Durable action-state reads reject non-TEXT or
+oversized values before copying them; expiry can retire the captured original
+control without waiting for a native observer under the Manager lock. Close
+joins reserved effects and registered cleanup.
+
+Successful STOP/CONT and local transition state do not establish independently
+observed stopped state or resource credit. There is no production action caller,
+permit writer, transactional outbox or crash-surviving original-owner recovery.
+The runtime stays warning-only with native pressure action disabled.

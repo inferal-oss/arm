@@ -343,7 +343,7 @@ no runtime acceptance.
 | Now | Kubernetes unified install/connect | Diagnostics `a15c54a`, corrected source ownership `5e5e7f1` and unused admitted source core `47bafbd7` are integrated; the actual missing-Node symptom is not reproduced. The latest read-only configured API is unavailable, so no fresh Node visibility is established. A working Kubernetes choice in both dialogs, provider use of admitted source preparation, backend effects, verified readiness/catalog and pinned mesh enrollment remain unfinished. | Continue the already assigned unified workflow using existing typed provider and original-key contracts. Diagnose context/identity/namespace/Node/query stages separately; scheduler allocatable figures do not supply live ARM CPU authority. |
 | Next | Public sync | Planner, rsync worker, ledger and recovery foundations are integrated, but public push/pull/both and typed multi-hop sync are not wired. The integrated scan-wide hold fixes the verification boundary, but the complete-scope owner type cannot currently mint a production positive capability. | Complete enforced native scope/charged Manager ownership and settlement first, then endpoint dispatch, reviewed conflicts/deletions/baselines, progress/recovery and web/Charm controls. Keep one coordinated sync continuation across planner, worker and relay work. |
 | Next | Provider lifecycle | Codec, durable fixture, entitlement component and V0 writer guard do not implement production registration or the real Manager/native-clock/retained worker-and-scratch bridge. | Finish reservations before image work, current held authority and every End/expiry/Close/restart/reset boundary before a startable factory. Uniform writer rollout and format activation remain explicit gates; a published guard is not proof that all writers upgraded. |
-| Next | Pressure response | Runtime remains warning-only (`MaxPauseJobs: 0`); original-owned native pause/resume is missing. The finite model does not implement the controller. | Complete capability/policy-selected original control, sustained grace, hysteresis, expiry/revocation precedence and retained memory/disk obligations with causal native/formal evidence before enabling pause. |
+| Next | Pressure response | Runtime remains warning-only (`MaxPauseJobs: 0`). Disconnected original-owned pause/resume foundations are integrated as `2a360513`/`b89280f6`/`1ab8578f`; no production controller is wired. | Complete capability/policy-selected original control, sustained grace, hysteresis, expiry/revocation precedence and retained memory/disk obligations with causal native/formal evidence before enabling pause. |
 | Next | Operations after clock work | The clock and initial local configuration milestones are integrated, including guarded startup and durable built-in ceiling changes (`c74d1fd`). Broader settings, per-user service/watchdog, degraded/full database behavior, retention/redaction, restore/purge policy and overhead remain. | Resume bounded stages in existing operations ownership. Keep generic/SSH checkpoint-refusal acceptance separate from unreviewed Cargo/Gradle/storage/export degraded-persistence paths. No host service or real-state mutation is implied by this survey. |
 | Next | General forwarding | Ordinary builds still refuse generic TCP. Usable ordinary browser/unmodified TCP workflows and equivalent web/Charm controls are unfinished; the Unix adapter remains an isolated prototype. | Preserve the fence. Complete source-client/Manager/native-clock/durable recovery and remaining security/platform/route-loss/formal gates. The concrete scheme is already approved; do not reopen that approval or bypass sync policies. |
 | Later | Remote operational parity | Selected remote web/TUI windows deliberately allow scoped inspection only; live monitoring/events, contacts/messages, administration and lease mutations are unavailable there. | Add each supported destination-granted workflow through typed host-bound APIs and original-key recovery, with matching UI behavior. Never substitute localhost or treat inspection as parity. |
@@ -468,8 +468,8 @@ ARM's vendored engine is unchanged.
 | Unified onboarding | `codex/unified-kubernetes-core-workflow` | `47bafbd7` core plus reviewed closed stage/connector contract; implement and validate complete workflow before activation. Prototype discovery and screenshots establish no installation or enrollment. |
 | Sync ownership | `codex/sync-manager-scope-gate-design` | Integrated hold `3d331e0e`; complete charged original scope, bounded transaction/gate, fresh-schema proof and native enforcement. |
 | Provider lifecycle | `codex/provider-pair-core-recovery` | Recovered unused helpers are integrated as `45dab133`: bounded raw reads, original membership/native-clock observations and retaining floors. Nine roots/94 named cases pass in normal and race runs; the regenerated current central proposal remains unapplied. Coupled reservation/accounting/lifecycle activation is unfinished. |
-| Native pressure | `codex/pressure-native-pause` | Base `d8a324fb`; original-owned policy and durable action cuts plus causal STOP/CONT validation remain under development. Production policy stays warning-only. |
-| Degraded persistence | `codex/degraded-holder-cancellation` | Base `07f2fb02`; review cancellation before failed persistence for Cargo, Gradle and storage exports without settlement credit. Generic/SSH evidence does not cover these holders. |
+| Native pressure | `codex/pressure-current-composition` | Reviewed original-owned control foundations are integrated as `2a360513`/`b89280f6`/`1ab8578f`. The composed Darwin race gate passes 22 roots/42 named cases; Linux ARM64 is compile-only. Production policy stays warning-only; complete controller/outbox/crash-survivor wiring and native Linux evidence remain open. |
+| Degraded persistence | `codex/degraded-holder-recovery` | Preserved cancellation draft is being recovered in isolation. Exact holder revision and durable Cargo-worker bindings require correction before the planned race/vet gate. Generic/SSH evidence does not cover Cargo, Gradle and export holders. |
 | Numeric/component dependency | `codex/numeric-sparkline-517-composition` | Current upstream source, build, 519 numeric and 52 component cases accepted. Current rendered UI and production build precede separate upstream drafts and ARM dependency promotion. |
 
 
@@ -486,3 +486,21 @@ its preserved source draft. General forwarding continues on
 `1adb1b23`/`f1678bca`. Seven composed race roots and targeted vet pass; actual
 Unix bind still requires positive disk custody and recovery proof. The
 approved forwarding security scheme remains unchanged.
+
+
+### Original-owned pressure foundation integration
+
+The reviewed disconnected source is integrated as `2a360513`, `b89280f6` and
+`1ab8578f` on the current provider/forwarding composition. Native effects run
+outside the Manager lock under a reservation; renewal refuses that reservation,
+and expiry retires original control before deferred cancellation. Durable action
+state reads are bounded. The forwarding startup cleanup-uncertainty marker and
+all prior provider C0 inputs remain preserved. The composed Darwin race run
+passes 22 roots/42 named cases and affected vet; two Linux ARM64 binaries compile
+but are not executed.
+
+This is an unused foundation. Authorized production permits, transactional
+intent/result publication, unknown-effect reconciliation, hard-crash recovery
+without PID adoption, observed stopped-state evidence, full controller/model
+correspondence and native Linux execution remain required. Production
+`MaxPauseJobs: 0` and `AllowPause: false` remain unchanged.
