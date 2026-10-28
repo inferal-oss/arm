@@ -2943,3 +2943,15 @@ See [source binding](validation/native-integration-source-binding-2026-10-28.jso
 [corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
 [cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
 and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).
+
+### Bounded provider accounting census
+
+The unused C2 reader takes one transaction across indexed provider pairs and
+ordinary LeaseRef rows. It computes physical, logical, pool and budget rollups
+without double-counting pair replacements. Exact rational CPU comparison avoids
+float underflow or rounded equality; policy revisions cannot precede recorded
+terms. Known-format header promises remain charged when marker damage prevents
+coverage, and terminal storage without an artifact cannot clear recorded custody.
+The implementation bounds row counts, field lengths and aggregate input before
+decoding. Coverage is a ledger observation, not a native capacity capability or
+permission to admit work. No factory or central schema/model proposal is enabled.

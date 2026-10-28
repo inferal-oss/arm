@@ -742,7 +742,7 @@ and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.js
 | Ownership branch | Reviewed or published state | Remaining acceptance |
 | --- | --- | --- |
 | `codex/log-run-completion` | Original `a6dd82e1` passes independent source and actual-evidence review: eight race roots / 33 named cases, no skips, CLI vet. Published as `dd47bb6e` with normalized record `34ea83a8`, preserving website SSR baseline `ef18a22a`. All 1,608 Go source/module entries and four owned paths match the tested feature exactly. | This primary checkout's native-foundation history still requires composed integration. No new full-suite, Linux runtime or carrier installation claim. |
-| `codex/provider-pair-c2-census-v2` | Five-file census successor closes all four source findings: exact CPU values, recorded policy revision floors, known-header floors despite marker damage and terminal storage custody. Independent review is source-clear for 30 selected roots. | Normal/race and targeted vet remain unrun at this record. C3–C5 and public admission remain open; the central proposal is unapplied. |
+| `codex/provider-pair-c2-census-v2` | Five-file census successor closes all four source findings: exact CPU values, recorded policy revision floors, known-header floors despite marker damage and terminal storage custody. Independent review and the normal/race gate accept 30 roots / 265 named cases per cohort, with targeted vet passing. Source is integrated as `1ca37afe` (original `55afc758`). | C3–C5 and public admission remain open; the central proposal is unapplied. Current remote/native composition is separate. |
 | `codex/retained-settlement-recovery` | The failed 48-root composition has an identified original-completion retention gap. A successor is adding bounded exact physical tuple and atomic event checks. | Independent successor review, original affected regressions and current composition must pass. The failed aggregate remains failed; no saved PID adoption or weakened expiry guard. |
 | `codex/forward-unix-issuer-merge` | Private prebind issuer v5 closes startup ordering, typed bounded physical rows, child custody and fixture cleanup findings; independent source review is clear. | The proposed 24-root native normal/race and vet gate remains unrun. No binder or public TCP enablement follows from source review. |
 | `codex/unified-kubernetes-core-workflow` | `957cef67` profiles and `0931784` bounded contract reads are source-reviewed. `1012c4f9` protected journal and `180e56a8` original socket constructor have frozen review handoffs. | Independent journal/socket review and scoped actual-evidence acceptance; complete helper, connector and UI workflow; separately reviewed live installation plan. |
@@ -754,3 +754,15 @@ Published website and run-list work is preserved on the remote branch. This
 survey does not relabel later source as covered by earlier native captures or
 merge unrelated divergent histories. Each current source cut retains its own
 review and execution boundary.
+
+### Provider-pair C2 census integration
+
+Reviewed source `55afc758` is integrated as `1ca37afe`. All five owned paths and
+modes equal the validated source; intervening primary changes since `4e43c834`
+are documentation only. Both normal and race pass the same 30 roots / 265 named
+cases, with zero failures/skips; targeted Manager/provider-preparation vet passes.
+All 2,744 source inputs and 92 selected tool/protocol pins remain unchanged.
+The census supplies bounded ledger observations only. Coupled lifecycle, atomic
+reservation and native finalization remain separate C3–C5 gates, followed by
+current-source composition before activation. See
+[normalized evidence](validation/provider-pair-c2-2026-10-28.json).

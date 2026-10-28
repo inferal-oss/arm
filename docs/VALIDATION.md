@@ -7358,3 +7358,20 @@ See [source binding](validation/native-integration-source-binding-2026-10-28.jso
 [corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
 [cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
 and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).
+
+### Provider-pair C2 census
+
+Independent review closes four accounting findings before execution: exact
+CPU lease/run agreement, recorded policy revision floors, retained pair promises
+on marker damage and terminal storage custody. Source `55afc758`, integrated as
+`1ca37afe`, passes identical 30-root / 265-name rosters in normal and race modes,
+with zero failures/skips, plus Manager/provider-preparation vet. All three
+original command returns and the outer return are zero. All 2,744 source files
+are independently rehashed against equal before/after records, alongside the
+92 selected tool/protocol inputs. Integrated Go sources/modules equal the tested
+feature exactly; intervening primary changes are documentation only.
+
+These are focused Darwin accounting-reader results. They do not establish
+C3–C5 lifecycle/native authority, a production provider, Linux runtime, full-suite
+acceptance or later composition with remote run, website, forwarding, operations
+and storage changes. [Normalized evidence](validation/provider-pair-c2-2026-10-28.json).
