@@ -279,6 +279,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case onboardAppliedMsg:
 		m.stage = onboardDone
+		m.notice = ""
 		m.plan = msg.plan
 		if msg.err != nil {
 			m.err = fmt.Errorf("policy application could not be confirmed; inspect rollout status and history before retrying: %w", msg.err)
@@ -286,11 +287,15 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 	case tea.KeyPressMsg:
 		key := msg.String()
-		if key == "ctrl+c" {
-			if m.stage == onboardApplying {
+		// Once confirmed, the write owns completion. Resizing must not make
+		// cancellation claim that a pending or completed write never happened.
+		if m.stage == onboardApplying {
+			if key == "ctrl+c" || key == "esc" || key == "q" {
 				m.notice = "A policy write is in progress. Inspect status/history if interrupted."
-				return m, nil
 			}
+			return m, nil
+		}
+		if key == "ctrl+c" {
 			m.cancelled = true
 			m.stage = onboardDone
 			return m, tea.Quit
@@ -435,7 +440,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			switch key {
 			case "y", "Y":
 				if !m.plan.Unchanged && m.mode != "disabled" && !install.InspectInstructions(m.home).Ready {
-					m.notice = "Managed instructions are not ready. Run `arm install` before enabling adoption, or choose Disabled."
+					m.notice = "Managed instructions are not ready. Run `" + installNextCommand(m.home, "install") + "` before enabling adoption, or choose Disabled."
 					m.stage = onboardPolicy
 					return m, nil
 				}
@@ -588,7 +593,7 @@ func (m *rolloutOnboardModel) reviewText() string {
 	fmt.Fprintln(&b, "\n"+p.Effect)
 	fmt.Fprintln(&b, "Discovery is separate from enrollment. Sessions still identify and acknowledge eligibility.")
 	if p.After.Mode != "disabled" && !install.InspectInstructions(m.home).Ready {
-		fmt.Fprintln(&b, "\nInstructions are NOT READY. Install managed instructions before enabling adoption.")
+		fmt.Fprintln(&b, "\nInstructions are NOT READY. Run `"+terminalSafe(installNextCommand(m.home, "install"))+"` before enabling adoption.")
 	}
 	return b.String()
 }
@@ -599,6 +604,9 @@ func (m *rolloutOnboardModel) View() tea.View {
 	var b strings.Builder
 	fmt.Fprintln(&b, title.Render("ARM · Project onboarding"))
 	if m.stage != onboardDone && (m.width < 40 || m.height < 20) {
+		if m.stage == onboardApplying {
+			return tea.NewView(b.String() + "Policy write in progress. Waiting for the result.\n")
+		}
 		return tea.NewView(b.String() + "Enlarge the terminal to at least 40×20. Esc cancels.\n")
 	}
 	fmt.Fprintln(&b, muted.Render("Directory → Scope → Name → Policy → Review"))

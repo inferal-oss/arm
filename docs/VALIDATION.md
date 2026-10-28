@@ -2,6 +2,13 @@
 
 ## Guided project onboarding — scoped owner validation
 
+Review-correction regressions pass under the race detector: after confirmation,
+shrinking the terminal and pressing Escape, q or Ctrl+C retains the pending
+write and reports its actual success or failure. Unready custom-home review and
+refusal commands retain the selected state directory. Scoped rollout/onboarding
+and installation next-command CLI tests, CLI vet and native compilation pass
+with one Go worker. These model checks do not claim a new real-terminal capture.
+
 Validated feature source: `74ab24d`. This source-bound evidence does not establish
 coordinator review or integration acceptance.
 

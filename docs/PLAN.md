@@ -27,6 +27,11 @@ native/Linux CLI compilation pass. Disposable real-terminal cancellation and
 confirmed onboarding pass without enrolling sessions. Coordinator review and
 integration remain separate gates.
 
+Onboarding review corrections keep pending policy writes authoritative across
+terminal resize and cancellation keys, and preserve the selected ARM home in
+readiness recovery commands. Focused CLI race regressions pass, including write
+success/failure after a resize. Coordinator integration remains separate.
+
 Owner: `codex/gradual-agent-rollout`. Focused source commit: `0916d4a`.
 Implementation adds a separate cooperative
 adoption ledger and CLI, disabled-by-default installed guidance, explicit

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,6 +25,9 @@ func onboardKey(m *rolloutOnboardModel, key string) tea.Cmd {
 		code = tea.KeyDown
 	case "up":
 		code = tea.KeyUp
+	case "ctrl+c":
+		_, cmd := m.Update(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
+		return cmd
 	default:
 		code = []rune(key)[0]
 	}
@@ -108,9 +112,16 @@ func TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy(t *testing.T) {
 
 func TestRolloutOnboardReadinessAndStaleReviewCannotApply(t *testing.T) {
 	m, home := onboardReviewFixture(t, false)
+	command := installNextCommand(home, "install")
+	if !strings.Contains(m.reviewText(), command) {
+		t.Fatal("review omits selected-home installation command")
+	}
 	onboardKey(m, "y")
 	if m.stage != onboardPolicy || m.applyStarted || !strings.Contains(m.notice, "instructions are not ready") {
 		t.Fatal(m.stage, m.notice)
+	}
+	if !strings.Contains(m.notice, command) {
+		t.Fatal("readiness refusal omits selected-home installation command", m.notice)
 	}
 	if _, e := os.Stat(home); !os.IsNotExist(e) {
 		t.Fatal("unready onboarding initialized state", e)
@@ -130,6 +141,35 @@ func TestRolloutOnboardReadinessAndStaleReviewCannotApply(t *testing.T) {
 	st, e := store.Read()
 	if e != nil || m.err == nil || len(st.Projects) != 1 || st.Projects[0].ID != "other" {
 		t.Fatal(st, e, m.err)
+	}
+}
+
+func TestRolloutOnboardResizeDuringApplyWaitsForActualResult(t *testing.T) {
+	for _, key := range []string{"esc", "q", "ctrl+c"} {
+		for _, failed := range []bool{false, true} {
+			name := key + map[bool]string{false: "/success", true: "/failure"}[failed]
+			t.Run(name, func(t *testing.T) {
+				m, home := onboardReviewFixture(t, true)
+				apply := onboardKey(m, "y")
+				m.Update(tea.WindowSizeMsg{Width: 30, Height: 10})
+				quit := onboardKey(m, key)
+				if quit != nil || m.cancelled || m.stage != onboardApplying || strings.Contains(m.View().Content, "Esc cancels") {
+					t.Fatal("pending write was reported as cancelled", m.stage, m.View().Content)
+				}
+				if failed {
+					m.Update(onboardAppliedMsg{err: errors.New("synthetic write failure")})
+				} else {
+					runOnboardCmd(t, m, apply)
+				}
+				if m.stage != onboardDone || m.cancelled || m.notice != "" || (m.err != nil) != failed {
+					t.Fatal("write result was lost", m.stage, m.err)
+				}
+				st, err := (rollout.Store{Home: home}).Read()
+				if err != nil || (!failed && (len(st.Projects) != 1 || st.Projects[0].Mode != "new-sessions")) || (failed && len(st.Projects) != 0) {
+					t.Fatal("policy does not match reported result", st, err)
+				}
+			})
+		}
 	}
 }
 

@@ -26,6 +26,9 @@ eligibility. Noninteractive output and `--json`/`--dry-run` are discovery-only.
 The confirmed binding and policy are one durable operation; keeping the current
 binding/mode preserves the ledger and invitations. Readiness is rechecked before
 enabling, stale reviews refuse, and uncertain writes require inspection.
+Pending writes continue awaiting their result across terminal resizing and
+cancellation keys. Readiness recovery commands retain an explicit custom ARM
+home and omit an effective default.
 
 The CLI has a separate local rollout ledger, independent of the resource/backend
 schema. New projects are disabled. Explicit directory/Git bindings contain
