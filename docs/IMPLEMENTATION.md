@@ -3021,3 +3021,42 @@ format/storage-pool metadata in the same snapshot. Unsupported metadata prevents
 coverage but does not erase known floors. Bounded key/value projections precede
 namespace interpretation. This does not provide a named-root accounting bridge
 or activate paired providers. [Validation](validation/storage-native-compatibility-2026-10-28.json).
+
+### Multiple independent run-log windows
+
+The web run roster can keep up to eight logs open simultaneously. Each run ID
+owns one transcript, byte cursor, UTF-8 decoder, pause/follow state, display
+buffer, error state and native window. Opening an already watched run restores
+and raises that same window instead of adding a reader or resetting its cursor.
+Detaching the inline log returns to the roster so another run can be opened;
+replacing an inline detail never closes detached peers.
+
+Stock Semblance detachable tabs support pointer tear-off, a pop-out button and
+Shift+Enter. A stock desktop and taskbar host the same transcript nodes. Tile log
+windows uses the native responsive desktop grid, with up to three columns; Float
+log windows restores the saved floating geometry. The taskbar docks to the bottom
+while tiled so it does not cover output tails. New windows come to the front.
+Native close/dock returns that log to its inline tab and leaves peers open; Close
+log stops watching only that execution. It never stops or changes the command.
+
+Inventory and output share at most two real in-flight requests. Cancelled queued
+work is discarded, while outstanding calls keep their slots until they settle.
+The polling clock runs independently of replies so one slow log does not pause
+healthy peers. Backlog pages yield between tasks, and each display retains its
+existing bounded latest-output window. The eight-log limit refuses another view
+without evicting an existing one.
+
+Detached logs keep following across dashboard navigation. A hidden docked log
+stops reading until its page resumes. Read from start, pause/follow, fold, output
+errors, completion and fullscreen apply independently; only one transcript enters
+fullscreen at a time. A completed log stops requesting output after draining;
+restoring or resizing it follows its cached tail without replaying the log.
+Controls remain visible while the transcript itself scrolls.
+
+Authentication reset/disposal closes every view and invalidates pending results.
+Floating dimensions and position fit viewport bounds using layout measurements
+that exclude opening animations, preserving geometry while maximized or docked.
+The pinned Semblance engine, backend protocol and shell completion interfaces
+are unchanged. These are floating dashboard windows. Scoped local acceptance is
+recorded in `docs/VALIDATION.md`; coordinator composition review and integration
+remain separate gates for the multiple-log continuation.

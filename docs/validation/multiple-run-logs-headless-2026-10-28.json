@@ -1,0 +1,160 @@
+{
+  "date": "2026-10-28",
+  "source": "31bf681f0246733032e5576ca76eea7ba3a041be",
+  "base": "18b0926",
+  "focused_commits": [
+    "ea4a005",
+    "43b03ed",
+    "7d5ec16",
+    "d3f014b",
+    "31bf681"
+  ],
+  "scope": "Independent simultaneous run-log windows using pinned native Semblance tiling",
+  "limits": {
+    "open_logs": 8,
+    "actual_in_flight_inventory_and_output_requests": 2
+  },
+  "checks": [
+    "three native windows opened from one roster, including pointer, control and keyboard pop-out",
+    "native tiling shows three agents side by side with original unobscured visible-tail nodes",
+    "pausing one log preserves two peer streams and ongoing backend capture",
+    "closing one log preserves both remaining windows and readers",
+    "docked hidden log stops reading while detached peer follows across navigation",
+    "reopening a minimized watched run restores its existing window and cursor",
+    "two peers tile again after independent docking, closing and restore",
+    "closing views never stops any of the three executions",
+    "completed minimized log restores its tail without replay while a peer keeps following"
+  ],
+  "page_errors": [],
+  "viewports": [
+    1440
+  ],
+  "feature_inputs": {
+    "internal/server/web/semblance/graph-ui.mjs": "d3bcf6b4e71ec6dbbfcd8b30dc15e2af3e7563553975419c6087e97366cd6bbd",
+    "internal/server/web/semblance/runs.mjs": "0e8de8950f94a4fb76f7f3ff2ef9b4a7a92b7196d93b02529aeb168501b3613c",
+    "internal/server/web/semblance/run-log.mjs": "d85b6ca2531a437e752bfe6253af3f559d2abf32c67721ef404f7af0a8e9a65f",
+    "internal/server/web/semblance/app.ttl": "0c573d4d17765aeff63737337920e23b0aa7e7d6f4ff3f6d04c33ffa48d48b4e",
+    "internal/server/web/assets/arm.mjs": "b213757d08fa728f99d3d2ba72b2f724ee30fce55fc441783d6bbf76216c76e6",
+    "internal/server/web/semblance/runs.test.mjs": "8cd0fced574b109f16a8cd9e183737914bf82d2c77ff37f939ea6c4fa5472968",
+    "internal/server/web/semblance/runs-ownership.test.mjs": "e0b952c92aea9b4809f75f3773cda45c7ad32005914c28437647ead1beabc8d2",
+    "web/test/run-log-windows.test.mjs": "253788ce5f666e5b8cc921683a2a3b56396ae8c6ef03c1d683c0723531ca143b",
+    "web/package-lock.json": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "web/semblance-provenance.json": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "binary_sha256": "fdb3039e4bcf4dce7596997ef8459b2cb0fd1d610efb51dccc392e65b203818d",
+  "tools": {
+    "go": "go version go1.27.3 darwin/arm64",
+    "node": "v26.12.1",
+    "playwright": "1.64.1",
+    "chromium": "156.0.8078.4",
+    "ffmpeg": "7.0.1 playwright-build-1013"
+  },
+  "validation": {
+    "javascript_passed": 426,
+    "javascript_failed": 0,
+    "javascript_skipped": 0,
+    "native_semblance_runtime_tests_passed": 2,
+    "web_asset_build": "passed",
+    "native_command_build": "passed",
+    "delayed_reply_polling_regression": "passed",
+    "final_video_fully_decoded": true
+  },
+  "leases": {
+    "validation": {
+      "cpu": 2,
+      "memory_bytes": 2147483648,
+      "ttl": "5m",
+      "state": "terminal",
+      "outcome": "completed",
+      "exit_code": 0
+    },
+    "capture": {
+      "cpu": 1,
+      "memory_bytes": 2147483648,
+      "ttl": "110s",
+      "state": "terminal",
+      "outcome": "completed",
+      "exit_code": 0
+    }
+  },
+  "video": {
+    "file": "multiple-run-logs.webm",
+    "duration": "00:00:14.28",
+    "codec": "VP9",
+    "width": 1440,
+    "height": 1000,
+    "fps": 25
+  },
+  "artifacts": [
+    {
+      "file": "run-roster.png",
+      "bytes": 143027,
+      "sha256": "7ca2f38ba2b8cbfd44e79f39b4c31a8656f2afacb6167ff64675816f0eab3625"
+    },
+    {
+      "file": "three-floating.png",
+      "bytes": 249616,
+      "sha256": "1ef8ab81a816c19e24ebb2600299090710ca4644130273ce3b94601508f72a38"
+    },
+    {
+      "file": "three-side-by-side.png",
+      "bytes": 187527,
+      "sha256": "aaee10cd3bc6a2ea0da4ed9e430ec5f19144334c500e7906c1bfc48cbad00d66"
+    },
+    {
+      "file": "one-paused-two-following.png",
+      "bytes": 229411,
+      "sha256": "8560ab265ef50569e78666d48581fbee2617028997dda2a7287b6f959e6dd81b"
+    },
+    {
+      "file": "close-one-keep-two.png",
+      "bytes": 185537,
+      "sha256": "5fdc5d62f1f4632f9afd9d23c6983c9a94958efc5c5b9e6e40ed43c2684cc56b"
+    },
+    {
+      "file": "independent-navigation.png",
+      "bytes": 205541,
+      "sha256": "fd5f9ae076bcdeb6d5acf2dc6ceace94f75aab16270e417995705187bfebeba0"
+    },
+    {
+      "file": "two-agents-side-by-side.png",
+      "bytes": 191136,
+      "sha256": "00c0feb2fab12223e34debcf37d637e6410178508c80aabb055069e0c1f16d0b"
+    },
+    {
+      "file": "completed-and-running-side-by-side.png",
+      "bytes": 196827,
+      "sha256": "9750ac6192e23c24097ab4ca4aa218a19277fbd8f7eab58f74a6f07390a35d44"
+    },
+    {
+      "file": "multiple-run-logs.webm",
+      "bytes": 4341517,
+      "sha256": "abb7bd7448c4f56e7fb26f88a4fae255e4613edb88ce953fce6199fad8e7c830"
+    },
+    {
+      "file": "video-frame.png",
+      "bytes": 542536,
+      "sha256": "85aa586560de39e5c28443ae1ccfe1d04e33bd9ffedfa53debf63107372fc57c"
+    }
+  ],
+  "cleanup": {
+    "outer_proxy_state": "terminal",
+    "outer_proxy_outcome": "completed",
+    "outer_proxy_exit_code": 0,
+    "producer_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "browser_and_context_closed": true,
+    "original_gate_and_capture_backends_joined": true,
+    "scoped_capture_and_backend_process_matches": 0
+  },
+  "limitations": [
+    "Up to eight dashboard log views; no OS/browser popup windows",
+    "Three illustrative real proxy shell producers in the local pinned browser/platform",
+    "No full Go suite, Linux runtime or new TUI validation claim",
+    "Coordinator exact-source and current-composition review are separate gates",
+    "Raw fixtures, receipts and media remain outside version control"
+  ]
+}
