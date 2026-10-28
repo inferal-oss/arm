@@ -6,6 +6,7 @@ import { nodeUninstallAvailability, uninstallDraft, assertUninstallOperation, un
 import { provisionDraft, validProvisionIntent, assertProvisionOperation, assertProvisionPreparation, supportedProvisionReview, provisionConfirmed } from "../mesh-provision.mjs";
 import { bytes, stringifyJSON } from "../core.mjs";
 import { validHostID, meshPreparationNotice, phaseLabel, operationAdvice, grantFromDraft, grantDescription, reviewIdentities, canReview, supportedReview, validateMeshReason } from "../mesh-model.mjs";
+import { mountNodeAvailability, availabilityObservation } from "./node-availability.mjs";
 import { createForwardConsole } from "./forward.mjs";
 import { formatKubeQuantity } from "./kube-quantity.mjs";
 const stopPolicyOptions = [{ value: "refuse", label: "Refuse while work remains" }, { value: "wait", label: "Wait for existing work" }, { value: "force", label: "Reclaim ARM-owned work" }];
@@ -13,6 +14,7 @@ const when = (value) => value ? new Date(value).toLocaleString() : "Not reported
 function createMeshConsole({ ui: graph, root, call, connected, storage, openNode, onKubeInventory = () => {}, onActivity = () => {
 }, onChanged = onActivity }) {
   const controls = /* @__PURE__ */ new Set();
+  const availabilityMutations = new Map(); // Exact local-host mutation boundaries survive modal remounts.
   const modalParts = /* @__PURE__ */ new Map();
   const button = (label, action, intent = "") => {
     const item = graph.button(label, action, { tone: intent === "danger" ? "Danger" : void 0, emphasis: intent === "primary" ? "Strong" : void 0 });
@@ -212,6 +214,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
         opKey = "";
         opVersion++;
       }
+      parts.availability?.dispose();
       modalParts.delete(d);
       d.dispose();
       if (current) {
@@ -294,12 +297,16 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       const entry = await call("node_inspect", { host });
       if (disposed || dialog !== ui.d || selectedHost !== host) return;
       if (entry?.host !== host) throw Error("Node inspection differs from the exact requested host.");
-      renderNode(ui, entry);
+      let observation = null;
+      try { observation = await call("node_availability_inspect_v1", {host}); } catch { /* Optional older gateway. */ }
+      if (disposed || dialog !== ui.d || selectedHost !== host) return;
+      renderNode(ui, entry, observation);
     } catch (error) {
       if (dialog === ui.d) status.set({ label: error.message });
     }
   }
-  function renderNode(ui, entry) {
+  function renderNode(ui, entry, observation) {
+    ui.availability?.dispose();
     ui.heading.set({ label: entry.display_name || entry.name || entry.host });
     ui.body.replace();
     ui.body.append(graph.descriptions([
@@ -326,6 +333,15 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       ui.body.append(graph.json(entry.metadata, "Reported metadata"));
     } else note(ui.body, "This peer has not provided metadata. No local data is substituted.");
     if (entry.error) note(ui.body, entry.error.message, "warning");
+    const availabilityRoot = graph.stack();
+    ui.body.append(availabilityRoot);
+    let mutationState = availabilityMutations.get(entry.host);
+    if (!mutationState) {mutationState={epoch:0,pending:false,uncertain:false};availabilityMutations.set(entry.host,mutationState);}
+    ui.availability = mountNodeAvailability({ui: graph, root: availabilityRoot, host: entry.host, sourceHost: roster?.source_host, local: entry.local, connected, mutationState,
+      ...availabilityObservation(entry.host, observation),
+      read: () => call("node_availability_read_v1", {host: entry.host}),
+      inspect: () => call("node_availability_inspect_v1", {host: entry.host}),
+      setSelf: entry.local ? request => call("node_availability_set_v1", request) : undefined});
     ui.foot.replace(button("Close", () => ui.d.close()));
     if (openNode) ui.foot.append(button("Open dashboard \u2197", () => openNode(entry), "primary"));
     if (!entry.local && entry.trust?.state === "active") ui.foot.append(button("Disconnect this node\u2026", () => editDisconnect(entry), "danger"));
@@ -735,7 +751,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
   }
   function editDisconnect(entry) {
     const ui = modal("Disconnect this node", "MESH / EXACT ENROLLMENT"), facts = graph.stack();
-    row(facts, "Node", entry.name);
+    row(facts, "Node", entry.name || entry.display_name || entry.host);
     row(facts, "Stable host", entry.host, true);
     row(facts, "Enrollment", entry.trust?.pair, true);
     ui.body.append(facts);
@@ -1360,6 +1376,7 @@ Executable SHA-256: ${q.sha256}`)]),
   return { refresh, invalidate: () => refresh(), openKubernetesInventory: () => kube.open(), focusKubernetesNode: reference => kube.focusKubernetesNode(reference), updateConnection() {
     installButton.disabled = connectButton.disabled = refreshButton.disabled = forwardButton.disabled = !connected();
     forwardUI?.updateConnection();
+    for (const parts of modalParts.values()) parts.availability?.updateConnection();
     kube.updateConnection();
     if (!connected()) {
       announce("Disconnected. Cached nodes and receipts may be stale. Reconnect performs reads only.");

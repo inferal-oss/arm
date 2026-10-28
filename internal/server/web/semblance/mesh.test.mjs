@@ -345,3 +345,58 @@ test('uncertain uninstall decision cannot be resent or implicitly finished after
   assert.equal(f.calls.filter(([n])=>n==='mesh_operator_decide').length,1);
   assert.equal(f.calls.filter(([n])=>n==='mesh_operator_uninstall_finish').length,0);
 });
+
+
+test('chosen node mounts advisory availability and closes its exact panel owner',async()=>{
+ const f=meshFixture();f.node.display_name='CustomPeer';
+ f.intercept((name,q)=>{
+  if(name==='node_availability_read_v1')return {schema:1,host:q.host,owner_declared:{profile:'intermittent',revision:1,updated_at:'2026-10-27T00:00:00Z'},observed_at:'2026-10-27T00:00:00Z'};
+  if(name==='node_availability_inspect_v1')return {schema:1,host:q.host,connection_state:'offline',declaration_state:'stale',resource_freshness:{cpu:'stale',memory:'stale',disk:'stale'}};
+ });
+ await f.open();await flush();
+ assert.ok(f.find('Availability','card'));assert.ok(f.text().includes('CustomPeer'));assert.match(f.text(),/Mobile \/ intermittent.*owner declared/);assert.match(f.text(),/Offline/);assert.match(f.text(),/Stale; unavailable for placement/);
+ assert.equal(f.find('Save owner availability','button'),undefined);
+ const calls=f.calls.filter(([n])=>n==='node_availability_read_v1'||n==='node_availability_inspect_v1');assert.ok(calls.length>=2);for(const [,q]of calls)assert.deepEqual(q,{host:f.node.host});
+ const box=f.find('Availability','card');await f.find('Close','button').fire('activate');assert.equal(box.disposed,true);f.console.dispose();
+});
+
+test('late declaration cannot repopulate a disposed chosen node panel',async()=>{
+ const f=meshFixture();let release;
+ const held=new Promise(resolve=>{release=resolve;});
+ f.intercept(name=>name==='node_availability_read_v1'?held:undefined);
+ await f.open();const box=f.find('Availability','card');assert.ok(box);
+ await f.find('Close','button').fire('activate');
+ release({schema:1,host:f.node.host,owner_declared:{profile:'stable',revision:1,updated_at:'2026-10-27T00:00:00Z'},observed_at:'2026-10-27T00:00:00Z'});await flush();
+ assert.equal(box.disposed,true);assert.equal(f.find('Availability','card'),undefined);assert.doesNotMatch(f.text(),/Stable \(owner declared\)/);f.console.dispose();
+});
+
+
+test('stock node refresh retains a pending owner update across its panel replacement',async()=>{
+ const f=meshFixture();f.node.local=true;let reject;
+ const pending=new Promise((resolve,rejectPromise)=>{reject=rejectPromise;});
+ const report={schema:1,host:f.node.host,owner_declared:{profile:'intermittent',revision:1,updated_at:'2026-10-27T00:00:00Z'},observed_at:'2026-10-27T00:00:00Z'};
+ f.intercept((name,q)=>{
+  if(name==='node_list')return {source_host:f.node.host,nodes:[f.node]};
+  if(name==='node_availability_read_v1')return report;
+  if(name==='node_availability_inspect_v1')return {schema:1,host:q.host,connection_state:'reachable',resource_freshness:{cpu:'unknown',memory:'unknown',disk:'unknown'}};
+  if(name==='node_availability_set_v1')return pending;
+ });
+ await f.open();await flush();f.find('Private reason for changing availability','area').value='owner declaration';
+ const write=f.find('Save owner availability','button').fire('activate');await flush();
+ const original=f.calls.find(([name])=>name==='node_availability_set_v1')[1];
+ await f.console.refresh(true);await flush();
+ assert.match(f.text(),new RegExp(original.key));
+ f.find('Private reason for changing availability','area').value='owner declaration';await f.find('Save owner availability','button').fire('activate');assert.equal(f.calls.filter(([n])=>n==='node_availability_set_v1').length,1);
+ reject(Error('original reply lost'));await write;
+ await f.find('Save owner availability','button').fire('activate');assert.equal(f.calls.filter(([n])=>n==='node_availability_set_v1').length,1);
+ await f.find('Read current declaration','button').fire('activate');assert.equal(f.find('Save owner availability','button').disabled,false);f.console.dispose();
+});
+
+
+test('mesh optional display names update without changing the exact selected host or supplied name',async()=>{
+ const f=meshFixture();f.node.name='';f.node.display_name='readable-peer';await f.console.refresh();assert.ok(f.text().includes('readable-peer'));
+ f.node.display_name='updated-peer';await f.console.refresh();assert.ok(f.text().includes('updated-peer'));
+ f.node.display_name='';f.node.name='Chosen node';await f.console.refresh();assert.ok(f.text().includes('Chosen node'));
+ await f.open();assert.ok(f.calls.some(([name,p])=>name==='node_inspect'&&p.host===f.node.host));
+ assert.equal(f.calls.some(([,p])=>p?.host==='readable-peer'||p?.host==='updated-peer'),false);
+});

@@ -6,6 +6,8 @@ import {Runtime,EventBus,Islands,MOD} from '../third_party/semblance/src/index.t
 import {DEFAULT_LAYERS} from '../third_party/semblance/src/ns.ts';
 import {DomRenderer} from '../third_party/semblance/src/render/dom.ts';
 import {createGraphUI,ARM} from '../../internal/server/web/semblance/graph-ui.mjs';
+import {createResourceOverview} from '../../internal/server/web/semblance/resources.mjs';
+import {createPoolConsole} from '../../internal/server/web/semblance/pools.mjs';
 
 function fixture({widgets={}}={}){
  const store=loadStore('wat',readFileSync(new URL('../../internal/server/web/semblance/app.ttl',import.meta.url),'utf8'));
@@ -16,6 +18,95 @@ function fixture({widgets={}}={}){
  const bus=new EventBus(runtime,projection);bus.attach(renderer,h=>{app.flush();ui.handled(h)});
  return{ui,document,window,store,runtime,projection,renderer,bus,close(){runtime.dispose();store.dispose?.();}};
 }
+it('resource refresh retains disclosure, focused consumer handles and exact visible commitments',()=>{
+ const x=fixture();try{
+  const root=x.ui.grid(),overview=createResourceOverview({ui:x.ui,root,owner:()=> 'Operator',onLease:()=>{},help:()=>x.ui.button('Explain',()=>{})});
+  x.ui.bind('monitorContent').replace(root);
+  const r={id:'permits',kind:'custom',unit:'permits',available:0,reserved:9223372036854775807n,budget_total:1,users:[{lease:'lease-a',reason:'Keep building',quantity:2}],custom:{pool:{name:'Build permits'}}};
+  overview.update([r],{});
+  const disclosure=[...x.ui.handles.values()].find(h=>h.kind==='AccordionItem'&&h.label.startsWith('Accounting & consumers'));
+  expect(disclosure.open).toBe(false);disclosure.open=true;
+  const consumer=[...x.ui.handles.values()].find(h=>h.kind==='Button'&&h.label==='Keep building');
+  overview.update([{...r,available:1}],{});
+  expect(disclosure.open).toBe(true);expect(consumer.disposed).not.toBe(true);
+  expect(x.document.body.textContent).toContain('RESERVED · 9,223,372,036,854,775,807 permits');
+  overview.update([r],{},'missing');expect(disclosure.disposed).not.toBe(true);
+  overview.update([r],{});expect(disclosure.open).toBe(true);
+  overview.dispose();expect(consumer.disposed).toBe(true);
+ }finally{x.close();}
+});
+it('root pools do not claim parent backing while child promises and material warnings remain visible',()=>{
+ const x=fixture();try{
+  const root=x.ui.grid(),overview=createResourceOverview({ui:x.ui,root,owner:()=> 'Operator',onLease:()=>{},help:()=>x.ui.button('Explain',()=>{})});
+  x.ui.bind('monitorContent').replace(root);
+  overview.update([
+   {id:'root',kind:'custom',unit:'permits',users:[],custom:{pool:{id:'root',name:'Root permits'},partition:{configured:4,committed:3,direct_reserved:0,child_backing:3,held_backing:4,uncarved_available:1,pending_return:0}}},
+   {id:'child',kind:'custom',unit:'permits',deficit:2,users:[{lease:'lease-a',reason:'Keep building',quantity:3,state:'active'}],custom:{pool:{id:'child',parent:'root',name:'Child permits'},partition:{configured:1,committed:3,direct_reserved:3,child_backing:0,held_backing:3,uncarved_available:0,pending_return:2}}}
+  ],{});
+  const node=label=>{const handle=[...x.ui.handles.values()].find(h=>h.kind==='Card'&&h.label===label);return x.renderer.nodeOf(x.projection.index.rootOf(handle.iri));};
+  const rootNode=node('Root permits'),childNode=node('Child permits');
+  expect(rootNode.textContent).not.toContain('Held in parent:');
+  expect(rootNode.textContent).toContain('COMMITTED · 3 permits');
+  expect(rootNode.textContent).toContain('1 permits');
+  expect(childNode.textContent).toContain('COMMITTED · 3 permits');
+  expect([...x.ui.handles.values()].filter(h=>h.kind==='AccordionItem').every(h=>!h.open)).toBe(true);
+  for(const warning of ['Held in parent: 3 permits.','Pending return: 2 permits.','Shortfall: 2 permits. Existing promises remain charged.']){
+   const text=[...childNode.querySelectorAll('*')].find(n=>n.textContent===warning);expect(text).toBeTruthy();expect(text.closest('[hidden]')).toBeNull();
+  }
+  overview.dispose();
+ }finally{x.close();}
+});
+it('a focused consumer keeps its RDF handle and DOM node through renewal and other consumer membership changes',()=>{
+ const x=fixture();try{
+  const root=x.ui.grid(),overview=createResourceOverview({ui:x.ui,root,owner:()=> 'Operator',onLease:()=>{},help:()=>x.ui.button('Explain',()=>{})});
+  x.ui.bind('monitorContent').replace(root);
+  const first={lease:'lease-a',relationship:'direct',reason:'Keep building',quantity:1,state:'active',expires_at:'2026-10-27T17:00:00Z'};
+  const r={id:'permits',kind:'custom',unit:'permits',available:1,reserved:1,budget_total:2,users:[first]};
+  overview.update([r],{});
+  const disclosure=[...x.ui.handles.values()].find(h=>h.kind==='AccordionItem'&&h.label.startsWith('Accounting & consumers'));disclosure.open=true;
+  const consumer=[...x.ui.handles.values()].find(h=>h.kind==='Button'&&h.label==='Keep building');
+  const node=x.renderer.nodeOf(x.projection.index.rootOf(consumer.iri));let focusEvents=0;node.addEventListener('focus',()=>focusEvents++);consumer.focus();
+  // Linkedom dispatches focus; native activeElement retention is checked in Chrome.
+  expect(focusEvents).toBe(1);
+  const renewed={...first,expires_at:'2026-10-27T18:00:00Z'};
+  const second={lease:'lease-b',relationship:'direct',reason:'Another build',quantity:1};
+  for(const users of [[renewed],[renewed,second],[renewed]]){
+   overview.update([{...r,users}],{});
+   expect(consumer.disposed).not.toBe(true);expect(node.isConnected).toBe(true);
+   expect(x.renderer.nodeOf(x.projection.index.rootOf(consumer.iri))).toBe(node);
+   expect(focusEvents).toBe(1);expect(disclosure.open).toBe(true);
+  }
+  expect([...x.ui.handles.values()].some(h=>h.label==='Another build')).toBe(false);
+  overview.dispose();
+ }finally{x.close();}
+});
+it('pool management uses a stock contained dialog; an empty inventory leaves actions behind its entry',async()=>{
+ const x=fixture();try{
+  const pool=createPoolConsole({ui:x.ui,root:x.ui.bind('monitorContent'),connected:()=>true,call:async()=>[]});
+  pool.update({status:{host:'local',cursor:1},route:{view:'resources'}});await new Promise(resolve=>setImmediate(resolve));
+  expect(x.document.querySelector('[role="dialog"]')).toBeFalsy();
+  const entry=[...x.ui.handles.values()].find(h=>h.label==='Manage pools…');entry.emit('activate');
+  expect(x.document.querySelector('[role="dialog"]').textContent).toContain('No custom pools yet.');
+  expect(x.document.querySelector('[role="dialog"] input[type="search"]')).toBeTruthy();
+  pool.applyRoute({view:'monitor'});expect(x.document.querySelector('[role="dialog"]')).toBeFalsy();
+  pool.dispose();
+ }finally{x.close();}
+});
+it('opening an older hosted dialog raises its existing projection above newer management overlays',()=>{
+ const x=fixture();try{
+  const lease=x.ui.dialog('Lease detail',[x.ui.button('Lease action',()=>{})]);
+  const manager=x.ui.dialog('Pool manager',[x.ui.button('Pool action',()=>{})]);
+  const editor=x.ui.dialog('Review pool change',[x.ui.button('Cancel change',()=>{})]);
+  const node=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));
+  manager.showModal();const managerNode=node(manager),managerAction=managerNode.querySelector('button');
+  editor.showModal();expect([...x.document.querySelectorAll('[role="dialog"]')].at(-1).textContent).toContain('Review pool change');
+  editor.close();lease.showModal();
+  expect([...x.document.querySelectorAll('[role="dialog"]')].at(-1).textContent).toContain('Lease detail');
+  expect(node(manager)).toBe(managerNode);expect(node(manager).querySelector('button')).toBe(managerAction);
+  lease.close();expect(manager.open).toBe(true);manager.showModal();
+  expect([...x.ui.desktopHosts].at(-1)).toBe(manager.iri);expect(manager.disposed).not.toBe(true);
+ }finally{x.close();}
+});
 it('renders the stock Semblance default and runs button effects only after a graph event',()=>{
  const x=fixture();try{let clicks=0;const b=x.ui.button('Review',()=>clicks++);x.ui.bind('monitorContent').replace(b);
  expect(x.document.querySelector('[data-sem-theme="semblance"]')).toBeTruthy();expect(clicks).toBe(0);
@@ -85,11 +176,59 @@ it('messages preserve exact instants in the viewer clock and evict retired autho
  list.setMessages([{id:'new',author:'current',at,body:x.ui.text('new')}]);expect(x.store.match(x.ui.nn(list.iri+'/author/retired'))).toHaveLength(0);expect(x.document.body.textContent).not.toContain('old');
  }finally{x.close();}
 });
-it('palette keywords find full identifiers while labels remain concise',()=>{
+it('palette keywords find full identifiers while primary labels stay concise and secondary help preserves exact IDs',()=>{
  const x=fixture(),id='0123456789abcdef0123456789abcdef';let selected='';const palette=createCommandPalette({ui:x.ui,onLease:value=>selected=value});try{
  palette.update({status:{host:'host',leases:[{id,request:{reason:'Short title'}}]}});palette.open();const input=x.document.querySelector('[role="combobox"]');input.value=id;input.dispatchEvent(new x.window.Event('input',{bubbles:true}));
- const options=[...x.document.querySelectorAll('[role="option"]')].filter(e=>!e.closest('[hidden]'));expect(options).toHaveLength(1);expect(options[0].textContent).toContain('Short title');expect(options[0].textContent).not.toContain(id);options[0].dispatchEvent(new x.window.Event('click',{bubbles:true}));expect(selected).toBe(id);
+ const options=[...x.document.querySelectorAll('[role="option"]')].filter(e=>!e.closest('[hidden]'));expect(options).toHaveLength(1);
+ const primary=options[0].querySelector('.sem-ta-label'),secondary=options[0].querySelector('.sem-ta-help');
+ expect(primary?.textContent).toContain('Short title');expect(primary?.textContent).not.toContain(id);expect(secondary?.textContent).toContain('ID '+id);
+ options[0].dispatchEvent(new x.window.Event('click',{bubbles:true}));expect(selected).toBe(id);
  }finally{palette.dispose();x.close();}
+});
+
+it('closing nested detail stays inside the highest surviving hosted modal after its opener is replaced',()=>{
+ for(const kind of ['dialog','drawer'])for(const close of ['button','escape']){
+  const x=fixture();try{
+   const page=x.ui.button('Page navigation',()=>lower.showModal(page));x.ui.bind('monitorContent').replace(page);
+   const openManager=x.ui.button('Open pool management',()=>manager.showModal(openManager)),lower=x.ui.dialog('Older overlay',[openManager]);
+   const opener=x.ui.button('Original consumer',()=>detail.showModal(opener)),manager=x.ui[kind]('Pool management',[opener]);
+   const detail=x.ui.dialog('Lease detail',[x.ui.text('Original exact lease')]);
+   const node=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri)),click=h=>node(h).dispatchEvent(new x.window.Event('click',{bubbles:true}));
+   click(page);expect(lower.open).toBe(true);click(openManager);expect(manager.open).toBe(true);click(opener);expect(detail.open).toBe(true);detail.returnTo=page;
+   const managerNode=node(manager),panel=managerNode.querySelector('[role="dialog"]'),lowerPanel=node(lower).querySelector('[role="dialog"]');
+   const replacement=x.ui.button('Current consumer',()=>{});manager.replace(replacement);
+   expect(opener.disposed).toBe(true);expect(x.ui.handles.has(opener.iri)).toBe(false);
+   const focus=[];panel.addEventListener('focus',()=>focus.push('manager'));lowerPanel.addEventListener('focus',()=>focus.push('older'));node(page).addEventListener('focus',()=>focus.push('page'));
+   let closed=0;detail.on('close',()=>closed++);
+   const closeButton=node(detail).querySelector('[aria-label="Close"]');
+   if(close==='button')closeButton.dispatchEvent(new x.window.Event('click',{bubbles:true}));
+   else closeButton.dispatchEvent(Object.assign(new x.window.Event('keydown',{bubbles:true,cancelable:true}),{key:'Escape',code:'Escape'}));
+   expect(detail.open).toBe(false);expect(closed).toBe(1);expect(manager.open).toBe(true);expect(lower.open).toBe(true);
+   expect(node(manager)).toBe(managerNode);expect(focus).toEqual(['manager']);expect(replacement.disposed).not.toBe(true);expect(opener.disposed).toBe(true);
+  }finally{x.close();}
+ }
+});
+it('closing the last hosted modal restores the live opener or the page reading fallback',()=>{
+ for(const removed of [false,true]){
+  const x=fixture();try{
+   const opener=x.ui.button('Open detail',()=>{}),heading=x.ui.bind('heading');x.ui.bind('monitorContent').replace(opener);
+   const detail=x.ui.dialog('Final detail',[x.ui.text('Read only')]),node=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));
+   detail.showModal(opener);detail.returnTo=null;
+   if(removed)x.ui.bind('monitorContent').replace(x.ui.text('Consumer removed'));
+   const focus=[];node(heading).addEventListener('focus',()=>focus.push('heading'));if(!removed)node(opener).addEventListener('focus',()=>focus.push('opener'));
+   node(detail).querySelector('[aria-label="Close"]').dispatchEvent(new x.window.Event('click',{bubbles:true}));
+   expect(detail.open).toBe(false);expect(focus).toEqual([removed?'heading':'opener']);
+  }finally{x.close();}
+ }
+});
+it('an explicit pending close callback keeps its requested focus inside the surviving modal',()=>{
+ const x=fixture();try{
+  const opener=x.ui.button('Original action',()=>{}),chosen=x.ui.button('Explicit next action',()=>{}),manager=x.ui.dialog('Manager',[opener,chosen]),detail=x.ui.dialog('Detail',[x.ui.text('Read only')]);
+  const node=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));manager.showModal();detail.showModal(opener);
+  const focus=[];node(opener).addEventListener('focus',()=>focus.push('opener'));node(chosen).addEventListener('focus',()=>focus.push('chosen'));
+  detail.on('close',()=>chosen.focus());x.ui.batch(()=>detail.close());
+  expect(focus).toEqual(['chosen']);expect(detail.open).toBe(false);expect(manager.open).toBe(true);
+ }finally{x.close();}
 });
 it('programmatic reading focus does not remove native controls from the Tab order',()=>{
  const x=fixture();try{const button=x.ui.button('Keep running',()=>{}),text=x.ui.stack([x.ui.text('Selected message')]);x.ui.bind('monitorContent').replace(button,text);button.focus();expect(x.store.match(x.ui.nn(button.iri),x.ui.nn(ARM+'focusable'))).toHaveLength(0);expect(x.document.querySelector('[data-sem-c="button"]').getAttribute('tabindex')).not.toBe('-1');button.hidden=true;button.focus();expect(x.store.match(x.ui.nn(button.iri),x.ui.nn(ARM+'focusable'))).toHaveLength(0);button.hidden=false;const blocks=[];x.renderer.nodeOf(x.projection.index.rootOf(text.iri)).scrollIntoView=options=>blocks.push(options.block);text.focus();expect(x.document.querySelector('[data-sem-c="stack"][tabindex="-1"]')).toBeTruthy();text.focus();expect(blocks).toEqual(['center','center']);

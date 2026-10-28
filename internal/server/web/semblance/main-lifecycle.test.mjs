@@ -11,6 +11,7 @@ function between(start,end){const a=source.indexOf(start),b=source.indexOf(end,a
 const declarations=[
   between('function disposeDetail(){','\nnavigation=createDashboardHistory'),
   between('function applyRoute(route){','\nfunction showLease'),
+  between('async function refresh(){','\nasync function connect(){'),
   between('async function connect(){','\nconst authentication='),
   between('async function loadLease(id){','\nfunction renderLeaseDetail'),
   between('function renderLeaseDetail(lease,leases,request,resultNote=', '\nconst activityTimeline='),
@@ -19,7 +20,7 @@ const reset=between('onStart:()=>{',',onSession:value=>').slice('onStart:'.lengt
 const onDetailClose=between("detail.on('close',()=>{",');\nconst when=').slice("detail.on('close',".length);
 const id='a'.repeat(32),tick=()=>new Promise(resolve=>setImmediate(resolve));
 
-function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus=false}={}){
+function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus=false,displayName}={}){
   const log=[],calls=[],instances=[],actions=[],reviews=[];
   const oldPanel={disposed:false,dispose(){this.disposed=true;}},oldReviews={disposed:false,dispose(){this.disposed=true;}};
   const lease=Object.freeze({id,display_name:'Build cache',host:'c'.repeat(32),revision:9007199254740993n,state:'active',owner:'operator',request:{reason:'Build'},expires_at:new Date(Date.now()+60000).toISOString()});
@@ -29,28 +30,28 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     Date,performance,WebSocket:{OPEN:1},setTimeout:()=>1,clearTimeout:()=>{},
     session:{token:'b'.repeat(64),expires_at:lease.expires_at},connection:{disconnect(){log.push('disconnect:old');}},
     state:{connected:false,status:null,epoch:0,cursor:0},targetWindow:null,view,retry:0,
-    retryTimer:null,refreshTimer:null,nodeContextInvalid:false,remoteDashboard:null,remoteSlot:null,remoteView:null,screenViewer:null,peerPicture:null,
+    retryTimer:null,refreshTimer:null,refreshBusy:false,refreshAgain:false,nodeContextInvalid:false,remoteDashboard:null,remoteSlot:null,remoteView:null,screenViewer:null,peerPicture:null,
     poolConsole:null,meshConsole:null,detailRequest:0,detailLeaseID:open?id:'',detailPanel:oldPanel,detailReviews:oldReviews,resettingSession:false,
     copyLoginGeneration:0,copyingLogin:false,paletteNodes:[],palettePools:[],paletteKubernetes:null,
     pendingLeaseActions:new Set(),pendingReviewConfigurations:new Set(),
     roots:{screen:{replace(){}}},detailBody:{},
     clearLogin(){},peerPoll:{reset(){}},notice:text=>log.push('notice:'+text),
     connectionState(label,live=false){scope.state.connected=live;log.push('connection:'+label);},
-    nodeContextClosed:()=>false,addEvent(){},acceptMonitor(){},updateFreshness(){},updateMessages(){},scheduleRefresh(){},refreshPalette(){},
+    nodeContextClosed:()=>false,addEvent(){},acceptMonitor(){},updateFreshness(){},updateActivityFeed(){},updateMessages(){},scheduleRefresh(){},refreshPalette(){},
     renderCurrent(){log.push('render:view');},owner:()=> 'operator',when:value=>value,leaseStateLabel:value=>value.state,leaseActionResult:()=>'',
     owned(root,children){root.children=children;},
     ui:{batch:fn=>fn(),put(){},heading:(label,level)=>({kind:'Heading',label,level}),text:label=>({label}),badge:label=>({label}),json:()=>({}),stack:()=>({}),
       bind:()=>({set(){},focus(){log.push('focus:heading');}})},
-    hostLabel:{set(){}},namedLabel,
-    localOperator:()=>true,namingNotice:{set(){}},
-    detail:{open,showModal(){this.open=true;log.push('open:dialog');this.focus();},focus(){log.push('focus:dialog');},close(){this.open=false;api.onDetailClose();}},
+    hostLabel:{set(props){Object.assign(this,props);}},namedLabel,
+    localOperator:()=>true,namingNotice:{set(){}},namingConsole:{updateConnection(){}},
+    detail:{open,set(props){Object.assign(this,props);},showModal(){this.open=true;log.push('open:dialog');this.focus();},focus(){log.push('focus:dialog');},close(){this.open=false;api.onDetailClose();}},
     navigation:{current:{view:'leases',lease:id},navigate(next){this.current=next;log.push('navigate');api.applyRoute(next);}},
     createLeaseActions(options){actions.push(options);return {dispose(){},updateConnection(){}};},
     createLeaseReviews(options){reviews.push(options);return {dispose(){},updateConnection(){}};},
     Backend:class {
       constructor(token,options){this.options=options;this.index=instances.length;instances.push(this);this.ready=ready(this.index);this.socket={readyState:1,close:()=>{this.socket.readyState=3;log.push('socket:close');}};}
       async call(operation,args){calls.push({connection:this.index,operation,args});
-        if(operation==='status'){if(failStatus)throw Error('Read unavailable');return {host:'c'.repeat(32),cursor:0,capabilities:['reviews'],leases:[lease]};}
+        if(operation==='status'){if(failStatus)throw Error('Read unavailable');return {host:'c'.repeat(32),display_name:displayName,cursor:0,capabilities:['reviews'],leases:[lease]};}
         if(operation==='inspect')return lease;
         if(operation==='monitor_subscribe')return {epoch:0,cursor:0};
         if(['events','messages','agents'].includes(operation))return [];
@@ -59,7 +60,7 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
       }
     },
   };
-  api=runInNewContext(declarations+'\n({connect,applyRoute,disposeDetail,loadLease,reset:'+reset+',onDetailClose:'+onDetailClose+'})',scope);
+  api=runInNewContext(declarations+'\n({connect,refresh,applyRoute,disposeDetail,loadLease,reset:'+reset+',onDetailClose:'+onDetailClose+'})',scope);
   return {scope,api,log,calls,instances,actions,reviews,oldPanel,oldReviews,lease};
 }
 function onlyReads(f){const allowed=new Set(['status','inspect','monitor_subscribe','events','messages','agents','subscribe','mesh_operator_watch']);assert.ok(f.calls.every(c=>allowed.has(c.operation)));}
@@ -97,4 +98,68 @@ test('a superseded connection cannot rebind the current lease detail',async()=>{
 test('a failed connection read retains the existing detail and route without a mutation',async()=>{
   const f=fixture({failStatus:true});await f.api.connect();await tick();
   assert.equal(f.scope.navigation.current.lease,id);assert.equal(f.scope.detail.open,true);assert.equal(f.oldPanel.disposed,false);assert.equal(f.actions.length,0);assert.ok(f.log.includes('socket:close'));onlyReads(f);
+});
+test('a delayed or rejected next lease read clears the previous display name immediately',async()=>{
+ const f=fixture();await f.api.connect();await tick();
+ const next='d'.repeat(32);let rejectRead;
+ f.scope.connection.call=async(operation)=>{if(operation==='inspect')return new Promise((_,reject)=>{rejectRead=reject;});throw Error('Unexpected read');};
+ f.scope.detail.set({label:'prior-readable-name'});
+ const read=f.api.loadLease(next);
+ assert.equal(f.scope.detail.label,'Lease detail');
+ assert.equal(f.scope.detailLeaseID,next);
+ rejectRead(Error('Second lease unavailable'));await read;
+ assert.equal(f.scope.detail.label,'Lease detail');
+ assert.equal(f.scope.detailBody.children[0].label,'Second lease unavailable');
+ f.scope.detail.set({label:'prior-readable-name'});f.scope.state.connected=false;
+ await f.api.loadLease(next);assert.equal(f.scope.detail.label,'Lease detail');
+ assert.match(f.scope.detailBody.children[0].label,/Waiting for a connection/);
+});
+
+
+test('empty optional host labels use the exact-ID fallback at connect and refresh',async()=>{
+ const f=fixture({displayName:''});await f.api.connect();await tick();assert.equal(f.scope.hostLabel.label,'Host cccccccc');
+ f.scope.hostLabel.set({label:'prior-name'});await f.api.refresh();assert.equal(f.scope.hostLabel.label,'Host cccccccc');onlyReads(f);
+});
+
+
+test('backend close refreshes peer status without replacing reported claims or moving focus',async()=>{
+ const f=fixture({open:false,view:'resources'});
+ f.scope.navigation.current={view:'resources',lease:null};
+ const slot=()=>({children:[],replacements:0,replace(...children){this.children=children;this.replacements++;}});
+ Object.assign(f.scope,{
+  connectionBadge:{set(){}},copyLogin:{},namesButton:{},activityButton:{},messages:{updateConnection(){}},updatePalette(){},
+  detailPanel:null,detailReviews:null,
+  peerStatus:{set(props){Object.assign(this,props);}},peerSummary:slot(),peerNotes:slot(),peerDetails:slot(),
+  hostResourceSummary:value=>JSON.stringify(value),
+ });
+ Object.assign(f.scope.ui,{text:label=>({label}),card:(label,children)=>({label,children})});
+ const production=runInNewContext([
+  between('function connectionState(', '\nfunction disposeDetail'),
+  between('function updatePeerStatus(){', '\nfunction renderLeases'),
+  '\n({connectionState,renderPeers})',
+ ].join('\n'),f.scope);
+ f.scope.connectionState=production.connectionState;
+ await f.api.connect();await tick();
+ for(const complete of [false,true]){
+  const picture={totals_complete:complete,local:{held:{cpu:1},held_count:1,queued:{cpu:2},queued_count:1,items:[{state:'held',resources:{cpu:1},expires_at:f.lease.expires_at}]},instances:[]};
+  f.scope.peerPicture=picture;production.renderPeers();
+  const liveLabel=complete?'Recent discovered peer reports':'Partial view · some peers unavailable';
+  assert.equal(f.scope.peerStatus.label,liveLabel);
+  const slots=[f.scope.peerSummary,f.scope.peerNotes,f.scope.peerDetails];
+  const before=slots.map(s=>({children:s.children,replacements:s.replacements}));
+  const calls=f.calls.length,focus=f.log.filter(x=>x.startsWith('focus:')).length;
+  f.instances.at(-1).options.onClose({code:1006});
+  assert.equal(f.scope.state.connected,false);
+  assert.equal(f.scope.peerStatus.label,'Stale view · backend disconnected');
+  assert.equal(f.scope.peerPicture,picture);
+  for(let i=0;i<slots.length;i++){
+   assert.equal(slots[i].children,before[i].children);
+   assert.equal(slots[i].replacements,before[i].replacements);
+  }
+  assert.equal(f.calls.length,calls);
+  assert.equal(f.log.filter(x=>x.startsWith('focus:')).length,focus);
+  await f.api.connect();await tick();
+  assert.equal(f.scope.state.connected,true);assert.equal(f.scope.peerStatus.label,liveLabel);
+ }
+ onlyReads(f);
 });

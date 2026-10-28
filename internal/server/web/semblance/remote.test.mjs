@@ -49,11 +49,11 @@ function snapshot() {return{
   leases:[ownLease,otherLease]
 };}
 function fixture(bound=context) {
-  const ui=graphUI(),calls=[],errors=[];
+  const ui=graphUI(),calls=[],errors=[],labels=[];
   let mono=0,wall=Date.parse('2026-10-26T10:00:00Z'),value=snapshot(),permissions=['observe-host','observe-own'];
   let contextHandler=null,statusHandler=null,metadataHandler=null,inspectHandler=null;
   const report=()=>({context:{...bound},access_scope:{source_host:bound.source_host,target_host:bound.host,pair:bound.pair,revision:bound.remote_revision,grant:{permissions}},read_only:true});
-  const dashboard=createRemoteNodeDashboard({ui,root:ui.root,feed:ui.stack(),context:bound,clock:{mono:()=>mono,wall:()=>wall},onError:error=>errors.push(error),
+  const dashboard=createRemoteNodeDashboard({ui,root:ui.root,feed:ui.stack(),context:bound,clock:{mono:()=>mono,wall:()=>wall},onError:error=>errors.push(error),onLabel:label=>labels.push(label),
     call:async(operation,params)=>{
       calls.push([operation,params]);
       if(operation==='node_context')return contextHandler?contextHandler():report();
@@ -63,7 +63,7 @@ function fixture(bound=context) {
       throw Error('Unexpected operation: '+operation);
     }});
   const find=(label,kind)=>[...ui.nodes].find(node=>node.visible&&node.label===label&&(!kind||node.kind===kind));
-  return{ui,dashboard,calls,errors,find,report,get value(){return value;},set value(next){value=next;},
+  return{ui,dashboard,calls,errors,labels,find,report,get value(){return value;},set value(next){value=next;},
     advance(ms){mono+=ms;wall+=ms;},permissions(next){permissions=next;},context(fn){contextHandler=fn;},status(fn){statusHandler=fn;},metadata(fn){metadataHandler=fn;},inspect(fn){inspectHandler=fn;}};
 }
 
@@ -155,4 +155,19 @@ test('exact wide bootstrap revisions match the destination report and changed ev
   await f.dashboard.refresh();assert.equal(f.dashboard.stale,true);assert.equal(f.errors.length,1);assert.match(f.errors[0].message,/exact selected node/);assert.equal(f.calls.filter(([op])=>op==='status').length,before);
   assert.ok(f.calls.every(([op])=>['node_context','status','node_metadata'].includes(op)));
  }finally{f.dashboard.dispose();}
+});
+
+
+test('remote readable labels come only from the scoped replies and exact IDs still drive reads',async()=>{
+ const f=fixture({...context,name:'LOCAL-ONLY-MESH-NAME',display_name:'UNSCOPED-CONTEXT-LABEL'});
+ f.value={...f.value,display_name:'authorized-host-label',resources:f.value.resources.map((r,i)=>({...r,id:'resource-'+i,display_name:'authorized-resource-'+i})),leases:f.value.leases.map(l=>({...l,display_name:'authorized-'+l.id}))};
+ await f.dashboard.refresh();
+ assert.equal(f.labels.at(-1),'authorized-host-label');assert.ok(f.find('Host ID '+context.host,'text'));
+ assert.ok(f.find('authorized-resource-0','card'));assert.equal(f.find('LOCAL-ONLY-MESH-NAME'),undefined);assert.equal(f.find('UNSCOPED-CONTEXT-LABEL'),undefined);
+ f.dashboard.show('leases');assert.ok(f.find('authorized-own-lease','card'));assert.ok(f.find('Lease ID own-lease','text'));
+ await f.find('Owned build','button').fire();
+ assert.ok(f.calls.some(([name,p])=>name==='inspect'&&p.id==='own-lease'));
+ assert.equal(f.calls.some(([,p])=>p?.id==='authorized-own-lease'),false);
+ assert.ok(f.find('authorized-own-lease','dialog'));
+ assert.equal(remoteResourceLabel({kind:'custom',display_name:'manual-permits',custom:{pool:{name:'Supplied permits'}}}),'manual-permits');
 });

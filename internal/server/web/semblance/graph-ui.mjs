@@ -103,8 +103,20 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       // Native buttons and fields retain their stock place in the Tab order.
       const reading=!target||(target===n&&object(this.iri,ARM+'focusable')?.value==='true');
       if(!target){put(this.iri,ARM+'focusable',true);app.flush();n=nodeOf(this.iri);}n?.scrollIntoView?.({block:reading?'center':'nearest'});(target??n)?.focus?.({preventScroll:true});}
-    showModal(opener){this.returnTo=ui.activeComponent;this.opener=opener??activating??this.returnTo;this.open=true;this.focus();}
-    restoreFocus(){for(const h of [this.opener,this.returnTo,handles.get(ARM+'heading')])if(h&&!h.disposed&&!h.disabled&&focusEligible(nodeOf(h.iri))){h.focus();return;}}
+    showModal(opener){this.returnTo=ui.activeComponent;this.opener=opener??activating??this.returnTo;
+      // Stock overlays share a stacking level, and keyboard focus follows the
+      // last visible modal. Raise the existing graph handle when it opens;
+      // creation order must not put an older lease dialog behind management.
+      if(ui.desktopHosts.has(this.iri)&&[...ui.desktopHosts].at(-1)!==this.iri){ui.desktopHosts.delete(this.iri);ui.desktopHosts.add(this.iri);ui.syncDesktop();}
+      this.open=true;this.focus();}
+    restoreFocus(){
+      if(pendingFocus)return;
+      const eligible=h=>h&&!h.disposed&&!h.disabled&&h.isConnected&&focusEligible(nodeOf(h.iri));
+      const modal=[...ui.desktopHosts].reverse().map(iri=>handles.get(iri)).find(h=>['Dialog','Drawer'].includes(h?.kind)&&h.open&&eligible(h));
+      for(const h of [this.opener,this.returnTo])if(eligible(h)&&(!modal||modal.contains(h))){h.focus();return;}
+      if(modal){modal.focus();return;}
+      const heading=handles.get(ARM+'heading');if(eligible(heading))heading.focus();
+    }
     close(){if(this.open){this.open=false;this.wasOpen=false;this.emit('close');this.restoreFocus();}}
     contains(handle){if(!handle)return false;const n=nodeOf(this.iri),child=nodeOf(handle.iri);return !!n&&!!child&&(n===child||n.contains?.(child));}
     retain(){if(!this.disposed)this.retainCount++;return this;}

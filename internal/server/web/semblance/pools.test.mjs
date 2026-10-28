@@ -78,7 +78,7 @@ async function edit(f,operation='Change total capacity…') {
 }
 
 test('cancelling a create review preserves empty inventory as row content',async()=>{
-  const f=fixture(),label='No custom pools yet. Create one to coordinate counted permits.';f.list(()=>[]);f.route({view:'resources',pool:null});await flush();assert.ok(f.find(label,'text'));
+  const f=fixture(),label='No custom pools yet. Create one to coordinate counted permits.';f.list(()=>[]);f.route({view:'resources',pool:null});await flush();await f.find('Manage pools…','button').fire();assert.ok(f.find(label,'text'));
   await f.find('Create pool…','button').fire();f.find('Pool name','field').value='Review only';f.find('Initial capacity','field').value='3';f.find('Why are you making this change?','area').value='Inspect the review';await f.find('Review change','button').fire();
   const empty=f.find(label,'text');assert.ok(empty);await f.find('Cancel change','button').fire();assert.equal(f.find(label,'text'),empty);assert.equal(f.calls.filter(([op])=>op==='pool_mutate').length,0);
 });
@@ -199,4 +199,31 @@ test('journal refresh reuses expanded entry and preserves semantic page-control 
   const technical=f.find('Journal entry 1');technical.open=true;f.find('Next page','button').focus();
   f.view.pool.revision=8;f.update();await flush();
   assert.equal(f.find('Journal entry 1'),technical);assert.equal(technical.open,true);assert.equal(f.ui.active,f.find('Next page','button'));
+});
+
+
+test('overview retains material pool warnings while management is closed; route opens the selected pool',async()=>{
+  const f=fixture();f.view={...f.view,deficit:2,partition:{committed:3,direct_reserved:1,child_backing:2,held_backing:7,pending_return:5},review:{unavailable:true}};
+  f.route({view:'resources',pool:null});await flush();
+  assert.equal(f.find('Create pool…','button'),undefined);
+  assert.ok(f.find('Manage pools…','button'));
+  assert.ok([...f.ui.nodes].some(n=>n.visible&&n.label.includes('Deficit 2 permits')));
+  assert.ok([...f.ui.nodes].some(n=>n.visible&&n.label.includes('Pending return 5 permits, held in parent 7 permits')));
+  assert.ok([...f.ui.nodes].some(n=>n.visible&&n.label.includes('Read only: complete tree exceeds')));
+  f.route({view:'resources',pool:'permits'});await flush();
+  assert.ok(f.find('Review permits','heading'));
+  assert.equal(f.find('Find custom pools','field'),undefined);
+  assert.equal(f.find('Change total capacity…','button').disabled,true);
+  const manager=[...f.ui.nodes].find(n=>n.kind==='dialog'&&n.label==='Custom resource pools');manager.close();
+  assert.equal(f.find('Find custom pools','field'),undefined);
+  assert.ok(f.find('Manage pools…','button'));
+});
+
+
+test('pool direct and subtree consumer names keep exact lease IDs as the action and secondary identity',async()=>{
+ const opened=[],f=fixture({onLease:id=>opened.push(id)});f.view={...f.view,users:f.view.users.map(u=>({...u,lease_display_name:'Readable direct lease'}))};
+ f.consumers(()=>({pool:'permits',descendants:true,entries:[{use:{lease:'subtree-lease',lease_display_name:'Readable subtree lease',quantity:1,state:'active',reason:'Subtree work',owner:'501'},direct_claims:[]}],cursor:'',more:false}));
+ f.update();await flush();f.console.focusLease('lease-a');assert.ok(f.find('Lease ID lease-a','text'));await f.find('Readable direct lease','button').fire();
+ assert.ok(f.find('Lease ID subtree-lease','text'));await f.find('Readable subtree lease','button').fire();
+ assert.deepEqual(opened,['lease-a','subtree-lease']);
 });

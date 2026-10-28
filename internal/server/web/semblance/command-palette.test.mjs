@@ -82,3 +82,16 @@ test('Kubernetes results retain exact context, CA, namespace and Node UID withou
  const old=entry.callbacks.activate,firstKey=entry.iri;selected=null;p.update({kubernetes:{...snapshot,namespace:{name:'default',uid:'namespace-b'}}});assert.notEqual(f.entries(p).find(h=>h.props.label.startsWith('Kubernetes')).iri,firstKey);old();assert.equal(selected,null);
  p.update({kubernetes:null});assert.ok(!f.entries(p).some(h=>h.props.label.startsWith('Kubernetes')));p.dispose();
 });
+
+
+test('server names are primary, missing optional names use supplied fallbacks and exact identities remain searchable/actionable',()=>{
+ const data={status:{host:'local-id',display_name:'local-words',resources:[{id:'resource-id',host:'local-id',display_name:'resource-words',host_display_name:'local-words',kind:'cpu'}],leases:[{id:'lease-id',host:'remote-id',host_display_name:'remote-words',display_name:'lease-words',request:{reason:'Build'}}]},nodes:[{host:'peer-id',display_name:'peer-words'},{host:'supplied-id',name:'Chosen node'}],pools:[{display_name:'manual-pool',pool:{id:'pool-id',name:'Chosen permits'}}]};
+ const entries=paletteEntries(data).entries;
+ for(const [id,words] of [['resource-id','resource-words'],['lease-id','lease-words'],['peer-id','peer-words'],['supplied-id','Chosen node'],['pool-id','manual-pool']]){
+  const entry=entries.find(e=>e.id===id);assert.ok(entry.label.includes(words));assert.ok(entry.keywords.includes(id));assert.ok(entry.help.includes(id));assert.equal(entry.id,id);
+ }
+ assert.ok(entries.find(e=>e.id==='resource-id').label.includes('local-words'));
+ const leaseEntry=entries.find(e=>e.id==='lease-id');assert.ok(leaseEntry.label.includes('remote-words'));assert.ok(leaseEntry.keywords.includes('remote-words'));assert.ok(leaseEntry.help.includes('remote-id'));assert.equal(leaseEntry.host,'remote-id');
+ const f=fixture(),selected=[];const palette=createCommandPalette({ui:f.ui,onLease:id=>selected.push(id)});palette.update(data);
+ f.entries(palette).find(e=>e.props.label.includes('lease-words')).callbacks.activate();assert.deepEqual(selected,['lease-id']);palette.dispose();
+});

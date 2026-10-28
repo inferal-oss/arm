@@ -12,7 +12,7 @@ const operationLabel = (operation, child = false) => ({create:child?'Create subp
  * retained here. `ui` writes component triples and routes RDF events to effects.
  */
 export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChanged=()=>{},onNavigate=()=>{},storage,key=()=>crypto.randomUUID()}) {
-  let status=null,pools=[],selected='',cursor=null,loading=false,disposed=false;
+  let status=null,pools=[],selected='',cursor=null,loading=false,disposed=false,closingManager=false;
   let readGeneration=0,historyGeneration=0,consumerGeneration=0,formGeneration=0;
   let history=null,historyAfter='0',historyBefore=null,historyReadKey=null;
   let consumerPage=null,consumerAfter='',consumerPrevious=[];
@@ -23,6 +23,12 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
   let detailFocusTargets=new Map(),journalFocusTargets=new Map(),journalItems=new Map();
   const allOnline=new Map();
   const feedback=ui.text('',{role:'status',hidden:true});
+  const overviewFeedback=ui.text('',{role:'status',hidden:true});
+  const summary=ui.text('Loading custom pools…');
+  const summaryWarnings=ui.stack();
+  const manager=ui.dialog('Custom resource pools');
+  const manageButton=ui.button('Manage pools…',()=>{manager.showModal(manageButton);filter.focus();});
+  manager.on('close',()=>{if(closingManager||disposed)return;closeEditor(false);if(selected)select('');});
   const filter=ui.field('Find custom pools',{type:'search',placeholder:'Find custom pools'},()=>renderRows());
   const rows=ui.stack();
   const detail=ui.stack([],{hidden:true});
@@ -37,9 +43,10 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
   editor.on('close',()=>{if(!editorClosing&&editorOperation)closeEditor();});
   const createButton=online(ui.button('Create pool…',()=>begin('create',createButton)));
   const refreshButton=online(ui.button('Refresh pools',()=>load(true)));
-  root.append(ui.heading('Custom resource pools'),ui.stack([filter,createButton,refreshButton],{row:true}),
+  manager.replace(filter,ui.stack([createButton,refreshButton],{row:true}),
     ui.text('Counted cooperative resources. Global pools use this one authority; physical resources retain their own policies.'),
     feedback,rows,detail,operations,journal);
+  root.append(ui.card('Custom resource pools',[summary,overviewFeedback,summaryWarnings,manageButton]));
 
   function online(handle,readOnly=false) {
     allOnline.set(handle,readOnly);
@@ -51,6 +58,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
   function owner(uid,name,authority) {return ownerDisplay({owner:uid,owner_username:name},status,authority);}
   function fail(message='') {
     feedback.set({label:message,hidden:!message});
+    overviewFeedback.set({label:message,hidden:!message});
     if(editor.open)dialogFeedback.set({label:message,hidden:!message});
   }
   function closeEditor(restore=true) {
@@ -96,6 +104,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     return ui.batch(()=>{
     let hierarchy;
     try {hierarchy=poolTreeRows(pools);}catch(error){fail(error.message);return;}
+    rows.hidden=filter.hidden=Boolean(selected);
     const search=filter.value.toLowerCase();
     const cards=hierarchy.filter(({view})=>stringifyJSON(view).toLowerCase().includes(search)).map(({view,depth})=>{
       const p=view.pool,parent=p.parent?pools.find(v=>v.pool.id===p.parent)?.pool:null;
@@ -105,7 +114,18 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     });
     const emptyMessage='No custom pools yet. Create one to coordinate counted permits.';
     rows.replace(...(cards.length?cards:cursor!==null?[ui.text(pools.length?'No pools match this filter.':emptyMessage)]:[]));
+    renderSummary();
     });
+  }
+  function renderSummary() {
+    summary.set({label:cursor===null?(connected()?'Loading custom pools…':'Pool inventory unavailable · reconnect to refresh.'):pools.length?`${pools.length} pools · ${pools.filter(v=>v.pool.state==='active').length} open for leases · ${pools.filter(v=>(v.partition?.committed??v.reserved)>0).length} with commitments`: 'No custom pools yet. Create one to coordinate counted permits.'});
+    const messages=[];
+    if(pools.length&&!connected())messages.push('Stale pool inventory · backend disconnected.');
+    for(const v of pools){const name=namedLabel(v,v.pool.name),unit=v.pool.unit;if(v.deficit>0)messages.push(`${name} · Deficit ${count(v.deficit)} ${unit}. Existing promises retain backing.`);if(v.partition?.pending_return>0)messages.push(`${name} · Pending return ${count(v.partition.pending_return)} ${unit}, held in parent ${count(v.partition.held_backing)} ${unit}.`);if(v.review?.unavailable)messages.push(`${name} · Read only: complete tree exceeds dashboard review limits.`);}
+    if(ops?.warning)messages.push(ops.warning);
+    const uncertain=ops?.operations.filter(operation=>operation.state==='unknown').length??0;
+    if(uncertain)messages.push(`${uncertain} pool changes have uncertain outcomes. Open Manage pools to check stored results or retry the retained exact request.`);
+    summaryWarnings.replace(...messages.map(label=>ui.text(label,{tone:'warning'})));
   }
   function renderDetail() {
     return ui.batch(()=>{
@@ -152,7 +172,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     for(const [label,users]of [['Direct active leases',view.users],['Direct queued claims',view.queued]]) {
       const list=(users||[]).map(user=>{
         const button=ui.button(user.lease_display_name||user.lease,()=>onLease(user.lease));leaseControls.set(user.lease,{button});detailFocusTargets.set('lease:'+user.lease,button);
-        return ui.stack([button,ui.text('ID: '+user.lease),ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${count(user.quantity)} ${p.unit} · ${user.state}`)]);
+        return ui.stack([button,ui.text('Lease ID '+user.lease),ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${count(user.quantity)} ${p.unit} · ${user.state}`)]);
       });
       const handle=ui.disclosure(`${label} · ${users?.length||0}`,list,{open:opened.has(label)});
       for(const user of users||[])leaseControls.get(user.lease).disclosure=handle;
@@ -162,7 +182,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     if(consumerPage?.pool===selected) {
       for(const entry of consumerPage.entries||[]) {
         const user=entry.use,button=ui.button(user.lease_display_name||user.lease,()=>onLease(user.lease));leaseControls.set(user.lease,{button});detailFocusTargets.set('lease:'+user.lease,button);
-        subtree.push(ui.stack([button,ui.text('ID: '+user.lease),ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${user.state}`),
+        subtree.push(ui.stack([button,ui.text('Lease ID '+user.lease),ui.text(user.reason),ui.text(`${owner(user.owner,user.owner_username,p.authority)} · ${user.state}`),
           ...(entry.direct_claims||[]).map(claim=>ui.text(`${poolName(claim.pool)} · ${count(claim.quantity)} ${p.unit}`))]));
       }
       if(!consumerPage.entries?.length)subtree.push(ui.text('No queued or consuming claims in this subtree.'));
@@ -196,13 +216,17 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
   function applyRoute(route) {
     return ui.batch(()=>{
     if(disposed)return;
+    if(route?.view!=='resources'){closingManager=true;closeEditor(false);manager.close();closingManager=false;}
     const id=route?.view==='resources'?route.pool||'':'',after=id?route.poolAfter??'0':'0',before=id?route.poolBefore??null:null;
+    if(id&&!manager.open)manager.showModal(manageButton);
     if(id===selected&&after===historyAfter&&before===historyBefore)return;
+    const returningToList=Boolean(selected)&&!id;
     fail();focusDetail=id!==selected&&Boolean(id);focusHistory=id===selected&&Boolean(id);
     selected=id;historyAfter=after;historyBefore=before;history=null;
     consumerPage=null;consumerAfter='';consumerPrevious=[];consumerGeneration++;
     historyGeneration++;historyReadKey=null;closeEditor(false);
     renderRows();renderDetail();renderHistory();loadHistory();loadConsumers();
+    if(returningToList&&manager.open)filter.focus();
     });
   }
   async function loadConsumers(after='',direction='refresh') {
@@ -361,9 +385,10 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
       content.push(ui.card(`${operationLabel(operation.request.operation,Boolean(operation.request.parent))} · ${state}`,children));
     }
     operations.replace(...content);
+    renderSummary();
     });
   }
-  const ops=createPoolOperations({call,authority:()=>status?.host,storage,onChange:renderOperations});
+  let ops;ops=createPoolOperations({call,authority:()=>status?.host,storage,onChange:renderOperations});
   renderOperations();
   return {
     update({status:next,route}) {if(disposed)return;status=next;applyRoute(route);setBusyState();load();},
@@ -372,7 +397,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
       if(!connected()){readGeneration++;historyGeneration++;consumerGeneration++;historyReadKey=null;loading=false;cursor=null;}
       setBusyState();renderOperations();if(connected())load(true);
     },
-    dispose() {if(disposed)return;closeEditor(false);disposed=true;readGeneration++;historyGeneration++;consumerGeneration++;formGeneration++;allOnline.clear();editor.dispose();root.replace();},
+    dispose() {if(disposed)return;disposed=true;closeEditor(false);readGeneration++;historyGeneration++;consumerGeneration++;formGeneration++;allOnline.clear();editor.dispose();manager.dispose();root.replace();},
     select,applyRoute,
     focusLease(id) {const target=leaseControls.get(id);if(!target){if(!focusAfterEdit?.isConnected)return false;focusAfterEdit.focus();return true;}if(target.disclosure)target.disclosure.open=true;target.button.focus();return true;}
   };

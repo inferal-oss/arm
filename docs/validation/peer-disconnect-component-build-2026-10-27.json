@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_NODE9_AND_REMAINING_BUILD_PASS",
+  "native_UI_acceptance": false,
+  "scope": "Nine completed lifecycle component tests plus three separately completed frontend/native build phases on exact peer-disconnect-label source. Original parser-failed run remains failed.",
+  "source_manifest_sha256": "e3ce543084969c001b8b76e855145fdff6922a20848d54289ada7ac3bb09b073",
+  "built_source_manifest_sha256": "474843e16426ed4782c191162aae5474ce0cd65babdce476aba15e15b4be6944",
+  "input_binding_sha256": "8960b7efdf541ca5ac763a2c583b220de982e40202f3fe561d5677786a7f86be",
+  "output_binding_sha256": "513e7a35e826b09d810187a603affd8ee3967d0be675eb39f81d0749444281d4",
+  "result_sha256": "34b203e514fb7990c1af8d5fcfbcaea095c25cf5b9639220094d097f5d2c4f1a",
+  "owners_sha256": "2de01e7bd5e2955d313a845a9058dc811aa8d97fa898f8e71d579dd8210b214f",
+  "Node": {
+    "original_command_exit_code": 0,
+    "original_overall_status": "FAILED_PARSER",
+    "reason": "Node26 emitted default spec report; outer harness expected TAP.",
+    "independent_raw_report_roster_match": true,
+    "tests": 9,
+    "pass": 9,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "actual_names": [
+      "a new connection reloads an open lease and replaces callbacks bound to the old connection",
+      "authentication reset preserves a direct lease route and reconnect reopens it",
+      "an explicit detail close clears the lease route",
+      "view-heading focus precedes opening a directly linked lease dialog",
+      "a superseded connection cannot rebind the current lease detail",
+      "a failed connection read retains the existing detail and route without a mutation",
+      "a delayed or rejected next lease read clears the previous display name immediately",
+      "empty optional host labels use the exact-ID fallback at connect and refresh",
+      "backend close refreshes peer status without replacing reported claims or moving focus"
+    ],
+    "original_test_owner_joined_zero_retired_pipes_closed": true,
+    "stdout_sha256": "9faee5031118debb61e3bf4bd5b9109cba3c841c30a8178c948a390e417371cc",
+    "no_test_rerun_for_reporter_classification": true
+  },
+  "remaining_build": {
+    "phases": [
+      "vite",
+      "native-build",
+      "buildinfo"
+    ],
+    "all_original_exit_codes": 0,
+    "all3original_owners_joined_retired_pipes_closed": true,
+    "owner_errors": [],
+    "result_passed": true,
+    "clean": true,
+    "pins_unchanged": true,
+    "before_after_binding_summaries_equal": true,
+    "outer_exit_code": 0,
+    "outer_provenance": "Sole original native-handle owner terminal report retained in dispatch record; independent app command metadata not separately obtained."
+  },
+  "source_delta_from_accepted_focus_build": {
+    "paths": [
+      "internal/server/web/assets/arm.mjs",
+      "internal/server/web/semblance/main-lifecycle.test.mjs",
+      "internal/server/web/semblance/main.mjs"
+    ],
+    "other_built_source_members_unchanged": 2637,
+    "production_change": "connectionState immediately updates only the peer freshness label through the extracted existing label selector. It does not replace reported claim rows, initiate RPCs, move focus or change resource quantities.",
+    "all_Go_and_module_input_source_bytes_unchanged": true
+  },
+  "artifact": {
+    "binary_sha256": "061133722feb58189bfa352da661c3ffd380ab183e522742bde4e913e3f634f0",
+    "binary_bytes": 71201122,
+    "Go": "go1.27.3",
+    "GOOS": "darwin",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0",
+    "command_path": "getarm.org/cmd/arm",
+    "trimpath": true,
+    "MachO_arm64_header_verified": true,
+    "assets": {
+      "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+      "arm.mjs": "f3c577134f219e8cf3ee9984b6bccd50e9c70987ef0b0605e2922d4e1c5ac237",
+      "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+    },
+    "all5actual_asset_bytes_found_in_binary": true,
+    "other4assets_unchanged": true,
+    "buildinfo_stdout_sha256": "27c8f34125c500e2f1470bf98a285926cb7e43264b829899fee77d821718a011"
+  },
+  "binding_checks": {
+    "selected_packet_pins": 14,
+    "all_selected_packet_pins_rehashed": true,
+    "original_and_copied_source_hashes": 2640,
+    "exact_copied_source_membership": true,
+    "copied_Node_dependencies_checked": 3041,
+    "recorded_immutable_tools_before_after": 17477,
+    "recorded_module_files_before_after": 20484,
+    "recorded_module_roots": 91,
+    "runtime_final_all_hashes_modes_membership_match": true
+  },
+  "limits": [
+    "Actual browser disconnect-label acceptance remains pending; no native UI pass.",
+    "No Go tests, RDF tests, full Node cohort or unrelated acceptance was rerun here.",
+    "Original parser failure and earlier native failures remain failed with their original scoped positives.",
+    "No ARM installation/execution, real cluster, native counter, hermetic ambient compiler/OS or arbitrary-descendant ownership claim.",
+    "Vite nonfatal large-chunk warning remains retained."
+  ]
+}

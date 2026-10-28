@@ -15,13 +15,13 @@ assert.ok(start>=0&&end>start);
 const declarations=source.slice(start,end);
 const field=()=>({set(value){Object.assign(this,value);},setPairs(rows){this.rows=rows;},setSeries(){},replace(){}});
 
-function fixture({used=12,total=100,available=7,filesystemStale=false,pageStale=false,connected=true,elapsed=0}={}){
+function fixture({used=12,total=100,available=7,filesystemStale=false,pageStale=false,connected=true,elapsed=0,diskQuality,networkQuality}={}){
   const measurement=value=>({value});
   const sample={at:'2026-10-27T00:00:00Z',cpu_busy_percent:measurement(0),cores:[],
     memory:{available:measurement(0),total:measurement(0),used:measurement(0)},
     swap:{available:measurement(0),total:measurement(0),used:measurement(0)},
     filesystem:{available:measurement(available),total:measurement(total),used:measurement(used)},
-    filesystem_stale:filesystemStale,disk_io:[],network:[]};
+    filesystem_stale:filesystemStale,disk_io:[],network:[],...(diskQuality?{disk_quality:diskQuality}:{}),...(networkQuality?{network_quality:networkQuality}:{})};
   const page={latest:sample,age_ns:0,stale_after_ns:1e9,stale:pageStale};
   const model=Object.fromEntries(['cpuValue','cpuNote','cpuChart','cores','ramValue','ramChart','ramFacts','ramNote','diskValue','diskChart','diskFacts','diskNote'].map(name=>[name,field()]));
   model.coreMap=new Map();
@@ -86,4 +86,17 @@ test('stale and recovered summaries update the existing handles without changing
   assert.equal(model.diskNote,handle);
   assert.equal(handle.label,'0 B of 100 B used');
   assert.equal(scope.state.monitor.latest.filesystem.used.value,0);
+});
+
+
+test('routine reported I/O badges hide, while partial/unavailable status remains visible and recovers',()=>{
+ const {model,scope,render}=fixture({diskQuality:'reported',networkQuality:'partial'});
+ assert.equal(model.io.disk_io.quality.hidden,true);
+ assert.equal(model.io.network.quality.hidden,false);
+ assert.equal(model.io.network.quality.label,'partial');
+ scope.state.monitor.latest.disk_quality='unavailable';
+ scope.state.monitor.latest.network_quality='reported';render();
+ assert.equal(model.io.disk_io.quality.hidden,false);
+ assert.equal(model.io.disk_io.quality.label,'unavailable');
+ assert.equal(model.io.network.quality.hidden,true);
 });

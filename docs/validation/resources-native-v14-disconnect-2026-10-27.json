@@ -1,0 +1,97 @@
+{
+  "state": "PASS_SINGLE_DISCONNECT_PEER_LABEL_CASE",
+  "overall": true,
+  "infrastructure_passed": true,
+  "native_report_passed": true,
+  "source_manifest_sha256": "e3ce543084969c001b8b76e855145fdff6922a20848d54289ada7ac3bb09b073",
+  "binary_sha256": "061133722feb58189bfa352da661c3ffd380ab183e522742bde4e913e3f634f0",
+  "bundle_sha256": "f3c577134f219e8cf3ee9984b6bccd50e9c70987ef0b0605e2922d4e1c5ac237",
+  "actual_completed_disconnect_cases": 1,
+  "facts": {
+    "globalDisconnected": true,
+    "peerStale": true,
+    "committed3": true,
+    "stalePoolInventory": true,
+    "CPUUnavailable": true,
+    "memoryUnavailable": true,
+    "diskUnavailable": true,
+    "createDisabled": true,
+    "refreshDisabled": true
+  },
+  "baseline_peer_label": "Partial view \u00b7 some peers unavailable",
+  "peer_label_observed_before_manager_close": true,
+  "capture": {
+    "raster": {
+      "format": "jpeg",
+      "width": 1280,
+      "height": 1812,
+      "sha256": "d723360dc0ff9f8552ca9c342bdea15147d50111ba85e0f4455def459c3c00da",
+      "bytes": 157301
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "horizontal_overflow": {
+      "document": 0,
+      "controls": []
+    },
+    "sample_count": 2,
+    "adjacent_observation_spacing_ms": 152.92337499931455,
+    "sample_acceptance_ms": 178.51858399808407,
+    "visual_peer_label_reviewed": true,
+    "scope": "Single disconnect state. Full-page raster includes fixed navigation overlay; no new card-layout acceptance."
+  },
+  "bootstrap": {
+    "initial_ticket_only": true,
+    "ticket_lifetime_seconds": 120,
+    "actual_navigation_margin_ms": 119958,
+    "ready_to_navigation_ms": 1,
+    "navigation_call_duration_ms": 1905.2497080005705,
+    "server_http_exchange_time": "not separately recorded",
+    "no_credential_refresh": true
+  },
+  "cleanup": {
+    "original_terminal_exit": 0,
+    "owned_children": 25,
+    "zero_exit_children": 23,
+    "explicitly_cancelled_before_after_exit130": 2,
+    "all_originals_joined": true,
+    "pipes_closed": true,
+    "authority_retired": true,
+    "owned_leases_released": 1,
+    "remaining_owned_leases": 0,
+    "post_wait_listener_refusals": 3,
+    "state_clear": true,
+    "pins_unchanged": true,
+    "pins_reverified": 14819,
+    "own_tab_closed": true,
+    "viewport_reset": true,
+    "other_tabs_touched": false
+  },
+  "limitations": [
+    "Only the failed disconnect peer-label case was run; no modal, nine-mode, width, Stat, resource-focus, names or Monitor replay.",
+    "Earlier qualified observations remain bound to their original source and scope.",
+    "Two eligible observations establish sampled readiness only; no continuous stability, maximum settle time, physical node identity or page-paint timing claim.",
+    "Zero transformed relay trace frames is compatible with this baseline/disconnect scope and is not UI proof.",
+    "Coordinator independent acceptance and integration remain."
+  ],
+  "coordinator_qualification": {
+    "status": "ACCEPTED_SINGLE_DISCONNECT_CASE",
+    "actual_outer_exit": 0,
+    "actual_outer_duration_ms": 52040,
+    "basis": "Current original command metadata and frozen raw result, owner, observation, timing and raster records inspected by coordinator",
+    "verified_binding_pins": 14819,
+    "sealed_records": 2,
+    "raw_evidence_hashes_checked": 72,
+    "post_disconnect_facts": 9,
+    "baseline_connected_peer_label": "Partial view \u00b7 some peers unavailable",
+    "screenshot_visually_inspected": true,
+    "limits": [
+      "Prior v11 and thirteen v12 positive checks retain source-specific scopes; not rerun.",
+      "One full-document raster is not a new card containment or complete pixel-layout gate; fixed navigation overlays part of its cards.",
+      "Server HTTP exchange timing is not separately recorded.",
+      "Names-form mutations and later source composition remain separate."
+    ]
+  }
+}
