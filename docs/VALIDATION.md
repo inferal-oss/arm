@@ -7159,3 +7159,10 @@ migration and I/O enforcement remain unverified or unsupported. Independent
 external-root strict reset remains unsupported and refuses. No normal ARM
 installation, original failed-ledger migration, privileged setup or broader
 provider/native-foundation acceptance follows from this integration.
+
+
+Automatic [main build and Pages deployment](https://github.com/inferal-oss/arm/actions/runs/40697907261)
+both pass on accepted main `2d83ba4`. Its production source remains identical to
+reviewed `ce92760`, with fully synthetic observer fixtures from `3856f9c`. This
+publication receipt adds no positive Linux allocation/workload/performance,
+live-origin, DNS/HTTPS or latency measurement acceptance.

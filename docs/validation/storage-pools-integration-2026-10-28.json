@@ -802,5 +802,12 @@
     "feature_commit": "3856f9c34b3d32d55ee32c337560a62838c81cbd",
     "normal_shared_queue": true,
     "original_recorder_joined_and_lease_terminal": true
+  },
+  "main_publication": {
+    "source_commit": "2d83ba4c1bdaa08ec7e13a8d67d9b983bce469b8",
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40697907261",
+    "build": "success",
+    "deploy": "success",
+    "scope": "Automatic current-source Pages pipeline; no additional Linux allocation/test/performance or live-origin/DNS/latency acceptance."
   }
 }
