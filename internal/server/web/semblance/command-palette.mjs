@@ -1,9 +1,10 @@
+import {dashboardViews} from '../route.mjs';
 import {namedLabel} from '../resource-names.mjs';
 const C='https://semblance.dev/ns/component#',KEY='https://semblance.dev/ns/keyboard#';
 const RDF='http://www.w3.org/1999/02/22-rdf-syntax-ns#',RDFS='http://www.w3.org/2000/01/rdf-schema#',SEM='https://semblance.dev/ns/core#';
 const ARM='https://arm.local/ui#';
 const sections=['Commands','Resources','Leases','Nodes','Kubernetes Nodes','Pools','Messages'];
-const views=['monitor','resources','leases','messages','activity','host','mesh','screen'];
+const views=dashboardViews;
 const records=value=>Array.isArray(value)?value:[];
 const text=value=>typeof value==='string'||typeof value==='number'?String(value):'';
 const identity=value=>{const id=text(value);return id&&id.length<=1024?id:'';};

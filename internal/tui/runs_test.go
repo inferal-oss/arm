@@ -175,3 +175,32 @@ func TestRunsNativeFramesFitNarrowAndWideTerminals(t *testing.T) {
 		}
 	}
 }
+
+func TestRunsImmediateDrainReusesInventoryAndTickRefreshesIt(t *testing.T) {
+	m, s, _ := runFixture(t, []byte("paged-output"))
+	runRead(t, m, press(m, "8"))
+	next := runRead(t, m, press(m, "enter"))
+	inventoryCount := func() int {
+		n := 0
+		for _, op := range s.operations {
+			if op == "runs" {
+				n++
+			}
+		}
+		return n
+	}
+	before := inventoryCount()
+	for next != nil {
+		next = runRead(t, m, next)
+	}
+	if inventoryCount() != before {
+		t.Fatal("each log page refetched the full inventory")
+	}
+	if len(m.runsUI.records) != 1 || string(m.runsUI.data) != "paged-output" {
+		t.Fatal("drain discarded inventory or output")
+	}
+	runRead(t, m, m.readRuns(false))
+	if inventoryCount() != before+1 {
+		t.Fatal("ordinary refresh skipped inventory")
+	}
+}

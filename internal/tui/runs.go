@@ -24,12 +24,13 @@ type runsDashboard struct {
 	cancel                            context.CancelFunc
 }
 type runsReadMsg struct {
-	ui         *runsDashboard
-	session    transport
-	generation uint64
-	records    []model.Run
-	page       *model.RunLog
-	err        error
+	ui           *runsDashboard
+	session      transport
+	generation   uint64
+	records      []model.Run
+	hasInventory bool
+	page         *model.RunLog
+	err          error
 }
 
 func (m *dashboardModel) runsVisible() bool {
@@ -52,7 +53,11 @@ func (m *dashboardModel) retireRunsIfHidden() {
 		m.retireRuns()
 	}
 }
-func (m *dashboardModel) readRuns(manual bool) tea.Cmd {
+func (m *dashboardModel) readRuns(manual bool) tea.Cmd { return m.readRunPage(manual, true) }
+
+// Immediate log drains reuse the current authorized inventory. Periodic reads
+// still refresh it, so a large transcript does not fetch the full list per page.
+func (m *dashboardModel) readRunPage(manual, inventory bool) tea.Cmd {
 	if !m.runsVisible() || !m.connected || m.session == nil {
 		return nil
 	}
@@ -73,8 +78,10 @@ func (m *dashboardModel) readRuns(manual bool) tea.Cmd {
 	}
 	return func() tea.Msg {
 		defer cancel()
-		msg := runsReadMsg{ui: ui, session: session, generation: generation}
-		msg.err = session.Call(ctx, "runs", nil, &msg.records)
+		msg := runsReadMsg{ui: ui, session: session, generation: generation, hasInventory: inventory}
+		if inventory {
+			msg.err = session.Call(ctx, "runs", nil, &msg.records)
+		}
 		if msg.err == nil && id != "" {
 			var page model.RunLog
 			msg.err = session.Call(ctx, "run_output", map[string]any{"id": id, "offset": offset}, &page)
@@ -97,10 +104,21 @@ func (m *dashboardModel) acceptRunsRead(msg runsReadMsg) tea.Cmd {
 		ui.err = msg.err.Error()
 		return nil
 	}
-	id, previous := m.selectionID(), m.selected
-	ui.records = msg.records
+	if msg.hasInventory {
+		id, previous := m.selectionID(), m.selected
+		ui.records = msg.records
+		m.restoreSelection(id, previous)
+		if ui.selected != nil {
+			for _, record := range ui.records {
+				if record.ID == ui.selected.ID {
+					r := record
+					ui.selected = &r
+					break
+				}
+			}
+		}
+	}
 	ui.err = ""
-	m.restoreSelection(id, previous)
 	if page := msg.page; page != nil && ui.selected != nil {
 		if page.Run.ID != ui.selected.ID || page.Offset != ui.offset || page.NextOffset != ui.offset+int64(len(page.Data)) {
 			ui.err = "Run output identity or byte cursor changed"
@@ -124,7 +142,7 @@ func (m *dashboardModel) acceptRunsRead(msg runsReadMsg) tea.Cmd {
 		}
 		// Drain a saved log one bounded page at a time, without waiting a full tick.
 		if ui.following && len(page.Data) > 0 && !ui.done {
-			return m.readRuns(false)
+			return m.readRunPage(false, false)
 		}
 	}
 	return nil
@@ -266,7 +284,7 @@ func (m *dashboardModel) runKey(k string) tea.Cmd {
 		if ui.following {
 			m.syncViewport()
 			m.viewport.GotoBottom()
-			return m.readRuns(false)
+			return m.readRunPage(false, false)
 		}
 	case "home":
 		m.retireRuns()

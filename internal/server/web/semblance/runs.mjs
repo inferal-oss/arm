@@ -4,7 +4,7 @@ export function cleanRunText(value) {
   return value.replace(/\r\n/g, '\n').replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f\u2028\u2029\u202a-\u202e\u2066-\u2069]/g, c => `\\u${c.charCodeAt(0).toString(16).padStart(4,'0')}`);
 }
 export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{}}) {
-  let active=false,disposed=false,generation=0,busy=false,logBusy=false,timer=null,selected=null,offset=0,text='',done=false,following=true,decoder=new TextDecoder(),displayCut=false;
+  let active=false,disposed=false,generation=0,busy=false,logBusy=false,timer=null,logTimer=null,selected=null,offset=0,text='',done=false,following=true,decoder=new TextDecoder(),displayCut=false;
   const filter=ui.field('Filter runs, commands or agents',{type:'search'},renderList),status=ui.text('Open a run to follow its output'),list=ui.stack(),detail=ui.stack();
   root.replace(filter,status,list,detail);let runs=[],detailID=null,display=null;const listRows=new Map();
   function replace(parent,children){const old=[...parent.children];parent.replace(...children);for(const child of old)if(!parent.children.includes(child))child.dispose();}
@@ -39,15 +39,20 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     display.lost.set({hidden:run.outcome!=='reporter_lost'});
     display.output.set({value:text||'(No output yet)'});
   });}
-  function retire(){generation++;busy=false;logBusy=false;if(timer!==null)clearTimeout(timer);timer=null;}
+  function retire(){generation++;busy=false;logBusy=false;if(timer!==null)clearTimeout(timer);timer=null;if(logTimer!==null)clearTimeout(logTimer);logTimer=null;}
   function close(){retire();selected=null;renderDetail();schedule();}
   function open(run){retire();selected=run;offset=0;text='';done=false;following=true;displayCut=false;decoder=new TextDecoder();renderDetail();return refresh();}
   function toggleFollow(){retire();following=!following;renderDetail();schedule();if(following)return refresh();}
-  function readStart(){retire();offset=0;text='';done=false;following=false;displayCut=false;decoder=new TextDecoder();return readLog(true);}
+  function readStart(){retire();offset=0;text='';done=false;following=false;displayCut=false;decoder=new TextDecoder();const pending=readLog(true);schedule();return pending;}
   function schedule(){if(active&&!disposed&&timer===null)timer=setTimeout(()=>{timer=null;refresh();},1000);}
+  function scheduleLog(){
+    if(!active||disposed||!connected()||!following||done||logTimer!==null)return;
+    const cut=generation,source=context();
+    logTimer=setTimeout(()=>{logTimer=null;if(cut===generation&&source===context())readLog();},0);
+  }
   async function readLog(manual=false){
     if(disposed||!active||!selected||!connected()||(!manual&&(!following||done))||logBusy)return;
-    logBusy=true;
+    logBusy=true;let catchup=false;
     const id=selected.id,cut=generation,source=context(),start=offset;
     try{const page=await call('run_output',{id,offset:start});if(disposed||cut!==generation||source!==context()||!active||selected?.id!==id)return;
       if(page.run?.id!==id||Number(page.offset)!==start)throw Error('Run output identity or cursor changed');
@@ -56,11 +61,12 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
       const drained=Boolean(page.done)&&next>=Number(page.run.log_bytes);
       text+=cleanRunText(decoder.decode(bytes,{stream:!drained}));if(text.length>WINDOW){text=text.slice(-WINDOW);if(/[\udc00-\udfff]/.test(text[0]))text=text.slice(1);displayCut=true;}
       offset=next;selected=page.run;done=drained;renderDetail();if(following&&bytes.length)display.output.scrollEnd?.();
-      // Drain paginated terminal output on later bounded polls too.
-    }catch(error){if(cut===generation&&source===context())status.set({label:'Output unavailable: '+error.message});}finally{if(cut===generation)logBusy=false;}
+      // One bounded page per task keeps rendering and pause controls responsive.
+      catchup=bytes.length>0&&following&&!done&&offset<Number(page.run.log_bytes);
+    }catch(error){if(cut===generation&&source===context())status.set({label:'Output unavailable: '+error.message});}finally{if(cut===generation){logBusy=false;if(catchup)scheduleLog();}}
   }
   async function refresh(){if(disposed||!active||busy){schedule();return;}if(!connected()){status.set({label:'Disconnected · cached runs and output are stale'});schedule();return;}busy=true;const cut=generation,source=context();try{
-    const inventory=await call('runs');if(disposed||cut!==generation||source!==context()||!active)return;runs=inventory??[];renderList();await readLog();
+    const inventory=await call('runs');if(disposed||cut!==generation||source!==context()||!active)return;runs=inventory??[];renderList();if(selected){const current=runs.find(r=>r.id===selected.id);if(current){selected=current;renderDetail();}}await readLog();
   }catch(error){if(cut===generation&&source===context())status.set({label:'Runs unavailable: '+error.message});}finally{if(cut===generation)busy=false;schedule();}}
   return {refresh,open,get selected(){return selected;},setActive(value){if(active===value)return;active=value;retire();if(active)refresh();},updateConnection(){retire();renderList();renderDetail();if(active)refresh();},reset(){retire();runs=[];selected=null;renderList();renderDetail();},dispose(){disposed=true;active=false;retire();}};
 }

@@ -95,3 +95,8 @@ test('server names are primary, missing optional names use supplied fallbacks an
  const f=fixture(),selected=[];const palette=createCommandPalette({ui:f.ui,onLease:id=>selected.push(id)});palette.update(data);
  f.entries(palette).find(e=>e.props.label.includes('lease-words')).callbacks.activate();assert.deepEqual(selected,['lease-id']);palette.dispose();
 });
+
+test('Runs is available through the shared public view navigation in the palette',()=>{
+ const f=fixture(),calls=[],palette=createCommandPalette({ui:f.ui,navigate:route=>calls.push(route)});palette.update({context:'local'});
+ const entry=f.entries(palette).find(h=>h.props.label==='Go to runs');assert.ok(entry);entry.callbacks.activate();assert.deepEqual(calls,[{view:'runs',lease:null}]);
+});

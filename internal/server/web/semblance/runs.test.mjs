@@ -24,3 +24,24 @@ test('log display is bounded and reporter loss never claims process completion',
 });
 test('output control sequences are escaped; html remains literal stock Code data',()=>{assert.equal(cleanRunText('\x1b[2J\n<script>\r\n\u202e'),String.raw`\u001b[2J`+'\n<script>\n'+String.raw`\u202e`);});
 test('live refresh keeps focused run and output controls rather than replacing them',async t=>{const f=fixture(t);f.panel.setActive(true);await tick();const opener=f.ui.get('Open readable-run');opener.focus();await f.panel.refresh();assert.equal(f.ui.get('Open readable-run'),opener);assert.equal(f.ui.activeComponent,opener);await opener.emit('activate');const pause=f.ui.get('Pause following');pause.focus();await f.panel.refresh();assert.equal(f.ui.get('Pause following'),pause);assert.equal(f.ui.activeComponent,pause);});
+test('read from start leaves output paused while scheduled inventory polling continues',async t=>{
+ let state='active';const f=fixture(t,(op,args)=>op==='runs'?[{...run,state}]:{run:{...run,state,log_bytes:20},offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Read from start').emit('activate');
+ const inventoryReads=f.calls.filter(([op])=>op==='runs').length,outputReads=f.calls.filter(([op])=>op==='run_output').length;state='terminal';
+ await new Promise(resolve=>setTimeout(resolve,1100));
+ assert.ok(f.calls.filter(([op])=>op==='runs').length>inventoryReads);assert.equal(f.calls.filter(([op])=>op==='run_output').length,outputReads);assert.equal(f.panel.selected.state,'terminal');assert.ok(f.ui.get('Follow output'));
+});
+for(const terminal of [false,true])test(`${terminal?'terminal':'active'} saved backlog catches up in bounded scheduled pages`,async t=>{
+ const data=Buffer.from('abcdefghijkl');let pages=0;
+ const f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,state:terminal?'terminal':'active',log_bytes:data.length},offset:args.offset,next_offset:Math.min(data.length,args.offset+3),data:data.subarray(args.offset,args.offset+3).toString('base64'),done:terminal});
+ const original=f.panel;f.panel.setActive(true);await tick();await original.open(run);
+ assert.equal(f.calls.filter(([op])=>op==='run_output').length,1,'catch-up must yield after one page');
+ for(let i=0;i<50&&f.calls.filter(([op])=>op==='run_output').length<4;i++)await new Promise(resolve=>setTimeout(resolve,5));
+ pages=f.calls.filter(([op])=>op==='run_output').length;assert.equal(pages,4);assert.equal(f.calls.filter(([op])=>op==='runs').length,2,'rapid pages must reuse inventory');
+ assert.equal(f.ui.all.filter(x=>x.kind==='Code'&&!x.disposed).at(-1).value,'abcdefghijkl');
+ await new Promise(resolve=>setTimeout(resolve,20));assert.equal(f.calls.filter(([op])=>op==='run_output').length,4,'caught-up reader must return to ordinary polling');
+});
+test('pause cancels an already scheduled rapid catch-up page',async t=>{
+ const f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,log_bytes:100},offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Pause following').emit('activate');await new Promise(resolve=>setTimeout(resolve,20));assert.equal(f.calls.filter(([op])=>op==='run_output').length,1);
+});
