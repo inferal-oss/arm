@@ -7498,7 +7498,25 @@ web, web harness and website trees equal upstream. Four focused normal roots /
 eight named cases pass without skips, and the private CLI build passes.
 
 This is the requested shared-branch synchronization checkpoint, not new broad
-storage/native acceptance. Separate reviewed C2 namespace, benchmark original
-binding and retained StorageBinding follow-ups remain pending. Earlier evidence
+storage/native acceptance. C2 namespace, benchmark original binding and retained StorageBinding
+follow-ups were pending at that checkpoint; `cca2e738` closes their scoped
+compatibility gate below. Earlier evidence
 keeps its source scope; paired providers and public sync/forward remain gated.
 See [normalized check record](validation/shared-main-rebase-2026-10-28.json).
+
+### Storage/native compatibility affected validation
+
+The exact source integrated as `cca2e738` passes both normal and race runs:
+46 roots / 246 distinct named cases each, zero failures/skips, identical rosters
+and all 34 required causal controls. Targeted Manager/provider-preparation vet
+passes. Source and selected-input comparisons remain unchanged across all
+phases. The seven integrated source files match the tested candidate exactly.
+
+Cases cover unsupported metadata with retained floors; closed new wire fields;
+blocked original benchmark workers; changed request/deadline/placement refusal;
+explicit End/Close before unreadable SQL; join-before-release; and retained
+parent replacement versus valid renewal. Controlled workers prove lifecycle
+ordering, not benchmark performance or quota enforcement. This is selected
+component evidence, with no new full-suite, multi-platform, UI, installed-module
+or factory/format activation acceptance.
+[Normalized evidence](validation/storage-native-compatibility-2026-10-28.json).

@@ -850,7 +850,7 @@ publication awaits the separately advanced storage integration.
 
 | Ownership branch | Current reviewed boundary | Next gate |
 | --- | --- | --- |
-| `codex/storage-native-integration-review` | Published storage feature `3856f9c3` and records through `5f75cae6` are available for composition. | Review shared Manager/storage recovery and strict C1/C2 compatibility with new storage selectors, bindings and opt-in format 3. Reflected model additions must not silently widen inert readers or invent accounting credit. No composed acceptance yet. |
+| `codex/storage-native-integration-review` | Published storage source is composed with native custody; `cca2e738` closes the scoped namespace, benchmark-original and retained-placement findings. Normal/race each pass 46 roots / 246 names, with targeted vet. | Broader suite/platform/runtime acceptance and the paired named-root accounting bridge remain separate. No new activation follows. |
 | `codex/kubernetes-unified-continuation` | Managed source `85e47781` and scoped record `ca7af509` are accepted locally: normal/race each 16 roots / 37 names, vet zero. Original helper boundaries use a controlled expiry seam. | Primary composition, actual Manager-to-factory admission and the unified dashboard installer remain open. Closed stage history and typed worker continue separately on `codex/kubernetes-stage-history`; no live installation is accepted. |
 | `codex/forward-unix-adapter` | Private binder is integrated as `25d60cc`. The full worker's original race gate remains failed. A single diagnostic identifies relay admission refusing unknown CPU capacity while its context still has time. | Review native sampler and test readiness without relaxing capacity or authorization; then a reviewed affected successor, later vet and Linux compile gates. |
 | `codex/provider-pair-c3-hooks` | Unused primitives are integrated as `53938db`; full hooks remain isolated work in progress. | Review exact original cancellation before fallible reads, callbacks after unlock, retaining-marker knowledge, unknown ACK debt and compatibility with strict storage accounting. C4/C5 and public activation remain separate. |
@@ -892,7 +892,26 @@ web, web harness and website trees equal upstream. Four focused normal roots /
 eight named cases pass without skips, and the private CLI build passes.
 
 This is the requested shared-branch synchronization checkpoint, not new broad
-storage/native acceptance. Separate reviewed C2 namespace, benchmark original
-binding and retained StorageBinding follow-ups remain pending. Earlier evidence
+storage/native acceptance. C2 namespace, benchmark original binding and retained StorageBinding
+follow-ups were pending at that checkpoint; `cca2e738` closes their scoped
+compatibility gate below. Earlier evidence
 keeps its source scope; paired providers and public sync/forward remain gated.
 See [normalized check record](validation/shared-main-rebase-2026-10-28.json).
+
+### Storage/native compatibility integrated
+
+Focused source `cca2e738` (reviewed candidate `897044e5`) closes the shared
+storage accounting and lifecycle findings after the rebase. The census refuses
+unsupported storage metadata in the same transaction without erasing known
+floors. Benchmark expiry requires its captured original request, placement and
+acknowledged deadline; explicit End/Close cancel the registered original before
+fallible reads. Holds remain until the runner joins, and changed post-join rows
+retain obligations. Retained parent identity now includes StorageBinding.
+
+Independent actual review accepts the exact seven-file source: normal and race
+each pass 46 roots / 246 named cases, including all 34 required controls, with
+zero failures/skips and matching rosters; targeted vet passes. Primary code and
+assets match the validated candidate, with only the later privacy policy and
+delivery documentation differing. Broader native, quota, performance, UI and
+activation work remains separate; no paired/public sync/forward enablement is
+introduced. See [scoped evidence](validation/storage-native-compatibility-2026-10-28.json).

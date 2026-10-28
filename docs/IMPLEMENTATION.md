@@ -3005,3 +3005,19 @@ case fails; composition acceptance and focused feature integration remain open.
 The separate full private forwarding worker also retains a failed three-node
 SSH relay admission race case. Public forwarding and paired-provider activation
 remain gated. See [current execution boundary](validation/native-composition-failures-2026-10-28.json).
+
+### Original storage custody and census boundary
+
+Integrated `cca2e738` binds benchmark holders to the original lease identity,
+immutable storage placement and acknowledged deadline. Automatic expiry refuses
+replacement bindings; explicit ending and shutdown still withdraw the captured
+original before fallible ledger reads. Cancellation alone cannot release the
+hold before the runner joins. A changed or unreadable post-join row retains its
+charged obligation. Retained storage/export parent checks also compare the exact
+StorageBinding, while legacy nil bindings and valid renewals remain supported.
+
+The unused census keeps its wire allowlists closed and observes workspace
+format/storage-pool metadata in the same snapshot. Unsupported metadata prevents
+coverage but does not erase known floors. Bounded key/value projections precede
+namespace interpretation. This does not provide a named-root accounting bridge
+or activate paired providers. [Validation](validation/storage-native-compatibility-2026-10-28.json).
