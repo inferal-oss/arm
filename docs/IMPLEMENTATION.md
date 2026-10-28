@@ -2424,6 +2424,8 @@ prototype and remains unconnected to public provider operations.
 Actual custom-name browser mutations expose a Host presentation defect: status
 refresh reconstructs its exact-ID disclosure with the default closed state.
 The canonical identity and local name mutations are retained correctly, but
-that does not establish stable rendered disclosure behavior. A focused control
-lifecycle correction remains pending; naming storage and resolution semantics
-are unchanged.
+that does not establish stable rendered disclosure behavior. The control lifecycle correction is integrated as `8451623`: summary and
+identity/disclosure handles persist, current values update in place, and a
+disposed view rebuilds fresh closed controls. Twelve targeted lifecycle checks
+and the exact fresh embedded bundle pass; actual Host-only browser acceptance
+remains pending. Naming storage and resolution semantics are unchanged.

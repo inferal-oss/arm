@@ -6289,3 +6289,21 @@ targeted integration, production/SSR builds and retained corpus/query checks
 still pending. Earlier failed runs are not promoted, and ARM's vendored engine
 is unchanged. Current upstream branch policy requires targeted tests; its main
 full-suite gate follows a batch of merges.
+
+
+### Host disclosure refresh source integration
+
+[The focused correction](validation/host-disclosure-refresh-2026-10-27.json)
+is integrated as `8451623`. All twelve targeted lifecycle cases pass without
+skips, including three regressions for persistent open/focus state, explicit
+close and disposal/rebuild. These execute production lifecycle functions with
+doubled component/focus boundaries and actual ownership helpers; they do not
+claim native browser behavior. A fresh Vite build passes and produces the exact
+integrated entry; the other four assets are unchanged. Both original commands
+exit zero and join with closed authority/pipes; independent app metadata also
+confirms the original outer exit zero. All three Git objects/modes match review,
+and only documentation differs from the tested author commit.
+
+The earlier naming browser run remains failed. Fresh executable and actual
+Host-only open/refresh/explicit-close/rendered-ID acceptance are still pending;
+there is no justification to repeat the ten successful naming mutations.

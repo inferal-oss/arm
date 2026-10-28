@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "status": "SOURCE_AND_TARGETED_FRONTEND_BUILD_ACCEPTED_NATIVE_HOST_PENDING",
+  "base": "f474d1b2aec1ba613cb1b5b7061638f0da6a594c",
+  "owned_source_sha256": {
+    "internal/server/web/semblance/main.mjs": "bdafa3cdb27946f20f7c423b30664a75396563a8d0c832f364ce7a5891247813",
+    "internal/server/web/semblance/main-lifecycle.test.mjs": "9bc2306017db9538f49239d402a488cdaf62552e1e7add97a158328e6b686b70",
+    "internal/server/web/assets/arm.mjs": "343e99a5f525c7a41f60b8a77888e44b9779f93f10fba303f2737b3785657b90"
+  },
+  "source_review_sha256": "61b3e32a0e164225edacbac5165f25f963312a19f8b959bbe249c85c06ba287b",
+  "source_fix": "Keep owned Host summary, identity and disclosure handles across status refresh; update current values in place; recreate only after prior view disposal. User open and explicit-close state remain intact.",
+  "actual_targeted_tests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=60000 main-lifecycle.test.mjs",
+    "tests": 12,
+    "pass": 12,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "exact_actual_unique_names": [
+      "a new connection reloads an open lease and replaces callbacks bound to the old connection",
+      "authentication reset preserves a direct lease route and reconnect reopens it",
+      "an explicit detail close clears the lease route",
+      "view-heading focus precedes opening a directly linked lease dialog",
+      "a superseded connection cannot rebind the current lease detail",
+      "a failed connection read retains the existing detail and route without a mutation",
+      "a delayed or rejected next lease read clears the previous display name immediately",
+      "empty optional host labels use the exact-ID fallback at connect and refresh",
+      "backend close refreshes peer status without replacing reported claims or moving focus",
+      "Host disclosure identity, open state and focus survive fresh status and name-clear refreshes",
+      "Host refresh preserves an explicit user close rather than reopening disclosures",
+      "Host view rebuilds fresh disclosures only after its previous handles were disposed"
+    ],
+    "exit": 0,
+    "stderr_bytes": 0,
+    "scope": "Extracted production lifecycle functions with doubled component/focus boundaries and actual graph-ownership helpers; not real RDF/browser rendering."
+  },
+  "actual_build": {
+    "command": "vite build --configLoader runner",
+    "exit": 0,
+    "modules_transformed": 354,
+    "assets_sha256": {
+      "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+      "arm.mjs": "343e99a5f525c7a41f60b8a77888e44b9779f93f10fba303f2737b3785657b90",
+      "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+    },
+    "only_generated_entry_changed": true,
+    "other_four_assets_equal_prior": true,
+    "built_generated_export_and_author_embedded_asset_bytes_match": true,
+    "warning": "Existing-style large minified chunk warning retained; no failed phase."
+  },
+  "binding_and_custody": {
+    "contract_sha256": "d462e084c68fa311f102bc0618e5b0306c8d9ae0000223299545d3320a51107a",
+    "source_members": 2668,
+    "source_copy_changed_only_generated_entry": true,
+    "final_author_source_map_matches": true,
+    "selected_protocol_tool_pins_checked": 8,
+    "selected_pins_unchanged": true,
+    "donor_before_after_match_reported": true,
+    "original_children": 2,
+    "all_exit0_joined_retired_pipes_closed": true,
+    "owner_errors": [],
+    "outer_exit": 0,
+    "outer_provenance": "Sole original tool-owner transcription and two original child Wait receipts are corroborated by independent app command metadata: completed, exit zero, 3760ms."
+  },
+  "evidence_sha256": {
+    "result": "f1143ae7426d8f5d2aa56ec9ae4377f1737a9f150fda76075ba3b37a65c40930",
+    "owners": "0fff038869d55a2b8bc02a4d3fbdcded7a8f54f3c0e9a908c3ad0dad85cea553",
+    "raw_TAP": "a65ae5d1e2badb4bfcd7c8d0759b82d68372a144638a181a6597232b9c1f2150",
+    "raw_vite_stdout": "03ae1803b7276637a30ba657f0f234dedf80231bc4699430007f2c286a385531",
+    "raw_vite_stderr": "351b524197fb492920789369e7f1a271420c757633fbb553b280a181ac4c31a4",
+    "original_terminal_transcription": "6962aa9b7bf6da22637cd8e4607cad8d702315081213b95517b47be605cac5bf"
+  },
+  "remaining_gate": "Fresh composed executable and actual Host-only open/refresh/explicit-close/rendered-exact-ID browser acceptance. No ten naming-mutation replay required.",
+  "limitations": [
+    "Earlier naming browser overall failure remains failed; positive ten mutations/fourteen map snapshots retain their original source scope.",
+    "No new Go, real RDF, browser/native focus, fresh compiled server, full Node suite, reproducible-two-build, public install or later-main acceptance.",
+    "One fresh Vite build provides exact artifact binding, not hermetic compiler or universal pixel/layout proof."
+  ],
+  "integration": {
+    "author_commit": "e9f0b23",
+    "integrated_commit": "8451623",
+    "all_three_Git_objects_and_modes_match_review": true,
+    "non_document_source_equal_author_commit": true,
+    "parent_independent_original_app_command_metadata": {
+      "status": "completed",
+      "exit": 0,
+      "duration_ms": 3760
+    },
+    "no_unchanged_cohort_replay": true
+  }
+}
