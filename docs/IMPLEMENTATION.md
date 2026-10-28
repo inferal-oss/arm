@@ -2715,3 +2715,19 @@ composition review and integration remain separate gates.
 Floating logs hide duplicate headings/help and reserve the remaining frame height
 for the output disclosure. Native style hooks keep the transcript scrollable,
 with following showing its latest lines while the controls remain visible.
+
+
+### Reviewed detachable log composition
+
+The focused window continuation is composed on accepted main `34ea83a` as
+`c44e6f0` through `2e3fa59`. Independent review confirms stock tab/window
+projection, one retained reader and cursor, bounded output, native docking and
+frame geometry retirement. Authentication reset removes owned transcript/window
+state and rejects pending old-context results. The pinned embedded framework,
+backend protocol and shell completion remain unchanged by this continuation.
+
+Fresh composed JavaScript, native Semblance lifecycle, deterministic web rebuild
+and native command build checks pass. Existing website CI also passes with fresh
+current-source dashboard captures and SSR/browser checks. This accepts one
+selected transcript in an in-page window; separate OS popups, multiple readers,
+full Go-suite and Linux-runtime acceptance remain outside this milestone.

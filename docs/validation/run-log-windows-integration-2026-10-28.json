@@ -1,0 +1,238 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "source_commit": "2e3fa59daa58d2873109da521ea77096b8dc2b78",
+  "accepted_main_base": "34ea83a8cc2d513a317a4c533914fb41e40374ea",
+  "owner_runtime_source": "cae0870f8fb2ce64bd0aecfcb10f63e4dbe9fe2d",
+  "owner_handoff_commit": "18b0926bbe88000a9b0badc47cd906601d569205",
+  "integrated_feature_commits": [
+    "c44e6f0",
+    "a50af69",
+    "bba92f3",
+    "9ba0f7d",
+    "89858b4",
+    "6c88105",
+    "2d1adc4",
+    "80d659c",
+    "2e3fa59"
+  ],
+  "review": {
+    "result": "no blocking findings",
+    "all_nine_feature_inputs_match": true,
+    "all_ten_media_hashes_match": true,
+    "backend_cli_and_pinned_framework_unchanged": true,
+    "no_second_reader_created_for_detachment": true,
+    "auth_reset_retires_owned_window_and_pending_results": true,
+    "desktop_mobile_fullscreen_and_decoded_frame_visually_reviewed": true,
+    "complete_video_decoding": "passed with supported PNG/image2 output; the bundled tool lacks the null muxer attempted first"
+  },
+  "feature_inputs": {
+    "internal/server/web/semblance/graph-ui.mjs": "725f29567b9dc285ea1c8486a2295eae36247c8925b006efef578381c4f40392",
+    "internal/server/web/semblance/runs.mjs": "a69936252d974b98d4140e1b00eb3a16d3d90cf483e7c3dcbae9929e22bac439",
+    "internal/server/web/semblance/app.ttl": "0c573d4d17765aeff63737337920e23b0aa7e7d6f4ff3f6d04c33ffa48d48b4e",
+    "internal/server/web/assets/arm.mjs": "e1ee8ac69ab12ac704a44991648493e86c3c004012f78162e1da928fd7b954c6",
+    "internal/server/web/semblance/runs.test.mjs": "e70db9cf8903e1febb5bd58e5f045c13e641111f6f6a041ff05b52c6ed798d9b",
+    "internal/server/web/semblance/runs-ownership.test.mjs": "e0b952c92aea9b4809f75f3773cda45c7ad32005914c28437647ead1beabc8d2",
+    "web/test/run-log-windows.test.mjs": "de1a879b39f79faca9be1d3fe421968bc5ec76ce882be7b724c604fab1f2ba4b",
+    "web/package-lock.json": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "web/semblance-provenance.json": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "composed_validation": {
+    "javascript": {
+      "passed": 418,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    "native_semblance_runtime": {
+      "passed": 1,
+      "failed": 0
+    },
+    "web_asset_rebuild": "passed; all feature hashes including generated bundle still match",
+    "native_command_build": {
+      "passed": true,
+      "binary_sha256": "bc3f381b551a22bcfb35c7fc8245e23a42bbad8f98b92b349925cf72648d4e7d"
+    },
+    "normal_shared_queue": true,
+    "lease_claim": {
+      "cpu": 2,
+      "memory_bytes": 2147483648,
+      "ttl_seconds": 300
+    },
+    "recorded_run_terminal_completed_exit_zero": true,
+    "original_backend_joined": true,
+    "original_backend_exit_code": 130,
+    "checkpointed_ledger_has_no_nonterminal_leases": true,
+    "checks": [
+      {
+        "name": "install",
+        "exit_code": 0,
+        "seconds": 0.586,
+        "log_sha256": "6d36d3c0cb2a70b4ccfa6fa1f5c52b19f0da2976c7eeae033992e7aefef8c03e"
+      },
+      {
+        "name": "javascript",
+        "exit_code": 0,
+        "seconds": 3.935,
+        "log_sha256": "7e3b8cc847047a198f30d8d2ee2996fde0d7db4bb68b35b021565be3faee3c62"
+      },
+      {
+        "name": "native-runtime",
+        "exit_code": 0,
+        "seconds": 1.175,
+        "log_sha256": "7933bb27f9554043b6df76228bc66e4074096306e405247f42c79c58bc0b1c91"
+      },
+      {
+        "name": "web-build",
+        "exit_code": 0,
+        "seconds": 0.806,
+        "log_sha256": "94a094f5798a2ee4d1a4736f3e29251d521744f84a2717b360be3cedd8239a6f"
+      },
+      {
+        "name": "native-build",
+        "exit_code": 0,
+        "seconds": 5.117,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "hosted_validation": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40685321856",
+    "event": "workflow_dispatch",
+    "source": "2e3fa59daa58d2873109da521ea77096b8dc2b78",
+    "result": "success",
+    "deployment": "skipped",
+    "artifact_id": 12814816662,
+    "reported_zip_sha256": "f4ecfaff9d641d1ec66ed0c5e279c2fb76409d1bb23664c805f9f86b04e025d2",
+    "artifact_audit": {
+      "metadata_sha256": "fcbdae4c9286357ace3cf471a357af3d3f1ee51abe9ae8de53b4245f700feaef",
+      "source": "2e3fa59daa58d2873109da521ea77096b8dc2b78",
+      "input_count": 611,
+      "source_and_assets_match": true,
+      "images_verified": 8,
+      "png_verification": "SHA256, chunk CRCs, full IDAT zlib stream, dimensions and scanline filters/bytes",
+      "images": [
+        {
+          "file": "web-monitor.png",
+          "sha256": "4a4ad9573e4abe0ae7d0d1db5b48b0599e27399aa8b6d3a72926db9c6b5c5718",
+          "width": 1440,
+          "height": 1703
+        },
+        {
+          "file": "web-resources.png",
+          "sha256": "1a0f72cd32c83097b01189a9b2df77c9b7b6319a404bbf19e9bd7055787af7d5",
+          "width": 1440,
+          "height": 1622
+        },
+        {
+          "file": "web-leases.png",
+          "sha256": "54440c0fc33dfec2000fce9478e271cf85161598a3b19b337001297d3308b9b2",
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "file": "web-activity.png",
+          "sha256": "2637adbb2b70a1a03d89ff1712c2da91f9eaeb093f8092e3f3c024c34cf8544f",
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "file": "web-host.png",
+          "sha256": "805f544ebe626a39cbeb3984d2cd48c21c39066f19d51fb612a854002445de3e",
+          "width": 1440,
+          "height": 1370
+        },
+        {
+          "file": "terminal-monitor.png",
+          "sha256": "7265193d1a29776ab5b789f418e299b1132e4f1612f968c3010dc1dbd8d7f7a9",
+          "width": 1212,
+          "height": 1312
+        },
+        {
+          "file": "terminal.png",
+          "sha256": "c4a64964109bec8b2b9c94963e926ae8601efe1e8a9a9663e9c406442887cb02",
+          "width": 1212,
+          "height": 1312
+        },
+        {
+          "file": "terminal-leases.png",
+          "sha256": "d6939fda0ce3a5c583891a566739c4a1ba333d61a75d9a15cf75d057eb5a6a87",
+          "width": 1212,
+          "height": 1312
+        }
+      ],
+      "prerender": {
+        "pages": [
+          {
+            "file": "index.html",
+            "sha256": "80be43c5498f8ff22ed746b5431f688409ded4b123bd412211ef9d1650760dd9"
+          },
+          {
+            "file": "start/index.html",
+            "sha256": "091268f3c1d016cab27c6eeb164c45bbd0a39432522b9f7bcf39e13aadfd9205"
+          },
+          {
+            "file": "capabilities/index.html",
+            "sha256": "8252e7978d8f07028ab357ee653d66fc6c2948c6ea2fa62604cea722ec5c24c4"
+          },
+          {
+            "file": "docs/index.html",
+            "sha256": "66e44e1e4208d4ac7d6b376ced284ec20c4751eea20a2282a1de0752347bd14d"
+          }
+        ],
+        "stylesheet": {
+          "file": "semblance.css",
+          "sha256": "bbdd10390954c6e88b07e7881b05e87f9c6764765c9f761f530decec8248ba60"
+        }
+      }
+    },
+    "checks": [
+      "capture ownership and terminal geometry",
+      "locked install and typecheck",
+      "gallery and screenshot integrity regressions",
+      "fresh embedded rebuild and five web/three terminal PNGs",
+      "SSR/provenance and Chromium no-script/adoption checks",
+      "artifact upload"
+    ]
+  },
+  "owner_rendered_acceptance": {
+    "checks": [
+      "pointer tear cancelled over origin",
+      "pointer drag-out moves original output node",
+      "same log follows its visible tail across view navigation",
+      "paused window remains stable while capture continues",
+      "window maximize and transcript fullscreen/Escape preserved",
+      "taskbar restores minimized log",
+      "closing window docks to original run tab",
+      "native pop-out control and Shift+Enter detach",
+      "390px window stays visible and within horizontal viewport bounds",
+      "docked fullscreen retains a visible following tail"
+    ],
+    "viewports": [
+      1440,
+      390
+    ],
+    "page_errors": [],
+    "video_sha256": "e0937027d9b42693462a261e1135fc5d6e65c84e6db8a7e58fb1d7382bfe4cb5",
+    "cleanup": {
+      "outer_proxy_state": "terminal",
+      "outer_proxy_outcome": "completed",
+      "outer_proxy_exit_code": 0,
+      "recorder_state": "terminal",
+      "recorder_outcome": "completed",
+      "recorder_exit_code": 0,
+      "original_backend_joined": true,
+      "browser_and_context_closed": true,
+      "scoped_capture_backend_process_matches": 0,
+      "active_fixture_leases": 0
+    }
+  },
+  "scope_limits": [
+    "Single selected run; no simultaneous readers or OS/browser popup windows",
+    "Local pinned browser/native platform only; no full Go suite or Linux runtime claim",
+    "Earlier failed, diagnostic and superseded captures are excluded from acceptance",
+    "Coordinator composition review and integration are separate gates",
+    "Private fixtures, raw receipts and media remain outside version control"
+  ]
+}

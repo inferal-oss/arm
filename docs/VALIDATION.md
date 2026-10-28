@@ -6848,3 +6848,35 @@ producers. This continuation supports one selected run and floating dashboard
 windows. It does not claim separate OS/browser windows, simultaneous readers,
 a full Go suite, Linux runtime, new TUI behavior or coordinator integration.
 Raw private fixtures, execution receipts and media remain outside version control.
+
+
+### Detachable run-log integration acceptance
+
+Independent final-diff review accepts the focused continuation through `18b0926`,
+composed as `2e3fa59` on main `34ea83a`. All nine input hashes and ten media
+artifacts match the owner's final source-bound record. Desktop, narrow,
+fullscreen and decoded video frames were visually inspected; the complete
+12.24-second stream decodes successfully. Earlier failed/superseded captures
+remain excluded. This is review of recorded rendered evidence, not a claim of
+a new local browser capture.
+
+A fresh bounded coordinator execution through the normal shared queue passes
+418 JavaScript cases without failures/skips/cancellations/todos, the real pinned
+Semblance tab/window lifecycle case, embedded asset rebuild and native command
+build. The rebuilt asset and all nine inputs remain byte-identical. The original
+coordinator backend joins after SIGTERM with exit 130, its command/lease completes
+with exit zero, and its checkpointed ledger contains no nonterminal lease. The
+original owner's checkpointed recorder lease is also terminal/completed/exit zero.
+
+[Nondeploy composition CI](https://github.com/inferal-oss/arm/actions/runs/40685321856)
+passes on exact source `2e3fa59`: locked installs, typecheck, gallery/integrity
+regressions, fresh current-source dashboard capture, SSR/provenance and Chromium
+no-script/takeover checks, and artifact upload. Deployment is skipped. Independent
+artifact audit verifies all 611 embedded inputs, runtime assets, four prerendered
+pages/shared stylesheet, and eight PNG hashes, CRCs, complete zlib streams,
+dimensions and scanline rosters. The feature adds no Go or CLI source.
+
+[Normalized integration evidence](validation/run-log-windows-integration-2026-10-28.json)
+records exact source/tool-output/artifact hashes and scope. The isolated owner
+branch and its uncommitted plan remain preserved. No full Go suite, Linux
+runtime, multi-reader or OS-popup acceptance is claimed.
