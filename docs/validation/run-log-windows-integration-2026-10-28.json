@@ -234,5 +234,13 @@
     "Earlier failed, diagnostic and superseded captures are excluded from acceptance",
     "Coordinator composition review and integration are separate gates",
     "Private fixtures, raw receipts and media remain outside version control"
-  ]
+  ],
+  "main_publication": {
+    "source_commit": "24182f579d4055f6d992a2638d5279e6e352eec9",
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40685791898",
+    "event": "push",
+    "build": "success",
+    "deploy": "success",
+    "scope": "Automatic current-source Pages pipeline; no separate live origin/DNS/latency acceptance."
+  }
 }

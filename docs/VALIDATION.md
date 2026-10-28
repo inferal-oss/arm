@@ -6880,3 +6880,9 @@ dimensions and scanline rosters. The feature adds no Go or CLI source.
 records exact source/tool-output/artifact hashes and scope. The isolated owner
 branch and its uncommitted plan remain preserved. No full Go suite, Linux
 runtime, multi-reader or OS-popup acceptance is claimed.
+
+
+Automatic [main build and Pages deployment](https://github.com/inferal-oss/arm/actions/runs/40685791898)
+both pass on `24182f5`. Its feature inputs remain identical to reviewed `2e3fa59`;
+the intervening acceptance commit changes documentation only. This publication
+receipt does not add live-origin, DNS/HTTPS or latency measurement acceptance.
