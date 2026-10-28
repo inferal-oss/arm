@@ -2611,3 +2611,15 @@ The reader returns facts only. It neither installs a schema nor constructs an
 original owner, entitlement, factory or complete accounting projection. Ordinary
 orphan LeaseRef rows lie outside C1; an empty indexed namespace is not proof of
 free resources. The schema/model proposal remains unapplied.
+
+### Bounded provider accounting census
+
+The unused C2 reader takes one transaction across indexed provider pairs and
+ordinary LeaseRef rows. It computes physical, logical, pool and budget rollups
+without double-counting pair replacements. Exact rational CPU comparison avoids
+float underflow or rounded equality; policy revisions cannot precede recorded
+terms. Known-format header promises remain charged when marker damage prevents
+coverage, and terminal storage without an artifact cannot clear recorded custody.
+The implementation bounds row counts, field lengths and aggregate input before
+decoding. Coverage is a ledger observation, not a native capacity capability or
+permission to admit work. No factory or central schema/model proposal is enabled.
