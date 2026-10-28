@@ -580,3 +580,11 @@ The census supplies bounded ledger observations only. Coupled lifecycle, atomic
 reservation and native finalization remain separate C3–C5 gates, followed by
 current-source composition before activation. See
 [normalized evidence](validation/provider-pair-c2-2026-10-28.json).
+
+### V0 compatibility baseline verification
+
+Original V0 source `824d3012` is already integrated as `e1891698`; delivery
+documentation `c2f2d986` remains in the current ancestry. No duplicate feature
+integration is needed. The current writable format remains `1`; later unused
+C1/C2 readers do not activate format 2 or a paired factory. Baseline distribution
+and the separately reviewed second activation stage remain rollout gates.
