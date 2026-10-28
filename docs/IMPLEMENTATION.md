@@ -2563,3 +2563,20 @@ boundaries remain unchanged. Complete journal checks, global accounting,
 coupled cancellation/recovery, atomic reservation before image work, native
 producer/finalizer and public factory remain unfinished. Ordinary workspace
 format and activation policy are unchanged.
+
+
+## Forward listener original Unix child
+
+Integrated `1adb1b23` issues one process-local Unix child from the exact
+current original ForwardListener. Parent identity and suspend-inclusive
+remaining time fence new child work; join/Close retain the parent's resources
+until the original child returns. Cleanup uncertainty is sticky and survives
+startup. Correction `f1678bca` refuses TCP-only recovery of that Unix outcome
+unconditionally, including when the failure text matches a legacy TCP prefix.
+Ordinary fenced TCP crash recovery remains covered separately.
+
+The child carries no path or filesystem authority and has no production
+consumer. There is no Unix bind or storage pair in this increment. The
+[storage custody contract](MESH-FORWARD-UNIX-CUSTODY-CONTRACT.md) remains
+required before namespace mutation; the existing memory promise is not a disk
+reservation. General TCP and broader forwarding activation remain fenced.
