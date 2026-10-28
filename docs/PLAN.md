@@ -8,7 +8,8 @@ A completed milestone does not establish full specification coverage.
 
 ## Project-scoped gradual agent adoption
 
-Owner: `codex/gradual-agent-rollout`. Implementation adds a separate cooperative
+Owner: `codex/gradual-agent-rollout`. Focused source commit: `0916d4a`.
+Implementation adds a separate cooperative
 adoption ledger and CLI, disabled-by-default installed guidance, explicit
 directory/Git/client-project bindings, manual cohorts and session acknowledgment.
 Resource admission, existing obligations and messaging registration remain
@@ -19,7 +20,8 @@ inheritance, Git repository replacement, audit-generation gaps and nonregular
 ledger reads. Complete rollout/installation race suites and scoped CLI
 rollout/guide/help/completion regressions, affected-package vet and native/Linux
 CLI compilation pass. The focused feature is ready for coordinator review and
-integration; full-suite and Linux runtime acceptance remain open. Native client discovery,
+integration; full-suite and Linux runtime acceptance remain open. Native client
+discovery,
 graphical policy editing, binding removal and compaction are outside this
 milestone.
 

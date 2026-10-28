@@ -2,6 +2,10 @@
 
 ## Project-scoped gradual agent adoption — scoped owner validation
 
+Validated source: focused feature commit `0916d4a`. Owner self-review is complete;
+coordinator review and integration remain separate gates. Subsequent
+documentation-only bookkeeping does not broaden the evidence below.
+
 The complete `internal/rollout` and `internal/install` suites pass with
 `GOMAXPROCS=1 go test -p 1 -race ./internal/rollout ./internal/install -count=1 -timeout=120s`.
 The rollout suite includes 13 focused cases for disabled reads without
