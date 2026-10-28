@@ -1,0 +1,577 @@
+{
+  "schema_version": 1,
+  "milestone": "cancellation-safety recovery",
+  "status": "PASS_SCOPED",
+  "platform": "darwin/arm64",
+  "prior_runs": [
+    {
+      "status": "PASS_SCOPED_PREDECESSOR",
+      "source_tree": "7e536ce34f9086f78693a061a74c496bdbf7c131",
+      "exit": 0,
+      "race": {
+        "roots": 11,
+        "nodes": 84,
+        "pass": 84,
+        "fail": 0,
+        "skip": 0
+      },
+      "manager_vet": "PASS",
+      "input_pins_unchanged": true,
+      "result_sha256": "365820c523f93126574ddd806f17be5cfd2b0c05021a36847df552b167ce5ccc",
+      "race_stdout_sha256": "c7d1b319b503fe259f97236d36d06a888e9ac81f2654fb788180f87bd9844d41",
+      "owners_returned": true
+    },
+    {
+      "status": "FAIL_PRESERVED",
+      "source_tree": "f30f4493b3751924516fe81da23cb3e757c498b8",
+      "exit": 1,
+      "race": {
+        "roots": 15,
+        "nodes": 94,
+        "pass": 93,
+        "fail": 1,
+        "skip": 0
+      },
+      "manager_vet": "UNRUN",
+      "input_pins_unchanged": true,
+      "result_sha256": "ac156bed81371c7f751fcf7a86d5dd4fa64140233dcc8851c7938aabf8ab9828",
+      "race_stdout_sha256": "2d3b41b1169d3ca3a60f6faf746c4e0f65a11f1823023ecad9bca02852b4abd4",
+      "owners_returned": true
+    }
+  ],
+  "limitations": [
+    "The scoped predecessor and successor passes do not establish acceptance of a later composed source.",
+    "The failed aggregate is preserved as failed; vet did not run after its race failure.",
+    "No host suspend, Linux suspend/resume, full-suite, real JVM/Gradle or storage export-copy validation is implied.",
+    "The five holder regression roots require current-composition execution; this sixteen-root successor does not execute them."
+  ],
+  "corrections": [
+    "Retain the original native owner and exact failed-settlement candidate until durable acknowledgment; retry persistence without native replay or PID adoption.",
+    "Reject changed SSH physical identity, saved run, request, ports and deadline before cleanup effects.",
+    "After a refused native-start acknowledgment, advance the private no-native predecessor only through the exact original acknowledged cancellation transaction.",
+    "Require the actual original native reap and SSH transport/input/callback joins before releasing charge, including End, CancelRequest and Close ordering."
+  ],
+  "review": {
+    "ssh_candidate_source_tree": "f0ab05d3e8087c8f341648934fa5c65202ebdb91",
+    "independent_source_review_sha256": "4f01bee3950d61f310ac4088b37883c0e929d2cf494ecc4d17a4a149f55ba370",
+    "second_source_review_sha256": "439ba36b9f8447520a0d68b15e291c66bac1a7ddaef75fe0338a088254916e0d",
+    "holder_regression_source_sha256": "bd883f91efb265febc4f4cfdbebaef30259c01c4b08f6cadd711a104d96c3a99"
+  },
+  "successor": {
+    "status": "PASS_SCOPED",
+    "source_tree": "f0ab05d3e8087c8f341648934fa5c65202ebdb91",
+    "source_manifest_sha256": "f3aea75be617969663ee0c03cd9d2e64c138ec4ab4dc134d067b7c9cbe88ca4c",
+    "race": {
+      "roots": 16,
+      "nodes": 99,
+      "pass": 99,
+      "fail": 0,
+      "skip": 0,
+      "roster": [
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestCloseReportsOriginalSettlementFailureCreatedDuringJoin",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestCloseReportsOriginalSettlementFailureCreatedDuringJoin/completion-event",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestCloseReportsOriginalSettlementFailureCreatedDuringJoin/terminal-row",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-and-settlement",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-only",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-and-settlement",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-only",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/below-deadline",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/list-decode-error",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/missing-deadline",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/other-boot",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-other-boot",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-read-error",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-regressed",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/read-error",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/regressed",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestNormalCheckpointExpiryUsesOriginalPhysicalAuthority",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestNormalCheckpointExpiryUsesOriginalPhysicalAuthority/changed-deadline",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestNormalCheckpointExpiryUsesOriginalPhysicalAuthority/physical-id",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestNormalCheckpointExpiryUsesOriginalPhysicalAuthority/valid",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestNormalCheckpointExpiryUsesOriginalPhysicalAuthority/valid-usage",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/data-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/oversized-data",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/oversized-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/oversized-run",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/request-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/request-key-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/request-key-null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/run-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/run-bytes",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/compare-and-put/predecessor/run-null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/data-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/oversized-data",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/oversized-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/oversized-run",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/request-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/request-key-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/request-key-null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/run-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/run-bytes",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/candidate/run-null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/event/blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/event/duplicate",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/event/missing",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/event/payload",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/event/time",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/event/window",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/data-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/oversized-data",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/oversized-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/oversized-run",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/request-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/request-key-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/request-key-null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/run-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/run-bytes",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalFailedSettlementRetriesOnlyExactPredecessor/observe-committed/predecessor/run-null",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/body-id",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/deadline",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/host",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/native",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/owner",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/physical-id",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/ports",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/request",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/request-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalNativeFinalizerRejectsChangedTupleBeforeEffects/run",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementRefusalDoesNotStarveExpiredNativeSibling",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds/data-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds/data-overflow",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds/key-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds/key-overflow",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds/run-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestOriginalSettlementTupleReadBounds/run-overflow",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestRunNativeExecutionObservation",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHFailedNativeGateAcceptsAcknowledgedCancellationBeforeFinalizer",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHFailedNativeGateAcceptsAcknowledgedCancellationBeforeFinalizer/cancel-request",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHFailedNativeGateAcceptsAcknowledgedCancellationBeforeFinalizer/close",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHFailedNativeGateAcceptsAcknowledgedCancellationBeforeFinalizer/end",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeExitKeepsChargeUntilOriginalInputJoin",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerAcceptsLatestAcknowledgedRenewal",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/deadline",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/foreign-body",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/native-record-erased-after-ack",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/ports",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/request-key",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/run-blob",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHNativeFinalizerRejectsChangedTupleBeforeEffects/run-bytes",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSSHReconcileCannotBypassHeldOrFailedSettlement",
+          "status": "pass"
+        },
+        {
+          "package": "getarm.org/internal/manager",
+          "name": "TestSupervisedUsageHasOwnedIdentityFreshnessAndFinalSummary",
+          "status": "pass"
+        }
+      ]
+    },
+    "manager_vet": "PASS",
+    "original_race_and_vet_waits_returned": true,
+    "inputs_unchanged": 2776,
+    "source_files_unchanged": 2751,
+    "result_sha256": "24821e310e71fcde9b855db7e2e3ad6c6e30cee44394033d6e8a0ed23aa86b6b",
+    "race_stdout_sha256": "848cb1fb52d57ba6d6a2035ae8af1b6abeef39ffd7987ca98bdd783fb7258783"
+  },
+  "date": "2026-10-28",
+  "scope": "Sixteen affected Manager race-test roots and Manager vet on the reviewed cancellation-recovery source. Current integration acceptance is recorded separately."
+}

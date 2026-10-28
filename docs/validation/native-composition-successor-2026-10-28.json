@@ -1,0 +1,61 @@
+{
+  "verdict": "INDEPENDENT_SCOPED_PRESSURE_SUCCESSOR_ACTUAL_PASS",
+  "snapshot_commit": "3cd2241fdf7591cb5767e1fb86dca8de32ddbe01",
+  "tree": "57607bd50c293bad6cdf8053432a3d49e2e913e9",
+  "seal_sha256": "c13e263b82ae9321a69907870e6b511a976dc8f81d393e021bcaff14f58a9850",
+  "result_sha256": "74b5111e096215878c5ae6c8bf79ae00fc711e35dd81eaed62931d7d695449f9",
+  "normal": {
+    "roots": 1,
+    "named_pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "duplicates": 0
+  },
+  "race": {
+    "roots": 1,
+    "named_pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "duplicates": 0
+  },
+  "named_sets_identical": true,
+  "named_cases": [
+    "TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue",
+    "TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue/busy-owner-refuses-before-reservation"
+  ],
+  "raw_stdout_sha256": {
+    "normal": "1500ac684027f9a8ddd9b7f41fbe00d63c0601e8675fd88faaf84ee52171e0e7",
+    "race": "f0dcacfcfe4e7e188a38daf9df48a5e406db7ce47f048e3f2a82e08a1437ba97"
+  },
+  "vet": {
+    "packages": 7,
+    "exit": 0
+  },
+  "private_build_exit": 0,
+  "binary": {
+    "bytes": 71988770,
+    "sha256": "4d2cfa7b1b9cace30e8d115c3a49484bd59af84fda245d4247a3fbdb9bda9c7f",
+    "mode": 493,
+    "executed": false
+  },
+  "original_helper_returns": 4,
+  "all_original_returns_exit0": true,
+  "source_paths_checked": 2814,
+  "selected_input_pins_checked": 53,
+  "recorded_before_phase_after_maps_equal": 6,
+  "current_source_Git_state_matches_seal": true,
+  "elapsed_seconds": 40.109942000000004,
+  "reuse": {
+    "prior193aggregate": "FAILED: normal193roots764namedPASS; race763namedPASS1FAIL0SKIP; vet/buildunrun in that packet",
+    "unchanged_source_equivalence": "Exactly one test body changes; all2813 other source paths and every production path identical. Earlier192roots/763siblingnamed normal+race passes retain exact scoped reuse; correctedroot now separately passes1root2named normal+race.",
+    "not_claimed": "No fresh193root or765named aggregate rerun."
+  },
+  "limits": [
+    "Native Darwin affected-source acceptance only; private binary recorded/hashed but not executed or installed.",
+    "Test-only correction retries typed reservation refusal before any effect; production guards and one-shot native apply behavior unchanged.",
+    "No fullGo/Linux/runtimeAPI/publicfactory/publicforwarding/physical-suspend/currentprovider activation or browser acceptance.",
+    "Selected tools/source/Git/pins verified, not a new hermetic OS/modulecache/escaped-descendant proof.",
+    "All prior failures remain failed; this audit did not rerun/import helper or execute nativecommands."
+  ],
+  "outer_tool_qualification": "Coordinator observed original tool terminal0; disk original child return records independently audited, no new Wait."
+}

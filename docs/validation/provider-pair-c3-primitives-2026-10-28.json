@@ -1,0 +1,98 @@
+{
+  "status": "SCOPED_PRIVATE_C3_PRIMITIVE_SOURCE_VALIDATION_ACCEPTED",
+  "source_base": "55afc758454511debaa526d60e5937a8a7c6e3e4",
+  "source_tree": "b34cd514dcdf1aa76fb0499bb09de2c74aae9e1f",
+  "source_manifest_sha256": "dfe0d6b8a18af240e12a421b24486ab9602ba49be9573e4bb3ad6e122565898d",
+  "test_only_successor_review_sha256": "ddfc8096ea4ba789b15b3516ae030ab12de1bc969823dd6e5d55b5282051149a",
+  "production_source_review_sha256": "1ec4a0cd4b45dec814d88a5ebc9243f41e63a2862530392a96717e38958a23b5",
+  "control_seal_sha256": "948bacdd5c51bfbd2ef024cdc5998ddc4ad1178a565b6900e1ccad215b949419",
+  "normal_and_race": {
+    "roots_each": 39,
+    "named_run_each": 333,
+    "named_pass_each": 333,
+    "named_fail_each": 0,
+    "named_skip_each": 0,
+    "C3_named_each": 68,
+    "prior_named_each": 265,
+    "identical_actual_named_rosters": true,
+    "actual_roster_sha256": "922ce457680f9983541dba1d51467fee483a240a15c40f1aeec981ccbb169e9c",
+    "sole_package": "getarm.org/internal/manager",
+    "package_start_each": 1,
+    "package_pass_each": 1,
+    "normal_log_sha256": "8c892298623cc26ccefd10cff25a0620e77e264f960511ad38cfcccdd9c14be8",
+    "race_log_sha256": "854c3fce4eab78869d0976778555b44c3506bb9300a42ae9116f6779ea064f16"
+  },
+  "vet": {
+    "exit": 0,
+    "packages": [
+      "./internal/manager",
+      "./internal/providerpreparation"
+    ],
+    "stdout_stderr_empty": true
+  },
+  "ownership": {
+    "original_a107_returns": 3,
+    "all_exit0": true,
+    "all_exact_argv_stream_hashes_match": true,
+    "outer": "Retained owning-tool terminal reply fields show0; not an independent app export/secondWait.",
+    "limit": "Original helper Wait and pipe joins only; no process-group absence or arbitrary escaped-descendant claim."
+  },
+  "source_closure": {
+    "tracked": 2744,
+    "exact_owned_untracked": 5,
+    "ignored": 0,
+    "all_entries": 2749,
+    "before_after_JSON_values_equal": true,
+    "before_SHA256": "1d60e394deb7dd0f69bd4d4689714392c83f57829a40dd929cf7d4a029aa12ff",
+    "after_SHA256": "7e8fb97228a66298840152300b2ba7fb1cb8410e85d147d6cf2426beeda60863",
+    "different_serialization_hashes_not_byte_equality": true,
+    "independent_current_bytes_kinds_modes_membership_HEAD_branch_index_status_match": true,
+    "selected_input_pins": 115,
+    "all_current_match": true,
+    "only_v1_to_v2_source_change": "One test helper/oracle updates expected Progress only after successful Commit and explicitly preserves unknown custody/floor; all production/template/model and protected source unchanged."
+  },
+  "owned_source": [
+    {
+      "bytes": 5349,
+      "lines": 146,
+      "mode": "0o644",
+      "path": "internal/manager/provider_pair_lifecycle_scope.go",
+      "sha256": "cd6f2654415fb057a5ab54c6416ee0827f04a207af6fd06a45b73e158998987e"
+    },
+    {
+      "bytes": 4541,
+      "lines": 136,
+      "mode": "0o644",
+      "path": "internal/manager/provider_pair_lifecycle_snapshot.go",
+      "sha256": "1e6e8908c781c050806fb860a2f1a5e7d70a6f9f429ad90d044f27288b31566b"
+    },
+    {
+      "bytes": 6707,
+      "lines": 156,
+      "mode": "0o644",
+      "path": "internal/manager/provider_pair_lifecycle_marker.go",
+      "sha256": "236c0f27b24dbfb3ddc4c57a4c7bdabecb9eec5b1fd7ec30a4d1043c2fa5ab90"
+    },
+    {
+      "bytes": 25921,
+      "lines": 620,
+      "mode": "0o644",
+      "path": "internal/manager/provider_pair_lifecycle_test.go",
+      "sha256": "f73fac2d76f4134d5407f9504da26173148c841b5e36b5969a71e0117b0afc3d"
+    },
+    {
+      "bytes": 7189,
+      "lines": 126,
+      "mode": "0o644",
+      "path": "docs/design/PROVIDER-PAIR-C3-CUSTODY.md",
+      "sha256": "4bd5de7290e23074fcb0498c4934188cc0b0771bcf22bdde6de7ee48725e166c"
+    }
+  ],
+  "prior_v1": "FAILED normal39roots333nodes332PASS1FAIL0SKIP; race and vet unrun. Preserved as failed, not superseded into pass.",
+  "limits": [
+    "Private unused cancellation/custody/retaining-marker primitive acceptance only; not C3 full integration.",
+    "No shared lifecycle hooks, eligible publication, native join/cleanup/settlement, available capacity, C4/C5, schema/catalog/format/factory or public activation.",
+    "Structural clocks/SQLite fixture tests are not physical suspend or actual ambiguous commit ACK proof.",
+    "No Linux/runtime/current-main/fleet or hermetic/transitive-toolchain claims."
+  ]
+}

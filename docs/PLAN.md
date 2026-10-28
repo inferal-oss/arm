@@ -707,3 +707,32 @@ accounting; an empty C1 index does not establish availability. Coupled lifecycle
 guards, atomic reservation/publisher before image work, native finalization and
 public provider activation remain unfinished. The central model/proof proposal
 remains unapplied; later combined-source validation is separate.
+
+### Reviewed current native integration
+
+The current native source is recorded in focused integration commits:
+`540a022` cancellation and original settlement, `2d9d5cf` holder regressions,
+`25d60cc` private Unix custody, `53938db` unused C3 primitives and `69c3a57`
+private charged sync. The reviewed shared Manager and proof-schema composition
+preserves original startup custody, cancellation ordering, bounded object
+censuses and ordinary sync schema 2. Published log-window assets are preserved
+byte-for-byte in `5e8caac`.
+
+The original 193-root race aggregate remains failed. Its unchanged 192 roots /
+763 sibling names retain their exact source-equivalent normal and race passes.
+A test-only correction (`f7e831c`) adds a deterministic busy-owner refusal
+control and retries only a bounded, typed pre-effect reservation refusal. The
+corrected one-root / two-name cohort passes normal and race; seven-package vet
+and the private CLI build pass. Production pressure guards and one-shot native
+effects are unchanged. No fresh 193-root aggregate is claimed.
+
+The C3 primitive leaf separately passes 39 roots / 333 names in normal and race
+with targeted vet. This does not implement full Manager lifecycle hooks, atomic
+reservation or native finalization. Public paired-provider, sync and forwarding
+activation remain gated. The full private forwarding worker still has its
+separate failed three-node relay-admission race case. Unified Kubernetes
+stage history, typed worker, dashboard wiring and real enrollment remain open.
+See [source binding](validation/native-integration-source-binding-2026-10-28.json),
+[corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
+[cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
+and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).

@@ -1,0 +1,23 @@
+{
+  "source_commit": "5e8caac",
+  "validated_source_tree": "57607bd50c293bad6cdf8053432a3d49e2e913e9",
+  "exact_committed_input_paths": 2811,
+  "excluded_from_byte_comparison": [
+    "docs/IMPLEMENTATION.md",
+    "docs/PLAN.md",
+    "docs/VALIDATION.md"
+  ],
+  "feature_commits": {
+    "foundations": "fe2a102",
+    "cancellation": "540a022",
+    "holder_tests": "2d9d5cf",
+    "private_unix_binder": "25d60cc",
+    "unused_provider_census": "63bda94",
+    "unused_C3_primitives": "53938db",
+    "private_charged_sync": "69c3a57",
+    "composition_tests": "f7e831c",
+    "published_log_windows": "5e8caac"
+  },
+  "validation": "Original 193-root normal passes; original race has one pressure fixture failure. Unchanged 192 roots and 763 sibling names retain exact source-equivalent normal/race passing evidence. Corrected pressure root separately passes normal/race, followed by seven-package vet and private build. No fresh 193-root aggregate claimed.",
+  "limits": "Public sync, forwarding factory and paired providers remain gated; full provider hooks and unified Kubernetes installer remain unfinished."
+}

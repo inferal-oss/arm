@@ -7241,3 +7241,120 @@ they do not establish physical headroom, suspend, image work, schema activation,
 Linux runtime, provider lifecycle or complete accounting. Empty indexed results
 remain observations with ordinary-row/orphan coverage left to C2. Later current
 run-reporting/recovery/forwarding composition is not accepted by this leaf gate.
+### Detachable run-log windows
+
+The focused continuation on `codex/run-log-windows` adds stock Semblance
+detachable tabs, a floating desktop and a taskbar without changing the pinned
+engine or backend protocol. Final source is `cae0870`, following `1fea100`,
+`d620338`, `62b8cff`, `b208ebd`, `a67be25`, `35faf04` and `97e680c`.
+Source/input and retained artifact hashes are
+recorded in `validation/run-log-windows-headless-2026-10-28.json`.
+
+The normal shared FIFO queue runs the final affected Node test roster: 418 pass,
+zero failures, cancellations, skips or todos. The real WAT/Semblance runtime
+regression passes with native pop-out, Shift+Enter, geometry, maximize/restore,
+minimize/taskbar restore, closing off-page, return-to-tab and reset. It asserts
+that the exact output node and byte cursor survive; docking removes the visible
+frame, and reset removes native input geometry and stacking references. The
+production-adapter regression additionally covers viewport fitting without
+animation offsets, preserved maximized geometry and resize-listener retirement.
+The web asset rebuild and native command build pass with Go 1.27.3 darwin/arm64;
+the existing large JavaScript chunk warning remains.
+
+Headless Chromium checks use real proxy output and the embedded dashboard.
+Pointer tear-off and cancel, pop-out control, Shift+Enter, navigation while
+following, pause while capture continues, maximize, fullscreen/Escape, taskbar
+restore and closing/docking pass without page errors. The 390px viewport check
+asserts the actual frame is visible within horizontal viewport bounds, in
+addition to no page overflow. A real 120-line saved backlog plus continuing
+output verifies
+that the log itself scrolls to its visible tail while controls stay in view on
+both desktop and mobile. Floating and docked fullscreen views also assert a
+visible following tail. Retained desktop/mobile images and a decoded frame
+from the final video are visually inspected. The recording uses an explicit
+bounded one-core lease inside the normal shared queue. Original recorder and
+proxy complete with exit 0; the private backend is joined and browser/context
+closed, with no scoped capture/backend process remaining.
+
+Review fixes explicitly synchronize a docked frame's open state after native
+geometry/state changes, and fit/reposition floating frames after viewport shrink
+using layout geometry rather than animation-scaled rectangles. The final layout
+also gives the transcript the remaining frame height and declares its native
+style hooks, so following scrolls the log rather than clipping it below the
+frame, including fullscreen. The final retained recording is 00:00:12.24 long.
+Earlier failed
+or visually rejected captures and temporary diagnostic instrumentation are not
+acceptance evidence; the final recording uses the unmodified built asset.
+
+Evidence is local to the pinned native platform/browser and illustrative shell
+producers. This continuation supports one selected run and floating dashboard
+windows. It does not claim separate OS/browser windows, simultaneous readers,
+a full Go suite, Linux runtime, new TUI behavior or coordinator integration.
+Raw private fixtures, execution receipts and media remain outside version control.
+
+
+### Detachable run-log integration acceptance
+
+Independent final-diff review accepts the focused continuation through `18b0926`,
+composed as `2e3fa59` on main `34ea83a`. All nine input hashes and ten media
+artifacts match the owner's final source-bound record. Desktop, narrow,
+fullscreen and decoded video frames were visually inspected; the complete
+12.24-second stream decodes successfully. Earlier failed/superseded captures
+remain excluded. This is review of recorded rendered evidence, not a claim of
+a new local browser capture.
+
+A fresh bounded coordinator execution through the normal shared queue passes
+418 JavaScript cases without failures/skips/cancellations/todos, the real pinned
+Semblance tab/window lifecycle case, embedded asset rebuild and native command
+build. The rebuilt asset and all nine inputs remain byte-identical. The original
+coordinator backend joins after SIGTERM with exit 130, its command/lease completes
+with exit zero, and its checkpointed ledger contains no nonterminal lease. The
+original owner's checkpointed recorder lease is also terminal/completed/exit zero.
+
+[Nondeploy composition CI](https://github.com/inferal-oss/arm/actions/runs/40685321856)
+passes on exact source `2e3fa59`: locked installs, typecheck, gallery/integrity
+regressions, fresh current-source dashboard capture, SSR/provenance and Chromium
+no-script/takeover checks, and artifact upload. Deployment is skipped. Independent
+artifact audit verifies all 611 embedded inputs, runtime assets, four prerendered
+pages/shared stylesheet, and eight PNG hashes, CRCs, complete zlib streams,
+dimensions and scanline rosters. The feature adds no Go or CLI source.
+
+[Normalized integration evidence](validation/run-log-windows-integration-2026-10-28.json)
+records exact source/tool-output/artifact hashes and scope. The isolated owner
+branch and its uncommitted plan remain preserved. No full Go suite, Linux
+runtime, multi-reader or OS-popup acceptance is claimed.
+
+
+Automatic [main build and Pages deployment](https://github.com/inferal-oss/arm/actions/runs/40685791898)
+both pass on `24182f5`. Its feature inputs remain identical to reviewed `2e3fa59`;
+the intervening acceptance commit changes documentation only. This publication
+receipt does not add live-origin, DNS/HTTPS or latency measurement acceptance.
+
+### Reviewed current native integration
+
+The current native source is recorded in focused integration commits:
+`540a022` cancellation and original settlement, `2d9d5cf` holder regressions,
+`25d60cc` private Unix custody, `53938db` unused C3 primitives and `69c3a57`
+private charged sync. The reviewed shared Manager and proof-schema composition
+preserves original startup custody, cancellation ordering, bounded object
+censuses and ordinary sync schema 2. Published log-window assets are preserved
+byte-for-byte in `5e8caac`.
+
+The original 193-root race aggregate remains failed. Its unchanged 192 roots /
+763 sibling names retain their exact source-equivalent normal and race passes.
+A test-only correction (`f7e831c`) adds a deterministic busy-owner refusal
+control and retries only a bounded, typed pre-effect reservation refusal. The
+corrected one-root / two-name cohort passes normal and race; seven-package vet
+and the private CLI build pass. Production pressure guards and one-shot native
+effects are unchanged. No fresh 193-root aggregate is claimed.
+
+The C3 primitive leaf separately passes 39 roots / 333 names in normal and race
+with targeted vet. This does not implement full Manager lifecycle hooks, atomic
+reservation or native finalization. Public paired-provider, sync and forwarding
+activation remain gated. The full private forwarding worker still has its
+separate failed three-node relay-admission race case. Unified Kubernetes
+stage history, typed worker, dashboard wiring and real enrollment remain open.
+See [source binding](validation/native-integration-source-binding-2026-10-28.json),
+[corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
+[cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
+and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).

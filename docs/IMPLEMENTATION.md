@@ -2873,3 +2873,73 @@ The reader returns facts only. It neither installs a schema nor constructs an
 original owner, entitlement, factory or complete accounting projection. Ordinary
 orphan LeaseRef rows lie outside C1; an empty indexed namespace is not proof of
 free resources. The schema/model proposal remains unapplied.
+
+### Detachable run-log presentation
+
+The selected web run log uses the pinned Semblance detachable tab. Its native
+pop-out button, Shift+Enter and pointer tear-off move the same transcript into
+a floating in-dashboard window with resize, minimize, maximize and return-to-tab
+controls. A stock taskbar restores minimized windows. Window close returns the
+log to its tab rather than stopping the execution. The existing single reader,
+byte cursor, following/paused state and folded transcript are retained.
+
+A detached log continues polling across dashboard view navigation. Returning it
+to its tab while that view is hidden stops polling until the Runs view resumes.
+Back to runs, replacement selection, authentication reset and disposal retire
+the selected log window; reset/disposal invalidate late output and remove its
+input geometry. This presentation supports one selected run at a time and does
+not create an OS window or a separate browser tab. Floating dimensions and position
+are fitted to viewport bounds after resize or restore, using layout measurements
+that exclude opening animations. Explicit open state parks a docked native frame
+while retaining its geometry for the next detach. Local native runtime and
+responsive browser acceptance are recorded in `docs/VALIDATION.md`; coordinator
+composition review and integration remain separate gates.
+
+Floating logs hide duplicate headings/help and reserve the remaining frame height
+for the output disclosure. Native style hooks keep the transcript scrollable,
+with following showing its latest lines while the controls remain visible.
+
+
+### Reviewed detachable log composition
+
+The focused window continuation is composed on accepted main `34ea83a` as
+`c44e6f0` through `2e3fa59`. Independent review confirms stock tab/window
+projection, one retained reader and cursor, bounded output, native docking and
+frame geometry retirement. Authentication reset removes owned transcript/window
+state and rejects pending old-context results. The pinned embedded framework,
+backend protocol and shell completion remain unchanged by this continuation.
+
+Fresh composed JavaScript, native Semblance lifecycle, deterministic web rebuild
+and native command build checks pass. Existing website CI also passes with fresh
+current-source dashboard captures and SSR/browser checks. This accepts one
+selected transcript in an in-page window; separate OS popups, multiple readers,
+full Go-suite and Linux-runtime acceptance remain outside this milestone.
+
+### Reviewed current native integration
+
+The current native source is recorded in focused integration commits:
+`540a022` cancellation and original settlement, `2d9d5cf` holder regressions,
+`25d60cc` private Unix custody, `53938db` unused C3 primitives and `69c3a57`
+private charged sync. The reviewed shared Manager and proof-schema composition
+preserves original startup custody, cancellation ordering, bounded object
+censuses and ordinary sync schema 2. Published log-window assets are preserved
+byte-for-byte in `5e8caac`.
+
+The original 193-root race aggregate remains failed. Its unchanged 192 roots /
+763 sibling names retain their exact source-equivalent normal and race passes.
+A test-only correction (`f7e831c`) adds a deterministic busy-owner refusal
+control and retries only a bounded, typed pre-effect reservation refusal. The
+corrected one-root / two-name cohort passes normal and race; seven-package vet
+and the private CLI build pass. Production pressure guards and one-shot native
+effects are unchanged. No fresh 193-root aggregate is claimed.
+
+The C3 primitive leaf separately passes 39 roots / 333 names in normal and race
+with targeted vet. This does not implement full Manager lifecycle hooks, atomic
+reservation or native finalization. Public paired-provider, sync and forwarding
+activation remain gated. The full private forwarding worker still has its
+separate failed three-node relay-admission race case. Unified Kubernetes
+stage history, typed worker, dashboard wiring and real enrollment remain open.
+See [source binding](validation/native-integration-source-binding-2026-10-28.json),
+[corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
+[cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
+and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).
