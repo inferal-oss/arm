@@ -267,6 +267,7 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
     tileWindows(enabled=true){if(!ui.windowDesktop)return;batch(()=>{
       put(ui.windowDesktop.iri,C.tileLayout,enabled?C.DesktopGridLayout:C.DesktopFloatingLayout,true);
       put(ui.windowDesktop.iri,C.columns,3);put(ui.windowDesktop.iri,C.minWidth,'320px');
+      const taskbar=ui.windowDesktop.children.find(child=>child.kind==='Taskbar');if(taskbar)put(taskbar.iri,C.attachedTo,enabled?C.BottomEdge:null,true);
       if(enabled)for(const frame of ui.windowFrames)if(frame.detached){put(frame.frameIRI,C.windowState,C.Normal,true);put(frame.frameIRI,C.attachedTo,null);}
     });if(!enabled)for(const frame of ui.windowFrames)frame.fit();},
     disclosure(label,children=[],props={}){return batch(()=>{const h=component('AccordionItem',{label,open:false,...props});h.body=ui.stack(children);put(h.iri,C.content,h.body.iri,true);h.children=h.body.children;replaceOwnership(h,[h.body]);return h;});},
