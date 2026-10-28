@@ -221,12 +221,14 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
         if(h.disposed||!h.detached||!viewport)return;
         const state=object(window,C.windowState)?.value,edge=object(window,C.attachedTo)?.value;
         if(state&&state!==C.Normal||edge&&edge!==C.NoEdge)return;
-        const node=nodeOf(window);let box=node?.getBoundingClientRect?.();
-        if(!box?.width||!box.height)return;
+        const node=nodeOf(window);if(!node?.getBoundingClientRect)return;
+        // Read layout geometry, excluding the native opening animation's scale.
+        const measure=()=>{const rect=node.getBoundingClientRect(),style=viewport.getComputedStyle?.(node),left=Number.parseFloat(style?.left),top=Number.parseFloat(style?.top);return {left:Number.isFinite(left)?left:rect.left,top:Number.isFinite(top)?top:rect.top,width:node.offsetWidth||rect.width,height:node.offsetHeight||rect.height};};
+        let box=measure();if(!box.width||!box.height)return;
         // Stock frame dimensions are content-box values; leave room for its
         // border and a viewport margin before clamping its position.
         batch(()=>{if(box.width>viewport.innerWidth-32)put(window,C.width,Math.max(1,viewport.innerWidth-34));if(box.height>viewport.innerHeight-32)put(window,C.height,Math.max(1,viewport.innerHeight-34));});
-        box=node.getBoundingClientRect();
+        box=measure();
         const x=Math.max(0,Math.min(box.left,viewport.innerWidth-box.width)),y=Math.max(0,Math.min(box.top,viewport.innerHeight-box.height));
         if(Math.abs(x-box.left)>1||Math.abs(y-box.top)>1)batch(()=>{put(window,C.x,Math.round(x));put(window,C.y,Math.round(y));});
       }

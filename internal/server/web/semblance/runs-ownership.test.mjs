@@ -44,7 +44,7 @@ test('detachable wrapper owns its exact content and retires native geometry with
 
 test('floating log window is kept reachable after resize and retires its viewport listener',()=>{
  const listeners=new Set(),viewport={innerWidth:390,innerHeight:640,addEventListener(name,fn){assert.equal(name,'resize');listeners.add(fn);},removeEventListener(name,fn){assert.equal(name,'resize');listeners.delete(fn);}};
- const box={left:440,top:800,width:358,height:440}, {ui,store,root}=graphFixture({viewport,node:{getBoundingClientRect:()=>box}}),content=ui.code('output'),window=ui.detachable('Log',content),C='https://semblance.dev/ns/component#',f=store.factory;
+ const box={left:440,top:800,width:358,height:440},node={get offsetWidth(){return box.width;},get offsetHeight(){return box.height;},getBoundingClientRect:()=>({...box,left:box.left+14,width:box.width-28})};viewport.getComputedStyle=()=>({left:box.left+'px',top:box.top+'px'});const {ui,store,root}=graphFixture({viewport,node}),content=ui.code('output'),window=ui.detachable('Log',content),C='https://semblance.dev/ns/component#',f=store.factory;
  root.replace(window);window.popOut();assert.equal(listeners.size,1);for(const fn of listeners)fn();
  const iri=window.iri+'/~window-'+encodeURIComponent(window.tab.iri),value=p=>store.match(f.namedNode(iri),f.namedNode(C+p),null,f.defaultGraph())[0]?.object.value;
  assert.equal(value('x'),'32');assert.equal(value('y'),'200');
