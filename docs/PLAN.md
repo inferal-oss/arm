@@ -19,6 +19,36 @@ Unknown resource, process, transport or filesystem outcomes retain obligations.
 No lookup-only receipt, context deadline or process exit alone proves cleanup.
 Production fences remain until their explicit acceptance gates pass.
 
+## Current integration queue — October 28
+
+The designated coordinator owns integration from main `02c7a1d`. Preserve all
+existing worktrees and unfinished source. Landing existing requested work is the
+current scope; new feature work requires user direction. The following owners
+retain their assignments and the source-specific gates recorded below.
+
+| Owner / branch | Source state | Dependencies and remaining gates |
+| --- | --- | --- |
+| Run-list presentation — `codex/run-list-polish` | Reviewed source `02300f2` and evidence `f131f76` integrated as `744a2f9`, `2f44cb2`, `f54676d`, `e91ec95`. | No blocking source findings. All 413 JavaScript tests, complete TUI race tests, TUI vet and native build pass on the identical composed tree. Source-bound responsive web/PTY evidence is verified; the capture window is released. Full Go suite and Linux runtime remain outside this acceptance. The owner's uncommitted plan is preserved. |
+| Website prerendering — `codex/website-prerender` | Candidate `768ecdb` from `02c7a1d`; final integration handoff pending. | Review the final handoff for the pinned SSR-capable dependency, four rendered sections, browser takeover, build/publish integrity and actual browser evidence. Review exact dependency and publish artifacts; preserve embedded application dependencies. |
+| Storage performance pools — `codex/storage-performance-pools` | Uncommitted continuation from `02c7a1d`; retain sole implementation ownership. | Configured mount-point pools, native metadata, opt-in benchmarks, shared-capacity admission, CLI/web/TUI views, agent/Rust guidance and atomic configuration edits require focused commits and final-source review. Native macOS and Linux testing is authorized; implementation reports do not establish acceptance. |
+
+Run-list and storage both touch terminal presentation; integrate reviewed focused
+cuts in that order when ready and revalidate the resulting composition. Central
+CLI/backend/schema changes remain coordinator-reviewed. Website dependencies
+remain scoped to the public site. Existing divergent run feature branches are
+historical source/review material, not additional merge candidates.
+
+Keep existing authorized executions intact. Serialize native browser/PTY
+captures and storage benchmarks. The run-list capture reports positive cleanup
+and has released its window; later windows still require explicit coordination.
+Use the existing shared CPU queue for website builds and bounded ARM leases for
+resource-intensive work. Queue acceptance is not owner acknowledgement or
+validation evidence.
+
+Earlier portfolio rows below retain their recorded technical limits. Their old
+assignments do not establish current owner activity or readiness; obtain a fresh
+handoff before scheduling or integrating additional source.
+
 ## Accepted recent milestones
 
 | Area | Integrated commit | Supported boundary |

@@ -1,5 +1,31 @@
 # Validation record
 
+## Run-list main integration — 2026-10-28
+
+The four focused owner commits through `f131f76` are reviewed and integrated as
+`744a2f9`, `2f44cb2`, `f54676d` and `e91ec95` on main `02c7a1d`. The committed
+composition is tree-identical to the reviewed owner cut before this coordination
+record. No divergent historical run feature branch is imported. The isolated
+independent review and final owner source have identical implementation files;
+coordinator review finds no remaining blocking source findings.
+
+Fresh checks on that exact tree pass through the unchanged shared FIFO queue:
+413 JavaScript tests, zero failures/skips; the complete TUI package under the
+race detector (`go test -p 2 -race ./internal/tui -count=1 -timeout=180s`,
+25.042 seconds package time); TUI vet; and a native CLI build. Go work uses
+`GOMAXPROCS=2`. The quiet recorder uses the actual coordinator's registered
+polling contact in disposable state with peer publication disabled. The run
+completes with exit zero and its original foreground backend is joined.
+
+All nine recorded feature-input hashes and fifteen retained media hashes match
+the [normalized owner evidence](validation/run-list-polish-headless-2026-10-28.json).
+Coordinator inspection covers desktop listing, mobile expanded Details and the
+terminal return-to-roster image. Those captures remain bound to `02300f2`;
+they are not a second native capture. Documentation changes do not broaden the
+local macOS/browser evidence, establish the full Go suite or add Linux runtime
+acceptance. Private execution receipts, media and task identifiers stay outside
+version control. The implementation branch and its uncommitted plan are retained.
+
 ## Compact run listing and corrected native capture — 2026-10-28
 
 Final isolated source `02300f2` composes compact listing `13b2683` with fixes
