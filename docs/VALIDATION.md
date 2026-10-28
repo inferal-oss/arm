@@ -6382,3 +6382,32 @@ verifies all sixteen committed Git objects/modes at `7d057f24`, current base
 No upstream merge, ARM dependency promotion or current numeric/Sparkline
 acceptance follows. The latest recovered 49-path numeric/component continuation
 is separately awaiting current-base composition and validation.
+
+
+### Kubernetes source capability core
+
+[Independent core evidence](validation/kubernetes-source-core-qualified-2026-10-27.json)
+retains the original failed broad cohort and its skipped helper cases. Its
+50 roots/83 named passing cases are an assembled source-scoped union across
+successors, not one successful aggregate run. The final proof successor
+separately passes 13 database and three partial-lifecycle named cases. The
+foreign-reference finding is fixed: an unattached partial parent requires zero
+references. Historical-reader fixtures retain/refuse source obligations; they
+do not test terminal-source parent handoff.
+
+[Current composed evidence](validation/kubernetes-source-config-composition-2026-10-27.json)
+binds all 21 committed Go paths and modes at `47bafbd7`, tree
+`f60753771052a1660d9fd1e80ddf79a28fc94500`, to the tested source. All six
+original phases exit zero: fresh helper, helper build information, Darwin
+ARM64 race cohort, targeted vet, Linux ARM64 Manager compilation and tool
+version capture. The cohort passes 36 roots/68 exact named cases, with zero
+failures/skips and unchanged 2,706 selected inputs. It includes configured
+startup, configured source cancellation/join with retained storage debt and
+all three existing native helper cases.
+
+CPU observations are controlled lifecycle/accounting fixtures, not physical
+headroom or sleep evidence. Linux is compilation only. Original Wait and causal
+ownership assertions do not establish universal descendant closure or physical
+reclamation. No public provider/installer/connector, current live cluster,
+browser or GUI acceptance follows. The latest configured-cluster read is
+unavailable; historical Node visibility is not current evidence.

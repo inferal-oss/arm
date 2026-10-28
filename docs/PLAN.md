@@ -340,7 +340,7 @@ no runtime acceptance.
 | Priority | Area | Concrete unfinished work | Next action and boundary |
 | --- | --- | --- | --- |
 | Integrated | Compact Resources and mobile composition | Backend/CLI/terminal `ff412e9` and browser source/assets `5130242` match the reviewed composition. Final disconnect label and cleanup pass; earlier qualified positive cohorts keep their recorded source scope. | Naming mutations now have scoped positive evidence within an overall failed run. The refresh-state correction is integrated as `8451623` with twelve targeted lifecycle checks and an exact fresh bundle. The affected Host-only browser check now passes on its fresh executable. Retain separate unsupported platform/roaming/layout work and prior failures. Do not replay unchanged Resource cohorts. |
-| Now | Kubernetes unified install/connect | Diagnostics `a15c54a` and corrected source ownership `5e5e7f1` are integrated; the actual missing-Node symptom is not reproduced. A working Kubernetes choice in both dialogs, admitted source preparation, backend effects, verified readiness/catalog and pinned mesh enrollment remain unfinished. | Continue the already assigned unified workflow using existing typed provider and original-key contracts. Diagnose context/identity/namespace/Node/query stages separately; scheduler allocatable figures do not supply live ARM CPU authority. |
+| Now | Kubernetes unified install/connect | Diagnostics `a15c54a`, corrected source ownership `5e5e7f1` and unused admitted source core `47bafbd7` are integrated; the actual missing-Node symptom is not reproduced. The latest read-only configured API is unavailable, so no fresh Node visibility is established. A working Kubernetes choice in both dialogs, provider use of admitted source preparation, backend effects, verified readiness/catalog and pinned mesh enrollment remain unfinished. | Continue the already assigned unified workflow using existing typed provider and original-key contracts. Diagnose context/identity/namespace/Node/query stages separately; scheduler allocatable figures do not supply live ARM CPU authority. |
 | Next | Public sync | Planner, rsync worker, ledger and recovery foundations are integrated, but public push/pull/both and typed multi-hop sync are not wired. The complete-scope owner type cannot currently mint a positive capability. | Complete enforced native scope/charged Manager ownership and settlement first, then endpoint dispatch, reviewed conflicts/deletions/baselines, progress/recovery and web/Charm controls. Keep one coordinated sync continuation across planner, worker and relay work. |
 | Next | Provider lifecycle | Codec, durable fixture, entitlement component and V0 writer guard do not implement production registration or the real Manager/native-clock/retained worker-and-scratch bridge. | Finish reservations before image work, current held authority and every End/expiry/Close/restart/reset boundary before a startable factory. Uniform writer rollout and format activation remain explicit gates; a published guard is not proof that all writers upgraded. |
 | Next | Pressure response | Runtime remains warning-only (`MaxPauseJobs: 0`); original-owned native pause/resume is missing. The finite model does not implement the controller. | Complete capability/policy-selected original control, sustained grace, hysteresis, expiry/revocation precedence and retained memory/disk obligations with causal native/formal evidence before enabling pause. |
@@ -372,8 +372,15 @@ are not integration candidates merely because Git lists them as unmerged. The
 earlier Kubernetes prototype is superseded by the unified onboarding continuation;
 its unfinished owned UI work remains preserved.
 
-The active `codex/kubernetes-source-capability` branch owns unused source
-admission beneath unified onboarding. Persistent Host controls from
+Unused source admission beneath unified onboarding is reviewed and integrated
+as `47bafbd7`, composed with configured Manager startup. It supplies original
+CPU/memory ownership and separately charged managed-storage custody, with
+closed file/helper budgets and no public adapter activation. The current
+Darwin race cohort passes 36 roots/68 named cases without skips; targeted vet
+and Linux ARM64 compilation pass. The existing unified-onboarding owner
+continues the preserved selectors, typed stages, recovery and pinned connector.
+
+Persistent Host controls from
 `codex/host-disclosure-refresh` are integrated with source-bound native acceptance
 (`8451623`). Local startup settings and durable ceiling transitions from
 `codex/resolved-local-daemon-config-final` are integrated as `c74d1fd`.

@@ -1,0 +1,706 @@
+{
+  "schema": 1,
+  "classification": "ACCEPT_SCOPED_ASSEMBLED_UNUSED_CORE_AND_PROOF_SUCCESSOR_CURRENT_COMPOSITION_PENDING",
+  "source_commit": "db50e685a70ae4bac2f57308aef5ba113c794d44",
+  "source_tree": "21a0d22b6a328a77a2c55f34996fca4d83182d06",
+  "baseline_commit": "f474d1b2aec1ba613cb1b5b7061638f0da6a594c",
+  "author_record_sha256": "f8256c48e99a8ba47eb3b4445480e94ac9726b53318db89fd1f2a18e1c01ce55",
+  "owned_go_sha256": {
+    "internal/database/proof.go": "e62e78bc797df18702ddf84bfaee5772f30884be604132cdbdb7e7dadc3f62dc",
+    "internal/kubeprovision/owned_exec.go": "c7d99b1e0379ccfc14810229f9d31acd048688f2c38d2aa8694d19a1517d519e",
+    "internal/manager/manager.go": "c0855591685c095d356e8a81ae0a9e12306b7baafae9eaf351f6435e5e86b716",
+    "internal/manager/relay_transit.go": "890bbaebce07d18309650b8ba062b661135cc9fa257fae34183d096044df3937",
+    "internal/database/proof_kubesource.go": "9ec65918f7575f531092f6304463d6c9774c95a3262813392c8e2507aeb5e6d3",
+    "internal/database/proof_kubesource_test.go": "180b6ccc23c806accc38270d0daba83df373f52bff6a937bd664585b23c3cfdc",
+    "internal/kubeprovision/source_files.go": "bb960d34d7f559e8e98d38d9d6b39bc31fc9c9386915edeb8570e933476419a2",
+    "internal/kubeprovision/source_files_test.go": "820f83c572f555f5a08073646630eaa801d10897bbc8446b8eab371324303514",
+    "internal/kubesource/scope.go": "740420081f3890ae9dfbd70c1a464ca94b48370aca45d8873419e47e99059ab8",
+    "internal/kubesource/scope_test.go": "a1f01f0cfc8848a995d6e3cd8381ea17c527c6bd13a8eb719d7a77a208b203d6",
+    "internal/manager/kubernetes_source.go": "42fbc85034a4642a05e78d6f53300ec60a5236c96c5a5a2501942201e9fd1cb0",
+    "internal/manager/kubernetes_source_files.go": "166fa94c699dd972d01ed3912f188db2864f7e7c35c12234652153ae9b26a037",
+    "internal/manager/kubernetes_source_native_test.go": "56789693eda0270bbbaf8bd5d7eaad2bf92b052a0622488bfe317370dc202c53",
+    "internal/manager/kubernetes_source_recovery_test.go": "e24fdce195a58eeef2879008a9595b958e0e2425caf263bc2fec3f02ada3240e",
+    "internal/manager/kubernetes_source_test.go": "e05ee54dedf18ee6e987eb3ee8533e2e6e02c8d7744534d202e054c4e8f02783",
+    "internal/storage/source_directory.go": "ab4e4c404a542e926e55791e5b646b9ac2bf3ae7420d46c31e2e2f596f058faa",
+    "internal/storage/source_directory_test.go": "90a99d5f261c06b70ca441ae9aa3c88f7cdb70a13d42bd27977d3da32a75eef3",
+    "internal/storage/source_mount_darwin.go": "e9749265bd528619607edc1ec244eb6c17c14bc25b06b9e1c72cfe19335e046c",
+    "internal/storage/source_mount_darwin_test.go": "0819fff0b443e2fada6ecbba1e435f976ca6341130e8f972a8d548ea855ce648",
+    "internal/storage/source_mount_linux.go": "532bad02d03df0d6fc0f0339e2e99ca393e272392f8456c5a4ab0516e59a10f8"
+  },
+  "final_native_snapshot_20_Go_files_match_Git_and_retained_map": true,
+  "scoped_actual_cohorts": {
+    "broad_failed_predecessor": {
+      "actual_roots": {
+        "PASS": 45,
+        "SKIP": 3,
+        "FAIL": 1
+      },
+      "actual_named": {
+        "PASS": 72,
+        "SKIP": 3,
+        "FAIL": 7
+      },
+      "all_run_names_have_exact_one_status": true,
+      "raw_log_sha256": "d7382b402b32eb06f1a39d88c62f2fb46e3d5c34607032cf05ce58ba3f43e5de",
+      "manifest_sha256": "c2fa3fd6ccec71c458a1c6ace50dc08c9b3340f85144258c1499a6a6f4ade533",
+      "diff_owned_from_db50": [
+        "internal/kubeprovision/owned_exec.go",
+        "internal/kubeprovision/source_files.go",
+        "internal/kubeprovision/source_files_test.go",
+        "internal/manager/kubernetes_source_recovery_test.go",
+        "internal/manager/kubernetes_source_test.go"
+      ],
+      "actual_roster": [
+        {
+          "name": "TestClosedScopeAndCumulativeBudgets",
+          "status": "PASS"
+        },
+        {
+          "name": "TestPairRejectsSwapsAndScopeDrift",
+          "status": "PASS"
+        },
+        {
+          "name": "TestCleanupNeverFollowsSymlinksOrExternalHardLinks",
+          "status": "PASS"
+        },
+        {
+          "name": "TestOpenFileBlocksCleanupAndCanBeRetried",
+          "status": "PASS"
+        },
+        {
+          "name": "TestReplacedRootAndArtifactArePreserved",
+          "status": "PASS"
+        },
+        {
+          "name": "TestReplacedRootAndArtifactArePreserved/artifact",
+          "status": "PASS"
+        },
+        {
+          "name": "TestReplacedRootAndArtifactArePreserved/root",
+          "status": "PASS"
+        },
+        {
+          "name": "TestQuarantineCrashWindowAndMissingIdentity",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRecycledInodeCannotMatchOldCreationIdentity",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceDirectoryOriginalFDAndUnlink",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceDirectoryRejectsReplacementWithoutAdoption",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceMountUsesReportedMountpoint",
+          "status": "PASS"
+        },
+        {
+          "name": "TestOwnedExecRealChildReceipt",
+          "status": "SKIP"
+        },
+        {
+          "name": "TestOwnedExecRealChildCancellation",
+          "status": "SKIP"
+        },
+        {
+          "name": "TestOwnedExecRealChildShipsHeldFile",
+          "status": "SKIP"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello/cancel-during-verification",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello/withdraw-before-start",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello/withdraw-before-grant",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallNativeLoanReceiptIsOriginalAndOneShot",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallInspectionWrapperUsesFourNativeRequests",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceNativeFourRequestsAndFifthRefusal",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCrashWriter",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/active",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/ending",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/needs_attention",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/terminal",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-active",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-terminal",
+          "status": "FAIL"
+        },
+        {
+          "name": "TestKubernetesSourceRestartCannotAdoptOrReleaseUnknownPair",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceReservedRequestsRequirePrivatePermit",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceSameOperationAdmissionIsExclusive",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourcePartialAdmissionNeverWaitsUnpublishedCaller",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceDebtPairAndCumulativePayload",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceLostDebtAckDoesNotExposeOrUnlink",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceRequestLaneReservedBeforeOpen",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceQueuedIORechecksAfterGate",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceNativeClosureSeparateFromSQLSettlement",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceNativeCloseFailureIsSticky",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceEndCancelsBeforeFailedRead",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceEndCancelsBeforeFailedRead/source",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceEndCancelsBeforeFailedRead/parent",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCreateRechecksAfterGate",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCreateRechecksAfterGate/cancel",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCreateRechecksAfterGate/source-end",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCreateRechecksAfterGate/parent-end",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCreateRechecksAfterGate/elapsed-expiry",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceCreateRechecksAfterGate/directory-replaced",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceFailedUnlinkRetainsLinkedEntryAndPair",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceManagerCloseCancelsThenJoinsOutsideLocks",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/unknown-state",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/wrong-role",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/column-key-mismatch",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/blob",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/oversize",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/row-bound",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitReleaseRequiresOriginalJoin",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/expiry",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged/force",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitAdmissionFailureStartsNoOwner",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitChangedDurableBindingCannotSettle",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitJoinPersistenceFailureRetainsCharge",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitCloseCancelsEvenWhenEndingWriteFails",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitRecoveredMarkerRemainsChargedAndBlocksReset",
+          "status": "PASS"
+        },
+        {
+          "name": "TestRelayTransitSettledMarkerAllowsResetProof",
+          "status": "PASS"
+        },
+        {
+          "name": "TestForwardTransitSettledMarkerAllowsResetProof",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/missing-parent",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/wrong-owner",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/obsolete-inspect-three",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/wrong-attempt",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/duplicate-parent",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/extra-consumer",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofClosedRelationship/unattached-written-parent",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceProofPartialAdmissionIsNotAdoption",
+          "status": "PASS"
+        }
+      ]
+    },
+    "proof_and_legacy_helper_successor": {
+      "actual_roots": {
+        "PASS": 4
+      },
+      "actual_named": {
+        "PASS": 10
+      },
+      "all_run_names_have_exact_one_status": true,
+      "raw_log_sha256": "46749e8d6df3a93d19552827a2cc405ca90b00e6be3c8dd7daef625a5366d9c3",
+      "manifest_sha256": "ecef604462834d0b879e828796d626835a0a10e9630b65e88f2b2a32181f5a44",
+      "diff_owned_from_db50": [
+        "internal/kubeprovision/owned_exec.go",
+        "internal/kubeprovision/source_files.go",
+        "internal/kubeprovision/source_files_test.go",
+        "internal/manager/kubernetes_source_test.go"
+      ],
+      "actual_roster": [
+        {
+          "name": "TestOwnedExecRealChildReceipt",
+          "status": "PASS"
+        },
+        {
+          "name": "TestOwnedExecRealChildCancellation",
+          "status": "PASS"
+        },
+        {
+          "name": "TestOwnedExecRealChildShipsHeldFile",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/active",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/ending",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/needs_attention",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/terminal",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-active",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-terminal",
+          "status": "PASS"
+        }
+      ]
+    },
+    "stronger_queued_io_successor": {
+      "actual_roots": {
+        "PASS": 1
+      },
+      "actual_named": {
+        "PASS": 1
+      },
+      "all_run_names_have_exact_one_status": true,
+      "raw_log_sha256": "3e8459995584eda8fbd8af5a13081330584db98471a62ca6a1125cef81dc6add",
+      "manifest_sha256": "2d6ee43446e153b671cc8ddffb5cbbc6e8652b1e63f2bced0b4e3dcb0cfdcacc",
+      "diff_owned_from_db50": [
+        "internal/kubeprovision/owned_exec.go",
+        "internal/kubeprovision/source_files.go",
+        "internal/kubeprovision/source_files_test.go"
+      ],
+      "actual_roster": [
+        {
+          "name": "TestKubernetesSourceQueuedIORechecksAfterGate",
+          "status": "PASS"
+        }
+      ]
+    },
+    "post_wait_affected_native_successor": {
+      "actual_roots": {
+        "PASS": 8
+      },
+      "actual_named": {
+        "PASS": 11
+      },
+      "all_run_names_have_exact_one_status": true,
+      "raw_log_sha256": "ca44a813f7eb561e27a57fd44ce6bad570eae80dd431221497d7297c7854e560",
+      "manifest_sha256": "9728a1e5992b293525078273a8e92658ed4d2e26f4ec89f0dfb99ddec21f48d2",
+      "diff_owned_from_db50": [],
+      "actual_roster": [
+        {
+          "name": "TestOwnedExecRealChildReceipt",
+          "status": "PASS"
+        },
+        {
+          "name": "TestOwnedExecRealChildCancellation",
+          "status": "PASS"
+        },
+        {
+          "name": "TestOwnedExecRealChildShipsHeldFile",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello/cancel-during-verification",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello/withdraw-before-start",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallAuthorityAtStartAndHello/withdraw-before-grant",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallNativeLoanReceiptIsOriginalAndOneShot",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallPanicAfterWaitNeverSignalsReapedProcess",
+          "status": "PASS"
+        },
+        {
+          "name": "TestSourceCallInspectionWrapperUsesFourNativeRequests",
+          "status": "PASS"
+        },
+        {
+          "name": "TestKubernetesSourceNativeFourRequestsAndFifthRefusal",
+          "status": "PASS"
+        }
+      ]
+    }
+  },
+  "assembled": {
+    "distinct_passing_roots": 50,
+    "distinct_passing_named": 83,
+    "not_one_full_successful_run": true,
+    "broad_predecessor_still_FAILED": true,
+    "legacy_helper_skips_closed_by_actual_final_helper_roots": true,
+    "scope": "Scoped union replaces only specific failed/skipped results and revalidates changed native ownership boundaries; does not promote failed aggregate.",
+    "runtime50_83_and_proof_successor_separate": true
+  },
+  "fresh_final_helper": {
+    "sha256": "7fead4a45038bdf59b3fa560c5db2ab12d82e48757e747d25fbd1ccb6a8ff987",
+    "bytes": 71440194,
+    "legacy_roots_actual_pass": 3,
+    "post_wait_affected_roots": 8,
+    "post_wait_affected_named": 11,
+    "build_exit": 0,
+    "build_original_metadata_confirmed": true
+  },
+  "historical_reader": {
+    "base": "f474d1b2aec1ba613cb1b5b7061638f0da6a594c",
+    "expected_Go_and_module_files_Gitblobmatched": 1561,
+    "runner_sha256": "d7b7736dbb0090aecefcf2fd08715604031fbea29a4db613ecea2f75ffc2d369",
+    "six_mode_output_matches_author_record": true,
+    "terminal_source_parent_handoff_exercised": false,
+    "source_work_not_adopted": true,
+    "scope": "Historical ordinary parent renewals can alter parent clock; that is not original source authority or current tuple proof. Partial-terminal acceptance is a separate historical generic-proof behavior."
+  },
+  "proof_boundary": {
+    "acceptance": "SCOPED_ACCEPT_SUCCESSOR",
+    "known_parent_reference_finding_closed": "Unattached partial parent requires zero references; actual empty/one/two foreign-reference database cases and both Manager partial modes pass on cdfff2f4/907ee644 source.",
+    "proof_source_review": "Separate independent source review df07e (coordinator supplied); no new semantic reevaluation here.",
+    "final_20_source_match": "Proof11 changes exactly these two database files; other18 source hashes match recorded native10/db50 cut.",
+    "current_composition": "Still pending with later configured-startup Manager source; no public adapter activation accepted."
+  },
+  "static_compile_qualification": {
+    "five_package_vet": "Actual original vet07 exit0 corroborated by recovered app metadata.",
+    "proof08_vet": "Actual original exit0 corroborated.",
+    "io09_vet": "Actual original exit0 corroborated.",
+    "native10_vet": "Actual original exit0 corroborated.",
+    "native10_Linux_compile": "Actual original exit0 corroborated on native10/db50 runtime source; not Linux runtime or an unexecuted proof11 Linux successor claim.",
+    "proof11_vet": "Actual original exit0 corroborated on corrected proof source.",
+    "Linux_runtime": false
+  },
+  "native_ownership_scope": "Passing tests contain original exec.Cmd/pipe/one-shot receipt/Manager join assertions and actual after-Wait panic witness. External per-child Wait transcripts, native all-descendant closure and public provider bridge are not established by verbose package PASS alone.",
+  "remaining": [
+    "Compose with current Manager configuration/startup source and run only affected current cohort.",
+    "Public Provider/installer/server/CLI/browser/connector wiring, real cluster readiness and enrollment remain disabled.",
+    "Positive Linux mount-custody/native runtime, kernel quota or physical reclamation not established."
+  ],
+  "reviewer_actions": "Read-only bounded logs/manifests/Git-source/helper hashes; no runtime/tests/builds/helper imports/network/browser or author/primary edits.",
+  "author_record_retained_sha256": "f8256c48e99a8ba47eb3b4445480e94ac9726b53318db89fd1f2a18e1c01ce55",
+  "final_owned_go_sha256": {
+    "internal/database/proof.go": "e62e78bc797df18702ddf84bfaee5772f30884be604132cdbdb7e7dadc3f62dc",
+    "internal/kubeprovision/owned_exec.go": "c7d99b1e0379ccfc14810229f9d31acd048688f2c38d2aa8694d19a1517d519e",
+    "internal/manager/manager.go": "c0855591685c095d356e8a81ae0a9e12306b7baafae9eaf351f6435e5e86b716",
+    "internal/manager/relay_transit.go": "890bbaebce07d18309650b8ba062b661135cc9fa257fae34183d096044df3937",
+    "internal/database/proof_kubesource.go": "cdfff2f4dd562221b21a3676782f7910c7bb566da056d37686867e781075d2c2",
+    "internal/database/proof_kubesource_test.go": "907ee6446426e8fac5d7e4022e059e10bf9b93ea106c610c725e3f1fed259373",
+    "internal/kubeprovision/source_files.go": "bb960d34d7f559e8e98d38d9d6b39bc31fc9c9386915edeb8570e933476419a2",
+    "internal/kubeprovision/source_files_test.go": "820f83c572f555f5a08073646630eaa801d10897bbc8446b8eab371324303514",
+    "internal/kubesource/scope.go": "740420081f3890ae9dfbd70c1a464ca94b48370aca45d8873419e47e99059ab8",
+    "internal/kubesource/scope_test.go": "a1f01f0cfc8848a995d6e3cd8381ea17c527c6bd13a8eb719d7a77a208b203d6",
+    "internal/manager/kubernetes_source.go": "42fbc85034a4642a05e78d6f53300ec60a5236c96c5a5a2501942201e9fd1cb0",
+    "internal/manager/kubernetes_source_files.go": "166fa94c699dd972d01ed3912f188db2864f7e7c35c12234652153ae9b26a037",
+    "internal/manager/kubernetes_source_native_test.go": "56789693eda0270bbbaf8bd5d7eaad2bf92b052a0622488bfe317370dc202c53",
+    "internal/manager/kubernetes_source_recovery_test.go": "e24fdce195a58eeef2879008a9595b958e0e2425caf263bc2fec3f02ada3240e",
+    "internal/manager/kubernetes_source_test.go": "e05ee54dedf18ee6e987eb3ee8533e2e6e02c8d7744534d202e054c4e8f02783",
+    "internal/storage/source_directory.go": "ab4e4c404a542e926e55791e5b646b9ac2bf3ae7420d46c31e2e2f596f058faa",
+    "internal/storage/source_directory_test.go": "90a99d5f261c06b70ca441ae9aa3c88f7cdb70a13d42bd27977d3da32a75eef3",
+    "internal/storage/source_mount_darwin.go": "e9749265bd528619607edc1ec244eb6c17c14bc25b06b9e1c72cfe19335e046c",
+    "internal/storage/source_mount_darwin_test.go": "0819fff0b443e2fada6ecbba1e435f976ca6341130e8f972a8d548ea855ce648",
+    "internal/storage/source_mount_linux.go": "532bad02d03df0d6fc0f0339e2e99ca393e272392f8456c5a4ab0516e59a10f8"
+  },
+  "proof_successor": {
+    "database_relationship": {
+      "roots": 3,
+      "named_run_pass": 13,
+      "actual_names": [
+        "TestKubernetesSourceProofClosedRelationship",
+        "TestKubernetesSourceProofClosedRelationship/missing-parent",
+        "TestKubernetesSourceProofClosedRelationship/wrong-owner",
+        "TestKubernetesSourceProofClosedRelationship/obsolete-inspect-three",
+        "TestKubernetesSourceProofClosedRelationship/wrong-attempt",
+        "TestKubernetesSourceProofClosedRelationship/duplicate-parent",
+        "TestKubernetesSourceProofClosedRelationship/extra-consumer",
+        "TestKubernetesSourceProofClosedRelationship/unattached-written-parent",
+        "TestKubernetesSourceProofPartialAdmissionIsNotAdoption",
+        "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences",
+        "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/empty-partial-parent",
+        "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/one-foreign-reference",
+        "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/two-foreign-references"
+      ],
+      "raw_sha256": "15f80ef62b8b0862cfa0c226b5c20e9f8bd9f7e138f69ec757642e54279f81fa"
+    },
+    "partial_lifecycle": {
+      "roots": 1,
+      "named_run_pass": 3,
+      "actual_names": [
+        "TestKubernetesSourceStoppedProofLifecycleFixtures",
+        "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-active",
+        "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-terminal"
+      ],
+      "raw_sha256": "b799fa6cd8ecfb69e471acddd2854c09f56e81fc4cf9e9f56368bda48b1392df"
+    }
+  },
+  "original_metadata": {
+    "sha256": "3d509a5b2b38e244bf2cb49656ea7b0b1c884d56a48a0afc18a4bc1c9483f95e",
+    "basis": "Recovered original app command metadata, independently read by coordinator and inspected here.",
+    "outcomes": {
+      "historical": {
+        "status": "completed",
+        "exit": 0,
+        "duration_ms": 12342
+      },
+      "linux07": {
+        "exit": 0,
+        "duration_ms": 59917
+      },
+      "vet07": {
+        "exit": 0,
+        "duration_ms": 89230
+      },
+      "vet08": {
+        "exit": 0,
+        "duration_ms": 9218
+      },
+      "vet09": {
+        "exit": 0,
+        "duration_ms": 8802
+      },
+      "native10vet": {
+        "exit": 0,
+        "duration_ms": 10448
+      },
+      "native10linux": {
+        "exit": 0,
+        "duration_ms": 19556
+      },
+      "native10build": {
+        "exit": 0,
+        "duration_ms": 33713
+      },
+      "native10race": {
+        "exit": 0,
+        "duration_ms": 32871
+      },
+      "proof11race": {
+        "exit": 0,
+        "duration_ms": 22191
+      },
+      "partial11race": {
+        "exit": 0,
+        "duration_ms": 32666
+      },
+      "proof11vet": {
+        "exit": 0,
+        "duration_ms": 46549
+      },
+      "broad07": {
+        "status": "failed",
+        "exit": 1,
+        "duration_ms": 96768
+      },
+      "helper07": {
+        "exit": 0,
+        "duration_ms": 77811
+      },
+      "proof08": {
+        "exit": 0,
+        "duration_ms": 29635
+      },
+      "io09": {
+        "exit": 0,
+        "duration_ms": 22504
+      }
+    }
+  },
+  "qualifications": [
+    "Preserves original broad07FAIL and earlier partial record;50/83is an assembled source-scoped runtime union, not one successful aggregate.",
+    "Proof11actual3roots13named database and1root3named partial lifecycle are independent successors; do not backdate proof acceptance.",
+    "No separate external child ownership receipts invented; individual ownership behavior rests on inspected source and actual passing causal assertions; original outer commands independently corroborated."
+  ]
+}

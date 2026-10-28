@@ -2420,8 +2420,8 @@ actual runtime/browser acceptance.
 The refreshed delivery inventory retains the unfinished public workflows in
 [the plan](PLAN.md#unfinished-work-survey). Integrated diagnostic and ownership
 foundations do not yet provide unified Kubernetes installation. The native
-source capability is being implemented separately from the preserved dashboard
-prototype and remains unconnected to public provider operations.
+source capability is integrated as an unused core separately from the preserved
+dashboard prototype and remains unconnected to public provider operations.
 
 Actual custom-name browser mutations expose a Host presentation defect: status
 refresh reconstructs its exact-ID disclosure with the default closed state.
@@ -2472,3 +2472,37 @@ conversion/Sparkline work. The latest retained thirty numeric and nineteen
 component paths, including both later lexical-cast corrections, are being
 composed on current upstream. The earlier failed and qualified native evidence
 retain their original source scope.
+
+
+## Kubernetes source capability core
+
+Integrated `47bafbd7` composes the reviewed source capability with configured
+Manager startup. `PrepareKubernetesSource` admits an original disk-zero transit
+owner (0.1 CPU, 128 MiB, five minutes) and an ordinary managed-storage parent
+(six minutes). Strict matching `ks1`/`kd1` operation/attempt/stage/size tuples
+bind the pair. Ordinary acquisition cannot manufacture the reserved shape.
+The pure tuple parser and database proof reject swapped, duplicate, missing or
+foreign relationships, including foreign references to an unattached parent.
+
+The held-directory factory checks original file and mount identity, records
+truthful content/allocation debt before exposing writes, and enforces one-shot
+purposes and cumulative byte limits. Shipment permits one bounded payload and
+three helper requests; inspection permits four helper requests, including the
+marker lookup. Close does not replenish these budgets. Source/parent End and
+Manager shutdown cancel original work before fallible ledger access and join
+outside bookkeeping locks. Native execution checks original authority before
+start and before granting work; signalability retires before the sole Wait.
+
+Finalization distinguishes original source closure, durable CPU/memory
+settlement and retained storage debt. Written storage may remain charged as
+`needs_attention`; unlink and descriptor closure do not prove physical
+reclamation. Restart inspection never reconstructs a native owner. Historical
+readers refuse attached source tuples and retain obligations in the scoped
+fixtures; terminal-source parent handoff remains untested. Generic storage
+cleanup is unchanged. [The current contract](KUBERNETES-SOURCE-PREPARATION.md)
+records budgets and supported boundaries.
+
+This core enables no installer/provider factory, public CLI or dashboard
+effects, connector, bootstrap, readiness or mesh enrollment. Those remain
+separate steps in unified onboarding. The latest read-only configured API was
+unavailable; earlier Node observations establish no current discovery success.

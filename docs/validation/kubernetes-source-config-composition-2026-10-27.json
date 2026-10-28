@@ -1,0 +1,537 @@
+{
+  "status": "PASS-scoped-composition",
+  "base": "5f85b7d20ed1d12e83fe8356e078a76d777e99e8",
+  "source_dependency": "bee560e63546a046a211bfda12a67318b8763738",
+  "source_files": {
+    "internal/database/proof.go": {
+      "sha256": "e62e78bc797df18702ddf84bfaee5772f30884be604132cdbdb7e7dadc3f62dc",
+      "bytes": 26536
+    },
+    "internal/database/proof_kubesource.go": {
+      "sha256": "cdfff2f4dd562221b21a3676782f7910c7bb566da056d37686867e781075d2c2",
+      "bytes": 1823
+    },
+    "internal/database/proof_kubesource_test.go": {
+      "sha256": "907ee6446426e8fac5d7e4022e059e10bf9b93ea106c610c725e3f1fed259373",
+      "bytes": 3733
+    },
+    "internal/kubeprovision/owned_exec.go": {
+      "sha256": "c7d99b1e0379ccfc14810229f9d31acd048688f2c38d2aa8694d19a1517d519e",
+      "bytes": 8171
+    },
+    "internal/kubeprovision/source_files.go": {
+      "sha256": "bb960d34d7f559e8e98d38d9d6b39bc31fc9c9386915edeb8570e933476419a2",
+      "bytes": 8538
+    },
+    "internal/kubeprovision/source_files_test.go": {
+      "sha256": "820f83c572f555f5a08073646630eaa801d10897bbc8446b8eab371324303514",
+      "bytes": 11453
+    },
+    "internal/kubesource/scope.go": {
+      "sha256": "740420081f3890ae9dfbd70c1a464ca94b48370aca45d8873419e47e99059ab8",
+      "bytes": 4975
+    },
+    "internal/kubesource/scope_test.go": {
+      "sha256": "a1f01f0cfc8848a995d6e3cd8381ea17c527c6bd13a8eb719d7a77a208b203d6",
+      "bytes": 2089
+    },
+    "internal/manager/kubernetes_source.go": {
+      "sha256": "42fbc85034a4642a05e78d6f53300ec60a5236c96c5a5a2501942201e9fd1cb0",
+      "bytes": 16225
+    },
+    "internal/manager/kubernetes_source_files.go": {
+      "sha256": "166fa94c699dd972d01ed3912f188db2864f7e7c35c12234652153ae9b26a037",
+      "bytes": 11268
+    },
+    "internal/manager/kubernetes_source_native_test.go": {
+      "sha256": "56789693eda0270bbbaf8bd5d7eaad2bf92b052a0622488bfe317370dc202c53",
+      "bytes": 3758
+    },
+    "internal/manager/kubernetes_source_recovery_test.go": {
+      "sha256": "e24fdce195a58eeef2879008a9595b958e0e2425caf263bc2fec3f02ada3240e",
+      "bytes": 6432
+    },
+    "internal/manager/kubernetes_source_test.go": {
+      "sha256": "e05ee54dedf18ee6e987eb3ee8533e2e6e02c8d7744534d202e054c4e8f02783",
+      "bytes": 17933
+    },
+    "internal/manager/manager.go": {
+      "sha256": "978d81b2f0f4820ff02c5f9475855dd6e198cdb6fe66c5e42e345a546c8473c4",
+      "bytes": 69970
+    },
+    "internal/manager/relay_transit.go": {
+      "sha256": "890bbaebce07d18309650b8ba062b661135cc9fa257fae34183d096044df3937",
+      "bytes": 12415
+    },
+    "internal/storage/source_directory.go": {
+      "sha256": "ab4e4c404a542e926e55791e5b646b9ac2bf3ae7420d46c31e2e2f596f058faa",
+      "bytes": 6290
+    },
+    "internal/storage/source_directory_test.go": {
+      "sha256": "90a99d5f261c06b70ca441ae9aa3c88f7cdb70a13d42bd27977d3da32a75eef3",
+      "bytes": 2164
+    },
+    "internal/storage/source_mount_darwin.go": {
+      "sha256": "e9749265bd528619607edc1ec244eb6c17c14bc25b06b9e1c72cfe19335e046c",
+      "bytes": 514
+    },
+    "internal/storage/source_mount_darwin_test.go": {
+      "sha256": "0819fff0b443e2fada6ecbba1e435f976ca6341130e8f972a8d548ea855ce648",
+      "bytes": 546
+    },
+    "internal/storage/source_mount_linux.go": {
+      "sha256": "532bad02d03df0d6fc0f0339e2e99ca393e272392f8456c5a4ab0516e59a10f8",
+      "bytes": 107
+    },
+    "internal/manager/kubernetes_source_configuration_test.go": {
+      "sha256": "06612c0bd1a87a23b5c57d8cc88a05f01b14fa0b8b9a53097cc7f93a835da90b",
+      "bytes": 3205
+    }
+  },
+  "unchanged_configuration_files": {
+    "internal/manager/daemon_config.go": "dc694bcaf3754e4a31994b2cf48583dce8a2a0b7a86543977345b55d59966198",
+    "internal/manager/daemon_config_test.go": "efb6a8155af43801bc5e35d7ca6d2bd5a8bf61d2b52861e1886de2b17f6a073d",
+    "internal/daemonconfig/config.go": "93081ad45c8facad89149b2d6a2bd8087da4f175f234dba83239703eae5ddeed",
+    "go.mod": "9b84c88d83cfffd848c3c156820e74646f444a388f18f1803ab2b1d31f1ca937",
+    "go.sum": "a45e834d977cd2eabc397e674c446a7e1ff856f9f0ca3b1b1f57ac4cf97aa4b8"
+  },
+  "storage_go_sha256": "68a62313c3008296062a321f7529d22e8e008db25cca5a88ac8c8fa65b0a522f",
+  "scope": "Unused native Kubernetes source core composed with configured Manager startup; public provider/installer/connector remains unwired.",
+  "test_result": {
+    "roots": 36,
+    "named_nodes": 68,
+    "pass": 68,
+    "fail": 0,
+    "skip": 0,
+    "roster": [
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/duplicate-parent",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/extra-consumer",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/missing-parent",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/obsolete-inspect-three",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/unattached-written-parent",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/wrong-attempt",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofClosedRelationship/wrong-owner",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofPartialAdmissionIsNotAdoption",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/empty-partial-parent",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/one-foreign-reference",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "name": "TestKubernetesSourceProofUnattachedParentRejectsForeignReferences/two-foreign-references",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestOwnedExecRealChildCancellation",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestOwnedExecRealChildReceipt",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestOwnedExecRealChildShipsHeldFile",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallAuthorityAtStartAndHello",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallAuthorityAtStartAndHello/cancel-during-verification",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallAuthorityAtStartAndHello/withdraw-before-grant",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallAuthorityAtStartAndHello/withdraw-before-start",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallInspectionWrapperUsesFourNativeRequests",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallNativeLoanReceiptIsOriginalAndOneShot",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubeprovision",
+        "name": "TestSourceCallPanicAfterWaitNeverSignalsReapedProcess",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubesource",
+        "name": "TestClosedScopeAndCumulativeBudgets",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubesource",
+        "name": "TestPairRejectsSwapsAndScopeDrift",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestConfiguredKubernetesSourceEndJoinsAndRetainsStorageDebt",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestDaemonConfigurationJournalInitialLegacyAndUnchangedStartup",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestDaemonConfigurationLowerCeilingPreservesLeaseTermsAndDeficit",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCrashWriter",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCreateRechecksAfterGate",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCreateRechecksAfterGate/cancel",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCreateRechecksAfterGate/directory-replaced",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCreateRechecksAfterGate/elapsed-expiry",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCreateRechecksAfterGate/parent-end",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceCreateRechecksAfterGate/source-end",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceDebtPairAndCumulativePayload",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceEndCancelsBeforeFailedRead",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceEndCancelsBeforeFailedRead/parent",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceEndCancelsBeforeFailedRead/source",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceFailedUnlinkRetainsLinkedEntryAndPair",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceLostDebtAckDoesNotExposeOrUnlink",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceManagerCloseCancelsThenJoinsOutsideLocks",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceNativeCloseFailureIsSticky",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceNativeClosureSeparateFromSQLSettlement",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceNativeFourRequestsAndFifthRefusal",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/blob",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/column-key-mismatch",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/oversize",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/row-bound",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/unknown-state",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceOperationScanRefusesCorruptOrBoundedHistory/wrong-role",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourcePartialAdmissionNeverWaitsUnpublishedCaller",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceQueuedIORechecksAfterGate",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceRequestLaneReservedBeforeOpen",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceReservedRequestsRequirePrivatePermit",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceRestartCannotAdoptOrReleaseUnknownPair",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceSameOperationAdmissionIsExclusive",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/active",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/ending",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/needs_attention",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-active",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/partial-terminal",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourceStoppedProofLifecycleFixtures/terminal",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/storage",
+        "name": "TestSourceDirectoryOriginalFDAndUnlink",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/storage",
+        "name": "TestSourceDirectoryRejectsReplacementWithoutAdoption",
+        "result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/storage",
+        "name": "TestSourceMountUsesReportedMountpoint",
+        "result": "pass"
+      }
+    ]
+  },
+  "phases": [
+    {
+      "name": "go-version",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "70f94d37a097ca424ec1a1c0d5a81288ec60b4ceeae67edc3a75aeb6ce378600",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fresh-helper",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "helper-buildinfo",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "40a4d22bbd911e6b62d8b0a865b6619e22efa5ad6dd4b6ff6c8d5b5cb3da882a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-race",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "1d5e69ad69c1613142404484d49d4523d358c7f70347b8063710a358874ea3ae",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "targeted-vet",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "linux-manager-compile",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "go_version": "go1.27.3",
+  "native_platform": "darwin/arm64",
+  "helper_CGO_ENABLED": "0",
+  "helper_sha256": "9d1c6d5c2b46ccafaee12b7ea505a9e0a0936453c8fcb7f41567870f04a4b1d5",
+  "linux_arm64_manager_compile_only_sha256": "e938fdd8e7dd51a27c4416f6853678d93e335c63209a41355dd9a67de3c70d35",
+  "selected_input_count": 2706,
+  "final_selected_inputs_unchanged": true,
+  "nineteen_dependency_files_exact": [
+    "internal/database/proof.go",
+    "internal/database/proof_kubesource.go",
+    "internal/database/proof_kubesource_test.go",
+    "internal/kubeprovision/owned_exec.go",
+    "internal/kubeprovision/source_files.go",
+    "internal/kubeprovision/source_files_test.go",
+    "internal/kubesource/scope.go",
+    "internal/kubesource/scope_test.go",
+    "internal/manager/kubernetes_source.go",
+    "internal/manager/kubernetes_source_files.go",
+    "internal/manager/kubernetes_source_native_test.go",
+    "internal/manager/kubernetes_source_recovery_test.go",
+    "internal/manager/kubernetes_source_test.go",
+    "internal/manager/relay_transit.go",
+    "internal/storage/source_directory.go",
+    "internal/storage/source_directory_test.go",
+    "internal/storage/source_mount_darwin.go",
+    "internal/storage/source_mount_darwin_test.go",
+    "internal/storage/source_mount_linux.go"
+  ],
+  "limits": [
+    "Controlled CPU observations establish lifecycle/accounting behavior, not fresh physical CPU headroom or physical sleep.",
+    "Linux ARM64 result is compilation only; native race cohort ran on Darwin ARM64.",
+    "Existing normal module/build caches were reused; no hermetic OS or transitive tool reconstruction claim.",
+    "Original command waits and helper contract do not establish all possible descendant closure.",
+    "Earlier failed broad proof/helper cohorts retain their original failed/skipped status.",
+    "No public installer, provider, connector, cluster, browser, or GUI activation acceptance."
+  ],
+  "seal_sha256": "aabc7806e3626f3b623db9c45880041e27b6689c5effd3bf7a4355bc275d510e",
+  "result_sha256": "f5af5df971a0758b84cfd9e45ffe418e8c0e6a14fe1fdcaf7fc65ef93c3e65f7",
+  "test_roster_sha256": "9b16443b31f2e352818c7f4e088bd6aed5777be0e703e8bd618327ff28ee71bb",
+  "duration_seconds": 128.468795708,
+  "commit": "47bafbd7e195007c05fa442e0a44a0c91faf829d",
+  "tree": "f60753771052a1660d9fd1e80ddf79a28fc94500",
+  "commit_source_matches_tested_files": true,
+  "committed_path_count": 21
+}
