@@ -7384,3 +7384,19 @@ format-guard implementation differs only by its later module import path. The
 accepted historical 31-root / 132-name normal and race results, vet and exact
 old-guard negatives retain their original source/platform scope. This readback
 adds no new runtime, fleet rollout, format-2 or paired-factory acceptance.
+
+### Retained settlement recovery and failed SSH successor
+
+Independent audit accepts recovery v3: 11 actual roots / 84 named race cases,
+zero failures/skips, with targeted Manager vet and both owned child returns
+zero. All 2,750 source inputs and 2,772 selected source/control pins remain
+unchanged. This is affected Darwin evidence, not a replay or promotion of the
+old failed 48-root composition.
+
+The separate SSH v1 race attempt executes all 15 roots / 94 names: 93 pass,
+one fails, none skip. The failure is
+`TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin`; subsequent vet is
+unrun. Raw run/status sets agree, captured before/after source records agree,
+and the failure remains failed. The next source-only correction retains a
+review finding for legitimate End/Close ACK ordering. No current composed
+acceptance follows. [Normalized evidence](validation/retained-settlement-recovery-2026-10-28.json).
