@@ -255,7 +255,38 @@ func TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue(t 
 	m.mu.Lock()
 	persistStagedPressureState(t, m, state)
 	m.mu.Unlock()
-	reserved, err := m.reservePressureNativeControl(pause, p)
+	t.Run("busy-owner-refuses-before-reservation", func(t *testing.T) {
+		// Use the existing test-only mutex seam to make the nonblocking
+		// original-owner refusal deterministic; it must precede any effect.
+		ownerMu := (*sync.Mutex)(unsafe.Pointer(reflect.ValueOf(candidate.job.childOwner).Elem().FieldByName("mu").UnsafeAddr()))
+		var blocked pressureNativeCandidate
+		var blockedErr error
+		func() {
+			ownerMu.Lock()
+			defer ownerMu.Unlock()
+			blocked, blockedErr = m.reservePressureNativeControl(pause, p)
+		}()
+		m.mu.Lock()
+		active := candidate.job.pressureEffectActive
+		m.mu.Unlock()
+		if !errors.Is(blockedErr, errPressureControlRefused) || blocked.job != nil || active || candidate.job.childOwner.Paused() {
+			t.Fatal("busy original owner acquired a reservation or effect", blockedErr)
+		}
+	})
+	// The sole original Wait polls under Owner.mu. Its legitimate transient
+	// contention can refuse this pre-effect reservation. Retry only that typed
+	// refusal: every attempt repeats the unchanged durable/current/elapsed
+	// guards, and none has reserved a slot or sent STOP/CONT. Native apply
+	// calls and errors below are never retried.
+	var reserved pressureNativeCandidate
+	reserveUntil := time.Now().Add(time.Second)
+	for {
+		reserved, err = m.reservePressureNativeControl(pause, p)
+		if !errors.Is(err, errPressureControlRefused) || !time.Now().Before(reserveUntil) {
+			break
+		}
+		time.Sleep(time.Millisecond)
+	}
 	if err != nil || reserved.job != candidate.job {
 		t.Fatal("fixture could not reserve exact current pressure effect", err)
 	}
