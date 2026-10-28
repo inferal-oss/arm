@@ -36,6 +36,7 @@ type NativeExecCall struct {
 	afterWait       func() // private causal fixture after original native Wait
 	mu              sync.Mutex
 	current         func(context.Context) error
+	providerCurrent func(context.Context) error // optional captured original provider journal guard
 	original        *OwnedExec
 	pod             Pod
 	kind            reviewedExecKind
@@ -95,11 +96,33 @@ func (o *OwnedExec) NewSourceCall(pod Pod, kind string) (*NativeExecCall, error)
 	}
 	return &NativeExecCall{original: clone, pod: pod, kind: k, command: command, nonce: nonce, encoded: encoded, done: make(chan struct{})}, nil
 }
+
+// NewSourceCallForExec accepts only the exact already-reviewed provider call
+// map. The boolean describes payload presence for classification, not resource
+// admission. The factory still requires its concrete original payload loan.
+func (o *OwnedExec) NewSourceCallForExec(pod Pod, command []string, hasPayload bool) (*NativeExecCall, error) {
+	if o == nil {
+		return nil, fmt.Errorf("original fixed helper unavailable")
+	}
+	var presence io.Reader
+	if hasPayload {
+		presence = bytes.NewReader(nil)
+	}
+	kind, err := classifyReviewedExec(o.Plan, pod, command, presence)
+	if err != nil {
+		return nil, err
+	}
+	return o.NewSourceCall(pod, string(kind))
+}
 func (c *NativeExecCall) Scope() (key string, size int64, kind string, err error) {
 	if c == nil || c.original == nil || c.done == nil {
 		return "", 0, "", fmt.Errorf("original fixed call required")
 	}
-	return c.original.Plan.Review.Key, c.original.Plan.Review.BinaryBytes, string(c.kind), nil
+	purpose := string(c.kind)
+	if apiSourceKind(c.kind) {
+		purpose = "mesh_bootstrap"
+	}
+	return c.original.Plan.Review.Key, c.original.Plan.Review.BinaryBytes, purpose, nil
 }
 func (c *NativeExecCall) WriteRequest(w io.Writer) error {
 	if _, _, _, err := c.Scope(); err != nil {
@@ -274,10 +297,19 @@ func (c *NativeExecCall) checkCurrent(ctx context.Context) error {
 	}
 	c.mu.Lock()
 	check := c.current
+	providerCheck := c.providerCurrent
 	cancelled := c.cancelled
 	c.mu.Unlock()
 	if cancelled || check == nil {
 		return context.Canceled
+	}
+	// The provider guard can wait on journal I/O. Complete it BEFORE the
+	// final native lease sample: a still-live Go context does not establish
+	// suspend-inclusive source authority after that potentially blocking work.
+	if providerCheck != nil {
+		if err := providerCheck(ctx); err != nil {
+			return err
+		}
 	}
 	if err := check(ctx); err != nil {
 		return err

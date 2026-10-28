@@ -101,6 +101,17 @@ func (h *RelayTransit) CheckActive(ctx context.Context) error {
 	m := h.manager
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return h.checkActiveLocked(ctx)
+}
+
+// checkActiveLocked shares the exact original-owner check with private source
+// construction, allowing its final check after parent I/O without unlocking
+// between tuple checks. The caller holds Manager.mu; no native close occurs.
+func (h *RelayTransit) checkActiveLocked(ctx context.Context) error {
+	if h == nil || h.manager == nil || ctx == nil || ctx.Err() != nil {
+		return model.Err("lease_inactive", "live original relay hold required")
+	}
+	m := h.manager
 	l, err := m.get(h.id)
 	if err != nil || m.closing || h.ctx.Err() != nil || h.settled || h.recoveryReason != "" || m.relayTransits[h.id] != h || l.ID != h.id || l.PID != 0 || l.Process != nil || l.State != "active" || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Clock, h.result.Clock) || !reflect.DeepEqual(l.Expires, h.result.Expires) || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !reflect.DeepEqual(l.Request, h.result.Request) || !m.leaseLive(l) {
 		return model.Err("lease_inactive", "elapsed original relay entitlement unavailable")

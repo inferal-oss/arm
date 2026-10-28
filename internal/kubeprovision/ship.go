@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 // ExecAPI is the client-go streaming adapter used for one fixed payload
@@ -118,6 +119,12 @@ func (p Provider) LookupBinary(ctx context.Context, key string, transport ExecAP
 // intent. A lost stream or ACK remains unknown; calls with the original key do
 // read-only lookup and never send payload bytes again.
 func (p Provider) ShipBinary(ctx context.Context, key string, payload io.Reader, transport ExecAPI) (Record, error) {
+	return p.shipBinary(ctx, key, payload, transport, func(ctx context.Context, source io.Reader, size int64, digest string) (HeldSourceFile, error) {
+		return spoolBinary(ctx, source, size, digest)
+	})
+}
+
+func (p Provider) shipBinary(ctx context.Context, key string, payload io.Reader, transport ExecAPI, spool func(context.Context, io.Reader, int64, string) (HeldSourceFile, error)) (record Record, resultErr error) {
 	if payload == nil || transport == nil {
 		return Record{}, errors.New("binary and Kubernetes exec transport required")
 	}
@@ -141,31 +148,75 @@ func (p Provider) ShipBinary(ctx context.Context, key string, payload io.Reader,
 	if r.BinaryPhase != "" {
 		return p.ReconcileBinary(ctx, key, transport)
 	}
-	spooled, err := spoolBinary(ctx, payload, r.Plan.Review.BinaryBytes, r.Plan.Review.BinarySHA256)
+	var preparation *sourceExecGuard
+	if managed, ok := transport.(*ManagedSourceExec); ok {
+		if managed.native == nil || managed.native.Plan.SHA256 != r.Plan.SHA256 {
+			return r, ErrIdentity
+		}
+		journal, ok := p.Journal.(sourcePreparationJournal)
+		if !ok {
+			return r, errors.New("durable original Kubernetes source ownership required")
+		}
+		preparation, err = journal.beginSourcePreparation(ctx, key, r.Plan.SHA256, pod.UID, r.Revision)
+		if err != nil {
+			return r, err
+		}
+		transport = &managedSourceOperation{source: managed, guard: preparation}
+		defer func() {
+			panicked := recover()
+			unknown := panicked != nil || errors.Is(resultErr, ErrHelperCleanupUnknown)
+			if closeErr := preparation.finish(unknown); closeErr != nil {
+				resultErr = errors.Join(resultErr, ErrHelperCleanupUnknown, closeErr)
+				record.SourceCleanupUnknown = true
+			} else {
+				record.SourceCleanupUnknown = false
+			}
+			if panicked != nil {
+				panic(panicked)
+			}
+		}()
+	}
+	update := func(prior Record, change func(*Record) error) (Record, error) {
+		if preparation != nil {
+			return preparation.advance(ctx, p.Journal, prior, change)
+		}
+		return p.updateSourceStage(ctx, key, prior, change)
+	}
+	spooled, err := spool(ctx, payload, r.Plan.Review.BinaryBytes, r.Plan.Review.BinarySHA256)
 	if err != nil {
 		return r, err
 	}
-	defer spooled.Close()
+	var closeOnce sync.Once
+	var closeErr error
+	closeSpool := func() error {
+		closeOnce.Do(func() { closeErr = spooled.Close() })
+		return closeErr
+	}
+	defer func() {
+		if err := closeSpool(); err != nil {
+			resultErr = errors.Join(resultErr, ErrHelperCleanupUnknown, err)
+		}
+	}()
 	if fresh, err := p.ExactPod(ctx, key); err != nil || fresh.UID != pod.UID {
 		if err != nil {
 			return r, err
 		}
 		return r, ErrIdentity
 	}
-	r, err = p.updateSourceStage(ctx, key, r, func(next *Record) error { next.BinaryPhase = "ship_attempted"; return nil })
+	r, err = update(r, func(next *Record) error { next.BinaryPhase = "ship_attempted"; return nil })
 	if err != nil {
 		return r, err
 	}
 	output, stderr := newBoundedOutput(4096), newBoundedOutput(4096)
 	args := []string{"/bin/sh", "-ec", shipScript, "arm-ship", key, r.Plan.Review.BinarySHA256, strconv.FormatInt(r.Plan.Review.BinaryBytes, 10), pod.UID}
-	streamErr := p.execWithSourceCleanup(ctx, key, transport, pod, args, spooled, output, stderr, spooled.Close)
+	streamErr := p.execWithSourceCleanup(ctx, key, transport, pod, args, spooled, output, stderr, closeSpool)
 	if streamErr != nil || output.Len() != 0 || stderr.Len() != 0 || output.Overflow() || stderr.Overflow() {
 		return unknownExecRecord(r, streamErr)
 	}
 	if _, err := p.LookupBinary(ctx, key, transport); err != nil {
 		return unknownExecRecord(r, err)
 	}
-	return p.updateSourceStage(ctx, key, r, func(next *Record) error {
+	return update(r, func(next *Record) error {
 		if next.BinaryPhase != "ship_attempted" {
 			return ErrJournalConflict
 		}

@@ -32,6 +32,20 @@ type sourceExecGuard struct {
 }
 
 func (j FileJournal) beginSourceExec(ctx context.Context, key, plan, pod string) (*sourceExecGuard, error) {
+	return j.beginSourceOwner(ctx, key, plan, pod, 0, false)
+}
+
+// Preparation binds the target snapshot before any factory allocation or
+// caller read. A concurrent target attempt or even a same-value revision
+// change must be inspected again, not discovered only after reading payload.
+func (j FileJournal) beginSourcePreparation(ctx context.Context, key, plan, pod string, revision uint64) (*sourceExecGuard, error) {
+	if revision == 0 {
+		return nil, ErrJournalConflict
+	}
+	return j.beginSourceOwner(ctx, key, plan, pod, revision, true)
+}
+
+func (j FileJournal) beginSourceOwner(ctx context.Context, key, plan, pod string, revision uint64, preparation bool) (*sourceExecGuard, error) {
 	var result *sourceExecGuard
 	err := j.withLock(ctx, func(dirfd int) error {
 		d, ok, err := j.readDiskLocked(dirfd, key)
@@ -43,6 +57,9 @@ func (j FileJournal) beginSourceExec(ctx context.Context, key, plan, pod string)
 		}
 		if d.SourceCleanupUnknown {
 			return ErrSourceOwnerUnavailable
+		}
+		if preparation && (d.Revision != revision || d.BinaryPhase != "") {
+			return ErrJournalConflict
 		}
 		var nonce [32]byte
 		if _, err := rand.Read(nonce[:]); err != nil {
@@ -58,6 +75,54 @@ func (j FileJournal) beginSourceExec(ctx context.Context, key, plan, pod string)
 		return nil
 	})
 	return result, err
+}
+
+func (g *sourceExecGuard) currentLocked(ctx context.Context) error {
+	if g.finished || ctx == nil || ctx.Err() != nil {
+		return ErrSourceOwnerUnavailable
+	}
+	return g.journal.withLock(ctx, func(dirfd int) error {
+		d, ok, err := g.journal.readDiskLocked(dirfd, g.key)
+		if err != nil {
+			return err
+		}
+		if !ok || !d.SourceCleanupUnknown || d.SourceOwner != g.owner || d.Plan.SHA256 != g.plan || d.Pod == nil || d.Pod.UID != g.pod || d.Revision != g.revision {
+			return ErrSourceOwnerUnavailable
+		}
+		return nil
+	})
+}
+
+func (g *sourceExecGuard) current(ctx context.Context) error {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	return g.currentLocked(ctx)
+}
+
+// advance is available only through this captured original, never public
+// Update. The current nonce is checked first; while g.mu is held this owner
+// cannot finish/rotate. Update's exact revision CAS and its private on-disk
+// envelope preserve that nonce across the target change. A refused/unknown
+// write never advances the cached revision or permits later positive finish.
+func (g *sourceExecGuard) advance(ctx context.Context, journal Journal, prior Record, change func(*Record) error) (Record, error) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	if prior.Plan.Review.Key != g.key || prior.Plan.SHA256 != g.plan || prior.Pod == nil || prior.Pod.UID != g.pod || prior.Revision != g.revision {
+		return prior, ErrSourceOwnerUnavailable
+	}
+	if err := g.currentLocked(ctx); err != nil {
+		return prior, err
+	}
+	next, err := journal.Update(ctx, g.key, g.revision, func(next *Record) error {
+		if !next.SourceCleanupUnknown || next.Plan.SHA256 != g.plan || next.Pod == nil || next.Pod.UID != g.pod || next.Revision != g.revision {
+			return ErrSourceOwnerUnavailable
+		}
+		return change(next)
+	})
+	if err == nil {
+		g.revision = next.Revision
+	}
+	return next, err
 }
 
 // Source ownership has its own nonce/CAS; target Revision is unchanged. That
@@ -94,6 +159,10 @@ type sourceExecJournal interface {
 	beginSourceExec(context.Context, string, string, string) (*sourceExecGuard, error)
 }
 
+type sourcePreparationJournal interface {
+	beginSourcePreparation(context.Context, string, string, string, uint64) (*sourceExecGuard, error)
+}
+
 // Retain only fixed source-ownership classes through the remote-output fence.
 // Credential/API/script errors continue to collapse into the generic outcome.
 func unknownExecResult(err error) error {
@@ -124,6 +193,19 @@ func (p Provider) execWithSourceCleanup(ctx context.Context, key string, transpo
 	if _, raw := transport.(*ClientGo); raw {
 		return errors.New("owned Kubernetes exec transport required")
 	}
+	if original, ok := transport.(*managedSourceOperation); ok {
+		if original.guard == nil || original.guard.key != key || original.guard.pod != pod.UID {
+			return ErrSourceOwnerUnavailable
+		}
+		// Preparation owns this same guard through the final payload close.
+		// Do not mint a nested owner or retire it between its fixed calls.
+		defer func() {
+			if cleanup != nil && cleanup() != nil {
+				err = ErrHelperCleanupUnknown
+			}
+		}()
+		return original.Exec(ctx, pod, args, input, out, stderr)
+	}
 	j, ok := p.Journal.(sourceExecJournal)
 	if !ok {
 		return errors.New("durable original Kubernetes source ownership required")
@@ -138,6 +220,9 @@ func (p Provider) execWithSourceCleanup(ctx context.Context, key string, transpo
 	g, err := j.beginSourceExec(ctx, key, r.Plan.SHA256, pod.UID)
 	if err != nil {
 		return err
+	}
+	if managed, ok := transport.(*ManagedSourceExec); ok {
+		transport = &managedSourceOperation{source: managed, guard: g}
 	}
 	returned := false
 	defer func() {

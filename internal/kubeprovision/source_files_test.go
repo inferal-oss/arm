@@ -163,12 +163,12 @@ type sourceMapExec struct {
 }
 
 func (a *sourceMapExec) Exec(ctx context.Context, pod Pod, args []string, _ io.Reader, out, stderr io.Writer) error {
-	kind := map[string]string{"arm-lookup": "lookup_binary", "arm-catalog-proof": "catalog_proof", "arm-start-lookup": "lookup_start_marker", "arm-runtime-proof": "runtime_proof"}[args[3]]
+	kind := map[string]string{"arm-lookup": "lookup_binary", "arm-catalog-proof": "catalog_proof", "arm-start": "start_marker", "arm-start-lookup": "lookup_start_marker", "arm-runtime-proof": "runtime_proof"}[args[3]]
 	if kind == "" {
 		return errors.New("unexpected effect in inspection map")
 	}
 	a.kinds = append(a.kinds, kind)
-	call, err := a.owned.NewSourceCall(pod, kind)
+	call, err := a.owned.NewSourceCallForExec(pod, args, false)
 	if err != nil {
 		return err
 	}
@@ -322,4 +322,66 @@ func sourceInspectionServer(t *testing.T, effect func(http.ResponseWriter, *http
 	}
 	t.Setenv("KUBECONFIG", path)
 	return plan, podFromAPI(object), server.Close
+}
+
+func TestSourceCallStartWrapperUsesThreeNativeRequests(t *testing.T) {
+	t.Setenv("ARM_KUBE_SOURCE_TEST_HELPER", "1")
+	var plan Plan
+	effect := func(w http.ResponseWriter, r *http.Request) {
+		command := r.URL.Query()["command"]
+		if len(command) < 4 {
+			t.Error("missing fixed command")
+			return
+		}
+		output := ""
+		switch command[3] {
+		case "arm-catalog-proof":
+			output = "ARM_CATALOG_VERIFIED " + plan.Review.CatalogSHA256 + "\n"
+		case "arm-start":
+		case "arm-start-lookup":
+			output = "ARM_START_MARKER_VERIFIED\n"
+		default:
+			t.Error("unexpected effect", command[3])
+			return
+		}
+		execServerEffect(t, output, nil, false)(w, r)
+	}
+	var pod Pod
+	var closeServer func()
+	plan, pod, closeServer = sourceInspectionServer(t, effect)
+	defer closeServer()
+	api, err := OpenReviewedContext(plan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	journal := FileJournal{Root: filepath.Join(t.TempDir(), "journal")}
+	if err = journal.Insert(t.Context(), Record{Plan: plan, Phase: PhasePreflight, Revision: 1}); err != nil {
+		t.Fatal(err)
+	}
+	r, err := journal.Update(t.Context(), plan.Review.Key, 1, func(r *Record) error { r.Phase = PhaseCreateAttempted; return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = journal.Update(t.Context(), plan.Review.Key, r.Revision, func(r *Record) error {
+		r.Phase = PhaseCreated
+		r.Pod = &pod
+		r.BinaryPhase = "binary_verified"
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	owned, err := NewOwnedExec(plan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	adapter := &sourceMapExec{t: t, owned: owned}
+	provider := Provider{API: api, Journal: journal}
+	result, err := provider.RequestStart(t.Context(), plan.Review.Key, adapter)
+	if err != nil || result.StartPhase != "marker_verified" {
+		t.Fatal(result, err)
+	}
+	if !reflect.DeepEqual(adapter.kinds, []string{"catalog_proof", "start_marker", "lookup_start_marker"}) {
+		t.Fatal("start exceeded its exact three-request map", adapter.kinds)
+	}
 }

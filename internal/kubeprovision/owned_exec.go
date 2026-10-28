@@ -81,9 +81,20 @@ func (o *OwnedExec) Exec(ctx context.Context, pod Pod, command []string, input i
 	if o == nil || o.image == "" {
 		return errors.New("owned Kubernetes exec helper unavailable")
 	}
-	kind, err := classifyReviewedExec(o.Plan, pod, command, input)
-	if err != nil {
-		return err
+	var kind reviewedExecKind
+	var err error
+	if o.sourceCall != nil && apiSourceKind(o.sourceCall.kind) {
+		// Only the package-private original API builder can create this call.
+		// Public Exec/NewSourceCall still accept only the existing Pod scripts.
+		if o.sourceCall.providerCurrent == nil || pod != (Pod{}) || command != nil || input != nil || o.Plan.Validate() != nil {
+			return ErrIdentity
+		}
+		kind = o.sourceCall.kind
+	} else {
+		kind, err = classifyReviewedExec(o.Plan, pod, command, input)
+		if err != nil {
+			return err
+		}
 	}
 	var payload *os.File
 	if kind == execShip {

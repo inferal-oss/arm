@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"getarm.org/internal/kubesource"
 	"getarm.org/internal/model"
 	"getarm.org/internal/ports"
 )
@@ -105,6 +106,9 @@ func (m *Manager) portParent(r model.Request, consumer string) (model.Lease, err
 	if err != nil {
 		return l, err
 	}
+	if kubesource.IsReserved(l.Request) {
+		return l, model.Err("ports_unavailable", "native source ports cannot be attached by ordinary work")
+	}
 	if l.Request.Kind != "ports" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseCovers(l, r.TTL) || len(l.Ports) == 0 || len(m.portSockets[l.ID]) != len(l.Ports) {
 		return l, model.Err("ports_unavailable", "parent ports must be active on this host/user, still supervised, and outlast the command's TTL")
 	}
@@ -156,6 +160,15 @@ func (m *Manager) activatePorts(l *model.Lease, cmd *exec.Cmd) error {
 // finishPorts only closes descriptors ARM owns, then probes exact bindings.
 // Occupancy is uncertainty about reclamation, never permission to kill a PID.
 func (m *Manager) finishPorts(l *model.Lease) {
+	if kubesource.IsReserved(l.Request) {
+		// Neither an ordinary End nor restart/probe can replace the original f
+		// socket/stream/helper close witnesses. Only its retained owner settles it.
+		l.State = "needs_attention"
+		l.Ended = nil
+		l.Failure = "Original Kubernetes forward port closure remains unproved"
+		return
+	}
+
 	ports.Close(m.portSockets[l.ID])
 	delete(m.portSockets, l.ID)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

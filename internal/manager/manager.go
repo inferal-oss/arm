@@ -94,6 +94,7 @@ type Manager struct {
 	kubernetesSourceAdmissions map[string]bool
 	sshBeforeFinalizer         func()                                  // private real-Wait ordering fixture; snapshotted under mu, called outside locks
 	sourceBeforeAdmission      func()                                  // private disposable causal fixture; runs outside locks
+	sourceBeforePortBind       func()                                  // private causal fixture, outside bookkeeping locks
 	kubernetesSources          map[string]*KubernetesSourcePreparation // original native source/parent cancellation only
 
 	leaseClockCheckpoint    leaseclock.Sample
@@ -1300,6 +1301,9 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		key = r.Key
 	}
 	if source != nil && !source.parent {
+		if e = ensureKubernetesSourceContractTx(tx, source.scope); e != nil {
+			return empty, e
+		}
 		if e = excludeSourceOperationTx(tx, source.scope); e != nil {
 			return empty, e
 		}
@@ -1359,7 +1363,10 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		delete(m.startClocks, l.ID)
 	}
 	if l.State == "provisioning" {
-		if len(r.Ports) > 0 {
+		if len(r.Ports) > 0 && source != nil && source.port {
+			// Durable original forward parent first; native bind happens outside
+			// Manager.mu under the captured source context, never generic ports.
+		} else if len(r.Ports) > 0 {
 			l, e = m.provisionPorts(l, run, ls)
 		} else if r.Kind == "storage" {
 			l, e = m.provisionStorage(l)
@@ -1442,6 +1449,9 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	defer m.traceNodeStop("end-return")
 	if source := m.kubernetesSources[id]; source != nil {
 		source.Cancel()
+		if source.scope.Stage == kubesource.Forward && source.port.ID == id {
+			return source.endForwardPortLocked(outcome)
+		}
 	} // BEFORE any failing ledger read
 	if hold := m.syncWorkers[id]; hold != nil {
 		hold.cancel()

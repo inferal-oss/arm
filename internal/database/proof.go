@@ -78,6 +78,7 @@ func rowJSON[T any](r proofRow, key string, required ...string) (T, error) {
 }
 
 type proofReader struct {
+	kubernetesSourceContract bool
 	customNamesRaw           *string
 	leaseReviewSchema        bool
 	home                     string
@@ -390,6 +391,11 @@ func (p *proofReader) metadata() error {
 			if e != nil || at.IsZero() {
 				return fmt.Errorf("invalid scheduler clock")
 			}
+		case kubesource.ContractKey:
+			if raw != kubesource.ContractValue {
+				return fmt.Errorf("unsupported Kubernetes source contract")
+			}
+			p.kubernetesSourceContract = true
 		case "shutdown":
 			var report model.ShutdownReport
 			if err = strictEvidence(raw, &report, "id", "actor", "phase", "started_at", "remaining"); err != nil {
@@ -517,8 +523,12 @@ func (p *proofReader) readLeases() error {
 			if r["run"] != nil {
 				return fmt.Errorf("source pair carries a run descriptor")
 			}
-			if _, _, err := kubesource.ValidateRole(l); err != nil {
+			scope, _, err := kubesource.ValidateRoleKind(l)
+			if err != nil {
 				return err
+			}
+			if scope.RequiresContract() && !p.kubernetesSourceContract {
+				return fmt.Errorf("new Kubernetes source role lacks its prior compatibility contract")
 			}
 		}
 		if l.Request.Kind == "relay-transit" && !sourcePairPurpose && (r["run"] != nil || l.PID != 0 || l.Process != nil || l.Request.Resources.CPU <= 0 || l.Request.Resources.Memory <= 0 || l.Request.Resources.Disk != 0 || l.Request.Queue || l.Request.StartDeadline != nil || l.Request.Profile != "" || l.Request.Agent != "" || l.Request.StorageLease != "" || l.Request.ServiceLease != "" || l.Request.PortLease != "" || len(l.Request.Ports) != 0 || len(l.Request.Pools) != 0 || l.Request.UsagePolicy != nil || l.Request.Peer != "" || l.Request.PeerCertificate != "" || l.Request.PeerGrantRevision != 0 || l.Request.OriginKey != "") {

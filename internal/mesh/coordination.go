@@ -1,6 +1,7 @@
 package mesh
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -9,10 +10,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
 
+	"getarm.org/internal/kubejournal"
 	"getarm.org/internal/local"
 	"getarm.org/internal/model"
 	"getarm.org/internal/nodestop"
@@ -21,30 +24,31 @@ import (
 // Coordination is durable operator workflow evidence, separate from peer trust.
 // Worker credentials and private review data never belong in browser projections.
 type Coordination struct {
-	ResumeFrom      string               `json:"resume_from,omitempty"`
-	ParentKey       string               `json:"parent_key,omitempty"`
-	ResolvedBy      string               `json:"resolved_by,omitempty"`
-	Schema          int                  `json:"schema"`
-	Key             string               `json:"key"`
-	Kind            string               `json:"kind"`
-	Digest          string               `json:"request_sha256"`
-	Request         json.RawMessage      `json:"request,omitempty"`
-	Actor           local.Identity       `json:"actor"`
-	Targets         []string             `json:"targets"`
-	Revision        int64                `json:"revision"`
-	Phase           string               `json:"phase"`
-	Updated         time.Time            `json:"updated_at"`
-	Worker          string               `json:"worker,omitempty"`
-	WorkerExpires   time.Time            `json:"worker_expires_at,omitempty"`
-	Review          json.RawMessage      `json:"review,omitempty"`
-	ReviewRevision  int64                `json:"review_revision"`
-	ReviewHash      string               `json:"review_sha256,omitempty"`
-	ReviewExpires   time.Time            `json:"review_expires_at,omitempty"`
-	CancelRequested bool                 `json:"cancel_requested"`
-	Approved        bool                 `json:"approved"`
-	Result          json.RawMessage      `json:"result,omitempty"`
-	Handoff         *CoordinationHandoff `json:"handoff,omitempty"`
-	Error           *model.Error         `json:"error,omitempty"`
+	KubernetesWorkflow *kubejournal.Record  `json:"kubernetes_workflow_v1,omitempty"`
+	ResumeFrom         string               `json:"resume_from,omitempty"`
+	ParentKey          string               `json:"parent_key,omitempty"`
+	ResolvedBy         string               `json:"resolved_by,omitempty"`
+	Schema             int                  `json:"schema"`
+	Key                string               `json:"key"`
+	Kind               string               `json:"kind"`
+	Digest             string               `json:"request_sha256"`
+	Request            json.RawMessage      `json:"request,omitempty"`
+	Actor              local.Identity       `json:"actor"`
+	Targets            []string             `json:"targets"`
+	Revision           int64                `json:"revision"`
+	Phase              string               `json:"phase"`
+	Updated            time.Time            `json:"updated_at"`
+	Worker             string               `json:"worker,omitempty"`
+	WorkerExpires      time.Time            `json:"worker_expires_at,omitempty"`
+	Review             json.RawMessage      `json:"review,omitempty"`
+	ReviewRevision     int64                `json:"review_revision"`
+	ReviewHash         string               `json:"review_sha256,omitempty"`
+	ReviewExpires      time.Time            `json:"review_expires_at,omitempty"`
+	CancelRequested    bool                 `json:"cancel_requested"`
+	Approved           bool                 `json:"approved"`
+	Result             json.RawMessage      `json:"result,omitempty"`
+	Handoff            *CoordinationHandoff `json:"handoff,omitempty"`
+	Error              *model.Error         `json:"error,omitempty"`
 }
 
 type CoordinationGuard struct {
@@ -78,6 +82,14 @@ func ReadCoordination(home, key string) (Coordination, bool, error) {
 	}
 	if op.Schema != 1 || op.Key != key || op.Revision < 1 || len(op.Targets) > 4 {
 		return op, false, fmt.Errorf("invalid operator coordination record")
+	}
+	if op.KubernetesWorkflow != nil || op.Kind == "kubernetes_install" || op.Kind == "kubernetes_connect" {
+		if e = kubejournal.Decode(raw, &op); e != nil {
+			return op, false, e
+		}
+	}
+	if e = validateKubernetesCoordination(op); e != nil {
+		return op, false, e
 	}
 	return op, true, nil
 }
@@ -117,6 +129,14 @@ func ListCoordinations(home string) ([]Coordination, error) {
 		if filepath.Base(expected) != entry.Name() {
 			return nil, fmt.Errorf("operator coordination identity mismatch")
 		}
+		if op.KubernetesWorkflow != nil || op.Kind == "kubernetes_install" || op.Kind == "kubernetes_connect" {
+			if e = kubejournal.Decode(raw, &op); e != nil {
+				return nil, e
+			}
+		}
+		if e = validateKubernetesCoordination(op); e != nil {
+			return nil, e
+		}
 		out = append(out, op)
 		if len(out) > 128 {
 			return nil, fmt.Errorf("operator coordination history exceeds bounded roster")
@@ -138,6 +158,29 @@ func targetOverlap(a, b []string) bool {
 	return false
 }
 func saveCoordination(home string, op Coordination) error {
+	if err := validateKubernetesCoordination(op); err != nil {
+		return err
+	}
+	if op.KubernetesWorkflow != nil {
+		// Check the complete encoded envelope that save writes, rather than
+		// only its nested record. The legacy writer's 1 MiB bound is wider than
+		// the closed Kubernetes reader and would otherwise ACK unreadable data.
+		if op.Schema != 1 || !ValidKey(op.Key) || op.Revision < 1 || len(op.Targets) > 4 {
+			return fmt.Errorf("invalid Kubernetes coordination envelope")
+		}
+		raw, err := json.MarshalIndent(op, "", "  ")
+		if err != nil {
+			return err
+		}
+		var decoded Coordination
+		if err = kubejournal.Decode(append(raw, '\n'), &decoded); err != nil {
+			return err
+		}
+		canonical, err := json.MarshalIndent(decoded, "", "  ")
+		if err != nil || !bytes.Equal(raw, canonical) {
+			return fmt.Errorf("Kubernetes coordination canonical round trip differs")
+		}
+	}
 	// Lifecycle writer creates/verifies this same private directory and bounds it.
 	p, e := coordinationPath(home, op.Key)
 	if e != nil {
@@ -163,8 +206,11 @@ func saveCoordination(home string, op Coordination) error {
 // Expired workers are deliberately unresolved: their remote mutation may still
 // have committed. A new worker never silently steals their target or retries it.
 func ClaimCoordination(home, key, kind, digest, target string) (*CoordinationGuard, error) {
+	return claimCoordination(home, key, kind, digest, target, nil)
+}
+func claimCoordination(home, key, kind, digest, target string, workflow *kubejournal.Record) (*CoordinationGuard, error) {
 	decoded, decodeErr := hex.DecodeString(digest)
-	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "reconnect" && kind != "disconnect" && kind != "provision" && kind != "stop" && kind != "uninstall") || len(digest) != 64 || target == "" || len(target) > 512 {
+	if !ValidKey(key) || decodeErr != nil || len(decoded) != 32 || (kind != "connect" && kind != "reconnect" && kind != "disconnect" && kind != "provision" && kind != "stop" && kind != "uninstall" && !(workflow != nil && (kind == "kubernetes_install" || kind == "kubernetes_connect"))) || len(digest) != 64 || target == "" || len(target) > 512 {
 		return nil, model.Err("invalid_request", "invalid operator coordination intent")
 	}
 	unlock, e := coordinationLock(home)
@@ -206,6 +252,10 @@ func ClaimCoordination(home, key, kind, digest, target string) (*CoordinationGua
 	worker := local.ID() + local.ID()
 	op := Coordination{Schema: 1, Key: key, Kind: kind, Digest: digest, Targets: []string{target}, Revision: 1, Phase: "preparing", Worker: worker, Actor: local.CurrentIdentity(), Updated: time.Now().UTC()}
 
+	if workflow != nil {
+		op.KubernetesWorkflow = workflow
+		op.Phase = workflow.Phase
+	}
 	op.WorkerExpires = op.Updated.Add(time.Minute)
 	if e = saveCoordination(home, op); e != nil {
 		return nil, e
@@ -230,8 +280,26 @@ func (g *CoordinationGuard) Change(fn func(*Coordination) error) error {
 	if !exists || op.Worker != g.worker || op.Revision != g.revision || !time.Now().Before(op.WorkerExpires) {
 		return model.Err("mesh_operation_changed", "operator worker lost its durable revision or deadline")
 	}
+	var priorWorkflow *kubejournal.Record
+	if op.KubernetesWorkflow != nil {
+		snapshot, err := op.KubernetesWorkflow.Snapshot()
+		if err != nil {
+			return err
+		}
+		priorWorkflow = &snapshot
+	}
 	if e = fn(&op); e != nil {
 		return e
+	}
+	if priorWorkflow != nil {
+		if op.KubernetesWorkflow == nil {
+			return fmt.Errorf("Kubernetes stage record cannot be removed")
+		}
+		if !reflect.DeepEqual(priorWorkflow, op.KubernetesWorkflow) {
+			if e = priorWorkflow.ValidateSuccessor(*op.KubernetesWorkflow); e != nil {
+				return e
+			}
+		}
 	}
 	op.Revision++
 	op.Updated = time.Now().UTC()
@@ -315,6 +383,9 @@ func DecideCoordination(home, key string, revision int64, hash string, approve b
 	if !exists {
 		return op, model.Err("not_found", "operator operation not found")
 	}
+	if op.KubernetesWorkflow != nil {
+		return op, model.Err("invalid_request", "Kubernetes decisions require an exact stage key and review")
+	}
 	if op.ReviewHash != hash || op.ReviewRevision != revision {
 		return op, model.Err("review_changed", "review identity changed")
 	}
@@ -358,6 +429,12 @@ func CancelCoordination(home, key string, revision int64) (Coordination, error) 
 	}
 	if !coordinationActive(op) {
 		return op, nil
+	}
+	if op.KubernetesWorkflow != nil {
+		if e = op.KubernetesWorkflow.Cancel(op.KubernetesWorkflow.Revision, time.Now().UTC()); e != nil {
+			return op, e
+		}
+		op.Phase = op.KubernetesWorkflow.Phase
 	}
 	op.CancelRequested = true
 	op.Revision++

@@ -112,6 +112,9 @@ func verifyHeldPayload(file *os.File, size int64, digest string) error {
 }
 
 func executeReviewedPod(ctx context.Context, request reviewedExecRequest, payload *os.File) reviewedExecResult {
+	if apiSourceKind(request.Kind) {
+		return executeReviewedAPI(ctx, request, payload != nil)
+	}
 	var result reviewedExecResult
 	failed := func(error) reviewedExecResult {
 		// REST statuses and credential-plugin errors may include secrets even
