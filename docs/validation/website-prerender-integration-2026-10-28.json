@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "source_commit": "76a9ed213da12d72e5718984f9803054a1311490",
+  "main_base": "c13e199ffcdaf449c305927176efddf24d53445d",
+  "owner_commits": [
+    "768ecdb09701578094477ac55a24442b409c6a0f",
+    "622acb34bbfb94632847fd6d2d9bc1ef81295eff"
+  ],
+  "integrated_commits": [
+    "adb8bd6",
+    "76a9ed2"
+  ],
+  "review": {
+    "result": "no blocking findings",
+    "validated_input_count": 23,
+    "source_manifest_sha256": "fe0908f6830bd9dc392879fa655ade66ce047277c08d4291b12535819126b06d",
+    "website_and_workflow_match_owner": true,
+    "embedded_app_go_module_and_backend_unchanged": true
+  },
+  "hosted_validation": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40664779322",
+    "event": "workflow_dispatch",
+    "source": "76a9ed213da12d72e5718984f9803054a1311490",
+    "result": "success",
+    "deployment": "skipped",
+    "platform": "ubuntu-24.04 x64",
+    "checks": [
+      "capture ownership and terminal geometry",
+      "locked dependency installation",
+      "typecheck",
+      "four gallery cases without skips",
+      "four screenshot-integrity cases without skips",
+      "fresh rebuilt embedded UI and five web/three terminal captures",
+      "four static pages, shared stylesheet, source overlays, WAT-only assets and notices",
+      "actual Chromium no-script and client takeover checks",
+      "artifact upload"
+    ],
+    "artifact": {
+      "id": 12805078716,
+      "name": "github-pages",
+      "reported_zip_sha256": "873b34784d163bc75ba42551697ff5bebe3b7c8d3e531ddb1acaa6f8ec76d685",
+      "source_metadata_verified": true,
+      "page_css_image_hashes_verified": true
+    }
+  },
+  "prerender": {
+    "pages": [
+      {
+        "file": "index.html",
+        "sha256": "80be43c5498f8ff22ed746b5431f688409ded4b123bd412211ef9d1650760dd9"
+      },
+      {
+        "file": "start/index.html",
+        "sha256": "091268f3c1d016cab27c6eeb164c45bbd0a39432522b9f7bcf39e13aadfd9205"
+      },
+      {
+        "file": "capabilities/index.html",
+        "sha256": "8252e7978d8f07028ab357ee653d66fc6c2948c6ea2fa62604cea722ec5c24c4"
+      },
+      {
+        "file": "docs/index.html",
+        "sha256": "66e44e1e4208d4ac7d6b376ced284ec20c4751eea20a2282a1de0752347bd14d"
+      }
+    ],
+    "stylesheet": {
+      "file": "semblance.css",
+      "sha256": "bbdd10390954c6e88b07e7881b05e87f9c6764765c9f761f530decec8248ba60"
+    }
+  },
+  "dashboard_capture": {
+    "source": "76a9ed213da12d72e5718984f9803054a1311490",
+    "binary_sha256": "0584b45ea737ce06ea2dba3ab1b55f624ef4dbaf4d343c5ea21531a41b48c93f",
+    "metadata_sha256": "c179e6b8716b2eeb3334861037896a7034ad0f8f501d96eb18479f0d2b1daaba",
+    "embedded_ui": {
+      "inputs_sha256": "2a75bf005f2e072a3ebdb098150dcde137065445197202827796c4b6b449b0cf",
+      "input_count": 610,
+      "engine_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "assets": [
+        {
+          "file": "LICENSES.txt",
+          "bytes": 140022,
+          "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f"
+        },
+        {
+          "file": "arm-wat-only-store-DpLv8E9I.mjs",
+          "bytes": 154,
+          "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de"
+        },
+        {
+          "file": "arm.mjs",
+          "bytes": 4300581,
+          "sha256": "2ae7aa5eccb1b27f6491555ec8f0acb37c2af1671a42d438da01eddef1503e37"
+        },
+        {
+          "file": "assets/wat-C2A9nalw.wasm",
+          "bytes": 102443,
+          "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea"
+        },
+        {
+          "file": "wat-2wrDwrzy.mjs",
+          "bytes": 62,
+          "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+        }
+      ]
+    },
+    "images": [
+      {
+        "file": "web-monitor.png",
+        "width": 1440,
+        "height": 1683,
+        "sha256": "84a46b8e3b47c2a991c52396adfe8b094dab733dae2b7f23b31896c162157e25"
+      },
+      {
+        "file": "web-resources.png",
+        "width": 1440,
+        "height": 1622,
+        "sha256": "2d2bfa4004bb676d7b1cfb14c80ef5dd6d80260adc1ab6400820083890ccca0c"
+      },
+      {
+        "file": "web-leases.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "98eddad01b0c066778ea0399b172b773554b5d61cfd8a9f6812fdca0a525ed1a"
+      },
+      {
+        "file": "web-activity.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "b376cb1101470072cb29a0ab8f1d7cd41041416cf0044de0d5b1c5c6e98cf43d"
+      },
+      {
+        "file": "web-host.png",
+        "width": 1440,
+        "height": 1370,
+        "sha256": "2125edf6e97f2233c0d1f2ba1d8665df07eaca9e01166ec1017533958da1798f"
+      },
+      {
+        "file": "terminal-monitor.png",
+        "width": 1212,
+        "height": 1312,
+        "sha256": "b025270925a5c1e753235eb5ab1df5b354d6e7b04bcbd5553f6c2c006bc82d59"
+      },
+      {
+        "file": "terminal.png",
+        "width": 1212,
+        "height": 1312,
+        "sha256": "260427b4c225a2c25b10182a6620cc32588e40bf72cb220c7f8219ea0cf44d5c"
+      },
+      {
+        "file": "terminal-leases.png",
+        "width": 1212,
+        "height": 1312,
+        "sha256": "bafd994cddf0bcbfaba32789e7b142e510000ff532601e945187c2dc8b993f7f"
+      }
+    ],
+    "png_verification": "All eight chunk CRCs, complete IDAT zlib streams, scanline byte/filter rosters and dimensions pass. Web Monitor and terminal Resources visually inspected.",
+    "current_composed_source_and_assets_match": true
+  },
+  "publication": {
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40665648686",
+    "event": "push",
+    "source": "76a9ed213da12d72e5718984f9803054a1311490",
+    "build": "success",
+    "deployment": "success",
+    "independent_public_origin_probe": false
+  },
+  "limits": [
+    "Prior root and prefix browser evidence retains its exact owner-source scope.",
+    "Hosted acceptance covers the existing website publish workflow and scoped dashboard captures, not the full ARM runtime suite.",
+    "No measured public first-paint or time-to-interactive improvement, DNS/HTTPS breadth or alternate-browser acceptance.",
+    "Substantial client transfer and JavaScript-dependent compact navigation/display/gallery remain."
+  ]
+}

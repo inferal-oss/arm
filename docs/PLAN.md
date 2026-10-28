@@ -29,7 +29,7 @@ retain their assignments and the source-specific gates recorded below.
 | Owner / branch | Source state | Dependencies and remaining gates |
 | --- | --- | --- |
 | Run-list presentation — `codex/run-list-polish` | Reviewed source `02300f2` and evidence `f131f76` integrated as `744a2f9`, `2f44cb2`, `f54676d`, `e91ec95`. | No blocking source findings. All 413 JavaScript tests, complete TUI race tests, TUI vet and native build pass on the identical composed tree. Source-bound responsive web/PTY evidence is verified; the capture window is released. Full Go suite and Linux runtime remain outside this acceptance. The owner's uncommitted plan is preserved. |
-| Website prerendering — `codex/website-prerender` | Candidate `768ecdb` from `02c7a1d`; final integration handoff pending. | Review the final handoff for the pinned SSR-capable dependency, four rendered sections, browser takeover, build/publish integrity and actual browser evidence. Review exact dependency and publish artifacts; preserve embedded application dependencies. |
+| Website prerendering — `codex/website-prerender` | Reviewed owner cut `768ecdb` / `622acb3` integrated as `adb8bd6` / `76a9ed2` on `c13e199`. | Independent review has no blocking findings; composed Linux Pages CI, eight fresh dashboard PNGs, SSR/provenance and Chromium checks pass. Main build and Pages deployment succeed. Owner branch/worktree remain clean and preserved. Public latency measurement and broader origin/browser acceptance remain outside scope. |
 | Storage performance pools — `codex/storage-performance-pools` | Uncommitted continuation from `02c7a1d`; retain sole implementation ownership. | Configured mount-point pools, native metadata, opt-in benchmarks, shared-capacity admission, CLI/web/TUI views, agent/Rust guidance and atomic configuration edits require focused commits and final-source review. Native macOS and Linux testing is authorized; implementation reports do not establish acceptance. |
 
 Run-list and storage both touch terminal presentation; integrate reviewed focused
@@ -110,13 +110,15 @@ cases, full root/prefix SSR/provenance builds, and actual Chromium no-script and
 takeover checks pass on the final source. The native Vite loader, explicit route
 key, canonical metadata and native-tool notice findings are fixed.
 
-[Scoped evidence](validation/website-prerender-2026-10-28.json) records source
-hashes and actual output receipts. Independent review, composed CI with fresh
-dashboard PNG capture, integration and live publication remain coordinator gates.
-No public performance measurement or local screenshot-decoding acceptance is
-claimed; the large client transfer and script-dependent compact/gallery controls
-remain. Both original browser/HTTP fixtures closed and the task's queue commands
-finished. No main merge or push is included in this branch.
+[Owner evidence](validation/website-prerender-2026-10-28.json) retains its exact
+source hashes, actual output receipts and earlier failures. Coordinator review
+accepts the focused cut as `adb8bd6` / `76a9ed2` on main `c13e199` with no blocking
+findings. [Composed hosted evidence](validation/website-prerender-integration-2026-10-28.json)
+records successful Linux Pages validation, fresh rebuilt dashboard captures,
+PNG stream/hash checks, SSR/provenance and actual Chromium checks. Main's existing
+Pages build and deployment also succeed. The clean owner branch/worktree is
+preserved. No public latency measurement or broader origin/browser acceptance is
+claimed; the large client transfer and script-dependent controls remain.
 
 ## Active portfolios
 

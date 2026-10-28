@@ -2676,4 +2676,6 @@ stylesheet and Go discovery checks for every section, followed by Chromium
 checks of the published files. Build receipts include page and stylesheet
 hashes. Static generation removes graph projection from first paint; it does not
 remove the client graph/engine transfer or establish a measured public load-time
-improvement. Live publication remains a separate integration gate.
+improvement. The composed source is published through the existing Pages
+workflow; scoped build, capture and publication evidence is recorded in
+[VALIDATION.md](VALIDATION.md).

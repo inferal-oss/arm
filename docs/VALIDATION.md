@@ -1,5 +1,38 @@
 # Validation record
 
+## Website SSR integration and hosted Pages acceptance — 2026-10-28
+
+Owner commits `768ecdb` and `622acb3` are independently reviewed and integrated
+as `adb8bd6` and `76a9ed2`, composing the accepted run-list main `c13e199`.
+All 23 runtime/build evidence inputs and their `fe0908f6` manifest match the
+composed tree. Website/workflow sources remain identical to the owner cut;
+embedded application, Go module and backend sources are unchanged. Review finds
+no remaining blocking findings.
+
+The [non-deploying composed Linux run](https://github.com/inferal-oss/arm/actions/runs/40664779322)
+passes on exact commit `76a9ed2`: capture ownership/geometry, locked installs,
+typecheck, four gallery cases and four screenshot-integrity cases without skips,
+fresh embedded UI rebuild and five web/three terminal captures, four-page SSR
+and source/provenance/notices checks, actual Chromium no-script/takeover tests,
+and artifact upload. Its deployment is skipped as intended. The uploaded Pages
+artifact binds all four page hashes, the shared stylesheet and eight dashboard
+PNGs to that source. Their recorded hashes match. All PNG chunk CRCs, complete
+IDAT decompression, scanline/filter rosters and dimensions pass; representative
+web and terminal images are visually inspected. Current embedded source and
+asset hashes exactly match the hosted capture. This closes the owner-local
+missing-PNG gap without reattributing earlier local evidence.
+
+The [main publication run](https://github.com/inferal-oss/arm/actions/runs/40665648686)
+then passes both build and Pages deployment on the same commit. Its configured
+base, fresh capture, publication integrity and Chromium gates succeed. The
+[normalized integration record](validation/website-prerender-integration-2026-10-28.json)
+retains technical source, artifact and image hashes and the public CI references;
+raw receipts/media remain outside version control. The owner worktree remains
+clean and preserved. This accepts the scoped Linux website workflow and Pages
+publication; it adds no full ARM suite, alternate-browser, independent public
+origin/DNS/HTTPS or measured public latency claim. The original root/prefix
+macOS evidence retains its recorded source scope and failures.
+
 ## Run-list main integration — 2026-10-28
 
 The four focused owner commits through `f131f76` are reviewed and integrated as
@@ -6746,5 +6779,6 @@ with an icon-prefixed label locator remain distinct from the complete final pass
 This is website-local evidence, not acceptance of the embedded framework update,
 Linux/hosted CI, live publication, DNS/HTTPS, or measured public first-paint and
 interactive latency. The client bundle remains substantial; compact navigation,
-display and gallery controls still require the client. Independent review and
-integration remain pending.
+display and gallery controls still require the client. Coordinator review,
+composed Linux capture and publication are recorded in the integration acceptance
+above.
