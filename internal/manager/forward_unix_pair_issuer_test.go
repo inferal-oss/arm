@@ -3,6 +3,7 @@ package manager
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -23,6 +24,12 @@ func newForwardUnixPairFixture(t *testing.T) (*Manager, *ForwardListener, *Forwa
 	if err != nil {
 		t.Fatal(err)
 	}
+	return newForwardUnixPairFixtureAt(t, root)
+}
+
+func newForwardUnixPairFixtureAt(t *testing.T, root string) (*Manager, *ForwardListener, *ForwardUnixChild, chan struct{}, chan struct{}) {
+	t.Helper()
+	var err error
 	home := filepath.Join(root, "arm")
 	if err = os.MkdirAll(home, 0700); err != nil {
 		t.Fatal(err)
@@ -284,6 +291,99 @@ func TestForwardUnixPairRecoveryRefusalPreservesLedger(t *testing.T) {
 			}
 		})
 	}
+}
+
+func snapshotForwardUnixPairLedger(t *testing.T, db *sql.DB) [3]string {
+	t.Helper()
+	queries := [...]string{
+		`SELECT COALESCE(json_group_array(json_array(source_id,storage_id,phase,source_key,storage_key,socket_name,disk_bytes,data)),'[]') FROM (SELECT * FROM forward_unix_pairs ORDER BY source_id)`,
+		`SELECT COALESCE(json_group_array(json_array(id,request_key,data,run)),'[]') FROM (SELECT * FROM leases ORDER BY id)`,
+		`SELECT COALESCE(json_group_array(json_array(sequence,type,entity,at,data)),'[]') FROM (SELECT * FROM events ORDER BY sequence)`,
+	}
+	var result [3]string
+	for i, query := range queries {
+		if err := db.QueryRow(query).Scan(&result[i]); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return result
+}
+
+func TestForwardUnixPairMixedIntentRefusesBeforeAnyPlannedWrite(t *testing.T) {
+	m, _, c1, joined1, childJoined1 := newForwardUnixPairFixture(t)
+	p1, err := c1.IssueStoragePair(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	joined2, childJoined2 := make(chan struct{}), make(chan struct{})
+	t.Cleanup(func() {
+		select {
+		case <-childJoined2:
+		default:
+			close(childJoined2)
+		}
+		select {
+		case <-joined2:
+		default:
+			close(joined2)
+		}
+	})
+	binding := model.ForwardSourceBinding{Workspace: strings.Repeat("a", 32), Target: strings.Repeat("b", 32), Service: "echo", GrantRevision: 1, Bind: "127.0.0.1:0", TokenSHA256: strings.Repeat("c", 64)}
+	h2, err := m.AcquireForwardListener(context.Background(), strings.Repeat("e", 32), "second original pair", binding, time.Minute, model.Resources{CPU: .01, Memory: 1 << 20}, joined2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c2, err := h2.IssueUnixChild(context.Background(), childJoined2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p2, err := c2.IssueStoragePair(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	planned, intentPair := p1, p2
+	if p1.source > p2.source {
+		planned, intentPair = p2, p1
+	}
+	intent := intentPair.data
+	intent.Phase, intent.Revision = "bind_intent", 2
+	intent.BindIntent = &forwardUnixBindIntent{Directory: intent.StorageArtifact, Allocated: 0, At: time.Now().UTC()}
+	raw, err := json.Marshal(intent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = m.db.Exec(`UPDATE forward_unix_pairs SET phase='bind_intent',data=? WHERE source_id=? AND phase='planned'`, string(raw), intentPair.source); err != nil {
+		t.Fatal(err)
+	}
+	// If recovery touches the earlier planned pair before rejecting the later
+	// intent, this trigger changes the returned error and makes the test fail.
+	if _, err = m.db.Exec(`CREATE TRIGGER forward_unix_test_planned_write BEFORE UPDATE ON forward_unix_pairs WHEN OLD.phase='planned' BEGIN SELECT RAISE(FAIL,'planned write attempted before native preflight'); END`); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _, _ = m.db.Exec(`DROP TRIGGER forward_unix_test_planned_write`) }()
+	before := snapshotForwardUnixPairLedger(t, m.db)
+	tx, err := m.db.BeginTx(context.Background(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := abortForwardUnixPlannedPairs(context.Background(), tx, m.home)
+	if err = tx.Rollback(); err != nil {
+		t.Fatal(err)
+	}
+	if errorCode(result) != "forward_unix_pair_unavailable" {
+		t.Fatalf("mixed native state reached planned write or survey: %v", result)
+	}
+	after := snapshotForwardUnixPairLedger(t, m.db)
+	if !reflect.DeepEqual(before, after) {
+		t.Fatal("mixed native refusal changed pair, lease or event ledger")
+	}
+	if planned.data.Phase != "planned" || intentPair.data.Phase != "planned" {
+		t.Fatal("test changed original in-process pair handles")
+	}
+	close(childJoined1)
+	close(joined1)
+	close(childJoined2)
+	close(joined2)
 }
 
 func TestForwardUnixPairStartupRefusesAlteredPlannedTuple(t *testing.T) {

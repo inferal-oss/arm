@@ -1,6 +1,6 @@
 # Unix source custody needed before native bind
 
-Status: contract for the next forwarding increment; no native Unix socket is bound by this increment. The Manager child in `internal/manager/forward_unix_child.go` carries process-local authority only. Ordinary TCP forwarding admission and its CPU/memory promise are unchanged.
+Status: target custody contract. The isolated private binder candidate can bind and close one original Unix socket; it exposes no public forwarding route or accept worker. Restart recovery for bind intent or bound sockets is not implemented. Ordinary TCP forwarding admission and its CPU/memory promise are unchanged.
 
 ## Charged parent and immutable pair
 
