@@ -57,7 +57,7 @@ var forwardUnixGuardResetSchema = []struct{ kind, name, table, ddl string }{
 	{"table", "forward_unix_pairs", "forward_unix_pairs", `CREATE TABLE forward_unix_pairs (
 	source_id TEXT PRIMARY KEY,
 	storage_id TEXT NOT NULL UNIQUE,
-	phase TEXT NOT NULL CHECK (phase IN ('planned','observed','bound','active','closing','uncertain','terminal')),
+	phase TEXT NOT NULL CHECK (phase IN ('planned','observed','bind_intent','bound','active','closing','uncertain','terminal')),
 	source_key TEXT NOT NULL,
 	storage_key TEXT NOT NULL,
 	socket_name TEXT NOT NULL,
@@ -65,18 +65,37 @@ var forwardUnixGuardResetSchema = []struct{ kind, name, table, ddl string }{
 	data TEXT NOT NULL CHECK (json_valid(data))
 )`},
 	{"trigger", "forward_unix_source_update_guard", "leases", `CREATE TRIGGER forward_unix_source_update_guard
-BEFORE UPDATE OF data ON leases
+BEFORE UPDATE ON leases
 WHEN CASE WHEN EXISTS (SELECT 1 FROM forward_unix_pairs p WHERE p.source_id=OLD.id AND p.phase IS NOT 'terminal')
-THEN (json_extract(NEW.data,'$.state') IS 'terminal'
+THEN (NEW.id IS NOT OLD.id
+     OR NEW.request_key IS NOT OLD.request_key
+     OR NEW.request_key IS NOT (SELECT source_key FROM forward_unix_pairs WHERE source_id=OLD.id)
+     OR json_extract(NEW.data,'$.id') IS NOT OLD.id
+     OR json_extract(NEW.data,'$.host') IS NULL
+     OR json_extract(NEW.data,'$.owner') IS NULL
+     OR json_extract(NEW.data,'$.host') IS NOT json_extract(OLD.data,'$.host')
+     OR json_extract(NEW.data,'$.owner') IS NOT json_extract(OLD.data,'$.owner')
+     OR (json_extract(NEW.data,'$.state') IS NOT 'active'
+         AND json_extract(NEW.data,'$.state') IS NOT 'provisioning'
+         AND json_extract(NEW.data,'$.state') IS NOT 'ending'
+         AND json_extract(NEW.data,'$.state') IS NOT 'needs_attention')
      OR json_extract(NEW.data,'$.request.storage_lease') IS NOT (SELECT storage_id FROM forward_unix_pairs WHERE source_id=OLD.id)
      OR json_extract(NEW.data,'$.request') IS NOT json_extract(OLD.data,'$.request')
      OR json_extract(NEW.data,'$.ports') IS NOT json_extract(OLD.data,'$.ports')) ELSE 0 END
 BEGIN SELECT RAISE(ABORT,'unfinished forward Unix source pair retains charge'); END`},
 	{"trigger", "forward_unix_storage_update_guard", "leases", `CREATE TRIGGER forward_unix_storage_update_guard
-BEFORE UPDATE OF data ON leases
+BEFORE UPDATE ON leases
 WHEN CASE WHEN EXISTS (SELECT 1 FROM forward_unix_pairs p WHERE p.storage_id=OLD.id AND p.phase IS NOT 'terminal')
-THEN (json_extract(NEW.data,'$.state') IS NOT 'active'
-     AND json_extract(NEW.data,'$.state') IS NOT 'needs_attention'
+THEN (NEW.id IS NOT OLD.id
+     OR NEW.request_key IS NOT OLD.request_key
+     OR NEW.request_key IS NOT (SELECT storage_key FROM forward_unix_pairs WHERE storage_id=OLD.id)
+     OR json_extract(NEW.data,'$.id') IS NOT OLD.id
+     OR json_extract(NEW.data,'$.host') IS NULL
+     OR json_extract(NEW.data,'$.owner') IS NULL
+     OR json_extract(NEW.data,'$.host') IS NOT json_extract(OLD.data,'$.host')
+     OR json_extract(NEW.data,'$.owner') IS NOT json_extract(OLD.data,'$.owner')
+     OR (json_extract(NEW.data,'$.state') IS NOT 'active'
+         AND json_extract(NEW.data,'$.state') IS NOT 'needs_attention')
      OR json_extract(NEW.data,'$.request') IS NOT json_extract(OLD.data,'$.request')
      OR json_extract(NEW.data,'$.artifact.identity') IS NOT json_extract(OLD.data,'$.artifact.identity')) ELSE 0 END
 BEGIN SELECT RAISE(ABORT,'unfinished forward Unix storage pair retains charge'); END`},
