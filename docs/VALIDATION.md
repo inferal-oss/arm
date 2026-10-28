@@ -6307,3 +6307,51 @@ and only documentation differs from the tested author commit.
 The earlier naming browser run remains failed. Fresh executable and actual
 Host-only open/refresh/explicit-close/rendered-ID acceptance are still pending;
 there is no justification to repeat the ten successful naming mutations.
+
+
+### Corrected Host native acceptance
+
+[The affected native gate](validation/host-disclosure-native-2026-10-27.json)
+passes on the fresh executable containing the exact `8451623` UI entry. Three
+actual sampled freshness age transitions preserve logical disclosure identity,
+state and focus; explicit close persists. Four later authoritative snapshots
+bound the observed UI cursors, and all 27 UI cursor samples are nondecreasing.
+Read-only refresh requires neither cursor growth nor simultaneous CLI/UI equality.
+Seven original owners join and retire authority with closed pipes; the listener
+refuses after shutdown, state clears, all selected pins remain unchanged and
+actual app entries corroborate the owned browser reset/close. Both actual
+open/closed rasters were inspected. Fixed-footer full-page overlap remains; no
+complete layout or physical DOM-object identity claim is made. The first
+strict-growth oracle failure remains failed; no naming mutations were repeated.
+
+### Local daemon configuration and composed startup
+
+[Exact guarded configuration evidence](validation/daemon-configuration-2026-10-27.json)
+accepts 25 roots/117 unique RUN=PASS nodes across five package passes on Darwin
+arm64, with no skips, failures or race diagnostics; server coverage is compilation
+only. Targeted vet passes. All fifteen reviewed source hashes match before and
+after execution and the integrated Git objects/modes. Malformed latest journal
+rows, file/flag precedence, actual fresh/recorded launch, changed-selection refusal,
+legacy healthy inspection and retained lease terms are covered within the
+recorded cases. Fixture child closure is supported by inspected source and
+passing original Wait/shutdown assertions; no separate external child receipts
+or universal production descendant closure are claimed.
+
+[Current composition](validation/configuration-host-composition-2026-10-27.json)
+separately passes two actual startup/mesh roots/four named nodes on `c74d1fd`,
+including changed-selection refusal and fresh/recorded startup. It does not
+repeat browser acceptance on that new backend. Device-full/unknown-commit fault
+injection, Linux execution, OS services, live reload and the broader operations
+portfolio remain unaccepted. Earlier failed and draft-source cohorts retain
+their original status.
+
+### Current-upstream Semblance targeted gates
+
+[Current source validation](validation/semblance-current-targeted-2026-10-27.json)
+accepts the corrected 67-case storage/guard/streaming roster, typecheck, 121
+integration cases and the final normal production build with two SSR workers.
+Required engine and layout prebuilds run; engine image hashes remain unchanged.
+The renderer reports 1,922 route renders, without a claim of that many distinct
+HTML files. Earlier test-oracle and linker-environment failures remain failed.
+The retained comparison/current unresolved-need assessment and publication
+remain separate; ARM's vendored engine is unchanged.

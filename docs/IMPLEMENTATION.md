@@ -2427,5 +2427,29 @@ The canonical identity and local name mutations are retained correctly, but
 that does not establish stable rendered disclosure behavior. The control lifecycle correction is integrated as `8451623`: summary and
 identity/disclosure handles persist, current values update in place, and a
 disposed view rebuilds fresh closed controls. Twelve targeted lifecycle checks
-and the exact fresh embedded bundle pass; actual Host-only browser acceptance
-remains pending. Naming storage and resolution semantics are unchanged.
+and the exact fresh embedded bundle pass. A later fresh-executable Host-only
+gate accepts three actual refresh witnesses and persistent explicit close.
+Naming storage and resolution semantics are unchanged.
+
+
+## Resolved local daemon configuration
+
+Integrated `c74d1fd` adds a strict private version-one TOML file for supported
+CPU, memory, disk and loopback-listen settings. `arm config check` and
+`arm config show` inspect desired settings and provenance without starting a
+backend or creating state. Defaults, the complete validated file and actually
+explicit startup flags have deterministic precedence. A settings fingerprint
+refuses a changed selection in the child before opening backend state.
+
+Startup records bounded typed ceiling-change events before capacity publication
+and recovery. Lowered limits preserve existing lease terms and charges and expose
+a deficit; legacy first use records an unknown prior baseline. Fresh mesh starts
+resolve the current file, while recorded successful launch policy is replayed
+exactly. Healthy existing endpoints remain inspectable with an invalid next-start
+file. [Configuration documentation](configuration.md) defines these boundaries.
+
+This is startup configuration, with no live reload, OS service/watchdog, broader
+provider/profile/headroom settings, retention/restore or Linux-runtime acceptance.
+The current configuration/Host composition has scoped actual startup checks;
+Host browser acceptance remains tied to its unchanged reviewed entry and the
+separately built pre-configuration executable.

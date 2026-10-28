@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "status": "ACCEPT_GUARDED_SOURCE_AND_SCOPED_NATIVE_VALIDATION",
+  "source": {
+    "base": "be49ea327c54bc519a636aac62496109aac8aaad",
+    "feature_commit": "145bbea",
+    "owned_paths": 15,
+    "mode": "100644 on all15, verified by integration reviewer",
+    "source_manifest_sha256": "9665d8d575a287af7de718c3dd56c3eea79ad9e975c72b2ce748e79ae334a0d5",
+    "before_after_maps_equal_reviewed_manifest": true,
+    "owned_sha256": {
+      "docs/configuration.md": "e898961d7ab89af8589cf7d0018f77c1abb7e9701f7410ee62dca0af879519f5",
+      "internal/cli/agents_guide.go": "422e74b98f390da6cc7237f72a43278ddb4390f38d08432ed7a4a4e4e7642c68",
+      "internal/cli/backend_ensure.go": "6418ff3f4ffd96a6e58d7f686c4f9f711960ce2011611e48d5945f4d75cc0797",
+      "internal/cli/cli.go": "548901244c7ce884d970b9347f8595231d05d81989fa02782a7b092b2cf193cc",
+      "internal/cli/config.go": "0d8bb224a8f13de7821578ba8b28116566486403f09992ebef7a68f053729834",
+      "internal/cli/config_mesh_test.go": "3f3baf87a1b6d87ac6377bcd7d5cda089327e0482f136e74c26bfd914b81baa7",
+      "internal/cli/config_test.go": "27b101ab6a2480bf5cbcdd1fc16e0fbbd65a1cb6ec0387d04389d7ca54c94057",
+      "internal/cli/help.go": "87ec669035d15ffd646c6e49b79bdc90127d30b98afe597c1615f3b6108fff2c",
+      "internal/daemonconfig/config.go": "93081ad45c8facad89149b2d6a2bd8087da4f175f234dba83239703eae5ddeed",
+      "internal/daemonconfig/config_test.go": "4cf57a957beb53bcd97980541ff05e084a22543bdfde1f6eb042d4528f04ef18",
+      "internal/database/proof_daemon_config_test.go": "e4252887915460e95541308b08ab4a4a1276ff5793710ddf8c13e2b06b9d0eb8",
+      "internal/manager/daemon_config.go": "dc694bcaf3754e4a31994b2cf48583dce8a2a0b7a86543977345b55d59966198",
+      "internal/manager/daemon_config_test.go": "efb6a8155af43801bc5e35d7ca6d2bd5a8bf61d2b52861e1886de2b17f6a073d",
+      "internal/manager/manager.go": "a01ba4902fc15fa75e9c36ccbddb93e9e9ef6d340b96b886782c1a7fdb04b547",
+      "internal/server/server.go": "dfe69ea9de1ecc392e9d072d52f6beb1e260049b12ab3fa3c511287d8e1659f6"
+    },
+    "source_review_sha256": "1d543451a54dcd3b6e71b7812dda5de14f81ad6b456b52c9f29976fd1cb09524"
+  },
+  "actual_fourth_cohort": {
+    "classification": "Targeted native race cohort; command classification supplied by execution context, actual JSON event roster independently parsed.",
+    "roots": 25,
+    "unique_named_run": 117,
+    "unique_named_pass": 117,
+    "run_pass_exact": true,
+    "fail": 0,
+    "skip": 0,
+    "race_diagnostics": 0,
+    "package_passes": {
+      "getarm.org/internal/daemonconfig": 1.354,
+      "getarm.org/internal/manager": 17.94,
+      "getarm.org/internal/cli": 17.174,
+      "getarm.org/internal/server": 1.635,
+      "getarm.org/internal/database": 3.195
+    },
+    "server_scope": "Package compilation/pass only; no server test root selected.",
+    "root_roster": [
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestAgentGuideReflectsCurrentAuthorityAndStorageBoundaries"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestAgentsGuideWorksOfflineWithoutStateOrAgentCLIs"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestAllCommandHelpIsAvailableWithoutBackendOrSideEffects"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestCompletionProtocolNestedFlagsAndOffline"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestCompletionPublicTreeAndAuthoritativeFlags"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestCompletionRootFlagsMatchExecutionWithoutEffects"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestConfigCLIReadOnlyMissingInvalidPartialAndHelp"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestDaemonExplicitStartupArgumentsDoNotPromoteDefaults"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestDaemonInvalidStartupRefusesBeforeCreatingState"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestDaemonMeshEnsureChangedConfigurationRefusesBeforeBackendOpen"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "test": "TestEnsureMeshBackendPreservesHealthyConfiguredBudgets"
+      },
+      {
+        "package": "getarm.org/internal/daemonconfig",
+        "test": "TestConfigCeilingsAreExactAndBounded"
+      },
+      {
+        "package": "getarm.org/internal/daemonconfig",
+        "test": "TestResolvedConfigAbsentAndUnsafeInputsAreReadOnly"
+      },
+      {
+        "package": "getarm.org/internal/daemonconfig",
+        "test": "TestResolvedConfigInvalidWholeFileCannotBeMasked"
+      },
+      {
+        "package": "getarm.org/internal/daemonconfig",
+        "test": "TestResolvedConfigPartialFileAndExplicitPrecedence"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "test": "TestSettledProofAcceptsDaemonConfigurationAuditWithoutSchemaChange"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestBudgetMutationFaultAndConcurrentReviewCannotLoseUpdate"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestBudgetMutationsStableLineageKeyedRevisionsAndZeroDeficit"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestDaemonConfigurationBlobDiscriminatorCannotSkipLatest"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestDaemonConfigurationFailedJournalDoesNotPublishCapacity"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestDaemonConfigurationInvalidSettingsDoNotCreateHome"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestDaemonConfigurationJournalInitialLegacyAndUnchangedStartup"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestDaemonConfigurationLowerCeilingPreservesLeaseTermsAndDeficit"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "test": "TestDaemonConfigurationMalformedLastEventCannotInventBaseline"
+      }
+    ],
+    "full_named_package_test_roster_sha256": "3189672937498500c15e3df0a1e5a1b7d69a5e25e31a591d45be78b4c79e85de",
+    "raw_log_sha256": "6dcd073ce9f966e748ba436b8d80b4967883ea82a7c47b188657243465d8ac96",
+    "outer_completed": true,
+    "outer_exit": 0,
+    "outer_duration_ms": 72786
+  },
+  "targeted_vet": {
+    "completed": true,
+    "exit": 0,
+    "retained_log_bytes": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outer_duration_ms": 25499
+  },
+  "causal_scope": [
+    "Fresh-config inspection/ensure applies file values without generated ceiling flags; recorded replay retains saved settings; healthy legacy endpoint remains usable with malformed desired next-start file.",
+    "Changed desired config inside actual launch callback before cmd.Start is refused by exact child exit2/configuration_changed before database/endpoint/launch record creation.",
+    "Malformed newest BLOB discriminator is selected then refused before recovery; existing complete lease bytes and both journal records retained. SQL envelope bounds and exact supported JSON remain fail-closed.",
+    "Lower ceilings preserve request/Clock/Expires/Budget/BudgetPolicy, expose deficit and refuse conflicting admission; legacy startup initializes unknown prior baseline and unchanged selection appends nothing.",
+    "Read-only config diagnosis/help/completion/guide controls, exact units/private-file checks, durable insertion failure and generic settled-proof producer compatibility pass in their selected tests."
+  ],
+  "ownership_qualification": {
+    "test_fixture_original_join_scope": "Inspected source plus actual passing original exec.Cmd Wait and shutdown assertions. No separate external per-child owner receipts exist or are claimed.",
+    "production_launcher": "Nil callback uses current executable and unchanged detached Start/Process.Release; tests retaining children do not establish universal production join/descendant closure.",
+    "outer_provenance": "Independent original app command metadata readback supplied by coordinator confirms cohort and vet completed0. No private handles copied here."
+  },
+  "limits": [
+    "No actual unknown-commit fault injection; source refuses unconfirmed commit before publishing new capacity, and insertion-abort behavior was exercised.",
+    "No Linux configuration runtime, OS service/watchdog, live reload, provider/profile settings, broad degraded-database recovery, retention/restore or public-install acceptance.",
+    "No whole package/full suite/current-later composition claim; earlier110-node draft results are not promoted to this final cut.",
+    "Reviewer performed passive evidence/source inspection only; no new runtime, Go, test, queue, browser or tool-world audit."
+  ]
+}

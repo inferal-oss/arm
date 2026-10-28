@@ -1,0 +1,150 @@
+{
+  "classification": "SCOPED_ACCEPT: actual Host disclosure survives live refresh and retains explicit close",
+  "source_commit": "e9f0b23ea33b2dffc204bbb1dab6ca8f33d445d3",
+  "binary_sha256": "bef8c4008e32c441051e59eb90ad5b33624a42e291d16ee30b9105d13be19c9f",
+  "bundle_sha256": "343e99a5f525c7a41f60b8a77888e44b9779f93f10fba303f2737b3785657b90",
+  "binding_sha256": "9946f1f706b0cc0664235e526fb61a8d8c266b78706da1a168e9991de15903f2",
+  "controller_sha256": "63f1e9a302e2ee667af716d20152b9c9c8a59abd10fc604faa95952c82e9e242",
+  "case_sha256": "95510e8b4dccf49e05c92eb5e1e38d3ad54b0f582b0c81f7b5f82b4d33030c1b",
+  "actual_outer": {
+    "basis": "Coordinator recovered original app command metadata",
+    "exit": 0,
+    "duration_ms": 38960,
+    "first_oracle_failure_preserved": {
+      "exit": 1,
+      "duration_ms": 92157
+    }
+  },
+  "actual_observations": {
+    "snapshot_count": 4,
+    "checkpoint_cursors": [
+      2,
+      4,
+      4,
+      6
+    ],
+    "ui_case_cursors": [
+      2,
+      4,
+      4,
+      6,
+      6
+    ],
+    "ui_cursor_samples": 27,
+    "ui_cursors_nondecreasing": true,
+    "later_authoritative_cursors_bound_UI": true,
+    "same_button_id_and_aria_controls_target": true,
+    "sampled_focus_and_open_then_closed_state_retained": true,
+    "exact_authoritative_host_and_owner_preserved": true,
+    "witnesses": [
+      {
+        "label": "open-refresh-one",
+        "ages_seconds": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "sample_count": 7,
+        "elapsed_ms": 1275
+      },
+      {
+        "label": "open-refresh-two",
+        "ages_seconds": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "sample_count": 9,
+        "elapsed_ms": 1695
+      },
+      {
+        "label": "closed-refresh",
+        "ages_seconds": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "sample_count": 6,
+        "elapsed_ms": 1061
+      }
+    ]
+  },
+  "closure": {
+    "native_owners": {
+      "total": 7,
+      "ordinary_CLI_exit0": 6,
+      "exact_expected_backend_cancel130": 1,
+      "original_joins_pipe_closes_authority_retirement": true,
+      "errors": []
+    },
+    "listener_refusals_after_wait": [
+      true
+    ],
+    "no_seed_or_resource_or_names_write_dispatch": true,
+    "no_recorded_leases": true,
+    "state_clear": true,
+    "own_browser_reset_close_actual_app_entry_completed": true
+  },
+  "input_checks": {
+    "selected_files": 2684,
+    "selected_hashes_match": true,
+    "before_after_binding_bytes_identical": true,
+    "retained_evidence_hashes_match": true,
+    "controller_sources_match_reviewed_hashes": true
+  },
+  "capture_observations": [
+    {
+      "name": "host-open-after-refresh",
+      "sha256": "00e64657e783a38c95d37e1081aa86a5ef8005f3da47d1563347ec1076104979",
+      "format": "jpeg",
+      "width": 1280,
+      "height": 1442,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "observation_gap_ms": 151.57416700012982,
+      "raster_viewed_by_independent_reviewer": true,
+      "viewed_scope": "Readable open exact identity/cursor",
+      "fixed_footer_full_page_overlap_retained": true
+    },
+    {
+      "name": "host-closed-after-refresh",
+      "sha256": "dc4f50d171c19c0e1bc65eec90b1ad76faafb56d3c662256c686077e4e0ab2ca",
+      "format": "jpeg",
+      "width": 1280,
+      "height": 1354,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "observation_gap_ms": 151.53112499974668,
+      "raster_viewed_by_independent_reviewer": true,
+      "viewed_scope": "Disclosure visibly collapsed",
+      "fixed_footer_full_page_overlap_retained": true
+    }
+  ],
+  "qualifications": [
+    "Affected Host view only. No naming-form mutations, old width/resource/focus cohorts, Go/Node/RDF suites or release validation were repeated.",
+    "Stable button DOM id and aria-controls target string establish logical rendered identity observations. No strict physical DOM-object or independently retained panel-object identity is claimed.",
+    "Three sampled freshness age>=1-to0 transitions support live refresh; durable cursor growth or equality is not required. Later authoritative reads bound UI cursors and preserve exact identity.",
+    "Capture readiness is two controller samples at least150ms apart, not continuous stability, a maximum settling bound or an exact page-paint/event-exchange timestamp.",
+    "Actual JPEGs were independently viewed. Their full-page heights1442/1354 differ from CSS viewport900. Fixed footer overlap obscures lower content and remains unfixed; no pixel-clean/full-layout acceptance.",
+    "Seven original scoped wait/pipe-close/authority-retirement receipts include one exact owned backend cancellation130; cancellation is not ordinary lease settlement. No all-descendant/native-GC closure claim.",
+    "Selected source/runtime input pins are preserved; no complete OS/transitive-browser/controller-import hermeticity claim. Screenshots and raw identities remain private.",
+    "The original oracle failure remains failed. This corrected affected gate adds source-bound acceptance only and does not erase older failures or accept later compositions."
+  ]
+}

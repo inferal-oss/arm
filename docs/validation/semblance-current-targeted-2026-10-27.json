@@ -1,0 +1,167 @@
+{
+  "classification": "ACCEPTED scoped corrected67, typecheck, final two-worker production/SSR build and121 affected integration; replay/query/publication separate",
+  "base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "final_owned_manifest_sha256": "4382a31614893b5f59de63134b0cb71518ba99f6bdaba46a1fa3a6857cb29b1d",
+  "final_source_patch_sha256": "2c1328a693fab5d5d18a0507a962d847a0d78f74c8047615453d83814f8f82df",
+  "test_only_correction_sha256": "c1b31a897cb2ad781dead6a5f147066bf9b801070abc3524302d310c86468f3c",
+  "previous_build_failure_audit_sha256": "3b63700889a217f9689ce8b70ad6fdcc8af49bae2a7d2d253b2fb7a5dc3dc8d5",
+  "corrected_regression": {
+    "owner_exit": 0,
+    "child_exit": 0,
+    "named_cases": 67,
+    "pass": 67,
+    "fail": 0,
+    "skip_pending_todo": 0,
+    "exact_unique_rosters": true,
+    "mapping": "66 identity pairs plus1 previously explicit unique Vitest shortening, preserving all67logical names",
+    "files": {
+      "test/rdf-engine-compiled-empty-left.test.ts": 12,
+      "test/rdf-engine-compiled-packed-rows.test.ts": 11,
+      "test/rdf-engine-compiled-streaming-join.test.ts": 4,
+      "test/rdf-engine-required-triple-guard.test.ts": 40
+    },
+    "mixed_Fork_all_assertions": "Passed including exact44EVAL-vector and positive/zero/positive same-callsite anchor scan sequence; outputs/modes/bindings unchanged. Per-assert vectors not emitted individually.",
+    "owner_sha256": "2cab686231323e5ce4187038d7c8d3de57512ba94ea5d198d7d60bdd7b480384",
+    "raw_report_sha256": "03db36cf7ba238cd6f44474f00fc1c033e8d2403703c9eaedaa9fd5436359283",
+    "test_sha256": "d59545855409dfb427358056445182aff61b206efde111b7933eae93066544ea"
+  },
+  "typecheck": {
+    "exit": 0,
+    "owning_run_status": "overallFAILED normal production loader error retained",
+    "receipt_sha256": "bc1d459dcfbbb329ccfb63464bebb81a60e06f48110a43b54e4925c4752911d5"
+  },
+  "final_two_worker_production": {
+    "owner_exit": 0,
+    "original_children": [
+      {
+        "name": "production-build",
+        "exit": 0,
+        "original_wait_pipe_join_confirmed": true
+      }
+    ],
+    "inputs_unchanged": true,
+    "owner_sha256": "150978d790593a2a04eef9c1a232056a0d31f6c059a6fff7209b47cf04300a5f",
+    "seal_sha256": "50e8ee68e96e42417450a4777abd983308895d06ba978fe023c434037073d5bc",
+    "duration_seconds": 55.98824501037598,
+    "SSR_workers": 2,
+    "renderer_reported_routes": 1922,
+    "renderer_reported_HTML_KiB": 173034,
+    "normal_npm_build_and_prebuilds": true
+  },
+  "normal_pipeline_observed": [
+    "npm run build",
+    "npm prebuild invokes engine:build and layout:build",
+    "Rust and WAT engine builds",
+    "Rust and WAT layout builds",
+    "Vite client production build",
+    "SSR renderer reports1922routes with2workers and173034KiB HTML"
+  ],
+  "wrapper_review": {
+    "sha256": "72ad4323d38d200a8b4eae60835a8ad17069466d58dbc8b7d170da8abe394110",
+    "behavior": "Per-run shell exports only DYLD_FALLBACK_LIBRARY_PATH for the exact selected toolchain lib directory, then execs original rustc argv unchanged. No inserted/removed/reordered flags, build.ts or global toolchain edits.",
+    "selected_RUSTC_and_library_binding": "RUSTC and toolchain library bound by run seal; minimal environment restoration immediately before original rustc execution.",
+    "supported_SSR_worker_cap": "SEMBLANCE_BUILD_WORKERS=2 is existing src/node/site.ts supported option and actual log reports2."
+  },
+  "image_hashes_unchanged": {
+    "rust": "f0b83cad2f465a24857a3fa9c29a806cf452b0b769977580877fa9a1c43bf0f5",
+    "wat": "d7c1292ade7e58f345b995c94a02e81dc29ceaee47d5e69b990091935cbc54c2"
+  },
+  "normal_build_source_pins": {
+    "package.json": "ea822da511268bf141abfe98e4ff5b862e1cec582ef27a39085dd29b7d344678",
+    "rdf-engine/build.ts": "659c48a4b87919ed90e24703c04f2f8223e55b9851eb16f6acce6f8e8940a85e",
+    "layout-solver/build.ts": "f3aebdca4490c26bc932fb945a008cf6b317e0e1a7978441e2d5955b67668562",
+    "vite.config.ts": "dbe8167fd521124293ea738da403aebcc8a9ac662d0c7d7b91fa2c3d0cbf6389",
+    "src/node/site.ts": "6714b339ddb49e714bc26c70984c4eca0dbdda618c97dda7cce5dc59776ff44b"
+  },
+  "preserved_runs": {
+    "first_67": "FAILED66/67; not relabeled",
+    "first_normal_production": {
+      "owner_exit": 1,
+      "original_children": [
+        {
+          "name": "typecheck",
+          "exit": 0,
+          "original_wait_pipe_join_confirmed": true
+        },
+        {
+          "name": "production-build",
+          "exit": 1,
+          "original_wait_pipe_join_confirmed": true
+        }
+      ],
+      "inputs_unchanged": true,
+      "owner_sha256": "bc1d459dcfbbb329ccfb63464bebb81a60e06f48110a43b54e4925c4752911d5",
+      "seal_sha256": "9406bad7a8616575f8caa9eef171987f67ac01d5271ab937f5e825d955a79b65",
+      "duration_seconds": 5.022255182266235
+    },
+    "first_environment_fixed_build": {
+      "owner_exit": 0,
+      "original_children": [
+        {
+          "name": "production-build",
+          "exit": 0,
+          "original_wait_pipe_join_confirmed": true
+        }
+      ],
+      "inputs_unchanged": true,
+      "owner_sha256": "faf10a9b0f7dd99624a393fda5e0a9addd16dc7c01f9494e1a6f5214f944b3d4",
+      "seal_sha256": "ba78f5fcba48765bf8ba3391e2b47485109a57056cc30218c714192feed9fcd6",
+      "duration_seconds": 32.90211296081543,
+      "SSR_workers": 4,
+      "renderer_reported_routes": 1922,
+      "renderer_reported_HTML_KiB": 173034,
+      "normal_npm_build_and_prebuilds": true,
+      "acceptance_scope": "normal build command success retained;4workers does not establish final2worker envelope"
+    }
+  },
+  "limits": [
+    "No tests/builds/queries/helpers/engine imports, queue or browser execution by independent auditor.",
+    "1922 is renderer-reported route work, not accepted unique file count or an export manifest. A passive currentdist observation found1821.html files; no claim of1922distinct retained HTMLfiles or explanation inferred.",
+    "Original returned helper wait/pipe-join contract only, not independent OS Wait or blanket escaped-descendant closure. Outer app-tool metadata is left to coordinator readback; no new owner poll.",
+    "Original selected-input verification receipts and targeted build/source/image pins checked; no repeated71production-path/fullSDK/toolworld audit.",
+    "Only now-terminal121integration independently inspected; active replay/populated-comparison outputs not inspected as complete or accepted. No browser, currentfullsuite, publication or PR acceptance follows.",
+    "Prior failed native/compiler/formatter runs and differing source scopes remain preserved."
+  ],
+  "independent_audit_sha256": "07fa35a1763524f46a77dc23eb58f03d485ab7806f477bebe1b3fa3da431ea36",
+  "integration": {
+    "owner_exit": 0,
+    "child_exit": 0,
+    "original_wait_pipe_join_confirmed": true,
+    "seal_sha256": "961a5facd7a26db5fcd7c2535fa7c428dfcf4d8d811b284156ca98ece221db6e",
+    "owner_receipt_sha256": "66276be35608039defd1b7e19484943422f51f34f268ef331d06df572f7b95bf",
+    "raw_vitest_sha256": "edbec726326116a5f7705bffddcaa05888042f45f55453a78404e0f17c3f9340",
+    "named_cases": 121,
+    "passed": 121,
+    "fail": 0,
+    "skip_pending_todo": 0,
+    "files": {
+      "test/cost.test.ts": 3,
+      "test/ex-calendar.test.ts": 15,
+      "test/rdf-engine-budget.test.ts": 12,
+      "test/rdf-engine-compiled.test.ts": 70,
+      "test/rdf-engine-parity.test.ts": 7,
+      "test/rdf-engine.test.ts": 12,
+      "test/tab-list-names.test.ts": 2
+    },
+    "mapping": {
+      "pairs": 121,
+      "unique_logical_and_rendered": true,
+      "identity_pairs": 121,
+      "exact_rosters_match": true
+    },
+    "images": {
+      "rust": "f0b83cad2f465a24857a3fa9c29a806cf452b0b769977580877fa9a1c43bf0f5",
+      "wat": "d7c1292ade7e58f345b995c94a02e81dc29ceaee47d5e69b990091935cbc54c2"
+    },
+    "original_selected_inputs_unchanged": true,
+    "calendar_positive": {
+      "name": "Semblance queries on both builds renders a populated Calendar through both genuine compiled paths",
+      "status": "passed",
+      "source_sha256": "72788847d6a75a29af8b505987ce84952353039ed83db7d18bca59a2cc84b687",
+      "scope": "Pinned existing hard assertions require nonempty identical normalized outputs in Rust/WAT interpreted/compiled modes, genuine compiledRuns+1 and no fallback. Separate per-mode outputs/counts/counter snapshots are not emitted."
+    },
+    "duration_seconds": 540.2678217887878,
+    "owner_budget_seconds": 1650,
+    "queue_seconds": 1800
+  }
+}

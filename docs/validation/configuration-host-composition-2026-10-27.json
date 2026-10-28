@@ -1,0 +1,28 @@
+{
+  "status": "PASS_SCOPED_CURRENT_CONFIG_HOST_STARTUP_COMPOSITION",
+  "source": "c74d1fdb79456ce9751188b03b8dcf373b420d71",
+  "test_roots": [
+    "TestDaemonMeshEnsureChangedConfigurationRefusesBeforeBackendOpen",
+    "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay"
+  ],
+  "root_count": 2,
+  "exact_run_pass_named_nodes": 4,
+  "roster": [
+    "TestDaemonMeshEnsureChangedConfigurationRefusesBeforeBackendOpen",
+    "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay",
+    "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay/fresh-config",
+    "TestDaemonMeshEnsureResolvesFreshConfigAndPreservesRecordedReplay/recorded-policy"
+  ],
+  "no_skips_failures_or_race_diagnostics": true,
+  "actual_original_exit": 0,
+  "raw_log_sha256": "aefe9172e44e60b5074099a91436b44e271461e669f0ef534946782f7e442d0a",
+  "scope": "Actual fresh/recorded mesh startup and changed-config refusal on composed source. Fixture original Wait/shutdown assertions; not browser/full-suite/Linux/service acceptance.",
+  "integration": {
+    "author_commit": "145bbea440625c2f00a6b0aac7a00b237266f9d4",
+    "integrated_commit": "c74d1fd",
+    "reviewed_source_manifest_sha256": "9665d8d575a287af7de718c3dd56c3eea79ad9e975c72b2ce748e79ae334a0d5",
+    "all_15_Git_objects_and_modes_match": true,
+    "prior_Host_UI_commit": "8451623",
+    "composed_scope": "Two startup/mesh roots and four named nodes on the current source. Host browser evidence remains bound to its earlier fresh executable and unchanged UI entry; it is not a browser run on the configuration composition."
+  }
+}
