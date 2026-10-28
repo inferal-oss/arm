@@ -7441,3 +7441,49 @@ test-only pressure successor and seven-package vet/private build, recorded
 below. The separate full forwarding worker remains under diagnosis. Earlier
 baseline symptoms and passing sibling cases do not waive either failed attempt.
 [Normalized evidence](validation/native-composition-failures-2026-10-28.json).
+
+### Reviewed current native integration
+
+The current native source is recorded in focused integration commits:
+`540a022` cancellation and original settlement, `2d9d5cf` holder regressions,
+`25d60cc` private Unix custody, `53938db` unused C3 primitives and `69c3a57`
+private charged sync. The reviewed shared Manager and proof-schema composition
+preserves original startup custody, cancellation ordering, bounded object
+censuses and ordinary sync schema 2. Published log-window assets are preserved
+byte-for-byte in `5e8caac`.
+
+The original 193-root race aggregate remains failed. Its unchanged 192 roots /
+763 sibling names retain their exact source-equivalent normal and race passes.
+A test-only correction (`f7e831c`) adds a deterministic busy-owner refusal
+control and retries only a bounded, typed pre-effect reservation refusal. The
+corrected one-root / two-name cohort passes normal and race; seven-package vet
+and the private CLI build pass. Production pressure guards and one-shot native
+effects are unchanged. No fresh 193-root aggregate is claimed.
+
+The C3 primitive leaf separately passes 39 roots / 333 names in normal and race
+with targeted vet. This does not implement full Manager lifecycle hooks, atomic
+reservation or native finalization. Public paired-provider, sync and forwarding
+activation remain gated. The full private forwarding worker still has its
+separate failed three-node relay-admission race case. Unified Kubernetes
+stage history, typed worker, dashboard wiring and real enrollment remain open.
+See [source binding](validation/native-integration-source-binding-2026-10-28.json),
+[corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
+[cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
+and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).
+
+### Survey source and public-origin readback
+
+Primary ancestry confirms the previously integrated completion, compact UI,
+mesh metadata, gauge, forgetting, peer-view and private rsync milestones.
+Current routed SSH identity/pin source matches the focused follow-up; later
+accepted harness changes are retained. This readback is not a new native run.
+
+Public HTTPS requests return 200 with TLS verification successful for
+`getarm.org`; `getarm.cloud` redirects to it. Both produce identical 10,962-byte
+ARM root HTML with a prerendered heading. A request for the existing script
+asset through the cloud domain preserves both its path and query string and
+returns 200. This establishes public routing/content at this observation, not
+account ownership, purchase details, browser acceptance or performance. Draft
+PR readback also confirms exact heads/bases and unmerged draft state for numeric
+#226 and Sparkline #227. ARM vendor promotion remains unverified.
+[Normalized survey](validation/integration-survey-2026-10-28.json).

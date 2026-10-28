@@ -1,0 +1,95 @@
+{
+  "source_head": "1fbd32f70e9be2add84663018173d6c18c5f0845",
+  "survey_scope": "Current and preserved implementation handoffs cross-checked against primary ancestry, source, delivery records and remaining acceptance gates. Earlier source acceptance is not broadened.",
+  "confirmed_integrated_ancestors": {
+    "run_completion": [
+      "dd47bb6e",
+      "34ea83a8"
+    ],
+    "compact_resources_ui": [
+      "5130242",
+      "1d18eaf"
+    ],
+    "intermittent_mesh_backend_cli_tui": [
+      "ff412e9",
+      "954d608"
+    ],
+    "terminal_gauges": [
+      "0ec2b57"
+    ],
+    "explicit_database_forgetting": [
+      "181a776"
+    ],
+    "peer_terminal_view": [
+      "d7fab97"
+    ],
+    "private_rsync_worker": [
+      "a392829"
+    ],
+    "screen_cleanup_retention": [
+      "0d341aa"
+    ]
+  },
+  "routed_ssh": {
+    "current_integration": "79c6d0f3",
+    "later_native_acceptance": "4701a1b8",
+    "original_followup": "cf054c41",
+    "evidence": "Current identity.go, identity_test.go and pins.go equal the original focused follow-up; harness has additional accepted native observation/provenance changes. No duplicate import is needed."
+  },
+  "pending_work": {
+    "storage_native_composition": "Published 3856f9c3 through 5f75cae6 awaits strict namespace, original benchmark/retained binding and shared lifecycle composition review.",
+    "pressure_controller": "Disconnected a07ed552 prerequisite is not in primary; current-base extraction and independent review are required. Public native pausing remains disabled.",
+    "public_sync": "Private bridge69c3a57 is integrated; persistent native enrollment, independent backing headroom, complete writer exclusion and actual reviewed bidirectional workflow remain open.",
+    "provider_pairs": "Unused C3 primitives53938db integrated; full hooks and C4/C5 remain open.",
+    "forward_worker": "Private binder25d60cc integrated; corrected readiness successor underway after preserved failed full and diagnostic runs.",
+    "kubernetes_unified_workflow": "Accepted private managed bridge85e47781 remains a local integration candidate. Unused V2 history needs current predecessor/source-profile corrections; typed worker, old-reader/proof fence, dashboard enrollment and live acceptance remain open.",
+    "browser_mobile_policy": "Backend/CLI/TUI integrated; current web parity and controlled-dialog acceptance remain to be verified with dependency promotion.",
+    "upstream_components": "Drafts226/227 submitted; ARM dependency promotion is not yet accepted."
+  },
+  "parked_research": {
+    "QUIC": "d115a84 remains preserved parked research; no unverified transport transition or duplicate merge."
+  },
+  "upstream_drafts": [
+    {
+      "url": "https://github.com/inferal-oss/semblance/pull/226",
+      "head": "22ba77dbc6b927d0700d906884d0ab221ef34b2a",
+      "base": "main",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "url": "https://github.com/inferal-oss/semblance/pull/227",
+      "head": "8ced16a443b6dc8dd23fbbb293edcced3b3551ad",
+      "base": "codex/numeric-182-d879",
+      "draft": true,
+      "merged": false
+    }
+  ],
+  "public_origins": {
+    "date": "2026-10-28",
+    "getarm_org": {
+      "http": 200,
+      "tls_verification": 0,
+      "effective_url": "https://getarm.org/"
+    },
+    "getarm_cloud": {
+      "http": 200,
+      "tls_verification": 0,
+      "effective_url": "https://getarm.org/"
+    },
+    "same_root_body": {
+      "bytes": 10962,
+      "sha256": "80be43c5498f8ff22ed746b5431f688409ded4b123bd412211ef9d1650760dd9",
+      "title": "ARM \u2014 Agent Resource Manager",
+      "prerendered_heading_present": true
+    },
+    "path_query_check": {
+      "request": "https://getarm.cloud/assets/index-orjCDTfX.js?arm_verify=1",
+      "http": 200,
+      "tls_verification": 0,
+      "effective_url": "https://getarm.org/assets/index-orjCDTfX.js?arm_verify=1"
+    },
+    "limits": "Public HTTPS routing/content witness only; no Cloudflare account, ownership/payment, browser interaction or performance benchmark claim."
+  },
+  "completion": "Not complete: concrete source and native acceptance gates above remain."
+}

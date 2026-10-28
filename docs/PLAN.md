@@ -855,3 +855,29 @@ publication awaits the separately advanced storage integration.
 | `codex/forward-unix-adapter` | Private binder is integrated as `25d60cc`. The full worker's original race gate remains failed. A single diagnostic identifies relay admission refusing unknown CPU capacity while its context still has time. | Review native sampler and test readiness without relaxing capacity or authorization; then a reviewed affected successor, later vet and Linux compile gates. |
 | `codex/provider-pair-c3-hooks` | Unused primitives are integrated as `53938db`; full hooks remain isolated work in progress. | Review exact original cancellation before fallible reads, callbacks after unlock, retaining-marker knowledge, unknown ACK debt and compatibility with strict storage accounting. C4/C5 and public activation remain separate. |
 | `codex/numeric-182-d879` and `codex/sparkline-155-d879` | Focused local commits `22ba77db` / `8ced16a4` match the tested composed source. Normal production prebuild and two-worker SSR are independently accepted; generated assets are not browser-tested. | Two focused draft submissions, then separately reviewed ARM dependency promotion. No upstream merge or release is authorized by this record. |
+
+### Survey reconciliation: integrated work and remaining feature delivery
+
+An ancestry/source check confirms that completion, compact Resources UI,
+intermittent-mesh backend/CLI/TUI, terminal gauge, explicit database forgetting,
+peer terminal view and private rsync worker milestones are already integrated.
+The routed SSH pin follow-up is present through its focused integration and
+later native acceptance; reimporting its divergent predecessor is unnecessary.
+QUIC remains parked research.
+
+The survey also identifies unintegrated pressure-controller prerequisite
+`a07ed552`. Its current-base extraction must retain current cancellation and
+fixture corrections; authenticated permit handling, observed native effects,
+crash recovery and model/native gates still precede activation. Public sync
+continues beyond its private bridge: persistent enrollment, independent backing
+headroom, complete writer exclusion and reviewed bidirectional effects are
+required. Web mobile-policy parity remains a separate verification/integration
+cut after the accepted backend/CLI/TUI milestone.
+
+The numeric and Sparkline drafts are submitted as upstream
+[#226](https://github.com/inferal-oss/semblance/pull/226) and
+[#227](https://github.com/inferal-oss/semblance/pull/227), respectively; neither
+is merged. ARM dependency promotion remains open. Current public HTTPS checks
+confirm both domains reach the ARM page, with the cloud-domain redirect retaining
+a known asset path and query string. See the
+[normalized survey](validation/integration-survey-2026-10-28.json).
