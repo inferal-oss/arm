@@ -75,6 +75,8 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
   function schedule(){if(active()&&!disposed&&timer===null)timer=setTimeout(()=>{timer=null;refresh();},1000);}
   async function refresh(){
     if(disposed||!active())return;
+    // A slow inventory or output reply must not stop the other readers' clock.
+    schedule();
     if(!connected()){for(const view of views.values())view.update(null,listError);renderList();schedule();return;}
     const cut=epoch,source=context();
     if(!inventoryBusy){inventoryBusy=true;try{

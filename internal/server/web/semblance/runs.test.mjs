@@ -200,3 +200,10 @@ test('fullscreen and output failures in one window do not change another window'
  f.panel.closeLog(records[0].id);assert.equal(bSurface.fullViewport,true);assert.equal(b.output.disposed,undefined);
  await b.button('Tile log windows').emit('activate');assert.equal(bSurface.fullViewport,false);assert.equal(f.ui.tiled,true);await b.window.dock();assert.equal(f.ui.tiled,false);assert.equal(f.panel.selected.id,records[1].id);
 });
+
+test('a slow output reply does not freeze the shared polling clock for another log',async t=>{
+ const records=multipleRuns(2);let hold=false,release,started;const began=new Promise(resolve=>started=resolve);let peerReads=0;
+ const f=fixture(t,async(op,args)=>{if(op==='runs')return records;if(hold&&args.id===records[0].id)await new Promise(resolve=>{release=resolve;started();});if(args.id===records[1].id)peerReads++;return {run:records.find(r=>r.id===args.id),offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false};});
+ t.after(()=>release?.());f.panel.setActive(true);await tick();for(const run of records){await f.panel.open(run);await logUI(f,run.reason).window.popOut();}
+ hold=true;await began;await tick();const before=peerReads;await new Promise(resolve=>setTimeout(resolve,1150));assert.ok(peerReads>before,'healthy peer must continue polling while the first reply remains outstanding');
+});
