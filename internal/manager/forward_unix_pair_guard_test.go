@@ -52,7 +52,7 @@ func TestForwardUnixPairGuardRetainsBothChargesForOldReader(t *testing.T) {
 	}
 	if err == nil {
 		h.request, h.result = source.Request, source
-		_, err = m.db.Exec(`INSERT INTO forward_unix_pairs(source_id,storage_id,phase,source_key,storage_key,socket_name,disk_bytes,data) VALUES(?,?,?,?,?,?,?,?)`, source.ID, storage.ID, "planned", source.Request.Key, storage.Request.Key, "forward-"+strings.Repeat("e", 32)+".sock", storage.Request.Resources.Disk, `{}`)
+		_, err = m.db.Exec(`INSERT INTO forward_unix_pairs(source_id,storage_id,phase,source_key,storage_key,socket_name,disk_bytes,data) VALUES(?,?,?,?,?,?,?,?)`, source.ID, storage.ID, "bind_intent", source.Request.Key, storage.Request.Key, "forward-"+strings.Repeat("e", 32)+".sock", storage.Request.Resources.Disk, `{}`)
 	}
 	m.mu.Unlock()
 	if err != nil {
@@ -90,9 +90,22 @@ func TestForwardUnixPairGuardRetainsBothChargesForOldReader(t *testing.T) {
 	defer db.Close()
 	for _, attempt := range []struct{ id, query string }{
 		{source.ID, `UPDATE leases SET data=json_set(data,'$.state','terminal') WHERE id=?`},
+		{source.ID, `UPDATE leases SET data=json_remove(data,'$.state') WHERE id=?`},
+		{source.ID, `UPDATE leases SET data=json_set(data,'$.state','queued') WHERE id=?`},
+		{source.ID, `UPDATE leases SET data=json_set(data,'$.state','future') WHERE id=?`},
 		{source.ID, `UPDATE leases SET data=json_set(data,'$.request.resources.cpu',0) WHERE id=?`},
+		{source.ID, `UPDATE leases SET id='ffffffffffffffffffffffffffffffff' WHERE id=?`},
+		{source.ID, `UPDATE leases SET request_key='changed-source-key' WHERE id=?`},
+		{source.ID, `UPDATE leases SET data=json_set(data,'$.id','ffffffffffffffffffffffffffffffff') WHERE id=?`},
+		{source.ID, `UPDATE leases SET data=json_set(data,'$.host','changed-host') WHERE id=?`},
+		{source.ID, `UPDATE leases SET data=json_set(data,'$.owner','4294967294') WHERE id=?`},
 		{storage.ID, `UPDATE leases SET data=json_set(data,'$.state','ending') WHERE id=?`},
 		{storage.ID, `UPDATE leases SET data=json_set(data,'$.request.resources.disk_bytes',0) WHERE id=?`},
+		{storage.ID, `UPDATE leases SET id='eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' WHERE id=?`},
+		{storage.ID, `UPDATE leases SET request_key='changed-storage-key' WHERE id=?`},
+		{storage.ID, `UPDATE leases SET data=json_set(data,'$.id','eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') WHERE id=?`},
+		{storage.ID, `UPDATE leases SET data=json_set(data,'$.host','changed-host') WHERE id=?`},
+		{storage.ID, `UPDATE leases SET data=json_set(data,'$.owner','4294967294') WHERE id=?`},
 		{source.ID, `DELETE FROM leases WHERE id=?`},
 		{storage.ID, `DELETE FROM leases WHERE id=?`},
 	} {
@@ -102,5 +115,108 @@ func TestForwardUnixPairGuardRetainsBothChargesForOldReader(t *testing.T) {
 	}
 	if _, err = Open(home, model.Resources{CPU: 1, Memory: 16 << 20, Disk: 8 << 20}); errorCode(err) != "forward_unix_pair_unavailable" {
 		t.Fatalf("this cut adopted an unfinished pair without an issuer/reader: %v", err)
+	}
+}
+
+func TestForwardUnixGuardStartupInstallsOnlyWholeExactGroup(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		changes []string
+		accept  bool
+		count   int
+	}{
+		{"fresh exact group", nil, true, 7},
+		{"missing trigger", []string{`DROP TRIGGER forward_unix_source_update_guard`}, false, 6},
+		{"altered no-op trigger", []string{`DROP TRIGGER forward_unix_source_update_guard`, `CREATE TRIGGER forward_unix_source_update_guard BEFORE UPDATE ON leases BEGIN SELECT 1; END`}, false, 7},
+		{"table and indexes only", []string{`DROP TRIGGER forward_unix_source_update_guard`, `DROP TRIGGER forward_unix_storage_update_guard`, `DROP TRIGGER forward_unix_source_delete_guard`, `DROP TRIGGER forward_unix_storage_delete_guard`}, false, 3},
+		{"entire group absent", []string{`DROP TRIGGER forward_unix_source_update_guard`, `DROP TRIGGER forward_unix_storage_update_guard`, `DROP TRIGGER forward_unix_source_delete_guard`, `DROP TRIGGER forward_unix_storage_delete_guard`, `DROP TABLE forward_unix_pairs`}, true, 7},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root, err := filepath.EvalSymlinks(t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			home := filepath.Join(root, "arm")
+			m, err := Open(home, model.Resources{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = m.Close(); err != nil {
+				t.Fatal(err)
+			}
+			db, err := sql.Open("sqlite", filepath.Join(home, "state.db"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			for _, change := range tc.changes {
+				if _, err = db.Exec(change); err != nil {
+					t.Fatal(err)
+				}
+			}
+			m, err = Open(home, model.Resources{})
+			if tc.accept {
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err = m.Close(); err != nil {
+					t.Fatal(err)
+				}
+			} else if err == nil {
+				_ = m.Close()
+				t.Fatal("partial or altered guard group was repaired or accepted")
+			}
+			var count int
+			if err = db.QueryRow(`SELECT count(*) FROM sqlite_schema WHERE name GLOB 'forward_unix_*' OR name GLOB 'sqlite_autoindex_forward_unix_pairs_*' OR tbl_name='forward_unix_pairs' OR sql LIKE '%forward_unix_pairs%'`).Scan(&count); err != nil {
+				t.Fatal(err)
+			}
+			if count != tc.count {
+				t.Fatalf("startup changed guard group unexpectedly: got %d want %d", count, tc.count)
+			}
+		})
+	}
+}
+
+func TestForwardUnixGuardCatalogProjectionBounds(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		ddl  string
+	}{
+		{"oversized SQL", `CREATE TRIGGER forward_unix_source_update_guard BEFORE UPDATE ON leases BEGIN ` + strings.Repeat(" ", 8192) + `SELECT 1; END`},
+		{"oversized name", `CREATE TRIGGER forward_unix_` + strings.Repeat("x", 256) + ` BEFORE UPDATE ON leases BEGIN SELECT 1; END`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root, err := filepath.EvalSymlinks(t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			home := filepath.Join(root, "arm")
+			m, err := Open(home, model.Resources{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = m.Close(); err != nil {
+				t.Fatal(err)
+			}
+			db, err := sql.Open("sqlite", filepath.Join(home, "state.db"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			if _, err = db.Exec(`DROP TRIGGER forward_unix_source_update_guard`); err != nil {
+				t.Fatal(err)
+			}
+			if _, err = db.Exec(tc.ddl); err != nil {
+				t.Fatal(err)
+			}
+			tx, err := db.Begin()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer tx.Rollback()
+			if _, err = readForwardUnixGuardObjects(context.Background(), tx); err == nil {
+				t.Fatal("oversized schema object passed bounded catalog read")
+			}
+		})
 	}
 }
