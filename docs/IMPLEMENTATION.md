@@ -2679,3 +2679,14 @@ remove the client graph/engine transfer or establish a measured public load-time
 improvement. The composed source is published through the existing Pages
 workflow; scoped build, capture and publication evidence is recorded in
 [VALIDATION.md](VALIDATION.md).
+
+### Run selector completion
+
+`arm log RUN` completes IDs and readable names from one authenticated local run
+inventory query, including proxy and leased runs. It validates up to 4,096
+entries, suppresses unsafe, ambiguous and canonical-ID-shaped aliases, then
+returns at most 256 sorted suggestions. Collision checks cover the entire
+bounded inventory before the output cap. Suggestions contain only safe tokens
+and fixed descriptions; completion reads neither logs nor command metadata.
+The existing 250 ms deadline, no-start behavior and normal execution
+authorization remain in force. Follow and offset flags retain their semantics.

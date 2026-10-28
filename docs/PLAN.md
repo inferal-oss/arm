@@ -596,3 +596,15 @@ byte-for-byte unchanged; all eight recorded web/TUI source/asset hashes still
 match the captured feature. The merge preserves reviewed feature commit IDs and
 uses normal fast-forward push checks. Earlier headless videos remain bound to
 `47f9031`; they are not reattributed to this later source composition.
+
+### Run selector completion
+
+Owner: `codex/log-run-completion`. Reviewed feature `a6dd82e1` is integrated as
+`dd47bb6e` on the website SSR publication baseline `ef18a22a`. `arm log` now
+completes run IDs and unambiguous readable names for proxy and leased runs. The
+authenticated read is bounded by the existing 250 ms completion deadline and
+never starts a backend. Independent review accepts eight focused race roots /
+33 named cases and CLI vet. All Go source/module entries and the four owned
+paths are identical on this composition; website changes have separate evidence.
+Broader native-foundation composition and full-suite/platform coverage remain
+open. See [qualified evidence](validation/log-run-completion-2026-10-28.json).

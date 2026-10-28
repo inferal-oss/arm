@@ -1,0 +1,114 @@
+{
+  "actual_race": {
+    "failures": 0,
+    "named_cases": 33,
+    "package_elapsed_seconds": 2.479,
+    "passes": 33,
+    "roots": 8,
+    "roster": [
+      "TestCompletionPublicTreeAndAuthoritativeFlags",
+      "TestCompletionRunFlagsAndBoundariesOffline",
+      "TestCompletionRunsAmbiguity",
+      "TestCompletionRunsDeadline",
+      "TestCompletionRunsInventoryBounds",
+      "TestCompletionRunsInventoryBounds/collision-beyond-output-cap",
+      "TestCompletionRunsInventoryBounds/oversized-inventory",
+      "TestCompletionRunsInventoryBounds/sorted-output-cap",
+      "TestCompletionRunsSanitizesNames",
+      "TestCompletionRunsSanitizesNames/0",
+      "TestCompletionRunsSanitizesNames/1",
+      "TestCompletionRunsSanitizesNames/2",
+      "TestCompletionRunsSanitizesNames/3",
+      "TestCompletionRunsSanitizesNames/4",
+      "TestCompletionRunsSanitizesNames/5",
+      "TestCompletionRunsSanitizesNames/6",
+      "TestCompletionRunsSanitizesNames/7",
+      "TestCompletionRunsSanitizesNames/8",
+      "TestCompletionRunsSelectors",
+      "TestCompletionRunsSelectors/all",
+      "TestCompletionRunsSelectors/id-prefix",
+      "TestCompletionRunsSelectors/inline-offset",
+      "TestCompletionRunsSelectors/long-follow-offset",
+      "TestCompletionRunsSelectors/no-descriptions",
+      "TestCompletionRunsSelectors/readable-prefix",
+      "TestCompletionRunsSelectors/short-follow",
+      "TestCompletionRunsUnavailable",
+      "TestCompletionRunsUnavailable/denied",
+      "TestCompletionRunsUnavailable/empty",
+      "TestCompletionRunsUnavailable/invalid-id",
+      "TestCompletionRunsUnavailable/malformed",
+      "TestCompletionRunsUnavailable/missing",
+      "TestCompletionRunsUnavailable/stopped"
+    ],
+    "skips": 0
+  },
+  "commit": "a6dd82e1e37dab1205212cf5b2f0acb6142b558c",
+  "findings": [],
+  "original_children": {
+    "closed_pipes": 2,
+    "count": 2,
+    "owner_errors": [],
+    "positive_original_joins": 2,
+    "retired_authority": 2,
+    "zero_exit": 2
+  },
+  "original_outer_exit": 0,
+  "parent": "c13e199ffcdaf449c305927176efddf24d53445d",
+  "paths": {
+    "docs/completion.md": {
+      "git_mode": "100644",
+      "git_object": "6e04bbb860c56335d08401b3f43ac1cd2974b901",
+      "sha256": "c3d1dc294ceb4294a9a5a78d606f6979d52edee8f8afb47d65c1324ea6c08e18"
+    },
+    "internal/cli/completion.go": {
+      "git_mode": "100644",
+      "git_object": "24a857f1f7db293445faf61b24fe67ad8e45889d",
+      "sha256": "a9437a183870882fdf079a9d3beb8021342066386cbed0c855d90bb417343cf1"
+    },
+    "internal/cli/completion_runs.go": {
+      "git_mode": "100644",
+      "git_object": "b693209c20c6f6c61af167d73174aa7275b1bce4",
+      "sha256": "1bdc9cf8d1b47fab67468a0de83e32f35041ef418ba7f9424b257c759a5658f1"
+    },
+    "internal/cli/completion_runs_test.go": {
+      "git_mode": "100644",
+      "git_object": "c683fb0be3f6691fd0d5f0c1c13fcbc5cf806b3e",
+      "sha256": "8c8138ead8489a28b35cef6a33c61cff1771f40a30c34a089b05724b91048691"
+    }
+  },
+  "preserved_predecessors": [
+    "Initial sandbox profile parser rejected numeric loopback host before Go dispatch.",
+    "Second run stopped at test-fixture compilation; two error returns corrected before final passing source."
+  ],
+  "schema": 1,
+  "source_assessment": [
+    "Only log first-RUN argument completion changes; backend/model/schema/UI/module and existing quiet/follow/offset dispatch unchanged",
+    "One already-authenticated runs read under250ms context; endpoint reader never initializes state or auto-starts backend",
+    "Whole bounded4096 inventory validates all IDs; unsafe/ambiguous/canonical-ID-shaped aliases suppressed; collision analysis precedes sorted256 output cap",
+    "Both leased and proxy selectors use run-domain names; output contains only safe tokens and fixed descriptions, no log reads or private command/reason/path fields",
+    "No shell interpolation, external plugin completion, state writes or authorization expansion"
+  ],
+  "targeted_CLI_vet_exit": 0,
+  "status": "REVIEWED_SOURCE_AND_SCOPED_ACTUAL_ACCEPTED",
+  "original_validated_source_count": 2745,
+  "composition_source_commit": "dd47bb6ebf74c782bf5550f73ce41ff3d5ee0739",
+  "composition_parent": "ef18a22a292d16759fcb7096d83eb5abd5f5d0b6",
+  "composition_check": {
+    "original_feature_commit": "a6dd82e1e37dab1205212cf5b2f0acb6142b558c",
+    "all_owned_paths_and_modes_match_reviewed_source": true,
+    "go_module_and_go_source_entries_identical": true,
+    "go_module_and_go_source_entry_count": 1608,
+    "runtime_repeated_on_composition": false,
+    "other_changes": "Website SSR sources, publication workflow and documentation only; no Go source or module changes since the validated parent."
+  },
+  "limits": [
+    "Darwin arm64 focused CLI race8roots/33named cases and CLI vet only; no fullsuite, Linux runtime, real run lifecycle or new carrier build/install.",
+    "Loopback authenticated inventory fixtures exercise completion transport; proxy/leased run lifecycle is a separately accepted dependency.",
+    "Installed carrier lacks proxy; existing authorized canonical owned runner used without user-state/backend/contact creation.",
+    "Shared mutable Go cache reused normally; no exclusive cache lease or cache copies.",
+    "No fresh runtime rerun by independent reviewer.",
+    "Later origin/local foundation composition and relevant interface/source equality remain separate acceptance.",
+    "Original owner Wait/pipe receipts do not prove arbitrary escaped descendant closure or hermetic toolchain/OS.",
+    "Composition acceptance uses exact Go source/module and owned-path equality; the changed website sources are outside CLI validation scope. Local native-foundation composition remains separate."
+  ]
+}

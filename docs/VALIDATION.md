@@ -6782,3 +6782,19 @@ interactive latency. The client bundle remains substantial; compact navigation,
 display and gallery controls still require the client. Coordinator review,
 composed Linux capture and publication are recorded in the integration acceptance
 above.
+
+### Run selector completion
+
+Independent source and actual-evidence review accepts `a6dd82e1`: eight CLI
+race roots / 33 named cases pass with no failures or skips, and CLI vet exits
+zero. Both original command owners join, close their pipes and retire authority.
+All 2,745 tracked source hashes match the tested feature commit. Earlier sandbox
+profile and fixture-compilation failures remain failed, preceding the passing
+corrected source. No full-suite, Linux runtime, real run-lifecycle or new
+carrier-install claim follows from these authenticated loopback fixtures.
+
+Composition `dd47bb6e` preserves current website SSR baseline `ef18a22a`. Its
+Go source/module entries and four owned paths match the reviewed feature
+exactly; no new runtime run is claimed for this composition. Website validation
+and later native-foundation integration remain separate. Normalized evidence:
+[log-run-completion-2026-10-28.json](validation/log-run-completion-2026-10-28.json).
