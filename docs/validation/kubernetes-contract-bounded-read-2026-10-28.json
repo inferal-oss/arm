@@ -1,0 +1,39 @@
+{
+  "scope": "bounded SQL projection correction only",
+  "base": "957cef670782f8b8a2254804723eb5da404d3e29",
+  "source_sha256": {
+    "internal/manager/kubernetes_contract.go": "27b2e911148f4085f521af87fe0a2d82bf4754034198a6622abce769cc63eb65",
+    "internal/manager/kubernetes_contract_test.go": "10c7290bac99692c6ee63c91827b6d6380f0dda38d6869ad35f18f2a89c70d08"
+  },
+  "darwin_race": {
+    "exit": 0,
+    "roots": 3,
+    "named_cases": 13,
+    "skips": 0,
+    "roster": [
+      "TestKubernetesSourceNewContractRefusalPrecedesAdmission",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/missing",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/canonical",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/altered-same-length",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/short-text",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/appended-text",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/oversized-text",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/canonical-blob",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/oversized-blob",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/null",
+      "TestKubernetesSourceContractSQLProjectionIsBoundedAndExact/integer",
+      "TestKubernetesSourceLegacyProfileDoesNotRequireContractTable"
+    ]
+  },
+  "targeted_manager_vet_exit": 0,
+  "oversized_payload_bytes": 8388608,
+  "bounded_return": "original type and BLOB byte length plus CASE/substr limited to canonical length + one byte before driver Scan; unsupported type/length returns NULL",
+  "write_controls": "existing-row INSERT/UPDATE/DELETE triggers reject any attempted replacement",
+  "limitations": [
+    "NULL tested with deliberately malformed nullable fixture schema",
+    "No whole source/native workflow replay",
+    "Earlier foundation runtime, stage journal and current composition remain separately qualified",
+    "No public activation or cluster effects"
+  ]
+}

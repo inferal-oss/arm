@@ -453,3 +453,14 @@ verification and refreshed active-forward attempt types, native effect adapters,
 remote reservation ownership, connector dial/invalidation, complete current and
 previous-reader proof relationships and actual composed UI/runtime gates remain.
 The full unified onboarding owner continues those gates on the same branch.
+
+### Bounded source-contract metadata correction
+
+Independent source review of the unused profile foundation requires the contract
+metadata read to be bounded before its driver scan. The isolated
+`codex/kubernetes-contract-bounded-read` correction projects original SQLite type,
+byte length and a bounded conditional BLOB prefix before exact comparison. It
+preserves first-insertion transaction ordering and existing values. Targeted
+controls pass; independent correction review and current-base composition remain
+separate. The protected journal and full onboarding/native connector continuation
+are outside this correction.

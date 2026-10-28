@@ -6430,3 +6430,21 @@ bind, current certificate/grant authorization, a forward constructor, complete
 old-reader partial/runtime proof, or enrollment. The new protected records still
 lack complete current stopped-proof relationships and therefore cannot supply
 settled removal authority. Public adapters remain unused.
+
+### Bounded Kubernetes source-contract metadata correction
+
+The [two-path correction record](validation/kubernetes-contract-bounded-read-2026-10-28.json)
+uses the isolated `957cef67` profile foundation. Three targeted Darwin race roots
+and thirteen named cases pass without skips; targeted Manager vet also passes.
+The controls cover missing insertion, unchanged canonical TEXT, altered equal
+length, short/appended TEXT, eight-MiB TEXT and BLOB, canonical bytes stored as
+BLOB, NULL, INTEGER, legacy profiles with no contract table and refusal before
+source admission. Existing-row mutation triggers ensure the check cannot rewrite
+valid or malformed metadata. The NULL control deliberately uses a malformed
+nullable fixture schema; production's NOT NULL column does not permit creating
+that row normally.
+
+These checks qualify only the bounded-read correction. They do not replay the
+whole earlier source cohort or independently accept its native runtime claims,
+the protected stage journal, current-main composition, forward ownership,
+installation or enrollment.

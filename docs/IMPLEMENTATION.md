@@ -2529,3 +2529,14 @@ stage. Serial read-only verification, renewed local forward ownership, remote
 native reservations/actions, connector dialing and full namespace/database proof
 relationships remain to be implemented. There is no public projection or full
 installation/connection delivery in this cut.
+
+## Bounded Kubernetes source-contract read
+
+The native source-contract check now projects SQLite's original value type and
+BLOB byte length before returning bytes to Go. A conditional expression excludes
+wrong types or lengths; the remaining projection uses a canonical-length-plus-one
+substring cap. Exact existing canonical TEXT is retained, missing metadata is
+inserted in the original transaction, and malformed/oversized values are refused
+without rewriting. Unchanged `s`/`i` profiles still do not query this contract.
+This corrects the earlier unbounded driver scan; it does not activate a public
+workflow or establish old-runtime writer exclusion.
