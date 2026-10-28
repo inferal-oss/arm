@@ -485,3 +485,64 @@ its preserved source draft. General forwarding continues on
 `codex/forward-manager-bridge`: original child authority is pending review;
 actual Unix bind still requires positive disk custody and recovery proof. The
 approved forwarding security scheme remains unchanged.
+
+## Run transparency
+
+Owner branches: `codex/run-transparency` (CLI, agent guidance, integration),
+`codex/run-records` (backend and persistence), and `codex/run-dashboards`
+(web and terminal views). The implementation starts from `1e7a6ff`.
+Existing work is preserved; no unrelated source histories are imported.
+
+Reviewed and integrated feature commits:
+
+| Area | Integrated commits | Accepted scope |
+| --- | --- | --- |
+| Shared model/backend | `d21fdbd`, `32b7aa8` | Local inventory, readable names, lease associations, durable proxy capture, browser read-only boundaries and reporter-loss uncertainty. |
+| CLI/instructions | `8ed42d3` | Quiet runs, no-lease proxy, run discovery, snapshot/follow/byte-offset logs and installed agent guidance. |
+| Log packing | `a57fbfb` | Atomic packed small appends, exact retry receipts and explicit retention limits. |
+| Dashboards | `4378c3a`, `7310f3a` | Web/TUI Runs views, default following, pause/manual reads, bounded catch-up and command-palette integration. |
+
+Independent final-source review has no unresolved blocking findings. Final
+composed focused macOS race tests, vet, native build, 393 JavaScript tests and
+Linux amd64 cross-compilation pass. Native proxy cancellation separately verifies
+the original child join and retained log. Go 1.27.3 is installed and verified.
+
+At that source cut, interactive browser rendering was unverified because its
+executor rejected configured symlinked writable roots. The later headless browser
+and live-PTY acceptance below supersedes that local presentation gap. Full-suite
+and Linux runtime acceptance remain unestablished. Remote runs, SSH capture, history
+pagination/archival and retention deletion remain unsupported. Inventory and
+proxy storage bounds, reporter uncertainty and reset-proof evidence limits are
+recorded in IMPLEMENTATION and VALIDATION; none broadens resource authority.
+
+### Run log presentation and native capture follow-up
+
+Owner: `codex/run-dashboards`, integrated review baseline `4b30070`. Independent
+review identified below-fold run details that did not receive focus. The focused
+fix is integrated as `3de2e70`; requested foldable and full-screen log views in
+both dashboards are integrated as `47f9031`. Final independent source review has
+no blocking findings. All 400 JavaScript tests, focused TUI race checks, affected
+vet, native build and Linux amd64 compilation pass.
+
+Actual headless Chromium and live-PTY recordings pass on `47f9031`: live output,
+fold/unfold, fullscreen/Escape, independent pause/resume, final saved-log drain,
+web opener focus restoration and PTY mode restoration. Final video streams are
+14.84 seconds (web) and 14.36 seconds (terminal), 1440×1000 at 25 fps. The TUI is
+actual 140×48 PTY bytes rendered in xterm, not synthetic Go previews. Recording
+work itself runs under an ARM lease; the foreground fixture disables peer
+publication and uses new private state. Normalized evidence is in
+[run-transparency-headless-2026-10-28.json](validation/run-transparency-headless-2026-10-28.json).
+Videos, frames, credentials and raw execution receipts remain outside version
+control. No remote, alternate browser/platform or full-suite claim is added.
+
+### Main integration
+
+Main advances from `1e7a6ff` to origin `eb4a1e5` without local commits to replay.
+The run-transparency feature through `4a822ce` is composed with origin's unused
+provider-pair core. The plan append conflict preserves both delivery records.
+Fresh affected feature/provider race checks, 400 JavaScript tests, seven-package
+vet and the native build pass on this composition. Origin's provider core stays
+byte-for-byte unchanged; all eight recorded web/TUI source/asset hashes still
+match the captured feature. The merge preserves reviewed feature commit IDs and
+uses normal fast-forward push checks. Earlier headless videos remain bound to
+`47f9031`; they are not reattributed to this later source composition.

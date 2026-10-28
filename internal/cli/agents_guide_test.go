@@ -120,3 +120,27 @@ func TestAgentGuideExplainsReplyIdentityAndUnknownSend(t *testing.T) {
 	}
 	t.Fatal("missing agent communication workflow")
 }
+
+func TestAgentGuideExplainsProxyQuietRunsAndLogRecovery(t *testing.T) {
+	var out, stderr bytes.Buffer
+	if code := Main([]string{"agents", "--json"}, strings.NewReader(""), &out, &stderr); code != 0 {
+		t.Fatal(code, stderr.String())
+	}
+	var guide agentGuide
+	if err := json.Unmarshal(out.Bytes(), &guide); err != nil {
+		t.Fatal(err)
+	}
+	for _, section := range guide.Sections {
+		if section.ID != "runs" {
+			continue
+		}
+		text := strings.Join(section.Guidance, " ") + strings.Join(section.Commands, " ")
+		for _, need := range []string{"arm run --quiet", "arm proxy --quiet", "arm runs --json", "arm log RUN_ID", "arm log -f RUN_ID", "--offset", "exit status", "does not reserve capacity", "interrupted reporting", `--reason "Run tests"`, `--reason "Observe an authorized wait"`} {
+			if !strings.Contains(text, need) {
+				t.Fatalf("run guidance omits %q", need)
+			}
+		}
+		return
+	}
+	t.Fatal("run transparency guidance missing")
+}

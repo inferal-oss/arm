@@ -781,7 +781,7 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 	if strings.HasPrefix(r.Operation, "mesh_") {
 		return s.meshOperation(ctx, r.Operation, r.Params)
 	}
-	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "pool_mutate" || r.Operation == "budget_mutate" {
+	if r.Operation == "acquire" || r.Operation == "run" || r.Operation == "run_create" || r.Operation == "pool_mutate" || r.Operation == "budget_mutate" {
 		s.admission.Lock()
 		defer s.admission.Unlock()
 		if s.stopping {
@@ -808,6 +808,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "runs", "run_inspect", "run_output", "run_create", "run_append", "run_finish":
+		return s.runOperation(r.Operation, r.Params)
 	case "name_list", "name_mutate":
 		return s.nameOperation(ctx, r.Operation, r.Params)
 	case "kube_contexts", "kube_nodes":

@@ -27,6 +27,9 @@ func (m *dashboardModel) modalGeometry() (int, int) {
 	return width, height
 }
 func (m *dashboardModel) viewportGeometry() (int, int) {
+	if m.runFullscreen() {
+		return m.width, max(1, m.height-2)
+	}
 	if m.modal() {
 		width, height := m.modalGeometry()
 		return width - 4, height - 2
@@ -283,6 +286,9 @@ func (m *dashboardModel) footer() string {
 	return "↑↓ select · Enter inspect · [/] Filter · Tab feed · [?] Help · q exit"
 }
 func (m *dashboardModel) View() tea.View {
+	if m.runFullscreen() {
+		return m.runFullscreenView()
+	}
 	if m.width < 45 || m.height < 14 {
 		view := tea.NewView(fitBlock("ARM dashboard\n\nEnlarge the terminal to at least 45 × 14.\nq or Ctrl+C exits; leases keep running.", m.width, m.height))
 		view.AltScreen = true
@@ -405,4 +411,25 @@ func (m *dashboardModel) exitFooter() string {
 		right = strings.Replace(right, " · [u] Recovery", "", 1)
 	}
 	return fitBlock(align(keycap("q", "Exit", "quiet")+muted.Render(" leases keep running"), muted.Render(right), m.width), m.width, 1)
+}
+
+func (m *dashboardModel) runFullscreenView() tea.View {
+	ui := m.runsUI
+	mode := "paused"
+	if ui.following {
+		mode = "following"
+	}
+	title := "RUN LOG · " + safe(ui.selected.Name) + " · " + mode
+	if !m.connected {
+		title = "DISCONNECTED · " + title
+	}
+	// This is a full terminal reading surface: only a one-line title and
+	// controls remain around the same viewport and transcript buffer.
+	content := fitBlock(title, m.width, 1) + "\n" + fitBlock(m.viewport.View(), m.width, max(1, m.height-2)) + "\n" + fitBlock("[z/Esc] Back [f] Follow [o] Fold [q] Exit", m.width, 1)
+	view := tea.NewView(canvasStyle.Render(fitBlock(content, m.width, m.height)))
+	view.AltScreen = true
+	view.WindowTitle = "ARM · Run log"
+	view.MouseMode = tea.MouseModeCellMotion
+	view.OnMouse = m.mouseHandler()
+	return view
 }

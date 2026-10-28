@@ -32,7 +32,7 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     session:{token:'b'.repeat(64),expires_at:lease.expires_at},connection:{disconnect(){log.push('disconnect:old');}},
     state:{connected:false,status:null,epoch:0,cursor:0},targetWindow:null,view,retry:0,
     retryTimer:null,refreshTimer:null,refreshBusy:false,refreshAgain:false,nodeContextInvalid:false,remoteDashboard:null,remoteSlot:null,remoteView:null,screenViewer:null,peerPicture:null,
-    poolConsole:null,meshConsole:null,detailRequest:0,detailLeaseID:open?id:'',detailPanel:oldPanel,detailReviews:oldReviews,resettingSession:false,
+    runsConsole:null,poolConsole:null,meshConsole:null,detailRequest:0,detailLeaseID:open?id:'',detailPanel:oldPanel,detailReviews:oldReviews,resettingSession:false,
     copyLoginGeneration:0,copyingLogin:false,paletteNodes:[],palettePools:[],paletteKubernetes:null,
     pendingLeaseActions:new Set(),pendingReviewConfigurations:new Set(),
     roots:{screen:{replace(){}}},detailBody:{},

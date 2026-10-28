@@ -10,6 +10,21 @@ before Cargo builds. Read `arm agents card gradle-build --json` before owned Gra
 services/builds. Cards explain code-backed behavior, not extra permissions.
 It works offline without creating state. `arm agent list` lists contacts.
 Use `arm run --cpu N --memory SIZE --ttl DURATION --reason "purpose" -- COMMAND`.
+Runs save output for `arm runs`, `arm log [-f] RUN_ID` and both dashboards.
+Use `arm run --quiet ...` to save output without printing it into agent context;
+this still waits and preserves the command's exit status. Use `--agent CONTACT`
+and a concrete `--reason` so the operator can identify the work.
+Route likely long-running commands that need no new lease through
+`arm proxy --quiet --agent CONTACT --reason "purpose" -- COMMAND`.
+Proxy records command/output without reserving resources; it does not bypass
+required admission or a refused lease. Keep its returned run ID (for leased work,
+the lease ID is also the run ID). After quiet work fails, read `arm log RUN_ID`;
+use `arm log -f RUN_ID` to follow it from another terminal. Find IDs, commands,
+reasons and retained byte counts with `arm runs --json`. To read only later output,
+use `arm log RUN_ID --offset BYTE_OFFSET`; offsets count bytes, not lines.
+Command arguments,
+working directory and output are visible to authorized local dashboard readers;
+avoid secrets in arguments/output. Lost reporting leaves execution uncertain.
 Use `--wait` to queue locally for capacity. A grant is required before work begins.
 CPU/memory/disk promises are cooperative, not kernel hard limits. CPU, memory
 and disk pools follow current OS headroom and may shrink or become stale; inspect

@@ -79,6 +79,8 @@ func (m *dashboardModel) baseControls() []mouseControl {
 		return []mouseControl{{"y", "Send reviewed"}, {"n", "Keep unsent"}, {"pgup", "↑"}, {"pgdown", "↓"}}
 	case m.record != nil:
 		return []mouseControl{{"enter", "Expand"}, {"esc", "Back"}, {"pgup", "↑"}, {"pgdown", "↓"}}
+	case m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil:
+		return []mouseControl{{"f", "Follow/pause"}, {"o", "Fold"}, {"z", "Fullscreen"}, {"home", "Start"}, {"n", "Next page"}, {"esc", "Runs"}}
 	case m.detail != nil:
 		return []mouseControl{{"e", "Extend"}, {"x", "Release"}, {"c", "Cancel"}, {"h", "Check-ins"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Back"}}
 	case m.poolUI != nil:
@@ -130,14 +132,14 @@ func (m *dashboardModel) controlBar() (string, []mouseRegion) {
 // Bind an input to the exact rendered state: resize, dialog replacement, pending
 // transitions, selection or content changes invalidate delayed mouse commands.
 func (m *dashboardModel) mouseFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%d/%d/%d/%t/%t/%p/%p/%p/%d/%s/%s/%p/%x", m.width, m.height, m.view, m.selected, m.viewport.YOffset(), m.feedOffset, m.detailGeneration, m.pending, m.feedFocus, m.review, m.composer, m.record, m.messageOperation, m.messageBusy, m.inputMode, m.ioPicker, sha256.Sum256([]byte(m.displayContent()+fmt.Sprint(m.feedItems())+m.poolMouseFrame()))) + fmt.Sprintf("/names:%p", m.nameUI)
+	return fmt.Sprintf("%dx%d/%d/%d/%d/%d/%d/%t/%t/%p/%p/%p/%d/%s/%s/%p/%x", m.width, m.height, m.view, m.selected, m.viewport.YOffset(), m.feedOffset, m.detailGeneration, m.pending, m.feedFocus, m.review, m.composer, m.record, m.messageOperation, m.messageBusy, m.inputMode, m.ioPicker, sha256.Sum256([]byte(m.displayContent()+fmt.Sprint(m.feedItems())+m.poolMouseFrame()))) + fmt.Sprintf("/names:%p/run-full:%t", m.nameUI, m.runFullscreen())
 }
 
 // Read-only wheel deltas can be queued from one rendered frame. Scrolling or
 // telemetry refresh must not discard the next delta; navigation/modal/geometry
 // changes still prevent an old gesture from scrolling a different surface.
 func (m *dashboardModel) mouseScrollFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI) + fmt.Sprintf("/names:%p", m.nameUI)
+	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI) + fmt.Sprintf("/names:%p/run-full:%t", m.nameUI, m.runFullscreen())
 }
 
 func mouseKey(key string) tea.KeyPressMsg {
@@ -156,6 +158,10 @@ func mouseKey(key string) tea.KeyPressMsg {
 		code = tea.KeyEnter
 	case "esc":
 		code = tea.KeyEscape
+	case "home":
+		code = tea.KeyHome
+	case "end":
+		code = tea.KeyEnd
 	case "pgup":
 		code = tea.KeyPgUp
 	case "pgdown":
@@ -168,6 +174,15 @@ func mouseKey(key string) tea.KeyPressMsg {
 	return tea.KeyPressMsg{Code: code}
 }
 func (m *dashboardModel) mouseRegions() []mouseRegion {
+	if m.runFullscreen() {
+		var regions []mouseRegion
+		for _, control := range []struct{ key, label string }{{"z", "[z/Esc] Back"}, {"f", "[f] Follow"}, {"o", "[o] Fold"}, {"q", "[q] Exit"}} {
+			if x := strings.Index("[z/Esc] Back [f] Follow [o] Fold [q] Exit", control.label); x < m.width {
+				regions = append(regions, mouseRegion{x: x, y: m.height - 1, width: min(len(control.label), m.width-x), height: 1, key: control.key, row: -1})
+			}
+		}
+		return regions
+	}
 	_, regions := m.controlBar()
 	regions = append(regions, mouseRegion{x: 0, y: m.height - 1, width: 10, height: 1, key: "q", row: -1})
 	if x := strings.Index(ansi.Strip(m.exitFooter()), "[u] Recovery"); x >= 0 && m.canOpenRecovery() {
@@ -256,6 +271,17 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 			starts[row] = i
 			row += 4 + len(item.Deliveries)
 		}
+	case m.view == 7 && m.runsUI != nil && m.runsUI.selected == nil:
+		base := 2
+		if !m.connected {
+			base += 2
+		}
+		if m.runsUI.err != "" {
+			base += 2
+		}
+		for i := range m.filteredRuns() {
+			starts[base+4*i] = i
+		}
 	case m.view == 4:
 		for i := range m.events {
 			starts[3*i] = i
@@ -300,10 +326,15 @@ func (m *dashboardModel) mouseHandler() func(tea.MouseMsg) tea.Cmd {
 			if mouse.Button == tea.MouseWheelDown {
 				direction = 3
 			}
-			if direction == 0 || mouse.Y < 4 || mouse.Y >= height-4 {
+			top, bottom := 4, height-4
+			if m.runFullscreen() {
+				top = 1
+				bottom = height - 1
+			}
+			if direction == 0 || mouse.Y < top || mouse.Y >= bottom {
 				return nil
 			}
-			event := dashboardMouseMsg{frame: scrollFrame, wheel: direction, region: mouseRegion{feed: width >= 110 && mouse.X >= mainWidth+2}}
+			event := dashboardMouseMsg{frame: scrollFrame, wheel: direction, region: mouseRegion{feed: !m.runFullscreen() && width >= 110 && mouse.X >= mainWidth+2}}
 			return func() tea.Msg { return event }
 		}
 		if _, ok := msg.(tea.MouseClickMsg); !ok || mouse.Button != tea.MouseLeft {
@@ -330,6 +361,9 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cm
 			m.feedOffset = max(0, min(max(0, len(m.feedItems())-1), m.feedOffset+msg.wheel))
 		} else {
 			m.viewport.SetYOffset(m.viewport.YOffset() + msg.wheel)
+			if m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil {
+				m.runsUI.following = false
+			}
 		}
 		return nil
 	}
@@ -339,6 +373,10 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cm
 	r := msg.region
 	if strings.HasPrefix(r.key, "nav") {
 		m.recovery = nil
+		if m.runsUI != nil {
+			m.retireRuns()
+			m.runsUI.selected = nil
+		}
 		m.detail = nil
 		m.record = nil
 		m.resourceID = ""

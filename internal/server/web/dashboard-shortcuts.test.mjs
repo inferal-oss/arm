@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {dashboardShortcut, installDashboardShortcuts} from './dashboard-shortcuts.mjs';
 import {createDashboardHistory, dashboardViews} from './route.mjs';
 const event = (key, extra = {}) => ({key, target: {tagName:'BODY'}, ...extra});
-test('digits map to the same eight ordered views, never arbitrary keys or modifiers', () => {
-  for (let index=0; index<8; index++) assert.equal(dashboardShortcut(event(String(index+1))),dashboardViews[index]);
-  for (const key of ['0','9','!','Digit1','11','1\n','',undefined]) assert.equal(dashboardShortcut(event(key)),null);
+test('digits map to the same nine ordered views, never arbitrary keys or modifiers', () => {
+  for (let index=0; index<9; index++) assert.equal(dashboardShortcut(event(String(index+1))),dashboardViews[index]);
+  for (const key of ['0','!','Digit1','11','1\n','',undefined]) assert.equal(dashboardShortcut(event(key)),null);
   for (const flag of ['defaultPrevented','repeat','isComposing','altKey','ctrlKey','metaKey','shiftKey'])
     for (const key of ['1','8']) assert.equal(dashboardShortcut(event(key,{[flag]:true})),null,flag);
   assert.equal(dashboardShortcut(event('1',{keyCode:229})),null);
