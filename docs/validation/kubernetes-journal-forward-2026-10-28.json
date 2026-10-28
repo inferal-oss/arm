@@ -1,0 +1,472 @@
+{
+  "status": "SCOPED_SEVEN_FIX_NATIVE_GATE_ACCEPTED",
+  "base": "180e56a8c04888651e8150ea7979cc887cb98b43",
+  "reviewed_source_tree": "ed225ecbebf30769b299bbd539e5150ea53e7633",
+  "source_review_sha256": "8164c22b3a1bae27fab9a8e62a7efaf2012ccfeb9bb6562e41e3e5509df375b3",
+  "source_payload": [
+    {
+      "base_sha256": "926d750643c459ee91d82756ceda64c769548254bc3a0717230741000306a001",
+      "bytes": 14834,
+      "mode": "100644",
+      "path": "internal/kubejournal/journal_test.go",
+      "sha256": "32557ea5e9fe38d226485cba011d90f4697130224473f7ea4e2a618220e5af84"
+    },
+    {
+      "base_sha256": "c44602985925b9526a5dd58dda996fbb1c8e8dab4d1ff6e5b94c184d7e425dff",
+      "bytes": 2966,
+      "mode": "100644",
+      "path": "internal/kubejournal/persistence.go",
+      "sha256": "26e042485c3615509e9d5850b54a10dd910580cf4f5f2471907804812e866f54"
+    },
+    {
+      "base_sha256": "43b537ceec6b40699abf28db347705377d95a810b66b2dbce9beb407b1576767",
+      "bytes": 9784,
+      "mode": "100644",
+      "path": "internal/kubejournal/transitions.go",
+      "sha256": "f40954cd6fa7b16680423f239bf9c1ee57fa0900cf1a5c9a2ac755d3d2398bcd"
+    },
+    {
+      "base_sha256": "235df5cbe0898716c07060717f69136ae215c7684a73db07ab2cd4ee1798a6fd",
+      "bytes": 11213,
+      "mode": "100644",
+      "path": "internal/manager/kubernetes_forward_port.go",
+      "sha256": "aca7b6fa95194ea22e7fcd2fc4b3dda83286eaf4e3af22110b0e1a4f789291d2"
+    },
+    {
+      "base_sha256": "0b869de7895903da7941806dac38c5d8ccea90b0006e1f293e6e1a8e00c4bdc9",
+      "bytes": 13031,
+      "mode": "100644",
+      "path": "internal/manager/kubernetes_forward_port_test.go",
+      "sha256": "ce1b88d6301931b555c15c4bc8eae21e8345a272affacbd12033bd9d94dbf83a"
+    },
+    {
+      "base_sha256": "39fa8d9be60950ce6d2170eaf853df4a0a6eeee7ebad5b7f577f7e99cf562125",
+      "bytes": 24034,
+      "mode": "100644",
+      "path": "internal/mesh/coordination.go",
+      "sha256": "bb07a03c13e11706d6cb4dcaa27dba8d21d9e3bb63e569ec971ccec488195b5d"
+    },
+    {
+      "base_sha256": "0b91b80d444aae9abc0d8096f68a6e2589fa410f14469fd7d764ab3eb4b43ae5",
+      "bytes": 6804,
+      "mode": "100644",
+      "path": "internal/mesh/kubernetes_workflow_test.go",
+      "sha256": "116c1a2177a661bee739369db2471f674180c8c5767b82b3d964c46f694f58cd"
+    }
+  ],
+  "control_seal_sha256": "88c6ea2757cf9ee2a917623ba885d6d348380f1c843cd057978fd655ba4556cf",
+  "control_review_sha256": "390400bb2c0bc9c8cf095ae31bfee6f8e1bef76d0e0c8366587d9a39d6f84486",
+  "actual_result_sha256": "af1e6ee99863281dddfc37784c9db69ad94c6db38a25b2fe230f06e27344413d",
+  "race": {
+    "os": "Darwin",
+    "arch": "arm64",
+    "CGO_ENABLED": "1",
+    "roots": 30,
+    "named_run": 67,
+    "named_pass": 67,
+    "named_fail": 0,
+    "named_skip": 0,
+    "no_duplicate_or_unexpected_names": true,
+    "packages": {
+      "getarm.org/internal/kubejournal": "pass",
+      "getarm.org/internal/mesh": "pass",
+      "getarm.org/internal/manager": "pass"
+    },
+    "roster": [
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageAttemptRequiresExactApprovalAndAcknowledgedBinding",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageCancellationAfterBindingRefusesAttemptButRecordsCleanup",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/generation",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/grant",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/host",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/pod",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/same",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/source-pin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/ssh",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageConnectorCannotSubstituteOriginalDraftPins/uid",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageFinalObservationBoundsPreserveOriginal",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageFinalObservationBoundsPreserveOriginal/aggregate",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageFinalObservationBoundsPreserveOriginal/string",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageLostAckAndCancellationPreservePriorAuthorization",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageProveRequiresIndependentForwardPortRetirement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageProveRequiresIndependentForwardPortRetirement/positive",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageProveRequiresIndependentForwardPortRetirement/unknown-close",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageProveRequiresIndependentForwardPortRetirement/unsettled-port",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageReviewHashIncludesGenerationAndDeclineIsFinal",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/alias",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/duplicate",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/huge",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/missing",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/null-review",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/null-stages",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/tail",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/unknown",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/kubejournal",
+        "name": "TestStageStrictCodecRejectsAliasesDuplicatesAndMissingFields/valid",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardCancellationAtFinalBindCutCreatesNoBinding",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin/port",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin/source",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin/storage",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardFirstCloseFailureRetainsSourceAndPort",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardJoinedCallerAtBindCutCreatesNoBinding",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardManagerCloseWaitsForOriginalCaller",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardOriginalTripleCloseAndCachedBinding",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardRequestDebtSurvivesPositivePortAndCPUClosure",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardSQLFailureStillClosesOriginalAndRetainsSettlement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardSocketForkExclusionAndFirstClose",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardSocketForkExclusionAndFirstClose/cloexec-refused",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardSocketForkExclusionAndFirstClose/close-uncertain",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesForwardSocketForkExclusionAndFirstClose/normal",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesSourcePortRoleReservedIndependentlyOfProject",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile/refused",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile/success",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestKubernetesWorkflowContractAcknowledgmentPrecedesProtectedFile/unknown-contract",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestRelayTransitReleaseRequiresOriginalJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestCoordinationCrossWorkerTargetAndRevision",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestCoordinationDurableWorkerCapAndProspectiveAttemptTarget",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestCoordinationResumeChildNormalizesToImmutableRoot",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestCoordinationReviewBoundCASAndSingleDecision",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowFinalEnvelopeRefusalPreservesProtectedBytes",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowFinalEnvelopeRefusalPreservesProtectedBytes/aggregate",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowFinalEnvelopeRefusalPreservesProtectedBytes/string",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowFinalEnvelopeRefusalPreservesProtectedBytes/target-count",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates/alias",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates/duplicate",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates/missing-stages",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "name": "TestKubernetesWorkflowProtectedWriterCASAndGenericDecisionRefusal",
+        "status": "pass"
+      }
+    ],
+    "raw_log_sha256": "e250c30a1916f8f477122661a4f9f8dc63f764275dfd55da097fc5264b2bc529",
+    "roster_sha256": "880f99b6de154be269f461eb5db31aa1fd1421a6bf27769f7d48a24e975d5743"
+  },
+  "vet": {
+    "packages": [
+      "./internal/kubejournal",
+      "./internal/mesh",
+      "./internal/manager"
+    ],
+    "exit": 0,
+    "stdout_empty": true,
+    "stderr_empty": true
+  },
+  "linux_arm64_compile_only": {
+    "linux-kubejournal": {
+      "test_execution": false,
+      "bytes": 32556714,
+      "sha256": "e0cd61db3df42c248fd9fad45b026cd204f9a3e62216cc4094bb7f4ecc8fa2c7",
+      "elf64_arm64": true
+    },
+    "linux-mesh": {
+      "test_execution": false,
+      "bytes": 36426591,
+      "sha256": "adc6d66aaf564849f136b77f2079f6bfd65291dbd6f8caa21620291a4e1f29fc",
+      "elf64_arm64": true
+    },
+    "linux-manager": {
+      "test_execution": false,
+      "bytes": 55286644,
+      "sha256": "f35ea432039672533be65e793d481430cf693891b0547d0ef3a18cdfe6bde7cf",
+      "elf64_arm64": true
+    }
+  },
+  "original_child_closure": {
+    "count": 5,
+    "all_original_helper_returns_exit0": true,
+    "all_output_hashes_match": true,
+    "scope": "Reviewed a107 original wait/pipe-join contract; no arbitrary escaped-descendant closure claim."
+  },
+  "source_controls": {
+    "regular_source_files": 2727,
+    "byte_size_kind_executable_mode_membership_match": true,
+    "git_base_index_workdiff_indexdiff_match": true,
+    "selected_input_pins": 22,
+    "all_match": true,
+    "final_inputs_unchanged_recorded": true,
+    "cache": "Existing mutable Go build cache used in place, not an immutable input or content snapshot."
+  },
+  "original_outer_completion": "Producer retains original initial/progress/terminal tool reply fields showing exit0; this audit read those retained fields, not an independent app metadata export or second Wait.",
+  "scope": [
+    "KJ1 final strict/canonical journal and complete outer encoded-envelope refusal; legitimate successor preserved.",
+    "KF1 original/probe socket CLOEXEC fork exclusion and sticky first-close ownership; real local sockets and controlled CPU fixtures."
+  ],
+  "limits": [
+    "Linux artifacts are ELF64 little endian machine183; no Linux test/runtime execution.",
+    "No real cluster, public forwarding/onboarding, source provider activation, UI, eight-slot helper or current/later-main acceptance.",
+    "Older failed gates and scoped predecessors are not relabeled as this gate.",
+    "No hermetic compiler/OS/all-descendant or kernel-close-failure measurement claim."
+  ],
+  "focused_source_commit": "2da67aa643becd8e645f74ae0369a4415f61053c"
+}

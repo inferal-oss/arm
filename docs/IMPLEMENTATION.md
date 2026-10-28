@@ -2643,3 +2643,20 @@ the first gate exposed a valid never-granted PID-zero settlement case, and
 review of its successor found an acknowledged End/Close predecessor ordering
 case. Both must be resolved without adopting arbitrary saved process identity
 or a changed row. Public activation and current composition remain open.
+
+### Reviewed forwarding and onboarding branches awaiting composition
+
+Private Unix binder `48d21fc1` now has focused source and native lifecycle
+acceptance, documented in `ceea798b`; it exposes no public accept worker.
+Kubernetes correction `2da67aa6` keeps final journal writes within the strict
+reader envelope and excludes fork/exec inheritance during original and probe
+socket construction. Its seven source files are reviewed and validated on
+the isolated onboarding foundation. Neither branch is accepted as the current
+combined main application. Unified installation, readiness and enrollment
+remain implementation work.
+
+Sync composed source `15b18897` closes the shared preparing/operation phase
+check after the lifecycle-revocation correction. Its private original-owner
+bridge still requires final composed execution audit and production
+prerequisites; retrospective guest evidence does not establish current-source
+or public sync acceptance.

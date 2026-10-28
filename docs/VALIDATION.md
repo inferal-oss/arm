@@ -6631,3 +6631,23 @@ unrun. Raw run/status sets agree, captured before/after source records agree,
 and the failure remains failed. The next source-only correction retains a
 review finding for legitimate End/Close ACK ordering. No current composed
 acceptance follows. [Normalized evidence](validation/retained-settlement-recovery-2026-10-28.json).
+
+### Kubernetes journal and socket correction
+
+Focused `2da67aa6` matches the reviewed candidate tree. The affected Darwin
+race run executes 30 roots / 67 named cases, all pass with no skips, and
+three-package vet passes. All three Linux ARM64 test artifacts pass compile-only
+ELF/header checks; no Linux execution occurred. Five original child returns,
+2,727 source files and 22 selected pins match the frozen gate. This accepts
+the isolated correction, without current-main, cluster or onboarding workflow
+acceptance. [Normalized evidence](validation/kubernetes-journal-forward-2026-10-28.json).
+
+### Current Sparkline browser partial result
+
+Independent audit accepts four actual layouts, 24 matched rendering states,
+16 live sample clicks, both example paths and three regional keyboard checks.
+The original external Arabic digit assertion remains failed: it expected
+localized digits while the documented component preserves stored lexical
+numeric text. Arabic keyboard and 512/513-sample witnesses remain unrun. Both
+active mount disposals returned and the owned server closed; server exit zero
+does not establish UI success. [Qualified partial evidence](validation/semblance-sparkline-ui-partial-2026-10-28.json).
