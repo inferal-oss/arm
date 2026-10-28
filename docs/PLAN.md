@@ -504,3 +504,32 @@ intent/result publication, unknown-effect reconciliation, hard-crash recovery
 without PID adoption, observed stopped-state evidence, full controller/model
 correspondence and native Linux execution remain required. Production
 `MaxPauseJobs: 0` and `AllowPause: false` remain unchanged.
+
+
+### Current integration and survey follow-through
+
+The isolated composition of forwarding, pressure, run reporting and degraded
+persistence is not accepted. At source tree `5f2952a5`, its native race gate
+executes all 48 selected roots: 47 pass and one fails. Two existing
+checkpoint-and-settlement subcases fail ordinary reconciliation after positive
+original joins and refused settlement writes. The fix must preserve original
+completion or conservative charged recovery evidence; saved PID fields cannot
+supply signal or settlement authority. Targeted vet did not run after the race
+failure. The five additional holder-regression roots pass all 24 named nodes
+within this failed aggregate. Prior passing feature evidence retains its
+recorded source scope.
+
+The survey also includes the storage-pool implementation: configuration,
+shared-backing capacity,
+bounded opt-in measurements, pool displays and workload guidance require
+reviewed commits and separate native macOS/Linux evidence. Run-history
+foundation `02c7a1d8` is published; compact run-list presentation continues
+separately and is not accepted from the earlier fullscreen/log captures.
+
+Provider C1 strict readers, charged-XFS scope, Kubernetes source profiles and
+the forwarding retention guard have separate review handoffs. Reader-bound
+and identity/schema findings must be fixed before integration; source-only
+foundations do not complete their public workflows. The current Semblance
+publication composition is source-ready on frozen `d879c3a0` for bounded
+affected checks, preserving the accepted earlier numeric evidence. Its new
+runtime checks, draft submissions and ARM dependency promotion remain open.
