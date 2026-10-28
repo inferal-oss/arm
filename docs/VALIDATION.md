@@ -6708,3 +6708,43 @@ physical-clock, image, real provider, format activation, Linux execution or
 full lifecycle acceptance. The optional mutation overlay was not run. Literal
 unified-patch context whitespace is retained; other owned code/docs pass the
 scoped whitespace check and the patch passes its applicability check.
+
+
+### Public website pre-render and browser takeover
+
+Website feature `768ecdb` is bound by the
+[normalized source and artifact evidence](validation/website-prerender-2026-10-28.json).
+On Darwin arm64 with Node 26.12.1, npm 11.20.0 and pinned Playwright 1.64.1 /
+Chromium 156.0.8078.4, final-source typecheck, all four gallery snap regressions
+and all four screenshot-integrity cases pass without skips. Full publish builds
+pass at `/` and `/arm/`, each rendering four pages from WAT, emitting the shared
+stylesheet and verifying source overlays, native navigation destinations,
+canonical/Go metadata, WAT-only assets and complete notices. The evidence retains
+both actual build receipts and hashes of the validated runtime/build inputs.
+
+Actual headless Chromium checks pass for both bases: every section is visible and
+styled with JavaScript disabled at 1440 × 900 and 390 × 900, with no horizontal
+body overflow; desktop GET navigation works before takeover. Holding WASM proves
+the content is present before the engine loads. Releasing it replays the queued
+navigation click, preserves the original heading node and reuses the published
+stylesheet. Direct pages, all four legacy fragments, back/forward, gallery
+open/Escape focus restoration, compact native picker selectedness and the Day
+display hook pass. No uncaught page error or caught initialization failure is
+reported. Each run awaits original browser closure and the HTTP server close
+callback; both complete. The task's queued commands are finished.
+
+All eight root-build desktop/narrow section screenshots were inspected for
+layout, type, identity, diagram and control placement. Actual dashboard PNGs
+were absent in this local build; these views show missing gallery image assets.
+No local image decoding/content acceptance is claimed. Fresh current-source
+capture and screenshot provenance remain mandatory in the existing Pages job.
+
+Self-review corrected the SSR module-loader lifecycle, malformed navigation key
+lookup, inherited home canonicals and omitted native build-tool notices. The
+initial overlay refusal, failed loader/navigation cuts and partial browser run
+with an icon-prefixed label locator remain distinct from the complete final pass.
+This is website-local evidence, not acceptance of the embedded framework update,
+Linux/hosted CI, live publication, DNS/HTTPS, or measured public first-paint and
+interactive latency. The client bundle remains substantial; compact navigation,
+display and gallery controls still require the client. Independent review and
+integration remain pending.

@@ -100,6 +100,24 @@ remaining-capacity views, routed SSH and carrier milestones retain the scopes
 recorded in IMPLEMENTATION and VALIDATION. Do not reimport old divergent branch
 history merely because it contains an earlier ready report.
 
+## Website publish-time rendering
+
+Owner: `codex/website-prerender`. Feature `768ecdb` updates only the website's
+pinned Semblance archive, pre-renders all four public sections during the Pages
+build and adopts their HTML in the client. The embedded app, Go module and
+backend are unchanged. Typecheck, four gallery cases, four screenshot-integrity
+cases, full root/prefix SSR/provenance builds, and actual Chromium no-script and
+takeover checks pass on the final source. The native Vite loader, explicit route
+key, canonical metadata and native-tool notice findings are fixed.
+
+[Scoped evidence](validation/website-prerender-2026-10-28.json) records source
+hashes and actual output receipts. Independent review, composed CI with fresh
+dashboard PNG capture, integration and live publication remain coordinator gates.
+No public performance measurement or local screenshot-decoding acceptance is
+claimed; the large client transfer and script-dependent compact/gallery controls
+remain. Both original browser/HTTP fixtures closed and the task's queue commands
+finished. No main merge or push is included in this branch.
+
 ## Active portfolios
 
 | Owner role / branch | Current step | Remaining work and acceptance gates |
