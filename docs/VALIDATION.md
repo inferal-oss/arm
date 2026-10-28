@@ -7640,3 +7640,8 @@ build and deployment passed at `827e09f` in
 [the original publication run](https://github.com/inferal-oss/arm/actions/runs/40730599594);
 that evidence is not relabeled as the supplement. See the
 [separate supplemental record](validation/multiple-run-logs-supplement-integration-2026-10-28.json).
+
+The supplemental automatic main build and Pages deployment both pass on
+`2d74eab` in [the publication run](https://github.com/inferal-oss/arm/actions/runs/40732147166).
+Production inputs and assets are identical to the validated `a7fb230` composition;
+subsequent acceptance-record changes are documentation only.

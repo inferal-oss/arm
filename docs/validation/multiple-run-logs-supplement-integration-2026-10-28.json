@@ -124,7 +124,11 @@
     "recorded_run": "terminal/completed/exit zero",
     "original_backend_joined": true,
     "all_leases_terminal": true,
-    "native_command_binary_sha256": "8ae31f5e32f708e8e886d3c61d17e4477487f894d424a82f70a549ea03dba59a"
+    "native_command_binary_sha256": "8ae31f5e32f708e8e886d3c61d17e4477487f894d424a82f70a549ea03dba59a",
+    "native_command_vcs": {
+      "revision": "a7fb230218980503f8b757a99cfcbb44e5ab6d77",
+      "modified": false
+    }
   },
   "owner_recording": {
     "source": "19664fedaec00ae5539e696333a3f21664f88cc5",
@@ -332,5 +336,12 @@
     "No OS/browser popup, full Go suite, Linux workload, throughput, quota or new TUI acceptance.",
     "Existing original acceptance records and their failed controls retain exact earlier source scopes.",
     "Raw receipts, identities, environment details and local artifacts remain private."
-  ]
+  ],
+  "main_publication": {
+    "source": "2d74eaba81e95f5a43c4694cec71aeabba776433",
+    "run_url": "https://github.com/inferal-oss/arm/actions/runs/40732147166",
+    "build": "passed",
+    "deploy": "passed",
+    "production_inputs_and_assets": "identical to reviewed and validated a7fb230; later differences are acceptance documentation"
+  }
 }
