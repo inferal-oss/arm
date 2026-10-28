@@ -7570,3 +7570,22 @@ Final runtime source is `31bf681`, after `ea4a005`, `43b03ed`, `7d5ec16` and
 `d3f014b`; documentation-only evidence follows it. Ten feature inputs and ten
 retained artifacts are hashed. The earlier accepted window branch, binary,
 media and pre-continuation uncommitted plan content remain preserved.
+
+### Reviewed simultaneous-log integration
+
+On source-equivalent composed input `32bc2a9`, all 428 affected JavaScript tests
+and both real Semblance lifecycle cases pass without failures/skips. The rebuilt
+web asset and native command build pass. All ten owner feature-input hashes and
+ten retained media hashes match; tiled live/paused/completed output and decoded
+video frames were visually inspected. Full video decoding passes after correcting
+the decoder output mode; its original command failure remains recorded separately
+from the successful component checks. Both original validation backends are joined
+and all recorded leases are terminal.
+
+[Nondeploy hosted validation](https://github.com/inferal-oss/arm/actions/runs/40729857322)
+passes on the exact composed source, including current-source dashboard capture,
+SSR integrity and browser checks. The uploaded artifact matches all 612 dashboard
+inputs/assets, four HTML pages and CSS. Eight PNGs pass hashes, CRCs and complete
+zlib/scanline decoding. Owner multi-log recording remains bound to `31bf681`;
+no new narrow multi-window recording, full Go suite or Linux workload/performance
+acceptance is inferred. [Normalized integration evidence](validation/multiple-run-logs-integration-2026-10-28.json).
