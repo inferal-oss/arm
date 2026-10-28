@@ -1,0 +1,207 @@
+{
+  "classification": "ACCEPTED scoped final current-base comparisons and wide-storage counterexample; publication not authorized",
+  "base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+  "review_packet_sha256": "91427677e4bc6a5876b360dc0c563418b1c3f7fc5527b8cc4d1b6c6e1b93abd6",
+  "final_owned_manifest_sha256": "4382a31614893b5f59de63134b0cb71518ba99f6bdaba46a1fa3a6857cb29b1d",
+  "final_patch_sha256": "2c1328a693fab5d5d18a0507a962d847a0d78f74c8047615453d83814f8f82df",
+  "owned_files": 16,
+  "source_delta_since_independent_resolution_review": "Only packed-row test changed: new mixed-Fork control plus c1b31a source-derived vector correction. Other15 owned files exact; production unchanged against reviewed source. Previously checked71production paths not redundantly re-audited.",
+  "prior_accepted_scope_receipt_sha256": "f38e119d87459ba099e9716e5677f5c3eb3943095d8921304e9961956a05d9b9",
+  "prior_accepted_scopes": "67corrected regressions,121affected integration,typechecks,freshbaseline/candidate builds,final2worker normal production/SSR build. No replay of these scopes in this audit.",
+  "images": {
+    "baseline": {
+      "rust": "9d32419aa583f4e6d0a381c3c91796f6289601f686c375361b82fbd46c7e6136",
+      "wat": "8acb7d9c3327e0bd501574d5b58d39bd966f1355b60c4805b22fa0466711f1c7"
+    },
+    "candidate": {
+      "rust": "f0b83cad2f465a24857a3fa9c29a806cf452b0b769977580877fa9a1c43bf0f5",
+      "wat": "d7c1292ade7e58f345b995c94a02e81dc29ceaee47d5e69b990091935cbc54c2"
+    }
+  },
+  "retained_inputs": {
+    "corpus_sha256": "6dbe219357b6e255c433ded3f7afcbc334e82483ae805749b316065d3a17f233",
+    "query_sha256": "4648b9b9af94a6dfeb78e57661649f0bd04ac87509ecdee8c866d9e63c462ee6",
+    "quads": 132822,
+    "source_terms": 57753
+  },
+  "replay": {
+    "owner_exit": 0,
+    "child_exits": [
+      0,
+      0
+    ],
+    "original_wait_pipe_joins": true,
+    "original_selected_inputs_unchanged": true,
+    "selected_inputs": 2109,
+    "dependency_links": 358,
+    "seal_sha256": "8ab9a9f40b1d5e75c4c61a2c9b38cc1ef41382249aa150240a89ae3f2c9eae89",
+    "owner_sha256": "c34603b99bb59d7de971d75a4dc0b833d67c492c5c25e51f56aba311627ebe05",
+    "duration_seconds": 5.906396150588989,
+    "steps": 892,
+    "cells_each": 3568,
+    "actual_mode_roster": "Every step: Rust interpreted,WAT interpreted,Rust compiled,WAT compiled; exact3568identities/order independently checked.",
+    "candidate_vs_current_baseline": "All3568UTF8 result digests/lengths, selected execution branch/counter vectors and error classifications match. Both outcomes returned in all3568cells,0fallback; no backend mismatches or candidate/current-baseline differences.",
+    "query_releases_each": 3568,
+    "fuel_resets_each": 3568,
+    "engines_disposed_each": [
+      "rust",
+      "wat"
+    ],
+    "Calendar_target": "All4cells return empty normalized output; former Rust compiled unreachable absent on current baseline too.",
+    "upstream_only_difference_from_old_reference": {
+      "step": 57,
+      "query_index": 42,
+      "backend": "wat",
+      "compiled": true,
+      "old": "interrupted",
+      "both_current": "returned without fallback",
+      "causal_scope": "Recorded coherent current-baseline behavior, consistent with upstream214 changes; not a candidate regression or a required old interruption invariant."
+    },
+    "final_live_counts_each": {
+      "rust": {
+        "termCount": 64804,
+        "quadCount": 132822
+      },
+      "wat": {
+        "termCount": 69101,
+        "quadCount": 132822
+      }
+    },
+    "report_hashes": {
+      "baseline": "0a8ae84bd958c6d65a083877e0812c934b1078836ff4caa624b9f796f76c786f",
+      "candidate": "63047f85c6b0b71a6f392d74f401875528efa7f8746d453a1550af750d776624"
+    }
+  },
+  "populated": {
+    "owner_exit": 0,
+    "child_exits": [
+      0,
+      0
+    ],
+    "original_wait_pipe_joins": true,
+    "original_selected_inputs_unchanged": true,
+    "selected_inputs": 2109,
+    "dependency_links": 358,
+    "seal_sha256": "437a69171e8750a9c7ae359b9464fc46006edda8e2141cef9ee19f821fffb63c",
+    "owner_sha256": "e6333d352b861839a2d100a7e6e9d7462e836f540da75189f662eb40989c82ba",
+    "duration_seconds": 1.6699199676513672,
+    "fuel": 20000000,
+    "binding": "https://semblance.dev/demo#ex-calendar-week",
+    "cells_each": 4,
+    "query_releases_each": 4,
+    "fuel_resets_each": 4,
+    "engines_disposed_each": [
+      "rust",
+      "wat"
+    ],
+    "count_all8cells": 986,
+    "native_ids_per_cell": 2958,
+    "all8_normalized_row_arrays_exact_equal": true,
+    "digest": {
+      "sha256": "4a5dd4c7017b35b93f2057e549d9c70a934bd6837df16a0f73c712bbbbd188f3",
+      "utf8Bytes": 191533
+    },
+    "modes": [
+      {
+        "backend": "rust",
+        "compiled": false,
+        "hostSelectedCompiled": false,
+        "delta": {
+          "compiledRuns": 0,
+          "interpretedRuns": 1,
+          "fallbacks": 0
+        }
+      },
+      {
+        "backend": "rust",
+        "compiled": true,
+        "hostSelectedCompiled": true,
+        "delta": {
+          "compiledRuns": 1,
+          "interpretedRuns": 0,
+          "fallbacks": 0
+        }
+      },
+      {
+        "backend": "wat",
+        "compiled": false,
+        "hostSelectedCompiled": false,
+        "delta": {
+          "compiledRuns": 0,
+          "interpretedRuns": 1,
+          "fallbacks": 0
+        }
+      },
+      {
+        "backend": "wat",
+        "compiled": true,
+        "hostSelectedCompiled": true,
+        "delta": {
+          "compiledRuns": 1,
+          "interpretedRuns": 0,
+          "fallbacks": 0
+        }
+      }
+    ],
+    "report_hashes": {
+      "baseline": "ab013d2826bbedfb48899715e09e1b5ca4843964977c1ae58f614480595a7f64",
+      "candidate": "6344ec4532762ea6f7b4eb640da15db912879c1b9014aa81e12494934e687349"
+    },
+    "scope": "Current upstream already fixes the Calendar result; this check proves retained-input parity, not new Calendar-fix causality."
+  },
+  "current_wide_counterexample": {
+    "owner_exit": 1,
+    "child_exits": [
+      1
+    ],
+    "original_wait_pipe_joins": true,
+    "original_selected_inputs_unchanged": true,
+    "selected_inputs": 2115,
+    "dependency_links": 358,
+    "seal_sha256": "84e290b56d1106c3036a94cb64d86e682a3f265c4a6b478056f49eb962933bbc",
+    "owner_sha256": "88c1532fba4501bf281eaf4ca53f667c9ef92dca47a50bf32cab50f78c4a343c",
+    "duration_seconds": 2.296276807785034,
+    "classification": "EXPECTED_FAILED_POSITIVE_EXECUTION_REPRODUCED; keep actualexit1",
+    "positive_acceptance": false,
+    "selected_failed": 1,
+    "explicit_unselected": 10,
+    "selected_title": "Rust ordinary compiled row storage runs a sparse RHS beyond the old full-frame word limit without collecting the join product",
+    "same_test_sha256_baseline_candidate": "d59545855409dfb427358056445182aff61b206efde111b7933eae93066544ea",
+    "baseline_image_sha256": "9d32419aa583f4e6d0a381c3c91796f6289601f686c375361b82fbd46c7e6136",
+    "old0081image_not_used": true,
+    "native_error": "RuntimeError: unreachable",
+    "native_frame": "wasm-function[751]:0x47f57",
+    "passive_native_export_check": {
+      "export": "cq_group",
+      "index": 751,
+      "body_range": [
+        294380,
+        294788
+      ],
+      "trap_opcode": "0x00",
+      "i32_guard_limit": 16777216,
+      "basis": "Independent small stdlib WASM section/LEB decode, no engine execution; native PC lies in cq_group at the existing16M guard sequence."
+    },
+    "supported_input": "2000source values times96hours gives192000rows; at least96frame slots imply18432000densewords >16777216 existinglimit. Interpreted192000count assertion precedes baseline compiled trap.",
+    "candidate_same_case": "Passed in previously accepted corrected67 with genuine compiled/no-fallback, exact result multiset and duplicate multiplicity assertions; no candidate rerun required. Ordered-row coverage is separately supplied by the mixed-Fork control.",
+    "raw_vitest_sha256": "e1c52a503d66f576989a2ca7f4a6ee1fdc40ff4ef459b25899aa7bfd2fa2921e",
+    "candidate_report_sha256": "03db36cf7ba238cd6f44474f00fc1c033e8d2403703c9eaedaa9fd5436359283"
+  },
+  "findings": [],
+  "disposition": "Supports focused follow-up for lossless wide sparse ordinary-row storage on current upstream. Do not describe closed Calendar190 as unresolved, infer an ARM numeric prerequisite, or claim all joins/probes globally bounded. Final issue/PR/source publication review stays coordinator-owned.",
+  "preserved_failures": [
+    "Old Calendar/native traces and historical compiler/formatter failures retain original failed scope",
+    "First current67 failed66/67 remains failed",
+    "Normal production linker failure remains failed; earlier4worker success separatelyqualified",
+    "Current baseline wide control stays actualfailed1 despite expected causal value"
+  ],
+  "limits": [
+    "No new tests, query, builds, engine/helper imports, queue, native/browser/network or publication by reviewer.",
+    "Replay earlier outputs retained as Node UTF8 digests/lengths, not complete strings; they do not prove exact UTF16 equality for malformed surrogates. Target empty strings and populated normalized row arrays are exact retained values.",
+    "Construct normalization sorts/deduplicates and collapses blank-node labels; not a full RDF blank-node isomorphism or exact term-allocation/performance proof.",
+    "Selected inputs stable by original sealed before/final verification; exact current critical input/image/source hashes independently checked, no repeated toolworld/fullsource audit.",
+    "Original helper returned CompletedProcess proves its stated original wait/pipe-join contract; no independently observed kernel Wait or blanket descendant/native-GC/system closure. Outer app metadata left to coordinator.",
+    "No historicalR4 reconstruction, currentfullsuite/main/broaderplatform/browser acceptance. Dense keep heap,16M stack and rowfuel limits remain unchanged, not unlimited/physical-memory or hard preemption claims."
+  ],
+  "independent_audit_sha256": "78a2b34f8f97cded74a3bd4aa960502a31971f4fba3dbe68353777fc86e89e5a"
+}

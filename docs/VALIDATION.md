@@ -5314,8 +5314,9 @@ acknowledgement. No physical picker keyboard, interface removal, forced counter
 reset, physical suspend, other-browser/OS GUI, broader Screen workflow or full
 upstream suite acceptance is claimed.
 
-The separate numeric gate remains 509/510 passing with one compiled Calendar
-parity failure. The initial history capture reaches its 64MiB bound before that
+The earlier separate numeric gate records 509/510 passing with one compiled
+Calendar parity failure. Current upstream fixes that Calendar case independently;
+the complete numeric/component composition still requires current-base validation. The initial history capture reaches its 64MiB bound before that
 query and remains failed. A separately reviewed offline compact codec preserves
 all 5,046 retained events semantically in order, passes 17 synthetic witnesses
 and seven refusal controls, and reduces that measured partial history to
@@ -6355,3 +6356,29 @@ The renderer reports 1,922 route renders, without a claim of that many distinct
 HTML files. Earlier test-oracle and linker-environment failures remain failed.
 The retained comparison/current unresolved-need assessment and publication
 remain separate; ARM's vendored engine is unchanged.
+
+
+### Current Semblance comparisons and draft submission
+
+[Final comparison/control evidence](validation/semblance-current-comparison-2026-10-27.json)
+accepts all 3,568 retained cell comparisons between coherent current baseline and
+candidate images. Both return at the formerly interrupted WAT cell. All eight
+current populated-query cells return 986 identical normalized triples with
+genuine selected modes and no fallback. Releases, fuel resets, engine disposal
+and original helper-return contracts pass in their recorded scope.
+
+The separate one-case current-baseline counterexample fails at the original
+16M-word `cq_group` guard after its interpreted 192,000-row assertion passes.
+Its selected native trap maps to that guard; the candidate passes the same
+regression without raising the limit. This expected failed baseline run stays
+failed. It establishes the remaining generic wide-table issue, independently
+of the Calendar problem already fixed upstream.
+
+[Draft publication evidence](validation/semblance-draft-218-2026-10-27.json)
+verifies all sixteen committed Git objects/modes at `7d057f24`, current base
+`517df976`, issue #217 and its engine-plan link, exact reviewed PR text, draft
+[PR #218](https://github.com/inferal-oss/semblance/pull/218) and successful
+[Engines CI](https://github.com/inferal-oss/semblance/actions/runs/40637054006).
+No upstream merge, ARM dependency promotion or current numeric/Sparkline
+acceptance follows. The latest recovered 49-path numeric/component continuation
+is separately awaiting current-base composition and validation.

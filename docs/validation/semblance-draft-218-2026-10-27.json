@@ -1,0 +1,42 @@
+{
+  "status": "REVIEWED_DRAFT_PR_CREATED_ATTACHED_ENGINES_CI_SUCCESS",
+  "repository": "inferal-oss/semblance",
+  "issue": "https://github.com/inferal-oss/semblance/issues/217",
+  "engine_plan": "https://github.com/inferal-oss/semblance/issues/9",
+  "pull_request": "https://github.com/inferal-oss/semblance/pull/218",
+  "draft": true,
+  "merged": false,
+  "source": {
+    "commit": "7d057f248f9dde293aad886eea3a82b998db99b0",
+    "tree": "6e58d23c2bf427ae2c4f047d94e8586eca1aa986",
+    "base": "517df976f02e1f88bb0a7ff536cf3f2c6109fc30",
+    "branch": "codex/calendar-packed-rows-upstream",
+    "changed_paths": 16,
+    "all_Git_blob_hashes_and_modes_match_review": true,
+    "source_manifest_sha256": "4382a31614893b5f59de63134b0cb71518ba99f6bdaba46a1fa3a6857cb29b1d",
+    "patch_sha256": "2c1328a693fab5d5d18a0507a962d847a0d78f74c8047615453d83814f8f82df"
+  },
+  "review": {
+    "production_source": "01f06e9c27717d3411156834b8f492918d1530fccba9e619bdebebe8f430b788",
+    "publication_source_claims_privacy": "14a4b823033d3090f03ea2596711bd65b02166c183e88cf9c287693bc4cb39c6",
+    "targeted_build_evidence": "f38e119d87459ba099e9716e5677f5c3eb3943095d8921304e9961956a05d9b9",
+    "comparison_control_evidence": "8a67bfd00218b53a58407fbf993c7bc35f46eaa93ccce5ab80518b85556e2ca1",
+    "published_PR_body_sha256": "4250162ad864698e607f80f8ab6a88644bf4158eb4ca96e3081a17511ca46ecb",
+    "published_body_readback_matches_reviewed_text_and_Closes_217": true,
+    "issue_linked_from_engine_plan": true,
+    "PR_attached_to_work_record": true
+  },
+  "CI": {
+    "name": "Engines",
+    "status": "completed",
+    "conclusion": "success",
+    "run": "https://github.com/inferal-oss/semblance/actions/runs/40637054006",
+    "queried_for_exact_head_commit": true
+  },
+  "scope": [
+    "Current upstream already fixes Calendar through PR214 and closes190. This follow-up fixes the separately reproduced wide sparse ordinary-table stack limit.",
+    "188 targeted cases, current3568-cell replay comparisons and eight populated query cells with986 normalized triples are accepted within the linked records. The expected current-baseline wide-table failure remains failed.",
+    "No upstream merge, release or ARM vendored dependency change follows from draft submission. This generic wide-table patch is not the ARM numeric/Sparkline promotion prerequisite.",
+    "Existing numeric30 plus Sparkline19 source is a separate recovered continuation requiring current-base composition/validation; older failed numeric cohorts remain failed."
+  ]
+}

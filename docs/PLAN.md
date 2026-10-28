@@ -279,7 +279,7 @@ not reactivated by retaining their technical records.
 - [Corrected native UI follow-up](validation/semblance-renderer-review-2026-10-27.json): exact source/build/native/browser/cleanup evidence, corrected option selectedness and keyboard hints, with upstream submission and later composition gates explicit.
 - [Resources v2 completed cohorts](validation/resources-ui-v2-scoped-2026-10-27.json): source-bound frontend/native/build/bootstrap observations with exact assertion controls, missing-path and old-harness limits; no product-browser acceptance.
 - [Compact Monitor](validation/semblance-compact-monitor-2026-10-27.json): current-source reproducible builds, affected checks and actual desktop/phone review.
-- [Calendar diagnostic](validation/numeric-calendar-diagnostic-2026-10-27.json): complete bounded history capture with original compiled-Rust failure retained; causal baseline replay remains open.
+- [Calendar diagnostic](validation/numeric-calendar-diagnostic-2026-10-27.json): historical bounded capture retains its original compiled-Rust failure; later current-base comparisons establish the upstream fix separately.
 - [Qualified Sparkline native observations](validation/sparkline-qualified-native-2026-10-27.json): 80 source-bound configurations, regional keyboard/locale and point-limit witnesses, preserving selector/geometry/numeric failures.
 - [Upstream component submissions](validation/semblance-upstream-prs-2026-10-27.json): reviewed draft PRs and exact per-PR targeted/native evidence; submission is not upstream acceptance.
 - [Frozen corrected website](validation/website-artifact-ec2f9c9-2026-10-27.json): eight views, native picker phases, WAT-only assets and notices, retaining prior failures.
@@ -349,7 +349,7 @@ no runtime acceptance.
 | Later | Remote operational parity | Selected remote web/TUI windows deliberately allow scoped inspection only; live monitoring/events, contacts/messages, administration and lease mutations are unavailable there. | Add each supported destination-granted workflow through typed host-bound APIs and original-key recovery, with matching UI behavior. Never substitute localhost or treat inspection as parity. |
 | Later | Screen access | Direct-peer Standard VNC and resource retention are integrated. Sustained independent input, live clipboard, separate-user/headless cases, revocation, multi-hop and High Performance breadth remain open. | Keep the accepted direct Standard boundary; separately review routed view/control grants, held resources and disposable live-desktop evidence. Socket/noVNC tests do not establish OS interaction. |
 | Later | Workload and resource breadth | Cargo/Gradle support is intentionally constrained; broader configuration/wrappers/shared services, dedicated uv adapters, GPU/unified-memory, network budgets and distributed pools remain unfinished. | Deliver capability-specific adapters with real tools/hardware and explicit ownership/accounting. Shared local counts and observation are not distributed allocation or kernel enforcement. |
-| Held dependency | Semblance numeric/Sparkline | Packed-row engine builds, ABI/typecheck, 66 storage/guard/streaming cases and 112 integration cases now have scoped acceptance, including populated Calendar in four genuine modes. Fixed retained replay and the exact populated query now pass in scope; current-upstream builds, 67 regressions, 121 integration cases and two-worker production/SSR build have scoped acceptance. Final retained-comparison and current-need review/publication remain pending. ARM's vendored engine is unchanged. | Review retained comparison results and confirm the remaining current-base need before choosing the focused PR and numeric promotion. Current upstream requires targeted tests on branches; its full suite runs on main after a merge batch. Keep Sparkline dependency #182 and prior failed runs explicit. |
+| Held dependency | Semblance numeric/Sparkline | Current-upstream builds, 67 regressions, 121 integration cases and the two-worker production/SSR build are accepted. Both current baseline and candidate match all 3,568 retained cells and the 986-triple query in every mode. Upstream #214 fixes Calendar; reviewed draft [PR #218](https://github.com/inferal-oss/semblance/pull/218), head `7d057f24`, addresses a separate current wide-table limit and has successful Engines CI. ARM's vendored engine is unchanged. | Compose the recovered latest 30 numeric plus 19 Sparkline paths on current `517df976`, preserving current overlapping framework behavior, then review and validate the actual current roster. Shared conversion #182 remains the component prerequisite; #218 is independent. Preserve old failures and source-qualified native evidence. Branch validation stays targeted; upstream merge is separate. |
 | Scoped future | Installation and releases | Canonical literal `@latest` is accepted for published `81fdccd`, not all later source. Per-user service lifecycle and a later tagged four-platform carrier release are distinct incomplete boundaries. | Retain source-specific public-install evidence. Perform later release/artifact work only for an authorized concrete cut; no tag, merge or deployment follows from this survey. |
 | Scoped future | Cross-user cooperation | Advisory peer summaries and Charm views are integrated; actual different-UID/formal breadth and stronger shared admission/fairness remain unsupported. | Keep advisory reports outside admission/process authority. Stronger cooperation requires its own trusted authority design, not a reinterpretation of peer totals. |
 
@@ -380,7 +380,8 @@ admission beneath unified onboarding. Persistent Host controls from
 Current-upstream Semblance work has fresh Rust/WAT builds and ABI checks, the
 corrected 67-case roster, 121 integration cases and the two-worker production
 build. The earlier 66/67 test-oracle failure stays failed; final retained
-comparisons, current-need review and publication remain separate. No public
+comparisons and current wide-table need are accepted. Draft PR #218 is submitted
+with successful Engines CI; upstream merge remains separate. No public
 sync, provider factory, native pressure pause or ordinary TCP fence is enabled
 by this survey.
 
@@ -400,3 +401,21 @@ pass against the composed configuration and prior Host assets. The supported
 settings, precedence and guarded restart behavior are documented in
 [configuration.md](configuration.md). This does not complete the operations
 portfolio or enable live configuration reload.
+
+
+### Semblance draft and recovered numeric continuation
+
+[Draft PR #218](https://github.com/inferal-oss/semblance/pull/218) publishes the
+reviewed sixteen-path wide sparse-table and bounded-absence patch at `7d057f24`
+on current base `517df976`. Issue #217 is linked from engine plan #9; exact
+published text and source match review, and Engines CI succeeds. The draft is
+unmerged and ARM's dependency is unchanged.
+
+Current upstream already resolves the earlier Calendar failure. The still-open
+shared decimal conversion requirement #182 and Sparkline #155 remain separate.
+The latest retained thirty numeric and nineteen component paths are recovered,
+including the later lexical-cast corrections omitted by an older unlaunched
+preparation packet. Both patches pass source-only apply checks on `517df976`;
+six overlapping framework files need preserved current behavior. This is a
+source continuation, not acceptance of the old 509/510 numeric run or a new
+current-base composition.

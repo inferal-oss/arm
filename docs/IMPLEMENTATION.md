@@ -98,8 +98,10 @@ enable fenced backend features or accept every remote/native operation.
 The separate experimental Sparkline candidate has qualified native evidence for
 80 configurations, regional keyboard/locale behavior and 512-point identity.
 Its 513 selector helper remains failed, with separate unchanged HTML and visual
-evidence supporting visible refusal. The numeric Calendar failure remains open;
-these observations do not promote the numeric dependency or change ARM's bundle.
+evidence supporting visible refusal. The earlier numeric/Calendar cohort remains
+failed, while upstream #214 independently fixes Calendar. The recovered numeric
+and Sparkline source still needs current-base composition/validation; these old
+observations do not promote that dependency or change ARM's bundle.
 
 The component evidence targets `eb80b431`. Later upstream reaction changes need
 separate composition; the disabled-text draft has textual conflicts to resolve.
@@ -2453,3 +2455,20 @@ provider/profile/headroom settings, retention/restore or Linux-runtime acceptanc
 The current configuration/Host composition has scoped actual startup checks;
 Host browser acceptance remains tied to its unchanged reviewed entry and the
 separately built pre-configuration executable.
+
+
+## Wide-table upstream draft and numeric continuation
+
+Reviewed [Semblance PR #218](https://github.com/inferal-oss/semblance/pull/218)
+is submitted as a draft at `7d057f24` with successful Engines CI. It packs sparse
+ordinary Rust tables without raising the existing stack limit and adds limited
+conservative absence checks. Dense legacy `cq_group`, WAT streaming storage and
+current UNION/Fork behavior remain intact. The same wide-table regression traps
+in current upstream and passes on the candidate. This improvement is independent
+of the Calendar fix already supplied by upstream #214.
+
+The draft does not change ARM's vendored engine or complete the shared numeric
+conversion/Sparkline work. The latest retained thirty numeric and nineteen
+component paths, including both later lexical-cast corrections, are being
+composed on current upstream. The earlier failed and qualified native evidence
+retain their original source scope.
