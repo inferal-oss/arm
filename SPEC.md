@@ -361,6 +361,26 @@ Stream custom-pool creation/capacity changes, queue changes, lease lifecycle, wa
 
 Protocol compatibility and errors are versioned. Both interfaces display stale or disconnected state clearly. Client disconnection does not release leases, stop expiry, or suspend enforcement.
 
+### Execution transparency
+
+Model each ordinary command execution as a run with a random stable ID and a
+deterministic readable name, command arguments, working directory, agent, reason,
+status, timestamps, exit result, optional resource lease, and durable output.
+Leased runs preserve admission, expiry and cleanup rules. A local noninteractive
+`arm proxy` records already-authorized work without requesting a new lease;
+proxy observation grants no resources or process authority.
+
+`arm run --quiet` and `arm proxy --quiet` save output without printing it into
+an agent's context while preserving completion waiting and exit status.
+`arm runs` discovers executions; `arm log RUN` reads retained output and
+`arm log -f RUN` follows new bytes. Both dashboards list active and past runs,
+show their associations, and follow selected output by default with pause and
+saved-output navigation. Keep output as data: escape terminal controls and HTML,
+bound rendering and storage, expose truncation, and distinguish reporter loss
+from observed process exit. Agent instructions must explain these workflows and
+log recovery after quiet failures. Preserve existing SSH command/transport privacy;
+run visibility does not broaden remote observation or execution grants.
+
 ### Proposed CLI
 
 ```sh

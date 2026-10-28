@@ -519,3 +519,26 @@ Licensed under either the [Apache License, Version 2.0](LICENSE-APACHE) or the [
 
 The readable-label vocabulary has a separate
 [EFF attribution and CC BY 4.0 license](internal/readablename/NOTICE.md).
+
+### See what commands are doing
+
+`arm run` saves command output. Add `--quiet` to keep output out of an agent's
+context while still waiting for completion and preserving its exit status.
+For authorized noninteractive work that needs no new resource lease, use the local proxy:
+
+```sh
+arm proxy --quiet --agent CONTACT --reason "Wait for the existing build" -- ./wait-for-build
+arm runs
+arm log -f RUN_ID_OR_READABLE_NAME
+```
+
+The web and terminal dashboards list active and past runs with their command,
+agent, reason and optional lease, and follow selected output by default.
+Web logs fold and fill the browser window; terminal logs use `o` to fold,
+`z` for fullscreen and `Esc` to return.
+`arm log RUN` reads a snapshot; `arm log -f RUN` follows. Proxy captures stdout
+and stderr together, reserves no resources, and does not replace required
+admission. Logs, arguments and working directory are visible to authorized local
+readers; do not put secrets in them. Proxy output has explicit retention limits,
+and lost reporting leaves process exit unknown. SSH command text and transport
+output retain their existing privacy boundary and are excluded from run capture.

@@ -69,6 +69,8 @@ type job struct {
 }
 
 type Manager struct {
+	proxyReported map[string]time.Time
+
 	kubernetesSourceAdmissions map[string]bool
 	sourceBeforeAdmission      func()                                  // private disposable causal fixture; runs outside locks
 	kubernetesSources          map[string]*KubernetesSourcePreparation // original native source/parent cancellation only
@@ -221,6 +223,10 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 			return nil, e
 		}
 	}
+	if e = initForwardUnixPairGuard(db); e != nil {
+		db.Close()
+		return nil, e
+	}
 	if fresh {
 		if _, e = db.Exec(`INSERT INTO metadata VALUES ('host',?)`, local.ID()); e != nil {
 			db.Close()
@@ -263,6 +269,10 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 		return nil, e
 	}
 	if e = m.initBudgetRecords(); e != nil && !m.degradeBudgetStartup(e) {
+		db.Close()
+		return nil, e
+	}
+	if e = m.initRunRecords(); e != nil {
 		db.Close()
 		return nil, e
 	}
@@ -1569,6 +1579,7 @@ func (m *Manager) tick() {
 	if m.closing {
 		return
 	}
+	_ = m.expireProxyRuns(time.Now()) // Advisory reporting state; never process authority.
 	reviewsReady := false
 	// Optional review work runs only after ordinary expiry, incidents, queue
 	// reconciliation and admission have had their turn. Always read fresh rows.

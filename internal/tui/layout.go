@@ -39,6 +39,9 @@ func scrollReview(view *viewport.Model, key string) bool {
 }
 
 func (m *dashboardModel) mainWidth() int {
+	if m.runFullscreen() {
+		return m.width
+	}
 	if m.width >= 110 {
 		return m.width - 35
 	}
@@ -62,6 +65,9 @@ func (m *dashboardModel) viewportContent() string {
 	return content
 }
 func (m *dashboardModel) displayContent() string {
+	if m.runFullscreen() {
+		return m.runFullscreenText()
+	}
 	if m.nameUI != nil {
 		return fieldLabels(m.nameText())
 	}
@@ -156,6 +162,11 @@ func (m *dashboardModel) selectionID() string {
 	switch m.view {
 	case 1:
 		r := m.filteredResources()
+		if index < len(r) {
+			return r[index].ID
+		}
+	case 7:
+		r := m.filteredRuns()
 		if index < len(r) {
 			return r[index].ID
 		}
@@ -257,6 +268,8 @@ func (m *dashboardModel) bodyText() string {
 		return m.hostText()
 	case 6:
 		return m.meshText()
+	case 7:
+		return m.runsText()
 	}
 	return ""
 }
@@ -572,6 +585,8 @@ func (m *dashboardModel) itemCount() int {
 	switch m.view {
 	case 1:
 		return len(m.filteredResources())
+	case 7:
+		return len(m.filteredRuns())
 	case 2:
 		return len(m.filteredLeases())
 	case 3:
@@ -583,6 +598,12 @@ func (m *dashboardModel) itemCount() int {
 }
 func (m *dashboardModel) currentRecord() any {
 	index := m.selected
+	if m.view == 7 && !m.feedFocus {
+		records := m.filteredRuns()
+		if index < len(records) {
+			return records[index]
+		}
+	}
 	if m.feedFocus {
 		items := m.feedItems()
 		if index < len(items) {
@@ -614,6 +635,9 @@ func (m *dashboardModel) currentRecord() any {
 	return m.data.status
 }
 func (m *dashboardModel) openSelected() tea.Cmd {
+	if m.view == 7 && !m.feedFocus {
+		return m.openRun()
+	}
 	if m.feedFocus {
 		items := m.feedItems()
 		if m.selected < len(items) && items[m.selected].lease != "" {

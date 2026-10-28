@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-28",
+  "feature_source": "47f9031b5402869a311ae0a64c41040b04c4713e",
+  "reviewed_commits": [
+    "3de2e70",
+    "47f9031"
+  ],
+  "scope": "Local headless Chromium and actual ARM terminal PTY run-log presentation",
+  "capture": {
+    "headless": true,
+    "browser": "Chromium 156.0.8078.4",
+    "playwright": "1.64.1",
+    "xterm": "6.0.0",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "terminal": {
+      "cols": 140,
+      "rows": 48,
+      "source": "actual PTY bytes"
+    },
+    "recorder": "ARM-supervised execution with a one-core cooperative claim"
+  },
+  "checks": [
+    "web: opening reveals below-fold details",
+    "web: saved-log disclosure folded and unfolded",
+    "web: stock fullscreen popover entered",
+    "web: paused view stable while saved log grows",
+    "web: native Escape restores fullscreen control",
+    "web: close restores opener focus",
+    "web: saved leased output visible; no page errors",
+    "tui: paused fullscreen stable while saved log grows",
+    "tui: actual PTY quit and terminal mode restoration",
+    "tui: fold/unfold and full-terminal enter/Escape return",
+    "web and tui: final completion marker and end-of-saved-log observed"
+  ],
+  "artifacts": [
+    {
+      "file": "web-runs.webm",
+      "bytes": 2864296,
+      "sha256": "16e0b4adc12ca499e3b5f2458955b4f9d9a793a91e0933900a8a291ab717726b",
+      "duration": "00:00:14.84"
+    },
+    {
+      "file": "tui-runs.webm",
+      "bytes": 2829632,
+      "sha256": "3ddcbb86d05fcf96c9127747b1466b72608418cd7ccb4133aeacc46f3128343c",
+      "duration": "00:00:14.36"
+    },
+    {
+      "file": "web-history.png",
+      "bytes": 136006,
+      "sha256": "a050d68ce00681fcc235a152b56e71087337c8a9e7a1088ae0b999434bcf8a77"
+    },
+    {
+      "file": "web-fullscreen.png",
+      "bytes": 100811,
+      "sha256": "2019dacd9dd928b11643ee8bac02686439ee86df7d8e66246da30c3b59f6f384"
+    },
+    {
+      "file": "web-complete.png",
+      "bytes": 154253,
+      "sha256": "9d39ca407c5a7b00424f40af7e92e1df22de0800621fdb7f9eb6337d7ccb0e3a"
+    },
+    {
+      "file": "tui-fullscreen.png",
+      "bytes": 87401,
+      "sha256": "5a4ce7175c73efa48cd9b21ead6d9ca2c67d182874090d0b45efda60a4e77c6a"
+    },
+    {
+      "file": "tui-complete.png",
+      "bytes": 295126,
+      "sha256": "8292e887c708243f2590ed43cbec27c0f4332283045f7544fe59be436224d9f9"
+    }
+  ],
+  "binary_sha256": "0e0647772e569f586fdf1c7ad76e2723d029d7e61e164e018b738438df161c2e",
+  "feature_inputs": {
+    "internal/server/web/semblance/runs.mjs": "cd7277cfae792392198b30a32733da9e4cfab8e300e406dda592cc5b3fabee91",
+    "internal/server/web/semblance/app.ttl": "4c47c0499490ff023e2ae7a4daf5d21af78825d6e148b28efa8ccfedb08ce9fe",
+    "internal/server/web/assets/arm.mjs": "45904f3750e36c0b4321617eccbfc2169d2b75490ae85f5d19cff7ff55ea79c3",
+    "internal/tui/runs.go": "e94d34506e9facd4176b0d30af6d9ebf9cf4b4ea3463c8536dadfb83f32255fa",
+    "internal/tui/presentation.go": "e14168185f6287522c3b34e62655669aa0cb506854b037417c5962643303c29d",
+    "internal/tui/tui.go": "99c0b64cfa5c8149435d0ddbfcffb8a212975c15a9ad612e65962d6f3cd12f01",
+    "internal/tui/layout.go": "c44e679f7cfdb7569e842815b3171adddc78f02788285b2096d54300183719c2",
+    "internal/tui/mouse.go": "c7c40c6c7f8eb34b4421467301b53c96d1019284959eb0428e9112d84c77e36d"
+  },
+  "validation": {
+    "javascript": {
+      "passed": 400,
+      "failed": 0,
+      "skipped": 0
+    },
+    "tui_focused_race": "passed",
+    "native_build": "passed",
+    "affected_vet": "passed",
+    "linux_amd64": "compilation only"
+  },
+  "limits": [
+    "Local disposable state only; no peer or remote run coverage",
+    "One native desktop platform and one browser/viewport/terminal geometry",
+    "Full suite and universal descendant cleanup remain unestablished",
+    "Recordings and raw private receipts are retained outside version control"
+  ]
+}

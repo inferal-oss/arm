@@ -49,6 +49,66 @@ var resetSchema = []string{
 	`CREATE INDEX storage_exports_state ON storage_exports(state)`,
 }
 
+// A later Manager may install this optional pre-bind retention group. All
+// objects must match exactly; any row remains an unsettled obligation until a
+// pair-aware reset reader is reviewed. Older databases without the group stay
+// readable for their original obligations.
+var forwardUnixGuardResetSchema = []struct{ kind, name, table, ddl string }{
+	{"table", "forward_unix_pairs", "forward_unix_pairs", `CREATE TABLE forward_unix_pairs (
+	source_id TEXT PRIMARY KEY,
+	storage_id TEXT NOT NULL UNIQUE,
+	phase TEXT NOT NULL CHECK (phase IN ('planned','observed','bind_intent','bound','active','closing','uncertain','terminal')),
+	source_key TEXT NOT NULL,
+	storage_key TEXT NOT NULL,
+	socket_name TEXT NOT NULL,
+	disk_bytes INTEGER NOT NULL CHECK (disk_bytes > 0),
+	data TEXT NOT NULL CHECK (json_valid(data))
+)`},
+	{"trigger", "forward_unix_source_update_guard", "leases", `CREATE TRIGGER forward_unix_source_update_guard
+BEFORE UPDATE ON leases
+WHEN CASE WHEN EXISTS (SELECT 1 FROM forward_unix_pairs p WHERE p.source_id=OLD.id AND p.phase IS NOT 'terminal')
+THEN (NEW.id IS NOT OLD.id
+     OR NEW.request_key IS NOT OLD.request_key
+     OR NEW.request_key IS NOT (SELECT source_key FROM forward_unix_pairs WHERE source_id=OLD.id)
+     OR json_extract(NEW.data,'$.id') IS NOT OLD.id
+     OR json_extract(NEW.data,'$.host') IS NULL
+     OR json_extract(NEW.data,'$.owner') IS NULL
+     OR json_extract(NEW.data,'$.host') IS NOT json_extract(OLD.data,'$.host')
+     OR json_extract(NEW.data,'$.owner') IS NOT json_extract(OLD.data,'$.owner')
+     OR (json_extract(NEW.data,'$.state') IS NOT 'active'
+         AND json_extract(NEW.data,'$.state') IS NOT 'provisioning'
+         AND json_extract(NEW.data,'$.state') IS NOT 'ending'
+         AND json_extract(NEW.data,'$.state') IS NOT 'needs_attention')
+     OR json_extract(NEW.data,'$.request.storage_lease') IS NOT (SELECT storage_id FROM forward_unix_pairs WHERE source_id=OLD.id)
+     OR json_extract(NEW.data,'$.request') IS NOT json_extract(OLD.data,'$.request')
+     OR json_extract(NEW.data,'$.ports') IS NOT json_extract(OLD.data,'$.ports')) ELSE 0 END
+BEGIN SELECT RAISE(ABORT,'unfinished forward Unix source pair retains charge'); END`},
+	{"trigger", "forward_unix_storage_update_guard", "leases", `CREATE TRIGGER forward_unix_storage_update_guard
+BEFORE UPDATE ON leases
+WHEN CASE WHEN EXISTS (SELECT 1 FROM forward_unix_pairs p WHERE p.storage_id=OLD.id AND p.phase IS NOT 'terminal')
+THEN (NEW.id IS NOT OLD.id
+     OR NEW.request_key IS NOT OLD.request_key
+     OR NEW.request_key IS NOT (SELECT storage_key FROM forward_unix_pairs WHERE storage_id=OLD.id)
+     OR json_extract(NEW.data,'$.id') IS NOT OLD.id
+     OR json_extract(NEW.data,'$.host') IS NULL
+     OR json_extract(NEW.data,'$.owner') IS NULL
+     OR json_extract(NEW.data,'$.host') IS NOT json_extract(OLD.data,'$.host')
+     OR json_extract(NEW.data,'$.owner') IS NOT json_extract(OLD.data,'$.owner')
+     OR (json_extract(NEW.data,'$.state') IS NOT 'active'
+         AND json_extract(NEW.data,'$.state') IS NOT 'needs_attention')
+     OR json_extract(NEW.data,'$.request') IS NOT json_extract(OLD.data,'$.request')
+     OR json_extract(NEW.data,'$.artifact.identity') IS NOT json_extract(OLD.data,'$.artifact.identity')) ELSE 0 END
+BEGIN SELECT RAISE(ABORT,'unfinished forward Unix storage pair retains charge'); END`},
+	{"trigger", "forward_unix_source_delete_guard", "leases", `CREATE TRIGGER forward_unix_source_delete_guard
+BEFORE DELETE ON leases
+WHEN EXISTS (SELECT 1 FROM forward_unix_pairs p WHERE p.source_id=OLD.id AND p.phase IS NOT 'terminal')
+BEGIN SELECT RAISE(ABORT,'unfinished forward Unix source pair retains charge'); END`},
+	{"trigger", "forward_unix_storage_delete_guard", "leases", `CREATE TRIGGER forward_unix_storage_delete_guard
+BEFORE DELETE ON leases
+WHEN EXISTS (SELECT 1 FROM forward_unix_pairs p WHERE p.storage_id=OLD.id AND p.phase IS NOT 'terminal')
+BEGIN SELECT RAISE(ABORT,'unfinished forward Unix storage pair retains charge'); END`},
+}
+
 const meshResetSchema = `CREATE TABLE mesh_operations (principal TEXT,key TEXT,operation TEXT,request TEXT,result TEXT,admission TEXT NOT NULL,PRIMARY KEY(principal,key))`
 const syncLeaseBindingResetSchema = `CREATE TABLE sync_lease_bindings (lease TEXT PRIMARY KEY,key TEXT NOT NULL,side TEXT NOT NULL,volume TEXT NOT NULL,disk_bytes INTEGER NOT NULL)`
 
@@ -113,11 +173,13 @@ var resetAutoIndexes = map[string]int{
 	"published_agents": 2, "published_agent_changes": 1, "routed_agent_links": 2,
 	"routing_roots": 1, "routing_outbox": 2, "routing_inbox": 2,
 	"routing_graph_issuance": 1, "routing_graph_reports": 1, "routing_graph_observations": 1,
+	"proxy_runs": 2, "proxy_run_chunks": 1,
 	"cargo_workloads": 1, "lease_reviews": 1, "lease_review_policies": 1,
 	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
 	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "host_pressure_state": 1, "host_pressure_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
-	"sync_operations": 1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1, "sync_workspaces": 2,
+	"forward_unix_pairs": 2,
+	"sync_operations":    1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1, "sync_workspaces": 2,
 }
 
 func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, error) {
@@ -127,6 +189,11 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	reviewObjects := map[string][3]string{}
 	reviewSeen := map[string]bool{}
+	forwardUnixObjects := map[string][3]string{}
+	forwardUnixSeen := map[string]bool{}
+	for _, object := range forwardUnixGuardResetSchema {
+		forwardUnixObjects[normalizedSchema(object.ddl)] = [3]string{object.kind, object.name, object.table}
+	}
 	for i, q := range leaseReviewResetSchema {
 		reviewObjects[normalizedSchema(q)] = leaseReviewObjectIdentity[i]
 	}
@@ -152,7 +219,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		syncObjects[normalizedSchema(object.ddl)] = struct{ name, kind, table string }{name, object.kind, object.table}
 	}
 	syncSeen := map[string]bool{}
-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 148`)
+	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 160`)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +234,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if err := rows.Scan(&kind, &name, &table, &raw); err != nil {
 			return nil, err
 		}
-		if count > 147 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+		if count > 159 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
 			return nil, resetSchemaError("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
@@ -189,6 +256,16 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
+		if identity, ok := forwardUnixObjects[normal]; ok {
+			if kind != identity[0] || name != identity[1] || table != identity[2] || forwardUnixSeen[name] {
+				return nil, resetSchemaError("forward Unix guard schema object identity differs")
+			}
+			forwardUnixSeen[name] = true
+			if kind == "table" {
+				catalog[table] = nil
+			}
+			continue
+		}
 		if object, ok := syncObjects[normal]; ok {
 			if kind != object.kind || name != object.name || table != object.table || syncSeen[name] {
 				return nil, resetSchemaError("sync schema object identity differs")
@@ -232,6 +309,21 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			}
 			continue
 		}
+
+		proxyObject := false
+		for object, ddl := range proxyRunResetSchema {
+			if normal == normalizedSchema(ddl) {
+				if kind != "table" || name != object || table != object {
+					return nil, resetSchemaError("proxy run schema object identity differs")
+				}
+				catalog[table] = nil
+				proxyObject = true
+				break
+			}
+		}
+		if proxyObject {
+			continue
+		}
 		if normal == normalizedSchema(cargoResetSchema) {
 			if kind != "table" || name != "cargo_workloads" || table != "cargo_workloads" {
 				return nil, resetSchemaError("Cargo optional schema identity differs")
@@ -271,11 +363,19 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	if len(reviewSeen) != 0 && len(reviewSeen) != len(leaseReviewResetSchema) {
 		return nil, resetSchemaError("partial lease review schema group")
 	}
+	if len(forwardUnixSeen) != 0 && len(forwardUnixSeen) != len(forwardUnixGuardResetSchema) {
+		return nil, resetSchemaError("partial forward Unix guard schema group")
+	}
 	// Version 1 predates workspace locators. Exact shape/version pairing is
 	// checked by readSync after metadata; neither supported shape is migrated.
 	legacySync := len(syncSeen) == len(syncResetSchema)-1 && !syncSeen["sync_workspaces"]
 	if len(syncSeen) != 0 && len(syncSeen) != len(syncResetSchema) && !legacySync {
 		return nil, resetSchemaError("partial sync reset schema group")
+	}
+	_, proxyRuns := catalog["proxy_runs"]
+	_, proxyChunks := catalog["proxy_run_chunks"]
+	if proxyRuns != proxyChunks {
+		return nil, resetSchemaError("partial proxy run schema group")
 	}
 	workspaceCount := 0
 	for _, table := range workspaceResetTables {

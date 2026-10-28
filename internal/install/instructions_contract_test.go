@@ -42,6 +42,9 @@ func TestCurrentInstructionsRoundTripBothAdaptersWithBoundState(t *testing.T) {
 		}
 		for _, fragment := range []string{
 			"arm agents --json", "arm agents card --list --json", "arm agents card rust-build --json",
+			"arm run --quiet", "arm proxy --quiet --agent CONTACT", "arm runs --json",
+			"arm log -f RUN_ID", "arm log RUN_ID --offset BYTE_OFFSET", "does not bypass",
+			"still waits and preserves", "Lost reporting leaves execution uncertain",
 			"current OS headroom", "not kernel hard limits", "keep the authority/key",
 			"does not release the source", "shorter deadline, never an extension",
 			"remote mesh pool bundles are refused", "reverse permissions default to none",

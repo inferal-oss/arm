@@ -154,6 +154,8 @@ func (s *Server) dashboardLoginLink(raw json.RawMessage) (model.BrowserLink, err
 
 func browserAllowedOperation(op string) bool {
 	switch op {
+	case "runs", "run_inspect", "run_output":
+		return true // Read-only local execution observations.
 	case "name_list", "name_mutate":
 		return true // Explicit source-local presentation metadata, never resource authority.
 	case "dashboard_login_link":
