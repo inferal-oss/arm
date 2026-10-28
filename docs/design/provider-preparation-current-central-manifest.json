@@ -1,0 +1,33 @@
+{
+  "base": "1e7a6ffcc08a9faf9d19017b0276e06de9750b25",
+  "status": "INERT_UNAPPLIED_SOURCE_PROPOSAL_NOT_ACCEPTED_OR_INSTALLED",
+  "supersedes_as_current_proposal": "provider-preparation-v1-central.patch",
+  "patch_sha256": "d3168a704b5052c03618d8f7999f7b7e325510e037b9b00658aecd17420e5a97",
+  "proposed_files": {
+    "internal/database/proof.go": "6b4e57ee131bdcf1bdac66d3ed7de63a484066925fef16a726ab962aef0edb19",
+    "internal/database/proof_json.go": "ee5ed05e6446b9008e15ce4dba57fbcca529eb98e142ca55bd48c20c61c9ee2a",
+    "internal/database/proof_provider_preparations.go": "8ba9b19110b16f5f8dbef540afaf067d23bc894ac97d510f76b8c2439243d0f8",
+    "internal/database/proof_schema.go": "429a3fa689e03ff12b9f6fbfe5c81eaa7d0bdc70da1a870762c081f8a9728200",
+    "internal/database/proof_ssh_shapes.go": "5f90a43a9bce9c6a3a84673ad81264ba70ae36fe61168f7f2d5f6ae578884f3e",
+    "internal/manager/provider_preparation_types.go": "de9937c531178d6c920bf384cc6a63eebe60fdf38e4c7782f0a104cc017d6117",
+    "internal/model/model.go": "974ada9f275e02ff1fc6faa6cc9fa35f353629c8aebd271a4fb2a71fba37d1f5",
+    "internal/sshservice/receipt.go": "0549bad13a82037845d4c1f1753247001ae03a5b1cd95dd41d96445cb3446cc2"
+  },
+  "baseline_files": {
+    "internal/database/proof.go": "e62e78bc797df18702ddf84bfaee5772f30884be604132cdbdb7e7dadc3f62dc",
+    "internal/database/proof_json.go": "df6bdb0d6372782efe5e055e19f24ae56d5705d42aa53942161a5ef4dcea832d",
+    "internal/database/proof_provider_preparations.go": null,
+    "internal/database/proof_schema.go": "bf686c4578c408f773ae0360a1e97b644a09c981c59a3448a461b640203dbb2a",
+    "internal/database/proof_ssh_shapes.go": "24c6c9cd4627d5d5c98055fdb92dc08a56c3bb77e30c6dd13334c2fcd355e223",
+    "internal/manager/provider_preparation_types.go": null,
+    "internal/model/model.go": "89b721676a87861d6d1a4f859ca6d56a676dcb23915cad44abf1bba4d51d23b4",
+    "internal/sshservice/receipt.go": "b899df9df6d5aafcbc8d5fdc521e62e88cf268b9a68389f6165f07e9ee8f8aa9"
+  },
+  "preserved_current_boundaries": [
+    "custom-name read proof",
+    "Kubernetes source proof",
+    "daemon configuration metadata proof",
+    "all current independent SSH inventory entries except explicit provider field/type additions"
+  ],
+  "scope": "No writer/installer/format2 activation. Exact current proof/schema/model/raw-field/SSH proposal only; independent review and causal proof tests remain required."
+}

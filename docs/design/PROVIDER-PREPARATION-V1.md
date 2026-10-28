@@ -4,11 +4,14 @@ Base: `180c86e`. The independently accepted consumer (`2a11fc0`) and its central
 acceptance (`68aba15`) remain complete within their recorded scope. This proposal
 does not reopen or delay that acceptance.
 
-Status: design only. The new `internal/providerpreparation` package contains data
-declarations and SQL strings only. No runtime package imports it; no decoder,
+Original review status: design only. The `internal/providerpreparation` package
+contains data declarations and SQL strings only. The later [unused private core](PROVIDER-PAIR-CORE-NEXT.md)
+imports those declarations without production wiring. No decoder,
 installer, factory, test gate, image verification, temp operation, Start, dispatch,
 registry, endpoint or settlement operation is enabled. The central changes in
-[the installation patch](provider-preparation-v1-central.patch) are **not applied**.
+[the historical patch](provider-preparation-v1-central.patch) and its
+[current-base regeneration](provider-preparation-current-central.patch) are
+**not applied**.
 It is a zero-context diff against the exact base; applicability is checked with
 `git apply --unidiff-zero --check`, not by executing or installing it.
 The [dependency matrix](PROVIDER-PREPARATION-DEPENDENCIES.md) is mandatory before

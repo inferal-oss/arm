@@ -4,9 +4,9 @@ package providerpreparation
 // QueryRowContext with the original caller bound and a bounded read deadline.
 // The fresh Manager clock sample follows these reads under the Manager fence.
 // The +1 sentinel and exact byte length detect truncation; SQL run must be NULL.
-const ReadLeaseSQL = `SELECT id,typeof(id),substr(CAST(request_key AS BLOB),1,129),typeof(request_key),run IS NULL,typeof(data),length(CAST(data AS BLOB)),substr(CAST(data AS BLOB),1,12289) FROM leases WHERE id=?`
+const ReadLeaseSQL = `SELECT substr(CAST(id AS BLOB),1,33),typeof(id),substr(CAST(request_key AS BLOB),1,129),typeof(request_key),run IS NULL,typeof(data),length(CAST(data AS BLOB)),substr(CAST(data AS BLOB),1,12289) FROM leases WHERE id=?`
 
-const ReadBudgetSQL = `SELECT lease,typeof(lease),typeof(data),length(CAST(data AS BLOB)),substr(CAST(data AS BLOB),1,4097) FROM lease_budget_bindings WHERE lease=?`
+const ReadBudgetSQL = `SELECT substr(CAST(lease AS BLOB),1,33),typeof(lease),typeof(data),length(CAST(data AS BLOB)),substr(CAST(data AS BLOB),1,4097) FROM lease_budget_bindings WHERE lease=?`
 
 // Header scan precedes body allocation. A 129th record or aggregate >4MiB makes
 // accounting unavailable. Numeric projections return only an INTEGER or a

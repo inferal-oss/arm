@@ -2,8 +2,12 @@
 
 The original inert proposal was reviewed against `180c86e`; its compile-only
 evidence does not establish runtime support. The current consumer acceptance is
-independent. V0 now has a separate ordinary-format baseline guard candidate;
-all later rows remain proposed work. The inert central patch remains unapplied.
+independent. V0's ordinary-format baseline guard is integrated, with deployment
+and activation still open. The [next source cut](PROVIDER-PAIR-CORE-NEXT.md) adds
+unused private readers and retaining reducers; runtime wiring remains proposed.
+The old inert central patch remains unapplied. Its separately regenerated
+[current-base proposal](provider-preparation-current-central.patch) is also inert
+and unaccepted; its applicability is static evidence only.
 
 | ID | Intersection / exact current source | Required rule before any factory | Proposed status |
 | --- | --- | --- | --- |
@@ -13,8 +17,8 @@ all later rows remain proposed work. The inert central patch remains unapplied.
 | V3 | `internal/database/proof_schema.go`, `proof_provider_preparations.go`, `proof.go` | Literal four-object group, two exact autoindexes, marker 1; absence supported, partial/version mismatch refused. Catalog +6 only. Any row or held-field presence blocks default reset. | Un-applied read-only catalog patch; no installer. |
 | V4 | `internal/database/proof_json.go`, `proof_ssh_shapes.go`; `internal/sshservice/receipt.go` | Raw presence at exact Lease node rejects null/false/unknown presentations before decoding; typed attachments and independent recursive shape inventory remain closed. | Narrow un-applied patch; broader history/raw-path audit still required. |
 | A0 | `internal/manager/manager.go: acquireWithAdmission`; `budget_admission.go`, `budget_accounting.go`, `budget_model.go` | One transaction for both leases, budget sidecars, pair index/header and future bytes before any native work. One bounded pair event; no generic Acquire/put/event helper bypass. | Not implemented; disabled producer. |
-| A1 | `internal/manager/manager.go: get/list/put`; proposed Manager raw reader | Protected tuple/type/length/context validation, not remarshal of usage-attached values. Initial/rows immutable, marker CAS with one successor ACK. | Queries/type contract only. |
-| A2 | `internal/manager/scheduling.go`, `manager.go: Status/Active/Acquire/tick`, `disk.go`, `budget_accounting.go`, `subpool_accounting.go` | Valid members count once through the paired projection. Missing/terminal member never frees a promise. Corruption/overflow/bounds produce unavailable accounting and fence new grants/renewals/activation. | Not implemented; blocks factory. |
+| A1 | `internal/manager/provider_pair_{raw,members}.go`; existing get/list/put must not be used | Protected tuple/type/length/context validation, not remarshal of usage-attached values. Initial/rows immutable, marker CAS with one successor ACK. | Unused member readers/clock prerequisite only; full journal checker and production registration absent. |
+| A2 | `internal/manager/scheduling.go`, `manager.go: Status/Active/Acquire/tick`, `disk.go`, `budget_accounting.go`, `subpool_accounting.go` | Valid members count once through the paired projection. Missing/terminal member never frees a promise. Corruption/overflow/bounds produce unavailable accounting and fence new grants/renewals/activation. | Unused pair-local floor helper only; complete inventory/projection/guards absent and block factory. |
 | L0 | `internal/manager/manager.go: end/reconcile/renew` | Pair guard precedes terminal/ending shortcuts, generic non-job release, PID logic and ordinary put. Mark/revoke pair without member writes; signal only original live owner outside bookkeeping locks even on write error. | Not implemented. |
 | L1 | `internal/manager/storage.go: endStorage/storageCleanup/storageHandoff`; `storage_export.go` | Pair guard precedes native cleanup/handoff/export or retained-storage rewrites. Neither member may independently disappear. | Not implemented. |
 | L2 | `internal/manager/bulk.go`; `shutdown.go`; `manager.go: Close` | Deduplicate by pair, cancel original contexts, retain both; Close handles pairs even though they are not m.jobs. Never wait on native joins or callbacks under Manager.mu. | Not implemented. |
@@ -24,7 +28,7 @@ all later rows remain proposed work. The inert central patch remains unapplied.
 | R1 | `internal/sshservice/state_records.go`, `history_decode.go`, `history_validate.go`, `history_catalog.go`, `history_archive.go`, `history_worker.go`; `internal/historypack` | Receipt/history/pack compaction cannot strip or reinterpret pair obligations as bare terminal resources. Preserve unsupported/unsettled evidence; no parser-generated proof from typed defaults. | Not implemented; blocks factory. |
 | O0 | `internal/manager/peer_snapshot.go`, `cpu_warning.go`, `cpu_credit.go`; native resource views | Missing/terminal member stays represented or projection is unavailable. No warning/snapshot data creates admission or signal credit. Do not hide an unknown pair behind ordinary state-only filters. | Not implemented. |
 | O1 | `internal/cli/output.go`; `internal/server/{server,cpu,disk,mesh}.go`; `internal/tui/{capacity_budget,cpu_budget,presentation}.go`; `internal/server/web/semblance/{backend,remote,main,pools}.mjs`, `app.ttl` | Carry accounting-unavailable state; do not advertise capacity minus a partial retained floor as free. Preserve the distinction between physical observations and reservable budgets. Complete the renderer/subscription audit when routing implementation. | UI/backend owners review before producer; no new UI in this diff. |
-| F0 | Proposed `manager.ProviderPrepareIntent` | Private original Manager/epoch/pointer/expected row context; no ctor or restoration from bytes. | Type declaration in un-applied patch only. |
+| F0 | Private `manager.providerPairCore` / `providerPairOriginal`; old proposed exported intent remains unapplied | Private original Manager/epoch/pointer/expected row context; no ctor or restoration from bytes. | Unused private shapes and observer only; no registry publisher or constructor. |
 | F1 | Later preparing factory and finalizer | Exact predecessor/ACK semantics, no native verification until charged; actual opaque producer/owner registration and compiling sealed settlement bridge before dispatch or slot release. | Deliberately absent. |
 
 The exact raw/typed proof, accounting, lifecycle and scope boundaries must be
