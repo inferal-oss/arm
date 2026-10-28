@@ -2955,3 +2955,11 @@ coverage, and terminal storage without an artifact cannot clear recorded custody
 The implementation bounds row counts, field lengths and aggregate input before
 decoding. Coverage is a ledger observation, not a native capacity capability or
 permission to admit work. No factory or central schema/model proposal is enabled.
+
+### V0 baseline verification
+
+V0 source `824d3012` remains integrated as `e1891698`, with delivery record
+`c2f2d986`. Its current workspace-format guard retains the same behavior; the
+subsequent import-path update is not a format change. Writable format remains
+`1`. The two-stage baseline rollout, future-format pre-write refusal and
+disabled paired factory remain in force alongside the unused C1/C2 readers.

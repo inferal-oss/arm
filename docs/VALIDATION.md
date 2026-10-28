@@ -7375,3 +7375,12 @@ These are focused Darwin accounting-reader results. They do not establish
 C3–C5 lifecycle/native authority, a production provider, Linux runtime, full-suite
 acceptance or later composition with remote run, website, forwarding, operations
 and storage changes. [Normalized evidence](validation/provider-pair-c2-2026-10-28.json).
+
+### V0 integration readback
+
+An ancestry and source readback confirms `824d3012` was integrated as `e1891698`
+and documented in `c2f2d986`; both integration records remain present. The
+format-guard implementation differs only by its later module import path. The
+accepted historical 31-root / 132-name normal and race results, vet and exact
+old-guard negatives retain their original source/platform scope. This readback
+adds no new runtime, fleet rollout, format-2 or paired-factory acceptance.
