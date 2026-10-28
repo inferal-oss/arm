@@ -7589,3 +7589,34 @@ inputs/assets, four HTML pages and CSS. Eight PNGs pass hashes, CRCs and complet
 zlib/scanline decoding. Owner multi-log recording remains bound to `31bf681`;
 no new narrow multi-window recording, full Go suite or Linux workload/performance
 acceptance is inferred. [Normalized integration evidence](validation/multiple-run-logs-integration-2026-10-28.json).
+
+### Multiple run-log windows — retained-session and narrow-layout supplement
+
+The initial recording runtime source is `31bf681`, after `ea4a005`, `43b03ed`, `7d5ec16` and
+
+
+The final contract supplement at runtime source `19664fe` follows test/docs
+commit `4199207`. Eight simultaneously retained transcripts are verified at
+262,144 UTF-16 code units each, 2,097,152 in aggregate. Inventory removal and
+filtering preserve ID-bound windows; disconnect labels cached output and stops
+reads, and reconnect resumes peers without unpausing a paused log. Existing
+byte-identity/cursor, stale-context retirement, decoder and request-bound checks
+remain in the affected roster.
+
+The additional 390px capture reproduced floating windows outside the viewport
+after leaving a tiled layout. Re-fitting after the native projection commits
+fixes this transition. The final desktop/narrow recording passes ten checks with
+zero page errors, including tiled/floating bounds, original-node preservation,
+maximize/restore, fullscreen/Escape and taskbar restore. Narrow tiles leave little
+transcript space; floating/fullscreen provides more reading room. The failed
+pre-fix capture remains excluded from acceptance.
+
+Fresh normal-queue validation of the final source passes 428 affected JavaScript
+cases, both native Semblance lifecycle cases, web rebuild and native command
+build. The supplementary VP9/WebM recording is 16.40 seconds and fully decodes.
+Its ten feature inputs and eleven media artifacts are bound in
+`validation/multiple-run-logs-contracts-2026-10-28.json`. Original private fixture
+backends are joined; the recorder, proxy and three producers finish, browser and
+context close, and no owned resource window remains active. Composition against
+current main, including rebuilding its storage-aware embedded asset, remains the
+coordinator's separate review/integration gate. No main merge/push was performed.
