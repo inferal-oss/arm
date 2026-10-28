@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {namedLabel} from '../resource-names.mjs';
+import {replaceOwnership,releaseOwnership} from './graph-ownership.mjs';
 
 // Execute the production lifecycle functions with IO/component boundaries
 // doubled. These tests cover connection/route ownership, not RDF rendering.
@@ -162,4 +163,65 @@ test('backend close refreshes peer status without replacing reported claims or m
   assert.equal(f.scope.state.connected,true);assert.equal(f.scope.peerStatus.label,liveLabel);
  }
  onlyReads(f);
+});
+
+function hostFixture(){
+ const all=[],ui={activeComponent:null,batch:fn=>fn()};
+ function handle(kind,label,children=[]){
+  const h={kind,label,children:[],parents:new Set(),ownedChildren:new Set(),open:false,disposed:false,
+   set(props){Object.assign(this,props);return this;},
+   replace(...next){const orphaned=replaceOwnership(this,next);this.children=next;for(const child of orphaned)child.dispose();return this;},
+   dispose(){if(this.disposed)return;this.disposed=true;if(ui.activeComponent===this)ui.activeComponent=null;for(const child of releaseOwnership(this))child.dispose();},
+   userToggle(){this.open=!this.open;ui.activeComponent=this;},
+  };all.push(h);h.replace(...children);return h;
+ }
+ Object.assign(ui,{
+  text:label=>handle('Text',label),heading:(label,level)=>Object.assign(handle('Heading',label),{level}),code:code=>Object.assign(handle('Code',''),{code}),
+  descriptions:pairs=>Object.assign(handle('DescriptionList',''),{pairs,setPairs(next){this.pairs=next;}}),
+  card:(label,children)=>handle('Card',label,children),grid:children=>handle('Grid','',children),
+  disclosure:(label,children)=>handle('AccordionItem',label,children),json:(value,label)=>ui.disclosure(label,[ui.code(JSON.stringify(value))]),
+ });
+ const scope={ui,roots:{host:handle('Stack','')},state:{status:null},namedLabel,owner:value=>'Operator '+value.owner,count:value=>String(value),stringifyJSON:JSON.stringify};
+ const api=runInNewContext([
+  'let hostView=null;',between('function owned(root,children){','\nfunction connectionState'),
+  between('function renderHost(){','\nfunction updateFreshness'), '\n({renderHost})',
+ ].join('\n'),scope);
+ const walk=h=>[h,...h.children.flatMap(walk)];
+ return {ui,scope,all,render(status){scope.state.status=status;api.renderHost();},find(label){return walk(scope.roots.host).find(h=>h.label===label);}};
+}
+const hostStatus=(props={})=>({host:'a'.repeat(32),owner:'501',display_name:'BrowserHost',cursor:1n,capabilities:['live-cpu-admission'],infrastructure_ports:[],...props});
+
+test('Host disclosure identity, open state and focus survive fresh status and name-clear refreshes',()=>{
+ const f=hostFixture();f.render(hostStatus());
+ const exact=f.find('Exact identity & cursor'),authority=f.find('Local authority'),technical=f.find('Technical identifiers · 1 capabilities'),infrastructure=f.find('Infrastructure ports');
+ for(const disclosure of [technical,infrastructure,exact])disclosure.userToggle();
+ for(const [index,display_name] of ['BrowserHost',undefined,''].entries()){
+  const status=hostStatus({host:(index===2?'b':'a').repeat(32),display_name,cursor:9007199254740993n+BigInt(index),capabilities:index===1?[]:['native-port-inventory'],infrastructure_ports:[{port:5000+index}]});
+  f.render(status);
+  assert.equal(f.find('Local authority'),authority);assert.equal(f.find('Exact identity & cursor'),exact);
+  for(const disclosure of [exact,technical,infrastructure]){assert.equal(disclosure.open,true);assert.equal(disclosure.disposed,false);}
+  assert.equal(f.ui.activeComponent,exact);
+  assert.equal(exact.children[0].pairs[0][1],status.host);assert.equal(exact.children[0].pairs[1][1],String(status.cursor));
+  assert.equal(authority.children[0].pairs[0][1],display_name||status.host.slice(0,12)+'…');
+  assert.equal(technical.label,`Technical identifiers · ${status.capabilities.length} capabilities`);assert.equal(technical.children[0].code,status.capabilities.join('\n'));
+  assert.equal(infrastructure.children[0].code,JSON.stringify(status.infrastructure_ports));
+ }
+ assert.equal(f.all.filter(h=>h.kind==='AccordionItem').length,3);
+});
+
+test('Host refresh preserves an explicit user close rather than reopening disclosures',()=>{
+ const f=hostFixture();f.render(hostStatus());
+ const disclosures=[f.find('Exact identity & cursor'),f.find('Technical identifiers · 1 capabilities'),f.find('Infrastructure ports')];
+ for(const disclosure of disclosures)disclosure.userToggle();
+ f.render(hostStatus({display_name:undefined,cursor:2n}));
+ for(const disclosure of disclosures){assert.equal(disclosure.open,true);disclosure.userToggle();}
+ for(let i=0;i<3;i++){f.render(hostStatus({cursor:3n+BigInt(i)}));for(const disclosure of disclosures){assert.equal(disclosure.open,false);assert.equal(disclosure.disposed,false);}}
+ assert.equal(f.find('Exact identity & cursor'),disclosures[0]);
+});
+
+test('Host view rebuilds fresh disclosures only after its previous handles were disposed',()=>{
+ const f=hostFixture();f.render(hostStatus());const old=f.find('Exact identity & cursor');old.userToggle();
+ f.scope.roots.host.replace(f.ui.text('Different scoped view'));assert.equal(old.disposed,true);
+ f.render(hostStatus({host:'c'.repeat(32),display_name:'Next host',cursor:9n}));const next=f.find('Exact identity & cursor');
+ assert.notEqual(next,old);assert.equal(next.open,false);assert.equal(next.disposed,false);assert.equal(next.children[0].pairs[0][1],'c'.repeat(32));
 });
