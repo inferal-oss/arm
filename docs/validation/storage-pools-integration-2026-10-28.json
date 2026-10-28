@@ -1,0 +1,806 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "status": "scoped integration acceptance; positive Linux allocation/workload/performance remain unverified",
+  "reviewed_composition_before_final_fixes": "23116bf",
+  "original_owner_commits": [
+    "e015b5b70518b9455fd916375f7bffd756a3c12f",
+    "ce55d7e3089be87720c63050840732359d64d675",
+    "0ddc1e6caa01b0e83b49d047539d7ba111ea56c9",
+    "cc24b70e3282237541390aad8e1b3262dea809c6"
+  ],
+  "initial_candidate_inventory": {
+    "entries": 2519,
+    "sha256": "c716ef88ad31e3d92bcda488ab0fb5fed6dc721261a22c9e62a7665fa6ec39c2",
+    "all_verified": true
+  },
+  "source_qualified_checks": {
+    "source": "e6bd73a18068a4ae9679ae8f349a43deb1af7ec3",
+    "javascript": {
+      "passed": 415,
+      "failed": 0,
+      "skipped": 0
+    },
+    "go": [
+      {
+        "name": "race",
+        "exit_code": 0,
+        "seconds": 146.638,
+        "passed_nodes": 284,
+        "skips": [],
+        "failed": [],
+        "packages": [
+          "getarm.org/internal/daemonconfig",
+          "getarm.org/internal/observe",
+          "getarm.org/internal/database",
+          "getarm.org/internal/cli",
+          "getarm.org/internal/tui",
+          "getarm.org/internal/mesh",
+          "getarm.org/internal/server",
+          "getarm.org/internal/manager"
+        ]
+      },
+      {
+        "name": "vet",
+        "exit_code": 0,
+        "seconds": 6.505
+      },
+      {
+        "name": "native-build",
+        "exit_code": 0,
+        "seconds": 1.9
+      },
+      {
+        "name": "linux-build",
+        "exit_code": 0,
+        "seconds": 5.074
+      },
+      {
+        "name": "linux-tests-build",
+        "exit_code": 0,
+        "seconds": 3.219
+      }
+    ],
+    "cli_intersection": {
+      "source": "23116bf",
+      "race_named_passed": 237,
+      "failed": 0,
+      "skipped": 0,
+      "cli_vet": "passed",
+      "native_and_linux_cli_build": "passed"
+    }
+  },
+  "macos_comparison": {
+    "source": "e6bd73a18068a4ae9679ae8f349a43deb1af7ec3",
+    "binary_sha256": "7f0289e0e75c631d1e11df3277078deb879973864110110e3ac80d242d0638ea",
+    "distinct_backing_and_devices_verified": true,
+    "sequential_samples_each": 3,
+    "measurements": [
+      {
+        "location": "A",
+        "filesystem": "apfs",
+        "samples": [
+          {
+            "bytes": 268435456,
+            "write_mib_s": 1842.7684192135762,
+            "read_mib_s": 4490.8112125942835,
+            "random_read_iops": 15095.674735383434,
+            "duration_ns": 229901042,
+            "method": "F_NOCACHE; buffered write+fsync; QD1"
+          },
+          {
+            "bytes": 268435456,
+            "write_mib_s": 1877.63527210617,
+            "read_mib_s": 4579.685007476247,
+            "random_read_iops": 15007.621057568296,
+            "duration_ns": 226410125,
+            "method": "F_NOCACHE; buffered write+fsync; QD1"
+          },
+          {
+            "bytes": 268435456,
+            "write_mib_s": 1738.9802941538153,
+            "read_mib_s": 4347.057083108396,
+            "random_read_iops": 14804.391341015596,
+            "duration_ns": 240744583,
+            "method": "F_NOCACHE; buffered write+fsync; QD1"
+          }
+        ],
+        "median_write_mib_s": 1842.7684192135762,
+        "median_read_mib_s": 4490.8112125942835,
+        "median_random_read_iops": 15007.621057568296
+      },
+      {
+        "location": "B",
+        "filesystem": "apfs",
+        "samples": [
+          {
+            "bytes": 268435456,
+            "write_mib_s": 780.8423168123488,
+            "read_mib_s": 763.0093473741717,
+            "random_read_iops": 7148.171601017878,
+            "duration_ns": 735052750,
+            "method": "F_NOCACHE; buffered write+fsync; QD1"
+          },
+          {
+            "bytes": 268435456,
+            "write_mib_s": 796.0551734646202,
+            "read_mib_s": 781.7671143250426,
+            "random_read_iops": 6418.976098089978,
+            "duration_ns": 728937375,
+            "method": "F_NOCACHE; buffered write+fsync; QD1"
+          },
+          {
+            "bytes": 268435456,
+            "write_mib_s": 940.5012080095096,
+            "read_mib_s": 759.2263807038132,
+            "random_read_iops": 6292.503046732883,
+            "duration_ns": 690810792,
+            "method": "F_NOCACHE; buffered write+fsync; QD1"
+          }
+        ],
+        "median_write_mib_s": 796.0551734646202,
+        "median_read_mib_s": 763.0093473741717,
+        "median_random_read_iops": 6418.976098089978
+      }
+    ],
+    "displayed_profile": "last saved sample per location; comparison medians are computed separately",
+    "claims_per_sample": {
+      "cpu": 1,
+      "memory_mib": 8,
+      "disk_mib": 257
+    },
+    "all_twelve_original_leases_terminal": true,
+    "all_six_exact_namespaces_absent": true,
+    "settlement": "Explicit authorized residual-responsibility handoff only after namespace removal; no exclusive physical reclamation credit",
+    "limitation": "Small opt-in filesystem/path samples under recorded conditions; no guaranteed bandwidth or physical host-drive rating"
+  },
+  "live_ui": {
+    "source": "23116bf",
+    "binary_sha256": "adb99acb31e6933f39985dff4f2b3247aa4c6b7e24961720ea59a11209af6441",
+    "native_profile_source": "e6bd73a",
+    "pty": {
+      "artifact_manifest_sha256": "bed3c8ea2f98969ae53cc9b385bce37ce3bbab4e7aabf99bce7c3c0f2659f22b",
+      "artifacts_verified": 57,
+      "source_pins_verified": 9,
+      "geometry": [
+        [
+          160,
+          50
+        ],
+        [
+          72,
+          28
+        ]
+      ],
+      "checks": [
+        "named pool resources/details",
+        "topology and saved performance metrics/time/method",
+        "narrow scrolling",
+        "controlled timestamp stale warning",
+        "run-log fold/fullscreen/return",
+        "original PTYs joined and backends stopped"
+      ]
+    },
+    "web": {
+      "rendered_checks": 64,
+      "dimensions": [
+        [
+          1440,
+          1100
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "verified": [
+        "Both named resource cards and saved write/read/QD1 values",
+        "Mount/source/backing/model observations and measurement timestamp/cache method",
+        "Disclosure opens and closes at both widths",
+        "Original fresh labels and explicit controlled timestamp-stale warning",
+        "No horizontal document overflow and no unhandled page errors",
+        "Both original browser processes joined/absent and temporary profiles removed",
+        "Both private backends stopped without force; original profile fields and exact metadata restored"
+      ],
+      "fixture": "Timestamp only on location-1 changed to 2000-01-01 for clearly identified stale-label capture; not a new native sample",
+      "capture_limitation": "Reviewed actual desktop and narrow PNGs. Some tall card/full-page captures include the fixed shell header/footer at their captured scroll offsets; DOM text, disclosure states and layout widths are recorded separately."
+    },
+    "web_manifest_sha256": "a3c76c0ae81f30456c6186e8a905703d9bc0f56f4e9597104c330e0611de3b3a",
+    "web_artifacts_verified": 30,
+    "web_source_pins_verified": 9,
+    "managed_browser_failure": "Kernel exited before connection; this attempt remains failed. Independent standalone development acceptance is recorded separately.",
+    "exact_original_profile_metadata_restored": true,
+    "all_original_browsers_ptys_and_backends_closed": true
+  },
+  "hosted_non_deploy": {
+    "source": "e6bd73a18068a4ae9679ae8f349a43deb1af7ec3",
+    "metadata_sha256": "722b3e3f37166bd9d20ee2e989aa82fc1c7721e8b8513ac65ee45d5c413a8935",
+    "embedded_source_and_assets_match": true,
+    "input_count": 610,
+    "image_integrity": "all eight SHA256/CRC/zlib/scanline/dimension rosters passed",
+    "images": [
+      {
+        "file": "web-monitor.png",
+        "sha256": "ae4525ebb86a2f4fa87e8f57fbaf5f854e694006791774e29db2b6ea84b01381",
+        "width": 1440,
+        "height": 1703
+      },
+      {
+        "file": "web-resources.png",
+        "sha256": "71998597c82012ada806da244172ff7f0b92696ee9f29a025a1a48535931599f",
+        "width": 1440,
+        "height": 1622
+      },
+      {
+        "file": "web-leases.png",
+        "sha256": "4831a4ee5e09d19c56fc588d1b12743cbdb164d4b67057e2be5b12e0672c3a04",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "file": "web-activity.png",
+        "sha256": "0ddaef6dc27c782dc84563c8656def2fae90105e4e8595b3d81a1f20d9eb992e",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "file": "web-host.png",
+        "sha256": "fffbb668abc4157a2c94d9df83277f483515d344184def5cf84916c59deff522",
+        "width": 1440,
+        "height": 1370
+      },
+      {
+        "file": "terminal-monitor.png",
+        "sha256": "f9b5ced610e668207316175965f3f6eece3a932b4f008040a01e623a7d2919aa",
+        "width": 1212,
+        "height": 1312
+      },
+      {
+        "file": "terminal.png",
+        "sha256": "d14f256290f307e11255894f14cf6c405e6f4a18c283b48f23eca99bbfa55801",
+        "width": 1212,
+        "height": 1312
+      },
+      {
+        "file": "terminal-leases.png",
+        "sha256": "036a63815b84512a5e4e7162d062eaff17670467a15899fc29fe4eb52f187df0",
+        "width": 1212,
+        "height": 1312
+      }
+    ],
+    "prerender": {
+      "pages": [
+        {
+          "file": "index.html",
+          "sha256": "80be43c5498f8ff22ed746b5431f688409ded4b123bd412211ef9d1650760dd9"
+        },
+        {
+          "file": "start/index.html",
+          "sha256": "091268f3c1d016cab27c6eeb164c45bbd0a39432522b9f7bcf39e13aadfd9205"
+        },
+        {
+          "file": "capabilities/index.html",
+          "sha256": "8252e7978d8f07028ab357ee653d66fc6c2948c6ea2fa62604cea722ec5c24c4"
+        },
+        {
+          "file": "docs/index.html",
+          "sha256": "66e44e1e4208d4ac7d6b376ced284ec20c4751eea20a2282a1de0752347bd14d"
+        }
+      ],
+      "stylesheet": {
+        "file": "semblance.css",
+        "sha256": "bbdd10390954c6e88b07e7881b05e87f9c6764765c9f761f530decec8248ba60"
+      }
+    },
+    "ci": "https://github.com/inferal-oss/arm/actions/runs/40673998545"
+  },
+  "linux_original_attempt": {
+    "source": "e6bd73a",
+    "benchmark": "refused for unknown backing before any sample/lease",
+    "manager_tests": "insufficient_capacity before starting the test binary; not a Go test result",
+    "cpu_memory_refusal": "verified initial cgroup namespace required; no bypass",
+    "all_original_private_backends_stopped": true,
+    "zero_refusal_leases": true,
+    "positive_native_workload_and_performance_acceptance": false
+  },
+  "remaining_gates": [
+    "positive Linux native allocation/workload/test and throughput acceptance remain unverified",
+    "external-root strict reset, automatic tier placement/migration and I/O enforcement remain unsupported",
+    "no full Go suite, future namespace stability, physical reclamation, guaranteed throughput or full SPEC acceptance"
+  ],
+  "final_source": "3856f9c34b3d32d55ee32c337560a62838c81cbd",
+  "owner_focused_commits": [
+    "e015b5b70518b9455fd916375f7bffd756a3c12f",
+    "ce55d7e3089be87720c63050840732359d64d675",
+    "0ddc1e6caa01b0e83b49d047539d7ba111ea56c9",
+    "cc24b70e3282237541390aad8e1b3262dea809c6",
+    "2b16fd8e0bfb7361547782803b8c119259892d30",
+    "8c7d839a5568695690de61e350fa9587db548e09",
+    "6aa5f8052252e614af70a63c1c47eb22414473ff"
+  ],
+  "review_findings_closed": [
+    "same-tick queued disk over-admission",
+    "replacement/unknown volume profiles marked fresh",
+    "Btrfs synthetic path device loses accessible covering source association",
+    "named provider creation not bound to freshly observed filesystem before mkdir"
+  ],
+  "final_composed_validation": {
+    "source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+    "native_checks": [
+      {
+        "name": "causal-legacy-open",
+        "exit_code": 1,
+        "seconds": 6.12,
+        "log_sha256": "5d088103623f03be83acc7b47313bc62d89cf0c429e8f487d200f382e6d8b756",
+        "passed_nodes": 0,
+        "skips": [],
+        "failed": [
+          [
+            "getarm.org/internal/manager",
+            "TestStoragePoolFirstProviderRejectsMismatchedFilesystemBeforeMkdir"
+          ],
+          [
+            "getarm.org/internal/manager",
+            null
+          ]
+        ],
+        "packages": [],
+        "outcome": "expected failed causal control"
+      },
+      {
+        "name": "causal-strict-btrfs",
+        "exit_code": 1,
+        "seconds": 0.536,
+        "log_sha256": "b6e330b62aaf0f21f31feeb5f580a656fb3713540c702012589a220ff069340c",
+        "passed_nodes": 0,
+        "skips": [],
+        "failed": [
+          [
+            "getarm.org/internal/observe",
+            "TestStorageAssociationObservedSyntheticDevice"
+          ],
+          [
+            "getarm.org/internal/observe",
+            null
+          ]
+        ],
+        "packages": [],
+        "outcome": "expected failed causal control"
+      },
+      {
+        "name": "normal-boundary",
+        "exit_code": 0,
+        "seconds": 2.753,
+        "log_sha256": "686d398afd3869cfd3ca5a93f20fcff8f2415573299a6832978b92c1ce68549f",
+        "passed_nodes": 87,
+        "skips": [],
+        "failed": [],
+        "packages": [
+          "getarm.org/internal/observe",
+          "getarm.org/internal/storage"
+        ],
+        "outcome": "passed"
+      },
+      {
+        "name": "race",
+        "exit_code": 0,
+        "seconds": 171.845,
+        "log_sha256": "8bd9b7f19444d007e6bdb6013f10280dcf95c70399dba03f9c8de484cd5ee7b2",
+        "passed_nodes": 453,
+        "skips": [],
+        "failed": [],
+        "packages": [
+          "getarm.org/internal/storage",
+          "getarm.org/internal/observe",
+          "getarm.org/internal/daemonconfig",
+          "getarm.org/internal/database",
+          "getarm.org/internal/cli",
+          "getarm.org/internal/mesh",
+          "getarm.org/internal/server",
+          "getarm.org/internal/tui",
+          "getarm.org/internal/manager"
+        ],
+        "outcome": "passed"
+      },
+      {
+        "name": "storage-complete-race",
+        "exit_code": 0,
+        "seconds": 8.405,
+        "log_sha256": "08aced9b0037059c23d6d17c38215f7c1b4dd5f42557244cbd2fc07a83733eaa",
+        "passed_nodes": 41,
+        "skips": [],
+        "failed": [],
+        "packages": [
+          "getarm.org/internal/storage"
+        ],
+        "outcome": "passed"
+      },
+      {
+        "name": "vet",
+        "exit_code": 0,
+        "seconds": 5.667,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "outcome": "passed"
+      },
+      {
+        "name": "linux-vet",
+        "exit_code": 0,
+        "seconds": 2.146,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "outcome": "passed"
+      },
+      {
+        "name": "native-build",
+        "exit_code": 0,
+        "seconds": 1.891,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "outcome": "passed"
+      },
+      {
+        "name": "linux-build",
+        "exit_code": 0,
+        "seconds": 3.296,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "outcome": "passed"
+      },
+      {
+        "name": "linux-observer-test-build",
+        "exit_code": 0,
+        "seconds": 0.425,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "outcome": "passed"
+      },
+      {
+        "name": "linux-storage-test-build",
+        "exit_code": 0,
+        "seconds": 0.327,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "outcome": "passed"
+      }
+    ],
+    "web": {
+      "source_inputs_sha256": {
+        "internal/server/web/semblance/main.mjs": "398befa9cba5a0008cb0d7adc9fde21e7e928f2c172468622b614c971346838b",
+        "internal/server/web/semblance/resources.mjs": "27f0cac2d20c8beb96a123aa602a627b22395c415a4fe02ea73a8902d3c5686b",
+        "internal/server/web/semblance/runs.mjs": "a69936252d974b98d4140e1b00eb3a16d3d90cf483e7c3dcbae9929e22bac439",
+        "internal/server/web/semblance/graph-ui.mjs": "725f29567b9dc285ea1c8486a2295eae36247c8925b006efef578381c4f40392",
+        "internal/server/web/semblance/app.ttl": "0c573d4d17765aeff63737337920e23b0aa7e7d6f4ff3f6d04c33ffa48d48b4e",
+        "internal/server/web/assets/arm.mjs": "bfd4f214d1183cadb39c795acdc1591be837ddfc9668c3328dde5de54f5a85ac"
+      },
+      "javascript_passed": 420,
+      "failures": 0,
+      "skips": 0,
+      "native_semblance_runtime_passed": 1,
+      "checks": [
+        {
+          "name": "install",
+          "exit_code": 0,
+          "seconds": 0.696,
+          "log_sha256": "09f8c0d3faa02fd56b22cf3f0153db51e4391d497f0e1dbfeb0e27756414d8d8"
+        },
+        {
+          "name": "web-build",
+          "exit_code": 0,
+          "seconds": 0.816,
+          "log_sha256": "225f0c93bfac3ac218db088482793b5d196848c7d598c79addf585cd89ae903b"
+        },
+        {
+          "name": "javascript",
+          "exit_code": 0,
+          "seconds": 3.936,
+          "log_sha256": "34e39845d769ed4ba0a509dac714caf8b1f8c50b016c43bc7dacdacc289ca3c9"
+        },
+        {
+          "name": "native-runtime",
+          "exit_code": 0,
+          "seconds": 0.967,
+          "log_sha256": "77e4dc933828d8ee3274cc01d6dc384aa88d066dcf530fccf795f39164900963"
+        }
+      ]
+    },
+    "artifacts": {
+      "macos_cli": {
+        "sha256": "d4ca38b11a40204cf649f5e25ac4a26e48aa69f14dcfa784a54d3930ed97d8f3",
+        "bytes": 71917826,
+        "compiled_source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+        "vcs_modified": false,
+        "vcs_revision": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc"
+      },
+      "linux_cli": {
+        "sha256": "9fb0ff54c7d42222e11ba1848390aa2364742b63aa7fdc94869157d9a9c7ee21",
+        "bytes": 69525382,
+        "compiled_source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+        "vcs_modified": false,
+        "vcs_revision": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc"
+      },
+      "linux_observer_test": {
+        "sha256": "32281316694c9b86ae990909559244e72bc201979224d7b4617454029df46b26",
+        "bytes": 6890454,
+        "compiled_source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+        "source_binding": "Successful exact-source compile receipt; Go test executable has no VCS stamp."
+      },
+      "linux_storage_test": {
+        "sha256": "9c0419b369647110e2ca8f988e3ea5a02bb3552a509cb1e7258d8fb28000f972",
+        "bytes": 5122079,
+        "compiled_source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+        "source_binding": "Successful exact-source compile receipt; Go test executable has no VCS stamp."
+      }
+    },
+    "recorder_cleanup": {
+      "web_cleanup": {
+        "all_leases_terminal": true,
+        "original_backend_joined": true,
+        "original_backend_exit_code": 130,
+        "request_resources": {
+          "cpu": 2,
+          "memory_bytes": 2147483648,
+          "disk_bytes": 0
+        }
+      },
+      "native_cleanup": {
+        "all_leases_terminal": true,
+        "original_backend_joined": true,
+        "original_backend_exit_code": 130,
+        "request_resources": {
+          "cpu": 2,
+          "memory_bytes": 2147483648,
+          "disk_bytes": 0
+        }
+      }
+    },
+    "normal_shared_queue": true,
+    "limits": "Selected affected packages plus complete storage race suite; no full Go suite or Linux test/workload execution."
+  },
+  "final_hosted_non_deploy": {
+    "source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+    "run": "https://github.com/inferal-oss/arm/actions/runs/40690807479",
+    "build": "success",
+    "deploy": "skipped",
+    "artifact_id": 12816922519,
+    "reported_zip_sha256": "3ab1a3d17004c707b9fcf277da78d5582ab22cc4860e40b099234388e9ef6166",
+    "audit": {
+      "source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+      "metadata_sha256": "a1a1071c6aa0638e2f222d9a6c30b20107aa9d0e4451e0fd4f4c89df6440da9a",
+      "input_count": 611,
+      "source_and_assets_match": true,
+      "images_verified": 8,
+      "png_verification": "SHA256, chunk CRCs, complete zlib streams, dimensions, scanline byte/filter rosters",
+      "images": [
+        {
+          "file": "web-monitor.png",
+          "sha256": "5662acdadd8a968521a03690cfe1c7b20842aaf6aa006f1bd8328619f0927a43",
+          "width": 1440,
+          "height": 1663
+        },
+        {
+          "file": "web-resources.png",
+          "sha256": "9406759adf1d790d3f4ee951f5a1cad641b42b0493872e418ffc19d454fb601c",
+          "width": 1440,
+          "height": 1622
+        },
+        {
+          "file": "web-leases.png",
+          "sha256": "2c9418eef18f30445a32ea53608d942a26bad23f86d440fe83c4b4d4e4e5f261",
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "file": "web-activity.png",
+          "sha256": "eedc751435a4d172f712c124a77ec4bdf65263b00d8d044eccc228b4ab735f25",
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "file": "web-host.png",
+          "sha256": "eafef01c1f4d54950bf47fa38be851ee6a32dd61178ac56df29114a8b506b5e4",
+          "width": 1440,
+          "height": 1370
+        },
+        {
+          "file": "terminal-monitor.png",
+          "sha256": "2929af16e986ca9106a51698789f694b0ceecd84d34a4e0c305c4d77ec245af0",
+          "width": 1212,
+          "height": 1312
+        },
+        {
+          "file": "terminal.png",
+          "sha256": "ff3593c71e2032c09b7babed20327175d13096d3d541fd08ad252ef74614b47f",
+          "width": 1212,
+          "height": 1312
+        },
+        {
+          "file": "terminal-leases.png",
+          "sha256": "273235fb65f4ca6cd5f5fcee3f01a82a545e7f175ec880c90295f848ab55fab0",
+          "width": 1212,
+          "height": 1312
+        }
+      ],
+      "prerender": {
+        "pages": [
+          {
+            "file": "index.html",
+            "sha256": "80be43c5498f8ff22ed746b5431f688409ded4b123bd412211ef9d1650760dd9"
+          },
+          {
+            "file": "start/index.html",
+            "sha256": "091268f3c1d016cab27c6eeb164c45bbd0a39432522b9f7bcf39e13aadfd9205"
+          },
+          {
+            "file": "capabilities/index.html",
+            "sha256": "8252e7978d8f07028ab357ee653d66fc6c2948c6ea2fa62604cea722ec5c24c4"
+          },
+          {
+            "file": "docs/index.html",
+            "sha256": "66e44e1e4208d4ac7d6b376ced284ec20c4751eea20a2282a1de0752347bd14d"
+          }
+        ],
+        "stylesheet": {
+          "file": "semblance.css",
+          "sha256": "bbdd10390954c6e88b07e7881b05e87f9c6764765c9f761f530decec8248ba60"
+        }
+      },
+      "embedded_ui": {
+        "inputs_sha256": "2f6fe690efb08bda06f272e973b7c391dc5745c923a1191fefde9900a567621a",
+        "input_count": 611,
+        "engine_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "assets": [
+          {
+            "file": "LICENSES.txt",
+            "bytes": 140022,
+            "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f"
+          },
+          {
+            "file": "arm-wat-only-store-DpLv8E9I.mjs",
+            "bytes": 154,
+            "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de"
+          },
+          {
+            "file": "arm.mjs",
+            "bytes": 4308516,
+            "sha256": "bfd4f214d1183cadb39c795acdc1591be837ddfc9668c3328dde5de54f5a85ac"
+          },
+          {
+            "file": "assets/wat-C2A9nalw.wasm",
+            "bytes": 102443,
+            "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea"
+          },
+          {
+            "file": "wat-2wrDwrzy.mjs",
+            "bytes": 62,
+            "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+          }
+        ]
+      }
+    }
+  },
+  "format_and_interface_acceptance": {
+    "ordinary_ledger_format": 1,
+    "named_locations_opt_into_format": 3,
+    "provider_format_2": "unactivated",
+    "older_writer_downgrade_fence": "reviewed; named state requires a compatible writer",
+    "model_and_proof": "Request pool selector and Lease binding shapes reviewed with affected source/proof guards",
+    "startup": "optional complete named settings hash reviewed; ordinary encoding retained",
+    "native_provider": "additive OpenOnFilesystem; existing Open, Provider and platform helpers unchanged",
+    "reset": "independent strict reset of external named roots remains unsupported and refuses"
+  },
+  "linux_read_only": {
+    "source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+    "binary_sha256": "9fb0ff54c7d42222e11ba1848390aa2364742b63aa7fdc94869157d9a9c7ee21",
+    "outcome": "passed",
+    "remote_readonly_seconds": 0.6854961479984922,
+    "checks": {
+      "exact_source": true,
+      "exact_binary_before_after": true,
+      "same_original_target": true,
+      "old_ledger_and_stage_hashes_unchanged": true,
+      "target_namespace_unchanged": true,
+      "zero_leases": true,
+      "no_provider_root_published": true,
+      "stop_without_force_or_remaining": true,
+      "original_backend_pidfd_exit": true,
+      "peer_publication_disabled": true,
+      "one_enabled_pool": true,
+      "native_fsid_separate_from_uuid": true,
+      "covering_mount_source_present": true,
+      "native_default_named_fsid_matches": true,
+      "observed_shared_association": true,
+      "config_startup_hash_matches": true,
+      "config_points_at_original_target": true,
+      "no_status_leases": true,
+      "resources_pool_projection": true,
+      "status_pool_projection": true,
+      "cpu_memory_authority_unchanged": true,
+      "readonly_completed_in_window": true
+    },
+    "original_backend_exit_evidence": "original pidfd ready after non-force stop",
+    "workload_allocation_and_throughput": "not executed and not accepted",
+    "observed_shared_scope": "native FSID, st_dev and covering Btrfs source agree; no lease/accounting transaction requested",
+    "raw_report_sha256": "f2b3459899a9d7deeffd0e37acf28afd7e15625ac3ec21de3aafd5410627f12e",
+    "original_refused_ledgers_unchanged": true,
+    "artifact_manifest_sha256": "1219039751f3fd525376156de37eed5454cd30c35bdc82dee213dfad07e1f56a",
+    "artifact_hashes_verified": 8,
+    "command_roster_verified": [
+      "peers",
+      "config",
+      "config",
+      "config",
+      "config",
+      "config",
+      "start",
+      "storage",
+      "status",
+      "resources",
+      "stop"
+    ],
+    "original_idle_recorder_stopped_without_force": true,
+    "protected_original_roster_entries": 18,
+    "total_staging_control_report_seconds": 1.831
+  },
+  "review_limits": [
+    "Source-specific native tests and bounded observed filesystem association; no future stability or syscall deadline guarantee.",
+    "Earlier measurements and rendered evidence retain original binaries/sources; no new throughput sample is inferred.",
+    "Independent current source tests do not accept unmerged native/forwarding/provider-foundation compositions."
+  ],
+  "reviewed_source_inventory": {
+    "entries": 2786,
+    "sha256": "b5d4dc1327e9058fb5c803520c43da96174111719f4cdd87cc3a3be2d5ac1405",
+    "source_tree": "b4541b00c67812c7a8265561605757b46dd0c95e"
+  },
+  "reviewed_production_source": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+  "final_source_inventory": {
+    "entries": 2787,
+    "sha256": "3c6290a172655e7fc32fd8b3fa63a9b15aee8c955e0476f78430e1e3858e68dc",
+    "source_tree": "ad43ed305213a9d94eabd9caa852f59c18fde654"
+  },
+  "review_composition_commits": [
+    "8bd03bc",
+    "78ca2b1",
+    "d9a3fd1",
+    "a4b0eaa",
+    "e6bd73a",
+    "23116bf",
+    "e1ccdd0",
+    "7dd2d6b",
+    "ce92760"
+  ],
+  "landed_feature_commit": "3856f9c34b3d32d55ee32c337560a62838c81cbd",
+  "integration_method": "Focused reviewed feature commit on accepted main; original owner and prior review histories preserved.",
+  "production_equivalence": {
+    "reference": "ce927606681a0035e3f3087dfb43d5c0a4d53dbc",
+    "all_production_source_assets_modules_framework_byte_equal": true,
+    "only_changed_paths": [
+      "docs/VALIDATION.md",
+      "docs/validation/storage-association-candidate-2026-10-28.json",
+      "docs/validation/storage-association-fixture-normalization-2026-10-28.json",
+      "internal/observe/storage_association_test.go"
+    ],
+    "binary_scope": "CLI build/execution stamps remain ce92760; no later-binary execution claim."
+  },
+  "final_fixture_validation": {
+    "tested_tree": "ad43ed305213a9d94eabd9caa852f59c18fde654",
+    "source_file_sha256": "49c8e36503015086aaeafebe24e858e2e5efa2081745bb0a1268c113504eea9c",
+    "results": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 0.738,
+        "passed_nodes": 61,
+        "failures": 0,
+        "skips": 0,
+        "log_sha256": "824e10d515ad6af00ce75580279939a677146f1f28cddecef38096bd582a81f9"
+      },
+      {
+        "name": "race",
+        "exit_code": 0,
+        "seconds": 2.103,
+        "passed_nodes": 61,
+        "failures": 0,
+        "skips": 0,
+        "log_sha256": "ec93fbe275a378740559dd7b9727002d2fedb60209fef3d339cb7af96b5f5b2b"
+      }
+    ],
+    "feature_commit": "3856f9c34b3d32d55ee32c337560a62838c81cbd",
+    "normal_shared_queue": true,
+    "original_recorder_joined_and_lease_terminal": true
+  }
+}

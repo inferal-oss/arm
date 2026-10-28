@@ -2757,10 +2757,19 @@ measurements; agent and Rust cards teach performance/space-based selection.
 Initial remote aggregate observation/claim scopes do not expose local named
 paths, names or selectors.
 
-Focused normal/race, format/refusal, configuration, lifetime and browser-model
-checks and native/Linux ARM64 builds have passed at the recorded candidate
-source. Native two-location macOS measurements, actual Linux VM execution and
-independent integration review remain pending coordinated resource windows.
+Focused feature `3856f9c` retains all production source/assets from `ce92760`.
+That reviewed source passes native custody/reopen, configuration, format/refusal,
+accounting/lifetime and current frontend/runtime checks, affected vet and native/
+Linux ARM64 builds. Final fully synthetic observer fixtures additionally pass
+61 normal and 61 race nodes on the exact feature tree.
+
+Six native macOS samples at `e6bd73a` and actual PTY/standalone web presentation
+at `23116bf` retain their original source scopes. Corrected read-only Linux
+config/startup/topology and pool/resource views pass at `ce92760` on the original
+selected Btrfs target. CPU/memory authority stays unknown there; no Linux
+allocation, workload test or performance sample follows. The original failed
+attempts remain failed and unexecuted. Normalized current acceptance is in
+`docs/validation/storage-pools-integration-2026-10-28.json`.
 The independent strict-reset external-root namespace proof is not implemented:
 strict reset refuses this group; explicit reviewed forgetting remains ledger
 abandonment without cleanup credit. Automatic placement/migration, throughput

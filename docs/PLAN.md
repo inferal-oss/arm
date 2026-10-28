@@ -31,7 +31,7 @@ retain their assignments and the source-specific gates recorded below.
 | Run-list presentation — `codex/run-list-polish` | Reviewed source `02300f2` and evidence `f131f76` integrated as `744a2f9`, `2f44cb2`, `f54676d`, `e91ec95`. | No blocking source findings. All 413 JavaScript tests, complete TUI race tests, TUI vet and native build pass on the identical composed tree. Source-bound responsive web/PTY evidence is verified; the capture window is released. Full Go suite and Linux runtime remain outside this acceptance. The owner's uncommitted plan is preserved. |
 | Website prerendering — `codex/website-prerender` | Reviewed owner cut `768ecdb` / `622acb3` integrated as `adb8bd6` / `76a9ed2` on `c13e199`. | Independent review has no blocking findings; composed Linux Pages CI, eight fresh dashboard PNGs, SSR/provenance and Chromium checks pass. Main build and Pages deployment succeed. Owner branch/worktree remain clean and preserved. Public latency measurement and broader origin/browser acceptance remain outside scope. |
 | Detachable run logs — `codex/run-log-windows` | Reviewed focused continuation `1fea100` through `18b0926` composed on accepted main `34ea83a` as `c44e6f0` through `2e3fa59`. | All nine feature inputs and ten media artifacts match; independent 418 JavaScript tests, real Semblance lifecycle regression, deterministic web rebuild and native command build pass. Source-bound drag/pop-out/dock/mobile/follow video is verified. Nondeploy Pages CI passes on the exact composition; all 611 UI inputs, runtime assets, four pages and eight decoded PNGs match. Automatic main build and Pages deployment pass on `24182f5`. Full Go suite and Linux runtime remain outside scope. Owner branch and uncommitted plan are preserved. |
-| Storage performance pools — `codex/storage-performance-pools` | Candidate `e015b5b` / `ce55d7e`, queue fix `0ddc1e6` and freshness fix `cc24b70` composed with reviewed main in isolated `23116bf`. | Queue over-admission and stale replacement-volume findings are corrected. Scoped macOS measurements, actual web/PTY checks, composed race/vet/build and nondeploy Pages CI pass at their recorded sources. Btrfs association correction `2b16fd8` is reviewed in isolation; final composed verification and the first-provider filesystem custody correction remain pending. Linux workload/performance execution remains refused by native authority. No main storage integration is claimed. |
+| Storage performance pools — `codex/storage-performance-pools` | Reviewed focused owner commits `e015b5b`, `ce55d7e`, `0ddc1e6`, `cc24b70`, `2b16fd8`, `8c7d839` plus fixture cleanup `6aa5f80`; focused feature `3856f9c` lands on `dacba08`, with production source identical to reviewed `ce92760`. | All four source findings are closed. Fully synthetic final observer fixtures pass 61 normal/61 race nodes. Reviewed native boundary 87, affected race 453, complete storage race 41, JS 420, native Semblance lifecycle, native/Linux vet/builds and nondeploy Pages CI pass. Source-bound macOS samples and web/PTY evidence are verified; corrected Linux read-only discovery/config/views pass on the original target. Positive Linux allocation/workload/performance and full-suite acceptance remain open; strict external-root reset remains unsupported. Branch/worktree preserved. |
 
 Run-list and storage both touch terminal presentation; integrate reviewed focused
 cuts in that order when ready and revalidate the resulting composition. Central
@@ -50,38 +50,39 @@ Earlier portfolio rows below retain their recorded technical limits. Their old
 assignments do not establish current owner activity or readiness; obtain a fresh
 handoff before scheduling or integrating additional source.
 
-## Mount-aware storage pools — in progress
+## Mount-aware storage pools — scoped milestone accepted
 
-Owner: `codex/storage-performance-pools`. Add explicitly configured host storage
-locations, native filesystem/backing-device discovery on macOS and Linux,
-conservative shared-capacity admission, exact managed placement, bounded opt-in
-performance profiles, and CLI/web/terminal pool visibility. Validate two distinct
-native macOS filesystems, accounting aliases, unavailable/replaced mounts,
-restart retention, benchmark cancellation/cleanup and Linux compilation. Device
-metadata and benchmark results are observations, not throughput guarantees or
-physical quotas. Normal/race safety, configuration/format fences, UI models,
-embedded frontend build, vet and macOS/Linux ARM64 builds pass at candidate source.
-Native macOS/Linux measurement and independent integration review remain pending;
-no acceptance or main integration is claimed. Named storage opts into format 3;
-ordinary ledgers retain format 1. Independent external-root strict reset remains
-unsupported and refuses. Automatic tier selection and I/O enforcement remain separate.
-Independent review found a P1 same-tick queue over-admission bug in default and
-named/shared disk accounting. The focused correction and normal/race queue
-regressions pass locally; composed re-review and the deferred native measurement
-windows remain required. A separate P2 review correction requires current-volume
-confirmation before retained profiles appear fresh; normal/race replacement-view
-regressions pass locally and await composed re-review.
-A further P2 correction handles Btrfs synthetic device IDs only after exact
-block/sysfs/UUID association and stable bounded pre/post facts. The 61-case normal
-and race source rosters, native/Linux vet and Linux builds pass; corrected Linux
-configured read-only verification awaits a separate reviewed window. Prior native
-and UI scopes remain tied to their original sources. Original Linux positive
-workload/performance gates remain refused and unverified.
-A separate P1 named-provider custody correction checks and holds the native
-parent FD before root creation, verifies root identity/filesystem before
-publication and preserves failed-publication obligations. Its 26-node normal
-and race scopes, native/Linux vet and native/Linux compilation pass locally;
-composed acceptance and affected native boundaries remain pending.
+Owner: `codex/storage-performance-pools`. Focused feature `3856f9c`, with
+production source identical to reviewed `ce92760`, adds
+explicitly configured locations, native filesystem/backing/device observations,
+conservative shared promises, exact selected managed placement, opt-in measured
+profiles and CLI/web/TUI presentation. Atomic comment-preserving configuration
+edits, explicit config provenance and agent/Rust guidance are included.
+
+Independent review closed same-tick disk over-admission, unconfirmed-volume
+profile freshness, Btrfs subvolume/source association and first-provider
+filesystem custody. The final held-parent opener checks native filesystem
+identity before creation and retains uncertain/unpublished roots and charges.
+Final normal boundary, selected affected race, complete storage race, current
+frontend/runtime, vet and native/Linux build gates pass at their recorded source.
+The exact source and scoped acceptance are in
+[the integration record](validation/storage-pools-integration-2026-10-28.json).
+
+Six macOS samples remain bound to `e6bd73a`; actual PTY/standalone rendered web
+evidence remains bound to `23116bf`. Corrected read-only Linux config/startup,
+backing association and pool/resource views pass at `ce92760` on the original
+Btrfs target. The original Linux benchmark preflight and native test admission
+refusals remain failed/unexecuted; positive Linux allocation, workloads/tests
+and throughput remain unverified. Existing CPU/memory authority is unchanged.
+
+Named state opts into format 3, ordinary ledgers retain format 1 and optional
+provider format 2 remains unactivated. Request/Lease shape guards and optional
+complete named startup hashes are reviewed within the recorded composition.
+Independent strict reset of external named roots remains unsupported and
+refuses. Automatic tier placement/migration, I/O enforcement, physical
+reclamation credit and full specification/platform acceptance remain separate.
+All original acceptance windows are released; further validation needs its own
+central allocation. Preserve the isolated owner branch, worktree and receipts.
 
 ## Accepted recent milestones
 

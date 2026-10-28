@@ -7064,6 +7064,7 @@ receipt does not add live-origin, DNS/HTTPS or latency measurement acceptance.
 
 
 
+
 Btrfs association fixtures now derive malformed UUIDs and membership ranges only
 from a synthetic base UUID and use synthetic source/subvolume/sysfs labels. All
 61 existing pure association cases pass after this fixture-data normalization,
@@ -7071,3 +7072,90 @@ with zero failures/skips. Production discovery/custody bytes are unchanged; prio
 race and compile runs retain their original hashes and scope. The fixture-only
 followup is recorded in
 `docs/validation/storage-association-fixture-normalization-2026-10-28.json`.
+
+## Configured storage pools — reviewed integration
+
+Independent review accepts focused owner cuts `e015b5b`, `ce55d7e`, `0ddc1e6`,
+`cc24b70`, `2b16fd8` and `8c7d839` in composed source `ce92760`, including accepted
+main `dacba08`. Review reproduced and closed same-tick shared/default disk
+over-admission, false profile freshness after volume uncertainty, discarded
+Btrfs subvolume/source association and unbound first-provider filesystem
+creation. Existing `storage.Open`, Provider type and native/source helpers remain
+unchanged; the additive named opener holds/checks the parent before `mkdirat`,
+checks the opened root and preserves uncertain namespaces and original charges.
+The source-bound candidate receipts above retain their historical scopes.
+
+The focused feature lands as `3856f9c` on `dacba08`. Every production source,
+module, framework and runtime asset byte matches tested `ce92760`; differences
+are limited to documentation and fully synthetic observer fixture data. This
+keeps private-derived identifiers out of the feature's main history while
+preserving the owner and prior review branches. The exact final feature tree
+passes 61 observer nodes in each normal/race cohort, no failures/skips. Its
+2,787 tracked inputs are inventoried separately. Original CLI binaries and
+Linux execution retain their actual `ce92760` revision/hash; no later-binary
+execution or throughput acceptance is inferred from source equivalence.
+
+
+Final native boundary checks pass 87 named nodes; the selected nine-package race
+gate passes 453, and the complete storage race package passes 41, all without
+failures or skips. Native and Linux storage/observer/manager vet, affected native
+vet, native/Linux command builds and Linux observer/storage-test compilation
+pass. Both CLI binaries carry clean `ce92760` VCS stamps; test executable hashes
+are bound to exact compile receipts, without claiming an embedded VCS stamp.
+Two final-source compiler overlays restoring only the old opener or strict Btrfs
+device predicate fail their intended regression. Those expected failed controls
+remain distinct from positive production-source results. An earlier coordinator
+wrapper path error stopped before any backend or test; its failed receipt is
+retained separately. Both successful coordinator recorders complete exit zero,
+the original backends join after SIGTERM with exit 130, and checkpointed ledgers
+have no nonterminal lease.
+
+The combined dashboard is rebuilt from storage and accepted detachable-log
+source: all 420 JavaScript cases pass without failures/skips, and the real
+pinned Semblance lifecycle regression passes. The normal shared queue and bounded
+CPU2/memory2GiB leases cover both recorded validation phases. All 2,786
+tracked inputs and modes at tested `ce92760` are inventoried.
+[Nondeploy composition CI](https://github.com/inferal-oss/arm/actions/runs/40690807479)
+passes on exact `ce92760`: current-source dashboard capture, website typecheck,
+gallery/integrity, SSR/provenance and Chromium no-script/adoption checks succeed;
+deployment is skipped. Independent artifact audit verifies all 611 embedded
+inputs/runtime assets, four pages/shared stylesheet and eight PNG hashes, CRCs,
+complete zlib streams, dimensions and scanline rosters.
+
+Native macOS comparison remains bound to `e6bd73a`: three sequential 256MiB
+samples on each of two distinct APFS containers/devices, using F_NOCACHE, 1MiB
+write+fsync/read and 512 random 4KiB QD1 reads. Comparison medians are distinct
+from the last saved sample shown in the UI. All twelve original leases are
+terminal; six exact namespaces are absent. Explicit residual-responsibility
+handoff after removal gives no exclusive physical reclamation credit.
+Actual PTY and standalone web evidence remains bound to `23116bf`: all 57 PTY
+and 30 web artifact hashes plus each set of nine source pins match. The 64 web
+checks cover both widths and explicitly controlled timestamp-only stale states.
+Original metadata is restored and original PTYs/browsers/backends close. The
+managed-browser kernel failure remains a separate failed tool scope. Fixed-shell
+overlays in tall captures limit blanket pixel-layout acceptance.
+
+The exact final Linux CLI passes configured read-only discovery/startup/pool/
+resource checks against the original Btrfs target in a fresh private authority.
+Independent audit verifies 22 conditions: covering mount/source, separate native
+FSID and proven UUID grouping, consistent resource projections, config/launch
+hash agreement, unchanged old ledgers/stages/target entries, zero leases and
+unpublished provider roots, peer publication disabled, non-force stop and
+positive original backend exit through its pidfd. All eight final artifact hashes
+and the original idle-recorder non-force stop match. All eleven guest commands
+stay within the granted roster. The remote read-only phase takes 0.685s; the
+reported staging/control/report window is 1.831s. Matching default/named native FSID and covering source is observed;
+no Linux lease/accounting transaction is requested. CPU/memory remain unknown
+under the unchanged initial-cgroup rule. Both original Linux failures remain
+failed: no benchmark sample and no native manager-test execution was accepted.
+
+[Normalized integration evidence](validation/storage-pools-integration-2026-10-28.json)
+binds final source, artifact/receipt hashes and source-qualified earlier scopes.
+This milestone includes opt-in format 3, Request/Lease shape guards and optional
+complete named startup hashes; ordinary format 1 remains and provider format 2
+is unactivated. Linux allocation/workload/performance positives, full Go-suite
+coverage, physical enforcement/reclamation guarantees, automatic tier placement/
+migration and I/O enforcement remain unverified or unsupported. Independent
+external-root strict reset remains unsupported and refuses. No normal ARM
+installation, original failed-ledger migration, privileged setup or broader
+provider/native-foundation acceptance follows from this integration.
