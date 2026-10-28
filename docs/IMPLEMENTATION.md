@@ -3045,6 +3045,11 @@ The polling clock runs independently of replies so one slow log does not pause
 healthy peers. Backlog pages yield between tasks, and each display retains its
 existing bounded latest-output window. The eight-log limit refuses another view
 without evicting an existing one.
+The existing 256 KiB display window is measured as 262,144 JavaScript UTF-16
+code units per transcript. Eight views retain at most 2,097,152 code units of
+logical transcript text (up to 4 MiB as UTF-16 before graph/DOM copies and bounded
+in-flight decode/render temporaries). This is a display-text bound, not a total
+browser-heap bound or a backend log-retention limit.
 
 Detached logs keep following across dashboard navigation. A hidden docked log
 stops reading until its page resumes. Read from start, pause/follow, fold, output
