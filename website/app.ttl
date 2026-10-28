@@ -21,7 +21,7 @@ ui:Capabilities a ui:Page ; rdfs:label "Capabilities" ; sem:slug "capabilities" 
 ui:Docs a ui:Page ; rdfs:label "Docs & source" ; sem:slug "docs" ; sem:order 4 ; ui:heading ui:docsTitle .
 ui:location a nav:Location ; nav:root ui:shell ; nav:dimensions ( ui:atPage ) .
 ui:atPage a nav:Dimension ; nav:subject ui:state ; nav:property ui:page ;
-    nav:carriedBy nav:Fragment ; nav:history nav:MakesHistory .
+    nav:carriedBy nav:Path ; nav:keyProperty sem:slug ; nav:implicit ui:Home ; nav:history nav:MakesHistory .
 
 ui:shell a c:Stack ; sty:theme sty:Semblance ; sty:colorScheme sty:System ;
     pos:direction pos:Column ; pos:gap tok:space-7 ; pos:inset tok:space-5 ;

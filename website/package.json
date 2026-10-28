@@ -6,15 +6,15 @@
   "scripts": {
     "engine:build": "node scripts/patch-framework.mjs && node scripts/build-engine.mjs",
     "predev": "npm run engine:build",
-    "dev": "vite --host 127.0.0.1",
-    "build": "npm run engine:build && node scripts/notices.mjs && vite build && node scripts/assert-build.mjs",
+    "dev": "node --import tsx node_modules/vite/bin/vite.js --configLoader native --host 127.0.0.1",
+    "build": "npm run engine:build && node scripts/notices.mjs && node --import tsx node_modules/vite/bin/vite.js build --configLoader native && node scripts/finalize-pages.mjs && node scripts/assert-build.mjs",
     "typecheck": "node scripts/patch-framework.mjs && tsc --noEmit",
     "test:gallery": "node --import tsx --test scripts/test-gallery-snap.mjs",
     "test:screenshots": "node --test scripts/test-screenshot-integrity.mjs",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "node --import tsx node_modules/vite/bin/vite.js preview --configLoader native --host 127.0.0.1"
   },
   "dependencies": {
-    "@inferal-oss/semblance": "https://codeload.github.com/inferal-oss/semblance/tar.gz/88eb230991c4f63d54fe47bee5cf3fb9f121e528"
+    "@inferal-oss/semblance": "https://codeload.github.com/inferal-oss/semblance/tar.gz/d879c3a02afe2ae33d36bfe00835183f3e4d13c3"
   },
   "devDependencies": {
     "@rdfjs/types": "2.0.1",

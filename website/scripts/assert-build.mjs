@@ -3,9 +3,11 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { embeddedUI } from '../../scripts/dashboard-screenshots/source.mjs'
 import { verifyScreenshotSet } from './screenshot-integrity.mjs'
+import { verifyPrerenderedSite } from './prerender-integrity.mjs'
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex')
 const dist = process.argv[2] ?? 'dist'
+const prerendered = verifyPrerenderedSite(dist)
 const provenance = JSON.parse(readFileSync('provenance.json', 'utf8'))
 const files = readdirSync(join(dist, 'assets'), { withFileTypes: true })
 if (files.some(file => !file.isFile())) throw Error('Unexpected nested runtime asset')
@@ -45,8 +47,10 @@ const metadata = existsSync(metadataPath) ? verifyScreenshotSet(join(dist, 'scre
 if (process.env.GITHUB_ACTIONS === 'true' && (!process.env.GITHUB_SHA || !metadata)) throw Error('Current-build screenshots are required')
 const receipt = { schema: 1, source_commit: metadata?.source_commit ?? null, framework: provenance.framework,
   renderer_overlay: provenance.renderer_overlay, gallery_overlay: gallery,
+  notices: { file: "THIRD-PARTY-NOTICES.txt", sha256: sha(readFileSync(join(dist, "THIRD-PARTY-NOTICES.txt"))), native_tool_notices: provenance.native_tool_notices },
+  prerender: { pages: prerendered.documents.map(({ file, html }) => ({ file, sha256: sha(html) })), stylesheet: { file: "semblance.css", sha256: sha(prerendered.css) } },
   screenshots: metadata ? { metadata_sha256: sha(readFileSync(metadataPath)), binary_sha256: metadata.binary_sha256, embedded_ui: metadata.embedded_ui, images: metadata.images } : null,
   wasm: { file: 'assets/' + wasm[0].name, bytes: wasmBytes.length, sha256: sha(wasmBytes) },
   runtime_chunks: chunks.map(file => 'assets/' + file.name).sort(), optional_rust_engine: false, vite_helper: provenance.vite_helper }
 writeFileSync(join(dist, 'build-integrity.json'), JSON.stringify(receipt, null, 2) + '\n')
-console.log('Verified pinned WAT-only runtime, native option overlay and full Vite helper notice.')
+console.log('Verified four pre-rendered pages, published styles, pinned WAT-only runtime, source overlays and full notices.')

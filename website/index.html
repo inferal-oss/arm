@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <base href="%BASE_URL%" />
     <meta name="go-import" content="getarm.org git https://github.com/inferal-oss/arm" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="ARM coordinates agents on macOS and Linux with time-limited resource leases, durable ownership, queued admission, and local web and terminal dashboards." />
@@ -10,12 +11,8 @@
     <title>ARM — Agent Resource Manager</title>
   </head>
   <body data-sem-theme="semblance" data-sem-color-scheme="system">
-    <main id="app" aria-label="ARM public website">
-      <p><picture><source srcset="./brand-lockup-light.svg" media="(prefers-color-scheme: light)" /><img src="./brand-lockup.svg" width="120" height="32" alt="ARM" /></picture></p>
-      <p>Loading Agent Resource Manager.</p>
-      <p><a href="https://github.com/inferal-oss/arm">Read the source and setup guide on GitHub</a>.</p>
-    </main>
-    <noscript>JavaScript is required for the interactive Semblance website. The complete setup guide and documentation are available in the linked GitHub repository.</noscript>
+    <div id="app" role="main" aria-label="ARM public website"></div>
+    <noscript>Enable JavaScript to use display settings, compact navigation and gallery controls. <a href="https://github.com/inferal-oss/arm">Read the source and setup guide</a>.</noscript>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

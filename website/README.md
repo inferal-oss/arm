@@ -1,16 +1,24 @@
 # ARM public website
 
 The public site is an actual Semblance application. `app.ttl` holds the content,
-stock components, navigation model and Semblance theme selection with the system color scheme. `main.ts` only
-loads the engine, projects the graph, and attaches Semblance's DOM/event/history,
-gallery snap, lightbox and fullscreen host effects. Two small site-specific renderings bind existing brand assets and the system-map
+stock components, navigation model and Semblance theme selection with the system
+color scheme. `semblance.config.ts` describes the graph for Semblance's
+publish-time renderer.
+`main.ts` mounts the same graph with Semblance's automatic DOM takeover, event
+replay, history, gallery snap, lightbox and fullscreen effects. Two small
+site-specific renderings bind existing brand assets and the system-map
 content image to RDF/HTML. Layout and sizing use stock components and measure
 styles, with no CSS overrides. The color-scheme
 control changes graph state; the theme remains Semblance.
 
-The source lives on the same branch as ARM. The static build works at a domain
-root or a GitHub Pages repository prefix (`base: './'`); navigation uses fragments
-and does not need server rewrites. There is no backend, account, analytics or
+The source lives on the same branch as ARM. The static build emits already styled
+HTML for `/`, `/start/`, `/capabilities/`
+and `/docs/`. Navigation uses real page paths, and legacy fragment addresses are
+still read by the client. No server rendering process or rewrite is required.
+The default base is `/`; set `WEBSITE_BASE_PATH=/repository/` when building for a
+repository prefix. Pages supplies its configured base automatically. A document
+base keeps logos, screenshots and notices valid from every nested page. There is
+no backend, account, analytics or
 live ARM connection on the public site. Commands are examples, not executed by
 this page.
 
@@ -23,12 +31,21 @@ npm ci --ignore-scripts
 npm run typecheck
 npm run test:gallery
 npm run build
+npm ci --ignore-scripts --prefix ../scripts/dashboard-screenshots
+node ../scripts/dashboard-screenshots/node_modules/playwright/cli.js install chromium
+node scripts/test-prerender-browser.mjs
 npm run preview -- --port 5198
 ```
 
 The build compiles the pinned framework's WAT source into WebAssembly, emits
 production/source dependency notices and Vite's complete bundled-helper notice,
-then bundles the stock framework. The exact optional `oxigraph/web.js` import
+then bundles the stock framework and runs its `semblance()` Vite plugin. The
+plugin renders each address from a fresh WAT store and emits `semblance.css`.
+Vite loads its config natively through the locked TypeScript loader, so the
+SSR plugin can import its site description after bundling.
+The client adopts those nodes and reuses that stylesheet; it preserves published
+content if initialization fails. Preload remains off to prioritize first paint.
+The exact optional `oxigraph/web.js` import
 resolves to a throwing WAT-only stub, so unused Rust engine bytes are excluded.
 `npm run dev -- --port 5198` starts the
 local development preview (also builds WAT first).
@@ -40,17 +57,19 @@ hold a queue slot for an idle preview server.
 ## Dependency provenance
 
 Semblance is not yet published to npm. The dependency is the official upstream
-source archive for commit `88eb230991c4f63d54fe47bee5cf3fb9f121e528`:
+source archive for commit `d879c3a02afe2ae33d36bfe00835183f3e4d13c3`:
 
-<https://github.com/inferal-oss/semblance/commit/88eb230991c4f63d54fe47bee5cf3fb9f121e528>
+<https://github.com/inferal-oss/semblance/commit/d879c3a02afe2ae33d36bfe00835183f3e4d13c3>
 
 `package-lock.json` pins the archive URL and SHA-512 integrity, plus each registry
-dependency. Build output includes the complete licenses from all production
+dependency. Build output includes the complete licenses from all installed production/source
 dependencies in `THIRD-PARTY-NOTICES.txt`; it is regenerated from those installed
 packages. When a package omits its license text, an exact-version/archive-bound
 copy from its immutable upstream release is retained under `licenses/` with
-source URLs and content hashes. Unknown or changed fallback identities fail the
-build. Semblance itself is MIT OR Apache-2.0. Generated engine/build files and
+source URLs and content hashes. Native build-tool packages use the complete
+license from their exact-version parent archive, with the archive integrity and
+license hash bound in `provenance.json`; uninstalled optional platform packages
+are omitted. Unknown or changed fallback identities fail the build. Semblance itself is MIT OR Apache-2.0. Generated engine/build files and
 `node_modules` are ignored and must not be committed or used as Pages artifacts.
 Only `dist/` is the publishable output.
 
@@ -91,7 +110,7 @@ sync, general TCP forwarding, Kubernetes enrollment, VNC, pause, GPU and managed
 provider workflows. No prebuilt release downloads are advertised.
 
 Before deployment, check all four navigation choices, refresh/back/forward and
-direct fragments (`#overview`, `#start`, `#capabilities`, `#docs`), mouse and
+direct page paths and legacy fragments (`#overview`, `#start`, `#capabilities`, `#docs`), mouse and
 keyboard disclosure actions, the color-scheme controls, all source links and the
 license link. Inspect desktop and narrow layouts. A successful local build does
 not establish custom-domain DNS, HTTPS or deployment acceptance.
@@ -158,3 +177,16 @@ controls, focus return and all eight decoded images remain browser review gates.
 The documentation and capability cards use `pos:AlignedColumns`, so their headers
 and bodies share row tracks on each wrapped line. They stack naturally at narrow
 widths without fixed heights, padding text or CSS overrides.
+
+## Pre-render publication gate
+
+The final build checks every rendered page, its navigation destinations, published
+stylesheet, mount marker and canonical Go discovery metadata. The build receipt
+records page and stylesheet hashes. A failed SSR pass stops artifact publication.
+The Pages workflow also runs Chromium checks against the built files with
+JavaScript disabled at desktop and phone widths, then verifies node/style reuse,
+an interaction queued while WASM loads, direct pages, legacy fragments and
+back/forward navigation. Compact pickers, display settings and gallery actions
+continue to require the client; desktop page navigation uses native GET forms
+before takeover. Live deployment and public timing measurements are separate
+from these build and browser checks.

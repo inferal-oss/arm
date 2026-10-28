@@ -1,28 +1,39 @@
 {
   "schema": 1,
   "framework": {
-    "archive": "https://codeload.github.com/inferal-oss/semblance/tar.gz/88eb230991c4f63d54fe47bee5cf3fb9f121e528",
-    "integrity": "sha512-92IauJvJkyoHuvFvedbEkdOSm72Vt8MI5HN8jhaOtkX1dF726GhkkUhPjDC5TU816IsOqQrENfNKKnA8POJp1A==",
-    "commit": "88eb230991c4f63d54fe47bee5cf3fb9f121e528"
+    "archive": "https://codeload.github.com/inferal-oss/semblance/tar.gz/d879c3a02afe2ae33d36bfe00835183f3e4d13c3",
+    "integrity": "sha512-W0SbrnsiE0ID2L6Gjhvff4eE0FpRW1haFj7NOszcgiW0cV2+MVAQntPVQBzm2agY9Cl2SDnv8RuS2l7qZo+Nnw==",
+    "commit": "d879c3a02afe2ae33d36bfe00835183f3e4d13c3"
   },
   "renderer_overlay": {
     "path": "src/render/dom.ts",
-    "base_sha256": "dce6c7997fe712a94caa3a5ee30aba3e8eaebc5d25e4367b2e164d4334ba8871",
-    "sha256": "2de10c3f48a289bbc84da35942ed123ed3e280a86e981d44cb301ab2a68ecca6",
+    "base_sha256": "318275da741060cdae43734040e204e4c3cd1243675ad74f5000cf8873fd910c",
+    "sha256": "adb6799f47fc558f170619c12b0dfb35dbd17a71b12323e347766190fd8d426d",
     "upstream_issue": "https://github.com/inferal-oss/semblance/issues/181",
     "upstream_change_commit": "454e0186506f3fd2f4f0fcd76673c4e9d50667c8",
     "status": "Reviewed generic source overlay; upstream acceptance is not claimed."
   },
-  "wat_sha256": "643c92ff69038f6ea70cdb3ca91fbeba7b0345d49692fa2fc398d94b69d58f01",
+  "wat_sha256": "8acb7d9c3327e0bd501574d5b58d39bd966f1355b60c4805b22fa0466711f1c7",
   "build_files": {
-    "vite.config.ts": "e2d86a264b5fbfece34069d3cacffc7f0cb3aeb9a0e3e0f8be3354fed4c24921",
+    "vite.config.ts": "092fbf007bfdedbab4358a90ad1ee8846bb1e5563063adf49acb206d502b9f4f",
     "arm-wat-only-store.mjs": "4a833e733aeea9e4c62e1b45a322043cd3c597a7b5100aec6e662ac29781a7c3",
     "scripts/patch-framework.mjs": "4c38e7bfc662439b1552c196958d86f7823ab4c8dbe648fa7f30e262da79fb66",
-    "scripts/assert-build.mjs": "c8a8266c9a43844023926aaea28e9e35b8f5ea02ea9b7542dce22a4696c78fef",
-    "scripts/gallery-overlays.json": "0eb154b99049346758cbc0ca2b4baaf315ba6d48805e619d5d912de68888d8de",
+    "scripts/assert-build.mjs": "ebff2fede7899623203db58ce4e22aa8004b6698171ccc52f7421dce4b78698f",
+    "scripts/gallery-overlays.json": "df54c235714e759801ec30c8f64e94ff4fb0e413eace1e2922edb86a1d1761b2",
     "scripts/screenshot-integrity.mjs": "7628ec1c14aaeff2867af88ee24f780c1245161bcd12492248e546f2880575b7",
     "../scripts/dashboard-screenshots/source.mjs": "382a64c13734433e57e08605500b0def7d4e2d88e7e39af8ea8bd992da60dfc2",
-    "../scripts/dashboard-screenshots/views.json": "b50671e0b4490550391bbfd4c2f376ed7ff7be1f8303e102ea92a6e932174d94"
+    "../scripts/dashboard-screenshots/views.json": "b50671e0b4490550391bbfd4c2f376ed7ff7be1f8303e102ea92a6e932174d94",
+    "package.json": "de4acd5df9d65d908c9302e119d02c2213116c53bb135531525f756cbbd9e143",
+    "index.html": "a79b241511e23c7ced2dfd2f9c7a4d95c899d15abc1c644ff6b2793353eda815",
+    "main.ts": "6422d88ff9cc3ecf2006c0cd40eac96d8bf5d5f489a499d28d5356112ccba4ac",
+    "semblance.config.ts": "80fbb4338e96582f9607269338378add64a76049cba35bfdd62ecedb8f6b74c4",
+    "scripts/build-engine.mjs": "b74b88f9ff23f6c0fa50af0ae855aa097f3dcf40b75b2f0948fdc6c15e3053b9",
+    "scripts/notices.mjs": "3c2805596028b465573ae8e8063e72ed0dfc1b29da767446ee676729249b86d6",
+    "scripts/prerender-integrity.mjs": "6d83414854947d4fd44303bd9af411b2379e3b61e81c02cc765e3efd4b0fcf89",
+    "scripts/test-prerender-browser.mjs": "62a4a9ac71272a220df0004f0ee6281a9b4ca54b237bc5d0e67a56cb665f6083",
+    "app.ttl": "7b7f9f144087d24629e494e97cc8ba9c876ac31c7980ffab8a3a1f19f4cd032a",
+    "tsconfig.json": "6db128762b66b6f77a7452d1bf05850c06c753d9b0fa29f9a1eb19f8ef5e3557",
+    "scripts/finalize-pages.mjs": "042bbd955dd07b3461b5dbdeb56921dcd5be6d198edb53b5940dc0a122d0981d"
   },
   "vite_helper": {
     "version": "8.3.5",
@@ -31,7 +42,7 @@
   },
   "gallery_overlay": {
     "patch_file": "scripts/gallery-overlays.json",
-    "patch_sha256": "0eb154b99049346758cbc0ca2b4baaf315ba6d48805e619d5d912de68888d8de",
+    "patch_sha256": "df54c235714e759801ec30c8f64e94ff4fb0e413eace1e2922edb86a1d1761b2",
     "files": [
       {
         "path": "src/web/snap.ts",
@@ -40,10 +51,24 @@
       },
       {
         "path": "ontology/theme/gallery.ttl",
-        "base_sha256": "03ba4281c0020a4e2e27419a9ca6da2a16f2179b6bd7e4f64e947bed6432bfb1",
-        "sha256": "2ae3500f685bdd2d5eb1577342b769bd074ba154c94913abbb02b74ac7685e31"
+        "base_sha256": "ec4bc2c52b16ea2968d6f9a2cae08a1b0f008822bcf12c09d597d55cf7df137b",
+        "sha256": "dae6e9aa20fa0f6f68d8b9fea78ff540176d8f7ee8477aad31834a2c964bfb79"
       }
     ],
     "status": "Website-only generic source overlay; upstream acceptance is not claimed."
+  },
+  "native_tool_notices": {
+    "esbuild": {
+      "version": "0.28.2",
+      "integrity": "sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==",
+      "license": "LICENSE.md",
+      "sha256": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681"
+    },
+    "rolldown": {
+      "version": "1.2.15",
+      "integrity": "sha512-6odND+fel5zVw3I4Yc2e69gvguDnX0CAAGiNDZSq4ik5WUcaLrkD2GLuog0XcODbor31hZ5ayEMgVDno+KPV5g==",
+      "license": "LICENSE",
+      "sha256": "23ecfff35a5a2e80d92142f75228912c3b1abc4b5a8337a821ff4397e2f9f734"
+    }
   }
 }

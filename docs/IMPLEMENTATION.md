@@ -2643,3 +2643,37 @@ boundaries remain unchanged. Complete journal checks, global accounting,
 coupled cancellation/recovery, atomic reservation before image work, native
 producer/finalizer and public factory remain unfinished. Ordinary workspace
 format and activation policy are unchanged.
+
+### Public website publish-time rendering
+
+The website-only Semblance dependency is pinned to upstream
+`d879c3a02afe2ae33d36bfe00835183f3e4d13c3`. Its `semblance()` Vite plugin reads
+`website/semblance.config.ts` and renders the Overview, Get started, Capabilities
+and Docs sections to separate static HTML files during `npm run build`, alongside
+one compiled `semblance.css`. The browser uses the public `mount()` API to adopt
+those nodes, reuse the stylesheet and replay interactions captured before WASM
+initialization. Client failure preserves the published content and releases
+native page navigation.
+
+The graph now carries its page dimension in paths, with an explicit `sem:slug`
+key and an implicit home page. Legacy fragments remain client-readable. Desktop
+navigation uses real GET destinations before takeover; compact pickers, display
+settings and gallery actions require JavaScript. `WEBSITE_BASE_PATH` controls
+both generated addresses and the document base, so nested sections retain their
+logos, diagrams, screenshots and notice links under a repository prefix. Pages
+supplies its configured base before building.
+
+Native Vite config loading runs through the locked TypeScript loader so the SSR
+plugin can load its site description after bundling. The previous native option,
+gallery snap and Lightbox corrections remain source/hash-bound, rebased onto the
+new website archive. Omitted native build-tool license texts use the complete,
+hash-bound notices from their exact-version parent packages; optional packages
+not installed on the build platform are excluded. The embedded ARM browser app,
+Go module and backend dependencies are unchanged.
+
+Artifact upload requires rendered content, native navigation destinations,
+stylesheet and Go discovery checks for every section, followed by Chromium
+checks of the published files. Build receipts include page and stylesheet
+hashes. Static generation removes graph projection from first paint; it does not
+remove the client graph/engine transfer or establish a measured public load-time
+improvement. Live publication remains a separate integration gate.

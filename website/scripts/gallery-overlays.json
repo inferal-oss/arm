@@ -34,8 +34,8 @@
     },
     {
       "path": "ontology/theme/gallery.ttl",
-      "base_sha256": "03ba4281c0020a4e2e27419a9ca6da2a16f2179b6bd7e4f64e947bed6432bfb1",
-      "sha256": "2ae3500f685bdd2d5eb1577342b769bd074ba154c94913abbb02b74ac7685e31",
+      "base_sha256": "ec4bc2c52b16ea2968d6f9a2cae08a1b0f008822bcf12c09d597d55cf7df137b",
+      "sha256": "dae6e9aa20fa0f6f68d8b9fea78ff540176d8f7ee8477aad31834a2c964bfb79",
       "edits": [
         {
           "before": "[] a sty:StyleRule ; sty:appliesTo c:Lightbox ;\n    sty:declares [ sty:property \"position\" ; sty:raw \"fixed\" ] ,",
