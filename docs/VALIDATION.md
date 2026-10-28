@@ -7183,3 +7183,24 @@ their original failed status; earlier five-case success is not attributed to
 the prefix correction. CPU admission observations are controlled fixtures,
 with the native Darwin clock. No Linux execution, Unix socket bind/storage,
 application traffic or production forwarding activation is established.
+
+
+### Original-owned pressure current composition
+
+[Independent composed evidence](validation/pressure-native-current-2026-10-28.json)
+binds all nine paths and modes at `1ab8578f` to the reviewed source union. Eight
+non-Manager files match the reviewed final pressure source exactly; the Manager
+delta only preserves the current forwarding startup cleanup-uncertainty fence.
+All prior provider C0 files and the other forwarding inputs remain unchanged.
+
+The native Darwin race run passes 22 roots/42 exact named RUN=PASS cases with
+zero failures/skips; affected ChildOwner/Manager vet passes. All three original
+phase waits return zero, all 1,606 selected pins remain unchanged, and both Linux
+ARM64 binaries have verified hashes and ELF architecture. They are compile-only
+and were not executed. Queue and single-worker bounds are retained.
+
+Actual native original-child pause/resume/retirement is covered, while several
+Manager reservations and observer interleavings are staged or injected. This
+does not accept the complete pressure controller, OS stopped-state confirmation,
+physical headroom, host sleep, hard-crash recovery or model/trace correspondence.
+Earlier failed source runs remain failed. Production pausing remains disabled.

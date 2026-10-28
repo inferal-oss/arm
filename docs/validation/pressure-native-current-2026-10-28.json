@@ -1,0 +1,372 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED_SCOPED_DISCONNECTED_CURRENT_COMPOSITION",
+  "base": "11d78a8563a06cf6ba6575fb9320e914651780bd",
+  "source_target": "283130604acdff42a603fd4b1c5e4215eb61bc50",
+  "source_review_sha256": "c5257614d0fe51e5877d7d99cf9f77703b407c0f03cc91efc598ff7dddda0c4d",
+  "composed_commits": [
+    "2a360513c3e412a51c54c69d3dab657879db3596",
+    "b89280f642d530dddca145bb15a2cf4627ef331a",
+    "1ab8578f3b1a832834a951f39e1c4d49a5ca6737"
+  ],
+  "tree": "fd9bb04a99ee78c4dda02833cbeebd27a60f7ca1",
+  "owned_files": {
+    "internal/childowner/observe_darwin.go": {
+      "sha256": "e9149ff478819417178d9b9ca8997b039ed23f3e84df09aa9496cd05b35b3c85",
+      "blob": "f1fddad80a3c64ccb7761cae4d7e4c92bd479c1b",
+      "mode": "100644"
+    },
+    "internal/childowner/observe_linux.go": {
+      "sha256": "9645effe47b3991c94580d874ee8f5aa251cdb4170caf893951d099bbc70a4a2",
+      "blob": "c1434313edf08d98b472be7108f1486c2a8b6724",
+      "mode": "100644"
+    },
+    "internal/childowner/owner.go": {
+      "sha256": "b7065ffbc4ccd5b251322d96d6f9cb68413d073f73eb5309d001d4fbb741d1a2",
+      "blob": "99dae30bf8220feed1592c77be2dc79665d19921",
+      "mode": "100644"
+    },
+    "internal/childowner/owner_native_pause_test.go": {
+      "sha256": "9eb0e3844fab4676f28035258e2e0127391e1feabb58e448440a12889f446e71",
+      "blob": "500701455ae720d503d5446ae67c1302babcf588",
+      "mode": "100644"
+    },
+    "internal/manager/job_control.go": {
+      "sha256": "34786970eb9d1e6c6e0357bb89423679df70d6fd7cee3d8fbcdb570739b4b2cd",
+      "blob": "e54681cacdf2e72a4f059c625f8d049c1c4917e5",
+      "mode": "100644"
+    },
+    "internal/manager/manager.go": {
+      "sha256": "702c40b323d6456cc57f203f7941eae0826d6f41d837eb0e585c79d860b7b03c",
+      "blob": "59778594d855394a360d921791cf678dbdf28ef6",
+      "mode": "100644"
+    },
+    "internal/manager/pressure_native_candidate.go": {
+      "sha256": "26249754fd9ea7e7a72d562705f27ffe027abfc7b4d6f4d99d0d72652ec4a3de",
+      "blob": "3b40fe49600f9f13b21a761c0a78ffe04cd36995",
+      "mode": "100644"
+    },
+    "internal/manager/pressure_native_candidate_test.go": {
+      "sha256": "0dba6f21943ae54892a529f368182bd6ae5d321f0857ab2570e02e76b4d1c89d",
+      "blob": "96997ddb21d387b522e84caa4efa649b17adec69",
+      "mode": "100644"
+    },
+    "internal/manager/pressure_native_control.go": {
+      "sha256": "1f63cd806b9cf901448ad8f1bf6f4d017d8c4954555cd25dccd928e8fe2051a4",
+      "blob": "2abfb3280d126dd208da124df7bff158a2308b39",
+      "mode": "100644"
+    }
+  },
+  "eight_nonManager_owned_files_exact_reviewed": true,
+  "Manager_union": "Only retained current forwarding startup-marker behavior differs from reviewed pressure source; no conflict resolution or feature widening.",
+  "Manager_union_diff_sha256": "a9a81b6eb2f9edf249517163225e7902dd6b0e27f372ea16b103d83f8e9de443",
+  "prior_C0_14_and_forward_five_nonManager_files_retained": true,
+  "native_race": {
+    "roots": 22,
+    "nodes": 42,
+    "pass": 42,
+    "fail": 0,
+    "skip": 0,
+    "roster": [
+      {
+        "package": "getarm.org/internal/childowner",
+        "name": "TestOriginalOwnerNativePauseResumeAndRetirement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/childowner",
+        "name": "TestPausePreflightUncertaintyPreservesPlatformCleanupFence",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/childowner",
+        "name": "TestPausePreflightUncertaintyPreservesPlatformCleanupFence/signal-preflight=false",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/childowner",
+        "name": "TestPausePreflightUncertaintyPreservesPlatformCleanupFence/signal-preflight=true",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/childowner",
+        "name": "TestPressureRetirementCutsOffDelayedOriginalEffect",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardListenerCrashRecoveryAfterExclusiveProcessFence",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardListenerJoinedPortAllowsResetProof",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardListenerPortAndResourcesJoinBeforeSettlement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildCleanupFaultRetainsChargeAndRecoveryFence",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildExactOriginalAndJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildManagerCloseWaitsForOriginalJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestForwardUnixChildNeverReissuedAfterJoin",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-and-settlement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-only",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-and-settlement",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-only",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/id",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/owner",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/pid",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/process",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureChangedBindingDoesNotStarveOriginalSibling/request",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureFreshRosterDecodeRefusesAllNativeSignals",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/below-deadline",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/list-decode-error",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/missing-deadline",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/other-boot",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-other-boot",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-read-error",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/post-refusal-regressed",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/read-error",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureLeavesUnprovenNativeOwnersLive/regressed",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureRefusesNewAuthority",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestLeaseClockCheckpointFailureRejectsPhysicalIDAlias",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestPressureDegradedExpiryUsesCapturedOriginalDuringReservedEffect",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestPressureNativeControlRefusesUnjournaledAction",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestPressurePausedOriginalRevocationPrecedesResumeAndRetainsCharges",
+        "status": "pass"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "name": "TestPressureReservedEffectLetsEndRetireWithoutWaitingForNativeOwner",
+        "status": "pass"
+      }
+    ],
+    "issues": []
+  },
+  "phases": [
+    {
+      "name": "race",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "8172aaae348c40970401aafa3fb6f1d0f297aa62aa551a52edf59868df4eb67c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "vet",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "linux-compile",
+      "exit": 0,
+      "original_wait_returned": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "linux_compile_only": {
+    "childowner.test": {
+      "sha256": "f302f9e6056cbacbb4985f88fe190b9ff6f322675f9a50555dd2de3655e97af5",
+      "bytes": 4838182,
+      "ELF_machine": 183,
+      "executed": false
+    },
+    "manager.test": {
+      "sha256": "469b77b703631da76f280f95f058922ec97b3a4241b018462093336cca937377",
+      "bytes": 55257089,
+      "ELF_machine": 183,
+      "executed": false
+    }
+  },
+  "outer_exit": 0,
+  "elapsed_seconds": 189.644149625,
+  "gate_seal_sha256": "2ed2004d823e5ba63b05f68f6dce1ea80c22091c8ed41149e6af608777bd5f50",
+  "result_sha256": "20600c074052760995d23de42b888ba6fa25604aeb90f2278bbb749413b1b02b",
+  "source_manifest_sha256": "66ca7fea0cf490dbbea0a1b2d5c500dba2b8ebdf19ec8bf96f394b5a46dbdb5a",
+  "selected_inputs": {
+    "files": 1606,
+    "scope": "Tracked Go sources,go.mod/go.sum and selected runner/tool entrypoints, not a complete transitive toolchain/module-cache proof.",
+    "pre_post_equal": true
+  },
+  "controls": {
+    "canonical_FIFO_queue_sha256": "769e8980b0e10ad8724eef473c463acf0d572dfe789d05ca008482d03f757922",
+    "five_overrides_unset_at_dispatch": true,
+    "GOMAXPROCS": 1,
+    "p": 1,
+    "parallel": 1,
+    "count": 1,
+    "test_timeout_seconds": 180,
+    "module_readonly": true,
+    "phase_caps_seconds": [
+      240,
+      120,
+      180
+    ],
+    "owner_cap_seconds": 600,
+    "native_CGO_ENABLED": "1",
+    "linux_CGO_ENABLED": "0",
+    "ordinary_released_cache_reused_no_copies_or_downloads": true
+  },
+  "Go_executable_sha256": "aa355b078a81158d418079a3f8c776719eb99cc6f527e39ffa3250c66566aafb",
+  "activation": {
+    "MaxPauseJobs": 0,
+    "AllowPause": false,
+    "host_policy_unchanged_sha256": "de83fee59cd7c5a32093309277a41688755749b9443b9e6523fda2e17444e8c0",
+    "new_grant_writer_outbox_native_factory": false
+  },
+  "limitations": [
+    "Native Darwin childowner pause/resume/retirement is exercised, but Manager pressure reservations/state and several observer cuts are staged/injected. This is not a complete sustained-pressure controller or model/trace correspondence result.",
+    "CPU availability in Manager fixtures is controlled; no fresh physical headroom, whole-host pause, physical sleep or general workload-safety claim.",
+    "Linux ARM64 results are compilation only. No Linux native pause/signal/Wait behavior is accepted by this gate.",
+    "Earlier f5/a5 failed executions retain their exact failed status; current composition does not rewrite them.",
+    "No production pressure enablement, policy writer or full outbox/controller wiring follows; default warning-only policy is unchanged.",
+    "Existing forwarding tests exercise process-local child/join/recovery bounds; they do not enable Unix binding/storage or generic forwarding.",
+    "Original returned Go child waits/a107 pipe cleanup are not arbitrary escaped/transitive descendant closure or a hermetic toolchain claim.",
+    "No full suite, S3 or normal duplicate cohort was run. This record accepts only the focused disconnected source milestone."
+  ],
+  "coordinator_actual_review": {
+    "qualified_record_sha256": "14ae68e0d47bfd457daddf858e25ce2a454a91ab1be9be3f6ab50a0ebe72e3eb",
+    "coordinator_record_sha256": "e84a797530721f88f10ebf658855afe7e05e193230d367775b014bdacc250dc4",
+    "raw_roster_log_hashes_git_objects_modes_parent_chain_inputs_and_dependencies_checked": true
+  }
+}
