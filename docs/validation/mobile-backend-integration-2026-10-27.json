@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED_BACKEND_CLI_TERMINAL_SOURCE_PROJECTION",
+  "commit": "ff412e9c8d8355a68953eb3d7184b8b674d61593",
+  "owned_paths": 36,
+  "all_owned_git_objects_and_modes_match_reviewed_composed_source": true,
+  "validation_scope": "Standalone mobile component/native fixture and selected composed normal/race cases; Go source unchanged by later graph-ui-only focus correction. Intermediate backend-only commit is not independently claimed as a full browser build/runtime run.",
+  "leaf_native_evidence_sha256": "29dac5e5b8cde387bc1a28ff2a36a384c53241e4ab9ef8bf723bce591cb305d4",
+  "composed_component_build_evidence_sha256": "b844d4a171e36037040322c1db0554e2fb2e9b3864d0b9359c5b21f7e57f5831",
+  "limits": [
+    "Browser source/assets and the new browser-asset test are deferred together to the separately reviewed UI integration.",
+    "Same approved endpoint and running backend; no roaming, automatic certificate renewal, scheduler or OS-service installation.",
+    "No physical suspend, Linux feature runtime or later public-install acceptance."
+  ]
+}

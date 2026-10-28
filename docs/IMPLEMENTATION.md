@@ -2273,8 +2273,9 @@ persistence is integrated separately below.
 
 ## Intermittent-node component milestone
 
-The reviewed, not-yet-integrated mobile-node slice keeps declaration separate
-from reachability and current capacity. Optional owner-local profile metadata
+Integrated backend/CLI/terminal commit `ff412e9` keeps declaration separate
+from reachability and current capacity; the reviewed browser controls and fresh
+bundle remain in the pending UI integration. Optional owner-local profile metadata
 uses bounded CAS writes; remote observations expose a limited public projection.
 A bounded read-only observer retries approved endpoints with backoff and uses
 suspend-inclusive native freshness. Startup retries preserve the original
@@ -2284,7 +2285,7 @@ Unknown operations retain their original keys and obligations.
 The exact frozen slice passes its native race, frontend-policy and causal-control
 gates. A separate standalone native gate now accepts two-node outage/restart,
 browser state changes and actual PTY restoration. The composed component/build
-gate also passes; final rendered composition and product integration remain open.
+gate also passes; final rendered composition and browser integration remain open.
 No scheduler, roaming endpoint discovery,
 automatic certificate renewal or OS service installation is implemented here.
 

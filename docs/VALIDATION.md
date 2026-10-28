@@ -6121,3 +6121,13 @@ three listeners refuse, and the exact owned lease is ordinarily released.
 Full-document raster height differs from browser viewport height. No complete
 pixel, physical same-node, current corrected-source or product integration claim
 follows from these observations.
+
+
+### Intermittent-node backend integration
+
+[Projection evidence](validation/mobile-backend-integration-2026-10-27.json)
+verifies all 36 Go paths in `ff412e9` against the reviewed composed source.
+Standalone leaf and combined normal/race evidence retain their recorded scopes;
+no new intermediate-tree runtime is claimed. Browser modules, fresh assets and
+the new served-panel test are deferred together to the UI integration. The
+backend code does not enable roaming, scheduling, new grants or CPU entitlement.

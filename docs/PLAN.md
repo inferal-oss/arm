@@ -130,7 +130,8 @@ retroactive local pass is claimed.
 
 ## Intermittent mesh-node follow-up
 
-The reviewed candidate adds optional owner-local profile/CAS metadata, bounded
+Backend, CLI and terminal code is integrated as `ff412e9`. It adds optional
+owner-local profile/CAS metadata, bounded
 pinned-TLS observation, native-clock freshness and generation-fenced startup
 retry. Cancellation joins remain outside administration locks. CLI validation,
 web unknown-write fences across remounts and terminal selection cancellation
@@ -147,7 +148,7 @@ fixture failures remain failed; long trust fields still clip in the node dialog.
 [The composed candidate](validation/mobile-resources-names-composed-build-2026-10-27.json)
 passes 63 Go roots/151 named cases in each normal/race cohort, 101 Node cases,
 eight selected RDF cases, vet and fresh frontend/native builds. Final composed
-Resources interaction and focused product integration remain open. Recovery
+Resources interaction and browser-source/asset integration remain open. Recovery
 assumes a running backend and the same approved reachable endpoint. Roaming,
 certificate renewal, an automatic scheduler and physical suspend/Linux runtime
 are separate unsupported boundaries; declarations do not grant resources.
@@ -242,6 +243,8 @@ not reactivated by retaining their technical records.
 
 ## Validation records
 
+- [Intermittent-node backend integration](validation/mobile-backend-integration-2026-10-27.json): exact 36-path Go projection with browser-source/assets and their served-bundle test deliberately deferred to the UI cut.
+
 - [Mobile native successor](validation/mobile-node-native-v7-2026-10-27.json), [composed component/build](validation/mobile-resources-names-composed-build-2026-10-27.json), [failed medium layout](validation/resources-native-v10-failed-2026-10-27.json) and [qualified modal-focus failure](validation/resources-native-v11-qualified-failure-2026-10-27.json): source-bound progress and current remaining integration gates.
 
 - [Doodle containment](validation/gallery-doodle-containment-2026-10-27.json) and [upstream draft publication](validation/gallery-containment-draft-2026-10-27.json): exact two-file source, scoped 16-case native evidence and successful refreshed PR CI, with paint/header limits retained.
@@ -333,7 +336,7 @@ no runtime acceptance.
 
 | Priority | Area | Concrete unfinished work | Next action and boundary |
 | --- | --- | --- | --- |
-| Now | Compact Resources and mobile composition | Accepted mobile leaf and composed source/build await final modal-focus correction, remaining controlled modes and focused integration. | Retain qualified widths/Stat containment, warnings and real consumer checks from the failed native attempt. Fix nested Close/Escape restoration after opener replacement, then validate only affected and unrun behavior against the rebuilt exact binary. Preserve all failures and source-specific limits. |
+| Now | Compact Resources and mobile composition | Backend/CLI/terminal are integrated as `ff412e9`; accepted composed browser source/build await final modal-focus and controlled-mode acceptance before UI integration. | Retain qualified widths/Stat containment, warnings and real consumer checks from the failed native attempt. Fix nested Close/Escape restoration after opener replacement, then validate only affected and unrun behavior against the rebuilt exact binary. Preserve all failures and source-specific limits. |
 | Now | Kubernetes unified install/connect | Main still lacks a working Kubernetes choice in both dialogs, a reproduced explanation for missing Nodes, backend effect wiring, verified readiness/catalog and pinned mesh enrollment. The old partial web edit is not ready. | Continue the already assigned unified workflow using existing typed provider and original-key contracts. Diagnose context/identity/namespace/Node/query stages separately; scheduler allocatable figures do not supply live ARM CPU authority. |
 | Next | Public sync | Planner, rsync worker, ledger and recovery foundations are integrated, but public push/pull/both and typed multi-hop sync are not wired. The complete-scope owner type cannot currently mint a positive capability. | Complete enforced native scope/charged Manager ownership and settlement first, then endpoint dispatch, reviewed conflicts/deletions/baselines, progress/recovery and web/Charm controls. Keep one coordinated sync continuation across planner, worker and relay work. |
 | Next | Provider lifecycle | Codec, durable fixture, entitlement component and V0 writer guard do not implement production registration or the real Manager/native-clock/retained worker-and-scratch bridge. | Finish reservations before image work, current held authority and every End/expiry/Close/restart/reset boundary before a startable factory. Uniform writer rollout and format activation remain explicit gates; a published guard is not proof that all writers upgraded. |
