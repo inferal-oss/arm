@@ -115,6 +115,15 @@ func (m *dashboardModel) displayContent() string {
 }
 func (m *dashboardModel) keepSelectionVisible() {
 	m.syncViewport()
+	if m.view == 7 && m.runsUI != nil && m.runsUI.selected == nil && m.record == nil && !m.feedFocus && !m.modal() {
+		row := m.runListSelectionRow()
+		if row < m.viewport.YOffset() {
+			m.viewport.SetYOffset(row)
+		} else if row+1 >= m.viewport.YOffset()+m.viewport.Height() {
+			m.viewport.SetYOffset(max(0, row-m.viewport.Height()+2))
+		}
+		return
+	}
 	if m.view == 2 && m.detail == nil && m.record == nil && m.resourceID == "" && !m.feedFocus && !m.modal() {
 		row := m.leaseTableSelectionRow()
 		if row < m.viewport.YOffset() {

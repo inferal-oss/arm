@@ -4,9 +4,9 @@ import {controlUI} from './control-test-ui.mjs';
 import {createRunsConsole,cleanRunText} from './runs.mjs';
 const id='a'.repeat(32),other='b'.repeat(32),run={id,name:'readable-run',command:['test','--all'],agent:'agent',reason:'Verification',state:'active',log_bytes:0};
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function fixture(t,handler,fullscreen=false){const ui=controlUI();ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
+function fixture(t,handler,fullscreen=false){const ui=controlUI();ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();}};}
 const encoded=text=>Buffer.from(text).toString('base64');
-test('Runs loads only while visible and opens output following by default',async t=>{const f=fixture(t);await f.panel.refresh();assert.equal(f.calls.length,0);f.panel.setActive(true);await tick();assert.equal(f.calls[0][0],'runs');await f.ui.get('Open readable-run').emit('activate');assert.equal(f.calls.at(-1)[0],'run_output');assert.ok(f.ui.get('Pause following'));assert.equal(f.ui.get('Next output page').disabled,true);});
+test('Runs loads only while visible and opens output following by default',async t=>{const f=fixture(t);await f.panel.refresh();assert.equal(f.calls.length,0);f.panel.setActive(true);await tick();assert.equal(f.calls[0][0],'runs');await f.ui.get('Verification').emit('activate');assert.equal(f.calls.at(-1)[0],'run_output');assert.ok(f.ui.get('Pause following'));assert.equal(f.ui.get('Next output page').disabled,true);});
 test('terminal output drains pages and byte cursor preserves split UTF-8',async t=>{
  const data=Buffer.from('A🙂B'),f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,state:'terminal',log_bytes:data.length},offset:args.offset,next_offset:Math.min(data.length,args.offset+3),data:data.subarray(args.offset,args.offset+3).toString('base64'),done:true});
  f.panel.setActive(true);await tick();await f.panel.open(run);assert.equal(f.calls.at(-1)[1].offset,0);await f.panel.refresh();assert.equal(f.calls.at(-1)[1].offset,3);assert.equal(f.ui.all.filter(x=>x.kind==='Code').at(-1).value,'A🙂B');assert.equal(f.ui.get('Next output page').disabled,true);
@@ -23,7 +23,7 @@ test('log display is bounded and reporter loss never claims process completion',
  const chunk='x'.repeat(65536);const f=fixture(t,(op,args)=>op==='runs'?[run]:{run:{...run,state:'interrupted',outcome:'reporter_lost',log_bytes:1e6,truncated:true},offset:args.offset,next_offset:args.offset+chunk.length,data:encoded(chunk),done:true});f.panel.setActive(true);await tick();await f.panel.open(run);for(let i=0;i<5;i++)await f.panel.refresh();const code=f.ui.all.filter(x=>x.kind==='Code'&&!x.disposed).at(-1);assert.equal(code.value.length,256*1024);assert.match(f.ui.labels(),/display shows latest 256 KiB/);assert.match(f.ui.labels(),/Reporter lost; process completion is unknown/);assert.equal(f.ui.get('Reporter lost; process completion is unknown').hidden,false);
 });
 test('output control sequences are escaped; html remains literal stock Code data',()=>{assert.equal(cleanRunText('\x1b[2J\n<script>\r\n\u202e'),String.raw`\u001b[2J`+'\n<script>\n'+String.raw`\u202e`);});
-test('live refresh keeps focused run and output controls rather than replacing them',async t=>{const f=fixture(t);f.panel.setActive(true);await tick();const opener=f.ui.get('Open readable-run');opener.focus();await f.panel.refresh();assert.equal(f.ui.get('Open readable-run'),opener);assert.equal(f.ui.activeComponent,opener);await opener.emit('activate');const pause=f.ui.get('Pause following');pause.focus();await f.panel.refresh();assert.equal(f.ui.get('Pause following'),pause);assert.equal(f.ui.activeComponent,pause);});
+test('live refresh keeps focused run and output controls rather than replacing them',async t=>{const f=fixture(t);f.panel.setActive(true);await tick();const opener=f.ui.get('Verification');opener.focus();await f.panel.refresh();assert.equal(f.ui.get('Verification'),opener);assert.equal(f.ui.activeComponent,opener);await opener.emit('activate');const pause=f.ui.get('Pause following');pause.focus();await f.panel.refresh();assert.equal(f.ui.get('Pause following'),pause);assert.equal(f.ui.activeComponent,pause);});
 test('read from start leaves output paused while scheduled inventory polling continues',async t=>{
  let state='active';const f=fixture(t,(op,args)=>op==='runs'?[{...run,state}]:{run:{...run,state,log_bytes:20},offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
  f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Read from start').emit('activate');
@@ -46,16 +46,16 @@ test('pause cancels an already scheduled rapid catch-up page',async t=>{
  f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Pause following').emit('activate');await new Promise(resolve=>setTimeout(resolve,20));assert.equal(f.calls.filter(([op])=>op==='run_output').length,1);
 });
 test('explicit open brings run details into focus once and close restores the current opener',async t=>{
- const f=fixture(t);f.panel.setActive(true);await tick();const opener=f.ui.get('Open readable-run');opener.focus();
- await opener.emit('activate');const heading=f.ui.activeComponent;assert.equal(heading.kind,'Heading');assert.equal(heading.label,'readable-run');
+ const f=fixture(t);f.panel.setActive(true);await tick();const opener=f.ui.get('Verification');opener.focus();
+ await opener.emit('activate');const heading=f.ui.activeComponent;assert.equal(heading.kind,'Heading');assert.equal(heading.label,'Verification');
  await f.panel.refresh();assert.equal(f.ui.activeComponent,heading,'polling must preserve reading focus');
  const pause=f.ui.get('Pause following');pause.focus();await f.panel.refresh();assert.equal(f.ui.activeComponent,pause,'output updates must not steal control focus');
- await f.ui.get('Close output').emit('activate');assert.equal(f.ui.activeComponent,f.ui.get('Open readable-run'));assert.equal(f.ui.activeComponent,opener);
+ await f.ui.get('Back to runs').emit('activate');assert.equal(f.ui.activeComponent,f.ui.get('Verification'));assert.equal(f.ui.activeComponent,opener);
 });
 test('closing a run whose opener was filtered out focuses the surviving filter',async t=>{
- const f=fixture(t);f.panel.setActive(true);await tick();await f.ui.get('Open readable-run').emit('activate');
- const filter=f.ui.get('Filter runs, commands or agents');filter.value='no matching run';await filter.emit('input');
- await f.ui.get('Close output').emit('activate');assert.equal(f.ui.activeComponent,filter);
+ const f=fixture(t);f.panel.setActive(true);await tick();await f.ui.get('Verification').emit('activate');
+ const filter=f.ui.get('Search runs');filter.value='no matching run';await filter.emit('input');
+ await f.ui.get('Back to runs').emit('activate');assert.equal(f.ui.activeComponent,filter);
 });
 
 function installFullscreen(ui){
@@ -82,4 +82,28 @@ test('fullscreen shares the transcript and restores focus/folding through button
 for(const mode of ['hide','reset','dispose'])test(`fullscreen retracts its graph fact before ${mode}`,async t=>{
  const f=fixture(t,undefined,true);f.panel.setActive(true);await tick();await f.panel.open(run);await f.ui.get('Fullscreen log').emit('activate');const surface=f.ui.all.find(x=>x.fullViewport===true&&!x.disposed);
  if(mode==='hide')f.panel.setActive(false);else f.panel[mode]();assert.equal(surface.fullViewport,false);await tick();assert.ok(!f.ui.all.some(x=>x.fullViewport===true&&!x.disposed));if(mode==='dispose')assert.equal(f.ui.fullscreenListeners.size,0);
+});
+test('compact purpose rows stay stable through active-first reordering and search full identities',async t=>{
+ let records=[{...run,state:'terminal',name:'four-word-generated-display-name',created_at:'2026-10-28T12:00:00.123456789Z'},{...run,id:other,reason:'Compile preview',command:['/a/very/long/private/tool','--mode','preview'],agent:'preview-agent',state:'active',created_at:'2026-10-27T12:00:00Z'}];
+ const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();
+ const opener=f.ui.get('Verification');opener.focus();const roots=f.ui.all.filter(x=>x.kind==='Stack'&&x.children.some(child=>child.label==='Current · 1'));assert.ok(roots.length);const list=roots.at(-1);assert.equal(list.children[1].children[0].children[0].label,'Compile preview');
+ assert.equal(f.ui.all.filter(x=>x.kind==='Card').length,0);assert.ok(!list.children.some(x=>String(x.label).includes('four-word')));
+ records=[{...records[0],state:'active'},{...records[1],state:'terminal'}];await f.panel.refresh();assert.equal(f.ui.get('Verification'),opener);assert.equal(f.ui.activeComponent,opener);assert.equal(list.children[1].children[0].children[0],opener);
+ const filter=f.ui.get('Search runs');filter.value=other;await filter.emit('input');assert.ok(f.ui.get('Compile preview'));assert.equal(list.children.length,2);
+});
+test('selected run gets its own compact view with full metadata in closed Details',async t=>{
+ const f=fixture(t);f.panel.setActive(true);await tick();await f.ui.get('Verification').emit('activate');const technical=f.ui.get('Details');assert.ok(technical);assert.equal(technical.open,false);const heading=f.ui.activeComponent;assert.equal(heading.label,'Verification');
+ const history=f.ui.all.find(x=>x.kind==='Stack'&&x.children.includes(f.ui.get('Search runs')));assert.equal(history.hidden,true);
+ await f.panel.refresh();assert.equal(technical.open,false);assert.equal(f.ui.activeComponent,heading);
+ await f.ui.get('Back to runs').emit('activate');assert.equal(history.hidden,false);assert.equal(f.ui.activeComponent,f.ui.get('Verification'));
+});
+test('full Details retains raw capture failure state and the child exit code',async t=>{
+ const failed={...run,state:'terminal',outcome:'log_failed',exit_code:0};const f=fixture(t,op=>op==='runs'?[failed]:{run:failed,offset:0,next_offset:0,data:'',done:true});f.panel.setActive(true);await tick();await f.panel.open(failed);const details=f.ui.get('Details');assert.equal(details.open,false);assert.ok(details.children.some(x=>String(x.label).includes('Outcome: log_failed')&&String(x.label).includes('Exit code: 0')));assert.ok(f.ui.get('Log failed'));
+});
+test('search matches the displayed failure status and outcome',async t=>{
+ const failed={...run,state:'terminal',outcome:'log_failed',exit_code:0};const f=fixture(t,op=>op==='runs'?[failed]:null);f.panel.setActive(true);await tick();const filter=f.ui.get('Search runs');filter.value='Log failed';await filter.emit('input');assert.ok(f.ui.get('Verification'));filter.value='log_failed';await filter.emit('input');assert.ok(f.ui.get('Verification'));
+});
+test('row moves restore a blurred opener and leave unrelated focus alone',async t=>{
+ let records=[{...run,created_at:'2026-10-28T12:00:00Z'},{...run,id:other,reason:'Other task',state:'terminal',created_at:'2026-10-28T11:00:00Z'}];const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();const opener=f.ui.get('Verification'),list=f.ui.all.find(x=>x.role==='list');const replace=list.replace.bind(list);list.replace=(...children)=>{replace(...children);if(f.ui.activeComponent===opener)f.ui.activeComponent=null;return list;};opener.focus();records=records.map(r=>({...r,state:r.id===id?'terminal':'active'}));await f.panel.refresh();assert.equal(f.ui.activeComponent,opener);
+ const filter=f.ui.get('Search runs');filter.focus();await f.panel.refresh();assert.equal(f.ui.activeComponent,filter);
 });

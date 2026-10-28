@@ -118,3 +118,73 @@ arm:RunTranscript a owl:Class ; rdfs:subClassOf c:Stack .
 arm:RunOutputFull a owl:Class ; rdfs:subClassOf arm:RunOutput .
 [] a sty:StyleRule ; sty:appliesTo arm:RunOutputFull ;
  sty:declares [ sty:property "max-height" ; sty:raw "calc(100dvh - 14rem)" ] .
+
+# Runs use a quiet reading column and aligned stock components rather than
+# full-width cards. The compact breakpoint stacks metadata beneath the command.
+arm:RunSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-surface" .
+arm:RunListRow a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-list-row" .
+arm:RunPrimary a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-primary" .
+arm:RunRowMeta a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-row-meta" .
+arm:RunOpen a owl:Class ; rdfs:subClassOf c:Button ; sem:slug "arm-run-open" .
+arm:RunListCommand a owl:Class ; rdfs:subClassOf c:Code ; sem:slug "arm-run-list-command" .
+arm:RunDetailCommand a owl:Class ; rdfs:subClassOf c:Code ; sem:slug "arm-run-detail-command" .
+arm:RunSecondary a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-secondary" .
+[] a sty:StyleRule ; sty:appliesTo arm:RunSurface ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+              [ sty:property "max-width" ; sty:raw "72rem" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "margin-inline" ; sty:raw "auto" ] ,
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunListRow ;
+ sty:declares [ sty:property "display" ; sty:raw "grid" ] ,
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) minmax(10rem, 16rem)" ] ,
+              [ sty:property "align-items" ; sty:raw "center" ] ,
+              [ sty:property "gap" ; sty:raw "1.25rem" ] ,
+              [ sty:property "padding-block" ; sty:raw "0.75rem" ] ,
+              [ sty:property "border-bottom" ; sty:raw "1px solid var(--sem-border)" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunPrimary ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "gap" ; sty:raw "0.25rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunRowMeta ;
+ sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+              [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+              [ sty:property "justify-content" ; sty:raw "flex-end" ] ,
+              [ sty:property "align-items" ; sty:raw "center" ] ,
+              [ sty:property "gap" ; sty:raw "0.35rem 0.6rem" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunOpen ;
+ sty:declares [ sty:property "justify-content" ; sty:raw "flex-start" ] ,
+              [ sty:property "text-align" ; sty:raw "left" ] ,
+              [ sty:property "font-weight" ; sty:raw "650" ] ,
+              [ sty:property "padding" ; sty:raw "0" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] ,
+              [ sty:property "white-space" ; sty:raw "normal" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunListCommand ;
+ sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+              [ sty:property "background" ; sty:raw "none" ] ,
+              [ sty:property "border" ; sty:raw "0" ] ,
+              [ sty:property "padding" ; sty:raw "0" ] ,
+              [ sty:property "font-size" ; sty:raw "0.875rem" ] ,
+              [ sty:property "color" ; sty:token tok:muted ] ,
+              [ sty:property "white-space" ; sty:raw "nowrap" ] ,
+              [ sty:property "text-overflow" ; sty:raw "ellipsis" ] ,
+              [ sty:property "overflow" ; sty:raw "hidden" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunDetailCommand ;
+ sty:declares [ sty:property "white-space" ; sty:raw "normal" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunSecondary ;
+ sty:declares [ sty:property "font-size" ; sty:raw "0.875rem" ] ,
+              [ sty:property "color" ; sty:token tok:muted ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunListRow ; sty:atWidth sty:CompactWidth ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] ,
+              [ sty:property "gap" ; sty:raw "0.4rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunRowMeta ; sty:atWidth sty:CompactWidth ;
+ sty:declares [ sty:property "justify-content" ; sty:raw "flex-start" ] .
+arm:RunTechnical a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-technical" .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTechnical ;
+ sty:declares [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .

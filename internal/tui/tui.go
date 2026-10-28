@@ -693,14 +693,18 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return nil
 		}
 		m.selected = min(max(0, m.itemCount()-1), m.selected+1)
-		m.viewport.SetYOffset(max(0, m.selected*3-m.viewport.Height()+3))
+		if m.view != 7 || m.feedFocus {
+			m.viewport.SetYOffset(max(0, m.selected*3-m.viewport.Height()+3))
+		}
 	case "k", "up":
 		if !m.feedFocus && (m.view == 0 || m.view == 5) {
 			m.viewport.ScrollUp(1)
 			return nil
 		}
 		m.selected = max(0, m.selected-1)
-		m.viewport.SetYOffset(min(m.viewport.YOffset(), m.selected*3))
+		if m.view != 7 || m.feedFocus {
+			m.viewport.SetYOffset(min(m.viewport.YOffset(), m.selected*3))
+		}
 	case "enter":
 		return m.openSelected()
 	case "esc":

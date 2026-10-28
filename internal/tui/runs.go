@@ -108,8 +108,17 @@ func (m *dashboardModel) acceptRunsRead(msg runsReadMsg) tea.Cmd {
 	}
 	if msg.hasInventory {
 		id, previous := m.selectionID(), m.selected
+		anchor := ui.selected == nil && len(ui.records) > 0 && m.view == 7 && !m.feedFocus
+		rowBefore, offsetBefore := 0, m.viewport.YOffset()
+		if anchor {
+			rowBefore = m.runListSelectionRow()
+		}
 		ui.records = msg.records
 		m.restoreSelection(id, previous)
+		if anchor && id != "" && m.selectionID() == id {
+			m.syncViewport()
+			m.viewport.SetYOffset(offsetBefore + m.runListSelectionRow() - rowBefore)
+		}
 		if ui.selected != nil {
 			for _, record := range ui.records {
 				if record.ID == ui.selected.ID {
@@ -155,10 +164,11 @@ func (m *dashboardModel) filteredRuns() []model.Run {
 	}
 	var runs []model.Run
 	for _, run := range m.runsUI.records {
-		if strings.Contains(strings.ToLower(run.ID+" "+run.Name+" "+run.Agent+" "+run.Reason+" "+run.State+" "+strings.Join(run.Command, " ")), strings.ToLower(m.filter)) {
+		if strings.Contains(strings.ToLower(run.ID+" "+run.Name+" "+run.Agent+" "+run.Reason+" "+run.State+" "+run.Outcome+" "+runStatusLabel(run)+" "+strings.Join(run.Command, " ")), strings.ToLower(m.filter)) {
 			runs = append(runs, run)
 		}
 	}
+	orderRunRecords(runs)
 	return runs
 }
 func (m *dashboardModel) openRun() tea.Cmd {
@@ -263,14 +273,7 @@ func (m *dashboardModel) runsText() string {
 		}
 		return out.String()
 	}
-	out.WriteString("Current and past runs · Enter follows output\n\n")
-	for i, r := range m.filteredRuns() {
-		fmt.Fprintf(&out, "%s%s · %s\n  %s\n  %s · %s\n\n", selectedPrefix(m.selected, i), short(r.Name, max(12, m.mainWidth()-30)), safe(r.State), short(strings.Join(r.Command, " "), max(1, m.mainWidth()-8)), short(r.Agent, 30), short(r.Reason, max(1, m.mainWidth()-42)))
-	}
-	if len(m.filteredRuns()) == 0 {
-		out.WriteString("No matching runs.")
-	}
-	return out.String()
+	return m.runListRender().text
 }
 func (m *dashboardModel) runKey(k string) tea.Cmd {
 	ui := m.runsUI
