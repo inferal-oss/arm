@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "status": "FAILED_WITH_13_QUALIFIED_POSITIVE_CHECKS",
+  "scope": "Independent offline qualification of remaining-only Resources v12 native evidence. No rerun, browser/probe, candidate helper import or source change.",
+  "binding_sha256": "695645e7a573cd7b0921a4000d58015d794590481c340761a05cf41533d1aa4a",
+  "source_manifest_sha256": "8e39ae9720a541fd6f9d2c8b38730d208e86c88b519d16a72606086be1344316",
+  "binary_sha256": "79477b9979bc19276dda24cfb59057299cb5c27e30846245c1c45c2aa92b1828",
+  "bundle_sha256": "7aba9726fde7340a7f13db1f2e2678b083685ce95eb2e505ed5dd887d5be43cd",
+  "overall": {
+    "original_exit_code": 1,
+    "original_duration_ms": 877084,
+    "native_report": "FAIL",
+    "infrastructure_passed": true,
+    "native_report_passed": false,
+    "passed": false
+  },
+  "qualified_PASS_names": [
+    "Nested Close after actual opener replacement",
+    "Nested Escape after actual opener replacement",
+    "Ordinary last manager Close restores live opener",
+    "Direct lease last-modal Close restores page reading fallback",
+    "Controlled unavailable pool review",
+    "Controlled stale capacity",
+    "Controlled partial peer report",
+    "Controlled filesystem-stale",
+    "Controlled page-stale",
+    "Controlled expired",
+    "Controlled unknown-used",
+    "Controlled unknown-total",
+    "Controlled zero"
+  ],
+  "corrected_focus_cases": [
+    {
+      "case": "close",
+      "real_same_ID_renewal": true,
+      "expiry_changed": true,
+      "capacity_restored": 1,
+      "old_AX_opener_absent_new_control_present": true,
+      "active_connected_inside_live_manager_after": true
+    },
+    {
+      "case": "escape",
+      "real_same_ID_renewal": true,
+      "expiry_changed": true,
+      "capacity_restored": 1,
+      "old_AX_opener_absent_new_control_present": true,
+      "active_connected_inside_live_manager_after": true
+    }
+  ],
+  "ordinary_focus": {
+    "last_manager_Close_returns_live_Manage_pools_button": true,
+    "direct_lease_Close_returns_page_heading_without_modal": true
+  },
+  "controlled_values": {
+    "read_only_scope": "Selected pool complete-tree review unavailable; not an authority-wide Create denial.",
+    "unknown_used": {
+      "used": "unavailable",
+      "total": "100 B",
+      "available": "7 B"
+    },
+    "unknown_total": {
+      "used": "12 B",
+      "total": "unavailable",
+      "available": "7 B"
+    },
+    "zero": {
+      "used": "0 B",
+      "total": "0 B",
+      "available": "0 B"
+    }
+  },
+  "controlled_trace": {
+    "frames": 107,
+    "limit": 8192,
+    "truncated": false,
+    "error": "",
+    "changed_frame_hash_pairs": 107,
+    "modes": {
+      "read-only": 3,
+      "stale-capacity": 2,
+      "partial-peers": 5,
+      "filesystem-stale": 1,
+      "page-stale": 2,
+      "expired": 28,
+      "unknown-used": 18,
+      "unknown-total": 2,
+      "zero": 46
+    },
+    "limit_note": "Trace retains before/after frame hashes rather than complete payload bodies. Mode acknowledgements, saved AX/DOM facts and transformation source support controlled-state observations; this is not native counter authority."
+  },
+  "disconnect": {
+    "acknowledged_and_attempted": true,
+    "included_in_PASS_roster": false,
+    "recorded_status": "FAIL",
+    "raw_observations": {
+      "Disconnected_retrying": true,
+      "STALE": true,
+      "native_resource_availability_unavailable": true,
+      "committed3": true,
+      "shortfall2": true,
+      "held3": true,
+      "pending2": true,
+      "create_and_refresh_disabled": true
+    },
+    "classification": "Confirmed narrow peer-summary stale-label refresh defect. The frozen actor predicate was retained commitments AND literal peer stale label. Raw AX independently satisfies commitments and global uncertainty, but the peer label remains Partial view instead of Stale view. No broader accounting-loss defect is established; original overall FAIL is preserved.",
+    "disconnect_transformed_frame_retained": false,
+    "exact_failed_predicate": {
+      "retained_COMMITTED3": true,
+      "literal_peer_stale_label": false,
+      "literal_partial_peer_label_still_present": true
+    },
+    "pending_actor_oracle_explanation": false
+  },
+  "cleanup": {
+    "original_owners": 43,
+    "exit0": 41,
+    "expected_exit130_roles": [
+      "before backend",
+      "after backend"
+    ],
+    "all_original_joined_retired_owned_pipes_closed": true,
+    "owner_errors": [],
+    "three_post_original_wait_listener_refusals": true,
+    "exact_owned_lease_ordinary_release_terminal_released": true,
+    "remaining_owned_leases": 0,
+    "state_clear": true,
+    "clean": true,
+    "binding_pins_rehashed": 14814,
+    "before_after_binding_equal": true,
+    "actor_owned_tab_reset_and_close_record_present": true,
+    "actor_tab_close_flags": {
+      "viewport_reset": true,
+      "own_tab_closed": true,
+      "window_returned": true,
+      "other_tabs_touched": false
+    }
+  },
+  "limits": [
+    "Overall run remains FAILED because the peer-specific stale-label conjunct failed.13 source-bound positive checks are qualified; no all-success claim.",
+    "Browser closure is supported by retained actor flags, not an independent live CUA probe.",
+    "Opener replacement uses renewed pool revision plus old/new AX control evidence and prior real RDF/DOM regression; no physical sameNode claim across browser calls.",
+    "Four selected rasters were inspected; sampled readiness/focus and paint evidence do not prove continuous stability or pixel-perfect layout.",
+    "No previous width/30Stat/resource-focus/name/Monitor/eight-manager cohort was promoted to a new source runtime pass. Prior failures retain their original scopes.",
+    "Controlled values are deliberate fixture projections, not current hardware measurements."
+  ],
+  "prior_pending_review_sha256": "81bba301f1edbc6ae8fc5511eae7006fdde2c20da19550cfe55fb3cf80efb477",
+  "final_author_packet": {
+    "manifest_sha256": "c3d2b46ad57372a803615c94e5a34ad46af768d959391a2a0d2f7effe5e48c39",
+    "private_receipt_sha256": "d05821f49342e5a216d1af6de327d9b36ddad63c9f380d035fe94b346f87590b",
+    "public_record_sha256": "e7b24ebdc7c462e6cf497025c4d3e25afc1e4452b6a90cc512f7b48603e11413",
+    "all2sealed_and57referenced_raw_evidence_hashes_match": true
+  },
+  "source_diagnosis": {
+    "scope": "Nearby peer summary freshness label on connection transition only",
+    "evidence": "Accepted built main.connectionState updates state.connected and dependent controls but does not render peer status; renderPeers selects stale label from state.connected when called. Saved disconnect AX shows old partial label.",
+    "no_extra_peer_RPC_or_broad_rerender_required_by_finding": true,
+    "source_fix": "Separately prepared/reviewed; no source edit or retest performed in this audit."
+  },
+  "actor_closure_pending": false
+}

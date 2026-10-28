@@ -6131,3 +6131,35 @@ Standalone leaf and combined normal/race evidence retain their recorded scopes;
 no new intermediate-tree runtime is claimed. Browser modules, fresh assets and
 the new served-panel test are deferred together to the UI integration. The
 backend code does not enable roaming, scheduling, new grants or CPU entitlement.
+
+
+### Modal restoration and peer-disconnect follow-up
+
+[Focus/build evidence](validation/modal-focus-remaining-build-2026-10-27.json)
+accepts eight selected RDF cases, with fourteen explicitly unselected, and the
+fresh Vite/native ARM build. All four original phase owners exit zero and join.
+The earlier seven-of-eight failure remains failed. This build supplies no new
+Go, full Node or native browser acceptance; its outer zero remains the original
+handle owner's report rather than independently recovered outer metadata.
+
+[Independent native v12 qualification](validation/resources-native-v12-qualified-failure-2026-10-27.json)
+retains actual outer exit 1 and overall native failure while accepting thirteen
+scoped checks. Distinct real renewals replace each opener; Close and Escape keep
+connected focus inside the still-open manager. Ordinary Close returns to a live
+opener or page heading. Nine controlled modes distinguish stale/unknown and zero
+values and preserve selected disabled controls and material warnings.
+
+Disconnection is attempted and fails only its peer-specific stale-label
+conjunct. Actual observations preserve global Disconnected/STALE, unavailable
+CPU/memory/disk, commitments, shortfall/held/pending amounts and disabled pool
+controls. The nearby-peer section retains its old Partial label. Source review
+confirms connection transitions do not refresh that existing label selection;
+a minimal lifecycle correction is pending build and native follow-up. This is
+not evidence of lost accounting or capacity being made fresh.
+
+All 43 original owners join with closed pipes and retired authority: 41 exit
+zero and two have bounded intentional cancellation. The exact lease is released,
+no owned leases remain, three listeners refuse after Wait, and the owned browser
+tab is reset/closed. Earlier width/Stat/accounting/resource-focus cohorts keep
+their separate source scope. No all-pass, full-layout or product integration
+claim follows from this failed run.

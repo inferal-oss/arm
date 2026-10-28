@@ -2301,10 +2301,13 @@ show the shorter Resources page and rebuilt Monitor badge presentation.
 The historical first interaction attempt stops at a dialog readiness guard.
 Later scoped manager checks pass, and the composed candidate verifies responsive
 Stat containment, pool warnings and real renewal/add/remove consumer focus.
-Its overall native run still fails: closing nested lease details restores focus
-outside the still-open pool manager after the opener is replaced. The generic
-restoration correction and remaining modes need acceptance. No new product
-bundle is integrated by these evidence records; original failures remain failed.
+The corrected generic restoration now passes actual Close/Escape after distinct
+opener replacements, plus ordinary opener/page fallback. Nine controlled modes
+also pass. That later native run remains failed because the nearby-peer summary
+keeps its previous label on disconnect while global uncertainty and commitments
+remain visible. A focused status-label correction awaits its build/native check.
+No new product bundle is integrated by these records; original failures remain
+failed.
 
 
 ## Upstream Gallery image-selection submission
@@ -2340,18 +2343,17 @@ slices remain open; later public installation and cross-platform runtime are
 not established by the native feature gate.
 
 
-## Pending UI runtime corrections
+## UI composition boundary
 
-The compact Resources candidate now omits the parent-held warning for actual
-root pools while retaining child commitment and deficit information. A stock
-four-column resource grid adapts to a 240px minimum card width. Its corrected
-frontend bundle is built and independently checked; binary embedding and actual
-remaining interaction checks are still pending.
+Root pools omit the parent-held warning while child commitments and deficits
+remain visible. The corrected 280px resource-card floor has qualified native
+1280/1060/390 containment evidence. Generic nested focus restoration and nine
+controlled states have later scoped acceptance; the peer disconnect label still
+requires its focused correction and final integration.
 
-The mobile-node candidate retains whole native obligations across the recorded
-outage/restart. The failed native comparison mixed gateway and authority
-projections; a fixture-only correction uses the original native baselines.
-Terminal restoration and successful rejoin/revocation remain acceptance gates.
+The mobile standalone milestone accepts whole native obligations through
+outage/restart and revocation, plus PTY restoration. Those checks retain their
+same-endpoint Darwin scope; they do not supply later combined UI acceptance.
 
 
 ## Upstream Lightbox containment submission

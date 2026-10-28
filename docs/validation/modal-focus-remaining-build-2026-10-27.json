@@ -1,0 +1,104 @@
+{
+  "state": "ACCEPTED_REMAINING_MODAL_FOCUS_RDF_AND_BUILD_SCOPE_ONLY",
+  "source_manifest_sha256": "8e39ae9720a541fd6f9d2c8b38730d208e86c88b519d16a72606086be1344316",
+  "input_binding_sha256": "a9f6ab4cdc166712787828769e551b2f09746f632c6221db212a4d1727909fc6",
+  "output_binding_sha256": "fc45580e36ad3b7a6439f99e7f2c83cb3378b9f2d0f1511398218ea4c359fe81",
+  "remaining_phases": [
+    {
+      "name": "rdf",
+      "exit": 0,
+      "original_joined": true,
+      "authority_retired": true,
+      "pipes_closed": true
+    },
+    {
+      "name": "vite",
+      "exit": 0,
+      "original_joined": true,
+      "authority_retired": true,
+      "pipes_closed": true
+    },
+    {
+      "name": "native-build",
+      "exit": 0,
+      "original_joined": true,
+      "authority_retired": true,
+      "pipes_closed": true
+    },
+    {
+      "name": "buildinfo",
+      "exit": 0,
+      "original_joined": true,
+      "authority_retired": true,
+      "pipes_closed": true
+    }
+  ],
+  "RDF": {
+    "total_named_cases": 22,
+    "selected_pass": 8,
+    "selected_fail": 0,
+    "explicitly_unselected": 14,
+    "todo": 0,
+    "selected_names": [
+      "opening an older hosted dialog raises its existing projection above newer management overlays",
+      "uses stock Dialog graph open/close and notifies the effect on stock close",
+      "effect markers are consumed before native focus reentry and close is delivered once",
+      "closing nested detail stays inside the highest surviving hosted modal after its opener is replaced",
+      "closing the last hosted modal restores the live opener or the page reading fallback",
+      "an explicit pending close callback keeps its requested focus inside the surviving modal",
+      "programmatic reading focus does not remove native controls from the Tab order",
+      "a pointer-opened overlay remembers its invoking control even when the browser did not focus it"
+    ],
+    "scope": "Actual RDF/runtime/event-bus fixture DOM; eight top-level cases include four dialog/drawer by Close/Escape combinations with real renderer opening clicks, strict retained-node identity and manager-only focus sequence. Not native Chrome."
+  },
+  "source_delta_from_previously_accepted_composition": [
+    "internal/server/web/semblance/graph-ui.mjs",
+    "web/test/graph-ui.test.mjs"
+  ],
+  "unchanged_source_boundaries": [
+    "All Go source and module bytes",
+    "Prior101-case Node suite source",
+    "All other2638 input source members"
+  ],
+  "input_pin_counts": {
+    "source": 2640,
+    "Node": 3041,
+    "tools": 17477,
+    "module_files": 20484,
+    "module_roots": 91,
+    "packet": 9,
+    "source_manifest_sha256": "8e39ae9720a541fd6f9d2c8b38730d208e86c88b519d16a72606086be1344316",
+    "all_hashes_and_memberships_match": true
+  },
+  "generated_assets": {
+    "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+    "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+    "arm.mjs": "7aba9726fde7340a7f13db1f2e2678b083685ce95eb2e505ed5dd887d5be43cd",
+    "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+    "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+  },
+  "generated_asset_delta": [
+    "arm.mjs"
+  ],
+  "binary": {
+    "sha256": "79477b9979bc19276dda24cfb59057299cb5c27e30846245c1c45c2aa92b1828",
+    "bytes": 71201122,
+    "format": "Mach-O64 arm64",
+    "Go": "1.27.3",
+    "GOOS": "darwin",
+    "CGO_ENABLED": 0,
+    "build_tags": null,
+    "all_five_asset_byte_arrays_located": true
+  },
+  "warning": "Vite reports a nonfatal minified chunk larger than500kB. Other phase stderr is empty.",
+  "outer_status_qualification": "Outer exit0 is the author sole-original-handle report, not independently recovered coordinator tool metadata. Acceptance rests on the four original phase-owner receipts, raw RDF/build outputs, exact artifact hashes and independent current pin checks.",
+  "prior_evidence": "Prior63Go/151normal-and-race and101Node evidence is unchanged-source scoped evidence, not rerun here. Failed prior7-of8 RDF attempt remains failed; prior binaries/bundles keep their original scope.",
+  "native_UI_acceptance": false,
+  "remaining": "Separately reviewed native Close/Escape/disappearing-opener/controlled-mode fixture using this exact source and binary. No prior width/Stat/warning/consumer scope is relabelled as a current native run.",
+  "limits": [
+    "No Go tests or Node policy suite rerun.",
+    "No browser/backend/helper execution during this independent audit.",
+    "No Linux, later-main, public-install, deployment or full-specification acceptance.",
+    "Selected inputs checked; mutable Go cache and ambient OS/SDK/dynamic-loader hermeticity not claimed."
+  ]
+}
