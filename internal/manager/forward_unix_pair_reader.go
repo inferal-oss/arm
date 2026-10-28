@@ -25,6 +25,33 @@ func forwardUnixPairUnavailable() error {
 	return model.Err("forward_unix_pair_unavailable", "forward Unix pair requires exact no-bind proof or compatible native recovery")
 }
 
+func validForwardUnixSocketName(name string) bool {
+	prefix := "forward-"
+	if strings.HasPrefix(name, "f-") {
+		prefix = "f-"
+	}
+	return len(name) == len(prefix)+32+len(".sock") && strings.HasPrefix(name, prefix) && strings.HasSuffix(name, ".sock") && canonicalForwardHex(strings.TrimSuffix(strings.TrimPrefix(name, prefix), ".sock"), 16)
+}
+
+func validForwardUnixPairPhase(data forwardUnixPairData) bool {
+	validIntent := data.BindIntent != nil && data.BindIntent.Directory == data.StorageArtifact && data.BindIntent.Allocated >= 0 && data.BindIntent.Allocated <= data.DiskBytes && !data.BindIntent.At.IsZero() && data.BindIntent.At.Location() == time.UTC
+	validBound := data.Bound != nil && data.Bound.Directory == data.StorageArtifact && data.Bound.Socket.Device == data.StorageArtifact.Device && data.Bound.Socket.Inode != 0 && data.Bound.Socket.Owner == data.StorageArtifact.Owner && data.Bound.Socket.BirthKnown && data.Bound.Allocated >= 0 && data.Bound.Allocated <= data.DiskBytes && !data.Bound.At.IsZero() && data.Bound.At.Location() == time.UTC && validIntent && !data.Bound.At.Before(data.BindIntent.At)
+	switch data.Phase {
+	case "planned":
+		return data.Revision == 1 && data.NoBind == nil && data.BindIntent == nil && data.Bound == nil && data.NativeTerminal == nil
+	case "bind_intent":
+		return data.Revision == 2 && data.NoBind == nil && validIntent && data.Bound == nil && data.NativeTerminal == nil
+	case "bound":
+		return data.Revision == 3 && data.NoBind == nil && validIntent && validBound && data.NativeTerminal == nil
+	case "terminal":
+		if data.Revision == 2 && data.NoBind != nil && data.BindIntent == nil && data.Bound == nil && data.NativeTerminal == nil {
+			return data.NoBind.Directory == data.StorageArtifact && data.NoBind.Allocated >= 0 && data.NoBind.Allocated <= data.DiskBytes && !data.NoBind.At.IsZero()
+		}
+		return data.Revision == 4 && data.NoBind == nil && validIntent && validBound && data.NativeTerminal != nil && data.NativeTerminal.Socket == data.Bound.Socket && data.NativeTerminal.Directory == data.StorageArtifact && data.NativeTerminal.Allocated >= 0 && data.NativeTerminal.Allocated <= data.DiskBytes && !data.NativeTerminal.At.IsZero() && data.NativeTerminal.At.Location() == time.UTC && !data.NativeTerminal.At.Before(data.Bound.At)
+	}
+	return false
+}
+
 func validForwardUnixPairClock(d *leaseclock.Deadline, max time.Duration) bool {
 	return d != nil && d.Version == 1 && d.Boot != "" && len(d.Boot) <= 256 && d.Anchor >= 0 && d.End > d.Anchor && d.End-d.Anchor <= int64(max) && !d.Wall.IsZero()
 }
@@ -76,7 +103,7 @@ func readForwardUnixPairRows(ctx context.Context, tx *sql.Tx) ([]forwardUnixPlan
 		if err := rows.Scan(&sourceID, &storageID, &phase, &sourceKey, &storageKey, &name, &diskBytes, &raw); err != nil {
 			return nil, forwardUnixPairUnavailable()
 		}
-		if !canonicalForwardHex(sourceID, 16) || !canonicalForwardHex(storageID, 16) || sourceID == storageID || phase != "planned" && phase != "terminal" || !strings.HasPrefix(sourceKey, "forward-listener:") || !canonicalForwardHex(strings.TrimPrefix(sourceKey, "forward-listener:"), 16) || storageKey != "forward-unix-storage:"+sourceID || len(sourceKey) > 128 || len(storageKey) > 128 || len(name) != len("forward-")+32+len(".sock") || !strings.HasPrefix(name, "forward-") || !strings.HasSuffix(name, ".sock") || !canonicalForwardHex(strings.TrimSuffix(strings.TrimPrefix(name, "forward-"), ".sock"), 16) || diskBytes != forwardUnixDiskPromise || len(raw) > 4096 {
+		if !canonicalForwardHex(sourceID, 16) || !canonicalForwardHex(storageID, 16) || sourceID == storageID || phase != "planned" && phase != "terminal" && phase != "bind_intent" && phase != "bound" || !strings.HasPrefix(sourceKey, "forward-listener:") || !canonicalForwardHex(strings.TrimPrefix(sourceKey, "forward-listener:"), 16) || storageKey != "forward-unix-storage:"+sourceID || len(sourceKey) > 128 || len(storageKey) > 128 || !validForwardUnixSocketName(name) || diskBytes != forwardUnixDiskPromise || len(raw) > 4096 {
 			return nil, forwardUnixPairUnavailable()
 		}
 		var data forwardUnixPairData
@@ -84,7 +111,7 @@ func readForwardUnixPairRows(ctx context.Context, tx *sql.Tx) ([]forwardUnixPlan
 			return nil, forwardUnixPairUnavailable()
 		}
 		canonical, err := json.Marshal(data)
-		if err != nil || string(canonical) != raw || data.Schema != 1 || data.Phase != phase || data.SourceID != sourceID || data.StorageID != storageID || data.SourceKey != sourceKey || data.StorageKey != storageKey || data.SocketName != name || data.DiskBytes != diskBytes || data.SourceRevision < 1 || data.StorageRevision < 1 || data.StorageArtifact.Device == 0 || data.StorageArtifact.Inode == 0 || data.StorageRoot.Device == 0 || data.StorageRoot.Inode == 0 || phase == "planned" && (data.Revision != 1 || data.NoBind != nil) || phase == "terminal" && (data.Revision != 2 || data.NoBind == nil || data.NoBind.Directory != data.StorageArtifact || data.NoBind.Allocated < 0 || data.NoBind.Allocated > data.DiskBytes || data.NoBind.At.IsZero()) {
+		if err != nil || string(canonical) != raw || data.Schema != 1 || data.Phase != phase || data.SourceID != sourceID || data.StorageID != storageID || data.SourceKey != sourceKey || data.StorageKey != storageKey || data.SocketName != name || data.DiskBytes != diskBytes || data.SourceRevision < 1 || data.StorageRevision < 1 || data.StorageArtifact.Device == 0 || data.StorageArtifact.Inode == 0 || data.StorageRoot.Device == 0 || data.StorageRoot.Inode == 0 || !validForwardUnixPairPhase(data) {
 			return nil, forwardUnixPairUnavailable()
 		}
 		planned = append(planned, forwardUnixPlannedRow{data: data, encoded: raw})
@@ -95,9 +122,9 @@ func readForwardUnixPairRows(ctx context.Context, tx *sql.Tx) ([]forwardUnixPlan
 	return planned, nil
 }
 
-// validateForwardUnixPairStartup accepts only an exact completed no-bind
-// tombstone. A planned row requires a separately fenced native absence survey;
-// bind intent and every later native state still retain their charges.
+// validateForwardUnixPairStartup accepts only exact completed terminal
+// tombstones. A planned row requires a separately fenced native absence
+// survey; bind intent and bound states still retain both charges.
 func validateForwardUnixPairStartup(ctx context.Context, tx *sql.Tx, allowPlanned bool) error {
 	rows, err := readForwardUnixPairRows(ctx, tx)
 	if err != nil || len(rows) == 0 {
@@ -146,8 +173,7 @@ func validateForwardUnixTerminalRow(ctx context.Context, tx *sql.Tx, row forward
 
 // abortForwardUnixPlannedPairs validates every pair before changing any row.
 // It runs before generic startup recovery while the daemon lifetime lock is
-// held. This source cut has no native binder; a future binder must durably
-// enter bind_intent before its first bind syscall.
+// held. Native bind intent and bound states are never interpreted as no-bind.
 func abortForwardUnixPlannedPairs(ctx context.Context, tx *sql.Tx, home string) error {
 	planned, err := readForwardUnixPairRows(ctx, tx)
 	if err != nil || len(planned) == 0 {
@@ -155,6 +181,9 @@ func abortForwardUnixPlannedPairs(ctx context.Context, tx *sql.Tx, home string) 
 	}
 	needsProof := false
 	for _, row := range planned {
+		if row.data.Phase != "planned" && row.data.Phase != "terminal" {
+			return forwardUnixPairUnavailable()
+		}
 		needsProof = needsProof || row.data.Phase == "planned"
 	}
 	var rootRaw string

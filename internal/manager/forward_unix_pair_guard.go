@@ -7,7 +7,7 @@ import (
 )
 
 // These five objects plus two SQLite constraint indexes are one atomic
-// startup group. A future binder must validate the complete tuple before bind.
+// startup group. The private binder validates the complete tuple before bind.
 const forwardUnixPairTable = `CREATE TABLE forward_unix_pairs (
 	source_id TEXT PRIMARY KEY,
 	storage_id TEXT NOT NULL UNIQUE,
@@ -122,8 +122,8 @@ func validateForwardUnixGuardObjects(actual map[string]forwardUnixGuardObject) e
 // initForwardUnixPairGuard installs an entirely absent group in one durable
 // transaction, or validates the exact existing group. It never repairs a
 // partial/no-op group. A strict reader may atomically abort only an exact
-// planned no-bind tuple before generic recovery. Bind intent and later phases
-// still refuse startup; this cut has no native bind or cleanup authority.
+// planned no-bind tuple before generic recovery. Bind intent and bound phases
+// still refuse startup; the private binder has no restart cleanup authority.
 func initForwardUnixPairGuard(db *sql.DB, allowPlanned bool) error {
 	ctx := context.Background()
 	tx, err := db.BeginTx(ctx, nil)

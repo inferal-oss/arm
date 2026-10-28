@@ -251,17 +251,35 @@ func (m *Manager) closeForwardListeners() error {
 	m.mu.Lock()
 	owners := make([]*ForwardListener, 0, len(m.forwardListeners))
 	children := make([]*ForwardUnixChild, 0, len(m.forwardListeners))
+	pairs := make([]*ForwardUnixPair, 0)
 	var result error
 	for id, h := range m.forwardListeners {
 		owners = append(owners, h)
 		if h.unixChild != nil {
 			children = append(children, h.unixChild)
+			if p := h.unixChild.pair; p != nil {
+				p.shutdownRequested = true
+				pairs = append(pairs, p)
+			}
 		}
 		_, err := m.end(id, "cancelled")
 		result = errors.Join(result, err)
-		h.CloseOriginal()
 	}
 	m.mu.Unlock()
+	for _, h := range owners {
+		h.CloseOriginal()
+	}
+	for _, p := range pairs {
+		if p.constructorDone != nil {
+			<-p.constructorDone
+		}
+		m.mu.Lock()
+		b := p.native
+		m.mu.Unlock()
+		if b != nil {
+			result = errors.Join(result, b.retireOnShutdown())
+		}
+	}
 	for _, c := range children {
 		<-c.workerDone
 	}

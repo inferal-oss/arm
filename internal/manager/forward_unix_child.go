@@ -87,20 +87,23 @@ func (c *ForwardUnixChild) MarkCleanupUncertain(reason string) error {
 	h := c.parent
 	m := h.manager
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	if c.released || h.unixChild != c || h.settled || m.forwardListeners[h.id] != h {
+		m.mu.Unlock()
 		return model.Err("listener_owner_changed", "original Unix child no longer owns cleanup")
 	}
 	select {
 	case <-c.joined:
+		m.mu.Unlock()
 		return model.Err("listener_owner_changed", "cleanup failure must precede original child join")
 	default:
 	}
+	// Keep the sticky hold before releasing Manager.mu; interrupt the native
+	// listener only after the lock is released.
+	defer func() { m.mu.Unlock(); h.CloseOriginal() }()
 	if h.unixFault == "" {
 		h.unixFault = reason
 	}
 	c.cancel()
-	h.CloseOriginal()
 	l, err := m.get(h.id)
 	if err != nil {
 		return err

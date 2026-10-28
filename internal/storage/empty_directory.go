@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-var nativeSocketBasename = regexp.MustCompile(`^forward-[a-f0-9]{32}\.sock$`)
+var nativeSocketBasename = regexp.MustCompile(`^(forward-|f-)[a-f0-9]{32}\.sock$`)
 
 // EmptyDirectoryProof is a read-only observation of the original held
 // managed directory. Allocated includes the directory's own filesystem

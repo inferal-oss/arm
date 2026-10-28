@@ -16,19 +16,26 @@ import (
 const forwardUnixDiskPromise int64 = 4 << 20
 const forwardUnixCleanupWindow = time.Hour
 
-// ForwardUnixPair is an original, in-process pre-bind handle. It grants no
-// pathname, directory FD or socket authority. This cut has no native binder.
+// ForwardUnixPair is an original, in-process pair handle. Its private binder
+// owns one native socket; the pair grants no caller pathname or directory FD.
 type ForwardUnixPair struct {
-	child   *ForwardUnixChild
-	source  string
-	storage string
-	data    forwardUnixPairData
-	aborted bool // protected by Manager.mu
+	child                *ForwardUnixChild
+	source               string
+	storage              string
+	data                 forwardUnixPairData
+	aborted              bool // protected by Manager.mu
+	binding              bool // original bind attempt began, even before durable intent
+	native               *ForwardUnixBound
+	shutdownRequested    bool          // Manager.Close has cancelled this constructor/owner
+	constructorDone      chan struct{} // closed after every original constructor path
+	beforeNativeBindTest func()        // fixed test seam after intent ACK and directory IO
+	afterNativeBindTest  func()        // fixed test seam after original listener custody
+	afterBoundAckTest    func()        // fixed test seam before capability return
 }
 
 // AbortBeforeBind discharges only a positively read-back planned tuple. This
-// source cut has no binder; later binders must persist bind_intent before the
-// syscall, and this method refuses every other phase. Directory cleanup stays
+// binder persists bind_intent before the syscall, and this method refuses
+// every other phase. Directory cleanup stays
 // with the ordinary storage lease and its original artifact checks.
 func (p *ForwardUnixPair) AbortBeforeBind(ctx context.Context) error {
 	if p == nil || p.child == nil || p.child.parent == nil || p.child.parent.manager == nil || ctx == nil || ctx.Err() != nil {
@@ -41,7 +48,7 @@ func (p *ForwardUnixPair) AbortBeforeBind(ctx context.Context) error {
 	if p.aborted {
 		return nil
 	}
-	if c.pair != p || c.released || h.unixChild != c || m.forwardListeners[h.id] != h || h.unixFault != "" || p.data.Phase != "planned" || p.source != h.id || p.storage != p.data.StorageID {
+	if c.pair != p || c.released || h.unixChild != c || m.forwardListeners[h.id] != h || h.unixFault != "" || p.binding || p.data.Phase != "planned" || p.source != h.id || p.storage != p.data.StorageID {
 		return model.Err("listener_owner_changed", "original planned pair changed")
 	}
 	encoded, err := json.Marshal(p.data)
@@ -139,9 +146,32 @@ type forwardUnixPairData struct {
 	Phase           string                     `json:"phase"`
 	Revision        int                        `json:"revision"`
 	NoBind          *forwardUnixNoBindProof    `json:"no_bind,omitempty"`
+	BindIntent      *forwardUnixBindIntent     `json:"bind_intent,omitempty"`
+	Bound           *forwardUnixBoundProof     `json:"bound,omitempty"`
+	NativeTerminal  *forwardUnixNativeTerminal `json:"native_terminal,omitempty"`
 }
 
 type forwardUnixNoBindProof struct {
+	Directory model.FileIdentity `json:"directory"`
+	Allocated int64              `json:"allocated_bytes"`
+	At        time.Time          `json:"at"`
+}
+
+type forwardUnixBindIntent struct {
+	Directory model.FileIdentity `json:"directory"`
+	Allocated int64              `json:"allocated_bytes"`
+	At        time.Time          `json:"at"`
+}
+
+type forwardUnixBoundProof struct {
+	Socket    model.FileIdentity `json:"socket"`
+	Directory model.FileIdentity `json:"directory"`
+	Allocated int64              `json:"allocated_bytes"`
+	At        time.Time          `json:"at"`
+}
+
+type forwardUnixNativeTerminal struct {
+	Socket    model.FileIdentity `json:"socket"`
 	Directory model.FileIdentity `json:"directory"`
 	Allocated int64              `json:"allocated_bytes"`
 	At        time.Time          `json:"at"`
@@ -221,7 +251,7 @@ func (c *ForwardUnixChild) IssueStoragePair(ctx context.Context) (pair *ForwardU
 	if h.result.Clock == nil || currentStorage.Clock == nil {
 		return nil, model.Err("lease_inactive", "native deadline provenance unavailable")
 	}
-	name := "forward-" + local.ID() + ".sock"
+	name := "f-" + local.ID() + ".sock"
 	data := forwardUnixPairData{
 		Schema: 1, SourceID: h.id, SourceKey: h.key,
 		SourceBinding: *h.request.ForwardSource, SourceClock: *h.result.Clock,
