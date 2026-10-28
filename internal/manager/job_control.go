@@ -117,7 +117,22 @@ func (m *Manager) checkpointExpiryJobBinding(id string, l model.Lease, j *job) e
 		!reflect.DeepEqual(l.Request, j.leaseRequest) || j.identity == nil || l.Process == nil ||
 		l.PID <= 0 || l.PID != j.cmd.Process.Pid || j.identity.PID != l.PID || j.identity.PGID != l.PID ||
 		j.identity.UID != l.Owner || j.identity.Start == "" || j.identity.Namespace == "" ||
-		!reflect.DeepEqual(l.Process, j.identity) || !j.childOwner.Active() {
+		!reflect.DeepEqual(l.Process, j.identity) {
+		return model.Err("needs_attention", "Original expired job binding is unavailable; obligations remain charged")
+	}
+	if j.pressureEffectActive {
+		// Reservation established the exact original while it was available.
+		// Native observation may now hold Owner.mu, so recheck its captured
+		// command/owner and every current generic row binding without waiting
+		// for that mutex under Manager.mu. The owner itself still serializes
+		// the deferred TERM/KILL with its sole Wait after the effect exits.
+		reserved := j.pressureEffectCandidate
+		if reserved.job != j || reserved.owner != j.childOwner || reserved.cmd != j.cmd ||
+			reserved.id.LeaseID != id || reserved.leaseRevision != l.Revision ||
+			!m.pressureOriginalBindingFields(id, l, j) {
+			return model.Err("needs_attention", "Reserved original expired job binding differs; obligations remain charged")
+		}
+	} else if !j.childOwner.Active() {
 		return model.Err("needs_attention", "Original expired job binding is unavailable; obligations remain charged")
 	}
 	if r := j.sshRuntime; r != nil {

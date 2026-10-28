@@ -44,24 +44,25 @@ type RunRequest struct {
 	sshRuntime *sshRuntime
 }
 type job struct {
-	leaseHost, leaseOwner  string
-	leaseRequest           model.Request
-	nativeDone             chan struct{}
-	sshRuntime             *sshRuntime
-	controlMu              sync.Mutex
-	controlRetired         bool
-	controlError           error
-	childOwner             *childowner.Owner
-	pressureGrant          *pressureNativeGrant // process-local only; never restored from a lease row
-	pressureEffectActive   bool                 // Manager.mu protects the one native pressure effect reservation
-	pressureCancelDeferred bool                 // original cancellation waits for that reserved effect, never under Manager.mu
-	cmd                    *exec.Cmd
-	done                   chan struct{}
-	identity               *model.ProcessIdentity
-	cpuAnchor              string
-	cpuExited              atomic.Bool
-	observationError       string
-	lastUsage              *model.WorkloadUsage
+	leaseHost, leaseOwner   string
+	leaseRequest            model.Request
+	nativeDone              chan struct{}
+	sshRuntime              *sshRuntime
+	controlMu               sync.Mutex
+	controlRetired          bool
+	controlError            error
+	childOwner              *childowner.Owner
+	pressureGrant           *pressureNativeGrant    // process-local only; never restored from a lease row
+	pressureEffectActive    bool                    // Manager.mu protects the one native pressure effect reservation
+	pressureEffectCandidate pressureNativeCandidate // exact original captured by that reservation
+	pressureCancelDeferred  bool                    // original cancellation waits for that reserved effect, never under Manager.mu
+	cmd                     *exec.Cmd
+	done                    chan struct{}
+	identity                *model.ProcessIdentity
+	cpuAnchor               string
+	cpuExited               atomic.Bool
+	observationError        string
+	lastUsage               *model.WorkloadUsage
 	// Manager.mu protects the one original cancellation/escalation sequence.
 	originalCancellationRequested bool
 	originalCancellationError     error
@@ -1457,6 +1458,9 @@ func (m *Manager) Renew(id string, ttl time.Duration) (model.Lease, error) {
 	return m.renew(id, ttl)
 }
 func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
+	if j := m.jobs[id]; j != nil && j.pressureEffectActive {
+		return model.Lease{}, model.Err("renewal_denied", "native pressure effect is reserved; retry after it completes")
+	}
 	if err := m.reconcileLeaseExpiries(); err != nil {
 		return model.Lease{}, err
 	}
