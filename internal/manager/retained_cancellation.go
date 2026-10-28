@@ -56,7 +56,7 @@ func (m *Manager) cancelRegisteredStorageConsumers(id string) {
 
 func retainedLeaseBinding(id string, l, original model.Lease) bool {
 	return id != "" && l.ID == id && original.ID == id && l.Host == original.Host && l.Owner == original.Owner &&
-		reflect.DeepEqual(l.Request, original.Request) && l.PID == 0 && l.Process == nil
+		reflect.DeepEqual(l.Request, original.Request) && reflect.DeepEqual(l.StorageBinding, original.StorageBinding) && l.PID == 0 && l.Process == nil
 }
 
 // The caller has freshly read the entire physical-keyed roster and verified a
@@ -101,6 +101,14 @@ func (m *Manager) checkRetainedCancellation(row checkpointExpiryLease, mode reta
 	id, l := row.id, row.lease
 	changed := func() error {
 		return model.Err("needs_attention", "original retained-holder binding differs; obligations remain charged")
+	}
+	if h := m.storageBenchmarkLeases[id]; h != nil {
+		if !storageBenchmarkBinding(id, l, h) {
+			return changed()
+		}
+		if mode == retainedWithdrawOriginal {
+			h.cancel()
+		}
 	}
 	if w := m.cargoWorkers[id]; w != nil {
 		if w.leaseID != id || w.id == "" || w.cancel == nil || l.Cargo == nil || l.Request.Profile != "rust-build" ||
@@ -214,6 +222,9 @@ func (m *Manager) cancelRegisteredExport(id string) {
 // Renew may extend these existing owners, never replace them. Only the ACKed
 // ordinary mutation updates the expected native deadline used by expiry.
 func (m *Manager) refreshRetainedDeadline(l model.Lease) {
+	if h := m.storageBenchmarkLeases[l.ID]; h != nil && storageBenchmarkIdentity(l.ID, l, h) {
+		h.lease.Clock, h.lease.Expires = l.Clock, l.Expires
+	}
 	if j := m.jobs[l.ID]; j != nil && l.Host == j.leaseHost && l.Owner == j.leaseOwner && reflect.DeepEqual(l.Request, j.leaseRequest) {
 		j.leaseDeadline, j.leaseExpires = l.Clock, l.Expires
 	}

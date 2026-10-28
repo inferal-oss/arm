@@ -145,7 +145,7 @@ func TestProviderPairC3CustodyAndTargets(t *testing.T) {
 }
 
 func TestProviderPairC3UnknownNeverOrdinaryPermission(t *testing.T) {
-	for _, damage := range []string{"missing member", "orphan", "BLOB marker", "partial namespace", "ordinary debt", "foreign owner"} {
+	for _, damage := range []string{"missing member", "orphan", "BLOB marker", "partial namespace", "ordinary debt", "foreign owner", "named storage format"} {
 		t.Run(damage, func(t *testing.T) {
 			f := c2Fixture(t, true)
 			switch damage {
@@ -160,6 +160,8 @@ func TestProviderPairC3UnknownNeverOrdinaryPermission(t *testing.T) {
 				c2Exec(t, f, `DROP INDEX provider_preparations_operation_key`)
 			case "ordinary debt":
 				c2Exec(t, f, `INSERT INTO leases VALUES(?,NULL,'{}',NULL)`, strings.Repeat("1", 32))
+			case "named storage format":
+				c2Exec(t, f, `INSERT INTO metadata VALUES('workspace_format','3')`)
 			case "foreign owner":
 				f.m.owner = "43"
 			}

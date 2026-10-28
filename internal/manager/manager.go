@@ -158,7 +158,7 @@ type Manager struct {
 	diskCollector      func(context.Context, string) model.DiskAvailability
 
 	storageBenchmarkRunner func(context.Context, string, string, int64) (model.StoragePerformance, error)
-	storageBenchmarkLeases map[string]context.CancelFunc
+	storageBenchmarkLeases map[string]*storageBenchmarkHold
 	storageBenchmarkBusy   bool
 	storagePools           map[string]*storagePool
 	storagePoolObserve     func(context.Context, string) (model.StorageLocation, error)
@@ -643,8 +643,8 @@ func (m *Manager) Close() error {
 	for id := range m.storageExportCancels {
 		m.cancelRegisteredExport(id)
 	}
-	for _, cancel := range m.storageBenchmarkLeases {
-		cancel()
+	for id := range m.storageBenchmarkLeases {
+		m.cancelRegisteredStorageBenchmark(id)
 	}
 	m.mu.Unlock()
 	m.pressureLaunchMu.Unlock()
@@ -1453,6 +1453,7 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	// process. A failed read/write still cannot keep those originals running.
 	// Durable mutation below retains its own independent binding/refusal gates.
 	m.cancelRegisteredProfileOwners(id)
+	m.cancelRegisteredStorageBenchmark(id)
 	if m.closing {
 		m.cancelRegisteredExport(id)
 	}
@@ -1490,8 +1491,11 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 // enters end's unconditional withdrawal of registered original capabilities.
 func (m *Manager) endLease(id string, l model.Lease, outcome string, expiry *automaticExpiryEnding) (model.Lease, error) {
 	var e error
-	if cancel, held := m.storageBenchmarkLeases[id]; held {
-		cancel()
+	if hold := m.storageBenchmarkLeases[id]; hold != nil {
+		if !storageBenchmarkBinding(id, l, hold) {
+			return l, model.Err("needs_attention", "original benchmark binding differs; obligations remain charged")
+		}
+		hold.cancel()
 		if l.State == "active" || l.State == "provisioning" {
 			l.State = "ending"
 			l.Outcome = outcome

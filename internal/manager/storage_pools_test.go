@@ -183,14 +183,14 @@ func TestStoragePoolBenchmarkCancelledAndInvalidRequestsDoNotWrite(t *testing.T)
 }
 func TestStoragePoolBenchmarkRuntimeHoldRetainsCharges(t *testing.T) {
 	m := newManager(t)
-	m.storageBenchmarkLeases = map[string]context.CancelFunc{}
+	m.storageBenchmarkLeases = map[string]*storageBenchmarkHold{}
 	l, e := m.Acquire(diskRequest("held-benchmark", 10), nil)
 	if e != nil {
 		t.Fatal(e)
 	}
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
-	m.storageBenchmarkLeases[l.ID] = cancel
+	m.storageBenchmarkLeases[l.ID] = &storageBenchmarkHold{lease: l, cancel: cancel}
 	ending, e := m.End(l.ID, "cancelled")
 	if e != nil || ending.State != "ending" || ctx.Err() != context.Canceled {
 		t.Fatal(ending, e)

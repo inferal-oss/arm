@@ -312,6 +312,30 @@ func (r *providerPairC2Reader) ordinary(h providerPairC2Header, raw []byte) (mod
 	return l, nil
 }
 
+// This unused census has no reviewed accounting bridge for named storage roots.
+// Refuse their namespace in the SAME snapshot, but keep scanning retained floors.
+func (r *providerPairC2Reader) storageFormatBoundary() (err error) {
+	rows, err := r.tx.QueryContext(r.ctx, `SELECT typeof(key),length(CAST(key AS BLOB)),substr(CAST(key AS BLOB),1,65),typeof(value),length(CAST(value AS BLOB)),substr(CAST(value AS BLOB),1,2) FROM metadata WHERE lower(replace(replace(CAST(substr(CAST(key AS BLOB),1,65) AS TEXT),'ſ','s'),'K','k')) IN ('workspace_format','storage_pools') LIMIT 3`)
+	if err != nil {
+		return err
+	}
+	defer func() { err = errors.Join(err, rows.Close()) }()
+	seen := false
+	for rows.Next() {
+		var keyKind, valueKind string
+		var key, value []byte
+		var keySize, size sql.NullInt64
+		if err := rows.Scan(&keyKind, &keySize, &key, &valueKind, &size, &value); err != nil {
+			return err
+		}
+		if seen || keyKind != "text" || !keySize.Valid || keySize.Int64 != int64(len(key)) || string(key) != "workspace_format" || valueKind != "text" || !size.Valid || size.Int64 != 1 || string(value) != "1" {
+			return fmt.Errorf("named storage namespace is outside the private census contract")
+		}
+		seen = true
+	}
+	return rows.Err()
+}
+
 // Absent optional namespace is a real empty observation only if the marker and
 // all six declared schema objects are absent. This is not a format permission.
 func (r *providerPairC2Reader) namespace() (present bool, err error) {
@@ -399,6 +423,7 @@ func readProviderPairInventory(ctx context.Context, tx *sql.Tx, host, owner stri
 	r := providerPairC2Reader{ctx: ctx, tx: tx, host: host, owner: owner, remaining: providerPairC2TotalBytes, budgetCache: map[string]model.Budget{}, poolCache: map[string]model.Pool{}}
 	floors := map[string]providerPairQuantity{}
 	pairs := []providerPairDecoded{}
+	p.fail(r.storageFormatBoundary())
 	present, namespaceErr := r.namespace()
 	p.fail(namespaceErr)
 	// A damaged marker/optional group cannot erase readable fixed header duties.

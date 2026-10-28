@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -11,6 +12,35 @@ import (
 	"getarm.org/internal/model"
 	"getarm.org/internal/observe"
 )
+
+// A process-local original, never reconstructed from a current ledger row.
+// Its deadline changes only after an acknowledged ordinary renewal.
+type storageBenchmarkHold struct {
+	lease  model.Lease
+	cancel context.CancelFunc
+}
+
+func storageBenchmarkIdentity(id string, l model.Lease, h *storageBenchmarkHold) bool {
+	if h == nil || h.cancel == nil || !retainedLeaseBinding(id, l, h.lease) || l.ManagedDir != h.lease.ManagedDir {
+		return false
+	}
+	if l.Artifact == nil || h.lease.Artifact == nil {
+		return l.Artifact == nil && h.lease.Artifact == nil
+	}
+	return reflect.DeepEqual(l.Artifact.Identity, h.lease.Artifact.Identity)
+}
+
+func storageBenchmarkBinding(id string, l model.Lease, h *storageBenchmarkHold) bool {
+	return storageBenchmarkIdentity(id, l, h) && retainedDeadlineBinding(l, h.lease)
+}
+
+// Explicit withdrawal addresses the registered original even if SQL is unreadable.
+// It grants neither settlement nor authority over a replacement row.
+func (m *Manager) cancelRegisteredStorageBenchmark(id string) {
+	if h := m.storageBenchmarkLeases[id]; h != nil && h.cancel != nil && h.lease.ID == id && h.lease.Host == m.host && h.lease.Owner == m.owner {
+		h.cancel()
+	}
+}
 
 // BenchmarkStoragePool is opt-in. It uses ordinary local admission, retains the
 // original leases until native I/O and scratch cleanup return, and never probes
@@ -54,29 +84,38 @@ func (m *Manager) BenchmarkStoragePool(ctx context.Context, name string, size in
 	// resources or cleaning scratch before the original native worker joins.
 	m.mu.Lock()
 	if m.storageBenchmarkLeases == nil {
-		m.storageBenchmarkLeases = map[string]context.CancelFunc{}
+		m.storageBenchmarkLeases = map[string]*storageBenchmarkHold{}
 	}
+	storeHold := &storageBenchmarkHold{lease: store, cancel: cancel}
 	current, checkErr := m.get(store.ID)
-	if checkErr != nil || current.State != "active" || !m.leaseLive(current) {
+	if checkErr != nil || current.State != "active" || !storageBenchmarkBinding(store.ID, current, storeHold) || !m.leaseLive(current) {
+		if checkErr == nil && storageBenchmarkBinding(store.ID, current, storeHold) {
+			_, _ = m.storageCleanup(store.ID)
+		}
 		m.mu.Unlock()
-		m.StorageCleanup(store.ID)
 		return result, model.Err("storage_unavailable", "benchmark storage ended before worker admission")
 	}
-	m.storageBenchmarkLeases[store.ID] = cancel
+	storeHold.lease = current
+	m.storageBenchmarkLeases[store.ID] = storeHold
 	m.storageJobs[store.ID] = true
 	m.mu.Unlock()
 	defer func() {
 		m.mu.Lock()
 		delete(m.storageBenchmarkLeases, store.ID)
-		delete(m.storageJobs, store.ID)
 		lease, e := m.get(store.ID)
+		if e == nil && !storageBenchmarkBinding(store.ID, lease, storeHold) {
+			e = model.Err("needs_attention", "joined benchmark storage binding differs; obligations remain charged")
+		}
+		if e == nil {
+			delete(m.storageJobs, store.ID)
+		}
 		if e == nil && lease.State == "ending" {
 			m.scheduleStorage(store.ID)
 		}
-		m.mu.Unlock()
 		if e == nil && lease.State != "ending" {
-			lease, e = m.StorageCleanup(store.ID)
+			lease, e = m.storageCleanup(store.ID)
 		}
+		m.mu.Unlock()
 		if e == nil {
 			result.CleanupState = lease.State
 		}
@@ -91,17 +130,21 @@ func (m *Manager) BenchmarkStoragePool(ctx context.Context, name string, size in
 	}
 	m.mu.Lock()
 	current, checkErr = m.get(cpu.ID)
-	if checkErr != nil || current.State != "active" || !m.leaseLive(current) {
+	if checkErr != nil || current.State != "active" || !storageBenchmarkBinding(cpu.ID, current, &storageBenchmarkHold{lease: cpu, cancel: cancel}) || !m.leaseLive(current) {
 		m.mu.Unlock()
 		return result, model.Err("insufficient_capacity", "benchmark CPU ended before worker admission")
 	}
-	m.storageBenchmarkLeases[cpu.ID] = cancel
+	cpuHold := &storageBenchmarkHold{lease: current, cancel: cancel}
+	m.storageBenchmarkLeases[cpu.ID] = cpuHold
 	result.ExecutionLease = cpu.ID
 	m.mu.Unlock()
 	defer func() {
 		m.mu.Lock()
 		delete(m.storageBenchmarkLeases, cpu.ID)
 		lease, e := m.get(cpu.ID)
+		if e == nil && !storageBenchmarkBinding(cpu.ID, lease, cpuHold) {
+			e = model.Err("needs_attention", "joined benchmark CPU binding differs; obligations remain charged")
+		}
 		if e == nil && lease.State == "ending" {
 			stamp := time.Now().UTC()
 			lease.State = "terminal"
@@ -109,10 +152,10 @@ func (m *Manager) BenchmarkStoragePool(ctx context.Context, name string, size in
 			lease.Revision++
 			e = m.put(lease, "storage.benchmark_joined")
 		}
-		m.mu.Unlock()
 		if e == nil && lease.State != "terminal" {
-			_, e = m.End(cpu.ID, "released")
+			_, e = m.end(cpu.ID, "released")
 		}
+		m.mu.Unlock()
 		err = errors.Join(err, e)
 	}()
 	if err = ctx.Err(); err != nil {
@@ -128,7 +171,7 @@ func (m *Manager) BenchmarkStoragePool(ctx context.Context, name string, size in
 	// scratch name disappears, clones/snapshots can retain its physical blocks.
 	m.mu.Lock()
 	intent, intentErr := m.get(store.ID)
-	if intentErr == nil && intent.State == "active" && m.leaseLive(intent) && intent.Artifact != nil {
+	if intentErr == nil && intent.State == "active" && storageBenchmarkBinding(store.ID, intent, storeHold) && m.leaseLive(intent) && intent.Artifact != nil {
 		intent.Artifact.ContentObserved = true
 		intent.Revision++
 		intentErr = m.put(intent, "storage.benchmark_write_intent")
