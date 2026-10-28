@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -258,5 +259,72 @@ func TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue(t 
 	result, err = m.applyPressureNativeControl(resume, p)
 	if err != nil || !result.Applied || candidate.job.childOwner.Paused() {
 		t.Fatal("durably staged recovered original did not CONT", result, err)
+	}
+}
+
+func TestPressureReservedEffectLetsEndRetireWithoutWaitingForNativeOwner(t *testing.T) {
+	m := newManager(t)
+	r := request(local.ID())
+	r.Resources.CPU = 0.01
+	l, err := m.Acquire(r, &RunRequest{Request: r, Command: []string{"/bin/sleep", "30"}, CWD: filepath.Dir(m.home)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	m.mu.Lock()
+	j := m.jobs[l.ID]
+	m.mu.Unlock()
+	if j == nil || j.childOwner == nil {
+		t.Fatal("fixture lacks original owner")
+	}
+	if err := j.childOwner.Pause(); err != nil {
+		t.Fatal("fixture could not stop its original child", err)
+	}
+	m.mu.Lock()
+	j.pressureEffectActive = true // Deterministic reservation before End; native effect is already owned.
+	m.mu.Unlock()
+	var finishOnce sync.Once
+	finish := func() {
+		finishOnce.Do(func() {
+			m.mu.Lock()
+			j.pressureEffectActive = false
+			deferred := j.pressureCancelDeferred
+			j.pressureCancelDeferred = false
+			m.mu.Unlock()
+			if deferred {
+				m.startDeferredPressureCancellation(l.ID, j)
+			}
+		})
+	}
+	t.Cleanup(func() {
+		finish()
+		_ = j.childOwner.Signal(syscall.SIGKILL) // Only this captured test-owned original.
+	})
+	ended := make(chan error, 1)
+	go func() {
+		_, endErr := m.End(l.ID, "revoked")
+		ended <- endErr
+	}()
+	select {
+	case err := <-ended:
+		if err != nil {
+			t.Fatal("End could not record revocation while effect was reserved", err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("End waited on the original native observer under Manager.mu")
+	}
+	m.mu.Lock()
+	deferred := j.originalCancellationRequested && j.pressureCancelDeferred
+	m.mu.Unlock()
+	if !deferred || !j.childOwner.Paused() || j.cmd.ProcessState != nil {
+		t.Fatal("End lost its exact stopped original or deferred cancellation")
+	}
+	finish()
+	select {
+	case <-j.nativeDone:
+	case <-time.After(5 * time.Second):
+		t.Fatal("deferred original cancellation did not reach its sole native Wait")
+	}
+	if err := j.childOwner.Resume(); !errors.Is(err, childowner.ErrRetired) {
+		t.Fatal("original owner resumed after deferred End/Wait", err)
 	}
 }

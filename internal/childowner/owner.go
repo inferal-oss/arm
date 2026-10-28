@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 )
@@ -40,6 +41,7 @@ type Owner struct {
 	terminalGroupProven bool
 	terminalGroupExit   terminal
 	preflightSignals    bool
+	pressureRetired     atomic.Bool
 	waiting             bool
 	failure             error
 	killSentAt          time.Time
@@ -113,15 +115,15 @@ func (o *Owner) Signal(sig syscall.Signal) error {
 
 // Pause and Resume control only this process-local original owner. They are
 // separate from Signal so an already terminal leader cannot receive a late
-// STOP or CONT through a reused numeric process group. The Manager must still
-// hold its lease/action/clock fence while calling either method.
+// STOP or CONT through a reused numeric process group. The Manager reserves a
+// validated lease/action/clock effect before calling either method.
 func (o *Owner) Pause() error  { return o.setPaused(true) }
 func (o *Owner) Resume() error { return o.setPaused(false) }
 
 func (o *Owner) setPaused(want bool) error {
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	if o.retired || o.signalsRetired {
+	if o.retired || o.signalsRetired || o.pressureRetired.Load() {
 		return ErrRetired
 	}
 	if o.failure != nil {
@@ -145,6 +147,13 @@ func (o *Owner) setPaused(want bool) error {
 	if ended.ready {
 		return ErrRetired // The sole original Wait must settle any descendants.
 	}
+	// End/revocation can retire pressure control without waiting for the
+	// native observer under this mutex. If it wins before this final cut, no
+	// STOP/CONT is sent. If it loses, the effect is in flight and original
+	// cancellation follows it through the same owner.
+	if o.pressureRetired.Load() {
+		return ErrRetired
+	}
 	sig := syscall.SIGCONT
 	if want {
 		sig = syscall.SIGSTOP
@@ -156,13 +165,31 @@ func (o *Owner) setPaused(want bool) error {
 	return nil
 }
 
+// RetirePressureControls is a nonblocking end/revocation cut. It never
+// retires TERM/KILL or the sole Wait needed to clean up the original child.
+func (o *Owner) RetirePressureControls() { o.pressureRetired.Store(true) }
+
 // OwnsUnreaped confirms the exact original command handle without exposing a
 // PID as a reusable capability. It cannot restore ownership after Wait begins
 // retiring signals, even if a stored row still contains the old number.
 func (o *Owner) OwnsUnreaped(cmd *exec.Cmd) bool {
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	return !o.retired && !o.signalsRetired && o.failure == nil && o.cmd == cmd && cmd != nil && cmd.Process != nil &&
+	return o.ownsUnreapedLocked(cmd)
+}
+
+// TryOwnsUnreaped lets a Manager holding its bookkeeping lock refuse a busy
+// original observer immediately. It never waits for Owner.mu in that order.
+func (o *Owner) TryOwnsUnreaped(cmd *exec.Cmd) bool {
+	if !o.mu.TryLock() {
+		return false
+	}
+	defer o.mu.Unlock()
+	return o.ownsUnreapedLocked(cmd)
+}
+
+func (o *Owner) ownsUnreapedLocked(cmd *exec.Cmd) bool {
+	return !o.retired && !o.signalsRetired && !o.pressureRetired.Load() && o.failure == nil && o.cmd == cmd && cmd != nil && cmd.Process != nil &&
 		cmd.Process.Pid == o.pid && cmd.ProcessState == nil
 }
 
@@ -170,6 +197,16 @@ func (o *Owner) Paused() bool {
 	o.mu.Lock()
 	defer o.mu.Unlock()
 	return !o.retired && o.paused
+}
+
+// TryPaused is a conservative snapshot for a Manager final fence. Busy owner
+// observation withdraws the effect instead of blocking lease bookkeeping.
+func (o *Owner) TryPaused() (bool, bool) {
+	if !o.mu.TryLock() {
+		return false, false
+	}
+	defer o.mu.Unlock()
+	return !o.retired && o.paused, true
 }
 
 func (o *Owner) signalLocked(sig syscall.Signal) error {

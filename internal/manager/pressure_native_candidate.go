@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"reflect"
 	"time"
 
 	"getarm.org/internal/model"
@@ -57,8 +58,7 @@ func (m *Manager) bindPressureNativeGrant(id string, policy pressure.Policy) boo
 		return false
 	}
 	j := m.jobs[id]
-	if j == nil || j.sshRuntime != nil || j.originalCancellationRequested || m.sshTransports[id] != nil ||
-		m.checkpointExpiryJobBinding(id, l, j) != nil || !j.childOwner.OwnsUnreaped(j.cmd) {
+	if j == nil || j.pressureEffectActive || j.originalCancellationRequested || !m.pressureOriginalBinding(id, l, j) {
 		return false
 	}
 	remaining, err := m.leaseRemaining(l)
@@ -71,6 +71,20 @@ func (m *Manager) bindPressureNativeGrant(id string, policy pressure.Policy) boo
 	}
 	j.pressureGrant = &pressureNativeGrant{leaseID: id, leaseRevision: l.Revision, owner: j, policyDigest: digest, epoch: m.pressureEpoch}
 	return true
+}
+
+// pressureOriginalBinding repeats the exact generic branch of the checkpoint
+// owner fence with a nonblocking child-owner check. A busy native observer
+// withdraws this pressure action instead of holding Manager.mu behind it.
+// SSH/profile-specific jobs are excluded by pressureGenericExecution.
+func (m *Manager) pressureOriginalBinding(id string, l model.Lease, j *job) bool {
+	return j != nil && m.jobs[id] == j && j.sshRuntime == nil && m.sshTransports[id] == nil &&
+		j.cmd != nil && j.cmd.Process != nil && j.childOwner != nil && j.done != nil &&
+		l.ID == id && l.Host == j.leaseHost && l.Owner == j.leaseOwner &&
+		reflect.DeepEqual(l.Request, j.leaseRequest) && j.identity != nil && l.Process != nil &&
+		l.PID > 0 && l.PID == j.cmd.Process.Pid && j.identity.PID == l.PID && j.identity.PGID == l.PID &&
+		j.identity.UID == l.Owner && j.identity.Start != "" && j.identity.Namespace != "" &&
+		reflect.DeepEqual(l.Process, j.identity) && j.childOwner.TryOwnsUnreaped(j.cmd)
 }
 
 func (m *Manager) pressureGenericExecution(l model.Lease) bool {
@@ -101,8 +115,7 @@ func (m *Manager) pressureOriginalNativeCandidate(id string, policy pressure.Pol
 		return none, false
 	}
 	j := m.jobs[id]
-	if j == nil || j.sshRuntime != nil || j.originalCancellationRequested || m.sshTransports[id] != nil ||
-		m.checkpointExpiryJobBinding(id, l, j) != nil || !j.childOwner.OwnsUnreaped(j.cmd) {
+	if j == nil || j.pressureEffectActive || j.originalCancellationRequested || !m.pressureOriginalBinding(id, l, j) {
 		return none, false
 	}
 	digest, ok := pressurePolicyHash(policy)
