@@ -8,14 +8,14 @@ import {createRunsConsole} from './runs.mjs';
 
 // Execute the production GraphUI class and ownership lifecycle. The RDF store
 // is a minimal read/write boundary; Component.replace/dispose are the real code.
-function graphFixture(){
+function graphFixture({viewport,node}={}){
  const term=(value,termType='NamedNode')=>({value,termType,equals(other){return other?.value===value&&other?.termType===termType;}});
  const factory={namedNode:value=>term(value),literal:value=>term(String(value),'Literal'),defaultGraph:()=>term('','DefaultGraph'),quad:(subject,predicate,object,graph)=>({subject,predicate,object,graph})};
  let quads=[];const equal=(a,b)=>['subject','predicate','object','graph'].every(key=>a[key].equals(b[key]));
  const store={factory,match:(s,p,o,g)=>quads.filter(q=>(!s||q.subject.equals(s))&&(!p||q.predicate.equals(p))&&(!o||q.object.equals(o))&&(!g||q.graph.equals(g))),has:q=>quads.some(old=>equal(old,q))};
- const app={store,projection:{index:{rootOf:iri=>iri}},renderer:{nodeOf:()=>null},flush(){},runtime:{transaction:fn=>fn(),onInput:()=>()=>{},apply({remove=[],add=[]}){quads=quads.filter(q=>!remove.some(old=>equal(old,q)));for(const q of add)if(!store.has(q))quads.push(q);}}};
+ const app={store,projection:{index:{rootOf:iri=>iri}},renderer:{nodeOf:()=>node??null},flush(){},runtime:{transaction:fn=>fn(),onInput:()=>()=>{},apply({remove=[],add=[]}){quads=quads.filter(q=>!remove.some(old=>equal(old,q)));for(const q of add)if(!store.has(q))quads.push(q);}}};
  const source=readFileSync(new URL('./graph-ui.mjs',import.meta.url),'utf8').replace(/^import .*\n/gm,'').replace(/export /g,'');
- const create=runInNewContext(source+'\ncreateGraphUI',{stockC:{},stockBEH:{},stringifyJSON,replaceOwnership,releaseOwnership,queueMicrotask});
+ const create=runInNewContext(source+'\ncreateGraphUI',{stockC:{},stockBEH:{},stringifyJSON,replaceOwnership,releaseOwnership,queueMicrotask,window:viewport});
  const ui=create(app);return {ui,store,root:ui.stack()};
 }
 const run={id:'a',name:'generated-name',reason:'Native purpose',state:'active',command:['test']},tick=()=>new Promise(resolve=>setImmediate(resolve));
@@ -40,4 +40,15 @@ test('detachable wrapper owns its exact content and retires native geometry with
  root.replace();assert.equal(window.disposed,true);assert.equal(content.disposed,true);assert.equal(window.tab.disposed,true);
  assert.equal(store.match(f.namedNode(iri),null,null,f.defaultGraph()).length,0);assert.equal(store.match(f.namedNode(ui.windowDesktop.iri),f.namedNode(C+'topmost'),null,f.defaultGraph()).length,0);
  ui.windowDesktop.dispose();root.dispose();
+});
+
+test('floating log window is kept reachable after resize and retires its viewport listener',()=>{
+ const listeners=new Set(),viewport={innerWidth:390,innerHeight:640,addEventListener(name,fn){assert.equal(name,'resize');listeners.add(fn);},removeEventListener(name,fn){assert.equal(name,'resize');listeners.delete(fn);}};
+ const {ui,store,root}=graphFixture({viewport,node:{getBoundingClientRect:()=>({left:440,top:800,width:358,height:440})}}),content=ui.code('output'),window=ui.detachable('Log',content),C='https://semblance.dev/ns/component#',f=store.factory;
+ root.replace(window);window.popOut();assert.equal(listeners.size,1);for(const fn of listeners)fn();
+ const iri=window.iri+'/~window-'+encodeURIComponent(window.tab.iri),value=p=>store.match(f.namedNode(iri),f.namedNode(C+p),null,f.defaultGraph())[0]?.object.value;
+ assert.equal(value('x'),'32');assert.equal(value('y'),'200');
+ ui.put(iri,C+'windowState',C+'Maximized',true);ui.put(iri,C+'x',100);for(const fn of listeners)fn();assert.equal(value('x'),'100','maximizing must preserve floating geometry');
+ ui.put(iri,C+'windowState',C+'Normal',true);for(const fn of listeners)fn();assert.equal(value('x'),'32');
+ root.dispose();assert.equal(listeners.size,0);ui.windowDesktop.dispose();
 });

@@ -216,16 +216,30 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       Object.defineProperty(h,'detached',{get:()=>object(tab.iri,C.detached)?.value==='true'});
       h.popOut=()=>put(tab.iri,C.detached,true);h.dock=()=>put(tab.iri,C.detached,null);
       let detached=false;
+      const dispose=h.dispose.bind(h),window=h.iri+'/~window-'+encodeURIComponent(tab.iri),viewport=globalThis.window;
+      function keepVisible(){
+        if(h.disposed||!h.detached||!viewport)return;
+        const state=object(window,C.windowState)?.value,edge=object(window,C.attachedTo)?.value;
+        if(state&&state!==C.Normal||edge&&edge!==C.NoEdge)return;
+        const node=nodeOf(window),box=node?.getBoundingClientRect?.();
+        if(!box?.width||!box.height)return;
+        const x=Math.max(0,Math.min(box.left,viewport.innerWidth-box.width)),y=Math.max(0,Math.min(box.top,viewport.innerHeight-box.height));
+        if(Math.abs(x-box.left)>1||Math.abs(y-box.top)>1)batch(()=>{put(window,C.x,Math.round(x));put(window,C.y,Math.round(y));});
+      }
+      viewport?.addEventListener('resize',keepVisible);
       const unwatch=runtime.onInput((graph,delta)=>{
-        if(graph!==undefined||![...delta.add,...delta.remove].some(q=>q.subject.value===tab.iri&&q.predicate.value===C.detached))return;
-        queueMicrotask(()=>{if(h.disposed||detached===h.detached)return;detached=h.detached;
-          // A frame with saved geometry can remain a projected component after
-          // its tab docks. Explicit open state parks that frame and its body,
-          // while preserving its geometry for the next native detach.
-          put(window,C.open,detached);h.emit('detach',{detached});});
+        if(graph!==undefined||![...delta.add,...delta.remove].some(q=>q.subject.value===tab.iri&&q.predicate.value===C.detached||q.subject.value===window&&q.predicate.value===C.windowState))return;
+        queueMicrotask(()=>{
+          if(h.disposed)return;
+          if(detached!==h.detached){detached=h.detached;
+            // A frame with saved geometry can remain projected after its tab
+            // docks. Park it explicitly, retaining geometry for the next detach.
+            put(window,C.open,detached);h.emit('detach',{detached});
+          }
+          keepVisible();
+        });
       });
-      const dispose=h.dispose.bind(h),window=h.iri+'/~window-'+encodeURIComponent(tab.iri);
-      h.dispose=()=>{if(h.disposed)return;unwatch();batch(()=>{
+      h.dispose=()=>{if(h.disposed)return;unwatch();viewport?.removeEventListener('resize',keepVisible);batch(()=>{
         // Native gestures write geometry directly to the deterministic window.
         // Retire it with the tab so closed sessions leave no private state behind.
         apply({remove:store.match(nn(window),null,null,g),add:[]});
