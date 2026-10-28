@@ -1,0 +1,71 @@
+{
+  "scope": "unused original local forward resource/socket constructor only",
+  "base": "e001d73554b26fd56c21b31e5fc68906b0f1b074",
+  "source_sha256": {
+    "internal/manager/kubernetes_source.go": "da77f422be0b892879e1c57823b314ba0b06af7604ccf0fe6c2fea0a8071490e",
+    "internal/manager/manager.go": "55a181fb72587dbd4c51d0b1f6dcbbac32b2afdbbada6fe04aecbcfc3ed41ebb",
+    "internal/manager/ports.go": "0e15c933197de82982a99cd80c4d9e9802e30ed93fd5b06e6f468038a5646b68",
+    "internal/manager/relay_transit.go": "c261b7892cd8096d7f6c39cb9772f4a8fcd39eb6caba4bc7ccb1cf16d0488dc2",
+    "internal/manager/kubernetes_forward_port.go": "235df5cbe0898716c07060717f69136ae215c7684a73db07ab2cd4ee1798a6fd",
+    "internal/manager/kubernetes_forward_port_test.go": "0b869de7895903da7941806dac38c5d8ccea90b0006e1f293e6e1a8e00c4bdc9"
+  },
+  "race_predecessor": {
+    "exit": 1,
+    "passing_roots": 11,
+    "passing_named": 14,
+    "skips": 0,
+    "passed_roster": [
+      "TestKubernetesForwardOriginalTripleCloseAndCachedBinding",
+      "TestKubernetesForwardCancellationAtFinalBindCutCreatesNoBinding",
+      "TestKubernetesForwardFirstCloseFailureRetainsSourceAndPort",
+      "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin",
+      "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin/source",
+      "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin/storage",
+      "TestKubernetesForwardEveryOriginalEndRetainsSocketUntilJoin/port",
+      "TestKubernetesForwardManagerCloseWaitsForOriginalCaller",
+      "TestKubernetesForwardSQLFailureStillClosesOriginalAndRetainsSettlement",
+      "TestKubernetesForwardJoinedCallerAtBindCutCreatesNoBinding",
+      "TestRelayTransitReleaseRequiresOriginalJoin",
+      "TestRelayTransitExactOwnerAndPublicMarkerDenial",
+      "TestRelayTransitEndingWriteFailureStillCancelsAndRetainsCharge",
+      "TestRelayTransitCloseWaitsWithoutHoldingManagerMutex"
+    ],
+    "failed_roots": [
+      "TestKubernetesForwardRequestDebtSurvivesPositivePortAndCPUClosure"
+    ],
+    "failure": "test expected needs_attention, actual ending retained storage promise/history"
+  },
+  "race_successor": {
+    "exit": 0,
+    "passing_roots": 1,
+    "passing_named": 1,
+    "skips": 0,
+    "roster": [
+      "TestKubernetesForwardRequestDebtSurvivesPositivePortAndCPUClosure"
+    ],
+    "changed_paths_from_predecessor": [
+      "internal/manager/kubernetes_forward_port_test.go"
+    ],
+    "production_hashes_unchanged": true
+  },
+  "qualified_union": {
+    "distinct_roots": 12,
+    "distinct_named": 15,
+    "single_all_passing_run": false
+  },
+  "targeted_manager_vet_exit": 0,
+  "linux_arm64_compile_only": {
+    "exit": 0,
+    "test_execution": false
+  },
+  "other_preserved_failure": "initial Close fixture double-called Manager.Close and panicked; corrected fixture owns Close once",
+  "native_scope": "controlled CPU samples, actual local socket/file ownership; no cluster effects",
+  "limitations": [
+    "No socket loan or inherited fixed forward helper",
+    "No eight-slot stream lifecycle or SPDY/target authorization",
+    "No remote bootstrap or production connector/public adapter",
+    "Natural expiry/restart and full current/previous partial proof remain",
+    "Stage verification/refresh history and current-base composition remain",
+    "No real installation or enrollment"
+  ]
+}

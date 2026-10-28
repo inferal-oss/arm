@@ -2540,3 +2540,33 @@ inserted in the original transaction, and malformed/oversized values are refused
 without rewriting. Unchanged `s`/`i` profiles still do not query this contract.
 This corrects the earlier unbounded driver scan; it does not activate a public
 workflow or establish old-runtime writer exclusion.
+
+## Unused original Kubernetes forward socket construction
+
+A distinct native constructor admits a five-minute `f` source with separately
+charged six-minute storage and port parents. The source row is committed first;
+the port row is durable before bind. The original socket is registered before
+fallible setup, bound only to kernel-selected TCP4 loopback, and attached once
+with storage before the factory is published. It never enters the ordinary
+socket activation table or a public connector. Original caller completion and
+parent/source entitlement are checked again after blocking parent I/O, directly
+before bind/listen. A private extraction shares the existing relay-owner
+predicate without changing ordinary relay checking.
+
+End through any original source/storage/port ID withdraws the captured context
+before a failing ledger read. Port End cannot release the socket while its
+original caller is still running. Manager Close cancels and waits outside the
+bookkeeping mutex. Native first close and any cleanup-probe descriptor close
+are separate checked operations; a bind probe cannot substitute for original
+closure. Only positive original closure plus a separate availability observation
+permits the port parent to settle. Native close uncertainty retains source and
+port promises, and blocks another source attempt for the installation. Failed
+SQL still permits closing originals, while settlement remains unacknowledged.
+
+The forward request factory retains its one-shot 65536-byte allowance and the
+independent 131072-byte storage promise after touched-file closure, even when
+source CPU and port settle. Untouched sources retain ordinary empty-storage
+cleanup policy. This constructor exposes no socket loan API: the inherited
+fixed helper, eight total pending/active/closing/unknown slots, authenticated
+remote actions, connector phase/invalidation and actual old-runtime/proof
+relationships remain unfinished. There is no public workflow activation.

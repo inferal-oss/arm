@@ -25,6 +25,9 @@ type KubernetesSourcePreparation struct {
 	scope               kubesource.Scope
 	transit             *RelayTransit
 	parent              model.Lease // Manager.mu protects the original expected parent tuple
+	port                model.Lease // original forward parent; never a generic port attachment
+	socket              *kubernetesForwardSocket
+	portID              string // immutable after parent admission, before publication
 	ctx                 context.Context
 	cancel              context.CancelFunc
 	callerJoined        <-chan struct{}
@@ -46,10 +49,10 @@ func (k *KubernetesSourcePreparation) Binding() (kubesource.Binding, error) {
 	}
 	k.manager.mu.Lock()
 	defer k.manager.mu.Unlock()
-	if k.parent.ID == "" {
+	if k.parent.ID == "" || k.scope.Stage == kubesource.Forward && k.port.ID == "" {
 		return kubesource.Binding{}, model.Err("lease_inactive", "source construction did not publish a complete binding")
 	}
-	return kubesource.Binding{Operation: k.scope.Operation, Attempt: k.scope.Attempt, Stage: string(k.scope.Stage), BinaryBytes: k.scope.B, SourceLeaseID: k.transit.id, StorageLeaseID: k.parent.ID}, nil
+	return kubesource.Binding{Operation: k.scope.Operation, Attempt: k.scope.Attempt, Stage: string(k.scope.Stage), BinaryBytes: k.scope.B, SourceLeaseID: k.transit.id, StorageLeaseID: k.parent.ID, PortLeaseID: k.port.ID}, nil
 }
 
 func (k *KubernetesSourcePreparation) Context() context.Context {
@@ -107,18 +110,33 @@ func (k *KubernetesSourcePreparation) checkPairLocked() error {
 	if !m.leaseCovers(parent, remaining) {
 		return model.Err("lease_inactive", "parent does not cover source entitlement")
 	}
+	if k.scope.Stage == kubesource.Forward {
+		return k.checkForwardPortLocked(source, remaining)
+	}
 	return nil
 }
 
 // PrepareKubernetesSource admits only the reviewed fixed native pair. It is not
 // called from Provider, CLI, server, browser or connector. The generic admission
 // methods retain their existing no-attachment rules.
-func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (result *KubernetesSourcePreparation, resultErr error) {
-	if ctx == nil || callerJoined == nil || scope.Validate() != nil {
-		return nil, model.Err("invalid_request", "closed native source scope and original caller required")
-	}
+func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (*KubernetesSourcePreparation, error) {
 	if scope.Stage == kubesource.Forward {
 		return nil, model.Err("invalid_request", "forward source requires the original three-row port constructor")
+	}
+	return m.prepareKubernetesSource(ctx, scope, callerJoined)
+}
+
+// PrepareKubernetesForwardSource is unused native three-row admission. It does
+// not expose a socket/port or wire a public connector/helper.
+func (m *Manager) PrepareKubernetesForwardSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (*KubernetesSourcePreparation, error) {
+	if scope.Stage != kubesource.Forward {
+		return nil, model.Err("invalid_request", "exact forward profile required")
+	}
+	return m.prepareKubernetesSource(ctx, scope, callerJoined)
+}
+func (m *Manager) prepareKubernetesSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (result *KubernetesSourcePreparation, resultErr error) {
+	if ctx == nil || callerJoined == nil || scope.Validate() != nil {
+		return nil, model.Err("invalid_request", "closed native source scope and original caller required")
 	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -146,7 +164,7 @@ func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.
 	// Both keys, including partial/terminal rows, are lookup-only. No existing
 	// admission can be adopted as an original runtime owner.
 	var count int
-	err := m.db.QueryRow(`SELECT count(*) FROM leases WHERE request_key IN (?,?)`, scope.Key(false), scope.Key(true)).Scan(&count)
+	err := m.db.QueryRow(`SELECT count(*) FROM leases WHERE request_key IN (?,?,?)`, scope.Key(false), scope.Key(true), scope.PortKey()).Scan(&count)
 	if err == nil && count != 0 {
 		err = model.Err("idempotency_conflict", "source attempt already recorded; inspect original tuple")
 	}
@@ -207,6 +225,11 @@ func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.
 	if err = transit.CheckActive(life); err != nil {
 		return nil, err
 	}
+	if scope.Stage == kubesource.Forward {
+		if err = k.prepareForwardPort(budget); err != nil {
+			return nil, err
+		}
+	}
 	// Atomic one-time attachment; no I/O or human wait belongs under this lock.
 	m.mu.Lock()
 	source, e := m.get(transit.id)
@@ -219,6 +242,18 @@ func (m *Manager) PrepareKubernetesSource(ctx context.Context, scope kubesource.
 		if e == nil {
 			source.Request.StorageLease = parent.ID
 			e = kubesource.ValidatePair(source, parent)
+			if e == nil && scope.Stage == kubesource.Forward {
+				var port model.Lease
+				port, e = m.get(k.port.ID)
+				if e == nil && (!reflect.DeepEqual(port, k.port) || port.State != "active" || !m.leaseLive(port) || source.Request.PortLease != "") {
+					e = model.Err("lease_inactive", "original forward port changed before attachment")
+				}
+				if e == nil {
+					source.Request.PortLease = port.ID
+					e = kubesource.ValidatePortPair(source, port)
+				}
+			}
+
 		}
 		if e == nil {
 			source.Revision++
@@ -357,14 +392,22 @@ func (k *KubernetesSourcePreparation) finish(published bool) {
 	if k.watchDone != nil {
 		<-k.watchDone
 	}
-	if cleanupErr != nil {
-		cleanupErr = errors.Join(cleanupErr, k.transit.MarkCleanupUncertain("original source file/helper custody unresolved"))
-	}
 	nativeClosed := cleanupErr == nil
+	var portClosed, portSettled bool
+	var portState string
+	if k.portID != "" {
+		var portErr error
+		portClosed, portSettled, portState, portErr = k.finishForwardPort(nativeClosed)
+		cleanupErr = errors.Join(cleanupErr, portErr)
+		nativeClosed = nativeClosed && portClosed
+	}
+	if cleanupErr != nil {
+		cleanupErr = errors.Join(cleanupErr, k.transit.MarkCleanupUncertain("original source file/helper/port custody or acknowledgment unresolved"))
+	}
 	close(k.privateJoined)
 	source, err := k.transit.FinishAfterJoin()
 	cleanupErr = errors.Join(cleanupErr, err)
-	r := KubernetesSourceResult{SourceLeaseID: k.transit.id, StorageLeaseID: k.parent.ID, SourceClosed: nativeClosed, SourceSettled: err == nil && source.State == "terminal", PromisedDisk: k.scope.DiskBytes()}
+	r := KubernetesSourceResult{SourceLeaseID: k.transit.id, StorageLeaseID: k.parent.ID, PortLeaseID: k.portID, PortClosed: portClosed, PortSettled: portSettled, PortState: portState, SourceClosed: nativeClosed, SourceSettled: err == nil && source.State == "terminal", PromisedDisk: k.scope.DiskBytes()}
 	if k.parent.ID != "" {
 		parent, endErr := k.manager.End(k.parent.ID, "released")
 		if endErr != nil {
@@ -377,6 +420,9 @@ func (k *KubernetesSourcePreparation) finish(published bool) {
 	delete(k.manager.kubernetesSources, k.transit.id)
 	if k.parent.ID != "" {
 		delete(k.manager.kubernetesSources, k.parent.ID)
+	}
+	if k.port.ID != "" {
+		delete(k.manager.kubernetesSources, k.port.ID)
 	}
 	k.manager.mu.Unlock()
 	k.mu.Lock()
@@ -393,6 +439,7 @@ type kubernetesSourcePermit struct {
 	manager *Manager
 	scope   kubesource.Scope
 	parent  bool
+	port    bool
 	request model.Request
 }
 
@@ -406,11 +453,14 @@ func validateSourcePermit(m *Manager, r model.Request, p *kubernetesSourcePermit
 	want := model.Request{}
 	if p != nil {
 		want = p.scope.Request(m.host, r.Budget, p.parent)
+		if p.port {
+			want = p.scope.PortRequest(m.host, r.Budget, m.portNamespace)
+		}
 		if !p.parent {
 			want.Kind = relayTransitKind
 		}
 	}
-	if p == nil || p.manager != m || p.scope.Validate() != nil || !reflect.DeepEqual(r, p.request) || !reflect.DeepEqual(r, want) || r.Key != p.scope.Key(p.parent) {
+	if p == nil || p.manager != m || p.scope.Validate() != nil || p.port && (!p.parent || p.scope.Stage != kubesource.Forward) || !reflect.DeepEqual(r, p.request) || !reflect.DeepEqual(r, want) {
 		return model.Err("invalid_request", "reserved source request requires exact native admission permit")
 	}
 	return nil

@@ -464,3 +464,19 @@ preserves first-insertion transaction ordering and existing values. Targeted
 controls pass; independent correction review and current-base composition remain
 separate. The protected journal and full onboarding/native connector continuation
 are outside this correction.
+
+### Unused original Kubernetes forward socket owner
+
+The onboarding branch adds a separate native `f` source/storage/ports constructor
+on the bounded-contract dependency. Source is durable before both parents, and
+both attachments precede factory publication. It holds the original TCP4
+loopback socket, cancels through any original ID before ledger reads, and joins
+outside bookkeeping locks. Ordinary port cleanup/restart cannot adopt or settle
+that reserved socket. The existing pair constructor still refuses `f`.
+
+This remains an unused resource foundation awaiting independent review. No
+inherited forward helper, eight-slot stream owner, bootstrap action, target
+proof, public adapter or production connector uses it. Complete those pieces,
+serialized verification/refresh history, all partial/current/previous proof cuts
+and accepted current-base composition before public enablement. Stage schema
+activation remains held until the complete lifecycle fits its closed format.

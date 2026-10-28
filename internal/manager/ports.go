@@ -160,6 +160,15 @@ func (m *Manager) activatePorts(l *model.Lease, cmd *exec.Cmd) error {
 // finishPorts only closes descriptors ARM owns, then probes exact bindings.
 // Occupancy is uncertainty about reclamation, never permission to kill a PID.
 func (m *Manager) finishPorts(l *model.Lease) {
+	if kubesource.IsReserved(l.Request) {
+		// Neither an ordinary End nor restart/probe can replace the original f
+		// socket/stream/helper close witnesses. Only its retained owner settles it.
+		l.State = "needs_attention"
+		l.Ended = nil
+		l.Failure = "Original Kubernetes forward port closure remains unproved"
+		return
+	}
+
 	ports.Close(m.portSockets[l.ID])
 	delete(m.portSockets, l.ID)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

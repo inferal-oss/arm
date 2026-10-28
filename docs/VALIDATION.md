@@ -6448,3 +6448,28 @@ These checks qualify only the bounded-read correction. They do not replay the
 whole earlier source cohort or independently accept its native runtime claims,
 the protected stage journal, current-main composition, forward ownership,
 installation or enrollment.
+
+### Unused original Kubernetes forward socket constructor
+
+The [source-bound constructor record](validation/kubernetes-forward-owner-2026-10-28.json)
+covers six Go paths on the owned branch's bounded-contract dependency. A Darwin
+race run passes eleven roots/fourteen named cases; its one failed storage-debt
+oracle expected `needs_attention` while the actual retained state was `ending`.
+The corrected one-root successor passes and confirms the full charged storage
+promise and paired content/allocation history. This supplies twelve roots/fifteen
+names across source-qualified runs, not a single all-passing cohort. Only that
+test oracle changes between the two frozen sources; production hashes match.
+Targeted Manager vet and Linux ARM64 compile-only gates pass separately.
+
+The native socket fixtures use controlled CPU admission samples and real local
+sockets/files. They cover the exact original triple, cached IDs after closure,
+End through all three original IDs, retention until caller join, cancellation or
+caller completion at the final bind cut, sticky first-close uncertainty, Manager
+Close waiting outside its mutex, cleanup after SQL failure, and touched request
+storage debt. Four affected ordinary relay boundaries also pass. The initial
+Manager Close fixture invoked Close twice and panicked; that failed predecessor
+is retained, with a single-owner fixture in its successful successor.
+
+No inherited helper, SPDY stream, eight-slot lifecycle, target authorization,
+remote bootstrap, natural expiry/restart breadth, real installation/enrollment,
+full current/previous proof or current-main composition is accepted here.
