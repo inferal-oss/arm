@@ -89,7 +89,7 @@ history merely because it contains an earlier ready report.
 
 | Area | Technical owner | Current gate |
 | --- | --- | --- |
-| Compact Resources and web alignment | Resources UI role | Root-pool warning and stock four-card layout are composed with naming and mobile-node controls. The final candidate uses a 280px adaptive card floor after actual 1060px Stat overflow at 240px. Source-bound component/build validation passes 101 Node cases, eight selected RDF cases and 63 Go roots/151 named cases in each normal and race cohort, plus vet and a fresh embedded bundle/binary. Earlier failed runs remain failed. Final composed native checks still cover 1280/1060/390 card containment/readability, root-child warnings, real consumer focus, disappearing opener and controlled modes; prior manager/Monitor evidence is retained. Product integration remains pending that interaction gate. |
+| Compact Resources and web alignment | Resources UI role | Root-pool warning and stock four-card layout are composed with naming and mobile-node controls. The 280px floor fixes the earlier actual medium-width Stat overflow. Component/build checks pass 101 Node cases, eight selected RDF cases and 63 Go roots/151 named cases in each normal/race cohort, vet and fresh embedded assets. A separate overall-failed native run qualifies all three widths, 30 Stat containment checks, root/child warnings, readable/exact IDs and real renewal/add/remove resource-consumer focus. Its nested lease Close restores focus outside the still-open pool manager after the opener is replaced; generic restoration is under correction. Escape/remaining controlled modes and focused integration remain open. Prior failures stay failed. |
 | Unified mesh onboarding | `codex/unified-mesh-kubernetes` | Put SSH and Kubernetes in the existing Connect/Install flow and remove the separate Kubernetes inventory area. Reproduce and fix context-visible but missing-Node discovery using actual read-only configured-cluster evidence, including explicit empty/forbidden/unavailable/filtered states. Reuse integrated CLI/provider inventory, reviewed Pod planning, shipment and original-key recovery. Complete typed dashboard plan/review/recovery, bootstrap/readiness and pinned mesh enrollment without treating scheduler figures as live resource authority. Preserve credential/transport/accounting fences and the original failed cluster attempt; later cluster effects need a concrete reviewed plan and scoped identity/readiness/enrollment/cleanup evidence. |
 | Shell completion and readable identities | `codex/cli-completion-readable-names` | Default labels and Cobra Bash/Zsh/Fish completion (`4d13dd9`, `ac861e3`) are integrated. Custom local names are reviewed and integrated as `0f34023`: bounded CAS metadata, scoped reservations, exact identity bindings, fail-closed joint lookup, CLI/web/terminal forms and completion. Final custom source passes 195 roots/650 named nodes in each normal and race cohort, including all 169 required cases per cohort; vet, CLI build and shell protocols pass. All 72 owned paths and modes match the validated source. Qualified frontend build and 79 JavaScript cases remain separate from the failed overall frontend wrapper. Browser interaction, composed compact Resources/mobile command behavior, Linux custom-name runtime and later public installation remain open. No schema migration, signed identity rewrite or format-2 activation. |
 
@@ -130,37 +130,27 @@ retroactive local pass is claimed.
 
 ## Intermittent mesh-node follow-up
 
-Mesh resilience work is owned by the mobile recovery role. Confirm transient
-loss and long absence recovery without undoing explicit disconnect or revocation.
-The current per-request pinned TLS path can retry when a trusted peer returns;
-listener startup failures and freshness observation need bounded owned recovery.
-Prepare a declared mobile/intermittent profile and advisory work-suitability
-ranking, separately from measured reachability and fresh spendable-resource
-reports. Destination admission remains authoritative, and unknown work keeps its
-original obligations and operation key. Profile persistence/report compatibility,
-generation fencing, stop/join behavior, native outage/restart fixtures and UI
-projection require review. No automatic scheduler, service installation, new
-grants, stale-capacity spending or replay is accepted by this investigation.
+The reviewed candidate adds optional owner-local profile/CAS metadata, bounded
+pinned-TLS observation, native-clock freshness and generation-fenced startup
+retry. Cancellation joins remain outside administration locks. CLI validation,
+web unknown-write fences across remounts and terminal selection cancellation
+are covered by the scoped source-specific checks.
 
-The frozen successor has passed independent source and actual-result review.
-Its accepted frontend rebuild changes only the application bundle. The final
-component gate passes 47 Go roots/91 race cases across seven packages, all 28
-Node policy cases and ten exact causal fault controls, with 15 original helper
-groups joined and final source/tool/dependency/control pins verified. The clock
-fixture uses a genuine valid disposable identity; invalid identity remains a
-separate refusal case. Earlier cancellation and invalid-identity fixture runs
-remain failed.
+The frozen component gate passes 47 Go roots/91 race cases, 28 Node cases and
+ten causal controls. [Independent native evidence](validation/mobile-node-native-v7-2026-10-27.json)
+then accepts a standalone two-node same-endpoint outage/restart: complete native
+lease records survive restart and revocation, 61 CLI groups and four long owners
+join, and actual PTY modes/geometry restore. Five selected browser captures
+corroborate Stable/Mobile, stale offline, rejoined and revoked states. Earlier
+fixture failures remain failed; long trust fields still clip in the node dialog.
 
-The product slice adds optional local profile/CAS metadata, bounded pinned-TLS
-observation, native-clock freshness and generation-fenced startup retry, with
-stop/cancellation joins outside administration locks. CLI validation, web
-unknown-write fences across remounts and terminal selection cancellation are
-corrected. This is component acceptance on its frozen source, with no production
-activation or composed-main acceptance. A minimal disposable two-node native
-build/CLI/browser/PTY protocol is being prepared for the remaining interaction
-gate. Automatic recovery assumes a running backend and the same approved
-reachable endpoint; roaming-address migration, certificate renewal and
-automatic scheduling remain separate work.
+[The composed candidate](validation/mobile-resources-names-composed-build-2026-10-27.json)
+passes 63 Go roots/151 named cases in each normal/race cohort, 101 Node cases,
+eight selected RDF cases, vet and fresh frontend/native builds. Final composed
+Resources interaction and focused product integration remain open. Recovery
+assumes a running backend and the same approved reachable endpoint. Roaming,
+certificate renewal, an automatic scheduler and physical suspend/Linux runtime
+are separate unsupported boundaries; declarations do not grant resources.
 
 ## Website capture expansion follow-up
 
@@ -180,15 +170,12 @@ remain failed; native interaction evidence retains its recorded source scope.
 
 ## Canonical module validation follow-up
 
-Unpublished namespace source `c01368e` and dependency commit `5fbe548` have
-independent source review. The dependency slice preserves existing selections
-and adds only the reviewed Cobra requirements and seven checksum lines. The
-original tidy-diff failure is retained; its ordering-only successor has not yet
-run the required fresh preflight. Final local native validation needs an exact
-reviewed runner, selected Python module binding, source/dependency seals and
-bounded original-owner cleanup before execution. Public getarm.org Go lookup,
-metadata publication and cold-cache installation remain gated; this source
-review changes no supported installation command on main.
+The earlier preparation checkpoint at `c01368e` is superseded by the accepted
+canonical module records above. Native dependency validation accepts `5fbe548`;
+public two-platform literal-latest installation accepts `5b80ab9` using the
+reviewed independent helper workflow. Earlier tidy/preflight and cached-source
+failures remain preserved. Later feature sources require their own scoped
+installation acceptance; no repeat public query is needed for documentation.
 
 ## Shared dependency order
 
@@ -254,6 +241,8 @@ Older mounted-share experiments are superseded by the sync direction and are
 not reactivated by retaining their technical records.
 
 ## Validation records
+
+- [Mobile native successor](validation/mobile-node-native-v7-2026-10-27.json), [composed component/build](validation/mobile-resources-names-composed-build-2026-10-27.json), [failed medium layout](validation/resources-native-v10-failed-2026-10-27.json) and [qualified modal-focus failure](validation/resources-native-v11-qualified-failure-2026-10-27.json): source-bound progress and current remaining integration gates.
 
 - [Doodle containment](validation/gallery-doodle-containment-2026-10-27.json) and [upstream draft publication](validation/gallery-containment-draft-2026-10-27.json): exact two-file source, scoped 16-case native evidence and successful refreshed PR CI, with paint/header limits retained.
 
@@ -324,13 +313,45 @@ missing. Preserve unrelated checkouts and externally held capacity; never infer
 passing validation from a queued, interrupted or missing original command.
 
 
-## Remaining mobile native acceptance
+## Mobile native history and remaining composition
 
-The failed two-node native attempt preserves complete native lease records
-through outage and backend restart. Its fixture compared a reduced gateway
-projection to a full native record; no obligation mutation is demonstrated.
-All original groups join and explicit lease releases reach terminal states.
-Both backend stop commands used force and report no remaining obligations.
-Terminal restoration remains unverified after ENOTTY; rejoin/revocation and the
-corrected retained-PTY checks need one reviewed successor. Component acceptance
-does not yet authorize product integration or later composed-runtime claims.
+The failed v6 comparison mixed a reduced gateway projection with a whole native
+lease; complete native baselines were unchanged. Its ENOTTY restoration result
+remains unverified and failed. The separate v7 successor compares complete
+native baselines and verifies terminal modes/geometry after child exit. Its
+accepted scoped evidence does not retrospectively pass v6. Both runs explicitly
+force backend Stop after ordinary exact lease releases. Final composed UI
+interaction and integration remain separate from the accepted leaf milestone.
+
+
+## Unfinished-work survey
+
+This read-only survey targets `c33b05d` and the current accepted handoff. A
+completed component milestone does not complete its user-facing portfolio.
+Existing accepted checks retain their source/platform scope; this survey adds
+no runtime acceptance.
+
+| Priority | Area | Concrete unfinished work | Next action and boundary |
+| --- | --- | --- | --- |
+| Now | Compact Resources and mobile composition | Accepted mobile leaf and composed source/build await final modal-focus correction, remaining controlled modes and focused integration. | Retain qualified widths/Stat containment, warnings and real consumer checks from the failed native attempt. Fix nested Close/Escape restoration after opener replacement, then validate only affected and unrun behavior against the rebuilt exact binary. Preserve all failures and source-specific limits. |
+| Now | Kubernetes unified install/connect | Main still lacks a working Kubernetes choice in both dialogs, a reproduced explanation for missing Nodes, backend effect wiring, verified readiness/catalog and pinned mesh enrollment. The old partial web edit is not ready. | Continue the already assigned unified workflow using existing typed provider and original-key contracts. Diagnose context/identity/namespace/Node/query stages separately; scheduler allocatable figures do not supply live ARM CPU authority. |
+| Next | Public sync | Planner, rsync worker, ledger and recovery foundations are integrated, but public push/pull/both and typed multi-hop sync are not wired. The complete-scope owner type cannot currently mint a positive capability. | Complete enforced native scope/charged Manager ownership and settlement first, then endpoint dispatch, reviewed conflicts/deletions/baselines, progress/recovery and web/Charm controls. Keep one coordinated sync continuation across planner, worker and relay work. |
+| Next | Provider lifecycle | Codec, durable fixture, entitlement component and V0 writer guard do not implement production registration or the real Manager/native-clock/retained worker-and-scratch bridge. | Finish reservations before image work, current held authority and every End/expiry/Close/restart/reset boundary before a startable factory. Uniform writer rollout and format activation remain explicit gates; a published guard is not proof that all writers upgraded. |
+| Next | Pressure response | Runtime remains warning-only (`MaxPauseJobs: 0`); original-owned native pause/resume is missing. The finite model does not implement the controller. | Complete capability/policy-selected original control, sustained grace, hysteresis, expiry/revocation precedence and retained memory/disk obligations with causal native/formal evidence before enabling pause. |
+| Next | Operations after clock work | The clock milestone finished, but its assigned operational stages did not: resolved configuration/budget journaling, per-user service/watchdog, degraded/full database behavior, retention/redaction, restore/purge policy and overhead. | Resume bounded stages in existing operations ownership. Keep generic/SSH checkpoint-refusal acceptance separate from unreviewed Cargo/Gradle/storage/export degraded-persistence paths. No host service or real-state mutation is implied by this survey. |
+| Next | General forwarding | Ordinary builds still refuse generic TCP. Usable ordinary browser/unmodified TCP workflows and equivalent web/Charm controls are unfinished; the Unix adapter remains an isolated prototype. | Preserve the fence. Complete source-client/Manager/native-clock/durable recovery and remaining security/platform/route-loss/formal gates. The concrete scheme is already approved; do not reopen that approval or bypass sync policies. |
+| Later | Remote operational parity | Selected remote web/TUI windows deliberately allow scoped inspection only; live monitoring/events, contacts/messages, administration and lease mutations are unavailable there. | Add each supported destination-granted workflow through typed host-bound APIs and original-key recovery, with matching UI behavior. Never substitute localhost or treat inspection as parity. |
+| Later | Screen access | Direct-peer Standard VNC and resource retention are integrated. Sustained independent input, live clipboard, separate-user/headless cases, revocation, multi-hop and High Performance breadth remain open. | Keep the accepted direct Standard boundary; separately review routed view/control grants, held resources and disposable live-desktop evidence. Socket/noVNC tests do not establish OS interaction. |
+| Later | Workload and resource breadth | Cargo/Gradle support is intentionally constrained; broader configuration/wrappers/shared services, dedicated uv adapters, GPU/unified-memory, network budgets and distributed pools remain unfinished. | Deliver capability-specific adapters with real tools/hardware and explicit ownership/accounting. Shared local counts and observation are not distributed allocation or kernel enforcement. |
+| Held dependency | Semblance numeric/Sparkline | Numeric promotion remains blocked by the Calendar corpus failure. The packed-row engine correction is a new source-only proposal; Sparkline's targeted/native milestones cannot waive that dependency. | Review the engine algorithm/ABI and required existing/new cases, preserving evaluation order/fuel and the datatype domain. Only then finish dependent source acceptance and Sparkline PR preparation. Submitted generic drafts remain separate from upstream merges. |
+| Scoped future | Installation and releases | Canonical literal `@latest` is accepted for `5b80ab9`, not all later source. Per-user service lifecycle and a later tagged four-platform carrier release are distinct incomplete boundaries. | Retain source-specific public-install evidence. Perform later release/artifact work only for an authorized concrete cut; no tag, merge or deployment follows from this survey. |
+| Scoped future | Cross-user cooperation | Advisory peer summaries and Charm views are integrated; actual different-UID/formal breadth and stronger shared admission/fairness remain unsupported. | Keep advisory reports outside admission/process authority. Stronger cooperation requires its own trusted authority design, not a reinterpretation of peer totals. |
+
+Already integrated narrow tasks—default/completion/custom names, terminal gauges,
+remaining-capacity views, schema refusal/explicit forgetting, routed SSH, website
+publication and canonical module installation—have no newly identified lost
+ready source. Their later compositions and explicit limitations remain separate.
+
+QUIC `d115a84` remains parked. Mounted-share/publication/consumer experiments are
+superseded by explicit sync and are historical, not tasks to resume. Existing
+upstream draft submissions do not authorize merges or a new main full-suite run.

@@ -6074,3 +6074,50 @@ native pass is inferred from the separate automated aggregate.
 confirms draft PR #216 at `fe0ffc77`, one commit/two exact file blobs, reviewed
 body and successful parity CI. Original native evidence stays on its recorded
 base. This does not merge upstream or update ARM's vendored framework.
+
+
+### Accepted mobile leaf and composed component candidate
+
+[Mobile v7](validation/mobile-node-native-v7-2026-10-27.json) independently
+verifies all 18 native actions, 61 original CLI groups and four long owners.
+Whole native obligations remain identical after restart and revocation, with
+ordinary exact releases and explicitly forced backend stops. PTY bytes, modes
+and geometry are checked; five selected rasters corroborate availability states.
+The same-endpoint/finite-host and inherited dialog-clipping limits remain.
+
+[Composed component/build evidence](validation/mobile-resources-names-composed-build-2026-10-27.json)
+accepts source manifest `c90cd5838ec3963996750b1c5f7aab28c876df6d4fd369b705ec076308f242e6`:
+63 roots/151 named cases across seven packages pass in each normal/race cohort,
+101 Node cases pass, and eight RDF cases pass with 11 explicitly unselected.
+Vet, fresh Vite and native ARM build pass. Bundle `355b8dde` is embedded in
+binary `65a3a191`; all eight original phase owners join with zero exit.
+Independent outer command metadata is unavailable; its zero exit is the sole
+handle-owner report, while acceptance uses actual retained phase waits, reports
+and source/artifact bindings. No native UI acceptance follows from this build.
+
+[Resources v10](validation/resources-native-v10-failed-2026-10-27.json) remains
+failed: at 1060px four 245px cards contain 195px inner rows but 226px Stats,
+producing 31px inner and 6px outer overhang despite zero document/control
+overflow. The new 280px floor needs actual composed card containment at
+1280/1060/390 plus remaining warnings/focus/mode checks. Earlier skipped, failed
+and unrun scopes remain unchanged; this survey and recording run no new tests.
+
+
+### Composed Resources native partial acceptance
+
+[Independent v11 audit](validation/resources-native-v11-qualified-failure-2026-10-27.json)
+retains overall exit 1 while qualifying six settled captures and 30 primary Stat
+containment records. At 1280/1060/390, base cards are respectively four across,
+three plus one, and one column; all inner/outer Stat overhang and document/control
+overflow are zero. Root/child warnings, real same-ID renewal and consumer
+addition/removal preserve the selected resource consumer's focus. Authoritative
+readable labels and exact secondary/detail/route identities are checked.
+
+The first genuine failure is nested restoration: underlying pool rows are
+replaced during real refresh, and closing lease details focuses the page heading
+while the pool manager remains open. The Close defect is unresolved here; Escape
+and remaining controlled modes are unrun. All 55 original groups join and close,
+three listeners refuse, and the exact owned lease is ordinarily released.
+Full-document raster height differs from browser viewport height. No complete
+pixel, physical same-node, current corrected-source or product integration claim
+follows from these observations.

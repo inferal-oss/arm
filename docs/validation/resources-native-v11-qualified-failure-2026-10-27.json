@@ -1,0 +1,274 @@
+{
+  "schema": 1,
+  "status": "FAILED_WITH_SCOPED_POSITIVE_OBSERVATIONS",
+  "scope": "Independent offline audit of actual Resources v11 native observations on accepted composed source/artifacts. No runtime, retry, Chrome operation or source change.",
+  "binding_sha256": "56ceae29439f4e7956f2f090a8e6903ead17a34c5edfa95812b90592a92b161a",
+  "sealed_manifest_sha256": "e5b4a1f1ca1c810cae695de0eaceefe063088ece1db33cdeb1762db7b573157f",
+  "producer_private_receipt_sha256": "ace4b99f57f22f88cb1be379780fe4fd42ae10a30f2f9a168c4bfcc6987d33eb",
+  "source_manifest_sha256": "c90cd5838ec3963996750b1c5f7aab28c876df6d4fd369b705ec076308f242e6",
+  "binary_sha256": "65a3a19180ddf726ea22e4681d4ed690331a659cb4e7c05abefd0371b9746231",
+  "bundle_sha256": "355b8dde5f2e548b826a1ba46d25fa5bc383f90a097fef7e448bcca286c225cf",
+  "overall": {
+    "native_report": "FAIL",
+    "infrastructure_passed": true,
+    "native_report_passed": false,
+    "overall_passed": false,
+    "independently_recovered_original_command_exit": 1,
+    "original_command_duration_ms": 519466,
+    "exact_reviewed_queue_and_binding_match": true
+  },
+  "confirmed_defect": {
+    "phase": "Close nested lease detail after real underlying pool-consumer row renewal and membership changes",
+    "observed": "Lease detail stayed top/focused before closing. Close then focused connected page H2 Resource budgets outside any dialog while the pool manager remained open.",
+    "expected": "Return focus inside the still-open pool manager when the old opener has disappeared.",
+    "corroboration": [
+      "Retained activeElement record",
+      "Accessibility transcription with open manager",
+      "Settled failure raster independently viewed"
+    ],
+    "fix_scope": "Generic hosted-dialog focus restoration; source correction and successor validation are separate."
+  },
+  "scoped_positive_observations": {
+    "captures": [
+      {
+        "name": "composed-resources-desktop-1280",
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "raster": {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 1241,
+          "sha256": "65dfb53e7f83787ffcc19c4735bc7b06c3d3a17a03ef21b8c97b0dcb1a321ea6",
+          "bytes": 100451
+        },
+        "primary_stats": 4,
+        "base_row_card_counts": [
+          4
+        ],
+        "base_card_widths": [
+          300,
+          300,
+          300,
+          300
+        ],
+        "maximum_stat_overhang": 0,
+        "exact_paired_facts_equal": true,
+        "pair_spacing_ms": 151.2572910003364,
+        "readiness_block_ms": 222.06841599941254,
+        "document_horizontal_overflow": 0,
+        "control_horizontal_overflow_count": 0
+      },
+      {
+        "name": "composed-resources-medium-1060",
+        "viewport": {
+          "width": 1060,
+          "height": 900
+        },
+        "raster": {
+          "format": "jpeg",
+          "width": 1060,
+          "height": 1429,
+          "sha256": "b8628cc379087637999d94b2a924728d5aee06b44945b50d52b35fa94c0d950b",
+          "bytes": 96151
+        },
+        "primary_stats": 4,
+        "base_row_card_counts": [
+          3,
+          1
+        ],
+        "base_card_widths": [
+          332,
+          332,
+          332,
+          332
+        ],
+        "maximum_stat_overhang": 0,
+        "exact_paired_facts_equal": true,
+        "pair_spacing_ms": 152.54733299836516,
+        "readiness_block_ms": 178.61037499830127,
+        "document_horizontal_overflow": 0,
+        "control_horizontal_overflow_count": 0
+      },
+      {
+        "name": "composed-resources-phone-390",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "raster": {
+          "format": "jpeg",
+          "width": 390,
+          "height": 2090,
+          "sha256": "99ffa77fcce951eb8863ca0ead0cb7dde6bbaeba16100917f8ba68244612acff",
+          "bytes": 79091
+        },
+        "primary_stats": 4,
+        "base_row_card_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "base_card_widths": [
+          358,
+          358,
+          358,
+          358
+        ],
+        "maximum_stat_overhang": 0,
+        "exact_paired_facts_equal": true,
+        "pair_spacing_ms": 152.83037500083447,
+        "readiness_block_ms": 185.58012500032783,
+        "document_horizontal_overflow": 0,
+        "control_horizontal_overflow_count": 0
+      },
+      {
+        "name": "composed-seeded-phone-390",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "raster": {
+          "format": "jpeg",
+          "width": 390,
+          "height": 2891,
+          "sha256": "054b4d34c54e69dc44358f744737798af9ff799d9077b0dc1aae10441a44b284",
+          "bytes": 111775
+        },
+        "primary_stats": 6,
+        "base_row_card_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "base_card_widths": [
+          358,
+          358,
+          358,
+          358
+        ],
+        "maximum_stat_overhang": 0,
+        "exact_paired_facts_equal": true,
+        "pair_spacing_ms": 152.65545899793506,
+        "readiness_block_ms": 180.62654200196266,
+        "document_horizontal_overflow": 0,
+        "control_horizontal_overflow_count": 0
+      },
+      {
+        "name": "composed-seeded-medium-1060",
+        "viewport": {
+          "width": 1060,
+          "height": 900
+        },
+        "raster": {
+          "format": "jpeg",
+          "width": 1060,
+          "height": 1592,
+          "sha256": "c48dd83d4a0c2fbd1e9ed047bf7bcc6257ef048c067f0546eee7c66db7bd9e56",
+          "bytes": 129395
+        },
+        "primary_stats": 6,
+        "base_row_card_counts": [
+          3,
+          1
+        ],
+        "base_card_widths": [
+          332,
+          332,
+          332,
+          332
+        ],
+        "maximum_stat_overhang": 0,
+        "exact_paired_facts_equal": true,
+        "pair_spacing_ms": 151.3176669999957,
+        "readiness_block_ms": 176.1834169998765,
+        "document_horizontal_overflow": 0,
+        "control_horizontal_overflow_count": 0
+      },
+      {
+        "name": "composed-seeded-desktop-1280",
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "raster": {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 1716,
+          "sha256": "f2cb9f801bcdb7aa43ff123b8fa3625cf46d1ccdfceb9de3571390eda70805f3",
+          "bytes": 135510
+        },
+        "primary_stats": 6,
+        "base_row_card_counts": [
+          4
+        ],
+        "base_card_widths": [
+          300,
+          300,
+          300,
+          300
+        ],
+        "maximum_stat_overhang": 0,
+        "exact_paired_facts_equal": true,
+        "pair_spacing_ms": 151.6594589985907,
+        "readiness_block_ms": 180.05108299851418,
+        "document_horizontal_overflow": 0,
+        "control_horizontal_overflow_count": 0
+      }
+    ],
+    "all_six_JPEG_headers_dimensions_hashes_bytes_verified": true,
+    "all_six_rasters_and_failure_raster_viewed": true,
+    "total_primary_stat_records": 30,
+    "independently_recomputed_maximum_inner_row_card_overhang": 0,
+    "root_child_accounting": {
+      "root_has_no_parent_and_no_parent_warning": true,
+      "child_committed": 3,
+      "child_shortfall": 2,
+      "child_held_in_parent": 3,
+      "child_pending_return": 2,
+      "warnings_outside_closed_disclosure": true
+    },
+    "real_consumer_flow": {
+      "same_exact_lease_renewed": true,
+      "expiry_changed_and_UI_updated": true,
+      "original_consumer_button_connected_and_focused_after_renew_add_remove": true,
+      "readable_primary_matches_authoritative_pool_consumer_lease_display_name": true,
+      "exact_secondary_detail_route_ID_match": true,
+      "physical_sameNode_across_browser_calls_claimed": false
+    }
+  },
+  "cleanup": {
+    "original_owners": 55,
+    "zero_exit": 53,
+    "expected_exit130_roles": [
+      "before backend",
+      "after backend"
+    ],
+    "all_original_joined_authority_retired_owned_pipes_closed": true,
+    "ownership_or_signal_errors": false,
+    "owner_errors": [],
+    "three_post_original_wait_listener_refusals": true,
+    "exact_remaining_owned_lease_ordinarily_released_to_terminal": true,
+    "remaining_owned_leases": 0,
+    "state_clear": true,
+    "normal_stop_request": true,
+    "all14809binding_pins_rehashed_and_unchanged": true,
+    "before_after_binding_bytes_equal": true,
+    "own_tab_reset_and_close_flags_retained": true
+  },
+  "unperformed": [
+    "Controlled observation modes",
+    "Escape variant of disappearing-opener scenario"
+  ],
+  "limits": [
+    "Viewport900/844height and full-document raster1241\u20132891height are distinct.",
+    "Sampled facts and paint do not prove continuous stability or physical node identity.",
+    "Full-page captures include a fixed footer over portions of document content; no complete pixel-clean or universal occlusion-free claim.",
+    "Unavailable optional animation/font APIs remain unknown.",
+    "Tab closure is retained coordinator/producer observation; no independent live browser probe.",
+    "Prior failed originals remain failed. Component/build acceptance is separate from native UI acceptance."
+  ]
+}

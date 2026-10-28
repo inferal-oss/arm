@@ -1,0 +1,113 @@
+{
+  "state": "FAILED_NATIVE_V10_SCOPED_EVIDENCE_INDEPENDENTLY_VERIFIED",
+  "overall": "FAILED",
+  "original_exit": 1,
+  "infrastructure_passed": true,
+  "native_passed": false,
+  "source_manifest_sha256": "0c3c78cec6e1420c68cd3b20e71460309b6af9472f17de30a7caf3179c0ebf38",
+  "binary_sha256": "fb23fa93b21ce14e039b28738a76cc8ed346c060f3d4c3cfd75174ffb81b48cb",
+  "bundle_sha256": "b75c8e5d043139826e6f443870969c492ec8bf8705c9a1fd4860706ee1f67511",
+  "verified_inputs": {
+    "frozen_inputs": 14686,
+    "source_files": 2522,
+    "evidence_files": 15,
+    "before_after_binding_equal": true
+  },
+  "actual_defect": {
+    "viewport_width": 1060,
+    "first_row_cards": 4,
+    "card_width": 245,
+    "inner_row_width": 195,
+    "stat_width": 226,
+    "stat_beyond_inner_row": 31,
+    "stat_beyond_outer_card": 6,
+    "affected": [
+      "CPU",
+      "Memory",
+      "Storage",
+      "Ports"
+    ],
+    "document_horizontal_overflow": 0,
+    "control_horizontal_overflow": 0,
+    "classification": "Actual internal card containment defect; distinct from document/control overflow."
+  },
+  "retained_observations": [
+    {
+      "css_viewport": [
+        1280,
+        900
+      ],
+      "full_document_jpeg": [
+        1280,
+        1191
+      ],
+      "first_row_cards": 4,
+      "card_width": 300,
+      "scope": "Sampled initial Resources layout fits; no interaction acceptance."
+    },
+    {
+      "css_viewport": [
+        1060,
+        900
+      ],
+      "full_document_jpeg": [
+        1060,
+        1149
+      ],
+      "first_row_cards": 4,
+      "card_width": 245,
+      "scope": "Actual internal Stat containment failure."
+    }
+  ],
+  "captures": [
+    {
+      "sha256": "39b783c20a448667a615c04c0411238e36e0bef19fcf401d2721ec08a2746df8",
+      "bytes": 95418,
+      "full_document": true,
+      "controller_pair_gap_ms": 152.2979159988463,
+      "sampled_readiness_block_ms": 196.00570799782872
+    },
+    {
+      "sha256": "c37ba3dc5f76d816d6387eeb47c4f1477e8abcd1a321ca620bdab452e2ec3081",
+      "bytes": 87550,
+      "full_document": true,
+      "controller_pair_gap_ms": 151.44058300182223,
+      "sampled_readiness_block_ms": 174.7125409990549
+    }
+  ],
+  "closure": {
+    "original_children_joined_retired_pipes_closed": 15,
+    "zero_exits": 13,
+    "expected_owned_foreground_130": [
+      "before",
+      "after"
+    ],
+    "cancel_scope": "Persisted original-object role/PID/binary/home/serve intent before cancel; no arbitrary 130 waiver.",
+    "original_child_errors": [],
+    "post_wait_listener_refusals_recorded": 3,
+    "state_clear_recorded": true,
+    "zero_owned_leases_created_or_remaining": true,
+    "browser_reset_close": "Retained controller receipt reports own tab reset/close and window return; original CUA replies not independently recovered in this audit.",
+    "no_all_descendant_claim": true
+  },
+  "unrun": [
+    "390px Resources layout/readability/containment",
+    "seeded root-versus-child warnings",
+    "same-ID renewal/add/remove consumer focus",
+    "disappearing opener fallback",
+    "controlled material/unknown/disconnect modes"
+  ],
+  "correction_assessment": {
+    "status": "REASONABLE_BOUNDED_PROPOSAL_NOT_RUNTIME_VALIDATED",
+    "change": "Only Resources grid minWidth 240px to 280px; keep columns4 and stock components.",
+    "basis": "Observed Stat226 plus card horizontal inset50 requires276px;280px provides4px margin for this sample. Stock capped grid can wrap as the minimum rises.",
+    "expected_not_observed": "1280 may retain four columns;1060 may wrap to three;390 may use one.",
+    "remaining_gate": "Verify actual card/inner/Stat rectangles and visible readability at1280/1060/390 using the final composed binary after its actual build. No separate standalone rebuild or mirrored constant test required."
+  },
+  "limitations": [
+    "Whole attempt remains failed; earlier-source Monitor and manager-flow evidence remains separately scoped.",
+    "No new build, test, backend, probe or browser execution during independent audit.",
+    "Retained full-document images are not900px-high viewport screenshots.",
+    "No final-composed binary or custom-name/mobile acceptance inferred."
+  ]
+}

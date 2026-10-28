@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "status": "SCOPED_PASS",
+  "scope": "Independent offline audit of the completed native Mobile v7 fixture, actual terminal byte/mode evidence and five selected browser captures.",
+  "source_manifest_sha256": "6fed1b93ae2f5b2d8ee9c879918de79ccb7fd48530d0d9dc29de7e4a2dbe3557",
+  "source_entries_independently_rehashed": 2567,
+  "source_packet_entries_independently_rehashed": 49,
+  "asset_sha256": "9e866e97917cbf79e504d4e37ee4dc0e27b93413c3b29b31d3966a34867f446a",
+  "accepted_binary_sha256": "5f31a706bab7556f65dad68490a3df2d0b91ca4a1f776153c4b8b9043b2e915f",
+  "fixture_sha256": "a0b5103e6b531271362b92a7f5e555bc13d5f415358e5cb9a355f9517d86ee03",
+  "pty_shim_sha256": "ae10b465e06983064b61d48b0c6a34cfbeb06b1ebf9105a5cfe856aa2bf13aa5",
+  "protocol_map_sha256": "54572ffce5143cab00b29682df3697c436d753a8715d3506869382e460324817",
+  "protocol_entries_independently_rehashed": 19,
+  "native_receipt_sha256": "17bccf33b31803430436f48481dfa2f57342db420e6400602c1c7d8d1439a192",
+  "original_execution": {
+    "status": "completed",
+    "exit_code": 0,
+    "duration_ms": 309334,
+    "exact_frozen_launch_contract_matched": true
+  },
+  "actual_native": {
+    "completed_actions": 18,
+    "stage": "revoked",
+    "elapsed_seconds": 309.11487479199997,
+    "cleanup_errors": [],
+    "deadline_violations": [],
+    "cli_original_groups_joined": 61,
+    "cli_exit_codes": {
+      "0": 58,
+      "1": 2,
+      "2": 1
+    },
+    "expected_nonzero_codes": [
+      "idempotency_conflict",
+      "revision_conflict",
+      "invalid_request"
+    ],
+    "long_original_owners": 4,
+    "all_original_joined_retired_and_owned_pipes_closed": true,
+    "lost_native_wait": false,
+    "long_exit_codes": [
+      0,
+      130,
+      0,
+      0
+    ],
+    "intentional_outage_exit": "Target backend returned130 after original-owner SIGTERM.",
+    "whole_initial_native_lease_records_equal_after_rejoin": true,
+    "whole_initial_native_lease_records_equal_after_revocation": true,
+    "native_obligations_active_until_explicit_release": 2,
+    "exact_ordinary_releases_to_terminal_released": 2,
+    "backend_stops": {
+      "both_stopped": true,
+      "both_force_applied": true,
+      "both_remaining_empty": true,
+      "qualification": "Cleanup used explicit --force; no non-forcing stop claim."
+    },
+    "both_endpoint_files_absent_at_audit": true
+  },
+  "terminal": {
+    "raw_bytes": 88422,
+    "raw_sha256": "94d3122a9513039e4f5aa6b13333913b3bdacb5cc59b39fe401f30fa8cc58e14",
+    "alternate_screen_enter_count": 1,
+    "alternate_screen_exit_count": 1,
+    "original_tui_exit": 0,
+    "termios_restored_under_existing_policy": true,
+    "sole_termios_difference": "Darwin PENDIN runtime bit",
+    "allowed_difference_mask": 536870912,
+    "requested_and_after_child_geometry": [
+      40,
+      140,
+      0,
+      0
+    ],
+    "original_and_restored_geometry": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "scope": "Actual private PTY bytes, modes and geometry; no native Terminal application pixel claim."
+  },
+  "browser": {
+    "selected_capture_sha256": {
+      "browser-owner-stable-read.png": "a6a57be4f0683c781726d832d207f8e08c80820359679634a5271a16bc51067f",
+      "browser-owner-mobile.png": "cb2b6056f0ed08539e420a6ee64d39115b287b9179e50675c89393f7f4f01709",
+      "browser-offline-painted.png": "b6e4ba6bbf8b7e5e1d31e99368671980f873747b234638e57c3790d0d588e5eb",
+      "browser-rejoined.png": "e5a128d67065ff392f38110e0dadd37360ff04ec7d70c82ae69fe116f806f0e6",
+      "browser-revoked.png": "69bc924cc6750bdacf310590042bf3e1f28304f6a48cc327a0ea22e60223efab"
+    },
+    "independently_viewed_all_five_selected_images": true,
+    "observed_states": [
+      "Stable owner declaration with current-read acknowledgement",
+      "Mobile/intermittent owner declaration with current-read acknowledgement",
+      "Offline connection with last reported stale Mobile and unknown resource availability",
+      "Reachable rejoin with current Mobile and fresh report explicitly requiring destination admission",
+      "Revoked peer with unknown/unsupported declaration and unknown unavailable-for-placement resources"
+    ],
+    "remote_read_only": "Selected peer captures have no owner setter; source-local setter shown separately.",
+    "own_tabs_reset_and_closed": "Coordinator positive closure, retained in implementation review; this audit performed no browser control.",
+    "known_horizontal_dialog_clipping": true,
+    "pixel_clean_claim": false,
+    "first_raced_paints_used_for_acceptance": false
+  },
+  "historical_failure": {
+    "mobile_v6_status": "FAILED",
+    "mobile_v6_receipt_sha256": "6a60d872608506078daad2a8589570f464cde6a152e26adca5316163d04c44b4",
+    "qualification": "Prior projection-oracle failure and ENOTTY/unverified restoration remain preserved; v7 supplies separate corrected fixture evidence."
+  },
+  "limits": [
+    "Finite same-host transport outage and restart at the same saved endpoint only.",
+    "Owner availability is advisory, separate from connection/resource freshness, not a scheduler or resource entitlement.",
+    "Fresh resource reports still require destination admission.",
+    "No physical suspend, roaming, Linux, provider-workload, current-main composition, public-install, hermetic or escaped-descendant claim.",
+    "This audit did not rerun a helper, binary, test, queue job or browser interaction."
+  ]
+}

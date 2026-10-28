@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "status": "SCOPED_COMPONENT_AND_BUILD_PASS",
+  "native_ui_acceptance": false,
+  "scope": "Exact composed Mobile, Resources and custom-name source; selected component tests, fresh frontend asset build and native Darwin arm64 CLI build only.",
+  "source": {
+    "manifest_sha256": "c90cd5838ec3963996750b1c5f7aab28c876df6d4fd369b705ec076308f242e6",
+    "source_entries": 2640,
+    "full_composition_patch_sha256": "459722106596b47d140600a2b80e0e220a6f52c3156db9f7ccbb047455bf975b",
+    "delta_from_previously_reviewed_source": "Two pool-consumer secondary labels change ID: to Lease ID; callbacks, canonical identifiers, pool IDs and accounting unchanged."
+  },
+  "input_binding_sha256": "ce355ba29d635ef72b8daddb2f1eeb99b32736fc0f40a36d747e972ae1d4b0d1",
+  "output_binding_sha256": "f7376361e80529ecff3bdca1b56e410dfe46737389763d149653dea5343e1fc3",
+  "result_sha256": "3b37cf3d7b3efe1a3d3d0299f3eda3eceec274048c93a17687fc3d205134f830",
+  "owners_sha256": "bf009bae1534d74f64eef6b925b2d3f5d647df05222c2aca5d10ffda5dc2a59c",
+  "execution": {
+    "phases": 8,
+    "all_phase_exit_codes": 0,
+    "all_eight_original_owners_joined": true,
+    "all_authorities_retired_and_owned_pipes_closed": true,
+    "ownership_or_signal_errors": false,
+    "receipt_errors": [],
+    "outer_exit_code_reported": 0,
+    "outer_provenance": "Sole original native-handle owner tool-terminal report. Independent outer command metadata was unavailable; acceptance rests on retained original-owner phase receipts, raw reports and immutable artifact bindings."
+  },
+  "node": {
+    "passed": 101,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "exact_names_match_planned_roster": true,
+    "actual_named_roster_sha256": "91b89d336dd84d7928a139832fa4a7f7484367276978ab213949bdd654f5250b"
+  },
+  "go": {
+    "normal": {
+      "roots": 63,
+      "named_passes": 151,
+      "packages": 7,
+      "failures": 0,
+      "skips": 0,
+      "duplicate_named_runs": 0,
+      "exact_root_roster_match": true
+    },
+    "race": {
+      "roots": 63,
+      "named_passes": 151,
+      "packages": 7,
+      "failures": 0,
+      "skips": 0,
+      "duplicate_named_runs": 0,
+      "exact_root_roster_match": true,
+      "data_race_diagnostics": 0
+    },
+    "packages": [
+      "getarm.org/internal/cli",
+      "getarm.org/internal/database",
+      "getarm.org/internal/manager",
+      "getarm.org/internal/mesh",
+      "getarm.org/internal/nodeavailability",
+      "getarm.org/internal/server",
+      "getarm.org/internal/tui"
+    ],
+    "root_roster_sha256": "b5b3f94e5034518dfc2d1518afe44a97c00918c466d424dea9db31f5997af2c1",
+    "actual_named_roster_sha256": "b16c754979f0759dd633a2d48ef00f7e6ab1abd3901e2698df4e34f9ea7010d5",
+    "vet_exit_code": 0
+  },
+  "rdf": {
+    "selected_passed": 8,
+    "selected_failed": 0,
+    "explicitly_unselected_skipped": 11,
+    "todo": 0,
+    "total_declared": 19,
+    "exact_all_names_and_selection_statuses_match": true,
+    "selected_names": [
+      "resource refresh retains disclosure, focused consumer handles and exact visible commitments",
+      "root pools do not claim parent backing while child promises and material warnings remain visible",
+      "a focused consumer keeps its RDF handle and DOM node through renewal and other consumer membership changes",
+      "pool management uses a stock contained dialog; an empty inventory leaves actions behind its entry",
+      "opening an older hosted dialog raises its existing projection above newer management overlays",
+      "renders the stock Semblance default and runs button effects only after a graph event",
+      "optional variants are absent and stock grid parameters remain valid graph data",
+      "palette keywords find full identifiers while primary labels stay concise and secondary help preserves exact IDs"
+    ],
+    "actual_all_roster_sha256": "b3834bde10104ffaa0a7aa0c5a1a732d5c6f69b2df98f8c5eb41d2c7d5b6a709"
+  },
+  "assets": {
+    "build": "Fresh Vite build from exact composed source",
+    "sha256": {
+      "LICENSES.txt": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f",
+      "arm-wat-only-store-DpLv8E9I.mjs": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de",
+      "arm.mjs": "355b8dde5f2e548b826a1ba46d25fa5bc383f90a097fef7e448bcca286c225cf",
+      "assets/wat-C2A9nalw.wasm": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+      "wat-2wrDwrzy.mjs": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+    },
+    "other_four_asset_hashes_unchanged": true,
+    "warning": "Nonfatal chunk-size warning above500kB retained."
+  },
+  "binary": {
+    "sha256": "65a3a19180ddf726ea22e4681d4ed690331a659cb4e7c05abefd0371b9746231",
+    "bytes": 71201122,
+    "go_version": "go1.27.3",
+    "command_path": "getarm.org/cmd/arm",
+    "module_version": "(devel)",
+    "GOOS": "darwin",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0",
+    "trimpath": true,
+    "retained_buildinfo_sha256": "248de5f9eda0af558760b5254aa9e68925a132f4343b9bdaca8499b3d2a05ebe"
+  },
+  "closure": {
+    "original_source": 2640,
+    "selected_tools": 17477,
+    "Node_dependencies": 3041,
+    "selected_module_files": 20484,
+    "selected_module_roots": 91,
+    "all_recorded_before_after_equal": true,
+    "independent_passive_hash_and_membership_checks_match": true,
+    "copied_source_changed_only_exact_frontend_asset_projection": true,
+    "mutable_go_cache_separate": true
+  },
+  "historical_failures": [
+    "Earlier import failure occurred before any phase and remains failed.",
+    "Earlier selected Node run passed100of101 and remains failed; the two display-label corrections are tested only by this successor."
+  ],
+  "limits": [
+    "No browser/native UI interaction or rendering acceptance; current composed assets require their remaining native observation scope.",
+    "No CLI installation, public-module install, physical suspend, roaming, scheduler or Linux acceptance.",
+    "Selected tests only;11 RDF tests are explicitly unselected, not passed.",
+    "No hermetic OS/runtime/compiler or arbitrary-descendant ownership claim.",
+    "No runtime, replay, candidate helper import, binary execution or new test was performed by this reviewer."
+  ]
+}

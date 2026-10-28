@@ -2282,8 +2282,10 @@ approval; revocation, stop and changed generations prevent late publication.
 Unknown operations retain their original keys and obligations.
 
 The exact frozen slice passes its native race, frontend-policy and causal-control
-gates. Standalone product binary, two-node native interaction, browser/PTY and
-current-main composition remain open. No scheduler, roaming endpoint discovery,
+gates. A separate standalone native gate now accepts two-node outage/restart,
+browser state changes and actual PTY restoration. The composed component/build
+gate also passes; final rendered composition and product integration remain open.
+No scheduler, roaming endpoint discovery,
 automatic certificate renewal or OS service installation is implemented here.
 
 
@@ -2295,10 +2297,13 @@ and bundle identities are independently qualified despite the failed overall
 build wrapper's generated-cache assertion. Actual matched desktop/phone captures
 show the shorter Resources page and rebuilt Monitor badge presentation.
 
-The first native interaction attempt stops at an opening-dialog readiness guard.
-Manager keyboard/actions, real consumer focus, controlled data modes and final
-main-source composition remain open. No new product bundle is integrated by
-this evidence record; the exact failed attempt and cleanup remain preserved.
+The historical first interaction attempt stops at a dialog readiness guard.
+Later scoped manager checks pass, and the composed candidate verifies responsive
+Stat containment, pool warnings and real renewal/add/remove consumer focus.
+Its overall native run still fails: closing nested lease details restores focus
+outside the still-open pool manager after the opener is replaced. The generic
+restoration correction and remaining modes need acceptance. No new product
+bundle is integrated by these evidence records; original failures remain failed.
 
 
 ## Upstream Gallery image-selection submission
@@ -2360,3 +2365,18 @@ The new native window establishes 16 numerical border-box cases and 15 matching
 viewport paints. The 639px screenshot-size mismatch stays unverified. Narrow
 header and Close-control clipping remain issue #143; no complete accessibility,
 keyboard, zoom or fullscreen acceptance is claimed.
+
+
+## Current composed node and Resources candidate
+
+The reviewed candidate combines custom names, intermittent-node controls and
+compact resource views. It prefers valid server display names while retaining
+canonical IDs, composes both optional metadata proof keys, and routes availability
+reads through existing host aliases and bounded dynamic completion. A resource-only
+stock grid keeps a four-column maximum with a 280px minimum after an actual
+medium-width Stat overflow at the earlier 240px floor.
+
+Component checks and the fresh embedded bundle/binary are accepted. The final
+Resources interaction gate and product integration remain pending. The
+[unfinished-work survey](PLAN.md#unfinished-work-survey) distinguishes complete
+components from missing public workflows; it grants no production authority.
