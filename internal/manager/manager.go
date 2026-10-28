@@ -317,15 +317,19 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 			// A recorded in-process allocation is not a positive join witness.
 			// In particular, PID0 must never settle a lost transport owner.
 			l.State = "needs_attention"
-			l.Outcome = "relay_supervision_lost"
-			l.Failure = "Original relay transport join was not recorded; resources remain charged pending explicit recovery"
-			if l.Request.Kind == syncPreparationKind {
+			if l.Request.Kind == relayTransitKind {
+				l.Outcome = "relay_supervision_lost"
+				l.Failure = "Original relay transport join was not recorded; resources remain charged pending explicit recovery"
+			} else if l.Request.Kind == syncPreparationKind {
 				l.Outcome = "sync_preparation_supervision_lost"
 				l.Failure = "Original sync preparation join and scratch cleanup were not recorded; resources remain charged pending explicit recovery"
-			}
-			if l.Request.Kind == forwardListenerKind {
-				l.Outcome = "forward_listener_supervision_lost"
-				l.Failure = "Original source listener, connections and port cleanup were not joined; port and resources remain charged"
+			} else {
+				// A native child cleanup failure is stronger evidence than a lost
+				// process-local join. Never turn it into TCP-only recovery authority.
+				if l.Outcome != "forward_unix_cleanup_uncertain" {
+					l.Outcome = "forward_listener_supervision_lost"
+					l.Failure = "Original source listener, connections and port cleanup were not joined; port and resources remain charged"
+				}
 			}
 			l.Revision++
 			if e = m.put(l, "relay.recovery_required"); e != nil {
