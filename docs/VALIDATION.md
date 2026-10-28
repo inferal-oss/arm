@@ -7649,7 +7649,7 @@ subsequent acceptance-record changes are documentation only.
 
 ### Composed Kubernetes component acceptance
 
-The corrected component composition integrates as `95532d95`; all seven affected
+The corrected component composition integrates as `17f39cd2`; all seven affected
 Go package trees and module inputs equal the tested candidate `32a4657a`.
 Normal and native race runs each pass the exact same 85 roots / 195 named cases
 with seven package passes and no failures or skips. All eight required

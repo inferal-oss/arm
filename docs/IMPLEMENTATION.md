@@ -3089,7 +3089,7 @@ focused supplemental source/test/documentation changes.
 
 ### Kubernetes default-root component integration
 
-Feature `95532d95` composes closed source/storage/port profiles, exact current
+Feature `17f39cd2` composes closed source/storage/port profiles, exact current
 source-parent checks, independent original port lifetime, managed provider
 preparation and an unused historical workflow codec. The private API helper
 uses fixed create-original and fresh lookup-original actions, checks the node
