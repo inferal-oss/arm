@@ -24,6 +24,7 @@ export function createRunLogView({ui,record,request,connected,context,onRead,onD
   display.technical=ui.disclosure('Details',[ui.text('Run: '+label(run)+' · ID: '+run.id),display.fullCommand,display.metadata,display.times,...(run.lease_id?[ui.text('Lease ID: '+run.lease_id),ui.button('Inspect associated lease',()=>onLease(run.lease_id))]:[ui.text('Observation only · no resource lease')])],{open:false});
   display.window=ui.detachable(title(),display.transcript);
   display.window.on('detach',()=>{setFull(false,false);renderPresentation();onDetach(api);if(following&&display.fold.open)display.output.scrollEnd?.();});
+  display.window.on('layout',()=>{if(following&&display.fold.open)display.output.scrollEnd?.();});
   root.replace(ui.button('Back to runs',()=>onClose(api),{emphasis:'Quiet'}),display.heading,display.command,display.state,display.technical,ui.text('Drag the log tab out, use its pop-out control, or press Shift+Enter. Closing its window returns the log here.'),display.window);
   function renderErrors(){
     if(display){const errors=[!connected()?'Disconnected; cached output is stale':'',listError?'Run list unavailable: '+listError:'',logError?'Output unavailable: '+logError:''].filter(Boolean);display.error.set({label:errors.join(' · '),hidden:!errors.length});}
@@ -53,7 +54,7 @@ export function createRunLogView({ui,record,request,connected,context,onRead,onD
     display.expand.set({label:full?'Exit fullscreen':'Fullscreen log'});display.exitHint.hidden=!full;renderPresentation();
     if(!full)display.fold.open=foldBeforeFull;
     if(restoreFocus)display.expand.focus();
-    if(full&&following)display.output.scrollEnd?.();
+    if(following&&display.fold.open)display.output.scrollEnd?.();
   }
   // Native Escape retracts the stock Fullscreen graph fact. Reflect that same
   // transition in controls and focus, without creating another log reader.
@@ -94,7 +95,7 @@ export function createRunLogView({ui,record,request,connected,context,onRead,onD
     read:readLog,update(next,error=''){if(disposed)return;if(next?.id===run.id)run=next;listError=error;render();},
     setActive(value){if(active===value)return;active=value;if(!active){setFull(false,false);retire();}},
     invalidate(){retire();render();},exitFullscreen(){setFull(false,false);},
-    focus(){display.window.reveal?.();display.follow.focus();},focusDetails(){display.heading.focus();},
+    focus(){display.window.reveal?.();display.follow.focus();if(following&&display.fold.open)display.output.scrollEnd?.();},focusDetails(){display.heading.focus();},
     setLayout(tiled){display.layout.set({label:tiled?'Float log windows':'Tile log windows'});},
     dispose(){if(disposed)return;setFull(false,false);disposed=true;active=false;retire();unwatch?.();display.window.dispose();root.dispose();}
   };
