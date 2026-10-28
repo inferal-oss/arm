@@ -17,6 +17,7 @@ import (
 
 	"getarm.org/internal/agents"
 	"getarm.org/internal/cargoprofile"
+	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/database"
 	"getarm.org/internal/local"
 	"getarm.org/internal/manager"
@@ -105,6 +106,10 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 }
 
 func serveNode(ctx context.Context, home, address string, capacity model.Resources, restart *nodestop.Restart) (resultErr error) {
+	settings := daemonconfig.Settings{Resources: capacity, Listen: address}
+	if err := settings.Validate(); err != nil {
+		return model.Err("invalid_config", err.Error())
+	}
 	if e := local.Prepare(home); e != nil {
 		return e
 	}
@@ -146,7 +151,7 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	if e = database.InstallResetSeed(ctx, home, lock); e != nil {
 		return e
 	}
-	m, e := manager.Open(home, capacity)
+	m, e := manager.OpenConfigured(home, settings)
 	if e != nil {
 		return e
 	}

@@ -20,6 +20,7 @@ import (
 
 	"getarm.org/internal/cargoprofile"
 	"getarm.org/internal/childowner"
+	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/database"
 	"getarm.org/internal/leaseclock"
 	"getarm.org/internal/local"
@@ -149,6 +150,10 @@ func Open(home string, capacity model.Resources) (*Manager, error) {
 }
 
 func openWithLeaseClock(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error)) (*Manager, error) {
+	return openWithStartup(home, capacity, clockRead, nil)
+}
+
+func openWithStartup(home string, capacity model.Resources, clockRead func() (leaseclock.Sample, error), startup *daemonconfig.Settings) (*Manager, error) {
 	if !finiteCPU(capacity.CPU) || capacity.CPU < 0 || capacity.CPU > 65536 {
 		return nil, model.Err("invalid_config", "CPU ceiling must be a finite nonnegative logical-core count at most 65536")
 	}
@@ -233,6 +238,13 @@ func openWithLeaseClock(home string, capacity model.Resources, clockRead func() 
 	}
 	identity := local.CurrentIdentity()
 	m.owner, m.ownerUsername = identity.UID, identity.Username
+	if startup != nil {
+		m.capacity = model.Resources{} // unpublished until its durable decision
+		if e = m.applyStartupConfiguration(*startup); e != nil {
+			db.Close()
+			return nil, e
+		}
+	}
 	if e = m.initSyncRecords(context.Background()); e != nil {
 		db.Close()
 		return nil, e

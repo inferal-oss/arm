@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"getarm.org/internal/client"
+	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/local"
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
@@ -21,8 +22,20 @@ func (a *app) inspectMeshLifecycle() (mesh.LifecycleInspection, error) {
 	if err != nil {
 		return inspection, err
 	}
-	if _, err := os.Lstat(filepath.Join(a.home, "endpoint.json")); os.IsNotExist(err) {
+	resolveStopped := func() (mesh.LifecycleInspection, error) {
+		if inspection.StartupSource == "current defaults; no prior launch policy exists" {
+			resolved, err := daemonconfig.Resolve(a.home, daemonDefaults(), daemonconfig.Overrides{})
+			if err != nil {
+				return inspection, err
+			}
+			inspection.Startup.Resources = resolved.Settings.Resources
+			inspection.Startup.Listen = resolved.Settings.Listen
+			inspection.StartupSource = "validated desired configuration; no prior launch policy exists"
+		}
 		return inspection, nil
+	}
+	if _, err := os.Lstat(filepath.Join(a.home, "endpoint.json")); os.IsNotExist(err) {
+		return resolveStopped()
 	} else if err != nil {
 		return inspection, err
 	}
@@ -30,7 +43,7 @@ func (a *app) inspectMeshLifecycle() (mesh.LifecycleInspection, error) {
 	defer cancel()
 	var status model.Status
 	if err := client.Call(ctx, a.home, "status", nil, &status); err != nil {
-		return inspection, nil
+		return resolveStopped()
 	}
 	inspection.Running = true
 	inspection.Host = status.Host
@@ -58,7 +71,17 @@ func (a *app) inspectMeshLifecycle() (mesh.LifecycleInspection, error) {
 // JSON result contract. It never signals a stale endpoint PID or changes a
 // running authority's budgets.
 func (a *app) ensureMeshBackend(expected mesh.StartupPolicy) (mesh.LifecycleInspection, error) {
+	return a.ensureMeshBackendWithLauncher(expected, nil)
+}
+
+// The optional launcher lets disposable tests retain their original child and
+// Wait. Production uses only the current executable and existing detached start.
+func (a *app) ensureMeshBackendWithLauncher(expected mesh.StartupPolicy, launch func(*exec.Cmd) error) (mesh.LifecycleInspection, error) {
 	if err := expected.Validate(); err != nil {
+		return mesh.LifecycleInspection{}, err
+	}
+	snapshot, err := daemonconfig.SnapshotSHA256(daemonconfig.Settings{Resources: expected.Resources, Listen: expected.Listen})
+	if err != nil {
 		return mesh.LifecycleInspection{}, err
 	}
 	inspection, err := a.inspectMeshLifecycle()
@@ -91,13 +114,25 @@ func (a *app) ensureMeshBackend(expected mesh.StartupPolicy) (mesh.LifecycleInsp
 	if expected.Resources.Disk > 0 {
 		disk = strconv.FormatInt(expected.Resources.Disk, 10)
 	}
-	command := exec.Command(executable, "--home", a.home, "serve", "--cpu", strconv.FormatFloat(expected.Resources.CPU, 'f', -1, 64), "--memory", memory, "--disk", disk, "--listen", expected.Listen)
+	arguments := []string{"--home", a.home, "serve", "--expect-config", snapshot}
+	if inspection.StartupSource == "persisted successful backend launch" {
+		arguments = append(arguments, "--cpu", strconv.FormatFloat(expected.Resources.CPU, 'f', -1, 64), "--memory", memory, "--disk", disk, "--listen", expected.Listen)
+	}
+	command := exec.Command(executable, arguments...)
 	command.Stdout, command.Stderr = log, log
 	command.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
-	if err := command.Start(); err != nil {
+	if launch == nil {
+		launch = func(cmd *exec.Cmd) error {
+			if err := cmd.Start(); err != nil {
+				return err
+			}
+			_ = cmd.Process.Release()
+			return nil
+		}
+	}
+	if err := launch(command); err != nil {
 		return inspection, err
 	}
-	_ = command.Process.Release()
 	until := time.Now().Add(10 * time.Second)
 	for time.Now().Before(until) {
 		current, err := a.inspectMeshLifecycle()
@@ -105,6 +140,9 @@ func (a *app) ensureMeshBackend(expected mesh.StartupPolicy) (mesh.LifecycleInsp
 			return current, err
 		}
 		if current.Running {
+			if current.Startup.Resources != expected.Resources || current.Startup.Listen != expected.Listen {
+				return current, model.Err("setup_changed", "started backend does not match the inspected startup policy; inspect its retained startup decision before proceeding")
+			}
 			return current, nil
 		}
 		select {

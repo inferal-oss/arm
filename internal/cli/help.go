@@ -16,6 +16,8 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"config check":                      {summary: "Validate config.toml in the selected ARM home and show desired startup settings. Read-only: no backend, database, identity or directory creation. Invalid/unsupported fields refuse; see docs/configuration.md.", max: 0},
+	"config show":                       {summary: "Show validated desired next-start CPU/memory/disk ceilings and loopback listen address with default/file provenance. This is not a running backend read or live apply. Startup flags override valid file fields; internal mesh recorded-policy replay preserves its saved startup settings.", max: 0},
 	"name list":                         {summary: "List local custom-name metadata without probing objects. --all includes inactive and dangling reservations.", max: 0},
 	"name set":                          {usage: "KIND TARGET NAME --revision N [--host HOST] [--binding-lease ID]", summary: "Assign a local cosmetic name after a fresh authorized target read. KIND is host, lease, pool or resource. Requires the current name-map revision; no automatic retries.", min: 3, max: 3},
 	"name clear":                        {usage: "KIND EXACT_ID NAME --host EXACT_HOST_ID --revision N [--binding-lease EXACT_LEASE_ID]", summary: "Clear one exact active or inactive reservation without probing the old object. Clearing permits a later deliberate name reuse. Port resources require the original reservation lease.", min: 3, max: 3},
@@ -232,6 +234,7 @@ var commandHelps = map[string]commandHelp{
 	"version":                {summary: "Print ARM, Go and platform versions."},
 }
 var groupHelps = map[string]string{
+	"config":          "  check   Validate local config.toml without creating state\n  show    Show desired startup settings and per-field provenance\n",
 	"name":            "  list                List local names (--all includes reservations)\n  set KIND TARGET NAME  Assign a visible target at --revision N\n  clear KIND ID NAME    Clear an exact binding at --host ID --revision N\n",
 	"mesh kubernetes": "  contexts            List local kubeconfig choices\n  nodes               Browse reported Node resources (--context NAME)\n  keygen              Generate a new exact operation key offline\n  plan                Read an exact Pod/binary review without creating it\n  apply               Create only the exact confirmed --expect-plan\n  lookup KEY          Observe the saved operation without replay\n  ship KEY            Send the exact confirmed binary to its owned Pod\n\n  Node figures are scheduler reports, not live ARM capacity.\n",
 	"reviews":         "  list              Page checkpoints and pending reviews\n  inspect ID        Read claims, reason, usage quality and replies\n  policy LEASE      Inspect optional per-lease cadence\n  configure LEASE   Enable/disable at --revision N --policy-generation G\n  reply ID          Record exact-session explanation; intent only\n",

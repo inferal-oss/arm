@@ -22,6 +22,7 @@ import (
 	"getarm.org/internal/agents"
 	"getarm.org/internal/buildinfo"
 	"getarm.org/internal/client"
+	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/install"
 	"getarm.org/internal/kubeprovision"
 	"getarm.org/internal/local"
@@ -285,6 +286,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.print(map[string]string{"version": Version, "go": runtime.Version(), "os": runtime.GOOS, "arch": runtime.GOARCH})
 	case "serve", "daemon", "start", "stop":
 		return a.daemon(cmd, args)
+	case "config":
+		return a.configCommand(args)
 	case "acquire", "run":
 		return a.acquire(cmd, args)
 	case "install", "uninstall":
@@ -871,11 +874,13 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	cpuValue := float64(max(1, runtime.NumCPU()-1))
 	memValue, diskValue, listenValue := "auto", "auto", "127.0.0.1:0"
 	cpus, mem, disk, listen := &cpuValue, &memValue, &diskValue, &listenValue
+	expectConfig := new(string)
 	if action == "start" || action == "serve" {
 		f.Float64Var(cpus, "cpu", cpuValue, "host CPU reservation `budget`")
 		f.StringVar(mem, "memory", memValue, "live host memory pool: auto, or a positive optional ceiling `size`")
 		f.StringVar(disk, "disk", diskValue, "live state-filesystem pool: auto, or a positive optional ceiling `size`")
 		f.StringVar(listen, "listen", listenValue, "loopback backend `address`")
+		f.StringVar(expectConfig, "expect-config", "", "require the resolved settings `SHA256` from config show before startup")
 	}
 	if action != "serve" {
 		f.Bool("json", false, "force JSON output (default: automatic)")
@@ -914,25 +919,15 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		}
 		return a.stopBackend(model.ShutdownRequest{Force: *force, Wait: *wait, Timeout: time.Duration(*timeout) * time.Second})
 	}
-	var memory int64
-	var e error
-	if *mem != "auto" {
-		memory, e = bytesValue(*mem)
-		if e != nil || memory <= 0 {
-			return 2, fmt.Errorf("--memory must be auto or a positive ceiling size")
-		}
+	resolved, e := daemonconfig.Resolve(a.home, daemonDefaults(), startupOverrides(f, cpus, mem, disk, listen))
+	if e != nil {
+		return 2, fmt.Errorf("configuration refused before startup; use arm config check: %w", e)
 	}
-	var d int64
-	if *disk != "auto" {
-		d, e = bytesValue(*disk)
-		if e != nil || d <= 0 {
-			return 2, fmt.Errorf("--disk must be auto or a positive ceiling size")
-		}
+	if *expectConfig != "" && *expectConfig != resolved.SettingsSHA256 {
+		return 2, model.Err("configuration_changed", "resolved startup settings differ from --expect-config; review arm config show before retrying")
 	}
-	if *cpus <= 0 || math.IsNaN(*cpus) || math.IsInf(*cpus, 0) || d < 0 {
-		return 2, fmt.Errorf("host budgets must be positive and finite")
-	}
-	capacity := model.Resources{CPU: *cpus, Memory: memory, Disk: d}
+	capacity := resolved.Settings.Resources
+	*listen = resolved.Settings.Listen
 	if action == "serve" {
 		return 0, server.Serve(a.ctx, a.home, *listen, capacity)
 	}
@@ -964,15 +959,10 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		return 1, e
 	}
 	defer log.Close()
-	memoryArg := *mem
-	if memory > 0 {
-		memoryArg = strconv.FormatInt(memory, 10)
-	}
-	diskArg := *disk
-	if d > 0 {
-		diskArg = strconv.FormatInt(d, 10)
-	}
-	cmd := exec.Command(exe, "--home", a.home, "serve", "--cpu", strconv.FormatFloat(*cpus, 'f', -1, 64), "--memory", memoryArg, "--disk", diskArg, "--listen", *listen)
+	// Pass only arguments explicitly provided to start. Generated default flags
+	// must not mask config.toml when the child resolves its actual startup.
+	arguments := append(startupArguments(a.home, f), "--expect-config", resolved.SettingsSHA256)
+	cmd := exec.Command(exe, arguments...)
 	cmd.Stdout = log
 	cmd.Stderr = log
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
